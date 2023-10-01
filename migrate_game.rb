@@ -25,11 +25,10 @@ end
 
 # Switches the position of two blocks of actions.
 # If an array of actions `[abcdeFGHIjklMNopq]` is passed with ranges `6..9` and
-# `13..14` then this will return an array of actions `[MNjklFGHI]`.
+# `13..14` then this will modify the array order to be `[abcdeMNjklFGHIopq]`.
 # @param actions [Array] Array of actions.
 # @param first_block [Range] ID range of the first block of actions.
 # @param second_block [Range] ID range of the second block of actions.
-# @return [Array] The section of the actions array affected by the reordering.
 def switch_action_blocks(actions, first_block, second_block)
   raise RangeError if second_block.first <= first_block.last
   raise RangeError if first_block.size.zero? || second_block.size.zero?
@@ -39,7 +38,6 @@ def switch_action_blocks(actions, first_block, second_block)
   reordered = actions[second_block] + actions[middle_block] + actions[first_block]
   reordered.each_with_index { |action, i | action['id'] = start_idx + i }
   actions[first_block.first..second_block.last] = reordered
-  reordered
 end
 
 # Moves an auto_actions array from one action to another. If both actions have
@@ -48,8 +46,6 @@ end
 # @param actions [Array] Array of actions.
 # @param from [Integer] Index of the action with the auto_actions.
 # @param to [Integer] Index of the action to move the auto_actions to.
-# @return [Array] The section of the actions array including both from and to,
-#                 or nil if neither action had auto_actions.
 def move_auto_actions(actions, from, to)
   from, to = [from, to].minmax # In case from > to
   first = actions[from]
@@ -68,8 +64,6 @@ def move_auto_actions(actions, from, to)
   else
     first['auto_actions'] = auto_actions2
   end
-
-  actions.slice(from, to - from + 1)
 end
 
 # If inserting/deleting actions, modify the given `actions` and return `nil`
@@ -114,20 +108,21 @@ def repair(game, original_actions, actions, broken_action, data, pry_db: false)
     raise Exception, 'Could not find remove_token_action' unless reduce_action
     next_step_action = next_actions.rotate(next_actions.index(reduce_action))
                          .find { |action| action['type'] != 'remove_token' }
-    share_actions_start = original_actions.index(broken_action)
-    share_actions_end = original_actions.index(reduce_action) - 1
-    token_actions_start = original_actions.index(reduce_action)
-    token_actions_end = original_actions.index(next_step_action) - 1
+    share_actions_start = actions.index(broken_action)
+    share_actions_end = actions.index(reduce_action) - 1
+    token_actions_start = actions.index(reduce_action)
+    token_actions_end = actions.index(next_step_action) - 1
     # There might be an auto_actions section in the last action of the reduce
     # tokens step. This will be where a player has autopassed on merge actions
     # in the round. This needs to be moved to the last action in the post merger
     # shares step.
-    move_auto_actions(original_actions, token_actions_end, share_actions_end)
+    move_auto_actions(actions, token_actions_end, share_actions_end)
     # Switch to position of the blocks of actions for the PostMergeShares and
     # the ReduceTokens steps.
     share_actions_idx = share_actions_start..share_actions_end
     token_actions_idx = token_actions_start..token_actions_end
-    return switch_action_blocks(original_actions, share_actions_idx, token_actions_idx)
+    switch_action_blocks(actions, share_actions_idx, token_actions_idx)
+    return
   end
 
   # Generic handling for when a change just needs pass actions to be
