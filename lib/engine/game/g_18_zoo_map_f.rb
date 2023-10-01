@@ -2,7 +2,7 @@
 
 module Engine
   module Game
-    module G18ZOO
+    module G18ZOOMapF
     end
   end
 end
