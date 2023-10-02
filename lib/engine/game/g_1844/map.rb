@@ -279,7 +279,7 @@ module Engine
             %w[G22 I20] => 'upgrade=cost:90,terrain:mountain',
             %w[B23 C14 D17 G16] => 'town=revenue:0',
             %w[E10 F25 J1 K8] => 'town=revenue:0;upgrade=cost:20,terrain:water',
-            %w[F13 H3 H25 L11] => 'town=revenue:0;upgrade=cost:30,terrain:mountain',
+            %w[F13 H3 L11] => 'town=revenue:0;upgrade=cost:30,terrain:mountain',
             %w[C24 D25 G18] => 'city=revenue:0',
             %w[B19 C12 D13 E18 H13 K10 K20 K22] => 'city=revenue:0;upgrade=cost:20,terrain:river',
             %w[F21 G28 I28] => 'city=revenue:0;upgrade=cost:30,terrain:mountain',

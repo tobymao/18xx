@@ -29,6 +29,8 @@ module Engine
             abilities: [
               {
                 type: 'tile_lay',
+                # TODO: uncomment
+                # after_phase: '2',
                 when: %w[track owning_player_track],
                 count: 1,
                 reachable: true,
@@ -58,6 +60,7 @@ module Engine
             abilities: [
               {
                 type: 'choose_ability',
+                after_phase: '2',
                 when: %w[track owning_player_track],
                 choices: ['Place tile'],
               },
@@ -94,7 +97,12 @@ module Engine
             abilities: [
               { type: 'close', on_phase: 'never' },
               { type: 'no_buy' },
-              # { type: 'assign_corporation', when: 'owning_player_or_turn', count: 1, closed_when_used_up: true },
+              {
+                type: 'choose_ability',
+                after_phase: '4',
+                when: 'owning_player_or_turn',
+                choices: [], # Defined in special_choose step
+              },
             ],
           },
           {

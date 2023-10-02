@@ -302,6 +302,14 @@ module Engine
           @gb ||= corporation_by_id('GB')
         end
 
+        def p4
+          @p4 ||= company_by_id('P4')
+        end
+
+        def p7
+          @p7 ||= company_by_id('P7')
+        end
+
         def setup
           setup_destinations
           mountain_railways.each { |mr| mr.owner = @bank }
@@ -358,7 +366,7 @@ module Engine
         end
 
         def event_close_companies!
-          lay_p4_overpass!
+          lay_p4_overpass! unless p4.closed?
           super
         end
 
@@ -672,7 +680,7 @@ module Engine
         end
 
         def lay_p4_overpass!
-          company = company_by_id('P4')
+          company = p4
           return if company.abilities.empty?
 
           owner = company.owner
