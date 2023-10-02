@@ -367,6 +367,7 @@ module Engine
 
         def event_close_companies!
           lay_p4_overpass! unless p4.closed?
+          p7.revenue = 0
           super
         end
 
@@ -597,6 +598,7 @@ module Engine
         def operating_round(round_num)
           G1844::Round::Operating.new(self, [
             Engine::Step::Bankrupt,
+            Engine::Step::DiscardTrain,
             Engine::Step::Exchange,
             G1844::Step::SpecialChoose,
             G1844::Step::SpecialTrack,
@@ -607,7 +609,6 @@ module Engine
             Engine::Step::Token,
             G1844::Step::Route,
             G1844::Step::Dividend,
-            Engine::Step::DiscardTrain,
             G1844::Step::BuyTrain,
             [G1844::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
@@ -705,6 +706,13 @@ module Engine
           end
 
           @log << "#{company.name} closes"
+          company.close!
+        end
+
+        def assign_p7_train(corp)
+          company = p7
+          @log << "#{company.owner.name} (#{company.name}) assigns EVA #{@eva.name} train to #{corp.name}"
+          buy_train(corp, @eva, :free)
           company.close!
         end
 
