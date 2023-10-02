@@ -6,11 +6,11 @@ module Engine
   module Game
     module G1844
       module Step
-        class RemoveTokens < Engine::Step::Base
+        class RemoveSBBTokens < Engine::Step::Base
           REMOVE_TOKEN_ACTIONS = %w[remove_token].freeze
 
           def actions(entity)
-            return [] unless current_entity == entity
+            return [] if entity != current_entity || hexes_to_resolve(entity).empty?
 
             REMOVE_TOKEN_ACTIONS
           end
@@ -20,7 +20,8 @@ module Engine
           end
 
           def help
-            "#{@game.sbb.name} cannot have two tokens in the same hex. Select which token to remove."
+            "#{current_entity.name} cannot have two tokens in the same hex. "\
+              "Select which token to remove from #{hexes_to_resolve(current_entity).map(&:id).join(',')}."
           end
 
           def active_entities
@@ -28,11 +29,11 @@ module Engine
           end
 
           def can_replace_token?(entity, token)
-            avaialble_hex(entity, token.hex)
+            available_hex(entity, token.hex)
           end
 
           def hexes_to_resolve(entity)
-            entity.tokens.map(&:hex).group_by(&:itself).select { |_k, v| v.size > 1 }.keys
+            entity.tokens.select(&:used).map(&:hex).group_by(&:itself).select { |_k, v| v.size > 1 }.keys
           end
 
           def available_hex(entity, hex)
@@ -46,7 +47,7 @@ module Engine
 
             raise GameError, "Cannot remove #{token.corporation.name} token" if !@game.loading && !available_hex(entity, hex)
 
-            @log << "#{entity.name} removes token from #{hex.full_name} and places on charter"
+            @log << "#{entity.name} removes token from #{hex.full_name} and places it on its charter"
             token.remove!
           end
         end

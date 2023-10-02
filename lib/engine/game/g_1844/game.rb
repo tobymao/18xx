@@ -449,7 +449,7 @@ module Engine
               @log << "#{sbb.name} already has a token on #{token.hex.full_name}, placing token on charter instead"
               token.remove!
             else
-              token.swap!(sbb.tokens.last)
+              token.swap!(sbb.tokens.last, check_tokenable: false)
             end
           end
         end
