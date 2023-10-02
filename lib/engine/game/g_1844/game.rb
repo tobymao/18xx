@@ -257,10 +257,10 @@ module Engine
           'company_abilities' => ['Company Abilities Useable', 'Company special abilities can be used'],
           'buy_across' => ['Buy Across', 'Trains can be bought between corporations'],
           '3t_downgrade' => ['3 -> 3H', '3 trains downgraded to 3H trains'],
-          '4t_downgrade' => ['4 -> 4H', '4 trains downgraded to 4H trains'],
-          '5t_downgrade' => ['5 -> 5H', '5 trains downgraded to 5H trains'],
           'sbb_formation' => ['SBB Forms', 'SBB forms after the Operating Round'],
-          'full_capitalization' => ['Full Capitalization', 'Newly formed corporations receive full capitalization']
+          '4t_downgrade' => ['4 -> 4H', '4 trains downgraded to 4H trains'],
+          'full_capitalization' => ['Full Capitalization', 'Newly formed corporations receive full capitalization'],
+          '5t_downgrade' => ['5 -> 5H', '5 trains downgraded to 5H trains'],
         ).freeze
 
         P4_TILE_LAYS = { 'H17' => 'OP3', 'H19' => 'OP2', 'H21' => 'OP2', 'H23' => 'OP2', 'I16' => 'OP1' }.freeze
@@ -380,6 +380,15 @@ module Engine
           downgrade_train_type!('4', '4H')
         end
 
+        def event_full_capitalization!
+          @log << "-- Event: #{EVENTS_TEXT['full_capitalization'][1]} --"
+          @full_capitalization = true
+          @corporations.select { |corp| corp.type == :historical && !corp.floated }.each do |corp|
+            hex_by_id(corp.destination_coordinates).remove_assignment!(corp)
+            corp.remove_ability(corp.abilities.find { |a| a.description.start_with?('Destination') })
+          end
+        end
+
         def event_5t_downgrade!
           downgrade_train_type!('5', '5H')
         end
@@ -438,10 +447,10 @@ module Engine
           determine_sbb_president!(previous_owners.uniq)
         end
 
-        def place_sbb_tokens!(corp)
-          locations = corp.tokens.map { |token| token.used ? token.hex.full_name : 'Unused' }.join(', ')
-          @log << "#{sbb.name} receives #{corp.tokens.size} tokens: #{locations}"
-          corp.tokens.each do |token|
+        def place_sbb_tokens!(corporation)
+          locations = corporation.tokens.map { |token| token.used ? token.hex.full_name : 'Unused' }.join(', ')
+          @log << "#{sbb.name} receives #{corporation.tokens.size} tokens: #{locations}"
+          corporation.tokens.each do |token|
             sbb.tokens << Token.new(sbb, price: 100)
             next unless token.used
 
@@ -454,10 +463,10 @@ module Engine
           end
         end
 
-        def sbb_share_exchange!(corp)
-          cash_per_share = corp.share_price.price - sbb.share_price.price
-          corp.share_holders.keys.each do |share_holder|
-            shares = share_holder.shares_of(corp).map do |corp_share|
+        def sbb_share_exchange!(corporation)
+          cash_per_share = corporation.share_price.price - sbb.share_price.price
+          corporation.share_holders.keys.each do |share_holder|
+            shares = share_holder.shares_of(corporation).map do |corp_share|
               percent = corp_share.president ? 10 : 5
               sbb.shares_of(sbb).find { |sbb_share| sbb_share.percent == percent }
             end
@@ -653,7 +662,12 @@ module Engine
           return if corporation == sbb
 
           @log << "#{corporation.name} floats"
-          multiplier = corporation.type == :'pre-sbb' ? 2 : 5
+          multiplier =
+            case corporation.type
+            when :'pre-sbb' then 2
+            when :regional then 5
+            when :historical then @full_capitalization ? 10 : 5
+            end
           @bank.spend(corporation.par_price.price * multiplier, corporation)
           @log << "#{corporation.name} receives #{format_currency(corporation.cash)}"
         end
@@ -709,10 +723,10 @@ module Engine
           company.close!
         end
 
-        def assign_p7_train(corp)
+        def assign_p7_train(corporation)
           company = p7
-          @log << "#{company.owner.name} (#{company.name}) assigns EVA #{@eva.name} train to #{corp.name}"
-          buy_train(corp, @eva, :free)
+          @log << "#{company.owner.name} (#{company.name}) assigns EVA #{@eva.name} train to #{corporation.name}"
+          buy_train(corporation, @eva, :free)
           company.close!
         end
 

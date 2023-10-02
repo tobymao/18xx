@@ -22,6 +22,10 @@ module Engine
             super
           end
 
+          def get_par_prices(entity, _corp)
+            @game.stock_market.share_prices_with_types([:par]).select { |p| p.price * 2 <= available_cash(entity) }
+          end
+
           def can_buy_company?(player, company)
             return false unless super
 
