@@ -1437,10 +1437,6 @@ module Engine
           @log << "#{entity.name} borrows a #{train.name}"
         end
 
-        def train_limit(entity)
-          super + Array(abilities(entity, :train_limit)).sum(&:increase)
-        end
-
         def eight_train_variant?
           @eight_train_variant ||= @optional_rules&.include?(:eight_train_variant)
         end

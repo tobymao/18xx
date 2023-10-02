@@ -923,7 +923,7 @@ module Engine
       end
 
       def train_limit(entity)
-        @phase.train_limit(entity)
+        @phase.train_limit(entity) + Array(abilities(entity, :train_limit)).sum(&:increase)
       end
 
       def train_owner(train)

@@ -297,10 +297,6 @@ module Engine
           super
         end
 
-        def train_limit(entity)
-          super + Array(abilities(entity, :train_limit)).sum(&:increase)
-        end
-
         private
 
         def remove_corporation_block(corporation)
