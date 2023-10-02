@@ -79,7 +79,7 @@ module Engine
             desc: "Comes with the Director's share of the FNM. When purchased, the owner sets the par price for the FNM" \
                   ' and it immediately floats, with 3 shares going to the market. The company closes when the FNM runs' \
                   ' a train for the first time.',
-            abilities: [{ type: 'close', when: 'ran_train', corporation: 'FNM' }, # TODO: add ran_train event
+            abilities: [{ type: 'close', when: 'ran_train', corporation: 'FNM' },
                         { type: 'no_buy' },
                         { type: 'shares', shares: 'FNM_0' }],
           },
