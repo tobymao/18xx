@@ -185,6 +185,8 @@ module Engine
             ['Concessions close', 'All concessions close without compensation, major companies float at 50%'],
           'full_capitalisation' =>
             ['Full capitalisation', 'Major companies receive full capitalisation when floated'],
+          'phase_revenue' =>
+            ['Phase revenue company closes', 'P16 closes if not owned by a major company'],
         }.freeze
 
         MARKET_TEXT = G1822::Game::MARKET_TEXT.merge(max_price: 'Maximum price for a minor').freeze
@@ -295,6 +297,9 @@ module Engine
             events: [
               {
                 'type' => 'full_capitalisation',
+              },
+              {
+                'type' => 'phase_revenue',
               },
             ],
           },
