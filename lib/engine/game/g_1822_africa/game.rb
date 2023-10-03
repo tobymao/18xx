@@ -904,7 +904,6 @@ module Engine
             ['Minor company dividend > 0', '1 →'],
             ['Each share sold (if sold by director)', '1 ←'],
             ['One or more shares sold (if sold by non-director)', '1 ←'],
-            ['Corporation sold out at end of SR', '1 →'],
           ]
         end
       end
