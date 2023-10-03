@@ -38,6 +38,8 @@ module Engine
         OR_SETS = [2, 2, 2, 2, 2].freeze
 
         CAPITALIZATION = :incremental
+        HOME_TOKEN_TIMING = :operate
+        SOLD_OUT_INCREASE = false
 
         MARKET = [
           [
@@ -69,21 +71,6 @@ module Engine
         MARKET_TEXT = Base::MARKET_TEXT.merge(
           ignore_unless_president: 'Price will not drop below these values in Stock Round unless president sells'
         ).freeze
-
-        def setup_preround
-          # randomize the private companies, choose an amount equal to player count, sort numerically
-          @companies = @companies.shuffle.take(@players.size).sort_by(&:name)
-          # puts "List of companies: #{@companies.inspect}"
-          # record whether or not the shuffled companies include KO
-          @ko_included = @companies.include?(@ko_company)
-          # puts "setup_preround: #{@ko_included}"
-        end
-
-        def setup
-          setup_company_price_up_to_face
-          @or = 0
-          # puts "setup: #{@ko_included}"
-        end
 
         PHASES = [{ name: '2', train_limit: 4, tiles: [:yellow] },
                   {
@@ -141,6 +128,33 @@ module Engine
                     ],
                   }].freeze
 
+        GAME_END_CHECK = { custom: :current_or, stock_market: :current }.freeze
+
+        GAME_END_REASONS_TEXT = Base::GAME_END_REASONS_TEXT.merge(
+          custom: 'Fixed number of ORs',
+          stock_market: 'Company reached the top of the market.',
+        ).freeze
+
+        GAME_END_REASONS_TIMING_TEXT = Base::EVENTS_TEXT.merge(
+          full_or: 'Ends after the final OR set.',
+          current: 'Ends after this OR.'
+        ).freeze
+
+        def setup_preround
+          # randomize the private companies, choose an amount equal to player count, sort numerically
+          @companies = @companies.sort_by { rand }.take(@players.size).sort_by(&:name)
+          puts "list of companies: #{@companies.inspect}"
+        end
+
+        def setup
+          setup_company_price_up_to_face
+          @or = 0
+          # code below may be used for setting float percentage of NRS
+          # ko_company
+          # # record whether or not the shuffled companies include KO
+          # ko_included = @companies.include?(ko_company)
+        end
+
         def timeline
           @timeline ||= [
             'Game ends after OR 5.2!',
@@ -153,7 +167,7 @@ module Engine
         end
 
         def progress_information
-          base_progress = [
+          [
             { type: :PRE },
             { type: :SR },
             { type: :OR, name: '1.1' },
@@ -170,22 +184,9 @@ module Engine
             { type: :SR },
             { type: :OR, name: '5.1' },
             { type: :OR, name: '5.2' },
+            { type: :End },
           ]
-
-          base_progress << { type: :End }
         end
-
-        GAME_END_CHECK = { custom: :current_or, stock_market: :current }.freeze
-
-        GAME_END_REASONS_TEXT = Base::GAME_END_REASONS_TEXT.merge(
-          custom: 'Fixed number of ORs',
-          stock_market: 'Company reached the top of the market.',
-        ).freeze
-
-        GAME_END_REASONS_TIMING_TEXT = Base::EVENTS_TEXT.merge(
-          full_or: 'Ends after the final OR set.',
-          current: 'Ends after this OR.'
-        ).freeze
 
         def new_auction_round
           Engine::Round::Auction.new(self, [
@@ -193,42 +194,76 @@ module Engine
           ])
         end
 
-        # This allows for the ledges that prevent price drops unless the president is selling
+        def operating_round(round_num)
+          @round_num = round_num
+          Engine::Round::Operating.new(self, [
+            Engine::Step::Bankrupt,
+            Engine::Step::Assign,
+            Engine::Step::SpecialToken,
+            Engine::Step::SpecialTrack,
+            Engine::Step::BuyCompany,
+            GSteamOverHolland::Step::IssueShares,
+            Engine::Step::Track,
+            Engine::Step::Token,
+            Engine::Step::Route,
+            GSteamOverHolland::Step::Dividend,
+            Engine::Step::DiscardTrain,
+            Engine::Step::BuyTrain,
+            [Engine::Step::BuyCompany, { blocks: true }],
+          ], round_num: round_num)
+        end
+
+        def ipo_name(_entity = nil)
+          'Treasury'
+        end
+
+        def price_movement_chart
+          [
+            ['Action', 'Share Price Change'],
+            ['No dividend', '1 ←'],
+            ['Dividend < stock price', 'none'],
+            ['Dividend ≥ stock price', '1 →'],
+            ['Dividend ≥ 2X stock price', '2 →'],
+            ['Corporation issues shares', '← 1 less than the number of shares issued'],
+          ]
+        end
+
         def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil, movement: nil)
           super
 
           num_shares = bundle.num_shares
-          unless president_selling
-            num_shares = 0 if corporation.share_price.type == :ignore_sale_unless_president
-            num_shares = 1 if corporation.share_price.type == :max_one_drop_unless_president
-            num_shares = 2 if corporation.share_price.type == :max_two_drops_unless_president
+          unless bundle.owner == corporation.owner
+            # This allows for the ledges that prevent price drops unless the president is selling
+            case corporation.share_price.type
+            when :ignore_sale_unless_president
+              num_shares = 0
+            when :max_one_drop_unless_president
+              num_shares = 1
+            when :max_two_drops_unless_president
+              num_shares = 2 unless num_shares == 1
+            end
           end
-          num_shares.times { @stock_market.move_down(corporation) } if selling_movement?(corporation)
+          num_shares.times { @stock_market.move_down(corporation) }
         end
 
-        def nrs_corp
-          @nrs_corp ||= corporation_by_id('NRS')
+        def issuable_shares(entity)
+          return [] unless round.steps.find { |step| step.instance_of?(GSteamOverHolland::Step::IssueShares) }.active?
+
+          num_shares = entity.num_player_shares - entity.num_market_shares
+          bundles = bundles_for_corporation(entity, entity)
+
+          bundles
+            .each { |bundle| bundle.share_price = share_price }
+            .reject { |bundle| bundle.num_shares > num_shares }
         end
 
-        def ko_company
-          @ko_company ||= company_by_id('KO')
-        end
+        def redeemable_shares(entity)
+          return [] unless round.steps.find { |step| step.instance_of?(GSteamOverHolland::Step::IssueShares) }.active?
 
-        def ko_included?
-          @ko_included
+          bundles_for_corporation(share_pool, entity)
+            .each { |bundle| bundle.share_price = share_price }
+            .reject { |bundle| entity.cash < bundle.price }
         end
-
-        # def action_processed(action)
-        #   case action
-        #   when Action::Par
-        #     if action.corporation == nrs_corp && @removed_companies.include?(company_by_id('KO'))
-        #       bonus = action.share_price.price
-        #       @bank.spend(bonus, nrs_corp)
-        #       @log << "#{nrs_corp.name} receives a #{format_currency(bonus)} because "\
-        #               'a player received a share of it in the Private Auction'
-        #     end
-        #   end
-        # end
       end
     end
   end
