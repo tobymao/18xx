@@ -78,6 +78,7 @@ module Engine
 
         def new_auction_round
           Engine::Round::Auction.new(self, [
+            Engine::Step::CompanyPendingPar,
             G18Dixie::Step::SelectionAuction,
           ])
         end
