@@ -53,9 +53,8 @@ module View
 
           if @current_actions.include?('par') && @step.respond_to?(:companies_pending_par) && !@step.companies_pending_par.empty?
             return h(:div, render_company_pending_par)
-          elsif @corporation_to_par && @current_actions.include?('par')
-            return render_select_par_slot
           end
+          return render_select_par_slot if @corporation_to_par && @current_actions.include?('par')
 
           children = []
 

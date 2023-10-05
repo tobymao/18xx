@@ -564,8 +564,7 @@ module Engine
           super
           return unless [wra, sr].find(corporation)
 
-          
-          bundle = ShareBundle.new(corporation.shares_of(corporation).slice(0,3))
+          bundle = ShareBundle.new(corporation.shares_of(corporation).slice(0, 3))
           @share_pool.buy_shares(@share_pool, bundle, exchange: :free, exchange_price: 0, allow_president_change: false)
         end
 

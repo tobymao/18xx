@@ -119,6 +119,7 @@ module Engine
 
           def process_par(action)
             return super if companies_pending_par.empty?
+
             share_price = action.share_price
             corporation = action.corporation
 
