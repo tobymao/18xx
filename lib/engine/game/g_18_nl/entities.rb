@@ -48,9 +48,9 @@ module Engine
             value: 70,
             revenue: 10,
             desc: 'A player owning this company may exchange it for a 10% share of the DV if they do not already hold 60%'\
-                  'of the DV and there is DV stock available in the Bank or the Pool. The exchange may be made during'\
-                  " the player's turn of a stock round or between the turns of other players or corporations in either "\
-                  'stock or operating rounds. This action closes the private. Blocks F9 while owned by a player.',
+                  ' of the DV and there is DV stock available in the Bank or the Pool. The exchange may be made during'\
+                  " the player's turn of a stock round or between the turns of other players or corporations in either"\
+                  ' stock or operating rounds. This action closes the private. Blocks F9 while owned by a player.',
             abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['F9'] },
                         {
                           type: 'exchange',
