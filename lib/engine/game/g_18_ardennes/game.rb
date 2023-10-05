@@ -38,6 +38,8 @@ module Engine
         HOME_TOKEN_TIMING = :par
 
         MUST_BUY_TRAIN = :always # Just for majors, minors are handled in #must_buy_train?
+        BANKRUPTCY_ALLOWED = true
+        BANKRUPTCY_ENDS_GAME_AFTER = :all_but_one
 
         def setup
           super
@@ -114,6 +116,15 @@ module Engine
         def operating_order
           minor_corporations.select(&:ipoed).sort +
           major_corporations.select(&:ipoed).sort
+        end
+
+        # Checks whether a player really is bankrupt.
+        def can_go_bankrupt?(player, _corporation)
+          return super if @round.is_a?(Round::Operating)
+
+          # Has the player won the auction for a major company concession
+          # that they cannot afford to start?
+          bankrupt?(player)
         end
       end
     end

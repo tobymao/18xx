@@ -481,6 +481,49 @@ module Engine
 
           super
         end
+
+        # Is the player unable to raise enough cash to start one of the
+        # corporations that they are under obligation for?
+        def bankrupt?(player)
+          return false if player.companies.none? { |c| c.type == :concession }
+
+          cash_needed(player) > liquidity(player)
+        end
+
+        # How much a minor is worth, when exchanged for a share.
+        # A minor's value is twice its market price, but anything in excess
+        # of the value of the major's share is lost.
+        def minor_sale_value(minor, share_price)
+          [share_price.price, minor.share_price.price * 2].min
+        end
+
+        # The minimum amount of cash needed to start a major company.
+        def min_concession_cost(concession)
+          major = major_corporations.find do |corp|
+            corp.par_via_exchange = concession
+          end
+          minor = pledged_minors[major]
+          min_par = lowest_major_par
+          (min_par.price * 3) - minor_sale_value(minor, min_par)
+        end
+
+        private
+
+        # The minimum amount of cash needed to start one of the corporations
+        # that the player is under obligation for.
+        def cash_needed(player)
+          player.companies
+                .select { |company| company.type == :concession }
+                .map { |concession| min_concession_cost(concession) }
+                .min
+        end
+
+        # The lowest par price for starting a major corporation.
+        def lowest_major_par
+          @lowest_major_par ||= stock_market.par_prices.reverse.find do |pp|
+            pp.types.include?(:par_2)
+          end
+        end
       end
     end
   end

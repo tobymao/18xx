@@ -13,11 +13,24 @@ module Engine
           def actions(entity)
             return super unless under_obligation?(entity)
 
-            if can_sell_any?(entity)
+            if @game.bankrupt?(entity)
+              %w[bankrupt]
+            elsif can_sell_any?(entity)
               %w[sell_shares par]
             else
               %w[par]
             end
+          end
+
+          def bankruptcy_description(player)
+            concession = player.companies
+                               .select { |c| c.type == :concession }
+                               .min { |c| @game.min_concession_cost(c) }
+
+            "#{player.name} needs at least " \
+              "#{@game.format_currency(@game.min_concession_cost(concession))} " \
+              "to start #{concession.name} but can only raise " \
+              "#{@game.format_currency(@game.liquidity(player))}."
           end
 
           def sellable_companies(entity)
@@ -45,8 +58,7 @@ module Engine
           # cash to pay for this extra share.
           def available_par_cash(player, corporation, share_price: nil)
             minor = @game.pledged_minors[corporation]
-            extra_cash = [share_price.price, minor.share_price.price * 2].min
-            available_cash(player) + extra_cash
+            available_cash(player) + @game.minor_sale_value(minor, share_price)
           end
 
           def process_par(action)
@@ -60,6 +72,21 @@ module Engine
             exchange_minor(minor, major)
           end
 
+          def process_bankrupt(action)
+            player = action.entity
+
+            # All shares and the GL go to the bank pool.
+            # Concessions can be purchased by another player in a future auction.
+            sell_bankrupt_shares(player)
+            player.companies.each do |company|
+              company.owner = company.type == :minor ? @game.bank : nil
+            end
+            player.companies.clear
+
+            player.spend(player.cash, @game.bank) if player.cash.positive?
+            @game.declare_bankrupt(player)
+          end
+
           private
 
           # Has the player won any auctions for public companies in the
@@ -70,6 +97,17 @@ module Engine
             return false if bought? # Already started a corporation this turn.
 
             player.companies.any? { |company| company.type == :concession }
+          end
+
+          def sell_bankrupt_shares(player)
+            @log << "-- #{player.name} goes bankrupt and sells remaining shares --"
+
+            player.shares_by_corporation.each do |corporation, shares|
+              next if shares.empty?
+
+              bundles = @game.bundles_for_corporation(player, corporation)
+              @game.share_pool.sell_shares(bundles.last)
+            end
           end
         end
       end
