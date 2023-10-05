@@ -115,7 +115,7 @@ module Engine
             player.spend(price, @game.bank)
             @companies.delete(company)
             @log << "#{player.name} wins the auction for #{company.name} with a bid of #{@game.format_currency(price)}"
-           @game.after_buy_company(player, company, price)
+            @game.after_buy_company(player, company, price)
           end
 
           def resolve_bids

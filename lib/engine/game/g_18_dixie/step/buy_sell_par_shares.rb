@@ -14,6 +14,7 @@ module Engine
           def actions(entity)
             return [] unless entity.player?
             return [] unless entity == current_entity
+            return ['par'] unless companies_pending_par.empty?
             return %w[bid pass] if @auctioning
 
             actions = super
@@ -116,6 +117,20 @@ module Engine
             false
           end
 
+          def process_par(action)
+            return super if companies_pending_par.empty?
+            share_price = action.share_price
+            corporation = action.corporation
+
+            raise GameError, 'Cannot par on behalf of other entities' if action.purchase_for
+            raise GameError, "#{corporation.name} cannot be parred" unless companies_pending_par.find(corporation)
+
+            @game.stock_market.set_par(corporation, share_price)
+            @game.share_pool.buy_shares(action.entity, corporation.shares.first, exchange: :free)
+            @game.after_par(corporation)
+            @round.companies_pending_par.shift
+          end
+
           def win_bid(winner, _company)
             player = winner.entity
             company = winner.company
@@ -129,6 +144,11 @@ module Engine
             @log <<
                 "#{player.name} wins the auction for #{company.name} "\
                 "with a bid of #{@game.format_currency(price)}"
+            @game.after_buy_company(player, company, price)
+          end
+
+          def ipo_type(_entity)
+            :par
           end
 
           def committed_cash
@@ -151,6 +171,10 @@ module Engine
             company.value
           end
 
+          def companies_pending_par
+            @round.companies_pending_par
+          end
+
           def setup
             setup_auction
             super
@@ -158,7 +182,7 @@ module Engine
           end
 
           def round_state
-            super.merge({ auctioning: nil })
+            super.merge({ auctioning: nil, companies_pending_par: [] })
           end
 
           def auction_entity(entity)
