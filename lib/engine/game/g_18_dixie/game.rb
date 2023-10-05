@@ -399,6 +399,32 @@ module Engine
           @recently_floated << minor
         end
 
+        def can_par?(corporation, parrer)
+          if corporation == sr
+            @round.companies_pending_par.index(sr_company)
+          elsif corporation == wra
+            @round.companies_pending_par.index(wra_company)
+          else
+            super
+          end
+        end
+
+        def sr_company
+          @p6 ||= company_by_id('P6')
+        end
+
+        def sr
+          @sr ||= corporation_by_id('SR')
+        end
+
+        def wra_company
+          @p10 ||= company_by_id('P10')
+        end
+
+        def wra
+          @wra ||= corporation_by_id('WRA')
+        end
+
         # ICG/SCL merger stuff
         def ic
           @ic ||= corporation_by_id('IC')
