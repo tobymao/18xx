@@ -31,24 +31,24 @@ module View
       }.freeze
 
       # All markets
-      PAD = 4                                     # between box contents and border
+      PAD = 4 # between box contents and border
       BORDER = 1
-      WIDTH_TOTAL = 50                            # of entire box, including border
+      WIDTH_TOTAL = 50 # of entire box, including border
       TOKEN_SIZE = 25
       TOKEN_SIZES = { small: 25, medium: 32, large: 40 }.freeze
 
       # 1D markets
-      VERTICAL_TOKEN_PAD = 4                      # vertical space between tokens
-      MIN_NUM_TOKENS = 3                          # guarantee space for this many tokens
-      PRICE_HEIGHT = 20                           # depends on font and size!
+      VERTICAL_TOKEN_PAD = 4 # vertical space between tokens
+      MIN_NUM_TOKENS = 3 # guarantee space for this many tokens
+      PRICE_HEIGHT = 20 # depends on font and size!
       MIN_TOKENS_HEIGHT = MIN_NUM_TOKENS * (TOKEN_SIZE + VERTICAL_TOKEN_PAD)
 
       # 2D markets
       HEIGHT_TOTAL = 50
-      TOKEN_PAD = 3                               # left/right padding of tokens within box
+      TOKEN_PAD = 3 # left/right padding of tokens within box
       BOX_WIDTH = WIDTH_TOTAL - (2 * BORDER)
-      LEFT_MARGIN = TOKEN_PAD                     # left edge of leftmost token
-      RIGHT_MARGIN = BOX_WIDTH - TOKEN_PAD        # right edge of rightmost token
+      LEFT_MARGIN = TOKEN_PAD # left edge of leftmost token
+      RIGHT_MARGIN = BOX_WIDTH - TOKEN_PAD # right edge of rightmost token
       LEFT_TOKEN_POS = LEFT_MARGIN
       RIGHT_TOKEN_POS = RIGHT_MARGIN - TOKEN_SIZE # left edge of rightmost token
       MID_TOKEN_POS = (LEFT_TOKEN_POS + RIGHT_TOKEN_POS) / 2
@@ -69,7 +69,7 @@ module View
         textAlign: 'center',
         position: 'absolute',
         bottom: "#{PAD}px",
-        width: "#{WIDTH_TOTAL - (2 * PAD) - (2 * BORDER)}px",
+        width: "#{WIDTH_TOTAL + PRICE_HEIGHT - (2 * PAD) - (2 * BORDER)}px",
       }.freeze
 
       def box_style_1d
@@ -87,8 +87,8 @@ module View
 
       def box_height_1d
         tokens_height = [*@game.stock_market.market.first.map do |p|
-                           p.corporations.sum { |c| TOKEN_SIZES[@game.corporation_size(c)] + VERTICAL_TOKEN_PAD }
-                         end,
+          p.corporations.sum { |c| TOKEN_SIZES[@game.corporation_size(c)] + VERTICAL_TOKEN_PAD }
+        end,
                          MIN_TOKENS_HEIGHT].max
         "#{tokens_height + VERTICAL_TOKEN_PAD + PRICE_HEIGHT - (2 * BORDER)}px"
       end
@@ -253,6 +253,8 @@ module View
       end
 
       def grid_2d
+        has_price_info = @game.stock_market.market.any? { |row| row.any?(&:info) }
+
         # Need to peek at row below to know if sitting on ledge.
         @game.stock_market.market.push([]).each_cons(2).each_with_index.map do |rows, row_i|
           row_prices, next_row = rows
@@ -269,7 +271,7 @@ module View
               if first_price && !next_row.empty? && next_row[col_i]
                 align = { left: 0, bottom: 0 }
                 arrow = '⭣'
-              # last cell on right, not top row
+                # last cell on right, not top row
               elsif !row_i.zero? && @game.stock_market.right_ledge?([row_i, col_i])
                 align = { right: 0, top: 0 }
                 arrow = '⭡'
@@ -280,10 +282,14 @@ module View
 
               first_price = false
 
-              h(:div, { style: cell_style(@box_style_2d, price.types) }, [
+              h(:div, { style: cell_style(has_price_info ? @box_style_2d_with_info : @box_style_2d, price.types) }, [
                 h('div.xsmall_font', price.price),
                 h(:div, tokens),
-                h(:div, { style: { color: '#00000060', position: 'absolute', 'font-size': '170%' }.merge(align) }, arrow),
+                if price.info
+                  h(:div, { style: PRICE_STYLE_INFO }, price.info)
+                else
+                  h(:div, { style: { color: '#00000060', position: 'absolute', 'font-size': '170%' }.merge(align) }, arrow)
+                end,
               ])
             else
               h(:div, { style: @space_style_2d }, '')
@@ -315,6 +321,11 @@ module View
         @box_style_2d = @space_style_2d.merge(
           border: "solid #{BORDER}px rgba(0,0,0,0.2)",
           color: color_for(:font2),
+        )
+
+        @box_style_2d_with_info = @box_style_2d.merge(
+          height: "#{HEIGHT_TOTAL + PRICE_HEIGHT - (2 * PAD) - (2 * BORDER)}px",
+          width: "#{WIDTH_TOTAL + PRICE_HEIGHT - (2 * PAD) - (2 * BORDER)}px",
         )
 
         grid = if @game.stock_market.one_d?
