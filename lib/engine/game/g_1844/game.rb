@@ -822,7 +822,9 @@ module Engine
         end
 
         def revenue_str(route)
-          str = super
+          stops = route.stops
+          stop_hexes = stops.map(&:hex)
+          str = route.hexes.map { |h| stop_hexes.include?(h) ? h&.name : "(#{h&.name})" }.join('-')
           str += ' + EW' if east_west_bonus?(route.stops)
           str += ' + NS' if north_south_bonus?(route.stops)
           str
