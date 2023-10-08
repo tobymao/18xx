@@ -15,15 +15,6 @@ module Engine
         include Entities
         include Map
 
-        register_colors(red: '#d1232a',
-                        orange: '#f58121',
-                        black: '#110a0c',
-                        blue: '#025aaa',
-                        lightBlue: '#8dd7f6',
-                        yellow: '#ffe600',
-                        green: '#32763f',
-                        brightGreen: '#6ec037')
-
         PLAYER_CLASS = G1844::Player
 
         CURRENCY_FORMAT_STR = '%s SFR'
