@@ -20,6 +20,16 @@ module Engine
 
             super
           end
+
+          def must_take_player_loan?(entity)
+            @game.depot.min_depot_price > (entity.cash + entity.owner.cash)
+          end
+
+          def try_take_player_loan(entity, cost)
+            return unless cost > entity.cash
+
+            @game.take_player_loan(entity, cost - entity.cash)
+          end
         end
       end
     end

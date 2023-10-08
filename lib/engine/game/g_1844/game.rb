@@ -31,6 +31,7 @@ module Engine
         POOL_SHARE_DROP = :left_block
         NEXT_SR_PLAYER_ORDER = :most_cash # TODO: not officially supported. Add to common code.
         EBUY_PRES_SWAP = false
+        EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
         MUST_BUY_TRAIN = :always
         DISCARDED_TRAINS = :remove
 
@@ -501,9 +502,9 @@ module Engine
             next if !share_holder.player? || !share_holder.cash.negative?
 
             debt = share_holder.cash.abs
+            share_holder.debt += debt
+            share_holder.cash += debt
             @log << "#{share_holder.name} takes #{format_currency(debt)} of debt to complete payment"
-            share_holder.debt = debt
-            @bank.spend(debt, share_holder)
           end
         end
 
@@ -906,7 +907,45 @@ module Engine
           tile
         end
 
-        def interest_for_debt(debt)
+        def graph_skip_paths(entity)
+          entity.type == :regional ? regional_skip_paths : super
+        end
+
+        def regional_skip_paths
+          @regional_skip_paths ||= @hexes.select { |hex| hex.tile.color == :red }.flat_map do |hex|
+            hex.tile.paths.map { |path| [path, true] }
+          end.to_h
+          @regional_skip_paths
+        end
+
+        def take_player_loan(player, loan)
+          player.cash += loan # debt does not come from the bank
+          interest = player_debt_interest(loan)
+          player.debt += loan + interest
+
+          @log << "#{player.name} takes #{format_currency(loan)} in debt"
+          @log << "#{player.name} has 50% interest (#{format_currency(interest)}) applied to this debt"
+        end
+
+        def apply_interest_to_player_debt!
+          @players.each do |player|
+            next if player.debt.zero?
+
+            interest = player_debt_interest(player.debt)
+            player.debt += interest
+            @log << "#{player.name} has an additional 50% interest (#{format_currency(interest)}) applied to their debt"
+          end
+        end
+
+        def payoff_player_loan(player)
+          payoff = player.cash >= player.debt ? player.debt : player.cash
+          verb = payoff == player.debt ? 'pays off' : 'decreases'
+          @log << "#{player.name} #{verb} their debt of #{format_currency(player.debt)}"
+          player.cash -= payoff
+          player.debt -= payoff
+        end
+
+        def player_debt_interest(debt)
           (debt * 0.5).ceil
         end
       end
