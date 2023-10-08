@@ -303,6 +303,7 @@ module Engine
 
         def setup
           setup_destinations
+          setup_offboard_bonuses
           mountain_railways.each { |mr| mr.owner = @bank }
           tunnel_companies.each { |tc| tc.owner = @bank }
 
@@ -334,6 +335,21 @@ module Engine
 
             dest_hex.assign!(c)
           end
+        end
+
+        def setup_offboard_bonuses
+          hex_info = @hexes.map do |hex|
+            offboard = hex.tile.offboards.first
+            next if !offboard || hex.tile.color != :red
+
+            icon = offboard.tile.icons.find { |i| i.name.start_with?('bonus_') }
+            [hex, offboard.groups.find { |g| g.size > 1 }, icon ? icon.name.split('_')[1].to_i : nil]
+          end.compact
+          group_bonus = hex_info.map { |_hex, group, bonus| group && bonus ? [group, bonus] : nil }.compact.to_h
+
+          @hex_bonus_revenue = hex_info.map do |hex, group, bonus|
+            [hex, bonus || group_bonus[group]]
+          end.compact.to_h
         end
 
         def event_train_exports!
@@ -798,7 +814,36 @@ module Engine
         def revenue_for(route, stops)
           revenue = super
           revenue += 10 * stops.size if route.paths.any? { |path| path.track == :narrow }
+          revenue += east_west_bonus_revenue(stops)
+          revenue += north_south_bonus_revenue(stops)
           revenue
+        end
+
+        def revenue_str(route)
+          str = super
+          str += ' + EW' if east_west_bonus?(route.stops)
+          str += ' + NS' if north_south_bonus?(route.stops)
+          str
+        end
+
+        def hex_bonus_revenue(hex)
+          @hex_bonus_revenue[hex] || 0
+        end
+
+        def east_west_bonus?(stops)
+          (stops.flat_map(&:groups) & %w[E W]).size == 2
+        end
+
+        def east_west_bonus_revenue(stops)
+          east_west_bonus?(stops) ? stops.sum { |stop| hex_bonus_revenue(stop.hex) } : 0
+        end
+
+        def north_south_bonus?(stops)
+          (stops.flat_map(&:groups) & %w[N S]).size == 2
+        end
+
+        def north_south_bonus_revenue(stops)
+          north_south_bonus?(stops) ? stops.sum { |stop| hex_bonus_revenue(stop.hex) } : 0
         end
 
         def check_for_mountain_or_tunnel_activation(routes)

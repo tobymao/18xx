@@ -233,27 +233,37 @@ module Engine
 
         HEXES = {
           red: {
-            ['A18'] => 'offboard=revenue:yellow_20|green_40|brown_60|gray_70,groups:Stuttgart;path=a:5,b:_0;border=edge:0;'\
-                       'border=edge:4',
-            ['A20'] => 'offboard=revenue:yellow_20|green_40|brown_60|gray_70,groups:Stuttgart,hide:1;path=a:0,b:_0;'\
-                       'path=a:5,b:_0;border=edge:1;',
-            ['B11'] => 'offboard=revenue:yellow_30|green_40|brown_50|gray_60;path=a:0,b:_0;path=a:5,b:_0;',
-            ['B17'] => 'offboard=revenue:yellow_20|green_40|brown_60|gray_70,groups:Stuttgart,hide:1;path=a:4,b:_0;border=edge:3',
-            ['C8'] => 'offboard=revenue:yellow_10|green_30|brown_50|gray_70;path=a:0,b:_0;path=a:4,b:_0;',
-            ['C26'] => 'offboard=revenue:yellow_10|green_30|brown_50|gray_70;path=a:0,b:_0;path=a:1,b:_0;',
-            ['F3'] => 'offboard=revenue:yellow_10|green_30|brown_50|gray_70;path=a:4,b:_0;path=a:5,b:_0;',
-            ['G30'] => 'offboard=revenue:yellow_20|green_40|brown_60|gray_80,groups:Innsbruck,hide:1;path=a:1,b:_0;border=edge:0',
-            ['H29'] => 'offboard=revenue:yellow_20|green_40|brown_60|gray_80,groups:Innsbruck;path=a:0,b:_0;path=a:1,b:_0;'\
-                       'path=a:2,b:_0;border=edge:3;border=edge:5',
-            ['I30'] => 'offboard=revenue:yellow_20|green_40|brown_60|gray_80,groups:Innsbruck,hide:1;path=a:1,b:_0;border=edge:2',
-            ['L1'] => 'offboard=revenue:yellow_30|green_50|brown_70|gray_90;path=a:3,b:_0',
-            ['L15'] => 'offboard=revenue:yellow_40|green_50|brown_70|gray_90,groups:Milano,hide:1;path=a:2,b:_0;border=edge:5',
-            ['M8'] => 'offboard=revenue:yellow_0|green_30|brown_50|gray_70;path=a:2,b:_0;path=a:3,b:_0',
+            ['A18'] => 'offboard=revenue:yellow_20|green_40|brown_60|gray_70,groups:Stuttgart|N;path=a:5,b:_0;border=edge:0;'\
+                       'border=edge:4;label=N;icon=image:1844/bonus_30',
+            ['A20'] => 'offboard=revenue:yellow_20|green_40|brown_60|gray_70,groups:Stuttgart|N,hide:1;path=a:0,b:_0;'\
+                       'path=a:5,b:_0;border=edge:1',
+            ['B11'] => 'offboard=revenue:yellow_30|green_40|brown_50|gray_60,groups:N;path=a:0,b:_0;path=a:5,b:_0;label=N;'\
+                       'icon=image:1844/bonus_30',
+            ['B17'] => 'offboard=revenue:yellow_20|green_40|brown_60|gray_70,groups:Stuttgart|N,hide:1;path=a:4,b:_0;'\
+                       'border=edge:3',
+            ['C8'] => 'offboard=revenue:yellow_10|green_30|brown_50|gray_70,groups:W;path=a:0,b:_0;path=a:4,b:_0;label=W;'\
+                      'icon=image:1844/bonus_50',
+            ['C26'] => 'offboard=revenue:yellow_10|green_30|brown_50|gray_70,groups:E;path=a:0,b:_0;path=a:1,b:_0;label=E;'\
+                       'icon=image:1844/bonus_50',
+            ['F3'] => 'offboard=revenue:yellow_10|green_30|brown_50|gray_70,groups:W;path=a:4,b:_0;path=a:5,b:_0;label=W;'\
+                      'icon=image:1844/bonus_50',
+            ['G30'] => 'offboard=revenue:yellow_20|green_40|brown_60|gray_80,groups:Innsbruck|E,hide:1;path=a:1,b:_0;'\
+                       'border=edge:0',
+            ['H29'] => 'offboard=revenue:yellow_20|green_40|brown_60|gray_80,groups:Innsbruck|E;path=a:0,b:_0;path=a:1,b:_0;'\
+                       'path=a:2,b:_0;border=edge:3;border=edge:5;label=E;icon=image:1844/bonus_90',
+            ['I30'] => 'offboard=revenue:yellow_20|green_40|brown_60|gray_80,groups:Innsbruck|E,hide:1;path=a:1,b:_0;'\
+                       'border=edge:2',
+            ['L1'] => 'offboard=revenue:yellow_30|green_50|brown_70|gray_90,groups:W;path=a:3,b:_0;label=W;'\
+                      'icon=image:1844/bonus_90',
+            ['L15'] => 'offboard=revenue:yellow_40|green_50|brown_70|gray_90,groups:Milano|S,hide:1;path=a:2,b:_0;border=edge:5',
+            ['M8'] => 'offboard=revenue:yellow_0|green_30|brown_50|gray_70,groups:S;path=a:2,b:_0;path=a:3,b:_0;label=S;'\
+                      'icon=image:1844/bonus_40',
             ['M16'] => 'border=edge:2;border=edge:4',
-            ['M18'] => 'offboard=revenue:yellow_40|green_50|brown_70|gray_90,groups:Milano;border=edge:1;border=edge:4',
-            ['M20'] => 'offboard=revenue:yellow_40|green_50|brown_70|gray_90,groups:Milano,hide:1;path=a:3,b:_0;'\
+            ['M18'] => 'offboard=revenue:yellow_40|green_50|brown_70|gray_90,groups:Milano|S;border=edge:1;border=edge:4;'\
+                       'label=S;icon=image:1844/bonus_40',
+            ['M20'] => 'offboard=revenue:yellow_40|green_50|brown_70|gray_90,groups:Milano|S,hide:1;path=a:3,b:_0;'\
                        'border=edge:1;border=edge:4',
-            ['M22'] => 'offboard=revenue:yellow_40|green_50|brown_70|gray_90,groups:Milano,hide:1;path=a:2,b:_0;border=edge:1',
+            ['M22'] => 'offboard=revenue:yellow_40|green_50|brown_70|gray_90,groups:Milano|S,hide:1;path=a:2,b:_0;border=edge:1',
           },
           gray: {
             ['E26'] => 'offboard=revenue:yellow_10|green_20|brown_30|gray_40;path=a:2,b:_0;path=a:5,b:_0',
