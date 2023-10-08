@@ -566,6 +566,7 @@ module Engine
               reorder_players(:least_cash, log_player_order: true)
               new_stock_round
             when Engine::Round::Stock
+              apply_interest_to_player_debt!
               @operating_rounds = @phase.operating_rounds
               reorder_players
               new_operating_round

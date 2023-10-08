@@ -2244,6 +2244,10 @@ module Engine
         @companies
       end
 
+      def player_debt(_player)
+        0
+      end
+
       private
 
       def init_graph
