@@ -371,7 +371,8 @@ module Engine
             max_ownership_percent: 75,
             coordinates: 'D19',
             destination_coordinates: 'D15',
-            color: '#c0c0c0',
+            color: '#d8d2d3',
+            text_color: '#363552',
           },
           {
             float_percent: 50,
@@ -385,8 +386,8 @@ module Engine
             max_ownership_percent: 75,
             coordinates: 'C12',
             destination_coordinates: 'F17',
-            color: '#606060',
-            text_color: 'orange',
+            color: '#583838',
+            text_color: '#a2452b',
           },
           {
             float_percent: 50,
@@ -400,7 +401,8 @@ module Engine
             max_ownership_percent: 75,
             coordinates: 'C24',
             destination_coordinates: 'F25',
-            color: '#165800',
+            color: '#225252',
+            text_color: '#d8d2d3',
           },
           {
             float_percent: 50,
@@ -413,10 +415,10 @@ module Engine
             tokens: [0, 40],
             max_ownership_percent: 75,
             coordinates: 'I4',
-            # city: 0,
+            # city: 0, todo uncomment
             destination_coordinates: 'F7',
-            color: '#c0c0c0',
-            text_color: '#165800',
+            color: '#d8d2d3',
+            text_color: '#225252',
           },
           {
             float_percent: 50,
@@ -430,7 +432,8 @@ module Engine
             max_ownership_percent: 75,
             coordinates: 'G18',
             destination_coordinates: 'H19',
-            color: 'yellow',
+            color: '#c1b22b',
+            text_color: 'black',
           },
           {
             float_percent: 60,
@@ -442,7 +445,7 @@ module Engine
             tokens: [0, 40, 100],
             type: 'regional',
             coordinates: 'F7',
-            color: 'green',
+            color: '#3f963d',
           },
           {
             float_percent: 60,
@@ -454,7 +457,8 @@ module Engine
             tokens: [0, 40, 100],
             type: 'regional',
             coordinates: 'G28',
-            color: 'red',
+            color: '#242943',
+            text_color: '#bcba4c',
           },
           {
             float_percent: 60,
@@ -466,7 +470,7 @@ module Engine
             tokens: [0, 40, 100],
             type: 'regional',
             coordinates: 'K10',
-            color: '#474548',
+            color: '#b02c2d',
           },
           {
             float_percent: 50,
@@ -479,7 +483,7 @@ module Engine
             type: 'historical',
             coordinates: 'L21',
             destination_coordinates: 'G20',
-            color: '#d1232a',
+            color: '#2a5f3b',
           },
           {
             float_percent: 50,
@@ -492,7 +496,7 @@ module Engine
             type: 'historical',
             coordinates: 'G26',
             destination_coordinates: 'J13',
-            color: '#d1232a',
+            color: '#cf3334',
           },
           {
             float_percent: 50,
@@ -506,7 +510,7 @@ module Engine
             coordinates: 'F11',
             destination_coordinates: 'J13',
             abilities: [{ type: 'assign_hexes', hexes: ['J13'], count: 1 }],
-            color: '#d1232a',
+            color: '#c1b22b',
           },
           {
             float_percent: 50,
@@ -520,7 +524,7 @@ module Engine
             coordinates: 'D15',
             city: 0,
             destination_coordinates: 'H13',
-            color: '#d1232a',
+            color: '#3e3d5e',
           },
           {
             float_percent: 50,
@@ -533,7 +537,8 @@ module Engine
             type: 'historical',
             coordinates: 'D25',
             destination_coordinates: 'C20',
-            color: '#d1232a',
+            color: '#d8d2d3',
+            text_color: 'black',
           },
           {
             float_percent: 50,
@@ -546,7 +551,7 @@ module Engine
             type: 'historical',
             coordinates: 'I6',
             destination_coordinates: 'H13',
-            color: '#d1232a',
+            color: '#be8c3a',
           },
           {
             float_percent: 20,
@@ -558,7 +563,7 @@ module Engine
             tokens: [],
             type: 'historical',
             floatable: false,
-            color: 'red',
+            color: '#913e2e',
             abilities: [
               {
                 type: 'train_buy',
