@@ -923,7 +923,7 @@ module Engine
       end
 
       def train_limit(entity)
-        @phase.train_limit(entity)
+        @phase.train_limit(entity) + Array(abilities(entity, :train_limit)).sum(&:increase)
       end
 
       def train_owner(train)
@@ -2244,6 +2244,10 @@ module Engine
         @companies
       end
 
+      def player_debt(_player)
+        0
+      end
+
       private
 
       def init_graph
@@ -2732,7 +2736,14 @@ module Engine
 
       def next_sr_position(entity)
         player_order = if @round.current_entity&.player?
-                         next_sr_player_order == :first_to_pass ? @round.pass_order : []
+                         case next_sr_player_order
+                         when :first_to_pass
+                           @round.pass_order
+                         when :most_cash
+                           @players.sort_by { |p| [p.cash, @players.index(p)] }.reverse
+                         else
+                           []
+                         end
                        else
                          @players
                        end

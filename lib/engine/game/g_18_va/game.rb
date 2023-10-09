@@ -428,10 +428,6 @@ module Engine
           two_player? && @optional_rules&.include?(:two_player_share_limit) ? { max_ownership_percent: 70 } : {}
         end
 
-        def train_limit(entity)
-          super + Array(abilities(entity, :train_limit)).sum(&:increase)
-        end
-
         # 5 => 10 share conversion logic
         def event_forced_conversions!
           @log << '-- Event: All 5 share corporations must convert to 10 share corporations immediately --'
