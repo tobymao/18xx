@@ -36,24 +36,24 @@ module Engine
             abilities: [{ type: 'revenue_change', revenue: 10, when: 'sold' }],
             color: '#d9d9d9',
           },
-          # {
-          #   name: 'Gare de Liège-Guillemins',
-          #   sym: 'GLG',
-          #   value: 50,
-          #   revenue: 10,
-          #   desc: 'Owning corporation may lay or upgrade a tile in Liège'\
-          #         ' (H17). If it does, it may then optionally place a token for free there.'\
-          #         ' This counts as one of the corporation\'s tile builds and token laying'\
-          #         ' (if token was placed). Blocks H17 while owned by a player.',
-          #   abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['H17'] },
-          #               {
-          #                 type: 'teleport',
-          #                 owner_type: 'corporation',
-          #                 hexes: ['H17'],
-          #                 tiles: %w[14 15 57 619 X14 X15 X16 X17 X18 X19 35 36 118],
-          #               }],
-          #   color: '#d9d9d9',
-          # },
+          {
+            name: 'Gare de Liège-Guillemins',
+            sym: 'GLG',
+            value: 50,
+            revenue: 10,
+            desc: 'Owning corporation may lay or upgrade a tile in Liège'\
+                  ' (H17). If it does, it may then optionally place a token for free there.'\
+                  ' This counts as one of the corporation\'s tile builds and token laying'\
+                  ' (if token was placed). Blocks H17 while owned by a player.',
+            abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['H17'] },
+                        {
+                          type: 'teleport',
+                          owner_type: 'corporation',
+                          hexes: ['H17'],
+                          tiles: %w[14 15 57 619 X14 X15 X16 X17 X18 X19 35 36 118],
+                        }],
+            color: '#d9d9d9',
+          },
           {
             name: 'Station Antwerpen Centraal',
             sym: 'SAC',

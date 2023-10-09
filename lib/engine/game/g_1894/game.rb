@@ -315,6 +315,7 @@ module Engine
           @log << "-- The French major shareholding corporation is the #{french_starting_corporation.id}"
           belgian_starting_corporation = corporation_by_id('Belge')
 
+          remove_random_teleport_company
           remove_extra_french_major_shareholding_companies
 
           @players.each do |player|
@@ -676,6 +677,13 @@ module Engine
           def london.blocks?(corporation)
             !@game.ferry_marker?(corporation)
           end
+        end
+
+        def remove_random_teleport_company
+          teleports = companies.find_all { |c| c.value == 50 }
+          company = teleports.sort_by { rand }.take(1).first
+          company.close!
+          @round.steps.find { |s| s.is_a?(Engine::Step::WaterfallAuction) }.companies.delete(company)
         end
 
         def remove_extra_french_major_shareholding_companies
