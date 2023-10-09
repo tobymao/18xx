@@ -16,108 +16,6 @@ module Engine
             text_color: :black,
             abilities: [{ type: 'no_buy' }],
           },
-          {
-            sym: 'BY',
-            name: 'Königlich Bayerische Staats-Eisenbahn',
-            type: :concession,
-            value: 0,
-            discount: 0,
-            color: :lightblue,
-            text_color: :black,
-            abilities: [
-              {
-                type: 'exchange',
-                corporations: ['BY'],
-                owner_type: 'player',
-                from: 'par',
-              },
-            ],
-          },
-          {
-            sym: 'N',
-            name: 'Compagnie des chemins de fer du Nord',
-            type: :concession,
-            value: 0,
-            discount: 0,
-            color: :saddlebrown,
-            text_color: :white,
-            abilities: [
-              {
-                type: 'exchange',
-                corporations: ['N'],
-                owner_type: 'player',
-                from: 'par',
-              },
-            ],
-          },
-          {
-            sym: 'E',
-            name: 'Compagnie des chemins de fer de l\'Est',
-            type: :concession,
-            value: 0,
-            discount: 0,
-            color: :orange,
-            text_color: :black,
-            abilities: [
-              {
-                type: 'exchange',
-                corporations: ['E'],
-                owner_type: 'player',
-                from: 'par',
-              },
-            ],
-          },
-          {
-            sym: 'NL',
-            name: 'Maatschappij tot Exploitatie van Staatsspoorwegen',
-            type: :concession,
-            value: 0,
-            discount: 0,
-            color: :yellow,
-            text_color: :black,
-            abilities: [
-              {
-                type: 'exchange',
-                corporations: ['NL'],
-                owner_type: 'player',
-                from: 'par',
-              },
-            ],
-          },
-          {
-            sym: 'BE',
-            name: 'État Belge',
-            type: :concession,
-            value: 0,
-            discount: 0,
-            color: :darkgreen,
-            text_color: :white,
-            abilities: [
-              {
-                type: 'exchange',
-                corporations: ['BE'],
-                owner_type: 'player',
-                from: 'par',
-              },
-            ],
-          },
-          {
-            sym: 'P',
-            name: 'Preußische Staatseisenbahnen',
-            type: :concession,
-            value: 0,
-            discount: 0,
-            color: :darkblue,
-            text_color: :white,
-            abilities: [
-              {
-                type: 'exchange',
-                corporations: ['P'],
-                owner_type: 'player',
-                from: 'par',
-              },
-            ],
-          },
         ].freeze
 
         CORPORATIONS = [
@@ -437,16 +335,8 @@ module Engine
           super.reject { |c| c[:type] == :minor }
         end
 
-        def init_company_abilities
-          super
-
-          # Link concessions to corporations.
-          @companies.each do |company|
-            next unless (ability = abilities(company, :exchange))
-            next unless ability.from.include?(:par)
-
-            exchange_corporations(ability).first.par_via_exchange = company
-          end
+        def setup_preround
+          @companies.concat(init_concessions)
         end
 
         def concession_companies
@@ -508,6 +398,22 @@ module Engine
         end
 
         private
+
+        # Creates a concession company for each major corporations
+        def init_concessions
+          major_corporations.map do |corporation|
+            concession = Company.new(
+              sym: corporation.id,
+              name: corporation.name,
+              type: :concession,
+              value: 0,
+              color: corporation.color,
+              text_color: corporation.text_color,
+            )
+            corporation.par_via_exchange = concession
+            concession
+          end
+        end
 
         # The minimum amount of cash needed to start one of the corporations
         # that the player is under obligation for.
