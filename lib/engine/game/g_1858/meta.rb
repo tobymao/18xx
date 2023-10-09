@@ -7,7 +7,7 @@ module Engine
     module G1858
       module Meta
         include Game::Meta
-        DEV_STAGE = :alpha
+        DEV_STAGE = :beta
 
         GAME_TITLE = '1858'
         GAME_SUBTITLE = 'The Railways of Iberia'
