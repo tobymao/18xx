@@ -21,86 +21,37 @@ module Engine
 
         CERT_LIMIT = { 3 => 18, 4 => 14 }.freeze
 
-        STARTING_CASH = { 3 => 570, 4 => 440 }.freeze
+        STARTING_CASH = { 3 => 570, 4 => 480 }.freeze
 
         CAPITALIZATION = :full
 
         MUST_SELL_IN_BLOCKS = false
 
         MARKET = [
-          %w[83
-             89
-             96
-             103
-             111
-             120
-             131
-             145
-             160
-             185
-             213
-             250
-             290
-             350e],
-          %w[77
-             82
-             90p
-             94
-             100p
-             109
-             120
-             132
-             150
-             170
-             195
-             230
-             270
-             320],
-          %w[72
-             77
-             82
-             88
-             93
-             99
-             109
-             120
-             135
-             153
-             176
-             205
-             240
-             290],
-          %w[66
-             70
-             75
-             82p
-             87
-             93
-             99
-             109
-             120
-             138
-             160
-             185
-             220],
-          %w[63o
-             66
-             70
-             75
-             80
-             85
-             92
-             102
-             115
-             128
-             147],
-          %w[59o 63o 66 70 76p 81 88 99 109],
-          %w[55o 59o 62o 65 69 73 82 92],
-          %w[40o 50o 54o 60o 64 67p 75],
-          %w[30o 40o 50o 54o 60o],
-          %w[20o 30o 40o 50o 54o],
+          %w[90 99 109 115 124 132 141 151 162 190 220 260 310 375e],
+          %w[83 95p 100 106 113 121 130 139 149 175 205 240 285 340],
+          %w[75 82 89 95 103 111 120 130 140 165 190 225 270],
+          %w[69 75 81 87 93 100p 108 116 133 155 180 215],
+          %w[64 69 75 80p 85 91 97 111 126 145 170],
+          %w[59 64 68 71 76 81 90 101 115],
+          %w[50o 56o 62 66 70 75 83 93],
+          %w[40o 50o 55o 60o 64 67p 75],
+          %w[30o 40o 50o 55o 60o],
+          %w[20o 30o 40o 50o 55o],
           %w[10o 20o 30o 40o 50o],
         ].freeze
+
+        def price_movement_chart
+          [
+            ['Action', 'Share Price Change'],
+            ['Dividend 0 or withheld', '1 ←'],
+            ['Dividend paid', '1 →'],
+            ['N shares sold', 'N ↓'],
+            ['Corporation sold out at end of SR', '1 ↑'],
+            ['Corporation sold out at end of SR and president + treasury at least 80%', '1 additional ↑'],
+            ['Corporation sold out at end of SR and the stock price in gray area', '1 additional ↑'],
+          ]
+        end
 
         PHASES = [{ name: 'Yellow', train_limit: 4, tiles: [:yellow], operating_rounds: 1 },
                   {
@@ -130,14 +81,14 @@ module Engine
                   {
                     name: 'Red',
                     on: '6',
-                    train_limit: 2,
+                    train_limit: 3,
                     tiles: %i[yellow green brown],
                     operating_rounds: 3,
                   },
                   {
                     name: 'Gray',
                     on: '7',
-                    train_limit: 2,
+                    train_limit: 3,
                     tiles: %i[yellow green brown],
                     operating_rounds: 3,
                   },
@@ -161,7 +112,7 @@ module Engine
                   {
                     name: '4',
                     distance: 4,
-                    price: 320,
+                    price: 280,
                     rusts_on: '7',
                     num: 4,
                     discount: { '3' => 60 },
@@ -173,7 +124,7 @@ module Engine
                     rusts_on: 'D',
                     num: 5,
                     events: [{ 'type' => 'late_corporations_available' }],
-                    discount: { '4' => 160 },
+                    discount: { '4' => 140 },
                   },
                   {
                     name: '6',
@@ -244,9 +195,10 @@ module Engine
         LONDON_HEX = 'A10'
         LONDON_BONUS_FERRY_SUPPLY_HEX = 'A12'
         FERRY_MARKER_ICON = 'ferry'
-        FERRY_MARKER_COST = 50
+        FERRY_MARKER_COST = 80
+        LS_FERRY_MARKER_COST = 40
 
-        PARIS_HEX = 'G4'
+        PARIS_HEX = 'G6'
         CENTRE_BOURGOGNE_HEX = 'I2'
         LUXEMBOURG_HEX = 'I18'
         SQ_HEX = 'G10'
@@ -254,28 +206,26 @@ module Engine
         LILLE_HEX = 'D11'
         NETHERLANDS_HEX = 'C18'
         GREAT_BRITAIN_HEX = 'A4'
+        FRENCH_LATE_CORPORATIONS_HOME_HEXES = %w[B3 B9 B11 D3 D9 D11 E2 E6 E10 G4 G6 G10 H9 I10].freeze
+        BELGIAN_LATE_CORPORATIONS_HOME_HEXES = %w[C14 D15 D17 E16 F15 G14 G18 H17].freeze
 
         NON_NETHERLANDS_OFFBOARDS = [CENTRE_BOURGOGNE_HEX, LUXEMBOURG_HEX, GREAT_BRITAIN_HEX].freeze
 
         GREEN_CITY_TILES = %w[14 15 619].freeze
         GREEN_CITY_14_TILE = '14'
-        BROWN_CITY_14_UPGRADE_TILES = %w[X18 X19 36].freeze
+        BROWN_CITY_14_UPGRADE_TILES = %w[X16 X17 X18].freeze
         GREEN_CITY_15_TILE = '15'
-        BROWN_CITY_15_UPGRADE_TILES = %w[X16 35 118].freeze
+        BROWN_CITY_15_UPGRADE_TILES = %w[X19 X20 X21].freeze
         GREEN_CITY_619_TILE = '619'
-        BROWN_CITY_619_UPGRADE_TILES = %w[X14 X15 X17].freeze
-        BROWN_CITY_TILES = %w[X14 X15 X16 X17 X18 X19 35 36 118].freeze
-        PARIS_TILES = %w[X1 X4 X5 X9 X10].freeze
+        BROWN_CITY_619_UPGRADE_TILES = %w[X22 X23 X24].freeze
+        BROWN_CITY_TILES = %w[X16 X17 X18 X19 X20 X21 X22 X23 X24].freeze
+        PARIS_TILES = %w[X1 X4 X5 X9 X10 X11 X12].freeze
 
         FRENCH_REGULAR_CORPORATIONS = %w[PLM Ouest Nord Est CFOR].freeze
         BELGIAN_REGULAR_CORPORATIONS = %w[AG Belge].freeze
         REGULAR_CORPORATIONS = FRENCH_REGULAR_CORPORATIONS + BELGIAN_REGULAR_CORPORATIONS
         FRENCH_LATE_CORPORATIONS = %w[LF].freeze
-        FRENCH_LATE_CORPORATIONS_HOME_HEXES = %w[B3 B9 B11 D3 D11 E6 E10 G2 G4 G10 H7 I8].freeze
         BELGIAN_LATE_CORPORATIONS = %w[LB].freeze
-        BELGIAN_LATE_CORPORATIONS_HOME_HEXES = %w[D15 D17 E16 F15 G14 G18 H17].freeze
-
-        DESTINATION_ABILITY_TYPES = %i[assign_hexes hex_bonus].freeze
 
         def stock_round
           G1894::Round::Stock.new(self, [
@@ -332,6 +282,10 @@ module Engine
           company_by_id('SQG')
         end
 
+        def ls
+          company_by_id('LS')
+        end
+
         def starting_corporation_ids
           ['Belge', french_starting_corporation.id]
         end
@@ -347,7 +301,8 @@ module Engine
           @log << "-- Setting game up for #{@players.size} players --"
 
           @ferry_marker_ability =
-            Engine::Ability::Description.new(type: 'description', description: 'Ferry marker')
+            Engine::Ability::Description.new(type: 'description', description: 'Ferry marker',
+                                             desc_detail: 'May access London (A10)')
           block_london
 
           paris_tiles = @all_tiles.select { |t| PARIS_TILES.include?(t.name) }
@@ -360,18 +315,7 @@ module Engine
           @log << "-- The French major shareholding corporation is the #{french_starting_corporation.id}"
           belgian_starting_corporation = corporation_by_id('Belge')
 
-          adjust_companies
           remove_extra_french_major_shareholding_companies
-
-          @corporations.each do |corporation|
-            next unless (dest_abilities = Array(abilities(corporation)).select { |a| DESTINATION_ABILITY_TYPES.include?(a.type) })
-
-            dest_abilities.each do |ability|
-              ability.hexes.each do |id|
-                hex_by_id(id).assign!(corporation)
-              end
-            end
-          end
 
           @players.each do |player|
             share_pool.transfer_shares(french_starting_corporation.ipo_shares.last.to_bundle, player)
@@ -397,12 +341,6 @@ module Engine
 
         def init_round_finished
           @players.rotate!(@round.entity_index)
-        end
-
-        def assignment_tokens(assignment, _simple_logos = false)
-          return "/icons/#{assignment.logo_filename}" if assignment.is_a?(Engine::Corporation)
-
-          super
         end
 
         def init_stock_market
@@ -432,7 +370,7 @@ module Engine
               hex = hex_by_id(coordinate)
               tile = hex&.tile
               if tile.color != :brown
-                # don't take the token that's alerady pending
+                # Don't take the token that's alerady pending
                 token = corporation.tokens.find { |t| !t.used && !@round.pending_tokens.find { |p_t| p_t[:token] == t } }
                 tile.cities.first.place_token(corporation, token, free: true)
               else
@@ -491,8 +429,10 @@ module Engine
           when Action::PlaceToken
             # Mark the corporation that has London bonus
             if action.city.hex.id == LONDON_BONUS_FERRY_SUPPLY_HEX
-              action.entity.add_ability(
-                Engine::Ability::Description.new(type: 'description', description: 'London shipping')
+              action.entity.owner.add_ability(
+                Engine::Ability::Description.new(type: 'description', description: 'London bonus',
+                                                 desc_detail: 'The value of London (A10) is increased, for this corporation only,'\
+                                                              ' by the largest non-London, non-Luxembourg revenue on the route.')
               )
               return
             end
@@ -545,7 +485,7 @@ module Engine
         end
 
         def issuable_shares(entity)
-          # if the corporation has more redeemed shares than are left in IPO
+          # If the corporation has more redeemed shares than are left in IPO
           return [] unless entity.num_ipo_reserved_shares > entity.num_ipo_shares - entity.num_ipo_reserved_shares
 
           bundle = Engine::ShareBundle.new(entity.reserved_shares)
@@ -555,14 +495,10 @@ module Engine
         end
 
         def redeemable_shares(entity)
-          if entity.share_price.type == :unlimited
-            return bundles_for_corporation(share_pool, entity).reject do |bundle|
-                     bundle.shares.size > 2 || entity.cash < bundle.price
-                   end
-          end
+          max_bundle_size = @round.round_num == 1 ? 2 : 1
 
           bundles_for_corporation(share_pool, entity)
-            .reject { |bundle| bundle.shares.size > 1 || entity.cash < bundle.price }
+            .reject { |bundle| bundle.shares.size > max_bundle_size || entity.cash < bundle.price }
         end
 
         def late_corporation_possible_home_hexes(corporation)
@@ -594,10 +530,10 @@ module Engine
 
           return tile.add_reservation!(corporation, 0) if [BRUXELLES_HEX, LILLE_HEX].include?(coordinates)
 
-          # tile is brown, non-Bruxelles, non-Lille
+          # Tile is brown, non-Bruxelles, non-Lille
           if tile.cities.first.tokenable?(corporation) && !tile.cities[1].tokenable?(corporation)
             tile.add_reservation!(corporation, 0)
-          elsif !tile.cities.first.tokenable?(corporation) && tile.cities[1].tokenable?
+          elsif !tile.cities.first.tokenable?(corporation) && tile.cities[1].tokenable?(corporation)
             tile.add_reservation!(corporation, 1)
           else
             tile.add_reservation!(corporation, nil, false)
@@ -641,7 +577,6 @@ module Engine
 
         def revenue_for(route, stops)
           revenue = super
-          revenue += est_centre_bourgogne_bonus(route.corporation, stops)
           revenue += luxembourg_value(route.corporation, stops)
           revenue += london_bonus(route.corporation, stops)
           revenue += netherlands_bonus(route.corporation, stops)
@@ -654,7 +589,7 @@ module Engine
 
           return 0 unless stops.any? { |s| NON_NETHERLANDS_OFFBOARDS.include?(s.hex.id) }
 
-          50
+          100
         end
 
         def london_bonus(corporation, stops)
@@ -665,24 +600,14 @@ module Engine
           get_route_max_value(corporation, stops, ignore_london: true)
         end
 
-        def est_centre_bourgogne_bonus(corporation, stops)
-          est_running_to_centre_bourgogne(corporation, stops) ? 30 : 0
-        end
-
-        def est_running_to_centre_bourgogne(corporation, stops)
-          corporation == est && stops.any? { |s| s.hex.id == CENTRE_BOURGOGNE_HEX }
-        end
-
         def luxembourg_value(corporation, stops)
           return 0 unless stops.any? { |s| s.hex.id == LUXEMBOURG_HEX }
 
           get_route_max_value(corporation, stops)
         end
 
-        def get_route_max_value(corporation, stops, ignore_london: false)
+        def get_route_max_value(_corporation, stops, ignore_london: false)
           revenues = stops.map { |s| get_current_revenue(s.revenue) }
-
-          revenues << 60 if est_running_to_centre_bourgogne(corporation, stops)
 
           if ignore_london
             london_revenue = get_current_revenue(hex_by_id(LONDON_HEX).tile.towns.first.revenue)
@@ -716,21 +641,27 @@ module Engine
           graph.reachable_hexes(entity).include?(hex_by_id(LONDON_HEX))
         end
 
+        def get_ferry_marker_cost(entity)
+          return ls.owner == entity ? LS_FERRY_MARKER_COST : FERRY_MARKER_COST
+        end
+
         def can_buy_ferry_marker?(entity)
           return false unless entity.corporation?
 
           ferry_marker_available? &&
             !ferry_marker?(entity) &&
-            buying_power(entity) >= FERRY_MARKER_COST &&
+            buying_power(entity) >= get_ferry_marker_cost(entity) &&
             connected_to_london?(entity)
         end
 
         def buy_ferry_marker(entity)
           return unless can_buy_ferry_marker?(entity)
 
-          entity.spend(FERRY_MARKER_COST, @bank)
+          cost = get_ferry_marker_cost(entity)
+
+          entity.spend(cost, @bank)
           entity.add_ability(@ferry_marker_ability.dup)
-          @log << "#{entity.name} buys a ferry marker for $#{FERRY_MARKER_COST}"
+          @log << "#{entity.name} buys a ferry marker for $#{cost}"
 
           tile_icons = hex_by_id(LONDON_BONUS_FERRY_SUPPLY_HEX).tile.icons
           tile_icons.delete_at(tile_icons.find_index { |icon| icon.name == FERRY_MARKER_ICON })
@@ -745,15 +676,6 @@ module Engine
           def london.blocks?(corporation)
             !@game.ferry_marker?(corporation)
           end
-        end
-
-        def adjust_companies
-          return unless @players.size == 4
-
-          company_to_remove = companies.find { |c| c.id == 'AR' }
-
-          company_to_remove.close!
-          @round.steps.find { |s| s.is_a?(Engine::Step::WaterfallAuction) }.companies.delete(company_to_remove)
         end
 
         def remove_extra_french_major_shareholding_companies
