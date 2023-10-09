@@ -14,7 +14,7 @@ module Engine
         GAME_DESIGNER = 'Ian D Wilson'
         GAME_LOCATION = 'Iberia'
         GAME_PUBLISHER = :all_aboard_games
-        GAME_RULES_URL = 'https://docs.google.com/viewer?a=v&pid=sites&srcid=YWxsLWFib2FyZGdhbWVzLmNvbXxhYWdsbGN8Z3g6NGJmNDUwZjAyOTYwZDJhMg'
+        GAME_RULES_URL = 'https://boardgamegeek.com/filepage/266344/1858-rules-v10'
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1858'
         GAME_IMPLEMENTER = 'Oliver Burnett-Hall'
 

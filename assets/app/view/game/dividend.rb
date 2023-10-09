@@ -46,7 +46,7 @@ module View
                   real_moves = 0
                   times.times do
                     prev_price = new_share_price
-                    new_share_price = @game.stock_market.find_relative_share_price(new_share_price, dir)
+                    new_share_price = @game.stock_market.find_relative_share_price(new_share_price, entity, dir)
                     break if prev_price == new_share_price
 
                     real_moves += 1

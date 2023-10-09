@@ -58,9 +58,18 @@ def run_game(game, actions = nil, strict: false)
 
   $total += 1
   time = Time.now
-  engine = Engine::Game.load(game, strict: strict)
   begin
-    engine.maybe_raise!
+    engine = Engine::Game.load(game, strict: strict)
+  rescue Exception => e # rubocop:disable Lint/RescueException
+    $count += 1
+    data['finished']=false
+    #data['stack']=e.backtrace
+    data['exception']=e
+    return data
+  end
+
+  begin
+      engine.maybe_raise!
 
     time = Time.now - time
     $total_time += time

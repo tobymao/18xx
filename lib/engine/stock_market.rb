@@ -93,10 +93,10 @@ module Engine
     end
 
     def find_share_price(corporation, directions)
-      find_relative_share_price(corporation.share_price, directions)
+      find_relative_share_price(corporation.share_price, corporation, directions)
     end
 
-    def find_relative_share_price(share, directions)
+    def find_relative_share_price(share, corporation, directions)
       coordinates = share.coordinates
 
       price = share_price(coordinates)
@@ -104,13 +104,13 @@ module Engine
       Array(directions).each do |direction|
         case direction
         when :left
-          coordinates = left(nil, coordinates)
+          coordinates = left(corporation, coordinates)
         when :right
-          coordinates = right(nil, coordinates)
+          coordinates = right(corporation, coordinates)
         when :down
-          coordinates = down(nil, coordinates)
+          coordinates = down(corporation, coordinates)
         when :up
-          coordinates = up(nil, coordinates)
+          coordinates = up(corporation, coordinates)
         end
         price = share_price(coordinates) || price
       end

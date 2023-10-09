@@ -1977,7 +1977,7 @@ module Engine
           return if president.cash < (before[:share_price].price * num_buyable)
 
           net_sold = before[:num_shares] - num_buyable
-          share_price = @stock_market.find_relative_share_price(before[:share_price], [:up] * net_sold)
+          share_price = @stock_market.find_relative_share_price(before[:share_price], bundle.corporation, [:up] * net_sold)
 
           after = {
             president: president,
