@@ -120,7 +120,7 @@ module Engine
             price: 500,
           },
           {
-            name: 'P+',
+            name: 'P',
             distance: [
               {
                 'nodes' => ['city'],

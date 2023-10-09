@@ -6,6 +6,7 @@ require_relative 'map'
 require_relative 'entities'
 require_relative 'corporation'
 require_relative 'share_pool'
+require_relative '../cities_plus_towns_route_distance_str'
 
 module Engine
   module Game
@@ -14,6 +15,7 @@ module Engine
         include_meta(G1847AE::Meta)
         include Map
         include Entities
+        include CitiesPlusTownsRouteDistanceStr
 
         attr_accessor :draft_finished, :yellow_tracks_restricted, :must_exchange_investor_companies, :train_bought_this_round
 
@@ -184,7 +186,7 @@ module Engine
                     distance: [{ 'nodes' => ['town'], 'pay' => 6, 'visit' => 6 },
                                { 'nodes' => %w[city offboard town], 'pay' => 6, 'visit' => 6 }],
                     price: 700,
-                    num: 5,
+                    num: 9,
                   }].freeze
 
         STATUS_TEXT = Base::STATUS_TEXT.merge(
@@ -360,6 +362,7 @@ module Engine
           # Draft Rounds and short ORs ("inside" Draft Round) are named 0.1, 0.2, ...
           @turn = 0
           @draft_round_num = 1
+
           @draft_finished = false
           @recently_floated = []
           @extra_tile_lay = true
@@ -376,6 +379,13 @@ module Engine
         def operating_order
           # LFK is not really a corporation and does not operate
           super.reject { |c| c == lfk }
+        end
+
+        def liquidity(player, emergency: false)
+          value = super
+          value += lfk.share_price.price if lfk.owner == player
+
+          value
         end
 
         def tile_lays(entity)
@@ -404,7 +414,7 @@ module Engine
         end
 
         def can_corporation_have_investor_shares_exchanged?(corporation)
-          return false unless ['3+3', '4', '4+4'].include?(@phase.current[:name])
+          return false unless ['3+3', '4', '4+4', '5'].include?(@phase.current[:name])
 
           corporation.floated
         end
@@ -428,13 +438,14 @@ module Engine
           end
 
           @log << '-- From now on, corporations may lay yellow tracks in any hexes they can reach, not'\
-                  ' only in hexes of a given color Investor companies for the associated Investor shares --'
+                  ' only in hexes of a given color --'
           @yellow_tracks_restricted = false
         end
 
         def exchange_all_investor_companies!
           INVESTOR_COMPANIES.map { |id| company_by_id(id) }.reject(&:closed?).each do |company|
-            corporation = corporation_by_id(company.abilities.first.corporations.first)
+            ability = company.abilities.find { |a| a.type == :exchange }
+            corporation = corporation_by_id(ability.corporations.first)
             share = corporation.reserved_shares.first
             share_pool.buy_shares(company.owner,
                                   share.to_bundle,

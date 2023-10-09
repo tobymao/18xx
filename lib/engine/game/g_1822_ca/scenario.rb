@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative '../g_1822/scenario'
+
 module Engine
   module Game
     module G1822CA
@@ -15,6 +17,8 @@ module Engine
           %w[5y 10y 15y 20y 25y 30y 35y 40y 45y 50p 60xp 70xp 80xp 90xp 100xp 110 120 135 150 165 180 200 220
              245 270 300 330 360 400 450 500e 550e 600e],
         ].freeze
+
+        PHASES = G1822::Scenario::PHASES
 
         TRAINS = [
           {
@@ -129,7 +133,7 @@ module Engine
             price: 500,
           },
           {
-            name: 'P+',
+            name: 'P',
             distance: [
               {
                 'nodes' => ['city'],

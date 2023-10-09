@@ -26,6 +26,7 @@ module View
     module Round
       class Operating < Snabberb::Component
         needs :game
+        needs :selected_company, default: nil, store: true
 
         def render
           round = @game.round
@@ -34,6 +35,12 @@ module View
           @current_actions = round.actions_for(entity)
 
           entity = entity.owner if entity.company? && !round.active_entities.one?
+
+          if !entity.company? &&
+             @game.purchasable_companies(entity).empty? &&
+             !@game.abilities(@selected_company)
+            store(:selected_company, nil, skip: true)
+          end
 
           convert_track = @step.respond_to?(:conversion?) && @step.conversion?
 
@@ -108,7 +115,7 @@ module View
 
               @step.assignable_corporations(company).each do |corporation|
                 component = View::Game::Corporation.new(@root, corporation: corporation, selected_company: company)
-                component.store(:selected_company, company, skip: true)
+                store(:selected_company, company, skip: true)
                 left << h(:div, props, [component.render])
               end
             end

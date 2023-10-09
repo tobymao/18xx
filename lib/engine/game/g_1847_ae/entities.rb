@@ -42,7 +42,7 @@ module Engine
             revenue: 30,
             min_price: 100,
             max_price: 200,
-            desc: 'Revenue increases to 50M when a tile is laid in D9. '\
+            desc: 'Revenue increases to 50M when a tile is laid in E9. '\
                   'May be sold to a corporation for 100 to 200M. '\
                   'Never closes.',
             sym: 'R',
@@ -286,7 +286,7 @@ module Engine
             abilities: [
               {
                 type: 'base',
-                description: 'Builds in blue hexes in yellow phase',
+                description: 'Builds in blue (B) hexes in yellow phase',
                 remove: '4',
               },
             ],
@@ -311,7 +311,7 @@ module Engine
             abilities: [
               {
                 type: 'base',
-                description: 'Builds in pink hexes in yellow phase',
+                description: 'Builds in pink (P) hexes in yellow phase',
                 remove: '4',
               },
               {
@@ -340,7 +340,7 @@ module Engine
             abilities: [
               {
                 type: 'base',
-                description: 'Builds in green hexes in yellow phase',
+                description: 'Builds in green (G) hexes in yellow phase',
                 remove: '4',
               },
               {
@@ -378,7 +378,7 @@ module Engine
             abilities: [
               {
                 type: 'base',
-                description: 'Builds in blue hexes in yellow phase',
+                description: 'Builds in blue (B) hexes in yellow phase',
                 remove: '4',
               },
               {
@@ -411,7 +411,7 @@ module Engine
             abilities: [
               {
                 type: 'base',
-                description: 'Builds in blue hexes in yellow phase',
+                description: 'Builds in blue (B) hexes in yellow phase',
                 remove: '4',
               },
               {
@@ -445,7 +445,7 @@ module Engine
             abilities: [
               {
                 type: 'base',
-                description: 'Builds in blue hexes in yellow phase',
+                description: 'Builds in blue (B) hexes in yellow phase',
                 remove: '4',
               },
               {
@@ -479,7 +479,7 @@ module Engine
             abilities: [
               {
                 type: 'base',
-                description: 'Builds in pink hexes in yellow phase',
+                description: 'Builds in pink (P) hexes in yellow phase',
                 remove: '4',
               },
               {

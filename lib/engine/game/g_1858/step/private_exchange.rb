@@ -31,12 +31,16 @@ module Engine
             company.add_ability(blocker)
           end
 
-          def exchange_for_share(bundle, corporation, minor, player)
+          def exchange_for_share(bundle, corporation, minor, player, treasury_share)
             if !@game.loading && !@game.corporation_private_connected?(corporation, minor)
               raise GameError, "#{minor.name} is not connected to #{corporation.full_name}"
             end
 
             @game.share_pool.buy_shares(player, bundle, exchange: :free)
+            return unless treasury_share
+
+            acquire_private(corporation, minor)
+            claim_token(corporation, minor)
           end
 
           def claim_token(corporation, minor)
@@ -67,6 +71,24 @@ module Engine
               company.remove_ability(reservation)
               corporation.add_ability(reservation)
             end
+          end
+
+          def log_request(corporation, minor)
+            requester = minor.owner
+            approver = corporation.owner
+            msg = "• requested #{approver.name}’s permission to " \
+                  "exchange #{minor.name} for a #{corporation.id} " \
+                  'treasury share.'
+            @round.process_action(Engine::Action::Log.new(requester, message: msg))
+          end
+
+          def log_response(corporation, minor, approved)
+            requester = minor.owner
+            approver = corporation.owner
+            verb = approved ? 'approved' : 'denied'
+            msg = "• #{verb} #{requester.name}’s request to exchange " \
+                  "#{minor.name} for a #{corporation.id} treasury share."
+            @round.process_action(Engine::Action::Log.new(approver, message: msg))
           end
         end
       end

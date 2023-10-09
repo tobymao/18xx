@@ -55,6 +55,10 @@ module View
         div_class = choice_buttons.size < 5 ? '.inline' : ''
         children << h("div#{div_class}", { style: { marginTop: '0.5rem' } }, "#{step.choice_name}: ") if step.choice_name
         children << h(:div, choice_buttons)
+        if step.respond_to?(:choice_explanation) && (explanation = step.choice_explanation)
+          paragraphs = explanation.map { |text_block| h(:p, text_block) }
+          children << h(:div, { style: { marginTop: '0.5rem' } }, paragraphs)
+        end
         h(:div, children)
       end
 

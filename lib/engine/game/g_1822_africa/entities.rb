@@ -93,10 +93,9 @@ module Engine
             color: nil,
           },
           {
-            name: 'P8 (Reserve Three Tiles) [N/A]',
+            name: 'P8 (Reserve Three Tiles)',
             sym: 'P8',
-            desc: '[NOT YET FUNCTIONAL] '\
-                  'MAJOR/MINOR, Phase 1. Upon acquisition, owning company must reserve three tiles from the stock '\
+            desc: 'MAJOR/MINOR, Phase 1. Upon acquisition, owning company must reserve three tiles from the stock '\
                   'of unplayed tiles for future placement. No other company may use these tiles held in reserve. '\
                   'The revenue of this private company changes to A5x the number of tiles it holds. '\
                   'Once the owning company reserves tiles, it may not place any other tiles '\
@@ -301,10 +300,9 @@ module Engine
             color: nil,
           },
           {
-            name: 'P18 (Safari Bonus) [N/A]',
+            name: 'P18 (Safari Bonus)',
             sym: 'P18',
-            desc: '[NOT YET FUNCTIONAL] '\
-                  'MAJOR/MINOR, Phase 3. The Safari Bonus can be added to a train owned by the company. '\
+            desc: 'MAJOR/MINOR, Phase 3. The Safari Bonus can be added to a train owned by the company. '\
                   'It converts the train into a safari train that counts an extra 20 to the earnings for reaching '\
                   'each of the game reserves. Does not count against train limit and does not count as a train '\
                   'for the purposes of train ownership. Can’t be sold to another company.',

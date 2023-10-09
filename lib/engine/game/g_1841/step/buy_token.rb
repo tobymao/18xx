@@ -123,6 +123,9 @@ module Engine
 
             @round.bought_token = true
             @game.token_graph_for_entity(entity).clear
+
+            # kill routes for corp selling token
+            @game.graph.clear_graph_for(old_token.corporation)
           end
 
           def real_owner(corporation)

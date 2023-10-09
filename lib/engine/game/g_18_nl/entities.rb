@@ -6,7 +6,7 @@ module Engine
       module Entities
         COMPANIES = [
           {
-            name: 'Amsterdamsche Omnibus-Maatschappij',
+            name: 'P1 - Amsterdamsche Omnibus-Maatschappij',
             sym: 'P1',
             value: 20,
             revenue: 0,
@@ -22,10 +22,9 @@ module Engine
                           special: false,
                           count: 1,
                         }],
-            color: nil,
           },
           {
-            name: 'Geldersch-Overijsselsche Lokaalspoorweg-Maatschappij',
+            name: 'P2 - Geldersch-Overijsselsche Lokaalspoorweg-Maatschappij',
             sym: 'P2',
             value: 40,
             revenue: 5,
@@ -42,17 +41,16 @@ module Engine
                           from_owner: true,
                           hexes: %w[E4 F9 F15 F19 H13 I4 I10 J5 K10],
                         }],
-            color: nil,
           },
           {
-            name: 'De Veluwe',
+            name: 'P3 - De Veluwe',
             sym: 'P3',
             value: 70,
             revenue: 10,
             desc: 'A player owning this company may exchange it for a 10% share of the DV if they do not already hold 60%'\
-                  'of the DV and there is DV stock available in the Bank or the Pool. The exchange may be made during'\
-                  " the player's turn of a stock round or between the turns of other players or corporations in either "\
-                  'stock or operating rounds. This action closes the private. Blocks F9 while owned by a player.',
+                  ' of the DV and there is DV stock available in the Bank or the Pool. The exchange may be made during'\
+                  " the player's turn of a stock round or between the turns of other players or corporations in either"\
+                  ' stock or operating rounds. This action closes the private. Blocks F9 while owned by a player.',
             abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['F9'] },
                         {
                           type: 'exchange',
@@ -61,10 +59,9 @@ module Engine
                           when: 'any',
                           from: %w[ipo market],
                         }],
-            color: nil,
           },
           {
-            name: 'De Twentsche Electrische Tramweg-Maatschappij',
+            name: 'P4 - De Twentsche Electrische Tramweg-Maatschappij',
             sym: 'P4',
             value: 110,
             revenue: 10,
@@ -74,10 +71,9 @@ module Engine
                   ' Blocks F19 while owned by a player.',
             abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['F19'] },
                         { type: 'shares', shares: 'NCS_1' }],
-            color: nil,
           },
           {
-            name: 'Hollandsche Ijzeren Spoorweg-Maatschappij',
+            name: 'P5 - Hollandsche Ijzeren Spoorweg-Maatschappij',
             sym: 'P5',
             value: 160,
             revenue: 10,
@@ -90,10 +86,9 @@ module Engine
                         { type: 'close', when: 'bought_train', corporation: 'HIS' },
                         { type: 'no_buy' },
                         { type: 'shares', shares: 'HIS_0' }],
-            color: nil,
           },
           {
-            name: 'Spoorweg-Maatschappij Zuid Beveland',
+            name: 'P6 - Spoorweg-Maatschappij Zuid Beveland',
             sym: 'P6',
             value: 200,
             revenue: 15,
@@ -106,13 +101,11 @@ module Engine
                         { type: 'close', when: 'bought_train', corporation: 'NFL' },
                         { type: 'no_buy' },
                         { type: 'shares', shares: 'NFL_0' }],
-            color: nil,
           },
         ].freeze
 
         CORPORATIONS = [
           {
-            float_percent: 60,
             sym: 'AS',
             name: 'Almelo-Salzbergen',
             logo: '18_nl/AS',
@@ -121,7 +114,31 @@ module Engine
             color: 'red',
           },
           {
-            float_percent: 60,
+            sym: 'NCS',
+            name: 'Nederlandsche Centraal',
+            logo: '18_nl/NCS',
+            tokens: [0, 40, 100, 100],
+            coordinates: 'F13',
+            color: 'green',
+          },
+          {
+            sym: 'DV',
+            name: 'De Vuluwe',
+            logo: '18_nl/DV',
+            tokens: [0, 40, 100, 100],
+            coordinates: 'G8',
+            color: 'black',
+          },
+          {
+            sym: 'MES',
+            name: 'Maatschappij tot Exploitatie van Staatsspoorwegen',
+            logo: '18_nl/MES',
+            tokens: [0, 40, 100],
+            coordinates: 'J7',
+            text_color: 'black',
+            color: 'lightBlue',
+          },
+          {
             sym: 'HIS',
             name: 'Hollandsche Ijzeren Spoorweg',
             logo: '18_nl/HIS',
@@ -131,47 +148,6 @@ module Engine
             color: 'blue',
           },
           {
-            float_percent: 60,
-            sym: 'NCS',
-            name: 'Nederlandsche Centraal',
-            logo: '18_nl/NCS',
-            tokens: [0, 40, 100, 100],
-            coordinates: 'F13',
-            color: 'green',
-          },
-          {
-            float_percent: 20,
-            sym: 'DV',
-            name: 'De Vuluwe',
-            logo: '18_nl/DV',
-            tokens: [0, 40, 100, 100],
-            coordinates: 'G8',
-            color: 'black',
-          },
-          {
-            float_percent: 60,
-            sym: 'NFL',
-            name: 'Noord Friesche Lokaal',
-            logo: '18_nl/NFL',
-            tokens: [0, 40],
-            coordinates: 'B15',
-            shares: [30, 10, 10, 10, 10, 10, 10, 10],
-            text_color: 'black',
-            color: 'magenta',
-          },
-          {
-            float_percent: 60,
-            sym: 'NRS',
-            name: 'Nederlansche Rhijnspoorweg-Maatschappij',
-            logo: '18_nl/NRS',
-            tokens: [0, 40],
-            coordinates: 'E6',
-            city: 1,
-            text_color: 'black',
-            color: 'orange',
-          },
-          {
-            float_percent: 60,
             sym: 'NZO',
             name: 'Nederlansche Zuid-Ooster',
             logo: '18_nl/NZO',
@@ -182,17 +158,6 @@ module Engine
             color: 'yellow',
           },
           {
-            float_percent: 60,
-            sym: 'MES',
-            name: 'Maatschappij tot Exploitatie van Staatsspoorwegen',
-            logo: '18_nl/MES',
-            tokens: [0, 40, 100],
-            coordinates: 'J7',
-            text_color: 'black',
-            color: 'lightBlue',
-          },
-          {
-            float_percent: 60,
             sym: 'ZHE',
             name: '	Zuid-Hollandsche Electrische Spoorweg-Maatschappij',
             logo: '18_nl/ZHE',
@@ -200,6 +165,26 @@ module Engine
             coordinates: 'G2',
             city: 1,
             color: 'purple',
+          },
+          {
+            sym: 'NRS',
+            name: 'Nederlansche Rhijnspoorweg-Maatschappij',
+            logo: '18_nl/NRS',
+            tokens: [0, 40],
+            coordinates: 'E6',
+            city: 1,
+            text_color: 'black',
+            color: 'orange',
+          },
+          {
+            sym: 'NFL',
+            name: 'Noord Friesche Lokaal',
+            logo: '18_nl/NFL',
+            tokens: [0, 40],
+            coordinates: 'B15',
+            shares: [30, 10, 10, 10, 10, 10, 10, 10],
+            text_color: 'black',
+            color: 'magenta',
           },
         ].freeze
       end

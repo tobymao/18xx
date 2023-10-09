@@ -6,13 +6,13 @@ module Engine
   module Game
     module G18Tokaido
       module Meta
-        include Game::Meta
+        include Engine::Game::Meta
 
-        DEV_STAGE = :alpha
+        DEV_STAGE = :beta
         PROTOTYPE = true
         DEPENDS_ON = '18 Los Angeles'
 
-        GAME_TITLE = '18 Tokaido'
+        GAME_TITLE = '18Tokaido'
         GAME_ISSUE_LABEL = '18Tokaido'
         GAME_DESIGNER = 'Douglas Triggs'
         GAME_LOCATION = 'Central Japan'
@@ -37,7 +37,27 @@ module Engine
           {
             sym: :limited_express,
             short_name: 'Limited Express',
-            desc: 'removes one of the 6 trains from the game',
+            desc: 'removes one of the 6 trains from the game (for a faster train rush)',
+          },
+          {
+            sym: :snake_draft,
+            short_name: 'Snake Draft',
+            desc: 'snake draft for privates',
+          },
+          {
+            sym: :waterfall_auction,
+            short_name: 'Waterfall Auction',
+            desc: 'standard waterfall auction for privates',
+          },
+          {
+            sym: :expanded_tileset,
+            short_name: 'Expanded Tileset',
+            desc: 'slightly expanded (newbie-friendly) tileset',
+          },
+          {
+            sym: :no_yellow_zone,
+            short_name: 'No Yellow Zone',
+            desc: 'removes yellow zone from stock market (for slightly more newbie-friendly game)',
           },
         ].freeze
       end

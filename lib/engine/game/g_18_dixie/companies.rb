@@ -92,7 +92,7 @@ module Engine
             sym: 'P6',
             value: 140,
             revenue: 0,
-            desc: 'The purchaser of this Private Company immediately receives teh 20% president\'s certificate of the Southern '\
+            desc: 'The purchaser of this Private Company immediately receives the 20% president\'s certificate of the Southern '\
                   'Railway. The owner then immediately sets the par value for the Southern Railway, places 3 regular shares '\
                   'of the Southern Railway into the Open Market (thus it is floated and will operate with no further '\
                   'share purchases), and discards this Private Company. As long as this Private Company is in the game and '\
@@ -162,7 +162,7 @@ module Engine
             sym: 'P10',
             value: 150,
             revenue: 0,
-            desc: 'The purchaser of this Private Company immediately receives teh 20% president\'s certificate of the WRA '\
+            desc: 'The purchaser of this Private Company immediately receives the 20% president\'s certificate of the WRA '\
                   '. The owner then immediately sets the par value for the WRA, places 3 regular shares of the '\
                   'WRA into the Open Market (thus it is floated and will operate with no further share purchases), '\
                   'and discards this Private Company. As long as this Private Company is in the game and unbought, the WRA'\

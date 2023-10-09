@@ -110,6 +110,7 @@ module Engine
       BANK_CASH = 12_000
 
       CURRENCY_FORMAT_STR = '$%s'
+      FORMAT_UPGRADES_ON_HEXES = false
 
       STARTING_CASH = {}.freeze
 
@@ -189,7 +190,7 @@ module Engine
       SELL_BUY_ORDER = :sell_buy_or_buy_sell
 
       # do shares in the pool drop the price?
-      # none, one, each
+      # none, down_block, left_block, down_share
       POOL_SHARE_DROP = :none
 
       # do sold out shares increase the price?
@@ -922,7 +923,7 @@ module Engine
       end
 
       def train_limit(entity)
-        @phase.train_limit(entity)
+        @phase.train_limit(entity) + Array(abilities(entity, :train_limit)).sum(&:increase)
       end
 
       def train_owner(train)
@@ -1009,6 +1010,13 @@ module Engine
               share_pool.buy_shares(player, share, exchange: :free)
             end
           end
+        end
+        abilities(company, :acquire_company) do |ability|
+          acquired_company = company_by_id(ability.company)
+          acquired_company.owner = player
+          player.companies << acquired_company
+          @log << "#{player.name} receives #{acquired_company.name}"
+          after_buy_company(player, acquired_company, 0)
         end
       end
 
@@ -1244,6 +1252,10 @@ module Engine
            (self.class::MUST_BUY_TRAIN == :route && @graph.route_info(entity)&.dig(:route_train_purchase)))
       end
 
+      def can_buy_train_from_others?
+        self.class::ALLOW_TRAIN_BUY_FROM_OTHERS
+      end
+
       def discard_discount(train, price)
         return price unless self.class::DISCARDED_TRAIN_DISCOUNT
         return price unless @depot.discarded.include?(train)
@@ -1284,6 +1296,13 @@ module Engine
 
       def routes_revenue(routes)
         routes.sum(&:revenue)
+      end
+
+      # Revenue earned during an Action::RunRoutes, in addition to the train
+      # revenue calculated in #routes_revenue. This value is stored in the game
+      # JSON, this method is not called again whilst a game is being loaded.
+      def extra_revenue(_entity, _routes)
+        0
       end
 
       def compute_other_paths(routes, route)
@@ -2122,7 +2141,7 @@ module Engine
           @log << "-- Event: obsolete #{removed_obsolete_trains.uniq.join(', ')} trains are removed from The Depot --"
         end
 
-        return unless rusted_trains.any?
+        return if rusted_trains.empty?
 
         @log << "-- Event: #{rusted_trains.uniq.join(', ')} trains rust " \
                 "( #{owners.map { |c, t| "#{c} x#{t}" }.join(', ')}) --"
@@ -2219,6 +2238,14 @@ module Engine
 
       def bankruptcy_options(_entity)
         []
+      end
+
+      def initial_auction_companies
+        @companies
+      end
+
+      def player_debt(_player)
+        0
       end
 
       private
@@ -2653,7 +2680,11 @@ module Engine
                            " : Game Ends at conclusion of this round (#{turn})"
                          end
                        when :current_or
-                         " : Game Ends at conclusion of this OR (#{turn}.#{@round.round_num})"
+                         if @round.is_a?(Round::Operating)
+                           " : Game Ends at conclusion of this OR (#{turn}.#{@round.round_num})"
+                         else
+                           " : Game Ends at conclusion of the next OR (#{turn}.#{@round.round_num})"
+                         end
                        when :full_or
                          if @round.is_a?(Round::Operating)
                            " : Game Ends at conclusion of #{round_end.short_name} #{turn}.#{operating_rounds}"
@@ -2705,7 +2736,14 @@ module Engine
 
       def next_sr_position(entity)
         player_order = if @round.current_entity&.player?
-                         next_sr_player_order == :first_to_pass ? @round.pass_order : []
+                         case next_sr_player_order
+                         when :first_to_pass
+                           @round.pass_order
+                         when :most_cash
+                           @players.sort_by { |p| [p.cash, @players.index(p)] }.reverse
+                         else
+                           []
+                         end
                        else
                          @players
                        end
@@ -2955,8 +2993,9 @@ module Engine
 
       def ability_right_time?(ability, time, on_phase, passive_ok, strict_time)
         return true unless @round
+        return false if ability.on_phase && !['any', ability.on_phase].include?(on_phase)
+        return false if ability.after_phase && !@phase.previous.map { |p| p['name'] }.include?(ability.after_phase)
         return true if time == 'any' || ability.when?('any')
-        return (on_phase == ability.on_phase) || (on_phase == 'any') if ability.on_phase
         return false if ability.passive && !passive_ok
         return true if ability.passive && ability.when.empty?
 
@@ -2994,6 +3033,8 @@ module Engine
             @round.operating? && !@round.current_operator_acted
           when 'or_start'
             ability_time_is_or_start?
+          when 'stock_round'
+            @round.stock?
           else
             default
           end

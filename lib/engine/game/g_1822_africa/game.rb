@@ -60,20 +60,21 @@ module Engine
           P15: '/icons/1822_africa/coffee.svg',
         }.freeze
 
+        TOKEN_PRICE = 100
+
         PRIVATES_IN_GAME = 12
 
-        EXTRA_TRAINS = %w[2P P+ LP].freeze
+        EXTRA_TRAINS = %w[2P P+ LP S].freeze
         EXTRA_TRAIN_PERMANENTS = %w[2P LP].freeze
-        EXPRESS_TRAIN_MULTIPLIER = 2
 
-        PRIVATE_TRAINS = %w[P1 P2 P3 P4 P5].freeze
+        PRIVATE_TRAINS = %w[P1 P2 P3 P4 P5 P18].freeze
         PRIVATE_MAIL_CONTRACTS = [].freeze # Stub
         PRIVATE_PHASE_REVENUE = %w[P16].freeze
         PRIVATE_REMOVE_REVENUE = %w[P13].freeze
 
         COMPANY_10X_REVENUE = 'P16'
         COMPANY_REMOVE_TOWN = 'P9'
-        COMPANY_EXTRA_TILE_LAYS = %w[P7 P12].freeze
+        COMPANY_EXTRA_TILE_LAYS = %w[P7 P8 P12].freeze
         COMPANY_TOKEN_SWAP = 'P13'
         COMPANY_RECYCLED_TRAIN = 'P6'
         COMPANY_SELL_SHARE = 'P17'
@@ -85,8 +86,12 @@ module Engine
         COMPANY_GOLD_MINE = 'P14'
         GOLD_MINE_BONUS = 20
 
+        COMPANY_RESERVE_THREE_TILES = 'P8'
+
         GAME_RESERVE_TILE = 'GR'
         GAME_RESERVE_MULTIPLIER = 5
+
+        SAFARI_TRAIN_BONUS = 20
 
         MINOR_BIDBOX_PRICE = 100
         BIDDING_BOX_MINOR_COUNT = 3
@@ -180,6 +185,8 @@ module Engine
             ['Concessions close', 'All concessions close without compensation, major companies float at 50%'],
           'full_capitalisation' =>
             ['Full capitalisation', 'Major companies receive full capitalisation when floated'],
+          'phase_revenue' =>
+            ['Phase revenue company closes', 'P16 closes if not owned by a major company'],
         }.freeze
 
         MARKET_TEXT = G1822::Game::MARKET_TEXT.merge(max_price: 'Maximum price for a minor').freeze
@@ -291,6 +298,9 @@ module Engine
               {
                 'type' => 'full_capitalisation',
               },
+              {
+                'type' => 'phase_revenue',
+              },
             ],
           },
           {
@@ -331,6 +341,41 @@ module Engine
               },
             ],
             num: 2,
+            price: 0,
+          },
+          {
+            name: 'LR',
+            distance: [
+              {
+                'nodes' => ['city'],
+                'pay' => 1,
+                'visit' => 1,
+              },
+              {
+                'nodes' => ['town'],
+                'pay' => 1,
+                'visit' => 1,
+              },
+            ],
+            num: 1,
+            price: 50,
+          },
+          {
+            name: '2R',
+            distance: 2,
+            num: 1,
+            price: 100,
+          },
+          {
+            name: '3R',
+            distance: 3,
+            num: 1,
+            price: 160,
+          },
+          {
+            name: 'S',
+            distance: 2,
+            num: 1,
             price: 0,
           },
         ].freeze
@@ -384,6 +429,13 @@ module Engine
           @company_trains['P3'] = find_and_remove_train_by_id('2P-1', buyable: false)
           @company_trains['P4'] = find_and_remove_train_by_id('P+-0', buyable: false)
           @company_trains['P5'] = find_and_remove_train_by_id('P+-1', buyable: false)
+          @company_trains['P18'] = find_and_remove_train_by_id('S-0', buyable: false)
+
+          @recycled_trains = [
+            find_and_remove_train_by_id('LR-0', buyable: false),
+            find_and_remove_train_by_id('2R-0', buyable: false),
+            find_and_remove_train_by_id('3R-0', buyable: false),
+          ].freeze
         end
 
         def reorder_on_concession(companies)
@@ -463,8 +515,8 @@ module Engine
             G1822Africa::Step::Assign,
             G1822::Step::Track,
             G1822::Step::DestinationToken,
-            G1822::Step::Token,
-            G1822::Step::Route,
+            G1822Africa::Step::Token,
+            G1822Africa::Step::Route,
             G1822::Step::Dividend,
             G1822Africa::Step::BuyTrain,
             G1822Africa::Step::MinorAcquisition,
@@ -563,69 +615,14 @@ module Engine
           help
         end
 
-        # This repeats the logic from the base game because our determination of train type is based on route
-        def check_overlap(routes)
-          # Tracks by e-train and normal trains
-          tracks_by_type = Hash.new { |h, k| h[k] = [] }
-
-          # Check local train not use the same token more then one time
-          local_cities = []
-
-          routes.each do |route|
-            local_cities.concat(route.visited_stops.select(&:city?)) if route.train.local? && !route.chains.empty?
-
-            route.paths.each do |path|
-              a = path.a
-              b = path.b
-
-              tracks = tracks_by_type[route_train_type(route)]
-              tracks << [path.hex, a.num, path.lanes[0][1]] if a.edge?
-              tracks << [path.hex, b.num, path.lanes[1][1]] if b.edge?
-
-              if b.edge? && a.town? && (nedge = a.tile.preferred_city_town_edges[a]) && nedge != b.num
-                tracks << [path.hex, a, path.lanes[0][1]]
-              end
-              if a.edge? && b.town? && (nedge = b.tile.preferred_city_town_edges[b]) && nedge != a.num
-                tracks << [path.hex, b, path.lanes[1][1]]
-              end
-            end
-          end
-
-          tracks_by_type.each do |_type, tracks|
-            tracks.group_by(&:itself).each do |k, v|
-              raise GameError, "Route can't reuse track on #{k[0].id}" if v.size > 1
-            end
-          end
-
-          local_cities.group_by(&:itself).each do |k, v|
-            raise GameError, "Local train can only use each token on #{k.hex.id} once" if v.size > 1
-          end
-        end
-
-        def compute_other_paths(routes, route)
-          routes.flat_map do |r|
-            next if r == route || route_train_type(route) != route_train_type(r)
-
-            r.paths
-          end
-        end
-
-        # This repeats the logic from the base game, but with changes to how */E trains are calculated
         def revenue_for(route, stops)
           revenue = super
+
           revenue += plantation_bonus(route)
           revenue += gold_mine_bonus(route, stops)
-          revenue += destination_bonus_for(route)
+          revenue += safari_train_bonus(route)
 
-          return revenue unless can_be_express?(route.train)
-          return revenue unless includes_two_tokens?(route)
-
-          express_revenue = revenue_for_express(route, stops)
-          express_revenue += destination_bonus_for(route) * self.class::EXPRESS_TRAIN_MULTIPLIER
-
-          return express_revenue if train_over_distance?(route)
-
-          [revenue, express_revenue].max
+          revenue
         end
 
         def plantation_bonus(route)
@@ -647,81 +644,38 @@ module Engine
           self.class::GOLD_MINE_BONUS
         end
 
-        def destination_bonus_for(route)
-          destination_bonus = destination_bonus(route.routes)
+        def safari_train_bonus(route)
+          return 0 unless safari_train_attached?(route.train)
 
-          return destination_bonus[:revenue] if destination_bonus && destination_bonus[:route] == route
-
-          0
-        end
-
-        def revenue_for_express(route, stops)
-          entity = route.train.owner
-
-          stops.sum do |stop|
-            next 0 unless stop.city?
-
-            if stop.tokened_by?(entity)
-              stop.route_base_revenue(route.phase, route.train) * self.class::EXPRESS_TRAIN_MULTIPLIER
-            else
-              0
-            end
-          end
-        end
-
-        def runs_as_express?(route)
-          return false unless can_be_express?(route.train)
-          return false unless includes_two_tokens?(route)
-          return true if train_over_distance?(route)
-
-          stops = route.stops
-
-          normal_revenue = G1822::Game.instance_method(:revenue_for).bind_call(self, route, stops)
-          express_revenue = revenue_for_express(route, stops)
-
-          express_revenue > normal_revenue
+          self.class::SAFARI_TRAIN_BONUS * find_game_reserves(route.all_hexes).count
         end
 
         def revenue_str(route)
           str = super
-          str += ' [Express]' if runs_as_express?(route)
+
           str += ' +20 (Coffee Plantation) ' if plantation_bonus(route).positive?
           str += ' +20 (Gold Mine)' if gold_mine_bonus(route, route.stops).positive?
+
+          safari_bonus = safari_train_bonus(route)
+          str += " + #{safari_bonus} (Safari)" if safari_bonus.positive?
+
           str
         end
 
-        def check_distance(route, visits, train = nil)
-          return if can_be_express?(route.train)
-
-          super
+        def train_type(train)
+          train.name[0] == 'E' ? :etrain : :normal
         end
 
-        def train_over_distance?(route)
-          train_distance = route.train.distance
-          visits = route.visited_stops
-
-          return false unless train_distance.is_a?(Numeric)
-
-          route_distance = visits.sum(&:visit_cost)
-
-          route_distance > train_distance
+        def route_trains(entity)
+          entity.runnable_trains.reject { |t| pullman_train?(t) || safari_train?(t) }
         end
 
-        def includes_two_tokens?(route)
-          entity = route.train.owner
-
-          tokened_stops = route.stops.count do |stop|
-            stop.city? && stop.tokened_by?(entity)
-          end
-
-          tokened_stops > 1
+        def safari_train?(t)
+          t.name == 'S'
         end
 
-        def route_train_type(route)
-          return :normal unless can_be_express?(route.train)
-          return :express if runs_as_express?(route)
-
-          :normal
+        def safari_train_attached?(t)
+          t.name[-1] == 'S'
         end
 
         def can_be_express?(train)
@@ -744,11 +698,25 @@ module Engine
           return true if special && tile_game_reserve?(to)
           return false if from.color == :yellow && plantation_assigned?(from.hex)
 
-          super
+          result = super
+
+          return result unless reserve_tiles_owner_active?
+
+          result && @reserved_tiles.any? { |t| t.name == to.name }
+        end
+
+        def reserve_tiles_owner_active?
+          return false if !@tile_reservations_done || @reserved_tiles.none?
+
+          current_entity == company_reserve_tiles&.owner
+        end
+
+        def find_game_reserves(hexes)
+          hexes.select { |h| h.tile.color == :purple }
         end
 
         def pay_game_reserve_bonus!(entity)
-          reserves = hexes.select { |h| h.tile.color == :purple }
+          reserves = find_game_reserves(hexes)
           bonus = hex_crow_distance_not_inclusive(*reserves) * self.class::GAME_RESERVE_MULTIPLIER
 
           return if bonus.zero?
@@ -786,6 +754,8 @@ module Engine
             company_choices_recycled_train(company, time)
           when self.class::COMPANY_SELL_SHARE
             company_choices_sell_share(company, time)
+          when self.class::COMPANY_RESERVE_THREE_TILES
+            company_choices_reserve_three_tiles(company, time)
           else
             {}
           end
@@ -816,6 +786,20 @@ module Engine
           { sell: "Sell #{corp.name} treasury share for #{format_currency(corp.share_price.price)}" }
         end
 
+        def company_choices_reserve_three_tiles(company, _time)
+          return {} if !company.owner&.corporation? || @tile_reservations_done
+
+          choices = {}
+
+          available_tiles = tiles.reject { |t| t.color == :purple }.group_by(&:name)
+
+          available_tiles.each do |name, tiles|
+            choices[name] = "##{name} × #{tiles.size}"
+          end
+
+          choices
+        end
+
         def company_made_choice(company, choice, _time)
           case company.id
           when self.class::COMPANY_TOKEN_SWAP
@@ -824,20 +808,18 @@ module Engine
             company_made_choice_recycled_train(company, choice)
           when self.class::COMPANY_SELL_SHARE
             company_made_choice_sell_share(company, choice)
+          when self.class::COMPANY_RESERVE_THREE_TILES
+            company_made_choice_reserve_three_tiles(company, choice)
           end
         end
 
         def company_made_choice_recycled_train(company, choice)
-          train = @depot.trains.find { |t| t.name == choice }
-          new_train = Engine::Train.new(name: "#{train.name}R", distance: train.distance, price: train.price)
-          new_train.owner = @depot
-          @depot.trains << train
-
+          train = @recycled_trains.find { |t| t.name.start_with?(choice) }
+          buy_train(company.owner, train)
           @log << "#{company.owner.name} buys a recycled #{train.name} train for #{format_currency(train.price)}"
-          buy_train(company.owner, new_train)
 
-          @log << "#{company.name} closes"
           company.close!
+          @log << "#{company.name} closes"
         end
 
         def company_made_choice_sell_share(company, _choice)
@@ -847,8 +829,66 @@ module Engine
           company.close!
         end
 
+        def company_made_choice_reserve_three_tiles(company, choice)
+          return if @tile_reservations_done
+
+          tile = @tiles.find { |t| t.name == choice }
+
+          @reserved_tiles ||= []
+          @reserved_tiles << tile
+
+          @tiles.delete(tile)
+
+          @log << "#{company.owner.name} reserves tile ##{tile.name}"
+
+          finish_tile_reservations(company) if @reserved_tiles.size == 3
+        end
+
+        def finish_tile_reservations(company)
+          @tile_reservations_done = true
+          update_tile_reservations!
+          @log << "#{company.owner.name} can only lay reserved tiles until all of them are placed"
+        end
+
+        def update_tile_reservations!
+          company_reserve_tiles.revenue = 5 * @reserved_tiles.size
+
+          return if @reserved_tiles.any?
+
+          @log << "#{company_reserve_tiles.name} closes"
+          company_reserve_tiles.close!
+        end
+
+        def update_tile_lists(tile, old_tile)
+          if reserve_tiles_owner_active? && @reserved_tiles&.include?(tile)
+            @tiles << tile
+            @reserved_tiles.delete(tile)
+            update_tile_reservations!
+          end
+
+          super
+        end
+
+        def company_reserve_tiles
+          @company_reserve_tiles ||= company_by_id(self.class::COMPANY_RESERVE_THREE_TILES)
+        end
+
+        def tiles
+          return @tiles unless reserve_tiles_owner_active?
+
+          @reserved_tiles + @tiles
+        end
+
         def room?(entity)
           entity.trains.count { |t| !extra_train?(t) } < train_limit(entity)
+        end
+
+        def company_status_str(company)
+          if company == company_reserve_tiles && @reserved_tiles&.any?
+            return "[#{@reserved_tiles.map { |t| "##{t.name}" }.join(', ')}]"
+          end
+
+          super
         end
 
         # Stubbed out because this game doesn't use it, but base 22 does
@@ -869,7 +909,6 @@ module Engine
             ['Minor company dividend > 0', '1 →'],
             ['Each share sold (if sold by director)', '1 ←'],
             ['One or more shares sold (if sold by non-director)', '1 ←'],
-            ['Corporation sold out at end of SR', '1 →'],
           ]
         end
       end

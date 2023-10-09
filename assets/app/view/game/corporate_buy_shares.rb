@@ -43,7 +43,7 @@ module View
       end
 
       def render_player_input(player)
-        return unless @step.current_actions.include?('corporate_buy_shares')
+        return '' unless @step.current_actions.include?('corporate_buy_shares')
 
         input = player.shares.group_by(&:corporation).values.map do |corp_shares|
           render_buttons(corp_shares.reject(&:president).group_by(&:percent).values.map(&:first),
@@ -54,7 +54,7 @@ module View
       end
 
       def render_corporation_input(corporation)
-        return unless @step.current_actions.include?('corporate_buy_shares')
+        return '' unless @step.current_actions.include?('corporate_buy_shares')
 
         pool_shares = @game.share_pool.shares_by_corporation[corporation].group_by(&:percent).values.map(&:first)
         input = [render_buttons(pool_shares)].compact

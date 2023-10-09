@@ -132,10 +132,11 @@ module View
         end
 
         def render_payoff_player_debt_button
-          payoffloan = lambda do
+          payoffdebt = lambda do
             process_action(Engine::Action::PayoffPlayerDebt.new(@current_entity))
           end
-          [h(:button, { on: { click: payoffloan } }, 'Payoff Loan')]
+          partial = @current_entity.cash < @game.player_debt(@current_entity)
+          [h(:button, { on: { click: payoffdebt } }, "Payoff Debt#{partial ? ' (Partial)' : ''}")]
         end
 
         def render_failed_merge
@@ -325,13 +326,15 @@ module View
           }
 
           @game.buyable_bank_owned_companies.map do |company|
+            inputs = []
+            inputs.concat(render_buy_input(company)) if @current_actions.include?('buy_company')
+            inputs.concat(render_company_bid_input(company)) if @current_actions.include?('bid')
+
             children = []
             children << h(Company, company: company,
-                                   bids: (@current_actions.include?('bid') ? @step.bids[company] : nil))
-            if @selected_company == company
-              inputs = []
-              inputs.concat(render_buy_input(company)) if @current_actions.include?('buy_company')
-              inputs.concat(render_company_bid_input(company)) if @current_actions.include?('bid')
+                                   bids: (@current_actions.include?('bid') ? @step.bids[company] : nil),
+                                   interactive: !inputs.empty?)
+            if !inputs.empty? && @selected_company == company
               children << h('div.margined_bottom', { style: { width: '20rem' } }, inputs)
             end
             h(:div, props, children)
@@ -352,7 +355,7 @@ module View
           end
           [h(:button,
              { on: { click: buy } },
-             "Buy #{@selected_company.sym} from Bank for #{@game.format_currency(company.value)}")]
+             "Buy #{company.sym} from Bank for #{@game.format_currency(company.value)}")]
         end
 
         def render_buy_input_interval(company)

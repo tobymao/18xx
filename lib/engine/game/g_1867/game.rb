@@ -563,7 +563,7 @@ module Engine
           unipoed = (@corporations + @future_corporations).reject(&:ipoed)
           minor = unipoed.select { |c| c.type == :minor }
           major = unipoed.select { |c| c.type == :major }
-          ["#{minor.size} minor, #{major.size} major", [@national]]
+          ["#{minor.size} minor, #{major.size} major", [@national] + minor + major]
         end
 
         def show_value_of_companies?(_owner)
@@ -876,10 +876,13 @@ module Engine
                 new_or!
               else
                 @log << "-- #{round_description('Merger', @round.round_num)} --"
+                # The order of steps in the Grand Trunk Games rules is incorrect
+                # (confirmed by Ian D Wilson https://github.com/tobymao/18xx/issues/9655).
+                # It has buying shares before removing tokens.
                 G1867::Round::Merger.new(self, [
                   G1867::Step::MajorTrainless,
-                  G1867::Step::PostMergerShares, # Step C & D
                   G1867::Step::ReduceTokens, # Step E
+                  G1867::Step::PostMergerShares, # Step C & D
                   Engine::Step::DiscardTrain, # Step F
                   G1867::Step::Merge,
                 ], round_num: @round.round_num)

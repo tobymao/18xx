@@ -18,7 +18,7 @@ module Engine
               price_drops =
                 if (pool_share_drop == :none) || (shares_in_pool = corp.num_market_shares).zero?
                   0
-                elsif pool_share_drop == :one
+                elsif pool_share_drop == :down_block
                   @game.frozen?(corp) ? 2 : 1
                 else
                   shares_in_pool

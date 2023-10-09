@@ -383,7 +383,7 @@ module View
           when :par
             h('div.margined_bottom', { style: { width: '20rem' } }, [h(Par, corporation: @selected_corporation)])
           when :bid
-            h(Bid, entity: @current_entity, corporation: @selected_corporation)
+            h(Bid, entity: @current_entity, biddable: @selected_corporation)
           end
         end
 

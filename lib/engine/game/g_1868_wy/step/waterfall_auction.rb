@@ -49,6 +49,10 @@ module Engine
             reason = "all players #{reasons.join(' or ')}"
             @log << "#{@cheapest.name} is removed (#{reason})"
 
+            (@game.class::COMPANY_CHOICES[@cheapest.id] || []).each do |choice_id|
+              @game.company_by_id(choice_id).close!
+            end
+
             @cheapest.close!
             @companies.delete(@cheapest)
             @cheapest = @companies.first
@@ -144,6 +148,11 @@ module Engine
             @passed_on_cheapest[action.entity] = 'pass' unless @auctioning
             super
             maybe_all_passed!
+          end
+
+          # if @choosing, the company is already paid for
+          def min_bid(company)
+            @choosing && @company_choices.include?(company) ? 0 : super
           end
         end
       end

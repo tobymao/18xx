@@ -60,7 +60,7 @@ module Engine
         MUST_SELL_IN_BLOCKS = false
         SELL_MOVEMENT = :down_share
         SOLD_OUT_INCREASE = true
-        POOL_SHARE_DROP = :one
+        POOL_SHARE_DROP = :down_block
         TRACK_RESTRICTION = :semi_restrictive
         MIN_BID_INCREMENT = 5
 
@@ -753,8 +753,8 @@ module Engine
           end
         end
 
-        def auction_companies
-          companies.dup
+        def initial_auction_companies
+          companies
         end
 
         # reorder players by least cash.
@@ -1060,8 +1060,23 @@ module Engine
             .group_by { |e| acting_for_entity(e) }
         end
 
-        def possible_presidents
-          players.reject(&:bankrupt) + corporations.select(&:floated?).reject(&:closed?).sort
+        def player_distance_for_president(previous, entity)
+          return 0 if !previous || !entity
+
+          possible_players = if previous.player?
+                               @players.rotate(@players.index(previous)).reject(&:bankrupt)
+                             else
+                               @players.reject(&:bankrupt)
+                             end
+          possible_corps = corporations.reject(&:closed?).sort
+
+          possible = possible_players + possible_corps
+          possible.reject! { |p| p == previous }
+          possible = [previous] + possible
+
+          a = possible.find_index(previous)
+          b = possible.find_index(entity)
+          a < b ? b - a : b - (a - possible.size)
         end
 
         # for 1841, this means frozen
@@ -1435,7 +1450,7 @@ module Engine
               cost = pres_upgrade_cost(tp, @merger_target)
               share_list.each { |s| simple_transfer_share(s, s.corporation) }
               @log << "#{entity.name} upgrades to a president share for #{format_currency(cost)}"
-              entity.spend(cost, @bank)
+              entity.spend(cost, @merger_target)
               @share_pool.transfer_shares(pres_share.to_bundle, entity, allow_president_change: true)
             else
               # exchange pairs until only a single share left
@@ -1487,20 +1502,20 @@ module Engine
 
               cost = pres_upgrade_cost(tp, @merger_target)
               @log << "#{entity.name} upgrades to a president share for #{format_currency(cost)}"
-              entity.spend(cost, @bank)
+              entity.spend(cost, @merger_target)
               @share_pool.transfer_shares(pres_share.to_bundle, entity, allow_president_change: true)
             elsif answer == :full
               # upgrade to a full share
 
               @log << "#{entity.name} upgrades to full share for #{format_currency(cost)}"
               if new_share
-                entity.spend(cost, @bank)
+                entity.spend(cost, @merger_target)
                 @share_pool.transfer_shares(new_share.to_bundle, entity, allow_president_change: true)
               else
                 raise GameError, 'No shares to transfer' unless pres_share
 
                 ten_share = entity.shares_of(@merger_target).first
-                entity.spend(cost, @bank)
+                entity.spend(cost, @merger_target)
                 @share_pool.transfer_shares(ten_share.to_bundle, @merger_target, allow_president_change: true)
                 @share_pool.transfer_shares(pres_share.to_bundle, entity, allow_president_change: true)
               end
@@ -2548,7 +2563,7 @@ module Engine
           return false if bundle.partial? && !can_sell_partial?(owner, corp)
           return true if can_dump?(owner, corp, active)
 
-          corp_minimum_to_retain(owner, corp, active) <= bundle.percent &&
+          corp_minimum_to_retain(owner, corp, active) <= (owner.percent_of(corp) - bundle.percent) &&
             !bundle.presidents_share
         end
 

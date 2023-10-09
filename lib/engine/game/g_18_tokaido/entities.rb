@@ -6,11 +6,11 @@ module Engine
       module Entities
         COMPANIES = [
           {
-            name: 'Kyoto Railway Co.',
+            name: 'Kyoto Railway Company',
             value: 20,
             revenue: 5,
             desc: 'No special ability. Blocks hex D8 while owned by a player.',
-            sym: 'KT',
+            sym: 'KRC',
             abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['D8'] }],
             color: nil,
           },
@@ -82,16 +82,6 @@ module Engine
             abilities: [{ type: 'close', on_phase: 'never', owner_type: 'corporation' }],
             color: nil,
           },
-          {
-            name: 'Inoue Masaru',
-            value: 100,
-            revenue: 0,
-            desc: 'Purchasing player immediately takes a 10% share of the YSL. This does not close the private ' \
-                  'company. This private company has no other special ability.',
-            sym: 'IM',
-            abilities: [{ type: 'shares', shares: 'YSL_1' }],
-            color: nil,
-          },
         ].freeze
 
         CORPORATIONS = [
@@ -103,7 +93,7 @@ module Engine
             simple_logo: '18_tokaido/YSL.alt',
             tokens: [0, 40],
             coordinates: 'I9',
-            color: '#ef2f2f',
+            color: '#d81e3e',
             text_color: 'white',
           },
           {
@@ -114,19 +104,19 @@ module Engine
             simple_logo: '18_tokaido/SRC.alt',
             tokens: [0, 40, 60],
             coordinates: 'B12',
-            color: '#ef8f2f',
-            text_color: 'black',
+            color: '#7b352a',
+            text_color: 'white',
           },
           {
             float_percent: 60,
-            sym: 'KRC',
+            sym: 'KAN',
             name: 'Kansai Railway Co.',
             logo: '18_tokaido/KRC',
             simple_logo: '18_tokaido/KRC.alt',
             tokens: [0, 40, 60],
             coordinates: 'C11',
             city: 1,
-            color: '#2f7f2f',
+            color: '#237333',
             text_color: 'white',
           },
           {
@@ -137,8 +127,8 @@ module Engine
             simple_logo: '18_tokaido/ARC.alt',
             tokens: [0, 40],
             coordinates: 'F8',
-            color: '#2f2f9f',
-            text_color: 'white',
+            color: '#FFF500',
+            text_color: 'black',
           },
           {
             float_percent: 60,
@@ -160,8 +150,8 @@ module Engine
             simple_logo: '18_tokaido/SHI.alt',
             tokens: [0, 40, 60],
             coordinates: 'J2',
-            color: '#efef4f',
-            text_color: 'black',
+            color: '#0189d1',
+            text_color: 'white',
           },
           {
             float_percent: 60,
@@ -171,8 +161,8 @@ module Engine
             simple_logo: '18_tokaido/NAN.alt',
             tokens: [0, 40, 60],
             coordinates: 'F4',
-            color: '#7f9f9f',
-            text_color: 'white',
+            color: '#a2dced',
+            text_color: 'black',
           },
         ].freeze
       end

@@ -5,7 +5,10 @@ require_relative '../company_price_up_to_face'
 require_relative 'entities'
 require_relative 'map'
 require_relative 'meta'
+require_relative 'stock_market'
+require_relative 'tiles'
 require_relative 'step/buy_company'
+require_relative 'step/buy_sell_par_shares'
 require_relative 'step/draft_distribution'
 
 module Engine
@@ -15,6 +18,9 @@ module Engine
         include_meta(G18Tokaido::Meta)
         include Entities
         include Map
+        include StockMarket
+        include Tiles
+
         include CompanyPriceUpToFace
 
         register_colors(green: '#237333',
@@ -26,23 +32,12 @@ module Engine
 
         attr_reader :drafted_companies
 
-        TRACK_RESTRICTION = :permissive
         CURRENCY_FORMAT_STR = '¥%s'
+        # Technically not used; recalculated depending on optional rules
         CERT_LIMIT = { 2 => 24, 3 => 16, 4 => 12 }.freeze
         STARTING_CASH = { 2 => 820, 3 => 550, 4 => 480 }.freeze
         CAPITALIZATION = :full
         MUST_SELL_IN_BLOCKS = false
-
-        MARKET = [
-          %w[75 80 85 95 105 115 130 145 160 180 200 225 250 275 300],
-          %w[70 75 80 85 95p 105 115 130 145 160 180 200 225 250 275],
-          %w[65 70 75 80p 85 95 105 115 130 145 160],
-          %w[60 65 70p 75 80 85 95 105],
-          %w[55 60 65 70 75 80],
-          %w[50 55 60 65],
-          %w[45 50 55],
-          %w[40 45],
-        ].freeze
 
         PHASES = [
           {
@@ -82,8 +77,8 @@ module Engine
             operating_rounds: 3,
           },
           {
-            name: 'E',
-            on: 'E',
+            name: 'D',
+            on: 'D',
             train_limit: 2,
             tiles: %i[yellow green brown gray],
             operating_rounds: 3,
@@ -107,7 +102,7 @@ module Engine
             name: '4',
             distance: 4,
             price: 300,
-            rusts_on: 'E',
+            rusts_on: 'D',
           },
           {
             name: '5',
@@ -121,7 +116,7 @@ module Engine
             price: 630,
           },
           {
-            name: 'E',
+            name: 'D',
             distance: 999,
             price: 900,
             available_on: '6',
@@ -133,8 +128,8 @@ module Engine
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
           'signal_end_game' => [
             'Triggers End Game',
-            'Game ends after next set of ORs when E train purchased or exported, ' \
-            'purchasing a E train triggers a stock round immediately after current OR',
+            'Game ends after next set of ORs when D train purchased or exported, ' \
+            'purchasing a D train triggers a stock round immediately after current OR',
           ]
         )
 
@@ -146,10 +141,43 @@ module Engine
 
         GAME_END_CHECK = { bankrupt: :immediate, final_phase: :full_or }.freeze
 
+        def game_tiles
+          if @optional_rules&.include?(:expanded_tileset)
+            tiles = G18Tokaido::Tiles::TILES.dup
+            %w[204 207 208 619 622].each { |t| tiles[t] += 1 }
+            tiles
+          else
+            G18Tokaido::Tiles::TILES
+          end
+        end
+
+        def game_market
+          if @optional_rules&.include?(:no_yellow_zone)
+            market = G18Tokaido::StockMarket::MARKET.dup
+            market.map do |row|
+              row.map { |p| p.include?('y') ? p.chop : p }
+            end
+          else
+            G18Tokaido::StockMarket::MARKET
+          end
+        end
+
         def setup
-          @reverse = true
+          if waterfall_auction
+            @companies.each do |c|
+              new_value = c.value - ((c.value - 20) / 4)
+              c.value = new_value
+              c.min_price = (new_value / 2).to_i
+              c.max_price = new_value * 2
+            end
+          elsif @optional_rules&.include?(:snake_draft)
+            setup_company_price_up_to_face
+            @reverse = true
+          else
+            setup_company_price_up_to_face
+            @companies.each { |c| c.owner = @bank }
+          end
           @e_train_exported = false
-          setup_company_price_up_to_face
         end
 
         def after_bid; end
@@ -172,7 +200,7 @@ module Engine
             3
           when '6'
             @optional_rules&.include?(:limited_express) ? 2 : 3
-          when 'E'
+          when 'D'
             20
           end
         end
@@ -189,11 +217,22 @@ module Engine
         end
 
         def init_round
-          Engine::Round::Draft.new(
-            self,
-            [G18Tokaido::Step::DraftDistribution],
-            snake_order: true
-          )
+          if waterfall_auction
+            Engine::Round::Auction.new(self, [
+              Engine::Step::CompanyPendingPar,
+              Engine::Step::WaterfallAuction,
+            ])
+          elsif @optional_rules&.include?(:snake_draft)
+            Engine::Round::Draft.new(
+              self,
+              [G18Tokaido::Step::DraftDistribution],
+              snake_order: true
+            )
+          else
+            Engine::Round::Stock.new(self, [
+              G18Tokaido::Step::BuySellParShares,
+            ])
+          end
         end
 
         def init_round_finished
@@ -233,7 +272,7 @@ module Engine
         def stock_round
           Engine::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
-            Engine::Step::BuySellParShares,
+            G18Tokaido::Step::BuySellParShares,
           ])
         end
 
@@ -259,6 +298,8 @@ module Engine
               init_round_finished
               reorder_players
               new_stock_round
+            when Engine::Round::Auction
+              new_stock_round
             when Engine::Round::Stock
               @operating_rounds = @phase.operating_rounds
               @need_last_stock_round = false
@@ -279,7 +320,7 @@ module Engine
           @need_last_stock_round = true
           game_end_check
           @operating_rounds = @round.round_num if round.class.short_name != 'SR'
-          @log << 'First E train bought/exported, end game triggered'
+          @log << 'First D train bought/exported, end game triggered'
         end
 
         def game_ending_description
@@ -299,7 +340,7 @@ module Engine
         def or_set_finished
           return if @e_train_exported
 
-          @e_train_exported = true if depot.upcoming.first.name == 'E'
+          @e_train_exported = true if depot.upcoming.first.name == 'D'
           depot.export!
         end
 
@@ -335,11 +376,12 @@ module Engine
         end
 
         def timeline
-          @timeline = [
-            'First stock round is in reverse order of draft order',
+          timeline = [
             'At the end of each set of ORs the next available train will be exported (removed, triggering ' \
             'phase change as if purchased)',
           ]
+          timeline.unshift('First stock round is in reverse order of draft order') unless waterfall_auction
+          @timeline = timeline
         end
 
         def fish_market
@@ -351,6 +393,10 @@ module Engine
         end
 
         def draft_finished?; end
+
+        def waterfall_auction
+          @optional_rules&.include?(:waterfall_auction)
+        end
       end
     end
   end

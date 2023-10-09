@@ -298,7 +298,7 @@ module Engine
       end
 
       def buyable_bank_owned_companies(entity)
-        return [] unless entity.player?
+        return [] if !entity.player? || bought?
 
         @game.buyable_bank_owned_companies.select { |c| can_buy_company?(entity, c) }
       end
@@ -345,6 +345,7 @@ module Engine
         @round.current_actions << action
         @log << "#{owner ? '-- ' : ''}#{entity.name} buys #{company.name} from "\
                 "#{owner ? owner.name : 'the market'} for #{@game.format_currency(price)}"
+        @game.after_buy_company(entity, company, price) if entity.player?
       end
 
       def auto_actions(entity)

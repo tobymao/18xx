@@ -108,7 +108,12 @@ module Engine
             size_corporation(@game.phase.corporation_sizes.first) if @game.phase.corporation_sizes.one?
 
             @remaining_bid_amount = price
+
             @game.apply_subsidy(corporation)
+            if (cash_subsidy = corporation.companies.find { |c| @game.class::CASH_SUBSIDIES.include?(c.id) })
+              @remaining_bid_amount -= cash_subsidy.value
+              cash_subsidy.close!
+            end
             par_corporation if available_subsidiaries(winner.entity).none?
           end
 
@@ -130,9 +135,12 @@ module Engine
           end
 
           def process_assign(action)
-            super
             @remaining_bid_amount -= action.target.value
-            @remaining_bid_amount = 0 if @remaining_bid_amount.negative?
+            if @remaining_bid_amount.negative?
+              action.entity.spend(@remaining_bid_amount.abs, @game.bank, check_cash: false)
+              @remaining_bid_amount = 0
+            end
+            super
           end
 
           def use_on_assign_abilities(company)
@@ -186,16 +194,9 @@ module Engine
           def par_corporation
             return unless @corporation_size
 
-            entity = @winning_bid.entity
             corporation = @winning_bid.corporation
-            if (cash_subsidy = corporation.companies.find { |c| @game.class::CASH_SUBSIDIES.include?(c.id) })
-              entity.spend(cash_subsidy.value - @remaining_bid_amount, @game.bank) if @remaining_bid_amount < cash_subsidy.value
-              cash_subsidy.close!
-            else
-              corporation.companies.find { |c| c.name == 'No Subsidy' }&.close!
-            end
+            corporation.companies.find { |c| c.name == 'No Subsidy' }&.close!
 
-            @remaining_bid_amount = 0
             @game.bank.spend(corporation.cash.abs, corporation) if corporation.cash.negative?
             if corporation.tokens.first.hex.id == 'E11' && @game.metro_denver && @game.hex_by_id('E11').tile.name == 'X04s'
               @round.pending_tracks << {

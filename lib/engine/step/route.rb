@@ -28,6 +28,7 @@ module Engine
       def process_run_routes(action)
         entity = action.entity
         @round.routes = action.routes
+        @round.extra_revenue = action.extra_revenue
         trains = {}
         abilities = []
 
@@ -42,9 +43,17 @@ module Engine
           @log << "#{entity.name} runs a #{train.name} train for #{revenue}: #{route.revenue_str}"
           abilities.concat(route.abilities) if route.abilities
         end
+        log_extra_revenue(entity, action.extra_revenue)
         pass!
 
         abilities.uniq.each { |type| @game.abilities(action.entity, type, time: 'route')&.use! }
+      end
+
+      def log_extra_revenue(entity, extra_revenue)
+        return unless extra_revenue&.nonzero?
+
+        revenue_str = @game.format_revenue_currency(extra_revenue)
+        @log << "#{entity.name} receives #{revenue_str} additional revenue"
       end
 
       def conversion?
