@@ -16,6 +16,7 @@ module Engine
         attr_accessor :ndem_acting_player, :number_ndem_shares, :ndem_state
 
         CERT_LIMIT = { 3 => 16, 4 => 13, 5 => 10 }.freeze
+        CERT_LIMIT_INCREASED = { 3 => 18, 4 => 14, 5 => 11 }.freeze
 
         BIDDING_TOKENS = {
           '3': 6,
@@ -773,6 +774,12 @@ module Engine
           exit_out = tile.paths.find { |p| p.town == path_to_mc.town && p != path_to_mc }.edges[0].num
           @m22_adjacent_hexes ||= { 0 => 'N21', 1 => 'M20', 2 => 'L21', 3 => 'L23', 4 => 'M24' }
           hex_by_id(@m22_adjacent_hexes[exit_out]).tile.exits.include?((exit_out + 3) % 6)
+        end
+
+        def game_cert_limit
+          return CERT_LIMIT_INCREASED if @optional_rules&.include?(:higher_cert_limit)
+
+          CERT_LIMIT
         end
       end
     end
