@@ -484,6 +484,8 @@ module Engine
 
           shares = (shares || share_holder.shares_of(corporation)).sort_by { |h| [h.president ? 1 : 0, h.percent] }
 
+          return super if shares.none?(&:double_cert)
+
           bundles = (1..shares.size).flat_map do |n|
             shares.combination(n).to_a.map { |ss| Engine::ShareBundle.new(ss) }
           end
@@ -492,6 +494,18 @@ module Engine
             [b.shares.count { |s| s.percent == 10 },
              b.presidents_share ? 1 : 0,
              b.shares.find(&:double_cert) ? 1 : 0]
+          end
+
+          # Sell president share only if someone else can become new president
+          if corporation.owner == share_holder
+            sh_values = corporation.share_holders.values
+            if sh_values.size < 2
+              bundles.reject!(&:presidents_share)
+            else
+              sh_values.sort!.reverse!
+              percent_needed_to_change_president = sh_values.first - sh_values[1] + 10
+              bundles.reject! { |b| b.percent < percent_needed_to_change_president && b.presidents_share }
+            end
           end
 
           bundles.sort_by(&:percent)
