@@ -432,7 +432,8 @@ module Engine
             if action.city.hex.id == LONDON_BONUS_FERRY_SUPPLY_HEX
               action.entity.owner.add_ability(
                 Engine::Ability::Description.new(type: 'description', description: 'London bonus',
-                                                 desc_detail: 'The value of London (A10) is increased, for this corporation only,'\
+                                                 desc_detail: 'The value of London (A10) is increased,'\
+                                                              ' for this corporation only,'\
                                                               ' by the largest non-London, non-Luxembourg revenue on the route.')
               )
               return
@@ -643,7 +644,7 @@ module Engine
         end
 
         def get_ferry_marker_cost(entity)
-          return ls.owner == entity ? LS_FERRY_MARKER_COST : FERRY_MARKER_COST
+          ls.owner == entity ? LS_FERRY_MARKER_COST : FERRY_MARKER_COST
         end
 
         def can_buy_ferry_marker?(entity)
