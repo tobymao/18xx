@@ -50,6 +50,7 @@ module Engine
             @round.steps.each do |step|
               step.unpass! if step.class < Connection
             end
+            @round.recalculate_order
           end
         end
       end

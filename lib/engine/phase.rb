@@ -29,6 +29,10 @@ module Engine
       @game.after_buying_train(train, source)
     end
 
+    def previous
+      @phases[0...@index]
+    end
+
     def current
       @phases[@index]
     end

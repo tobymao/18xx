@@ -26,6 +26,7 @@ These attributes may be set for all ability types
   been used at least once, but there is still `count` remaining, the ability
   gets used up and removed. Default `true`.
 - `on_phase`: The phase when this ability is active
+- `after_phase`: The ability is active for all phases after the specified phase
 - `when`: (string or array of strings) The game steps or special time descriptor
   when this ability is active. If no values are provided, this ability is
   considered to be "passive", i.e., its effect applies without the user needinng

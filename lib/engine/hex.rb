@@ -103,6 +103,10 @@ module Engine
       @coordinates
     end
 
+    def full_name
+      "#{name} (#{location_name})"
+    end
+
     def tile=(new_tile)
       @original_tile = @tile = new_tile
       new_tile.hex = self

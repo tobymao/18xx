@@ -39,7 +39,7 @@ module Engine
             @game.sell_queue.dig(0, 1)
           end
 
-          def can_sell?
+          def can_sell?(_entity, _bundle)
             false
           end
 

@@ -42,7 +42,7 @@ module Engine
             revenue: 30,
             min_price: 100,
             max_price: 200,
-            desc: 'Revenue increases to 50M when a tile is laid in D9. '\
+            desc: 'Revenue increases to 50M when a tile is laid in E9. '\
                   'May be sold to a corporation for 100 to 200M. '\
                   'Never closes.',
             sym: 'R',

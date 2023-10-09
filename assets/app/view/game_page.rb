@@ -456,12 +456,12 @@ module View
       children << h(Game::EntityOrder, round: @round)
       unless @game.finished
         children << h(Game::Abilities, user: @user, game: @game)
+        children << h(Game::Help, game: @game)
         children << if @game.round.unordered? && hotseat_or_master
                       h(Game::MasterPass)
                     else
                       h(Game::Pass, actions: current_entity_actions)
                     end
-        children << h(Game::Help, game: @game)
       end
       children << render_action
 

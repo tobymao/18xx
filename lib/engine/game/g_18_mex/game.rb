@@ -718,10 +718,6 @@ module Engine
           lays
         end
 
-        def train_limit(entity)
-          super + Array(abilities(entity, :train_limit)).sum(&:increase)
-        end
-
         def action_processed(action)
           case action
           when Action::LayTile
