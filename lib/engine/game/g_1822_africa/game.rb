@@ -651,8 +651,13 @@ module Engine
           )
         end
 
-        def gold_mine_bonus(_route, stops)
-          return 0 if !@gold_mine_token || stops&.none? { |s| s.hex == @gold_mine_token.hex }
+        def gold_mine_bonus(route, stops)
+          return 0 unless @gold_mine_token
+
+          gold_stop = stops&.find { |s| s.hex == @gold_mine_token.hex }
+
+          return 0 unless gold_stop
+          return 0 if train_type(route.train) == :etrain && !gold_stop.tokened_by?(route.train.owner)
 
           self.class::GOLD_MINE_BONUS
         end
