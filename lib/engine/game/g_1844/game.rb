@@ -29,10 +29,9 @@ module Engine
         SELL_BUY_ORDER = :sell_buy
         SELL_MOVEMENT = :down_block
         POOL_SHARE_DROP = :left_block
-        NEXT_SR_PLAYER_ORDER = :most_cash # TODO: not officially supported. Add to common code.
+        NEXT_SR_PLAYER_ORDER = :most_cash
         EBUY_PRES_SWAP = false
         EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
-        MUST_BUY_TRAIN = :always
         DISCARDED_TRAINS = :remove
 
         TRACK_RESTRICTION = :permissive
@@ -568,7 +567,7 @@ module Engine
             when Engine::Round::Stock
               apply_interest_to_player_debt!
               @operating_rounds = @phase.operating_rounds
-              reorder_players
+              reorder_players(log_player_order: true)
               new_operating_round
             when G1844::Round::Operating
               next_round =
@@ -906,7 +905,6 @@ module Engine
             ignore_gauge_walk: true,
           )
           tile.ignore_gauge_walk = true
-          # @_tiles[tile.id] = tile
           tile
         end
 
@@ -918,7 +916,6 @@ module Engine
           @regional_skip_paths ||= @hexes.select { |hex| hex.tile.color == :red }.flat_map do |hex|
             hex.tile.paths.map { |path| [path, true] }
           end.to_h
-          @regional_skip_paths
         end
 
         def take_player_loan(player, loan)

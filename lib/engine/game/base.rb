@@ -2735,8 +2735,15 @@ module Engine
       end
 
       def next_sr_position(entity)
-        player_order = if @round.current_entity&.player?
-                         next_sr_player_order == :first_to_pass ? @round.pass_order : []
+        player_order =  if @round.current_entity&.player?
+                          case next_sr_player_order
+                          when :first_to_pass
+                            @round.pass_order
+                          when :most_cash
+                            @players.sort_by { |p| [p.cash, @players.index(p)] }.reverse
+                          else
+                            []
+                          end
                        else
                          @players
                        end

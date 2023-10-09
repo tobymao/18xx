@@ -29,8 +29,7 @@ module Engine
             abilities: [
               {
                 type: 'tile_lay',
-                # TODO: uncomment
-                # after_phase: '2',
+                after_phase: '2',
                 when: %w[track owning_player_track],
                 count: 1,
                 reachable: true,
@@ -415,7 +414,7 @@ module Engine
             tokens: [0, 40],
             max_ownership_percent: 75,
             coordinates: 'I4',
-            # city: 0, todo uncomment
+            city: 0,
             destination_coordinates: 'F7',
             color: '#d8d2d3',
             text_color: '#225252',
