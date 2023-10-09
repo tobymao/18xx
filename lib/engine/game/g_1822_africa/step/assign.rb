@@ -16,6 +16,12 @@ module Engine
             @game.bank.spend(bonus, corporation)
             @game.log << "#{corporation.id} receives Coffee Plantation bonus of #{@game.format_currency(bonus)}"
           end
+
+          def available_hex(entity, hex)
+            return unless hex.tile.color == :white
+
+            super
+          end
         end
       end
     end
