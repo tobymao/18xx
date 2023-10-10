@@ -600,7 +600,7 @@ module Engine
 
         def new_auction_round
           Engine::Round::Auction.new(self, [
-            Engine::Step::CompanyPendingPar,
+            G1844::Step::CompanyPendingPar,
             Engine::Step::SelectionAuction,
           ])
         end
