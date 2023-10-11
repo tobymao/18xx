@@ -13,7 +13,7 @@ module Engine
             old_price = corporation.share_price
             @game.share_pool.sell_shares(action.bundle)
 
-            (bundle.num_shares.times - 1).times do
+            (bundle.num_shares - 1).times do
               @game.stock_market.move_left(corporation)
             end
 
@@ -22,6 +22,10 @@ module Engine
 
           def blocks?
             false
+          end
+
+          def dividend_step_passes
+            pass!
           end
         end
       end

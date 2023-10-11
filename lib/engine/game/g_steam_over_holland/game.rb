@@ -100,7 +100,7 @@ module Engine
                     tiles: %i[yellow green brown],
                   }].freeze
 
-        TRAINS = [{ name: '2', distance: 2, price: 100, rusts_on: '4', num: 5 },
+        TRAINS = [{ name: '2', distance: 2, price: 500, rusts_on: '4', num: 5 },
                   { name: '3', distance: 3, price: 200, rusts_on: '5', num: 4 },
                   { name: '4', distance: 4, price: 300, rusts_on: '6', num: 3 },
                   {
@@ -143,16 +143,11 @@ module Engine
         def setup_preround
           # randomize the private companies, choose an amount equal to player count, sort numerically
           @companies = @companies.sort_by { rand }.take(@players.size).sort_by(&:name)
-          puts "list of companies: #{@companies.inspect}"
         end
 
         def setup
           setup_company_price_up_to_face
           @or = 0
-          # code below may be used for setting float percentage of NRS
-          # ko_company
-          # # record whether or not the shuffled companies include KO
-          # ko_included = @companies.include?(ko_company)
         end
 
         def timeline
@@ -201,9 +196,10 @@ module Engine
             Engine::Step::Assign,
             Engine::Step::SpecialToken,
             Engine::Step::SpecialTrack,
+            Engine::Step::HomeToken,
             Engine::Step::BuyCompany,
             GSteamOverHolland::Step::IssueShares,
-            Engine::Step::Track,
+            GSteamOverHolland::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
             GSteamOverHolland::Step::Dividend,
@@ -230,7 +226,6 @@ module Engine
 
         def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil, movement: nil)
           super
-
           num_shares = bundle.num_shares
           unless bundle.owner == corporation.owner
             # This allows for the ledges that prevent price drops unless the president is selling
@@ -251,6 +246,7 @@ module Engine
 
           num_shares = entity.num_player_shares - entity.num_market_shares
           bundles = bundles_for_corporation(entity, entity)
+          share_price = stock_market.find_share_price(entity, :current).price
 
           bundles
             .each { |bundle| bundle.share_price = share_price }
@@ -259,6 +255,8 @@ module Engine
 
         def redeemable_shares(entity)
           return [] unless round.steps.find { |step| step.instance_of?(GSteamOverHolland::Step::IssueShares) }.active?
+
+          share_price = stock_market.find_share_price(entity, :current).price
 
           bundles_for_corporation(share_pool, entity)
             .each { |bundle| bundle.share_price = share_price }

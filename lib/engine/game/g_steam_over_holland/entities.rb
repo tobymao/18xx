@@ -18,6 +18,7 @@ module Engine
                 when: 'track',
                 count: 1,
                 free: true,
+                special: false,
                 tiles: [],
                 hexes: [],
                 closed_when_used_up: true,

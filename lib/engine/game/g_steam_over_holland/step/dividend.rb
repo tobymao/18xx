@@ -26,7 +26,7 @@ module Engine
           def pass!
             super
 
-            @round.steps.find { |s| s.is_a?(G1846::Step::IssueShares) }.dividend_step_passes
+            @round.steps.find { |s| s.is_a?(GSteamOverHolland::Step::IssueShares) }.dividend_step_passes
           end
         end
       end
