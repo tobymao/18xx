@@ -807,6 +807,9 @@ module Engine
         end
 
         def check_other(route)
+          if route.stops.any? { |stop| stop.route_revenue(route.phase, route.train).zero? }
+            raise GameError, 'No Mountain Railway to visit'
+          end
           return unless hex_train?(route.train)
 
           raise GameError, 'Cannot visit offboard hexes' if route.stops.any? { |stop| stop.tile.color == :red }
