@@ -100,12 +100,6 @@ module Engine
 
             super
           end
-
-          def process_sell_shares(action)
-            super
-
-            @game.lfk.owner = @game.share_pool if action.bundle.corporation == @game.lfk
-          end
         end
       end
     end
