@@ -188,7 +188,7 @@ module Engine
             num: 6,
             distance: 4,
             price: 300,
-            rusts_on: '7',
+            rusts_on: '8E',
             variants: [
               {
                 name: '4H',
