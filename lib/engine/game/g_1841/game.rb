@@ -1292,8 +1292,18 @@ module Engine
             next if shares[corp].empty?
 
             bundle = ShareBundle.new(Array(shares[corp]))
+            is_pres = bundle.presidents_share
             @log << "Moving #{bundle.percent}% of shares of #{corp.name} from #{from.name} to #{target.name} treasury"
-            @share_pool.transfer_shares(bundle, target, allow_president_change: true)
+
+            # special case: if from is already president of share being moved, don't allow president change
+            # because: 1: transfer_shares doesn't handle the president transfer correctly if more than 1 share is moved
+            # and 2: the presidency should stay with the target anyway
+            @share_pool.transfer_shares(bundle, target, allow_president_change: !is_pres)
+            next unless is_pres
+
+            # handle president transfer manually
+            corp.owner = target
+            @log << "#{target.name} retains presidency of #{corp.name}"
           end
 
           # cash
