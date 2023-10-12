@@ -188,7 +188,7 @@ module Engine
             num: 6,
             distance: 4,
             price: 300,
-            rusts_on: '7',
+            rusts_on: '8E',
             variants: [
               {
                 name: '4H',
@@ -600,7 +600,7 @@ module Engine
 
         def new_auction_round
           Engine::Round::Auction.new(self, [
-            Engine::Step::CompanyPendingPar,
+            G1844::Step::CompanyPendingPar,
             Engine::Step::SelectionAuction,
           ])
         end
@@ -807,6 +807,9 @@ module Engine
         end
 
         def check_other(route)
+          if route.stops.any? { |stop| stop.route_revenue(route.phase, route.train).zero? }
+            raise GameError, 'No Mountain Railway to visit'
+          end
           return unless hex_train?(route.train)
 
           raise GameError, 'Cannot visit offboard hexes' if route.stops.any? { |stop| stop.tile.color == :red }
