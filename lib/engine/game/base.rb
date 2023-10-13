@@ -2994,7 +2994,7 @@ module Engine
       def ability_right_time?(ability, time, on_phase, passive_ok, strict_time)
         return true unless @round
         return false if ability.on_phase && !['any', ability.on_phase].include?(on_phase)
-        return false if ability.after_phase && !@phase.previous.map { |p| p['name'] }.include?(ability.after_phase)
+        return false if ability.after_phase && !@phase.previous.map { |p| p[:name] }.include?(ability.after_phase)
         return true if time == 'any' || ability.when?('any')
         return false if ability.passive && !passive_ok
         return true if ability.passive && ability.when.empty?
