@@ -249,7 +249,7 @@ module View
         minor_logos = minors.map do |minor|
           logo_props = {
             attrs: {
-              src: minor.logo,
+              src: setting_for(:simple_logos, @game) ? minor.simple_logo : minor.logo,
             },
             style: {
               paddingRight: '1px',
