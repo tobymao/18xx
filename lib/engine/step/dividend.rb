@@ -126,7 +126,7 @@ module Engine
       end
 
       def payout_per_share(entity, revenue)
-        revenue / entity.total_shares
+        revenue / entity.total_shares.to_f
       end
 
       def holder_for_corporation(entity)
