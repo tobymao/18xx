@@ -100,6 +100,12 @@ module Engine
 
             super
           end
+
+          def action_is_shenanigan?(entity, other_entity, action, corporation, share_to_buy)
+            return 'Nationalization' if action.is_a?(Action::BuyShares) && action.bundle.owner.player?
+
+            super
+          end
         end
       end
     end
