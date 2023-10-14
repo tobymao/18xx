@@ -51,6 +51,9 @@ module View
             store(:corporation_to_par, nil, skip: true)
           end
 
+          if @current_actions.include?('par') && @step.respond_to?(:companies_pending_par) && !@step.companies_pending_par.empty?
+            return h(:div, render_company_pending_par)
+          end
           return render_select_par_slot if @corporation_to_par && @current_actions.include?('par')
 
           children = []
@@ -90,6 +93,24 @@ module View
           children << h(StockMarket, game: @game, show_bank: true)
 
           h(:div, children)
+        end
+
+        def render_company_pending_par
+          children = []
+
+          company = @step.companies_pending_par.first
+          @game.abilities(company, :shares).shares&.each do |share|
+            next unless share.president
+
+            children << h(Corporation, corporation: share.corporation)
+            children << if @game.respond_to?(:par_chart)
+                          h(ParChart, corporation_to_par: share.corporation)
+                        else
+                          h(Par, corporation: share.corporation)
+                        end
+          end
+
+          children
         end
 
         def render_buttons

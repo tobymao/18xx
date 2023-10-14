@@ -78,6 +78,7 @@ module Engine
 
         def new_auction_round
           Engine::Round::Auction.new(self, [
+            Engine::Step::CompanyPendingPar,
             G18Dixie::Step::SelectionAuction,
           ])
         end
@@ -398,6 +399,32 @@ module Engine
           @recently_floated << minor
         end
 
+        def can_par?(corporation, parrer)
+          if corporation == sr
+            @round.companies_pending_par.index(sr_company)
+          elsif corporation == wra
+            @round.companies_pending_par.index(wra_company)
+          else
+            super
+          end
+        end
+
+        def sr_company
+          @p6 ||= company_by_id('P6')
+        end
+
+        def sr
+          @sr ||= corporation_by_id('SR')
+        end
+
+        def wra_company
+          @p10 ||= company_by_id('P10')
+        end
+
+        def wra
+          @wra ||= corporation_by_id('WRA')
+        end
+
         # ICG/SCL merger stuff
         def ic
           @ic ||= corporation_by_id('IC')
@@ -531,6 +558,14 @@ module Engine
             }
           end
           after_option_choice(primary_corp, secondary_corp, merger_corp)
+        end
+
+        def after_par(corporation)
+          super
+          return unless [wra, sr].find(corporation)
+
+          bundle = ShareBundle.new(corporation.shares_of(corporation).slice(0, 3))
+          @share_pool.buy_shares(@share_pool, bundle, exchange: :free, exchange_price: 0, allow_president_change: false)
         end
 
         def after_option_choice(primary_corp, secondary_corp, merger_corp)
