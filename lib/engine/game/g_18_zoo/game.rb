@@ -25,56 +25,12 @@ module Engine
         MUST_SELL_IN_BLOCKS = true
 
         MARKET = [
-          [
-            { price: 7, info: '100      1' },
-            { price: 8, info: '150      2' },
-            { price: 9, info: '150      2' },
-            { price: 10, info: '200   2+1', types: [:safe_par] },
-            { price: 11, info: '200   2+2', types: [:safe_par] },
-            { price: 12, info: '250   3+2', types: [:safe_par] },
-            { price: 13, info: '250   3+2', types: [:safe_par] },
-            { price: 14, info: '300   3+2', types: [:safe_par] },
-            { price: 15, info: '350   3+3', types: [:safe_par] },
-            { price: 16, info: '400      4' },
-            { price: 20, info: '450      5' },
-            { price: 24, info: 'END   6', types: [:endgame] },
-          ],
-          [
-            { price: 6, info: '100      1' },
-            { price: 7, info: '100      1', types: [:par_1] },
-            { price: 8, info: '150      2' },
-            { price: 9, info: '150      2', types: [:par_2] },
-            { price: 10, info: '200      2' },
-            { price: 11, info: '200      2' },
-            { price: 12, info: '250      3', types: [:par_3] },
-            { price: 13, info: '250      3' },
-            { price: 14, info: '300      3' },
-          ],
-          [
-            { price: 5, info: '80      1' },
-            { price: 6, info: '100      1', types: [:par_1] },
-            { price: 7, info: '100      2' },
-            { price: 8, info: '150      2' },
-            { price: 9, info: '150      2' },
-            { price: 10, info: '200      2' },
-            { price: 11, info: '200      2' },
-          ],
-          [
-            { price: 4, info: '50      1' },
-            { price: 5, info: '80      1', types: [:par_1] },
-            { price: 6, info: '100      1' },
-            { price: 7, info: '100      2' },
-            { price: 8, info: '150      2' },
-          ],
-          [
-            { price: 3, info: '40      0' },
-            { price: 4, info: '50      1' },
-            { price: 5, info: '80      1' },
-          ],
-          [
-            { price: 2, info: '30      0' },
-            { price: 3, info: '40      0' },
-          ],
+          %w[7 8 9 10s 11s 12s 13s 14s 15s 16 20 24e],
+          %w[6 7x 8 9z 10 11 12w 13 14],
+          %w[5 6x 7 8 9 10 11],
+          %w[4 5x 6 7 8],
+          %w[3 4 5],
+          %w[2 3],
         ].freeze
 
         PHASES = [
@@ -267,16 +223,16 @@ module Engine
           'new_train' => ['First train bonus',
                           'Corporation buying the first train of this type moves one to the right'],
           'rust_own_3s_4s' => ['First train buyer rust 3S Long and 4S',
-                               'Corporation buying the first 4J/2J immediately rusts its own 3S Long and 4S ' \
+                               'Corporation buying the first 4J/2J immediately rusts its own 3S Long and 4S '\
                                '(3S long and 4S run one last time for the other corporations)'],
         ).freeze
 
         STATUS_TEXT = Base::STATUS_TEXT.merge(
           'ipo_9' => ['IPO 9 (bonus)',
-                      'Corporation gets 5$N bonus in the treasury; must place a yellow or a green' \
+                      'Corporation gets 5$N bonus in the treasury; must place a yellow or a green'\
                       ' track in the Home and up to 2 yellow tracks'],
           'ipo_12' => ['IPO 12 (bonus)',
-                       'Corporation gets 10$N bonus in the treasury; must place a yellow or a green' \
+                       'Corporation gets 10$N bonus in the treasury; must place a yellow or a green'\
                        ' or a brown track in the Home and up to 4 yellow tracks'],
           'grey_homes' => ['Grey Homes',
                            '3 Grey tracks available; upgrade HOME of GIRAFFES, TIGERS and BROWN BEARS'],
@@ -526,7 +482,7 @@ module Engine
                                                      .find { |c| !c.ipoed }
             @near_families_purchasable = [{ direction: 'next', id: next_corporation.id },
                                           { direction: 'reverse', id: previous_corporation.id }]
-            @log << "Near family rule: next choice is either #{previous_corporation.full_name} or" \
+            @log << "Near family rule: next choice is either #{previous_corporation.full_name} or"\
                     " #{next_corporation.full_name} (choosing one excludes the other one)"
           else
             if @corporations.count(&:ipoed) == 2
@@ -718,7 +674,7 @@ module Engine
           to_price = entity.share_price.price
           return unless from_price != to_price
 
-          @log << "#{entity.name}'s share price changes from #{format_currency(from_price)} " \
+          @log << "#{entity.name}'s share price changes from #{format_currency(from_price)} "\
                   "to #{format_currency(to_price)} #{additional_info}"
         end
 
@@ -782,7 +738,7 @@ module Engine
           # Route cannot use Hole as off-board and as pass-through, or used twice
           count_holes = holes_in_route.size
           if count_holes > 2
-            raise GameError, 'Hole cannot be used as a terminal and as a tunnel at the same time; neither can be used' \
+            raise GameError, 'Hole cannot be used as a terminal and as a tunnel at the same time; neither can be used'\
                              ' multiple times as tunnel with the same squirrel (train)'
           end
 
@@ -859,13 +815,13 @@ module Engine
           if holes_assignment
             c1 = @holes.first.coordinates
             c2 = @holes.last.coordinates
-            help << "Off-boards #{c1}, #{c2} are special: they can be used at the beginning or end of a route, and" \
-                    ' may also be passed through. Click on it to use it as a beginning or end of a route. Click on' \
-                    " the first stop out of the off-board #{c1} and the first stop out of the off-board #{c2} to run" \
+            help << "Off-boards #{c1}, #{c2} are special: they can be used at the beginning or end of a route, and"\
+                    ' may also be passed through. Click on it to use it as a beginning or end of a route. Click on'\
+                    " the first stop out of the off-board #{c1} and the first stop out of the off-board #{c2} to run"\
                     ' a route through.'
           end
           if corn_assignment
-            help << 'Any train running in a city which has a "Wheat" token increase route value by ' \
+            help << 'Any train running in a city which has a "Wheat" token increase route value by '\
                     "#{format_revenue_currency(30)}."
           end
           help
@@ -1027,14 +983,14 @@ module Engine
                              end
 
           @timeline = [
-            "ZOOTicket: the current value is #{format_currency(@ticket_zoo_current_value)}." \
-            ' Numbers 4,5,6…20 on the timeline are the value of a single ZOOTicket during each round' \
-            ' (i.e. a ZOOTicket is worth 9$N in the OR 2.2). At the end of game each non-sold ZOOTicket is worth' \
+            "ZOOTicket: the current value is #{format_currency(@ticket_zoo_current_value)}."\
+            ' Numbers 4,5,6…20 on the timeline are the value of a single ZOOTicket during each round'\
+            ' (i.e. a ZOOTicket is worth 9$N in the OR 2.2). At the end of game each non-sold ZOOTicket is worth'\
             ' 20$N.',
           ]
           @timeline << "NEARBY FAMILY: #{near_family_text}" if near_family_text
           @timeline << 'SR 3: at the start of SR 3 the reserved R shares are available to buy.'
-          @timeline << 'END: if during a forced train purchase the player doesn\'t have enough money, the bank covers' \
+          @timeline << 'END: if during a forced train purchase the player doesn\'t have enough money, the bank covers'\
                        ' the expense; the player gets a negative debt (loan) equal to twice what the bank paid'
         end
 
@@ -1146,7 +1102,7 @@ module Engine
         def chart_price(share_price)
           bonus_share = bonus_payout_for_share(share_price)
           bonus_president = bonus_payout_for_president(share_price)
-          "#{format_currency(bonus_share)}" \
+          "#{format_currency(bonus_share)}"\
             "#{bonus_president.positive? ? '+' + format_currency(bonus_president) : ''}"
         end
 
@@ -1163,7 +1119,7 @@ module Engine
 
           help = "Current dividend #{format_currency(bonus_hold_share)}"
           help += " (+#{format_currency(bonus_hold_president)} bonus president)" if bonus_hold_president.positive?
-          help += ". Threshold to move: #{format_revenue_currency(threshold)}. " \
+          help += ". Threshold to move: #{format_revenue_currency(threshold)}. "\
                   "Dividend if moved #{format_currency(bonus_pay_share)}"
           help += " (+#{format_currency(bonus_pay_president)} bonus president)" if bonus_pay_president.positive?
 
