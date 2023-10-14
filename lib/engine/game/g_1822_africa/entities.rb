@@ -316,7 +316,7 @@ module Engine
             sym: 'C1',
             value: 100,
             revenue: 10,
-            desc: 'Has a face value of $100 and contributes $100 to conversion into the NAR director’s certificate.',
+            desc: 'Has a face value of A100 and contributes A100 to conversion into the NAR director’s certificate.',
             abilities: [
               {
                 type: 'exchange',
@@ -333,7 +333,7 @@ module Engine
             sym: 'C2',
             value: 100,
             revenue: 10,
-            desc: 'Has a face value of $100 and contributes $100 to conversion into the WAR director’s certificate.',
+            desc: 'Has a face value of A100 and contributes A100 to conversion into the WAR director’s certificate.',
             abilities: [
               {
                 type: 'exchange',
@@ -350,7 +350,7 @@ module Engine
             sym: 'C3',
             value: 100,
             revenue: 10,
-            desc: 'Has a face value of $100 and contributes $100 to conversion into the EAR director’s certificate.',
+            desc: 'Has a face value of A100 and contributes A100 to conversion into the EAR director’s certificate.',
             abilities: [
               {
                 type: 'exchange',
@@ -367,7 +367,7 @@ module Engine
             sym: 'C4',
             value: 100,
             revenue: 10,
-            desc: 'Has a face value of $100 and contributes $100 to conversion into the CAR director’s certificate.',
+            desc: 'Has a face value of A100 and contributes A100 to conversion into the CAR director’s certificate.',
             abilities: [
               {
                 type: 'exchange',
@@ -384,7 +384,7 @@ module Engine
             sym: 'C5',
             value: 100,
             revenue: 10,
-            desc: 'Has a face value of $100 and contributes $100 to conversion into the SAR director’s certificate.',
+            desc: 'Has a face value of A100 and contributes A100 to conversion into the SAR director’s certificate.',
             abilities: [
               {
                 type: 'exchange',
@@ -461,7 +461,7 @@ module Engine
             sym: 'M7',
             value: 100,
             revenue: 0,
-            desc: 'A 50% director’s certificate in the associated minor company. Starting location is G17 (Yohannesburg).',
+            desc: 'A 50% director’s certificate in the associated minor company. Starting location is G17 (Johannesburg).',
             abilities: [],
             color: '#ffffff',
             text_color: 'black',
