@@ -1409,7 +1409,7 @@ module Engine
             options = [:cash]
             options << :pres if entity.player? && pres_share && afford_upgrade_to_pres?(entity, tp, @merger_target)
             options << :full if entity.player && normal_share && afford_upgrade_to_full?(entity, @merger_target)
-            if entity.player && !normal_share && pres_share && !current_shares.emtpy? &&
+            if entity.player && !normal_share && pres_share && !current_shares.empty? &&
                 afford_upgrade_to_full?(entity, @merger_target)
               # special case: entity already has a share, no target normal shares left but
               # president share is still available
