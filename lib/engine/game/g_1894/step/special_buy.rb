@@ -10,6 +10,9 @@ module Engine
           attr_reader :ferry_marker
 
           def buyable_items(entity)
+            cost = @game.get_ferry_marker_cost(entity)
+            @ferry_marker.cost = cost
+
             return [@ferry_marker] if @game.loading || (@game.can_buy_ferry_marker?(entity) && current_entity == entity)
 
             []
@@ -31,7 +34,8 @@ module Engine
 
           def setup
             super
-            @ferry_marker ||= Item.new(description: 'Ferry marker', cost: Engine::Game::G1894::Game::FERRY_MARKER_COST)
+
+            @ferry_marker ||= Item.new(description: 'Ferry marker', cost: 0)
           end
         end
       end
