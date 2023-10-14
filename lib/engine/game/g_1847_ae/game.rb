@@ -537,6 +537,8 @@ module Engine
             ability = corporation.all_abilities.find { |a| a.description&.include?('IPO:') }
             corporation.remove_ability(ability)
             corporation.has_ipo_description_ability = false
+          when Action::SellShares
+            lfk.owner = share_pool if action.bundle.corporation == lfk
           when Action::LayTile
             return if action.hex.id != 'E9' || r.revenue == 50
 
