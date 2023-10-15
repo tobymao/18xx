@@ -447,7 +447,6 @@ module Engine
           if count < 2
             @log << '-- Event: The Tuscan Merge will not occur - 2 or more Tuscan corporations are not active --'
             sfli.close!
-            holding.close!
             return
           end
 
@@ -2497,7 +2496,6 @@ module Engine
             transform_start(sflp, holding, tuscan_merge: true)
           else
             # sflp and sfma are open, but not ssfl
-            holding.close! # not needed
             @tuscan_merge_ssfl = nil
             merger_start(sflp, sfma, sfli, tuscan_merge: true)
           end
