@@ -703,6 +703,13 @@ module View
       end
 
       def can_assign_corporation?
+        # reset selected_company if cleared during an undo action
+        @selected_company ||=
+          begin
+            step = @game.round.active_step
+            (step.respond_to?(:selected_company) && step.selected_company) || nil
+          end
+
         @selected_corporation && @game.abilities(@selected_company, :assign_corporation)
       end
     end

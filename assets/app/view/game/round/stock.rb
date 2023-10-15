@@ -35,7 +35,7 @@ module View
           @auctioning_corporation = @step.auctioning_corporation if @step.respond_to?(:auctioning_corporation)
           @selected_corporation ||= @auctioning_corporation
           @auctioning_company = @step.auctioning_company if @step.respond_to?(:auctioning_company)
-          @selected_company ||= @auctioning_company
+          @selected_company ||= (@step.respond_to?(:selected_company) && @step.selected_company) || @auctioning_company
           @mergeable_entity = @step.mergeable_entity if @step.respond_to?(:mergeable_entity)
           @price_protection = @step.price_protection if @step.respond_to?(:price_protection)
           @selected_corporation ||= @price_protection&.corporation
@@ -199,7 +199,8 @@ module View
             children = []
             children.concat(render_subsidiaries)
             input = render_input(corporation) if @game.corporation_available?(corporation)
-            children << h(Corporation, corporation: corporation, interactive: input || merging)
+            children << h(Corporation, corporation: corporation, interactive: input || merging,
+                                       selected_company: @selected_company)
             children << input if input && @selected_corporation == corporation
             h(:div, props, children)
           end.compact

@@ -19,7 +19,9 @@ module Engine
           def help
             case current_entity
             when @game.lhp_private
-              "#{@game.lhp_private.name} is closing. You may assign the 2+1 train to a Railroad Company for no compensation."
+              "#{@game.lhp_private.name} is closing. "\
+              "#{@game.lhp_private.owner.name} may assign the 2+1 train "\
+              'to a Railroad Company for no compensation.'
             end
           end
 
@@ -96,6 +98,18 @@ module Engine
             else
               available
             end
+          end
+
+          def available_subsidiaries
+            []
+          end
+
+          def ipo_type
+            :par
+          end
+
+          def selected_company
+            current_entity == @game.lhp_private ? @game.lhp_private : nil
           end
         end
       end
