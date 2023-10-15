@@ -560,7 +560,7 @@ module Engine
         def next_round!
           @round =
             case @round
-            when init_round.class
+            when Engine::Round::Auction
               init_round_finished
               reorder_players(:least_cash, log_player_order: true)
               new_stock_round
