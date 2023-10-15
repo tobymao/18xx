@@ -16,7 +16,10 @@ module Engine
           end
 
           def select_entities
-            @game.abilities(@game.no_bust, :assign_hexes) ? [@game.no_bust] : []
+            entities = []
+            entities << @game.lhp_private if @game.lhp_train_pending?
+            entities << @game.no_bust if @game.abilities(@game.no_bust, :assign_hexes)
+            entities
           end
 
           def start_operating
