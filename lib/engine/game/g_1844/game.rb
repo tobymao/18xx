@@ -245,7 +245,7 @@ module Engine
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
           'train_exports' => ['Train Exports', 'Next train exported at the end of each OR set'],
           '2t_downgrade' => ['2 -> 2H', '2 trains downgraded to 2H trains'],
-          'company_abilities' => ['Company Abilities Useable', 'Company special abilities can be used'],
+          'company_abilities' => ['Company Abilities', 'Company special abilities can be used'],
           'buy_across' => ['Buy Across', 'Trains can be bought between corporations'],
           '3t_downgrade' => ['3 -> 3H', '3 trains downgraded to 3H trains'],
           'sbb_formation' => ['SBB Forms', 'SBB forms after the Operating Round'],
