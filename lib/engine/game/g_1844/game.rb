@@ -473,9 +473,12 @@ module Engine
         def sbb_share_exchange!(corporation)
           cash_per_share = corporation.share_price.price - sbb.share_price.price
           corporation.share_holders.keys.each do |share_holder|
+            sbb_shares = sbb.shares_of(sbb)
             shares = share_holder.shares_of(corporation).map do |corp_share|
               percent = corp_share.president ? 10 : 5
-              sbb.shares_of(sbb).find { |sbb_share| sbb_share.percent == percent }
+              share = sbb_shares.find { |sbb_share| sbb_share.percent == percent }
+              sbb_shares.delete(share)
+              share
             end
             next if shares.empty?
 
@@ -560,7 +563,7 @@ module Engine
         def next_round!
           @round =
             case @round
-            when init_round.class
+            when Engine::Round::Auction
               init_round_finished
               reorder_players(:least_cash, log_player_order: true)
               new_stock_round
