@@ -48,30 +48,38 @@ module Engine
         hex = city.hex
         extra_action ||= special_ability.extra_action if %i[teleport token].include?(special_ability&.type)
 
-        check_connected(entity, city, hex) if connected
+        unless @game.loading
 
-        if special_ability&.type == :token && special_ability.city && special_ability.city != city.index
-          raise GameError, "#{special_ability.owner.name} can only place token on #{hex.name} city "\
-                           "#{special_ability.city}, not on city #{city.index}"
+          check_connected(entity, city, hex) if connected
+
+          if special_ability&.type == :token && special_ability.city && special_ability.city != city.index
+            raise GameError, "#{special_ability.owner.name} can only place token on #{hex.name} city "\
+                             "#{special_ability.city}, not on city #{city.index}"
+          end
+
+          if special_ability&.type == :token && !special_ability&.hexes&.empty? && !special_ability.hexes.include?(hex.id)
+            raise GameError, "#{special_ability.owner.name} can only place token on #{special_ability.hexes} hexes"\
+                             ", not on #{hex.id}"
+          end
+
+          if special_ability&.type == :teleport &&
+             !special_ability.hexes.empty? &&
+             !special_ability.hexes.include?(hex.id)
+            raise GameError, "#{special_ability.owner.name} cannot place token in "\
+                             "#{hex.name} (#{hex.location_name}) with teleport"
+          end
+
+          raise GameError, 'Token already placed this turn' if !extra_action && @round.tokened
+
+          token, ability = adjust_token_price_ability!(entity, token, hex, city, special_ability: special_ability)
+          tokener = entity.name
+          if ability
+            tokener += " (#{ability.owner.sym})" if ability.owner != entity
+            entity.remove_ability(ability)
+          end
+
+          raise GameError, 'Token is already used' if token.used
         end
-
-        if special_ability&.type == :teleport &&
-           !special_ability.hexes.empty? &&
-           !special_ability.hexes.include?(hex.id)
-          raise GameError, "#{special_ability.owner.name} cannot place token in "\
-                           "#{hex.name} (#{hex.location_name}) with teleport"
-        end
-
-        raise GameError, 'Token already placed this turn' if !extra_action && @round.tokened
-
-        token, ability = adjust_token_price_ability!(entity, token, hex, city, special_ability: special_ability)
-        tokener = entity.name
-        if ability
-          tokener += " (#{ability.owner.sym})" if ability.owner != entity
-          entity.remove_ability(ability)
-        end
-
-        raise GameError, 'Token is already used' if token.used
 
         free = !token.price.positive?
         if ability&.type == :token
@@ -129,7 +137,7 @@ module Engine
         # TODO: special_ability token here
         @game.abilities(entity, :token) do |ability, _|
           next if ability.special_only && ability != special_ability
-          next if ability.hexes.any? && !ability.hexes.include?(hex.id)
+          next if !ability&.hexes&.empty? && !ability.hexes.include?(hex.id)
           next if ability.city && ability.city != city.index
 
           if ability.neutral
