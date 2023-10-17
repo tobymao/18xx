@@ -73,8 +73,8 @@ module View
       }.freeze
 
       PRICE_STYLE_2D_INFO = PRICE_STYLE_1D_INFO.merge({
-        width: "#{WIDTH_TOTAL + PRICE_HEIGHT - (2 * PAD) - (2 * BORDER)}px",
-      }).freeze
+                                                        width: "#{WIDTH_TOTAL + PRICE_HEIGHT - (2 * PAD) - (2 * BORDER)}px",
+                                                      }).freeze
 
       def box_style_1d
         {

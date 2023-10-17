@@ -60,20 +60,20 @@ module Engine
             { price: 11, info: '200        2' },
           ],
           [
-            { price: 4, info: '50        1' },
-            { price: 5, info: '80        1', types: [:par_1] },
+            { price: 4, info: '50          1' },
+            { price: 5, info: '80          1', types: [:par_1] },
             { price: 6, info: '100        1' },
             { price: 7, info: '100        2' },
             { price: 8, info: '150        2' },
           ],
           [
-            { price: 3, info: '40        0' },
-            { price: 4, info: '50        1' },
-            { price: 5, info: '80        1' },
+            { price: 3, info: '40          0' },
+            { price: 4, info: '50          1' },
+            { price: 5, info: '80          1' },
           ],
           [
-            { price: 2, info: '30        0' },
-            { price: 3, info: '40        0' },
+            { price: 2, info: '30          0' },
+            { price: 3, info: '40          0' },
           ],
         ].freeze
 
