@@ -64,13 +64,17 @@ module View
         textAlign: 'center',
       }.freeze
 
-      PRICE_STYLE_INFO = {
+      PRICE_STYLE_1D_INFO = {
         fontSize: '80%',
         textAlign: 'center',
         position: 'absolute',
         bottom: "#{PAD}px",
         width: "#{WIDTH_TOTAL - (2 * PAD) - (2 * BORDER)}px",
       }.freeze
+
+      PRICE_STYLE_2D_INFO = PRICE_STYLE_1D_INFO.merge({
+        width: "#{WIDTH_TOTAL + PRICE_HEIGHT - (2 * PAD) - (2 * BORDER)}px",
+      }).freeze
 
       def box_style_1d
         {
@@ -234,7 +238,7 @@ module View
 
           cell_elements = [h(:div, { style: PRICE_STYLE_1D }, price.price),
                            h(:div, { style: TOKEN_STYLE_1D }, tokens)]
-          cell_elements << h(:div, { style: PRICE_STYLE_INFO }, price.info) if price.info
+          cell_elements << h(:div, { style: PRICE_STYLE_1D_INFO }, price.info) if price.info
 
           element = h(:div, { style: cell_style(box_style, price.types) }, cell_elements)
           if idx.even?
@@ -253,6 +257,8 @@ module View
       end
 
       def grid_2d
+        has_price_info = @game.stock_market.market.any? { |row| row.any?(&:info) }
+
         # Need to peek at row below to know if sitting on ledge.
         @game.stock_market.market.push([]).each_cons(2).each_with_index.map do |rows, row_i|
           row_prices, next_row = rows
@@ -280,10 +286,14 @@ module View
 
               first_price = false
 
-              h(:div, { style: cell_style(@box_style_2d, price.types) }, [
+              h(:div, { style: cell_style(has_price_info ? @box_style_2d_with_info : @box_style_2d, price.types) }, [
                 h('div.xsmall_font', price.price),
                 h(:div, tokens),
-                h(:div, { style: { color: '#00000060', position: 'absolute', 'font-size': '170%' }.merge(align) }, arrow),
+                if price.info
+                  h(:div, { style: PRICE_STYLE_2D_INFO }, price.info)
+                else
+                  h(:div, { style: { color: '#00000060', position: 'absolute', 'font-size': '170%' }.merge(align) }, arrow)
+                end,
               ])
             else
               h(:div, { style: @space_style_2d }, '')
@@ -315,6 +325,11 @@ module View
         @box_style_2d = @space_style_2d.merge(
           border: "solid #{BORDER}px rgba(0,0,0,0.2)",
           color: color_for(:font2),
+        )
+
+        @box_style_2d_with_info = @box_style_2d.merge(
+          height: "#{HEIGHT_TOTAL + PRICE_HEIGHT - (2 * PAD) - (2 * BORDER)}px",
+          width: "#{WIDTH_TOTAL + PRICE_HEIGHT - (2 * PAD) - (2 * BORDER)}px",
         )
 
         grid = if @game.stock_market.one_d?
