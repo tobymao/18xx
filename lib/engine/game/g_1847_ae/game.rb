@@ -503,7 +503,8 @@ module Engine
           # May sell president share only if someone else can become new president
           if corporation.owner == share_holder
             sh_values = corporation.share_holders.values
-            if sh_values.size < 2
+            if sh_values.size == 1
+              # No one else owns shares of the corporation
               bundles.reject!(&:presidents_share)
             else
               sh_values.sort!.reverse!
