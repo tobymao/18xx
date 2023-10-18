@@ -245,7 +245,7 @@ module Engine
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
           'train_exports' => ['Train Exports', 'Next train exported at the end of each OR set'],
           '2t_downgrade' => ['2 -> 2H', '2 trains downgraded to 2H trains'],
-          'company_abilities' => ['Company Abilities Useable', 'Company special abilities can be used'],
+          'company_abilities' => ['Company Abilities', 'Company special abilities can be used'],
           'buy_across' => ['Buy Across', 'Trains can be bought between corporations'],
           '3t_downgrade' => ['3 -> 3H', '3 trains downgraded to 3H trains'],
           'sbb_formation' => ['SBB Forms', 'SBB forms after the Operating Round'],
@@ -473,9 +473,12 @@ module Engine
         def sbb_share_exchange!(corporation)
           cash_per_share = corporation.share_price.price - sbb.share_price.price
           corporation.share_holders.keys.each do |share_holder|
+            sbb_shares = sbb.shares_of(sbb)
             shares = share_holder.shares_of(corporation).map do |corp_share|
               percent = corp_share.president ? 10 : 5
-              sbb.shares_of(sbb).find { |sbb_share| sbb_share.percent == percent }
+              share = sbb_shares.find { |sbb_share| sbb_share.percent == percent }
+              sbb_shares.delete(share)
+              share
             end
             next if shares.empty?
 
@@ -560,7 +563,7 @@ module Engine
         def next_round!
           @round =
             case @round
-            when init_round.class
+            when Engine::Round::Auction
               init_round_finished
               reorder_players(:least_cash, log_player_order: true)
               new_stock_round

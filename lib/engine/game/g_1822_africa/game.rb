@@ -189,6 +189,19 @@ module Engine
             ['Phase revenue company closes', 'P16 closes if not owned by a major company'],
         }.freeze
 
+        STATUS_TEXT = G1822::Game::STATUS_TEXT.merge(
+          'can_acquire_minor_bidbox' => ['Acquire a minor from bidbox',
+                                         'Can acquire a minor from bidbox for A100, must have connection '\
+                                         'to start location'],
+          'minor_float_phase1' => ['Minors receive A100 in capital', 'Minors receive A100 capital with A50 stock value'],
+          'minor_float_phase2' => ['Minors receive 2X stock value in capital',
+                                   'Minors receive 2X stock value as capital '\
+                                   'and float at between A50 to A80 stock value based on bid'],
+          'minor_float_phase3on' => ['Minors receive winning bid as capital',
+                                     'Minors receive entire winning bid as capital '\
+                                     'and float at between A50 to A80 stock value based on bid'],
+        ).freeze
+
         MARKET_TEXT = G1822::Game::MARKET_TEXT.merge(max_price: 'Maximum price for a minor').freeze
 
         PHASES = [
@@ -638,8 +651,13 @@ module Engine
           )
         end
 
-        def gold_mine_bonus(_route, stops)
-          return 0 if !@gold_mine_token || stops&.none? { |s| s.hex == @gold_mine_token.hex }
+        def gold_mine_bonus(route, stops)
+          return 0 unless @gold_mine_token
+
+          gold_stop = stops&.find { |s| s.hex == @gold_mine_token.hex }
+
+          return 0 unless gold_stop
+          return 0 if train_type(route.train) == :etrain && !gold_stop.tokened_by?(route.train.owner)
 
           self.class::GOLD_MINE_BONUS
         end
