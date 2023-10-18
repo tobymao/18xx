@@ -354,6 +354,9 @@ module Engine
           tile = hex.tile
           tile.cities.first.place_token(l, l.next_token)
 
+          # L's presidency is implicitely drafted in initial auction
+          l.ipoed = true
+
           # Reserve investor shares and add money for them to treasury
           [saar.shares[1], saar.shares[2], hlb.shares[1]].each { |s| s.buyable = false }
           @bank.spend(saar.par_price.price * 2, saar)
