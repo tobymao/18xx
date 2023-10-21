@@ -560,6 +560,10 @@ module Engine
           privates
         end
 
+        def unowned_purchasable_companies(_entity)
+          @companies.select { |c| c.owner == @bank }
+        end
+
         def next_round!
           @round =
             case @round
