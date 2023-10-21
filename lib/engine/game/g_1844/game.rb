@@ -565,7 +565,7 @@ module Engine
             case @round
             when Engine::Round::Auction
               init_round_finished
-              reorder_players(:least_cash, log_player_order: true)
+              reorder_players(log_player_order: true)
               new_stock_round
             when Engine::Round::Stock
               apply_interest_to_player_debt!
@@ -639,6 +639,10 @@ module Engine
           G1844::Round::SBBFormation.new(self, [
             G1844::Step::RemoveSBBTokens,
           ])
+        end
+
+        def next_sr_player_order
+          @round.is_a?(Engine::Round::Auction) ? :least_cash : :most_cash
         end
 
         def can_par?(corporation, _parrer)
