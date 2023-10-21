@@ -787,6 +787,10 @@ module Engine
           name[-1] == 'H'
         end
 
+        def express_train?(train)
+          train.name[-1] == 'E'
+        end
+
         def route_distance(route)
           hex_train?(route.train) ? route_hex_distance(route) : super
         end
@@ -816,6 +820,24 @@ module Engine
           return unless hex_train?(route.train)
 
           raise GameError, 'Cannot visit offboard hexes' if route.stops.any? { |stop| stop.tile.color == :red }
+        end
+
+        def revenue_stops(route)
+          stops = super
+          return stops unless express_train?(route.train)
+
+          distance = route.train.distance.first['pay']
+          return stops if stops.size <= distance
+
+          # Prune the list of stops to improve performance
+          stops_by_revenue = stops.sort_by { |stop| -1 * stop.route_revenue(route.phase, route.train) }
+          stops = stops_by_revenue.slice!(0...distance)
+          unless stops.find { |stop| stop.tokened_by?(route.corporation) }
+            stops.pop
+            tokened_stop = stops_by_revenue.find { |stop| stop.tokened_by?(route.corporation) }
+            stops << tokened_stop if tokened_stop
+          end
+          stops.concat(stops_by_revenue.select { |stop| stop.tile.color == :red })
         end
 
         def revenue_for(route, stops)
