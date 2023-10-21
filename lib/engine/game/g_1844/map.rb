@@ -113,19 +113,16 @@ module Engine
           },
           'XM1' => {
             'count' => 2,
-            'hidden' => true,
             'color' => 'gray',
             'code' => 'offboard=revenue:yellow_10|green_20|brown_50|gray_80',
           },
           'XM2' => {
             'count' => 2,
-            'hidden' => true,
             'color' => 'gray',
             'code' => 'offboard=revenue:yellow_10|green_40|brown_50|gray_60',
           },
           'XM3' => {
             'count' => 2,
-            'hidden' => true,
             'color' => 'gray',
             'code' => 'offboard=revenue:yellow_10|green_50|brown_80|gray_10',
           },
