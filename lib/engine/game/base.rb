@@ -2741,6 +2741,8 @@ module Engine
                            @round.pass_order
                          when :most_cash
                            @players.sort_by { |p| [p.cash, @players.index(p)] }.reverse
+                         when :least_cash
+                           @players.sort_by { |p| [p.cash, @players.index(p)] }
                          else
                            []
                          end
