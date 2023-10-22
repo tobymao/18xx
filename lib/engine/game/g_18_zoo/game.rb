@@ -25,56 +25,12 @@ module Engine
         MUST_SELL_IN_BLOCKS = true
 
         MARKET = [
-          [
-            { price: 7, info: '100        1' },
-            { price: 8, info: '150        2' },
-            { price: 9, info: '150        2' },
-            { price: 10, info: '200    2+1', types: [:safe_par] },
-            { price: 11, info: '200    2+2', types: [:safe_par] },
-            { price: 12, info: '250    3+2', types: [:safe_par] },
-            { price: 13, info: '250    3+2', types: [:safe_par] },
-            { price: 14, info: '300    3+2', types: [:safe_par] },
-            { price: 15, info: '350    3+3', types: [:safe_par] },
-            { price: 16, info: '400        4' },
-            { price: 20, info: '450        5' },
-            { price: 24, info: 'END       6', types: [:endgame] },
-          ],
-          [
-            { price: 6, info: '100        1' },
-            { price: 7, info: '100        1', types: [:par_1] },
-            { price: 8, info: '150        2' },
-            { price: 9, info: '150        2', types: [:par_2] },
-            { price: 10, info: '200        2' },
-            { price: 11, info: '200        2' },
-            { price: 12, info: '250        3', types: [:par_3] },
-            { price: 13, info: '250        3' },
-            { price: 14, info: '300        3' },
-          ],
-          [
-            { price: 5, info: '80          1' },
-            { price: 6, info: '100        1', types: [:par_1] },
-            { price: 7, info: '100        2' },
-            { price: 8, info: '150        2' },
-            { price: 9, info: '150        2' },
-            { price: 10, info: '200        2' },
-            { price: 11, info: '200        2' },
-          ],
-          [
-            { price: 4, info: '50          1' },
-            { price: 5, info: '80          1', types: [:par_1] },
-            { price: 6, info: '100        1' },
-            { price: 7, info: '100        2' },
-            { price: 8, info: '150        2' },
-          ],
-          [
-            { price: 3, info: '40          0' },
-            { price: 4, info: '50          1' },
-            { price: 5, info: '80          1' },
-          ],
-          [
-            { price: 2, info: '30          0' },
-            { price: 3, info: '40          0' },
-          ],
+          %w[7 8 9 10s 11s 12s 13s 14s 15s 16 20 24e],
+          %w[6 7x 8 9z 10 11 12w 13 14],
+          %w[5 6x 7 8 9 10 11],
+          %w[4 5x 6 7 8],
+          %w[3 4 5],
+          %w[2 3],
         ].freeze
 
         PHASES = [
