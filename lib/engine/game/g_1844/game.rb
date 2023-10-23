@@ -438,10 +438,7 @@ module Engine
             if num_trains.positive?
               @log << "#{sbb.name} receives #{num_trains} train#{num_trains == 1 ? '' : 's'}:" \
                       " #{corp.trains.map(&:name).join(', ')}"
-            end
-            corp.trains.each do |train|
-              train.owner = sbb
-              sbb.trains << train
+              transfer(:trains, corp, sbb)
             end
 
             sbb_share_exchange!(corp)
@@ -641,6 +638,7 @@ module Engine
         def new_sbb_formation_round
           @log << '-- SBB Formation Round --'
           G1844::Round::SBBFormation.new(self, [
+            Engine::Step::DiscardTrain,
             G1844::Step::RemoveSBBTokens,
           ])
         end
