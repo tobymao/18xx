@@ -40,8 +40,8 @@ module Engine
             revenue: 15,
             desc: 'A corporation owning the DH may place a tile and station token in the DH hex F16 for only the $120'\
                   " cost of the mountain. The station does not have to be connected to the remainder of the corporation's"\
-                  " route. The tile laid is the owning corporation's"\
-                  ' one tile placement for the turn. Blocks F16 while owned by a player.',
+                  " route. The tile laid is the owning corporation's one tile placement for the turn. The hex must be empty"\
+                  ' to use this ability. Blocks F16 while owned by a player.',
             abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['F16'] },
                         {
                           type: 'teleport',
