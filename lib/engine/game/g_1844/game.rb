@@ -315,6 +315,7 @@ module Engine
           @depot.forget_train(@sbb_train)
           @sbb_train.variant = '5H'
           @sbb_train.buyable = false
+          sbb.shares.select { |s| s.percent == 10 && !s.president }.each { |s| s.double_cert = true }
 
           @all_tiles.each { |t| t.ignore_gauge_walk = true }
           @_tiles.values.each { |t| t.ignore_gauge_walk = true }
