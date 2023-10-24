@@ -148,8 +148,8 @@ svg {
 
 @media (prefers-color-scheme: dark) {
   body {
-    background-color: black;
-    color: gainsboro;
+    background-color: #0d1117;
+    color: #e6edf3;
   }
 
   button, .button_link, input, select, textarea {
