@@ -76,14 +76,6 @@ module Engine
             @game.max_dividend_per_share(current_entity)
           end
 
-          def variable_share_multiplier(_corporation)
-            1
-          end
-
-          def variable_input_step
-            1
-          end
-
           def chart
             @game.dividend_chart(current_entity)
           end

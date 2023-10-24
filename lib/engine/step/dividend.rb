@@ -48,6 +48,18 @@ module Engine
         end
       end
 
+      def variable_share_multiplier(_corporation)
+        1
+      end
+
+      def variable_input_step
+        1
+      end
+
+      def variable_max
+        1
+      end
+
       def process_dividend(action)
         entity = action.entity
         revenue = total_revenue
