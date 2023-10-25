@@ -101,30 +101,6 @@ def repair(game, original_actions, actions, broken_action, data, pry_db: false)
     binding.pry
   end
 
-  # 1861/1867 reverse PostMergerShares and ReduceToken steps (issue #9655).
-  if game.active_step.is_a?(Engine::Game::G1867::Step::ReduceTokens) &&
-      %w[buy_shares pass].include?(broken_action['type'])
-    reduce_action = next_actions.find { |action| action['type'] == 'remove_token' }
-    raise Exception, 'Could not find remove_token_action' unless reduce_action
-    next_step_action = next_actions.rotate(next_actions.index(reduce_action))
-                         .find { |action| action['type'] != 'remove_token' }
-    share_actions_start = actions.index(broken_action)
-    share_actions_end = actions.index(reduce_action) - 1
-    token_actions_start = actions.index(reduce_action)
-    token_actions_end = actions.index(next_step_action) - 1
-    # There might be an auto_actions section in the last action of the reduce
-    # tokens step. This will be where a player has autopassed on merge actions
-    # in the round. This needs to be moved to the last action in the post merger
-    # shares step.
-    move_auto_actions(actions, token_actions_end, share_actions_end)
-    # Switch to position of the blocks of actions for the PostMergeShares and
-    # the ReduceTokens steps.
-    share_actions_idx = share_actions_start..share_actions_end
-    token_actions_idx = token_actions_start..token_actions_end
-    switch_action_blocks(actions, share_actions_idx, token_actions_idx)
-    return
-  end
-
   # Generic handling for when a change just needs pass actions to be
   # inserted/deleted
 

@@ -447,7 +447,6 @@ module Engine
           if count < 2
             @log << '-- Event: The Tuscan Merge will not occur - 2 or more Tuscan corporations are not active --'
             sfli.close!
-            holding.close!
             return
           end
 
@@ -1292,8 +1291,18 @@ module Engine
             next if shares[corp].empty?
 
             bundle = ShareBundle.new(Array(shares[corp]))
+            is_pres = bundle.presidents_share
             @log << "Moving #{bundle.percent}% of shares of #{corp.name} from #{from.name} to #{target.name} treasury"
-            @share_pool.transfer_shares(bundle, target, allow_president_change: true)
+
+            # special case: if from is already president of share being moved, don't allow president change
+            # because: 1: transfer_shares doesn't handle the president transfer correctly if more than 1 share is moved
+            # and 2: the presidency should stay with the target anyway
+            @share_pool.transfer_shares(bundle, target, allow_president_change: !is_pres)
+            next unless is_pres
+
+            # handle president transfer manually
+            corp.owner = target
+            @log << "#{target.name} retains presidency of #{corp.name}"
           end
 
           # cash
@@ -1409,7 +1418,7 @@ module Engine
             options = [:cash]
             options << :pres if entity.player? && pres_share && afford_upgrade_to_pres?(entity, tp, @merger_target)
             options << :full if entity.player && normal_share && afford_upgrade_to_full?(entity, @merger_target)
-            if entity.player && !normal_share && pres_share && !current_shares.emtpy? &&
+            if entity.player && !normal_share && pres_share && !current_shares.empty? &&
                 afford_upgrade_to_full?(entity, @merger_target)
               # special case: entity already has a share, no target normal shares left but
               # president share is still available
@@ -2487,7 +2496,6 @@ module Engine
             transform_start(sflp, holding, tuscan_merge: true)
           else
             # sflp and sfma are open, but not ssfl
-            holding.close! # not needed
             @tuscan_merge_ssfl = nil
             merger_start(sflp, sfma, sfli, tuscan_merge: true)
           end

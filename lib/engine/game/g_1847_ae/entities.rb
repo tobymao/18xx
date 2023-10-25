@@ -10,10 +10,10 @@ module Engine
             name: 'Pfälzische Ludwigsbahn presidency',
             value: 172,
             revenue: 0,
-            desc: 'Comes with the President\'s certificate of Pfälzische Ludwigsbahn (L). '\
+            desc: 'Comes with two shares of Pfälzische Ludwigsbahn (L). '\
                   'Closes immediately.',
             sym: 'PLP',
-            abilities: [{ type: 'shares', shares: 'L_0' }],
+            abilities: [{ type: 'shares', shares: %w[L_4 L_5] }],
           },
           {
             name: 'Saarbrücker Private Railway',

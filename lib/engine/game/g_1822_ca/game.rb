@@ -39,6 +39,13 @@ module Engine
 
         COMPANIES_BIG_CITY_UPGRADES = %w[P14 P15 P16 P17 P18].freeze
         COMPANIES_EXTRA_TRACK_LAYS = (COMPANIES_BIG_CITY_UPGRADES + %w[P19 P20 P21]).freeze
+        BIG_CITY_HEXES_TO_COMPANIES = {
+          'AH8' => 'P17',
+          'N16' => 'P18',
+          'AC21' => 'P14',
+          'AE15' => 'P15',
+          'AF12' => 'P16',
+        }.freeze
 
         PRIVATE_MAIL_CONTRACTS = %w[P22 P23].freeze
         PRIVATE_SMALL_MAIL_CONTRACTS = %w[P24 P25].freeze
@@ -628,6 +635,15 @@ module Engine
             non_director_sales,
             ['Corporation sold out at end of SR', '1 →'],
           ].compact
+        end
+
+        def action_processed(action)
+          case action
+          when Action::LayTile
+            if action.tile.color == :gray && (id = BIG_CITY_HEXES_TO_COMPANIES[action.hex.id])
+              company_by_id(id)&.all_abilities&.clear
+            end
+          end
         end
       end
     end

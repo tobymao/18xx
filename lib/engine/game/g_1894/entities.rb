@@ -6,11 +6,11 @@ module Engine
       module Entities
         COMPANIES = [
           {
-            name: 'Ligne Longwy-Villerupt-Micheville',
-            sym: 'LVM',
+            name: 'Ligne de Reims à Charleville',
+            sym: 'LRC',
             value: 20,
             revenue: 5,
-            desc: 'Once per game the owning corporation may pay 50 F to lay a yellow track.'\
+            desc: 'Once per game the owning corporation may pay 60 F to lay a yellow track.'\
                   ' This is in addition to the corporation\'s regular track actions.'\
                   ' Blocks I14 while owned by a player.',
             abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['I14'] },
@@ -18,7 +18,7 @@ module Engine
                           type: 'tile_lay',
                           owner_type: 'corporation',
                           when: 'track',
-                          cost: 50,
+                          cost: 60,
                           count: 1,
                           special: false,
                           reachable: true,
@@ -55,6 +55,24 @@ module Engine
             color: '#d9d9d9',
           },
           {
+            name: 'Station Antwerpen Centraal',
+            sym: 'SAC',
+            value: 50,
+            revenue: 10,
+            desc: 'Owning corporation may lay or upgrade a tile in Antwerpen'\
+                  ' (D17). If it does, it may then optionally place a token for free there.'\
+                  ' This counts as one of the corporation\'s tile builds and token laying'\
+                  ' (if token was placed). Blocks D17 while owned by a player.',
+            abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['D17'] },
+                        {
+                          type: 'teleport',
+                          owner_type: 'corporation',
+                          hexes: ['D17'],
+                          tiles: %w[14 15 57 619 X14 X15 X16 X17 X18 X19 35 36 118],
+                        }],
+            color: '#d9d9d9',
+          },
+          {
             name: 'Ligne de Saint-Quentin à Guise',
             sym: 'SQG',
             value: 70,
@@ -70,7 +88,8 @@ module Engine
             sym: 'LS',
             value: 90,
             revenue: 15,
-            desc: 'Owning corporation may place its cheapest available token for free in A12.'\
+            desc: 'Owning corporation pays 40 F for ferry marker.'\
+                  ' Owning corporation may place its cheapest available token for free in A12.'\
                   ' The value of London (A10) is increased, for this corporation only,'\
                   ' by the largest non-London, non-Luxembourg revenue on the route.',
             abilities: [{
@@ -199,7 +218,7 @@ module Engine
             simple_logo: '1894/Nord.alt',
             tokens: [0, 0, 100, 100],
             max_ownership_percent: 60,
-            coordinates: %w[E10 G14],
+            coordinates: %w[D9 G14],
             color: '#ff4040',
           },
           {
@@ -220,7 +239,7 @@ module Engine
             simple_logo: '1894/CFOR.alt',
             tokens: [0, 0, 100, 100, 100],
             max_ownership_percent: 60,
-            coordinates: %w[D3 H1],
+            coordinates: %w[D3 H3],
             color: '#9c661f',
           },
           {
@@ -246,7 +265,7 @@ module Engine
             simple_logo: '1894/PLM.alt',
             tokens: [0, 40, 100, 100, 100],
             max_ownership_percent: 60,
-            coordinates: 'G4',
+            coordinates: 'G6',
             city: 0,
             color: '#dda0dd',
             text_color: 'black',
@@ -258,17 +277,9 @@ module Engine
             simple_logo: '1894/Est.alt',
             tokens: [0, 40, 100, 100, 100],
             max_ownership_percent: 60,
-            coordinates: 'I8',
+            coordinates: 'I10',
             color: '#ff9966',
             text_color: 'black',
-            abilities: [
-              {
-                type: 'hex_bonus',
-                amount: 0,
-                description: 'Value of I2 increased to 60',
-                hexes: ['I2'],
-              },
-            ],
           },
           {
             sym: 'LF',
@@ -285,7 +296,7 @@ module Engine
             name: 'Late Belgian',
             logo: '1894/LB',
             simple_logo: '1894/LB.alt',
-            tokens: [0, 40],
+            tokens: [0, 40, 100],
             max_ownership_percent: 60,
             color: '#c9c9c9',
             text_color: 'black',

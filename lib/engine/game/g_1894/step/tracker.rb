@@ -15,17 +15,17 @@ module Engine
           super
         end
 
-        def legal_tile_rotation?(_entity, hex, tile)
-          if @game.class::BROWN_CITY_TILES.include?(tile.name)
-            old_paths = hex.tile.paths
-            new_paths = tile.paths
-            new_exits = tile.exits
+        def legal_tile_rotation?(entity, hex, tile)
+          return super unless @game.class::BROWN_CITY_TILES.include?(tile.name)
 
-            new_exits.all? { |edge| hex.neighbors[edge] } &&
-              old_paths.all? { |path| new_paths.any? { |p| path <= p } }
-          else
-            super
-          end
+          old_paths = hex.tile.paths
+          old_exits = hex.tile.exits
+          new_paths = tile.paths
+          new_exits = tile.exits
+
+          new_exits.all? { |edge| hex.neighbors[edge] } &&
+            old_paths.all? { |path| new_paths.any? { |p| path <= p } } &&
+            new_exits.sort == old_exits.sort
         end
       end
     end
