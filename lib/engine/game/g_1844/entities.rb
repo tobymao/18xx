@@ -558,7 +558,7 @@ module Engine
             name: 'Schweizer Bundesbahnen',
             logo: '1844/SBB.alt',
             simple_logo: '1844/SBB.alt',
-            shares: [10, 10, 10, 10, 10, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5],
+            shares: [10, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 10, 10, 10, 10],
             tokens: [],
             type: 'historical',
             floatable: false,

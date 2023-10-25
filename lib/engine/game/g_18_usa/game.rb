@@ -430,7 +430,9 @@ module Engine
           # Prioritize single resource type abilities
           resources = {}
           tile_resources(tile).each do |r|
-            resources[r] = resource_abilities_for_hex(hex, r, selected_companies).sort_by { |a| a.tiles.size }
+            resources[r] = resource_abilities_for_hex(hex, r, selected_companies).sort_by do |a|
+              [a.tiles.size, a.owner.id]
+            end
           end
           return resources.transform_values(&:first) if resources.one?
 

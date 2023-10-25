@@ -101,10 +101,10 @@ module Engine
             super
           end
 
-          def process_sell_shares(action)
-            super
+          def action_is_shenanigan?(entity, other_entity, action, corporation, share_to_buy)
+            return 'Nationalization' if action.is_a?(Action::BuyShares) && action.bundle.owner.player?
 
-            @game.lfk.owner = @game.share_pool if action.bundle.corporation == @game.lfk
+            super
           end
         end
       end

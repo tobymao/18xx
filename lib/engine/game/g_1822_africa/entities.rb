@@ -44,14 +44,29 @@ module Engine
             color: nil,
           },
           {
-            name: 'P5 (Pullman)',
+            name: 'P5 (Add Town)',
             sym: 'P5',
-            desc: 'MAJOR/MINOR, Phase 3. A "Pullman" carriage that can be added to another train owned by the company.'\
-                  ' It converts the train into a + train. Does not count against train limit and does not count '\
-                  'as a train for the purposes of train ownership. Can’t be sold to another company.',
+            desc: 'MAJOR/MINOR, Phase 2. Add Small Station. Allows the owning company to place a yellow track tile '\
+                  'with a small station directly on an undeveloped plain hex or upgrade a plain tile of one colour '\
+                  'to a small station tile of the next colour. This closes the company and counts as the company’s '\
+                  'normal track laying step. All other normal track laying restrictions apply. Once acquired, the '\
+                  'private company pays its revenue to the owning company until the power is exercised and the '\
+                  'company is closed.',
             value: 0,
             revenue: 10,
-            abilities: [],
+            abilities: [
+              {
+                type: 'tile_lay',
+                owner_type: 'corporation',
+                when: %w[track special_track],
+                count: 1,
+                reachable: true,
+                closed_when_used_up: true,
+                hexes: [],
+                tiles: %w[3 4 58 141 142 143 144],
+                combo_entities: %w[P7 P11],
+              },
+            ],
             color: nil,
           },
           {
@@ -316,7 +331,7 @@ module Engine
             sym: 'C1',
             value: 100,
             revenue: 10,
-            desc: 'Has a face value of $100 and contributes $100 to conversion into the NAR director’s certificate.',
+            desc: 'Has a face value of A100 and contributes A100 to conversion into the NAR director’s certificate.',
             abilities: [
               {
                 type: 'exchange',
@@ -333,7 +348,7 @@ module Engine
             sym: 'C2',
             value: 100,
             revenue: 10,
-            desc: 'Has a face value of $100 and contributes $100 to conversion into the WAR director’s certificate.',
+            desc: 'Has a face value of A100 and contributes A100 to conversion into the WAR director’s certificate.',
             abilities: [
               {
                 type: 'exchange',
@@ -350,7 +365,7 @@ module Engine
             sym: 'C3',
             value: 100,
             revenue: 10,
-            desc: 'Has a face value of $100 and contributes $100 to conversion into the EAR director’s certificate.',
+            desc: 'Has a face value of A100 and contributes A100 to conversion into the EAR director’s certificate.',
             abilities: [
               {
                 type: 'exchange',
@@ -367,7 +382,7 @@ module Engine
             sym: 'C4',
             value: 100,
             revenue: 10,
-            desc: 'Has a face value of $100 and contributes $100 to conversion into the CAR director’s certificate.',
+            desc: 'Has a face value of A100 and contributes A100 to conversion into the CAR director’s certificate.',
             abilities: [
               {
                 type: 'exchange',
@@ -384,7 +399,7 @@ module Engine
             sym: 'C5',
             value: 100,
             revenue: 10,
-            desc: 'Has a face value of $100 and contributes $100 to conversion into the SAR director’s certificate.',
+            desc: 'Has a face value of A100 and contributes A100 to conversion into the SAR director’s certificate.',
             abilities: [
               {
                 type: 'exchange',
@@ -461,7 +476,7 @@ module Engine
             sym: 'M7',
             value: 100,
             revenue: 0,
-            desc: 'A 50% director’s certificate in the associated minor company. Starting location is G17 (Yohannesburg).',
+            desc: 'A 50% director’s certificate in the associated minor company. Starting location is G17 (Johannesburg).',
             abilities: [],
             color: '#ffffff',
             text_color: 'black',

@@ -67,13 +67,14 @@ module Engine
         EXTRA_TRAINS = %w[2P P+ LP S].freeze
         EXTRA_TRAIN_PERMANENTS = %w[2P LP].freeze
 
-        PRIVATE_TRAINS = %w[P1 P2 P3 P4 P5 P18].freeze
+        PRIVATE_TRAINS = %w[P1 P2 P3 P4 P18].freeze
         PRIVATE_MAIL_CONTRACTS = [].freeze # Stub
         PRIVATE_PHASE_REVENUE = %w[P16].freeze
         PRIVATE_REMOVE_REVENUE = %w[P13].freeze
 
         COMPANY_10X_REVENUE = 'P16'
         COMPANY_REMOVE_TOWN = 'P9'
+        COMPANY_ADD_TOWN = 'P5'
         COMPANY_EXTRA_TILE_LAYS = %w[P7 P8 P12].freeze
         COMPANY_TOKEN_SWAP = 'P13'
         COMPANY_RECYCLED_TRAIN = 'P6'
@@ -126,7 +127,7 @@ module Engine
           'P2' => { acquire: %i[major], phase: 2 },
           'P3' => { acquire: %i[major], phase: 2 },
           'P4' => { acquire: %i[major minor], phase: 3 },
-          'P5' => { acquire: %i[major minor], phase: 3 },
+          'P5' => { acquire: %i[major minor], phase: 2 },
           'P6' => { acquire: %i[major minor], phase: 3 },
           'P7' => { acquire: %i[major minor], phase: 3 },
           'P8' => { acquire: %i[major minor], phase: 1 },
@@ -147,7 +148,7 @@ module Engine
           'P2' => 'P2 (Permanent 2-train)',
           'P3' => 'P3 (Permanent 2-train)',
           'P4' => 'P4 (Pullman)',
-          'P5' => 'P5 (Pullman)',
+          'P5' => 'P5 (Add Town)',
           'P6' => 'P6 (Recycled train)',
           'P7' => 'P7 (Extra tile)',
           'P8' => 'P8 (Reserve Three Tiles)',
@@ -188,6 +189,19 @@ module Engine
           'phase_revenue' =>
             ['Phase revenue company closes', 'P16 closes if not owned by a major company'],
         }.freeze
+
+        STATUS_TEXT = G1822::Game::STATUS_TEXT.merge(
+          'can_acquire_minor_bidbox' => ['Acquire a minor from bidbox',
+                                         'Can acquire a minor from bidbox for A100, must have connection '\
+                                         'to start location'],
+          'minor_float_phase1' => ['Minors receive A100 in capital', 'Minors receive A100 capital with A50 stock value'],
+          'minor_float_phase2' => ['Minors receive 2X stock value in capital',
+                                   'Minors receive 2X stock value as capital '\
+                                   'and float at between A50 to A80 stock value based on bid'],
+          'minor_float_phase3on' => ['Minors receive winning bid as capital',
+                                     'Minors receive entire winning bid as capital '\
+                                     'and float at between A50 to A80 stock value based on bid'],
+        ).freeze
 
         MARKET_TEXT = G1822::Game::MARKET_TEXT.merge(max_price: 'Maximum price for a minor').freeze
 
@@ -340,7 +354,7 @@ module Engine
                 'visit' => 99,
               },
             ],
-            num: 2,
+            num: 1,
             price: 0,
           },
           {
@@ -428,7 +442,6 @@ module Engine
           @company_trains['P2'] = find_and_remove_train_by_id('2P-0', buyable: false)
           @company_trains['P3'] = find_and_remove_train_by_id('2P-1', buyable: false)
           @company_trains['P4'] = find_and_remove_train_by_id('P+-0', buyable: false)
-          @company_trains['P5'] = find_and_remove_train_by_id('P+-1', buyable: false)
           @company_trains['P18'] = find_and_remove_train_by_id('S-0', buyable: false)
 
           @recycled_trains = [
@@ -510,7 +523,7 @@ module Engine
             G1822::Step::DiscardTrain,
             G1822::Step::SpecialChoose,
             G1822Africa::Step::LayGameReserve,
-            G1822::Step::SpecialTrack,
+            G1822Africa::Step::SpecialTrack,
             G1822Africa::Step::SpecialToken,
             G1822Africa::Step::Assign,
             G1822::Step::Track,
@@ -601,6 +614,10 @@ module Engine
           entity.id == self.class::COMPANY_REMOVE_TOWN
         end
 
+        def must_add_town?(entity)
+          entity.id == self.class::COMPANY_ADD_TOWN
+        end
+
         def train_help(entity, runnable_trains, _routes)
           help = super
 
@@ -638,8 +655,13 @@ module Engine
           )
         end
 
-        def gold_mine_bonus(_route, stops)
-          return 0 if !@gold_mine_token || stops&.none? { |s| s.hex == @gold_mine_token.hex }
+        def gold_mine_bonus(route, stops)
+          return 0 unless @gold_mine_token
+
+          gold_stop = stops&.find { |s| s.hex == @gold_mine_token.hex }
+
+          return 0 unless gold_stop
+          return 0 if train_type(route.train) == :etrain && !gold_stop.tokened_by?(route.train.owner)
 
           self.class::GOLD_MINE_BONUS
         end
@@ -697,6 +719,11 @@ module Engine
         def upgrades_to?(from, to, special = false, selected_company: nil)
           return true if special && tile_game_reserve?(to)
           return false if from.color == :yellow && plantation_assigned?(from.hex)
+
+          # Special case for P5 where we add a town to a tile
+          if self.class::TRACK_PLAIN.include?(from.name) && self.class::TRACK_TOWN.include?(to.name)
+            return Engine::Tile::COLORS.index(to.color) == (Engine::Tile::COLORS.index(from.color) + 1)
+          end
 
           result = super
 
