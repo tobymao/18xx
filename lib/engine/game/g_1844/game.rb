@@ -315,6 +315,7 @@ module Engine
           @depot.forget_train(@sbb_train)
           @sbb_train.variant = '5H'
           @sbb_train.buyable = false
+          sbb.shares.select { |s| s.percent == 10 && !s.president }.each { |s| s.double_cert = true }
 
           @all_tiles.each { |t| t.ignore_gauge_walk = true }
           @_tiles.values.each { |t| t.ignore_gauge_walk = true }
@@ -438,10 +439,7 @@ module Engine
             if num_trains.positive?
               @log << "#{sbb.name} receives #{num_trains} train#{num_trains == 1 ? '' : 's'}:" \
                       " #{corp.trains.map(&:name).join(', ')}"
-            end
-            corp.trains.each do |train|
-              train.owner = sbb
-              sbb.trains << train
+              transfer(:trains, corp, sbb)
             end
 
             sbb_share_exchange!(corp)
@@ -560,12 +558,16 @@ module Engine
           privates
         end
 
+        def unowned_purchasable_companies(_entity)
+          @companies.select { |c| c.owner == @bank }
+        end
+
         def next_round!
           @round =
             case @round
             when Engine::Round::Auction
               init_round_finished
-              reorder_players(:least_cash, log_player_order: true)
+              reorder_players(log_player_order: true)
               new_stock_round
             when Engine::Round::Stock
               apply_interest_to_player_debt!
@@ -637,8 +639,13 @@ module Engine
         def new_sbb_formation_round
           @log << '-- SBB Formation Round --'
           G1844::Round::SBBFormation.new(self, [
+            Engine::Step::DiscardTrain,
             G1844::Step::RemoveSBBTokens,
           ])
+        end
+
+        def next_sr_player_order
+          @round.is_a?(Engine::Round::Auction) ? :least_cash : :most_cash
         end
 
         def can_par?(corporation, _parrer)
@@ -787,6 +794,10 @@ module Engine
           name[-1] == 'H'
         end
 
+        def express_train?(train)
+          train.name[-1] == 'E'
+        end
+
         def route_distance(route)
           hex_train?(route.train) ? route_hex_distance(route) : super
         end
@@ -816,6 +827,24 @@ module Engine
           return unless hex_train?(route.train)
 
           raise GameError, 'Cannot visit offboard hexes' if route.stops.any? { |stop| stop.tile.color == :red }
+        end
+
+        def revenue_stops(route)
+          stops = super
+          return stops unless express_train?(route.train)
+
+          distance = route.train.distance.first['pay']
+          return stops if stops.size <= distance
+
+          # Prune the list of stops to improve performance
+          stops_by_revenue = stops.sort_by { |stop| -1 * stop.route_revenue(route.phase, route.train) }
+          stops = stops_by_revenue.slice!(0...distance)
+          unless stops.find { |stop| stop.tokened_by?(route.corporation) }
+            stops.pop
+            tokened_stop = stops_by_revenue.find { |stop| stop.tokened_by?(route.corporation) }
+            stops << tokened_stop if tokened_stop
+          end
+          stops.concat(stops_by_revenue.select { |stop| stop.tile.color == :red })
         end
 
         def revenue_for(route, stops)

@@ -32,7 +32,7 @@ module Engine
             @pullman_train.distance = [
               {
                 'nodes' => %w[city offboard],
-                'pay' => distance,
+                'pay' => 99,
                 'visit' => distance,
               },
               {
