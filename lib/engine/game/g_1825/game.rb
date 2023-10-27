@@ -683,8 +683,8 @@ module Engine
         # find first player from PD not a director
         # o.w. PD
         def acting_for_entity(entity)
-          return entity if entity.player?
-          return entity.owner if entity.owner.player?
+          return entity if entity&.player?
+          return entity.owner if entity&.owner&.player?
 
           acting = @players.find { |p| !director?(p) }
           acting || @players.first
