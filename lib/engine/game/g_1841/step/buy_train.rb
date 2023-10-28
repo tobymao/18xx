@@ -75,6 +75,10 @@ module Engine
             price = action.price
             player = entity.player
 
+            if entity.cash < price && action.train.owner != @game.depot
+              raise GameError, "#{entity.name} has insufficient cash to buy this train"
+            end
+
             if @emr_triggered && action.train.owner != @game.depot
               raise GameError, 'Must purchase first train from depot after EMR'
             end
