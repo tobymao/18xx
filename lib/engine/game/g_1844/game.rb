@@ -392,6 +392,8 @@ module Engine
           @log << "-- Event: #{EVENTS_TEXT['full_capitalization'][1]} --"
           @full_capitalization = true
           @corporations.select { |corp| corp.type == :historical && !corp.floated }.each do |corp|
+            next unless corp.destination_coordinates
+
             hex_by_id(corp.destination_coordinates).remove_assignment!(corp)
             corp.remove_ability(corp.abilities.find { |a| a.description.start_with?('Destination') })
           end
