@@ -135,7 +135,7 @@ module Engine
         # Steps for companies are non-blocking
         if entity
           return @steps.find do |step|
-            step.active? && !step.actions(entity).empty? && (entity.company? || step.blocking?)
+            step.active? && (entity.company? || step.blocking?) && !step.actions(entity).empty?
           end
         end
 
