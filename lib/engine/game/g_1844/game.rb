@@ -308,7 +308,8 @@ module Engine
           tunnel_companies.each { |tc| tc.owner = @bank }
 
           @eva = @depot.trains.find { |t| t.name == '5' && t.events.empty? }
-          @depot.forget_train(@eva)
+          @depot.remove_train(@eva)
+          @eva.reserved = true
           @eva.variant = '5H'
 
           @sbb_train = @depot.trains.find { |t| t.name == '5' && t.events.empty? }
