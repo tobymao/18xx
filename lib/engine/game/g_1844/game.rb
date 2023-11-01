@@ -471,7 +471,6 @@ module Engine
         end
 
         def sbb_share_exchange!(corporation)
-          cash_per_share = corporation.share_price.price - sbb.share_price.price
           corporation.share_holders.keys.each do |share_holder|
             sbb_shares = sbb.shares_of(sbb)
             shares = share_holder.shares_of(corporation).map do |corp_share|
@@ -486,9 +485,9 @@ module Engine
             bundle = ShareBundle.new(shares)
             @share_pool.transfer_shares(bundle, share_holder, allow_president_change: false)
 
-            msg = share_holder.name.to_s
-
+            cash_per_share = corporation.par_price ? corporation.share_price.price - sbb.share_price.price : 0
             cash = cash_per_share * bundle.percent / 5
+            msg = share_holder.name.to_s
             if cash.zero? || share_holder == @share_pool
               msg += ' receives'
             elsif cash.positive?
