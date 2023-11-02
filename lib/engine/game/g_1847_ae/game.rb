@@ -26,6 +26,7 @@ module Engine
         SELL_MOVEMENT = :down_block
         TILE_RESERVATION_BLOCKS_OTHERS = :always
         CAPITALIZATION = :incremental
+        MUST_SELL_IN_BLOCKS = true
 
         BANK_CASH = 8_000
         CURRENCY_FORMAT_STR = '%sM'
