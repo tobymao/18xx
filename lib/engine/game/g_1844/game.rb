@@ -308,7 +308,8 @@ module Engine
           tunnel_companies.each { |tc| tc.owner = @bank }
 
           @eva = @depot.trains.find { |t| t.name == '5' && t.events.empty? }
-          @depot.forget_train(@eva)
+          @depot.remove_train(@eva)
+          @eva.reserved = true
           @eva.variant = '5H'
 
           @sbb_train = @depot.trains.find { |t| t.name == '5' && t.events.empty? }
@@ -392,6 +393,8 @@ module Engine
           @log << "-- Event: #{EVENTS_TEXT['full_capitalization'][1]} --"
           @full_capitalization = true
           @corporations.select { |corp| corp.type == :historical && !corp.floated }.each do |corp|
+            next unless corp.destination_coordinates
+
             hex_by_id(corp.destination_coordinates).remove_assignment!(corp)
             corp.remove_ability(corp.abilities.find { |a| a.description.start_with?('Destination') })
           end
@@ -469,7 +472,6 @@ module Engine
         end
 
         def sbb_share_exchange!(corporation)
-          cash_per_share = corporation.share_price.price - sbb.share_price.price
           corporation.share_holders.keys.each do |share_holder|
             sbb_shares = sbb.shares_of(sbb)
             shares = share_holder.shares_of(corporation).map do |corp_share|
@@ -484,9 +486,9 @@ module Engine
             bundle = ShareBundle.new(shares)
             @share_pool.transfer_shares(bundle, share_holder, allow_president_change: false)
 
-            msg = share_holder.name.to_s
-
+            cash_per_share = corporation.par_price ? corporation.share_price.price - sbb.share_price.price : 0
             cash = cash_per_share * bundle.percent / 5
+            msg = share_holder.name.to_s
             if cash.zero? || share_holder == @share_pool
               msg += ' receives'
             elsif cash.positive?
@@ -628,7 +630,9 @@ module Engine
             G1844::Step::BuyCompany,
             Engine::Step::HomeToken,
             Engine::Step::Track,
+            G1844::Step::DestinationCheck,
             Engine::Step::Token,
+            G1844::Step::DestinationCheck,
             G1844::Step::Route,
             G1844::Step::Dividend,
             G1844::Step::BuyTrain,
