@@ -331,40 +331,9 @@ module Engine
         end
 
         def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil, movement: nil)
-          bundle_owner = bundle.owner
-          @sell_queue << [bundle, bundle.corporation.owner] unless bundle.corporation.president?(bundle_owner)
+          @sell_queue << [bundle, bundle.corporation.owner]
 
           @share_pool.sell_shares(bundle)
-
-          change_price(bundle, bundle.corporation.owner) if bundle.corporation.president?(bundle_owner)
-        end
-
-        def change_price(bundle, corporation_owner, forced = false)
-          corporation = bundle.corporation
-          old_price = corporation.share_price
-
-          hit_soft_ledge = false
-          bundle.num_shares.times do
-            if hit_soft_ledge
-              @stock_market.move_down(corporation)
-              hit_soft_ledge = false
-            end
-
-            r, c = corporation.share_price.coordinates
-            if corporation.share_price.type != :ignore_one_sale &&
-                @stock_market.market.dig(r + 1, c)&.type == :ignore_one_sale
-              hit_soft_ledge = true
-            else
-              @stock_market.move_down(corporation)
-            end
-          end
-
-          verb = forced ? 'can\'t' : 'doesn\'t'
-          num_presentation = @share_pool.num_presentation(bundle)
-          @log << "#{corporation_owner.name} #{verb} price protect #{num_presentation} of #{corporation.name}"
-          @log << "#{corporation.name} hits the ledge" if hit_soft_ledge
-
-          log_share_price(corporation, old_price)
         end
 
         def num_certs(entity, price_protecting: false)
