@@ -89,7 +89,7 @@ module Engine
           end
 
           def process_pass(_action, forced = false)
-            bundle, corporation_owner = @game.sell_queue.shift
+            bundle, = @game.sell_queue.shift
 
             corporation = bundle.corporation
             old_price = corporation.share_price
