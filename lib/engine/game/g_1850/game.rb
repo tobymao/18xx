@@ -14,7 +14,7 @@ module Engine
         include G1850::Entities
         include G1850::Map
 
-        attr_accessor :sell_queue, :connection_run, :reissued, :mesabi_token_counter, :mesabi_compnay_sold_or_closed
+        attr_accessor :sell_queue, :connection_run, :reissued, :mesabi_token_counter, :mesabi_company_sold_or_closed
 
         CORPORATION_CLASS = G1850::Corporation
         COMPANY_CLASS = G1850::Company
@@ -243,7 +243,7 @@ module Engine
         end
 
         def wlg_company
-          @wlg_compnay ||= company_by_id('WLG')
+          @wlg_company ||= company_by_id('WLG')
         end
 
         def gbc_company
@@ -262,15 +262,16 @@ module Engine
           @log << '-- Event: Private companies close --'
           @companies.each do |company|
             if company == gbc_company ||
-              (company == wlg_company && wlg_company.abilities&.first&.count == 3) ||
+              company == wlg_company ||
               (company == cm_company && cm_company.abilities&.first)
+
               company.revenue = 0
               next
             end
 
             company.close!
           end
-          @mesabi_compnay_sold_or_closed = true
+          @mesabi_company_sold_or_closed = true
         end
 
         def event_close_remaining_companies!
@@ -296,7 +297,7 @@ module Engine
 
           buyer.mesabi_token = true
           @mesabi_token_counter -= 1
-          @mesabi_compnay_sold_or_closed = true
+          @mesabi_company_sold_or_closed = true
           log << "#{buyer.name} receives Mesabi token. #{@mesabi_token_counter} Mesabi tokens left in the game."
           log << '-- Corporations can now buy Mesabi tokens --'
         end

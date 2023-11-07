@@ -82,7 +82,7 @@ module Engine
           def can_buy_mesabi_token?(entity)
             entity.corporation? &&
             !entity.mesabi_token &&
-            @game.mesabi_compnay_sold_or_closed &&
+            @game.mesabi_company_sold_or_closed &&
             @game.mesabi_token_counter.positive? &&
             entity.cash >= 80 &&
             hex_neighbors(entity, @game.mesabi_hex) &&
