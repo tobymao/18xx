@@ -28,6 +28,8 @@ module Lib
         height: "#{size}px",
         filter: "drop-shadow(#{DROP_SHADOW_SIZE}px #{DROP_SHADOW_SIZE}px 2px #555)",
         pointerEvents: 'auto',
+        # set z-index to ensure that these tiles appear at the topmost level.
+        'z-index': '1',
       }
     end
   end
