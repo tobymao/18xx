@@ -49,7 +49,6 @@ module Engine
 
         MUST_SELL_IN_BLOCKS = true
         SELL_MOVEMENT = :left_per_10_if_pres_else_left_one
-        SOLD_OUT_INCREASE = false
 
         GAME_END_CHECK = { stock_market: :current_or, custom: :full_or }.freeze
         GAME_END_REASONS_TEXT = Base::GAME_END_REASONS_TEXT.merge(
