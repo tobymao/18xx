@@ -90,7 +90,7 @@ module Engine
           'X9' => {
             'count' => 1,
             'color' => 'brown',
-            'code' => 'city=revenue:80,loc:0.5;city=revenue:8 0,slots:2;'\
+            'code' => 'city=revenue:80,loc:0.5;city=revenue:80,slots:2;'\
                       'path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_1;path=a:3,b:_1;label=P',
           },
           'X10' => {
