@@ -14,7 +14,7 @@ module Engine
         include G1850::Entities
         include G1850::Map
 
-        attr_accessor :sell_queue, :connection_run, :reissued, :mesabi_token_counter, :mesabi_compnay_sold_or_closed
+        attr_accessor :sell_queue, :connection_run, :reissued, :mesabi_token_counter, :mesabi_company_sold_or_closed
 
         CORPORATION_CLASS = G1850::Corporation
         COMPANY_CLASS = G1850::Company
@@ -243,7 +243,7 @@ module Engine
         end
 
         def wlg_company
-          @wlg_compnay ||= company_by_id('WLG')
+          @wlg_company ||= company_by_id('WLG')
         end
 
         def gbc_company
@@ -262,15 +262,16 @@ module Engine
           @log << '-- Event: Private companies close --'
           @companies.each do |company|
             if company == gbc_company ||
-              (company == wlg_company && wlg_company.abilities&.first&.count == 3) ||
+              company == wlg_company ||
               (company == cm_company && cm_company.abilities&.first)
+
               company.revenue = 0
               next
             end
 
             company.close!
           end
-          @mesabi_compnay_sold_or_closed = true
+          @mesabi_company_sold_or_closed = true
         end
 
         def event_close_remaining_companies!
@@ -296,7 +297,7 @@ module Engine
 
           buyer.mesabi_token = true
           @mesabi_token_counter -= 1
-          @mesabi_compnay_sold_or_closed = true
+          @mesabi_company_sold_or_closed = true
           log << "#{buyer.name} receives Mesabi token. #{@mesabi_token_counter} Mesabi tokens left in the game."
           log << '-- Corporations can now buy Mesabi tokens --'
         end
@@ -331,40 +332,9 @@ module Engine
         end
 
         def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil, movement: nil)
-          bundle_owner = bundle.owner
-          @sell_queue << [bundle, bundle.corporation.owner] unless bundle.corporation.president?(bundle_owner)
+          @sell_queue << [bundle, bundle.corporation.owner]
 
           @share_pool.sell_shares(bundle)
-
-          change_price(bundle, bundle.corporation.owner) if bundle.corporation.president?(bundle_owner)
-        end
-
-        def change_price(bundle, corporation_owner, forced = false)
-          corporation = bundle.corporation
-          old_price = corporation.share_price
-
-          hit_soft_ledge = false
-          bundle.num_shares.times do
-            if hit_soft_ledge
-              @stock_market.move_down(corporation)
-              hit_soft_ledge = false
-            end
-
-            r, c = corporation.share_price.coordinates
-            if corporation.share_price.type != :ignore_one_sale &&
-                @stock_market.market.dig(r + 1, c)&.type == :ignore_one_sale
-              hit_soft_ledge = true
-            else
-              @stock_market.move_down(corporation)
-            end
-          end
-
-          verb = forced ? 'can\'t' : 'doesn\'t'
-          num_presentation = @share_pool.num_presentation(bundle)
-          @log << "#{corporation_owner.name} #{verb} price protect #{num_presentation} of #{corporation.name}"
-          @log << "#{corporation.name} hits the ledge" if hit_soft_ledge
-
-          log_share_price(corporation, old_price)
         end
 
         def num_certs(entity, price_protecting: false)

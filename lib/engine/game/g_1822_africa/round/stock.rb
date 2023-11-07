@@ -76,17 +76,6 @@ module Engine
 
             # Increase player loans with 50% interest in SR x.2
             @game.add_interest_player_loans! if round_num == 2
-
-            # Move sold out corps stock value right
-            corporations_to_move_price.sort.each do |corp|
-              next unless corp.share_price
-
-              old_price = corp.share_price
-
-              sold_out_stock_movement(corp) if sold_out?(corp)
-
-              @game.log_share_price(corp, old_price)
-            end
           end
 
           def clear_bidboxes(bidbox_items)

@@ -115,8 +115,8 @@ module Engine
           desc: 'The corporation owning the Western Land Grant is allowed extra construction of yellow track. During'\
                 ' the track laying phase, the owning corporation is allowed to lay a second tile which must be yellow. The'\
                 ' owning corporation may do this up to three times. Two of these track lays must be used west of the'\
-                ' Mississippi river, one may be used anywhere on the map. If none of the track lays have been used, this'\
-                ' company survives until phase six as a non-revenue company.',
+                ' Mississippi river, one may be used anywhere on the map. This company closes when all three track lays'\
+                ' have been used; otherwise it survives until phase six as a non-revenue paying company.',
           sym: 'WLG',
           abilities: [{
             type: 'tile_lay',
@@ -128,6 +128,7 @@ module Engine
             when: 'track',
             hexes: [],
             tiles: %w[1 2 3 4 5 6 7 8 9 55 56 57 58 69],
+            closed_when_used_up: true,
           }],
           color: nil,
         },

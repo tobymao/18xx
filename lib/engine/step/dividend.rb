@@ -48,6 +48,22 @@ module Engine
         end
       end
 
+      def variable_share_multiplier(_corporation)
+        # For variable dividends, multiplier on chosen dividend
+        # (used for games where player chooses an amount per share to pay out rather than a flat dividend amount)
+        1
+      end
+
+      def variable_input_step
+        # For variable dividends, allowed dividend modulo (e.g. 5, 10)
+        1
+      end
+
+      def variable_max
+        # For variable dividends, maximum dividend allowed to be paid out
+        1
+      end
+
       def process_dividend(action)
         entity = action.entity
         revenue = total_revenue

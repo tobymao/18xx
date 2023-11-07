@@ -37,7 +37,12 @@ module Engine
             amount = action.amount || 0
             payout = corp_dividend_options(entity, amount)[kind]
 
-            raise GameError, "Amount must be multiples of #{variable_input_step}" if amount % variable_input_step != 0
+            if (amount > variable_max(entity)) || amount.negative?
+              raise GameError,
+                    "Dividend cannot be larger than total revenue of #{@game.format_currency(variable_max(entity))} "\
+                    "or smaller than #{@game.format_currency(0)}"
+            end
+            raise GameError, "Dividend must be multiples of #{variable_input_step}" if amount % variable_input_step != 0
 
             entity.operating_history[[@game.turn, @round.round_num]] = OperatingInfo.new(
               routes,
@@ -173,16 +178,12 @@ module Engine
           end
 
           def help_str(max)
-            "Select dividend to distribute to shareholders, between #{@game.format_currency(0)}"\
-              " and #{@game.format_currency(max)}. Leftover will be withholded to corporation."
+            "Choose dividend paid to shareholders out of revenue, between #{@game.format_currency(0)} "\
+              "and #{@game.format_currency(max)}. Excess revenue is paid to corporation treasury."
           end
 
           def chart
             @game.price_movement_chart
-          end
-
-          def variable_share_multiplier(_corporation)
-            1
           end
 
           def variable_input_step
