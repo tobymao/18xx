@@ -212,10 +212,6 @@ module Engine
           def variable_share_multiplier(corporation)
             corporation.total_shares
           end
-
-          def variable_input_step
-            1
-          end
         end
       end
     end

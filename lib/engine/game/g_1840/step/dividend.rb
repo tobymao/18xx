@@ -181,10 +181,6 @@ module Engine
             @game.price_movement_chart
           end
 
-          def variable_share_multiplier(_corporation)
-            1
-          end
-
           def variable_input_step
             10
           end
