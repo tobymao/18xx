@@ -262,8 +262,9 @@ module Engine
           @log << '-- Event: Private companies close --'
           @companies.each do |company|
             if company == gbc_company ||
-              (company == wlg_company && wlg_company.abilities&.first) ||
+              company == wlg_company ||
               (company == cm_company && cm_company.abilities&.first)
+
               company.revenue = 0
               next
             end

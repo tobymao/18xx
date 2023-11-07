@@ -128,6 +128,7 @@ module Engine
             when: 'track',
             hexes: [],
             tiles: %w[1 2 3 4 5 6 7 8 9 55 56 57 58 69],
+            closed_when_used_up: true,
           }],
           color: nil,
         },
