@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
-require_relative 'operating'
+require_relative '../../../round/operating'
 
 module Engine
   module Game
     module G18NY
       module Round
-        class Capitalization < Operating
+        class Capitalization < Engine::Round::Operating
           def name
             'Capitalization Round'
           end
