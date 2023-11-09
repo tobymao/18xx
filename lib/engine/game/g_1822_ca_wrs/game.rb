@@ -44,6 +44,8 @@ module Engine
           },
         ]).freeze
 
+        PENDING_HOME_TOKENERS = [MINOR_14_ID, 'GNWR'].freeze
+
         def init_companies(players)
           game_companies.map do |company|
             next if players.size < (company[:min_players] || 0)

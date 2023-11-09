@@ -428,7 +428,7 @@ module Engine
 
           entity = route.train.owner
           sawmill_dest = sawmill_stop.city? &&
-                         sawmill_stop.tokens.find { |t| t.type == :destination && t.corporation == entity } &&
+                         sawmill_stop.tokens.find { |t| t && t.type == :destination && t.corporation == entity } &&
                          (dest = destination_bonus(route.routes)) &&
                          dest[:route] == route
           multiplier = sawmill_dest ? 2 : 1
