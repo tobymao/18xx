@@ -48,18 +48,15 @@ module Engine
         hex = city.hex
         extra_action ||= special_ability.extra_action if %i[teleport token].include?(special_ability&.type)
 
+        check_connected(entity, city, hex) if connected
         unless @game.loading
-
-          check_connected(entity, city, hex) if connected
-
           if special_ability&.type == :token && special_ability.city && special_ability.city != city.index
             raise GameError, "#{special_ability.owner.name} can only place token on #{hex.name} city "\
                              "#{special_ability.city}, not on city #{city.index}"
           end
 
-          if special_ability&.type == :token && !special_ability&.hexes&.empty? && !special_ability.hexes.include?(hex.id)
-            raise GameError, "#{special_ability.owner.name} can only place token on #{special_ability.hexes} hexes"\
-                             ", not on #{hex.id}"
+          if special_ability&.type == :token && !@round.active_step.available_hex(special_ability.owner, hex)
+            raise GameError, "#{special_ability.owner.name} cannot place token on hex #{hex.id}"
           end
 
           if special_ability&.type == :teleport &&
