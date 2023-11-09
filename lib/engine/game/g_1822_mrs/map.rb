@@ -451,7 +451,7 @@ module Engine
             ['K16'] =>
               'city=revenue:yellow_30|green_40|brown_50|gray_60,slots:2;path=a:0,b:_0,terminal:1',
             ['Q44'] =>
-              'offboard=revenue:yellow_0|green_60|brown_90|gray_120,visit_cost:0;path=a:2,b:_0',
+              'offboard=revenue:yellow_0|green_60|brown_90|gray_120,visit_cost:0;path=a:2,b:_0,lanes:2',
           },
           blue: {
             %w[J43 Q36 Q42 R31] =>
