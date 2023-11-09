@@ -172,7 +172,7 @@ module Engine
           'D17' => 'Baden',
           'D19' => 'Zurich',
           'D21' => 'Rapperswil',
-          'D23' => 'Appelzell',
+          'D25' => 'Appelzell',
           'E8' => 'Biel',
           'E10' => 'Solothurn',
           'E18' => 'Zug',

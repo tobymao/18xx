@@ -332,7 +332,7 @@ module Engine
             abilities: [
               {
                 hexes: %w[AF12],
-                tiles: %w[M1 M2 M3 M4 M5 M6 M7],
+                tiles: %w[M1 M2 M3 M4 M5 M6 M7 M8],
                 type: 'tile_lay',
                 when: %w[track special_track],
                 owner_type: 'corporation',
