@@ -200,13 +200,11 @@ module Engine
         end
 
         def game_tiles
-          if @optional_rules.include?(:north)
-            # When using the 1888-N variant, adjust the tile
-            # counts to the alternate values specified.
-            return TILES.merge(NORTH_VARIANT_TILES)
-          else
-            return TILES
-          end
+          # When using the 1888-N variant, adjust the tile
+          # counts to the alternate values specified.
+          return TILES.merge(NORTH_VARIANT_TILES) if @optional_rules.include?(:north)
+
+          TILES
         end
 
         def setup
