@@ -33,7 +33,10 @@ module Engine
       end
 
       def skip!
-        process_dividend(Action::Dividend.new(current_entity, kind: 'withhold'))
+        # insert a dummy action so the operating history has something to link to
+        action = Action::Dividend.new(current_entity, kind: 'withhold')
+        action.id = @game.actions.last.id if @game.actions.last
+        process_dividend(action)
       end
 
       def dividend_options(entity)
