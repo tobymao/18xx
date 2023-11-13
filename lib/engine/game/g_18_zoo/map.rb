@@ -10,21 +10,21 @@ module Engine
         TILE_MM = 'upgrade=cost:2,terrain:mountain'
 
         TILES = {
-          '7' => 6,
+          '7' => 7,
           'X7' => {
-            'count' => 6,
+            'count' => 7,
             'color' => 'yellow',
             'code' => "#{Engine::Config::Tile::YELLOW['3']};label=O;icon=image:river,sticky:1",
           },
-          '8' => 16,
+          '8' => 18,
           'X8' => {
-            'count' => 16,
+            'count' => 18,
             'color' => 'yellow',
             'code' => "#{Engine::Config::Tile::YELLOW['58']};label=O;icon=image:river,sticky:1",
           },
-          '9' => 11,
+          '9' => 13,
           'X9' => {
-            'count' => 11,
+            'count' => 13,
             'color' => 'yellow',
             'code' => "#{Engine::Config::Tile::YELLOW['4']};label=O;icon=image:river,sticky:1",
           },
@@ -34,11 +34,25 @@ module Engine
           '201' => 2,
           '202' => 2,
           '621' => 2,
+          '16' => 1,
+          'X16' => {
+            'count' => 1,
+            'color' => 'green',
+            'code' => 'town=revenue:10;town=revenue:10;path=a:0,b:_0;path=a:_0,b:2;path=a:1,b:_1;path=a:_1,b:3;'\
+                      'label=O;icon=image:river,sticky:1',
+          },
           '19' => 1,
           'X19' => {
             'count' => 1,
             'color' => 'green',
             'code' => 'town=revenue:10;town=revenue:10;path=a:0,b:_0;path=a:_0,b:3;path=a:2,b:_1;path=a:_1,b:4;'\
+                      'label=O;icon=image:river,sticky:1',
+          },
+          '20' => 1,
+          'X20' => {
+            'count' => 1,
+            'color' => 'green',
+            'code' => 'town=revenue:10;town=revenue:10;path=a:0,b:_0;path=a:_0,b:3;path=a:1,b:_1;path=a:_1,b:4;'\
                       'label=O;icon=image:river,sticky:1',
           },
           '23' => 2,
@@ -110,12 +124,15 @@ module Engine
           '579' => 1,
           '792' => 1,
           '793' => 1,
+          '39' => 1,
           '40' => 1,
           '41' => 1,
           '42' => 1,
           '43' => 1,
+          '44' => 1,
           '45' => 1,
           '46' => 1,
+          '47' => 1,
           '611' => 3,
           '582' => 3,
           'TI_455' => {
