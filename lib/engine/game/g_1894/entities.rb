@@ -42,7 +42,8 @@ module Engine
             value: 50,
             revenue: 10,
             desc: 'Owning corporation may lay or upgrade a tile in Liège'\
-                  ' (H17). If it does, it may then optionally place a token for free there.'\
+                  ' (H17), even if not connected. If it does, it may then'\
+                  ' optionally place a token for free there.'\
                   ' This counts as one of the corporation\'s tile builds and token laying'\
                   ' (if token was placed). Blocks H17 while owned by a player.',
             abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['H17'] },
@@ -60,7 +61,8 @@ module Engine
             value: 50,
             revenue: 10,
             desc: 'Owning corporation may lay or upgrade a tile in Antwerpen'\
-                  ' (D17). If it does, it may then optionally place a token for free there.'\
+                  ' (D17), even if not connected. If it does, it may then '\
+                  ' optionally place a token for free there.'\
                   ' This counts as one of the corporation\'s tile builds and token laying'\
                   ' (if token was placed). Blocks D17 while owned by a player.',
             abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['D17'] },
