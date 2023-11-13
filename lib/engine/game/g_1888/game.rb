@@ -199,6 +199,14 @@ module Engine
           @log << ' * (Playing with deprecated option)' if @optional_rules.include?(:small_bank)
         end
 
+        def game_tiles
+          # When using the 1888-N variant, adjust the tile
+          # counts to the alternate values specified.
+          return TILES.merge(NORTH_VARIANT_TILES) if @optional_rules.include?(:north)
+
+          TILES
+        end
+
         def setup
           setup_company_price_50_to_150_percent
           @corporations.each { |c| c.float_percent = 50 } if prototype?

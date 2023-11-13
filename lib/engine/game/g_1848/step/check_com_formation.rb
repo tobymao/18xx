@@ -11,14 +11,10 @@ module Engine
 
           def actions(entity)
             return [] unless entity == current_entity
-
-            @connected = false
-
             return [] if @game.sydney_adelaide_connected
             return ACTIONS if @game.loading
             return [] unless @game.check_for_sydney_adelaide_connection
 
-            @connected = true
             ACTIONS
           end
 
@@ -26,12 +22,16 @@ module Engine
             'COM Sydney Adelaide Check'
           end
 
+          def active?
+            !@game.sydney_adelaide_connected
+          end
+
           def blocks?
-            @connected
+            @game.check_for_sydney_adelaide_connection
           end
 
           def auto_actions(entity)
-            return [] unless @connected
+            return [] unless @game.check_for_sydney_adelaide_connection
 
             [Engine::Action::DestinationConnection.new(entity)]
           end
