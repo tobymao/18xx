@@ -100,21 +100,23 @@ module Engine
                     tiles: %i[yellow green brown],
                   }].freeze
 
-        TRAINS = [{ name: '2', distance: 2, price: 500, rusts_on: '4', num: 5 },
-                  { name: '3', distance: 3, price: 200, rusts_on: '5', num: 4 },
-                  { name: '4', distance: 4, price: 300, rusts_on: '6', num: 3 },
+        TRAINS = [{ name: '2', distance: 2, price: 100, rusts_on: '4', num: 1 },
+                  { name: '3', distance: 3, price: 200, rusts_on: '5', num: 4, events: [{ 'type' => 'float_30' }], },
+                  { name: '4', distance: 4, price: 300, rusts_on: '6', num: 3, events: [{ 'type' => 'float_40' }], },
                   {
                     name: '5',
                     distance: 3,
                     price: 400,
                     num: 3,
-                    events: [{ 'type' => 'close_companies' }],
+                    events: [{ 'type' => 'close_companies' },
+                             { 'type' => 'float_50' }],
                   },
                   {
                     name: '6',
                     distance: 6,
                     price: 500,
                     num: 6,
+                    events: [{ 'type' => 'float_60' }],
                     variants: [
                       {
                         name: '3E',
@@ -189,6 +191,12 @@ module Engine
           ])
         end
 
+        def stock_round
+          Engine::Round::Stock.new(self, [
+            GSteamOverHolland::Step::BuySellParShares,
+          ])
+        end
+
         def operating_round(round_num)
           @round_num = round_num
           Engine::Round::Operating.new(self, [
@@ -224,21 +232,56 @@ module Engine
           ]
         end
 
-        def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil, movement: nil)
-          super
-          num_shares = bundle.num_shares
-          unless bundle.owner == corporation.owner
-            # This allows for the ledges that prevent price drops unless the president is selling
-            case corporation.share_price.type
-            when :ignore_sale_unless_president
-              num_shares = 0
-            when :max_one_drop_unless_president
-              num_shares = 1
-            when :max_two_drops_unless_president
-              num_shares = 2 unless num_shares == 1
-            end
+        EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+          'float_30' => ['30% to Float', "Corporation's President must buy 30% to float"],
+          'float_40' => ['40% to Float', "Corporation's President must buy 40% to float"],
+          'float_50' => ['50% to Float', "Corporation's President must buy 50% to float"],
+          'float_60' => ['60% to Float', "Corporation's President must buy 60% to float"],
+          'close_companies' => ['Close Companies', 'Companies close and are removed from the game'],
+        ).freeze
+
+        def percent_needed_to_float
+          case @phase.name
+          when '2'
+            20
+          when '3'
+            30
+          when '4'
+            40
+          when '5'
+            50
+          when '6'
+            60
+          else
+            # This shouldn't happen
+            raise NotImplementedError
           end
-          num_shares.times { @stock_market.move_down(corporation) }
+        end
+
+        def event_float_30!
+          @log << "-- Event: #{EVENTS_TEXT['float_30'][1]} --"
+          update_float_percent(30)
+        end
+
+        def event_float_40!
+          @log << "-- Event: #{EVENTS_TEXT['float_40'][1]} --"
+          update_float_percent(40)
+        end
+
+        def event_float_50!
+          @log << "-- Event: #{EVENTS_TEXT['float_50'][1]} --"
+          update_float_percent(50)
+        end
+
+        def event_float_60!
+          @log << "-- Event: #{EVENTS_TEXT['float_60'][1]} --"
+          update_float_percent(60)
+        end
+
+        def update_float_percent(percent)
+          @corporations.each do |c|
+            c.float_percent = percent
+          end
         end
 
         def issuable_shares(entity)
@@ -262,6 +305,18 @@ module Engine
             .each { |bundle| bundle.share_price = share_price }
             .reject { |bundle| entity.cash < bundle.price }
         end
+
+        # def can_ipo_any?(entity)
+        #   extra_shares_needed = (percent_needed_to_float / 10 - 2).to_i
+        #   !bought? && @game.corporations.any? do |c|
+        #     @game.can_par?(c, entity) && begin
+        #       bundle = c.shares.first&.to_bundle
+        #       bundle ||= ShareBundle.new(c.shares, 0)
+        #       bundle.num_shares += c.extra_shares_needed
+        #       return false unless can_buy?(entity, bundle)
+        #     end
+        #   end
+        # end
       end
     end
   end
