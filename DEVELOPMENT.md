@@ -144,9 +144,15 @@ Failures:
 4. Copy the file content in the box and click `create`
 5. Look for an error in the browser console
 
-#### Before filing a pull request
+#### Running test fixtures
 
-Run `docker-compose exec rack rake` while a docker instance is running to run rubocop (to ensure your changes meet the project's code style guidelines) as well as the test suite.
+Run `docker-compose exec rack rake` while a docker instance is running to run rubocop and test games. This ensures your changes don't break existing games, and that the code matches the project's style guide.
+
+Run a specific set of test fixtures using the `-e` flag to `rspec`. This is useful when testing a specific bug or reproducing an issue.
+
+`docker-compose exec rack rspec spec/lib/engine/games/game_spec.rb -e '<folder_name> <fixture_name>' [...]`
+
+e.g. `docker-compose exec rack rspec spec/lib/engine/games/game_spec.rb -e '1860 19354'`
 
 #### Profiling the code
 
