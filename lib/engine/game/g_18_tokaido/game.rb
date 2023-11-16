@@ -400,7 +400,7 @@ module Engine
 
         def payout_companies(ignore: [])
           companies = @companies.select do |c|
-            c.owner && !c.owner.is_a?(Engine::Bank) && c.revenue.positive? && !ignore.include?(c.id)
+            c.owner && c.owner != bank && c.revenue.positive? && !ignore.include?(c.id)
           end
 
           companies.sort_by! do |company|
@@ -413,8 +413,6 @@ module Engine
 
           companies.each do |company|
             owner = company.owner
-            next if owner == bank
-
             revenue = company.revenue
             @bank.spend(revenue, owner)
             @log << "#{owner.name} collects #{format_currency(revenue)} from #{company.name}"
