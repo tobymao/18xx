@@ -40,7 +40,7 @@ module Engine
             name: "#{name} (#{sym})",
             value: 150,
             desc: '',
-            revenue: nil,
+            revenue: 0,
             color: nil,
           }
         end.freeze
@@ -106,10 +106,10 @@ module Engine
             simple_logo: "1854/#{sym}",
             tokens: [0, 40],
             color: '#000000',
+            type: 'minor',
             # shares: [100],
             # max_ownership_percent: 100,
             # hide_shares: true,
-            # type: 'minor',
           }
         end.freeze
 

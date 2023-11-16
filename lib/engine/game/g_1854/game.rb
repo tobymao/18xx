@@ -19,6 +19,8 @@ module Engine
         include Trains
         include Tiles
 
+        attr_reader :need_auction_or, :auction_finished
+
         COMPANY_CLASS = G1854::Company
 
         CURRENCY_FORMAT_STR = '%s G'
@@ -100,6 +102,106 @@ module Engine
 
         STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(par_1: :blue, type_limited: :peach).freeze
 
+        @need_auction_or = true
+        @auction_finished = false
+
+        def new_auction_round
+          Round::Auction.new(self, [
+            Engine::Step::CompanyPendingPar,
+            G1854::Step::WaterfallAuction,
+          ])
+        end
+
+        def operating_round(round_num)
+          Round::Operating.new(self, [
+            Engine::Step::Bankrupt,
+            Engine::Step::Exchange,
+            Engine::Step::SpecialTrack,
+            Engine::Step::BuyCompany,
+            Engine::Step::Track,
+            Engine::Step::Token,
+            Engine::Step::Route,
+            Engine::Step::Dividend,
+            Engine::Step::DiscardTrain,
+            G1854::Step::BuyTrain,
+            [Engine::Step::BuyCompany, { blocks: true }],
+          ], round_num: round_num)
+        end
+
+        def trigger_auction_or
+          puts "trigger_auction_or"
+          @need_auction_or = true
+        end
+
+        def clear_auction_or
+          puts "clear_auction_or"
+          @need_auction_or = false
+        end
+
+        def set_auction_finished
+          @auction_finished = true
+        end
+
+        def auction_finished?
+          @auction_finished
+        end
+
+        def close_minor_companies
+          @companies.each do |company|
+            next if company.corp_sym.nil?
+            company.close!
+          end
+        end
+
+        def next_round!
+          puts "next_round!"
+          @round =
+            case @round
+            when Engine::Round::Stock
+              if @round.round_num == 1
+                new_stock_round(@round.round_num + 1)
+              else
+                @operating_rounds = @phase.operating_rounds
+                reorder_players
+                new_operating_round
+              end
+            when Engine::Round::Operating
+              puts "this or"
+              clear_auction_or
+
+              if @round.round_num < @operating_rounds
+                puts "next or"
+                or_round_finished
+                new_operating_round(@round.round_num + 1)
+              else
+                @turn += 1
+                or_round_finished
+                or_set_finished
+                if auction_finished?
+                  puts "next stock"
+                  new_stock_round
+                else
+                  puts "next auction"
+                  new_auction_round
+                end
+              end
+            when init_round.class
+              puts "this init"
+              if @need_auction_or
+                puts "next operating"
+                or_round_finished
+                new_operating_round(@round.round_num + 1)
+              else
+                puts "finally done"
+                close_minor_companies
+                set_auction_finished
+                init_round_finished
+                reorder_players
+                new_stock_round
+              end
+            end
+        end
+
         def setup
           # each minor starts with 150G, regardless of price paid in
           # initial auction.
@@ -128,7 +230,6 @@ module Engine
             target_corp = minor_by_id(ability.corp_sym)
             target_corp.owner = player
             target_corp.float!
-            company.close!
           end
           super
         end
