@@ -397,6 +397,29 @@ module Engine
         def waterfall_auction
           @optional_rules&.include?(:waterfall_auction)
         end
+
+        def payout_companies(ignore: [])
+          companies = @companies.select do |c|
+            c.owner && !c.owner.is_a?(Engine::Bank) && c.revenue.positive? && !ignore.include?(c.id)
+          end
+
+          companies.sort_by! do |company|
+            [
+              company.owned_by_player? ? [0, @players.index(company.owner)] : [1, company.owner],
+              company.revenue,
+              company.name,
+            ]
+          end
+
+          companies.each do |company|
+            owner = company.owner
+            next if owner == bank
+
+            revenue = company.revenue
+            @bank.spend(revenue, owner)
+            @log << "#{owner.name} collects #{format_currency(revenue)} from #{company.name}"
+          end
+        end
       end
     end
   end
