@@ -299,12 +299,8 @@ module Engine
               reorder_players
               new_stock_round
             when Engine::Round::Auction
-              init_round_finished
               new_stock_round
             when Engine::Round::Stock
-              # If the initial round is a normal stock round,
-              # ensure that companies are closed properly if unclaimed.
-              init_round_finished unless @draft_finished
               @operating_rounds = @phase.operating_rounds
               @need_last_stock_round = false
               reorder_players
