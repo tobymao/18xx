@@ -35,13 +35,12 @@ module Engine
           name, coords, city = vals
           sym = (index + 1).to_s
           {
-            sym: sym,
+            sym: "L#{sym}",
+            corp_sym: sym,
             name: "#{name} (#{sym})",
             value: 150,
             desc: '',
             revenue: nil,
-            abilities: [{ type: 'close', when: 'par', corporation: sym },
-                        { type: 'shares', shares: "#{sym}_0" }],
             color: nil,
           }
         end.freeze

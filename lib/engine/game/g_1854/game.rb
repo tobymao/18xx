@@ -6,7 +6,6 @@ require_relative 'meta'
 require_relative 'phases'
 require_relative 'trains'
 require_relative 'tiles'
-require_relative 'stock_market'
 require_relative '../base'
 
 module Engine
@@ -19,6 +18,8 @@ module Engine
         include Phases
         include Trains
         include Tiles
+
+        COMPANY_CLASS = G1854::Company
 
         CURRENCY_FORMAT_STR = '%s G'
 
@@ -105,12 +106,31 @@ module Engine
           @minors.each do |minor|
             @bank.spend(150, minor)
           end
+
+          @companies.each do |company|
+            next if company.corp_sym.nil?
+            company.add_ability(G1854::Ability::AssignMinor.new(type: :assign_minor, corp_sym: company.corp_sym))
+          end
         end
 
         def reservation_corporations
           # populate reserved spaces on starting map
           # so locals starting spaces can be seen more easily
           @corporations + @minors
+        end
+
+        def player_card_minors(player)
+          @minors.select { |m| m.owner == player }
+        end
+
+        def after_buy_company(player, company, _price)
+          abilities(company, :assign_minor) do |ability|
+            target_corp = minor_by_id(ability.corp_sym)
+            target_corp.owner = player
+            target_corp.float!
+            company.close!
+          end
+          super
         end
       end
     end
