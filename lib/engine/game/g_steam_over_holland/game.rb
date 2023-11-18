@@ -100,7 +100,7 @@ module Engine
                     tiles: %i[yellow green brown],
                   }].freeze
 
-        TRAINS = [{ name: '2', distance: 2, price: 100, rusts_on: '4', num: 1 },
+        TRAINS = [{ name: '2', distance: 2, price: 100, rusts_on: '4', num: 5 },
                   { name: '3', distance: 3, price: 200, rusts_on: '5', num: 4, events: [{ 'type' => 'float_30' }], },
                   { name: '4', distance: 4, price: 300, rusts_on: '6', num: 3, events: [{ 'type' => 'float_40' }], },
                   {
