@@ -13,7 +13,7 @@ module Engine
         GAME_DESIGNER = 'Matthew Campbell'
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18Neb'
         GAME_LOCATION = 'Nebraska, USA'
-        GAME_PUBLISHER = :deepthoughtgames
+        GAME_PUBLISHER = %i[deep_thought_games golden_spike].freeze
         GAME_RULES_URL = 'https://drive.google.com/file/d/1Oug_yAvukxOUbrL8JgXprLPfSaR2MlZJ/view?usp=sharing'
 
         PLAYER_RANGE = [2, 4].freeze
