@@ -212,7 +212,7 @@ module Engine
             Engine::Step::Route,
             GSteamOverHolland::Step::Dividend,
             Engine::Step::DiscardTrain,
-            Engine::Step::BuyTrain,
+            GSteamOverHolland::Step::BuyTrain,
             [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
