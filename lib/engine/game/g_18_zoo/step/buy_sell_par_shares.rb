@@ -79,14 +79,9 @@ module Engine
           def sell_shares(entity, shares, swap: nil)
             raise GameError, "Cannot sell shares of #{shares.corporation.name}" if !can_sell?(entity, shares) && !swap
 
-            if shares.owner == shares.corporation.owner
-              should_move = true
-            elsif @round.share_sold.include?(shares)
-              should_move = false
-            else
-              should_move = true
-              @round.share_sold << shares
-            end
+            should_move = shares.owner == shares.corporation.owner || !@round.share_sold.include?(shares)
+            @round.share_sold << shares if shares.owner != shares.corporation.owner && !@round.share_sold.include?(shares)
+
             @game.sell_shares_and_change_price(shares, swap: swap, movement: (should_move ? @game.sell_movement : :none))
           end
         end
