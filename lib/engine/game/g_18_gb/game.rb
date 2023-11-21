@@ -33,7 +33,8 @@ module Engine
         attr_reader :scenario
         attr_accessor :train_bought
 
-        GAME_END_CHECK = { final_train: :current_or, stock_market: :current_or }.freeze
+        # we use a custom end check since final_train doesn't take the 'reserved' leasable train into account
+        GAME_END_CHECK = { custom: :current_or, stock_market: :current_or }.freeze
 
         BANKRUPTCY_ALLOWED = false
 
@@ -288,6 +289,25 @@ module Engine
               },
             ],
             available_on: '5X',
+          },
+          {
+            name: '6X-Leasable',
+            distance: [
+              {
+                'nodes' => %w[city offboard],
+                'pay' => 6,
+                'visit' => 6,
+              },
+              {
+                'nodes' => ['town'],
+                'pay' => 0,
+                'visit' => 99,
+              },
+            ],
+            price: 9999,
+            index: 999,
+            reserved: true,
+            available_on: '6X',
           },
         ].freeze
 
@@ -546,6 +566,11 @@ module Engine
           @share_pool.sell_shares(bundle, allow_president_change: allow_president_change, swap: swap)
           bundle.num_shares.times { @stock_market.move_down(corporation) } if non_president_sales_drop_price? || was_president
           log_share_price(corporation, old_price)
+        end
+
+        def custom_end_game_reached?
+          # if the only train left is the reserved leasable 6X
+          @depot.upcoming.count { |t| t.name == '6X' }.zero?
         end
 
         def insolvent?(corp)
@@ -915,11 +940,11 @@ module Engine
 
         def or_round_finished
           depot.export! unless @train_bought
-          trigger_end_game_restrictions if @depot.upcoming.size <= 2
+          trigger_end_game_restrictions if @depot.upcoming.count { |t| t.name == '6X' } <= 2
         end
 
         def end_now?(after)
-          if @round.is_a?(round_end) && @depot.upcoming.size == 1 && !@train_bought
+          if @round.is_a?(round_end) && @depot.upcoming.count { |t| t.name == '6X' } == 1 && !@train_bought
             @depot.export!
             return true
           end
