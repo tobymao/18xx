@@ -703,7 +703,7 @@ module Engine
           return bundles if bundles.empty? || corporation.operated?
 
           bundles.each do |bundle|
-            bundle.share_price = @stock_market.find_share_price(corporation, Array.new(bundle.num_shares) { :down }).price
+            bundle.share_price = @stock_market.find_share_price(corporation, :down).price
           end
           bundles
         end
