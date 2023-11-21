@@ -122,9 +122,22 @@ module View
         },
       }
 
+      dev_status = game.meta::DEV_STAGE
+      prototype_status = game.meta::PROTOTYPE
+
+      game_status = if dev_status != :production && prototype_status
+                      " (#{dev_status} prototype)"
+                    elsif dev_status != :production
+                      " (#{dev_status})"
+                    elsif prototype_status
+                      ' (prototype)'
+                    else
+                      ''
+                    end
+
       h('div.header', div_props, [
         h(:div, text_props, [
-          h(:div, "Game: #{game.display_title}"),
+          h(:div, "Game: #{game.display_title}" + game_status),
           h('div.nowrap', owner_props, "Owner: #{@gdata['user']['name']}"),
         ]),
         h(:div, buttons_props, buttons),
