@@ -424,7 +424,7 @@ module Engine
         end
 
         def calculate_sawmill_bonus(route)
-          return unless (sawmill_stop = route.stops.find { |s| s.hex == @sawmill_hex })
+          return unless (sawmill_stop = route.visited_stops.find { |s| s.hex == @sawmill_hex })
 
           entity = route.train.owner
           sawmill_dest = sawmill_stop.city? &&
