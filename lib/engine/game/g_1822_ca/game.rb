@@ -637,13 +637,15 @@ module Engine
           ].compact
         end
 
-        def action_processed(action)
-          case action
-          when Action::LayTile
-            if action.tile.color == :gray && (id = BIG_CITY_HEXES_TO_COMPANIES[action.hex.id])
-              company_by_id(id)&.all_abilities&.clear
-            end
-          end
+        def after_lay_tile(hex, old_tile, tile)
+          super
+
+          return unless tile.color == :gray
+
+          id = BIG_CITY_HEXES_TO_COMPANIES[hex.id]
+          return unless id
+
+          company_by_id(id)&.all_abilities&.clear
         end
       end
     end
