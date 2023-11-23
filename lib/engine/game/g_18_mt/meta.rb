@@ -17,7 +17,7 @@ module Engine
         GAME_ISSUE_LABEL = '18MT'
         GAME_RULES_URL = {
           'Wiki Rules Highlights' => 'https://github.com/tobymao/18xx/wiki/18MT:-Big-Sky-Barons',
-          'Contact Ryan on the 18xx Slack' => 'https://app.slack.com/client/T67762LUR/C012K0CNY5C',
+          'Contact Ryan on the 18xx Slack' => 'https://join.slack.com/t/18xxgames/shared_invite/zt-27imtsj2u-vussFAqtecmACsycjdsIhg',
           'Playtest Forum (BoardGameGeek, best place to discuss)' => 'https://boardgamegeek.com/thread/2816504/18mt-big-sky-barons-playtesting',
         }.freeze
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18MT:-Big-Sky-Barons'
