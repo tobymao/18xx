@@ -8,8 +8,9 @@ module Engine
     include Ownable
 
     attr_accessor :obsolete, :events, :variants, :obsolete_on, :rusted, :rusts_on, :index, :name,
-                  :distance, :reserved, :no_local, :multiplier
+                  :distance, :reserved, :no_local, :multiplier, :track_type
     attr_reader :available_on, :discount, :sym, :variant, :requires_token, :ever_operated, :operated, :salvage
+
     attr_writer :buyable
 
     def initialize(name:, distance:, price:, index: 0, **opts)
@@ -30,6 +31,7 @@ module Engine
       @obsolete = false
       @operated = false
       @ever_operated = false
+      @track_type = opts[:track_type] || :broad
       @events = (opts[:events] || []).select { |e| @index == (e['when'] || 1) - 1 }
       @reserved = opts[:reserved] || false
       @requires_token = opts[:requires_token].nil? ? true : opts[:requires_token]
@@ -53,6 +55,7 @@ module Engine
         obsolete_on: @obsolete_on,
         discount: @discount,
         salvage: @salvage,
+        track_type: @track_type,
       }
 
       # Primary variant should be at the head of the list.
