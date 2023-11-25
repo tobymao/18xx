@@ -6,7 +6,7 @@ class Turn < Snabberb::Component
 
   def render
     h(:div, [
-      h(:a, { href: @game_url }, "Go To Game #{@game_id}"),
+      h(:a, { attrs: { href: @game_url } }, "Go To Game #{@game_id}"),
     ])
   end
 end
