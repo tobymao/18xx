@@ -38,13 +38,6 @@ module Engine
             revenue = calculate_boe_revenue
             payout = send(:payout, entity, revenue)
             payout_shares(entity, revenue) if payout[:per_share].positive?
-            action.id = @game.actions.last.id
-            entity.operating_history[[@game.turn, @round.round_num]] = OperatingInfo.new(
-          [],
-          action,
-          revenue,
-          @round.laid_hexes
-        )
             pass!
           end
 
