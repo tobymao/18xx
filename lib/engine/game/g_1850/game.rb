@@ -149,8 +149,6 @@ module Engine
           phase_2_companies.each { |c| c.max_price = 2 * c.value }
         end
 
-        # Everything below this line is also included in 1870's game.rb file
-
         CURRENCY_FORMAT_STR = '$%s'
 
         BANK_CASH = 12_000

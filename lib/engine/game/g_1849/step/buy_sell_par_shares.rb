@@ -71,9 +71,16 @@ module Engine
             if !share_to_buy || !share_to_buy.last_cert
               @game.corporations.each do |corporation|
                 share = corporation.ipo_shares.find(&:last_cert)
+                if share && @game.last_cert_last?(share.to_bundle) &&
+                  corporation.holding_ok?(entity, share.percent) &&
+                  !@round.players_sold[entity][corporation]
+                  return "20% double cert for #{corporation.name} is currently available from the treasury"
+                end
+
                 share ||= @game.share_pool.shares_by_corporation[corporation].find(&:last_cert)
-                if share && @game.last_cert_last?(share.to_bundle) && corporation.holding_ok?(entity, share.percent)
-                  return "Last cert available for #{corporation.name}"
+                if share && @game.last_cert_last?(share.to_bundle) &&
+                  corporation.holding_ok?(entity, share.percent)
+                  return "20% double cert for #{corporation.name} is currently available from the bank pool"
                 end
               end
             end

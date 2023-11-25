@@ -12,7 +12,7 @@ module Engine
 
         GAME_DESIGNER = 'David G.D. Hecht'
         GAME_LOCATION = 'Scandinavian peninsula'
-        GAME_PUBLISHER = :deep_thought_games
+        GAME_PUBLISHER = %i[deep_thought_games golden_spike].freeze
         GAME_RULES_URL = 'https://boardgamegeek.com/filepage/233108/18scan-rules-v10-dtd-30-sep-2005'
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18Scan'
         GAME_SUBTITLE = 'Railroading under the Northern Lights'

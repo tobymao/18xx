@@ -299,12 +299,8 @@ module Engine
               reorder_players
               new_stock_round
             when Engine::Round::Auction
-              init_round_finished
               new_stock_round
             when Engine::Round::Stock
-              # If the initial round is a normal stock round,
-              # ensure that companies are closed properly if unclaimed.
-              init_round_finished unless @draft_finished
               @operating_rounds = @phase.operating_rounds
               @need_last_stock_round = false
               reorder_players
@@ -400,6 +396,27 @@ module Engine
 
         def waterfall_auction
           @optional_rules&.include?(:waterfall_auction)
+        end
+
+        def payout_companies(ignore: [])
+          companies = @companies.select do |c|
+            c.owner && c.owner != bank && c.revenue.positive? && !ignore.include?(c.id)
+          end
+
+          companies.sort_by! do |company|
+            [
+              company.owned_by_player? ? [0, @players.index(company.owner)] : [1, company.owner],
+              company.revenue,
+              company.name,
+            ]
+          end
+
+          companies.each do |company|
+            owner = company.owner
+            revenue = company.revenue
+            @bank.spend(revenue, owner)
+            @log << "#{owner.name} collects #{format_currency(revenue)} from #{company.name}"
+          end
         end
       end
     end
