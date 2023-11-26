@@ -174,7 +174,7 @@ module Engine
 
         MINOR_14_ID = '13'
         MINOR_14_HOME_HEX = 'AC21'
-        PENDING_HOME_TOKENERS = [MINOR_14_ID, 'QMOO'].freeze
+        PENDING_HOME_TOKENERS = [MINOR_14_ID].freeze
 
         MULTIPLE_TOKENS_ON_SAME_HEX_ALLOWED = true
 
@@ -334,6 +334,7 @@ module Engine
             G1822CA::Step::SpecialTrack,
             G1822CA::Step::SpecialToken,
             G1822CA::Step::Track,
+            G1822CA::Step::PendingToken,
             G1822CA::Step::DestinationToken,
             G1822CA::Step::Token,
             G1822CA::Step::Route,
@@ -637,15 +638,71 @@ module Engine
           ].compact
         end
 
+        def qmoo
+          @qmoo ||= corporation_by_id('QMOO')
+        end
+
         def after_lay_tile(hex, old_tile, tile)
           super
 
-          return unless tile.color == :gray
+          # remove ability from MOQTWY private if its city is now gray
+          if tile.color == :gray && (id = BIG_CITY_HEXES_TO_COMPANIES[hex.id])
+            company_by_id(id)&.all_abilities&.clear
+          end
 
-          id = BIG_CITY_HEXES_TO_COMPANIES[hex.id]
-          return unless id
+          update_qmoo_home(tile_trigger: true) if hex == quebec_hex
+        end
 
-          company_by_id(id)&.all_abilities&.clear
+        def after_place_token(_entity, city)
+          update_qmoo_home if city.hex == quebec_hex
+        end
+
+        # QMOO's home can be any one of the Quebec cities; it might be chosen
+        # when QMOO operates and lays the first yellow tile in Quebec, or the
+        # home reservation could change from a city to hex reservation when
+        # yellow is laid by a different company, and back to a city reservation
+        # when the cities join up with the tiles Q4, Q6, Q7, or Q8
+        def update_qmoo_home(tile_trigger: false)
+          qmoo_operated = qmoo.tokens.first.hex == quebec_hex
+
+          if qmoo_operated && tile_trigger && (quebec_hex.tile.color == :yellow)
+            qmoo.tokens.first.remove!
+            add_qmoo_reservation!
+
+            # if QMOO's reservation is on the hex due to multiple cities being
+            # available, this will prompt the pending token step to activate
+            place_home_token(qmoo)
+          elsif !qmoo_operated
+            quebec_hex.tile.remove_reservation!(qmoo)
+            add_qmoo_reservation!
+          end
+        end
+
+        # adds a home reservation for QMOO to the Quebec hex, or to a city if
+        # only one city has reservable slots
+        def add_qmoo_reservation!
+          tile = quebec_hex.tile
+          cities = tile.cities.select { |c| c.available_slots.positive? }
+          city_index = cities.one? ? cities[0].index : nil
+          quebec_hex.tile.add_reservation!(qmoo, city_index)
+        end
+
+        def quebec_hex
+          @quebec_hex ||= hex_by_id('AH8')
+        end
+
+        def pending_home_tokeners
+          pending = [MINOR_14_ID]
+          pending << 'QMOO' unless quebec_hex.tile.color == :white
+          pending
+        end
+
+        def render_hex_reservation?(corporation)
+          if corporation.id == 'QMOO'
+            quebec_hex.tile.color != :white && quebec_hex.tile.cities.size > 1 && current_entity != corporation
+          else
+            super
+          end
         end
       end
     end

@@ -2248,6 +2248,10 @@ module Engine
         0
       end
 
+      def render_hex_reservation?(_corporation)
+        true
+      end
+
       private
 
       def init_graph

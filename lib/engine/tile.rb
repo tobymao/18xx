@@ -377,6 +377,14 @@ module Engine
       end
     end
 
+    def remove_reservation!(entity)
+      if (city = @cities.find { |c| c.reserved_by?(entity) })
+        city.remove_reservation!(entity)
+      else
+        @reservations.delete(entity)
+      end
+    end
+
     def token_blocked_by_reservation?(corporation)
       return false if @reservations.empty?
 

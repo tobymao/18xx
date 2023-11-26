@@ -14,6 +14,11 @@ module Engine
                   check_tokenable: check_tokenable,
                   same_hex_allowed: @game.class::MULTIPLE_TOKENS_ON_SAME_HEX_ALLOWED)
           end
+
+          def process_place_token(action)
+            super
+            @game.after_place_token(action.entity, action.city)
+          end
         end
       end
     end
