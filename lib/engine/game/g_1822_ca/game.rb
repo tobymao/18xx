@@ -638,6 +638,10 @@ module Engine
           ].compact
         end
 
+        def gnwr
+          @gnwr ||= corporation_by_id('GNWR')
+        end
+
         def qmoo
           @qmoo ||= corporation_by_id('QMOO')
         end
@@ -650,11 +654,11 @@ module Engine
             company_by_id(id)&.all_abilities&.clear
           end
 
-          update_qmoo_home(tile_trigger: true) if hex == quebec_hex
+          update_home(qmoo, tile_trigger: true) if hex == quebec_hex
         end
 
         def after_place_token(_entity, city)
-          update_qmoo_home if city.hex == quebec_hex
+          update_home(qmoo) if city.hex == quebec_hex
         end
 
         # QMOO's home can be any one of the Quebec cities; it might be chosen
@@ -662,29 +666,32 @@ module Engine
         # home reservation could change from a city to hex reservation when
         # yellow is laid by a different company, and back to a city reservation
         # when the cities join up with the tiles Q4, Q6, Q7, or Q8
-        def update_qmoo_home(tile_trigger: false)
-          qmoo_operated = qmoo.tokens.first.hex == quebec_hex
+        def update_home(corp, tile_trigger: false)
+          hex = hex_by_id(corp.coordinates)
 
-          if qmoo_operated && tile_trigger && (quebec_hex.tile.color == :yellow)
-            qmoo.tokens.first.remove!
-            add_qmoo_reservation!
+          corp_operated = corp.tokens.first.hex == hex
+
+          if corp_operated && tile_trigger && (hex.tile.color == :yellow)
+            corp.tokens.first.remove!
+            add_corp_reservation!(corp)
 
             # if QMOO's reservation is on the hex due to multiple cities being
             # available, this will prompt the pending token step to activate
-            place_home_token(qmoo)
-          elsif !qmoo_operated
-            quebec_hex.tile.remove_reservation!(qmoo)
-            add_qmoo_reservation!
+            place_home_token(corp)
+          elsif !corp_operated
+            hex.tile.remove_reservation!(corp)
+            add_corp_reservation!(corp)
           end
         end
 
         # adds a home reservation for QMOO to the Quebec hex, or to a city if
         # only one city has reservable slots
-        def add_qmoo_reservation!
-          tile = quebec_hex.tile
+        def add_corp_reservation!(corp)
+          hex = hex_by_id(corp.coordinates)
+          tile = hex.tile
           cities = tile.cities.select { |c| c.available_slots.positive? }
           city_index = cities.one? ? cities[0].index : nil
-          quebec_hex.tile.add_reservation!(qmoo, city_index)
+          hex.tile.add_reservation!(corp, city_index)
         end
 
         def quebec_hex
