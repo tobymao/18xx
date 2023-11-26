@@ -103,7 +103,7 @@ module Engine
           end
           next true if reserved_by?(corporation)
 
-          if @tile.token_blocked_by_reservation?(corporation)
+          if @tile.token_blocked_by_reservation?(corporation) && !cheater
             @error = :blocked_reservation
             next false
           end
