@@ -25,6 +25,16 @@ module Engine
             super
             @game.place_token_on_upgrade(action)
           end
+
+          def tokener_available_hex(entity, hex)
+            if ([entity.id, hex.id] == ['B&O', 'H12'] ||
+                [entity.id, hex.id] == %w[PRR E11]) &&
+               entity.all_abilities.find { |a| a.type == :token }
+              return true
+            end
+
+            super
+          end
         end
       end
     end
