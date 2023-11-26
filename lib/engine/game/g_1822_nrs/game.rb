@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative '../g_1822/game'
+require_relative '../g_1822/scenario'
 require_relative 'entities'
 require_relative 'map'
 require_relative 'meta'
