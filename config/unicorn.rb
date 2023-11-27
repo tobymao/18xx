@@ -6,8 +6,8 @@ require 'message_bus'
 PRODUCTION = ENV['RACK_ENV'] == 'production'
 
 listen 9292
-worker_processes PRODUCTION ? 8 : 1
-timeout PRODUCTION ? 20 : 60
+worker_processes PRODUCTION ? 4 : 1
+timeout PRODUCTION ? 15 : 60
 preload_app true
 
 before_fork do |_server, _worker|
