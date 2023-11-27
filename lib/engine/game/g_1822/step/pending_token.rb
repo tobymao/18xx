@@ -26,7 +26,7 @@ module Engine
                                'tokens in the same city'
             end
 
-            connected = !@game.class::PENDING_HOME_TOKENERS.include?(action.entity.id)
+            connected = !@game.pending_home_tokeners.include?(action.entity.id)
             city.tokens << nil if action.entity.id == @game.class::MINOR_14_ID
             city.tokens << nil unless city.get_slot(action.entity)
             place_token(token.corporation, city, token, connected: connected, extra_action: true,

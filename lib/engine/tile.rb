@@ -150,6 +150,7 @@ module Engine
         town
       when 'halt'
         halt = Part::Halt.new(params['symbol'],
+                              revenue: params['revenue'],
                               groups: params['groups'],
                               hide: params['hide'],
                               visit_cost: params['visit_cost'],
@@ -373,6 +374,14 @@ module Engine
         @cities[city].add_reservation!(entity, slot)
       else
         @reservations << entity
+      end
+    end
+
+    def remove_reservation!(entity)
+      if (city = @cities.find { |c| c.reserved_by?(entity) })
+        city.remove_reservation!(entity)
+      else
+        @reservations.delete(entity)
       end
     end
 

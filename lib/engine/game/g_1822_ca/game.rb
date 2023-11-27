@@ -174,7 +174,7 @@ module Engine
 
         MINOR_14_ID = '13'
         MINOR_14_HOME_HEX = 'AC21'
-        PENDING_HOME_TOKENERS = [MINOR_14_ID, 'QMOO'].freeze
+        PENDING_HOME_TOKENERS = [MINOR_14_ID].freeze
 
         MULTIPLE_TOKENS_ON_SAME_HEX_ALLOWED = true
 
@@ -193,21 +193,21 @@ module Engine
           'P10' => { acquire: %i[major minor], phase: 3 },
           'P11' => { acquire: [], phase: 8 },
           'P12' => { acquire: %i[major minor], phase: 1 },
-          'P13' => { acquire: %i[major minor], phase: 3 },
+          'P13' => { acquire: %i[major], phase: 3 },
           'P14' => { acquire: %i[major minor], phase: 1 },
           'P15' => { acquire: %i[major minor], phase: 1 },
           'P16' => { acquire: %i[major minor], phase: 1 },
           'P17' => { acquire: %i[major minor], phase: 1 },
           'P18' => { acquire: %i[major minor], phase: 1 },
-          'P19' => { acquire: %i[major minor], phase: 3 },
-          'P20' => { acquire: %i[major minor], phase: 3 },
-          'P21' => { acquire: %i[major minor], phase: 3 },
-          'P22' => { acquire: %i[major minor], phase: 3 },
-          'P23' => { acquire: %i[major minor], phase: 3 },
-          'P24' => { acquire: %i[major minor], phase: 3 },
-          'P25' => { acquire: %i[major minor], phase: 3 },
-          'P26' => { acquire: %i[major minor], phase: 3 },
-          'P27' => { acquire: %i[major minor], phase: 3 },
+          'P19' => { acquire: %i[major], phase: 3 },
+          'P20' => { acquire: %i[major], phase: 3 },
+          'P21' => { acquire: %i[major], phase: 3 },
+          'P22' => { acquire: %i[major], phase: 3 },
+          'P23' => { acquire: %i[major], phase: 3 },
+          'P24' => { acquire: %i[major], phase: 3 },
+          'P25' => { acquire: %i[major], phase: 3 },
+          'P26' => { acquire: %i[major], phase: 3 },
+          'P27' => { acquire: %i[major], phase: 3 },
           'P28' => { acquire: %i[major minor], phase: 3 },
           'P29' => { acquire: %i[major minor], phase: 1 },
           'P30' => { acquire: %i[major minor], phase: 1 },
@@ -334,6 +334,7 @@ module Engine
             G1822CA::Step::SpecialTrack,
             G1822CA::Step::SpecialToken,
             G1822CA::Step::Track,
+            G1822CA::Step::PendingToken,
             G1822CA::Step::DestinationToken,
             G1822CA::Step::Token,
             G1822CA::Step::Route,
@@ -424,7 +425,7 @@ module Engine
         end
 
         def calculate_sawmill_bonus(route)
-          return unless (sawmill_stop = route.stops.find { |s| s.hex == @sawmill_hex })
+          return unless (sawmill_stop = route.visited_stops.find { |s| s.hex == @sawmill_hex })
 
           entity = route.train.owner
           sawmill_dest = sawmill_stop.city? &&
@@ -637,12 +638,77 @@ module Engine
           ].compact
         end
 
-        def action_processed(action)
-          case action
-          when Action::LayTile
-            if action.tile.color == :gray && (id = BIG_CITY_HEXES_TO_COMPANIES[action.hex.id])
-              company_by_id(id)&.all_abilities&.clear
-            end
+        def gnwr
+          @gnwr ||= corporation_by_id('GNWR')
+        end
+
+        def qmoo
+          @qmoo ||= corporation_by_id('QMOO')
+        end
+
+        def after_lay_tile(hex, old_tile, tile)
+          super
+
+          # remove ability from MOQTWY private if its city is now gray
+          if tile.color == :gray && (id = BIG_CITY_HEXES_TO_COMPANIES[hex.id])
+            company_by_id(id)&.all_abilities&.clear
+          end
+
+          update_home(qmoo, tile_trigger: true) if hex == quebec_hex
+        end
+
+        def after_place_token(_entity, city)
+          update_home(qmoo) if city.hex == quebec_hex
+        end
+
+        # QMOO's home can be any one of the Quebec cities; it might be chosen
+        # when QMOO operates and lays the first yellow tile in Quebec, or the
+        # home reservation could change from a city to hex reservation when
+        # yellow is laid by a different company, and back to a city reservation
+        # when the cities join up with the tiles Q4, Q6, Q7, or Q8
+        def update_home(corp, tile_trigger: false)
+          hex = hex_by_id(corp.coordinates)
+
+          corp_operated = corp.tokens.first.hex == hex
+
+          if corp_operated && tile_trigger && (hex.tile.color == :yellow)
+            corp.tokens.first.remove!
+            add_corp_reservation!(corp)
+
+            # if QMOO's reservation is on the hex due to multiple cities being
+            # available, this will prompt the pending token step to activate
+            place_home_token(corp)
+          elsif !corp_operated
+            hex.tile.remove_reservation!(corp)
+            add_corp_reservation!(corp)
+          end
+        end
+
+        # adds a home reservation for QMOO to the Quebec hex, or to a city if
+        # only one city has reservable slots
+        def add_corp_reservation!(corp)
+          hex = hex_by_id(corp.coordinates)
+          tile = hex.tile
+          cities = tile.cities.select { |c| c.available_slots.positive? }
+          city_index = cities.one? ? cities[0].index : nil
+          hex.tile.add_reservation!(corp, city_index)
+        end
+
+        def quebec_hex
+          @quebec_hex ||= hex_by_id('AH8')
+        end
+
+        def pending_home_tokeners
+          pending = [MINOR_14_ID]
+          pending << 'QMOO' unless quebec_hex.tile.color == :white
+          pending
+        end
+
+        def render_hex_reservation?(corporation)
+          if corporation.id == 'QMOO'
+            quebec_hex.tile.color != :white && quebec_hex.tile.cities.size > 1 && current_entity != corporation
+          else
+            super
           end
         end
       end

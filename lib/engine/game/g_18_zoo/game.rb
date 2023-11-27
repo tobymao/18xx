@@ -8,7 +8,7 @@ require_relative '../base'
 module Engine
   module Game
     module G18ZOO
-      class SharedGame < Game::Base
+      class Game < Game::Base
         CURRENCY_FORMAT_STR = '%s$N'
 
         BANK_CASH = 99_999
@@ -1406,128 +1406,6 @@ module Engine
 
           distance
         end
-      end
-
-      class Game < G18ZOO::SharedGame
-        include_meta(G18ZOO::Meta)
-        include G18ZOO::Entities
-        include G18ZOO::Map
-
-        STARTING_CASH = { 2 => 40, 3 => 28, 4 => 27, 5 => 22 }.freeze
-
-        def game_corporations
-          return G18ZOOMapD::Entities::CORPORATIONS if @players.size >= 4
-
-          G18ZOOMapA::Entities::CORPORATIONS
-        end
-
-        def game_corporation_coordinates
-          return G18ZOOMapD::Entities::CORPORATION_COORDINATES if @players.size >= 4
-
-          G18ZOOMapA::Entities::CORPORATION_COORDINATES
-        end
-
-        def game_hexes
-          return G18ZOOMapD::Map::HEXES if @players.size >= 4
-
-          G18ZOOMapA::Map::HEXES
-        end
-
-        def game_hole
-          return G18ZOOMapD::Map::HOLE if @players.size >= 4
-
-          G18ZOOMapA::Map::HOLE
-        end
-
-        def game_location_names
-          return G18ZOOMapD::Map::LOCATION_NAMES if @players.size >= 4
-
-          G18ZOOMapA::Map::LOCATION_NAMES
-        end
-
-        def game_base_2
-          return G18ZOOMapD::Map::BASE_2 if @players.size >= 4
-
-          G18ZOOMapA::Map::BASE_2
-        end
-
-        def game_location_name_base_2
-          return G18ZOOMapD::Map::LOCATION_NAMES_BASE_2 if @players.size >= 4
-
-          G18ZOOMapA::Map::LOCATION_NAMES_BASE_2
-        end
-
-        def game_base_3
-          return G18ZOOMapD::Map::BASE_3 if @players.size >= 4
-
-          G18ZOOMapA::Map::BASE_3
-        end
-
-        def game_location_name_base_3
-          return G18ZOOMapD::Map::LOCATION_NAMES_BASE_3 if @players.size >= 4
-
-          G18ZOOMapA::Map::LOCATION_NAMES_BASE_3
-        end
-      end
-    end
-
-    module G18ZOOMapA
-      class Game < G18ZOO::SharedGame
-        include_meta(G18ZOOMapA::Meta)
-        include G18ZOOMapA::Entities
-        include G18ZOOMapA::Map
-
-        STARTING_CASH = { 2 => 40, 3 => 28, 4 => 27, 5 => 22 }.freeze
-      end
-    end
-
-    module G18ZOOMapB
-      class Game < G18ZOO::SharedGame
-        include_meta(G18ZOOMapB::Meta)
-        include G18ZOOMapB::Entities
-        include G18ZOOMapB::Map
-
-        STARTING_CASH = { 2 => 40, 3 => 28, 4 => 23, 5 => 22 }.freeze
-      end
-    end
-
-    module G18ZOOMapC
-      class Game < G18ZOO::SharedGame
-        include_meta(G18ZOOMapC::Meta)
-        include G18ZOOMapC::Entities
-        include G18ZOOMapC::Map
-
-        STARTING_CASH = { 2 => 40, 3 => 28, 4 => 23, 5 => 22 }.freeze
-      end
-    end
-
-    module G18ZOOMapD
-      class Game < G18ZOO::SharedGame
-        include_meta(G18ZOOMapD::Meta)
-        include G18ZOOMapD::Entities
-        include G18ZOOMapD::Map
-
-        STARTING_CASH = { 2 => 48, 3 => 32, 4 => 27, 5 => 22 }.freeze
-      end
-    end
-
-    module G18ZOOMapE
-      class Game < G18ZOO::SharedGame
-        include_meta(G18ZOOMapE::Meta)
-        include G18ZOOMapE::Entities
-        include G18ZOOMapE::Map
-
-        STARTING_CASH = { 2 => 48, 3 => 32, 4 => 27, 5 => 22 }.freeze
-      end
-    end
-
-    module G18ZOOMapF
-      class Game < G18ZOO::SharedGame
-        include_meta(G18ZOOMapF::Meta)
-        include G18ZOOMapF::Entities
-        include G18ZOOMapF::Map
-
-        STARTING_CASH = { 2 => 48, 3 => 32, 4 => 27, 5 => 22 }.freeze
       end
     end
   end

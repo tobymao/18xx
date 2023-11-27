@@ -99,7 +99,9 @@ module View
         if @tile.location_name && (@tile.cities.size <= 1) && !@tile.hex.hide_location_name
           rendered_loc_name = render_tile_part(Part::LocationName)
         end
-        @tile.reservations.each { |r| children << render_tile_part(Part::Reservation, reservation: r) }
+        @tile.reservations.each do |r|
+          children << render_tile_part(Part::Reservation, reservation: r) if @game.render_hex_reservation?(r)
+        end
 
         large, normal = @tile.icons.partition(&:large)
         render_tile_parts_by_loc(Part::Icons, parts: normal).each { |i| children << i }

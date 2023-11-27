@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative '../g_1822/game'
+require_relative '../g_1822/scenario'
 require_relative 'entities'
 require_relative 'map'
 require_relative 'meta'
@@ -12,6 +13,7 @@ module Engine
         include_meta(G1822NRS::Meta)
         include Entities
         include Map
+        include G1822::Scenario
 
         BIDDING_BOX_START_MINOR = nil
 
@@ -46,8 +48,6 @@ module Engine
           %w[10y 15y 20y 25y 30y 35y],
           %w[5y 10y 15y 20y 25y],
         ].freeze
-
-        PHASES = G1822::Scenario::PHASES
 
         TRAINS = [
           {

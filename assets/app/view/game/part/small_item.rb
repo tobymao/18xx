@@ -10,7 +10,7 @@ module View
           parts = parts_for_loc
 
           if layout == :pointy
-            case @loc.to_s
+            case @loc
             when '0.5'
               parts.one? ? [PP_BOTTOM_LEFT_CORNER] : [PP_WIDE_BOTTOM_LEFT_CORNER]
             when '1.5'
@@ -28,8 +28,23 @@ module View
               preferred_render_locations
             end
           else
-            @loc = nil
-            preferred_render_locations
+            case @loc
+            when '0.5'
+              [P_BOTTOM_LEFT_CORNER]
+            when '1.5'
+              [P_LEFT_CORNER]
+            when '2.5'
+              [P_UPPER_LEFT_CORNER]
+            when '3.5'
+              [P_UPPER_RIGHT_CORNER]
+            when '4.5'
+              [P_RIGHT_CORNER]
+            when '5.5'
+              [P_BOTTOM_RIGHT_CORNER]
+            else
+              @loc = nil
+              preferred_render_locations
+            end
           end
         end
 
@@ -48,6 +63,12 @@ module View
         P_UPPER_LEFT_CORNER = {
           region_weights: Base::UPPER_LEFT_CORNER,
           x: -35,
+          y: -60.62,
+        }.freeze
+
+        P_UPPER_RIGHT_CORNER = {
+          region_weights: Base::UPPER_RIGHT_CORNER,
+          x: 35,
           y: -60.62,
         }.freeze
 
