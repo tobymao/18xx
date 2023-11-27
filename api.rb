@@ -116,20 +116,22 @@ class Api < Roda
       r.get Integer do |id|
         halt(404, 'User does not exist') unless (profile = User[id])
 
-        needs = { profile: profile&.to_h(for_user: false) }
+        Bus.cache("/profile:#{id}", ttl: 60, skip: user&.id == id) do
+          needs = { profile: profile&.to_h(for_user: false) }
 
-        if profile.settings['show_stats']
-          begin
-            needs[:profile]['stats'] = JSON.parse(Bus[Bus::USER_STATS % id])
-          rescue StandardError => e
-            LOGGER.error "Unable to get stats for #{id}: #{e}"
+          if profile.settings['show_stats']
+            begin
+              needs[:profile]['stats'] = JSON.parse(Bus[Bus::USER_STATS % id])
+            rescue StandardError => e
+              LOGGER.error "Unable to get stats for #{id}: #{e}"
+            end
           end
-        end
 
-        render(
-          games: Game.profile_games(profile).map(&:to_h),
-          **needs,
-        )
+          render(
+            games: Game.profile_games(profile).map(&:to_h),
+            **needs,
+          )
+        end
       end
     end
 
