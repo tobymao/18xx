@@ -202,8 +202,6 @@ class Api < Roda
   end
 
   def static(desc: '', js_tags: '', **needs)
-    LOGGER.error js_tags
-
     args = Snabberb.wrap(
       app_route: request.path,
       production: PRODUCTION,
