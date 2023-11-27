@@ -29,7 +29,7 @@ module Engine
             actions << 'buy_shares' if @bid_actions.zero? && can_buy_any?(entity) && player_debt.zero?
             actions << 'par' if @bid_actions.zero? && can_ipo_any?(entity) && player_debt.zero?
             actions << 'sell_shares' if can_sell_any?(entity)
-            actions << 'bid'
+            actions << 'bid' if player_debt.zero?
             actions << 'payoff_player_debt' if player_debt.positive? && entity.cash.positive?
             actions << 'pass' unless actions.empty?
             actions
@@ -141,8 +141,6 @@ module Engine
           end
 
           def process_bid(action)
-            raise GameError, 'Cannot bid while in debt' if @game.player_debt(action.entity).positive?
-
             @game.something_sold_in_sr! if @game.nothing_sold_in_sr?
             action.entity.unpass!
             add_bid(action)
