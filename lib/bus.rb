@@ -28,6 +28,22 @@ module Bus
     @redis ||= Redis.new(url: URL)
   end
 
+  def self.cache(key, ttl: 10, skip: false)
+    return yield if skip
+
+    result = self[key]
+
+    unless result
+      result = yield
+      redis.pipelined do |pipeline|
+        pipeline.set(key, result)
+        pipeline.expire(key, ttl)
+      end
+    end
+
+    result
+  end
+
   def self.[](key)
     redis.get(key)
   end
