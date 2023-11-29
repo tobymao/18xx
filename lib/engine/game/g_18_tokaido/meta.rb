@@ -24,6 +24,16 @@ module Engine
 
         OPTIONAL_RULES = [
           {
+            sym: :newbie_rules,
+            short_name: 'Local 普通',
+            desc: '[newbie variant] slightly expanded tileset, removes yellow zone from stock market',
+          },
+          {
+            sym: :limited_express,
+            short_name: 'Limited Express 特急',
+            desc: '[brutal variant] one less 6 train, 50% to float, 1882-like stock market',
+          },
+          {
             sym: :pass_priority,
             short_name: 'Pass Priority',
             players: [3, 4],
@@ -44,16 +54,6 @@ module Engine
             sym: :waterfall_auction,
             short_name: 'Waterfall Auction',
             desc: 'standard waterfall auction for privates',
-          },
-          {
-            sym: :limited_express,
-            short_name: 'Limited Express',
-            desc: 'one less 6 train, 50% to float, 1882-like stock market',
-          },
-          {
-            sym: :newbie_rules,
-            short_name: 'Newbie Friendly',
-            desc: 'slightly expanded tileset, removes yellow zone from stock market',
           },
         ].freeze
 
