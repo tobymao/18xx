@@ -556,6 +556,8 @@ module Engine
         @loans = init_loans
         @total_loans = @loans.size
         @corporations = init_corporations(@stock_market)
+        @closing_queue = {}
+        @corporations_are_closing = false
         @bank = init_bank
         @tiles = init_tiles
         @all_tiles = init_tiles
@@ -1775,6 +1777,10 @@ module Engine
 
         corporation.close!
         @cert_limit = init_cert_limit
+
+        # when the entity after the closing one starts operating, it might skip
+        # all its steps and land in a closing cell too
+        close_corporations_in_close_cell!
       end
 
       def shares_for_corporation(corporation)
@@ -2710,9 +2716,29 @@ module Engine
       end
 
       def action_processed(_action)
+        close_corporations_in_close_cell!
+      end
+
+      # close_corporation() might cause another corporation to need closing; if
+      # this function is called multiple times before resolving, corporations
+      # that should be closed are added to @closing_queue, but the closing loop
+      # is not re-entered
+      def close_corporations_in_close_cell!
         return unless stock_market.has_close_cell
 
-        @corporations.dup.each { |c| close_corporation(c) if c.share_price&.type == :close }
+        @corporations.each do |corp|
+          @closing_queue[corp] = true if !corp.closed? && corp.share_price&.type == :close
+        end
+
+        return if @corporations_are_closing
+
+        @corporations_are_closing = true
+        until @closing_queue.empty?
+          corp = @closing_queue.first[0]
+          @closing_queue.delete(corp)
+          close_corporation(corp)
+        end
+        @corporations_are_closing = false
       end
 
       def show_priority_deal_player?(order)
