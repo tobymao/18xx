@@ -81,11 +81,11 @@ module Engine
           end
 
           def process_pass(_action)
-            if all_cities_have_corp_token?
-              @game.log << "#{pending_corporation.name} already has a token on #{pending_token.city.hex.name}"
-            else
-              @game.log << "#{pending_corporation.name} passes replacing #{pending_minor.name} token"
-            end
+            @game.log << if all_cities_have_corp_token?
+                           "#{pending_corporation.name} already has a token on #{pending_token.city.hex.name}"
+                         else
+                           "#{pending_corporation.name} passes replacing #{pending_minor.name} token"
+                         end
 
             close!(pending_minor)
           end
