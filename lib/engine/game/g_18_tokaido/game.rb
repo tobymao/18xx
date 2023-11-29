@@ -170,7 +170,7 @@ module Engine
               c.min_price = (new_value / 2).to_i
               c.max_price = new_value * 2
             end
-          elsif @optional_rules&.include?(:snake_draft)
+          elsif snake_draft
             setup_company_price_up_to_face
             @reverse = true
           else
@@ -222,7 +222,7 @@ module Engine
               Engine::Step::CompanyPendingPar,
               Engine::Step::WaterfallAuction,
             ])
-          elsif @optional_rules&.include?(:snake_draft)
+          elsif snake_draft
             Engine::Round::Draft.new(
               self,
               [G18Tokaido::Step::DraftDistribution],
@@ -380,7 +380,7 @@ module Engine
             'At the end of each set of ORs the next available train will be exported (removed, triggering ' \
             'phase change as if purchased)',
           ]
-          timeline.unshift('First stock round is in reverse order of draft order') unless waterfall_auction
+          timeline.unshift('First stock round is in reverse order of draft order') if snake_draft
           @timeline = timeline
         end
 
@@ -396,6 +396,10 @@ module Engine
 
         def waterfall_auction
           @optional_rules&.include?(:waterfall_auction)
+        end
+
+        def snake_draft
+          @optional_rules&.include?(:snake_draft)
         end
 
         def payout_companies(ignore: [])
