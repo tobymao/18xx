@@ -142,7 +142,7 @@ module Engine
         GAME_END_CHECK = { bankrupt: :immediate, final_phase: :full_or }.freeze
 
         def game_tiles
-          if @optional_rules&.include?(:expanded_tileset)
+          if @optional_rules&.include?(:newbie_rules)
             tiles = G18Tokaido::Tiles::TILES.dup
             %w[204 207 208 619 622].each { |t| tiles[t] += 1 }
             tiles
@@ -152,7 +152,7 @@ module Engine
         end
 
         def game_market
-          if @optional_rules&.include?(:no_yellow_zone)
+          if @optional_rules&.include?(:newbie_rules)
             market = G18Tokaido::StockMarket::MARKET.dup
             market.map do |row|
               row.map { |p| p.include?('y') ? p.chop : p }

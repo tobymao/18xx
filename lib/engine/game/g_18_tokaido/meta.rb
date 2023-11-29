@@ -51,19 +51,15 @@ module Engine
             desc: 'removes one of the 6 trains from the game (for a faster train rush)',
           },
           {
-            sym: :expanded_tileset,
-            short_name: 'Expanded Tileset',
-            desc: 'slightly expanded (newbie-friendly) tileset',
-          },
-          {
-            sym: :no_yellow_zone,
-            short_name: 'No Yellow Zone',
-            desc: 'removes yellow zone from stock market (for slightly more newbie-friendly game)',
+            sym: :newbie_rules,
+            short_name: 'Newbie Friendly',
+            desc: 'slightly expanded tileset, removes yellow zone from stock market',
           },
         ].freeze
 
         MUTEX_RULES = [
-          %i[snake_draft waterfall_auction]
+          %i[snake_draft waterfall_auction],
+          %i[limited_express newbie_rules]
         ].freeze
       end
     end
