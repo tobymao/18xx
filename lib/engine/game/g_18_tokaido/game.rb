@@ -137,12 +137,16 @@ module Engine
           'FM' => '/icons/18_tokaido/fm_token.svg',
         }.freeze
 
+        def corporation_opts
+          limited_express ? { float_percent: 50 } : {}
+        end
+
         SELL_BUY_ORDER = :sell_buy
 
         GAME_END_CHECK = { bankrupt: :immediate, final_phase: :full_or }.freeze
 
         def game_tiles
-          if @optional_rules&.include?(:newbie_rules)
+          if newbie_rules
             tiles = G18Tokaido::Tiles::TILES.dup
             %w[204 207 208 619 622].each { |t| tiles[t] += 1 }
             tiles
@@ -152,17 +156,42 @@ module Engine
         end
 
         def game_market
-          if @optional_rules&.include?(:newbie_rules)
+          if newbie_rules
             market = G18Tokaido::StockMarket::MARKET.dup
             market.map do |row|
               row.map { |p| p.include?('y') ? p.chop : p }
             end
+          elsif limited_express
+            [
+              %w[76 82 90 100p 112 126 142 160 180 200 225 250 275 300e],
+              %w[70 76 82 90p 100 112 126 142 160 180 200 220 240 260],
+              %w[65 70 76 82p 90 100 111 125 140 155 170 185],
+              %w[60y 66 71 76p 82 90 100 110 120 130],
+              %w[55y 62 67 71p 76 82 90 100],
+              %w[50y 58y 65 67p 71 75 80],
+              %w[45o 54y 63 67 69 70],
+              %w[40o 50y 60y 67 68],
+              %w[30b 40o 50y 60y],
+              %w[20b 30b 40o 50y],
+              %w[10b 20b 30b 40o],
+            ].freeze
           else
             G18Tokaido::StockMarket::MARKET
           end
         end
 
+        def game_end_check_values
+          if limited_express
+            check = G18Tokaido::GAME_END_CHECK.dup
+            check.merge(stock_market: :current_round)
+          else
+            G18Tokaido::GAME_END_CHECK
+          end
+        end
+
         def setup
+          G18Tokaido.const_set(SELL_BUY_ORDER, :sell_buy_sell) if limited_express
+
           if waterfall_auction
             @companies.each do |c|
               new_value = c.value - ((c.value - 20) / 4)
@@ -199,7 +228,7 @@ module Engine
           when '5'
             3
           when '6'
-            @optional_rules&.include?(:limited_express) ? 2 : 3
+            limited_express ? 2 : 3
           when 'D'
             20
           end
@@ -400,6 +429,14 @@ module Engine
 
         def snake_draft
           @optional_rules&.include?(:snake_draft)
+        end
+
+        def limited_express
+          @optional_rules&.include?(:limited_express)
+        end
+
+        def newbie_rules
+          @optional_rules&.include?(:newbie_rules)
         end
 
         def payout_companies(ignore: [])
