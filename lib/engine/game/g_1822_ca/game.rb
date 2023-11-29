@@ -38,7 +38,8 @@ module Engine
         COMPANY_WINNIPEG_TOKEN = 'P10'
 
         COMPANIES_BIG_CITY_UPGRADES = %w[P14 P15 P16 P17 P18].freeze
-        COMPANIES_EXTRA_TRACK_LAYS = (COMPANIES_BIG_CITY_UPGRADES + %w[P19 P20 P21]).freeze
+        COMPANIES_EXTRA_TRACK_LAYS = (COMPANIES_BIG_CITY_UPGRADES + %w[P21]).freeze
+        COMPANIES_CONSUME_TILE_LAY = %w[P19 P20 P29 P30].freeze
         BIG_CITY_HEXES_TO_COMPANIES = {
           'AH8' => 'P17',
           'N16' => 'P18',
@@ -55,7 +56,6 @@ module Engine
 
         MOUNTAIN_PASS_HEXES = %w[E11 F16].freeze
         MOUNTAIN_PASS_TILES = %w[7 8 9].freeze
-        MOUNTAIN_PASS_COMPANIES = %w[P19 P20].freeze
         MOUNTAIN_PASS_HEXES_TO_COMPANIES = { 'E11' => 'P20', 'F16' => 'P19' }.freeze
 
         TILE_UPGRADES_MUST_USE_MAX_EXITS = %i[unlabeled_cities].freeze
