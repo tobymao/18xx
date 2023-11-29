@@ -35,6 +35,9 @@ module Engine
 
         # we use a custom end check since final_train doesn't take the 'reserved' leasable train into account
         GAME_END_CHECK = { custom: :current_or, stock_market: :current_or }.freeze
+        GAME_END_REASONS_TEXT = Base::GAME_END_REASONS_TEXT.merge(
+          custom: 'Last 6X sold or exported'
+        )
 
         BANKRUPTCY_ALLOWED = false
 
