@@ -45,6 +45,7 @@ module Engine
       mayfair: {
         name: 'Mayfair Games',
         url: 'https://boardgamegeek.com/boardgamepublisher/10/mayfair-games',
+        hidden: true,
       },
       mercury: {
         name: 'Mercury Games',
