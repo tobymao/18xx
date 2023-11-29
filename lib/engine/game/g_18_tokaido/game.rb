@@ -141,9 +141,8 @@ module Engine
           limited_express ? { float_percent: 50 } : {}
         end
 
+        # Not actually used (see game_end_check_values), but required by class validation
         SELL_BUY_ORDER = :sell_buy
-
-        GAME_END_CHECK = { bankrupt: :immediate, final_phase: :full_or }.freeze
 
         def game_tiles
           if newbie_rules
@@ -182,16 +181,13 @@ module Engine
 
         def game_end_check_values
           if limited_express
-            check = G18Tokaido::GAME_END_CHECK.dup
-            check.merge(stock_market: :current_round)
+            { bankrupt: :immediate, stock_market: :current_round, final_phase: :full_or }
           else
-            G18Tokaido::GAME_END_CHECK
+            { bankrupt: :immediate, final_phase: :full_or }
           end
         end
 
         def setup
-          G18Tokaido.const_set(SELL_BUY_ORDER, :sell_buy_sell) if limited_express
-
           if waterfall_auction
             @companies.each do |c|
               new_value = c.value - ((c.value - 20) / 4)
