@@ -48,10 +48,6 @@ module Engine
             [pending_corporation]
           end
 
-          def current_entity
-            pending_corporation
-          end
-
           def pending_acquisition
             @round.pending_acquisition
           end
@@ -85,7 +81,11 @@ module Engine
           end
 
           def process_pass(_action)
-            @game.log << "#{pending_corporation.name} passes replacing #{pending_minor.name} token"
+            if all_cities_have_corp_token?
+              @game.log << "#{pending_corporation.name} already has a token on #{pending_token.city.hex.name}"
+            else
+              @game.log << "#{pending_corporation.name} passes replacing #{pending_minor.name} token"
+            end
 
             close!(pending_minor)
           end
