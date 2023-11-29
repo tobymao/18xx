@@ -48,7 +48,7 @@ module Engine
           {
             sym: :limited_express,
             short_name: 'Limited Express',
-            desc: 'removes one of the 6 trains from the game (for a faster train rush)',
+            desc: 'one less 6 train, 50% to float, 1882-like stock market',
           },
           {
             sym: :newbie_rules,
