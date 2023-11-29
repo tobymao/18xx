@@ -20,7 +20,7 @@ module Engine
           end
 
           def description
-            @game.limited_express ? 'Sell/BuySell Shares' : 'Sell then Buy Shares'
+            @game.limited_express ? 'Sell/Buy/Sell Shares' : 'Sell then Buy Shares'
           end
 
           def can_sell_order?
