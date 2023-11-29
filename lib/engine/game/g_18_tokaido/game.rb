@@ -141,9 +141,6 @@ module Engine
           limited_express ? { float_percent: 50 } : {}
         end
 
-        # Not actually used (see game_end_check_values), but required by class validation
-        SELL_BUY_ORDER = :sell_buy
-
         def game_tiles
           if newbie_rules
             tiles = G18Tokaido::Tiles::TILES.dup
