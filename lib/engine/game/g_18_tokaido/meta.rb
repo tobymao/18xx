@@ -59,7 +59,7 @@ module Engine
 
         MUTEX_RULES = [
           %i[snake_draft waterfall_auction],
-          %i[limited_express newbie_rules]
+          %i[limited_express newbie_rules],
         ].freeze
       end
     end
