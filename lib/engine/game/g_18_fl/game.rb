@@ -235,10 +235,6 @@ module Engine
           @tile_company ||= company_by_id('TR')
         end
 
-        def token_company
-          @token_company ||= company_by_id('POSC')
-        end
-
         def revenue_for(route, stops)
           revenue = super
 
