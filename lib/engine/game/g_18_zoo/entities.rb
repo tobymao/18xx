@@ -16,7 +16,7 @@ module Engine
           {
             sym: 'MIDAS',
             name: 'Midas',
-            value: 2,
+            value: 1,
             desc: 'During the SR you can take the priority: when priority is assigned by “more money” criteria,'\
                   ' you are assigned 1st spot',
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
@@ -39,7 +39,7 @@ module Engine
           {
             sym: 'IT_S_ALL_GREEK_TO_ME',
             name: 'It’s all greek to me',
-            value: 2,
+            value: 1,
             desc: 'After your turn in an SR, you get another turn - it means you can play twice in a row in a SR:'\
                   ' “who said you can steal a company?”',
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
