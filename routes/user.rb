@@ -78,7 +78,7 @@ class Api
         r.post 'logout' do
           session.destroy
           clear_cookies!
-          { games: Game.home_games(nil, **r.params).map(&:to_h) }
+          { games: Game.home_games(nil, **r.params) }
         end
 
         # POST '/api/user/login'
@@ -116,7 +116,7 @@ class Api
 
     {
       user: user.to_h(for_user: true),
-      games: Game.home_games(user, **request.params).map(&:to_h),
+      games: Game.home_games(user, **request.params),
     }
   end
 end

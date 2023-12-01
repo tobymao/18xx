@@ -19,10 +19,9 @@ module Engine
             return super if hex.id != @game.class::PARIS_HEX || hex.tile.color != :green
 
             plm_in_city_0 = true if hex.tile.cities[0].reserved_by?(@game.plm) || hex.tile.cities[0].tokened_by?(@game.plm)
-
-            if tile.name == 'X7' || plm_in_city_0
+            if plm_in_city_0
               return true if tile.rotation == hex.tile.rotation
-            elsif tile.rotation == hex.tile.rotation + 3
+            elsif tile.rotation == (hex.tile.rotation + 3) % 6
               true
             end
           end

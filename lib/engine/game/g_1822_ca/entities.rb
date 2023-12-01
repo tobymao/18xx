@@ -473,21 +473,24 @@ module Engine
                 special: false,
                 free: true,
                 tiles: [],
-                hexes: %w[A9 B10 B12 B14 B6 B8 C11 C13 C7 C9 D10 D12 D14 D16 D6
-                          D8 E15 E7 E9 F10 F12 F6 F8 G11 G13 G17 G7 G9 H10 H12 H14 H16 H6
-                          H8 I11 I13 I15 I17 I7 I9 J10 J12 J14 J16 J6 J8 K11 K13 K17 K7 K9
-                          L10 L12 L14 L16 L6 L8 M11 M13 M15 M17 M7 M9 N10 N12 N14 N18 N6
-                          N8 O11 O13 O15 O17 O7 O9 P10 P12 P14 P16 P8 Q11 Q13 Q15 Q17 Q7
-                          Q9 R10 R12 R14 R8 S11 S13 S15 S9 U11 U13 U15 U17 U9 V10 V12 V14
-                          V16 V8 W11 W13 W15 W17 W19 W7 W9 X10 X12 X14 X16 X18 X8 Y11 Y13
-                          Y17 Y7 Y9 Z10 Z12 Z14 Z16 Z18 Z22 Z24 Z26 Z28 Z8 AA11 AA13 AA15
-                          AA17 AA19 AA21 AA23 AA27 AA7 AA9 AB10 AB12 AB14 AB16 AB18 AB20
-                          AB22 AB24 AB8 AC11 AC13 AC15 AC17 AC19 AC7 AC9 AD10 AD12 AD14
-                          AD16 AD18 AD20 AD8 AE11 AE13 AE17 AE19 AE7 AE9 AF10 AF14 AF16
-                          AF6 AF8 AG11 AG13 AG15 AG3 AG5 AG7 AG9 AH10 AH12 AH14 AH2 AH4
-                          AH6 AI11 AI13 AI3 AI5 AI7 AI9 AJ10 AJ12 AJ2 AJ4 AJ6 AJ8 AK11 AK3
-                          AK5 AK7 AK9 AL10 AL2 AL4 AL6 AL8 AM3 AM5 AM7 AM9 AN2 AN4 AN6 AO3
-                          AO5 AO7 AO9 AP2 AP6 AP8],
+                hexes: %w[A7 A9 B6 B8 B10 B12 B14 C7 C9 C11 C13 D6 D8 D10 D12
+                          D14 D16 E7 E9 E15 F6 F8 F10 F12 G7 G9 G11 G13 G17 G15
+                          H6 H8 H10 H12 H14 H16 I7 I9 I11 I13 I15 I17 J6 J8 J10
+                          J12 J14 J16 K7 K9 K11 K13 K15 K17 L6 L8 L10 L12 L14
+                          L16 M7 M9 M11 M13 M15 M17 N6 N8 N10 N12 N14 N18 O7 O9
+                          O11 O13 O15 O17 P8 P10 P12 P14 P16 Q7 Q9 Q11 Q13 Q15
+                          Q17 R8 R10 R12 R14 R16 S9 S11 S13 S15 U9 U11 U13 U15
+                          U17 V8 V10 V12 V14 V16 V18 W7 W9 W11 W13 W15 W17 W19
+                          X8 X10 X12 X14 X16 X18 Y7 Y9 Y11 Y13 Y15 Y17 Z8 Z10
+                          Z12 Z14 Z16 Z18 Z22 Z24 Z26 Z28 AA7 AA9 AA11 AA13 AA15
+                          AA17 AA19 AA21 AA23 AA25 AA27 AB8 AB10 AB12 AB14 AB16
+                          AB18 AB20 AB22 AB24 AC7 AC9 AC11 AC13 AC15 AC17 AC19
+                          AD8 AD10 AD12 AD14 AD16 AD18 AD20 AE7 AE9 AE11 AE13
+                          AE17 AE19 AF6 AF8 AF10 AF14 AF16 AG3 AG5 AG7 AG9 AG11
+                          AG13 AG15 AH2 AH4 AH6 AH10 AH12 AH14 AI3 AI5 AI7 AI9
+                          AI11 AI13 AJ2 AJ4 AJ6 AJ8 AJ10 AJ12 AK3 AK5 AK7 AK9
+                          AK11 AL2 AL4 AL6 AL8 AL10 AM3 AM5 AM7 AM9 AN2 AN4 AN6
+                          AO3 AO5 AO7 AO9 AP2 AP6 AP8],
               },
             ],
             color: PRIVATE_RED,
@@ -1687,6 +1690,7 @@ module Engine
             color: '#eee91e',
             text_color: 'black',
             destination_coordinates: 'AH8',
+            destination_loc: '3.5',
             destination_exits: [0, 1, 2, 3, 4, 5],
             destination_icon: '1822_ca/ICR_DEST',
           },
@@ -1726,6 +1730,7 @@ module Engine
             float_percent: 20,
             always_market_price: true,
             coordinates: 'AH8',
+            city: 1,
             color: '#7f3881',
             destination_coordinates: 'AA15',
             destination_icon: '1822_ca/QMOO_DEST',

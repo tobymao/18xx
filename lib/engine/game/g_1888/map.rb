@@ -115,6 +115,15 @@ module Engine
         }.freeze
         # rubocop:enable Layout/LineLength
 
+        NORTH_VARIANT_TILES = {
+          '4' => 4,
+          '15' => 4,
+          '43' => 1,
+          '51' => 2,
+          '58' => 5,
+          '611' => 6,
+        }.freeze
+
         LOCATION_NAMES = {
           'A1' => 'Baotou',
           'A19' => 'Changchun',

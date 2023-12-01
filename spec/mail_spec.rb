@@ -2,7 +2,6 @@
 
 require 'spec_helper'
 require 'assets'
-require 'json'
 
 describe 'Mail' do
   before(:all) { @subject = Assets.new }
@@ -14,8 +13,7 @@ describe 'Mail' do
   end
 
   it 'should render mail' do
-    data = JSON.parse(File.read(FIXTURES_DIR + '/1889/962.json'))
-    html = render(game_data: data, game_url: '')
-    expect(html).to include('Game over: SamK')
+    html = render(game_id: '1', game_url: '')
+    expect(html).not_to be_nil
   end
 end

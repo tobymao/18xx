@@ -143,9 +143,8 @@ module Engine
     end
 
     describe 'starting values' do
-      max_players = { map_a_d: 5, map_b: 5, map_c: 5, map_d: 5, map_e: 5, map_f: 5 }
+      max_players = { map_b: 5, map_c: 5, map_d: 5, map_e: 5, map_f: 5 }
       game_by_variant = {
-        map_a_d: Engine::Game::G18ZOO::Game,
         map_a: Engine::Game::G18ZOOMapA::Game,
         map_b: Engine::Game::G18ZOOMapB::Game,
         map_c: Engine::Game::G18ZOOMapC::Game,
@@ -154,7 +153,6 @@ module Engine
         map_f: Engine::Game::G18ZOOMapF::Game,
       }
       expected_cash = {
-        map_a_d: { 2 => 40, 3 => 28, 4 => 27, 5 => 22 },
         map_a: { 2 => 40, 3 => 28, 4 => 23, 5 => 22 },
         map_b: { 2 => 40, 3 => 28, 4 => 23, 5 => 22 },
         map_c: { 2 => 40, 3 => 28, 4 => 23, 5 => 22 },
@@ -163,7 +161,6 @@ module Engine
         map_f: { 2 => 48, 3 => 32, 4 => 27, 5 => 22 },
       }
       expected_cert_limit = {
-        map_a_d: { 2 => 10, 3 => 7, 4 => 7, 5 => 6 },
         map_a: { 2 => 10, 3 => 7, 4 => 5, 5 => 6 },
         map_b: { 2 => 10, 3 => 7, 4 => 5, 5 => 6 },
         map_c: { 2 => 10, 3 => 7, 4 => 5, 5 => 6 },
@@ -230,7 +227,7 @@ module Engine
 
     describe 'phases' do
       let(:players) { %w[a b c] }
-      let(:game) { Engine::Game::G18ZOO::Game.new(players) }
+      let(:game) { Engine::Game::G18ZOOMapA::Game.new(players) }
       let(:player_1) { game.players.first }
       let(:player_2) { game.players[1] }
       let(:player_3) { game.players[2] }
@@ -395,7 +392,7 @@ module Engine
 
     describe '"family near"' do
       let(:players) { %w[a b c] }
-      let(:game) { Engine::Game::G18ZOO::Game.new(players) }
+      let(:game) { Engine::Game::G18ZOOMapA::Game.new(players) }
       let(:player_1) { game.players.first }
       let(:player_2) { game.players[1] }
       let(:corporation) { game.corporations.first }

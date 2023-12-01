@@ -284,7 +284,7 @@ module Engine
       end
     end
 
-    describe '18ZOO' do
+    describe '18ZOO - Map A' do
       describe 4 do
         it 'corporation should earn 2$N for each share in Market' do
           game = game_at_action(game_file, 14)
@@ -349,7 +349,9 @@ module Engine
           expect(corporation.share_price.price).to eq(8)
         end
       end
+    end
 
+    describe '18ZOO - Map F' do
       describe 6535 do
         it '"on a diet" cannot be executed automatically' do
           game = game_at_action(game_file, 255)

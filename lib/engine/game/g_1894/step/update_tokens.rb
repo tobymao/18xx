@@ -40,7 +40,8 @@ module Engine
           end
 
           def description
-            "Choose city for token in #{@game.saved_tokens_hex.name}"
+            "Choose city for token in #{@game.saved_tokens_hex.name}"\
+              ' (either city may be chosen, even the one already containing a token)'
           end
 
           def available_hex(_entity, hex)

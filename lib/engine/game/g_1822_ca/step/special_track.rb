@@ -27,9 +27,9 @@ module Engine
           def process_lay_tile(action)
             super
 
-            # cannot lay a second yellow after using one of the P19-P20 Mountain
-            # Pass privates
-            @round.num_laid_track += 1 if @game.class::MOUNTAIN_PASS_COMPANIES.include?(action.entity.id)
+            # cannot lay a second yellow after using one of the privates that
+            # consumes the tile lay
+            @round.num_laid_track += 1 if @game.class::COMPANIES_CONSUME_TILE_LAY.include?(action.entity.id)
           end
 
           # P21 3-Tile Grant does not need to be consecutive
