@@ -19,7 +19,7 @@ module Engine
 
           def can_place_token?(entity)
             !@game.round.laid_token[entity] && (
-              !@game.token_company.closed? ||
+              !@game.steamboat.closed? ||
               (current_entity == entity &&
                 !(tokens = available_tokens(entity)).empty? &&
                 min_token_price(tokens) <= buying_power(entity))

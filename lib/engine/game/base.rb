@@ -2197,7 +2197,7 @@ module Engine
         2
       end
 
-      def skip_route_track_type; end
+      def skip_route_track_type(train); end
 
       def tile_valid_for_phase?(tile, hex: nil, phase_color_cache: nil)
         phase_color_cache ||= @phase.tiles
