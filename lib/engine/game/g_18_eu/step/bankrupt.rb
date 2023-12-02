@@ -13,6 +13,13 @@ module Engine
             transfer_remaining_shares(player)
             fund_previous_corporation(player, corporation) unless corporation.presidents_share.owner == @game.share_pool
             maybe_restart_ownerless_corporations
+
+            player_minors = @game.player_card_minors(player)
+            if player_minors.any?
+              debugger;
+              @log << "#{player.name}'s minors close: #{player_minors.map(&:name).join(', ')}"
+              player_minors.each { |c| @game.close_corporation(c) }
+            end
           end
 
           def transfer_remaining_shares(player)
