@@ -235,10 +235,6 @@ module Engine
           @tile_company ||= company_by_id('TR')
         end
 
-        def token_company
-          @token_company ||= company_by_id('POSC')
-        end
-
         def revenue_for(route, stops)
           revenue = super
 
@@ -247,10 +243,8 @@ module Engine
           raise GameError, '3E must visit at least two paying revenue centers' if route.train.variant['name'] == '3E' &&
              stops.count { |h| !h.town? } <= 1
 
-          steam = steamboat.id
-          if route.corporation.assigned?(steam) && (port = stops.map(&:hex).find { |hex| hex.assigned?(steam) })
-            revenue += 20 * port.tile.icons.count { |icon| icon.name == 'port' }
-          end
+          revenue += 20 if route.corporation.assigned?(steamboat.id) && stops.find { |s| s.hex.assigned?(steamboat.id) }
+
           hotels = stops.count { |h| h.tile.icons.any? { |i| i.name == route.corporation.id } }
 
           # 3E doesn't count hotels.

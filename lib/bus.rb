@@ -28,20 +28,21 @@ module Bus
     @redis ||= Redis.new(url: URL)
   end
 
-  def self.cache(key, ttl: 10, skip: false)
+  def self.cache(key, ttl: 10, skip: false, json: true)
     return yield if skip
 
     result = self[key]
 
     unless result
       result = yield
+      result = JSON.generate(result) if json
       redis.pipelined do |pipeline|
         pipeline.set(key, result)
         pipeline.expire(key, ttl)
       end
     end
 
-    result
+    json ? JSON.parse(result) : result
   end
 
   def self.[](key)

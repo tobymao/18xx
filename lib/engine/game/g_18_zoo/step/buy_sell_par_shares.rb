@@ -70,6 +70,20 @@ module Engine
 
             @game.available_companies
           end
+
+          def round_state
+            # An extra field to track whether a share was already sold from any not president since the start of the round.
+            super.merge({ share_sold: [] })
+          end
+
+          def sell_shares(entity, shares, swap: nil)
+            raise GameError, "Cannot sell shares of #{shares.corporation.name}" if !can_sell?(entity, shares) && !swap
+
+            should_move = shares.owner == shares.corporation.owner || !@round.share_sold.include?(shares)
+            @round.share_sold << shares if shares.owner != shares.corporation.owner && !@round.share_sold.include?(shares)
+
+            @game.sell_shares_and_change_price(shares, swap: swap, movement: (should_move ? @game.sell_movement : :none))
+          end
         end
       end
     end

@@ -170,7 +170,7 @@ class Api
       end
 
       r.get do
-        { games: Game.home_games(user, **r.params).map(&:to_h) }
+        { games: Game.home_games(user, **r.params) }
       end
 
       # POST '/api/game[/*]'

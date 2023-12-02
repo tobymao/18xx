@@ -21,13 +21,6 @@ module Engine
             end
           end
 
-          # P19-P20 Mountain Pass privates
-          if !abilities.empty? && @game.class::MOUNTAIN_PASS_COMPANIES.include?(entity.id)
-            # useless if someone's already paid for the mountain pass
-            hex = @game.hex_by_id(@game.class::MOUNTAIN_PASS_COMPANIES_TO_HEXES[entity.id])
-            return unless hex.tile.color == :white
-          end
-
           abilities.size > 1 ? abilities : abilities[0]
         end
       end
