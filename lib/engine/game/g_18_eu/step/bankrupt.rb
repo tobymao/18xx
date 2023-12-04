@@ -1,12 +1,15 @@
 # frozen_string_literal: true
 
 require_relative '../../../step/bankrupt'
+require_relative 'minor_exchange'
 
 module Engine
   module Game
     module G18EU
       module Step
         class Bankrupt < Engine::Step::Bankrupt
+          include MinorExchange
+
           def sell_bankrupt_shares(player, corporation)
             super
 
@@ -15,7 +18,8 @@ module Engine
             maybe_restart_ownerless_corporations
 
             @game.player_card_minors(player).each do |minor|
-              @game.close_corporation(minor, quiet: true)
+              transfer_trains(minor, @game.depot)
+              @game.close_corporation(minor)
             end
           end
 
