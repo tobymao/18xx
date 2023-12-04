@@ -128,6 +128,19 @@ module Engine
           ], round_num: round_num)
         end
 
+        def must_buy_train?(entity)
+          return false if entity.minor?
+          super
+        end
+
+        def route_trains(entity)
+          if entity.minor?
+            # TODO: better method to filter, not based on name?
+            return super.filter {|t| t.name.include? "+"}
+          end
+          super
+        end
+
         def trigger_auction_or
           puts "trigger_auction_or"
           @need_auction_or = true
@@ -154,23 +167,15 @@ module Engine
         end
 
         def next_round!
-          puts "next_round!"
           @round =
             case @round
             when Engine::Round::Stock
-              if @round.round_num == 1
-                new_stock_round(@round.round_num + 1)
-              else
                 @operating_rounds = @phase.operating_rounds
                 reorder_players
                 new_operating_round
-              end
             when Engine::Round::Operating
-              puts "this or"
               clear_auction_or
-
               if @round.round_num < @operating_rounds
-                puts "next or"
                 or_round_finished
                 new_operating_round(@round.round_num + 1)
               else
@@ -178,17 +183,13 @@ module Engine
                 or_round_finished
                 or_set_finished
                 if auction_finished?
-                  puts "next stock"
                   new_stock_round
                 else
-                  puts "next auction"
                   new_auction_round
                 end
               end
             when init_round.class
-              puts "this init"
               if @need_auction_or
-                puts "next operating"
                 or_round_finished
                 new_operating_round(@round.round_num + 1)
               else
