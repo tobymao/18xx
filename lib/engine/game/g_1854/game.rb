@@ -22,6 +22,7 @@ module Engine
         attr_reader :need_auction_or, :auction_finished
 
         COMPANY_CLASS = G1854::Company
+        DEPOT_CLASS = G1854::Depot
 
         CURRENCY_FORMAT_STR = '%s G'
 
