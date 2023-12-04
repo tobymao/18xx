@@ -101,6 +101,7 @@ module Engine
                                  { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
                       price: 800,
                       num: 2,
+                      events: [{ 'type' => 'remove_abilities' }],
                     },
                     {
                       name: 'TGV',
@@ -111,6 +112,14 @@ module Engine
                       discount: { '4' => 300, '5' => 300, '6' => 300 },
                     },
                   ].freeze
+
+        ASSIGNMENT_TOKENS = {
+          'P2' => '/icons/1826/mail.svg',
+        }.freeze
+
+        EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+          'remove_abilities' => ['Mail Token Removed'],
+        ).freeze
 
         def operating_round(round_num)
           Round::Operating.new(self, [
@@ -128,6 +137,40 @@ module Engine
             Engine::Step::BuyTrain,
             [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
+        end
+
+        def regie_des_postes
+          @regie_des_postes ||= company_by_id('P2')
+        end
+
+        def revenue_for(route, stops)
+          revenue = super
+          regie = regie_des_postes.id
+          revenue += 10 if route.corporation.assigned?(regie) && stops.find { |s| s.hex.assigned?(regie) }
+        end
+
+        def event_remove_abilities!
+          @log << 'Company abilities are removed'
+          removals = Hash.new { |h, k| h[k] = {} }
+
+          @corporations.each do |corp|
+            corp.assignments.dup.each do |company, _|
+              removals[company][:corporation] = corp.name
+              corp.remove_assignment!(company)
+            end
+          end
+
+          @hexes.each do |hex|
+            hex.assignments.dup.each do |company, _|
+              removals[company][:hex] = hex.name
+              hex.remove_assignment!(company)
+            end
+          end
+
+          removals.each do |company, removal|
+            corp = removal[:corporation]
+            @log << "-- Event: #{corp}'s #{company_by_id(company).name} ability is removed --"
+          end
         end
       end
     end
