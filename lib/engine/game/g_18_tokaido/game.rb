@@ -208,6 +208,21 @@ module Engine
           (8 * corporations.size / players.size).to_i
         end
 
+        def game_trains
+          if limited_express
+            trains = G18Tokaido::Game::TRAINS.dup
+            trains.map do |train|
+              if train[:name] == 'D'
+                train[:price] = 1100
+                train[:discount] = { '4' => 300, '5' => 300, '6' => 300 }
+              end
+              train
+            end
+          else
+            G18Tokaido::Game::TRAINS
+          end
+        end
+
         def num_trains(train)
           four_players = players.size == 4
 
