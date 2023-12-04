@@ -38,7 +38,8 @@ module Engine
         COMPANY_WINNIPEG_TOKEN = 'P10'
 
         COMPANIES_BIG_CITY_UPGRADES = %w[P14 P15 P16 P17 P18].freeze
-        COMPANIES_EXTRA_TRACK_LAYS = (COMPANIES_BIG_CITY_UPGRADES + %w[P19 P20 P21]).freeze
+        COMPANIES_EXTRA_TRACK_LAYS = (COMPANIES_BIG_CITY_UPGRADES + %w[P21]).freeze
+        COMPANIES_CONSUME_TILE_LAY = %w[P19 P20 P29 P30].freeze
         BIG_CITY_HEXES_TO_COMPANIES = {
           'AH8' => 'P17',
           'N16' => 'P18',
@@ -55,8 +56,7 @@ module Engine
 
         MOUNTAIN_PASS_HEXES = %w[E11 F16].freeze
         MOUNTAIN_PASS_TILES = %w[7 8 9].freeze
-        MOUNTAIN_PASS_COMPANIES = %w[P19 P20].freeze
-        MOUNTAIN_PASS_COMPANIES_TO_HEXES = { 'P20' => 'E11', 'P19' => 'F16' }.freeze
+        MOUNTAIN_PASS_HEXES_TO_COMPANIES = { 'E11' => 'P20', 'F16' => 'P19' }.freeze
 
         TILE_UPGRADES_MUST_USE_MAX_EXITS = %i[unlabeled_cities].freeze
         TRACK_RESTRICTION = :permissive
@@ -649,8 +649,11 @@ module Engine
         def after_lay_tile(hex, old_tile, tile)
           super
 
-          # remove ability from MOQTWY private if its city is now gray
-          if tile.color == :gray && (id = BIG_CITY_HEXES_TO_COMPANIES[hex.id])
+          # remove tile lay abilities when they are no longer useful
+          # - P14-P18 MOQTWY private if its city is now gray
+          # - P19-P20 after mountain passes laid
+          if (tile.color == :yellow && (id = MOUNTAIN_PASS_HEXES_TO_COMPANIES[hex.id])) ||
+             (tile.color == :gray && (id = BIG_CITY_HEXES_TO_COMPANIES[hex.id]))
             company_by_id(id)&.all_abilities&.clear
           end
 

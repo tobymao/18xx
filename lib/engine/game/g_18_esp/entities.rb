@@ -56,25 +56,31 @@ module Engine
           {
             sym: 'P4',
             name: 'La Maquinista',
-            value: 100,
-            revenue: 20,
+            value: 130,
+            revenue: 10,
             min_price: 1,
-            desc: 'Provides a tender card. When this private is purchased by a minor '\
-                  'or major company, the tender belongs to the acquiring company. '\
-                  'Then, the director can assign its tender to a train of his choice in each OR. '\
-                  'The same train can carry the tender in two or more consecutive ORs. '\
-                  'A train with a tender can adds a town (not harbor nor mine) to its route, '\
-                  'regardless of the range of the train. The tender is permanent. '\
-                  'If, due to a takeover, a tender in a minor goes into a major, then the major can use the tender.'\
-                  'The company that buys this private can use the tender in the same OR the private was purchased.'\
-                  'It is not able to trade with the tender. This private closes when is purchased.',
+            desc: "Provides five tender cards. The owner of this company (only player) can \
+            sell up to four of these five tenders (to any company). Each tender costs pts80 \
+            (20 goes to the owner and 60 to the bank). The fifth tender remains with the company\
+             until it is bought by a major or minor company. Then the fifth tender belongs to the\
+              company that bought this private. The director of the company that buys this private\
+              or that buys a tender to their owner, can assign its tender to a train of his choice\
+              in each OR. The same train can carry the tender in two or more consecutive ORs. \
+              A train with a tender can adds a town, harbor or mine to its route, regardless of \
+              the range of the train. The tender is permanent. No company may purchase more than one tender.\
+              If, due to an acquisition or because purchasing the private, a company has more than one tender,\
+              it keeps one for itself and must put the other ones up for sale at pts80 in the open market. \
+              Money for these sells goes to the bank.Companies that buy a tender to this private can do it\
+              in any moment during its turn in an OR, and can also use it in the same OR.\
+            It is not able to trade with the tender cars in other way that has been described.
+            This company closes when is acquired by a minor or major company.",
             abilities: [
                       {
                         type: 'base',
                         owner_type: 'corporation',
                         description: 'Tender',
-                        desc_detail: 'Private allows to attach tender to regular trains '\
-                                     'extending their distance by one town.',
+                        desc_detail: 'Allows to attach Tender to regular trains '\
+                                     'extending their distance by one town, harbor or mine.',
                         when: 'owning_corp_or_turn',
                       },
                     ],
@@ -83,8 +89,8 @@ module Engine
           {
             sym: 'P5',
             name: 'Alar del Rey - Santander',
-            value: 130,
-            revenue: 15,
+            value: 100,
+            revenue: 20,
             min_price: 1,
             desc: 'The major owning company (both North and '\
                   'South) can build the mountain pass of Alar del '\
