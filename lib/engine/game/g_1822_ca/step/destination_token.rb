@@ -68,7 +68,7 @@ module Engine
             @game.remove_extra_tokens!(hex.tile)
 
             # interactions with ICR's destination and QMOO's home
-            @game.update_home(qmoo) if entity.id == 'ICR'
+            @game.update_home(@game.qmoo) if entity == @game.icr
 
             pass!
           end
