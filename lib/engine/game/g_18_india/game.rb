@@ -38,7 +38,7 @@ module Engine
         
         CERT_LIMIT = { 2 => 37, 3 => 23, 4 => 18, 5 => 15 }.freeze
 
-        STARTING_CASH = { 2 => 1100 3 => 733, 4 => 550, 5 => 440 }.freeze
+        STARTING_CASH = { 2 => 1100, 3 => 733, 4 => 550, 5 => 440 }.freeze
 
         MARKET = [
           %w[0c 
@@ -73,10 +73,10 @@ module Engine
         ].freeze
 
         PHASES = [
-          { name: '2', train_limit: 2, tiles: [:yellow green brown gray], operating_rounds: 2 },
-          { name: '3', on: '3', train_limit: 2, tiles: [:yellow green brown gray], operating_rounds: 2 },
-          { name: '4', on: '4', train_limit: 2, tiles: [:yellow green brown gray], operating_rounds: 2 },
-          { name: '5', on: '5', train_limit: 2, tiles: [:yellow green brown gray], operating_rounds: 2 },
+          { name: '2', train_limit: 2, tiles: %i[yellow green brown gray], operating_rounds: 2 },
+          { name: '3', on: '3', train_limit: 2, tiles: %i[yellow green brown gray], operating_rounds: 2 },
+          { name: '4', on: '4', train_limit: 2, tiles: %i[yellow green brown gray], operating_rounds: 2 },
+          { name: '5', on: '5', train_limit: 2, tiles: %i[yellow green brown gray], operating_rounds: 2 },
         ].freeze
         
         TRAINS = [
