@@ -22,7 +22,7 @@ module Engine
         
         TRACK_RESTRICTION = :permissive
         SELL_BUY_ORDER = :sell_buy_sell
-        CURRENCY_FORMAT_STR = '$%sP'
+        CURRENCY_FORMAT_STR = 'R%sP'
         GAME_END_CHECK = { bank: :immediate }.freeze
         MARKET_SHARE_LIMIT = 100
         SELL_MOVEMENT = :none
@@ -35,32 +35,19 @@ module Engine
         GREEN_CITIES = %w[12 13 14 15].freeze
         YELLOW_TOWNS = %w[1a 2a 3a 4a 55a].freeze
         STOCK_PRICES = {
-          'LNWR' => 100,
-          'GWR' => 90,
-          'Mid' => 82,
-          'LSWR' => 76,
-          'GNR' => 71,
-          'LBSC' => 67,
-          'GER' => 64,
-          'GCR' => 61,
-          'LYR' => 58,
-          'SECR' => 56,
+          'BNR' => 82,
+          'BR' => 71,
         }.freeze
         
-        CERT_LIMIT = { 3 => 18, 4 => 18, 5 => 17, 6 => 14, 7 => 12, 8 => 10, 9 => 9 }.freeze
+        CERT_LIMIT = { 2 => 37, 3 => 23, 4 => 18, 5 => 15 }.freeze
 
-        STARTING_CASH = { 3 => 840, 4 => 630, 5 => 504, 6 => 420, 7 => 360, 8 => 315, 9 => 280 }.freeze
+        STARTING_CASH = { 2 => 1100 3 => 733, 4 => 550, 5 => 440 }.freeze
 
         MARKET = [
-          %w[0c 10y
-             20y
-             29y
-             38
-             47
-             53
-             56p
-             58p
-             61p
+          %w[0c 
+             56
+             58
+             61
              64p
              67p
              71p
@@ -68,20 +55,24 @@ module Engine
              82p
              90p
              100p
-             112
+             112p
              126
              142
              160
              180
-             200
-             225
-             250
-             275
+             205
+             230
+             255
+             280
              300
              320
-             335
-             345
-             350],
+             340
+             360
+             380
+             400
+             420
+             440
+             460],
         ].freeze
 
         PHASES = [{ name: '2', train_limit: 4, tiles: [:yellow], operating_rounds: 1 },
@@ -125,7 +116,7 @@ module Engine
           events: [{ 'type' => 'close_companies' }],
         }].freeze
         
-        LAYOUT = :pointy
+        #LAYOUT = :pointy
 
         def upgrades_to?(from, to, _special = false, selected_company: nil)
           return GREEN_CITIES.include?(to.name) if YELLOW_TOWNS.include? from.hex.tile.name
@@ -153,7 +144,7 @@ module Engine
         end
 
         def init_round
-          G1829::Round::Draft.new(self, [G1829::Step::Draft], snake_order: false)
+          G18India::Round::Draft.new(self, [G18India::Step::Draft], snake_order: false)
         end
 
         def stock_round
