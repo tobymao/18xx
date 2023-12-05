@@ -108,12 +108,10 @@ module Engine
 
         LOCATION_NAMES = {
           # TODO Add location names
-
           #Variable Value Cities
-          'A16' => 'Karachi'
-          'D3' => 'Lahore'
-          'D23' => 'Mumbai'
-
+          'A16' => 'Karachi',
+          'D3' => 'Lahore',
+          'D23' => 'Mumbai',
         }.freeze
 
         HEXES = {
