@@ -27,6 +27,7 @@ module Engine
         MUST_BUY_TRAIN = :never
         POOL_SHARE_DROP = :none
         SOLD_OUT_INCREASE = false
+        CAPITALIZATION = :incremental
 
         STOCK_PRICES = {
           'BNR' => 82,
@@ -76,10 +77,10 @@ module Engine
         ].freeze
         
         TRAINS = [
-          { name: '2', distance: 2, price: 180, num: 7 },
-          { name: '3', distance: 3, price: 300, num: 6 },
-          { name: '4', distance: 4, price: 450, num: 5 },
-          { name: '5', distance: 999, price: 1100, num: 5 },
+          { name: '2', distance: 2, price: 180, num: 6 },
+          { name: '3', distance: 3, price: 300, num: 4 },
+          { name: '4', distance: 4, price: 450, num: 3 },
+          { name: '5', distance: 999, price: 1100, num: 3 },
         ].freeze
 
         def operating_round(round_num)
@@ -97,7 +98,6 @@ module Engine
           ], round_num: round_num)
         end
         
-        end
       end
     end
   end
