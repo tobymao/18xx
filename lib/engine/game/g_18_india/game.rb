@@ -15,14 +15,10 @@ module Engine
         
 
         register_colors(brown: '#a05a2c',
-                        purple: '#5a2ca0',
-                        red: '#d1232a',
-                        black: '#000',
-                        white: '#ffffff'
-                        )
+                        purple: '#5a2ca0')
         
         TRACK_RESTRICTION = :permissive
-        SELL_BUY_ORDER = :sell_buy_sell
+        SELL_BUY_ORDER = :sell_buy
         CURRENCY_FORMAT_STR = '$%s'
         GAME_END_CHECK = { bank: :immediate }.freeze
         MARKET_SHARE_LIMIT = 100
@@ -41,11 +37,10 @@ module Engine
 
         STARTING_CASH = { 2 => 1100, 3 => 733, 4 => 550, 5 => 440 }.freeze
 
+        LAYOUT = :flat
+
         MARKET = [
-          %w[0c 
-             56
-             58
-             61
+          %w[0c 56 58 61
              64p
              67p
              71p
@@ -86,8 +81,6 @@ module Engine
           { name: '4', distance: 4, price: 450, num: 5 },
           { name: '5', distance: 999, price: 1100, num: 5 },
         ].freeze
-        
-        #LAYOUT = :pointy
 
         def operating_round(round_num)
           Engine::Round::Operating.new(self, [
