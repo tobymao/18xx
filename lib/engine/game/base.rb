@@ -1115,17 +1115,20 @@ module Engine
       def all_bundles_for_corporation(share_holder, corporation, shares: nil)
         return [] unless corporation.ipoed
 
-        shares = (shares || share_holder.shares_of(corporation)).sort_by { |h| [h.president ? 1 : 0, h.percent] }
+        shares ||= share_holder.shares_of(corporation)
+        return [] if shares.empty?
 
-        bundles = shares.flat_map.with_index do |share, index|
-          bundle = shares.take(index + 1)
-          percent = bundle.sum(&:percent)
-          bundles = [Engine::ShareBundle.new(bundle, percent)]
-          bundles.concat(partial_bundles_for_presidents_share(corporation, bundle, percent)) if share.president
-          bundles
+        shares = shares.sort_by { |h| [h.president ? 1 : 0, h.percent] }
+        bundle = []
+        percent = 0
+        all_bundles = shares.each_with_object([]) do |share, bundles|
+          bundle << share
+          percent += share.percent
+          bundles << Engine::ShareBundle.new(bundle, percent)
         end
+        all_bundles.concat(partial_bundles_for_presidents_share(corporation, bundle, percent)) if shares.last.president
 
-        bundles.sort_by(&:percent)
+        all_bundles.sort_by(&:percent)
       end
 
       def partial_bundles_for_presidents_share(corporation, bundle, percent)
