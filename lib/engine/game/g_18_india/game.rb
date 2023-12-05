@@ -10,8 +10,9 @@ module Engine
     module G18India
       class Game < Game::Base
         include_meta(G18India::Meta)
-        include Map
         include Entities
+        include Map
+        
 
         register_colors(brown: '#a05a2c',
                         purple: '#5a2ca0',
