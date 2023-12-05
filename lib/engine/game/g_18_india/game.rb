@@ -88,8 +88,6 @@ module Engine
         
         #LAYOUT = :pointy
 
-
-
         def operating_round(round_num)
           Engine::Round::Operating.new(self, [
             Engine::Step::Bankrupt,
@@ -104,7 +102,6 @@ module Engine
             [Engine::Step::BuyCompany, { blocks: false }],
           ], round_num: round_num)
         end
-
         
         end
       end
