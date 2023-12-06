@@ -30,11 +30,12 @@ module Engine
         SOLD_OUT_INCREASE = false
         CAPITALIZATION = :incremental
         HOME_TOKEN_TIMING = :float
-
+=begin
         STOCK_PRICES = {
           'BNR' => 82,
           'BR' => 71,
         }.freeze
+=end
         
         CERT_LIMIT = { 2 => 37, 3 => 23, 4 => 18, 5 => 15 }.freeze
 
