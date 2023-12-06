@@ -29,6 +29,7 @@ module Engine
         POOL_SHARE_DROP = :none
         SOLD_OUT_INCREASE = false
         CAPITALIZATION = :incremental
+        HOME_TOKEN_TIMING = :float
 
         STOCK_PRICES = {
           'BNR' => 82,
@@ -71,10 +72,10 @@ module Engine
         ].freeze
 
         PHASES = [
-          { name: '2', train_limit: 2, tiles: %i[yellow green brown gray], operating_rounds: 2 },
-          { name: '3', on: '3', train_limit: 2, tiles: %i[yellow green brown gray], operating_rounds: 2 },
-          { name: '4', on: '4', train_limit: 2, tiles: %i[yellow green brown gray], operating_rounds: 2 },
-          { name: '5', on: '5', train_limit: 2, tiles: %i[yellow green brown gray], operating_rounds: 2 },
+          { name: 'I', train_limit: 2, tiles: %i[yellow green brown gray], operating_rounds: 2 },
+          { name: 'II', on: '3', train_limit: 2, tiles: %i[yellow green brown gray], operating_rounds: 2 },
+          { name: 'III', on: '4', train_limit: 2, tiles: %i[yellow green brown gray], operating_rounds: 2 },
+          { name: 'IV', on: '5', train_limit: 2, tiles: %i[yellow green brown gray], operating_rounds: 2 },
         ].freeze
         
         TRAINS = [
