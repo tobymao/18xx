@@ -120,13 +120,14 @@ module Engine
             %w[B9 B15 C8 C10 C12 C14 D5 D7 D9 D13 D15 D25 E2 E6 E8 E12 E14 E16 E20 E26 E28 F3 F7 F21 F31 F33 
                G2 G4 G10 G12 G14 G20 G24 G26 G28 H3 H5 H7 H9 H13 H19 H23 H27 H29 H33 H37 I6 
                I10 I12 I22 I24 I26 I32 I34 I36 I38 J9 J15 J19 J21 J29 J31 J35 K10 K16 K18 K20 K24 K26 K28 ] => '',
-          } 
-         
+          },
+          red: {
+            %w[A16 D3 D23] => '',
+          },
           gray: {
             %w[B11 B13] => 'path=a:0,b:3',
             %w[A16 D3 D23] => '',
-          }
-        
+          },
         }.freeze
 
       end
