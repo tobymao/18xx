@@ -65,7 +65,8 @@ module Engine
             name: 'Great Indian Peninsula Railway',
             sym: 'GIPR',
             #logo: '18India/GIPR',
-            tokens: [0, 40, 100, 100, 100],
+            shares: [10, 10, 10, 10, 10, 10, 10, 10, 10, 10],
+            tokens: [0, 40, 100, 100],
             # Add Exchange Tokens
             # No president cert / Pres cert is 10%
             # par_price: 112
@@ -81,66 +82,189 @@ module Engine
             #logo: '18India/NW',
             tokens: [0, 40, 100, 100],
             # par_price: 100
-            float_percent: 20,
+            float_percent: 30,
             max_ownership_percent: 100,
-            coordinates: 'G8',
-            color: '#000000',
+            coordinates: 'G8', #Delhi
+            color: '#000000', #green
           },
           {
             name: 'East India Railway',
             sym: 'EI',
             #logo: '18India/EI',
             tokens: [0, 40, 100],
-            # par_price: 110
-            float_percent: 20,
+            # par_price: 100
+            float_percent: 30,
             max_ownership_percent: 100,
-            coordinates: 'P17',
-            color: '#000000',
+            coordinates: 'P17', #Kolkata
+            color: '#000000', #orange
           },
           {
             name: 'North Central Railway',
             sym: 'NC',
-            #logo: '18India/',
-            tokens: [0, 40, 100, 100, 100],
-            # par_price: 112
-            float_percent: 20,
+            #logo: '18India/NC',
+            tokens: [0, 40, 100, 100],
+            # par_price: 90
+            float_percent: 30,
             max_ownership_percent: 100,
-            coordinates: 'K14',
-            color: '#000000',
+            coordinates: 'K14', #Allahabad
+            color: '#000000', #light brown / tan
           },
           {
-            name: '',
-            sym: '',
-            #logo: '18India/',
-            tokens: [0, 40, 100, 100, 100],
-            # par_price: 112
-            float_percent: 20,
+            name: 'Madras Railway',
+            sym: 'MR',
+            #logo: '18India/MR',
+            tokens: [0, 40, 100],
+            # par_price: 90
+            float_percent: 30,
             max_ownership_percent: 100,
-            coordinates: '',
-            color: '#000000',
+            coordinates: 'K30', #Chennai
+            color: '#000000', #yellow
           },
-
+          {
+            name: 'South Indian Railway',
+            sym: 'SI',
+            #logo: '18India/SI',
+            tokens: [0, 40, 100, 100],
+            # par_price: 82
+            float_percent: 30,
+            max_ownership_percent: 100,
+            coordinates: 'G36', #Kochi
+            color: '#000000', #dark red/brown
+          },
           {
             name: 'Bengal Nagur Railway',
             sym: 'BNR',
             #logo: '18India/BNR',
             tokens: [0, 40, 100, 100, 100],
-            float_percent: 20,
+            # par_price: 82
+            float_percent: 30,
             max_ownership_percent: 100,
-            coordinates: 'I20',
-            color: 'brown',
+            coordinates: 'I20', #Nagpur
+            color: 'brown', 
+          },
+          {
+            name: 'Ceylon Government Railway',
+            sym: 'CG',
+            #logo: '18India/CG',
+            tokens: [0, 40, 100],
+            # par_price: 76
+            float_percent: 30,
+            max_ownership_percent: 100,
+            coordinates: 'K40', #Colombo
+            color: '#000000', #Light Purple
+          },
+          {
+            name: 'Punjab Northern State Railway',
+            sym: 'PNS',
+            #logo: '18India/PNS',
+            tokens: [0, 40, 100],
+            # par_price: 76
+            float_percent: 30,
+            max_ownership_percent: 100,
+            coordinates: 'D3', #Lahore
+            color: '#000000', #light green
+          },
+          {
+            name: 'West of India Portuguese Railway',
+            sym: 'WIP',
+            #logo: '18India/WIP',
+            tokens: [0, 40, 100],
+            # par_price: 76
+            float_percent: 30,
+            max_ownership_percent: 100,
+            coordinates: 'E24', #Pune
+            color: '#000000', #pink
+          },
+          {
+            name: 'Eastern Bengal Railway',
+            sym: 'EB',
+            #logo: '18India/EB',
+            tokens: [0, 40, 100],
+            # par_price: 76
+            float_percent: 30,
+            max_ownership_percent: 100,
+            coordinates: 'P17', #Kolkata
+            color: '#000000', #gray
           },
           {
             name: 'Bombay Railway',
             sym: 'BR',
             #logo: '18India/BR',
             tokens: [0, 40, 100],
-            float_percent: 20,
+            # par_price: 71
+            float_percent: 30,
             max_ownership_percent: 100,
-            coordinates: 'D23',
-            color: 'purple',
+            coordinates: 'D23', #Mumbai
+            color: 'purple', 
+          },
+          {
+            name: 'Nizam State Railway',
+            sym: 'NS',
+            #logo: '18India/NS',
+            tokens: [0, 40, 100],
+            # par_price: 71
+            float_percent: 30,
+            max_ownership_percent: 100,
+            coordinates: 'H25', #Hyderabad
+            color: '#000000', #medium blue
+          },
+          {
+            name: 'Tirhoot Railway',
+            sym: 'TR',
+            #logo: '18India/TR',
+            tokens: [0, 40],
+            # par_price: 71
+            float_percent: 30,
+            max_ownership_percent: 100,
+            coordinates: 'M10', #Nepal
+            color: '#000000', #black
+          },
+          {
+            name: 'Sind Punjab & Delhi Railroad',
+            sym: 'SPD',
+            #logo: '18India/SPD',
+            tokens: [0, 40],
+            # par_price: 67
+            float_percent: 30,
+            max_ownership_percent: 100,
+            coordinates: 'G8', #Delhi
+            color: '#000000', #tan
+          },
+          {
+            name: 'Darjeeling-Himalayan Railway',
+            sym: 'DH',
+            #logo: '18India/DH',
+            tokens: [0, 40],
+            # par_price: 67
+            float_percent: 30,
+            max_ownership_percent: 100,
+            coordinates: 'Q10', #China
+            color: '#000000', #dark green
+          },
+          {
+            name: 'Western Railway',
+            sym: 'WR',
+            #logo: '18India/WR',
+            tokens: [0, 40],
+            # par_price: 64
+            float_percent: 30,
+            max_ownership_percent: 100,
+            coordinates: 'D17', #Ahmedabad
+            color: '#000000', #dark blue
+          },
+          {
+            name: 'Kolar Gold Fields Railways',
+            sym: 'KGF',
+            #logo: '18India/KGF',
+            tokens: [0, 40],
+            # par_price: 64
+            float_percent: 30,
+            max_ownership_percent: 100,
+            coordinates: 'H31', #Bengaluru
+            color: '#000000', #red
           },
         ].freeze
+
       end
     end
   end
