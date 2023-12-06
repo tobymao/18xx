@@ -122,12 +122,9 @@ module Engine
                I10 I12 I22 I24 I26 I32 I34 I36 I38 J9 J15 J19 J21 J29 J31 J35 K10 K16 K18 K20 K24 K26 K28 ] => '',
           } 
          
-          red: {
-            %w[A16 D3 D23] => '',
-          }
-
           gray: {
             %w[B11 B13] => 'path=a:0,b:3',
+            %w[A16 D3 D23] => '',
           }
         
         }.freeze
