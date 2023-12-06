@@ -126,7 +126,6 @@ module Engine
           },
           gray: {
             %w[B11 B13] => 'path=a:0,b:3',
-            %w[A16 D3 D23] => '',
           },
         }.freeze
 
