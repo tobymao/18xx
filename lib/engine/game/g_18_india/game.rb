@@ -15,6 +15,7 @@ module Engine
         
 
         register_colors(brown: '#a05a2c',
+                        white: '#000000',
                         purple: '#5a2ca0')
         
         TRACK_RESTRICTION = :permissive
