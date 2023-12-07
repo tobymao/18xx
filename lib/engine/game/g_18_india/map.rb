@@ -111,7 +111,6 @@ module Engine
 
         LOCATION_NAMES = {
           # TODO Add location names
-          #Variable Value Cities
           'A16' => 'Karachi',
           'D3' => 'Lahore',
           'D23' => 'Mumbai',
@@ -120,15 +119,51 @@ module Engine
         HEXES = {
           # TODO list map hexes
           white: {
-            %w[B9 B15 C8 C10 C12 C14 D5 D7 D9 D13 D15 D25 E2 E6 E8 E12 E14 E16 E20 E26 E28 F3 F7 F21 F31 F33 
+            %w[B9 B15 C8 C10 C12 C14 D5 D7 D9 D13 D15 D25 E2 E6 E8 E12 E14 E16 F3 F7 F33 
                G2 G4 G10 G12 G14 G20 G24 G26 G28 H3 H5 H7 H9 H13 H19 H23 H27 H29 H33 H37 I6 
-               I10 I12 I22 I24 I26 I32 I34 I36 I38 J9 J15 J19 J21 J29 J31 J35 K10 K16 K18 K20 K24 K26 K28 ] => '',
+               I10 I12 I22 I24 I26 I32 I34 I36 I38 J9 J15 J19 J21 J29 J31 J35 K10 K16 K18 K20 K24 K26 K28] => '',
+            %w[E4 F11 F13] => 'town=revenue:0',
+            %w[E10 F9] => 'upgrade=cost:15,terrain:hill',
+            %w[F15] => 'upgrade=cost:30,terrain:mountain',
+            ['C16'] => 'town=revenue:0;border=edge:5,type:water,cost:30',
+            ['D11'] => 'town=revenue:0;upgrade=cost:15,terrain:hill',
+            ['D17'] => 'city=revenue:0;border=edge:2,type:water,cost:30',
+            %w[D19 F17] => 'town=revenue:0;border=edge:0,type:province;border=edge:5,type:province',
+            ['E18'] => 'upgrade=cost:15,terrain:hill;border=edge:0,type:province;border=edge:5,type:province',
+            ['E20'] => 'border=edge:2,type:province;border=edge:3,type:province',
+            ['E22'] => 'town=revenue:0;town=revenue:0;town=revenue:0;border=edge:0,type:province;border=edge:5,type:province',
+            ['E24'] => 'city=revenue:0;border=edge:0,type:province;border=edge:1,type:province;border=edge:2,type:province;border=edge:3,type:province',
+            ['E26'] => 'border=edge:3,type:province;border=edge:4,type:province;border=edge:5,type:province',
+            ['E28'] => 'border=edge:4,type:province;border=edge:5,type:province',
+            ['E30'] => 'town=revenue:0;border=edge:4,type:province',
+            ['F5'] => 'town=revenue:0;town=revenue:0;town=revenue:0',
+            ['F19'] => 'upgrade=cost:30,terrain:mountain;border=edge:2,type:province;border=edge:3,type:province',
+            %w[F21 G20 H19] => 'border=edge:0,type:province;border=edge:5,type:province'
+            ['F23'] => 'town=revenue:0;border=edge:2,type:province;border=edge:3,type:province',
+            ['F25'] => 'town=revenue:0;upgrade=cost:30,terrain:mountain;border=edge:1,type:province',
+            ['F27'] => 'town=revenue:0;upgrade=cost:30,terrain:mountain;border=edge:1,type:province;border=edge:2,type:province',
+            ['F29'] => 'upgrade=cost:30,terrain:mountain;border=edge:0,type:province;border=edge:1,type:province;border=edge:2,type:province',
+            %w[F31 ] => 'border=edge:3,type:province;border=edge:4,type:province'
+
+            #Commodity Locations
+            ['B18'] => '', # OIL Source
+            [''] => '',
+
           },
           red: {
-            %w[A16 D3 D23] => '',
+            ['A16'] => 'city=revenue:20;path=a:4,b:_0;path=a:5,b:_0',
+            ['D3'] => 'city=revenue:30;path=a:0,b:_0;path=a:4,b:_0;path=a:5,b:_0',
+            ['D23'] => 'city=revenue:40,slots:2;path=a:0,b:_0;path=a:3,b:_0;'\
+              'city=revenue:40;path=a:4,b:_1;path=a:5,b:_1',
           },
           gray: {
             %w[B11 B13] => 'path=a:0,b:3',
+            ['C6'] => 'town=revenue:10;path=a:0,b:_0;path=a:4,b:_0;path=a:5,b:_0',
+            ['D21'] => 'town=revenue:10;path=a:0,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;border=edge:3,type:province',
+            ['F1'] => 'town=revenue:10;path=a:0,b:_0;path=a:1,b:_0;path=a:5,b:_0',
+          },
+          blue: {
+            ['C18'] => 'junction;path=a:4,b:_0,terminal:1',
           },
         }.freeze
 
