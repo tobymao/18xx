@@ -142,7 +142,7 @@ module Engine
 
       def buyable_trains(entity)
         depot_trains = @depot.depot_trains
-        other_trains = @game.can_buy_train_from_others? ? @depot.other_trains(entity) : []
+        other_trains = @game.can_buy_train_from_others? ? other_trains(entity) : []
 
         if entity.cash < @depot.min_depot_price
           depot_trains = [@depot.min_depot_train] if ebuy_offer_only_cheapest_depot_train?
@@ -169,6 +169,10 @@ module Engine
         other_trains.reject! { |t| entity.cash < t.price && must_buy_at_face_value?(t, entity) }
 
         depot_trains + other_trains
+      end
+
+      def other_trains(entity)
+        @depot.other_trains(entity)
       end
 
       def buyable_exchangeable_train_variants(train, entity, exchange)
