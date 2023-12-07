@@ -64,7 +64,7 @@ module Engine
           {
             name: 'Great Indian Peninsula Railway',
             sym: 'GIPR',
-            #logo: '18India/GIPR',
+            logo: '18_india/GIPR',
             shares: [10, 10, 10, 10, 10, 10, 10, 10, 10, 10],
             tokens: [0, 40, 100, 100],
             # Add Exchange Tokens
@@ -78,8 +78,8 @@ module Engine
           },
           {
             name: 'Northwestern Railway',
-            sym: 'NW',
-            #logo: '18India/NW',
+            sym: 'NWR',
+            logo: '18_india/NWR',
             tokens: [0, 40, 100, 100],
             # par_price: 100
             float_percent: 30,
@@ -89,8 +89,8 @@ module Engine
           },
           {
             name: 'East India Railway',
-            sym: 'EI',
-            #logo: '18India/EI',
+            sym: 'EIR',
+            logo: '18_india/EIR',
             tokens: [0, 40, 100],
             # par_price: 100
             float_percent: 30,
@@ -100,8 +100,8 @@ module Engine
           },
           {
             name: 'North Central Railway',
-            sym: 'NC',
-            #logo: '18India/NC',
+            sym: 'NCR',
+            logo: '18_india/NCR',
             tokens: [0, 40, 100, 100],
             # par_price: 90
             float_percent: 30,
@@ -112,7 +112,7 @@ module Engine
           {
             name: 'Madras Railway',
             sym: 'MR',
-            #logo: '18India/MR',
+            logo: '18_india/MR',
             tokens: [0, 40, 100],
             # par_price: 90
             float_percent: 30,
@@ -122,8 +122,8 @@ module Engine
           },
           {
             name: 'South Indian Railway',
-            sym: 'SI',
-            #logo: '18India/SI',
+            sym: 'SIR',
+            logo: '18_india/SIR',
             tokens: [0, 40, 100, 100],
             # par_price: 82
             float_percent: 30,
@@ -134,7 +134,7 @@ module Engine
           {
             name: 'Bengal Nagur Railway',
             sym: 'BNR',
-            #logo: '18India/BNR',
+            logo: '18_india/BNR',
             tokens: [0, 40, 100, 100, 100],
             # par_price: 82
             float_percent: 30,
@@ -144,8 +144,8 @@ module Engine
           },
           {
             name: 'Ceylon Government Railway',
-            sym: 'CG',
-            #logo: '18India/CG',
+            sym: 'CGR',
+            logo: '18_india/CGR',
             tokens: [0, 40, 100],
             # par_price: 76
             float_percent: 30,
@@ -156,7 +156,7 @@ module Engine
           {
             name: 'Punjab Northern State Railway',
             sym: 'PNS',
-            #logo: '18India/PNS',
+            logo: '18_india/PNS',
             tokens: [0, 40, 100],
             # par_price: 76
             float_percent: 30,
@@ -167,7 +167,7 @@ module Engine
           {
             name: 'West of India Portuguese Railway',
             sym: 'WIP',
-            #logo: '18India/WIP',
+            logo: '18_india/WIP',
             tokens: [0, 40, 100],
             # par_price: 76
             float_percent: 30,
@@ -177,8 +177,8 @@ module Engine
           },
           {
             name: 'Eastern Bengal Railway',
-            sym: 'EB',
-            #logo: '18India/EB',
+            sym: 'EBR',
+            logo: '18_india/EBR',
             tokens: [0, 40, 100],
             # par_price: 76
             float_percent: 30,
@@ -189,7 +189,7 @@ module Engine
           {
             name: 'Bombay Railway',
             sym: 'BR',
-            #logo: '18India/BR',
+            logo: '18_india/BR',
             tokens: [0, 40, 100],
             # par_price: 71
             float_percent: 30,
@@ -199,8 +199,8 @@ module Engine
           },
           {
             name: 'Nizam State Railway',
-            sym: 'NS',
-            #logo: '18India/NS',
+            sym: 'NSR',
+            logo: '18_india/NSR',
             tokens: [0, 40, 100],
             # par_price: 71
             float_percent: 30,
@@ -211,7 +211,7 @@ module Engine
           {
             name: 'Tirhoot Railway',
             sym: 'TR',
-            #logo: '18India/TR',
+            logo: '18_india/TR',
             tokens: [0, 40],
             # par_price: 71
             float_percent: 30,
@@ -222,7 +222,7 @@ module Engine
           {
             name: 'Sind Punjab & Delhi Railroad',
             sym: 'SPD',
-            #logo: '18India/SPD',
+            logo: '18_india/SPD',
             tokens: [0, 40],
             # par_price: 67
             float_percent: 30,
@@ -232,8 +232,8 @@ module Engine
           },
           {
             name: 'Darjeeling-Himalayan Railway',
-            sym: 'DH',
-            #logo: '18India/DH',
+            sym: 'DHR',
+            logo: '18_india/DHR',
             tokens: [0, 40],
             # par_price: 67
             float_percent: 30,
@@ -244,7 +244,7 @@ module Engine
           {
             name: 'Western Railway',
             sym: 'WR',
-            #logo: '18India/WR',
+            logo: '18_india/WR',
             tokens: [0, 40],
             # par_price: 64
             float_percent: 30,
@@ -255,7 +255,7 @@ module Engine
           {
             name: 'Kolar Gold Fields Railways',
             sym: 'KGF',
-            #logo: '18India/KGF',
+            logo: '18_india/KGF',
             tokens: [0, 40],
             # par_price: 64
             float_percent: 30,
