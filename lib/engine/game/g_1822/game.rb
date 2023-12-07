@@ -186,7 +186,7 @@ module Engine
             name: '3',
             distance: 3,
             num: 9,
-            price: 200,
+            price: 400,
             rusts_on: '6',
           },
           {
@@ -294,7 +294,7 @@ module Engine
         MUST_BUY_TRAIN = :always
         NEXT_SR_PLAYER_ORDER = :most_cash
 
-        SELL_AFTER = :operate
+        SELL_AFTER = :full_or_turn
 
         SELL_BUY_ORDER = :sell_buy
 
