@@ -4,6 +4,9 @@ module Engine
   module Game
     module G18India
       module Map
+        LAYOUT = :flat
+
+        AXES = { x: :letter, y: :number }.freeze
 
         TILES = {
           # yellow tiles

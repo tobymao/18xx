@@ -13,63 +13,38 @@ module Engine
         include Entities
         include Map
         
-
         register_colors(brown: '#a05a2c',
                         white: '#000000',
                         purple: '#5a2ca0')
-        
-        TRACK_RESTRICTION = :permissive
-        SELL_BUY_ORDER = :sell_buy
-        CURRENCY_FORMAT_STR = '$%s'
-        GAME_END_CHECK = { bank: :immediate }.freeze
-        MARKET_SHARE_LIMIT = 100
-        SELL_MOVEMENT = :none
+
+        BANKRUPTCY_ALLOWED = false
         BANK_CASH = 9_000
-        MUST_BUY_TRAIN = :never
+        CURRENCY_FORMAT_STR = '$%s'
+        CAPITALIZATION = :incremental
+
+        TRACK_RESTRICTION = :permissive
+        TILE_TYPE = :lawson
+        
+        MARKET_SHARE_LIMIT = 100
+
+        SELL_BUY_ORDER = :sell_buy
+        MUST_SELL_IN_BLOCKS = false
+        SELL_MOVEMENT = :none
         POOL_SHARE_DROP = :none
         SOLD_OUT_INCREASE = false
-        CAPITALIZATION = :incremental
-        HOME_TOKEN_TIMING = :float
-=begin
-        STOCK_PRICES = {
-          'BNR' => 82,
-          'BR' => 71,
-        }.freeze
-=end
         
+        HOME_TOKEN_TIMING = :float
+        MUST_BUY_TRAIN = :never
+      
         CERT_LIMIT = { 2 => 37, 3 => 23, 4 => 18, 5 => 15 }.freeze
 
         STARTING_CASH = { 2 => 1100, 3 => 733, 4 => 550, 5 => 440 }.freeze
 
-        LAYOUT = :flat
+        GAME_END_CHECK = { bank: :current_or, stock_market: :current_or }.freeze
 
         MARKET = [
-          %w[0c 56 58 61
-             64p
-             67p
-             71p
-             76p
-             82p
-             90p
-             100p
-             112p
-             126
-             142
-             160
-             180
-             205
-             230
-             255
-             280
-             300
-             320
-             340
-             360
-             380
-             400
-             420
-             440
-             460],
+          %w[0c 56 58 61 64p 67p 71p 76p 82p 90p 100p 112p 126 142 160 
+          180 205 230 255 280 300 320 340 360 380 400e 420 440 460],
         ].freeze
 
         PHASES = [
