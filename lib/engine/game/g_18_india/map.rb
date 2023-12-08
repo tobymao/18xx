@@ -136,7 +136,7 @@ module Engine
             ['E30'] => 'town=revenue:0;border=edge:4,type:province',
             ['F5'] => 'town=revenue:0;town=revenue:0;town=revenue:0',
             ['F19'] => 'upgrade=cost:30,terrain:mountain;border=edge:2,type:province;border=edge:3,type:province',
-            %w[F21 G20 H19 H29] => 'border=edge:0,type:province;border=edge:5,type:province'
+            %w[F21 G20 H19 H29] => 'border=edge:0,type:province;border=edge:5,type:province',
             ['F23'] => 'town=revenue:0;border=edge:2,type:province;border=edge:3,type:province',
             ['F25'] => 'town=revenue:0;upgrade=cost:30,terrain:mountain;border=edge:1,type:province',
             ['F27'] => 'town=revenue:0;upgrade=cost:30,terrain:mountain;border=edge:1,type:province;border=edge:2,type:province',
