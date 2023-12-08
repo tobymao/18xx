@@ -20,7 +20,7 @@ module Engine
             revenue: 5,
             desc: 'One extra yellow tile placement. Close when used.',
             color: nil,
-            # TODO Add Ability
+            # TODO: Add Ability
           },
           {
             name: 'Dutch EIC',
@@ -29,7 +29,7 @@ module Engine
             revenue: 10,
             desc: 'One extra track upgade. Close when used.',
             color: nil,
-            # TODO Add Ability
+            # TODO: Add Ability
           },
           {
             name: 'French EIC',
@@ -38,7 +38,7 @@ module Engine
             revenue: 15,
             desc: '$40 Terrain cost discount. Close when used.',
             color: nil,
-            # TODO Add Ability
+            # TODO: Add Ability
           },
           {
             name: 'Danish EIC',
@@ -47,7 +47,7 @@ module Engine
             revenue: 20,
             desc: 'One free station, even if full. Close when used.',
             color: nil,
-            # TODO Add Ability
+            # TODO: Add Ability
           },
           {
             name: 'British EIC',
@@ -56,7 +56,7 @@ module Engine
             revenue: 25,
             desc: 'Receives jewlery concession. Close when used.',
             color: nil,
-            # TODO Add Ability
+            # TODO: Add Ability
           },
         ].freeze
 
@@ -73,7 +73,7 @@ module Engine
             float_percent: 30,
             max_ownership_percent: 100,
             # Can start in any open city
-            #coordinates: '',
+            # coordinates: '',
             color: 'white',
           },
           {
@@ -84,8 +84,8 @@ module Engine
             # par_price: 100
             float_percent: 30,
             max_ownership_percent: 100,
-            coordinates: 'G8', #Delhi
-            color: '#000000', #green
+            coordinates: 'G8', # Delhi
+            color: '#000000', # green
           },
           {
             name: 'East India Railway',
@@ -95,8 +95,8 @@ module Engine
             # par_price: 100
             float_percent: 30,
             max_ownership_percent: 100,
-            coordinates: 'P17', #Kolkata
-            color: '#000000', #orange
+            coordinates: 'P17', # Kolkata
+            color: '#000000', # orange
           },
           {
             name: 'North Central Railway',
@@ -106,8 +106,8 @@ module Engine
             # par_price: 90
             float_percent: 30,
             max_ownership_percent: 100,
-            coordinates: 'K14', #Allahabad
-            color: '#000000', #light brown / tan
+            coordinates: 'K14', # Allahabad
+            color: '#000000', # light brown / tan
           },
           {
             name: 'Madras Railway',
@@ -117,8 +117,8 @@ module Engine
             # par_price: 90
             float_percent: 30,
             max_ownership_percent: 100,
-            coordinates: 'K30', #Chennai
-            color: '#000000', #yellow
+            coordinates: 'K30', # Chennai
+            color: '#000000', # yellow
           },
           {
             name: 'South Indian Railway',
@@ -128,8 +128,8 @@ module Engine
             # par_price: 82
             float_percent: 30,
             max_ownership_percent: 100,
-            coordinates: 'G36', #Kochi
-            color: '#000000', #dark red/brown
+            coordinates: 'G36', # Kochi
+            color: '#000000', # dark red/brown
           },
           {
             name: 'Bengal Nagur Railway',
@@ -139,8 +139,8 @@ module Engine
             # par_price: 82
             float_percent: 30,
             max_ownership_percent: 100,
-            coordinates: 'I20', #Nagpur
-            color: 'brown', 
+            coordinates: 'I20', # Nagpur
+            color: 'brown',
           },
           {
             name: 'Ceylon Government Railway',
@@ -150,8 +150,8 @@ module Engine
             # par_price: 76
             float_percent: 30,
             max_ownership_percent: 100,
-            coordinates: 'K40', #Colombo
-            color: '#000000', #Light Purple
+            coordinates: 'K40', # Colombo
+            color: '#000000', # Light Purple
           },
           {
             name: 'Punjab Northern State Railway',
@@ -161,8 +161,8 @@ module Engine
             # par_price: 76
             float_percent: 30,
             max_ownership_percent: 100,
-            coordinates: 'D3', #Lahore
-            color: '#000000', #light green
+            coordinates: 'D3', # Lahore
+            color: '#000000', # light green
           },
           {
             name: 'West of India Portuguese Railway',
@@ -172,8 +172,8 @@ module Engine
             # par_price: 76
             float_percent: 30,
             max_ownership_percent: 100,
-            coordinates: 'E24', #Pune
-            color: '#000000', #pink
+            coordinates: 'E24', # Pune
+            color: '#000000', # pink
           },
           {
             name: 'Eastern Bengal Railway',
@@ -183,8 +183,8 @@ module Engine
             # par_price: 76
             float_percent: 30,
             max_ownership_percent: 100,
-            coordinates: 'P17', #Kolkata
-            color: '#000000', #gray
+            coordinates: 'P17', # Kolkata
+            color: '#000000', # gray
           },
           {
             name: 'Bombay Railway',
@@ -194,8 +194,8 @@ module Engine
             # par_price: 71
             float_percent: 30,
             max_ownership_percent: 100,
-            coordinates: 'D23', #Mumbai
-            color: 'purple', 
+            coordinates: 'D23', # Mumbai
+            color: 'purple',
           },
           {
             name: 'Nizam State Railway',
@@ -205,8 +205,8 @@ module Engine
             # par_price: 71
             float_percent: 30,
             max_ownership_percent: 100,
-            coordinates: 'H25', #Hyderabad
-            color: '#000000', #medium blue
+            coordinates: 'H25', # Hyderabad
+            color: '#000000', # medium blue
           },
           {
             name: 'Tirhoot Railway',
@@ -216,8 +216,8 @@ module Engine
             # par_price: 71
             float_percent: 30,
             max_ownership_percent: 100,
-            coordinates: 'M10', #Nepal
-            color: '#000000', #black
+            coordinates: 'M10', # Nepal
+            color: '#000000', # black
           },
           {
             name: 'Sind Punjab & Delhi Railroad',
@@ -227,8 +227,8 @@ module Engine
             # par_price: 67
             float_percent: 30,
             max_ownership_percent: 100,
-            coordinates: 'G8', #Delhi
-            color: '#000000', #tan
+            coordinates: 'G8', # Delhi
+            color: '#000000', # tan
           },
           {
             name: 'Darjeeling-Himalayan Railway',
@@ -238,8 +238,8 @@ module Engine
             # par_price: 67
             float_percent: 30,
             max_ownership_percent: 100,
-            coordinates: 'Q10', #China
-            color: '#000000', #dark green
+            coordinates: 'Q10', # China
+            color: '#000000', # dark green
           },
           {
             name: 'Western Railway',
@@ -249,8 +249,8 @@ module Engine
             # par_price: 64
             float_percent: 30,
             max_ownership_percent: 100,
-            coordinates: 'D17', #Ahmedabad
-            color: '#000000', #dark blue
+            coordinates: 'D17', # Ahmedabad
+            color: '#000000', # dark blue
           },
           {
             name: 'Kolar Gold Fields Railways',
@@ -260,11 +260,10 @@ module Engine
             # par_price: 64
             float_percent: 30,
             max_ownership_percent: 100,
-            coordinates: 'H31', #Bengaluru
-            color: '#000000', #red
+            coordinates: 'H31', # Bengaluru
+            color: '#000000', # red
           },
         ].freeze
-
       end
     end
   end
