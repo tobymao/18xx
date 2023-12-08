@@ -4,10 +4,6 @@ module Engine
   module Game
     module G18India
       module Map
-        LAYOUT = :flat
-
-        AXES = { x: :letter, y: :number }.freeze
-
         TILES = {
           # yellow tiles
           '9' => 41,
@@ -62,7 +58,7 @@ module Engine
           '60' => 1,
           '513' => 4,
           'GT6' => {
-            'count' => 2, 
+            'count' => 1, 
             'color' => 'gray', 
             'code' => 'town=revenue:20;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0', 
           },
@@ -73,47 +69,57 @@ module Engine
           },
           
           # Ferry yellow / gray tiles
-          'IF1' => { 'count' => 1, 'color' => 'yellow', 'code' => 'path=a:2,b:4;label=FERRY' }, 
-          'IF2' => { 'count' => 1, 'color' => 'yellow', 'code' => 'path=a:0,b:2;label=FERRY' },
+          'IF1' => { 'count' => 1, 'color' => 'yellow', 'code' => 'path=a:2,b:4;label=FERRY', }, 
+          'IF2' => { 'count' => 1, 'color' => 'yellow', 'code' => 'path=a:0,b:2;label=FERRY', },
 
           # triple town tiles
           'IND2'=> {
             'count' => 2, 
             'color' => 'yellow',
-            'code' => 'town=revenue:20; town=revenue:10; town=revenue:10;'\
+            'code' => 'town=revenue:20;town=revenue:10;town=revenue:10;'\
             'path=a:1,b:_0;path=a:_0,b:2;path=a:0,b:_1;path=a:_1,b:4;path=a:3,b:_2;path=a:_2,b:5', 
           },
           'IND3'=> {
             'count' => 2, 
             'color' => 'yellow', 
-            'code' => 'town=revenue:20; town=revenue:10; town=revenue:10;'\
+            'code' => 'town=revenue:20;town=revenue:10;town=revenue:10;'\
             'path=a:1,b:_0;path=a:_0,b:4;path=a:0,b:_1;path=a:_1,b:5;path=a:1,b:_2;path=a:_2,b:3', 
           },
           'IND4'=> {
             'count' => 2, 
             'color' => 'yellow', 
-            'code' => 'town=revenue:20; town=revenue:10; town=revenue:10;'\
+            'code' => 'town=revenue:20;town=revenue:10;town=revenue:10;'\
             'path=a:2,b:_0;path=a:_0,b:5;path=a:0,b:_1;path=a:_1,b:3;path=a:1,b:_2;path=a:_2,b:4', 
           },
           'IND5'=> {
             'count' => 2, 
             'color' => 'yellow', 
-            'code' => 'town=revenue:20; town=revenue:10; town=revenue:10;'\
+            'code' => 'town=revenue:20;town=revenue:10;town=revenue:10;'\
             'path=a:2,b:_0;path=a:_0,b:3;path=a:0,b:_1;path=a:_1,b:1;path=a:4,b:_2;path=a:_2,b:5', 
           },
           'IND6'=> {
             'count' => 2, 
             'color' => 'yellow',
-            'code' => 'town=revenue:20; town=revenue:10; town=revenue:10;'\
+            'code' => 'town=revenue:20;town=revenue:10;town=revenue:10;'\
             'path=a2:,b:_0;path=a:_0,b:5;path=a1:,b:_1;path=a:_1,b:3;path=a:0,b:_2;path=a:_2,b:4',
           },
         }.freeze
 
         LOCATION_NAMES = {
-          # TODO Add location names
-          'A16' => 'Karachi',
-          'D3' => 'Lahore',
-          'D23' => 'Mumbai',
+          #Red city names
+          'A16' => 'KARACHI',
+          'D3' => 'LAHORE',
+          'D23' => 'MUMBAI',
+          'G36' => 'KOCHI',
+          'K30' => 'CHENNAI',
+          'K40' => 'COLOMBO',
+          'M10' => 'NEPAL',
+          'Q10' => 'CHINA',
+          'R17' => 'DHAKA',
+          #OO cities
+          'G8' => 'DELHI',
+          'P17' => 'KOLKATA',
+          #Commodity names
           'B17' => 'OIL',
           'H15' => 'ORE1', 
           'H21' => 'COTTON',
@@ -258,6 +264,9 @@ module Engine
             ['C18'] => 'junction;path=a:4,b:_0,terminal:1',
           },
         }.freeze
+       
+        LAYOUT = :flat
+        AXES = { x: :letter, y: :number }.freeze
 
       end
     end
