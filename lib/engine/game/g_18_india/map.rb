@@ -76,32 +76,32 @@ module Engine
           'IND2'=> {
             'count' => 2, 
             'color' => 'yellow',
-            'code' => 'town=revenue:20;town=revenue:10;town=revenue:10;'\
+            'code' => 'town=revenue:20,style:dot;town=revenue:10;town=revenue:10;'\
             'path=a:1,b:_0;path=a:_0,b:2;path=a:0,b:_1;path=a:_1,b:4;path=a:3,b:_2;path=a:_2,b:5', 
           },
           'IND3'=> {
             'count' => 2, 
             'color' => 'yellow', 
-            'code' => 'town=revenue:20;town=revenue:10;town=revenue:10;'\
-            'path=a:1,b:_0;path=a:_0,b:4;path=a:0,b:_1;path=a:_1,b:5;path=a:1,b:_2;path=a:_2,b:3', 
+            'code' => 'town=revenue:20,style:dot;town=revenue:10;town=revenue:10;'\
+            'path=a:1,b:_0;path=a:4,b:_0;path=a:0,b:_1;path=a:5,b:_1;path=a:2,b:_2;path=a:3,b:_2', 
           },
           'IND4'=> {
             'count' => 2, 
             'color' => 'yellow', 
-            'code' => 'town=revenue:20;town=revenue:10;town=revenue:10;'\
-            'path=a:2,b:_0;path=a:_0,b:5;path=a:0,b:_1;path=a:_1,b:3;path=a:1,b:_2;path=a:_2,b:4', 
+            'code' => 'town=revenue:20,style:dot;town=revenue:10;town=revenue:10;'\
+            'path=a:2,b:_0;path=a:5,b:_0;path=a:1,b:_1;path=a:4,b:_1;path=a:0,b:_2;path=a:3,b:_2', 
           },
           'IND5'=> {
             'count' => 2, 
             'color' => 'yellow', 
-            'code' => 'town=revenue:20;town=revenue:10;town=revenue:10;'\
-            'path=a:2,b:_0;path=a:_0,b:3;path=a:0,b:_1;path=a:_1,b:1;path=a:4,b:_2;path=a:_2,b:5', 
+            'code' => 'town=revenue:20,style:dot;town=revenue:10;town=revenue:10;'\
+            'path=a:2,b:_0;path=a:3,b:_0;path=a:0,b:_1;path=a:1,b:_1;path=a:4,b:_2;path=a:5,b:_2', 
           },
           'IND6'=> {
             'count' => 2, 
-            'color' => 'yellow',
-            'code' => 'town=revenue:20;town=revenue:10;town=revenue:10;'\
-            'path=a2:,b:_0;path=a:_0,b:5;path=a1:,b:_1;path=a:_1,b:3;path=a:0,b:_2;path=a:_2,b:4',
+            'color' => 'yellow', 
+            'code' => 'town=revenue:20,style:dot;town=revenue:10;town=revenue:10;'\
+            'path=a:2,b:_0;path=a:5,b:_0;path=a:1,b:_1;path=a:3,b:_1;path=a:0,b:_2;path=a:4,b:_2', 
           },
         }.freeze
 
