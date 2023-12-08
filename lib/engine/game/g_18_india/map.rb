@@ -146,7 +146,8 @@ module Engine
             ['E18'] => 'upgrade=cost:15,terrain:hill;border=edge:0,type:province;border=edge:5,type:province',
             %w[E20 L15] => 'border=edge:2,type:province;border=edge:3,type:province',
             ['E22'] => 'town=revenue:0;town=revenue:0;town=revenue:0;border=edge:0,type:province;border=edge:5,type:province',
-            ['E24'] => 'city=revenue:0;border=edge:0,type:province;border=edge:1,type:province;border=edge:2,type:province;border=edge:3,type:province',
+            ['E24'] => 'city=revenue:0;border=edge:0,type:province;border=edge:1,type:province;border=edge:2,type:province;'\
+                       'border=edge:3,type:province',
             %w[E26 H13] => 'border=edge:3,type:province;border=edge:4,type:province;border=edge:5,type:province',
             %w[E28 G10] => 'border=edge:4,type:province;border=edge:5,type:province',
             ['E30'] => 'town=revenue:0;border=edge:4,type:province',
@@ -155,8 +156,10 @@ module Engine
             %w[F21 G20 H19 H29] => 'border=edge:0,type:province;border=edge:5,type:province',
             ['F23'] => 'town=revenue:0;border=edge:2,type:province;border=edge:3,type:province',
             ['F25'] => 'town=revenue:0;upgrade=cost:30,terrain:mountain;border=edge:1,type:province',
-            ['F27'] => 'town=revenue:0;upgrade=cost:30,terrain:mountain;border=edge:1,type:province;border=edge:2,type:province',
-            ['F29'] => 'upgrade=cost:30,terrain:mountain;border=edge:0,type:province;border=edge:1,type:province;border=edge:2,type:province',
+            ['F27'] => 'town=revenue:0;upgrade=cost:30,terrain:mountain;border=edge:1,type:province;'\
+                       'border=edge:2,type:province',
+            ['F29'] => 'upgrade=cost:30,terrain:mountain;'\
+                       'border=edge:0,type:province;border=edge:1,type:province;border=edge:2,type:province',
             %w[F31 J21 J31] => 'border=edge:3,type:province;border=edge:4,type:province',
             ['G4'] => 'border=edge:5,type:province',
             ['G6'] => 'town=revenue:0;upgrade=cost:30,terrain:mountain;'\
@@ -167,11 +170,13 @@ module Engine
             ['G16'] => 'upgrade=cost:30,terrain:mountain;border=edge:0,type:province;border=edge:5,type:province',
             %w[G18 G22 I16] => 'upgrade=cost:15,terrain:hill;border=edge:2,type:province;border=edge:3,type:province',
             ['G24'] => 'border=edge:4,type:water,cost:30',
-            ['G30'] => 'upgrade=cost:30,terrain:mountain;border=edge:0,type:province;border=edge:1,type:province;border=edge:5,type:province',
+            ['G30'] => 'upgrade=cost:30,terrain:mountain;'\
+                       'border=edge:0,type:province;border=edge:1,type:province;border=edge:5,type:province',
             ['G32'] => 'upgrade=cost:15,terrain:hill;border=edge:3,type:province',
             %w[H3 Q12] => 'border=edge:0,type:province',
             ['H5'] => 'border=edge:1,type:province;border=edge:2,type:province;border=edge:3,type:province',
-            ['H7'] => 'border=edge:1,type:water,cost:30;border=edge:2,type:water,cost:30;border=edge:1,type:province;border=edge:2,type:province',
+            ['H7'] => 'border=edge:1,type:water,cost:30;border=edge:2,type:water,cost:30;'\
+                      'border=edge:1,type:province;border=edge:2,type:province',
             ['H9'] => 'border=edge:3,type:water,cost:30;border=edge:4,type:water,cost:30;border=edge:5,type:water,cost:30;'\
                       'border=edge:1,type:province;border=edge:2,type:province',
             ['H11'] => 'town=revenue:0;border=edge:4,type:water,cost:30;'\
@@ -189,27 +194,32 @@ module Engine
             ['I20'] => 'city=revenue:0;border=edge:2,type:province;border=edge:3,type:province;border=edge:4,type:province',
             ['I24'] => 'border=edge:0,type:water,cost:30;border=edge:1,type:water,cost:30;border=edge:5,type:water,cost:30',
             ['I26'] => 'border=edge:3,type:water,cost:30',
-            ['I30'] => 'upgrade=cost:15,terrain:hill;border=edge:2,type:province;border=edge:3,type:province;border=edge:4,type:province',
+            ['I30'] => 'upgrade=cost:15,terrain:hill;'\
+                       'border=edge:2,type:province;border=edge:3,type:province;border=edge:4,type:province',
             ['J11'] => 'town=revenue:0;border=edge:0,type:water,cost:30;border=edge:1,type:water,cost:30',
             %w[J15 Q14] => 'border=edge:2,type:province;border=edge:3,type:province;border=edge:4,type:province',
             %w[J19 J29 K20] => 'border=edge:0,type:province;border=edge:1,type:province',
-            ['J23'] => 'upgrade=cost:30,terrain:mountain;border=edge:0,type:water,cost:30;border=edge:5,type:water,cost:30;border=edge:5,type:province',
+            ['J23'] => 'upgrade=cost:30,terrain:mountain;border=edge:0,type:water,cost:30;border=edge:5,type:water,cost:30;'\
+                       'border=edge:5,type:province',
             ['J25'] => 'upgrade=cost:30,terrain:mountain;border=edge:2,type:water,cost:30;border=edge:3,type:water,cost:30;'\
                        'border=edge:4,type:province;border=edge:5,type:province',
             ['J27'] => 'town=revenue:0;upgrade=cost:30,terrain:mountain;border=edge:4,type:province',
             ['J37'] => 'upgrade=cost:60,terrain:water;label=FERRY',
-            ['K12'] => 'town=revenue:0;town=revenue:0;town=revenue:0;border=edge:0,type:water,cost:30;border=edge:1,type:water,cost:30;border=edge:5,type:water,cost:30',
-            ['K14'] => 'city=revenue:0;border=edge:3,type:water,cost:30;border=edge:0,type:province;border=edge:1,type:province;border=edge:5,type:province',
+            ['K12'] => 'town=revenue:0;town=revenue:0;town=revenue:0;border=edge:0,type:water,cost:30;'\
+                       'border=edge:1,type:water,cost:30;border=edge:5,type:water,cost:30',
+            ['K14'] => 'city=revenue:0;border=edge:3,type:water,cost:30;border=edge:0,type:province;'\
+                       'border=edge:1,type:province;border=edge:5,type:province',
             %w[K16 K28 R15] => 'border=edge:3,type:province',
-            ['K22'] => 'upgrade=cost:30,terrain:mountain;border=edge:0,type:water,cost:30;'\
-                       'border=edge:0,type:province;border=edge:3,type:province;border=edge:4,type:province;border=edge:5,type:province',
+            ['K22'] => 'upgrade=cost:30,terrain:mountain;border=edge:0,type:water,cost:30;border=edge:0,type:province;'\
+                       'border=edge:3,type:province;border=edge:4,type:province;border=edge:5,type:province',
             ['K24'] => 'border=edge:2,type:water,cost:30;border=edge:3,type:water,cost:30;border=edge:4,type:water,cost:30;'\
                        'border=edge:1,type:province;border=edge:2,type:province;border=edge:3,type:province',
             ['K26'] => 'border=edge:0,type:province;border=edge:1,type:province;border=edge:2,type:province',
             ['L11'] => 'border=edge:0,type:water,cost:30',
-            ['L13'] => 'town=revenue:0;border=edge:2,type:water,cost:30;border=edge:3,type:water,cost:30;border=edge:4,type:water,cost:30;'\
-                       'border=edge:0,type:province;border=edge:5,type:province',
-            ['L23'] => 'town=revenue:0;border=edge:0,type:water,cost:30;border=edge:1,type:water,cost:30;border=edge:2,type:province',
+            ['L13'] => 'town=revenue:0;border=edge:2,type:water,cost:30;border=edge:3,type:water,cost:30;'\
+                       'border=edge:4,type:water,cost:30;border=edge:0,type:province;border=edge:5,type:province',
+            ['L23'] => 'town=revenue:0;border=edge:0,type:water,cost:30;border=edge:1,type:water,cost:30;'\
+                       'border=edge:2,type:province',
             %w[L25 Q18] => 'border=edge:3,type:water,cost:30;border=edge:4,type:water,cost:30',
             ['M12'] => 'border=edge:0,type:water,cost:30;border=edge:1,type:water,cost:30;border=edge:0,type:province',
             ['M14'] => 'border=edge:3,type:water,cost:30;border=edge:4,type:water,cost:30;'\
@@ -221,20 +231,22 @@ module Engine
                        'border=edge:2,type:province;border=edge:3,type:province;border=edge:4,type:province',
             ['O16'] => 'town=revenue:0;border=edge:3,type:water,cost:30;border=edge:4,type:water,cost:30',
             ['P13'] => 'border=edge:0,type:province;border=edge:1,type:province;border=edge:5,type:province',
-            ['P17'] => 'city=revenue:0;city=revenue:0;label=OO;border=edge:3,type:water,cost:30;border=edge:4,type:water,cost:30',
+            ['P17'] => 'city=revenue:0;city=revenue:0;label=OO;'\
+                       'border=edge:3,type:water,cost:30;border=edge:4,type:water,cost:30',
             ['R13'] => 'town=revenue:0;border=edge:0,type:province;border=edge:1,type:province',
 
             # Commodity Locations
-            ['B17'] => '', # OIL Source
-            ['H15'] => 'upgrade=cost:30,terrain:mountain;border=edge:0,type:province;border=edge:4,type:province;border=edge:5,type:province', # ORE1 Source
-            ['H21'] => 'border=edge:2,type:province;border=edge:3,type:province', # COTTON Source
-            ['I18'] => 'border=edge:0,type:province', # SPICES Source
-            ['I28'] => 'upgrade=cost:30,terrain:mountain;border=edge:0,type:province', # GOLD Source
-            ['J13'] => 'border=edge:3,type:water,cost:30;border=edge:4,type:water,cost:30;border=edge:0,type:province', # OPIUM Source
-            ['K38'] => 'town=revenue:0', # TEA1 Source
-            ['L21'] => 'upgrade=cost:30,terrain:mountain;border=edge:1,type:province', # ORE2 Source
-            ['O12'] => 'border=edge:0,type:province', # TEA2 Source
-            ['P15'] => 'border=edge:0,type:water,cost:30;border=edge:1,type:water,cost:30;border=edge:3,type:province', # RICE Source
+            ['B17'] => '', # OIL
+            ['H15'] => 'upgrade=cost:30,terrain:mountain;border=edge:0,type:province;border=edge:4,type:province;'\
+                       'border=edge:5,type:province', # ORE1
+            ['H21'] => 'border=edge:2,type:province;border=edge:3,type:province', # COTTON
+            ['I18'] => 'border=edge:0,type:province', # SPICES
+            ['I28'] => 'upgrade=cost:30,terrain:mountain;border=edge:0,type:province', # GOLD
+            ['J13'] => 'border=edge:3,type:water,cost:30;border=edge:4,type:water,cost:30;border=edge:0,type:province', # OPIUM
+            ['K38'] => 'town=revenue:0', # TEA1
+            ['L21'] => 'upgrade=cost:30,terrain:mountain;border=edge:1,type:province', # ORE2
+            ['O12'] => 'border=edge:0,type:province', # TEA2
+            ['P15'] => 'border=edge:0,type:water,cost:30;border=edge:1,type:water,cost:30;border=edge:3,type:province', # RICE
           },
 
           # Red hexes are variable revenue cities
