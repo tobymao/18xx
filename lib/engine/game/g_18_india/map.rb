@@ -114,6 +114,16 @@ module Engine
           'A16' => 'Karachi',
           'D3' => 'Lahore',
           'D23' => 'Mumbai',
+          'B17' => 'OIL',
+          'H15' => 'ORE1', 
+          'H21' => 'COTTON',
+          'I18' => 'SPICES',
+          'I28' => 'GOLD', 
+          'J13' => 'OPIUM', 
+          'K38' => 'TEA1', 
+          'L21' => 'ORE2',
+          'O12' => 'TEA2',
+          'P15' => 'RICE', 
         }.freeze
 
         HEXES = {
@@ -173,6 +183,7 @@ module Engine
             ['I20'] => 'city=revenue:0;border=edge:2,type:province;border=edge:3,type:province;border=edge:4,type:province',
             ['I24'] => 'border=edge:0,type:water,cost:30;border=edge:1,type:water,cost:30;border=edge:5,type:water,cost:30',
             ['I26'] => 'border=edge:3,type:water,cost:30',
+            ['I30'] => 'upgrade=cost:15,terrain:hill;border=edge:2,type:province;border=edge:3,type:province;border=edge:4,type:province',
             ['J11'] => 'town=revenue:0;border=edge:0,type:water,cost:30;border=edge:1,type:water,cost:30',
             %w[J15 Q14] => 'border=edge:2,type:province;border=edge:3,type:province;border=edge:4,type:province',
             %w[J19 J29 K20] => 'border=edge:0,type:province;border=edge:1,type:province',
@@ -213,7 +224,6 @@ module Engine
             ['H21'] => 'border=edge:2,type:province;border=edge:3,type:province', # COTTON Source
             ['I18'] => 'border=edge:0,type:province', # SPICES Source
             ['I28'] => 'upgrade=cost:30,terrain:mountain;border=edge:0,type:province', # GOLD Source
-            ['I30'] => 'upgrade=cost:15,terrain:hill;border=edge:2,type:province;border=edge:3,type:province;border=edge:4,type:province',
             ['J13'] => 'border=edge:3,type:water,cost:30;border=edge:4,type:water,cost:30;border=edge:0,type:province', # OPIUM Source
             ['K38'] => 'town=revenue:0', # TEA1 Source
             ['L21'] => 'upgrade=cost:30,terrain:mountain;border=edge:1,type:province', # ORE2 Source
