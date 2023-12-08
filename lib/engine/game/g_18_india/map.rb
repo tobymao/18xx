@@ -143,7 +143,7 @@ module Engine
             ['D11'] => 'town=revenue:0;upgrade=cost:15,terrain:hill',
             ['D17'] => 'city=revenue:0;border=edge:2,type:water,cost:30',
             %w[D19 F17] => 'town=revenue:0;border=edge:0,type:province;border=edge:5,type:province',
-            %w[D25 G12] => 'border=edge:4,type:province',            
+            %w[D25 G12] => 'border=edge:4,type:province',
             ['E18'] => 'upgrade=cost:15,terrain:hill;border=edge:0,type:province;border=edge:5,type:province',
             %w[E20 L15] => 'border=edge:2,type:province;border=edge:3,type:province',
             ['E22'] => 'town=revenue:0;town=revenue:0;town=revenue:0;border=edge:0,type:province;border=edge:5,type:province',
