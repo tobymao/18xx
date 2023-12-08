@@ -208,7 +208,7 @@ module Engine
             ['R13'] => 'town=revenue:0;border=edge:0,type:province;border=edge:1,type:province',
 
             #Commodity Locations
-            ['B18'] => '', # OIL Source
+            ['B17'] => '', # OIL Source
             ['H15'] => 'upgrade=cost:30,terrain:mountain;border=edge:0,type:province;border=edge:4,type:province;border=edge:5,type:province', # ORE1 Source
             ['H21'] => 'border=edge:2,type:province;border=edge:3,type:province', # COTTON Source
             ['I18'] => 'border=edge:0,type:province', # SPICES Source
@@ -225,9 +225,9 @@ module Engine
           red: {
             ['A16'] => 'city=revenue:20;path=a:4,b:_0;path=a:5,b:_0',
             ['D3'] => 'city=revenue:30;path=a:0,b:_0;path=a:4,b:_0;path=a:5,b:_0',
-            ['D23'] => 'city=revenue:40,slots:2;path=a:0,b:_0;path=a:3,b:_0;'\
-              'city=revenue:40;path=a:4,b:_1;path=a:5,b:_1;border=edge:5,type:province',
-            ['D23'] => 'city=revenue:20,slots:2;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
+            ['D23'] => 'city=revenue:40,slots:2;city=revenue:40;path=a:0,b:_0;path=a:3,b:_0;'\
+              'path=a:4,b:_1;path=a:5,b:_1;border=edge:5,type:province',
+            ['G36'] => 'city=revenue:20,slots:2;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
             ['K30'] => 'city=revenue:30,slots:2;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;border=edge:1,type:province',
             ['K40'] => 'city=revenue:20;path=a:4,b:_0',
             ['M10'] => 'city=revenue:10;path=a:0,b:_0;path=a:2,b:_0;city=revenue:10;path=a:1,b:_1;path=a:5,b:_1',
