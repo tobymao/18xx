@@ -646,6 +646,10 @@ module Engine
           @qmoo ||= corporation_by_id('QMOO')
         end
 
+        def icr
+          @icr ||= corporation_by_id('ICR')
+        end
+
         def after_lay_tile(hex, old_tile, tile)
           super
 
@@ -708,7 +712,7 @@ module Engine
         end
 
         def render_hex_reservation?(corporation)
-          if corporation.id == 'QMOO'
+          if corporation == qmoo
             quebec_hex.tile.color != :white && quebec_hex.tile.cities.size > 1 && current_entity != corporation
           else
             super

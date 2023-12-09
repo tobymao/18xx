@@ -188,7 +188,7 @@ module Engine
             Engine::Step::DiscardTrain,
             G1850::Step::BuyTrain,
             [G1870::Step::BuyCompany, { blocks: true }],
-            G1870::Step::PriceProtection,
+            G1850::Step::PriceProtection,
           ], round_num: round_num)
         end
 
@@ -196,7 +196,7 @@ module Engine
           G1870::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
             G1870::Step::BuySellParShares,
-            G1870::Step::PriceProtection,
+            G1850::Step::PriceProtection,
           ])
         end
 
@@ -330,7 +330,7 @@ module Engine
         end
 
         def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil, movement: nil)
-          @sell_queue << [bundle, bundle.corporation.owner]
+          @sell_queue << [bundle, bundle.corporation.owner, bundle.owner]
 
           @share_pool.sell_shares(bundle)
         end
