@@ -75,6 +75,7 @@ module Engine
             # Can start in any open city
             # coordinates: '',
             color: 'white',
+            text_color: 'black',
           },
           {
             name: 'Northwestern Railway',
