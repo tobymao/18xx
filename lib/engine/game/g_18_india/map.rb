@@ -164,9 +164,9 @@ module Engine
             %w[F31 J21 J31] => 'border=edge:3,type:province;border=edge:4,type:province',
             ['G4'] => 'border=edge:5,type:province',
             ['G6'] => 'town=revenue:0;upgrade=cost:30,terrain:mountain;'\
-                      'border=edge:5,type:water,cost:30;border=edge:4,type:province;border=edge:5,type:province',
+                      'border=edge:4,type:province;border=edge:5,type:province,cost:30',
             ['G8'] => 'city=revenue:0;city=revenue:0;label=OO;'\
-                      'border=edge:4,type:water,cost:30;border=edge:4,type:province;border=edge:5,type:province',
+                      'border=edge:4,type:province,cost:30;border=edge:5,type:province',
             ['G16'] => 'upgrade=cost:30,terrain:mountain;border=edge:0,type:province;border=edge:5,type:province',
             %w[G18 G22 I16] => 'upgrade=cost:15,terrain:hill;border=edge:2,type:province;border=edge:3,type:province',
             ['G24'] => 'border=edge:4,type:water,cost:30',
@@ -175,8 +175,7 @@ module Engine
             ['G32'] => 'upgrade=cost:15,terrain:hill;border=edge:3,type:province',
             %w[H3 Q12] => 'border=edge:0,type:province',
             ['H5'] => 'border=edge:1,type:province;border=edge:2,type:province;border=edge:3,type:province',
-            ['H7'] => 'border=edge:0,type:water,cost:30;border=edge:1,type:water,cost:30;border=edge:2,type:water,cost:30;'\
-                      'border=edge:1,type:province;border=edge:2,type:province',
+            ['H7'] => 'border=edge:0,type:water,cost:30;border=edge:1,type:province,cost:30;border=edge:2,type:province,cost:30',
             ['H9'] => 'border=edge:3,type:water,cost:30;border=edge:4,type:water,cost:30;border=edge:5,type:water,cost:30;'\
                       'border=edge:1,type:province;border=edge:2,type:province',
             ['H11'] => 'town=revenue:0;border=edge:4,type:water,cost:30;'\
@@ -199,8 +198,8 @@ module Engine
             ['J11'] => 'town=revenue:0;border=edge:0,type:water,cost:30;border=edge:1,type:water,cost:30',
             %w[J15 Q14] => 'border=edge:2,type:province;border=edge:3,type:province;border=edge:4,type:province',
             %w[J19 J29 K20] => 'border=edge:0,type:province;border=edge:1,type:province',
-            ['J23'] => 'upgrade=cost:30,terrain:mountain;border=edge:0,type:water,cost:30;border=edge:5,type:water,cost:30;'\
-                       'border=edge:5,type:province',
+            ['J23'] => 'upgrade=cost:30,terrain:mountain;border=edge:0,type:water,cost:30;'\
+                       'border=edge:5,type:province,cost:30',
             ['J25'] => 'upgrade=cost:30,terrain:mountain;border=edge:2,type:water,cost:30;border=edge:3,type:water,cost:30;'\
                        'border=edge:4,type:province;border=edge:5,type:province',
             ['J27'] => 'town=revenue:0;upgrade=cost:30,terrain:mountain;border=edge:4,type:province',
@@ -210,10 +209,10 @@ module Engine
             ['K14'] => 'city=revenue:0;border=edge:3,type:water,cost:30;border=edge:0,type:province;'\
                        'border=edge:1,type:province;border=edge:5,type:province',
             %w[K16 K28 R15] => 'border=edge:3,type:province',
-            ['K22'] => 'upgrade=cost:30,terrain:mountain;border=edge:0,type:water,cost:30;border=edge:0,type:province;'\
+            ['K22'] => 'upgrade=cost:30,terrain:mountain;border=edge:0,type:province,cost:30;'\
                        'border=edge:3,type:province;border=edge:4,type:province;border=edge:5,type:province',
-            ['K24'] => 'border=edge:2,type:water,cost:30;border=edge:3,type:water,cost:30;border=edge:4,type:water,cost:30;'\
-                       'border=edge:1,type:province;border=edge:2,type:province;border=edge:3,type:province',
+            ['K24'] => 'border=edge:4,type:water,cost:30;'\
+                       'border=edge:1,type:province;border=edge:2,type:province,cost:30;border=edge:3,type:province,cost:30',
             ['K26'] => 'border=edge:0,type:province;border=edge:1,type:province;border=edge:2,type:province',
             ['L11'] => 'border=edge:0,type:water,cost:30',
             ['L13'] => 'town=revenue:0;border=edge:2,type:water,cost:30;border=edge:3,type:water,cost:30;'\
@@ -221,12 +220,11 @@ module Engine
             ['L23'] => 'town=revenue:0;border=edge:0,type:water,cost:30;border=edge:1,type:water,cost:30;'\
                        'border=edge:2,type:province',
             %w[L25 Q18] => 'border=edge:3,type:water,cost:30;border=edge:4,type:water,cost:30',
-            ['M12'] => 'border=edge:0,type:water,cost:30;border=edge:1,type:water,cost:30;border=edge:0,type:province',
-            ['M14'] => 'border=edge:3,type:water,cost:30;border=edge:4,type:water,cost:30;'\
-                       'border=edge:2,type:province;border=edge:3,type:province;border=edge:4,type:province',
-            ['N13'] => 'town=revenue:0;border=edge:0,type:water,cost:30;border=edge:1,type:water,cost:30;'\
-                       'border=edge:0,type:province;border=edge:1,type:province;border=edge:5,type:province',
-            ['N15'] => 'border=edge:3,type:water,cost:30;border=edge:4,type:water,cost:30;border=edge:3,type:province',
+            ['M12'] => 'border=edge:1,type:water,cost:30;border=edge:0,type:province,cost:30',
+            ['M14'] => 'border=edge:2,type:province;border=edge:3,type:province,cost:30;border=edge:4,type:province,cost:30',
+            ['N13'] => 'town=revenue:0;'\
+                       'border=edge:0,type:province,cost:30;border=edge:1,type:province,cost:30;border=edge:5,type:province',
+            ['N15'] => 'border=edge:4,type:water,cost:30;border=edge:3,type:province,cost:30',
             ['O14'] => 'border=edge:0,type:water,cost:30;border=edge:1,type:water,cost:30;'\
                        'border=edge:2,type:province;border=edge:3,type:province;border=edge:4,type:province',
             ['O16'] => 'town=revenue:0;border=edge:3,type:water,cost:30;border=edge:4,type:water,cost:30',
