@@ -82,7 +82,7 @@ module Engine
                                         cheater: cheater, extra_slot: extra_slot, spender: spender,
                                         same_hex_allowed: same_hex_allowed)
         unless free
-          pay_token_cost(spender || entity, token.price)
+          pay_token_cost(spender || entity, token.price, city)
           price_log = " for #{@game.format_currency(token.price)}"
         end
 
@@ -100,7 +100,7 @@ module Engine
         @game.clear_token_graph_for_entity(entity)
       end
 
-      def pay_token_cost(entity, cost)
+      def pay_token_cost(entity, cost, _city)
         entity.spend(cost, @game.bank)
       end
 

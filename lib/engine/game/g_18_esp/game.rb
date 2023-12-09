@@ -53,6 +53,8 @@ module Engine
 
         BONUS = 100
 
+        MOUNTAIN_SECOND_TOKEN_COST = 50
+
         SELL_AFTER = :operate
 
         SELL_BUY_ORDER = :sell_buy
@@ -60,6 +62,10 @@ module Engine
         NORTH_SOUTH_DIVIDE = 13
 
         ARANJUEZ_HEX = 'F26'
+
+        P5_HEX = 'H12'
+
+        P5_DISCOUNT = 40
 
         BASE_MINE_BONUS = { yellow: 30, green: 20, brown: 10, gray: 0 }.freeze
 
@@ -307,12 +313,13 @@ module Engine
             Engine::Step::Exchange,
             Engine::Step::SpecialToken,
             G18ESP::Step::BuyCarriageOrCompany,
-            Engine::Step::HomeToken,
-            Engine::Step::SpecialTrack,
+            G18ESP::Step::HomeToken,
+            G18ESP::Step::SpecialChoose,
             G18ESP::Step::Track,
-            Engine::Step::Route,
+            G18ESP::Step::Route,
             G18ESP::Step::Dividend,
             Engine::Step::DiscardTrain,
+            G18ESP::Step::Acquire,
             G18ESP::Step::BuyTrain,
             [G18ESP::Step::BuyCarriageOrCompany, { blocks: true }],
           ], round_num: round_num)
@@ -328,6 +335,14 @@ module Engine
 
         def p4
           @p4 ||= company_by_id('P4')
+        end
+
+        def p5
+          @p5 ||= company_by_id('P5')
+        end
+
+        def mza
+          @mza ||= corporation_by_id('MZA')
         end
 
         def setup
@@ -346,6 +361,8 @@ module Engine
           setup_company_price(1)
 
           @luxury_carriages_count = 4
+
+          @opened_mountain_passes = []
 
           # Initialize the player depts, if player have to take an emergency loan
           init_player_debts
@@ -792,7 +809,16 @@ module Engine
         end
 
         def place_home_token(corporation)
-          super
+          if corporation == mza && corporation_by_id('MZ').ipoed && !corporation.tokens.first.used
+            # mza special case if mz already exists on the map
+            token = corporation.tokens.first
+            hex = hex_by_id(corporation.coordinates)
+            city = hex.tile.cities.size > 1 ? city_by_id("#{hex.tile.id}-#{corporation.city}") : hex.tile.cities.first
+            @log << "#{corporation.name} places a token on #{hex.id}"
+            city.place_token(corporation, token, cheater: true, check_tokenable: false)
+          else
+            super
+          end
           clear_graph_for_entity(corporation)
           corporation.goal_reached!(:destination) if check_for_destination_connection(corporation)
         end
@@ -973,8 +999,191 @@ module Engine
           true
         end
 
-        def skip_route_track_type(_train)
-          @train.track_type == :narrow ? :broad : :narrow
+        def skip_route_track_type(train)
+          train.track_type == :narrow ? :broad : :narrow
+        end
+
+        def open_mountain_pass(entity, pass_hex, p5_ability = false)
+          pass_tile = hex_by_id(pass_hex).tile
+
+          mount_pass_cost = mountain_pass_token_cost(hex_by_id(pass_hex), entity, p5_ability)
+          entity.spend(mount_pass_cost, @bank) if mount_pass_cost.positive?
+
+          @opened_mountain_passes << pass_hex.id
+          pass_tile.cities.first.remove_tokens!
+
+          entity_name = p5_ability ? "#{entity.name} (#{p5.name})" : entity.name
+
+          @log << "#{entity_name} spends #{format_currency(mount_pass_cost)} to open mountain pass"
+        end
+
+        def opening_new_mountain_pass(entity, p5_ability = false)
+          return {} unless entity
+
+          @graph.clear
+          openable_passes = @graph.connected_hexes(entity).keys.select do |hex|
+            mountain_pass_token_hex?(hex)
+          end
+          openable_passes = openable_passes.reject { |hex| @opened_mountain_passes.contains?(hex.id) }
+
+          openable_passes.to_h do |hex|
+            [hex.id, "#{hex.location_name} (#{format_currency(mountain_pass_token_cost(hex, entity, p5_ability))})"]
+          end
+        end
+
+        def mountain_pass_token_cost(hex, _entity, p5_ability = false)
+          return 0 if hex.id == P5_HEX && p5_ability
+
+          cost = MOUNTAIN_PASS_TOKEN_COST[hex.id]
+          cost -= P5_DISCOUNT if p5_ability
+          cost
+        end
+
+        def start_merge(corporation, minor, keep_token)
+          # pay compensation
+          pay_compensation(corporation, minor)
+
+          # take over assets
+          move_assets(corporation, minor)
+
+          # handle token
+          keep_token ? swap_token(corporation, minor) : gain_token(corporation, minor)
+
+          # complete goal
+          corporation.goal_reached!(:takeover)
+
+          # get share
+          get_reserved_share(minor.owner, corporation) if !@minors_stop_operating || minor.ipoed
+
+          # gain tender ability
+          gain_luxury_carriage_ability_from_minor(corporation, minor)
+
+          # close corp
+          close_corporation(minor)
+        end
+
+        def pay_compensation(corporation, minor)
+          if @minors_stop_operating && minor.player_share_holders.empty?
+            spend_compensation(MINOR_TAKEOVER_COST, corporation, @bank)
+            @log << "#{corporation.name} spends #{format_currency(MINOR_TAKEOVER_COST)} to acquire #{minor.name}"
+          else
+            share_price = minor.share_price
+            payout = share_price ? minor.share_price.price : 0
+
+            spend_compensation(payout, corporation, minor.owner)
+
+            @log << "#{minor.owner.name} gets #{format_currency(payout)} compensation"
+          end
+        end
+
+        def spend_compensation(amount, from, to)
+          if from.cash >= amount
+            from.spend(amount, to)
+          else
+            difference = amount - from.cash
+            from.spend(from.cash, to)
+            if to != from
+              take_player_loan(from.owner, differnce - from.owner.cash) unless from.owner.cash >= difference
+              from.owner.spend(difference, to)
+            end
+          end
+        end
+
+        def get_reserved_share(owner, corporation)
+          reserved_share = corporation.shares.find { |share| share.buyable == false }
+          return unless reserved_share
+
+          reserved_share.buyable = true
+          @share_pool.transfer_shares(
+              reserved_share.to_bundle,
+              owner,
+              allow_president_change: true,
+              price: 0
+            )
+          @log << "#{owner.name} gets a share of #{corporation.name}"
+        end
+
+        def gain_token(corporation, minor)
+          blocked_token = corporation.tokens.find { |token| token.used == true && !token.hex && token.price == 50 }
+          blocked_token&.used = false
+          delete_token_mz(minor) if minor&.name == 'MZ'
+        end
+
+        def gain_luxury_carriage_ability_from_minor(corporation, minor)
+          minor_luxury_ability = luxury_ability(minor)
+          return unless minor_luxury_ability
+
+          if luxury_ability(corporation)
+            @luxury_carriages_count += 1
+            @log << "#{corporation.name} already has a tender. The additional '\
+            'tender can be bought by another company from the bank"
+          else
+            corporation.add_ability(minor_luxury_ability)
+            @log << "#{corporation.name} gains tender from #{minor.name}"
+          end
+        end
+
+        def delete_token_mz(minor)
+          token = minor.tokens.first
+          return unless token.used
+
+          city = token.city
+          yellow_green = city.tile.color == :yellow || city.tile.color == :green
+          if !yellow_green
+            city.delete_token!(token)
+            # add mza reservation if mza not tokened in madrid yet
+            mza_token = city.tokens.compact.find { |t| t.corporation == mza }
+            city.add_reservation!(mza) unless mza_token
+            token.destroy!
+          else
+            # check if there's another slot
+            delete_slot = city.slots > 1 ? city.slots : false
+            # check if slot is already used, if not reserve
+            corp = @corporations.find { |c| c.city == city.index && c.name != 'MZ' }
+
+            city.delete_token!(token, remove_slot: delete_slot)
+            city.add_reservation!(corp) unless delete_slot
+          end
+        end
+
+        def swap_token(survivor, nonsurvivor)
+          new_token = survivor.tokens.last
+          old_token = nonsurvivor.tokens.first
+          city = old_token.city
+          if city.nil? && @minors_stop_operating
+            city = hex_by_id(nonsurvivor.coordinates).tile.cities.find { |c| c.reserved_by?(nonsurvivor) }
+            city.remove_reservation!(nonsurvivor)
+          end
+          return gain_token(survivor) unless city
+
+          @log << "Replaced #{nonsurvivor.name} token in #{city.hex.id} with #{survivor.name}"\
+                  ' token'
+
+          if nonsurvivor.ipoed
+            new_token.place(city)
+            city.tokens[city.tokens.find_index(old_token)] = new_token
+            nonsurvivor.tokens.delete(old_token)
+          else
+            city.place_token(survivor, new_token)
+          end
+        end
+
+        def move_assets(survivor, nonsurvivor)
+          # cash
+          nonsurvivor.spend(nonsurvivor.cash, survivor) if nonsurvivor.cash.positive?
+          # trains
+          nonsurvivor.trains.each { |t| t.owner = survivor }
+          survivor.trains.concat(nonsurvivor.trains)
+          nonsurvivor.trains.clear
+          survivor.trains.each { |t| t.operated = false }
+          # privates
+          nonsurvivor.companies.each do |c|
+            c.owner = survivor
+            survivor.companies << c
+          end
+          nonsurvivor.companies.clear
+
+          @log << "Moved assets from #{nonsurvivor.name} to #{survivor.name}"
         end
       end
     end
