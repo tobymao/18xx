@@ -85,7 +85,7 @@ module Engine
             float_percent: 30,
             max_ownership_percent: 100,
             coordinates: 'G8', # Delhi
-            color: '#000000', # green
+            color: '#48bc39', # green
           },
           {
             name: 'East India Railway',
@@ -96,7 +96,7 @@ module Engine
             float_percent: 30,
             max_ownership_percent: 100,
             coordinates: 'P17', # Kolkata
-            color: '#000000', # orange
+            color: '#f14324', # orange
           },
           {
             name: 'North Central Railway',
@@ -107,7 +107,7 @@ module Engine
             float_percent: 30,
             max_ownership_percent: 100,
             coordinates: 'K14', # Allahabad
-            color: '#000000', # light brown / tan
+            color: '#d8ba9e', # light brown / tan
           },
           {
             name: 'Madras Railway',
@@ -118,7 +118,7 @@ module Engine
             float_percent: 30,
             max_ownership_percent: 100,
             coordinates: 'K30', # Chennai
-            color: '#000000', # yellow
+            color: '#fccd1c', # yellow
           },
           {
             name: 'South Indian Railway',
@@ -129,7 +129,7 @@ module Engine
             float_percent: 30,
             max_ownership_percent: 100,
             coordinates: 'G36', # Kochi
-            color: '#000000', # dark red/brown
+            color: '#702f2b', # dark red/brown
           },
           {
             name: 'Bengal Nagur Railway',
@@ -140,7 +140,7 @@ module Engine
             float_percent: 30,
             max_ownership_percent: 100,
             coordinates: 'I20', # Nagpur
-            color: 'brown',
+            color: '#c4711c',
           },
           {
             name: 'Ceylon Government Railway',
@@ -151,7 +151,7 @@ module Engine
             float_percent: 30,
             max_ownership_percent: 100,
             coordinates: 'K40', # Colombo
-            color: '#000000', # Light Purple
+            color: '#967ac4', # Light Purple
           },
           {
             name: 'Punjab Northern State Railway',
@@ -162,7 +162,7 @@ module Engine
             float_percent: 30,
             max_ownership_percent: 100,
             coordinates: 'D3', # Lahore
-            color: '#000000', # light green
+            color: '#9fc322', # light green
           },
           {
             name: 'West of India Portuguese Railway',
@@ -173,7 +173,7 @@ module Engine
             float_percent: 30,
             max_ownership_percent: 100,
             coordinates: 'E24', # Pune
-            color: '#000000', # pink
+            color: '#f24780', # pink
           },
           {
             name: 'Eastern Bengal Railway',
@@ -184,7 +184,7 @@ module Engine
             float_percent: 30,
             max_ownership_percent: 100,
             coordinates: 'P17', # Kolkata
-            color: '#000000', # gray
+            color: '#72818e', # gray
           },
           {
             name: 'Bombay Railway',
@@ -195,7 +195,7 @@ module Engine
             float_percent: 30,
             max_ownership_percent: 100,
             coordinates: 'D23', # Mumbai
-            color: 'purple',
+            color: '#6046a6',
           },
           {
             name: 'Nizam State Railway',
@@ -206,7 +206,7 @@ module Engine
             float_percent: 30,
             max_ownership_percent: 100,
             coordinates: 'H25', # Hyderabad
-            color: '#000000', # medium blue
+            color: '#458dd3', # medium blue
           },
           {
             name: 'Tirhoot Railway',
@@ -217,7 +217,7 @@ module Engine
             float_percent: 30,
             max_ownership_percent: 100,
             coordinates: 'M10', # Nepal
-            color: '#000000', # black
+            color: '#100e0d', # black
           },
           {
             name: 'Sind Punjab & Delhi Railroad',
@@ -228,7 +228,7 @@ module Engine
             float_percent: 30,
             max_ownership_percent: 100,
             coordinates: 'G8', # Delhi
-            color: '#000000', # tan
+            color: '#c3b07a', # tan
           },
           {
             name: 'Darjeeling-Himalayan Railway',
@@ -239,7 +239,7 @@ module Engine
             float_percent: 30,
             max_ownership_percent: 100,
             coordinates: 'Q10', # China
-            color: '#000000', # dark green
+            color: '#2c8e48', # dark green
           },
           {
             name: 'Western Railway',
@@ -250,7 +250,7 @@ module Engine
             float_percent: 30,
             max_ownership_percent: 100,
             coordinates: 'D17', # Ahmedabad
-            color: '#000000', # dark blue
+            color: '#3766ba', # dark blue
           },
           {
             name: 'Kolar Gold Fields Railways',
@@ -261,7 +261,7 @@ module Engine
             float_percent: 30,
             max_ownership_percent: 100,
             coordinates: 'H31', # Bengaluru
-            color: '#000000', # red
+            color: '#da193a', # red
           },
         ].freeze
       end
