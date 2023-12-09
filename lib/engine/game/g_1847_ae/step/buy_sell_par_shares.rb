@@ -91,6 +91,7 @@ module Engine
                                              receiver: owner,
                                              price: price)
 
+            @game.nationalization_actions_this_round << action
             track_action(action, corporation)
           end
 
@@ -102,7 +103,7 @@ module Engine
           end
 
           def action_is_shenanigan?(entity, other_entity, action, corporation, share_to_buy)
-            return 'Nationalization' if action.is_a?(Action::BuyShares) && action.bundle.owner.player?
+            return 'Nationalization' if @game.nationalization_actions_this_round.include?(action)
 
             super
           end
