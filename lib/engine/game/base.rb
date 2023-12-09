@@ -1067,6 +1067,12 @@ module Engine
           corporation.operated?
         when :p_any_operate
           corporation.operated? || corporation.president?(entity)
+        when :full_or_turn
+          if @round.operating? && corporation.president?(entity)
+            corporation.operating_history.size > 1
+          else
+            corporation.operated?
+          end
         when :round
           (@round.stock? &&
             corporation.share_holders[entity] - @round.players_bought[entity][corporation] >= bundle.percent) ||
