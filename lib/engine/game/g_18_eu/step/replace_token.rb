@@ -17,6 +17,19 @@ module Engine
             ACTIONS
           end
 
+          def auto_actions(entity)
+            return [] unless all_cities_have_corp_token?
+
+            [Engine::Action::Pass.new(entity)]
+          end
+
+          def all_cities_have_corp_token?
+            # return true if all possible cities already have a token from the
+            # exchanging corporation.  This is used to auto-pass when there is
+            # not an actual decision to make, and pass is the only valid option.
+            available_cities.all? { |city| city&.tokened_by?(pending_corporation) }
+          end
+
           def description
             'Replace Token'
           end
@@ -32,11 +45,7 @@ module Engine
           def active_entities
             return [] unless pending_acquisition
 
-            [pending_corporation.owner]
-          end
-
-          def current_entity
-            pending_corporation
+            [pending_corporation]
           end
 
           def pending_acquisition
@@ -72,7 +81,11 @@ module Engine
           end
 
           def process_pass(_action)
-            @game.log << "#{pending_corporation.name} passes replacing #{pending_minor.name} token"
+            @game.log << if all_cities_have_corp_token?
+                           "#{pending_corporation.name} already has a token on #{pending_token.city.hex.name}"
+                         else
+                           "#{pending_corporation.name} passes replacing #{pending_minor.name} token"
+                         end
 
             close!(pending_minor)
           end
