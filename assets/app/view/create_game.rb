@@ -32,7 +32,7 @@ module View
 
     def render_create_button(check_options: true)
       error = check_options &&
-              selected_game_or_variant.check_options(@optional_rules, @min_players, @max_players)&.[](:error)
+              selected_game_or_variant.check_options(@optional_rules, @min_players, @max_players, @mode)&.[](:error)
       (render_button('Create', { style: { margin: '0.5rem 1rem 1rem 0' }, attrs: { disabled: !!error } }) { submit })
     end
 
@@ -285,7 +285,7 @@ module View
         h(:ul, ul_props, [*game_variants, *optional_rules]),
       ]
 
-      checked_options = selected_game_or_variant.check_options(@optional_rules, @min_players, @max_players)
+      checked_options = selected_game_or_variant.check_options(@optional_rules, @min_players, @max_players, @mode)
       if checked_options
         if (info = checked_options[:info])
           children.concat(
@@ -425,7 +425,7 @@ module View
 
       checked_options = Engine.meta_by_title(game_data[:title])
                           .check_options(game_data[:settings][:optional_rules],
-                                         game_data[:min_players], game_data[:max_players])
+                                         game_data[:min_players], game_data[:max_players], @mode)
       if (options_error_msg = checked_options&.[](:error))
         return store(:flash_opts, "game_data Optional Rules Error: #{options_error_msg}")
       end

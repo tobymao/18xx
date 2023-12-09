@@ -34,7 +34,7 @@ module Engine
           },
         ].freeze
 
-        def self.check_options(options, _min_players, _max_players)
+        def self.check_options(options, _min_players, _max_players, _mode)
           optional_rules = (options || []).map(&:to_sym)
           return { info: 'WARNING: No option selected. Will use North map with prototype rules' } if optional_rules.empty?
         end

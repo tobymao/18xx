@@ -32,7 +32,7 @@ module Engine
           },
         ].freeze
 
-        def self.check_options(options, _min_players, _max_players)
+        def self.check_options(options, _min_players, _max_players, _mode)
           optional_rules = (options || []).map(&:to_sym)
           return if !optional_rules.include?(:remove_two_ls) || !optional_rules.include?(:remove_three_ls)
 

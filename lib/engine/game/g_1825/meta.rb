@@ -145,7 +145,7 @@ module Engine
           %i[big_bank strict_bank],
         ].freeze
 
-        def self.check_options(options, _min_players, max_players)
+        def self.check_options(options, _min_players, max_players, _mode)
           optional_rules = (options || []).map(&:to_sym)
 
           return if optional_rules.empty? && !max_players

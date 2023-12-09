@@ -127,7 +127,7 @@ module Engine
           ].compact.flat_map { |c| c.upcase.split(/[:, ]+/) }.uniq
         end
 
-        def check_options(_options, _min_players, _max_players); end
+        def check_options(_options, _min_players, _max_players, _mode); end
       end
     end
   end

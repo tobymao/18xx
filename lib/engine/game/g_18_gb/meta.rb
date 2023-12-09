@@ -34,7 +34,7 @@ module Engine
           },
         ].freeze
 
-        def self.check_options(options, _min_players, _max_players)
+        def self.check_options(options, _min_players, _max_players, _mode)
           optional_rules = (options || []).map(&:to_sym)
 
           two_player_map = optional_rules.include?(:two_player_ew) ? 'East-West' : 'North-South'

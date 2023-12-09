@@ -398,7 +398,7 @@ module Engine
       def check_optional_rules!
         min_players = @players.size
         max_players = @players.size
-        error_string = meta.check_options(@optional_rules, min_players, max_players)&.[](:error)
+        error_string = meta.check_options(@optional_rules, min_players, max_players, nil)&.[](:error)
         raise OptionError, error_string if error_string
       end
 

@@ -92,7 +92,7 @@ module Engine
 
         PLAYER_RANGE = [2, 5].freeze
 
-        def self.check_options(_options, _min_players, _max_players)
+        def self.check_options(_options, _min_players, _max_players, _mode)
           { error: 'Must select a map. For 2-3 players, Maps A-C are recommended; for 4-5 players, Maps D-F are recommended.' }
         end
       end

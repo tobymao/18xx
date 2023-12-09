@@ -61,8 +61,8 @@ module Engine
 
         # overrides
         BANK_CASH = 99_999
-        STARTING_CASH = { 3 => 734, 4 => 550, 5 => 440 }.freeze
-        CERT_LIMIT = { 3 => 20, 4 => 15, 5 => 12 }.freeze
+        STARTING_CASH = { 2 => 1100, 3 => 734, 4 => 550, 5 => 440 }.freeze
+        CERT_LIMIT = { 2=> 30, 3 => 20, 4 => 15, 5 => 12 }.freeze
         CAPITALIZATION = :incremental
         SELL_BUY_ORDER = :sell_buy
         HOME_TOKEN_TIMING = :par
