@@ -27,7 +27,7 @@ module Engine
             token_holder.tokens_by_type
           end
 
-          def pay_token_cost(entity, cost)
+          def pay_token_cost(entity, cost, city)
             return super unless entity.minor?
 
             skev_income = (cost / 2).to_i

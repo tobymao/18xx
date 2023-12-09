@@ -10,7 +10,7 @@ module Engine
           def setup_m14_track_rights(_m14); end
 
           def process_place_token(action)
-            if action.entity == @game.corporation_by_id('QMOO') &&
+            if action.entity == @game.qmoo &&
                action.city.hex == @game.quebec_hex &&
                action.city.available_slots.zero?
               raise GameError, "Cannot place QMOO's home token in occupied or reserved city"

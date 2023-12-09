@@ -14,6 +14,12 @@ module Engine
             variants
           end
 
+          def other_trains(entity)
+            trains = super
+            trains.select! { |t| @game.hex_train_name?(t.name) } if entity.type == :regional
+            trains
+          end
+
           def spend_minmax(entity, train)
             return [train.price, train.price] if [train.owner, entity].include?(@game.sbb) ||
                                                   (train.owner&.corporation? && train.owner.owner != entity.owner)

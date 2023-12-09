@@ -294,7 +294,7 @@ module Engine
         MUST_BUY_TRAIN = :always
         NEXT_SR_PLAYER_ORDER = :most_cash
 
-        SELL_AFTER = :operate
+        SELL_AFTER = :full_or_turn
 
         SELL_BUY_ORDER = :sell_buy
 
