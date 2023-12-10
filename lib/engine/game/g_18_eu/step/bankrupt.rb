@@ -1,18 +1,29 @@
 # frozen_string_literal: true
 
 require_relative '../../../step/bankrupt'
+require_relative 'minor_exchange'
 
 module Engine
   module Game
     module G18EU
       module Step
         class Bankrupt < Engine::Step::Bankrupt
+          include MinorExchange
+
           def sell_bankrupt_shares(player, corporation)
             super
 
             transfer_remaining_shares(player)
             fund_previous_corporation(player, corporation) unless corporation.presidents_share.owner == @game.share_pool
             maybe_restart_ownerless_corporations
+            close_player_owned_minors(player)
+          end
+
+          def close_player_owned_minors(player)
+            @game.player_card_minors(player).each do |minor|
+              transfer_trains(minor, @game.depot)
+              @game.close_corporation(minor)
+            end
           end
 
           def transfer_remaining_shares(player)
