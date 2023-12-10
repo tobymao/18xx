@@ -16,7 +16,10 @@ module Engine
             transfer_remaining_shares(player)
             fund_previous_corporation(player, corporation) unless corporation.presidents_share.owner == @game.share_pool
             maybe_restart_ownerless_corporations
+            close_player_owned_minors(player)
+          end
 
+          def close_player_owned_minors(player)
             @game.player_card_minors(player).each do |minor|
               transfer_trains(minor, @game.depot)
               @game.close_corporation(minor)
