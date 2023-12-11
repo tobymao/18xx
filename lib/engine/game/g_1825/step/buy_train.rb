@@ -79,6 +79,15 @@ module Engine
               log_skip(entity)
             end
           end
+
+          def process_buy_train
+            super
+
+            unless (action.price % @game.class::TRAIN_PRICE_MULTIPLE).zero?
+              raise GameError, 'Train purchase price must be a multiple of '\
+                               "#{@game.format_currency(@game.class::TRAIN_PRICE_MULTIPLE)}"
+            end
+          end
         end
       end
     end
