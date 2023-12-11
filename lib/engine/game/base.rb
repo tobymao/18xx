@@ -167,6 +167,7 @@ module Engine
       # first           -- after first stock round
       # after_ipo       -- after stock round in which company is opened
       # operate         -- after operation
+      # full_or_turn    -- after corp completes a full OR turn
       # p_any_operate   -- pres any time, share holders after operation
       # any_time        -- at any time
       # round           -- after the stock round the share was purchased in
