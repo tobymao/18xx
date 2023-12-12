@@ -1427,7 +1427,7 @@ module Engine
         # in a city/town/offboard slot.
         distance = distance.sort_by { |types, _| types.size }
 
-        max_num_stops = [distance.sum { |h| h['pay'] }, visits.size].min
+        max_num_stops = [distance.sum { |h| h['pay'].to_i }, visits.size].min
 
         max_num_stops.downto(1) do |num_stops|
           # to_i to work around Opal bug
