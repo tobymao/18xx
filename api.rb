@@ -196,6 +196,7 @@ class Api < Roda
     static(
       desc: " (Pin #{pin})",
       js_tags: "<script type='text/javascript' src='#{Assets::PIN_DIR}#{pin}.js'></script>",
+      **needs,
     )
   end
 
