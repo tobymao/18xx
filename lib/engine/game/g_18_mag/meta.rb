@@ -48,7 +48,7 @@ module Engine
            sym: :supporters,
            short_name: 'Add Supporter Cards',
            desc: 'Players may choose one of six "supporter cards" as an optional action in the first SR. '\
-                 'The chosen supporter may be used once per OR to benefit one of that players\' minor companies (3-6 players)',
+                 'The chosen supporter may be used once per OR to benefit one of that player\'s minor companies (3-6 players)',
          },
         ].freeze
       end
