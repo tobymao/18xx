@@ -836,7 +836,7 @@ module Engine
         end
 
         def empty_auction_slot
-          @empty_auction_slot ||= Engine::Company.new(sym: '', name: '', value: nil, revenue: nil, desc: '', color: 'LightGrey')
+          @empty_auction_slot ||= Engine::Company.new(sym: '', name: '', value: nil, revenue: nil, desc: "\n"*3, color: 'LightGrey')
         end
 
         def company_header(company)
