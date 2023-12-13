@@ -273,7 +273,7 @@ module View
           }
 
           @step.available.select(&:minor?).map do |minor|
-            children = [h(Corporation, corporation: minor)]
+            children = [h(Corporation, corporation: minor, bids: @step&.bids[minor])]
             children << render_minor_input(minor) if @selected_corporation == minor
             h(:div, props, children)
           end
