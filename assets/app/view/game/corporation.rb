@@ -166,7 +166,7 @@ module View
             textAlign: 'center',
             fontWeight: 'bold',
             padding: '0.5rem',
-          }
+          },
         }
 
         rows = @bids
