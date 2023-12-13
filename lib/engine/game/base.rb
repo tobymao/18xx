@@ -167,6 +167,7 @@ module Engine
       # first           -- after first stock round
       # after_ipo       -- after stock round in which company is opened
       # operate         -- after operation
+      # full_or_turn    -- after corp completes a full OR turn
       # p_any_operate   -- pres any time, share holders after operation
       # any_time        -- at any time
       # round           -- after the stock round the share was purchased in
@@ -1426,7 +1427,7 @@ module Engine
         # in a city/town/offboard slot.
         distance = distance.sort_by { |types, _| types.size }
 
-        max_num_stops = [distance.sum { |h| h['pay'] }, visits.size].min
+        max_num_stops = [distance.sum { |h| h['pay'].to_i }, visits.size].min
 
         max_num_stops.downto(1) do |num_stops|
           # to_i to work around Opal bug
