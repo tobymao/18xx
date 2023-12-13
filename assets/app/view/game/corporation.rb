@@ -158,8 +158,11 @@ module View
           },
         }
 
+        # almost identical to render_bidders in view/game/company
+        # except for  minor CSS tweaks for padding/text alignment
         header_props = {
           style: {
+            clear: 'both',
             textAlign: 'center',
             fontWeight: 'bold',
             padding: '0.5rem',
