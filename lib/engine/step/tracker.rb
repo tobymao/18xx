@@ -54,6 +54,7 @@ module Engine
 
       def lay_tile_action(action, entity: nil, spender: nil)
         tile = action.tile
+        hex = action.hex
 
         old_tile = action.hex.tile
         tile_lay = get_tile_lay(action.entity)
@@ -64,7 +65,7 @@ module Engine
           raise GameError, "#{action.hex.id} cannot be laid as this hex was already laid on this turn"
         end
 
-        extra_cost = tile.color == :yellow ? tile_lay[:cost] : tile_lay[:upgrade_cost]
+        extra_cost = extra_cost(tile, tile_lay, hex)
 
         lay_tile(action, extra_cost: extra_cost, entity: entity, spender: spender)
         if track_upgrade?(old_tile, tile, action.hex)
@@ -73,6 +74,10 @@ module Engine
         end
         @round.num_laid_track += 1
         @round.laid_hexes << action.hex
+      end
+
+      def extra_cost(tile, tile_lay, _hex)
+        tile.color == :yellow ? tile_lay[:cost] : tile_lay[:upgrade_cost]
       end
 
       def track_upgrade?(from, _to, _hex)
@@ -104,7 +109,7 @@ module Engine
         hex = action.hex
         rotation = action.rotation
         old_tile = hex.tile
-        graph = @game.graph_for_entity(entity)
+        graph = @game.graph_for_entity(spender)
 
         if !@game.loading && (blocking_ability = ability_blocking_hex(entity, hex))
           raise GameError, "#{hex.id} is blocked by #{blocking_ability.owner.name}"

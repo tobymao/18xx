@@ -31,7 +31,22 @@ module Engine
             desc: 'This company allows a Corporation to increase the value of a City by F10 for all its runs. Once chosen,'\
                   ' the corp and city cannot be changed. This closes the private company. Bonus is removed when the first E'\
                   ' train is purchased.',
-            abilities: [],
+            abilities: [
+              {
+                type: 'assign_hexes',
+                when: 'any',
+                hexes: %w[B12 C11 C13 C15 E5 E15 F12 G9 G19 I1 I7 I13 K17 L14 M3 M13],
+                count: 1,
+                owner_type: 'player',
+              },
+              {
+                type: 'assign_corporation',
+                when: 'any',
+                count: 1,
+                owner_type: 'player',
+              },
+            ],
+            color: nil,
           },
           {
             name: "Chemin de Fer d'Algérie",
@@ -86,7 +101,7 @@ module Engine
 
         CORPORATIONS = [
           {
-            float_percent: 60,
+            float_percent: 50,
             sym: 'Paris',
             name: 'Chemin de Fer de Paris',
             logo: '1826/Paris',
@@ -98,7 +113,7 @@ module Engine
             color: 'sand',
           },
           {
-            float_percent: 60,
+            float_percent: 50,
             sym: 'PO',
             name: 'Chemin de Fer de Paris-Orléans',
             logo: '1826/PO',
@@ -111,7 +126,7 @@ module Engine
             text_color: 'black',
           },
           {
-            float_percent: 60,
+            float_percent: 50,
             sym: 'N',
             name: 'Chemin de Fer du Nord',
             logo: '1826/N',
@@ -123,7 +138,7 @@ module Engine
             color: 'red',
           },
           {
-            float_percent: 60,
+            float_percent: 50,
             sym: 'Est',
             name: "Chemin de Fer de l'Est",
             logo: '1826/Est',
@@ -135,7 +150,7 @@ module Engine
             color: 'orange',
           },
           {
-            float_percent: 60,
+            float_percent: 50,
             sym: 'O',
             name: "Chemin de Fer de l'Ouest",
             logo: '1846/O',
@@ -148,7 +163,7 @@ module Engine
             text_color: 'black',
           },
           {
-            float_percent: 60,
+            float_percent: 50,
             sym: 'Midi',
             name: 'Chemin de Fer du Midi',
             logo: '1826/Midi',
@@ -160,7 +175,7 @@ module Engine
             color: 'brightGreen',
           },
           {
-            float_percent: 60,
+            float_percent: 50,
             sym: 'GC',
             name: 'Grand Central de France',
             logo: '1826/GC',
@@ -172,7 +187,7 @@ module Engine
             text_color: 'black',
           },
           {
-            float_percent: 60,
+            float_percent: 50,
             sym: 'PLM',
             name: 'Chemin de Fer Paris-Lyon-Méditerranée',
             logo: '1826/PLM',
@@ -185,7 +200,7 @@ module Engine
             text_color: 'black',
           },
           {
-            float_percent: 60,
+            float_percent: 50,
             sym: 'Al',
             name: "Chemin de Fer d'Alsace",
             logo: '1826/Al',
@@ -196,7 +211,7 @@ module Engine
             color: 'blue',
           },
           {
-            float_percent: 60,
+            float_percent: 50,
             sym: 'B',
             name: "Chemins de Fer de l'Etat Belge",
             logo: '1826/B',
@@ -215,7 +230,7 @@ module Engine
             ],
           },
           {
-            float_percent: 60,
+            float_percent: 50,
             sym: 'Etat',
             name: "Chemins de Fer de l'Etat",
             logo: '1826/Etat',

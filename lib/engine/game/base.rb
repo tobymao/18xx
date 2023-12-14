@@ -167,6 +167,7 @@ module Engine
       # first           -- after first stock round
       # after_ipo       -- after stock round in which company is opened
       # operate         -- after operation
+      # full_or_turn    -- after corp completes a full OR turn
       # p_any_operate   -- pres any time, share holders after operation
       # any_time        -- at any time
       # round           -- after the stock round the share was purchased in
@@ -556,6 +557,8 @@ module Engine
         @loans = init_loans
         @total_loans = @loans.size
         @corporations = init_corporations(@stock_market)
+        @closing_queue = {}
+        @corporations_are_closing = false
         @bank = init_bank
         @tiles = init_tiles
         @all_tiles = init_tiles
@@ -1065,6 +1068,12 @@ module Engine
           corporation.operated?
         when :p_any_operate
           corporation.operated? || corporation.president?(entity)
+        when :full_or_turn
+          if @round.operating? && corporation.president?(entity)
+            corporation.operating_history.size > 1
+          else
+            corporation.operated?
+          end
         when :round
           (@round.stock? &&
             corporation.share_holders[entity] - @round.players_bought[entity][corporation] >= bundle.percent) ||
@@ -1113,17 +1122,20 @@ module Engine
       def all_bundles_for_corporation(share_holder, corporation, shares: nil)
         return [] unless corporation.ipoed
 
-        shares = (shares || share_holder.shares_of(corporation)).sort_by { |h| [h.president ? 1 : 0, h.percent] }
+        shares ||= share_holder.shares_of(corporation)
+        return [] if shares.empty?
 
-        bundles = shares.flat_map.with_index do |share, index|
-          bundle = shares.take(index + 1)
-          percent = bundle.sum(&:percent)
-          bundles = [Engine::ShareBundle.new(bundle, percent)]
-          bundles.concat(partial_bundles_for_presidents_share(corporation, bundle, percent)) if share.president
-          bundles
+        shares = shares.sort_by { |h| [h.president ? 1 : 0, h.percent] }
+        bundle = []
+        percent = 0
+        all_bundles = shares.each_with_object([]) do |share, bundles|
+          bundle << share
+          percent += share.percent
+          bundles << Engine::ShareBundle.new(bundle, percent)
         end
+        all_bundles.concat(partial_bundles_for_presidents_share(corporation, bundle, percent)) if shares.last.president
 
-        bundles.sort_by(&:percent)
+        all_bundles.sort_by(&:percent)
       end
 
       def partial_bundles_for_presidents_share(corporation, bundle, percent)
@@ -1415,7 +1427,7 @@ module Engine
         # in a city/town/offboard slot.
         distance = distance.sort_by { |types, _| types.size }
 
-        max_num_stops = [distance.sum { |h| h['pay'] }, visits.size].min
+        max_num_stops = [distance.sum { |h| h['pay'].to_i }, visits.size].min
 
         max_num_stops.downto(1) do |num_stops|
           # to_i to work around Opal bug
@@ -1775,6 +1787,10 @@ module Engine
 
         corporation.close!
         @cert_limit = init_cert_limit
+
+        # when the entity after the closing one starts operating, it might skip
+        # all its steps and land in a closing cell too
+        close_corporations_in_close_cell!
       end
 
       def shares_for_corporation(corporation)
@@ -2191,7 +2207,7 @@ module Engine
         2
       end
 
-      def skip_route_track_type; end
+      def skip_route_track_type(train); end
 
       def tile_valid_for_phase?(tile, hex: nil, phase_color_cache: nil)
         phase_color_cache ||= @phase.tiles
@@ -2246,6 +2262,10 @@ module Engine
 
       def player_debt(_player)
         0
+      end
+
+      def render_hex_reservation?(_corporation)
+        true
       end
 
       private
@@ -2706,9 +2726,29 @@ module Engine
       end
 
       def action_processed(_action)
+        close_corporations_in_close_cell!
+      end
+
+      # close_corporation() might cause another corporation to need closing; if
+      # this function is called multiple times before resolving, corporations
+      # that should be closed are added to @closing_queue, but the closing loop
+      # is not re-entered
+      def close_corporations_in_close_cell!
         return unless stock_market.has_close_cell
 
-        @corporations.dup.each { |c| close_corporation(c) if c.share_price&.type == :close }
+        @corporations.each do |corp|
+          @closing_queue[corp] = true if !corp.closed? && corp.share_price&.type == :close
+        end
+
+        return if @corporations_are_closing
+
+        @corporations_are_closing = true
+        until @closing_queue.empty?
+          corp = @closing_queue.first[0]
+          @closing_queue.delete(corp)
+          close_corporation(corp)
+        end
+        @corporations_are_closing = false
       end
 
       def show_priority_deal_player?(order)

@@ -137,12 +137,12 @@ module Engine
           'FM' => '/icons/18_tokaido/fm_token.svg',
         }.freeze
 
-        SELL_BUY_ORDER = :sell_buy
-
-        GAME_END_CHECK = { bankrupt: :immediate, final_phase: :full_or }.freeze
+        def corporation_opts
+          limited_express ? { float_percent: 50 } : {}
+        end
 
         def game_tiles
-          if @optional_rules&.include?(:expanded_tileset)
+          if newbie_rules
             tiles = G18Tokaido::Tiles::TILES.dup
             %w[204 207 208 619 622].each { |t| tiles[t] += 1 }
             tiles
@@ -152,13 +152,35 @@ module Engine
         end
 
         def game_market
-          if @optional_rules&.include?(:no_yellow_zone)
+          if newbie_rules
             market = G18Tokaido::StockMarket::MARKET.dup
             market.map do |row|
               row.map { |p| p.include?('y') ? p.chop : p }
             end
+          elsif limited_express
+            [
+              %w[76 82 90 100p 112 126 142 160 180 200 225 250 275 300e],
+              %w[70 76 82 90p 100 112 126 142 160 180 200 220 240 260],
+              %w[65 70 76 82p 90 100 111 125 140 155 170 185],
+              %w[60y 66 71 76p 82 90 100 110 120 130],
+              %w[55y 62 67 71p 76 82 90 100],
+              %w[50y 58y 65 67p 71 75 80],
+              %w[45o 54y 63 67 69 70],
+              %w[40o 50y 60y 67 68],
+              %w[30b 40o 50y 60y],
+              %w[20b 30b 40o 50y],
+              %w[10b 20b 30b 40o],
+            ].freeze
           else
             G18Tokaido::StockMarket::MARKET
+          end
+        end
+
+        def game_end_check_values
+          if limited_express
+            { bankrupt: :immediate, stock_market: :current_round, final_phase: :full_or }
+          else
+            { bankrupt: :immediate, final_phase: :full_or }
           end
         end
 
@@ -170,7 +192,7 @@ module Engine
               c.min_price = (new_value / 2).to_i
               c.max_price = new_value * 2
             end
-          elsif @optional_rules&.include?(:snake_draft)
+          elsif snake_draft
             setup_company_price_up_to_face
             @reverse = true
           else
@@ -186,6 +208,21 @@ module Engine
           (8 * corporations.size / players.size).to_i
         end
 
+        def game_trains
+          if limited_express
+            trains = G18Tokaido::Game::TRAINS.dup
+            trains.map do |train|
+              if train[:name] == 'D'
+                train[:price] = 1100
+                train[:discount] = { '4' => 300, '5' => 300, '6' => 300 }
+              end
+              train
+            end
+          else
+            G18Tokaido::Game::TRAINS
+          end
+        end
+
         def num_trains(train)
           four_players = players.size == 4
 
@@ -199,7 +236,7 @@ module Engine
           when '5'
             3
           when '6'
-            @optional_rules&.include?(:limited_express) ? 2 : 3
+            limited_express ? 2 : 3
           when 'D'
             20
           end
@@ -222,7 +259,7 @@ module Engine
               Engine::Step::CompanyPendingPar,
               Engine::Step::WaterfallAuction,
             ])
-          elsif @optional_rules&.include?(:snake_draft)
+          elsif snake_draft
             Engine::Round::Draft.new(
               self,
               [G18Tokaido::Step::DraftDistribution],
@@ -380,7 +417,7 @@ module Engine
             'At the end of each set of ORs the next available train will be exported (removed, triggering ' \
             'phase change as if purchased)',
           ]
-          timeline.unshift('First stock round is in reverse order of draft order') unless waterfall_auction
+          timeline.unshift('First stock round is in reverse order of draft order') if snake_draft
           @timeline = timeline
         end
 
@@ -396,6 +433,18 @@ module Engine
 
         def waterfall_auction
           @optional_rules&.include?(:waterfall_auction)
+        end
+
+        def snake_draft
+          @optional_rules&.include?(:snake_draft)
+        end
+
+        def limited_express
+          @optional_rules&.include?(:limited_express)
+        end
+
+        def newbie_rules
+          @optional_rules&.include?(:newbie_rules)
         end
 
         def payout_companies(ignore: [])

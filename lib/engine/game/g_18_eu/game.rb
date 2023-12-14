@@ -402,6 +402,8 @@ module Engine
         end
 
         def maybe_discard_pullman(entity)
+          return if entity == @depot
+
           pullman = owns_pullman?(entity)
           return unless pullman
 

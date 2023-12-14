@@ -3,7 +3,7 @@
 module Engine
   module Game
     module G18ZOO
-      module SharedEntities
+      module Entities
         COMPANIES = [
           {
             sym: 'DAYS_OFF',
@@ -16,7 +16,7 @@ module Engine
           {
             sym: 'MIDAS',
             name: 'Midas',
-            value: 2,
+            value: 1,
             desc: 'During the SR you can take the priority: when priority is assigned by “more money” criteria,'\
                   ' you are assigned 1st spot',
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
@@ -39,7 +39,7 @@ module Engine
           {
             sym: 'IT_S_ALL_GREEK_TO_ME',
             name: 'It’s all greek to me',
-            value: 2,
+            value: 1,
             desc: 'After your turn in an SR, you get another turn - it means you can play twice in a row in a SR:'\
                   ' “who said you can steal a company?”',
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
@@ -380,94 +380,6 @@ module Engine
         def game_corporation_coordinates
           self.class::CORPORATION_COORDINATES
         end
-      end
-
-      module Entities
-        include G18ZOO::SharedEntities
-      end
-    end
-
-    module G18ZOOMapA
-      module Entities
-        include G18ZOO::SharedEntities
-        CORPORATIONS = ALL_CORPORATIONS.select { |corporation| %w[GI PB PE LI TI].include?(corporation[:sym]) }.freeze
-
-        CORPORATION_COORDINATES = { 'GI' => 'K9', 'PB' => 'N10', 'PE' => 'K17', 'LI' => 'E15', 'TI' => 'H14' }.freeze
-      end
-    end
-
-    module G18ZOOMapB
-      module Entities
-        include G18ZOO::SharedEntities
-        CORPORATIONS = ALL_CORPORATIONS.select { |corporation| %w[CR GI PB PE BB].include?(corporation[:sym]) }.freeze
-
-        CORPORATION_COORDINATES = { 'CR' => 'H3', 'GI' => 'K10', 'PB' => 'N11', 'PE' => 'K18', 'BB' => 'I6' }.freeze
-      end
-    end
-
-    module G18ZOOMapC
-      module Entities
-        include G18ZOO::SharedEntities
-        CORPORATIONS = ALL_CORPORATIONS.select { |corporation| %w[CR LI TI BB EL].include?(corporation[:sym]) }.freeze
-
-        CORPORATION_COORDINATES = { 'CR' => 'I3', 'LI' => 'F16', 'TI' => 'I15', 'BB' => 'J6', 'EL' => 'E5' }.freeze
-      end
-    end
-
-    module G18ZOOMapD
-      module Entities
-        include G18ZOO::SharedEntities
-        CORPORATIONS = ALL_CORPORATIONS.select do |corporation|
-          %w[CR GI PB PE LI TI BB].include?(corporation[:sym])
-        end.freeze
-
-        CORPORATION_COORDINATES = {
-          'CR' => 'H3',
-          'GI' => 'K10',
-          'PB' => 'N11',
-          'PE' => 'K18',
-          'LI' => 'E16',
-          'TI' => 'H15',
-          'BB' => 'I6',
-        }.freeze
-      end
-    end
-
-    module G18ZOOMapE
-      module Entities
-        include G18ZOO::SharedEntities
-        CORPORATIONS = ALL_CORPORATIONS.select do |corporation|
-          %w[CR GI PB PE TI BB EL].include?(corporation[:sym])
-        end.freeze
-
-        CORPORATION_COORDINATES = {
-          'CR' => 'H3',
-          'GI' => 'K10',
-          'PB' => 'N11',
-          'PE' => 'K18',
-          'TI' => 'H15',
-          'BB' => 'I6',
-          'EL' => 'D5',
-        }.freeze
-      end
-    end
-
-    module G18ZOOMapF
-      module Entities
-        include G18ZOO::SharedEntities
-        CORPORATIONS = ALL_CORPORATIONS.select do |corporation|
-          %w[CR GI PE LI TI BB EL].include?(corporation[:sym])
-        end.freeze
-
-        CORPORATION_COORDINATES = {
-          'CR' => 'I3',
-          'GI' => 'L10',
-          'PE' => 'L18',
-          'LI' => 'F16',
-          'TI' => 'I15',
-          'BB' => 'J6',
-          'EL' => 'E5',
-        }.freeze
       end
     end
   end

@@ -117,6 +117,7 @@ class Api < Roda
         halt(404, 'User does not exist') unless (profile = User[id])
 
         needs = { profile: profile&.to_h(for_user: false) }
+
         if profile.settings['show_stats']
           begin
             needs[:profile]['stats'] = JSON.parse(Bus[Bus::USER_STATS % id])
@@ -124,8 +125,9 @@ class Api < Roda
             LOGGER.error "Unable to get stats for #{id}: #{e}"
           end
         end
+
         render(
-          games: Game.profile_games(profile).map(&:to_h),
+          games: Game.profile_games(profile),
           **needs,
         )
       end
@@ -173,7 +175,7 @@ class Api < Roda
     render(
       title: request.params['title'],
       pin: request.params['pin'],
-      games: Game.home_games(user, **request.params).map(&:to_h),
+      games: Game.home_games(user, **request.params),
     )
   end
 
@@ -182,37 +184,36 @@ class Api < Roda
 
     return render_pin(**needs) if needs[:pin]
 
-    script = Snabberb.prerender_script(
-      'Index',
-      'App',
-      'app',
-      javascript_include_tags: ASSETS.js_tags(titles || []),
-      app_route: request.path,
-      production: PRODUCTION,
+    static(
+      js_tags: ASSETS.js_tags(titles || []),
       **needs,
     )
-
-    '<!DOCTYPE html>' + ASSETS.context.eval(script)
   end
 
   def render_pin(**needs)
     pin = needs[:pin]
 
     static(
-      desc: "Pin #{pin}",
+      desc: " (Pin #{pin})",
       js_tags: "<script type='text/javascript' src='#{Assets::PIN_DIR}#{pin}.js'></script>",
-      attach_func: "Opal.App.$attach('app', #{Snabberb.wrap(app_route: request.path, **needs)})",
+      **needs,
     )
   end
 
-  def static(desc:, js_tags:, attach_func:)
+  def static(desc: '', js_tags: '', **needs)
+    args = Snabberb.wrap(
+      app_route: request.path,
+      production: PRODUCTION,
+      **needs,
+    )
+
     <<~HTML
       <!DOCTYPE html>
       <html>
         <head>
            <meta charset=\"utf-8\">
            <meta name=\"viewport\" content=\"width=device-width, initial-scale=1, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0\">
-           <title>18xx.Games (#{desc})</title>
+           <title>18xx.Games#{desc}</title>
            <link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css\">
            <link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&amp;display=swap\">
            <link id=\"favicon_svg\" rel=\"icon\" type=\"image/svg+xml\" href=\"/images/icon.svg\">
@@ -230,7 +231,7 @@ class Api < Roda
         <body>
           <div id="app"></div>
           #{js_tags}
-          <script>#{attach_func}</script>
+          <script>Opal.App.$attach('app', #{args})</script>
         </body>
       </html>
     HTML

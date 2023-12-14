@@ -146,10 +146,10 @@ module Engine
 
             spender ||= entity
             if spender.cash >= token.price
-              pay_token_cost(spender, token.price) if token.price.positive?
+              pay_token_cost(spender, token.price, nil) if token.price.positive?
             else
               diff = token.price - spender.cash
-              pay_token_cost(spender, spender.cash) if spender.cash.positive?
+              pay_token_cost(spender, spender.cash, nil) if spender.cash.positive?
               @round.receivership_loan += diff
             end
 

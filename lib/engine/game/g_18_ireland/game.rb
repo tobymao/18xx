@@ -219,7 +219,7 @@ module Engine
           Graph.new(self, skip_track: :narrow)
         end
 
-        def skip_route_track_type
+        def skip_route_track_type(_train)
           :narrow
         end
 

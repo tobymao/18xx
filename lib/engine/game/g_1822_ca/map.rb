@@ -634,7 +634,8 @@ module Engine
             ['AH8'] =>
               'city=revenue:10;city=revenue:0,loc:3.5;city=revenue:0,loc:5;label=Q;path=a:1,b:_0;'\
               'border=edge:0,type:water,cost:40;border=edge:4,type:water,cost:40;'\
-              'border=edge:5,type:water,cost:40;upgrade=cost:20',
+              'border=edge:5,type:water,cost:40;upgrade=cost:20,loc:5.5;',
+
             ['AN6'] =>
               'city=revenue:0;border=edge:4,type:impassable;border=edge:5,type:impassable;future_label=label:L,color:brown',
             ['AO3'] =>
