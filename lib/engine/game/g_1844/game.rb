@@ -708,6 +708,13 @@ module Engine
           bundles
         end
 
+        def shares_for_presidency_swap(shares, num_shares)
+          return super unless shares.first.corporation == sbb
+
+          double_share = shares.find { |s| s.percent == sbb.presidents_share.percent }
+          double_share ? [double_share] : shares.take(num_shares)
+        end
+
         def after_buy_company(player, company, _price)
           super
           return if !mountain_railways.include?(company) && !tunnel_companies.include?(company)

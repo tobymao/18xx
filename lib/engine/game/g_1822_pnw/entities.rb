@@ -588,7 +588,7 @@ module Engine
             text_color: 'black',
           },
           {
-            name: 'MINOR: 14. Camas Prarie Railroad',
+            name: 'MINOR: 14. Camas Prairie Railroad',
             sym: 'M14',
             value: 100,
             revenue: 0,

@@ -15,13 +15,24 @@ module Engine
         end
 
         def lay_tile_action(action)
-          old_tile = action.tile
+          hex = action.hex
           super
 
           if @game.mine_hex?(action.hex) && old_tile.color == :white
             @round.num_laid_track -= 1
             @round.mine_tile_laid = true
           end
+
+          tokens = hex.tile.cities.first.tokens if hex.id == 'F24'
+          if hex.id == 'F24' && tokens.find { |t| t&.corporation&.name == 'MZ' } && tokens.find do |t|
+               t&.corporation&.name == 'MZA'
+             end && (action.tile.color == :brown || action.tile.color == :gray)
+            mz_token = tokens.find { |t| t&.corporation&.name == 'MZ' }
+            hex.tile.cities.first.delete_token!(mz_token)
+            hex.tile.cities.first.exchange_token(mz_token, extra_slot: true)
+          end
+          # clear graphs
+          @game.graph.clear
 
           action.entity.goal_reached!(:destination) if @game.check_for_destination_connection(action.entity)
         end

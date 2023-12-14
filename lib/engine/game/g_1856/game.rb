@@ -299,6 +299,8 @@ module Engine
         HOME_TOKEN_TIMING = :operate
         ALLOW_REMOVING_TOWNS = true
 
+        EBUY_OTHER_VALUE = false
+
         RIGHT_COST = 50
 
         POST_NATIONALIZATION_CERT_LIMIT = {

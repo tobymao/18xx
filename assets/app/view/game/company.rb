@@ -104,6 +104,7 @@ module View
             fontSize: '80%',
             textAlign: 'left',
             fontWeight: 'normal',
+            whiteSpace: 'pre-line',
           }
 
           value_style = {

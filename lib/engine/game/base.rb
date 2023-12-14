@@ -167,6 +167,7 @@ module Engine
       # first           -- after first stock round
       # after_ipo       -- after stock round in which company is opened
       # operate         -- after operation
+      # full_or_turn    -- after corp completes a full OR turn
       # p_any_operate   -- pres any time, share holders after operation
       # any_time        -- at any time
       # round           -- after the stock round the share was purchased in
@@ -1067,6 +1068,12 @@ module Engine
           corporation.operated?
         when :p_any_operate
           corporation.operated? || corporation.president?(entity)
+        when :full_or_turn
+          if @round.operating? && corporation.president?(entity)
+            corporation.operating_history.size > 1
+          else
+            corporation.operated?
+          end
         when :round
           (@round.stock? &&
             corporation.share_holders[entity] - @round.players_bought[entity][corporation] >= bundle.percent) ||
@@ -1115,17 +1122,20 @@ module Engine
       def all_bundles_for_corporation(share_holder, corporation, shares: nil)
         return [] unless corporation.ipoed
 
-        shares = (shares || share_holder.shares_of(corporation)).sort_by { |h| [h.president ? 1 : 0, h.percent] }
+        shares ||= share_holder.shares_of(corporation)
+        return [] if shares.empty?
 
-        bundles = shares.flat_map.with_index do |share, index|
-          bundle = shares.take(index + 1)
-          percent = bundle.sum(&:percent)
-          bundles = [Engine::ShareBundle.new(bundle, percent)]
-          bundles.concat(partial_bundles_for_presidents_share(corporation, bundle, percent)) if share.president
-          bundles
+        shares = shares.sort_by { |h| [h.president ? 1 : 0, h.percent] }
+        bundle = []
+        percent = 0
+        all_bundles = shares.each_with_object([]) do |share, bundles|
+          bundle << share
+          percent += share.percent
+          bundles << Engine::ShareBundle.new(bundle, percent)
         end
+        all_bundles.concat(partial_bundles_for_presidents_share(corporation, bundle, percent)) if shares.last.president
 
-        bundles.sort_by(&:percent)
+        all_bundles.sort_by(&:percent)
       end
 
       def partial_bundles_for_presidents_share(corporation, bundle, percent)
@@ -1417,7 +1427,7 @@ module Engine
         # in a city/town/offboard slot.
         distance = distance.sort_by { |types, _| types.size }
 
-        max_num_stops = [distance.sum { |h| h['pay'] }, visits.size].min
+        max_num_stops = [distance.sum { |h| h['pay'].to_i }, visits.size].min
 
         max_num_stops.downto(1) do |num_stops|
           # to_i to work around Opal bug
