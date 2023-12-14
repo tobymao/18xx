@@ -10,7 +10,6 @@ module Engine
         class ModifiedDutchAuction < Engine::Step::Base
           include Engine::Step::PassableAuction
           include Engine::Step::ProgrammerAuctionBid
-          ACTIONS = %w[bid pass].freeze
 
           def description
             'Modified Dutch Auction for Minors'
@@ -44,7 +43,10 @@ module Engine
 
             return %w[bid] unless @auctioning
 
-            ACTIONS
+            actions = []
+            actions << 'bid' if can_afford?(entity)
+            actions << 'pass'
+            actions
           end
 
           def setup
@@ -97,14 +99,7 @@ module Engine
           def next_entity!
             @round.next_entity_index!
             entity = entities[entity_index]
-            return next_entity! if entity&.passed?
-            return unless @auctioning
-            return if can_afford?(entity)
-
-            pass_auction(entity)
-            return all_passed! if entities.all?(&:passed?)
-
-            next_entity!
+            next_entity! if entity&.passed?
           end
 
           def process_bid(action)
