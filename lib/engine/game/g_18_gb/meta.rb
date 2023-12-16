@@ -16,7 +16,7 @@ module Engine
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18GB'
         GAME_LOCATION = 'Great Britain'
         GAME_PUBLISHER = :all_aboard_games
-        GAME_RULES_URL = 'https://www.dropbox.com/s/uilbrqw8qyo3ves/18GB%20Rules.pdf?dl=0'
+        GAME_RULES_URL = 'https://boardgamegeek.com/filepage/269595/18gb-rules'
 
         PLAYER_RANGE = [2, 6].freeze
         OPTIONAL_RULES = [
