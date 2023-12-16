@@ -6,6 +6,7 @@ require_relative 'meta'
 require_relative 'phases'
 require_relative 'trains'
 require_relative 'tiles'
+require_relative 'mail_contract'
 require_relative '../base'
 
 module Engine
@@ -19,7 +20,7 @@ module Engine
         include Trains
         include Tiles
 
-        attr_reader :need_auction_or, :auction_finished
+        attr_reader :need_auction_or, :auction_finished, :available_mail_contracts
 
         COMPANY_CLASS = G1854::Company
         DEPOT_CLASS = G1854::Depot
@@ -53,6 +54,9 @@ module Engine
 
         TRACK_RESTRICTION = :permissive
         TILE_RESERVATION_BLOCKS_OTHERS = :always
+
+        NUM_SMALL_MAIL_CONTRACTS = 6
+        NUM_LARGE_MAIL_CONTRACTS = 6
 
         MARKET = [
         ['',
@@ -105,6 +109,7 @@ module Engine
 
         @need_auction_or = true
         @auction_finished = false
+        @available_mail_contracts = []
 
         def new_auction_round
           Round::Auction.new(self, [
@@ -122,9 +127,10 @@ module Engine
             Engine::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
-            Engine::Step::Dividend,
+            G1854::Step::Dividend,
             Engine::Step::DiscardTrain,
             G1854::Step::BuyTrain,
+            G1854::Step::BuyMailContract,
             [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
@@ -215,6 +221,15 @@ module Engine
             next if company.corp_sym.nil?
             company.add_ability(G1854::Ability::AssignMinor.new(type: :assign_minor, corp_sym: company.corp_sym))
           end
+
+          @available_mail_contracts = []
+          for _ in 1..NUM_SMALL_MAIL_CONTRACTS do
+            @available_mail_contracts << MailContract.new(sym:"MC", name:"Mail Contract", value:100)
+          end
+
+          for _ in 1..NUM_LARGE_MAIL_CONTRACTS do
+            @available_mail_contracts << MailContract.new(sym:"MC", name:"Mail Contract", value:200)
+          end
         end
 
         def reservation_corporations
@@ -227,13 +242,20 @@ module Engine
           @minors.select { |m| m.owner == player }
         end
 
+        def company_header(company)
+          company.local_railway? ? 'LOCAL RAILWAY' : super
+        end
+
         def after_buy_company(player, company, _price)
+          minor_assigned = false
           abilities(company, :assign_minor) do |ability|
             target_corp = minor_by_id(ability.corp_sym)
             target_corp.owner = player
             target_corp.float!
+            minor_assigned = true
           end
           super
+          company.close! if minor_assigned
         end
       end
     end

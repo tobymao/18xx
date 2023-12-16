@@ -36,12 +36,11 @@ module Engine
           sym = (index + 1).to_s
           {
             sym: "L#{sym}",
-            corp_sym: sym,
             name: "#{name} (#{sym})",
             value: 150,
-            desc: '',
-            revenue: 0,
-            color: nil,
+            corp_sym: sym,
+            color: "white",
+            local_railway: true,
           }
         end.freeze
 
@@ -88,16 +87,6 @@ module Engine
           name, coords, city = vals
           sym = (index + 1).to_s
           {
-            # sym: sym,
-            # name: name,
-            # logo: "1854/#{sym}",
-            # simple_logo: "1854/#{sym}",
-            # tokens: [0, 40],
-            # coordinates: coords,
-            # city: city,
-            # color: '#000000',
-
-            # float_percent: 100,
             sym: sym,
             name: name,
             coordinates: coords,
@@ -107,9 +96,6 @@ module Engine
             tokens: [0, 40],
             color: '#000000',
             type: 'minor',
-            # shares: [100],
-            # max_ownership_percent: 100,
-            # hide_shares: true,
           }
         end.freeze
 
