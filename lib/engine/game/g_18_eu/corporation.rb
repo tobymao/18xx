@@ -7,8 +7,8 @@ module Engine
     module G18EU
       class Corporation < Engine::Corporation
         def holding_ok?(share_holder, extra_percent = 0)
-          # per the rules, it's OK to hold over the limit until the company operates
-          # but then you must sell at the next opportunity.
+          # Per the rules, it's OK to temporarily hold over the per-corp limit
+          # if the company hasn't operated yet.
           return true unless self.operated?
           super
         end
