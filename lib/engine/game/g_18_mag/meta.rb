@@ -15,7 +15,12 @@ module Engine
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18Mag'
         GAME_LOCATION = 'Hungary'
         GAME_PUBLISHER = :lonny_games
-        GAME_RULES_URL = 'https://www.lonny.at/app/download/10197748784/18Mag_Rules_ENG_comp.pdf'
+        GAME_RULES_URL = {
+          'Base 18Mag Rules' =>
+          'https://www.lonny.at/app/download/10197748784/18Mag_Rules_ENG_comp.pdf',
+          'Expansion Rules' =>
+            'https://www.lonnygames.com/app/download/13361903531/18Mag_Exp_Rules_English.pdf',
+        }.freeze
 
         PLAYER_RANGE = [2, 6].freeze
         OPTIONAL_RULES = [
@@ -41,8 +46,9 @@ module Engine
          },
          {
            sym: :supporters,
-           short_name: 'Supporter Cards',
-           desc: '6 new supporters with abilities that can be used once an OR (3-6 players)',
+           short_name: 'Add Supporter Cards',
+           desc: 'Players may choose one of six "supporter cards" as an optional action in the first SR. '\
+                 'The chosen supporter may be used once per OR to benefit one of that player\'s minor companies (3-6 players)',
          },
         ].freeze
       end
