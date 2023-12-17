@@ -31,6 +31,8 @@ module Engine
           0,
         ]
 
+        # These companies exist only for the initial auction.  When these are bought, the minor is assigned
+        # to the buyer, and the companies are closed.
         LOCAL_COMPANIES = LOCAL_NAMES.zip(LOCAL_COORDINATES, LOCAL_CITIES).map.with_index do |vals, index|
           name, coords, city = vals
           sym = (index + 1).to_s
@@ -96,6 +98,11 @@ module Engine
             tokens: [0, 40],
             color: '#000000',
             type: 'minor',
+            # float_percent: 100,
+            # hide_shares: true,
+            # shares: [100],
+            # forced_share_percent: 100,
+            # max_ownership_percent: 100,
           }
         end.freeze
 

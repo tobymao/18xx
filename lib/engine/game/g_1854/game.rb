@@ -141,6 +141,8 @@ module Engine
         end
 
         def route_trains(entity)
+          # local railways are not allowed to run normal trains
+          # they may only run + trains
           if entity.minor?
             # TODO: better method to filter, not based on name?
             return super.filter {|t| t.name.include? "+"}
@@ -250,6 +252,7 @@ module Engine
           minor_assigned = false
           abilities(company, :assign_minor) do |ability|
             target_corp = minor_by_id(ability.corp_sym)
+            share = target_corp.ipo_shares.first
             target_corp.owner = player
             target_corp.float!
             minor_assigned = true

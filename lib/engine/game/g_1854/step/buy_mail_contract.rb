@@ -32,6 +32,7 @@ module Engine
 
           def log_skip(entity)
             # no need to print out skip for minors, they can never
+            # own mail contracts
             super unless entity.minor?
           end
         end
