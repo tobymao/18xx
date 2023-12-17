@@ -44,7 +44,7 @@ module Engine
         SELL_BUY_ORDER = :sell_buy
 
         # TODO: this is different for hex market
-        SELL_MOVEMENT = :down_block
+        SELL_MOVEMENT = :down_left_hex_share
         POOL_SHARE_DROP = :left_block
 
         EBUY_PRES_SWAP = false
@@ -59,49 +59,15 @@ module Engine
         NUM_LARGE_MAIL_CONTRACTS = 6
 
         MARKET = [
-        ['',
-         '',
-         '90',
-         '100',
-         '110',
-         '120',
-         '130',
-         '140',
-         '155',
-         '170',
-         '185',
-         '200',
-         '220t',
-         '240t',
-         '260t',
-         '290t',
-         '320t',
-         '350t'],
-        ['',
-         '70',
-         '80',
-         '90',
-         '100p',
-         '110',
-         '120',
-         '130',
-         '145',
-         '160',
-         '175',
-         '190',
-         '210t',
-         '230t',
-         '250t',
-         '280t',
-         '310t',
-         '340t'],
-        %w[55 60 70 80 90p 100 110 120 135 150 165 180 200t 220t 240t 270t 300t 330t],
-        %w[50 56 60 70 80p 90 100 110 125 140 155 170 190t 210t 230t],
-        %w[45 52 57 60 70p 80 90 100 115 130 145 160],
-        %w[40 50 54 58 60p 70 80 90 100x 120],
-        %w[35 45 52 56 59 64 70 80],
-        %w[30 40 48 54 58 60],
-        ].freeze
+          ['',    '',    '',    '86',  '89',  '93p', '97',  '101', '106', '112', '119', '127', '136', '146', '158', '170', '185', '210', '230', '250', '275', '300e'],
+          ['',    '',    '',    '81',  '84',  '87p', '91',  '95', '99', '104', '110', '117', '125', '134', '143', '153', '165', '180', '200'],
+          ['',    '',    '76',  '79',  '82p'  '85', '89',  '93', '97', '102', '108', '115', '123'],
+          ['',    '',    '71',  '74',  '77p'  '80', '83',  '87', '91', '95', '100'],
+          ['',    '66',  '69',  '72p',  '75',  '78', '81',  '85', '89'],
+          ['',    '61y', '64',  '67p', '70',  '73', '76y', '79y'],
+          ['56y', '59y', '62',  '65',  '68y', '71y'],
+          ['',    '54y', '57y', '60y', '63y']].freeze
+
 
         MARKET_TEXT = Base::MARKET_TEXT.merge(par_1: 'SBB starting price', type_limited: 'Regionals cannot enter').freeze
 
@@ -112,14 +78,23 @@ module Engine
         @available_mail_contracts = []
 
         def new_auction_round
-          Round::Auction.new(self, [
+          Engine::Round::Auction.new(self, [
             Engine::Step::CompanyPendingPar,
             G1854::Step::WaterfallAuction,
           ])
         end
 
+        def stock_round
+          G1854::Round::Stock.new(self, [
+            Engine::Step::DiscardTrain,
+            Engine::Step::Exchange,
+            Engine::Step::SpecialTrack,
+            Engine::Step::BuySellParShares,
+          ])
+        end
+
         def operating_round(round_num)
-          Round::Operating.new(self, [
+          Engine::Round::Operating.new(self, [
             Engine::Step::Bankrupt,
             Engine::Step::Exchange,
             Engine::Step::SpecialTrack,
@@ -173,6 +148,13 @@ module Engine
             next if company.corp_sym.nil?
             company.close!
           end
+        end
+
+        def init_stock_market
+          Engine::StockMarket.new(self.class::MARKET,
+                                 self.class::CERT_LIMIT_TYPES,
+                                 multiple_buy_types: self.class::MULTIPLE_BUY_TYPES,
+                                 hex_market: true)
         end
 
         def next_round!
@@ -252,7 +234,6 @@ module Engine
           minor_assigned = false
           abilities(company, :assign_minor) do |ability|
             target_corp = minor_by_id(ability.corp_sym)
-            share = target_corp.ipo_shares.first
             target_corp.owner = player
             target_corp.float!
             minor_assigned = true

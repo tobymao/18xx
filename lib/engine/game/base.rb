@@ -1182,6 +1182,8 @@ module Engine
         case movement || sell_movement
         when :down_share
           bundle.num_shares.times { @stock_market.move_down(corporation) }
+        when :down_left_hex_share
+          bundle.num_shares.times { @stock_market.move_down_left_hex(corporation) }
         when :down_per_10
           percent = bundle.percent
           percent -= swap.percent if swap
