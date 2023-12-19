@@ -12,11 +12,11 @@ module Engine
       @has_close_cell = false
       @zigzag = zigzag
       @hex_market = hex_market
-      if @hex_market
-        @market = hex_market_init(market, unlimited_types, multiple_buy_types)
-      else
-        @market = orthogonal_market_init(market, unlimited_types, multiple_buy_types)
-      end
+      @market = if @hex_market
+                  hex_market_init(market, unlimited_types, multiple_buy_types)
+                else
+                  orthogonal_market_init(market, unlimited_types, multiple_buy_types)
+                end
       # note, a lot of behavior depends on the par prices being in descending price order
       @par_prices.sort_by! do |p|
         r, c = p.coordinates
@@ -62,20 +62,23 @@ module Engine
       # row 1, col 0.  rows then alternate in the hex pattern
       # TODO: this is hard-coded to the 1854 market, where the hexes align this way based on the number of rows
       # TODO: could be more configurable.
-      binding.pry if $binding
       new_market = []
-      market.each_with_index  do |row, r_index|
+      market.each_with_index do |row, r_index|
         new_row = []
-        row.each_with_index  do |code, c_index|
-          if r_index.odd?
-            new_c_index = c_index * 2
-          else
-            new_c_index = (c_index * 2) + 1
-          end
+        row.each_with_index do |code, c_index|
+          new_c_index = if r_index.odd?
+                          c_index * 2
+                        else
+                          (c_index * 2) + 1
+                        end
 
           price = if code.instance_of?(Hash)
-                    SharePrice.new([r_index, new_c_index], unlimited_types: unlimited_types, multiple_buy_types: multiple_buy_types,
-                                                       **code)
+                    SharePrice.new(
+                      [r_index, new_c_index],
+                      unlimited_types: unlimited_types,
+                      multiple_buy_types: multiple_buy_types,
+                      **code
+                    )
                   else
                     SharePrice.from_code(code,
                                          r_index,
@@ -85,8 +88,8 @@ module Engine
                   end
           @par_prices << price if price&.can_par?
           @has_close_cell = true if price&.type == :close
-          if new_c_index > 0
-            new_row << SharePrice.from_code('', r_index, new_c_index-1, unlimited_types, multiple_buy_types: multiple_buy_types)
+          if new_c_index.positive?
+            new_row << SharePrice.from_code('', r_index, new_c_index - 1, unlimited_types, multiple_buy_types: multiple_buy_types)
           end
           new_row << price
         end
@@ -96,7 +99,7 @@ module Engine
     end
 
     def hex_market?
-      return !@hex_market.nil?
+      !@hex_market.nil?
     end
 
     def one_d?

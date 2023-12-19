@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'lib/settings'
+require 'lib/hex'
 require 'view/game/token'
 require 'view/game/par_chart'
 require 'view/game/loan_chart'
@@ -53,6 +54,15 @@ module View
       RIGHT_TOKEN_POS = RIGHT_MARGIN - TOKEN_SIZE # left edge of rightmost token
       MID_TOKEN_POS = (LEFT_TOKEN_POS + RIGHT_TOKEN_POS) / 2
       TOKEN_BORDER_WIDTH = 2
+
+      # Hex markets
+      HEX_WIDTH_TOTAL = 20
+      HEX_PAD_FROM_CENTER = (HEX_WIDTH_TOTAL / 2) - BORDER
+      HEX_HALF_TOKEN = TOKEN_SIZE / 2
+      HEX_MID_TOKEN_POS = -HEX_HALF_TOKEN
+      HEX_LEFT_TOKEN_POS = HEX_MID_TOKEN_POS - HEX_PAD_FROM_CENTER
+      HEX_RIGHT_TOKEN_POS = HEX_MID_TOKEN_POS + HEX_PAD_FROM_CENTER
+      HEX_TOKEN_BORDER_WIDTH = 2
 
       TOKEN_STYLE_1D = {
         textAlign: 'center',
@@ -179,6 +189,60 @@ module View
         props
       end
 
+      def token_svgs(corporation, index = nil, num = nil, spacing = nil)
+        width = TOKEN_SIZES[@game.corporation_size(corporation)]
+
+        props = {
+          attrs: {
+            href: logo_for_user(corporation),
+            title: corporation.name,
+            width: "#{width}px",
+            x: "#{HEX_MID_TOKEN_POS}px",
+            y: "#{HEX_MID_TOKEN_POS}px",
+          },
+        }
+
+        x_translation = !index.nil? && num > 1 ? HEX_MID_TOKEN_POS - (HEX_LEFT_TOKEN_POS + (index * spacing)) : 0
+
+        border_color = if setting_for(:show_player_colors, @game) && (owner = corporation.owner) && @game.players.include?(owner)
+                         player_colors(@game.players)[owner]
+                       else
+                         'transparent'
+                       end
+        if operated?(corporation)
+          props[:attrs][:title] = "#{corporation.name} has operated"
+          props[:attrs][:opacity] = '0.6'
+          props[:attrs]['clip-path'] = 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)'
+
+          under_shape = h(:polygon, {
+                            attrs: {
+                              points: '-14,0 0,14 14,0 0,-14',
+                              stroke: border_color,
+                              'stroke-width': 2,
+                              fill: 'transparent',
+                              'stroke-dasharray': '3',
+                            },
+                          })
+        else
+          under_shape = h(:circle, {
+                            attrs: {
+                              stroke: border_color,
+                              'stroke-width': 2,
+                              fill: 'transparent',
+                              r: "#{width / 2}px",
+                            },
+                          },)
+        end
+
+        g_props = {
+          attrs: {
+            transform: "translate(#{x_translation},0)",
+          },
+        }
+
+        h(:g, g_props, [h(:image, props), under_shape])
+      end
+
       def par_bars(colors)
         bar_style = {
           border: '1px solid black',
@@ -252,6 +316,75 @@ module View
         rows.map { |row| h(:div, { style: { width: 'max-content' } }, row) }
       end
 
+      def cell_style_hex(types)
+        normal_types = types.reject { |t| BORDER_TYPES.include?(t) }
+        color = @game.class::STOCKMARKET_COLORS[normal_types&.first]
+        color_to_use = color ? COLOR_MAP[color] : color_for(:bg2)
+
+        output = {}
+        output[:fill] = color_to_use
+        output[:stroke] = '#B0B0B0'
+        output['stroke-width'] = 2
+        output
+      end
+
+      def grid_hex
+        size = 40
+
+        props = {
+          attrs: {
+            id: 'hex-market',
+            width: '1600px',
+            height: '600px',
+          },
+        }
+
+        col_spacing = (size * Math.sqrt(3) / 2).round(2)
+        row_spacing = (size * 3 / 2).round(2)
+
+        text_props = {
+          attrs: {
+            'dominant-baseline': 'middle',
+            'text-anchor': 'middle',
+            'font-size': '80%',
+            transform: "translate(0, -#{row_spacing * 0.4})",
+          },
+        }
+
+        col_border = 0
+        row_border = row_spacing
+
+        market_hexes = []
+        @game.stock_market.market.each_with_index do |row, r_index|
+          row.each_with_index do |price, c_index|
+            next if price.nil?
+
+            corporations = price.corporations
+            num = corporations.size
+            spacing = num > 1 ? (HEX_RIGHT_TOKEN_POS - HEX_LEFT_TOKEN_POS) / (num - 1) : 0
+            tokens = corporations.reverse.map.with_index { |corp, index| token_svgs(corp, index, num, spacing) }
+
+            market_hexes << h(:g, { attrs: { transform: "translate(#{col_spacing * c_index},#{row_spacing * r_index})" } }, [
+                              h(:polygon,
+                                {
+                                  attrs: {
+                                    transform: 'rotate(30)',
+                                    points: Lib::Hex.points(scale: size / 100),
+                                  }.merge(cell_style_hex(price.types)),
+                                }),
+                              *tokens,
+                              h(:text, text_props, price.price),
+                            ])
+          end
+        end
+
+        [h(:div, [
+          h(:svg, props, [
+            h(:g, { attrs: { transform: "translate(#{col_border},#{row_border})" } }, market_hexes),
+]),
+        ])]
+      end
+
       def grid_2d
         # Need to peek at row below to know if sitting on ledge.
         @game.stock_market.market.push([]).each_cons(2).each_with_index.map do |rows, row_i|
@@ -317,7 +450,9 @@ module View
           color: color_for(:font2),
         )
 
-        grid = if @game.stock_market.one_d?
+        grid = if @game.stock_market.hex_market?
+                 grid_hex
+               elsif @game.stock_market.one_d?
                  if !!(zigzag = @game.stock_market.zigzag)
                    grid_zigzag(zigzag)
                  else

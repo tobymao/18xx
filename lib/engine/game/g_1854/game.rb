@@ -35,7 +35,7 @@ module Engine
           4 => 18,
           5 => 15,
           6 => 13,
-          7 => 11
+          7 => 11,
         }.freeze
         CERT_LIMIT_INCLUDES_PRIVATES = false
 
@@ -59,15 +59,17 @@ module Engine
         NUM_LARGE_MAIL_CONTRACTS = 6
 
         MARKET = [
-          ['',    '',    '',    '86',  '89',  '93p', '97',  '101', '106', '112', '119', '127', '136', '146', '158', '170', '185', '210', '230', '250', '275', '300e'],
-          ['',    '',    '',    '81',  '84',  '87p', '91',  '95', '99', '104', '110', '117', '125', '134', '143', '153', '165', '180', '200'],
-          ['',    '',    '76',  '79',  '82p'  '85', '89',  '93', '97', '102', '108', '115', '123'],
-          ['',    '',    '71',  '74',  '77p'  '80', '83',  '87', '91', '95', '100'],
-          ['',    '66',  '69',  '72p',  '75',  '78', '81',  '85', '89'],
-          ['',    '61y', '64',  '67p', '70',  '73', '76y', '79y'],
-          ['56y', '59y', '62',  '65',  '68y', '71y'],
-          ['',    '54y', '57y', '60y', '63y']].freeze
-
+          ['',    '',    '',    '86',  '89',  '93p', '97',  '101', '106', '112', '119', '127', '136', '146', '158', '170', '185',
+           '210', '230', '250', '275', '300e'],
+          ['',    '',    '',    '81',  '84',  '87p', '91',  '95', '99', '104', '110', '117', '125', '134', '143', '153', '165',
+           '180', '200'],
+          ['',    '',    '76',  '79',  '82p',  '85', '89',  '93', '97', '102', '108', '115', '123'],
+          ['',    '',    '71',  '74',  '77p',  '80', '83',  '87', '91', '95', '100'],
+          ['',    '66',  '69',  '72p', '75', '78', '81', '85', '89'],
+          ['',    '61y', '64',  '67p', '70', '73', '76y', '79y'],
+          %w[56y 59y 62 65 68y 71y],
+          ['', '54y', '57y', '60y', '63y'],
+].freeze
 
         MARKET_TEXT = Base::MARKET_TEXT.merge(par_1: 'SBB starting price', type_limited: 'Regionals cannot enter').freeze
 
@@ -112,6 +114,7 @@ module Engine
 
         def must_buy_train?(entity)
           return false if entity.minor?
+
           super
         end
 
@@ -120,18 +123,19 @@ module Engine
           # they may only run + trains
           if entity.minor?
             # TODO: better method to filter, not based on name?
-            return super.filter {|t| t.name.include? "+"}
+            return super.filter { |t| t.name.include? '+' }
           end
+
           super
         end
 
         def trigger_auction_or
-          puts "trigger_auction_or"
+          puts 'trigger_auction_or'
           @need_auction_or = true
         end
 
         def clear_auction_or
-          puts "clear_auction_or"
+          puts 'clear_auction_or'
           @need_auction_or = false
         end
 
@@ -146,24 +150,25 @@ module Engine
         def close_minor_companies
           @companies.each do |company|
             next if company.corp_sym.nil?
+
             company.close!
           end
         end
 
         def init_stock_market
           Engine::StockMarket.new(self.class::MARKET,
-                                 self.class::CERT_LIMIT_TYPES,
-                                 multiple_buy_types: self.class::MULTIPLE_BUY_TYPES,
-                                 hex_market: true)
+                                  self.class::CERT_LIMIT_TYPES,
+                                  multiple_buy_types: self.class::MULTIPLE_BUY_TYPES,
+                                  hex_market: true)
         end
 
         def next_round!
           @round =
             case @round
             when Engine::Round::Stock
-                @operating_rounds = @phase.operating_rounds
-                reorder_players
-                new_operating_round
+              @operating_rounds = @phase.operating_rounds
+              reorder_players
+              new_operating_round
             when Engine::Round::Operating
               clear_auction_or
               if @round.round_num < @operating_rounds
@@ -184,7 +189,7 @@ module Engine
                 or_round_finished
                 new_operating_round(@round.round_num + 1)
               else
-                puts "finally done"
+                puts 'finally done'
                 close_minor_companies
                 set_auction_finished
                 init_round_finished
@@ -203,16 +208,17 @@ module Engine
 
           @companies.each do |company|
             next if company.corp_sym.nil?
+
             company.add_ability(G1854::Ability::AssignMinor.new(type: :assign_minor, corp_sym: company.corp_sym))
           end
 
           @available_mail_contracts = []
-          for _ in 1..NUM_SMALL_MAIL_CONTRACTS do
-            @available_mail_contracts << MailContract.new(sym:"MC", name:"Mail Contract", value:100)
+          (1..NUM_SMALL_MAIL_CONTRACTS).each do |_|
+            @available_mail_contracts << MailContract.new(sym: 'MC', name: 'Mail Contract', value: 100)
           end
 
-          for _ in 1..NUM_LARGE_MAIL_CONTRACTS do
-            @available_mail_contracts << MailContract.new(sym:"MC", name:"Mail Contract", value:200)
+          (1..NUM_LARGE_MAIL_CONTRACTS).each do |_|
+            @available_mail_contracts << MailContract.new(sym: 'MC', name: 'Mail Contract', value: 200)
           end
         end
 

@@ -7,16 +7,16 @@ module Engine
     module G1854
       module Step
         class WaterfallAuction < Engine::Step::WaterfallAuction
-
           def actions(entity)
             return [] if @game.need_auction_or
+
             super
           end
 
           def setup
             super
             original_companies = @game.initial_auction_companies.sort_by(&:value)
-            @companies = @game.companies.select {|company| !company.owned_by_player? && !company.closed? }
+            @companies = @game.companies.select { |company| !company.owned_by_player? && !company.closed? }
             @cheapest = original_companies.first
           end
 

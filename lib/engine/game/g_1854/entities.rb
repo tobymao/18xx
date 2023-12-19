@@ -10,17 +10,17 @@ module Engine
           'Ybbstalbahn',
           'Steyrtalbahn',
           'Pyhrnbahn',
-          'Salzkammergutbahn'
-        ]
+          'Salzkammergutbahn',
+        ].freeze
 
-        LOCAL_COORDINATES =[
-          'J38',
-          'J38',
-          'M35',
-          'J32',
-          'J28',
-          'L28'
-        ]
+        LOCAL_COORDINATES = %w[
+          J38
+          J38
+          M35
+          J32
+          J28
+          L28
+        ].freeze
 
         LOCAL_CITIES = [
           0,
@@ -29,19 +29,19 @@ module Engine
           0,
           0,
           0,
-        ]
+        ].freeze
 
         # These companies exist only for the initial auction.  When these are bought, the minor is assigned
         # to the buyer, and the companies are closed.
         LOCAL_COMPANIES = LOCAL_NAMES.zip(LOCAL_COORDINATES, LOCAL_CITIES).map.with_index do |vals, index|
-          name, coords, city = vals
+          name, _coords, _city = vals
           sym = (index + 1).to_s
           {
             sym: "L#{sym}",
             name: "#{name} (#{sym})",
             value: 150,
             corp_sym: sym,
-            color: "white",
+            color: 'white',
             local_railway: true,
           }
         end.freeze
@@ -204,7 +204,7 @@ module Engine
             color: '#ECE821',
             text_color: 'black',
           },
-        ]
+        ].freeze
       end
     end
   end

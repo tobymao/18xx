@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-# require 'pry-byebug'
-
 module Engine
   class BaseMovement
     def initialize(market)
@@ -105,6 +103,7 @@ module Engine
       r, c = coordinates
       new_coords = [r, c - 2]
       return new_coords if share_price(new_coords)
+
       @market.down_left_hex(corporation, coordinates)
     end
 
@@ -112,17 +111,18 @@ module Engine
       r, c = coordinates
       new_coords = [r, c + 2]
       return new_coords if share_price(new_coords)
+
       @market.up_right_hex(corporation, coordinates)
     end
 
     def down_left_hex(_corporation, coordinates)
-      binding.pry if $binding
       r, c = coordinates
       new_coords = [r + 1, c - 1]
       puts "down_left_hex #{coordinates} #{new_coords}"
       x = share_price(new_coords)
       return new_coords if x
-      puts "old coords"
+
+      puts 'old coords'
       coordinates
     end
 
@@ -130,6 +130,7 @@ module Engine
       r, c = coordinates
       new_coords = [r - 1, c - 1]
       return new_coords if share_price(new_coords)
+
       coordinates
     end
 
@@ -137,6 +138,7 @@ module Engine
       r, c = coordinates
       new_coords = [r + 1, c + 1]
       return new_coords if share_price(new_coords)
+
       coordinates
     end
 
@@ -144,6 +146,7 @@ module Engine
       r, c = coordinates
       new_coords = [r - 1, c + 1]
       return new_coords if share_price(new_coords)
+
       coordinates
     end
   end

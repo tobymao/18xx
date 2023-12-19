@@ -7,13 +7,13 @@ module Engine
     module G1854
       module Step
         class BuyMailContract < Engine::Step::Base
-          ACTIONS = ['buy_mail_contract', 'pass'].freeze
+          ACTIONS = %w[buy_mail_contract pass].freeze
 
           def actions(entity)
             return [] if entity != current_entity
             return [] unless can_entity_buy_mail_contract?(entity)
 
-            return ACTIONS
+            ACTIONS
           end
 
           def description
@@ -27,7 +27,6 @@ module Engine
           def can_entity_buy_mail_contract?(entity)
             return false unless entity.corporation?
             return false if entity.minor?
-
           end
 
           def log_skip(entity)
