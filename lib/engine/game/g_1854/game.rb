@@ -37,7 +37,6 @@ module Engine
           6 => 13,
           7 => 11,
         }.freeze
-        CERT_LIMIT_INCLUDES_PRIVATES = false
 
         STARTING_CASH = { 3 => 860, 4 => 650, 5 => 525, 6 => 450 }.freeze
 
@@ -230,6 +229,11 @@ module Engine
 
         def player_card_minors(player)
           @minors.select { |m| m.owner == player }
+        end
+
+        def num_certs(entity)
+          # local railroads count towards cert limit
+          super + player_card_minors(entity).size
         end
 
         def company_header(company)
