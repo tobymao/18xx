@@ -53,6 +53,15 @@ module Engine
             value: 20,
             revenue: 5,
             desc: 'Building on one mountain is 20 G cheaper.',
+            abilities: [
+              {
+                type: 'tile_discount',
+                discount: 100,
+                hexes: ['E5'],
+                owner_type: 'player',
+                when: 'owning_player_or_turn',
+              },
+            ],
           },
           {
             name: 'Murtalbahn',
@@ -60,6 +69,15 @@ module Engine
             value: 50,
             revenue: 10,
             desc: 'Building one tunnel is 40 G cheaper.',
+            abilities: [
+              {
+                type: 'tile_discount',
+                discount: 100,
+                hexes: ['F16'],
+                owner_type: 'player',
+                when: 'owning_player_or_turn',
+              },
+            ],
           },
           {
             name: 'Graz-Köflacher Bahn',
@@ -67,6 +85,23 @@ module Engine
             value: 70,
             revenue: 15,
             desc: 'Routes through Graz earn 10 G extra.',
+            abilities: [
+              {
+                # TODO: should be when 'route'?
+                type: 'hex_bonus',
+                owner_type: 'player',
+                when: 'owning_player_or_turn',
+                hexes: ['F22'],
+                amount: 10,
+              },
+              {
+                type: 'tile_discount',
+                discount: 90,
+                hexes: ['F20'],
+                owner_type: 'player',
+                when: 'owning_player_or_turn',
+              },
+            ],
           },
           *LOCAL_COMPANIES,
           {
@@ -75,6 +110,16 @@ module Engine
             value: 170,
             revenue: 20,
             desc: 'Receives a 20% VB share. Closes when the VB runs for the first time.',
+            abilities: [{ type: 'shares', shares: 'VB_1' },
+                        { type: 'close', when: 'ran_train', corporation: 'VB' },
+                        {
+                          type: 'tile_discount',
+                          discount: 120,
+                          hexes: ['F4'],
+                          owner_type: 'player',
+                          when: 'owning_player_or_turn',
+                        },
+                      ],
           },
           {
             name: 'Semmeringbahn',
@@ -82,6 +127,16 @@ module Engine
             value: 190,
             revenue: 25,
             desc: 'Receives a 20% SD share. Closes when the SD runs for the first time.',
+            abilities: [{ type: 'shares', shares: 'SD_1' },
+                        { type: 'close', when: 'ran_train', corporation: 'SD' },
+                        {
+                          type: 'tile_discount',
+                          discount: 70,
+                          hexes: ['E23'],
+                          owner_type: 'player',
+                          when: 'owning_player_or_turn',
+                        },
+                      ],
           },
         ].freeze
 

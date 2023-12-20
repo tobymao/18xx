@@ -102,12 +102,11 @@ module Engine
             Engine::Step::BuyCompany,
             Engine::Step::Track,
             Engine::Step::Token,
-            Engine::Step::Route,
+            G1854::Step::Route,
             G1854::Step::Dividend,
             Engine::Step::DiscardTrain,
             G1854::Step::BuyTrain,
             G1854::Step::BuyMailContract,
-            [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
 
