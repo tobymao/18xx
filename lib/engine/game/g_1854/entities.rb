@@ -259,6 +259,48 @@ module Engine
             color: '#ECE821',
             text_color: 'black',
           },
+          {
+            float_percent: 100,
+            sym: 'A',
+            name: 'A',
+            logo: '1854/A',
+            simple_logo: '1854/A',
+            tokens: [0, 40],
+            shares: [50, 50],
+            type: 'lokalbahn',
+            # TODO: coordinates not fixed
+            coordinates: 'E13',
+            color: '#FFFFFF',
+            text_color: 'black',
+          },
+          {
+            float_percent: 100,
+            sym: 'B',
+            name: 'B',
+            logo: '1854/B',
+            simple_logo: '1854/B',
+            tokens: [0, 40],
+            shares: [50, 50],
+            type: 'lokalbahn',
+            # TODO: coordinates not fixed
+            coordinates: 'F8',
+            color: '#FFFFFF',
+            text_color: 'black',
+          },
+          {
+            float_percent: 100,
+            sym: 'C',
+            name: 'C',
+            logo: '1854/C',
+            simple_logo: '1854/C',
+            tokens: [0, 40],
+            shares: [50, 50],
+            type: 'lokalbahn',
+            # TODO: coordinates not fixed
+            coordinates: 'E3',
+            color: '#FFFFFF',
+            text_color: 'black',
+          },
         ].freeze
       end
     end

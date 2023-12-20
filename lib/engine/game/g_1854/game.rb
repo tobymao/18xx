@@ -107,6 +107,7 @@ module Engine
             Engine::Step::DiscardTrain,
             G1854::Step::BuyTrain,
             G1854::Step::BuyMailContract,
+            G1854::Step::MergeMinors,
           ], round_num: round_num)
         end
 
@@ -128,12 +129,10 @@ module Engine
         end
 
         def trigger_auction_or
-          puts 'trigger_auction_or'
           @need_auction_or = true
         end
 
         def clear_auction_or
-          puts 'clear_auction_or'
           @need_auction_or = false
         end
 
@@ -187,7 +186,6 @@ module Engine
                 or_round_finished
                 new_operating_round(@round.round_num + 1)
               else
-                puts 'finally done'
                 close_minor_companies
                 set_auction_finished
                 init_round_finished
@@ -218,6 +216,46 @@ module Engine
           (1..NUM_LARGE_MAIL_CONTRACTS).each do |_|
             @available_mail_contracts << MailContract.new(sym: 'MC', name: 'Mail Contract', value: 200)
           end
+        end
+
+        def open_minors
+          @minors.select {|m| !m.closed? }
+        end
+
+        def mergeable?(entity)
+          @minors.include?(entity) && !entity.closed?
+        end
+
+        def merge_target?(entity)
+          !entity.floated? && entity.type == :lokalbahn
+        end
+
+        def merge_minors_into_lokalbahn(minor_a, minor_b, corp)
+          # name is effectively sorting because they're all single digit numbers as strings
+          lower_minor, upper_minor = [minor_a, minor_b].sort {|a,b| a.name <=> b.name}
+
+          @log << "#{formatted_minor_name(lower_minor)} gives #{format_currency(lower_minor.cash)} to #{corp.name}"
+          lower_minor.spend(lower_minor.cash, corp)
+
+          @log << "#{formatted_minor_name(upper_minor)} gives #{format_currency(upper_minor.cash)} to #{corp.name}"
+          upper_minor.spend(upper_minor.cash, corp)
+
+          corp.owner = lower_minor.owner
+          share_pool.move_share(corp.ipo_shares.first, lower_minor.owner)
+          share_pool.move_share(corp.ipo_shares.first, upper_minor.owner)
+          float_corporation(corp) if corp.floated?
+          lower_minor.close!
+          upper_minor.close!
+        end
+
+        def float_corporation(corporation)
+          super unless corporation.type == :lokalbahn
+
+          @log << "#{corporation.name} floats"
+        end
+
+        def formatted_minor_name(minor)
+          return "#{minor.full_name} (#{minor.name})"
         end
 
         def reservation_corporations
