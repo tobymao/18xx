@@ -90,16 +90,16 @@ module Engine
             Engine::Step::DiscardTrain,
             Engine::Step::Exchange,
             Engine::Step::SpecialTrack,
-            Engine::Step::BuySellParShares,
+            G1854::Step::BuySellParShares,
           ])
         end
 
         def operating_round(round_num)
           Engine::Round::Operating.new(self, [
+            G1854::Step::TrackAndToken,
             Engine::Step::Bankrupt,
             Engine::Step::Exchange,
             Engine::Step::SpecialTrack,
-            Engine::Step::BuyCompany,
             Engine::Step::Track,
             Engine::Step::Token,
             G1854::Step::Route,
@@ -244,8 +244,32 @@ module Engine
           share_pool.move_share(corp.ipo_shares.first, lower_minor.owner)
           share_pool.move_share(corp.ipo_shares.first, upper_minor.owner)
           float_corporation(corp) if corp.floated?
-          lower_minor.close!
-          upper_minor.close!
+          # TODO: currently relies on the ordering in the market for last
+          @stock_market.set_par(corp, @stock_market.par_prices.last)
+          close_corporation(lower_minor)
+          close_corporation(upper_minor)
+        end
+
+        def lokal_tile_names
+          ['14','15','619']
+        end
+
+        def lokalbahn_homes
+          [hex_by_id('D18'), hex_by_id('D20')]
+        end
+
+        def upgrades_to?(from, to, special = false, selected_company: nil)
+          case active_step
+          when G1854::Step::TrackAndToken
+            return true if lokal_tile_names.include?(to.name)
+          end
+
+          super
+        end
+
+        def home_token_locations(corp)
+          return [] unless corp.corporation? && corp.type == :lokalbahn
+          return lokalbahn_homes
         end
 
         def float_corporation(corporation)
@@ -287,6 +311,13 @@ module Engine
           end
           super
           company.close! if minor_assigned
+        end
+
+        def legal_tile_rotation?(entity_or_entities, hex, tile)
+          # TODO
+          puts "legal_tile_rotation 1854"
+          puts caller
+          true
         end
       end
     end

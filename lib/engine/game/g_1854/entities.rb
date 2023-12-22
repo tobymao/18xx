@@ -268,10 +268,9 @@ module Engine
             tokens: [0, 40],
             shares: [50, 50],
             type: 'lokalbahn',
-            # TODO: coordinates not fixed
-            coordinates: 'E13',
             color: '#FFFFFF',
             text_color: 'black',
+            max_ownership_percent: 100,
           },
           {
             float_percent: 100,
@@ -282,10 +281,9 @@ module Engine
             tokens: [0, 40],
             shares: [50, 50],
             type: 'lokalbahn',
-            # TODO: coordinates not fixed
-            coordinates: 'F8',
             color: '#FFFFFF',
             text_color: 'black',
+            max_ownership_percent: 100,
           },
           {
             float_percent: 100,
@@ -296,10 +294,9 @@ module Engine
             tokens: [0, 40],
             shares: [50, 50],
             type: 'lokalbahn',
-            # TODO: coordinates not fixed
-            coordinates: 'E3',
             color: '#FFFFFF',
             text_color: 'black',
+            max_ownership_percent: 100,
           },
         ].freeze
       end

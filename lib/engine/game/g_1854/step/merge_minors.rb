@@ -8,6 +8,7 @@ module Engine
       module Step
         class MergeMinors < Engine::Step::Base
           def actions(entity)
+            return %w[pass] if entity.corporation? && !entity.minor?
             return [] if !entity.minor? || entity != current_entity #  || @game.done_this_round[entity]
             return [] unless @game.mergeable?(entity)
             return [] if target_corporations.empty?
