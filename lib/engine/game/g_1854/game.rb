@@ -118,6 +118,27 @@ module Engine
           super
         end
 
+        def buy_train(operator, train, price = nil)
+          # adjust share prices on sold, only move companies with a stock
+          # price token, not minors
+          seller = train.owner
+          if seller != @depot
+            if seller.corporation? && !seller.minor?
+              old_price = seller.share_price
+              @stock_market.move_down_right_hex(seller)
+              log_share_price(seller, old_price)
+            end
+
+            if operator.corporation? && !operator.minor?
+              old_price = operator.share_price
+              @stock_market.move_up_left_hex(operator)
+              log_share_price(operator, old_price)
+            end
+          end
+
+          super
+        end
+
         def route_trains(entity)
           # local railways are not allowed to run normal trains
           # they may only run + trains
