@@ -16,7 +16,6 @@ module Engine
             actions << 'assign' unless @selected_hex
             actions << 'lay_tile' if can_lay_tile?(entity)
             actions << 'place_token' if can_place_token?(entity)
-            # actions << 'pass' if actions.any?
             actions
           end
 
@@ -110,8 +109,6 @@ module Engine
             else
               raise GameError, "Invalid target #{target} for company #{company.name}"
             end
-
-            puts "#{action} #{company} #{target}"
           end
         end
       end

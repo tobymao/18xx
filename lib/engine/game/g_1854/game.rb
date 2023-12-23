@@ -74,6 +74,9 @@ module Engine
 
         STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(par_1: :blue, type_limited: :peach).freeze
 
+        DOUBLE_TOWN_TILES = %w[1 2 55 56 69].freeze
+        DOUBLE_TOWN_UPGRADES = %w[14 15 619].freeze
+
         @need_auction_or = true
         @auction_finished = false
         @available_mail_contracts = []
@@ -89,7 +92,6 @@ module Engine
           G1854::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
             Engine::Step::Exchange,
-            Engine::Step::SpecialTrack,
             G1854::Step::BuySellParShares,
           ])
         end
@@ -99,8 +101,7 @@ module Engine
             G1854::Step::TrackAndToken,
             Engine::Step::Bankrupt,
             Engine::Step::Exchange,
-            Engine::Step::SpecialTrack,
-            Engine::Step::Track,
+            G1854::Step::Track,
             Engine::Step::Token,
             G1854::Step::Route,
             G1854::Step::Dividend,
@@ -251,18 +252,24 @@ module Engine
         end
 
         def lokal_tile_names
-          ['14','15','619']
+          DOUBLE_TOWN_UPGRADES
         end
 
         def lokalbahn_homes
           [hex_by_id('D18'), hex_by_id('D20')]
         end
 
+        def double_dit_upgrade?(from, to)
+          DOUBLE_TOWN_TILES.include?(from.name) && DOUBLE_TOWN_UPGRADES.include?(to.name)
+        end
+
         def upgrades_to?(from, to, special = false, selected_company: nil)
           case active_step
           when G1854::Step::TrackAndToken
-            return true if lokal_tile_names.include?(to.name)
+            return true if DOUBLE_TOWN_UPGRADES.include?(to.name)
           end
+
+          return true if double_dit_upgrade?(from, to)
 
           super
         end
@@ -311,13 +318,6 @@ module Engine
           end
           super
           company.close! if minor_assigned
-        end
-
-        def legal_tile_rotation?(entity_or_entities, hex, tile)
-          # TODO
-          puts "legal_tile_rotation 1854"
-          puts caller
-          true
         end
       end
     end
