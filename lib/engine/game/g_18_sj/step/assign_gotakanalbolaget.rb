@@ -20,7 +20,7 @@ module Engine
           end
 
           def ability(entity)
-            return if !entity || !@game.gkb || @game.gkb.owner != entity
+            return if !entity || !entity.corporation? || !@game.gkb || @game.gkb.owner != entity
 
             ability = @game.abilities(entity, :assign_hexes)
             return if !ability || ability.count.zero?
