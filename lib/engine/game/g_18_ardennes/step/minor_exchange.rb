@@ -8,9 +8,9 @@ module Engine
         module MinorExchange
           private
 
-          def exchange_minor(minor, major)
-            player = major.owner
-            bundle = major.treasury_shares.first.to_bundle
+          def exchange_minor(minor, bundle)
+            player = minor.owner
+            major = bundle.corporation
             extra_cost = [0, major.share_price.price - (minor.share_price.price * 2)].max
 
             msg = "#{player.name} exchanges minor #{minor.name} "

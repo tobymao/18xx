@@ -38,6 +38,39 @@ module Engine
             super.select { |company| company.type == :minor }
           end
 
+          # Exchanging a minor for a share in a floated major corporation is
+          # done as a buy_share action.
+          def can_buy_any?(entity)
+            return false if bought?
+
+            super || can_exchange_any?(entity)
+          end
+
+          def can_gain?(entity, bundle, exchange: false)
+            # Can go above 60% ownership if exchanging a minor for a share.
+            exchange || super
+          end
+
+          # Checks whether a player can afford to exchange one of their minors
+          # for a share in a major corporation.
+          # **Note** This does not check whether there is a track connection
+          # between the minor and the major, which is required to carry out the
+          # exchange. This is not checked to avoid having to recalculate the
+          # game graph whilst a game is being loaded.
+          def can_exchange_any?(player)
+            majors = @game.major_corporations.select do |corp|
+              corp.ipoed && (corp.num_treasury_shares.positive? || corp.num_market_shares.positive?)
+            end
+            return false if majors.empty?
+
+            @game.minor_corporations.any? do |minor|
+              next false unless minor.owner == player
+
+              max_price = minor.share_price.price * 2 + @game.liquidity(player)
+              majors.any? { |corp| corp.share_price.price <= max_price }
+            end
+          end
+
           # Corporations whose cards are visible in the stock round.
           # Hide those whose concessions have not yet been auctioned.
           def visible_corporations
@@ -69,7 +102,7 @@ module Engine
             concession = major.par_via_exchange
 
             concession.close!
-            exchange_minor(minor, major)
+            exchange_minor(minor, major.treasury_shares.first.to_bundle)
           end
 
           def process_bankrupt(action)

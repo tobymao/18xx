@@ -360,6 +360,17 @@ module Engine
 
           super
         end
+
+        # Returns true if there is a route between one of the minor's tokens
+        # and one of the major's tokens, or if they both have tokens co-located
+        # on the same tile.
+        def major_minor_connected?(major, minor)
+          minor_cities = minor.placed_tokens.map(&:city)
+          major_cities = major.placed_tokens.map(&:city)
+
+          minor_cities.map(&:hex).intersect?(major_cities.map(&:hex)) ||
+            minor_cities.any? { |city| @graph.connected_nodes(major)[city] }
+        end
       end
     end
   end

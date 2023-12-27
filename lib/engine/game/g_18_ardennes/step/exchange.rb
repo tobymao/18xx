@@ -10,10 +10,27 @@ module Engine
         class Exchange < Engine::Step::Exchange
           include MinorExchange
 
+          def bought?
+            @round.current_actions.any? do |action|
+              Engine::Step::BuySellParShares::PURCHASE_ACTIONS.include?(action.class)
+            end
+          end
+
           def can_exchange?(entity, _bundle = nil)
+            return false if bought?
             return false unless entity.corporation?
 
             entity.type == :minor
+          end
+
+          def process_buy_shares(action)
+            unless can_exchange?(action.entity, action.bundle)
+              raise GameError, "Cannot exchange #{action.entity.id} for " \
+                               "#{action.bundle.corporation.id}"
+            end
+
+            exchange_minor(action.entity, action.bundle)
+            @round.current_actions << action
           end
         end
       end
