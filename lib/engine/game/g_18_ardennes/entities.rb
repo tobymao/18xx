@@ -390,7 +390,7 @@ module Engine
         # The minimum amount of cash needed to start a major company.
         def min_concession_cost(concession)
           major = major_corporations.find do |corp|
-            corp.par_via_exchange = concession
+            corp.par_via_exchange == concession
           end
           minor = pledged_minors[major]
           min_par = lowest_major_par
