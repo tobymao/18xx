@@ -16,7 +16,9 @@ module Engine
             if bundle.owner.player?
               return false unless can_nationalize?(entity, bundle.corporation)
 
-              return entity.cash >= nationalization_price(bundle.price)
+              return entity.cash >= nationalization_price(bundle.price) &&
+                !@round.players_sold[entity][bundle.corporation] &&
+                can_gain?(entity, bundle)
             end
 
             return false unless super

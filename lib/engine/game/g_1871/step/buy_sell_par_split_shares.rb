@@ -167,6 +167,7 @@ module Engine
             entity = action.entity
             raise GameError, "#{corporation.name} cannot be split" unless @game.can_split?(corporation, entity)
 
+            entity.unpass!
             # Set data needed for splitting
             @round.split_start(corporation)
 
