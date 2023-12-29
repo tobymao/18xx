@@ -94,7 +94,8 @@ module Engine
         def stock_round
           Round::Stock.new(self, [
             G18Ardennes::Step::Exchange,
-            G18Ardennes::Step::DiscardTrains,
+            G18Ardennes::Step::DeclineTrains,
+            Engine::Step::DiscardTrain,
             G18Ardennes::Step::BuySellParSharesCompanies,
           ])
         end
