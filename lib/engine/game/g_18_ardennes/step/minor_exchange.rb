@@ -8,7 +8,16 @@ module Engine
         module MinorExchange
           private
 
-          def exchange_minor(minor, bundle)
+          # Exchanges a minor corporation for a share in a major corporation.
+          # @param minor [Corporation] The minor corporation being exchanged.
+          # @param bundle [ShareBundle] The share bundle being received in
+          #        exchange for the minor corporation.
+          # @param may_decline [Boolean] If true, the major's owner will have
+          #        the option to decline any trains, tokens or forts. If false
+          #        then these will all be transferred. Cash cannot be declined.
+          #        This should be false if the minor is being used to start a
+          #        new major company, and true otherwise.
+          def exchange_minor(minor, bundle, may_decline)
             player = minor.owner
             major = bundle.corporation
             extra_cost = [0, major.share_price.price - (minor.share_price.price * 2)].max
@@ -23,24 +32,34 @@ module Engine
                                         exchange: minor,
                                         exchange_price: extra_cost,
                                         silent: true)
-            transfer_assets(minor, major)
+            transfer_assets(minor, major, may_decline)
             @game.close_corporation(minor)
           end
 
-          # Moves all assets from a minor to a major and logs what was transferred.
-          def transfer_assets(minor, major)
+          # Moves assets from a minor to a major and logs what was transferred.
+          # @param minor [Corporation] The minor corporation being exchanged.
+          # @param major [Corporation] The major corporation receiving the assets.
+          # @param may_decline [Boolean] If true, the major's owner will have
+          #        the option to decline any trains, tokens or forts. If false
+          #        then these will all be transferred. Cash cannot be declined.
+          def transfer_assets(minor, major, may_decline)
             assets = []
             assets << transfer_cash(minor, major)
-            assets << transfer_trains(minor, major)
-            assets << transfer_tokens(minor, major)
-            assets << transfer_forts(minor, major, :fort)
+            assets << transfer_trains(minor, major, may_decline)
+            assets << transfer_tokens(minor, major, may_decline)
+            assets << transfer_forts(minor, major, :fort, may_decline)
             @game.log << "#{major.name} receives #{minor.name}’s assets: " \
                          "#{assets.compact.join(', ')}."
           end
 
           # Transfers treasury cash.
-          # Returns a string describing the transfer, or nil if there was no cash
-          # to transfer.
+          # @param minor [Corporation] The minor corporation being exchanged.
+          # @param major [Corporation] The major corporation receiving the assets.
+          # @param may_decline [Boolean] If true, the major's owner will have
+          #        the option to decline any trains, tokens or forts. If false
+          #        then these will all be transferred. Cash cannot be declined.
+          # @return [String, nil] A description of the transfer, or nil if there
+          #         was no cash to transfer.
           def transfer_cash(minor, major)
             return if minor.cash.zero?
 
@@ -50,19 +69,30 @@ module Engine
           end
 
           # Transfers trains.
-          # Returns a string describing the transfer, or nil if there was no
-          # train to transfer.
-          def transfer_trains(minor, major)
+          # @param minor [Corporation] The minor corporation being exchanged.
+          # @param major [Corporation] The major corporation receiving the assets.
+          # @param may_decline [Boolean] If true, the major's owner will have
+          #        the option to decline any trains.
+          # @return [String, nil] A description of the transfer, or nil if there
+          #         were no trains to transfer.
+          def transfer_trains(minor, major, may_decline)
             return if minor.trains.empty?
 
-            trains = @game.transfer(:trains, minor, major).map(&:name)
-            "#{trains.one? ? 'a train' : 'trains'} (#{trains.join(' and ')})"
+            trains = @game.transfer(:trains, minor, major)
+            @round.optional_trains = trains if may_decline
+            "#{trains.one? ? 'a train' : 'trains'} " \
+              "(#{trains.map(&:name).join(' and ')})"
           end
 
           # Transfers station tokens. Also copies across assignments for mine
           # and port tokens.
-          # Returns a string describing the station tokens transferred.
-          def transfer_tokens(minor, major)
+          # @param minor [Corporation] The minor corporation being exchanged.
+          # @param major [Corporation] The major corporation receiving the assets.
+          # @param may_decline [Boolean] If true, the major's owner will have
+          #        the option to decline any tokens.
+          # @return [String, nil] A description of the transfer, or nil if
+          #         may_decline is true.
+          def transfer_tokens(minor, major, may_decline)
             cities = []
             minor.placed_tokens.each do |token|
               city = token.city
@@ -87,9 +117,13 @@ module Engine
           end
 
           # Transfers fort tokens.
-          # Returns a string describing the transfer, or nil if there was
-          # nothing to transfer.
-          def transfer_forts(minor, major)
+          # @param minor [Corporation] The minor corporation being exchanged.
+          # @param major [Corporation] The major corporation receiving the assets.
+          # @param may_decline [Boolean] If true, the major's owner will have
+          #        the option to decline any fort tokens.
+          # @return [String, nil] A description of the transfer, or nil if either
+          #         there were no forts to transfer, or if may_decline is true.
+          def transfer_forts(minor, major, may_decline)
             forts = minor.assignments.keys.intersection(Map::FORT_HEXES.keys)
             return if forts.empty?
 

@@ -10,6 +10,18 @@ module Engine
         class Exchange < Engine::Step::Exchange
           include MinorExchange
 
+          def round_state
+            super.merge(
+              {
+                major: nil,
+                minor: nil,
+                optional_trains: [],
+                optional_tokens: [],
+                optional_forts: [],
+              }
+            )
+          end
+
           def bought?
             @round.current_actions.any? do |action|
               Engine::Step::BuySellParShares::PURCHASE_ACTIONS.include?(action.class)
@@ -29,7 +41,9 @@ module Engine
                                "#{action.bundle.corporation.id}"
             end
 
-            exchange_minor(action.entity, action.bundle)
+            @round.minor = action.entity
+            @round.major = action.bundle.shares.first.corporation
+            exchange_minor(action.entity, action.bundle, true)
             @round.current_actions << action
           end
         end
