@@ -1069,7 +1069,7 @@ module Engine
         when :p_any_operate
           corporation.operated? || corporation.president?(entity)
         when :full_or_turn
-          if @round.operating? && corporation.president?(entity)
+          if @round.operating? && corporation == @round.current_operator
             corporation.operating_history.size > 1
           else
             corporation.operated?
