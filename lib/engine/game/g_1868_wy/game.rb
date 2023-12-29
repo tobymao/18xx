@@ -54,8 +54,8 @@ module Engine
         include StubsAreRestricted
         include SwapColorAndStripes
 
-        attr_accessor :big_boy_first_chance, :double_headed_trains, :dpr_first_home_status,
-                      :placed_oil_dt_count, :up_double_share_protection
+        attr_accessor :big_boy_first_chance, :big_boy_train_dh_original, :double_headed_trains,
+                      :dpr_first_home_status, :placed_oil_dt_count, :up_double_share_protection
         attr_reader :big_boy_train, :big_boy_train_original, :tile_groups, :unused_tiles,
                     :busters
 
@@ -1828,7 +1828,7 @@ module Engine
           update_cache(:trains)
         end
 
-        def attach_big_boy(train, entity)
+        def attach_big_boy(train, entity = nil, log: true)
           detached = detach_big_boy(log: false)
 
           @big_boy_train_original = train.dup
@@ -1848,14 +1848,16 @@ module Engine
           ]
           @big_boy_train = train
 
-          @log <<
-            if detached
-              "#{entity.name} moves the [+1+1] token from a #{detached.name} "\
-                "train to a #{@big_boy_train_original.name} train, forming a #{train.name} train"
-            else
-              "#{entity.name} attaches the [+1+1] token to a #{@big_boy_train_original.name} "\
-                "train, forming a #{train.name} train"
-            end
+          if log
+            @log <<
+              if detached
+                "#{entity&.name} moves the [+1+1] token from a #{detached.name} "\
+                  "train to a #{@big_boy_train_original.name} train, forming a #{train.name} train"
+              else
+                "#{entity&.name} attaches the [+1+1] token to a #{@big_boy_train_original.name} "\
+                  "train, forming a #{train.name} train"
+              end
+          end
 
           @big_boy_train
         end
