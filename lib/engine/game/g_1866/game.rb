@@ -2200,7 +2200,7 @@ module Engine
           company.name = name
           company.desc = if @round.operating?
                            'Buy/Sell a stock turn token. If set to a higher price than the current operating value, it enters'\
-                           ' play as already operated. T = Top row, M = Middle row, and B = Bottom row.'
+                             ' play as already operated. T = Top row, M = Middle row, and B = Bottom row.'
                          else
                            'Buy a stock turn token. T = Top row, M = Middle row and B = Bottom row.'
                          end
