@@ -1979,6 +1979,10 @@ module Engine
           net_sold = before[:num_shares] - num_buyable
           share_price = @stock_market.find_relative_share_price(before[:share_price], bundle.corporation, [:up] * net_sold)
 
+          # if UP was ledged before being dumped, the new price after protection
+          # can't be higher than the pre-dump price
+          share_price = before[:share_price] if share_price.price > before[:share_price].price
+
           after = {
             president: president,
             num_buyable: num_buyable,
