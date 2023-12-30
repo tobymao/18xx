@@ -120,7 +120,7 @@ module Engine
               @game.swap_up_double_share_and_presidency!
               @log << "#{player.name} swaps the Ames Brothers 20% share for the UP president's certificate"
             else
-              old_price = @game.union_pacific.share_price.price
+              old_price = @game.union_pacific.share_price
 
               swap = @game.up_protection_player_bundle
 
