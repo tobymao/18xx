@@ -662,7 +662,7 @@ module Engine
             sym: 'C1',
             value: 100,
             revenue: 10,
-            desc: 'Has a face value of £100 and contributes £100 to conversion into the CNoR director’s certificate.',
+            desc: 'Has a face value of $100 and contributes $100 to conversion into the CNoR director’s certificate.',
             abilities: [
               {
                 type: 'exchange',
@@ -679,7 +679,7 @@ module Engine
             sym: 'C2',
             value: 100,
             revenue: 10,
-            desc: 'Has a face value of £100 and converts into the CPR’s 10% director certificate. CPR may also put '\
+            desc: 'Has a face value of $100 and converts into the CPR’s 10% director certificate. CPR may also put '\
                   'its destination token into Vancouver when converted.',
             abilities: [
               {
@@ -697,7 +697,7 @@ module Engine
             sym: 'C3',
             value: 100,
             revenue: 10,
-            desc: 'Has a face value of £100 and contributes £100 to conversion into the GNWR director’s '\
+            desc: 'Has a face value of $100 and contributes $100 to conversion into the GNWR director’s '\
                   'certificate.',
             abilities: [
               {
@@ -715,7 +715,7 @@ module Engine
             sym: 'C4',
             value: 100,
             revenue: 10,
-            desc: 'Has a face value of £100 and contributes £100 to conversion into the GT director’s '\
+            desc: 'Has a face value of $100 and contributes $100 to conversion into the GT director’s '\
                   'certificate.',
             abilities: [
               {
@@ -733,7 +733,7 @@ module Engine
             sym: 'C5',
             value: 100,
             revenue: 10,
-            desc: 'Has a face value of £100 and contributes £100 to conversion into the GTP director’s certificate.',
+            desc: 'Has a face value of $100 and contributes $100 to conversion into the GTP director’s certificate.',
             abilities: [
               {
                 type: 'exchange',
@@ -750,7 +750,7 @@ module Engine
             sym: 'C6',
             value: 100,
             revenue: 10,
-            desc: 'Has a face value of £100 and contributes £100 to conversion into the GWR director’s certificate.',
+            desc: 'Has a face value of $100 and contributes $100 to conversion into the GWR director’s certificate.',
             abilities: [
               {
                 type: 'exchange',
@@ -767,7 +767,7 @@ module Engine
             sym: 'C7',
             value: 100,
             revenue: 10,
-            desc: 'Has a face value of £100 and contributes £100 to conversion into the ICR director’s certificate.',
+            desc: 'Has a face value of $100 and contributes $100 to conversion into the ICR director’s certificate.',
             abilities: [
               {
                 type: 'exchange',
@@ -784,7 +784,7 @@ module Engine
             sym: 'C8',
             value: 100,
             revenue: 10,
-            desc: 'Has a face value of £100 and contributes £100 to conversion into the NTR director’s certificate.',
+            desc: 'Has a face value of $100 and contributes $100 to conversion into the NTR director’s certificate.',
             abilities: [
               {
                 type: 'exchange',
@@ -801,7 +801,7 @@ module Engine
             sym: 'C9',
             value: 100,
             revenue: 10,
-            desc: 'Has a face value of £100 and contributes £100 to conversion into the PGE director’s certificate.',
+            desc: 'Has a face value of $100 and contributes $100 to conversion into the PGE director’s certificate.',
             abilities: [
               {
                 type: 'exchange',
@@ -818,7 +818,7 @@ module Engine
             sym: 'C10',
             value: 100,
             revenue: 10,
-            desc: 'Has a face value of £100 and contributes £100 to conversion into the QMOO director’s certificate.',
+            desc: 'Has a face value of $100 and contributes $100 to conversion into the QMOO director’s certificate.',
             abilities: [
               {
                 type: 'exchange',
@@ -957,7 +957,7 @@ module Engine
             value: 100,
             revenue: 0,
             desc: 'A 50% director’s certificate in the associated minor company. Starting location is AC21 (Toronto). Home '\
-                  'token cost £20, placing home token counts as first tile lay.',
+                  'token cost $20, placing home token counts as first tile lay.',
             abilities: [],
             color: '#ffffff',
             text_color: 'black',
