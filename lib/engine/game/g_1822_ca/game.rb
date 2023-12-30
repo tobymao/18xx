@@ -73,6 +73,8 @@ module Engine
 
         DETROIT_TO_DULUTH_HEXES = %w[Q19 Y27].freeze
 
+        ICONS_IN_CITIES_HEXES = %w[AH8 C15 N16 AF12].freeze
+
         COMPANY_SHORT_NAMES = {
           'P1' => 'P1 (5-Train)',
           'P2' => 'P2 (Permanent L-Train)',
@@ -717,6 +719,59 @@ module Engine
           else
             super
           end
+        end
+
+        def preprocess_action(action)
+          case action
+          when Action::LayTile
+            hex = action.hex
+            old_tile = hex.tile
+            new_tile = action.tile
+
+            @city_slot_icons ||= Hash.new { |h, k| h[k] = [] }
+
+            if ICONS_IN_CITIES_HEXES.include?(hex.id)
+
+              new_tile.rotate!(action.rotation)
+              city_map = hex.city_map_for(new_tile)
+
+              old_tile.cities.each do |city|
+                next if city.slot_icons.empty?
+
+                city.slot_icons.each do |_slot, icon|
+                  @city_slot_icons[city_map[city]] << icon
+                end
+              end
+            end
+          end
+        end
+
+        def action_processed(action)
+          case action
+          when Action::LayTile
+            unless @city_slot_icons.empty?
+              @city_slot_icons.each do |new_city, icons|
+                used_slots = {}
+
+                icons.each do |icon|
+                  next unless new_city
+
+                  slot = new_city.get_slot(icon.owner)
+                  slot += 1 while used_slots[slot]
+                  used_slots[slot] = true
+                  new_city.slot_icons[slot] = icon
+                end
+              end
+              @city_slot_icons.clear
+            end
+          end
+        end
+
+        def place_destination_token(entity, hex, token, city = nil)
+          super
+
+          city ||= token.city
+          city.slot_icons.delete_if { |_, icon| icon.owner == entity }
         end
       end
     end
