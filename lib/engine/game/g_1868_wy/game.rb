@@ -1360,8 +1360,8 @@ module Engine
           (%w[8 9].include?(from.name) && to.label&.to_s == '$20') || super
         end
 
-        def upgrade_cost(tile, hex, entity, spender)
-          super + (%w[16 19 20].include?(tile.name) ? 20 : 0)
+        def upgrade_cost(_old_tile, hex, _entity, _spender)
+          super + (%w[16 19 20].include?(hex.tile.name) ? 20 : 0)
         end
 
         def tile_cost_with_discount(_tile, _hex, _entity, spender, _cost)
