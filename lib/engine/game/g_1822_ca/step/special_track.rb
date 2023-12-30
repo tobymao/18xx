@@ -14,7 +14,13 @@ module Engine
             if hex == @game.sawmill_hex
               super && Array(entity_or_entities).none? { |e| @game.must_remove_town?(e) }
             else
-              super
+              entity, = entity_or_entities
+              if @game.class::COMPANIES_BIG_CITY_UPGRADES.include?(entity.id)
+                @game.class::BIG_CITY_HEXES_TO_COMPANIES[hex.id] == entity.id &&
+                  hex_neighbors(entity.owner, hex)
+              else
+                super
+              end
             end
           end
 
