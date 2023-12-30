@@ -295,6 +295,14 @@ module Engine
           return [] if corporation.tokens.any?(&:used)
 
           super
+          return if corporation.companies.empty?
+
+          # We need to restrict home token locations to cities where the
+          # private railway company being used to start the corporation had
+          # reservations. This is to prevent the possibility of a token going
+          # in the wrong Madrid city if there are unreserved slots available.
+          cities = reserved_cities(corporation, corporation.companies.first)
+          @round.pending_tokens.first[:cities] = cities
         end
 
         def home_token_locations(corporation)

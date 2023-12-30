@@ -52,6 +52,7 @@ module Engine
 
             @round.pending_tokens << {
               entity: corporation,
+              cities: cities,
               hexes: cities.map(&:hex),
               token: corporation.next_token,
             }
