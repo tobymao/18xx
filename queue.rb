@@ -24,7 +24,9 @@ ASSETS = Assets.new(precompiled: PRODUCTION)
 
 scheduler = Rufus::Scheduler.new
 
-PINS_TO_KEEP = 3
+# give latest pins a chance to be used before they get cleaned up
+UNUSED_RECENT_PINS_TO_KEEP = 3
+PINS_DIR = File.join(File.dirname(__FILE__), '..', 'public', 'pinned')
 
 def days_ago(days)
   Time.now - (86_400 * days)
@@ -46,10 +48,9 @@ scheduler.cron '00 09 * * *' do
   ).all.each(&:archive!)
 
   # clean up unused pins, except for the newest few
-  PINS_DIR = File.join(File.dirname(__FILE__), '..', 'public', 'pinned')
   pins = Dir.glob("#{PINS_DIR}/*.js.gz")
-           .sort_by{ |f| File.mtime(f) }[0..-(1 + PINS_TO_KEEP)]
-           .map { |f| f.split(/[.\/]/)[-3] }
+           .sort_by { |f| File.mtime(f) }[0..-(1 + UNUSED_RECENT_PINS_TO_KEEP)]
+           .map { |f| f.split(%r{[./]})[-3] }
   pins.each do |pin|
     where_kwargs = {
       Sequel.pg_jsonb_op(:settings).get_text('pin') => pin,
