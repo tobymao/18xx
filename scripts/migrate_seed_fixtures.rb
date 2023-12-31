@@ -2,7 +2,7 @@
 
 require 'json'
 
-FIXTURES_DIR = File.join(File.dirname(__FILE__), '..', 'public', 'fixtures')
+FIXTURES_DIR = File.join(File.dirname(__FILE__), '..', '..', 'public', 'fixtures')
 
 FIXTURE_FILES = Dir.glob("#{FIXTURES_DIR}/**/*json")
 

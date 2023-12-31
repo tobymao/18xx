@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require_relative 'models'
-Dir['./models/**/*.rb'].each { |file| require file }
+require_relative '../models'
+Dir['../models/**/*.rb'].each { |file| require file }
 Sequel.extension :pg_json_ops
 
 def get_games(statuses = %w[active finished])
