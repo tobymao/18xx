@@ -621,6 +621,9 @@ module Engine
       end
 
       def initialize_seed(seed)
+        # hotseat games created without the seed field being set
+        seed = nil if seed == ''
+
         @seed = seed || @id.to_s.scan(/\d+/).first.to_i
         @rand = @seed % RAND_M
       end
