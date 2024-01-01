@@ -33,7 +33,7 @@ module Engine
             hide_shares: true,
             coordinates: 'B8',
             city: 0,
-            abilities: [ { type: 'exchange', corporations: 'ipoed', from: %w[ipo market] } ],
+            abilities: [{ type: 'exchange', corporations: 'ipoed', from: %w[ipo market] }],
           },
           {
             sym: '2',
@@ -49,7 +49,7 @@ module Engine
             hide_shares: true,
             coordinates: 'B8',
             city: 1,
-            abilities: [ { type: 'exchange', corporations: 'ipoed', from: %w[ipo market] } ],
+            abilities: [{ type: 'exchange', corporations: 'ipoed', from: %w[ipo market] }],
           },
           {
             sym: '3',
@@ -64,7 +64,7 @@ module Engine
             max_ownership_percent: 100,
             hide_shares: true,
             coordinates: 'E15',
-            abilities: [ { type: 'exchange', corporations: 'ipoed', from: %w[ipo market] } ],
+            abilities: [{ type: 'exchange', corporations: 'ipoed', from: %w[ipo market] }],
           },
           {
             sym: '4',
@@ -79,7 +79,7 @@ module Engine
             max_ownership_percent: 100,
             hide_shares: true,
             coordinates: 'G25',
-            abilities: [ { type: 'exchange', corporations: 'ipoed', from: %w[ipo market] } ],
+            abilities: [{ type: 'exchange', corporations: 'ipoed', from: %w[ipo market] }],
           },
           {
             sym: '5',
@@ -94,7 +94,7 @@ module Engine
             max_ownership_percent: 100,
             hide_shares: true,
             coordinates: 'J24',
-            abilities: [ { type: 'exchange', corporations: 'ipoed', from: %w[ipo market] } ],
+            abilities: [{ type: 'exchange', corporations: 'ipoed', from: %w[ipo market] }],
           },
           {
             sym: '6',
@@ -109,7 +109,7 @@ module Engine
             max_ownership_percent: 100,
             hide_shares: true,
             coordinates: 'H6',
-            abilities: [ { type: 'exchange', corporations: 'ipoed', from: %w[ipo market] } ],
+            abilities: [{ type: 'exchange', corporations: 'ipoed', from: %w[ipo market] }],
           },
           {
             sym: '7',
@@ -124,7 +124,7 @@ module Engine
             max_ownership_percent: 100,
             hide_shares: true,
             coordinates: 'I21',
-            abilities: [ { type: 'exchange', corporations: 'ipoed', from: %w[ipo market] } ],
+            abilities: [{ type: 'exchange', corporations: 'ipoed', from: %w[ipo market] }],
           },
           {
             sym: '8',
@@ -140,7 +140,7 @@ module Engine
             hide_shares: true,
             coordinates: 'M7',
             city: 0,
-            abilities: [ { type: 'exchange', corporations: 'ipoed', from: %w[ipo market] } ],
+            abilities: [{ type: 'exchange', corporations: 'ipoed', from: %w[ipo market] }],
           },
           {
             sym: '9',
@@ -156,7 +156,7 @@ module Engine
             hide_shares: true,
             coordinates: 'M7',
             city: 1,
-            abilities: [ { type: 'exchange', corporations: 'ipoed', from: %w[ipo market] } ],
+            abilities: [{ type: 'exchange', corporations: 'ipoed', from: %w[ipo market] }],
           },
           {
             sym: '10',
@@ -171,7 +171,7 @@ module Engine
             max_ownership_percent: 100,
             hide_shares: true,
             coordinates: 'D18',
-            abilities: [ { type: 'exchange', corporations: 'ipoed', from: %w[ipo market] } ],
+            abilities: [{ type: 'exchange', corporations: 'ipoed', from: %w[ipo market] }],
           },
           {
             sym: '11',
@@ -186,7 +186,7 @@ module Engine
             max_ownership_percent: 100,
             hide_shares: true,
             coordinates: 'B16',
-            abilities: [ { type: 'exchange', corporations: 'ipoed', from: %w[ipo market] } ],
+            abilities: [{ type: 'exchange', corporations: 'ipoed', from: %w[ipo market] }],
           },
           {
             sym: '12',
@@ -201,7 +201,7 @@ module Engine
             max_ownership_percent: 100,
             hide_shares: true,
             coordinates: 'K11',
-            abilities: [ { type: 'exchange', corporations: 'ipoed', from: %w[ipo market] } ],
+            abilities: [{ type: 'exchange', corporations: 'ipoed', from: %w[ipo market] }],
           },
           {
             sym: '13',
@@ -216,7 +216,7 @@ module Engine
             max_ownership_percent: 100,
             hide_shares: true,
             coordinates: 'E9',
-            abilities: [ { type: 'exchange', corporations: 'ipoed', from: %w[ipo market] } ],
+            abilities: [{ type: 'exchange', corporations: 'ipoed', from: %w[ipo market] }],
           },
           {
             sym: '14',
@@ -231,7 +231,7 @@ module Engine
             max_ownership_percent: 100,
             hide_shares: true,
             coordinates: 'F10',
-            abilities: [ { type: 'exchange', corporations: 'ipoed', from: %w[ipo market] } ],
+            abilities: [{ type: 'exchange', corporations: 'ipoed', from: %w[ipo market] }],
           },
           {
             sym: '15',
@@ -247,7 +247,7 @@ module Engine
             hide_shares: true,
             coordinates: 'E25',
             city: 1,
-            abilities: [ { type: 'exchange', corporations: 'ipoed', from: %w[ipo market] } ],
+            abilities: [{ type: 'exchange', corporations: 'ipoed', from: %w[ipo market] }],
           },
           {
             sym: 'BY',
@@ -415,7 +415,7 @@ module Engine
         def exchange_corporations(exchange_ability)
           minor = exchange_ability.owner
           super.select do |major|
-            max_price = minor.share_price.price * 2 + liquidity(minor.owner)
+            max_price = (minor.share_price.price * 2) + liquidity(minor.owner)
 
             major.share_price.price <= max_price &&
               major_minor_connected?(major, minor)

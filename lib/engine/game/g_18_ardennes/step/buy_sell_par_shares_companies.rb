@@ -66,7 +66,7 @@ module Engine
             @game.minor_corporations.any? do |minor|
               next false unless minor.owner == player
 
-              max_price = minor.share_price.price * 2 + @game.liquidity(player)
+              max_price = (minor.share_price.price * 2) + @game.liquidity(player)
               majors.any? { |corp| corp.share_price.price <= max_price }
             end
           end
