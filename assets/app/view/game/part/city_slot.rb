@@ -46,6 +46,8 @@ module View
           6 => 2.0,
         }.freeze
 
+        ICON_RADIUS = 16
+
         def render_part
           color = ((@reservation&.corporation? || @reservation&.minor?) &&
                     @reservation&.reservation_color) ||
@@ -78,6 +80,7 @@ module View
           children << reservation if @reservation && !@token
           children << render_boom if @city&.boom
           children << h(Token, token: @token, radius: radius, game: @game) if @token
+          children << render_slot_icon if @city&.slot_icons&.[](@slot_index)
 
           props = {
             on: { click: ->(event) { on_click(event) } },
@@ -209,6 +212,19 @@ module View
               r: @boom_radius ||= 10 * (radius_addend + (route_prop(0, :width).to_i / 40)),
               'stroke-width': 2,
               'stroke-dasharray': 6,
+            })
+        end
+
+        def render_slot_icon
+          icon = @city&.slot_icons&.[](@slot_index)
+
+          h(:image,
+            attrs: {
+              href: icon.image,
+              x: -ICON_RADIUS,
+              y: -ICON_RADIUS,
+              width: "#{ICON_RADIUS * 2}px",
+              height: "#{ICON_RADIUS * 2}px",
             })
         end
       end

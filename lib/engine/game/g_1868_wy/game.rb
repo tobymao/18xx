@@ -54,15 +54,15 @@ module Engine
         include StubsAreRestricted
         include SwapColorAndStripes
 
-        attr_accessor :big_boy_first_chance, :double_headed_trains, :dpr_first_home_status,
-                      :placed_oil_dt_count, :up_double_share_protection
+        attr_accessor :big_boy_first_chance, :big_boy_train_dh_original, :double_headed_trains,
+                      :dpr_first_home_status, :placed_oil_dt_count, :up_double_share_protection
         attr_reader :big_boy_train, :big_boy_train_original, :tile_groups, :unused_tiles,
                     :busters
 
         # overrides
         BANK_CASH = 99_999
-        STARTING_CASH = { 3 => 734, 4 => 550, 5 => 440 }.freeze
-        CERT_LIMIT = { 3 => 20, 4 => 15, 5 => 12 }.freeze
+        STARTING_CASH = { 2 => 1100, 3 => 734, 4 => 550, 5 => 440 }.freeze
+        CERT_LIMIT = { 2 => 30, 3 => 20, 4 => 15, 5 => 12 }.freeze
         CAPITALIZATION = :incremental
         SELL_BUY_ORDER = :sell_buy
         HOME_TOKEN_TIMING = :par
@@ -1360,8 +1360,8 @@ module Engine
           (%w[8 9].include?(from.name) && to.label&.to_s == '$20') || super
         end
 
-        def upgrade_cost(tile, hex, entity, spender)
-          super + (%w[16 19 20].include?(tile.name) ? 20 : 0)
+        def upgrade_cost(_old_tile, hex, _entity, _spender)
+          super + (%w[16 19 20].include?(hex.tile.name) ? 20 : 0)
         end
 
         def tile_cost_with_discount(_tile, _hex, _entity, spender, _cost)
@@ -1828,7 +1828,7 @@ module Engine
           update_cache(:trains)
         end
 
-        def attach_big_boy(train, entity)
+        def attach_big_boy(train, entity = nil, log: true)
           detached = detach_big_boy(log: false)
 
           @big_boy_train_original = train.dup
@@ -1848,14 +1848,16 @@ module Engine
           ]
           @big_boy_train = train
 
-          @log <<
-            if detached
-              "#{entity.name} moves the [+1+1] token from a #{detached.name} "\
-                "train to a #{@big_boy_train_original.name} train, forming a #{train.name} train"
-            else
-              "#{entity.name} attaches the [+1+1] token to a #{@big_boy_train_original.name} "\
-                "train, forming a #{train.name} train"
-            end
+          if log
+            @log <<
+              if detached
+                "#{entity&.name} moves the [+1+1] token from a #{detached.name} "\
+                  "train to a #{@big_boy_train_original.name} train, forming a #{train.name} train"
+              else
+                "#{entity&.name} attaches the [+1+1] token to a #{@big_boy_train_original.name} "\
+                  "train, forming a #{train.name} train"
+              end
+          end
 
           @big_boy_train
         end
@@ -1978,6 +1980,10 @@ module Engine
 
           net_sold = before[:num_shares] - num_buyable
           share_price = @stock_market.find_relative_share_price(before[:share_price], bundle.corporation, [:up] * net_sold)
+
+          # if UP was ledged before being dumped, the new price after protection
+          # can't be higher than the pre-dump price
+          share_price = before[:share_price] if share_price.price > before[:share_price].price
 
           after = {
             president: president,

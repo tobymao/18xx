@@ -6,7 +6,7 @@ require_relative 'revenue_center'
 module Engine
   module Part
     class City < RevenueCenter
-      attr_accessor :reservations
+      attr_accessor :reservations, :slot_icons
       attr_reader :tokens, :extra_tokens, :boom
 
       def initialize(revenue, **opts)
@@ -17,6 +17,7 @@ module Engine
         @extra_tokens = []
         @reservations = []
         @boom = opts[:boom]
+        @slot_icons = {}
       end
 
       def slots(all: false)
@@ -50,7 +51,8 @@ module Engine
       end
 
       def find_reservation(corporation)
-        @reservations.find_index { |r| r && [r, r.owner].include?(corporation) }
+        @reservations.find_index { |r| r && [r, r.owner].include?(corporation) } ||
+          @slot_icons.find { |_, icon| icon&.owner == corporation }
       end
 
       def reserved_by?(corporation)
@@ -119,7 +121,7 @@ module Engine
       def get_slot(corporation, cheater: false)
         reservation = find_reservation(corporation)
         open_slot = @tokens.find_index.with_index do |t, i|
-          t.nil? && @reservations[i].nil?
+          t.nil? && @reservations[i].nil? && @slot_icons[i].nil?
         end
         return open_slot || @tokens.size if cheater
 
