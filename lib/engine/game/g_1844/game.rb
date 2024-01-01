@@ -447,6 +447,7 @@ module Engine
 
             sbb_share_exchange!(corp)
 
+            remove_destination_token!(corp)
             close_corporation(corp, quiet: true)
           end
 
@@ -782,11 +783,15 @@ module Engine
         end
 
         def destinated!(corporation)
-          hex_by_id(corporation.destination_coordinates).remove_assignment!(corporation)
+          remove_destination_token!(corporation)
           multiplier = corporation.type == :historical ? 5 : 2
           amount = corporation.par_price.price * multiplier
           @bank.spend(amount, corporation)
           @log << "#{corporation.name} has reached its destination and receives #{format_currency(amount)}"
+        end
+
+        def remove_destination_token!(corporation)
+          hex_by_id(corporation.destination_coordinates).remove_assignment!(corporation)
         end
 
         def must_buy_train?(entity)
