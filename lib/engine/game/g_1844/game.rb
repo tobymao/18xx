@@ -621,13 +621,13 @@ module Engine
 
         def operating_round(round_num)
           G1844::Round::Operating.new(self, [
-            Engine::Step::Bankrupt,
-            Engine::Step::DiscardTrain,
             Engine::Step::Exchange,
             G1844::Step::SpecialChoose,
             G1844::Step::SpecialTrack,
             G1844::Step::Destination,
             G1844::Step::BuyCompany,
+            Engine::Step::Bankrupt,
+            Engine::Step::DiscardTrain,
             Engine::Step::HomeToken,
             Engine::Step::Track,
             G1844::Step::DestinationCheck,
