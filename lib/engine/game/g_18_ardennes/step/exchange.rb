@@ -16,7 +16,7 @@ module Engine
                 major: nil,
                 minor: nil,
                 optional_trains: [],
-                optional_tokens: [],
+                corporations_removing_tokens: nil,
                 optional_forts: [],
               }
             )

@@ -240,8 +240,8 @@ module Engine
         }.freeze
 
         def setup_tokens
-          @mine_corp = dummy_corp('Mines', '18_ardennes/mine', MINE_HEXES)
-          @port_corp = dummy_corp('Ports', '18_ardennes/port', PORT_HEXES)
+          @mine_corp = dummy_corp('Mine', '18_ardennes/mine', MINE_HEXES)
+          @port_corp = dummy_corp('Port', '18_ardennes/port', PORT_HEXES)
           FORT_HEXES.each { |fort, coord| hex_by_id(coord).assign!(fort) }
         end
 

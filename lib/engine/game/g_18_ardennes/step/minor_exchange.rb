@@ -33,7 +33,9 @@ module Engine
                                         exchange_price: extra_cost,
                                         silent: true)
             transfer_assets(minor, major, may_decline)
-            @game.close_corporation(minor)
+            # If there are tokens that may optionally be rejected the minor
+            # needs to be left open for the DeclineTokens step.
+            @game.close_corporation(minor) unless @round.corporations_removing_tokens
           end
 
           # Moves assets from a minor to a major and logs what was transferred.
@@ -47,7 +49,7 @@ module Engine
             assets << transfer_cash(minor, major)
             assets << transfer_trains(minor, major, may_decline)
             assets << transfer_tokens(minor, major, may_decline)
-            assets << transfer_forts(minor, major, :fort, may_decline)
+            assets << transfer_forts(minor, major, may_decline)
             @game.log << "#{major.name} receives #{minor.name}’s assets: " \
                          "#{assets.compact.join(', ')}."
           end
@@ -91,29 +93,82 @@ module Engine
           # @param may_decline [Boolean] If true, the major's owner will have
           #        the option to decline any tokens.
           # @return [String, nil] A description of the transfer, or nil if
-          #         may_decline is true.
+          #         no tokens are transferred.
           def transfer_tokens(minor, major, may_decline)
+            if may_decline
+              remove_unswappable_tokens!(minor, major)
+              return if minor.placed_tokens.empty?
+
+              @round.corporations_removing_tokens = [major, minor]
+            end
+
             cities = []
             minor.placed_tokens.each do |token|
-              city = token.city
-              token.remove!
-              city.place_token(major, major.next_token, check_tokenable: false)
-              hex = city.hex.coordinates
-              prefix = ''
-              if minor.assigned?(hex)
-                if Map::MINE_HEXES.include?(hex)
-                  prefix = '⚒ '
-                  minor.remove_assignment!(hex)
-                  major.assign!(hex)
-                elsif Map::PORT_HEXES.include?(hex)
-                  prefix = '⚓ '
-                  minor.remove_assignment!(hex)
-                  major.assign!(hex)
-                end
-              end
-              cities << (prefix + city.hex.location_name)
+              cities << token_location(token)
+              transfer_minor_token!(token, major) unless may_decline
             end
             "#{cities.one? ? 'a token' : 'tokens'} (#{cities.join(' and ')})"
+          end
+
+          # Removes tokens that cannot legally be transferred from the minor
+          # company to the major. This can be for one of two reasons:
+          # 1. The major already has a token in the same city. Having tokens in
+          #    the same hex is allowed, if they are in different cities.
+          # 2. The major alreay has all of its tokens on the board.
+          # @param minor [Corporation] The minor corporation being exchanged.
+          # @param major [Corporation] The major corporation receiving the assets.
+          def remove_unswappable_tokens!(minor, major)
+            unswappable =
+              if major.unplaced_tokens.empty?
+                minor.placed_tokens
+              else
+                minor.placed_tokens.select do |token|
+                  major.placed_tokens.map(&:city).include?(token.city)
+                end
+              end
+            unswappable.each { |token| remove_minor_token!(token) }
+          end
+
+          # Removes a minor company's token from the map. If the token was in
+          # a port or mine city then a port or mine token is returned to the
+          # empty token slot.
+          # @param token [Token] The token to be removed.
+          def remove_minor_token!(token)
+            minor = token.corporation
+            city = token.city
+            coord = city.hex.coordinates
+            location = token_location(token)
+            @game.log << "Minor #{minor.id}’s token in " \
+                         "#{location} is removed."
+            token.remove!
+            return unless minor.assigned?(coord)
+
+            dummy_corp =
+              if Map::MINE_HEXES.include?(coord)
+                @game.mine_corp
+              elsif Map::PORT_HEXES.include?(coord)
+                @game.port_corp
+              end
+            minor.remove_assignment!(coord)
+            city.place_token(dummy_corp, dummy_corp.next_token, check_tokenable: false)
+            @game.log << "A #{dummy_corp.name.downcase} token is " \
+                         "returned to #{location}."
+          end
+
+          # Transfers a station token from a minor company to a major. Also
+          # copies across assignments for mine and port tokens.
+          # @param token [Token] The token to be removed.
+          # @param major [Corporation] The major receiving the token.
+          def transfer_minor_token!(token, major)
+            minor = token.corporation
+            city = token.city
+            coord = city.hex.coordinates
+            token.remove!
+            city.place_token(major, major.next_token, check_tokenable: false)
+            return unless minor.assigned?(coord)
+
+            minor.remove_assignment!(coord)
+            major.assign!(coord)
           end
 
           # Transfers fort tokens.
@@ -123,7 +178,7 @@ module Engine
           #        the option to decline any fort tokens.
           # @return [String, nil] A description of the transfer, or nil if either
           #         there were no forts to transfer, or if may_decline is true.
-          def transfer_forts(minor, major, may_decline)
+          def transfer_forts(minor, major, _may_decline)
             forts = minor.assignments.keys.intersection(Map::FORT_HEXES.keys)
             return if forts.empty?
 
@@ -132,6 +187,12 @@ module Engine
               major.assign!(fort)
             end
             "#{forts.count} fort token#{forts.count == 1 ? '' : 's'}"
+          end
+
+          # Returns a description of the location of a token, city name and hex
+          # coordinates.
+          def token_location(token)
+            "#{token.city.hex.location_name} [#{token.city.hex.coordinates}]"
           end
         end
       end
