@@ -447,6 +447,7 @@ module Engine
 
             sbb_share_exchange!(corp)
 
+            remove_destination_token!(corp)
             close_corporation(corp, quiet: true)
           end
 
@@ -621,13 +622,13 @@ module Engine
 
         def operating_round(round_num)
           G1844::Round::Operating.new(self, [
-            Engine::Step::Bankrupt,
-            Engine::Step::DiscardTrain,
             Engine::Step::Exchange,
             G1844::Step::SpecialChoose,
             G1844::Step::SpecialTrack,
             G1844::Step::Destination,
             G1844::Step::BuyCompany,
+            Engine::Step::Bankrupt,
+            Engine::Step::DiscardTrain,
             Engine::Step::HomeToken,
             Engine::Step::Track,
             G1844::Step::DestinationCheck,
@@ -703,9 +704,16 @@ module Engine
           return bundles if bundles.empty? || corporation.operated?
 
           bundles.each do |bundle|
-            bundle.share_price = @stock_market.find_share_price(corporation, Array.new(bundle.num_shares) { :down }).price
+            bundle.share_price = @stock_market.find_share_price(corporation, :down).price
           end
           bundles
+        end
+
+        def shares_for_presidency_swap(shares, num_shares)
+          return super unless shares.first.corporation == sbb
+
+          double_share = shares.find { |s| s.percent == sbb.presidents_share.percent }
+          double_share ? [double_share] : shares.take(num_shares)
         end
 
         def after_buy_company(player, company, _price)
@@ -775,11 +783,15 @@ module Engine
         end
 
         def destinated!(corporation)
-          hex_by_id(corporation.destination_coordinates).remove_assignment!(corporation)
+          remove_destination_token!(corporation)
           multiplier = corporation.type == :historical ? 5 : 2
           amount = corporation.par_price.price * multiplier
           @bank.spend(amount, corporation)
           @log << "#{corporation.name} has reached its destination and receives #{format_currency(amount)}"
+        end
+
+        def remove_destination_token!(corporation)
+          hex_by_id(corporation.destination_coordinates).remove_assignment!(corporation)
         end
 
         def must_buy_train?(entity)

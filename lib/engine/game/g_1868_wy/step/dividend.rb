@@ -27,6 +27,8 @@ module Engine
 
           def rust_obsolete_trains!(entity, log: false)
             super(entity, log: false)
+
+            @game.attach_big_boy(@game.big_boy_train_dh_original, log: false) if @game.big_boy_train_dh_original
           end
 
           def process_dividend(action)

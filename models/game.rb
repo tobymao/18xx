@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'base'
+require_relative '../lib/bus'
 
 class Game < Base
   many_to_one :user
@@ -82,21 +83,25 @@ class Game < Base
   # rubocop:enable Style/FormatString
 
   def self.home_games(user, **opts)
-    kwargs = {
-      new_offset: opts['new'],
-      active_offset: opts['active'],
-      finished_offset: opts['finished'],
-    }.transform_values { |v| v&.to_i || 0 }
+    Bus.cache("home_games:#{user&.id}", ttl: 9, skip: !opts.empty?) do
+      kwargs = {
+        new_offset: opts['new'],
+        active_offset: opts['active'],
+        finished_offset: opts['finished'],
+      }.transform_values { |v| v&.to_i || 0 }
 
-    kwargs[:user_id] = user.id if user
-    kwargs[:title] = opts['title'] != '' ? opts['title'] : nil
-    kwargs[:status] = %w[new active]
-    kwargs[:limit] = 1000
-    fetch(user ? LOGGED_IN_QUERY : LOGGED_OUT_QUERY, **kwargs).all
+      kwargs[:user_id] = user.id if user
+      kwargs[:title] = opts['title'] != '' ? opts['title'] : nil
+      kwargs[:status] = %w[new active]
+      kwargs[:limit] = 1000
+      fetch(user ? LOGGED_IN_QUERY : LOGGED_OUT_QUERY, **kwargs).all.map(&:to_h)
+    end
   end
 
   def self.profile_games(user)
-    fetch(USER_QUERY, { user_id: user.id, status: %w[new active archived finished], limit: 100 }).all
+    Bus.cache("profile_games:#{user.id}", ttl: 60) do
+      fetch(USER_QUERY, { user_id: user.id, status: %w[new active archived finished], limit: 100 }).all.map(&:to_h)
+    end
   end
 
   SETTINGS = %w[
@@ -122,7 +127,8 @@ class Game < Base
 
   def archive!
     Action.where(game: self).delete
-    archive_data = { status: 'archived' }
+    settings.delete('pin')
+    archive_data = { status: 'archived', settings: settings }
     unless finished_at
       archive_data[:finished_at] = updated_at
       archive_data[:manually_ended] = true

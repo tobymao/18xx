@@ -18,6 +18,14 @@ module Engine
 
             @round.last_to_act = action.entity.player
           end
+
+          def description
+            @game.limited_express ? 'Sell/Buy/Sell Shares' : 'Sell then Buy Shares'
+          end
+
+          def can_sell_order?
+            @game.limited_express ? true : !bought?
+          end
         end
       end
     end

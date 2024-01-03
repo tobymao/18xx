@@ -20,7 +20,7 @@ module View
 
     TILE_COLORS = Lib::Hex::COLOR.freeze
     ROUTE_COLORS = Lib::Settings::ROUTE_COLORS.freeze
-    NOTIFICATION_OPTIONS = %i[email webhook none].freeze
+    NOTIFICATION_OPTIONS = %i[none webhook email].freeze
     WEBHOOK_OPTIONS = { slack: '18oggs Slack', custom: 'Custom' }.freeze
 
     def render_content

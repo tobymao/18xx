@@ -294,7 +294,7 @@ module Engine
         MUST_BUY_TRAIN = :always
         NEXT_SR_PLAYER_ORDER = :most_cash
 
-        SELL_AFTER = :operate
+        SELL_AFTER = :full_or_turn
 
         SELL_BUY_ORDER = :sell_buy
 
@@ -1966,6 +1966,10 @@ module Engine
           end
         end
 
+        def pending_home_tokeners
+          self.class::PENDING_HOME_TOKENERS
+        end
+
         private
 
         def find_and_remove_train_by_id(train_id, buyable: true)
@@ -2009,18 +2013,18 @@ module Engine
             bid_box_3 = privates.map { |c| c if self.class::PLUS_EXPANSION_BIDBOX_3.include?(c.id) }.compact
             privates = bid_box_1 + bid_box_2 + bid_box_3
 
-            # Remove one of the bidbid 2 privates, except London, Chatham and Dover Railway
+            # Remove one of the bidbox 2 privates, except London, Chatham and Dover Railway
             company = privates.find do |c|
               c.id != self.class::COMPANY_LCDR && self.class::PLUS_EXPANSION_BIDBOX_2.include?(c.id)
             end
             privates.delete(company)
-            @log << "#{company.name} have been removed from the game"
+            @log << "#{company.name} has been removed from the game"
 
             # Remove two of the bidbox 3 privates
             2.times.each do |_|
               company = privates.find { |c| self.class::PLUS_EXPANSION_BIDBOX_3.include?(c.id) }
               privates.delete(company)
-              @log << "#{company.name} have been removed from the game"
+              @log << "#{company.name} has been removed from the game"
             end
           end
 
@@ -2072,7 +2076,13 @@ module Engine
             c.tokens << Engine::Token.new(c, logo: "../#{c.destination_icon}.svg",
                                              simple_logo: "../#{c.destination_icon}.svg",
                                              type: :destination)
-            dest_hex.tile.icons << Part::Icon.new("../#{c.destination_icon}", "#{c.id}_destination")
+            icon = Part::Icon.new("../#{c.destination_icon}", "#{c.id}_destination", owner: c, loc: c.destination_loc)
+            if c.destination_icon_in_city_slot
+              city, slot = c.destination_icon_in_city_slot
+              dest_hex.tile.cities[city].slot_icons[slot] = icon
+            else
+              dest_hex.tile.icons << icon
+            end
 
             next unless c.id == self.class::TWO_HOME_CORPORATION
 

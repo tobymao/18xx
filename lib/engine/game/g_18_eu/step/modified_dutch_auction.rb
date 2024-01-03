@@ -91,6 +91,9 @@ module Engine
 
           def remove_from_auction(entity)
             @active_bidders.delete(entity)
+            @bids[@auctioning]&.reject! do |bid|
+              bid.entity == entity
+            end
             resolve_bids
           end
 

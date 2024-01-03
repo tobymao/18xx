@@ -37,12 +37,12 @@ module View
         ]
       end
 
+      now = Time.now.to_i
       hotseat = Lib::Storage
         .all_keys
         .select { |k| k.start_with?('hs_') }
         .map { |k| Lib::Storage[k] }
-        .sort_by { |gd| gd[:id] }
-        .reverse
+        .sort_by { |gd| [-(gd[:updated_at] || now), gd[:id]] }
 
       render_row(children, 'Your Games', your_games, :personal) if @user
       render_row(children, 'Hotseat Games', hotseat, :hotseat) if hotseat.any?

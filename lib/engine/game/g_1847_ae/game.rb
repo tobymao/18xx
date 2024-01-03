@@ -17,7 +17,8 @@ module Engine
         include Entities
         include CitiesPlusTownsRouteDistanceStr
 
-        attr_accessor :draft_finished, :yellow_tracks_restricted, :must_exchange_investor_companies, :train_bought_this_round
+        attr_accessor :draft_finished, :yellow_tracks_restricted, :must_exchange_investor_companies, :train_bought_this_round,
+                      :nationalization_actions_this_round
 
         HOME_TOKEN_TIMING = :float
         TRACK_RESTRICTION = :semi_restrictive

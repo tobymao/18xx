@@ -17,4 +17,4 @@ Other contributors may be working on something similar, [check out the list of o
 
 **Did you join the Slack?**
 
-Check out `#18xxgamesdev` [on the slack](https://join.slack.com/t/18xxgames/shared_invite/zt-8ksy028m-CSZC~G5QtiFv60_jdqqulQ) and meet your fellow contributors!
+Check out `#18xxgamesdev` [on the slack](https://join.slack.com/t/18xxgames/shared_invite/zt-27imtsj2u-vussFAqtecmACsycjdsIhg) and meet your fellow contributors!

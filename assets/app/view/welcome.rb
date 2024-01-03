@@ -17,11 +17,13 @@ module View
 
     def render_notification
       message = <<~MESSAGE
-        <p><a href="https://github.com/tobymao/18xx/wiki/1894">1894</a> and <a href="https://github.com/tobymao/18xx/wiki/1844">1844</a> are now in alpha. <a href="https://github.com/tobymao/18xx/wiki/1858">1858</a> is in beta.</p>
+        <p><a href="https://github.com/tobymao/18xx/wiki/1844">1844</a> is in beta.</p>
+        <p>The random seed entered when creating a game is now used to seed random events within the game, not just inital turn order. See <a href="https://github.com/tobymao/18xx/wiki/Random-Seeds">the wiki page</a> for more details.</p>
+        <p><a href="https://github.com/tobymao/18xx/wiki/1850Jr">1850jr</a> is in alpha.</p>
         <p>Learn how to get <a href='https://github.com/tobymao/18xx/wiki/Notifications'>notifications</a> by email, Slack, Discord, and Telegram.</p>
         <p>Please submit problem reports and make suggestions for improvements on
         <a href='https://github.com/tobymao/18xx/issues'>GitHub</a>. Join the
-        <a href='https://join.slack.com/t/18xxgames/shared_invite/zt-8ksy028m-CSZC~G5QtiFv60_jdqqulQ'>18xx Slack</a>.
+        <a href='https://join.slack.com/t/18xxgames/shared_invite/zt-27imtsj2u-vussFAqtecmACsycjdsIhg'>18xx Slack</a>.
         to chat about 18xx and the website.
         </p>
         <p>The <a href='https://github.com/tobymao/18xx/wiki'>18xx.games Wiki</a> has rules, maps,

@@ -14,7 +14,13 @@ module Engine
             if hex == @game.sawmill_hex
               super && Array(entity_or_entities).none? { |e| @game.must_remove_town?(e) }
             else
-              super
+              entity, = entity_or_entities
+              if @game.class::COMPANIES_BIG_CITY_UPGRADES.include?(entity.id)
+                @game.class::BIG_CITY_HEXES_TO_COMPANIES[hex.id] == entity.id &&
+                  hex_neighbors(entity.owner, hex)
+              else
+                super
+              end
             end
           end
 
@@ -27,9 +33,9 @@ module Engine
           def process_lay_tile(action)
             super
 
-            # cannot lay a second yellow after using one of the P19-P20 Mountain
-            # Pass privates
-            @round.num_laid_track += 1 if @game.class::MOUNTAIN_PASS_COMPANIES.include?(action.entity.id)
+            # cannot lay a second yellow after using one of the privates that
+            # consumes the tile lay
+            @round.num_laid_track += 1 if @game.class::COMPANIES_CONSUME_TILE_LAY.include?(action.entity.id)
           end
 
           # P21 3-Tile Grant does not need to be consecutive

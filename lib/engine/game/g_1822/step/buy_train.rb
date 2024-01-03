@@ -84,7 +84,7 @@ module Engine
             # Spend the money from the player
             entity.spend(price, @game.bank)
 
-            @log << "#{entity.name} upgrades a L train to a 2 train for #{@game.format_currency(price)}"
+            @log << "#{entity.name} upgrades an L train to a 2 train for #{@game.format_currency(price)}"
           end
         end
       end

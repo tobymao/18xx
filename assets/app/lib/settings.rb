@@ -21,7 +21,7 @@ module Lib
     end.to_h
 
     SETTINGS = {
-      notifications: :email,
+      notifications: :none,
       webhook: :slack,
       webhook_url: '',
       webhook_user_id: '',

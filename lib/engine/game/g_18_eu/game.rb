@@ -3,6 +3,7 @@
 require_relative 'meta'
 require_relative 'map'
 require_relative 'entities'
+require_relative 'corporation'
 require_relative 'market'
 require_relative 'trains'
 require_relative '../base'
@@ -31,6 +32,7 @@ module Engine
 
         BIDDING_BOX_MINOR_COLOR = '#c6e9af'
 
+        CORPORATION_CLASS = G18EU::Corporation
         BANKRUPTCY_ENDS_GAME_AFTER = :all_but_one
         GAME_END_CHECK = { bankrupt: :immediate, bank: :full_or }.freeze
 
@@ -402,6 +404,8 @@ module Engine
         end
 
         def maybe_discard_pullman(entity)
+          return if entity == @depot
+
           pullman = owns_pullman?(entity)
           return unless pullman
 

@@ -49,7 +49,7 @@ module Engine
         include G18ZOO::SharedMeta
 
         GAME_TITLE = '18ZOO'
-        GAME_FULL_TITLE = '18ZOO - Map A (2-3 players) / Map D (4-5 players)'
+        GAME_FULL_TITLE = '18ZOO'
 
         GAME_VARIANTS = [
           {
@@ -91,90 +91,10 @@ module Engine
         ].freeze
 
         PLAYER_RANGE = [2, 5].freeze
-      end
-    end
 
-    module G18ZOOMapA
-      module Meta
-        include Engine::Game::Meta
-        include G18ZOO::SharedMeta
-
-        DEPENDS_ON = '18ZOO'
-
-        GAME_TITLE = '18ZOO - Map A'
-        GAME_IS_VARIANT_OF = G18ZOO::Meta
-
-        PLAYER_RANGE = [2, 5].freeze
-      end
-    end
-
-    module G18ZOOMapB
-      module Meta
-        include Engine::Game::Meta
-        include G18ZOO::SharedMeta
-
-        DEPENDS_ON = '18ZOO'
-
-        GAME_TITLE = '18ZOO - Map B'
-        GAME_IS_VARIANT_OF = G18ZOO::Meta
-
-        PLAYER_RANGE = [2, 5].freeze
-      end
-    end
-
-    module G18ZOOMapC
-      module Meta
-        include Engine::Game::Meta
-        include G18ZOO::SharedMeta
-
-        DEPENDS_ON = '18ZOO'
-
-        GAME_TITLE = '18ZOO - Map C'
-        GAME_IS_VARIANT_OF = G18ZOO::Meta
-
-        PLAYER_RANGE = [2, 5].freeze
-      end
-    end
-
-    module G18ZOOMapD
-      module Meta
-        include Engine::Game::Meta
-        include G18ZOO::SharedMeta
-
-        DEPENDS_ON = '18ZOO'
-
-        GAME_TITLE = '18ZOO - Map D'
-        GAME_IS_VARIANT_OF = G18ZOO::Meta
-
-        PLAYER_RANGE = [2, 5].freeze
-      end
-    end
-
-    module G18ZOOMapE
-      module Meta
-        include Engine::Game::Meta
-        include G18ZOO::SharedMeta
-
-        DEPENDS_ON = '18ZOO'
-
-        GAME_TITLE = '18ZOO - Map E'
-        GAME_IS_VARIANT_OF = G18ZOO::Meta
-
-        PLAYER_RANGE = [2, 5].freeze
-      end
-    end
-
-    module G18ZOOMapF
-      module Meta
-        include Engine::Game::Meta
-        include G18ZOO::SharedMeta
-
-        DEPENDS_ON = '18ZOO'
-
-        GAME_TITLE = '18ZOO - Map F'
-        GAME_IS_VARIANT_OF = G18ZOO::Meta
-
-        PLAYER_RANGE = [2, 5].freeze
+        def self.check_options(_options, _min_players, _max_players)
+          { error: 'Must select a map. For 2-3 players, Maps A-C are recommended; for 4-5 players, Maps D-F are recommended.' }
+        end
       end
     end
   end

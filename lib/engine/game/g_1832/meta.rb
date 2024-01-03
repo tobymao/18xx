@@ -15,7 +15,7 @@ module Engine
         GAME_DESIGNER = 'Bill Dixon'
         GAME_INFO_URL = 'https://google.com'
         GAME_LOCATION = 'Southern States, USA'
-
+        PUBLISHER = :golden_spike
         GAME_RULES_URL = 'http://google.com'
 
         PLAYER_RANGE = [3, 7].freeze

@@ -95,6 +95,7 @@ class Assets
   end
 
   def js_tags(titles)
+    combine
     titles.delete('all')
 
     scripts = %w[deps main].map do |key|
