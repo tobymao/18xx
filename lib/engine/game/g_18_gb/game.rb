@@ -36,7 +36,7 @@ module Engine
         # we use a custom end check since final_train doesn't take the 'reserved' leasable train into account
         GAME_END_CHECK = { custom: :current_or, stock_market: :current_or }.freeze
         GAME_END_REASONS_TEXT = Base::GAME_END_REASONS_TEXT.merge(
-          custom: 'Last 6X sold or exported'
+          custom: 'Last train sold or exported'
         )
 
         BANKRUPTCY_ALLOWED = false
@@ -294,7 +294,7 @@ module Engine
             available_on: '5X',
           },
           {
-            name: '6X-Leasable',
+            name: 'Leasable-6X',
             distance: [
               {
                 'nodes' => %w[city offboard],
@@ -573,7 +573,7 @@ module Engine
 
         def custom_end_game_reached?
           # if the only train left is the reserved leasable 6X
-          @depot.upcoming.count { |t| t.name == '6X' }.zero?
+          @depot.upcoming.reject { |t| t.name == 'Leasable-6X' }.none?
         end
 
         def insolvent?(corp)
@@ -943,11 +943,11 @@ module Engine
 
         def or_round_finished
           depot.export! unless @train_bought
-          trigger_end_game_restrictions if @depot.upcoming.count { |t| t.name == '6X' } <= 2
+          trigger_end_game_restrictions if @depot.upcoming.count { |t| t.name != 'Leasable-6X' } <= 2
         end
 
         def end_now?(after)
-          if @round.is_a?(round_end) && @depot.upcoming.count { |t| t.name == '6X' } == 1 && !@train_bought
+          if @round.is_a?(round_end) && @depot.upcoming.count { |t| t.name != 'Leasable-6X' } == 1 && !@train_bought
             @depot.export!
             return true
           end
