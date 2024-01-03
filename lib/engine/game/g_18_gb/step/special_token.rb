@@ -13,6 +13,20 @@ module Engine
             super
           end
 
+          def ability(entity)
+            return unless entity&.company?
+
+            @game.abilities(entity, :token) do |ability, _company|
+              return ability unless entity.value.positive?
+            end
+
+            @game.abilities(entity, :teleport) do |ability, _company|
+              return ability if !entity.value.positive? && ability.used?
+            end
+
+            nil
+          end
+
           def available_tokens(entity)
             ability = ability(entity)
             return [] unless ability
