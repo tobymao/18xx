@@ -28,6 +28,7 @@ module Engine
             type: 'major',
             text_color: 'white',
             coordinates: 'F10',
+            city: 1,
           },
           {
             float_percent: 60,
@@ -88,6 +89,7 @@ module Engine
             type: 'major',
             text_color: 'black',
             coordinates: 'F10',
+            city: 0,
           },
           {
             float_percent: 60,
@@ -214,10 +216,17 @@ module Engine
             value: 80,
             revenue: 15,
             sym: 'P5',
-            desc: 'This private company gives the owning company a WVCF token for free.'\
-                  ' When other companies connect to the coal fields, '\
-                  'they may buy a WVCF token (if available) during their operating round for $80'\
-                  ' ($40 goes to the company owning the WVCF private company).',
+            abilities: [
+              {
+                type: 'blocks_hexes',
+                owner_type: 'player',
+                hexes: %w[B12 B16 C13 C15],
+              },
+            ],
+            desc: 'This private company gives the owning company a Coal token for free.'\
+                  ' When other companies connect to the Coalfields, '\
+                  'they may buy a Coal token (if available) during their operating round for $80'\
+                  ' ($40 goes to the corporation owning the Coal private company).',
           },
           {
             name: 'Central Railroad & Canal',

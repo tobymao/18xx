@@ -190,6 +190,7 @@ module Engine
             # Player to the right of the person who started the auction is next to go.
             @acted = false
             @round.next_entity_index!
+            @round.current_actions.clear
           end
 
           def auctionable_companies

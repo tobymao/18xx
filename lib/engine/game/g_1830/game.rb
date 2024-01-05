@@ -158,7 +158,7 @@ module Engine
                     num: 3,
                     events: [{ 'type' => 'close_companies' }],
                   },
-                  { name: '6', distance: 6, price: 630, num: 2 },
+                  { name: '6', distance: 6, price: 630 },
                   {
                     name: 'D',
                     distance: 999,
@@ -188,6 +188,16 @@ module Engine
 
         def multiple_buy_only_from_market?
           !optional_rules&.include?(:multiple_brown_from_ipo)
+        end
+
+        def num_trains(train)
+          return train[:num] unless train[:name] == '6'
+
+          optional_6_train ? 3 : 2
+        end
+
+        def optional_6_train
+          @optional_rules&.include?(:optional_6_train)
         end
       end
     end
