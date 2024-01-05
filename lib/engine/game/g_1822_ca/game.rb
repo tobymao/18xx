@@ -73,6 +73,8 @@ module Engine
 
         DETROIT_TO_DULUTH_HEXES = %w[Q19 Y27].freeze
 
+        ICONS_IN_CITIES_HEXES = %w[AH8 C15 N16 AF12].freeze
+
         COMPANY_SHORT_NAMES = {
           'P1' => 'P1 (5-Train)',
           'P2' => 'P2 (Permanent L-Train)',
@@ -367,30 +369,86 @@ module Engine
           @sell_movement ||= @players.size == 2 ? :left_share_pres : :left_per_10_if_pres_else_left_one
         end
 
-        def routes_subsidy(routes)
-          super + small_mail_contract_subsidy(routes)
-        end
-
         def upgrades_to_correct_label?(from, to)
           super || (MOUNTAIN_PASS_HEXES.include?(from.hex&.id) && MOUNTAIN_PASS_TILES.include?(to.name))
         end
 
-        def small_mail_contract_subsidy(routes)
-          return 0 if routes.empty?
+        def mail_contract_bonus(entity, routes)
+          mail_contracts = entity.companies.count { |c| self.class::PRIVATE_MAIL_CONTRACTS.include?(c.id) }
+          small_contracts = entity.companies.count { |c| self.class::PRIVATE_SMALL_MAIL_CONTRACTS.include?(c.id) }
+          all_contracts = mail_contracts + small_contracts
+          return [] unless all_contracts.positive?
 
-          entity = routes.first.train.owner
-          contract_count = entity.companies.count { |c| self.class::PRIVATE_SMALL_MAIL_CONTRACTS.include?(c.id) }
-          contract_count *
-            case @phase.name.to_i
-            when (3..4)
-              20
-            when (5..6)
-              30
-            when 7
-              40
+          mail_bonuses =
+            if mail_contracts.positive?
+              bonuses = routes.map do |r|
+                stops = r.visited_stops
+                next if stops.size < 2
+
+                first = stops.first.route_base_revenue(r.phase, r.train)
+                last = stops.last.route_base_revenue(r.phase, r.train)
+                { route: r, subsidy: (first + last) / 2 }
+              end
+              bonuses.compact.sort_by { |v| -v[:subsidy] }.take(mail_contracts)
             else
-              0
+              []
             end
+
+          small_bonuses =
+            if small_contracts.positive?
+              subsidy = small_mail_subsidy
+
+              routes.map do |r|
+                next if r.visited_stops.size < 2
+
+                { route: r, subsidy: subsidy }
+              end.compact.take(small_contracts)
+            else
+              []
+            end
+
+          if routes.size >= all_contracts || mail_bonuses.empty? || small_bonuses.empty?
+            mail_bonuses + small_bonuses
+          else
+            mail_index = 0
+            small_index = 0
+            routes.map do
+              mail = mail_bonuses[mail_index] || { subsidy: 0 }
+              small = small_bonuses[small_index] || { subsidy: 0 }
+              if small[:subsidy] > mail[:subsidy]
+                small_index += 1
+                small
+              else
+                mail_index += 1
+                mail
+              end
+            end
+          end
+        end
+
+        def small_mail_subsidy
+          case @phase.name.to_i
+          when (3..4)
+            20
+          when (5..6)
+            30
+          when 7
+            40
+          else
+            0
+          end
+        end
+
+        def train_help(entity, runnable_trains, _routes)
+          return [] if runnable_trains.empty?
+
+          help = super
+
+          if entity.companies.any? { |c| self.class::PRIVATE_SMALL_MAIL_CONTRACTS.include?(c.id) }
+            help << 'Small mail contract(s) gives a phase-based subsidy for one of the trains operated.'
+          end
+
+          help
         end
 
         def revenue_for(route, stops)
@@ -717,6 +775,59 @@ module Engine
           else
             super
           end
+        end
+
+        def preprocess_action(action)
+          case action
+          when Action::LayTile
+            hex = action.hex
+            old_tile = hex.tile
+            new_tile = action.tile
+
+            @city_slot_icons ||= Hash.new { |h, k| h[k] = [] }
+
+            if ICONS_IN_CITIES_HEXES.include?(hex.id)
+
+              new_tile.rotate!(action.rotation)
+              city_map = hex.city_map_for(new_tile)
+
+              old_tile.cities.each do |city|
+                next if city.slot_icons.empty?
+
+                city.slot_icons.each do |_slot, icon|
+                  @city_slot_icons[city_map[city]] << icon
+                end
+              end
+            end
+          end
+        end
+
+        def action_processed(action)
+          case action
+          when Action::LayTile
+            unless @city_slot_icons.empty?
+              @city_slot_icons.each do |new_city, icons|
+                used_slots = {}
+
+                icons.each do |icon|
+                  next unless new_city
+
+                  slot = new_city.get_slot(icon.owner)
+                  slot += 1 while used_slots[slot]
+                  used_slots[slot] = true
+                  new_city.slot_icons[slot] = icon
+                end
+              end
+              @city_slot_icons.clear
+            end
+          end
+        end
+
+        def place_destination_token(entity, hex, token, city = nil)
+          super
+
+          city ||= token.city
+          city.slot_icons.delete_if { |_, icon| icon.owner == entity }
         end
       end
     end

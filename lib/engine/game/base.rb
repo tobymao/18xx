@@ -34,14 +34,15 @@ require_relative 'meta'
 
 module Engine
   module Game
-    def self.load(data, at_action: nil, actions: nil, pin: nil, optional_rules: nil, user: nil, **kwargs)
+    def self.load(data, at_action: nil, actions: nil, pin: nil, seed: nil, optional_rules: nil, user: nil, **kwargs)
       case data
       when String
-        parsed_data = JSON.parse(File.exist?(data) ? File.read(data) : data)
-        return load(parsed_data,
+        data = JSON.parse(File.exist?(data) ? File.read(data) : data)
+        return load(data,
                     at_action: at_action,
                     actions: actions,
-                    pin: pin,
+                    pin: pin || data.dig('settings', 'pin'),
+                    seed: seed || data.dig('settings', 'seed'),
                     optional_rules: optional_rules,
                     user: user,
                     **kwargs)
@@ -51,13 +52,16 @@ module Engine
         id = data['id']
         actions ||= data['actions'] || []
         pin ||= data.dig('settings', 'pin')
+        seed ||= data.dig('settings', 'seed')
         optional_rules ||= data.dig('settings', 'optional_rules') || []
       when Integer
-        return load(::Game[data],
+        db_game = ::Game[data]
+        return load(db_game,
                     at_action: at_action,
                     actions: actions,
-                    pin: pin,
-                    optional_rules: optional_rules,
+                    pin: pin || db_game.settings['pin'],
+                    seed: seed || db_game.settings['seed'],
+                    optional_rules: optional_rules || db_game.settings['optional_rules'],
                     user: user,
                     **kwargs)
       when ::Game
@@ -66,11 +70,20 @@ module Engine
         id = data.id
         actions ||= data.actions.map(&:to_h)
         pin ||= data.settings['pin']
+        seed ||= data.settings['seed']
         optional_rules ||= data.settings['optional_rules'] || []
       end
 
       Engine.game_by_title(title).new(
-        names, id: id, actions: actions, at_action: at_action, pin: pin, optional_rules: optional_rules, user: user, **kwargs
+        names,
+        id: id,
+        actions: actions,
+        at_action: at_action,
+        pin: pin,
+        seed: seed,
+        optional_rules: optional_rules,
+        user: user,
+        **kwargs
       )
     end
 
@@ -83,7 +96,7 @@ module Engine
                   :tiles, :turn, :total_loans, :undo_possible, :redo_possible, :round_history, :all_tiles,
                   :optional_rules, :exception, :last_processed_action, :broken_action,
                   :turn_start_action_id, :last_turn_start_action_id, :programmed_actions, :round_counter,
-                  :manually_ended
+                  :manually_ended, :seed
 
       # Game end check is described as a dictionary
       # with reason => after
@@ -498,7 +511,7 @@ module Engine
         true
       end
 
-      def initialize(names, id: 0, actions: [], at_action: nil, pin: nil, strict: false, optional_rules: [], user: nil)
+      def initialize(names, id: 0, actions: [], at_action: nil, pin: nil, strict: false, optional_rules: [], user: nil, seed: nil)
         @id = id
         @turn = 1
         @final_turn = nil
@@ -525,7 +538,7 @@ module Engine
 
         @optional_rules = init_optional_rules(optional_rules)
 
-        @seed = @id.to_s.scan(/\d+/).first.to_i % RAND_M
+        initialize_seed(seed)
 
         case self.class::DEV_STAGE
         when :prealpha
@@ -607,12 +620,20 @@ module Engine
         @log << '----'
       end
 
+      def initialize_seed(seed)
+        # hotseat games created without the seed field being set
+        seed = nil if seed == ''
+
+        @seed = seed || @id.to_s.scan(/\d+/).first.to_i
+        @rand = @seed % RAND_M
+      end
+
       def rand
-        @seed =
+        @rand =
           if RUBY_ENGINE == 'opal'
-            `parseInt(Big(#{RAND_A}).times(#{@seed}).plus(#{RAND_C}).mod(#{RAND_M}).toString())`
+            `parseInt(Big(#{RAND_A}).times(#{@rand}).plus(#{RAND_C}).mod(#{RAND_M}).toString())`
           else
-            ((RAND_A * @seed) + RAND_C) % RAND_M
+            ((RAND_A * @rand) + RAND_C) % RAND_M
           end
       end
 
@@ -918,7 +939,7 @@ module Engine
       end
 
       def clone(actions)
-        self.class.new(@names, id: @id, pin: @pin, actions: actions, optional_rules: @optional_rules)
+        self.class.new(@names, id: @id, pin: @pin, seed: @seed, actions: actions, optional_rules: @optional_rules)
       end
 
       def trains
