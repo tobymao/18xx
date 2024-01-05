@@ -70,7 +70,7 @@ module Engine
           end
 
           def process_pass(action)
-                        return unless @auctioning
+            return unless @auctioning
 
             entity = action.entity
             pass_auction(entity)
@@ -102,7 +102,7 @@ module Engine
             entity = entities[entity_index]
             return next_entity! if entity&.passed?
             return unless @auctioning
-            return if @bids[@auctioning]&.select {|bid| bid.entity == entity}.any?
+            return if @bids[@auctioning]&.select { |bid| bid.entity == entity }&.any?
             return if can_afford?(entity)
 
             pass_auction(entity)
