@@ -25,6 +25,15 @@ module Engine
           },
 
           'M19' => { desc: 'A 50% director’s certificate in the associated minor company. Starting location is T12 (Moncton).' },
+
+          'C2' => {
+            desc: 'Has a face value of $100 and converts into the CPR’s 10% director certificate. CPR may also put '\
+                  'its destination token into Vancouver when converted. Home: Montréal (T14). Destination: Vancouver (C15).',
+          },
+          'C8' => {
+            desc: 'Has a face value of $100 and contributes $100 to conversion into the NTR director’s '\
+                  'certificate. Home: Moncton (T12). Destination: SE Winnipeg (N16).',
+          },
         }.freeze
 
         STARTING_CORPORATIONS_OVERRIDE = {
