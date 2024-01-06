@@ -21,7 +21,6 @@ module Engine
           maybe_remove_token(minor, corporation, source)
 
           if source == corporation
-            # TODO: differentiate pool stock vs. treasury stock
             transfer_treasury(minor, corporation)
             transfer_trains(minor, corporation)
           else
