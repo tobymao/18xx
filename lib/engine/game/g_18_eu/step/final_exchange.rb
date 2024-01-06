@@ -101,7 +101,7 @@ module Engine
             return false unless bundle.corporation.ipoed
 
             # must take treasury shares if they exist.
-            return false if (bundle.owner == @game.share_pool) && (bundle.corporation.num_ipo_shares > 0)
+            return false if (bundle.owner == @game.share_pool) && bundle.corporation.num_ipo_shares.positive?
 
             true
           end
