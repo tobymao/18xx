@@ -1,0 +1,57 @@
+# frozen_string_literal: true
+
+require_relative '../../../step/token'
+
+module Engine
+  module Game
+    module G1832
+      module Step
+        class Token < Engine::Step::Token
+          def actions(entity)
+            actions = super.dup
+            actions += %w[choose pass] if can_place_miami_token?(entity)
+
+            actions.uniq
+          end
+
+          def choice_name
+            'Additional Token Actions'
+          end
+
+          def choices
+            choices = []
+            choices << ['Place Key West Token'] if can_place_miami_token?(current_entity)
+            choices
+          end
+
+          def process_choose(action)
+            place_miami_token(action.entity) if action.choice == 'Place Key West Token'
+            pass!
+          end
+
+          def place_miami_token(corporation)
+            ability = @game.abilities(corporation, :assign_hexes)
+            hex = @game.hex_by_id(ability.hexes.first)
+
+            hex.tile.icons.reject! { |icon| icon.name == 'FECR_key_west' }
+            hex.assign!(corporation)
+            ability.use!
+            corporation.spend(ability.cost, @game.bank)
+            @log << "#{corporation.name} places the Key West token on #{hex.name} for #{@game.format_currency(ability.cost)}"
+          end
+
+          def skip!
+            pass!
+          end
+
+          def can_place_miami_token?(entity)
+            (ability = @game.abilities(entity, :assign_hexes)) &&
+            entity.cash >= ability.cost &&
+            available_hex(entity, @game.hex_by_id(ability.hexes.first)) &&
+            (3..6).cover?(@game.phase.name.to_i)
+          end
+        end
+      end
+    end
+  end
+end

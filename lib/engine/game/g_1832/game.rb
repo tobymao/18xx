@@ -148,8 +148,14 @@ module Engine
         CORPORATE_BUY_SHARE_ALLOW_BUY_FROM_PRESIDENT = true
         IPO_RESERVED_NAME = 'Treasury'
 
-        TILE_LAYS = [{ lay: true, upgrade: true, cost: 0, cannot_reuse_same_hex: true },
-                     { lay: :not_if_upgraded, upgrade: false, cost: 0 }].freeze
+        TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }].freeze
+        SYSTEM_TILE_LAYS = [{ lay: true, upgrade: true },
+                            { lay: :not_if_upgraded, upgrade: false },
+                            { lay: true, upgrade: :not_if_upgraded, cannot_reuse_same_hex: true }].freeze
+
+        def tile_lays(_entity)
+          @entity.system? ? SYSTEM_TILE_LAYS : TILE_LAYS
+        end
 
         STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(unlimited: :green, par: :white,
                                                             ignore_one_sale: :red).freeze
@@ -206,7 +212,7 @@ module Engine
             G1870::Step::Assign,
             G1870::Step::SpecialTrack,
             G1832::Step::Track,
-            Engine::Step::Token,
+            G1832::Step::Token,
             Engine::Step::Route,
             G1870::Step::Dividend,
             Engine::Step::DiscardTrain,
@@ -241,6 +247,43 @@ module Engine
           @tile_143 ||= @all_tiles.find { |t| t.name == '143' }
           @tile_144 ||= @all_tiles.find { |t| t.name == '144' }
         end
+
+        def available_programmed_actions
+          [Action::ProgramMergerPass, Action::ProgramBuyShares, Action::ProgramSharePass]
+        end
+
+        def merge_rounds
+          [G1832::Round::Merger]
+        end
+
+        def corps_available_for_systems
+          @corporations.select { |c| c.operated? && c.type != :system }
+        end
+
+        # def next_round!
+        #   @round =
+        #     case @round
+        #     when G1870::Round::Stock
+        #       if merge_corporations.any? && phase.name.to_i == 4 || 5
+        #         @log << "-- #{round_description('Merger', @round.round_num)} --"
+        #         # The order of steps in the Grand Trunk Games rules is incorrect
+        #         # (confirmed by Ian D Wilson https://github.com/tobymao/18xx/issues/9655).
+        #         # It has buying shares before removing tokens.
+        #         G1832::Round::Merger.new(self, [
+        #           G1867::Step::PostMergerShares, # Step C & D
+        #           Engine::Step::DiscardTrain, # Step F
+        #           G1867::Step::Merge,
+        #         ], round_num: @round.round_num)
+        #       else
+        #         @operating_rounds = @phase.operating_rounds
+        #         reorder_players
+        #         new_operating_round
+        #       end
+        #     when G1832::Round::Merger
+        #       new_operating_round
+        #     when Engine::Round::Operating
+
+        # end
 
         def event_companies_buyable!
           coal_company.max_price = 2 * coal_company.value
