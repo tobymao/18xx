@@ -7427,14 +7427,6 @@
             "entity_type": "minor",
             "id": 554,
             "created_at": 1701282823,
-            "auto_actions": [
-                {
-                    "type": "pass",
-                    "entity": "AIRS",
-                    "entity_type": "corporation",
-                    "created_at": 1701282823
-                }
-            ],
             "shares": [
                 "AIRS_5"
             ],
