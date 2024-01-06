@@ -65,15 +65,15 @@ module Engine
             name: 'Great Indian Peninsula Railway',
             sym: 'GIPR',
             logo: '18_india/GIPR',
+            # No president cert / Pres cert is 10%
             shares: [10, 10, 10, 10, 10, 10, 10, 10, 10, 10],
             tokens: [0, 40, 100, 100],
             # Add Exchange Tokens
-            # No president cert / Pres cert is 10%
-            # par_price: 112
+            floatable: false,  # Can not float / operate until phase II
+            min_price: 112,
             float_percent: 30,
-            max_ownership_percent: 100,
+            max_ownership_percent: 200,
             # Can start in any open city
-            # coordinates: '',
             color: 'white',
             text_color: 'black',
           },
@@ -82,7 +82,7 @@ module Engine
             sym: 'NWR',
             logo: '18_india/NWR',
             tokens: [0, 40, 100, 100],
-            # par_price: 100
+            min_price: 100,
             float_percent: 30,
             max_ownership_percent: 100,
             coordinates: 'G8', # Delhi
@@ -93,7 +93,7 @@ module Engine
             sym: 'EIR',
             logo: '18_india/EIR',
             tokens: [0, 40, 100],
-            # par_price: 100
+            min_price: 100,
             float_percent: 30,
             max_ownership_percent: 100,
             coordinates: 'P17', # Kolkata
@@ -104,7 +104,7 @@ module Engine
             sym: 'NCR',
             logo: '18_india/NCR',
             tokens: [0, 40, 100, 100],
-            # par_price: 90
+            min_price: 90,
             float_percent: 30,
             max_ownership_percent: 100,
             coordinates: 'K14', # Allahabad
@@ -115,7 +115,7 @@ module Engine
             sym: 'MR',
             logo: '18_india/MR',
             tokens: [0, 40, 100],
-            # par_price: 90
+            min_price: 90,
             float_percent: 30,
             max_ownership_percent: 100,
             coordinates: 'K30', # Chennai
@@ -126,7 +126,7 @@ module Engine
             sym: 'SIR',
             logo: '18_india/SIR',
             tokens: [0, 40, 100, 100],
-            # par_price: 82
+            min_price: 82,
             float_percent: 30,
             max_ownership_percent: 100,
             coordinates: 'G36', # Kochi
@@ -137,7 +137,7 @@ module Engine
             sym: 'BNR',
             logo: '18_india/BNR',
             tokens: [0, 40, 100, 100, 100],
-            # par_price: 82
+            min_price: 82,
             float_percent: 30,
             max_ownership_percent: 100,
             coordinates: 'I20', # Nagpur
@@ -148,7 +148,7 @@ module Engine
             sym: 'CGR',
             logo: '18_india/CGR',
             tokens: [0, 40, 100],
-            # par_price: 76
+            min_price: 76,
             float_percent: 30,
             max_ownership_percent: 100,
             coordinates: 'K40', # Colombo
@@ -159,7 +159,7 @@ module Engine
             sym: 'PNS',
             logo: '18_india/PNS',
             tokens: [0, 40, 100],
-            # par_price: 76
+            min_price: 76,
             float_percent: 30,
             max_ownership_percent: 100,
             coordinates: 'D3', # Lahore
@@ -170,7 +170,7 @@ module Engine
             sym: 'WIP',
             logo: '18_india/WIP',
             tokens: [0, 40, 100],
-            # par_price: 76
+            min_price: 76,
             float_percent: 30,
             max_ownership_percent: 100,
             coordinates: 'E24', # Pune
@@ -181,7 +181,7 @@ module Engine
             sym: 'EBR',
             logo: '18_india/EBR',
             tokens: [0, 40, 100],
-            # par_price: 76
+            min_price: 76,
             float_percent: 30,
             max_ownership_percent: 100,
             coordinates: 'P17', # Kolkata
@@ -192,7 +192,7 @@ module Engine
             sym: 'BR',
             logo: '18_india/BR',
             tokens: [0, 40, 100],
-            # par_price: 71
+            min_price: 71,
             float_percent: 30,
             max_ownership_percent: 100,
             coordinates: 'D23', # Mumbai
@@ -203,7 +203,7 @@ module Engine
             sym: 'NSR',
             logo: '18_india/NSR',
             tokens: [0, 40, 100],
-            # par_price: 71
+            min_price: 71,
             float_percent: 30,
             max_ownership_percent: 100,
             coordinates: 'H25', # Hyderabad
@@ -214,7 +214,7 @@ module Engine
             sym: 'TR',
             logo: '18_india/TR',
             tokens: [0, 40],
-            # par_price: 71
+            min_price: 71,
             float_percent: 30,
             max_ownership_percent: 100,
             coordinates: 'M10', # Nepal
@@ -225,7 +225,7 @@ module Engine
             sym: 'SPD',
             logo: '18_india/SPD',
             tokens: [0, 40],
-            # par_price: 67
+            min_price: 67,
             float_percent: 30,
             max_ownership_percent: 100,
             coordinates: 'G8', # Delhi
@@ -236,7 +236,7 @@ module Engine
             sym: 'DHR',
             logo: '18_india/DHR',
             tokens: [0, 40],
-            # par_price: 67
+            min_price: 67,
             float_percent: 30,
             max_ownership_percent: 100,
             coordinates: 'Q10', # China
@@ -247,7 +247,7 @@ module Engine
             sym: 'WR',
             logo: '18_india/WR',
             tokens: [0, 40],
-            # par_price: 64
+            min_price: 64,
             float_percent: 30,
             max_ownership_percent: 100,
             coordinates: 'D17', # Ahmedabad
@@ -258,13 +258,51 @@ module Engine
             sym: 'KGF',
             logo: '18_india/KGF',
             tokens: [0, 40],
-            # par_price: 64
+            min_price: 64,
             float_percent: 30,
             max_ownership_percent: 100,
             coordinates: 'H31', # Bengaluru
             color: '#da193a', # red
           },
         ].freeze
+        
+=begin  # Used min_price to set intial par values
+        IPO_PAR_PRICES = { 
+          'GIPR' => 112,
+          'NWR' => 100,
+          'EIR' => 100,
+          'NCR' => 90,
+          'MR' => 90,
+          'SIR' => 82,
+          'BNR' => 82,
+          'CGR' => 76,
+          'PNS' => 76,
+          'WIP' => 76,
+          'EBR' => 76,
+          'BR' => 71,
+          'NSR' => 71,
+          'TR' => 71,
+          'SPD' => 67,
+          'DHR' => 67,
+          'WR' => 64,
+          'KGF' => 64,
+      }
+=end
+      def company_header(company)
+        case company.type
+        when :share
+          'SHARE CERTIFICATE'
+        when :president
+          'DIRECTOR\'s CERTIFICATE'
+        when :bond
+          'RAILROAD BOND'
+        when :warrant
+          'GUARANTY WARRANT'
+        else
+          super
+        end
+      end
+
       end
     end
   end
