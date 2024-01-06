@@ -7252,16 +7252,6 @@
             "percent": 10
         },
         {
-            "type": "place_token",
-            "entity": "RPR",
-            "entity_type": "corporation",
-            "id": 522,
-            "created_at": 1645876287,
-            "city": "581-0-0",
-            "slot": 0,
-            "tokener": "RPR"
-        },
-        {
             "type": "buy_shares",
             "entity": "13",
             "entity_type": "minor",
