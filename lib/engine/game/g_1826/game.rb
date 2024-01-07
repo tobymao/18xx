@@ -9,6 +9,8 @@ module Engine
   module Game
     module G1826
       class Game < Game::Base
+        attr_reader :recently_floated, :can_buy_trains
+
         include_meta(G1826::Meta)
         include Entities
         include Map
@@ -24,11 +26,13 @@ module Engine
                         brightGreen: '#6ec037',
                         violet: '#601d39',
                         sand: '#c89432')
-        TRACK_RESTRICTION = :permissive
+        TRACK_RESTRICTION = :semi_restrictive
         SELL_BUY_ORDER = :sell_buy
+        SELL_AFTER = :operate
         TILE_RESERVATION_BLOCKS_OTHERS = :always
         HOME_TOKEN_TIMING = :float
         CURRENCY_FORMAT_STR = 'F%s'
+        BANKRUPTCY_ENDS_GAME_AFTER = :all_but_one
 
         BANK_CASH = 12_000
 
@@ -60,6 +64,7 @@ module Engine
                     train_limit: { five_share: 1, ten_share: 3 },
                     tiles: %i[yellow green],
                     operating_rounds: 2,
+                    status: ['can_buy_trains'],
                   },
                   {
                     name: '10H',
@@ -67,6 +72,7 @@ module Engine
                     train_limit: 2,
                     tiles: %i[yellow green brown],
                     operating_rounds: 3,
+                    status: ['can_buy_trains'],
                   },
                   {
                     name: 'E',
@@ -74,6 +80,7 @@ module Engine
                     train_limit: 2,
                     tiles: %i[yellow green brown blue],
                     operating_rounds: 3,
+                    status: ['can_buy_trains'],
                   },
                   {
                     name: 'TVG',
@@ -81,18 +88,25 @@ module Engine
                     train_limit: 2,
                     tiles: %i[yellow green brown blue gray],
                     operating_rounds: 3,
+                    status: ['can_buy_trains'],
                   }].freeze
 
         TRAINS = [
                     { name: '2H', distance: 2, price: 100, rusts_on: '6H', num: 8 },
                     { name: '4H', distance: 4, price: 200, rusts_on: '10H', num: 7 },
-                    { name: '6H', distance: 6, price: 300, rusts_on: 'E', num: 6 },
+                    {
+                      name: '6H',
+                      distance: 6,
+                      price: 300,
+                      rusts_on: 'E',
+                      num: 6,
+                      events: [{ 'type' => 'can_buy_trains' }],
+                    },
                     {
                       name: '10H',
                       distance: 10,
                       price: 600,
                       num: 5,
-                      events: [{ 'type' => 'close_companies' }],
                     },
                     {
                       name: 'E',
@@ -119,7 +133,15 @@ module Engine
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
           'remove_abilities' => ['Mail Token Removed'],
+          'can_buy_trains' => ['Corporations can buy trains from other corporations'],
         ).freeze
+
+        # Corps may lay two yellow tiles on their first OR
+        def tile_lays(entity)
+          lays = [{ lay: true, upgrade: true }]
+          lays << { lay: :not_if_upgraded, upgrade: false } if @recently_floated&.include?(entity)
+          lays
+        end
 
         def operating_round(round_num)
           Round::Operating.new(self, [
@@ -130,11 +152,11 @@ module Engine
             Engine::Step::BuyCompany,
             Engine::Step::HomeToken,
             Engine::Step::Track,
-            Engine::Step::Token,
+            G1826::Step::Token,
             Engine::Step::Route,
-            Engine::Step::Dividend,
+            G1826::Step::Dividend,
             Engine::Step::DiscardTrain,
-            Engine::Step::BuyTrain,
+            G1826::Step::BuyTrain,
             [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
@@ -143,11 +165,18 @@ module Engine
           @regie ||= company_by_id('P2')
         end
 
+        # minimum bid increment in the auction
+        def min_increment
+          5
+        end
+
         def revenue_for(route, stops)
           revenue = super
 
           revenue += 10 if route.corporation.assigned?(regie.id) && stops.find { |s| s.hex.assigned?(regie.id) }
+          raise GameError, 'Route visits same hex twice' if route.hexes.size != route.hexes.uniq.size
 
+          # Add code here for TGV train bonuses
           revenue
         end
 
