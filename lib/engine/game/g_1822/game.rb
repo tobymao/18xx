@@ -1891,9 +1891,8 @@ module Engine
         end
 
         def compute_game_end
-          return [:bank, @round.is_a?(Engine::Round::Operating) ? :full_or : :current_or] if @bank.broken?
-
           return %i[stock_market current_or] if @stock_market.max_reached?
+          return [:bank, @round.is_a?(Engine::Round::Operating) ? :full_or : :current_or] if @bank.broken?
         end
 
         def preprocess_action(action)
