@@ -61,6 +61,7 @@ module View
                 slot: slot,
                 price: price,
               ))
+              store(:selected_token, nil)
             end
 
             if other_owner
