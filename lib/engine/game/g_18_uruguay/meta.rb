@@ -11,7 +11,6 @@ module Engine
         DEV_STAGE = :prealpha
         PROTOTYPE = true
 
-        GAME_SUBTITLE = ''
         GAME_DESIGNER = 'Pontus Nilsson'
         GAME_LOCATION = 'Uruguay'
         GAME_PUBLISHER = :self_published
