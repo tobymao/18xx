@@ -1,25 +1,39 @@
 # frozen_string_literal: true
 
+require_relative '../g_1870/game'
 require_relative 'meta'
-require_relative '../base'
 require_relative 'map'
-require_relative '../g_1870'
-require_relative '../g_1850'
 require_relative 'entities'
+require_relative '../base'
 
 module Engine
   module Game
     module G1832
       class Game < Game::Base
         include_meta(G1832::Meta)
-        include Entities
-        include Map
+        include G1832::Entities
+        include G1832::Map
 
         attr_accessor :sell_queue, :reissued, :coal_token_counter, :coal_company_sold_or_closed
 
-        CURRENCY_FORMAT_STR = '$%s'
+        CORPORATION_CLASS = G1832::Corporation
+        CORPORATE_BUY_SHARE_ALLOW_BUY_FROM_PRESIDENT = true
+        MULTIPLE_BUY_ONLY_FROM_MARKET = true
+        MUST_SELL_IN_BLOCKS = true
+        EBUY_OTHER_VALUE = false
 
-        BANK_CASH = 12_000
+        CLOSED_CORP_TRAINS_REMOVED = false
+
+        CORPORATE_BUY_SHARE_ALLOW_BUY_FROM_PRESIDENT = true
+        IPO_RESERVED_NAME = 'Treasury'
+
+        BOOMTOWN_HEXES = %w[D8 F14 G9 G9 H6 L14].freeze
+        MIAMI_HEX = 'N16'
+
+        TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }].freeze
+        SYSTEM_TILE_LAYS = [{ lay: true, upgrade: true },
+                            { lay: :not_if_upgraded, upgrade: false },
+                            { lay: true, upgrade: :not_if_upgraded, cannot_reuse_same_hex: true }].freeze
 
         CERT_LIMIT = {
           2 => { '10' => 28, '9' => 24, '8' => 21, '7' => 17, '6' => 14 },
@@ -31,11 +45,6 @@ module Engine
         }.freeze
 
         STARTING_CASH = { 2 => 1050, 3 => 700, 4 => 525, 5 => 420, 6 => 350, 7 => 300 }.freeze
-
-        CAPITALIZATION = :full
-
-        MUST_SELL_IN_BLOCKS = true
-        CORPORATION_CLASS = G1832::Corporation
 
         MARKET = [
           %w[64y 68 72 76 82 90 100p 110 120 140 160 180 200 225 250 275 300 325 350 375 400],
@@ -50,6 +59,9 @@ module Engine
           %w[0c 0c 10b 20b 30b 40o 50y],
           %w[0c 0c 0c 10b 20b 30b 40o],
         ].freeze
+
+        STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(unlimited: :green, par: :white,
+                                                            ignore_one_sale: :red).freeze
 
         PHASES = [{ name: '2', train_limit: 4, tiles: [:yellow], operating_rounds: 1 },
                   {
@@ -141,28 +153,17 @@ module Engine
           { name: '12', distance: 12, price: 1100, num: 99 },
         ].freeze
 
-        EBUY_OTHER_VALUE = false
+        def tile_lays(entity)
+          return self.class::SYSTEM_TILE_LAYS if system?(entity)
 
-        CLOSED_CORP_TRAINS_REMOVED = false
-
-        CORPORATE_BUY_SHARE_ALLOW_BUY_FROM_PRESIDENT = true
-        IPO_RESERVED_NAME = 'Treasury'
-
-        TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }].freeze
-        SYSTEM_TILE_LAYS = [{ lay: true, upgrade: true },
-                            { lay: :not_if_upgraded, upgrade: false },
-                            { lay: true, upgrade: :not_if_upgraded, cannot_reuse_same_hex: true }].freeze
-
-        def tile_lays(_entity)
-          @entity.system? ? SYSTEM_TILE_LAYS : TILE_LAYS
+          self.class::TILE_LAYS
         end
 
-        STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(unlimited: :green, par: :white,
-                                                            ignore_one_sale: :red).freeze
+        def system?(corporation)
+          return false unless corporation
 
-        MULTIPLE_BUY_ONLY_FROM_MARKET = true
-
-        BOOMTOWN_HEXES = %w[D8 F14 G9 G9 H6 L14].freeze
+          corporation.type == :system
+        end
 
         ASSIGNMENT_TOKENS = {
           'boomtown' => '/icons/1832/boomtown_token.svg',
@@ -259,31 +260,6 @@ module Engine
         def corps_available_for_systems
           @corporations.select { |c| c.operated? && c.type != :system }
         end
-
-        # def next_round!
-        #   @round =
-        #     case @round
-        #     when G1870::Round::Stock
-        #       if merge_corporations.any? && phase.name.to_i == 4 || 5
-        #         @log << "-- #{round_description('Merger', @round.round_num)} --"
-        #         # The order of steps in the Grand Trunk Games rules is incorrect
-        #         # (confirmed by Ian D Wilson https://github.com/tobymao/18xx/issues/9655).
-        #         # It has buying shares before removing tokens.
-        #         G1832::Round::Merger.new(self, [
-        #           G1867::Step::PostMergerShares, # Step C & D
-        #           Engine::Step::DiscardTrain, # Step F
-        #           G1867::Step::Merge,
-        #         ], round_num: @round.round_num)
-        #       else
-        #         @operating_rounds = @phase.operating_rounds
-        #         reorder_players
-        #         new_operating_round
-        #       end
-        #     when G1832::Round::Merger
-        #       new_operating_round
-        #     when Engine::Round::Operating
-
-        # end
 
         def event_companies_buyable!
           coal_company.max_price = 2 * coal_company.value
@@ -445,77 +421,6 @@ module Engine
 
           @skip_paths
         end
-
-        # 1828 system code
-        # def create_system(corporations)
-        #   return nil unless corporations.size == 2
-
-        #   system_data = CORPORATIONS.find { |c| c[:sym] == corporations.first.id }.dup
-        #   system_data[:sym] = corporations.map(&:name).join('-')
-        #   system_data[:tokens] = []
-        #   system_data[:abilities] = []
-        #   system_data[:corporations] = corporations
-        #   system = init_system(@stock_market, system_data)
-
-        #   @corporations << system
-        #   @_corporations[system.id] = system
-        #   system.shares.each { |share| @_shares[share.id] = share }
-
-        #   corporations.each { |corporation| transfer_assets_to_system(corporation, system) }
-
-        #   # Order tokens for better visual
-        #   max_price = system.tokens.max_by(&:price).price + 1
-        #   system.tokens.sort_by! { |t| (t.used ? -max_price : max_price) + t.price }
-
-        #   place_system_blocking_tokens(system)
-
-        #   # Make sure the system will not own two coal markers
-        #   if coal_markers(system).size > 1
-        #     remove_coal_marker(system)
-        #     add_coal_marker_to_va_coalfields
-        #     @log << "#{system.name} cannot have two coal markers, returning one to Virginia Coalfields"
-        #   end
-
-        #   @stock_market.set_par(system, system_market_price(corporations))
-        #   system.ipoed = true
-
-        #   system
-        # end
-
-        # def transfer_assets_to_system(corporation, system)
-        #   corporation.spend(corporation.cash, system) if corporation.cash.positive?
-
-        #   # Transfer tokens
-        #   used, unused = corporation.tokens.partition(&:used)
-        #   used.each do |t|
-        #     new_token = Engine::Token.new(system, price: t.price)
-        #     system.tokens << new_token
-        #     t.swap!(new_token, check_tokenable: false)
-        #   end
-        #   unused.sort_by(&:price).each { |t| system.tokens << Engine::Token.new(system, price: t.price) }
-        #   corporation.tokens.clear
-
-        #   # Transfer companies
-        #   corporation.companies.each do |company|
-        #     company.owner = system
-        #     system.companies << company
-        #   end
-        #   corporation.companies.clear
-
-        #   # Transfer abilities
-        #   corporation.all_abilities.dup.each do |ability|
-        #     corporation.remove_ability(ability)
-        #     system.add_ability(ability)
-        #   end
-
-        #   # Create shell and transfer
-        #   shell = G1828::Shell.new(corporation.name, system)
-        #   system.shells << shell
-        #   corporation.trains.dup.each do |train|
-        #     buy_train(system, train, :free)
-        #     shell.trains << train
-        #   end
-        # end
       end
     end
   end

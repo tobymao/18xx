@@ -8,7 +8,7 @@ module Engine
       module Step
         class Token < Engine::Step::Token
           def actions(entity)
-            actions = super.dup
+            actions = super
             actions += %w[choose pass] if can_place_miami_token?(entity)
 
             actions.uniq
@@ -19,13 +19,16 @@ module Engine
           end
 
           def choices
-            choices = []
-            choices << ['Place Key West Token'] if can_place_miami_token?(current_entity)
+            choices = {}
+            choices['keywest'] = 'Place Key West Token' if can_place_miami_token?(current_entity)
+
             choices
           end
 
           def process_choose(action)
-            place_miami_token(action.entity) if action.choice == 'Place Key West Token'
+            raise GameError, 'Illegal choice' unless action.choice == 'Place Key West Token'
+
+            place_miami_token(action.entity)
             pass!
           end
 
@@ -45,9 +48,9 @@ module Engine
           end
 
           def can_place_miami_token?(entity)
-            (ability = @game.abilities(entity, :assign_hexes)) &&
-            entity.cash >= ability.cost &&
-            available_hex(entity, @game.hex_by_id(ability.hexes.first)) &&
+            (abilities = @game.abilities(entity, :assign_hexes)) &&
+            abilities.any? { |ability| ability.cost == 100 } &&
+            entity.cash >= 100 &&
             (3..6).cover?(@game.phase.name.to_i)
           end
         end

@@ -331,10 +331,9 @@ module Engine
                         { type: 'close', when: 'bought_train', corporation: 'CG' },
                         { type: 'no_buy' },
                         { type: 'shares', shares: 'CG_0' },
-],
+            ],
             color: nil,
           },
-
         ].freeze
       end
     end
