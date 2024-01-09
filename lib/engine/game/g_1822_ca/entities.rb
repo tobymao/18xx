@@ -662,7 +662,8 @@ module Engine
             sym: 'C1',
             value: 100,
             revenue: 10,
-            desc: 'Has a face value of $100 and contributes $100 to conversion into the CNoR director’s certificate.',
+            desc: 'Has a face value of $100 and contributes $100 to conversion into the CNoR director’s '\
+                  'certificate. Home: Winnipeg (N16). Destination: Vancouver (C15).',
             abilities: [
               {
                 type: 'exchange',
@@ -680,7 +681,7 @@ module Engine
             value: 100,
             revenue: 10,
             desc: 'Has a face value of $100 and converts into the CPR’s 10% director certificate. CPR may also put '\
-                  'its destination token into Vancouver when converted.',
+                  'its destination token into Vancouver when converted. Home: Montréal (AF12). Destination: Vancouver (C15).',
             abilities: [
               {
                 type: 'exchange',
@@ -698,7 +699,7 @@ module Engine
             value: 100,
             revenue: 10,
             desc: 'Has a face value of $100 and contributes $100 to conversion into the GNWR director’s '\
-                  'certificate.',
+                  'certificate. Home: Thunder Bay (R16). Destination: N Winnipeg (N16).',
             abilities: [
               {
                 type: 'exchange',
@@ -716,7 +717,7 @@ module Engine
             value: 100,
             revenue: 10,
             desc: 'Has a face value of $100 and contributes $100 to conversion into the GT director’s '\
-                  'certificate.',
+                  'certificate. Home: Toronto (AC21). Destination: S Montréal (AF12).',
             abilities: [
               {
                 type: 'exchange',
@@ -733,7 +734,8 @@ module Engine
             sym: 'C5',
             value: 100,
             revenue: 10,
-            desc: 'Has a face value of $100 and contributes $100 to conversion into the GTP director’s certificate.',
+            desc: 'Has a face value of $100 and contributes $100 to conversion into the GTP director’s '\
+                  'certificate. Home: Winnipeg (N16). Destination: Prince Rupert (A7).',
             abilities: [
               {
                 type: 'exchange',
@@ -750,7 +752,8 @@ module Engine
             sym: 'C6',
             value: 100,
             revenue: 10,
-            desc: 'Has a face value of $100 and contributes $100 to conversion into the GWR director’s certificate.',
+            desc: 'Has a face value of $100 and contributes $100 to conversion into the GWR director’s '\
+                  'certificate. Home: Hamilton (AB24). Destination: Windsor (Z28).',
             abilities: [
               {
                 type: 'exchange',
@@ -767,7 +770,8 @@ module Engine
             sym: 'C7',
             value: 100,
             revenue: 10,
-            desc: 'Has a face value of $100 and contributes $100 to conversion into the ICR director’s certificate.',
+            desc: 'Has a face value of $100 and contributes $100 to conversion into the ICR director’s '\
+                  'certificate. Home: Halifax (AP4). Destination: Any Québec (AH8).',
             abilities: [
               {
                 type: 'exchange',
@@ -784,7 +788,8 @@ module Engine
             sym: 'C8',
             value: 100,
             revenue: 10,
-            desc: 'Has a face value of $100 and contributes $100 to conversion into the NTR director’s certificate.',
+            desc: 'Has a face value of $100 and contributes $100 to conversion into the NTR director’s '\
+                  'certificate. Home: Moncton (AO3). Destination: SE Winnipeg (N16).',
             abilities: [
               {
                 type: 'exchange',
@@ -801,7 +806,8 @@ module Engine
             sym: 'C9',
             value: 100,
             revenue: 10,
-            desc: 'Has a face value of $100 and contributes $100 to conversion into the PGE director’s certificate.',
+            desc: 'Has a face value of $100 and contributes $100 to conversion into the PGE director’s '\
+                  'certificate. Home: Vancouver (C15). Destination: Prince George (D10).',
             abilities: [
               {
                 type: 'exchange',
@@ -818,7 +824,8 @@ module Engine
             sym: 'C10',
             value: 100,
             revenue: 10,
-            desc: 'Has a face value of $100 and contributes $100 to conversion into the QMOO director’s certificate.',
+            desc: 'Has a face value of $100 and contributes $100 to conversion into the QMOO director’s '\
+                  'certificate. Home: Québec (AH8). Destination: North Bay (AA15).',
             abilities: [
               {
                 type: 'exchange',
