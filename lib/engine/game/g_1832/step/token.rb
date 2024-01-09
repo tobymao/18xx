@@ -26,7 +26,7 @@ module Engine
           end
 
           def process_choose(action)
-            raise GameError, 'Illegal choice' unless action.choice == 'Place Key West Token'
+            raise GameError, 'Illegal choice' unless action.choice == 'keywest'
 
             place_miami_token(action.entity)
             pass!
