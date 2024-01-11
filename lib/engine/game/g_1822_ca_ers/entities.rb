@@ -18,6 +18,17 @@ module Engine
         STARTING_CORPORATIONS = %w[1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19
                                    CPR GT GWR ICR NTR QMOO].freeze
 
+        STARTING_COMPANIES_OVERRIDE = {
+          'C2' => {
+            desc: 'Has a face value of $100 and contributes $100 to conversion into the CPR director’s '\
+                  'certificate. Home: Moncton (AO3). Destination: Winnipeg (T14).',
+          },
+          'C8' => {
+            desc: 'Has a face value of $100 and contributes $100 to conversion into the NTR director’s '\
+                  'certificate. Home: Montréal (AF12). Destination: Vancouver (T12).',
+          },
+        }.freeze
+
         STARTING_CORPORATIONS_OVERRIDE = {
           'CPR' => { destination_coordinates: 'T12', destination_icon_in_city_slot: [0, 0] },
           'NTR' => { destination_coordinates: 'T14', destination_icon_in_city_slot: [0, 2] },

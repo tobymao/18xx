@@ -720,7 +720,7 @@ module Engine
         def route_trains(entity)
           return super unless insolvent?(entity)
 
-          [@depot.min_depot_train]
+          @depot.upcoming.empty? ? [] : [@depot.min_depot_train]
         end
 
         def express_train?(train)
