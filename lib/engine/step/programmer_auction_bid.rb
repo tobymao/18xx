@@ -53,7 +53,7 @@ module Engine
                                              reason: "Price for #{target.name} exceeded maximum bid")]
         end
 
-        [Action::Pass.new(entity)]
+        []
       end
 
       def auto_buy?(_entity, program)
