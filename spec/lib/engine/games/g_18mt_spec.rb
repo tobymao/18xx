@@ -3,8 +3,6 @@
 require './spec/spec_helper'
 
 require 'json'
-require 'timeout'
-require 'pry-byebug'
 
 module Engine
   describe Game::G18MT do
