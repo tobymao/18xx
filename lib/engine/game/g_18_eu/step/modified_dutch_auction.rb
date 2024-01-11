@@ -102,6 +102,7 @@ module Engine
             entity = entities[entity_index]
             return next_entity! if entity&.passed?
             return unless @auctioning
+            return if @bids[@auctioning]&.any? { |bid| bid.entity == entity }
             return if can_afford?(entity)
 
             pass_auction(entity)

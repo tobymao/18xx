@@ -190,6 +190,16 @@ module Engine
 
         def block_detroit_duluth; end
         def event_open_detroit_duluth!; end
+
+        def init_companies(players)
+          game_companies.map do |company|
+            next if players.size < (company[:min_players] || 0)
+            next unless starting_companies.include?(company[:sym])
+
+            opts = self.class::STARTING_COMPANIES_OVERRIDE[company[:sym]] || {}
+            Company.new(**company.merge(opts))
+          end.compact
+        end
       end
     end
   end
