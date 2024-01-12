@@ -24,7 +24,6 @@ module Engine
 
         CLOSED_CORP_TRAINS_REMOVED = false
 
-        CORPORATE_BUY_SHARE_ALLOW_BUY_FROM_PRESIDENT = true
         IPO_RESERVED_NAME = 'Treasury'
 
         BOOMTOWN_HEXES = %w[D8 F14 G9 G9 H6 L14].freeze

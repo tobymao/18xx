@@ -48,10 +48,11 @@ module Engine
           end
 
           def can_place_miami_token?(entity)
-            @abilities = Array(@game.abilities(entity, :assign_hexes)) &&
-            abilities.any? { |ability| ability.cost == 100 } &&
-            entity.cash >= 100 &&
-            (3..6).cover?(@game.phase.name.to_i)
+            return false if entity.cash < 100
+            return false unless (3..6).cover?(@game.phase.name.to_i)
+
+            abilities = Array(@game.abilities(entity, :assign_hexes))
+            abilities.any? { |ability| ability.hexes == 'N16' }
           end
         end
       end
