@@ -105,7 +105,6 @@ module Engine
             super
 
             check_graph_clear(corporation)
-            @game.player_sold_shares[action.entity][corporation] = true
             @round.recalculate_order
             @game.corporation_token_rights!(corporation) unless previous_president == corporation.owner
             @game.all_corporation_token_rights(entity) if @game.national_corporation?(corporation)

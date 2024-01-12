@@ -18,7 +18,6 @@ module Engine
             corporation = bundle.corporation
             old_price = corporation.share_price
             @game.share_pool.sell_shares(action.bundle)
-            @game.player_sold_shares[corporation.owner][corporation] = true
 
             bundle.num_shares.times { @game.stock_market.move_left(corporation) }
             @game.log_share_price(corporation, old_price)
