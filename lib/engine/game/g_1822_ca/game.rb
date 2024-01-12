@@ -468,7 +468,7 @@ module Engine
           sawmill_bonus = sawmill_bonus(route.routes)
           str += " + Sawmill ($#{sawmill_bonus[:revenue]})" if sawmill_bonus && sawmill_bonus[:route] == route
 
-          str += grain_and_port_bonus(route.train, route.stops)[:description]
+          str += grain_and_port_bonus(route.train, route.visited_stops)[:description]
 
           str
         end
