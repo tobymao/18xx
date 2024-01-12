@@ -16,7 +16,7 @@ module Engine
             actions = []
             # Must have the buy_shares action, otherwise we dont show the stock page during a operating round
             actions << 'buy_shares'
-            actions << 'par' if can_ipo_any?(entity) && player_debt.zero? && !@game.game_end_triggered?
+            actions << 'par' if can_ipo_any?(entity) && player_debt.zero?
             actions << 'payoff_player_debt' if player_debt.positive? && entity.cash.positive?
             actions << 'sell_shares' if can_sell_any?(entity)
             actions << 'pass' unless actions.empty?
@@ -79,6 +79,7 @@ module Engine
           def process_par(action)
             super
 
+            @game.game_end_corporation_operated(action.corporation) if @game.game_end_triggered?
             check_graph_clear(action.corporation)
             change_market
             @round.force_next_entity!
