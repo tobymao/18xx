@@ -43,7 +43,7 @@ module Engine
         MUST_SELL_IN_BLOCKS = true
 
         MARKET = [
-          %w[64y 68 72 76 82 90 100p 110 120 140 160 180 200 225 250 275 300 325 350 375 400],
+          %w[64y 68 72 76 82 90 100p 110 120 140 160 180 200 225 250 275 300 325 350 375 400e],
           %w[60y 64y 68 72 76 82 90p 100 110 120 140 160 180 200 225 250 275 300 325 350 375],
           %w[55y 60y 64y 68 72 76 82p 90 100 110 120 140 160 180 200 225 250i 275i 300i 325i 350i],
           %w[50o 55y 60y 64y 68 72 76p 82 90 100 110 120 140 160i 180i 200i 225i 250i 275i 300i 325i],
@@ -55,6 +55,25 @@ module Engine
           %w[0c 0c 10b 20b 30b 40o 50y],
           %w[0c 0c 0c 10b 20b 30b 40o],
         ].freeze
+
+        STANDARD_GAME_END_CHECK = { bankrupt: :immediate, bank: :full_or }.freeze
+        VARIANT_GAME_END_CHECK = { bankrupt: :immediate, bank: :full_or, stock_market: :immediate }.freeze
+
+        # Next two methods allow the implementation of the $400 Finish variant.
+        def game_end_check_values
+          @optional_rules&.include?(:finish_on_400) ? self.class::VARIANT_GAME_END_CHECK : self.class::STANDARD_GAME_END_CHECK
+        end
+
+        def game_market
+          if @optional_rules.include?(:finish_on_400)
+            market = MARKET.dup
+            market.map do |row|
+              row.map { |p| p.include?('e') ? p.chop : p }
+            end
+          else
+            MARKET
+          end
+        end
 
         STANDARD_PHASES = [
           {
