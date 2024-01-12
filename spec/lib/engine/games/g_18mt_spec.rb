@@ -31,14 +31,14 @@ module Engine
       let(:players) { %w[a b c] }
       subject(:subject_with_actions) { Game::G18MT::Game.new(players, actions: actions) }
 
-      it 'should not pass unexpectedly' do
+      it 'should pass if pass is an option' do
         expect(subject_with_actions.raw_actions.size).to be 2
         action = Engine::Action::Bid.new(subject_with_actions.current_entity, company: subject_with_actions.company_by_id('MW'),
                                                                               price: 45)
         subject_with_actions.process_action(action, add_auto_actions: true)
 
         expect(subject_with_actions.raw_actions.size).to be 3
-        expect(subject_with_actions.current_entity.name).to be players[2]
+        expect(subject_with_actions.current_entity.name).to be players[0]
       end
     end
   end
