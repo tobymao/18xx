@@ -764,16 +764,16 @@ module Engine
             # Ferry tiles
             ['G7'] =>
               'border=edge:2,type:impassable;border=edge:4,type:impassable;'\
-              'city=revenue:0,visit_cost:99;path=a:1,b:_0;path=a:5,b:_0',
+              'city=revenue:0,visit_cost:99,loc:5;path=a:1,b:_0;path=a:5,b:_0',
             ['S25'] =>
-              'border=edge:0,type:impassable;city=revenue:0,visit_cost:99;'\
+              'border=edge:0,type:impassable;city=revenue:0,visit_cost:99,loc:1;'\
               'path=a:1,b:_0;path=a:2,b:_0',
             ['F8'] =>
               'border=edge:1,type:impassable;border=edge:5,type:impassable;'\
-              'city=revenue:0,visit_cost:99;path=a:2,b:_0;path=a:4,b:_0',
+              'city=revenue:0,visit_cost:99,loc:4;path=a:2,b:_0;path=a:4,b:_0',
             ['H4'] =>
               'border=edge:3,type:impassable;border=edge:5,type:impassable;'\
-              'city=revenue:0,visit_cost:99;path=a:0,b:_0;path=a:2,b:_0',
+              'city=revenue:0,visit_cost:99,loc:0;path=a:0,b:_0;path=a:2,b:_0',
 
             # Port bonus
             %w[B11 U8] =>

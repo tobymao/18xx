@@ -682,8 +682,8 @@ module Engine
           'TUS' => 'Min bid 30 | Converted to a Italian share',
         }.freeze
 
-        FERRY_YELLOW_HEX = %w[G7 S25].freeze
-        FERRY_GREEN_HEX = %w[F8 H4].freeze
+        FERRY_GREEN_HEX = %w[G7 S25].freeze
+        FERRY_BROWN_HEX = %w[F8 H4].freeze
         FERRY_TILE_G7 = 'border=edge:2,type:impassable;border=edge:4,type:impassable;path=a:1,b:5'
         FERRY_TILE_S25 = 'border=edge:0,type:impassable;path=a:1,b:2'
         FERRY_TILE_F8 = 'border=edge:1,type:impassable;border=edge:5,type:impassable;path=a:2,b:4'
@@ -1630,8 +1630,8 @@ module Engine
         def event_brown_ferries!
           @log << '-- Event: Brown Ferries --'
 
-          @ferry_blocker_green.tokens.compact.each(&:destroy!)
-          @ferry_blocker_green.close!
+          @ferry_blocker_brown.tokens.compact.each(&:destroy!)
+          @ferry_blocker_brown.close!
 
           update_ferry_hex('F8', self.class::FERRY_TILE_F8)
           update_ferry_hex('H4', self.class::FERRY_TILE_H4)
@@ -1658,8 +1658,8 @@ module Engine
         def event_green_ferries!
           @log << '-- Event: Green Ferries --'
 
-          @ferry_blocker_yellow.tokens.compact.each(&:destroy!)
-          @ferry_blocker_yellow.close!
+          @ferry_blocker_green.tokens.compact.each(&:destroy!)
+          @ferry_blocker_green.close!
 
           update_ferry_hex('G7', self.class::FERRY_TILE_G7)
           update_ferry_hex('S25', self.class::FERRY_TILE_S25)
@@ -2145,18 +2145,6 @@ module Engine
         end
 
         def setup_ferry_hex
-          yellow_corp = @ferry_blocker_yellow = Corporation.new(
-            sym: 'FBY',
-            name: 'Ferry Blocker Yellow',
-            logo: '1866/no_yellow',
-            simple_logo: '1866/no_yellow',
-            tokens: [0, 0],
-          )
-          yellow_corp.owner = @bank
-          FERRY_YELLOW_HEX.each do |hex_id|
-            hex_by_id(hex_id).tile.cities[0].place_token(yellow_corp, yellow_corp.next_token)
-          end
-
           green_corp = @ferry_blocker_green = Corporation.new(
             sym: 'FBG',
             name: 'Ferry Blocker Green',
@@ -2167,6 +2155,18 @@ module Engine
           green_corp.owner = @bank
           FERRY_GREEN_HEX.each do |hex_id|
             hex_by_id(hex_id).tile.cities[0].place_token(green_corp, green_corp.next_token)
+          end
+
+          brown_corp = @ferry_blocker_brown = Corporation.new(
+            sym: 'FBB',
+            name: 'Ferry Blocker Brown',
+            logo: '1866/no_brown',
+            simple_logo: '1866/no_brown',
+            tokens: [0, 0],
+          )
+          brown_corp.owner = @bank
+          FERRY_BROWN_HEX.each do |hex_id|
+            hex_by_id(hex_id).tile.cities[0].place_token(brown_corp, brown_corp.next_token)
           end
         end
 
