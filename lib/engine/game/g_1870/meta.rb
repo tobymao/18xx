@@ -20,7 +20,7 @@ module Engine
         OPTIONAL_RULES = [
           {
             sym: :diesels,
-            short_name: 'Diesels variant (Alpha)',
+            short_name: 'Diesels variant',
             desc: 'Diesel trains replace 8, 10, and 12 trains. Uses all 1830 Diesel rules.',
           },
           {
