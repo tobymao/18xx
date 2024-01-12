@@ -739,7 +739,7 @@ module Engine
           'WTB' => %w[I13 I15 J14 K15],
           'SAX' => %w[H20 H22 I21 I23],
           'K2S' => %w[S21 S23 T20 T22 T24 U21 V18 V20 W19],
-          'SAR' => %w[N12 O13 O15 P14 Q15 R14 S13 T12],
+          'SAR' => %w[N12 O13 O15 P14 Q15 R14 S13 S15 S17 T12 T14 T16 T18],
           'LV' => %w[M17 N14 N16 N18 N20 O17 P18],
           'PAP' => %w[Q19 R18 R20 S19],
           'TUS' => %w[P16 Q17],
