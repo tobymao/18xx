@@ -14,11 +14,20 @@ module Engine
             return [] if target_corporations.empty?
             return [] if @merge_target
 
-            %w[merge pass].freeze
+            actions = []
+            actions << 'merge' if @game.mergers_allowed?
+            actions << 'pass' if @game.mergers_allowed? && !@game.mergers_required?
+            actions
           end
 
           def blocking?
             @game.mergeable?(current_entity)
+          end
+
+          def active?
+            return false if @game.open_minors.empty?
+
+            @game.mergers_allowed? || @game.mergers_required?
           end
 
           def setup

@@ -57,6 +57,9 @@ module Engine
         NUM_SMALL_MAIL_CONTRACTS = 6
         NUM_LARGE_MAIL_CONTRACTS = 6
 
+        MERGERS_BEGIN_PHASE = 5
+        MERGERS_MANDATORY_PHASE = 6
+
         MARKET = [
           ['',    '',    '',    '86',  '89',  '93p', '97',  '101', '106', '112', '119', '127', '136', '146', '158', '170', '185',
            '210', '230', '250', '275', '300e'],
@@ -98,6 +101,7 @@ module Engine
 
         def operating_round(round_num)
           Engine::Round::Operating.new(self, [
+            G1854::Step::MergeMinors,
             G1854::Step::TrackAndToken,
             Engine::Step::Bankrupt,
             Engine::Step::Exchange,
@@ -246,6 +250,14 @@ module Engine
 
         def mergeable?(entity)
           @minors.include?(entity) && !entity.closed?
+        end
+
+        def mergers_allowed?
+          @phase.name.to_i >= MERGERS_BEGIN_PHASE
+        end
+
+        def mergers_required?
+          @phase.name.to_i >= MERGERS_MANDATORY_PHASE
         end
 
         def merge_target?(entity)
