@@ -103,6 +103,12 @@ module Engine
           end
         end
 
+        def new_auction_round
+          Engine::Round::Auction.new(self, [
+            G18RoyalGorge::Step::SingleItemAuction,
+          ])
+        end
+
         def stock_round
           Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
@@ -141,6 +147,37 @@ module Engine
 
         def par_prices
           @stock_market.share_prices_with_types(@available_par_groups)
+        end
+
+        def next_round!
+          @round =
+            case @round
+            when Round::Stock
+              @operating_rounds = @phase.operating_rounds
+              reorder_players
+              new_operating_round
+            when Round::Operating
+              if @round.round_num < @operating_rounds
+                or_round_finished
+                new_operating_round(@round.round_num + 1)
+              else
+                @turn += 1
+                or_round_finished
+                or_set_finished
+                new_stock_round
+              end
+            when Round::Auction
+              # reorder as normal first so that if there is a tie for most cash,
+              # the player who would be first with :after_last_to_act turn order
+              # gets the tiebreaker
+              reorder_players
+
+              # most cash goes first, but keep same relative order; don't
+              # reorder by descending cash
+              @players.rotate!(@players.index(@players.max_by(&:cash)))
+
+              new_stock_round
+            end
         end
 
         def corporation_opts
