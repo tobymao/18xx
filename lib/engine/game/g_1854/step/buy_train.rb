@@ -12,6 +12,14 @@ module Engine
 
             super
           end
+
+          def buyable_trains(entity)
+            trains_to_buy = super
+            # Can't buy trains from other corporations until train 3
+            return trains_to_buy if @game.can_cross_buy?
+
+            trains_to_buy.select(&:from_depot?)
+          end
         end
       end
     end

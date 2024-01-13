@@ -122,6 +122,33 @@ module Engine
           super
         end
 
+        def event_can_buy_trains!
+          @log << "-- Event: #{EVENTS_TEXT['can_buy_trains'][1]} --"
+          @can_cross_buy = true
+        end
+
+        def can_cross_buy?
+          @can_cross_buy
+        end
+
+        def event_minor_mergers_allowed!
+          @log << "-- Event: #{EVENTS_TEXT['minor_mergers_allowed'][1]} --"
+          @minor_mergers_allowed = true
+        end
+
+        def minor_mergers_allowed?
+          @minor_mergers_allowed
+        end
+
+        def event_minor_mergers_required!
+          @log << "-- Event: #{EVENTS_TEXT['minor_mergers_required'][1]} --"
+          @minor_mergers_required = true
+        end
+
+        def minor_mergers_required?
+          @minor_mergers_required
+        end
+
         def buy_train(operator, train, price = nil)
           # adjust share prices on sold, only move companies with a stock
           # price token, not minors
@@ -250,14 +277,6 @@ module Engine
 
         def mergeable?(entity)
           @minors.include?(entity) && !entity.closed?
-        end
-
-        def mergers_allowed?
-          @phase.name.to_i >= MERGERS_BEGIN_PHASE
-        end
-
-        def mergers_required?
-          @phase.name.to_i >= MERGERS_MANDATORY_PHASE
         end
 
         def merge_target?(entity)

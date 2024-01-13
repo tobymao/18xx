@@ -17,6 +17,7 @@ module Engine
             train_limit: { minor: 2, major: 4, lokalbahn: 4},
             tiles: %i[yellow green],
             operating_rounds: 2,
+            events: [{ 'type' => 'can_buy_trains' }],
           },
           {
             name: '4',
@@ -31,6 +32,7 @@ module Engine
             train_limit: 2,
             tiles: %i[yellow green brown],
             operating_rounds: 3,
+            events: [{ 'type' => 'minor_mergers_allowed' }],
           },
           {
             name: '6',
@@ -38,6 +40,7 @@ module Engine
             train_limit: 2,
             tiles: %i[yellow green brown],
             operating_rounds: 3,
+            events: [{ 'type' => 'minor_mergers_required' }],
           },
           {
             name: '7',
@@ -47,6 +50,12 @@ module Engine
             operating_rounds: 3,
           },
         ].freeze
+
+        EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+          'can_buy_trains' => ['Can buy trains', 'Corporations can buy trains from other corporations owned by the same player'],
+          'minor_mergers_allowed' => ['Minor mergers allowed', 'Minors can merge to form Lokalbahn AGs'],
+          'minor_mergers_required' => ['Minor mergers required', 'All minors must merge to form Lokalbahn AGs at the next OR round change'],
+        ).freeze
       end
     end
   end

@@ -15,8 +15,8 @@ module Engine
             return [] if @merge_target
 
             actions = []
-            actions << 'merge' if @game.mergers_allowed?
-            actions << 'pass' if @game.mergers_allowed? && !@game.mergers_required?
+            actions << 'merge' if @game.minor_mergers_allowed?
+            actions << 'pass' if @game.minor_mergers_allowed? && !@game.minor_mergers_required?
             actions
           end
 
@@ -27,7 +27,7 @@ module Engine
           def active?
             return false if @game.open_minors.empty?
 
-            @game.mergers_allowed? || @game.mergers_required?
+            @game.minor_mergers_allowed? || @game.minor_mergers_required?
           end
 
           def setup
