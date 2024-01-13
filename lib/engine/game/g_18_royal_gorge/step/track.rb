@@ -90,6 +90,8 @@ module Engine
               @log << "#{entity.name} pays #{@game.steel_corp.name} #{@game.format_currency(steel_cost)} for steel"
             end
 
+            upgrade_other_royal_gorge_hexes(action) if @game.class::ROYAL_GORGE_HEXES_TO_TILES.include?(action.hex.id)
+
             super
 
             # update choice to one step up the column
@@ -144,6 +146,17 @@ module Engine
           # choices are accessed via the map_legend
           def render_choices?
             false
+          end
+
+          def upgrade_other_royal_gorge_hexes(action)
+            @game.class::ROYAL_GORGE_HEXES_TO_TILES.each do |hex_id, tiles|
+              _green_tile, brown_tile = tiles
+              hex = @game.hex_by_id(hex_id)
+              next if hex == action.hex
+
+              tile = @game.tile_by_id("#{brown_tile}-0")
+              hex.lay(tile)
+            end
           end
         end
       end
