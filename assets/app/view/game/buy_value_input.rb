@@ -27,7 +27,7 @@ module View
           price = input.JS['elm'].JS['value'].to_i
           buy = lambda do
             if @selected_entity.corporation? || @selected_entity.minor?
-              to_merge = if @selected_corporation.corporation?
+              to_merge = if @selected_entity.corporation?
                            { corporation: @selected_entity }
                          else
                            { minor: @selected_entity }

@@ -45,7 +45,7 @@ module Engine
                 trains: %w[2 3 4 5 6 4D],
                 count: 1,
                 closed_when_used_up: true,
-                when: 'buying_train',
+                when: 'buy_train',
               },
             ],
           },
