@@ -16,9 +16,9 @@ module Engine
             revenue: 0,
             desc: 'Comes with one coal mine marker. When placing a yellow '\
                   'tile in a coal hex pointing to a revenue location, can place '\
-                  'token to avoid $15 terrain fee.  Marked yellow hexes can be '\
-                  'upgraded.  Hexes pay $10 extra revenue and do not count as a '\
-                  'stop.  May not start or end a route at a coal mine.',
+                  'token to avoid $15 terrain fee. Marked yellow hexes can be '\
+                  'upgraded. Hexes pay $10 extra revenue and do not count as a '\
+                  'stop. May not start or end a route at a coal mine.',
             sym: 'P1',
             abilities: [
               {
@@ -42,7 +42,7 @@ module Engine
             revenue: 0,
             desc: 'Comes with one $10 bridge token that may be placed by the owning '\
                   'corp in a city with $10 water cost, max one token '\
-                  'per city.  Allows owning corp to '\
+                  'per city. Allows owning corp to '\
                   'skip $10 river fee when placing track.',
             sym: 'P2',
             abilities: [
@@ -68,9 +68,9 @@ module Engine
             revenue: 0,
             desc: 'Comes with one oil marker. When placing a yellow '\
                   'tile in an oilfield hex pointing to a revenue location, can place '\
-                  'token.  Marked yellow hexes *can* be '\
-                  'upgraded.  Hexes pay $10 extra revenue and do not count as a '\
-                  'stop.  Hexes revenue bonus is upgraded automatically to $20 in phase 5. '\
+                  'token. Marked yellow hexes *can* be '\
+                  'upgraded. Hexes pay $10 extra revenue and do not count as a '\
+                  'stop. Hexes revenue bonus is upgraded automatically to $20 in phase 5. '\
                   'May not start or end a route at an oilfield.',
             sym: 'P3',
             abilities: [
@@ -238,9 +238,9 @@ module Engine
             revenue: 0,
             desc: 'Comes with two oil markers. When placing a yellow '\
                   'tile in an oilfield hex pointing to a revenue location, can place '\
-                  'token.  Marked yellow hexes *can* be '\
-                  'upgraded.  Hexes pay $10 extra revenue and do not count as a '\
-                  'stop.  Hexes revenue bonus is upgraded automatically to $20 in phase 5. '\
+                  'token. Marked yellow hexes *can* be '\
+                  'upgraded. Hexes pay $10 extra revenue and do not count as a '\
+                  'stop. Hexes revenue bonus is upgraded automatically to $20 in phase 5. '\
                   'May not start or end a route at an oilfield.',
             sym: 'P12',
             abilities: [
@@ -342,10 +342,10 @@ module Engine
             value: 60,
             revenue: 0,
             desc: 'Comes with two coal mine markers. When placing a yellow '\
-                  'tile in a mountain hex next to a revenue location, can place '\
-                  'token to avoid $15 terrain fee.  Marked yellow hexes can be '\
-                  'upgraded.  Hexes pay $10 extra revenue and do not count as a '\
-                  'stop.  May not start or end a route at a coal mine.',
+                  'tile in a coal hex next to a revenue location, can place '\
+                  'token to avoid $15 terrain fee. Marked yellow hexes can be '\
+                  'upgraded. Hexes pay $10 extra revenue and do not count as a '\
+                  'stop. May not start or end a route at a coal mine.',
             sym: 'P18',
             abilities: [
               {
@@ -401,7 +401,7 @@ module Engine
             revenue: 0,
             desc: 'Comes with one $10 bridge token that may be placed by the owning '\
                   'corp in a city with $10 water cost, max one token '\
-                  'per city.  Allows owning corp to '\
+                  'per city. Allows owning corp to '\
                   'skip $10 river fee when placing track. '\
                   'Also comes with one coal token and one ore token. (see rules on coal and ore) '\
                   'You can only ever use one of these two; using one means you forfeit the other',
@@ -440,7 +440,7 @@ module Engine
             revenue: 0,
             desc: 'Comes with two $10 bridge tokens that may be placed by the owning '\
                   'corp in a city with $10 water cost, max one token '\
-                  'per city.  Allows owning corp to '\
+                  'per city. Allows owning corp to '\
                   'skip $10 river fee when placing track.',
             sym: 'P22',
             abilities: [
@@ -580,10 +580,10 @@ module Engine
             value: 90,
             revenue: 0,
             desc: 'Comes with three coal mine markers. When placing a yellow '\
-                  'tile in a mountain hex next to a revenue location, can place '\
-                  'token to avoid $15 terrain fee.  Marked yellow hexes can be '\
-                  'upgraded.  Hexes pay $10 extra revenue and do not count as a '\
-                  'stop.  May not start or end a route at a coal mine.',
+                  'tile in a coal hex next to a revenue location, can place '\
+                  'token to avoid $15 terrain fee. Marked yellow hexes can be '\
+                  'upgraded. Hexes pay $10 extra revenue and do not count as a '\
+                  'stop. May not start or end a route at a coal mine.',
             sym: 'P28',
             abilities: [
               {
