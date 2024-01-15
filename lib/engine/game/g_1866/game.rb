@@ -442,7 +442,7 @@ module Engine
             },
             'region_corporations_maxcount' => {
               'GB' => 3,
-              'FR' => 3,
+              'FR' => 4,
               'AHE' => 3,
               'DE' => 3,
               'IT' => 3,
@@ -487,7 +487,7 @@ module Engine
             },
             'region_corporations_maxcount' => {
               'GB' => 3,
-              'FR' => 3,
+              'FR' => 4,
               'DE' => 3,
             },
           },
@@ -571,12 +571,15 @@ module Engine
               'IT' => %w[SSFL IFT SFAI],
             },
             'region_corporations_maxcount' => {
-              'FR' => 3,
+              'FR' => 4,
               'AHE' => 3,
               'IT' => 3,
             },
           },
         }.freeze
+
+        C_TILE_LABEL = %w[C1 C2 C3 C4 C5 C6].freeze
+        C_TILE_HEX = %w[R18 L24 H10 J6 L12 F22].freeze
 
         C_TILE_UPGRADE = {
           'C1' => 'C7',
@@ -662,7 +665,7 @@ module Engine
         }.freeze
 
         DOUBLE_HEX = %w[G15 G19 J12 J18 K5].freeze
-        E_TRAINS = %w[3E 4E 5E 6E].freeze
+        E_TRAINS = %w[4E 5E 6E].freeze
 
         ENTITY_STATUS_TEXT = {
           'DE' => 'Converted by PRU president or force convert in phase 5',
@@ -679,6 +682,8 @@ module Engine
           'TUS' => 'Min bid 30 | Converted to a Italian share',
         }.freeze
 
+        FERRY_GREEN_HEX = %w[G7 S25].freeze
+        FERRY_BROWN_HEX = %w[F8 H4].freeze
         FERRY_TILE_G7 = 'border=edge:2,type:impassable;border=edge:4,type:impassable;path=a:1,b:5'
         FERRY_TILE_S25 = 'border=edge:0,type:impassable;path=a:1,b:2'
         FERRY_TILE_F8 = 'border=edge:1,type:impassable;border=edge:5,type:impassable;path=a:2,b:4'
@@ -734,7 +739,7 @@ module Engine
           'WTB' => %w[I13 I15 J14 K15],
           'SAX' => %w[H20 H22 I21 I23],
           'K2S' => %w[S21 S23 T20 T22 T24 U21 V18 V20 W19],
-          'SAR' => %w[N12 O13 O15 P14 Q15 R14 S13 T12],
+          'SAR' => %w[N12 O13 O15 P14 Q15 R14 S13 S15 S17 T12 T14 T16 T18],
           'LV' => %w[M17 N14 N16 N18 N20 O17 P18],
           'PAP' => %w[Q19 R18 R20 S19],
           'TUS' => %w[P16 Q17],
@@ -801,7 +806,7 @@ module Engine
         STOCK_TURN_TOKEN_PREFIX = 'ST'
 
         attr_reader :scenario, :game_end_triggered_corporation, :game_end_triggered_round,
-                    :major_national_formed, :major_national_formed_round, :player_sold_shares
+                    :major_national_formed, :major_national_formed_round
 
         def action_processed(_action); end
 
@@ -1168,7 +1173,6 @@ module Engine
         end
 
         def operating_round(round_num)
-          initialize_sold_shares
           @current_turn = "OR#{round_num}"
           @turn = round_num
           G1866::Round::Operating.new(self, [
@@ -1238,7 +1242,7 @@ module Engine
         end
 
         def redeemable_shares(entity)
-          return [] if !entity.corporation? || !corporation?(entity) || @player_sold_shares[entity.owner][entity]
+          return [] if !entity.corporation? || !corporation?(entity)
 
           bundles_for_corporation(share_pool, entity)
             .reject { |bundle| bundle.shares.size > 1 || entity.cash < bundle.price }
@@ -1384,8 +1388,11 @@ module Engine
           # Give all players stock turn token and remove unused
           setup_stock_turn_token
 
-          # Initialize the sold shares variables
-          initialize_sold_shares
+          # Randomize and setup the capital hexes
+          setup_capital_hex
+
+          # Set up the blocking ferry hexes
+          setup_ferry_hex
 
           @final_round = nil
           @game_end_three_rounds = nil
@@ -1412,7 +1419,6 @@ module Engine
 
           status = []
           status << ["#{corporation.type == :share_5 ? '5' : '10'}-share corporation", 'bold']
-          status << ['Can not redeem', 'bold'] if @player_sold_shares[corporation.owner][corporation]
           if game_end_triggered?
             status << if game_end_corporation_operated?(corporation)
                         ['No share actions', 'bold']
@@ -1503,7 +1509,9 @@ module Engine
           return to.name == self.class::LONDON_TILE if from.hex.name == self.class::LONDON_HEX && from.color == :brown
 
           # C-tiles
-          return C_TILE_UPGRADE[from.name] == to.name if from.label.to_s == 'C' && %i[yellow green brown].include?(from.color)
+          if self.class::C_TILE_LABEL.include?(from.label.to_s) && %i[yellow green brown].include?(from.color)
+            return C_TILE_UPGRADE[from.name] == to.name
+          end
 
           super
         end
@@ -1622,8 +1630,12 @@ module Engine
         def event_brown_ferries!
           @log << '-- Event: Brown Ferries --'
 
-          update_ferry_hex('F8', self.class::FERRY_TILE_F8, [{ hex: 'E7', edge: 5 }, { hex: 'F10', edge: 1 }])
-          update_ferry_hex('H4', self.class::FERRY_TILE_H4, [{ hex: 'G3', edge: 5 }, { hex: 'I3', edge: 3 }])
+          @ferry_blocker_brown.tokens.compact.each(&:destroy!)
+          @ferry_blocker_brown.close!
+
+          update_ferry_hex('F8', self.class::FERRY_TILE_F8)
+          update_ferry_hex('H4', self.class::FERRY_TILE_H4)
+          @graph.clear
         end
 
         def event_formation!
@@ -1646,8 +1658,12 @@ module Engine
         def event_green_ferries!
           @log << '-- Event: Green Ferries --'
 
-          update_ferry_hex('G7', self.class::FERRY_TILE_G7, [{ hex: 'G5', edge: 4 }, { hex: 'H8', edge: 2 }])
-          update_ferry_hex('S25', self.class::FERRY_TILE_S25, [{ hex: 'R24', edge: 5 }, { hex: 'S23', edge: 4 }])
+          @ferry_blocker_green.tokens.compact.each(&:destroy!)
+          @ferry_blocker_green.close!
+
+          update_ferry_hex('G7', self.class::FERRY_TILE_G7)
+          update_ferry_hex('S25', self.class::FERRY_TILE_S25)
+          @graph.clear
         end
 
         def event_infrastructure_h!
@@ -1837,10 +1853,6 @@ module Engine
           scenario_name = 'ses' if optional_rules.include?(:ses)
 
           self.class::SCENARIO[scenario_name]
-        end
-
-        def initialize_sold_shares
-          @player_sold_shares = Hash.new { |h, k| h[k] = Hash.new { |h2, k2| h2[k2] = false } }
         end
 
         def interest_owed(entity)
@@ -2054,6 +2066,13 @@ module Engine
           @stock_turn_token_count[player] -= 1
         end
 
+        def setup_capital_hex
+          capitals = self.class::C_TILE_HEX.sort_by { rand }
+          capitals.each_with_index do |c, index|
+            hex_by_id(c).tile.label = "C#{index + 1}"
+          end
+        end
+
         def setup_corporations
           # Randomize from preset seed to get same order
           corps = @corporations.select { |c| c.type == :share_5 }.sort_by { rand }
@@ -2122,6 +2141,32 @@ module Engine
             next unless major_national_corporation?(corporation)
 
             corporation.shares.each { |share| share.buyable = false if share.index > 4 }
+          end
+        end
+
+        def setup_ferry_hex
+          green_corp = @ferry_blocker_green = Corporation.new(
+            sym: 'FBG',
+            name: 'Ferry Blocker Green',
+            logo: '1866/no_green',
+            simple_logo: '1866/no_green',
+            tokens: [0, 0],
+          )
+          green_corp.owner = @bank
+          FERRY_GREEN_HEX.each do |hex_id|
+            hex_by_id(hex_id).tile.cities[0].place_token(green_corp, green_corp.next_token)
+          end
+
+          brown_corp = @ferry_blocker_brown = Corporation.new(
+            sym: 'FBB',
+            name: 'Ferry Blocker Brown',
+            logo: '1866/no_brown',
+            simple_logo: '1866/no_brown',
+            tokens: [0, 0],
+          )
+          brown_corp.owner = @bank
+          FERRY_BROWN_HEX.each do |hex_id|
+            hex_by_id(hex_id).tile.cities[0].place_token(brown_corp, brown_corp.next_token)
           end
         end
 
@@ -2246,26 +2291,10 @@ module Engine
           entity.trains.none? { |t| !infrastructure_train?(t) }
         end
 
-        def update_ferry_hex(hex_name, tile_code, hex_borders)
-          hex = hex_by_id(hex_name)
-          hex_tile = Engine::Tile.from_code(hex_name, :blue, tile_code)
-          hex.tile = hex_tile
-
-          hex_borders.each do |border|
-            hex_border = hex_by_id(border[:hex])
-            border = hex_border.tile.borders.find { |b| b.edge == border[:edge] }
-            hex_border.tile.borders.delete(border)
-          end
-          update_hex_neighbors(hex)
-        end
-
-        def update_hex_neighbors(hex)
-          hex.all_neighbors.each do |direction, neighbor|
-            next if hex.tile.borders.any? { |border| border.edge == direction && border.type == :impassable }
-
-            neighbor.neighbors[neighbor.neighbor_direction(hex)] = hex
-            hex.neighbors[direction] = neighbor
-          end
+        def update_ferry_hex(hex_id, tile_code)
+          hex = hex_by_id(hex_id)
+          hex_tile = Engine::Tile.from_code(hex_id, :blue, tile_code)
+          hex.lay(hex_tile)
         end
 
         def update_stock_turn_token_names
