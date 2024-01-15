@@ -32,8 +32,11 @@ module Engine
           end
 
           def place_miami_token(corporation)
-            ability = @game.abilities(corporation, :assign_hexes)
-            hex = @game.hex_by_id(ability.hexes.first)
+            return unless can_place_miami_token?(corporation)
+
+            hex = MIAMI_HEX
+            abilities = Array(@game.abilities(corporation, :assign_hexes))
+            ability = abilities.any? { |a| a.hexes.includes?(MIAMI_HEX) }
 
             hex.tile.icons.reject! { |icon| icon.name == 'FECR_key_west' }
             hex.assign!(corporation)
