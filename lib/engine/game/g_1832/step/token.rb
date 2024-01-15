@@ -8,10 +8,9 @@ module Engine
       module Step
         class Token < Engine::Step::Token
           def actions(entity)
-            actions = super
-            actions += %w[choose pass] if can_place_miami_token?(entity)
+            return super unless can_place_miami_token?(entity)
 
-            actions.uniq
+            super | %w[choose pass]
           end
 
           def choice_name
@@ -52,7 +51,7 @@ module Engine
             return false unless (3..6).cover?(@game.phase.name.to_i)
 
             abilities = Array(@game.abilities(entity, :assign_hexes))
-            abilities.any? { |ability| ability.hexes == 'N16' }
+            abilities.any? { |ability| ability.hexes.includes?(MIAMI_HEX) }
           end
         end
       end
