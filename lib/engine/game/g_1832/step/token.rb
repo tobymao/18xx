@@ -34,7 +34,7 @@ module Engine
           def place_miami_token(corporation)
             return unless can_place_miami_token?(corporation)
 
-            hex = MIAMI_HEX
+            hex = @game.hex_by_id(MIAMI_HEX)
             abilities = Array(@game.abilities(corporation, :assign_hexes))
             ability = abilities.find { |a| a.hexes.includes?(MIAMI_HEX) }
 
