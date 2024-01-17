@@ -98,7 +98,12 @@ module Engine
           def can_gain?(_entity, bundle, exchange: false)
             return false unless exchange
 
-            bundle.corporation.ipoed
+            return false unless bundle.corporation.ipoed
+
+            # must take treasury shares if they exist.
+            return false if (bundle.owner == @game.share_pool) && bundle.corporation.num_ipo_shares.positive?
+
+            true
           end
 
           def buy_shares(entity, shares, exchange: nil, swap: nil, allow_president_change: true, borrow_from: nil)

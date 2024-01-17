@@ -151,7 +151,7 @@ module Engine
             value: 0,
             revenue: 0,
             desc: 'A 50% director’s certificate in the Württemberg minor national company. Cities: '\
-                  'Frankfurt (I15) and Stuttgart (F18)',
+                  'Frankfurt (I15) and Stuttgart (K15)',
             abilities: [],
             color: '#8e6aae',
             text_color: 'black',

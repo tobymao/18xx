@@ -239,7 +239,7 @@ module Engine
             corporations << {
               # version 1
               sym: 'SFV',
-              name: 'Strede de Ferro Venete',
+              name: 'Strade di Ferro Venete',
               logo: '1841/SFV',
               simple_logo: '1841/SFV.alt',
               color: 'gold',

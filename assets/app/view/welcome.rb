@@ -17,9 +17,9 @@ module View
 
     def render_notification
       message = <<~MESSAGE
-        <p><a href="https://github.com/tobymao/18xx/wiki/1822CA">1822CA</a> is in alpha.
-        <a href="https://github.com/tobymao/18xx/wiki/1844">1844</a> is in beta.
-        <a href="https://github.com/tobymao/18xx/wiki/1850Jr">1850jr</a> is in alpha.</p>
+        <p><a href="https://github.com/tobymao/18xx/wiki/1847-AE">1847AE</a> is in beta.
+        <a href="https://github.com/tobymao/18xx/wiki/1894">1894</a> is in beta.
+        <a href="https://github.com/tobymao/18xx/wiki/1822CA">1822CA</a> is in alpha.</p>
         <p>Learn how to get <a href='https://github.com/tobymao/18xx/wiki/Notifications'>notifications</a> by email, Slack, Discord, and Telegram.</p>
         <p>Please submit problem reports and make suggestions for improvements on
         <a href='https://github.com/tobymao/18xx/issues'>GitHub</a>. Join the
