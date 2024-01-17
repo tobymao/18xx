@@ -30,12 +30,6 @@ module Engine
             @round.current_actions.any? { |x| x.instance_of?(Action::ChooseAbility) && x.choice != 'SELL' }
           end
 
-          def can_buy?(entity, bundle)
-            return false if @game.player_sold_shares[entity][bundle.corporation]
-
-            super
-          end
-
           def choices_ability(entity)
             return {} if !entity.company? || (entity.company? && !@game.stock_turn_token_company?(entity))
             return {} if @game.stock_turn_token_removed?(active_entities[0])
@@ -57,10 +51,6 @@ module Engine
 
           def description
             'Stock Turn Token Action'
-          end
-
-          def did_sell?(corporation, entity)
-            super || @game.player_sold_shares[entity][corporation]
           end
 
           def get_par_prices(entity, corp = nil)
@@ -157,6 +147,13 @@ module Engine
 
           def paid_off_player_debt?
             @round.current_actions.any? { |x| x.instance_of?(Action::PayoffPlayerDebt) }
+          end
+
+          def setup
+            @round.players_sold = Hash.new { |h, k| h[k] = {} }
+            @round.players_history[current_entity].clear
+            @round.current_actions = []
+            @round.bought_from_ipo = false
           end
 
           def sold?

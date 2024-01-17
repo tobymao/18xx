@@ -41,7 +41,6 @@ module Engine
           end
 
           def lay_tile_action(action, entity: nil, spender: nil)
-            tile = action.tile
             hex = action.hex
             old_tile = hex.tile
             tile_frame = old_tile.frame
@@ -49,8 +48,6 @@ module Engine
 
             old_tile.reframe!(nil)
             hex.tile.reframe!(tile_frame.color, tile_frame.color2) if tile_frame
-            tile.restripe!(nil) if tile.label.to_s == 'C' && tile.color == :yellow
-            old_tile.restripe!(:gray) if old_tile.label.to_s == 'C' && old_tile.color == :yellow && tile.color == :green
           end
 
           def legal_tile_rotation?(entity, hex, tile)
@@ -94,7 +91,7 @@ module Engine
           end
 
           def upgradeable_tiles(_entity, hex)
-            return super if hex.tile.label.to_s == 'C'
+            return super if @game.class::C_TILE_LABEL.include?(hex.tile.label.to_s)
 
             super.group_by(&:color).values.flat_map do |group|
               max_edges = group.map { |t| t.edges.length }.max
