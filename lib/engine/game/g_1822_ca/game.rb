@@ -192,7 +192,7 @@ module Engine
           'P7' => { acquire: %i[major], phase: 3 },
           'P8' => { acquire: %i[major minor], phase: 2 },
           'P9' => { acquire: %i[major minor], phase: 2 },
-          'P10' => { acquire: %i[major minor], phase: 3 },
+          'P10' => { acquire: %i[major], phase: 3 },
           'P11' => { acquire: [], phase: 8 },
           'P12' => { acquire: %i[major minor], phase: 1 },
           'P13' => { acquire: %i[major], phase: 3 },
