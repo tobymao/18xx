@@ -350,6 +350,13 @@ module Engine
           ], round_num: round_num)
         end
 
+        def stock_round
+          G1822CA::Round::Stock.new(self, [
+            Engine::Step::DiscardTrain,
+            G1822::Step::BuySellParShares,
+          ])
+        end
+
         def must_remove_town?(entity)
           %w[P29 P30].include?(entity.id)
         end
