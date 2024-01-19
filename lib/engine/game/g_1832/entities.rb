@@ -160,7 +160,6 @@ module Engine
             abilities: [{ type: 'assign_hexes', hexes: ['N16'], count: 1, cost: 100 }],
           },
           {
-            float_percent: 20,
             sym: 'AMTK',
             name: 'Amtrak System',
             logo: '1832/AMTK',
@@ -172,7 +171,6 @@ module Engine
             text_color: 'black',
           },
           {
-            float_percent: 20,
             sym: 'BNSF',
             name: 'Burlington Northern Santa Fe System',
             logo: '1832/BNSF',
@@ -184,7 +182,6 @@ module Engine
             text_color: 'black',
           },
           {
-            float_percent: 20,
             sym: 'IC',
             name: 'Illinois Central System',
             logo: '1832/IC',
@@ -196,7 +193,6 @@ module Engine
             text_color: 'black',
           },
           {
-            float_percent: 20,
             sym: 'CSX',
             name: 'CSX System',
             logo: '1832/CSX',
@@ -208,7 +204,6 @@ module Engine
             text_color: 'black',
           },
           {
-            float_percent: 20,
             sym: 'NS',
             name: 'Norfolk Southern System',
             logo: '1832/NS',

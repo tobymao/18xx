@@ -323,6 +323,12 @@ module Engine
           true
         end
 
+        def can_par?(corporation, parrer)
+          return false if corporation.type == :system
+
+          super
+        end
+
         def coal_company
           @coal_company ||= company_by_id('P5')
         end
@@ -370,7 +376,7 @@ module Engine
           entity ||= current_entity
           return super unless @phase.name == '2'
 
-          coal_company
+          coal_company.owner.player? ? [coal_company] : []
         end
 
         def after_sell_company(buyer, company, _price, _seller)

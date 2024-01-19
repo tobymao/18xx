@@ -37,11 +37,6 @@ module Engine
             'Additional Track Actions'
           end
 
-          def pass!
-            super
-            @game.track_action_processed(current_entity)
-          end
-
           def process_choose(action)
             buy_coal_token(action.entity) if action.choice == 'Buy Coal Token'
             @round.num_laid_track += 1
