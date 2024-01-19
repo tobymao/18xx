@@ -228,11 +228,11 @@ describe 'Assets' do
 
   describe '#html' do
     it 'renders logged out' do
-      expect(render).to include('Welcome!')
+      expect(render).to include('18xx.Games')
     end
 
     it 'renders home logged in' do
-      expect(render(user: { name: 'toby', settings: { consent: true } })).to include('Welcome toby!')
+      expect(render(user: { name: 'toby', settings: { consent: true } })).to include('Profile (toby)')
     end
 
     it 'consent logged in' do

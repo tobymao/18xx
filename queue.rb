@@ -26,7 +26,7 @@ scheduler = Rufus::Scheduler.new
 
 # give latest pins a chance to be used before they get cleaned up
 UNUSED_RECENT_PINS_TO_KEEP = 2
-PINS_DIR = File.join(File.dirname(__FILE__), '..', 'public', 'pinned')
+PINS_DIR = File.join(File::SEPARATOR, '18xx', 'public', 'pinned')
 
 def days_ago(days)
   Time.now - (86_400 * days)
