@@ -18,8 +18,12 @@ module Engine
             @round.acquiring_major = entity
           end
 
-          def after_acquire_entity_minor(entity)
+          def after_acquire_entity_minor(entity, token_choice)
             @round.acquiring_major = entity
+
+            # reset graph for the AcquisitionTrack step; when token is replaced
+            # the graph is already reset by the base 1822 step
+            @game.graph.clear_graph_for(entity) if token_choice == 'exchange'
           end
         end
       end

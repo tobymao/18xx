@@ -192,7 +192,7 @@ module Engine
           'P7' => { acquire: %i[major], phase: 3 },
           'P8' => { acquire: %i[major minor], phase: 2 },
           'P9' => { acquire: %i[major minor], phase: 2 },
-          'P10' => { acquire: %i[major minor], phase: 3 },
+          'P10' => { acquire: %i[major], phase: 3 },
           'P11' => { acquire: [], phase: 8 },
           'P12' => { acquire: %i[major minor], phase: 1 },
           'P13' => { acquire: %i[major], phase: 3 },
@@ -348,6 +348,13 @@ module Engine
             G1822CA::Step::DiscardTrain,
             G1822CA::Step::IssueShares,
           ], round_num: round_num)
+        end
+
+        def stock_round
+          G1822CA::Round::Stock.new(self, [
+            Engine::Step::DiscardTrain,
+            G1822::Step::BuySellParShares,
+          ])
         end
 
         def must_remove_town?(entity)
