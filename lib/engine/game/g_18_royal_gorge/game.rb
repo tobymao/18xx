@@ -15,7 +15,7 @@ module Engine
         include Map
         include Trains
 
-        attr_accessor :gold_shipped
+        attr_accessor :gold_shipped, :local_jeweler_cash
         attr_reader :gold_corp, :steel_corp, :available_steel, :gold_cubes, :indebted, :debt_corp,
                     :treaty_of_boston
 
@@ -166,6 +166,8 @@ module Engine
           @indebted = {}
 
           @treaty_of_boston = false
+
+          @local_jeweler_cash = 0
         end
 
         def game_hexes
@@ -372,7 +374,9 @@ module Engine
                 @turn += 1
                 or_round_finished
                 or_set_finished
-                new_stock_round
+                round = new_stock_round
+                move_jeweler_cash!
+                round
               end
             when Round::Auction
               # reorder as normal first so that if there is a tie for most cash,
@@ -419,7 +423,7 @@ module Engine
           Round::Operating.new(self, [
             Engine::Step::Bankrupt,
             G18RoyalGorge::Step::SpecialChoose,
-            Engine::Step::SpecialTrack,
+            G18RoyalGorge::Step::SpecialTrack,
             Engine::Step::BuyCompany,
             G18RoyalGorge::Step::Track,
             Engine::Step::Token,
@@ -741,6 +745,10 @@ module Engine
           @doc_holliday ||= company_by_id('G1')
         end
 
+        def gold_nugget
+          @gold_nugget ||= company_by_id('G2')
+        end
+
         def upgrades_to?(from, to)
           return false unless super
 
@@ -828,6 +836,23 @@ module Engine
 
         def sell_movement(corporation)
           corporation.type == :rail ? :left_block_pres : :none
+        end
+
+        def local_jeweler
+          @local_jeweler ||= company_by_id('Y6')
+        end
+
+        def move_jeweler_cash!
+          return unless @local_jeweler_cash.positive?
+
+          player = local_jeweler.player
+          @log << "#{player.name} receives #{format_currency(@local_jeweler_cash)} from #{local_jeweler.name}"
+          player.cash += @local_jeweler_cash
+          @local_jeweler_cash = 0
+        end
+
+        def company_status_str(company)
+          format_currency(@local_jeweler_cash) if company == local_jeweler && company.player
         end
       end
     end
