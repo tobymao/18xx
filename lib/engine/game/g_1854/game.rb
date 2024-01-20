@@ -334,7 +334,8 @@ module Engine
         def float_corporation(corporation)
           super unless corporation.type == :lokalbahn
 
-          @log << "#{corporation.name} floats"
+          # TODO: double printing floats for majors
+          # @log << "#{corporation.name} floats"
         end
 
         def formatted_minor_name(minor)
