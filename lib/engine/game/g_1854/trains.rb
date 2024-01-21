@@ -13,39 +13,12 @@ module Engine
             rusts_on: '4',
           },
           {
-            name: '1+',
-            distance: [{ 'nodes' => %w[city offboard], 'pay' => 1, 'visit' => 1 },
-                       { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
-            num: 6,
-            price: 100,
-            rusts_on: '4',
-            available_on: '2',
-          },
-          {
             name: '3',
             distance: 3,
             num: 5,
             price: 200,
             rusts_on: '6',
             events: [{ 'type' => 'can_buy_trains' }],
-          },
-          {
-            name: '2+',
-            num: 4,
-            distance: [{ 'nodes' => %w[city offboard], 'pay' => 2, 'visit' => 2 },
-                        { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
-            price: 120,
-            rusts_on: '6',
-            available_on: '3',
-          },
-          {
-           name: '3+',
-            num: 3,
-            distance: [{ 'nodes' => %w[city offboard], 'pay' => 3, 'visit' => 3 },
-                        { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
-            price: 160,
-            rusts_on: '6',
-            available_on: '3',
           },
           {
             name: '4',
@@ -80,6 +53,33 @@ module Engine
             num: 5,
             price: 1200,
           },
+          {
+            name: '1+',
+            distance: [{ 'nodes' => %w[city offboard], 'pay' => 1, 'visit' => 1 },
+                       { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
+            num: 6,
+            price: 100,
+            rusts_on: '4',
+            available_on: '2',
+          },
+          {
+            name: '2+',
+            num: 4,
+            distance: [{ 'nodes' => %w[city offboard], 'pay' => 2, 'visit' => 2 },
+                        { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
+            price: 120,
+            rusts_on: '6',
+            available_on: '3',
+          },
+          {
+           name: '3+',
+            num: 3,
+            distance: [{ 'nodes' => %w[city offboard], 'pay' => 3, 'visit' => 3 },
+                        { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
+            price: 160,
+            rusts_on: '6',
+            available_on: '3',
+          }
         ].freeze
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
