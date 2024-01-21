@@ -1766,7 +1766,7 @@ module Engine
           end
         end
 
-        def place_destination_token(entity, hex, token, city = nil)
+        def place_destination_token(entity, hex, token, city = nil, log: true)
           city ||= destination_city(hex, entity)
           city.place_token(entity, token, free: true, check_tokenable: false, cheater: true)
           hex.tile.icons.reject! { |icon| icon.name == "#{entity.id}_destination" }
@@ -1777,7 +1777,7 @@ module Engine
 
           @graph.clear
 
-          @log << "#{entity.name} places its destination token on #{hex.name}"
+          @log << "#{entity.name} places its destination token on #{hex.name}" if log
         end
 
         def destination_city(hex, _entity)
@@ -2056,8 +2056,11 @@ module Engine
         end
 
         def setup_destinations
+          @destination_hexes = {}
           @corporations.each do |c|
             next unless c.destination_coordinates
+
+            @destination_hexes[c.destination_coordinates] = c
 
             home_hex = hex_by_id(c.coordinates)
             ability = Ability::Base.new(
@@ -2073,10 +2076,10 @@ module Engine
             )
             c.add_ability(ability)
 
-            c.tokens << Engine::Token.new(c, logo: "../#{c.destination_icon}.svg",
-                                             simple_logo: "../#{c.destination_icon}.svg",
+            c.tokens << Engine::Token.new(c, logo: "#{c.destination_icon}.svg",
+                                             simple_logo: "#{c.destination_icon}.svg",
                                              type: :destination)
-            icon = Part::Icon.new("../#{c.destination_icon}", "#{c.id}_destination", owner: c, loc: c.destination_loc)
+            icon = Part::Icon.new(c.destination_icon.to_s, "#{c.id}_destination", owner: c, loc: c.destination_loc)
             if c.destination_icon_in_city_slot
               city, slot = c.destination_icon_in_city_slot
               dest_hex.tile.cities[city].slot_icons[slot] = icon
