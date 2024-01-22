@@ -503,7 +503,6 @@ module Engine
         end
 
         def receives_sawmill_bonus?(entity)
-          return false if entity.type != :major
           return @sawmill_owner == entity if @sawmill_owner
 
           true
