@@ -30,8 +30,8 @@ module Engine
         TRACK_RESTRICTION = :permissive
         TILE_TYPE = :lawson
 
-        MARKET_SHARE_LIMIT = 200  # up to 200% of GIPR may be in market
-        PRESIDENT_SALES_TO_MARKET = true  # need to set to false and allow GIPR to sell PS
+        MARKET_SHARE_LIMIT = 200 # up to 200% of GIPR may be in market
+        PRESIDENT_SALES_TO_MARKET = true # need to set to false and allow GIPR to sell PS
 
         SELL_BUY_ORDER = :sell_buy
         MUST_SELL_IN_BLOCKS = false
@@ -75,17 +75,17 @@ module Engine
         SOUTH_GROUP = %w[CGR KGF MR NSR SIR WIP].freeze
 
         def corporation_removal_groups
-          [EAST_GROUP , WEST_GROUP, SOUTH_GROUP]
+          [EAST_GROUP, WEST_GROUP, SOUTH_GROUP]
         end
 
         CERT_DEALT = { 2 => 15, 3 => 13, 4 => 11, 5 => 10 }.freeze
         CERT_KEPT = { 2 => 8, 3 => 7, 4 => 6, 5 => 5 }.freeze
         IPO_CERTS_PER_ROW = { 2 => 18, 3 => 15, 4 => 13, 5 => 12 }.freeze
-        
+
         # Use overridden clases
         PLAYER_CLASS = Player
         CORPORATION_CLASS = Corporation
-       
+
         def certs_per_row
           IPO_CERTS_PER_ROW[@players.size]
         end
@@ -107,7 +107,7 @@ module Engine
         end
 
         def setup_preround
-          @log << "setup_preround method in game called"
+          @log << 'setup_preround method in game called'
         end
 
         def setup
@@ -118,7 +118,7 @@ module Engine
           assign_initial_ipo_price(@corporations)
 
           # Build draw and draft decks for inital hand and IPO rows
-          @ipo_rows = [ [], [], [] ]
+          @ipo_rows = [[], [], []]
           create_decks(@corporations)
 
           @selection_finished = false
@@ -127,14 +127,14 @@ module Engine
 
           # @log << "removals contain #{@removals.to_s}"
           # @log << "Player Hand Count #{@player_decks.flatten.size}"
-          @log << "End of Setup in Game"
+          @log << 'End of Setup in Game'
         end
 
-        def setup_corporations_by_region!(corporations)       
+        def setup_corporations_by_region!(corporations)
           corps_to_remove = []
           guaranty_corps = []
 
-          @log << "Setup: Select 3 corporations per region, remove others. One Guaranty company per region."
+          @log << 'Setup: Select 3 corporations per region, remove others. One Guaranty company per region.'
           corporation_removal_groups.each do |group|
             randomized_group = group.dup.sort_by { rand }
             corps_to_remove += randomized_group.take(group.count - 3) # remove all but 3 items from each region group
@@ -159,7 +159,7 @@ module Engine
           end
           @log << "Corporations in the game: #{@corporations.map(&:name).sort.join(', ')}"
           @log << "Guaranty Companies are #{guaranty_corps.join(', ')}"
-        end      
+        end
 
         def remove_corporation_reservations(corporation)
           # remove reservations for corporation at intial coordinates
@@ -176,17 +176,17 @@ module Engine
         end
 
         def assign_guaranty_warrant(corporation)
-            name = "Guaranty Warrant"
-            warrant = Company.new(
-              sym: name,
-              name: name,
-              value: 0,
-              desc: "Warrant pays 5\% of share value when company doesn't pay dividend.",
-              type: :warrent
-            )
-            corporation.companies << warrant
+          name = 'Guaranty Warrant'
+          warrant = Company.new(
+            sym: name,
+            name: name,
+            value: 0,
+            desc: "Warrant pays 5\% of share value when company doesn't pay dividend.",
+            type: :warrent
+          )
+          corporation.companies << warrant
         end
-        
+
         def assign_initial_ipo_price(corporations)
           corporations.each do |corporation|
             ipo_price = @stock_market.par_prices.select { |p| p.price == corporation.min_price }.first
@@ -203,8 +203,8 @@ module Engine
 
           corporations.each do |corporation|
             corporation.shares.each do |share|
-              if share.percent == 20 
-                share.buyable = false  # set the share as reserved / in player hands
+              if share.percent == 20
+                share.buyable = false # set the share as reserved / in player hands
                 @draft_deck << convert_share_to_company(share)
               else
                 draw_deck << share
@@ -226,12 +226,12 @@ module Engine
           new_deck = []
           deck.each do |card|
             if card.is_a? Engine::Share
-              card.buyable = set_buyable  # set buyable to false if in player hands
+              card.buyable = set_buyable # set buyable to false if in player hands
               new_deck << convert_share_to_company(card)
             elsif card.is_a? Engine::Company
               new_deck << card
             else
-              @log << "Error in converting deck"
+              @log << 'Error in converting deck'
             end
           end
           # @log << "Deck Count #{new_deck.flatten.size}"
@@ -240,25 +240,25 @@ module Engine
 
         def share_type(share)
           return :share unless share.percent == 20
+
           :president
         end
 
         def convert_share_to_company(share)
-          card = Company.new(
+          Company.new(
             sym: share.id,
             name: share.corporation.name,
             value: share.price,
-            desc: "Certificate for #{share.percent.to_s}\% of #{share.corporation.full_name}. Type is #{share_type(share)}",
+            desc: "Certificate for #{share.percent}\% of #{share.corporation.full_name}. Type is #{share_type(share)}",
             type: share_type(share),
             color: share.corporation.color,
             text_color: share.corporation.text_color,
             treasury: share
           )
-          card
         end
 
         def deal_deck_to_ipo(deck)
-          rows = [ 0, 1, 2 ]
+          rows = [0, 1, 2]
           rows.each do |row|
             new_row = deck.pop(certs_per_row)
             @ipo_rows[row] = hand_as_companies(new_row, true)
@@ -274,10 +274,9 @@ module Engine
           deck
         end
 
-        def sell_card(entity, card)
-          if card == nil || enity == nil
-            return
-          end
+        def sell_card(_entity, card)
+          return if card.nil? || enity.nil?
+
           share_pool.buy_shares(share_pool, card.treasury)
         end
 
@@ -288,11 +287,11 @@ module Engine
               # @log << "Share"
               share_pool.buy_shares(share_pool, card)
             elsif card.is_a? Engine::Company
-              @log << "Private #{card.name.to_s} is availabe in the Market"
+              @log << "Private #{card.name} is availabe in the Market"
               card.owner = @bank
               @bank.companies.push(card)
             else
-              @log << "Deck Dealing Error"
+              @log << 'Deck Dealing Error'
             end
           end
         end
@@ -303,11 +302,11 @@ module Engine
           @players.each do |player|
             cards = player.hand.dup
             cards.each do |card|
-              if card.owner == nil
-                draft << card
-                @draft_deck << card
-                player.hand.delete(card)
-              end
+              next unless card.owner.nil?
+
+              draft << card
+              @draft_deck << card
+              player.hand.delete(card)
             end
             # @log << "#{player.name.to_s} hand is size #{player.hand.size} contains #{player.hand.to_s}"
           end
@@ -317,6 +316,7 @@ module Engine
 
         def railroad_bond_convert_cost
           return 12 unless gpir_share_price
+
           if gpir_share_price <= 100
             0
           else
@@ -326,8 +326,10 @@ module Engine
 
         def gpir_share_price
           return 112 unless @corporations
-          gipr = @corporations.select{ |corp| corp.name == 'GIPR' }.first
+
+          gipr = @corporations.select { |corp| corp.name == 'GIPR' }.first
           return 112 unless gipr.share_price
+
           gipr.share_price
         end
 
@@ -403,23 +405,23 @@ module Engine
         def ipo_row_and_index(company)
           [0, 1, 2].each do |row|
             index = @ipo_rows[row].index(company)
-            return [row +1, index +1] if index
+            return [row + 1, index + 1] if index
           end
-          return nil
+          nil
         end
 
         def company_status_str(company)
           # used to add status of cert card e.g. IPO ROW
-          if in_ipo?(company) then
+          if in_ipo?(company)
             row, index = ipo_row_and_index(company)
             return "IPO Row:#{row} Index:#{index}"
           end
-          "status"
+          'status'
         end
 
-        def status_str(corporation)
+        def status_str(_corporation)
           # Use to track Corp status, e.g. managed vs directed companies
-          "Managed Company"
+          'Managed Company'
         end
 
         def timeline
@@ -437,7 +439,7 @@ module Engine
           timeline << "Market: #{bank.companies.join(', ')}" unless ipo_row_1.empty?
 
           @players.each do |p|
-            timeline << "#{p.name}: #{p.hand.map {|c| c.name}.sort.join(', ')}" unless p.hand.empty?
+            timeline << "#{p.name}: #{p.hand.map { |c| c.name }.sort.join(', ')}" unless p.hand.empty?
           end
 
           timeline
@@ -456,6 +458,7 @@ module Engine
 
         def purchasable_companies(entity = nil)
           return [] unless entity.player?
+
           entity.hand
         end
 
@@ -471,7 +474,6 @@ module Engine
             ['Dividend ≥ 4x share price', '4 →'],
           ]
         end
-
       end
     end
   end

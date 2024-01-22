@@ -5,7 +5,6 @@ module Engine
     module G18India
       module Decks
         # Placeholder, may move deck / hand methods to module
-
       end
     end
   end

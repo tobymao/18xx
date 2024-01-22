@@ -7,7 +7,7 @@ module Engine
     module G18India
       module Step
         class Draft < Engine::Step::Base
-          attr_reader :companies, :choices  #, :grouped_companies (check if grouping useful)
+          attr_reader :companies, :choices # , :grouped_companies (check if grouping useful)
 
           ACTIONS = %w[bid].freeze
 
@@ -59,6 +59,7 @@ module Engine
 
           def actions(entity)
             return [] if finished?
+
             entity == current_entity ? ACTIONS : []
           end
 
@@ -81,6 +82,7 @@ module Engine
 
           def action_finalized
             return unless finished?
+
             #  check to maintain player order
             @round.reset_entity_index!
           end
@@ -96,7 +98,6 @@ module Engine
             @round.next_entity_index!
             action_finalized
           end
-
         end
       end
     end

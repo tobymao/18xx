@@ -69,7 +69,7 @@ module Engine
             shares: [10, 10, 10, 10, 10, 10, 10, 10, 10, 10],
             tokens: [0, 40, 100, 100],
             # Add Exchange Tokens
-            floatable: false,  # Can not float / operate until phase II
+            floatable: false, # Can not float / operate until phase II
             min_price: 112,
             float_percent: 30,
             max_ownership_percent: 200,
@@ -265,22 +265,21 @@ module Engine
             color: '#da193a', # red
           },
         ].freeze
-        
-      def company_header(company)
-        case company.type
-        when :share
-          'SHARE CERTIFICATE'
-        when :president
-          'DIRECTOR\'s CERTIFICATE'
-        when :bond
-          'RAILROAD BOND'
-        when :warrant
-          'GUARANTY WARRANT'
-        else
-          super
-        end
-      end
 
+        def company_header(company)
+          case company.type
+          when :share
+            'SHARE CERTIFICATE'
+          when :president
+            'DIRECTOR\'s CERTIFICATE'
+          when :bond
+            'RAILROAD BOND'
+          when :warrant
+            'GUARANTY WARRANT'
+          else
+            super
+          end
+        end
       end
     end
   end

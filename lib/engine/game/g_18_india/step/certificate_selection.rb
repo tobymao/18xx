@@ -15,7 +15,7 @@ module Engine
           # ACTIONS_WITH_PASS = %w[bid pass].freeze
 
           def setup
-            @log << "Setup in CertificateSelection called with opts #{@opts.to_s}"
+            @log << "Setup in CertificateSelection called with opts #{@opts}"
             @companies = @game.companies
             @choices = Hash.new { |h, k| h[k] = [] }
             @cards_to_keep = @game.certs_to_keep
@@ -52,17 +52,18 @@ module Engine
 
           def selections_completed?
             return true if number_of_selections == @cards_to_keep
+
             false
           end
 
           def number_of_selections
-            current_entity.hand.count {|s| s.owner == current_entity}
+            current_entity.hand.count { |s| s.owner == current_entity }
           end
 
           def visible?
             # test if this makes selections visible to others when selecting cards
             # false
-            number_of_selections > 0  
+            number_of_selections > 0
           end
 
           def players_visible?
@@ -79,7 +80,7 @@ module Engine
 
           def all_players_selected?
             @game.players.each do |p|
-              return false unless p.hand.count {|s| s.owner == p} == @cards_to_keep
+              return false unless p.hand.count { |s| s.owner == p } == @cards_to_keep
             end
             true
           end
@@ -94,14 +95,16 @@ module Engine
 
           def actions(entity)
             return [] if finished?
+
             actions = ACTIONS
-            if entity == current_entity then @hide = false end  # test to see what this statement does
+            if entity == current_entity then @hide = false end # test to see what this statement does
             entity == current_entity ? actions : []
           end
 
           def process_pass(_action)
             # @log << "Process Pass called in Cert Selection"
             return unless selections_completed?
+
             @round.next_entity_index!
             action_finalized
           end
@@ -115,37 +118,41 @@ module Engine
             end
             action_finalized
           end
-          
+
           def log_selection(entity)
             return unless entity.player?
+
             @log << "#{entity.name} slected #{@cards_to_keep} certificates for hand"
           end
 
           def choose_company(player, company)
             return if player.nil? || company.nil?
+
             available_companies = available
             raise GameError, "Cannot choose #{company.name}" unless available_companies.include?(company)
-            if company.owner == player
-              company.owner = nil
-            else
-              company.owner = player
-            end
+
+            company.owner = if company.owner == player
+                              nil
+                            else
+                              player
+                            end
             # @log << "You have selected #{self.number_of_selections} out of #{@cards_to_keep}"
           end
 
           def action_finalized
             # @log << "Action Finalized called in Cert Selection"
             return unless finished?
-            @log << "Inital hand selection completed."
+
+            @log << 'Inital hand selection completed.'
             @game.prepare_draft_deck
             @round.reset_entity_index!
           end
 
-          def committed_cash(player, show_hidden = false)
+          def committed_cash(_player, show_hidden = false)
             return 0 unless show_hidden
+
             0
           end
-          
         end
       end
     end

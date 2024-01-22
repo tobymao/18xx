@@ -4,14 +4,12 @@ module Engine
   module Game
     module G18India
       class Corporation < Engine::Corporation
-
         def initialize(sym:, name:, **opts)
           super
-
         end
 
         def book_value
-          #sum of cash and all assets
+          # sum of cash and all assets
           cash + @companies.sum(&:value) + value_of_trains + value_of_owned_shares
         end
 
@@ -34,7 +32,6 @@ module Engine
         def mangaged_company?
           !presidents_share.owned_by_player?
         end
-
       end
     end
   end
