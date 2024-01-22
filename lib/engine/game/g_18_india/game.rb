@@ -165,14 +165,10 @@ module Engine
           # remove reservations for corporation at intial coordinates
           hex = hex_by_id(corporation.coordinates)
           hex.tile.cities.each do |city|
-            city.tokens.select { |t| t&.corporation == corporation }.each(&:remove!) if self.class::CLOSED_CORP_TOKENS_REMOVED
-            if self.class::CLOSED_CORP_RESERVATIONS_REMOVED && city.reserved_by?(corporation)
-              city.reservations.delete(corporation)
-            end
+            city.tokens.select { |t| t&.corporation == corporation }.each(&:remove!)
+            city.reservations.delete(corporation) if city.reserved_by?(corporation)
           end
-          if self.class::CLOSED_CORP_RESERVATIONS_REMOVED && hex.tile.reserved_by?(corporation)
-            hex.tile.reservations.delete(corporation)
-          end
+          hex.tile.reservations.delete(corporation) if hex.tile.reserved_by?(corporation)
         end
 
         def assign_guaranty_warrant(corporation)
@@ -189,8 +185,7 @@ module Engine
 
         def assign_initial_ipo_price(corporations)
           corporations.each do |corporation|
-            ipo_price = @stock_market.par_prices.select { |p| p.price == corporation.min_price }.first
-            # ipo_price = @stock_market.par_prices.select { |p| p.price == IPO_PAR_PRICES[corporation.name] }.first
+            ipo_price = @stock_market.par_prices.find { |p| p.price == corporation.min_price }
             @stock_market.set_par(corporation, ipo_price)
             corporation.ipoed = true
             # @log << "Set IPO for #{corporation.name} at #{corporation.par_price.price.to_s}"
@@ -225,10 +220,11 @@ module Engine
         def hand_as_companies(deck, set_buyable = false)
           new_deck = []
           deck.each do |card|
-            if card.is_a? Engine::Share
+            case card
+            when Engine::Share
               card.buyable = set_buyable # set buyable to false if in player hands
               new_deck << convert_share_to_company(card)
-            elsif card.is_a? Engine::Company
+            when Engine::Company
               new_deck << card
             else
               @log << 'Error in converting deck'
@@ -283,10 +279,11 @@ module Engine
         def deal_deck_to_market(deck)
           deck.each do |card|
             # @log << "Card is #{card}"
-            if card.is_a? Engine::Share
+            case card
+            when Engine::Share
               # @log << "Share"
               share_pool.buy_shares(share_pool, card)
-            elsif card.is_a? Engine::Company
+            when Engine::Company
               @log << "Private #{card.name} is availabe in the Market"
               card.owner = @bank
               @bank.companies.push(card)
@@ -327,7 +324,7 @@ module Engine
         def gpir_share_price
           return 112 unless @corporations
 
-          gipr = @corporations.select { |corp| corp.name == 'GIPR' }.first
+          gipr = @corporations.find { |corp| corp.name == 'GIPR' }
           return 112 unless gipr.share_price
 
           gipr.share_price
@@ -439,7 +436,7 @@ module Engine
           timeline << "Market: #{bank.companies.join(', ')}" unless ipo_row_1.empty?
 
           @players.each do |p|
-            timeline << "#{p.name}: #{p.hand.map { |c| c.name }.sort.join(', ')}" unless p.hand.empty?
+            timeline << "#{p.name}: #{p.hand.map(&:name).sort.join(', ')}" unless p.hand.empty?
           end
 
           timeline

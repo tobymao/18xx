@@ -63,7 +63,7 @@ module Engine
           def visible?
             # test if this makes selections visible to others when selecting cards
             # false
-            number_of_selections > 0
+            number_of_selections.positive?
           end
 
           def players_visible?
