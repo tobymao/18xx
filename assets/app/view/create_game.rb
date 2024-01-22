@@ -100,7 +100,8 @@ module View
           h(:a, { attrs: { href: '/login' } }, 'login'), ' to play multiplayer.'
         ]
       end
-      description << h(:p, 'If you are new to 18xx games then Shikoku 1889, 18Chesapeake or 18MS are good games to begin with.')
+      description << h(:p, 'New? Shikoku 1889 and 18Tokaido have Beginner variants '\
+                           'while 18Chesapeake and 18MS are good learning games')
       render_form('Create New Game', inputs, description)
     end
 

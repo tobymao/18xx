@@ -26,12 +26,12 @@ module Engine
           {
             sym: :newbie_rules,
             short_name: 'Local 普通',
-            desc: '[newbie variant] slightly expanded tileset, removes yellow zone from stock market',
+            desc: '[Beginner variant] expanded tileset and removes yellow zone from stock market',
           },
           {
             sym: :limited_express,
             short_name: 'Limited Express 特急',
-            desc: '[brutal variant] one less 6 train, 50% to float, 1882-like stock market',
+            desc: '[Experienced variant] one fewer 6 train, only 50% to float, 1882-like stock market',
           },
           {
             sym: :pass_priority,
