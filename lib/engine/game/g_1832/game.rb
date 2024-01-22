@@ -4,6 +4,8 @@ require_relative 'meta'
 require_relative '../base'
 require_relative 'map'
 require_relative '../g_1870'
+require_relative '../g_1850'
+require_relative 'entities'
 
 module Engine
   module Game
@@ -13,7 +15,7 @@ module Engine
         include Entities
         include Map
 
-        attr_accessor :sell_queue, :connection_run, :reissued
+        attr_accessor :sell_queue, :reissued, :coal_token_counter, :coal_company_sold_or_closed
 
         CURRENCY_FORMAT_STR = '$%s'
 
@@ -33,6 +35,7 @@ module Engine
         CAPITALIZATION = :full
 
         MUST_SELL_IN_BLOCKS = true
+        CORPORATION_CLASS = G1832::Corporation
 
         MARKET = [
           %w[64y 68 72 76 82 90 100p 110 120 140 160 180 200 225 250 275 300 325 350 375 400],
@@ -94,7 +97,7 @@ module Engine
                     operating_rounds: 3,
                   },
                   {
-                    name: '23',
+                    name: '12',
                     on: '12',
                     train_limit: 2,
                     tiles: %i[yellow green brown],
@@ -111,13 +114,13 @@ module Engine
             num: 6,
             events: [{ 'type' => 'companies_buyable' }],
           },
-          { name: '4', distance: 4, price: 300, rusts_on: '8', num: 5 },
+          { name: '4', distance: 4, price: 300, rusts_on: '8', num: 4 },
           {
             name: '5',
             distance: 5,
             price: 450,
             rusts_on: '12',
-            num: 4,
+            num: 3,
             events: [{ 'type' => 'close_companies' }],
           },
           {
@@ -127,12 +130,16 @@ module Engine
             num: 3,
             events: [{ 'type' => 'remove_tokens' }],
           },
-          { name: '8', distance: 8, price: 800, num: 3 },
+          {
+            name: '8',
+            distance: 8,
+            price: 800,
+            num: 3,
+            events: [{ 'type' => 'remove_key_west_token' }],
+          },
           { name: '10', distance: 10, price: 950, num: 2 },
           { name: '12', distance: 12, price: 1100, num: 99 },
         ].freeze
-
-        LAYOUT = :pointy
 
         EBUY_OTHER_VALUE = false
 
@@ -149,9 +156,18 @@ module Engine
 
         MULTIPLE_BUY_ONLY_FROM_MARKET = true
 
+        BOOMTOWN_HEXES = %w[D8 F14 G9 G9 H6 L14].freeze
+
+        ASSIGNMENT_TOKENS = {
+          'boomtown' => '/icons/1832/boomtown_token.svg',
+          'P2' => '/icons/1846/sc_token.svg',
+          'P3' => '/icons/1832/cotton_token.svg',
+        }.freeze
+
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
           'companies_buyable' => ['Companies become buyable', 'All companies may now be bought in by corporation'],
-          'remove_tokens' => ['Remove Tokens', 'Remove private company tokens']
+          'remove_tokens' => ['Remove Tokens', 'Remove private company tokens'],
+          'remove_key_west_token' => ['Remove Key West Token', 'FECR loses the Key West']
         ).freeze
 
         MARKET_TEXT = Base::MARKET_TEXT.merge(
@@ -160,7 +176,9 @@ module Engine
 
         STATUS_TEXT = Base::STATUS_TEXT.merge(
           'can_buy_companies_from_other_players' => ['Interplayer Company Buy',
-                                                     'Companies can be bought between players']
+                                                     'Companies can be bought between players',
+                                                     'The West Virginia Coalfields private company can be bought in for '\
+                                                     'up to face value from the owning player'],
         ).merge(
           'companies_buyable' => ['Companies become buyable', 'All companies may now be bought in by corporation'],
         )
@@ -176,25 +194,25 @@ module Engine
           G1870::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
             G1870::Step::BuySellParShares,
-            G1870::Step::PriceProtection,
+            G1850::Step::PriceProtection,
           ])
         end
 
         def operating_round(round_num)
-          G1870::Round::Operating.new(self, [
+          Engine::Round::Operating.new(self, [
             Engine::Step::Bankrupt,
             Engine::Step::Exchange,
-            G1870::Step::BuyCompany,
+            G1832::Step::BuyCompany,
             G1870::Step::Assign,
             G1870::Step::SpecialTrack,
-            G1870::Step::Track,
+            G1832::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
             G1870::Step::Dividend,
             Engine::Step::DiscardTrain,
             G1870::Step::BuyTrain,
-            [G1870::Step::BuyCompany, { blocks: true }],
-            G1870::Step::PriceProtection,
+            [G1832::Step::BuyCompany, { blocks: true }],
+            G1850::Step::PriceProtection,
           ], round_num: round_num)
         end
 
@@ -209,14 +227,42 @@ module Engine
 
         def setup
           @sell_queue = []
-          @connection_run = {}
           @reissued = {}
+          @coal_token_counter = 5
 
           coal_company.max_price = coal_company.value
+
+          @sharp_city ||= @all_tiles.find { |t| t.name == '5' }
+          @gentle_city ||= @all_tiles.find { |t| t.name == '6' }
+          @straight_city ||= @all_tiles.find { |t| t.name == '57' }
+
+          @tile_141 ||= @all_tiles.find { |t| t.name == '141' }
+          @tile_142 ||= @all_tiles.find { |t| t.name == '142' }
+          @tile_143 ||= @all_tiles.find { |t| t.name == '143' }
+          @tile_144 ||= @all_tiles.find { |t| t.name == '144' }
         end
 
         def event_companies_buyable!
           coal_company.max_price = 2 * coal_company.value
+        end
+
+        def event_close_companies!
+          @log << '-- Event: Private companies close --'
+          company.close!
+
+          @coal_company_sold_or_closed = true
+        end
+
+        def event_close_remaining_companies!
+          @log << '-- Event: All remaining private companies close --'
+          @companies.each(&:close!)
+        end
+
+        # can't run to or through the West Virginia Coalfied hex (B14) without a coal token
+        def check_distance(route, visits, _train = nil)
+          return super if visits.none? { |v| v.hex == coal_hex } || route.train.owner.coal_token
+
+          raise GameError, 'Corporation must own coal token to enter West Virginia Coalfields'
         end
 
         def event_remove_tokens!
@@ -247,10 +293,6 @@ module Engine
           end
         end
 
-        def coal_company
-          @river_company ||= company_by_id('P5')
-        end
-
         def port_company
           @port_company ||= company_by_id('P2')
         end
@@ -261,6 +303,14 @@ module Engine
 
         def can_hold_above_corp_limit?(_entity)
           true
+        end
+
+        def coal_company
+          @coal_company ||= company_by_id('P5')
+        end
+
+        def coal_hex
+          @coal_hex ||= hex_by_id('B14')
         end
 
         def revenue_for(route, stops)
@@ -298,33 +348,131 @@ module Engine
           true
         end
 
-        # CHECK IF THIS WORKS, IF NOT TRY IMPLEMENTING THIS OVER HERE VVVVV
-        # def upgrades_to?(from, to, _special = false, selected_company: nil)
-        #   return false if to.name == '171K' && from.hex.name != 'B11'
-        #   return false if to.name == '172L' && from.hex.name != 'C18'
+        def purchasable_companies(entity = nil)
+          entity ||= current_entity
+          return super unless @phase.name == '2'
 
-        #   super
-        # end
+          coal_company
+        end
 
-        # def upgrades_to_correct_label?(from, to)
-        #   return true if to.color != :brown
+        def after_sell_company(buyer, company, _price, _seller)
+          return unless company == coal_company
 
-        #   super
-        # end
+          buyer.coal_token = true
+          @coal_token_counter -= 1
+          @coal_company_sold_or_closed = true
+          log << "#{buyer.name} receives Coal token. #{@coal_token_counter} Coal tokens left in the game."
+          log << '-- Corporations can now buy Coal tokens --'
+        end
+
+        def status_array(corporation)
+          return unless corporation.coal_token
+
+          ['Coal Token']
+        end
+
+        def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
+          upgrades = super
+          return upgrades unless tile_manifest
+
+          upgrades |= [@sharp_city, @tile_141, @tile_142, @tile_143] if tile.name == '3' && tile.assigned?('boomtown')
+          upgrades |= [@straight_city, @tile_141, @tile_142] if tile.name == '4' && tile.assigned?('boomtown')
+
+          if tile.name == '58' && tile.assigned?('boomtown')
+            upgrades |= [@gentle_city, @tile_141, @tile_142, @tile_143, @tile_144]
+          end
+
+          upgrades
+        end
 
         def reissued?(corporation)
           @reissued[corporation]
         end
 
-        # TODO: LIST:
-        # Implement the bonuses for P2 and P3
-        # Implement Share Count issues (1856)
-        #
+        def graph_skip_paths(entity)
+          return nil if entity.coal_token
 
-        ASSIGNMENT_TOKENS = {
-          'P2' => '/icons/1846/sc_token.svg',
-          'P3' => '/icons/1832/cotton_token.svg',
-        }.freeze
+          @skip_paths ||= {}
+
+          return @skip_paths unless @skip_paths.empty?
+
+          coal_hex.tile.paths.each do |path|
+            @skip_paths[path] = true
+          end
+
+          @skip_paths
+        end
+
+        # 1828 system code
+        # def create_system(corporations)
+        #   return nil unless corporations.size == 2
+
+        #   system_data = CORPORATIONS.find { |c| c[:sym] == corporations.first.id }.dup
+        #   system_data[:sym] = corporations.map(&:name).join('-')
+        #   system_data[:tokens] = []
+        #   system_data[:abilities] = []
+        #   system_data[:corporations] = corporations
+        #   system = init_system(@stock_market, system_data)
+
+        #   @corporations << system
+        #   @_corporations[system.id] = system
+        #   system.shares.each { |share| @_shares[share.id] = share }
+
+        #   corporations.each { |corporation| transfer_assets_to_system(corporation, system) }
+
+        #   # Order tokens for better visual
+        #   max_price = system.tokens.max_by(&:price).price + 1
+        #   system.tokens.sort_by! { |t| (t.used ? -max_price : max_price) + t.price }
+
+        #   place_system_blocking_tokens(system)
+
+        #   # Make sure the system will not own two coal markers
+        #   if coal_markers(system).size > 1
+        #     remove_coal_marker(system)
+        #     add_coal_marker_to_va_coalfields
+        #     @log << "#{system.name} cannot have two coal markers, returning one to Virginia Coalfields"
+        #   end
+
+        #   @stock_market.set_par(system, system_market_price(corporations))
+        #   system.ipoed = true
+
+        #   system
+        # end
+
+        # def transfer_assets_to_system(corporation, system)
+        #   corporation.spend(corporation.cash, system) if corporation.cash.positive?
+
+        #   # Transfer tokens
+        #   used, unused = corporation.tokens.partition(&:used)
+        #   used.each do |t|
+        #     new_token = Engine::Token.new(system, price: t.price)
+        #     system.tokens << new_token
+        #     t.swap!(new_token, check_tokenable: false)
+        #   end
+        #   unused.sort_by(&:price).each { |t| system.tokens << Engine::Token.new(system, price: t.price) }
+        #   corporation.tokens.clear
+
+        #   # Transfer companies
+        #   corporation.companies.each do |company|
+        #     company.owner = system
+        #     system.companies << company
+        #   end
+        #   corporation.companies.clear
+
+        #   # Transfer abilities
+        #   corporation.all_abilities.dup.each do |ability|
+        #     corporation.remove_ability(ability)
+        #     system.add_ability(ability)
+        #   end
+
+        #   # Create shell and transfer
+        #   shell = G1828::Shell.new(corporation.name, system)
+        #   system.shells << shell
+        #   corporation.trains.dup.each do |train|
+        #     buy_train(system, train, :free)
+        #     shell.trains << train
+        #   end
+        # end
       end
     end
   end

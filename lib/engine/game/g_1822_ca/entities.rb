@@ -662,7 +662,8 @@ module Engine
             sym: 'C1',
             value: 100,
             revenue: 10,
-            desc: 'Has a face value of £100 and contributes £100 to conversion into the CNoR director’s certificate.',
+            desc: 'Has a face value of $100 and contributes $100 to conversion into the CNoR director’s '\
+                  'certificate. Home: Winnipeg (N16). Destination: Vancouver (C15).',
             abilities: [
               {
                 type: 'exchange',
@@ -679,8 +680,8 @@ module Engine
             sym: 'C2',
             value: 100,
             revenue: 10,
-            desc: 'Has a face value of £100 and converts into the CPR’s 10% director certificate. CPR may also put '\
-                  'its destination token into Vancouver when converted.',
+            desc: 'Has a face value of $100 and converts into the CPR’s 10% director certificate. CPR may also put '\
+                  'its destination token into Vancouver when converted. Home: Montréal (AF12). Destination: Vancouver (C15).',
             abilities: [
               {
                 type: 'exchange',
@@ -697,8 +698,8 @@ module Engine
             sym: 'C3',
             value: 100,
             revenue: 10,
-            desc: 'Has a face value of £100 and contributes £100 to conversion into the GNWR director’s '\
-                  'certificate.',
+            desc: 'Has a face value of $100 and contributes $100 to conversion into the GNWR director’s '\
+                  'certificate. Home: Thunder Bay (R16). Destination: N Winnipeg (N16).',
             abilities: [
               {
                 type: 'exchange',
@@ -715,8 +716,8 @@ module Engine
             sym: 'C4',
             value: 100,
             revenue: 10,
-            desc: 'Has a face value of £100 and contributes £100 to conversion into the GT director’s '\
-                  'certificate.',
+            desc: 'Has a face value of $100 and contributes $100 to conversion into the GT director’s '\
+                  'certificate. Home: Toronto (AC21). Destination: S Montréal (AF12).',
             abilities: [
               {
                 type: 'exchange',
@@ -733,7 +734,8 @@ module Engine
             sym: 'C5',
             value: 100,
             revenue: 10,
-            desc: 'Has a face value of £100 and contributes £100 to conversion into the GTP director’s certificate.',
+            desc: 'Has a face value of $100 and contributes $100 to conversion into the GTP director’s '\
+                  'certificate. Home: Winnipeg (N16). Destination: Prince Rupert (A7).',
             abilities: [
               {
                 type: 'exchange',
@@ -750,7 +752,8 @@ module Engine
             sym: 'C6',
             value: 100,
             revenue: 10,
-            desc: 'Has a face value of £100 and contributes £100 to conversion into the GWR director’s certificate.',
+            desc: 'Has a face value of $100 and contributes $100 to conversion into the GWR director’s '\
+                  'certificate. Home: Hamilton (AB24). Destination: Windsor (Z28).',
             abilities: [
               {
                 type: 'exchange',
@@ -767,7 +770,8 @@ module Engine
             sym: 'C7',
             value: 100,
             revenue: 10,
-            desc: 'Has a face value of £100 and contributes £100 to conversion into the ICR director’s certificate.',
+            desc: 'Has a face value of $100 and contributes $100 to conversion into the ICR director’s '\
+                  'certificate. Home: Halifax (AP4). Destination: Any Québec (AH8).',
             abilities: [
               {
                 type: 'exchange',
@@ -784,7 +788,8 @@ module Engine
             sym: 'C8',
             value: 100,
             revenue: 10,
-            desc: 'Has a face value of £100 and contributes £100 to conversion into the NTR director’s certificate.',
+            desc: 'Has a face value of $100 and contributes $100 to conversion into the NTR director’s '\
+                  'certificate. Home: Moncton (AO3). Destination: SE Winnipeg (N16).',
             abilities: [
               {
                 type: 'exchange',
@@ -801,7 +806,8 @@ module Engine
             sym: 'C9',
             value: 100,
             revenue: 10,
-            desc: 'Has a face value of £100 and contributes £100 to conversion into the PGE director’s certificate.',
+            desc: 'Has a face value of $100 and contributes $100 to conversion into the PGE director’s '\
+                  'certificate. Home: Vancouver (C15). Destination: Prince George (D10).',
             abilities: [
               {
                 type: 'exchange',
@@ -818,7 +824,8 @@ module Engine
             sym: 'C10',
             value: 100,
             revenue: 10,
-            desc: 'Has a face value of £100 and contributes £100 to conversion into the QMOO director’s certificate.',
+            desc: 'Has a face value of $100 and contributes $100 to conversion into the QMOO director’s '\
+                  'certificate. Home: Québec (AH8). Destination: North Bay (AA15).',
             abilities: [
               {
                 type: 'exchange',
@@ -957,7 +964,7 @@ module Engine
             value: 100,
             revenue: 0,
             desc: 'A 50% director’s certificate in the associated minor company. Starting location is AC21 (Toronto). Home '\
-                  'token cost £20, placing home token counts as first tile lay.',
+                  'token cost $20, placing home token counts as first tile lay.',
             abilities: [],
             color: '#ffffff',
             text_color: 'black',
@@ -1605,6 +1612,7 @@ module Engine
             text_color: 'black',
             destination_coordinates: 'C15',
             destination_icon: '1822_ca/CNoR_DEST',
+            destination_icon_in_city_slot: [0, 3],
           },
           {
             sym: 'CPR',
@@ -1620,6 +1628,7 @@ module Engine
             color: '#ed242a',
             destination_coordinates: 'C15',
             destination_icon: '1822_ca/CPR_DEST',
+            destination_icon_in_city_slot: [0, 2],
           },
           {
             sym: 'GNWR',
@@ -1635,6 +1644,7 @@ module Engine
             destination_coordinates: 'N16',
             destination_exits: [3],
             destination_icon: '1822_ca/GNWR_DEST',
+            destination_icon_in_city_slot: [1, 0],
           },
           {
             sym: 'GT',
@@ -1650,6 +1660,7 @@ module Engine
             destination_coordinates: 'AF12',
             destination_exits: [0],
             destination_icon: '1822_ca/GT_DEST',
+            destination_icon_in_city_slot: [0, 1],
           },
           {
             sym: 'GTP',
@@ -1693,6 +1704,7 @@ module Engine
             destination_loc: '3.5',
             destination_exits: [0, 1, 2, 3, 4, 5],
             destination_icon: '1822_ca/ICR_DEST',
+            destination_icon_in_city_slot: [2, 0],
           },
           {
             sym: 'NTR',
@@ -1707,6 +1719,7 @@ module Engine
             destination_coordinates: 'N16',
             destination_exits: [5],
             destination_icon: '1822_ca/NTR_DEST',
+            destination_icon_in_city_slot: [3, 0],
           },
           {
             sym: 'PGE',

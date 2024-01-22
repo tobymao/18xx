@@ -79,6 +79,16 @@ module Engine
               log_skip(entity)
             end
           end
+
+          def process_buy_train(action)
+            if action.train.owned_by_corporation? && !(action.price % @game.class::TRAIN_PRICE_MULTIPLE).zero?
+              raise GameError, 'Train purchase price must be a multiple of '\
+                               "#{@game.format_currency(@game.class::TRAIN_PRICE_MULTIPLE)}"
+            end
+
+            buy_train_action(action)
+            pass! unless can_buy_train?(action.entity)
+          end
         end
       end
     end

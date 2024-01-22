@@ -2,7 +2,7 @@
 
 module Engine
   module Game
-    module G1868WYSimple2p
+    module G1850Jr
     end
   end
 end
