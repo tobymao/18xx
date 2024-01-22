@@ -52,7 +52,7 @@ module Engine
             sym: 'P1',
             value: 20,
             revenue: 5,
-            desc: 'Building on one mountain is 20 G cheaper.',
+            desc: 'Building on one mountain is 20 G cheaper.  Owning player\'s corporations may ignore terrain costs in Außerfernbahn (E5)',
             abilities: [
               {
                 type: 'tile_discount',
@@ -68,7 +68,7 @@ module Engine
             sym: 'P2',
             value: 50,
             revenue: 10,
-            desc: 'Building one tunnel is 40 G cheaper.',
+            desc: 'Building one tunnel is 40 G cheaper.  Owning player\'s corporations may ignore terrain costs in Murtalbahn (F16)',
             abilities: [
               {
                 type: 'tile_discount',
@@ -84,7 +84,7 @@ module Engine
             sym: 'P3',
             value: 70,
             revenue: 15,
-            desc: 'Routes through Graz earn 10 G extra.',
+            desc: 'Routes through Graz earn 10 G extra.  Owning player\'s corporations may ignore terrain costs in Graz-Köflacher Bahn (F20)',
             abilities: [
               {
                 # TODO: should be when 'route'?
@@ -109,7 +109,7 @@ module Engine
             sym: 'P4',
             value: 170,
             revenue: 20,
-            desc: 'Receives a 20% VB share. Closes when the VB runs for the first time.',
+            desc: 'Receives a 20% VB share. Closes when the VB runs for the first time.  Owning player\'s corporations may ignore terrain costs in Arlbergbahn (F4)',
             abilities: [{ type: 'shares', shares: 'VB_1' },
                         { type: 'close', when: 'ran_train', corporation: 'VB' },
                         {
@@ -126,7 +126,7 @@ module Engine
             sym: 'P5',
             value: 190,
             revenue: 25,
-            desc: 'Receives a 20% SD share. Closes when the SD runs for the first time.',
+            desc: 'Receives a 20% SD share. Closes when the SD runs for the first time.  Owning player\'s corporations may ignore terrain costs in Semmeringbahn (E23)',
             abilities: [{ type: 'shares', shares: 'SD_1' },
                         { type: 'close', when: 'ran_train', corporation: 'SD' },
                         {
