@@ -192,7 +192,7 @@ module Engine
           'P7' => { acquire: %i[major], phase: 3 },
           'P8' => { acquire: %i[major minor], phase: 2 },
           'P9' => { acquire: %i[major minor], phase: 2 },
-          'P10' => { acquire: %i[major minor], phase: 3 },
+          'P10' => { acquire: %i[major], phase: 3 },
           'P11' => { acquire: [], phase: 8 },
           'P12' => { acquire: %i[major minor], phase: 1 },
           'P13' => { acquire: %i[major], phase: 3 },
@@ -350,6 +350,13 @@ module Engine
           ], round_num: round_num)
         end
 
+        def stock_round
+          G1822CA::Round::Stock.new(self, [
+            Engine::Step::DiscardTrain,
+            G1822::Step::BuySellParShares,
+          ])
+        end
+
         def must_remove_town?(entity)
           %w[P29 P30].include?(entity.id)
         end
@@ -468,7 +475,7 @@ module Engine
           sawmill_bonus = sawmill_bonus(route.routes)
           str += " + Sawmill ($#{sawmill_bonus[:revenue]})" if sawmill_bonus && sawmill_bonus[:route] == route
 
-          str += grain_and_port_bonus(route.train, route.stops)[:description]
+          str += grain_and_port_bonus(route.train, route.visited_stops)[:description]
 
           str
         end

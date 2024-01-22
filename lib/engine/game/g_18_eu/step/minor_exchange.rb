@@ -18,7 +18,7 @@ module Engine
         end
 
         def merge_minor!(minor, corporation, source)
-          maybe_remove_token(minor, corporation)
+          maybe_remove_token(minor, corporation, source)
 
           if source == corporation
             transfer_treasury(minor, corporation)
@@ -32,9 +32,14 @@ module Engine
           minor.close! unless @round.pending_acquisition
         end
 
-        def maybe_remove_token(minor, corporation)
+        def maybe_remove_token(minor, corporation, source)
           return unless corporation
           return minor.tokens.first.remove! if corporation.placed_tokens.empty?
+
+          # if this merge share is coming from somewhere other than a corporation
+          # i.e. the share pool, don't make a pending acquisition, because
+          # a share pool exchange does not allow for token replacement.
+          return if source != corporation
 
           @round.pending_acquisition = { minor: minor, corporation: corporation }
         end

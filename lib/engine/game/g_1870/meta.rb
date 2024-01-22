@@ -23,6 +23,11 @@ module Engine
             short_name: 'Diesels variant (Alpha)',
             desc: 'Diesel trains replace 8, 10, and 12 trains. Uses all 1830 Diesel rules.',
           },
+          {
+            sym: :finish_on_400,
+            short_name: '$400 Finish',
+            desc: 'Game ends as soon as a corporation hits 400 on the stock market. No further operations.',
+          },
         ].freeze
       end
     end
