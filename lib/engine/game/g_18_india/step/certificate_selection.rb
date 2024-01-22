@@ -12,7 +12,7 @@ module Engine
           attr_reader :companies, :choices
 
           ACTIONS = %w[bid].freeze
-          ACTIONS_WITH_PASS = %w[bid pass].freeze
+          # ACTIONS_WITH_PASS = %w[bid pass].freeze
 
           def setup
             @log << "Setup in CertificateSelection called with opts #{@opts.to_s}"
@@ -60,7 +60,9 @@ module Engine
           end
 
           def visible?
-            number_of_selections > 0
+            # test if this makes selections visible to others when selecting cards
+            # false
+            number_of_selections > 0  
           end
 
           def players_visible?
@@ -93,13 +95,12 @@ module Engine
           def actions(entity)
             return [] if finished?
             actions = ACTIONS
-            if entity == current_entity then @hide = false end
+            if entity == current_entity then @hide = false end  # test to see what this statement does
             entity == current_entity ? actions : []
           end
 
           def process_pass(_action)
-            # raise GameError, "Slections are not yet completed" unless selections_completed?
-            @log << "Process Pass called in Cert Selection"
+            # @log << "Process Pass called in Cert Selection"
             return unless selections_completed?
             @round.next_entity_index!
             action_finalized
@@ -109,17 +110,19 @@ module Engine
             # @log << "Process Bid called in Cert Selection"
             choose_company(action.entity, action.company)
             if selections_completed?
-              # log_selection(action.entity)
+              log_selection(action.entity)
               @round.next_entity_index!
             end
             action_finalized
           end
           
-          def log_selection(enity)
+          def log_selection(entity)
+            return unless entity.player?
             @log << "#{entity.name} slected #{@cards_to_keep} certificates for hand"
           end
 
           def choose_company(player, company)
+            return if player.nil? || company.nil?
             available_companies = available
             raise GameError, "Cannot choose #{company.name}" unless available_companies.include?(company)
             if company.owner == player

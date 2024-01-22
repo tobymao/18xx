@@ -266,28 +266,6 @@ module Engine
           },
         ].freeze
         
-=begin  # Used min_price to set intial par values
-        IPO_PAR_PRICES = { 
-          'GIPR' => 112,
-          'NWR' => 100,
-          'EIR' => 100,
-          'NCR' => 90,
-          'MR' => 90,
-          'SIR' => 82,
-          'BNR' => 82,
-          'CGR' => 76,
-          'PNS' => 76,
-          'WIP' => 76,
-          'EBR' => 76,
-          'BR' => 71,
-          'NSR' => 71,
-          'TR' => 71,
-          'SPD' => 67,
-          'DHR' => 67,
-          'WR' => 64,
-          'KGF' => 64,
-      }
-=end
       def company_header(company)
         case company.type
         when :share

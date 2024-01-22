@@ -5,7 +5,6 @@ require_relative 'map'
 require_relative 'entities'
 require_relative 'corporation'
 require_relative 'player'
-require_relative 'ipo_pool'
 require_relative 'decks'
 require_relative '../base'
 
@@ -109,9 +108,6 @@ module Engine
 
         def setup_preround
           @log << "setup_preround method in game called"
-          @ipo_row_1 = IpoPool.new(self)
-          @ipo_row_2 = IpoPool.new(self)
-          @ipo_row_3 = IpoPool.new(self)
         end
 
         def setup
@@ -122,10 +118,12 @@ module Engine
           assign_initial_ipo_price(@corporations)
 
           # Build draw and draft decks for inital hand and IPO rows
+          @ipo_rows = [ [], [], [] ]
           create_decks(@corporations)
 
+          @selection_finished = false
           @draft_finished = false
-          @last_action = nil  # not sure this is needed
+          @last_action = nil
 
           # @log << "removals contain #{@removals.to_s}"
           # @log << "Player Hand Count #{@player_decks.flatten.size}"
@@ -260,11 +258,10 @@ module Engine
         end
 
         def deal_deck_to_ipo(deck)
-          ipo_rows = [ [], [], [] ]
-          ipo_rows.each do |row|
-            row.concat( deck.pop(certs_per_row) )
-            # @log << "Row size #{row.size} contains #{row.to_s}"
-            row = hand_as_companies(row, true)
+          rows = [ 0, 1, 2 ]
+          rows.each do |row|
+            new_row = deck.pop(certs_per_row)
+            @ipo_rows[row] = hand_as_companies(new_row, true)
             # @log << "Row size #{row.size} contains #{row.to_s}"
           end
         end
@@ -292,7 +289,8 @@ module Engine
               share_pool.buy_shares(share_pool, card)
             elsif card.is_a? Engine::Company
               @log << "Private #{card.name.to_s} is availabe in the Market"
-              bank.companies.push(card)
+              card.owner = @bank
+              @bank.companies.push(card)
             else
               @log << "Deck Dealing Error"
             end
@@ -333,14 +331,17 @@ module Engine
           gipr.share_price
         end
 
-        def new_draft_round
-          @log << "Method new_draft_round called"
-          init_round
+        def init_round
+          selection_round
         end
 
-        def init_round
-          # @log << "-- #{round_description('Certificate Selection')} --"
-          draft_step = G18India::Step::CertificateSelection
+        def selection_round
+          selection_step = G18India::Step::CertificateSelection
+          Engine::Round::Draft.new(self, [selection_step], reverse_order: false)
+        end
+
+        def draft_round
+          draft_step = G18India::Step::Draft
           Engine::Round::Draft.new(self, [draft_step], reverse_order: false)
         end
 
@@ -365,6 +366,112 @@ module Engine
             [Engine::Step::BuyCompany, { blocks: false }],
           ], round_num: round_num)
         end
+
+        def next_round!
+          @round =
+            case @round
+            when Round::Stock
+              @operating_rounds = @phase.operating_rounds
+              reorder_players
+              new_operating_round
+            when Round::Operating
+              if @round.round_num < @operating_rounds
+                or_round_finished
+                new_operating_round(@round.round_num + 1)
+              else
+                @turn += 1
+                or_round_finished
+                or_set_finished
+                new_stock_round
+              end
+            when init_round.class
+              if @selection_finished == false
+                @selection_finished = true
+                draft_round
+              else
+                # init_round_finished
+                reorder_players
+                new_stock_round
+              end
+            end
+        end
+
+        def in_ipo?(company)
+          @ipo_rows.flatten.include?(company)
+        end
+
+        def ipo_row_and_index(company)
+          [0, 1, 2].each do |row|
+            index = @ipo_rows[row].index(company)
+            return [row +1, index +1] if index
+          end
+          return nil
+        end
+
+        def company_status_str(company)
+          # used to add status of cert card e.g. IPO ROW
+          if in_ipo?(company) then
+            row, index = ipo_row_and_index(company)
+            return "IPO Row:#{row} Index:#{index}"
+          end
+          "status"
+        end
+
+        def status_str(corporation)
+          # Use to track Corp status, e.g. managed vs directed companies
+          "Managed Company"
+        end
+
+        def timeline
+          timeline = []
+
+          ipo_row_1 = ipo_timeline(0)
+          timeline << "IPO ROW 1: #{ipo_row_1.join(', ')}" unless ipo_row_1.empty?
+
+          ipo_row_2 = ipo_timeline(1)
+          timeline << "IPO ROW 2: #{ipo_row_2.join(', ')}" unless ipo_row_2.empty?
+
+          ipo_row_3 = ipo_timeline(2)
+          timeline << "IPO ROW 3: #{ipo_row_3.join(', ')}" unless ipo_row_3.empty?
+
+          timeline << "Market: #{bank.companies.join(', ')}" unless ipo_row_1.empty?
+
+          @players.each do |p|
+            timeline << "#{p.name}: #{p.hand.map {|c| c.name}.sort.join(', ')}" unless p.hand.empty?
+          end
+
+          timeline
+        end
+
+        def ipo_timeline(index)
+          row = @ipo_rows[index]
+          row.map do |company|
+            "#{company.name}#{'*' if row.index(company) < 2}"
+          end
+        end
+
+        def unowned_purchasable_companies(_entity)
+          bank.companies + @ipo_rows[0] + @ipo_rows[1]
+        end
+
+        def purchasable_companies(entity = nil)
+          return [] unless entity.player?
+          entity.hand
+        end
+
+        def price_movement_chart
+          [
+            ['Action', 'Share Price Change'],
+            ['End OR without train', '1 ←'],
+            ['Dividend 0 or withheld', '1 ←'],
+            ['Dividend < share price', 'none'],
+            ['Dividend ≥ share price', '1 →'],
+            ['Dividend ≥ 2x share price', '2 →'],
+            ['Dividend ≥ 3x share price', '3 →'],
+            ['Dividend ≥ 4x share price', '4 →'],
+          ]
+        end
+
       end
     end
   end

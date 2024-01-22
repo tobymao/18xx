@@ -34,8 +34,6 @@ module Engine
         def mangaged_company?
           !presidents_share.owned_by_player?
         end
-=begin
-=end
 
       end
     end
