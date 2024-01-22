@@ -61,21 +61,21 @@ module Engine
         MERGERS_MANDATORY_PHASE = 6
 
         MARKET = [
-          ['',    '',    '',    '86',  '89',  '93p', '97',  '101', '106', '112', '119', '127', '136', '146', '158', '170', '185',
-           '210', '230', '250', '275', '300e'],
-          ['',    '',    '',    '81',  '84',  '87p', '91',  '95', '99', '104', '110', '117', '125', '134', '143', '153', '165',
-           '180', '200'],
-          ['',    '',    '76',  '79',  '82p',  '85', '89',  '93', '97', '102', '108', '115', '123'],
-          ['',    '',    '71',  '74',  '77p',  '80', '83',  '87', '91', '95', '100'],
-          ['',    '66',  '69',  '72p', '75', '78', '81', '85', '89'],
+          ['',    '',    '',    '86',  '89',  '93p', '97S',  '101S', '106S', '112S', '119S', '127S', '136S', '146S', '158S', '170S', '185S',
+           '210S', '230S', '250S', '275S', '300e'],
+          ['',    '',    '',    '81',  '84',  '87p', '91',  '95S', '99S', '104S', '110S', '117S', '125S', '134S', '143S', '153S', '165S',
+           '180S', '200S'],
+          ['',    '',    '76',  '79',  '82p',  '85', '89',  '93S', '97S', '102S', '108S', '115S', '123S'],
+          ['',    '',    '71',  '74',  '77p',  '80', '83',  '87', '91S', '95S', '100S'],
+          ['',    '66',  '69',  '72p', '75', '78', '81', '85', '89S'],
           ['',    '61y', '64',  '67p', '70', '73', '76y', '79y'],
           %w[56y 59y 62 65 68y 71y],
           ['', '54y', '57y', '60y', '63y'],
 ].freeze
 
-        MARKET_TEXT = Base::MARKET_TEXT.merge(par_1: 'SBB starting price', type_limited: 'Regionals cannot enter').freeze
+        MARKET_TEXT = Base::MARKET_TEXT.merge(share_split: 'Share split when first entered').freeze
 
-        STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(par_1: :blue, type_limited: :peach).freeze
+        STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(share_split: :green).freeze
 
         DOUBLE_TOWN_TILES = %w[1 2 55 56 69].freeze
         DOUBLE_TOWN_UPGRADES = %w[14 15 619].freeze

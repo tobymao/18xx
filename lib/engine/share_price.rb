@@ -31,6 +31,7 @@ module Engine
       'X' => :pays_bonus_2,
       'Y' => :pays_bonus_3,
       'Z' => :pays_bonus_4,
+      'S' => :share_split,
     }.freeze
 
     # Types which are info only and shouldn't

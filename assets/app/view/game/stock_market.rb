@@ -211,27 +211,38 @@ module View
                        end
         if operated?(corporation)
           props[:attrs][:title] = "#{corporation.name} has operated"
-          props[:attrs][:opacity] = '0.6'
+          # props[:attrs][:opacity] = '1.0'
           props[:attrs]['clip-path'] = 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)'
 
-          under_shape = h(:polygon, {
+          under_shape = [
+                          h(:polygon, {
                             attrs: {
-                              points: '-14,0 0,14 14,0 0,-14',
+                              points: "-#{(width/2)+1},0 0,#{(width/2)+1} #{(width/2)+1},0 0,-#{(width/2)+1}",
+                              stroke: corporation.color,
+                              'stroke-width': 2,
+                              fill: 'transparent',
+                            },
+                          }),
+                          h(:polygon, {
+                            attrs: {
+                              points: "-#{(width/2)+1},0 0,#{(width/2)+1} #{(width/2)+1},0 0,-#{(width/2)+1}",
                               stroke: border_color,
                               'stroke-width': 2,
                               fill: 'transparent',
-                              'stroke-dasharray': '3',
+                              'stroke-dasharray': '4',
                             },
-                          })
+                          }),
+
+                        ]
         else
-          under_shape = h(:circle, {
+          under_shape = [h(:circle, {
                             attrs: {
                               stroke: border_color,
                               'stroke-width': 2,
                               fill: 'transparent',
                               r: "#{width / 2}px",
                             },
-                          },)
+                          },)]
         end
 
         g_props = {
@@ -240,7 +251,7 @@ module View
           },
         }
 
-        h(:g, g_props, [h(:image, props), under_shape])
+        h(:g, g_props, [h(:image, props), *under_shape])
       end
 
       def par_bars(colors)
@@ -381,7 +392,7 @@ module View
         [h(:div, [
           h(:svg, props, [
             h(:g, { attrs: { transform: "translate(#{col_border},#{row_border})" } }, market_hexes),
-]),
+          ]),
         ])]
       end
 
