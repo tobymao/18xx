@@ -308,15 +308,18 @@ module Engine
           paris_tiles = @all_tiles.select { |t| PARIS_TILES.include?(t.name) }
           paris_tiles.each { |t| t.add_reservation!(plm, 0) }
 
+          remove_random_teleport_company
+          teleport_company = @companies.find { |c| c.value == 50 }
+          @log << "-- The teleport company is #{teleport_company.name} --"
+
           @french_starting_corporation_id = FRENCH_REGULAR_CORPORATIONS.sort_by { rand }.take(1).first
           french_starting_corporation.add_ability(
             Engine::Ability::Description.new(type: 'description', description: 'May not redeem shares')
           )
-          @log << "-- The French major shareholding corporation is the #{french_starting_corporation.id}"
-          belgian_starting_corporation = corporation_by_id('Belge')
-
-          remove_random_teleport_company
+          @log << "-- The French major shareholding corporation is the #{french_starting_corporation.id} --"
           remove_extra_french_major_shareholding_companies
+
+          belgian_starting_corporation = corporation_by_id('Belge')
 
           @players.each do |player|
             share_pool.transfer_shares(french_starting_corporation.ipo_shares.last.to_bundle, player)
