@@ -14,7 +14,7 @@ module Engine
             sym: 'P1',
             value: 0,
             revenue: 5,
-            desc: 'MAJOR, Phase 5. Montreal Locomotive Works. This is a normal 5-train that is '\
+            desc: 'MAJOR, Phase 5. Montréal Locomotive Works. This is a normal 5-train that is '\
                   'subject to all of the normal rules. Note that a company can acquire this '\
                   'private company at the start of its turn, even if it is already at its train '\
                   'limit as this counts as an acquisition action, not a train buying action. '\
@@ -155,7 +155,7 @@ module Engine
             revenue: 10,
             desc: 'MAJOR, Phase 3. Manitoba South-Western Colonization Railway. The owning company '\
                   'may place an exchange station token on the map, free of charge, in a token '\
-                  'space in Winnipeg. The company does NOT need to be able to trace a route to the '\
+                  'space in Winnipeg (N16). The company does NOT need to be able to trace a route to the '\
                   'station in Winnipeg. Token must be specifically conjoined to one of the five '\
                   'Station slots. Pays company $10 until used. The company does not need to be '\
                   'able to trace a route to Winnipeg to use this property (i.e. any company can '\
@@ -199,7 +199,7 @@ module Engine
                   'charter. At the end of the game, the player receives the share certificate from '\
                   'the off-shore tax haven charter and includes it in their portfolio for '\
                   'determining final worth. The player also receives the cash from dividend income '\
-                  'accumulated on the charter. Can’t be acquired. Does not count against the '\
+                  'accumulated on the charter. Does not count against the '\
                   'certificate limit.',
             abilities: [],
             color: PRIVATE_BLUE,
@@ -272,7 +272,7 @@ module Engine
             value: 0,
             revenue: 10,
             desc: 'MAJOR/MINOR, Phase 1. Ontario, Simcoe & Huron Union Railroad. Owner pays no '\
-                  'upgrade fee or terrain costs for the tile placement. This tile placement is in '\
+                  'upgrade fee or terrain costs for tile lays and upgrades to Toronto (AC21). This is in '\
                   'addition to the company’s normal tile placement(s), but happens during the '\
                   'company’s tile laying step. Does not close. Minor may place yellow or green '\
                   'only. The company upgrading the city must be connected to it in order to '\
@@ -298,7 +298,7 @@ module Engine
             value: 0,
             revenue: 10,
             desc: 'MAJOR/MINOR, Phase 1. Pontiac Pacific Junction Railway. Owner pays no upgrade '\
-                  'fee or terrain costs for the tile placement. This tile placement is in addition '\
+                  'fee or terrain costs for tile lays and upgrades to Ottawa (AE15). This is in addition '\
                   'to the company’s normal tile placement(s), but happens during the company’s '\
                   'tile laying step. Does not close. Minor may place yellow or green only. The '\
                   'company upgrading the city must be connected to it in order to exercise the '\
@@ -319,12 +319,12 @@ module Engine
             color: PRIVATE_GREEN,
           },
           {
-            name: 'P16 (Free Montreal Upgrades)',
+            name: 'P16 (Free Montréal Upgrades)',
             sym: 'P16',
             value: 0,
             revenue: 10,
             desc: 'MAJOR/MINOR, Phase 1. South Eastern Railway. Owner pays no upgrade fee or '\
-                  'terrain costs for the tile placement. This tile placement is in addition to the '\
+                  'terrain costs for tile lays and upgrades to Montréal (AF12). This is in addition to the '\
                   'company’s normal tile placement(s), but happens during the company’s tile '\
                   'laying step. Does not close. Minor may place yellow or green only. The company '\
                   'upgrading the city must be connected to it in order to exercise the private '\
@@ -345,12 +345,12 @@ module Engine
             color: PRIVATE_GREEN,
           },
           {
-            name: 'P17 (Free Quebec Upgrades)',
+            name: 'P17 (Free Québec Upgrades)',
             sym: 'P17',
             value: 0,
             revenue: 10,
-            desc: 'MAJOR/MINOR, Phase 1. Quebec & Richmond Railway. Owner pays no upgrade fee or '\
-                  'terrain costs for the tile placement. This tile placement is in addition to the '\
+            desc: 'MAJOR/MINOR, Phase 1. Québec & Richmond Railway. Owner pays no upgrade fee or '\
+                  'terrain costs for tile lays and upgrades to Québec (AH8). This is in addition to the '\
                   'company’s normal tile placement(s), but happens during the company’s tile '\
                   'laying step. Does not close. Minor may place yellow or green only. The company '\
                   'upgrading the city must be connected to it in order to exercise the private '\
@@ -376,7 +376,7 @@ module Engine
             value: 0,
             revenue: 10,
             desc: 'MAJOR/MINOR, Phase 1. Winnipeg & Prince Albert Railway. Owner pays no upgrade '\
-                  'fee or terrain costs for the tile placement. This tile placement is in addition '\
+                  'fee or terrain costs for the tile placement. This is in addition '\
                   'to the company’s normal tile placement(s), but happens during the company’s '\
                   'tile laying step. Does not close. Minor may place yellow or green only. The '\
                   'company upgrading the city must be connected to it in order to exercise the '\
@@ -402,7 +402,7 @@ module Engine
             value: 0,
             revenue: 10,
             desc: 'MAJOR, Phase 3. The Crowsnest Pass. Allows the owning company to place a tile '\
-                  'into the Crowsnest Pass (CP) and ignore the terrain fee. This tile placement '\
+                  'into the Crowsnest Pass (F16) and ignore the terrain fee. This tile placement '\
                   'counts as the company’s full track laying step. Closed when used. The CP hex is '\
                   'not reserved; any company may pay to lay a tile there irrespective of the '\
                   'ownership of P19.',
@@ -429,7 +429,7 @@ module Engine
             value: 0,
             revenue: 10,
             desc: 'MAJOR, Phase 3. The Yellowhead Pass. Allows the owning company to place a tile '\
-                  'into the Yellowhead Pass (YP) and ignore the terrain fee. This tile placement '\
+                  'into the Yellowhead Pass (E11) and ignore the terrain fee. This tile placement '\
                   'counts as the company’s full track laying step. Closed when used. The YP hex is '\
                   'not reserved; any company may pay to lay a tile there irrespective of the '\
                   'ownership of P20.',
@@ -459,8 +459,8 @@ module Engine
                   'to place three yellow tiles in addition to its normal track lay. The owning '\
                   'company’s normal track lay and each of the three extra yellow tile lays may be '\
                   'done in any order. These lays are exempt from terrain fees, but may not be used '\
-                  'to build on hexes with mountainous terrain ($120) or in Montreal, Ottawa, '\
-                  'Quebec, Toronto or Winnipeg.',
+                  'to build on hexes with mountainous terrain costing $120 or in Montréal, Ottawa, '\
+                  'Québec, Toronto or Winnipeg.',
             abilities: [
               {
                 type: 'tile_lay',
@@ -608,7 +608,7 @@ module Engine
                   'private company pays its revenue to the owning company until the power is '\
                   'exercised and the company is closed. May be used in conjunction with P12 and/or '\
                   'P30 as part of the same tile placement step. May not be used to remove a town '\
-                  'with a sawmill token (P13).',
+                  'with a sawmill token (placed by P13).',
             abilities: [
               {
                 type: 'tile_lay',
@@ -639,7 +639,7 @@ module Engine
                   'Once acquired, the private company pays its revenue to the owning company until '\
                   'the power is exercised and the company is closed. May be used in conjunction '\
                   'with P12 and/or P29 as part of the same tile placement step. May not be used to '\
-                  'remove a town with a sawmill token (P13).',
+                  'remove a town with a sawmill token (placed by P13).',
             abilities: [
               {
                 type: 'tile_lay',
@@ -858,7 +858,7 @@ module Engine
             text_color: 'black',
           },
           {
-            name: 'MINOR: 3. Quebec & New Brunswick Railway',
+            name: 'MINOR: 3. Québec & New Brunswick Railway',
             sym: 'M3',
             value: 100,
             revenue: 0,
@@ -868,7 +868,7 @@ module Engine
             text_color: 'black',
           },
           {
-            name: 'MINOR: 4. Quebec Central Railway',
+            name: 'MINOR: 4. Québec Central Railway',
             sym: 'M4',
             value: 100,
             revenue: 0,
@@ -899,7 +899,7 @@ module Engine
             text_color: 'black',
           },
           {
-            name: 'MINOR: 7. Montreal & Lachine Railway',
+            name: 'MINOR: 7. Montréal & Lachine Railway',
             sym: 'M7',
             value: 100,
             revenue: 0,
@@ -959,7 +959,7 @@ module Engine
             text_color: 'black',
           },
           {
-            name: 'MINOR: 13. Ontario & Quebec Railway',
+            name: 'MINOR: 13. Ontario & Québec Railway',
             sym: 'M13',
             value: 100,
             revenue: 0,
@@ -1174,7 +1174,7 @@ module Engine
           },
           {
             sym: '3',
-            name: 'Quebec & New Brunswick Railway',
+            name: 'Québec & New Brunswick Railway',
             logo: '1822_ca/3',
             tokens: [0],
             type: 'minor',
@@ -1189,7 +1189,7 @@ module Engine
           },
           {
             sym: '4',
-            name: 'Quebec Central Railway',
+            name: 'Québec Central Railway',
             logo: '1822_ca/4',
             tokens: [0],
             type: 'minor',
@@ -1235,7 +1235,7 @@ module Engine
           },
           {
             sym: '7',
-            name: 'Montreal & Lachine Railway',
+            name: 'Montréal & Lachine Railway',
             logo: '1822_ca/7',
             tokens: [0],
             type: 'minor',
@@ -1329,7 +1329,7 @@ module Engine
           },
           {
             sym: '13',
-            name: 'Ontario & Quebec Railway',
+            name: 'Ontario & Québec Railway',
             logo: '1822_ca/13',
             tokens: [20],
             type: 'minor',
@@ -1736,7 +1736,7 @@ module Engine
           },
           {
             sym: 'QMOO',
-            name: 'Quebec, Montreal, Ottawa and Occidental Railway',
+            name: 'Québec, Montréal, Ottawa and Occidental Railway',
             logo: '1822_ca/QMOO',
             tokens: [0, 100],
             type: 'major',
