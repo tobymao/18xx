@@ -289,10 +289,10 @@ module Engine
           lower_minor, upper_minor = [minor_a, minor_b].sort {|a,b| a.name <=> b.name}
 
           @log << "#{formatted_minor_name(lower_minor)} gives #{format_currency(lower_minor.cash)} to #{corp.name}"
-          lower_minor.spend(lower_minor.cash, corp)
+          lower_minor.spend(lower_minor.cash, corp, check_positive: false)
 
           @log << "#{formatted_minor_name(upper_minor)} gives #{format_currency(upper_minor.cash)} to #{corp.name}"
-          upper_minor.spend(upper_minor.cash, corp)
+          upper_minor.spend(upper_minor.cash, corp, check_positive: false)
 
           corp.owner = lower_minor.owner
           share_pool.move_share(corp.ipo_shares.first, lower_minor.owner)
