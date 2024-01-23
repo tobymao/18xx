@@ -207,7 +207,7 @@ module Engine
         end
 
         def init_stock_market
-          Engine::Game::G1854::StockMarket.new(self.class::MARKET,
+          Engine::StockMarket.new(self.class::MARKET,
                                   self.class::CERT_LIMIT_TYPES,
                                   multiple_buy_types: self.class::MULTIPLE_BUY_TYPES,
                                   hex_market: true)
@@ -372,6 +372,44 @@ module Engine
           end
           super
           company.close! if minor_assigned
+        end
+
+        def possibly_convert(entity)
+          return unless entity&.corporation?
+          return if entity&.shares_split?
+          return unless entity.share_price.type == :share_split
+
+          convert!(entity)
+        end
+
+        def convert!(corporation, quiet: false)
+          corporation.shares_split = true
+
+          @log << "#{corporation.name} converts to a 10-share company" unless quiet
+
+          shares = @_shares.values.select { |share| share.corporation == corporation }
+          shares.each { |share| share.percent /= 2 }
+          corporation.share_holders.transform_values! {|percent| percent / 2 }
+          corporation.share_holders.each do |shareholder, percent|
+            if shareholder.player?
+              amount = (percent/10) * corporation.share_price.price
+              @log << "#{shareholder.name} receives #{format_currency(amount)}" unless quiet
+              @bank.spend(amount, shareholder)
+            end
+          end
+
+          new_shares = Array.new(5) { |i| Share.new(corporation, percent: 10, index: i + 4) }
+          new_shares.each do |share|
+            add_new_share(share)
+          end
+        end
+
+        def add_new_share(share)
+          owner = share.owner
+          corporation = share.corporation
+          corporation.share_holders[owner] += share.percent if owner
+          owner.shares_by_corporation[corporation] << share
+          @_shares[share.id] = share
         end
       end
     end

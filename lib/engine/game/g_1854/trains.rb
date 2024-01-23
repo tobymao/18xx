@@ -25,7 +25,6 @@ module Engine
             distance: 4,
             num: 4,
             price: 320,
-            rusts_on: '4',
           },
           {
             name: '5',

@@ -9,6 +9,11 @@ module Engine
       module Step
         class Dividend < Engine::Step::Dividend
           include Engine::Step::MinorHalfPay
+
+          def change_share_price(entity, payout)
+            super
+            @game.possibly_convert(entity)
+          end
         end
       end
     end
