@@ -44,6 +44,11 @@ module Engine
             short_name: 'Re-enter hexes',
             desc: 'Routes may enter the same hex more than once, so long as no track is re-used.',
           },
+          {
+            sym: :non_operated_full_value,
+            short_name: 'Non-operated shares worth full value',
+            desc: 'Shares of unoperated corps sell for full value',
+          },
         ].freeze
       end
     end
