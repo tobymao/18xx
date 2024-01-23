@@ -36,7 +36,7 @@ module Engine
 
     # Types which are info only and shouldn't
     NON_HIGHLIGHT_TYPES = %i[par safe_par par_1 par_2 par_3 par_overlap safe_par convert_range max_price max_price_1 repar
-                             type_limited].freeze
+                             type_limited share_split].freeze
 
     # Types which count as par
     PAR_TYPES = %i[par par_overlap par_1 par_2 par_3].freeze

@@ -23,6 +23,7 @@ module Engine
         attr_reader :need_auction_or, :auction_finished, :available_mail_contracts
 
         COMPANY_CLASS = G1854::Company
+        CORPORATION_CLASS = G1854::Corporation
         DEPOT_CLASS = G1854::Depot
 
         CURRENCY_FORMAT_STR = '%s G'
@@ -206,7 +207,7 @@ module Engine
         end
 
         def init_stock_market
-          Engine::StockMarket.new(self.class::MARKET,
+          Engine::Game::G1854::StockMarket.new(self.class::MARKET,
                                   self.class::CERT_LIMIT_TYPES,
                                   multiple_buy_types: self.class::MULTIPLE_BUY_TYPES,
                                   hex_market: true)
