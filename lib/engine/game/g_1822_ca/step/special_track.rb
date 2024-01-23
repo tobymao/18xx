@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative '../../g_1822/step/special_track'
+require_relative 'acquisition_track'
 require_relative 'tracker'
 
 module Engine
@@ -25,6 +26,7 @@ module Engine
           end
 
           def actions(entity)
+            return [] if @round.active_step.is_a?(G1822CA::Step::AcquisitionTrack)
             return [] unless entity.company?
 
             super
