@@ -118,11 +118,9 @@ module Engine
     def down_left_hex(_corporation, coordinates)
       r, c = coordinates
       new_coords = [r + 1, c - 1]
-      puts "down_left_hex #{coordinates} #{new_coords}"
       x = share_price(new_coords)
       return new_coords if x
 
-      puts 'old coords'
       coordinates
     end
 
