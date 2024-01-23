@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require './spec/spec_helper'
+require './lib/engine/route'
 
 require 'json'
 require 'pry-byebug'
@@ -45,6 +46,7 @@ module Engine
         do_action(game,      Action::Pass.new(game.current_entity))
         do_action(game,       Action::Bid.new(game.current_entity, company: game.company_by_id('P5'), price: 190))
         do_action(game,       Action::Par.new(game.current_entity, corporation: game.corporation_by_id('KE'), share_price: game.share_price_by_id("67,5,6")))
+        binding.pry
         do_action(game, Action::BuyShares.new(game.current_entity, shares: game.share_by_id('KE_2')))
         do_action(game,      Action::Pass.new(game.current_entity))
         do_action(game,       Action::Par.new(game.current_entity, corporation: game.corporation_by_id('VB'), share_price: game.share_price_by_id("67,5,6")))
@@ -63,8 +65,54 @@ module Engine
         do_action(game,      Action::Pass.new(game.current_entity))
         do_action(game,      Action::Pass.new(game.current_entity))
         do_action(game,      Action::Pass.new(game.current_entity))
+        # SD
+        do_action(game,   Action::LayTile.new(game.current_entity, hex: game.hex_by_id("D22"), tile: game.tile_by_id("1-0"), rotation: 2))
+        do_action(game,  Action::BuyTrain.new(game.current_entity, train: game.train_by_id("2-0"), price: 100, variant: "2"))
+        do_action(game,  Action::BuyTrain.new(game.current_entity, train: game.train_by_id("2-1"), price: 100, variant: "2"))
+        do_action(game,      Action::Pass.new(game.current_entity))
+        # KE
+        do_action(game,   Action::LayTile.new(game.current_entity, hex: game.hex_by_id("C21"), tile: game.tile_by_id("56-0"), rotation: 2))
+        do_action(game,  Action::BuyTrain.new(game.current_entity, train: game.train_by_id("2-2"), price: 100, variant: "2"))
+        do_action(game,  Action::BuyTrain.new(game.current_entity, train: game.train_by_id("2-3"), price: 100, variant: "2"))
+        do_action(game,      Action::Pass.new(game.current_entity))
+        # VB
+        do_action(game,   Action::LayTile.new(game.current_entity, hex: game.hex_by_id("E3"), tile: game.tile_by_id("5-0"), rotation: 3))
+        do_action(game,  Action::BuyTrain.new(game.current_entity, train: game.train_by_id("2-4"), price: 100, variant: "2"))
+        do_action(game,  Action::BuyTrain.new(game.current_entity, train: game.train_by_id("2-5"), price: 100, variant: "2"))
+        do_action(game,      Action::Pass.new(game.current_entity))
+        # SR2
+        do_action(game,      Action::Pass.new(game.current_entity))
+        do_action(game,      Action::Pass.new(game.current_entity))
 
-        puts game.log.map {|m| m.message }
+        do_action(game,      Action::Pass.new(game.current_entity))
+
+        # binding.pry
+        do_action(game, Action::RunRoutes.new(game.current_entity, routes: []))
+        do_action(game,      Action::Pass.new(game.current_entity))
+        do_action(game,      Action::Pass.new(game.current_entity))
+        do_action(game,      Action::Pass.new(game.current_entity))
+        do_action(game,      Action::Pass.new(game.current_entity))
+        do_action(game,      Action::Pass.new(game.current_entity))
+        do_action(game,      Action::Pass.new(game.current_entity))
+        do_action(game,      Action::Pass.new(game.current_entity))
+        do_action(game,      Action::Pass.new(game.current_entity))
+        do_action(game,      Action::Pass.new(game.current_entity))
+        do_action(game,      Action::Pass.new(game.current_entity))
+        do_action(game,      Action::Pass.new(game.current_entity))
+
+        binding.pry
+        game.convert!(game.current_entity)
+        # do_action(game,      Action::Pass.new(game.current_entity))
+        # do_action(game,      Action::Pass.new(game.current_entity))
+        # do_action(game,      Action::Pass.new(game.current_entity))
+        # do_action(game,      Action::Pass.new(game.current_entity))
+        # do_action(game,      Action::Pass.new(game.current_entity))
+        # do_action(game,      Action::Pass.new(game.current_entity))
+        # do_action(game,      Action::Pass.new(game.current_entity))
+        # do_action(game,      Action::Pass.new(game.current_entity))
+        # do_action(game,      Action::Pass.new(game.current_entity))
+
+        # puts game.log.map {|m| m.message }
         puts "==="
         puts game.exception
         puts "==="
