@@ -6,24 +6,26 @@ module Engine
       module Entities
         COMPANIES = [
           {
-            name: 'Michigan Southern',
+            name: 'Michigan Southern (Minor)',
             value: 60,
             discount: -80,
             revenue: 0,
-            desc: 'Starts with $60 in treasury, a 2 train, and a token in Detroit (C15). In ORs, '\
-                  'this is the first minor to operate. Splits revenue evenly with owner. Buyer '\
-                  'pays an extra $80 ("debt").',
+            desc: 'Starts with $60, a 2 train, and a token in Detroit (C15). Always operates first. Its train may run in OR1. '\
+                  'Splits dividends equally with owner. Purchasing company receives its cash, train and token '\
+                  'but cannot run this 2 train in the same OR in which the MS operated. ',
             sym: 'MS',
             color: nil,
           },
           {
-            name: 'Big 4',
+            name: 'Big 4 (Minor)',
             value: 40,
             discount: -60,
             revenue: 0,
-            desc: 'Starts with $40 in treasury, a 2 train, and a token in Indianapolis (G9). In '\
-                  'ORs, this is the second minor to operate. Splits revenue evenly with owner. '\
-                  'Buyer pays an extra $60 ("debt").',
+            desc: 'Starts with $40, a 2 train, and a token in Indianapolis (G9). '\
+                  'Always operates after the MS and before other corporations. '\
+                  'Its train may run in OR1. '\
+                  'Splits dividends equally with owner. Purchasing company receives its cash, train and token '\
+                  'but cannot run this 2 train in the same OR in which the BIG4 operated. ',
             sym: 'BIG4',
             color: nil,
           },
@@ -31,10 +33,9 @@ module Engine
             name: 'Chicago and Western Indiana',
             value: 60,
             revenue: 10,
-            desc: 'Reserves a token slot in Chicago (D6), in the city next to E7. The owning '\
-                  'corporation may place an extra token there at no cost, with no connection '\
-                  'needed. Once this company is purchased by a corporation, the slot that was '\
-                  'reserved may be used by other corporations.',
+            desc: 'Reserves a token slot in the southeast entrance to Chicago (D6) next to E7. Owning '\
+                  'corporation may place an extra token there for free (no connection required). '\
+                  'Reservation is removed once this company is purchased by a corporation or closed.',
             sym: 'C&WI',
             abilities: [
               {
@@ -56,8 +57,8 @@ module Engine
             name: 'Mail Contract',
             value: 80,
             revenue: 0,
-            desc: 'Adds $10 per location visited by any one train of the owning corporation. Never '\
-                  'closes once purchased by a corporation.',
+            desc: 'Adds a $10 bonus for each city visited by a single train of the owning corporation. '\
+                  'Never closes once purchased by a corporation. Closes on Phase III if owned by a player',
             sym: 'MAIL',
             abilities: [{ type: 'close', on_phase: 'never', owner_type: 'corporation' }],
             color: nil,
@@ -66,8 +67,8 @@ module Engine
             name: 'Tunnel Blasting Company',
             value: 60,
             revenue: 20,
-            desc: 'Reduces, for the owning corporation, the cost of laying all mountain tiles and '\
-                  'tunnel/pass hexsides by $20.',
+            desc: 'Reduces the cost of laying tiles on mountains (hexes with a brown triangle) and '\
+                  'connecting hexes with tunnels (brown hex edges) by $20 for the owning corporation.',
             sym: 'TBC',
             abilities: [
               {
@@ -83,8 +84,9 @@ module Engine
             name: 'Meat Packing Company',
             value: 60,
             revenue: 15,
-            desc: 'The owning corporation may assign the Meat Packing Company to either St. Louis ('\
-                  'I1) or Chicago (D6), to add $30 to all routes it runs to this location.',
+            desc: 'Adds a $30 bonus to either St. Louis (I1) or Chicago (D6) for the owning corporation. '\
+                  'Bonus must be assigned after being purchased by a corporation. '\
+                  'Bonus persists after this company closes in Phase III but is removed in Phase IV.',
             sym: 'MPC',
             abilities: [
               {
@@ -107,11 +109,12 @@ module Engine
             name: 'Steamboat Company',
             value: 40,
             revenue: 10,
-            desc: 'At the beginning of each Operating Round, the owning player may assign the '\
-                  'Steamboat Company to a corporation/minor and to a port location (B8, C5, D14, '\
-                  'G19, I1). Once per Operating Round, the owning corporation may assign the '\
-                  'Steamboat Company to a port location. Add $20 per port symbol to all routes run '\
-                  'to the assigned location by the owning/assigned corporation/minor.',
+            desc: 'Add a bonus to the value of one port city, either a $40 bonus to Wheeling (G19) / Holland (B8) '\
+                  'or a $20 bonus to Chicago Conn. (C5) / Toledo (D14) / St. Louis (I1). '\
+                  'At the beginning of each OR, this company\'s owner may reassign this bonus '\
+                  'to a different port city and/or train company (including minors). '\
+                  'Once purchased by a corporation, it becomes permanently assigned to that corporation. '\
+                  'Bonus persists after this company closes in Phase III but is removed in Phase IV.',
             sym: 'SC',
             abilities: [
               {
@@ -147,8 +150,8 @@ module Engine
             name: 'Lake Shore Line',
             value: 40,
             revenue: 15,
-            desc: 'The owning corporation may make an extra $0 cost tile upgrade of either '\
-                  'Cleveland (E17) or Toledo (D14), but not both.',
+            desc: 'Owning corporation may make an extra free green tile upgrade of either '\
+                  'Cleveland (E17) or Toledo (D14).',
             sym: 'LSL',
             abilities: [
               {
@@ -168,9 +171,10 @@ module Engine
             name: 'Michigan Central',
             value: 40,
             revenue: 15,
-            desc: "The owning corporation may lay up to two extra $0 cost yellow tiles in the MC's "\
-                  'reserved hexes (B10, B12). The owning corporation does not need to be connected to those hexes. '\
-                  'If two tiles are laid, they must connect to each other.',
+            desc: 'Owning corporation may lay up to two extra free yellow tiles '\
+                  'in reserved hexes B10 and B12. '\
+                  'If both tiles are laid, they must connect to each other. '\
+                  'Owning corporation does not need to be connected to either hex to use this ability.',
             sym: 'MC',
             abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: %w[B10 B12] },
                         {
@@ -189,9 +193,10 @@ module Engine
             name: 'Ohio & Indiana',
             value: 40,
             revenue: 15,
-            desc: "The owning corporation may lay up to two extra $0 cost yellow tiles in the O&I's "\
-                  'reserved hexes (F14, F16). The owning corporation does not need to be connected to those hexes. '\
-                  'If two tiles are laid, they must connect to each other.',
+            desc: 'Owning corporation may lay up to two extra free yellow tiles '\
+                  'in reserved hexes F14 and F15. '\
+                  'If both tiles are laid, they must connect to each other. '\
+                  'Owning corporation does not need to be connected to either hex to use this ability.',
             sym: 'O&I',
             abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: %w[F14 F16] },
                         {
@@ -211,8 +216,9 @@ module Engine
             sym: 'BT',
             value: 40,
             revenue: 10,
-            desc: 'The owning corporation may place a $20 marker in Cincinnati (H12), to '\
-                  'add $20 to all of its routes run to this location.',
+            desc: 'Adds a $20 bonus to Cincinnati (H12) for the owning corporation. '\
+                  'Bonus must be assigned after being purchased by a corporation. '\
+                  'Bonus persists after this company closes in Phase III but is removed in Phase IV.',
             abilities: [
               {
                 type: 'assign_hexes',
@@ -235,9 +241,9 @@ module Engine
             sym: 'LM',
             value: 40,
             revenue: 15,
-            desc: 'If no track exists from Cincinnati (H12) to Dayton (G13), the '\
-                  'owning corporation may lay/upgrade one extra $0 cost tile in '\
-                  'each of these hexes that adds connecting track.',
+            desc: 'If no track connects Cincinnati (H12) to Dayton (G13), the '\
+                  'owning corporation may lay and/or upgrade an extra free tile in each hex to connect them. '\
+                  'Owning corporation does not need to be connected to either hex to use this ability.',
             abilities: [
               {
                 type: 'tile_lay',
@@ -268,9 +274,9 @@ module Engine
             abilities: [
             {
               type: 'token',
-              description: 'Reserved $40/$60 Ft. Wayne (E11) token',
+              description: 'Reserved $40 token ($60 to "teleport" there if unconnected) in Ft. Wayne (E11)',
               desc_detail: 'May place token in Ft. Wayne (E11) for $40 if connected, $60 '\
-                           'otherwise. Token slot is reserved until Phase IV.',
+                           'otherwise. This token slot is reserved until Phase IV.',
               hexes: ['E11'],
               price: 40,
               teleport_price: 60,
@@ -306,9 +312,9 @@ module Engine
             abilities: [
               {
                 type: 'token',
-                description: 'Reserved $40/$100 Cincinnati (H12) token',
+                description: 'Reserved $40 token ($100 to "teleport" there if unconnected) in Cincinnati (H12)',
                 desc_detail: 'May place token in Cincinnati (H12) for $40 if connected, $100 '\
-                             'otherwise. Token slot is reserved until Phase IV.',
+                             'otherwise. This token slot is reserved until Phase IV.',
                 hexes: ['H12'],
                 price: 40,
                 count: 1,
@@ -346,8 +352,8 @@ module Engine
             abilities: [
               {
                 type: 'token',
-                description: 'Reserved $40 Erie (D20) token',
-                desc_detail: 'May place $40 token in Erie (D20) if connected. Token slot is '\
+                description: 'Reserved $40 token in Erie (D20)',
+                desc_detail: 'May place $40 token in Erie (D20) if connected. This token slot is '\
                              'reserved until Phase IV.',
                 hexes: ['D20'],
                 count: 1,
@@ -387,8 +393,8 @@ module Engine
               {
                 type: 'tile_lay',
                 discount: 20,
-                description: 'Free yellow tile lays on hexes E5, F6, G5, H6, J4',
-                desc_detail: 'May lay yellow tiles for free on hexes marked with an IC-icon (E5, '\
+                description: 'Free yellow tile lays on "IC" hexes E5, F6, G5, H6 and J4',
+                desc_detail: 'IC lays yellow tiles for free on hexes marked with an IC icon (E5, '\
                              'F6, G5, H6 and J4).',
                 passive: true,
                 when: 'track_and_token',
@@ -398,7 +404,7 @@ module Engine
               {
                 type: 'token',
                 description: 'Reserved $40 Centralia (I5) token',
-                desc_detail: 'May place $40 token in Centralia (I5) if connected. Token slot is reserved until '\
+                desc_detail: 'May place $40 token in Centralia (I5) if connected. This token slot is reserved until '\
                              'Phase IV.',
                 hexes: ['I5'],
                 count: 1,
@@ -411,9 +417,8 @@ module Engine
               },
               {
                 type: 'base',
-                description: 'Receives subsidy equal to its par price',
-                desc_detail: 'Upon being launched IC receives a subsidy equal to its par price '\
-                             'paid by the bank into its treasury.',
+                description: 'Receives an initial subsidy equal to its par price',
+                desc_detail: 'When floated IC receives a one-time subsidy equal to its par price into its treasury.',
                 remove: 'par',
               },
             ],
