@@ -58,6 +58,7 @@ module View
 
           children = []
 
+          children.concat(render_bankruptcy) if @current_actions.include?('bankrupt')
           children << h(Choose) if @current_actions.include?('choose') && @step.choice_available?(@current_entity)
           children << h(FlexibleBuy) if @current_actions.include?('buy_shares') && @flexible_player
 
@@ -150,6 +151,24 @@ module View
           end
 
           [h(:button, { on: { click: merge } }, @step.merge_action)]
+        end
+
+        def render_bankruptcy
+          resign = lambda do
+            process_action(Engine::Action::Bankrupt.new(@current_entity))
+          end
+
+          props = {
+            style: {
+              width: 'max-content',
+            },
+            on: { click: resign },
+          }
+
+          [h(:div, [
+            h(:button, props, 'Declare Bankruptcy'),
+            h(:div, @step.bankruptcy_description(@current_entity)),
+          ])]
         end
 
         def render_payoff_player_debt_button
