@@ -21,25 +21,73 @@ module Engine
         include Tiles
         include Trains
 
+        # Minors that have been pledged in bids to start public companies.
+        # Used by {Step::MajorAuction} to pass this information to
+        # {Step::BuySellParSharesCompanies}. This is a hash whose keys are
+        # the major corporations and the values are the minor corporations.
+        attr_accessor :pledged_minors
+
         MIN_BID_INCREMENT = 5
         MUST_BID_INCREMENT_MULTIPLE = true
         COMPANY_SALE_FEE = 0 # Fee for selling Guillaume-Luxembourg to the bank.
+
+        SELL_BUY_ORDER = :sell_buy
+        SELL_AFTER = :operate
 
         CAPITALIZATION = :incremental
         HOME_TOKEN_TIMING = :par
 
         MUST_BUY_TRAIN = :always # Just for majors, minors are handled in #must_buy_train?
+        BANKRUPTCY_ALLOWED = true
+        BANKRUPTCY_ENDS_GAME_AFTER = :all_but_one
 
         def setup
           super
 
           setup_tokens
+          @pledged_minors = major_corporations.to_h { |corp| [corp, nil] }
         end
 
-        def new_auction_round
+        def next_round!
+          @round =
+            case @round
+            when Round::Auction
+              if @turn == 1
+                init_round_finished
+                reorder_players
+              end
+              new_stock_round
+            when Round::Stock
+              @operating_rounds = @phase.operating_rounds
+              reorder_players
+              new_operating_round
+            when Round::Operating
+              if @round.round_num < @operating_rounds
+                or_round_finished
+                new_operating_round(@round.round_num + 1)
+              else
+                @turn += 1
+                or_round_finished
+                or_set_finished
+                major_auction_round
+              end
+            end
+        end
+
+        def init_round
+          minor_auction_round
+        end
+
+        def minor_auction_round
           Engine::Round::Auction.new(self, [
             G18Ardennes::Step::HomeHexTile,
             G18Ardennes::Step::MinorAuction,
+          ])
+        end
+
+        def major_auction_round
+          Engine::Round::Auction.new(self, [
+            G18Ardennes::Step::MajorAuction,
           ])
         end
 
@@ -48,7 +96,7 @@ module Engine
             Engine::Step::DiscardTrain,
             Engine::Step::Exchange,
             Engine::Step::SpecialTrack,
-            Engine::Step::BuySellParSharesCompanies,
+            G18Ardennes::Step::BuySellParSharesCompanies,
           ])
         end
 
@@ -63,6 +111,20 @@ module Engine
             Engine::Step::DiscardTrain,
             Engine::Step::BuyTrain,
           ], round_num: round_num)
+        end
+
+        def operating_order
+          minor_corporations.select(&:ipoed).sort +
+          major_corporations.select(&:ipoed).sort
+        end
+
+        # Checks whether a player really is bankrupt.
+        def can_go_bankrupt?(player, _corporation)
+          return super if @round.is_a?(Round::Operating)
+
+          # Has the player won the auction for a major company concession
+          # that they cannot afford to start?
+          bankrupt?(player)
         end
       end
     end

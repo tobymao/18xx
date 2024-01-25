@@ -16,6 +16,7 @@ module Engine
 
         def lay_tile_action(action)
           hex = action.hex
+          old_tile = hex.tile
           super
 
           if @game.mine_hex?(action.hex) && old_tile.color == :white
