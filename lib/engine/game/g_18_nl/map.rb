@@ -183,7 +183,7 @@ module Engine
             ['E4'] => 'city=revenue:0;upgrade=cost:80,terrain:water',
           },
           yellow: {
-            ['E6'] => 'city=revenue:40,loc:1;city=revenue:40,loc:5;path=a:1,b:_0;path=a:5,b:_1;upgrade=cost:80,terrain:water;'\
+            ['E6'] => 'city=revenue:40,loc:2;city=revenue:40,loc:5;path=a:1,b:_0;path=a:5,b:_1;upgrade=cost:80,terrain:water;'\
                       'label=X',
             ['G2'] => 'city=revenue:30;city=revenue:30,loc:5;path=a:3,b:_0;path=a:4,b:_1;label=X',
             ['H3'] => 'city=revenue:30;city=revenue:30,loc:5;path=a:3,b:_0;path=a:5,b:_1;upgrade=cost:80,terrain:water;label=X',
