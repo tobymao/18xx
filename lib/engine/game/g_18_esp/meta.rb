@@ -18,6 +18,14 @@ module Engine
         GAME_INFO_URL = ''
 
         PLAYER_RANGE = [3, 6].freeze
+
+        OPTIONAL_RULES = [
+          {
+            sym: :core,
+            short_name: 'Core game',
+            desc: 'Core game without a variable setup',
+          },
+        ].freeze
       end
     end
   end

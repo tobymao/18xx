@@ -114,6 +114,15 @@ module Engine
             abilities: [{ type: 'shares', shares: 'CRB_1' }],
           },
           {
+            sym: 'P6',
+            name: 'Ferrocarril Vasco-Navarro',
+            value: 160,
+            revenue: 20,
+            desc: 'It provides a 10% certificate from the Southern company CRB.',
+            color: nil,
+            abilities: [{ type: 'shares', shares: 'random_share' }],
+          },
+          {
             sym: 'P7',
             name: 'Ferrocarril de Carreño',
             value: 190,
@@ -125,7 +134,6 @@ module Engine
           },
         ].freeze
 
-        # corporations with different properties in 1st Edition
         CORPORATIONS = [
           {
             float_percent: 40,
@@ -342,6 +350,114 @@ module Engine
             startable: true,
           },
         ].freeze
+
+        EXTRA_CORPORATIONS = [
+        {
+          float_percent: 40,
+          sym: 'SFVA',
+          name: 'Sociedad General de Ferrocarriles Vasco Asturiana',
+          logo: '18_esp/SFVA',
+          coordinates: 'D6',
+          color: '#75151E',
+          max_ownership_percent: 60,
+          tokens: [0, 50, 50, 50, 50],
+          type: 'major',
+          destination: 'C1',
+        },
+        {
+          float_percent: 40,
+          sym: 'FDC',
+          name: 'Ferrocarril del Cantábrico',
+          logo: '18_esp/FDC',
+          coordinates: 'I5',
+          color: '#5D9B9B',
+          max_ownership_percent: 60,
+          tokens: [0, 50, 50, 50, 50],
+          type: 'major',
+          destination: 'G5',
+        },
+        {
+          float_percent: 40,
+          sym: 'GSSR',
+          name: 'Great Southern of Spain Railway Company Limited',
+          logo: '18_esp/GSSR',
+          coordinates: 'I29',
+          city: 0,
+          max_ownership_percent: 60,
+          tokens: [0, 50, 50, 50, 50, 50],
+          color: '#6A5F31',
+          type: 'major',
+          destination: 'F32',
+        },
+        {
+          float_percent: 40,
+          sym: 'AVT',
+          name: 'Sociedad de los Ferrocarriles de Almansa a Valencia y Tarragona',
+          logo: '18_esp/AVT',
+          coordinates: 'K25',
+          city: 0,
+          max_ownership_percent: 60,
+          tokens: [0, 50, 50, 50, 50, 50],
+          color: '#7DCCE5',
+          type: 'major',
+          destination: 'L22',
+        },
+        {
+          float_percent: 40,
+          sym: 'TBF',
+          name: 'Compañía de los Ferrocarriles de Tarragona a Barcelona y Francia',
+          logo: '18_esp/TBF',
+          coordinates: 'L22',
+          city: 0,
+          max_ownership_percent: 60,
+          tokens: [0, 50, 50, 50, 50, 50],
+          color: '#F4A900',
+          type: 'major',
+          destination: 'N18',
+        },
+
+        {
+          sym: 'MH',
+          name: 'Ferrocarril de Madrid a Hendaya',
+          logo: '18_esp/MH',
+          coordinates: 'E21',
+          color: '#4C2F27',
+          tokens: [0],
+          type: 'minor',
+          shares: [100],
+          float_percent: 100,
+          max_ownership_percent: 100,
+          startable: true,
+        },
+
+        {
+          sym: 'CA',
+          name: 'Compañía del Ferrocarril Central de Aragón',
+          logo: '18_esp/CA',
+          coordinates: 'E21',
+          color: '#2E3A23',
+          tokens: [0],
+          type: 'minor',
+          shares: [100],
+          float_percent: 100,
+          max_ownership_percent: 100,
+          startable: true,
+        },
+        {
+          sym: 'CSE',
+          name: 'Compañía de los Caminos de Hierro del Sur de España ',
+          logo: '18_esp/CSE',
+          coordinates: 'E21',
+          color: '#2E3A23',
+          tokens: [0],
+          type: 'minor',
+          shares: [100],
+          float_percent: 100,
+          max_ownership_percent: 100,
+          startable: true,
+        },
+
+      ].freeze
       end
     end
   end
