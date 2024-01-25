@@ -185,7 +185,7 @@ module Engine
           'B3' => 'Le Havre',
           'B9' => 'Calais',
           'B11' => 'Dunkerque',
-          'B15' => 'Oostendee',
+          'B15' => 'Oostende',
           'C6' => 'Blangy-sur-Bresle & Abeville',
           'C14' => 'Brugge',
           'C18' => 'Netherlands',

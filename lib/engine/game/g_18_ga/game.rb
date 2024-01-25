@@ -79,6 +79,8 @@ module Engine
 
           neutral.tokens.each { |token| token.type = :neutral }
 
+          corporation_by_id('CoG').tokens.pop if @optional_rules&.include?(:remove_cog_token)
+
           city_by_id('E1-0-0').place_token(neutral, neutral.next_token)
           city_by_id('J4-0-0').place_token(neutral, neutral.next_token)
 

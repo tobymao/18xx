@@ -312,11 +312,14 @@ module Engine
           french_starting_corporation.add_ability(
             Engine::Ability::Description.new(type: 'description', description: 'May not redeem shares')
           )
-          @log << "-- The French major shareholding corporation is the #{french_starting_corporation.id}"
+          @log << "-- The French major shareholding corporation is the #{french_starting_corporation.id} --"
+          remove_extra_french_major_shareholding_companies
+
           belgian_starting_corporation = corporation_by_id('Belge')
 
           remove_random_teleport_company
-          remove_extra_french_major_shareholding_companies
+          teleport_company = @companies.find { |c| c.value == 50 }
+          @log << "-- The teleport company is #{teleport_company.name} --"
 
           @players.each do |player|
             share_pool.transfer_shares(french_starting_corporation.ipo_shares.last.to_bundle, player)

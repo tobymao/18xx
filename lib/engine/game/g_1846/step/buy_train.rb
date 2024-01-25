@@ -106,11 +106,16 @@ module Engine
             return variants if (variants.size < 2) || train.owned_by_corporation?
 
             min, max = variants.sort_by { |v| v[:price] }
-            return [min] if ((min[:price] <= entity.cash) && (entity.cash < max[:price])) || entity.receivership?
+            pres_cash = president_may_contribute?(entity) ? entity.owner.cash : 0
+            if ((min[:price] <= entity.cash + pres_cash) && (entity.cash + pres_cash < max[:price])) || entity.receivership?
+              return [min]
+            end
 
+            # player is not allowed to sell shares and then buy a "weaker" train if the corp could already afford a weaker train
             if (last_cash_raised = @last_share_sold_price || @last_share_issued_price)
               must_spend = entity.cash - last_cash_raised + 1
               must_spend += entity.owner.cash if @last_share_sold_price
+
               variants.reject! { |v| v[:price] < must_spend }
             end
 
