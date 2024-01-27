@@ -9,6 +9,7 @@ module Engine
         include Game::Meta
 
         DEV_STAGE = :prealpha
+        PROTOTYPE = true
 
         GAME_SUBTITLE = 'The Rails of Fremont County and the Royal Gorge Wars'
         GAME_DESIGNER = 'Kayla Ross & Denman Scofield'
