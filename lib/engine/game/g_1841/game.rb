@@ -2085,10 +2085,10 @@ module Engine
           tshares.each_with_index do |share, i|
             if i.even?
               @log << "Moving #{share.percent}% share of #{share.corporation.name} from #{old.name} to #{newa.name} treasury"
-              @share_pool.transfer_shares(share.to_bundle, newa, allow_president_change: true)
+              @share_pool.transfer_shares(share.to_bundle, newa, allow_president_change: true, corporate_transfer: true)
             else
               @log << "Moving #{share.percent}% share of #{share.corporation.name} from #{old.name} to #{newb.name} treasury"
-              @share_pool.transfer_shares(share.to_bundle, newb, allow_president_change: true)
+              @share_pool.transfer_shares(share.to_bundle, newb, allow_president_change: true, corporate_transfer: true)
             end
           end
         end
