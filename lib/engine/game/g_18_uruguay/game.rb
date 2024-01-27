@@ -249,6 +249,47 @@ module Engine
             end
           end
         end
+
+        def operating_round(round_num)
+          Round::Operating.new(self, [
+            Engine::Step::Bankrupt,
+            Engine::Step::Exchange,
+            G18Uruguay::Step::CornFarm,
+            G18Uruguay::Step::SheepFarm,
+            G18Uruguay::Step::CattleFarm,
+            Engine::Step::SpecialTrack,
+            Engine::Step::SpecialToken,
+            Engine::Step::HomeToken,
+            Engine::Step::Track,
+            Engine::Step::Token,
+            Engine::Step::Route,
+            Engine::Step::Dividend,
+            Engine::Step::DiscardTrain,
+            Engine::Step::BuyTrain,
+          ], round_num: round_num)
+        end
+
+        def abilities_ignore_owner(entity, type = nil, time: nil, on_phase: nil, passive_ok: nil, strict_time: nil)
+          return nil unless entity
+
+          active_abilities = entity.all_abilities.select do |ability|
+            ability_right_type?(ability, type) &&
+              ability_usable_this_or?(ability) &&
+              ability_right_time?(ability,
+                                  time,
+                                  on_phase,
+                                  passive_ok.nil? ? true : passive_ok,
+                                  strict_time.nil? ? true : strict_time) &&
+              ability_usable?(ability)
+          end
+
+          active_abilities.each { |a| yield a, a.owner } if block_given?
+
+          return nil if active_abilities.empty?
+          return active_abilities.first if active_abilities.one?
+
+          active_abilities
+        end
       end
     end
   end
