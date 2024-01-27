@@ -14,7 +14,7 @@ module Engine
         GAME_DESIGNER = 'Pontus Nilsson'
         GAME_LOCATION = 'Uruguay'
         GAME_PUBLISHER = :self_published
-        GAME_RULES_URL = 'https://boardgamegeek.com/file/download_redirect/35ac0b10c5ac19b363b82a4b572fb2a3d72b482baa0a61e4/18Uruguay_rules-0978.pdf'
+        GAME_RULES_URL = 'https://boardgamegeek.com/filepage/264279/18uruguay-english-rules'
         GAME_INFO_URL = ''
 
         PLAYER_RANGE = [3, 6].freeze
