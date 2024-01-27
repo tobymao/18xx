@@ -13,6 +13,12 @@ module Engine
             @connected_destination_nodes = []
           end
 
+          def actions(entity)
+            return [] if @game.destinated?(entity)
+
+            super
+          end
+
           def auto_actions(entity)
             return [Engine::Action::Pass.new(entity)] unless destination_node_check?(entity)
 
@@ -91,6 +97,12 @@ module Engine
               return true if path.nodes.include?(node_b)
             end
             false
+          end
+
+          # not actually replacing a token, but ICR sometimes needs to choose
+          # its home and it might need to choose a city that is full of tokens
+          def can_replace_token?(entity, _token)
+            entity == @game.icr
           end
         end
       end

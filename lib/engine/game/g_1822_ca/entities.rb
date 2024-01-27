@@ -1704,7 +1704,6 @@ module Engine
             destination_loc: '3.5',
             destination_exits: [0, 1, 2, 3, 4, 5],
             destination_icon: '1822_ca/ICR_DEST',
-            destination_icon_in_city_slot: [2, 0],
           },
           {
             sym: 'NTR',
