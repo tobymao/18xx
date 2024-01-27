@@ -62,7 +62,24 @@ module Engine
             'color' => 'green',
             'code' => 'city=revenue:40,slots:2;path=a:2,b:_0;path=a:3,b:_0;path=a:5,b:_0;label=S',
           },
-          # TODO: 3-hex royal gorge tile
+          'RG-D12-G' => {
+            'count' => 1,
+            'color' => 'green',
+            'code' => 'city=revenue:30;path=a:2,b:_0;path=a:5,b:_0;border=edge:1',
+            'hidden' => 1,
+          },
+          'RG-E13-G' => {
+            'count' => 1,
+            'color' => 'green',
+            'code' => 'town=revenue:40;path=a:2,b:_0;path=a:4,b:_0;border=edge:1',
+            'hidden' => 1,
+          },
+          'RG-F12-G' => {
+            'count' => 1,
+            'color' => 'green',
+            'code' => 'city=revenue:60;path=a:1,b:_0;path=a:4,b:_0;border=edge:1',
+            'hidden' => 1,
+          },
           # brown
           '39' => 2,
           '40' => 1,
@@ -90,7 +107,24 @@ module Engine
             'color' => 'brown',
             'code' => 'city=revenue:60,slots:2;path=a:2,b:_0;path=a:3,b:_0;path=a:5,b:_0;label=S',
           },
-          # TODO: 3-hex royal gorge tile
+          'RG-D12-B' => {
+            'count' => 1,
+            'color' => 'brown',
+            'code' => 'city=revenue:40;path=a:2,b:_0;path=a:5,b:_0;border=edge:1',
+            'hidden' => 1,
+          },
+          'RG-E13-B' => {
+            'count' => 1,
+            'color' => 'brown',
+            'code' => 'town=revenue:60;path=a:2,b:_0;path=a:4,b:_0;border=edge:1',
+            'hidden' => 1,
+          },
+          'RG-F12-B' => {
+            'count' => 1,
+            'color' => 'brown',
+            'code' => 'city=revenue:80;path=a:1,b:_0;path=a:4,b:_0;border=edge:1',
+            'hidden' => 1,
+          },
           # gray
           '171' => 1,
         }.freeze
@@ -133,28 +167,27 @@ module Engine
             %w[N2 G3 B4 F4 L4 N4 C5 G5 M5 H6 N6 C7 G7 M7 F8 E9 K9 M9 H10 L10 K11
                M11 J12 N12 G13 K13 M13 N14 G15 I15 H16 J16 L16 E17 K17 H18 G19] => '',
             # mines only
-            %w[E7 H8 F18] => 'icon=image:18_royal_gorge/mine,sticky:1,name:mine;',
+            %w[E7 H8 F18] => 'icon=image:18_royal_gorge/mine,name:mine;',
             # mountains
             %w[I11 J10 L6] => 'upgrade=cost:10,terrain:mountain;',
-            %w[J8] => 'upgrade=cost:10,terrain:mountain;icon=image:18_royal_gorge/mine,sticky:1,name:mine;',
+            %w[J8] => 'upgrade=cost:10,terrain:mountain;icon=image:18_royal_gorge/mine,name:mine;',
             %w[C9 D16 E5 I5 J4 J6 K5] => 'upgrade=cost:20,terrain:mountain;',
-            %w[B10 D4 D6 D8 D18] => 'upgrade=cost:30,terrain:mountain;icon=image:18_royal_gorge/mine,sticky:1,name:mine;',
+            %w[B10 D4 D6 D8 D18] => 'upgrade=cost:30,terrain:mountain;icon=image:18_royal_gorge/mine,name:mine;',
             # water
-            %w[K15 M15] => 'upgrade=cost:20,terrain:water;icon=image:18_royal_gorge/mine,sticky:1,name:mine',
+            %w[K15 M15] => 'upgrade=cost:20,terrain:water;icon=image:18_royal_gorge/mine,name:mine',
             %w[G11 J14 N16] => 'upgrade=cost:20,terrain:water;',
             # towns
-            %w[B8 C3 G9 I17 K3 L8 M3] => 'town=revenue:0;',
+            %w[B8 C3 G9 I17 K3 M3] => 'town=revenue:0;',
             %w[E19 F16] => 'town=revenue:0;upgrade=cost:10,terrain:mountain;',
-            %w[H4 I9 F6 H14 L12] => 'town=revenue:0;icon=image:18_royal_gorge/mine,sticky:1,name:mine;',
+            %w[H4 I9 F6 H14 L12] => 'town=revenue:0;icon=image:18_royal_gorge/mine,name:mine;',
             %w[E3] => 'town=revenue:0;label=R',
-            %w[I13] => 'town=revenue:0;upgrade=cost:20,terrain:water;',
             # cities
             %w[G17 K7] => 'city=revenue:0',
-            %w[B6] => 'city=revenue:0;icon=image:18_royal_gorge/mine,sticky:1,name:mine;'\
-                      'icon=image:18_royal_gorge/mine,sticky:1,name:mine;upgrade=cost:20,terrain:water,loc:1.5;',
+            %w[B6] => 'city=revenue:0;icon=image:18_royal_gorge/mine,name:mine;'\
+                      'icon=image:18_royal_gorge/mine,name:mine;upgrade=cost:20,terrain:water,loc:1.5;',
             %w[C11] => 'city=revenue:0;upgrade=cost:20,terrain:water;label=S',
-            %w[I7] => 'city=revenue:0;icon=image:18_royal_gorge/mine,sticky:1,name:mine;'\
-                      'icon=image:18_royal_gorge/mine,sticky:1,name:mine;',
+            %w[I7] => 'city=revenue:0;icon=image:18_royal_gorge/mine,name:mine;'\
+                      'icon=image:18_royal_gorge/mine,name:mine;',
             %w[H12 L14] => 'city=revenue:0;upgrade=cost:20,terrain:water;',
           },
           yellow: {
@@ -199,6 +232,25 @@ module Engine
                        'path=a:5,b:_0;border=edge:0;',
             ['C17'] => 'city=groups:Silverton,revenue:yellow_70|green_60|brown_50|gray_40,hide:1;'\
                        'path=a:4,b:_0;path=a:5,b:_0;border=edge:3;',
+          },
+        }.freeze
+
+        HOME_TOWN_HEXES = {
+          'FCC' => {
+            city: {
+              %w[I13] => 'city=revenue:0;upgrade=cost:20,terrain:water;',
+            },
+            town: {
+              %w[I13] => 'town=revenue:0;upgrade=cost:20,terrain:water;',
+            },
+          },
+          'NO' => {
+            city: {
+              %w[L8] => 'city=revenue:0;',
+            },
+            town: {
+              %w[L8] => 'town=revenue:0;',
+            },
           },
         }.freeze
       end
