@@ -225,6 +225,11 @@ module Engine
 
         MINERAL_HEXES = %w[A7 A9 B4 B12 D10 E15 F2 H10 I7 J2 J10 K5 K13 L10 H2 E5 G13].freeze
 
+        X_RESTRICTED_UPGRADES = {
+          'X2' => %w[X4 X7],
+          'X3' => %w[X5 X6 X7],
+        }.freeze
+
         def reservation_corporations
           corporations + minors
         end
@@ -459,6 +464,9 @@ module Engine
 
         def upgrades_to?(from, to, special = false, selected_company: nil)
           return false if to.name == T_TILE && !selected_company
+
+          # not needed for laying tiles, but keeps the tiles tab from lying to the player
+          return false if X_RESTRICTED_UPGRADES.key?(from.name) && !X_RESTRICTED_UPGRADES[from.name].include?(to.name)
 
           super
         end

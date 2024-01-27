@@ -30,7 +30,7 @@ module Engine
             min_price: 1,
             max_price: 45,
             desc: 'When this private is bought by a company, the president of the company may choose to add or remove '\
-                  'a 3/4/5/6 train to/from the depot. If a train is added, it must be of the '\
+                  'a 2/3/4/5/6 train to/from the depot. If a train is added, it must be of the '\
                   'current phase or later. This will close the company. Can be sold to a corporation for ₡1-₡45.',
             abilities: [],
             color: nil,
