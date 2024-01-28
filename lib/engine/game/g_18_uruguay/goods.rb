@@ -45,6 +45,13 @@ module Engine
           true if route.corporation == @rptla
           !visits_include_port?(visits) || train_with_goods?(route.train)
         end
+
+        def goods_on_train(train)
+          m = train.name.match(/.*\+.*(?<count>\d+).*/)
+          return 0 if m.nil?
+
+          m[:count]&.to_i
+        end
       end
     end
   end

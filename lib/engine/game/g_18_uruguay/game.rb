@@ -8,7 +8,9 @@ require_relative 'companies'
 require_relative 'trains'
 require_relative 'phases'
 require_relative 'goods'
+require_relative 'loans'
 require_relative 'step/route_rptla'
+require_relative '../../loan'
 
 module Engine
   module Game
@@ -24,6 +26,8 @@ module Engine
         include Trains
         include Phases
         include Goods
+        include InterestOnLoans
+        include Loans
 
         EBUY_SELL_MORE_THAN_NEEDED = true
 
@@ -54,6 +58,7 @@ module Engine
         RPTLA_STARTING_PRICE = 50
         RPTLA_STOCK_ROW = 11
         NUMBER_OF_LOANS = 99
+        LOAN_VALUE = 100
 
         GAME_END_CHECK = { custom: :one_more_full_or_set }.freeze
 
@@ -263,14 +268,16 @@ module Engine
             G18Uruguay::Step::CattleFarm,
             Engine::Step::SpecialTrack,
             Engine::Step::SpecialToken,
+            G18Uruguay::Step::TakeLoanBuyCompany,
             Engine::Step::HomeToken,
             Engine::Step::Track,
-            Engine::Step::Token,
+            G18Uruguay::Step::Token,
             G18Uruguay::Step::Route,
             G18Uruguay::Step::RouteRptla,
             Engine::Step::Dividend,
             Engine::Step::DiscardTrain,
             Engine::Step::BuyTrain,
+            [G18Uruguay::Step::TakeLoanBuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
 
@@ -301,8 +308,36 @@ module Engine
           @nationalized
         end
 
-        # Goods
+        def operating_order
+          super.sort.partition { |c| c.type != :bank }.flatten
+        end
 
+        # Loans
+        def float_corporation(corporation)
+          return if corporation == @rptla
+          return unless @loans
+
+          amount = corporation.par_price.price * 5
+          @bank.spend(amount, corporation)
+          @log << "#{corporation.name} receives #{format_currency(corporation.cash)}"
+          take_loan(corporation, @loans[0]) if @loans.size.positive? && !nationalized?
+        end
+
+        def perform_ebuy_loans(entity, remaining)
+          ebuy = true
+          while remaining.positive? && entity.share_price.price != 0
+            # if at max loans, company goes directly into receiverhsip
+            if @loans.empty?
+              @log << "There are no more loans available to force buy a train, #{entity.name} goes into receivership"
+              break
+            end
+            loan = @loans.first
+            take_loan(entity, loan, ebuy: ebuy)
+            remaining -= loan.amount
+          end
+        end
+
+        # Goods
         def number_of_goods_at_harbor
           ability = @rptla.abilities.find { |a| a.type == 'Goods' }
           ability.description[/\d+/].to_i
@@ -335,10 +370,43 @@ module Engine
           super
         end
 
+        # Revenue
         def revenue_str(route)
           return super unless route&.corporation == @rptla
 
           'Ship'
+        end
+
+        def routes_revenue(route, corporation)
+          revenue = super
+          return revenue if @rptla != corporation
+
+          revenue += (corporation.loans.size.to_f / 2).floor * 10
+          revenue
+        end
+
+        def routes_subsidy(route, corporation)
+          return super if @rptla != corporation
+
+          (corporation.loans.size.to_f / 2).ceil * 10
+        end
+
+        def revenue_for(route, stops)
+          revenue = super
+          revenue *= 2 if route.train.name == '4D'
+          revenue *= 2 if final_operating_round?
+          return revenue unless route&.corporation == @rptla
+
+          train = route.train
+          revenue * goods_on_train(train)
+        end
+
+        def or_round_finished
+          corps_pay_interest unless nationalized?
+        end
+
+        def final_operating_round?
+          @final_turn == @turn
         end
       end
     end
