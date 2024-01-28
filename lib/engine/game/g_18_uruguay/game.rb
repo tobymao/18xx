@@ -276,7 +276,7 @@ module Engine
             Engine::Step::SpecialToken,
             G18Uruguay::Step::TakeLoanBuyCompany,
             Engine::Step::HomeToken,
-            Engine::Step::Track,
+            G18Uruguay::Step::Track,
             G18Uruguay::Step::Token,
             G18Uruguay::Step::Route,
             G18Uruguay::Step::RouteRptla,
@@ -413,6 +413,13 @@ module Engine
 
         def final_operating_round?
           @final_turn == @turn
+        end
+
+        # Second capatilization
+        def second_capitalization!(corporation)
+          amount = corporation.par_price.price * 5
+          @bank.spend(amount, corporation)
+          @log << "Connected to destination #{corporation.name} receives #{format_currency(amount)}"
         end
       end
     end
