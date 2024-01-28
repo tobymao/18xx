@@ -793,6 +793,7 @@ module Engine
             hex = action.hex
             old_tile = hex.tile
             new_tile = action.tile
+            new_tile.rotate!(action.rotation)
 
             city_map = hex.city_map_for(new_tile)
 
@@ -800,9 +801,6 @@ module Engine
             @city_slot_icons ||= Hash.new { |h, k| h[k] = [] }
 
             if ICONS_IN_CITIES_HEXES.include?(hex.id)
-
-              new_tile.rotate!(action.rotation)
-
               old_tile.cities.each do |city|
                 next if city.slot_icons.empty?
 

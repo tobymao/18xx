@@ -780,6 +780,18 @@ module Engine
           end
         end
       end
+
+      describe 3 do
+        it "keeps ICR's destination token on the eastern city when Quebec is upgraded from Q3 to Q5" do
+          game = game_at_action(game_file, 1212)
+          quebec_hex = game.hex_by_id('AH8')
+          icr = game.corporation_by_id('ICR')
+          token = icr.placed_tokens.find { |t| t.type == :destination }
+
+          expect(token.hex).to be(quebec_hex)
+          expect(token.city.exits.sort).to eq([4, 5])
+        end
+      end
     end
   end
 end
