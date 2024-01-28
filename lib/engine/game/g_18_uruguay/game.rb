@@ -264,7 +264,7 @@ module Engine
             Engine::Step::Token,
             Engine::Step::Route,
             Engine::Step::Dividend,
-            Engine::Step::DiscardTrain,
+            G18Uruguay::Step::DiscardTrain,
             Engine::Step::BuyTrain,
           ], round_num: round_num)
         end
