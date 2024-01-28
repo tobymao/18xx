@@ -10,6 +10,8 @@ require_relative 'phases'
 require_relative 'loans'
 require_relative '../../loan'
 require_relative 'ability_ship'
+require_relative 'goods'
+require_relative 'step/route_rptla'
 
 module Engine
   module Game
@@ -26,9 +28,9 @@ module Engine
         include Phases
         include InterestOnLoans
         include Loans
+        include Goods
 
         EBUY_SELL_MORE_THAN_NEEDED = true
-        GOODS_TRAIN = 'Goods'
 
         register_colors(darkred: '#ff131a',
                         red: '#d1232a',
@@ -44,7 +46,6 @@ module Engine
         SELL_BUY_ORDER = :sell_buy
         TILE_RESERVATION_BLOCKS_OTHERS = true
         CURRENCY_FORMAT_STR = '$U%d'
-        GOODS_DESCRIPTION_STR = 'Number of goods: '
 
         MUST_BUY_TRAIN = :always
 
@@ -173,6 +174,7 @@ module Engine
 
         def setup
           super
+          goods_setup
           @rptla = @corporations.find { |c| c.id == 'RPTLA' }
           @fce = @corporations.find { |c| c.id == 'FCE' }
 
@@ -274,7 +276,8 @@ module Engine
             Engine::Step::HomeToken,
             Engine::Step::Track,
             G18Uruguay::Step::Token,
-            Engine::Step::Route,
+            G18Uruguay::Step::Route,
+            G18Uruguay::Step::RouteRptla,
             G18Uruguay::Step::Dividend,
             G18Uruguay::Step::DiscardTrain,
             G18Uruguay::Step::BuyTrain,
@@ -338,26 +341,6 @@ module Engine
           end
         end
 
-        # Goods
-        def number_of_goods_at_harbor
-          ability = @rptla.abilities.find { |a| a.type == 'Goods' }
-          ability.description[/\d+/].to_i
-        end
-
-        def add_good_to_rptla
-          ability = @rptla.abilities.find { |a| a.type == 'Goods' }
-          count = number_of_goods_at_harbor + 1
-          ability.description = GOODS_DESCRIPTION_STR + count.to_s
-        end
-
-        def remove_goods_from_rptla(goods_count)
-          return if number_of_goods_at_harbor < goods_count
-
-          ability = @rptla.abilities.find { |a| a.type == 'Goods' }
-          count = number_of_goods_at_harbor - goods_count
-          ability.description = GOODS_DESCRIPTION_STR + count.to_s
-        end
-
         def check_distance(route, visits, train = nil)
           @round.current_routes[route.train] = route
           if route.corporation != @rptla && !nationalized?
@@ -372,10 +355,21 @@ module Engine
         end
 
         # Revenue
-        def revenue_str(route)
-          return super unless route&.corporation == @rptla
+        def revenue_str_rptla(route)
+          count = goods_on_ship(route.train)
+          str = 'No goods'
+          str = count.to_s + ' good' if count.positive?
+          str += 's' if count > 1
+          str
+        end
 
-          'Ship'
+        def revenue_str(route)
+          return revenue_str_rptla(route) if route&.corporation == @rptla
+
+          good_hex = good_pickup_hex(route.train)
+          str = super
+          str += '+Good(' + good_hex.id + ')' unless good_hex.nil?
+          str
         end
 
         def rptla_revenue(corporation)
@@ -397,7 +391,7 @@ module Engine
           return revenue unless route&.corporation == @rptla
 
           train = route.train
-          revenue * goods_on_train(train)
+          revenue * goods_on_ship(train)
         end
 
         def or_round_finished
