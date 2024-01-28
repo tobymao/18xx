@@ -351,7 +351,7 @@ module Engine
         end
 
         def select(collection)
-          collection[rand % collection.size]
+          collection.min_by { rand }
         end
 
         def find_company(companies, collection)
