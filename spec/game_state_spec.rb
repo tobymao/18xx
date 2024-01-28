@@ -600,6 +600,32 @@ module Engine
 
       describe 2 do
         describe 'Winnipeg tile actions' do
+          it 'does not allow tile W3 with rotation 1, 4, or 5' do
+            action_index = 374
+            game = game_at_action(game_file, action_index)
+            winnipeg_hex = game.hex_by_id('N16')
+
+            w1_tile = game.tile_by_id('W1-0')
+            expect(winnipeg_hex.tile).to be(w1_tile)
+
+            entity = game.current_entity
+
+            w3_tile = game.tile_by_id('W3-0')
+            w3_tile.rotate!(0)
+            expect(game.legal_tile_rotation?(entity, winnipeg_hex, w3_tile)).to eq(true)
+            w3_tile.rotate!(2)
+            expect(game.legal_tile_rotation?(entity, winnipeg_hex, w3_tile)).to eq(true)
+            w3_tile.rotate!(3)
+            expect(game.legal_tile_rotation?(entity, winnipeg_hex, w3_tile)).to eq(true)
+
+            w3_tile.rotate!(1)
+            expect(game.legal_tile_rotation?(entity, winnipeg_hex, w3_tile)).to eq(false)
+            w3_tile.rotate!(4)
+            expect(game.legal_tile_rotation?(entity, winnipeg_hex, w3_tile)).to eq(false)
+            w3_tile.rotate!(5)
+            expect(game.legal_tile_rotation?(entity, winnipeg_hex, w3_tile)).to eq(false)
+          end
+
           it 'the correct cities join up for tile #W2' do
             action_index = 374
 
