@@ -414,7 +414,7 @@ module Engine
                 when: 'track',
                 count: 1,
                 closed_when_used_up: false,
-                hexes: %w[B15 C14 D15 E16 F17 H17 I18 K16 L15],
+                hexes: %w[A16 B15 C14 D15 E16 F17 H17 I18 K16 L15 M14 N13],
                 tiles: %w[PNW4],
               },
             ],
