@@ -864,6 +864,26 @@ module Engine
         def destinated?(entity)
           @destinated[entity]
         end
+
+        def legal_tile_rotation?(_entity, _hex, tile)
+          # special checks for the big cities
+          legal_rotations =
+            case tile.name
+            when 'M5', 'M6', 'M8', 'O2', 'O6', 'O8', 'Q6', 'Q8', 'T1', 'T2', 'T3', 'T4', 'T5', 'W2', 'W4', 'W5', 'W6', 'W7'
+              [0]
+            when 'M1', 'M2', 'M3', 'M4', 'O7'
+              [0, 5]
+            when 'M7', 'O1', 'O3', 'O4', 'O5'
+              [0, 1]
+            when 'Q1', 'Q2', 'Q3', 'Q4', 'Q5', 'Q7'
+              [0, 3, 5]
+            when 'W3'
+              [0, 2, 3]
+            end
+          return false if legal_rotations && !legal_rotations.include?(tile.rotation)
+
+          super
+        end
       end
     end
   end
