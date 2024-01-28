@@ -280,7 +280,7 @@ module Engine
             G18Uruguay::Step::Token,
             G18Uruguay::Step::Route,
             G18Uruguay::Step::RouteRptla,
-            Engine::Step::Dividend,
+            G18Uruguay::Step::Dividend,
             Engine::Step::DiscardTrain,
             G18Uruguay::Step::BuyTrain,
             [G18Uruguay::Step::TakeLoanBuyCompany, { blocks: true }],
