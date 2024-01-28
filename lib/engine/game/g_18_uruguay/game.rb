@@ -7,6 +7,8 @@ require_relative 'corporations'
 require_relative 'companies'
 require_relative 'trains'
 require_relative 'phases'
+require_relative 'goods'
+require_relative 'step/route_rptla'
 
 module Engine
   module Game
@@ -21,9 +23,9 @@ module Engine
         include Companies
         include Trains
         include Phases
+        include Goods
 
         EBUY_SELL_MORE_THAN_NEEDED = true
-        GOODS_TRAIN = 'Goods'
 
         register_colors(darkred: '#ff131a',
                         red: '#d1232a',
@@ -39,7 +41,6 @@ module Engine
         SELL_BUY_ORDER = :sell_buy
         TILE_RESERVATION_BLOCKS_OTHERS = true
         CURRENCY_FORMAT_STR = '$U%d'
-        GOODS_DESCRIPTION_STR = 'Number of goods: '
 
         MUST_BUY_TRAIN = :always
 
@@ -99,6 +100,8 @@ module Engine
           'GOODS_CATTLE10' => '/icons/1846/meat.svg',
         }.freeze
 
+        GOODS_TRAIN = 'Goods'
+        GOODS_DESCRIPTION_STR = 'Number of goods: '
         PORTS = %w[E1 G1 I1 J4 K5 K7 K13].freeze
         MARKET = [
           %w[70 75 80 90 100p 110 125 150 175 200 225 250 275 300 325 350 375 400 425 450],
@@ -167,6 +170,7 @@ module Engine
 
         def setup
           super
+          goods_setup
           @rptla = @corporations.find { |c| c.id == 'RPTLA' }
           @fce = @corporations.find { |c| c.id == 'FCE' }
 
@@ -262,7 +266,8 @@ module Engine
             Engine::Step::HomeToken,
             Engine::Step::Track,
             Engine::Step::Token,
-            Engine::Step::Route,
+            G18Uruguay::Step::Route,
+            G18Uruguay::Step::RouteRptla,
             Engine::Step::Dividend,
             Engine::Step::DiscardTrain,
             Engine::Step::BuyTrain,
@@ -289,6 +294,51 @@ module Engine
           return active_abilities.first if active_abilities.one?
 
           active_abilities
+        end
+
+        # Nationalized
+        def nationalized?
+          @nationalized
+        end
+
+        # Goods
+
+        def number_of_goods_at_harbor
+          ability = @rptla.abilities.find { |a| a.type == 'Goods' }
+          ability.description[/\d+/].to_i
+        end
+
+        def add_good_to_rptla
+          ability = @rptla.abilities.find { |a| a.type == 'Goods' }
+          count = number_of_goods_at_harbor + 1
+          ability.description = GOODS_DESCRIPTION_STR + count.to_s
+        end
+
+        def remove_goods_from_rptla(goods_count)
+          return if number_of_goods_at_harbor < goods_count
+
+          ability = @rptla.abilities.find { |a| a.type == 'Goods' }
+          count = number_of_goods_at_harbor - goods_count
+          ability.description = GOODS_DESCRIPTION_STR + count.to_s
+        end
+
+        def check_distance(route, visits, train = nil)
+          @round.current_routes[route.train] = route
+          if route.corporation != @rptla && !nationalized?
+            raise RouteTooLong, 'Need to have goods to run to port' unless check_for_port_if_goods_attached(route,
+                                                                                                            visits)
+            raise RouteTooLong, 'Goods needs to be shipped to port' unless check_for_goods_if_run_to_port(route,
+                                                                                                          visits)
+          end
+          raise RouteTooLong, '4D trains cannot deliver goods' if route.train.name == '4D' && visits_include_port?(visits)
+
+          super
+        end
+
+        def revenue_str(route)
+          return super unless route&.corporation == @rptla
+
+          'Ship'
         end
       end
     end
