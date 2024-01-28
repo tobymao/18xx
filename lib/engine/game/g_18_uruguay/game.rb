@@ -281,7 +281,7 @@ module Engine
             G18Uruguay::Step::Route,
             G18Uruguay::Step::RouteRptla,
             G18Uruguay::Step::Dividend,
-            Engine::Step::DiscardTrain,
+            G18Uruguay::Step::DiscardTrain,
             G18Uruguay::Step::BuyTrain,
             [G18Uruguay::Step::TakeLoanBuyCompany, { blocks: true }],
           ], round_num: round_num)
