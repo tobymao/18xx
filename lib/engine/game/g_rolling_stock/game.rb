@@ -39,6 +39,7 @@ module Engine
         BANK_CASH = 10_000
         STARTING_CASH = { 2 => 30, 3 => 30, 4 => 30, 5 => 30, 6 => 25 }.freeze
 
+        MARKET_SHARE_LIMIT = 100
         MARKET = [
           %w[0c
              5
