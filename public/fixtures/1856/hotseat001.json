@@ -166,20 +166,8 @@
             "original_id": 15
         },
         {
-            "type": "buy_shares",
-            "entity": "Player 1",
-            "entity_type": "player",
-            "id": 16,
-            "created_at": 1614998345,
-            "shares": [
-                "WGB_8"
-            ],
-            "percent": 10,
-            "original_id": 16
-        },
-        {
             "type": "pass",
-            "entity": "Player 2",
+            "entity": "Player 1",
             "entity_type": "player",
             "id": 17,
             "created_at": 1614998346,
@@ -187,7 +175,7 @@
         },
         {
             "type": "pass",
-            "entity": "Player 3",
+            "entity": "Player 2",
             "entity_type": "player",
             "id": 18,
             "created_at": 1614998347,
@@ -195,7 +183,7 @@
         },
         {
             "type": "pass",
-            "entity": "Player 1",
+            "entity": "Player 3",
             "entity_type": "player",
             "id": 19,
             "created_at": 1614998347,
@@ -308,6 +296,26 @@
             "id": 28,
             "created_at": 1614998363,
             "original_id": 28
+        },
+        {
+            "type": "buy_shares",
+            "entity": "Player 1",
+            "entity_type": "player",
+            "id": 16,
+            "created_at": 1614998345,
+            "shares": [
+                "WGB_8"
+            ],
+            "percent": 10,
+            "original_id": 16
+        },
+        {
+            "type": "pass",
+            "entity": "Player 1",
+            "entity_type": "player",
+            "id": 30,
+            "created_at": 1614998374,
+            "original_id": 30
         },
         {
             "type": "par",
