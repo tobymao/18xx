@@ -902,9 +902,9 @@
     "created_at": "2021-05-28",
     "loaded": true,
     "result": {
-        "Player 1": 884,
-        "Player 3": 863,
-        "Player 2": 863
+        "Player 1": 1004,
+        "Player 3": 953,
+        "Player 2": 953
     },
     "turn": 6,
     "round": "Stock Round",
