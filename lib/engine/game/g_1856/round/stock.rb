@@ -20,6 +20,10 @@ module Engine
             players_unvested_holdings[@entities[@entity_index]] = nil
             super
           end
+
+          def corporations_to_move_price
+            super.concat(@game.corporations.select { |c| sold_out?(c) }).uniq
+          end
         end
       end
     end
