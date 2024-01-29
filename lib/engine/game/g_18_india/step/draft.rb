@@ -42,7 +42,7 @@ module Engine
           end
 
           def tiered_auction_companies
-            @companies.group_by(&:revenue).values
+            @companies.group_by(&:type).values
           end
 
           def name

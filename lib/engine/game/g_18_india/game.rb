@@ -233,10 +233,10 @@ module Engine
             color: share.corporation.color,
             text_color: share.corporation.text_color,
             # reference to share keep in treasury
-            treasury: share 
+            treasury: share
           )
         end
-        
+
         def share_type(share)
           return :share unless share.percent == 20
 
@@ -285,6 +285,7 @@ module Engine
             cards = player.hand.dup
             cards.each do |card|
               next unless card.owner.nil?
+
               @draft_deck << card
               player.hand.delete(card)
             end

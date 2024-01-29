@@ -35,7 +35,9 @@ module Engine
             false
           end
 
-          def may_choose?(_company)
+          def may_choose?(company)
+            return false if selections_completed? && company.owner.nil?
+
             true
           end
 
@@ -77,7 +79,7 @@ module Engine
             return [] if finished?
             return [] unless entity == current_entity
 
-            if selections_completed? 
+            if selections_completed?
               ACTIONS_WITH_PASS
             else
               ACTIONS
@@ -93,24 +95,29 @@ module Engine
 
           def process_bid(action)
             choose_company(action.entity, action.company)
-            @game.next_turn! 
+            @game.next_turn!
             action_finalized
           end
 
           def choose_company(player, company)
-            company.owner = player
+            # toggle company owner: player <=> nil
+            company.owner = if company.owner == player
+                              nil
+                            else
+                              player
+                            end
           end
 
           def action_finalized
             return unless finished?
-            @log << "Inital hand selections completed"
+
+            @log << 'Inital hand selections completed'
             @game.prepare_draft_deck
           end
 
           def committed_cash(_player, _show_hidden)
-            return 0
+            0
           end
-
         end
       end
     end

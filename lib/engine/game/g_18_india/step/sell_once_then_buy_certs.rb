@@ -23,6 +23,7 @@ module Engine
 
           def actions(entity)
             return [] unless entity == current_entity
+
             # return ['sell_shares'] if must_sell?(entity)
 
             actions = []
