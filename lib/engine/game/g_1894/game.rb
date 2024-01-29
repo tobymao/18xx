@@ -189,7 +189,9 @@ module Engine
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
           'late_corporations_available' => ['Late corporations available', 'Late corporations can be opened'],
           'last_or_set_triggered' => ['The next OR set will be the last one',
-                                      'No new tracks and tokens allowed in the last OR set'],
+                                      'The next OR set will be the last one. '\
+                                      'Regular green cities may not be upgraded to brown. '\
+                                      'Track and token actions are skipped in the last OR set'],
         ).freeze
 
         LONDON_HEX = 'A10'
