@@ -106,10 +106,6 @@ module Engine
         end
 
         def setup_preround
-          @log << 'setup_preround method in game called'
-        end
-
-        def setup
           # remove random corporations based on regions, One from each group is Guaranty Company
           setup_corporations_by_region!(@corporations)
 
@@ -119,15 +115,18 @@ module Engine
           # Build draw and draft decks for player hand and IPO rows
           @ipo_rows = [[], [], []]
           create_decks(@corporations)
+        end
+
+        def setup
+          # remove tokens reserved by companies removed from game, can't be done in preround
+          remove_closed_corp_tokens(@removals)
 
           @selection_finished = false
           @draft_finished = false
           @last_action = nil
 
-          # Add new objects to cache
-          cache_objects
-          # update_cache(@companies)
-          @log << 'End of Setup in Game'
+          @log << "-- #{round_description('Hand Selection')} --"
+          @log << "Select #{certs_to_keep} Certificates for your starting hand"
         end
 
         def setup_corporations_by_region!(corporations)
@@ -143,7 +142,6 @@ module Engine
 
           corporations.reject! do |corporation|
             if corps_to_remove.include?(corporation.name)
-              remove_corporation_reservations(corporation)
               corporation.close!
               yield corporation if block_given?
               @removals << corporation
@@ -161,13 +159,15 @@ module Engine
         end
 
         # remove reservations for corporation at intial coordinates
-        def remove_corporation_reservations(corporation)
-          hex = hex_by_id(corporation.coordinates)
-          hex.tile.cities.each do |city|
-            city.tokens.select { |t| t&.corporation == corporation }.each(&:remove!)
-            city.reservations.delete(corporation) if city.reserved_by?(corporation)
+        def remove_closed_corp_tokens(closed_corps)
+          closed_corps.each do |corporation|
+            hex = hex_by_id(corporation.coordinates)
+            hex.tile.cities.each do |city|
+              city.tokens.select { |t| t&.corporation == corporation }.each(&:remove!)
+              city.reservations.delete(corporation) if city.reserved_by?(corporation)
+            end
+            hex.tile.reservations.delete(corporation) if hex.tile.reserved_by?(corporation)
           end
-          hex.tile.reservations.delete(corporation) if hex.tile.reserved_by?(corporation)
         end
 
         def assign_guaranty_warrant(corporation)
@@ -232,7 +232,7 @@ module Engine
             type: share_type(share),
             color: share.corporation.color,
             text_color: share.corporation.text_color,
-            # reference to share keep in treasury
+            # reference to share in treasury
             treasury: share
           )
         end
@@ -366,9 +366,11 @@ module Engine
             when init_round.class
               if @selection_finished == false
                 @selection_finished = true
+                @log << "-- #{round_description('Draft')} --"
+                @log << 'Draft certificates to add to your hand of reserved options'
                 draft_round
               else
-                reorder_players
+                reorder_players(:after_last_to_act, true)
                 new_stock_round
               end
             end
@@ -445,6 +447,11 @@ module Engine
 
           entity.hand
         end
+
+      # minors to show on player cards
+      def player_card_minors(_player)
+        []
+      end
 
         def price_movement_chart
           [
