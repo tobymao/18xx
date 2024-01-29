@@ -12,6 +12,7 @@ module Engine
             revenue: 5,
             desc: 'No special abilities.',
             color: nil,
+            type: :private,
           },
           {
             name: 'Portuguese EIC',
@@ -20,6 +21,7 @@ module Engine
             revenue: 5,
             desc: 'One extra yellow tile placement. Close when used.',
             color: nil,
+            type: :private,
             # TODO: Add Ability
           },
           {
@@ -29,6 +31,7 @@ module Engine
             revenue: 10,
             desc: 'One extra track upgade. Close when used.',
             color: nil,
+            type: :private,
             # TODO: Add Ability
           },
           {
@@ -38,6 +41,7 @@ module Engine
             revenue: 15,
             desc: '$40 Terrain cost discount. Close when used.',
             color: nil,
+            type: :private,
             # TODO: Add Ability
           },
           {
@@ -47,6 +51,7 @@ module Engine
             revenue: 20,
             desc: 'One free station, even if full. Close when used.',
             color: nil,
+            type: :private,
             # TODO: Add Ability
           },
           {
@@ -56,6 +61,7 @@ module Engine
             revenue: 25,
             desc: 'Receives jewlery concession. Close when used.',
             color: nil,
+            type: :private,
             # TODO: Add Ability
           },
         ].freeze

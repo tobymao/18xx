@@ -13,7 +13,7 @@ require_relative '../../../step/share_buying'
 # require_relative '../game'
 
 # For 18 India, first action is sell any, then buy
-#
+# NOTE: This section isn't completed, in progress for stock round
 module Engine
   module Game
     module G18India
@@ -23,12 +23,12 @@ module Engine
 
           def actions(entity)
             return [] unless entity == current_entity
-            return ['sell_shares'] if must_sell?(entity)
+            # return ['sell_shares'] if must_sell?(entity)
 
             actions = []
             if selling_round?
               # sell anything, only limitation is president share can't be in market
-              # also, remove check above to include getting below cert limit
+              # move 'must sell' ceck to this section to verify player below cert limit
               actions << 'sell_shares' if can_sell_any?(entity)
               actions << 'sell_company' if can_sell_any_companies?(entity)
             else

@@ -14,7 +14,7 @@ module Engine
         end
 
         def book_value_per_share
-          book_value / 2.0.ceil
+          book_value / 10.0.ceil
         end
 
         def total_value_per_share
