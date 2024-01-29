@@ -42,7 +42,7 @@ module Engine
         STARTING_CASH = { 2 => 600, 3 => 540, 4 => 410, 5 => 340 }.freeze
         CAPITALIZATION = :incremental
         SELL_AFTER = :any_time
-        MUST_SELL_IN_BLOCKS = false
+        MUST_SELL_IN_BLOCKS = true
         SELL_MOVEMENT = :down_block
         SOLD_OUT_INCREASE = true
         POOL_SHARE_DROP = :down_block
@@ -638,6 +638,20 @@ module Engine
 
         def operated_operators
           @corporations.select(&:operated?)
+        end
+
+        def check_distance(route, visits, train = nil)
+          train ||= route.train
+          distance = train.distance
+
+          route_distance = visits.sum(&:visit_cost)
+
+          # Getting terminal bonus also allow visiting one additional stop
+          east = visits.find { |stop| stop.groups.include?('E') }
+          terminal = visits.find { |stop| stop.hex.id == T_HEX }
+          route_distance -= 1 if east && terminal
+
+          raise RouteTooLong, "#{route_distance} is too many stops for #{distance} train" if distance < route_distance
         end
 
         def route_bonus(stops)
