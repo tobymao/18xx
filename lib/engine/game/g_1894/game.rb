@@ -546,6 +546,8 @@ module Engine
         end
 
         def upgrades_to?(from, to, _special = false, selected_company: nil)
+          return false if GREEN_CITY_TILES.include?(from.name) && @phase.current[:name] == 'Purple'
+
           return BROWN_CITY_14_UPGRADE_TILES.include?(to.name) if from.hex.tile.name == GREEN_CITY_14_TILE
           return BROWN_CITY_15_UPGRADE_TILES.include?(to.name) if from.hex.tile.name == GREEN_CITY_15_TILE
           return BROWN_CITY_619_UPGRADE_TILES.include?(to.name) if from.hex.tile.name == GREEN_CITY_619_TILE
