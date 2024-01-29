@@ -126,6 +126,7 @@ module Engine
 
           # Add new objects to cache
           cache_objects
+          # update_cache(@companies)
           @log << 'End of Setup in Game'
         end
 

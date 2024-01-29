@@ -7,7 +7,7 @@ module Engine
     module G18India
       module Step
         class Draft < Engine::Step::Base
-          attr_reader :companies, :choices # , :grouped_companies (check if grouping useful)
+          attr_reader :companies, :choices, :grouped_companies
 
           ACTIONS = %w[bid].freeze
 
@@ -72,7 +72,7 @@ module Engine
 
             @companies.delete(company)
 
-            @log << "#{player.name} drafts #{company.name}"
+            @log << "#{player.name} drafts #{company.type} cert of #{company.name}"
 
             @round.next_entity_index!
             action_finalized
