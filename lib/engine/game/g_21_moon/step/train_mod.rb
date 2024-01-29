@@ -54,10 +54,8 @@ module Engine
             # add in current phase train if missing
             add_trains.unshift(@game.phase.name) if add_trains.first != @game.phase.name
 
-            # never 2 or 10 trains
-            remove_trains.delete('2')
+            # never 10 trains
             remove_trains.delete('10')
-            add_trains.delete('2')
             add_trains.delete('10')
 
             choice_list = []
