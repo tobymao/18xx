@@ -29,7 +29,8 @@ module Engine
               action.city,
               token,
               connected: false,
-              extra_action: true
+              extra_action: true,
+              check_tokenable: false
             )
             @round.pending_tokens.shift
             action.entity.goal_reached!(:destination) if @game.check_for_destination_connection(action.entity)

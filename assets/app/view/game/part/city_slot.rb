@@ -79,8 +79,8 @@ module View
           children = [h(:circle, attrs: token_attrs)]
           children << reservation if @reservation && !@token
           children << render_boom if @city&.boom
-          children << h(Token, token: @token, radius: radius, game: @game) if @token
           children << render_slot_icon if @city&.slot_icons&.[](@slot_index)
+          children << h(Token, token: @token, radius: radius, game: @game) if @token
 
           props = {
             on: { click: ->(event) { on_click(event) } },

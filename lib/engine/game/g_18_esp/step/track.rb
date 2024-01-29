@@ -27,7 +27,7 @@ module Engine
           end
 
           def pay_token_cost(entity, cost, city)
-            return super if !@game.mountain_pass?(city.hex) || city.tokens.compact.size == 1
+            return super if !@game.mountain_pass_token_hex?(city.hex) || city.tokens.compact.size == 1
 
             first_corp = city.tokens.first.corporation
             extra_cost = cost - @game.class::MOUNTAIN_SECOND_TOKEN_COST

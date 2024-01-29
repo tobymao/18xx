@@ -353,6 +353,13 @@ module Engine
                            same_hex_allowed: true)
           clear_graph_for_entity(entity)
         end
+
+        def place_home_token(corporation)
+          # Public companies get their starting tokens by exchange.
+          return unless corporation.type == :minor
+
+          super
+        end
       end
     end
   end

@@ -8,7 +8,7 @@ module Engine
       module Meta
         include Game::Meta
 
-        DEPENDS_ON = '1870'
+        DEPENDS_ON = '1850'
 
         DEV_STAGE = :prealpha
 
