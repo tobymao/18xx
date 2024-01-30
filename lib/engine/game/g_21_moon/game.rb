@@ -194,7 +194,7 @@ module Engine
         T_BONUS = 30
         T_TILE = 'X30'
         RIFT_BONUS = 60
-        EW_BONUS = 100
+        EW_BONUS = 80
         NE_HEXES = %w[K1 L2 L4].freeze
         SE_HEXES = %w[L14 M11 M13].freeze
         NW_HEXES = %w[A3 A5 B2].freeze
