@@ -139,13 +139,26 @@ module Engine
       @tile.hex = nil
       tile.hex = self
 
-      # when upgrading, preserve tokens on previous tile (must be handled after
-      # reservations are completely done due to OO weirdness)
-      city_map.each do |old_city, new_city|
-        old_city.tokens.each.with_index do |token, index|
+      # when upgrading, move tokens from old tile to the corresponding city on
+      # the new tile; OO-style tiles make this complicated
+      tokens = city_map.each_with_object(Hash.new { |h, k| h[k] = [] }) do |(old_city, new_city), tokens_|
+        tokens_[new_city].concat(old_city.tokens)
+      end
+      # sort cheater tokens to the end so the correct tokens (if any) are
+      # recognized as the cheaters on the new tile
+      tokens.transform_values do |tokens_|
+        tokens_.compact.sort { |t1, t2| (t1.cheater ? 1 : 0) <=> (t2.cheater ? 1 : 0) }
+      end
+      # exchange the normal and cheater tokens
+      tokens.each do |new_city, tokens_|
+        tokens_.each.with_index do |token, index|
+          old_city = token.city
           cheater = (index >= old_city.normal_slots) && index
-          new_city.exchange_token(token, cheater: cheater) if token
+          new_city.exchange_token(token, cheater: cheater)
         end
+      end
+      # exchange the extra tokens
+      city_map.each do |old_city, new_city|
         old_city.extra_tokens.each { |token| new_city.exchange_token(token, extra_slot: true) }
         old_city.reset!
       end

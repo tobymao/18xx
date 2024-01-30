@@ -44,7 +44,7 @@ module Engine
           },
         ]).freeze
 
-        PENDING_HOME_TOKENERS = [MINOR_14_ID, 'GNWR'].freeze
+        PENDING_HOME_TOKENERS = ['GNWR'].freeze
 
         def after_lay_tile(hex, _old_tile, _tile)
           super

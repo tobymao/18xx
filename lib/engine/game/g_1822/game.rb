@@ -1307,9 +1307,6 @@ module Engine
 
           # If we upgraded london, check if we need to add the extra slot from minor 14
           upgrade_minor_14_home_hex(hex) if hex.name == self.class::MINOR_14_HOME_HEX
-
-          # If we upgraded the english channel to brown, upgrade france as well since we got 2 lanes to france.
-          return if hex.name != self.class::ENGLISH_CHANNEL_HEX || tile.color != :brown
         end
 
         def bank_companies(prefix)
@@ -1845,7 +1842,7 @@ module Engine
           return unless @minor_14_city_exit
 
           extra_city = hex.tile.paths.find { |p| p.edges[0].num == @minor_14_city_exit }.city
-          return unless extra_city.tokens.size == 1
+          return unless extra_city.tokens.size <= extra_city.normal_slots
 
           extra_city.tokens[extra_city.normal_slots] = nil
         end
