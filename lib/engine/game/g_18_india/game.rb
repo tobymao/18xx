@@ -448,10 +448,10 @@ module Engine
           entity.hand
         end
 
-      # minors to show on player cards **test using this to show player hand**
-      def player_card_minors(_player)
-        []
-      end
+        # minors to show on player cards **test using this to show player hand**
+        def player_card_minors(_player)
+          []
+        end
 
         def price_movement_chart
           [

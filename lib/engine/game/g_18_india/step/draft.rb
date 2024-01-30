@@ -86,10 +86,14 @@ module Engine
 
           def continue_reverse
             @counter += 1
-            if (@counter == @round.entities.size) && @reverse_order
-              @reverse_order = false
-              @round.entities = @game.players
-            end
+            return unless filp_turn_order?
+
+            @reverse_order = false
+            @round.entities = @game.players
+          end
+
+          def filp_turn_order?
+            (@counter == @round.entities.size) && @reverse_order
           end
 
           def process_pass(_action); end
