@@ -3,7 +3,7 @@
 require_relative '../../../step/base'
 
 # Draft certificates to be added to player hands, draft is open information
-# Draft order is reverse order for first cycle, then normal: 4, 3, 2, 1, 1, 2, 3, 4, 1, 2, 3, 4 ...
+# Draft order is reverse order for first cycle only, then normal: 4, 3, 2, 1, 1, 2, 3, 4, 1, 2, 3, 4 ...
 module Engine
   module Game
     module G18India
@@ -14,7 +14,7 @@ module Engine
           ACTIONS = %w[bid].freeze
 
           def setup
-            @companies = @game.draft_deck.sort_by { |item| [item.name, -item.value] }
+            @companies = @game.draft_deck.sort_by { |item| [item.type, -item.value, item.name] }
             @counter = 0
             @reverse_order = true
             @round.entities = @game.players.reverse # Reverse player order for first cycle
@@ -100,11 +100,11 @@ module Engine
             # maintain player priority for stock round
           end
 
+          def min_bid(_company); end
+
           def committed_cash(_player, _show_hidden = false)
             0
           end
-
-          def min_bid(_company); end
         end
       end
     end

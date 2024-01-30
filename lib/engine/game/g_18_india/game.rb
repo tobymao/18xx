@@ -425,7 +425,7 @@ module Engine
             timeline << "#{p.name}: #{p.hand.map(&:name).sort.join(', ')}" unless p.hand.empty?
           end
 
-          timeline << "Companies: #{@companies.map(&:name).sort.join(', ')}" unless @companies.empty?
+          # timeline << "Companies: #{@companies.map(&:name).sort.join(', ')}" unless @companies.empty?
 
           timeline
         end
@@ -448,7 +448,7 @@ module Engine
           entity.hand
         end
 
-      # minors to show on player cards
+      # minors to show on player cards **test using this to show player hand**
       def player_card_minors(_player)
         []
       end
