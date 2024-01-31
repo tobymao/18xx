@@ -72,7 +72,7 @@ module Engine
                   },
                   {
                     name: 'Brown',
-                    on: '5',
+                    on: '5+1',
                     train_limit: 3,
                     tiles: %i[yellow green brown],
                     operating_rounds: 3,
@@ -105,7 +105,7 @@ module Engine
                     name: '3',
                     distance: 3,
                     price: 120,
-                    rusts_on: '5',
+                    rusts_on: '5+1',
                     num: 5,
                     discount: { '2' => 40 },
                   },
@@ -118,8 +118,9 @@ module Engine
                     discount: { '3' => 60 },
                   },
                   {
-                    name: '5',
-                    distance: 5,
+                    name: '5+1',
+                    distance: [{ 'nodes' => %w[city offboard town], 'pay' => 5, 'visit' => 5 },
+                               { 'nodes' => ['town'], 'pay' => 1, 'visit' => 1 }],
                     price: 400,
                     rusts_on: 'D',
                     num: 5,
@@ -132,7 +133,7 @@ module Engine
                     price: 600,
                     num: 2,
                     events: [{ 'type' => 'close_companies' }],
-                    discount: { '5' => 200 },
+                    discount: { '5+1' => 200 },
                   },
                   {
                     name: '7',
@@ -147,7 +148,7 @@ module Engine
                     price: 800,
                     num: 22,
                     events: [{ 'type' => 'last_or_set_triggered' }],
-                    discount: { '5' => 200, '6' => 300, '7' => 350 },
+                    discount: { '5+1' => 200, '6' => 300, '7' => 350 },
                   }].freeze
 
         LAYOUT = :pointy
@@ -189,7 +190,9 @@ module Engine
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
           'late_corporations_available' => ['Late corporations available', 'Late corporations can be opened'],
           'last_or_set_triggered' => ['The next OR set will be the last one',
-                                      'No new tracks and tokens allowed in the last OR set'],
+                                      'The next OR set will be the last one. '\
+                                      'Regular green cities may not be upgraded to brown. '\
+                                      'Track and token actions are skipped in the last OR set'],
         ).freeze
 
         LONDON_HEX = 'A10'
@@ -551,6 +554,8 @@ module Engine
         end
 
         def upgrades_to?(from, to, _special = false, selected_company: nil)
+          return false if GREEN_CITY_TILES.include?(from.name) && @phase.current[:name] == 'Purple'
+
           return BROWN_CITY_14_UPGRADE_TILES.include?(to.name) if from.hex.tile.name == GREEN_CITY_14_TILE
           return BROWN_CITY_15_UPGRADE_TILES.include?(to.name) if from.hex.tile.name == GREEN_CITY_15_TILE
           return BROWN_CITY_619_UPGRADE_TILES.include?(to.name) if from.hex.tile.name == GREEN_CITY_619_TILE
@@ -620,7 +625,7 @@ module Engine
           revenues = stops.map { |s| get_current_revenue(s.revenue) }
 
           if ignore_london
-            london_revenue = get_current_revenue(hex_by_id(LONDON_HEX).tile.towns.first.revenue)
+            london_revenue = get_current_revenue(hex_by_id(LONDON_HEX).tile.cities.first.revenue)
             revenues.delete_at(revenues.index(london_revenue) || revenues.length)
           end
 
@@ -680,7 +685,7 @@ module Engine
         end
 
         def block_london
-          london = hex_by_id(LONDON_HEX).tile.towns.first
+          london = hex_by_id(LONDON_HEX).tile.cities.first
           london.instance_variable_set(:@game, self)
 
           def london.blocks?(corporation)
