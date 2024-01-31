@@ -1,47 +1,5 @@
 {
-  "id": 149843,
-  "description": "Learning game, but all are welcome  US Eastern Time",
-  "user": {
-    "id": 13834,
-    "name": "Elsceron"
-  },
-  "players": [
-    {
-      "id": 9317,
-      "name": "djanyreason"
-    },
-    {
-      "id": 437,
-      "name": "8bg"
-    },
-    {
-      "id": 4477,
-      "name": "Trigo"
-    },
-    {
-      "id": 13834,
-      "name": "Elsceron"
-    }
-  ],
-  "min_players": 3,
-  "max_players": 6,
-  "title": "18EU",
-  "settings": {
-    "seed": 232133283,
-    "is_async": true,
-    "unlisted": false,
-    "auto_routing": false,
-    "player_order": null,
-    "optional_rules": []
-  },
-  "user_settings": null,
-  "status": "active",
-  "turn": 4,
-  "round": "Operating Round",
-  "acting": [
-    437
-  ],
-  "result": {},
+  "status": "finished",
   "actions": [
     {
       "type": "bid",
@@ -6965,33 +6923,64 @@
       "created_at": 1706490933
     },
     {
-      "type": "buy_shares",
+      "type": "end_game",
       "entity": 437,
       "entity_type": "player",
       "id": 489,
-      "created_at": 1706490971,
-      "auto_actions": [
-        {
-          "type": "pass",
-          "entity": 4477,
-          "entity_type": "player",
-          "created_at": 1706490971
-        },
-        {
-          "type": "pass",
-          "entity": 13834,
-          "entity_type": "player",
-          "created_at": 1706490971
-        }
-      ],
-      "shares": [
-        "RPR_5"
-      ],
-      "percent": 10
+      "created_at": 1706737859
     }
   ],
+  "id": "hs_hlxdfwem_149843",
+  "players": [
+    {
+      "id": 9317,
+      "name": "djanyreason"
+    },
+    {
+      "id": 437,
+      "name": "8bg"
+    },
+    {
+      "id": 4477,
+      "name": "Trigo"
+    },
+    {
+      "id": 13834,
+      "name": "Elsceron"
+    }
+  ],
+  "title": "18EU",
+  "description": "Learning game, but all are welcome  US Eastern Time",
+  "min_players": 3,
+  "max_players": 6,
+  "user": {
+    "id": 0,
+    "name": "You"
+  },
+  "settings": {
+    "seed": 232133283,
+    "is_async": true,
+    "unlisted": false,
+    "auto_routing": false,
+    "player_order": null,
+    "optional_rules": []
+  },
+  "user_settings": null,
+  "turn": 4,
+  "round": "Stock Round",
+  "acting": [
+    437
+  ],
+  "result": {
+    "13834": 770,
+    "437": 645,
+    "4477": 1625,
+    "9317": 1427
+  },
   "loaded": true,
-  "created_at": 1705936083,
-  "updated_at": 1706620606,
-  "finished_at": null
+  "created_at": "2024-01-30",
+  "updated_at": 1706737859,
+  "finished_at": null,
+  "mode": "hotseat",
+  "manually_ended": true
 }

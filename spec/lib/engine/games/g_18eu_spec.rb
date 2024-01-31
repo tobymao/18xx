@@ -64,16 +64,19 @@ module Engine
     # issue 10222
     # prevent the purchase of stock over 60% in the stock round, can only obtain that through mergers.
 
-    context '18EU cant buy stock while at limit' do
+    context '18EU cant buy stock while at limit 10222' do
       let(:game_file_name) { 'prohibit_buy_over_60' }
       it 'should not allow stock purchase' do
         game = Engine::Game.load(game_file, at_action: 488)
-        action = Engine::Action::BuyShares.new(game.current_entity, shares: game.corporation_by_id('RPR').available_share, percent: 10)
+        action = Engine::Action::BuyShares.new(game.current_entity, shares: game.corporation_by_id('RPR').available_share,
+                                                                    percent: 10)
 
         expect(game.exception).to be_nil
-        expect(game.player_by_id(437).shares.length).to be 6
+        expect(game.current_entity.shares.length).to be 6
+
+        # Prevent player from attempting to purchase > 60% through normal stock buy.
         expect(game.process_action(action).exception).to be_a(GameError)
-        expect(game.player_by_id(437).shares.length).to be 6
+        expect(game.current_entity.shares.length).to be 6
       end
     end
   end
