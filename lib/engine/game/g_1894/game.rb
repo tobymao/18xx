@@ -389,10 +389,10 @@ module Engine
             hex = hex_by_id(corporation.coordinates)
             tile = hex&.tile
 
-            if tile.color != :brown
-              super
-            else
+            if tile.color == :brown
               place_home_token_brown_tile(corporation, hex, tile)
+            else
+              super
             end
           end
 
