@@ -3,6 +3,7 @@
 #
 # https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
 
+lib/engine/game/g_1817* @crericha
 lib/engine/game/g_1828* @crericha
 lib/engine/game/g_1844* @crericha
 lib/engine/game/g_1880* @crericha
