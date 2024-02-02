@@ -9,6 +9,7 @@ require_relative 'trains'
 require_relative 'phases'
 require_relative 'loans'
 require_relative '../../loan'
+require_relative 'nationalization'
 
 module Engine
   module Game
@@ -138,6 +139,11 @@ module Engine
           liquidation: :darkred
         )
 
+        EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+          nationalization: ['Nationalization',
+                            'Time for nationalization']
+        ).freeze
+
         def price_movement_chart
           [
             ['Action', 'Share Price Change'],
@@ -205,6 +211,17 @@ module Engine
           end
 
           setup_destinations
+        end
+
+        def init_train_handler
+          depot = super
+
+          # Due to that the nationalization happens on second 6 purchase an not on a phase change,
+          # the event needs to be tied to a train.
+          train = depot.upcoming.reverse.find { |t| t.name == '6' }
+          train.events << { 'type' => 'nationalization' }
+
+          depot
         end
 
         def lookup_rptla_price(price)
@@ -402,6 +419,59 @@ module Engine
 
         def final_operating_round?
           @final_turn == @turn
+        end
+
+        def place_home_token(corporation)
+          return if corporation == @fce
+
+          super
+        end
+
+        def can_hold_above_corp_limit?(_entity)
+          true
+        end
+
+        def next_round!
+          @round =
+            case @round
+            when G18Uruguay::Round::Nationalization
+              case @round.round_num
+              when 1
+                start_merge(current_entity.owner)
+              when 2
+                retreive_home_tokens
+                close_companies
+                @crowded_corps = nil
+                @cert_limit = CERT_LIMIT_NATIONALIZATION[@players.size][@corporations.size]
+                @log << "New certification limit is #{@cert_limit}"
+              end
+
+              if @round.round_num < 3
+                new_nationalization_round(@round.round_num + 1)
+              elsif @saved_or_round
+                # reorder_players
+                @log << '--Return to Operating Round--'
+                @saved_or_round
+              else
+                new_operating_round
+              end
+            when Engine::Round::Operating
+              if @nationalization_triggered
+                @nationalization_triggered = false
+                @saved_or_round = @round
+                new_nationalization_round(1)
+              else
+                super
+              end
+            else
+              super
+            end
+        end
+
+        def float_str(entity)
+          return super if !entity.corporation || entity.floatable
+
+          'Nationalization'
         end
       end
     end
