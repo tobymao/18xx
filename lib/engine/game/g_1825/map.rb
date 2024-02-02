@@ -955,9 +955,12 @@ module Engine
           existing_coords.flatten!
 
           new_hexes.each do |color, hex_hash|
-            hex_hash.each do |coords, value|
+            hex_hash.each do |raw_coords, value|
+              # copy to avoid mutating `new_hexes`
+              coords = raw_coords.dup
+
               # skip over a coordinate that has already been defined, regardless of color
-              coords.dup.each do |new_coord|
+              raw_coords.each do |new_coord|
                 coords.delete(new_coord) if existing_coords.include?(new_coord)
               end
               next if coords.empty?
