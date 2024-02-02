@@ -57,7 +57,7 @@ module Engine
           },
           {
             name: '5',
-            distance: 3,
+            distance: 5,
             price: 440,
             num: 3,
             events: [{ 'type' => 'close_companies' }],
@@ -74,11 +74,12 @@ module Engine
             distance: 6,
             price: 620,
             num: 2,
+            events: [{ 'type' => 'nationalization', 'when' => 2 }],
             variants: [
               {
                 name: 'Ship 6',
                 distance: 2,
-                price: 160,
+                price: 620,
               },
             ],
           },
@@ -91,7 +92,7 @@ module Engine
               {
                 name: 'Ship 7',
                 distance: 2,
-                price: 160,
+                price: 620,
               },
             ],
           },
@@ -120,7 +121,7 @@ module Engine
               {
                 name: 'Ship 8',
                 distance: 2,
-                price: 160,
+                price: 850,
               },
             ],
           },

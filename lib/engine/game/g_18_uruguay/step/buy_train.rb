@@ -20,7 +20,7 @@ module Engine
           end
 
           def buy_ships?(entity)
-            !entity.abilities.find { |ability| ability.type == 'Ship' }.nil?
+            !entity.abilities.find { |ability| ability.type == :Ship }.nil?
           end
 
           def actions(entity)
