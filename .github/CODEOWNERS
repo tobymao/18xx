@@ -3,6 +3,7 @@
 #
 # https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
 
+lib/engine/game/g_1817* @crericha
 lib/engine/game/g_1828* @crericha
 lib/engine/game/g_1844* @crericha
 lib/engine/game/g_1880* @crericha
@@ -26,3 +27,7 @@ lib/engine/game/g_18_mag* @roseundy
 lib/engine/game/g_18_new_england* @roseundy
 lib/engine/game/g_21_moon* @roseundy
 lib/engine/game/g_rolling_stock* @roseundy
+
+lib/engine/game/g_1822_africa* @vandamm
+lib/engine/game/g_18_jpt* @vandamm
+lib/engine/game/g_18_scan* @vandamm
