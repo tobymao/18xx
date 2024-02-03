@@ -43,7 +43,7 @@ module Engine
         LSL_ID = 'SBL'
 
         EVENTS_TEXT = G1846::Game::EVENTS_TEXT.merge(
-          'remove_markers' => ['Remove Markers', 'Remove LA Steamship and LA Citrus markers']
+          'remove_bonuses' => ['Remove Bonuses', 'Remove LA Steamship and LA Citrus bonuses']
         ).freeze
 
         def post_setup; end
