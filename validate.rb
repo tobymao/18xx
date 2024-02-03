@@ -46,6 +46,17 @@ class Validate
   def error_titles
     @error_titles ||= errors.map { |_id, g| g['title'] }.uniq.sort
   end
+
+  def error_ids_by_title
+    @error_ids_by_title ||=
+      begin
+        _errors = errors.each_with_object(Hash.new { |h, k| h[k] = [] }) do |(id, game), obj|
+          obj[game['title']] << game['id']
+        end
+        _errors.transform_values!(&:sort)
+        _errors
+      end
+  end
 end
 
 $count = 0
