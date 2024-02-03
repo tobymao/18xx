@@ -4,12 +4,7 @@ require 'argon2'
 require 'net/http'
 require 'uri'
 
-require_relative 'db'
-require_relative 'models'
-require_relative 'models/action'
-require_relative 'models/game'
-require_relative 'models/game_user'
-require_relative 'models/user'
+require_relative 'scripts_helper'
 
 raise 'You probably only want to import games into dev servers' unless ENV['RACK_ENV'] == 'development'
 

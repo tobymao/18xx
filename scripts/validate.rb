@@ -2,12 +2,8 @@
 # rubocop:disable all
 
 require 'json'
-require_relative 'models'
-
-Dir['./models/**/*.rb'].sort.each { |file| require file }
-Sequel.extension :pg_json_ops
-require './lib/engine'
-load 'migrate_game.rb'
+require_relative 'scripts_helper'
+require_relative 'migrate_game'
 
 # class to facilitate interacting with the results of validate_all() in an irb
 # console
