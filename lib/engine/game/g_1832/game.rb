@@ -4,7 +4,9 @@ require_relative '../g_1870/game'
 require_relative 'meta'
 require_relative 'map'
 require_relative 'entities'
+require_relative 'round/merger'
 require_relative '../base'
+require_relative '../double_sided_tiles'
 
 module Engine
   module Game
@@ -13,8 +15,10 @@ module Engine
         include_meta(G1832::Meta)
         include G1832::Entities
         include G1832::Map
+        include DoubleSidedTiles
 
         attr_accessor :sell_queue, :reissued, :coal_token_counter, :coal_company_sold_or_closed
+        attr_reader :tile_groups
 
         CORPORATION_CLASS = G1832::Corporation
         CORPORATE_BUY_SHARE_ALLOW_BUY_FROM_PRESIDENT = true
@@ -27,6 +31,7 @@ module Engine
         IPO_RESERVED_NAME = 'Treasury'
 
         BOOMTOWN_HEXES = %w[D8 F14 G9 G9 H6 L14].freeze
+        BOOMTOWN_TILES = %w[3a 4a 58a].freeze
         MIAMI_HEX = 'N16'
 
         TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }].freeze
@@ -399,12 +404,13 @@ module Engine
           upgrades = super
           return upgrades unless tile_manifest
 
-          upgrades |= [@sharp_city, @tile_141, @tile_142, @tile_143] if tile.name == '3' && tile.assigned?('boomtown')
-          upgrades |= [@straight_city, @tile_141, @tile_142] if tile.name == '4' && tile.assigned?('boomtown')
-
-          if tile.name == '58' && tile.assigned?('boomtown')
-            upgrades |= [@gentle_city, @tile_141, @tile_142, @tile_143, @tile_144]
+          if self.class::BOOMTOWN_HEXES.include?(tile.hex.id)
+            return @all_tiles.select { |t| self.class::BOOMTOWN_TILES.include?(t.name) }.uniq(&:name)
           end
+
+          upgrades |= [@sharp_city, @tile_141, @tile_142, @tile_143] if tile.name == '3a'
+          upgrades |= [@straight_city, @tile_141, @tile_142] if tile.name == '4a'
+          upgrades |= [@gentle_city, @tile_141, @tile_142, @tile_143, @tile_144] if tile.name == '58a'
 
           upgrades
         end
