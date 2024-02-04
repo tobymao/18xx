@@ -294,14 +294,14 @@ module Engine
 
         # When converting a Railroad Bond, there is no refund if share price < 100
         def railroad_bond_convert_cost
-          if gpir_share_price <= 100
+          if gipr_share_price <= 100
             0
           else
-            gpir_share_price - 100
+            gipr_share_price - 100
           end
         end
 
-        def gpir_share_price
+        def gipr_share_price
           return 112 unless @corporations
 
           gipr = @corporations.find { |corp| corp.name == 'GIPR' }
