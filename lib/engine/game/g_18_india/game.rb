@@ -333,7 +333,6 @@ module Engine
 
         def operating_round(round_num)
           Engine::Round::Operating.new(self, [
-            # Engine::Step::Bankrupt,  # should not need as there is no bankruptcy in game
             Engine::Step::Exchange,
             Engine::Step::HomeToken,
             Engine::Step::Track,
