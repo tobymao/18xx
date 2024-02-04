@@ -115,7 +115,7 @@ module Engine
 
               @game.crossing_border(entity, tile) # check and potentially pay bonus
 
-              # remove border
+              # remove borders
               tile.borders.delete(border)
               neighbor.tile.borders.map! { |nb| nb.edge == hex.invert(edge) ? nil : nb }.compact!
             end
@@ -124,7 +124,7 @@ module Engine
           def tracker_available_hex(entity, hex)
             connected = hex_neighbors(entity, hex)
             return nil unless connected
-            return nil if hex.id == @game.class::T_HEX
+            return nil if hex.id == @game.class::T_HEX && @game.block_terminal_hex?
 
             tile_lay = get_tile_lay(entity)
             return nil unless tile_lay

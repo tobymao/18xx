@@ -103,7 +103,7 @@ module Engine
                 trains: ['3+', '4+'],
                 count: 1,
                 closed_when_used_up: true,
-                when: 'buying_train',
+                when: 'buy_train',
               },
             ],
           },
