@@ -120,12 +120,6 @@ module View
           y: -37.5,
         }.freeze
 
-        PP_BOTTOM_RIGHT_CORNER = {
-          region_weights: Base::BOTTOM_LEFT_CORNER,
-          x: 65,
-          y: 37.5,
-        }.freeze
-
         PP_BOTTOM_LEFT_CORNER = {
           region_weights: Base::BOTTOM_LEFT_CORNER,
           x: -65,
