@@ -25,19 +25,25 @@ module Engine
                         yellow: '#ffe600',
                         green: '#32763f',
                         brightGreen: '#6ec037')
-        TRACK_RESTRICTION = :permissive
-        SELL_BUY_ORDER = :sell_buy_sell
-        TILE_RESERVATION_BLOCKS_OTHERS = :always
         CURRENCY_FORMAT_STR = '$%s'
 
-        def setup
-          if map?(:France)
-            Engine::Game::GSystem18::const_set(:SELL_BUY_ORDER, :sell_buy)
-          end
-        end
+        MUST_SELL_IN_BLOCKS = false
+        MUST_BID_INCREMENT_MULTIPLE = true
+        ONLY_HIGHEST_BID_COMMITTED = true
+        HOME_TOKEN_TIMING = :operate
+        SELL_BUY_ORDER = :sell_buy_sell
+        GAME_END_CHECK = { bankrupt: :immediate, final_phase: :full_or }.freeze
+        LAYOUT = :pointy
+
+        # need to define constants that could be redefined
+        SELL_AFTER = :first
+        SELL_MOVEMENT = :down_share
+        SOLD_OUT_INCREASE = true
+        EBUY_EMERGENCY_ISSUE_BEFORE_EBUY = false
+        BANKRUPTCY_ENDS_GAME_AFTER = :one
 
         def map?(map)
-          full = "map_#{map.to_str}"
+          full = "map_#{map}"
           optional_rules&.include?(full.to_sym)
         end
 
@@ -72,6 +78,36 @@ module Engine
           !optional_rules&.include?(:multiple_brown_from_ipo)
         end
 
+        def half_dividend_by_map?
+          @half_dividend ||= capitalization_by_map == :incremental
+        end
+
+        def redef_const(const, value)
+          mod = is_a?(Module) ? self : self.class
+          mod.send(:remove_const, const) if mod.const_defined?(const)
+          mod.const_set(const, value)
+        end
+
+        def setup
+          #################################################
+          # "Standard" overrides for Incremental Cap games
+          #
+          if capitalization_by_map == :incremental
+            redef_const(:SELL_BUY_ORDER, :sell_buy)
+            redef_const(:HOME_TOKEN_TIMING, :float)
+            redef_const(:SELL_AFTER, :after_ipo)
+            redef_const(:SELL_MOVEMENT, :left_block_pres)
+            redef_const(:SOLD_OUT_INCREASE, false)
+            redef_const(:EBUY_EMERGENCY_ISSUE_BEFORE_EBUY, true)
+            redef_const(:BANKRUPTCY_ENDS_GAME_AFTER, :all_but_one)
+          end
+
+          #################################################
+          # Map-specific overrides
+          #
+          redef_const(:CURRENCY_FORMAT_STR, 'F%s') if map?(:France)
+        end
+
         def init_round
           return super unless game_companies.empty?
 
@@ -91,7 +127,7 @@ module Engine
             Engine::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
-            Engine::Step::Dividend,
+            GSystem18::Step::Dividend,
             Engine::Step::DiscardTrain,
             Engine::Step::BuyTrain,
             [Engine::Step::BuyCompany, { blocks: true }],

@@ -37,7 +37,6 @@ module Engine
         MUTEX_RULES = [
           %i[map_NEUS map_France],
         ].freeze
-
       end
     end
   end

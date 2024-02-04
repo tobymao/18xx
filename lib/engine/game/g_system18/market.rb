@@ -4,7 +4,6 @@ module Engine
   module Game
     module GSystem18
       module Market
-
         BANK_CASH = 12_000
 
         def cash_by_map
@@ -12,6 +11,9 @@ module Engine
             { 2 => 850, 3 => 575 }
           elsif map?(:France)
             { 2 => 480, 3 => 320, 4 => 240 }
+          else
+            # default to make rake happy
+            { 2 => 400, 3 => 300, 4 => 200 }
           end
         end
 
@@ -20,14 +22,18 @@ module Engine
             { 2 => 20, 3 => 13 }
           elsif map?(:France)
             { 2 => 20, 3 => 13, 4 => 10 }
+          else
+            # default to make rake happy
+            { 2 => 20, 3 => 15, 4 => 10 }
           end
         end
 
         def capitalization_by_map
-          if map?(:NEUS)
-            :full
-          elsif map?(:France)
+          if map?(:France)
             :incremental
+          else
+            # NEUS
+            :full
           end
         end
 
@@ -45,8 +51,7 @@ module Engine
              200
              220
              250
-             275
-          ],
+             275],
           %w[70
              75
              80
@@ -60,8 +65,7 @@ module Engine
              180
              200
              220
-             250
-          ],
+             250],
           %w[65y
              70
              75
@@ -75,8 +79,7 @@ module Engine
              160
              180
              200
-             220
-          ],
+             220],
           %w[60y
              65
              70
@@ -87,8 +90,7 @@ module Engine
              110
              110
              125
-             140
-          ],
+             140],
           %w[55y
              60y
              65
@@ -96,39 +98,33 @@ module Engine
              75
              80
              90
-             100
-          ],
+             100],
           %w[50o
              60y
              65
              65p
              70
              75
-             80
-          ],
+             80],
           %w[45o
              55y
              60y
              65
              65
-             70
-          ],
+             70],
           %w[40b
              50o
              60y
              65y
-             65
-          ],
+             65],
           %w[30b
              40b
              50o
-             60y
-          ],
+             60y],
           %w[20b
              30b
              40b
-             50o
-          ],
+             50o],
         ].freeze
 
         MARKET_1D = [
@@ -157,14 +153,13 @@ module Engine
              440
              490
              540
-             600
-          ],
+             600],
         ].freeze
 
         def game_market
-          if map?(:NEUS)
+          if capitalization_by_map == :full
             MARKET_2D
-          elsif map?(:France)
+          else
             MARKET_1D
           end
         end

@@ -51,11 +51,41 @@ module Engine
           '619' => 2,
         }.freeze
 
+        # rubocop:disable Layout/LineLength
         def game_tiles
           tiles = {}
-          S18_TILES.each { |i,j| tiles[i] = j.dup }
+          S18_TILES.each { |i, j| tiles[i] = j.dup }
 
-          if map?(:NEUS)
+          if map?(:France)
+            tiles['619'] = 1
+            tiles.merge!({
+                           '204' => 1,
+                           '611' => 2,
+                           'X1' =>
+              {
+                'count' => 1,
+                'color' => 'gray',
+                'code' =>
+                'city=revenue:70,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=B',
+              },
+                           'X3' =>
+                {
+                  'count' => 1,
+                  'color' => 'green',
+                  'code' =>
+                  'city=revenue:60;city=revenue:60;city=revenue:60;path=a:0,b:_0;path=a:5,b:_0;path=a:1,b:_1;path=a:2,b:_1;path=a:3,b:_2;path=a:4,b:_2;label=P',
+                },
+                           'X4' =>
+                  {
+                    'count' => 1,
+                    'color' => 'brown',
+                    'code' =>
+                    'city=revenue:80,slots:2;city=revenue:80;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_1;path=a:3,b:_1;path=a:4,b:_0;path=a:5,b:_0;label=P',
+                  },
+
+                         })
+          else
+            # NEUS
             tiles.delete('5')
             tiles.delete('12')
             tiles.delete('13')
@@ -63,67 +93,31 @@ module Engine
             tiles.delete('206')
             tiles.delete('619')
             tiles.merge!({
-              '54' => 1,
-              '62' => 1,
-              'X1' =>
+                           '54' => 1,
+                           '62' => 1,
+                           'X1' =>
               {
                 'count' => 1,
                 'color' => 'gray',
                 'code' =>
-                'city=revenue:70,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=B'
+                'city=revenue:70,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=B',
               },
-              'X2' =>
-              {
-                'count' => 1,
-                'color' => 'gray',
-                'code' =>
-                'city=revenue:100,slots:4;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;label=NY'
-              },
-            })
-          elsif map?(:France)
-            tiles['619'] = 1
-            tiles.merge!({
-              '204' => 1,
-              '611' => 2,
-              'X1' =>
-              {
-                'count' => 1,
-                'color' => 'gray',
-                'code' =>
-                'city=revenue:70,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=B'
-              },
-              'X3' =>
-              {
-                'count' => 1,
-                'color' => 'green',
-                'code' =>
-                'city=revenue:60;city=revenue:60;city=revenue:60;path=a:0,b:_0;path=a:5,b:_0;path=a:1,b:_1;path=a:2,b:_1;path=a:3,b:_2;path=a:4,b:_2;label=P'
-              },
-              'X4' =>
-              {
-                'count' => 1,
-                'color' => 'brown',
-                'code' =>
-                'city=revenue:80,slots:2;city=revenue:80;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_1;path=a:3,b:_1;path=a:4,b:_0;path=a:5,b:_0;label=P'
-              },
-
-            })
+                           'X2' =>
+                {
+                  'count' => 1,
+                  'color' => 'gray',
+                  'code' =>
+                  'city=revenue:100,slots:4;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;label=NY',
+                },
+                         })
           end
 
           tiles
         end
+        # rubocop:enable Layout/LineLength
 
         def game_location_names
-          if map?(:NEUS)
-            {
-              'B3' => 'Chicago',
-              'B11' => 'Detroit & Cleveland',
-              'B11' => 'Erie',
-              'B11' => 'Boston',
-              'C10' => 'New York City',
-              'D9' => 'Washington DC',
-            }
-          elsif map?(:France)
+          if map?(:France)
             {
               'B4' => 'London',
               'B6' => 'Lille',
@@ -142,49 +136,21 @@ module Engine
               'F10' => 'Monaco',
               'G5' => 'Barcelona',
             }
+          else
+            # NEUS
+            {
+              'B3' => 'Chicago',
+              'B5' => 'Detroit & Cleveland',
+              'B7' => 'Erie',
+              'B11' => 'Boston',
+              'C10' => 'New York City',
+              'D9' => 'Washington DC',
+            }
           end
         end
 
         def game_hexes
-          if map?(:NEUS)
-            {
-              gray: {
-                ['A6'] => 'path=a:0,b:5',
-                ['A2'] => 'path=a:4,b:5',
-                ['A4'] => 'path=a:1,b:5',
-                ['A8'] => 'path=a:0,b:5;path=a:0,b:4',
-                ['A10'] => 'path=a:0,b:5;path=a:1,b:4',
-                ['A12'] => 'path=a:0,b:1',
-
-                ['D3'] => 'path=a:3,b:4',
-                ['D11'] => 'path=a:0,b:1',
-                %w[E8 E10] => 'path=a:2,b:3',
-              },
-
-              blue: {
-                ['B1'] => 'junction;path=a:4,b:_0,terminal:1',
-                ['C2'] => 'junction;path=a:3,b:_0,terminal:1',
-                ['C12'] => 'junction;path=a:2,b:_0,terminal:1',
-
-              },
-              white: {
-                %w[B7 C4] => 'city',
-                %w[C6] => 'town=revenue:0;town=revenue:0;upgrade=cost:120,terrain:mountain',
-                %w[C8] => 'town=revenue:0;town=revenue:0;upgrade=cost:40,terrain:mountain',
-                %w[B9 D5] => 'upgrade=cost:40,terrain:mountain',
-                ['D7'] => 'upgrade=cost:120,terrain:mountain',
-              },
-              yellow: {
-                ['B3'] => 'city=revenue:30;path=a:2,b:_0;path=a:4,b:_0;label=B',
-                ['B5'] => 'city=revenue:0;city=revenue:0;label=OO',
-                ['D9'] => 'city=revenue:30;city=revenue:0;path=a:2,b:_0;label=OO',
-                ['B11'] => 'city=revenue:30;path=a:1,b:_0;path=a:3,b:_0;label=B',
-                ['C10'] => 'city=revenue:40;city=revenue:40;path=a:2,b:_0;label=NY',
-                ['I15'] => 'city=revenue:30;path=a:4,b:_0;path=a:0,b:_0;label=B',
-
-              },
-            }
-          elsif map?(:France)
+          if map?(:France)
             {
               gray: {
                 %w[A5] => 'town=revenue:0;path=a:0,b:_0;path=a:5,b:_0',
@@ -213,10 +179,46 @@ module Engine
                 ['F8'] => 'city=revenue:30;path=a:1,b:_0;label=B',
               },
             }
+          else
+            # NEUS
+            {
+              gray: {
+                ['A6'] => 'path=a:0,b:5',
+                ['A2'] => 'path=a:4,b:5',
+                ['A4'] => 'path=a:1,b:5',
+                ['A8'] => 'path=a:0,b:5;path=a:0,b:4',
+                ['A10'] => 'path=a:0,b:5;path=a:1,b:4',
+                ['A12'] => 'path=a:0,b:1',
+
+                ['D3'] => 'path=a:3,b:4',
+                ['D11'] => 'path=a:0,b:1',
+                %w[E8 E10] => 'path=a:2,b:3',
+                ['B1'] => 'junction;path=a:4,b:_0,terminal:1',
+                ['C2'] => 'junction;path=a:3,b:_0,terminal:1',
+              },
+              blue: {
+                ['C12'] => 'junction;path=a:2,b:_0,terminal:1',
+
+              },
+              white: {
+                %w[B7 C4] => 'city',
+                %w[C6] => 'town=revenue:0;town=revenue:0;upgrade=cost:120,terrain:mountain',
+                %w[C8] => 'town=revenue:0;town=revenue:0;upgrade=cost:40,terrain:mountain',
+                %w[B9 D5] => 'upgrade=cost:40,terrain:mountain',
+                ['D7'] => 'upgrade=cost:120,terrain:mountain',
+              },
+              yellow: {
+                ['B3'] => 'city=revenue:30;path=a:2,b:_0;path=a:4,b:_0;label=B',
+                ['B5'] => 'city=revenue:0;city=revenue:0;label=OO',
+                ['D9'] => 'city=revenue:30;city=revenue:0;path=a:2,b:_0;label=OO',
+                ['B11'] => 'city=revenue:30;path=a:1,b:_0;path=a:3,b:_0;label=B',
+                ['C10'] => 'city=revenue:40;city=revenue:40;path=a:2,b:_0;label=NY',
+                ['I15'] => 'city=revenue:30;path=a:4,b:_0;path=a:0,b:_0;label=B',
+
+              },
+            }
           end
         end
-
-        LAYOUT = :pointy
       end
     end
   end
