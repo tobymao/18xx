@@ -293,17 +293,17 @@ module Engine
             %w[E9] => 'city=revenue:20,slots:7;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=SP',
           },
           gray60: {
-            %w[B6 C11 F12 H6 J8 J12] => 'upgrade=cost:10,terrain:mountain',
-            %w[H4] => 'upgrade=cost:10,terrain:mountain;border=edge:2,type:divider',
+            %w[B6 C11 F12 H6 J8 J12] => 'upgrade=cost:10,terrain:hill',
+            %w[H4] => 'upgrade=cost:10,terrain:hill;border=edge:2,type:divider',
           },
           gray50: {
             %w[B8 B10 D4 D6 E3 E11 E13 G9 I3 K7 K11] => 'upgrade=cost:40,terrain:mountain',
             %w[F6] => 'upgrade=cost:40,terrain:mountain;border=edge:4,type:divider',
           },
           salmon: {
-            %w[A7 A9 B4 B12 D10 E15 F2 H10 I7 J2 J10 K5 K13 L10] => 'city=revenue:0;upgrade=cost:20,terrain:mountain',
-            %w[H2] => 'city=revenue:0;upgrade=cost:20,terrain:mountain;border=edge:1,type:divider;border=edge:2,type:divider',
-            %w[E5 G13] => 'city=revenue:0;city=revenue:0;upgrade=cost:20,terrain:mountain;label=OO',
+            %w[A7 A9 B4 B12 D10 E15 F2 H10 I7 J2 J10 K5 K13 L10] => 'city=revenue:0;upgrade=cost:20,terrain:hill',
+            %w[H2] => 'city=revenue:0;upgrade=cost:20,terrain:hill;border=edge:1,type:divider;border=edge:2,type:divider',
+            %w[E5 G13] => 'city=revenue:0;city=revenue:0;upgrade=cost:20,terrain:hill;label=OO',
           },
           purple: {
             %w[B2] => 'offboard=revenue:20,groups:W0;path=a:0,b:_0',
