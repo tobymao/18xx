@@ -8,9 +8,10 @@ module Engine
           {
             sym: 'Y1',
             name: 'St. Cloud Hotel (Y1)',
-            desc: "Hotel token starts in Silvercliffe (G17). When owned by a corporation, St. Cloud's "\
-                  'hotel token will generate an additional $20 revenue only for the holding corporation. '\
-                  'Once in Brown Phase, the hotel is moved to Cañon City (H12). This company never closes.',
+            desc: 'Special abilities not implemented.',
+            # desc: "Hotel token starts in Silvercliffe (G17). When owned by a corporation, St. Cloud's "\
+            #       'hotel token will generate an additional $20 revenue only for the holding corporation. '\
+            #       'Once in Brown Phase, the hotel is moved to Cañon City (H12). This company never closes.',
             value: 50,
             revenue: 5,
             abilities: [
@@ -20,8 +21,9 @@ module Engine
           {
             sym: 'Y2',
             name: 'Ghost Town Tour Co. (Y2)',
-            desc: 'When the owning corporation ships the last gold from any mine space, they  may put 1 Ghost Town '\
-                  'Token in that hex. On future turns, Ghost Town Tokens provide $10 revenue for the owning corporation.',
+            desc: 'Special abilities not implemented.',
+            # desc: 'When the owning corporation ships the last gold from any mine space, they  may put 1 Ghost Town '\
+            #       'Token in that hex. On future turns, Ghost Town Tokens provide $10 revenue for the owning corporation.',
             value: 45,
             revenue: 15,
             abilities: [
@@ -31,9 +33,10 @@ module Engine
           {
             sym: 'Y3',
             name: 'Coal Creek Mines (Y3)',
-            desc: 'When any corporation runs through Coal Creek, the owning corporation receives a coal cube '\
-                  'from the Coal Mine Card. On a future turn, the owning corporation may use up to 2 coal cubes '\
-                  'to increase their train run by 1 stop for each cube. When used, cubes are removed from the game.',
+            desc: 'Special abilities not implemented.',
+            # desc: 'When any corporation runs through Coal Creek, the owning corporation receives a coal cube '\
+            #       'from the Coal Mine Card. On a future turn, the owning corporation may use up to 2 coal cubes '\
+            #       'to increase their train run by 1 stop for each cube. When used, cubes are removed from the game.',
             value: 40,
             revenue: 5,
             abilities: [
@@ -48,15 +51,15 @@ module Engine
             value: 75,
             revenue: 5,
             abilities: [
-              # { type: 'shares', shares: 'CF&I_1' },
-              { type: 'shares', shares: 'RG_1' },
+              { type: 'shares', shares: ['CF&I_1', 'RG_1'] },
               { type: 'no_buy' },
             ],
           },
           {
             sym: 'Y5',
             name: 'Territorial Prison (Y5)',
-            desc: 'If a corporation owns the prison, they may use prison labor to build in any terrain at 1/2 price.',
+            desc: 'Special abilities not implemented.',
+            # desc: 'If a corporation owns the prison, they may use prison labor to build in any terrain at 1/2 price.',
             value: 70,
             revenue: 10,
             abilities: [
@@ -95,8 +98,9 @@ module Engine
           {
             sym: 'G2',
             name: '13LB Gold Nugget (G2)',
-            desc: 'Once during the game, the owning corporation may ship 1 Gold for $130 revenue '\
-                  'increase (instead of the normal $50).',
+            desc: 'Special abilities not implemented.',
+            # desc: 'Once during the game, the owning corporation may ship 1 Gold for $130 revenue '\
+            #       'increase (instead of the normal $50).',
             value: 40,
             revenue: 5,
             abilities: [
@@ -106,9 +110,10 @@ module Engine
           {
             sym: 'G3',
             name: 'Hanging Bridge Lease (G3)',
-            desc: 'The owning corporation may run through The Royal Gorge (D12-E13-F12) by paying a '\
-                  '10% dividend to the Rio Grande from the proceeds. This money can either come from '\
-                  "the charter, or the president's personal cash.",
+            desc: 'Special abilities not implemented.',
+            # desc: 'The owning corporation may run through The Royal Gorge (D12-E13-F12) by paying a '\
+            #       '10% dividend to the Rio Grande from the proceeds. This money can either come from '\
+            #       "the charter, or the president's personal cash.",
             value: 50,
             revenue: 10,
             abilities: [
@@ -131,9 +136,10 @@ module Engine
           {
             sym: 'G5',
             name: 'Metals Investor (G5)',
-            desc: 'Each Stock Round, the owning player may purchase 1 CF&I share and/or 1 VGC '\
-                  'share for one step cheaper than their current value. Once used, the player may '\
-                  'not sell any of the purchased stocks until the next Stock Round.',
+            desc: 'Special abilities not implemented.',
+            # desc: 'Each Stock Round, the owning player may purchase 1 CF&I share and/or 1 VGC '\
+            #       'share for one step cheaper than their current value. Once used, the player may '\
+            #       'not sell any of the purchased stocks until the next Stock Round.',
             value: 25,
             revenue: 5,
             abilities: [
@@ -145,9 +151,10 @@ module Engine
           {
             sym: 'G6',
             name: 'Coal Depot (G6)',
-            desc: 'Place one coal cube on this card for every $10 paid for this company in the '\
-                  'initial auction (rounded down). During operating rounds, the owning corporation may '\
-                  'spend 1-2 coal cubes to add additional stops on a route, following normal route rules.',
+            desc: 'Special abilities not implemented.',
+            # desc: 'Place one coal cube on this card for every $10 paid for this company in the '\
+            #       'initial auction (rounded down). During operating rounds, the owning corporation may '\
+            #       'spend 1-2 coal cubes to add additional stops on a route, following normal route rules.',
             value: 10,
             revenue: 5,
             abilities: [
@@ -169,9 +176,10 @@ module Engine
           {
             sym: 'B2',
             name: 'Sulphur Springs (B2)',
-            desc: 'The owning corporation may close this company permanently to turn Sulphur '\
-                  'Springs (E3) into a city of the same color tile. If owned by a player, once in Brown Phase, '\
-                  'provides $50 revenue per operating round, only if Sulphur Springs is connected by any rail.',
+            desc: 'Special abilities not implemented.',
+            # desc: 'The owning corporation may close this company permanently to turn Sulphur '\
+            #       'Springs (E3) into a city of the same color tile. If owned by a player, once in Brown Phase, '\
+            #       'provides $50 revenue per operating round, only if Sulphur Springs is connected by any rail.',
             value: 50,
             revenue: 0,
             abilities: [
@@ -183,9 +191,10 @@ module Engine
           {
             sym: 'B3',
             name: 'Steel Depot (B3)',
-            desc: 'Comes with the Steel Depot card. Once per operating round, owning corporation '\
-                  'may use 0-2 steel from the Steel Depot card to lay yellow track for free. (Max '\
-                  'of 6 track applies).',
+            desc: 'Special abilities not implemented.',
+            # desc: 'Comes with the Steel Depot card. Once per operating round, owning corporation '\
+            #       'may use 0-2 steel from the Steel Depot card to lay yellow track for free. (Max '\
+            #       'of 6 track applies).',
             value: 55,
             revenue: 10,
             abilities: [
@@ -195,8 +204,9 @@ module Engine
           {
             sym: 'B4',
             name: 'Gold Miner (B4)',
-            desc: 'This card acts as though it were a 20% share of Victor Gold Company. Does not '\
-                  'count as a certificate. Closes when the first 5+ train is purchased.',
+            desc: 'Special abilities not implemented.',
+            # desc: 'This card acts as though it were a 20% share of Victor Gold Company. Does not '\
+            #       'count as a certificate. Closes when the first 5+ train is purchased.',
             value: 20,
             revenue: 0,
             abilities: [
@@ -209,8 +219,9 @@ module Engine
           {
             sym: 'B5',
             name: 'Track Engineer (B5)',
-            desc: 'Every operating round, this company may treat one train as if it were +1. It may '\
-                  'be a different train each operating round.',
+            desc: 'Special abilities not implemented.',
+            # desc: 'Every operating round, this company may treat one train as if it were +1. It may '\
+            #       'be a different train each operating round.',
             value: 60,
             revenue: 10,
             abilities: [
@@ -220,8 +231,9 @@ module Engine
           {
             sym: 'B6',
             name: 'U.S. Mint Worker (B6)',
-            desc: 'The owning player may close this company to purchase 1-2 Victor Gold Company '\
-                  'shares at a 50% discount each. These are bought simultaneously.',
+            desc: 'Special abilities not implemented.',
+            # desc: 'The owning player may close this company to purchase 1-2 Victor Gold Company '\
+            #       'shares at a 50% discount each. These are bought simultaneously.',
             value: 40,
             revenue: 5,
             abilities: [
@@ -353,6 +365,17 @@ module Engine
             text_color: 'black',
           ),
         ].freeze
+
+        DEBT_CORPORATION = {
+          sym: 'DEBT',
+          name: 'Debt',
+          color: 'red',
+          tokens: [],
+          logo: '18_royal_gorge/DEBT',
+          simple_logo: '18_royal_gorge/DEBT.alt',
+          type: :debt,
+          hide_shares: true,
+        }.freeze
       end
     end
   end

@@ -12,7 +12,7 @@ module Engine
       attr_reader :name, :sticky
 
       def initialize(image, name = nil, sticky = true, blocks_lay = nil, preprinted = true, large: false, owner: nil, loc: nil)
-        @image = "/icons/#{image}.svg"
+        @image = image.start_with?('/icons') ? "#{image}.svg" : "/icons/#{image}.svg"
         @name = name || image.split('/')[-1]
         @sticky = !!sticky
         @preprinted = preprinted

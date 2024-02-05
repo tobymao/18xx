@@ -606,8 +606,8 @@ module Engine
                   'colour. This closes the company and counts as the company’s normal track laying '\
                   'step. All other normal track laying restrictions apply. Once acquired, the '\
                   'private company pays its revenue to the owning company until the power is '\
-                  'exercised and the company is closed. May be used in conjunction with P12 and/or '\
-                  'P30 as part of the same tile placement step. May not be used to remove a town '\
+                  'exercised and the company is closed. May be used in conjunction with P12 '\
+                  'as part of the same tile placement step. May not be used to remove a town '\
                   'with a sawmill token (placed by P13).',
             abilities: [
               {
@@ -638,7 +638,7 @@ module Engine
                   'normal track laying step. All other normal track laying restrictions apply. '\
                   'Once acquired, the private company pays its revenue to the owning company until '\
                   'the power is exercised and the company is closed. May be used in conjunction '\
-                  'with P12 and/or P29 as part of the same tile placement step. May not be used to '\
+                  'with P12 as part of the same tile placement step. May not be used to '\
                   'remove a town with a sawmill token (placed by P13).',
             abilities: [
               {
@@ -1704,7 +1704,6 @@ module Engine
             destination_loc: '3.5',
             destination_exits: [0, 1, 2, 3, 4, 5],
             destination_icon: '1822_ca/ICR_DEST',
-            destination_icon_in_city_slot: [2, 0],
           },
           {
             sym: 'NTR',

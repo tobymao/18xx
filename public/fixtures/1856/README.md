@@ -28,3 +28,6 @@ hotseat002: (needs replacement)
 
  51745
  * Based off of #51745 - confirm that the nationalization of the Kitchener token is free
+
+ move_up_price_sr1
+ * confirm that price of a company moves up if sold out at the end of SR1

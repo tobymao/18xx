@@ -132,7 +132,7 @@ module Engine
               'count' => 1,
               'color' => 'yellow',
               'code' =>
-                'city=revenue:30;city=revenue:30,slots:2;path=a:0,b:_1;path=a:1,b:_1;'\
+                'city=revenue:30,groups:Montreal;city=revenue:30,groups:Montreal,slots:2;path=a:0,b:_1;path=a:1,b:_1;'\
                 'path=a:2,b:_0;path=a:3,b:_0;label=M;upgrade=cost:40',
             },
           'M2' =>
@@ -140,7 +140,7 @@ module Engine
               'count' => 1,
               'color' => 'green',
               'code' =>
-                'city=revenue:40;city=revenue:40,slots:2,loc:0;path=a:0,b:_1;path=a:1,b:_1;'\
+                'city=revenue:40,groups:Montreal;city=revenue:40,groups:Montreal,slots:2,loc:0;path=a:0,b:_1;path=a:1,b:_1;'\
                 'path=a:5,b:_1;path=a:2,b:_0;path=a:3,b:_0;label=M;upgrade=cost:60',
             },
           'M3' =>
@@ -148,7 +148,7 @@ module Engine
               'count' => 1,
               'color' => 'green',
               'code' =>
-                'city=revenue:30,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
+                'city=revenue:30,groups:Montreal,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
                 'path=a:3,b:_0;label=M;upgrade=cost:60',
             },
           'M4' =>
@@ -156,7 +156,7 @@ module Engine
               'count' => 1,
               'color' => 'brown',
               'code' =>
-                'city=revenue:60;city=revenue:60,slots:2,loc:0;path=a:0,b:_1;path=a:1,b:_1;'\
+                'city=revenue:60,groups:Montreal;city=revenue:60,groups:Montreal,slots:2,loc:0;path=a:0,b:_1;path=a:1,b:_1;'\
                 'path=a:5,b:_1;path=a:2,b:_0;path=a:3,b:_0;label=M;upgrade=cost:80',
             },
           'M5' =>
@@ -164,7 +164,7 @@ module Engine
               'count' => 1,
               'color' => 'brown',
               'code' =>
-                'city=revenue:50,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
+                'city=revenue:50,groups:Montreal,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
                 'path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=M;upgrade=cost:80',
             },
           'M6' =>
@@ -172,7 +172,7 @@ module Engine
               'count' => 1,
               'color' => 'brown',
               'code' =>
-                'city=revenue:40,slots:4;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
+                'city=revenue:40,groups:Montreal,slots:4;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
                 'path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=M;upgrade=cost:80',
             },
           'M7' =>
@@ -180,7 +180,7 @@ module Engine
               'count' => 1,
               'color' => 'gray',
               'code' =>
-                'city=revenue:80,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
+                'city=revenue:80,groups:Montreal,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
                 'path=a:4,b:_0;path=a:5,b:_0;label=M',
             },
           'M8' =>
@@ -188,7 +188,7 @@ module Engine
               'count' => 1,
               'color' => 'gray',
               'code' =>
-                'city=revenue:60,slots:4;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
+                'city=revenue:60,groups:Montreal,slots:4;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
                 'path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=M',
             },
           'O1' =>
@@ -196,7 +196,7 @@ module Engine
               'count' => 1,
               'color' => 'yellow',
               'code' =>
-                'city=revenue:30;city=revenue:30;path=a:0,b:_0;path=a:1,b:_1;'\
+                'city=revenue:30,groups:Ottawa;city=revenue:30,groups:Ottawa;path=a:0,b:_0;path=a:1,b:_1;'\
                 'path=a:4,b:_1;path=a:5,b:_0;label=O;upgrade=cost:40',
             },
           'O2' =>
@@ -204,7 +204,7 @@ module Engine
               'count' => 1,
               'color' => 'yellow',
               'code' =>
-                'city=revenue:20,slots:2;path=a:1,b:_0;path=a:5,b:_0;label=O;'\
+                'city=revenue:20,groups:Ottawa,slots:2;path=a:1,b:_0;path=a:5,b:_0;label=O;'\
                 'upgrade=cost:40',
             },
           'O3' =>
@@ -212,7 +212,7 @@ module Engine
               'count' => 1,
               'color' => 'green',
               'code' =>
-                'city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:1,b:_1;'\
+                'city=revenue:40,groups:Ottawa;city=revenue:40,groups:Ottawa;path=a:0,b:_0;path=a:1,b:_1;'\
                 'path=a:4,b:_1;path=a:5,b:_0;label=O;upgrade=cost:60',
             },
           'O4' =>
@@ -220,23 +220,22 @@ module Engine
               'count' => 1,
               'color' => 'green',
               'code' =>
-                'city=revenue:30,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:4,b:_0;'\
+                'city=revenue:30,groups:Ottawa,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:4,b:_0;'\
                 'path=a:5,b:_0;label=O;upgrade=cost:60',
             },
           'O5' =>
             {
               'count' => 1,
               'color' => 'brown',
-              'code' =>
-                'city=revenue:50,loc:5.5;city=revenue:50,slots:2,loc:2.5;path=a:0,b:_0;path=a:1,b:_1;'\
-                'path=a:3,b:_1;path=a:4,b:_1;path=a:5,b:_0;label=O;upgrade=cost:80',
+              'code' => 'city=revenue:50,groups:Ottawa,loc:5.5;city=revenue:50,groups:Ottawa,slots:2,loc:2.5;'\
+                        'path=a:0,b:_0;path=a:1,b:_1;path=a:3,b:_1;path=a:4,b:_1;path=a:5,b:_0;label=O;upgrade=cost:80',
             },
           'O6' =>
             {
               'count' => 1,
               'color' => 'brown',
               'code' =>
-                  'city=revenue:40,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
+                  'city=revenue:40,groups:Ottawa,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
                   'path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=O;upgrade=cost:80',
             },
           'O7' =>
@@ -244,7 +243,7 @@ module Engine
               'count' => 1,
               'color' => 'gray',
               'code' =>
-                  'city=revenue:60,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
+                  'city=revenue:60,groups:Ottawa,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
                   'path=a:4,b:_0;path=a:5,b:_0;label=O',
             },
           'O8' =>
@@ -252,7 +251,7 @@ module Engine
               'count' => 1,
               'color' => 'gray',
               'code' =>
-                  'city=revenue:50,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
+                  'city=revenue:50,groups:Ottawa,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
                   'path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=O',
             },
           'Q1' =>
@@ -260,7 +259,7 @@ module Engine
               'count' => 1,
               'color' => 'yellow',
               'code' =>
-                'city=revenue:30,slots:2,loc:1.5;city=revenue:30,loc:5;path=a:1,b:_0;path=a:2,b:_0;'\
+                'city=revenue:30,groups:Quebec,slots:2,loc:1.5;city=revenue:30,groups:Quebec,loc:5;path=a:1,b:_0;path=a:2,b:_0;'\
                 'path=a:4,b:_1;label=Q;upgrade=cost:40',
             },
           'Q2' =>
@@ -268,7 +267,7 @@ module Engine
               'count' => 1,
               'color' => 'yellow',
               'code' =>
-                'city=revenue:20;city=revenue:20;city=revenue:20,loc:5;path=a:1,b:_0;'\
+                'city=revenue:20,groups:Quebec;city=revenue:20,groups:Quebec;city=revenue:20,groups:Quebec,loc:5;path=a:1,b:_0;'\
                 'path=a:2,b:_1;path=a:4,b:_2;label=Q;upgrade=cost:40',
             },
           'Q3' =>
@@ -276,7 +275,7 @@ module Engine
               'count' => 1,
               'color' => 'green',
               'code' =>
-                'city=revenue:40,slots:2,loc:1.5;city=revenue:40,loc:5;path=a:0,b:_1;path=a:1,b:_0;'\
+                'city=revenue:40,groups:Quebec,slots:2,loc:1.5;city=revenue:40,groups:Quebec,loc:5;path=a:0,b:_1;path=a:1,b:_0;'\
                 'path=a:2,b:_0;path=a:4,b:_1;label=Q;upgrade=cost:60',
             },
           'Q4' =>
@@ -284,7 +283,7 @@ module Engine
               'count' => 1,
               'color' => 'green',
               'code' =>
-                'city=revenue:30,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
+                'city=revenue:30,groups:Quebec,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
                 'path=a:4,b:_0;label=Q;upgrade=cost:60',
             },
           'Q5' =>
@@ -292,7 +291,7 @@ module Engine
               'count' => 1,
               'color' => 'brown',
               'code' =>
-                'city=revenue:50,slots:2,loc:1.5;city=revenue:50,loc:5;path=a:0,b:_1;path=a:1,b:_0;'\
+                'city=revenue:50,groups:Quebec,slots:2,loc:1.5;city=revenue:50,groups:Quebec,loc:5;path=a:0,b:_1;path=a:1,b:_0;'\
                 'path=a:2,b:_0;path=a:4,b:_1;path=a:5,b:_1;label=Q;upgrade=cost:80',
             },
           'Q6' =>
@@ -300,7 +299,7 @@ module Engine
               'count' => 1,
               'color' => 'brown',
               'code' =>
-                'city=revenue:40,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
+                'city=revenue:40,groups:Quebec,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
                 'path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=Q;upgrade=cost:80',
             },
           'Q7' =>
@@ -308,7 +307,7 @@ module Engine
               'count' => 1,
               'color' => 'gray',
               'code' =>
-                'city=revenue:60,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
+                'city=revenue:60,groups:Quebec,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
                 'path=a:4,b:_0;path=a:5,b:_0;label=Q',
             },
           'Q8' =>
@@ -316,7 +315,7 @@ module Engine
               'count' => 1,
               'color' => 'gray',
               'code' =>
-                'city=revenue:50,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
+                'city=revenue:50,groups:Quebec,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
                 'path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=Q',
             },
           'T1' =>
@@ -324,7 +323,7 @@ module Engine
               'count' => 1,
               'color' => 'yellow',
               'code' =>
-                'city=revenue:30;city=revenue:30;path=a:1,b:_0;path=a:3,b:_1;'\
+                'city=revenue:30,groups:Toronto;city=revenue:30,groups:Toronto;path=a:1,b:_0;path=a:3,b:_1;'\
                 'label=T;upgrade=cost:40',
             },
           'T2' =>
@@ -332,7 +331,7 @@ module Engine
               'count' => 1,
               'color' => 'green',
               'code' =>
-                'city=revenue:50;city=revenue:50;path=a:1,b:_0;path=a:2,b:_0;'\
+                'city=revenue:50,groups:Toronto;city=revenue:50,groups:Toronto;path=a:1,b:_0;path=a:2,b:_0;'\
                 'path=a:3,b:_1;path=a:4,b:_1;label=T;upgrade=cost:60',
             },
           'T3' =>
@@ -340,7 +339,7 @@ module Engine
               'count' => 1,
               'color' => 'green',
               'code' =>
-                  'city=revenue:40;city=revenue:40;path=a:1,b:_1;path=a:2,b:_0;'\
+                  'city=revenue:40,groups:Toronto;city=revenue:40,groups:Toronto;path=a:1,b:_1;path=a:2,b:_0;'\
                   'path=a:3,b:_0;path=a:4,b:_1;label=T;upgrade=cost:60',
             },
           'T4' =>
@@ -348,7 +347,7 @@ module Engine
               'count' => 1,
               'color' => 'brown',
               'code' =>
-                  'city=revenue:70,slots:2;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
+                  'city=revenue:70,groups:Toronto,slots:2;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
                   'path=a:4,b:_0;label=T;upgrade=cost:80',
             },
           'T5' =>
@@ -356,7 +355,7 @@ module Engine
               'count' => 1,
               'color' => 'brown',
               'code' =>
-                  'city=revenue:50,slots:3;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
+                  'city=revenue:50,groups:Toronto,slots:3;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
                   'path=a:4,b:_0;label=T;upgrade=cost:80',
             },
           'T6' =>
@@ -364,7 +363,7 @@ module Engine
               'count' => 1,
               'color' => 'gray',
               'code' =>
-                  'city=revenue:90,slots:2;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
+                  'city=revenue:90,groups:Toronto,slots:2;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
                   'path=a:4,b:_0;label=T',
             },
           'T7' =>
@@ -372,7 +371,7 @@ module Engine
               'count' => 1,
               'color' => 'gray',
               'code' =>
-                  'city=revenue:70,slots:4;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
+                  'city=revenue:70,groups:Toronto,slots:4;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
                   'path=a:4,b:_0;label=T',
             },
           'W1' =>
@@ -380,25 +379,25 @@ module Engine
               'count' => 1,
               'color' => 'yellow',
               'code' =>
-                'city=revenue:30,slots:2,loc:1.5;city=revenue:30;city=revenue:30;city=revenue:30;'\
-                'path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_1;path=a:4,b:_2;path=a:5,b:_3;'\
-                'label=W;upgrade=cost:40',
+              'city=revenue:30,groups:Winnipeg,slots:2,loc:1.5;city=revenue:30,groups:Winnipeg;'\
+              'city=revenue:30,groups:Winnipeg;city=revenue:30,groups:Winnipeg;path=a:1,b:_0;'\
+              'path=a:2,b:_0;path=a:3,b:_1;path=a:4,b:_2;path=a:5,b:_3;label=W;upgrade=cost:40',
             },
           'W2' =>
             {
               'count' => 1,
               'color' => 'green',
               'code' =>
-              'city=revenue:50,slots:2,loc:1;city=revenue:50,slots:2,loc:3;city=revenue:50,loc:5.5;'\
-              'path=a:0,b:_2;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_1;path=a:4,b:_1;'\
-              'path=a:5,b:_2;label=W;upgrade=cost:60',
+              'city=revenue:50,groups:Winnipeg,slots:2,loc:1;city=revenue:50,groups:Winnipeg,slots:2,loc:3;'\
+              'city=revenue:50,groups:Winnipeg,loc:5.5;path=a:0,b:_2;path=a:1,b:_0;path=a:2,b:_0;'\
+              'path=a:3,b:_1;path=a:4,b:_1;path=a:5,b:_2;label=W;upgrade=cost:60',
             },
           'W3' =>
             {
               'count' => 1,
               'color' => 'green',
               'code' =>
-                'city=revenue:40,slots:2,loc:1.5;city=revenue:40,slots:3,loc:4.5;path=a:0,b:_1;'\
+                'city=revenue:40,groups:Winnipeg,slots:2,loc:1.5;city=revenue:40,groups:Winnipeg,slots:3,loc:4.5;path=a:0,b:_1;'\
                 'path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_1;path=a:4,b:_1;path=a:5,b:_1;'\
                 'label=W;upgrade=cost:60',
             },
@@ -407,16 +406,16 @@ module Engine
               'count' => 1,
               'color' => 'brown',
               'code' =>
-                'city=revenue:70,slots:2;city=revenue:70,slots:2;city=revenue:70,slots:2;'\
-                'path=a:0,b:_2;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_1;path=a:4,b:_1;'\
-                'path=a:5,b:_2;label=W;upgrade=cost:80',
+              'city=revenue:70,groups:Winnipeg,slots:2;city=revenue:70,groups:Winnipeg,slots:2;'\
+              'city=revenue:70,groups:Winnipeg,slots:2;path=a:0,b:_2;path=a:1,b:_0;path=a:2,b:_0;'\
+              'path=a:3,b:_1;path=a:4,b:_1;path=a:5,b:_2;label=W;upgrade=cost:80',
             },
           'W5' =>
             {
               'count' => 1,
               'color' => 'brown',
               'code' =>
-                'city=revenue:50,slots:6;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
+                'city=revenue:50,groups:Winnipeg,slots:6;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
                 'path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=W;upgrade=cost:80',
             },
           'W6' =>
@@ -424,16 +423,16 @@ module Engine
               'count' => 1,
               'color' => 'gray',
               'code' =>
-                'city=revenue:90,slots:2;city=revenue:90,slots:2;city=revenue:90,slots:2;'\
-                'path=a:0,b:_2;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_1;path=a:4,b:_1;'\
-                'path=a:5,b:_2;label=W',
+              'city=revenue:90,groups:Winnipeg,slots:2;city=revenue:90,groups:Winnipeg,slots:2;'\
+              'city=revenue:90,groups:Winnipeg,slots:2;path=a:0,b:_2;path=a:1,b:_0;path=a:2,b:_0;'\
+              'path=a:3,b:_1;path=a:4,b:_1;path=a:5,b:_2;label=W',
             },
           'W7' =>
             {
               'count' => 1,
               'color' => 'gray',
               'code' =>
-                'city=revenue:70,slots:6;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
+                'city=revenue:70,groups:Winnipeg,slots:6;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
                 'path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=W;',
             },
           # tiles for the Duluth-Detroit connection
@@ -619,22 +618,22 @@ module Engine
             ['AB24'] =>
               'city=revenue:0;future_label=label:B,color:green',
             ['AC21'] =>
-              'city=revenue:20;city=revenue:20;path=a:1,b:_0;path=a:3,b:_1;upgrade=cost:20;label=T;'\
-              'border=edge:0,type:impassable',
+            'city=revenue:20,groups:Toronto;city=revenue:20,groups:Toronto;path=a:1,b:_0;'\
+            'path=a:3,b:_1;upgrade=cost:20;label=T;border=edge:0,type:impassable',
             ['AE15'] =>
-              'city=revenue:10;city=revenue:10;path=a:1,b:_0;path=a:5,b:_1;'\
+              'city=revenue:10,groups:Ottawa;city=revenue:10,groups:Ottawa;path=a:1,b:_0;path=a:5,b:_1;'\
               'upgrade=cost:20;label=O;border=edge:2,type:water,cost:20;'\
               'border=edge:3,type:water,cost:20',
             ['AF12'] =>
-              'city=revenue:20,slots:2;city=revenue:20;path=a:0,b:_0;upgrade=cost:20;'\
+              'city=revenue:20,groups:Montreal,slots:2;city=revenue:20,groups:Montreal;path=a:0,b:_0;upgrade=cost:20;'\
               'label=M;border=edge:4,type:water,cost:20;border=edge:5,type:water,cost:20',
             ['AG13'] =>
               'city=revenue:20,loc:center;town=revenue:10,loc:4;path=a:_0,b:_1;'\
               'border=edge:1,type:water,cost:20;border=edge:2,type:water,cost:20',
             ['AH8'] =>
-              'city=revenue:10;city=revenue:0,loc:3.5;city=revenue:0,loc:5;label=Q;path=a:1,b:_0;'\
-              'border=edge:0,type:water,cost:40;border=edge:4,type:water,cost:40;'\
-              'border=edge:5,type:water,cost:40;upgrade=cost:20,loc:5.5;',
+            'city=revenue:10,groups:Quebec;city=revenue:0,groups:Quebec,loc:5;'\
+            'label=Q;path=a:1,b:_0;border=edge:0,type:water,cost:40;'\
+            'border=edge:4,type:water,cost:40;border=edge:5,type:water,cost:40;upgrade=cost:20,loc:5.5;',
 
             ['AN6'] =>
               'city=revenue:0;border=edge:4,type:impassable;border=edge:5,type:impassable;future_label=label:L,color:brown',
@@ -728,8 +727,9 @@ module Engine
             ['N6'] =>
               'city=revenue:0;upgrade=cost:20,terrain:swamp;icon=image:1822_ca/port,sticky:1',
             ['N16'] =>
-              'city=revenue:20,slots:2;city=revenue:20;city=revenue:20;city=revenue:20;path=a:1,b:_0;path=a:2,b:_0;'\
-              'path=a:3,b:_1;path=a:4,b:_2;path=a:5,b:_3;upgrade=cost:20;label=W',
+            'city=revenue:20,groups:Winnipeg,slots:2;city=revenue:20,groups:Winnipeg;'\
+            'city=revenue:20,groups:Winnipeg;city=revenue:20,groups:Winnipeg;path=a:1,b:_0;'\
+            'path=a:2,b:_0;path=a:3,b:_1;path=a:4,b:_2;path=a:5,b:_3;upgrade=cost:20;label=W',
           },
           gray: {
             ['C15'] =>

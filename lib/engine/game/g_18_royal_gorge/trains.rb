@@ -31,7 +31,6 @@ module Engine
                        { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
             price: 400,
             num: 3,
-            discount: { '2+' => 0 },
             events: [{ 'type' => 'brown_par', 'when' => 3 }],
           },
           {
@@ -46,7 +45,7 @@ module Engine
             distance: [{ 'nodes' => %w[city offboard town], 'pay' => 6, 'visit' => 6, 'multiplier' => 2 }],
             price: 650,
             num: 5,
-            discount: { '3+' => 0 },
+            events: [{ 'type' => 'trigger_endgame' }],
           },
         ].freeze
 

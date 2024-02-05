@@ -20,7 +20,7 @@ module Engine
       # open: https://github.com/tobymao/18xx/issues/5981
       { tile: 'H22', title: '1828.Games' },
 
-      # open: https://github.com/tobymao/18xx/issues/8178
+      # closed: https://github.com/tobymao/18xx/issues/8178
       { tile: 'H18', title: '1830', fixture: '26855', action: 385 },
 
       { tile: 'C15', title: '1846' },

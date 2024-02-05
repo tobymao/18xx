@@ -51,8 +51,7 @@ module Engine
       end
 
       def find_reservation(corporation)
-        @reservations.find_index { |r| r && [r, r.owner].include?(corporation) } ||
-          @slot_icons.find { |_, icon| icon&.owner == corporation }
+        @reservations.find_index { |r| r && [r, r.owner].include?(corporation) }
       end
 
       def reserved_by?(corporation)
@@ -121,7 +120,7 @@ module Engine
       def get_slot(corporation, cheater: false)
         reservation = find_reservation(corporation)
         open_slot = @tokens.find_index.with_index do |t, i|
-          t.nil? && @reservations[i].nil? && @slot_icons[i].nil?
+          t.nil? && @reservations[i].nil?
         end
         return open_slot || @tokens.size if cheater
 
@@ -166,7 +165,7 @@ module Engine
       end
 
       def exchange_token(token, cheater: false, extra_slot: false)
-        token.place(self, extra: extra_slot)
+        token.place(self, extra: extra_slot, cheater: cheater)
         return @extra_tokens << token if extra_slot
 
         slot = get_slot(token.corporation, cheater: cheater)

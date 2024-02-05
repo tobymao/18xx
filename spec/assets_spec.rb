@@ -198,6 +198,14 @@ TEST_CASES = [
     [nil,
      'endgame',
      ['1860: Phase 9 - Operating Round 8.4 (Nationalization) - Game Over - Nationalization complete']]]],
+
+  ['1822CA',
+   2,
+   [[nil,
+     'endgame',
+     ['GWR (P10) places a token on N16 (Winnipeg)',
+      'P10 (Winnipeg Station) closes',
+      '1822CA: Phase 7 - Operating Round 8.1 (of 2) - Game Over']]]],
 ].freeze
 
 AUTO_ACTIONS_TEST_CASES = [
