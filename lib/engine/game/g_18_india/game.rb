@@ -38,13 +38,33 @@ module Engine
         POOL_SHARE_DROP = :none
         SOLD_OUT_INCREASE = false
         NEXT_SR_PLAYER_ORDER = :first_to_pass
+        COMPANY_SALE_FEE = 0
 
         HOME_TOKEN_TIMING = :float
         MUST_BUY_TRAIN = :never
 
-        CERT_LIMIT = { 2 => 37, 3 => 23, 4 => 18, 5 => 15 }.freeze
-        CERT_LIMIT_CLOSE1 = { 2 => 33, 3 => 22, 4 => 17, 5 => 13 }.freeze
-        CERT_LIMIT_CLOSE2 = { 2 => 29, 3 => 19, 4 => 15, 5 => 12 }.freeze
+        CERT_LIMIT = {
+          2 => { 10 => 37, 9 => 33, 8 => 29 },
+          3 => { 10 => 23, 9 => 22, 8 => 19 },
+          4 => { 10 => 18, 9 => 17, 8 => 15 },
+          5 => { 10 => 15, 9 => 13, 8 => 12 },
+        }.freeze
+
+        # Modified for corporation share limit
+        def cert_limit(entity = nil)
+          return @cert_limit if entity.nil?
+          return 3 if entity.corporation?
+
+            @cert_limit
+        end
+
+        # Modify to only count :private type companies (exclude Warrents and Bonds)
+        def num_certs(entity)
+          certs = entity.shares.sum do |s|
+            s.corporation.counts_for_limit && s.counts_for_limit ? s.cert_size : 0
+          end
+          certs + entity.companies.count {|c| c.type == :private}
+        end
 
         STARTING_CASH = { 2 => 1100, 3 => 733, 4 => 550, 5 => 440 }.freeze
 
@@ -115,6 +135,9 @@ module Engine
           # Build draw and draft decks for player hand and IPO rows
           @ipo_rows = [[], [], []]
           create_decks(@corporations)
+
+          # Create Railroad Bonds
+          @bonds = create_railroad_bonds
         end
 
         def setup
@@ -292,6 +315,31 @@ module Engine
           end
         end
 
+        def create_railroad_bonds
+          bonds = []
+          10.times do |n|
+            bond = make_bond(n)
+            bond.owner = @bank
+            bonds << bond
+            @companies << bond
+          end
+          @bank.companies.push(bonds.first)
+          bonds
+        end
+
+        def make_bond(num)
+          ident = 'RB' + num.to_s
+          Company.new(
+            sym: ident,
+            name: 'Railroad Bond',
+            value: 100,
+            revenue: 10,
+            desc: 'May be converted to a 10% share of GIPR in Phase IV. The conversion cost is market value minus 100.',
+            color: :white,
+            type: :bond
+          )
+        end
+
         # When converting a Railroad Bond, there is no refund if share price < 100
         def railroad_bond_convert_cost
           if gpir_share_price <= 100
@@ -325,10 +373,8 @@ module Engine
         end
 
         def stock_round
-          Engine::Round::Stock.new(self, [
-            Engine::Step::Assign,
-            Engine::Step::BuySellParShares,
-          ])
+          # Engine::Round::Stock.new(self, [Engine::Step::BuySellParShares])
+          Engine::Round::Stock.new(self, [G18India::Step::SellOnceThenBuyCerts])
         end
 
         def operating_round(round_num)
@@ -437,9 +483,23 @@ module Engine
           end
         end
 
+        # Called by View::Game::Entities to determine if the company should be shown on entities
         # Lists unowned companies under 'The Bank' on ENTITIES tab
         def unowned_purchasable_companies(_entity)
           bank.companies + @ipo_rows[0] + @ipo_rows[1] + @ipo_rows[2]
+        end
+
+        # Lists buyable companies for STOCK ROUND
+        def buyable_bank_owned_companies
+          bank.companies + top_of_ipo_rows
+        end
+
+        def top_of_ipo_rows
+          top = []
+          [0, 1, 2].each do |row|
+            top << @ipo_rows[row].first
+          end
+          top
         end
 
         def purchasable_companies(entity)
