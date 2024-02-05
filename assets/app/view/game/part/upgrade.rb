@@ -79,7 +79,7 @@ module View
           else
             [
               P_CENTER,
-              PP_TOP_RIGHT_CORNER,
+              PP_UPPER_RIGHT_CORNER,
               PP_EDGE2,
               PP_BOTTOM_LEFT_CORNER,
               PP_RIGHT_CORNER,

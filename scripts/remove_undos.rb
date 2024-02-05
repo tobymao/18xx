@@ -1,9 +1,7 @@
 # frozen_string_literal: true
 # rubocop:disable all
+require_relative 'scripts_helper'
 
-Dir['./models/**/*.rb'].sort.each { |file| require file }
-require './lib/engine'
-Sequel.extension :pg_json_ops
 DB.extension :pg_array, :pg_advisory_lock, :pg_json, :pg_enum
 
 game_ids = Game.where(status: 'finished').select_map(:id)

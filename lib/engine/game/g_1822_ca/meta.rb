@@ -13,7 +13,7 @@ module Engine
         DEPENDS_ON = '1822'
 
         GAME_SUBTITLE = 'The Railways of Canada'
-        GAME_DESIGNER = 'Robert Lecuyer'
+        GAME_DESIGNER = 'Robert Lecuyer & Simon Cutforth'
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1822CA'
         GAME_LOCATION = 'Canada'
         GAME_PUBLISHER = :all_aboard_games

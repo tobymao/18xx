@@ -1,11 +1,7 @@
 # frozen_string_literal: true
 # rubocop:disable all
+require_relative 'scripts_helper'
 
-require_relative 'models'
-
-Dir['./models/**/*.rb'].sort.each { |file| require file }
-Sequel.extension :pg_json_ops
-require_relative 'lib/engine'
 $failed = []
 
 def fix_action(action, corp_map)

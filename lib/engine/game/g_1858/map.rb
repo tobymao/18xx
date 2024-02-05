@@ -546,9 +546,9 @@ module Engine
                     'icon=image:1858/MZ,sticky:1;' \
                     'icon=image:1858/ZP,sticky:1;',
             %w[H11] =>
-                    'city=revenue:40,loc:1;path=a:1,b:_0;' \
-                    'city=revenue:40,loc:2.5;path=a:2,b:_1;' \
-                    'city=revenue:40,loc:4;path=a:0,b:_2;path=a:4,b:_2;' \
+                    'city=revenue:40,groups:Madrid,loc:1;path=a:1,b:_0;' \
+                    'city=revenue:40,groups:Madrid,loc:2.5;path=a:2,b:_1;' \
+                    'city=revenue:40,groups:Madrid,loc:4;path=a:0,b:_2;path=a:4,b:_2;' \
                     'border=type:province,edge:2;' \
                     'border=type:province,edge:3;' \
                     'label=M',

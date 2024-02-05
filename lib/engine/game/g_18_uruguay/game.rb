@@ -7,6 +7,9 @@ require_relative 'corporations'
 require_relative 'companies'
 require_relative 'trains'
 require_relative 'phases'
+require_relative 'loans'
+require_relative '../../loan'
+require_relative 'ability_ship'
 
 module Engine
   module Game
@@ -21,6 +24,8 @@ module Engine
         include Companies
         include Trains
         include Phases
+        include InterestOnLoans
+        include Loans
 
         EBUY_SELL_MORE_THAN_NEEDED = true
         GOODS_TRAIN = 'Goods'
@@ -53,8 +58,9 @@ module Engine
         RPTLA_STARTING_PRICE = 50
         RPTLA_STOCK_ROW = 11
         NUMBER_OF_LOANS = 99
+        LOAN_VALUE = 100
 
-        GAME_END_CHECK = { custom: :one_more_full_or_set }.freeze
+        GAME_END_CHECK = { bankrupt: :immediate, custom: :one_more_full_or_set }.freeze
 
         GAME_END_REASONS_TEXT = Base::GAME_END_REASONS_TEXT.merge(
           custom: 'Nationalized'
@@ -170,6 +176,11 @@ module Engine
           @rptla = @corporations.find { |c| c.id == 'RPTLA' }
           @fce = @corporations.find { |c| c.id == 'FCE' }
 
+          @rptla.add_ability(Engine::G18Uruguay::Ability::Ship.new(
+            type: 'Ship',
+            description: 'Ship goods'
+          ))
+
           @rptla.add_ability(Engine::Ability::Base.new(
             type: 'Goods',
             description: GOODS_DESCRIPTION_STR + '0',
@@ -259,13 +270,15 @@ module Engine
             G18Uruguay::Step::CattleFarm,
             Engine::Step::SpecialTrack,
             Engine::Step::SpecialToken,
+            G18Uruguay::Step::TakeLoanBuyCompany,
             Engine::Step::HomeToken,
             Engine::Step::Track,
-            Engine::Step::Token,
+            G18Uruguay::Step::Token,
             Engine::Step::Route,
-            Engine::Step::Dividend,
-            Engine::Step::DiscardTrain,
-            Engine::Step::BuyTrain,
+            G18Uruguay::Step::Dividend,
+            G18Uruguay::Step::DiscardTrain,
+            G18Uruguay::Step::BuyTrain,
+            [G18Uruguay::Step::TakeLoanBuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
 
@@ -289,6 +302,110 @@ module Engine
           return active_abilities.first if active_abilities.one?
 
           active_abilities
+        end
+
+        # Nationalized
+        def nationalized?
+          @nationalized
+        end
+
+        def operating_order
+          super.sort.partition { |c| c.type != :bank }.flatten
+        end
+
+        # Loans
+        def float_corporation(corporation)
+          return if corporation == @rptla
+          return unless @loans
+
+          amount = corporation.par_price.price * 5
+          @bank.spend(amount, corporation)
+          @log << "#{corporation.name} receives #{format_currency(corporation.cash)}"
+          take_loan(corporation, @loans[0]) if @loans.size.positive? && !nationalized?
+        end
+
+        def perform_ebuy_loans(entity, remaining)
+          ebuy = true
+          while remaining.positive? && entity.share_price.price != 0
+            # if at max loans, company goes directly into receiverhsip
+            if @loans.empty?
+              @log << "There are no more loans available to force buy a train, #{entity.name} goes into receivership"
+              break
+            end
+            loan = @loans.first
+            take_loan(entity, loan, ebuy: ebuy)
+            remaining -= loan.amount
+          end
+        end
+
+        # Goods
+        def number_of_goods_at_harbor
+          ability = @rptla.abilities.find { |a| a.type == 'Goods' }
+          ability.description[/\d+/].to_i
+        end
+
+        def add_good_to_rptla
+          ability = @rptla.abilities.find { |a| a.type == 'Goods' }
+          count = number_of_goods_at_harbor + 1
+          ability.description = GOODS_DESCRIPTION_STR + count.to_s
+        end
+
+        def remove_goods_from_rptla(goods_count)
+          return if number_of_goods_at_harbor < goods_count
+
+          ability = @rptla.abilities.find { |a| a.type == 'Goods' }
+          count = number_of_goods_at_harbor - goods_count
+          ability.description = GOODS_DESCRIPTION_STR + count.to_s
+        end
+
+        def check_distance(route, visits, train = nil)
+          @round.current_routes[route.train] = route
+          if route.corporation != @rptla && !nationalized?
+            raise RouteTooLong, 'Need to have goods to run to port' unless check_for_port_if_goods_attached(route,
+                                                                                                            visits)
+            raise RouteTooLong, 'Goods needs to be shipped to port' unless check_for_goods_if_run_to_port(route,
+                                                                                                          visits)
+          end
+          raise RouteTooLong, '4D trains cannot deliver goods' if route.train.name == '4D' && visits_include_port?(visits)
+
+          super
+        end
+
+        # Revenue
+        def revenue_str(route)
+          return super unless route&.corporation == @rptla
+
+          'Ship'
+        end
+
+        def rptla_revenue(corporation)
+          return 0 if @rptla != corporation
+
+          (corporation.loans.size.to_f / 2).floor * 10
+        end
+
+        def rptla_subsidy(corporation)
+          return 0 if @rptla != corporation
+
+          (corporation.loans.size.to_f / 2).ceil * 10
+        end
+
+        def revenue_for(route, stops)
+          revenue = super
+          revenue *= 2 if route.train.name == '4D'
+          revenue *= 2 if final_operating_round?
+          return revenue unless route&.corporation == @rptla
+
+          train = route.train
+          revenue * goods_on_train(train)
+        end
+
+        def or_round_finished
+          corps_pay_interest unless nationalized?
+        end
+
+        def final_operating_round?
+          @final_turn == @turn
         end
       end
     end
