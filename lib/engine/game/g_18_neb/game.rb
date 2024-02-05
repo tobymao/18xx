@@ -19,6 +19,8 @@ module Engine
 
         STARTING_CASH = { 2 => 650, 3 => 450, 4 => 350 }.freeze
 
+        ONLY_HIGHEST_BID_COMMITTED = true
+
         CAPITALIZATION = :incremental
         # However 10-share corps that start in round 5: if their 5th share purchase
         #  - get 5x starting value
@@ -167,7 +169,7 @@ module Engine
         def init_round
           Round::Auction.new(self, [
             Engine::Step::CompanyPendingPar,
-            G18Neb::Step::PriceFindingAuction,
+            G18Neb::Step::BidAuction,
           ])
         end
 
