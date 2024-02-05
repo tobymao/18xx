@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative 'engine/deep_freeze'
 require_relative 'engine/jaro_winkler'
 
 if RUBY_ENGINE == 'opal'

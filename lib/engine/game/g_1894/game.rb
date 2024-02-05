@@ -386,10 +386,15 @@ module Engine
             hex = hex_by_id(corporation.coordinates)
             tile = hex&.tile
 
-            return super if tile.color != :brown
-
-            place_home_token_brown_tile(corporation, hex, tile)
+            if tile.color == :brown
+              place_home_token_brown_tile(corporation, hex, tile)
+            else
+              super
+            end
           end
+
+          # track actions are skipped in the final OR set, so graph must be reset here to take the home token into account
+          @graph.clear if @skip_track_and_token
         end
 
         def place_home_token_brown_tile(corporation, hex, tile)

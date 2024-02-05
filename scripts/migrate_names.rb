@@ -1,11 +1,8 @@
 # frozen_string_literal: true
 # rubocop:disable all
 
-require_relative 'models'
+require_relative 'scripts_helper'
 
-Dir['./models/**/*.rb'].sort.each { |file| require file }
-Sequel.extension :pg_json_ops
-require_relative 'lib/engine'
 $failed = []
 
 def migrate_db_actions(data)

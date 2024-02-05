@@ -42,7 +42,7 @@ module Engine
         STARTING_CASH = { 2 => 600, 3 => 540, 4 => 410, 5 => 340 }.freeze
         CAPITALIZATION = :incremental
         SELL_AFTER = :any_time
-        MUST_SELL_IN_BLOCKS = false
+        MUST_SELL_IN_BLOCKS = true
         SELL_MOVEMENT = :down_block
         SOLD_OUT_INCREASE = true
         POOL_SHARE_DROP = :down_block
@@ -194,7 +194,7 @@ module Engine
         T_BONUS = 30
         T_TILE = 'X30'
         RIFT_BONUS = 60
-        EW_BONUS = 100
+        EW_BONUS = 80
         NE_HEXES = %w[K1 L2 L4].freeze
         SE_HEXES = %w[L14 M11 M13].freeze
         NW_HEXES = %w[A3 A5 B2].freeze
@@ -304,7 +304,6 @@ module Engine
             'SE' => END_BONUS_COUNT,
             'SW' => END_BONUS_COUNT,
           }
-          @crossed_rift = false
           @sp_tiles = SP_TILES.map { |tn| @tiles.find { |t| t.name == tn } }
 
           update_bonus_locations
@@ -396,11 +395,10 @@ module Engine
           ols_minor = minor_by_id('OLS')
           ols_minor.owner = player
 
-          @log << "#{player.name} must choose city for OLS token"
-          @round.pending_tokens << {
+          @log << "#{player.name} must place tile for OLS"
+          @round.pending_tracks << {
             entity: ols_minor,
             hexes: MINERAL_HEXES.map { |h| hex_by_id(h) },
-            token: ols_minor.find_token_by_type,
           }
           @round.clear_cache!
         end
@@ -447,12 +445,13 @@ module Engine
         end
 
         def crossing_border(entity, _tile)
-          raise GameError, 'Cannot cross Rift' unless entity.companies.find { |c| c.sym == 'SBC' }
-          return if @crossed_rift
+          sbc = entity.companies.find { |c| c.sym == 'SBC' }
+          raise GameError, 'Cannot cross Rift' unless sbc
 
           @log << "#{entity.name} earns #{format_currency(self.class::RIFT_BONUS)} for crossing Rift"
           @bank.spend(self.class::RIFT_BONUS, entity)
-          @crossed_rift = true
+          sbc.close!
+          @log << "#{sbc.name} closes"
         end
 
         def tile_valid_for_phase?(tile, hex: nil, phase_color_cache: nil)
@@ -463,7 +462,7 @@ module Engine
         end
 
         def upgrades_to?(from, to, special = false, selected_company: nil)
-          return false if to.name == T_TILE && !selected_company
+          return false if to.name == T_TILE && !selected_company && block_terminal_hex?
 
           # not needed for laying tiles, but keeps the tiles tab from lying to the player
           return false if X_RESTRICTED_UPGRADES.key?(from.name) && !X_RESTRICTED_UPGRADES[from.name].include?(to.name)
@@ -484,6 +483,7 @@ module Engine
 
         def new_auction_round
           Engine::Round::Auction.new(self, [
+          G21Moon::Step::OLSTrack,
           G21Moon::Step::OLSToken,
           G21Moon::Step::WaterfallAuction,
         ])
@@ -640,11 +640,33 @@ module Engine
           @corporations.select(&:operated?)
         end
 
+        def east_stop?(stops)
+          stops.find { |stop| (stop.groups.include?('E0') || stop.groups.include?('E1'))  }
+        end
+
+        def west_stop?(stops)
+          stops.find { |stop| (stop.groups.include?('W0') || stop.groups.include?('W1'))  }
+        end
+
+        def check_distance(route, visits, train = nil)
+          train ||= route.train
+          distance = train.distance
+
+          route_distance = visits.sum(&:visit_cost)
+
+          # Getting terminal bonus also allow visiting one additional stop
+          east = east_stop?(visits)
+          terminal = visits.find { |stop| stop.hex.id == T_HEX }
+          route_distance -= 1 if east && terminal
+
+          raise RouteTooLong, "#{route_distance} is too many stops for #{distance} train" if distance < route_distance
+        end
+
         def route_bonus(stops)
           bonus = { revenue: 0 }
 
-          east = stops.find { |stop| stop.groups.include?('E') }
-          west = stops.find { |stop| stop.groups.include?('W') }
+          east = east_stop?(stops)
+          west = west_stop?(stops)
           terminal = stops.find { |stop| stop.hex.id == T_HEX }
 
           if east && west
@@ -1081,6 +1103,20 @@ module Engine
         def share_flags(shares)
           step = @round.active_step
           step.share_flags(shares) if step.respond_to?(:share_flags)
+        end
+
+        def legal_tile_rotation?(entity, hex, tile)
+          return true if entity.corporation? && entity.companies.find { |c| c.sym == 'SBC' }
+
+          tile.exits.none? { |edge| hex.tile.borders.any? { |border| border.edge == edge } }
+        end
+
+        def terminal_company
+          @terminal_company ||= @companies.find { |c| c.sym == 'T' }
+        end
+
+        def block_terminal_hex?
+          !terminal_company.closed?
         end
       end
     end

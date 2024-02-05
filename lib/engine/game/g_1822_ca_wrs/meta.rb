@@ -10,8 +10,6 @@ module Engine
         include Game::Meta
         include G1822CA::Meta
 
-        DEV_STAGE = :prealpha
-
         DEPENDS_ON = '1822CA'
         GAME_IS_VARIANT_OF = G1822CA::Meta
 

@@ -4,12 +4,8 @@ require 'argon2'
 require 'net/http'
 require 'uri'
 
-require_relative 'db'
-require_relative 'models'
-require_relative 'models/action'
-require_relative 'models/game'
-require_relative 'models/game_user'
-require_relative 'models/user'
+require_relative 'scripts_helper'
+require_relative 'db_scrub' # for scrub_passwords!
 
 raise 'You probably only want to import games into dev servers' unless ENV['RACK_ENV'] == 'development'
 
@@ -106,8 +102,4 @@ def import_game(game_id)
   end
 
   game.id
-end
-
-def fix_existing_users
-  DB[:users].update(password: Argon2::Password.create('password'))
 end
