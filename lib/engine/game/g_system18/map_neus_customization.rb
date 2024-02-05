@@ -111,8 +111,17 @@ module Engine
           self.class::MARKET_2D
         end
 
-        def map_neus_game_trains
-          self.class::S18_STDD_TRAINS
+        def map_neus_game_trains(trains)
+          # don't use 8 trains
+          trains.delete(find_train(trains, '8'))
+          find_train(trains, '4')[:rusts_on] = 'D'
+          # udpate quantities
+          find_train(trains, '2')[:num] = 4
+          find_train(trains, '3')[:num] = 3
+          find_train(trains, '4')[:num] = 2
+          find_train(trains, '5')[:num] = 2
+          find_train(trains, '6')[:num] = 1
+          trains
         end
 
         def map_neus_game_phases
