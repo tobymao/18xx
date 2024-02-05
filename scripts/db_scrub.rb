@@ -2,13 +2,7 @@
 
 raise "You probably don't want to scrub the prod db" unless ENV['RACK_ENV'] == 'development'
 
-require_relative '../db'
-require_relative '../models'
-require_relative '../models/action'
-require_relative '../models/game'
-require_relative '../models/game_user'
-require_relative '../models/user'
-Sequel.extension :pg_json_ops
+require_relative 'scripts_helper'
 
 def scrub_all_users!
   User.each { |user| scrub_user!(user) }

@@ -1,12 +1,7 @@
 # frozen_string_literal: true
 # rubocop:disable all
 
-require_relative 'models'
-
-Dir['./models/**/*.rb'].sort.each { |file| require file }
-
-Sequel.extension :pg_json_ops
-require_relative 'lib/engine'
+require_relative 'scripts_helper'
 
 $broken = {}
 
@@ -101,90 +96,25 @@ def repair(game, original_actions, actions, broken_action, data, pry_db: false)
     binding.pry
   end
 
-  # Generic handling for when a change just needs pass actions to be
-  # inserted/deleted
-
-  # action seems ok, try deleting auto_action pass
-  if broken_action['entity'] == game.current_entity.id &&
-     game.round.actions_for(game.current_entity).include?(broken_action['type']) &&
-     (broken_action['auto_actions'] || []).map { |aa| aa['type'] } == ['pass']
-     actions[broken_action_idx].delete('auto_actions')
-     puts '        patched: removed auto_action pass from broken_action'
-     return [actions[broken_action_idx]]
-  end
-
-  # fix entity for pass action
-  if broken_action['type'] == 'pass' && game.current_entity.id != broken_action['entity']
-    entity_type =
-      if game.current_entity.company?
-        'company'
-      else
-        broken_action['entity_type']
-      end
-    puts "        patched: changed entity of broken pass from #{broken_action['entity']} to #{game.current_entity.id} in current_action"
-    actions[broken_action_idx]['entity'] = game.current_entity.id
-    actions[broken_action_idx]['entity_type'] = entity_type
-    return [actions[broken_action_idx]]
-  end
-
-  # delete pass from current_action
-  if broken_action['type'] == 'pass' && !step_actions.include?('pass')
-    actions.delete(broken_action)
-    puts '        patched: deleted pass from current_action'
+  if step.class.to_s.include?("Destination")
+    broken_action['auto_actions'] = broken_action['auto_actions'] || []
+    broken_action['auto_actions'] << Engine::Action::Pass.new(current_entity).to_h
+    puts '       patched: Inserted auto_action pass'
     return
   end
 
-  # delete pass from current_action, move its auto_actions to prev_action
-  if broken_action['type'] == 'pass' && broken_action.include?('auto_actions')
-    if (auto_actions = broken_action.delete('auto_actions'))
-      actions[broken_action_idx - 1]['auto_actions'] = auto_actions
-    end
-    puts '        patched: deleted pass from current_action, moved auto_actions to pre_action'
-    return
-  end
-
-  # delete pass from prev_action when the broken_action would have worked in
-  # that spot
-  if !step_actions.include?(broken_action['type']) &&
-        prev_action['type'] == 'pass' &&
-        (g = Engine::Game.load(data, actions: prev_actions[..-2]))
-          .round
-          .actions_for(g.corporation_by_id(broken_action['entity']) || g.company_by_id(broken_action['entity']))
-          .include?(broken_action['type'])
-    actions.delete(prev_action)
-    puts '        patched: deleted pass from prev_action'
-    return
-  end
-
-  # delete pass from prev_action, move its auto_action pass to the prior action
-  if !step_actions.include?(broken_action['type']) &&
-        prev_action['type'] == 'pass' &&
-        (prev_action['auto_actions'] || []).map { |aa| aa['type'] } == ['pass'] &&
-        !actions[broken_action_idx - 2].include?('auto_actions')
-
-    actions[broken_action_idx - 2]['auto_actions'] = prev_action.delete('auto_actions')
-    actions.delete(prev_action)
-    puts '        patched: deleted pass from prev_action and moved pass auto_action to prior action'
-    return
-  end
-
-  # insert pass
-  if (!step_actions.include?(broken_action['type']) && step_actions.include?('pass')) ||
-      broken_action['entity'] != current_entity.id
-    pass = Engine::Action::Pass.new(current_entity)
-    pass.user = pass.entity.player.id
-    actions.insert(broken_action_idx, pass.to_h)
-    puts '        patched: inserted pass'
-    return
-  end
+  pass = Engine::Action::Pass.new(current_entity)
+  pass.user = pass.entity.player.id
+  actions.insert(broken_action_idx, pass.to_h)
+  puts '       patched: Add pass'
+  return
   ################
   # END REPAIR #
   ################
-
-  raise Exception, "Cannot fix Game #{game.id} at action #{action}"
 end
 
 def attempt_repair(actions, debug, data, pry_db: false)
+  puts "attempt repair"
   repairs = []
   rewritten = false
   ever_repaired = false
@@ -201,12 +131,13 @@ def attempt_repair(actions, debug, data, pry_db: false)
       action = action.copy(game) if action.is_a?(Engine::Action::Base)
       begin
         game.process_action(action).maybe_raise!
+        raise Exception if game.active_step.class.to_s.include?("Destination")
       rescue Exception => e
         puts e.backtrace if debug
         iteration += 1
         puts "    iteration #{iteration}; action #{action['id']}; #{game.active_step.type} step; #{action['entity']}, #{action['type']}"
 
-        raise Exception, "Stuck in infinite loop?" if iteration > 100
+        raise Exception, "Stuck in infinite loop?" if iteration > 1000
 
         ever_repaired = true
         inplace_actions = repair(game, actions, filtered_actions, action, data, pry_db: pry_db)
