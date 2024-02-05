@@ -53,7 +53,7 @@ module Engine
             train_limit: 4,
             tiles: [:yellow],
             operating_rounds: 2,
-            status: ['can_buy_morison'],
+            status: ['can_buy_morison_bridging'],
           },
           {
             name: '3',
@@ -145,11 +145,38 @@ module Engine
           },
         ].freeze
 
+        STATUS_TEXT = Base::STATUS_TEXT.merge(
+          'can_buy_morison_bridging' => ['Can Buy Morison Bridging Company'],
+        )
+
         EBUY_PRES_SWAP = false # allow presidential swaps of other corps when ebuying
         EBUY_OTHER_VALUE = false # allow ebuying other corp trains for up to face
         HOME_TOKEN_TIMING = :float # not :operating_round
         # Two tiles can be laid, only one upgrade
         TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, cost: 20, upgrade: :not_if_upgraded }].freeze
+
+        def morison_bridging_company
+          @morison_bridging_company ||= @companies.find { |company| company.id == 'P2' }
+        end
+
+        def setup_preround
+          setup_company_purchase_prices
+        end
+
+        def setup_company_purchase_prices
+          @companies.each do |company|
+            if company == morison_bridging_company
+              set_company_purchase_price(company, 1.0, 1.0)
+            else
+              set_company_purchase_price(company, 0.5, 1.5)
+            end
+          end
+        end
+
+        def set_company_purchase_price(company, min_multiplier, max_multiplier)
+          company.min_price = (company.value * min_multiplier).ceil
+          company.max_price = (company.value * max_multiplier).floor
+        end
 
         def setup
           @corporations, @future_corporations = @corporations.partition { |corporation| corporation.type != :local }
@@ -163,7 +190,7 @@ module Engine
         end
 
         def reorder_players(order = nil, log_player_order: false)
-          @round == Round::Auction ? super(:most_cash, log_player_order: true) : super
+          @round.is_a?(Round::Auction) ? super(:most_cash, log_player_order: true) : super
         end
 
         def init_round
@@ -187,14 +214,14 @@ module Engine
           Round::Operating.new(self, [
             Engine::Step::Bankrupt,
             Engine::Step::Exchange,
-            Engine::Step::BuyCompany,
+            G18Neb::Step::BuyCompany,
             Engine::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
             Engine::Step::Dividend,
             Engine::Step::DiscardTrain,
             Engine::Step::BuyTrain,
-            [Engine::Step::BuyCompany, { blocks: true }],
+            [G18Neb::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
 
@@ -210,6 +237,22 @@ module Engine
 
         def town_to_city_upgrade?(from, to)
           %w[3 4 58].include?(from.name) && %w[X01 X02 X03].include?(to.name)
+        end
+
+        def purchasable_companies(entity = nil)
+          if @phase.status.include?('can_buy_morison_bridging') &&
+              morison_bridging_company&.owner&.player? &&
+              entity != morison_bridging_company.owner
+            [morison_bridging_company]
+          elsif @phase.status.include?('can_buy_companies')
+            super
+          else
+            []
+          end
+        end
+
+        def after_phase_change(name)
+          set_company_purchase_price(morison_bridging_company, 0.5, 1.5) if name == '3' && morison_bridging_company
         end
       end
     end
