@@ -9,6 +9,7 @@ require_relative 'trains'
 require_relative 'phases'
 require_relative 'loans'
 require_relative '../../loan'
+require_relative 'ability_ship'
 
 module Engine
   module Game
@@ -175,6 +176,11 @@ module Engine
           @rptla = @corporations.find { |c| c.id == 'RPTLA' }
           @fce = @corporations.find { |c| c.id == 'FCE' }
 
+          @rptla.add_ability(Engine::G18Uruguay::Ability::Ship.new(
+            type: 'Ship',
+            description: 'Ship goods'
+          ))
+
           @rptla.add_ability(Engine::Ability::Base.new(
             type: 'Goods',
             description: GOODS_DESCRIPTION_STR + '0',
@@ -271,7 +277,7 @@ module Engine
             Engine::Step::Route,
             G18Uruguay::Step::Dividend,
             G18Uruguay::Step::DiscardTrain,
-            Engine::Step::BuyTrain,
+            G18Uruguay::Step::BuyTrain,
             [G18Uruguay::Step::TakeLoanBuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
