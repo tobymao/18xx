@@ -274,7 +274,7 @@ module Engine
             abilities: [
             {
               type: 'token',
-              description: 'Reserved $40 token ($60 to "teleport" there if unconnected) in Ft. Wayne (E11)',
+              description: 'Reserved $40 token/$60 teleport on E11',
               desc_detail: 'May place token in Ft. Wayne (E11) for $40 if connected, $60 '\
                            'otherwise. This token slot is reserved until Phase IV.',
               hexes: ['E11'],
@@ -312,7 +312,7 @@ module Engine
             abilities: [
               {
                 type: 'token',
-                description: 'Reserved $40 token ($100 to "teleport" there if unconnected) in Cincinnati (H12)',
+                description: 'Reserved $40 token/$100 teleport on H12',
                 desc_detail: 'May place token in Cincinnati (H12) for $40 if connected, $100 '\
                              'otherwise. This token slot is reserved until Phase IV.',
                 hexes: ['H12'],
@@ -391,9 +391,15 @@ module Engine
             tokens: [0, 80, 80, 80],
             abilities: [
               {
+                type: 'base',
+                description: 'Receives an initial subsidy of 1x par value',
+                desc_detail: 'When floated IC receives a one-time subsidy equal to its par price into its treasury.',
+                remove: 'par',
+              },
+              {
                 type: 'tile_lay',
                 discount: 20,
-                description: 'Free yellow tile lays on "IC" hexes E5, F6, G5, H6 and J4',
+                description: 'Free yellow tile lays on "IC" hexes',
                 desc_detail: 'IC lays yellow tiles for free on hexes marked with an IC icon (E5, '\
                              'F6, G5, H6 and J4).',
                 passive: true,
@@ -401,6 +407,7 @@ module Engine
                 hexes: %w[E5 F6 G5 H6 J4],
                 tiles: %w[7 8 9],
               },
+
               {
                 type: 'token',
                 description: 'Reserved $40 Centralia (I5) token',
@@ -415,12 +422,7 @@ module Engine
                 hex: 'I5',
                 remove: 'IV',
               },
-              {
-                type: 'base',
-                description: 'Receives an initial subsidy equal to its par price',
-                desc_detail: 'When floated IC receives a one-time subsidy equal to its par price into its treasury.',
-                remove: 'par',
-              },
+
             ],
             coordinates: 'K3',
             color: '#32763f',
