@@ -19,7 +19,7 @@ DB.register_advisory_lock(:action_lock)
 if ENV['RACK_ENV'] == 'development' || ENV['RACK_ENV'] == 'test'
   require 'logger'
   logger = Logger.new($stdout)
-  logger.level = Logger::FATAL if ENV['RACK_ENV'] == 'test'
+  logger.level = Logger::FATAL if ENV['RACK_ENV'] == 'test' || ENV['DB_LOG_LEVEL'] == 'fatal'
   DB.loggers << logger
 end
 

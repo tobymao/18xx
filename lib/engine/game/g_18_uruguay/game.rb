@@ -9,6 +9,7 @@ require_relative 'trains'
 require_relative 'phases'
 require_relative 'loans'
 require_relative '../../loan'
+require_relative 'ability_ship'
 
 module Engine
   module Game
@@ -59,7 +60,7 @@ module Engine
         NUMBER_OF_LOANS = 99
         LOAN_VALUE = 100
 
-        GAME_END_CHECK = { custom: :one_more_full_or_set }.freeze
+        GAME_END_CHECK = { bankrupt: :immediate, custom: :one_more_full_or_set }.freeze
 
         GAME_END_REASONS_TEXT = Base::GAME_END_REASONS_TEXT.merge(
           custom: 'Nationalized'
@@ -175,6 +176,11 @@ module Engine
           @rptla = @corporations.find { |c| c.id == 'RPTLA' }
           @fce = @corporations.find { |c| c.id == 'FCE' }
 
+          @rptla.add_ability(Engine::G18Uruguay::Ability::Ship.new(
+            type: 'Ship',
+            description: 'Ship goods'
+          ))
+
           @rptla.add_ability(Engine::Ability::Base.new(
             type: 'Goods',
             description: GOODS_DESCRIPTION_STR + '0',
@@ -269,9 +275,9 @@ module Engine
             Engine::Step::Track,
             G18Uruguay::Step::Token,
             Engine::Step::Route,
-            Engine::Step::Dividend,
+            G18Uruguay::Step::Dividend,
             G18Uruguay::Step::DiscardTrain,
-            Engine::Step::BuyTrain,
+            G18Uruguay::Step::BuyTrain,
             [G18Uruguay::Step::TakeLoanBuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
@@ -372,16 +378,14 @@ module Engine
           'Ship'
         end
 
-        def routes_revenue(route, corporation)
-          revenue = super
-          return revenue if @rptla != corporation
+        def rptla_revenue(corporation)
+          return 0 if @rptla != corporation
 
-          revenue += (corporation.loans.size.to_f / 2).floor * 10
-          revenue
+          (corporation.loans.size.to_f / 2).floor * 10
         end
 
-        def routes_subsidy(route, corporation)
-          return super if @rptla != corporation
+        def rptla_subsidy(corporation)
+          return 0 if @rptla != corporation
 
           (corporation.loans.size.to_f / 2).ceil * 10
         end

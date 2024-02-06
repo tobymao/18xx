@@ -19,20 +19,20 @@ module Engine
 
         STARTING_CASH = { 2 => 650, 3 => 450, 4 => 350 }.freeze
 
-        CAPITALIZATION = :incremental
-        # However 10-share corps that start in round 5: if their 5th share purchase
-        #  - get 5x starting value
-        #  - the remaining 5 shares are placed in bank pool
+        MIN_BID_INCREMENT = 5
+        ONLY_HIGHEST_BID_COMMITTED = true
 
-        MUST_SELL_IN_BLOCKS = true
+        CAPITALIZATION = :incremental
+        HOME_TOKEN_TIMING = :par
 
         # TODO: end of SR movement down and right if at top
         # TODO OR movement must pay stock price to move right
 
         SELL_BUY_ORDER = :sell_buy
-        # is this first to pass: first, second: second.. yes
+        SELL_AFTER = :operate
+        MUST_SELL_IN_BLOCKS = true
+
         NEXT_SR_PLAYER_ORDER = :first_to_pass
-        MIN_BID_INCREMENT = 5
 
         MARKET = [
           %w[82 90 100 110 122 135 150 165 180 200 220 245 270 300 330 360 400],
@@ -51,7 +51,7 @@ module Engine
             train_limit: 4,
             tiles: [:yellow],
             operating_rounds: 2,
-            status: ['can_buy_morison'],
+            status: ['can_buy_morison_bridging'],
           },
           {
             name: '3',
@@ -123,7 +123,8 @@ module Engine
             price: 450,
             num: 2,
             events: [{ 'type' => 'close_companies' },
-                     { 'type' => 'local_railroads_available' }],
+                     { 'type' => 'full_capitalization' },
+                     { 'type' => 'local_railways_available' }],
           },
           {
             name: '6/8',
@@ -143,31 +144,67 @@ module Engine
           },
         ].freeze
 
+        STATUS_TEXT = Base::STATUS_TEXT.merge(
+          'can_buy_morison_bridging' => ['Can Buy Morison Bridging Company'],
+        )
+
+        EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+          'full_capitalization' => ['Full Capitalization',
+                                    'Newly started 10-share corporations receive remaining capitalization once 5 shares sold'],
+          'local_railways_available' => ['Local Railways Available', 'Local Railways can now be started'],
+        )
+
         EBUY_PRES_SWAP = false # allow presidential swaps of other corps when ebuying
         EBUY_OTHER_VALUE = false # allow ebuying other corp trains for up to face
-        HOME_TOKEN_TIMING = :float # not :operating_round
+
         # Two tiles can be laid, only one upgrade
         TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, cost: 20, upgrade: :not_if_upgraded }].freeze
 
-        def setup
-          @corporations, @future_corporations = @corporations.partition { |corporation| corporation.type != :local }
+        def morison_bridging_company
+          @morison_bridging_company ||= @companies.find { |company| company.id == 'P2' }
         end
 
-        def event_local_railroads_available!
-          @log << 'Local railroads are now available!'
+        def setup_preround
+          setup_company_purchase_prices
+        end
 
-          @corporations += @future_corporations
-          @future_corporations = []
+        def setup_company_purchase_prices
+          @companies.each do |company|
+            if company == morison_bridging_company
+              set_company_purchase_price(company, 1.0, 1.0)
+            else
+              set_company_purchase_price(company, 0.5, 1.5)
+            end
+          end
+        end
+
+        def set_company_purchase_price(company, min_multiplier, max_multiplier)
+          company.min_price = (company.value * min_multiplier).ceil
+          company.max_price = (company.value * max_multiplier).floor
+        end
+
+        def setup
+          @corporations_to_fully_capitalize = []
+        end
+
+        def event_full_capitalization!
+          @log << "-- Event: #{EVENTS_TEXT['full_capitalization'][1]} --"
+          @corporations_fully_capitalize = true
+        end
+
+        def event_local_railways_available!
+          @log << "-- Event: #{EVENTS_TEXT['local_railways_available'][1]} --"
+          @locals_available = true
         end
 
         def reorder_players(order = nil, log_player_order: false)
-          @round == Round::Auction ? super(:most_cash, log_player_order: true) : super
+          @round.is_a?(Round::Auction) ? super(:most_cash, log_player_order: true) : super
         end
 
         def init_round
           Round::Auction.new(self, [
             Engine::Step::CompanyPendingPar,
-            G18Neb::Step::PriceFindingAuction,
+            G18Neb::Step::BidAuction,
           ])
         end
 
@@ -177,7 +214,7 @@ module Engine
             Engine::Step::Exchange,
             Engine::Step::HomeToken,
             Engine::Step::SpecialTrack,
-            Engine::Step::BuySellParShares,
+            G18Neb::Step::BuySellParShares,
           ])
         end
 
@@ -185,14 +222,14 @@ module Engine
           Round::Operating.new(self, [
             Engine::Step::Bankrupt,
             Engine::Step::Exchange,
-            Engine::Step::BuyCompany,
+            G18Neb::Step::BuyCompany,
             Engine::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
             Engine::Step::Dividend,
             Engine::Step::DiscardTrain,
             Engine::Step::BuyTrain,
-            [Engine::Step::BuyCompany, { blocks: true }],
+            [G18Neb::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
 
@@ -208,6 +245,62 @@ module Engine
 
         def town_to_city_upgrade?(from, to)
           %w[3 4 58].include?(from.name) && %w[X01 X02 X03].include?(to.name)
+        end
+
+        def purchasable_companies(entity = nil)
+          if @phase.status.include?('can_buy_morison_bridging') &&
+              morison_bridging_company&.owner&.player? &&
+              entity != morison_bridging_company.owner
+            [morison_bridging_company]
+          elsif @phase.status.include?('can_buy_companies')
+            super
+          else
+            []
+          end
+        end
+
+        def after_phase_change(name)
+          set_company_purchase_price(morison_bridging_company, 0.5, 1.5) if name == '3' && morison_bridging_company
+        end
+
+        def after_par(corporation)
+          super
+          @corporations_to_fully_capitalize << corporation if corporations_fully_capitalize?
+        end
+
+        def corporations_fully_capitalize?
+          @corporations_fully_capitalize
+        end
+
+        def locals_available?
+          @locals_available
+        end
+
+        def can_par?(corporation, _parrer)
+          return false if corporation.type == :local && !locals_available?
+
+          super
+        end
+
+        def check_for_full_capitalization(corporation)
+          return unless corporation.num_ipo_shares == 5
+          return unless @corporations_to_fully_capitalize.delete(corporation)
+
+          @bank.spend(coproration.num_ipo_shares * corporation.par_price.price, corporation)
+          @share_pool.transfer_shares(ShareBundle.new(corporation.shares_of(corporation)), @share_pool)
+          @log << "#{corporation.name} receives 5x its starting price in its treasury. " \
+                  "#{corporation.name}'s remaining shares are placed in the market"
+        end
+
+        def issuable_shares(entity)
+          max_issuable = (entity.total_shares * 0.5).floor - entity.num_market_shares
+          return [] unless max_issuable.positive?
+
+          bundles_for_corporation(entity, entity, shares: entity.shares_of(entity).first(max_issuable))
+        end
+
+        def redeemable_shares(entity)
+          [@share_pool.shares_of(entity).find { |s| s.price <= entity.cash }&.to_bundle].compact
         end
       end
     end
