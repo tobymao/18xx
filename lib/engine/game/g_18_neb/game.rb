@@ -124,7 +124,7 @@ module Engine
             num: 2,
             events: [{ 'type' => 'close_companies' },
                      { 'type' => 'full_capitalization' },
-                     { 'type' => 'local_railroads_available' }],
+                     { 'type' => 'local_railways_available' }],
           },
           {
             name: '6/8',
@@ -150,8 +150,8 @@ module Engine
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
           'full_capitalization' => ['Full Capitalization',
-                                    'Newly started 10-share corporations receive full capitalization once 5 shares sold'],
-          'local_railroads_available' => ['Local Railroads Available', 'Local Railroads can now be started'],
+                                    'Newly started 10-share corporations receive remaining capitalization once 5 shares sold'],
+          'local_railways_available' => ['Local Railways Available', 'Local Railways can now be started'],
         )
 
         EBUY_PRES_SWAP = false # allow presidential swaps of other corps when ebuying
@@ -184,7 +184,6 @@ module Engine
         end
 
         def setup
-          @corporations, @future_corporations = @corporations.partition { |corporation| corporation.type != :local }
           @corporations_to_fully_capitalize = []
         end
 
@@ -193,11 +192,9 @@ module Engine
           @corporations_fully_capitalize = true
         end
 
-        def event_local_railroads_available!
-          @log << 'Local railroads are now available!'
-
-          @corporations += @future_corporations
-          @future_corporations = []
+        def event_local_railways_available!
+          @log << "-- Event: #{EVENTS_TEXT['local_railways_available'][1]} --"
+          @locals_available = true
         end
 
         def reorder_players(order = nil, log_player_order: false)
@@ -273,6 +270,16 @@ module Engine
 
         def corporations_fully_capitalize?
           @corporations_fully_capitalize
+        end
+
+        def locals_available?
+          @locals_available
+        end
+
+        def can_par?(corporation, _parrer)
+          return false if corporation.type == :local && !locals_available?
+
+          super
         end
 
         def check_for_full_capitalization(corporation)
