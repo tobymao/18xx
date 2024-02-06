@@ -24,7 +24,7 @@ module Engine
 
         entity == current_entity &&
           @game.phase.status.include?('can_buy_companies') &&
-          companies.any? &&
+          !companies.empty? &&
           companies.map(&:min_price).min <= buying_power(entity)
       end
 
