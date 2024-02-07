@@ -222,7 +222,7 @@ module Engine
             G18Neb::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
-            Engine::Step::Dividend,
+            G18Neb::Step::Dividend,
             Engine::Step::DiscardTrain,
             Engine::Step::BuyTrain,
             [G18Neb::Step::BuyCompany, { blocks: true }],
@@ -319,6 +319,29 @@ module Engine
               [sp.price, sp.corporations.find_index(c)]
             end
           end
+        end
+
+        def revenue_for(route, stops)
+          super + east_west_bonus(route, stops)
+        end
+
+        def revenue_str(route)
+          stops = route.stops
+          stop_hexes = stops.map(&:hex)
+          str = route.hexes.map { |h| stop_hexes.include?(h) ? h&.name : "(#{h&.name})" }.join('-')
+          str += ' + EW' if east_west_route?(route.stops)
+          str
+        end
+
+        def east_west_route?(stops)
+          (stops.flat_map(&:groups) & %w[E W]).size == 2
+        end
+
+        def east_west_bonus(route, stops)
+          return 0 unless east_west_route?(stops)
+
+          multiplier = route.train.name == '4D' ? 2 : 1
+          stops.map { |stop| stop.route_revenue(route.phase, route.train) }.max * multiplier
         end
       end
     end
