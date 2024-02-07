@@ -178,7 +178,7 @@ module Engine
 
       # when can a share holder sell shares
       # first           -- after first stock round
-      # after_ipo       -- after stock round in which company is opened
+      # after_float     -- after stock round in which company floated
       # operate         -- after operation
       # full_or_turn    -- after corp completes a full OR turn
       # p_any_operate   -- pres any time, share holders after operation
@@ -1083,7 +1083,7 @@ module Engine
         case self.class::SELL_AFTER
         when :first
           @turn > 1 || @round.operating?
-        when :after_ipo
+        when :after_float
           corporation.operated? || @round.operating?
         when :operate
           corporation.operated?
