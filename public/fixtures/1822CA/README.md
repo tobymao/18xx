@@ -11,3 +11,7 @@
 * `2`
     * various destination token (and slot icon) interactions with big city upgrades (issue #10147)
     * 9 tokens in Winnipeg; assets_spec test added to ensure rendering works (issue #10173)
+
+* `3`
+    * ICR's destination token staying in the correct city in Quebec when
+      upgraded to green (issue #10201)
