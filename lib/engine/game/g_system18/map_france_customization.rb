@@ -7,8 +7,6 @@ module Engine
         # rubocop:disable Layout/LineLength
         def map_france_game_tiles(tiles)
           tiles.merge!({
-                         '204' => 1,
-                         '611' => 2,
                          'X1' =>
             {
               'count' => 1,
@@ -28,7 +26,7 @@ module Engine
                   'count' => 1,
                   'color' => 'brown',
                   'code' =>
-                  'city=revenue:80,slots:2;city=revenue:80;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_1;path=a:3,b:_1;path=a:4,b:_0;path=a:5,b:_0;label=P',
+                  'city=revenue:80,slots:2,loc:5.5;city=revenue:80,loc:2.5;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_1;path=a:3,b:_1;path=a:4,b:_0;path=a:5,b:_0;label=P',
                 },
 
                        })
