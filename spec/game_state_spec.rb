@@ -12,10 +12,21 @@ def raw_action(game, action_index)
   game.instance_variable_get(:@raw_all_actions)[action_index]
 end
 
+# get the title string from the `describe` block
+def game_title_for_test(test)
+  all_titles = Engine::GAME_META_BY_TITLE
+  parent = :parent_example_group
+
+  group = test.metadata[:example_group][parent]
+  group = group[parent] until all_titles.include?((title = group[:description]))
+  title
+end
+
 module Engine
   describe 'Fixture Game State' do
     let(:game_file) do
-      Find.find(FIXTURES_DIR).find { |f| File.basename(f) == "#{described_class}.json" }
+      title = game_title_for_test(RSpec.current_example)
+      Find.find("#{FIXTURES_DIR}/#{title}").find { |f| File.basename(f) == "#{described_class}.json" }
     end
 
     describe '18Chesapeake' do
