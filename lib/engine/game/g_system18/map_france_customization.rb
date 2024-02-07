@@ -6,7 +6,6 @@ module Engine
       module MapFranceCustomization
         # rubocop:disable Layout/LineLength
         def map_france_game_tiles(tiles)
-          tiles['619'] = 1
           tiles.merge!({
                          '204' => 1,
                          '611' => 2,
