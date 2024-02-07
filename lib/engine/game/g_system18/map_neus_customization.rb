@@ -6,6 +6,7 @@ module Engine
       module MapNeusCustomization
         def map_neus_game_tiles(tiles)
           tiles.delete('5')
+          tiles.delete('6')
           tiles.delete('12')
           tiles.delete('13')
           tiles.delete('205')
