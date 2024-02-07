@@ -829,6 +829,35 @@ module Engine
           expect(token.city.exits.sort).to eq([4, 5])
         end
       end
+
+      describe 4 do
+        it 'M13 Toronto' do
+          game = game_at_action(game_file, 1258)
+
+          toronto_hex = game.hex_by_id('AC21')
+          cities = toronto_hex.tile.cities
+
+          # before
+          expect(cities.map(&:normal_slots)).to eq([1, 1])
+          expect(cities.map(&:slots)).to eq([2, 1])
+
+          # act
+          action = {
+            'type' => 'lay_tile',
+            'entity' => 'P14',
+            'entity_type' => 'company',
+            'hex' => 'AC21',
+            'tile' => 'T4-0',
+            'rotation' => 0,
+          }
+          game.process_action(action)
+
+          # after
+          toronto = game.hex_by_id('AC21').tile.cities[0]
+          expect(toronto.normal_slots).to eq(2)
+          expect(toronto.slots).to eq(3)
+        end
+      end
     end
   end
 end

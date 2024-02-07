@@ -15,3 +15,7 @@
 * `3`
     * ICR's destination token staying in the correct city in Quebec when
       upgraded to green (issue #10201)
+
+* `4`
+    * upgrading Toronto to T4 (brown, only two slots) after three tokens are
+      present--M13's "rondel" token, plus M12 and and GT (issue #10226)
