@@ -49,7 +49,7 @@ module Engine
           {
             name: '2',
             train_limit: 4,
-            tiles: [:yellow],
+            tiles: %i[yellow],
             operating_rounds: 2,
             status: ['can_buy_morison_bridging'],
           },
@@ -134,7 +134,6 @@ module Engine
           },
           {
             name: '4D',
-            # Can pick 4 best city or offboards, skipping smaller cities.
             distance: [{ 'nodes' => %w[city offboard], 'pay' => 4, 'visit' => 99, 'multiplier' => 2 },
                        { 'nodes' => %w[town], 'pay' => 0, 'visit' => 99 }],
             price: 900,
@@ -154,11 +153,7 @@ module Engine
           'local_railways_available' => ['Local Railways Available', 'Local Railways can now be started'],
         )
 
-        EBUY_PRES_SWAP = false # allow presidential swaps of other corps when ebuying
-        EBUY_OTHER_VALUE = false # allow ebuying other corp trains for up to face
-
-        # Two tiles can be laid, only one upgrade
-        TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, cost: 20, upgrade: :not_if_upgraded }].freeze
+        TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: :not_if_upgraded }].freeze
 
         def morison_bridging_company
           @morison_bridging_company ||= @companies.find { |company| company.id == 'P2' }
@@ -223,7 +218,8 @@ module Engine
             Engine::Step::Bankrupt,
             Engine::Step::Exchange,
             G18Neb::Step::BuyCompany,
-            Engine::Step::Track,
+            G18Neb::Step::SpecialTrack,
+            G18Neb::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
             Engine::Step::Dividend,
@@ -239,8 +235,13 @@ module Engine
 
         def upgrades_to?(from, to, special = false, selected_company: nil)
           return true if town_to_city_upgrade?(from, to)
+          return true if omaha_green_upgrade?(from, to)
 
           super
+        end
+
+        def omaha_green_upgrade?(from, to)
+          from.color == :yellow && from.label&.to_s == 'O' && to.name == 'X04'
         end
 
         def town_to_city_upgrade?(from, to)
@@ -266,6 +267,10 @@ module Engine
         def after_par(corporation)
           super
           @corporations_to_fully_capitalize << corporation if corporations_fully_capitalize?
+        end
+
+        def after_tile_lay(_hex, _old_tile, _new_tile)
+          # TODO: P5
         end
 
         def corporations_fully_capitalize?
