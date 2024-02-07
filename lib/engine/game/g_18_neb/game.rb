@@ -302,6 +302,19 @@ module Engine
         def redeemable_shares(entity)
           [@share_pool.shares_of(entity).find { |s| s.price <= entity.cash }&.to_bundle].compact
         end
+
+        def operating_order
+          corporations = @corporations.select(&:floated?)
+          if @normal_operating_order
+            corporations.sort
+          else
+            @normal_operating_order = true
+            corporations.sort_by do |c|
+              sp = c.share_price
+              [sp.price, sp.corporations.find_index(c)]
+            end
+          end
+        end
       end
     end
   end
