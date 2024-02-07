@@ -376,7 +376,7 @@ module Engine
           self.class::COMPANIES_EXTRA_TRACK_LAYS.include?(company.id)
         end
 
-        def sell_movement
+        def sell_movement(_corporation)
           @sell_movement ||= @players.size == 2 ? :left_share_pres : :left_per_10_if_pres_else_left_one
         end
 

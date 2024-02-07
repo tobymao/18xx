@@ -1191,7 +1191,7 @@ module Engine
         self.class::SELL_AFTER == :first ? (@turn > 1 || !@round.stock?) : true
       end
 
-      def sell_movement
+      def sell_movement(_corporation = nil)
         self.class::SELL_MOVEMENT
       end
 
@@ -1200,7 +1200,7 @@ module Engine
         old_price = corporation.share_price
         was_president = corporation.president?(bundle.owner)
         @share_pool.sell_shares(bundle, allow_president_change: allow_president_change, swap: swap)
-        case movement || sell_movement
+        case movement || sell_movement(corporation)
         when :down_share
           bundle.num_shares.times { @stock_market.move_down(corporation) }
         when :down_per_10
@@ -1231,7 +1231,7 @@ module Engine
         else
           raise NotImplementedError
         end
-        log_share_price(corporation, old_price) if sell_movement != :none
+        log_share_price(corporation, old_price) if sell_movement(corporation) != :none
       end
 
       def sold_out_increase?(_corporation)
