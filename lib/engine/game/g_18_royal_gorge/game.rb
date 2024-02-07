@@ -311,6 +311,200 @@ module Engine
           )
         end
 
+        def show_map_legend?
+          true
+        end
+
+        def show_map_legend_on_left?
+          @round.is_a?(Round::Operating)
+        end
+
+        COLUMN_COLORS = {
+          'A' => :yellow,
+          'B' => :yellow,
+          'C' => :yellow,
+          'D' => :yellow,
+          'E' => :green,
+          'F' => :green,
+          'G' => :brown,
+          'H' => :brown,
+          'I' => :gray,
+        }.freeze
+
+        def cell(cost, column, color, action_processor = nil)
+          color_sym = COLUMN_COLORS[column]
+
+          chosen_column =
+            (@round.steel_column_choice[color_sym] if active_step.is_a?(G18RoyalGorge::Step::Track))
+
+          blank = false
+          image_text =
+            if cost == 40
+              { text: '∞' }
+            elsif @available_steel[color_sym][column].include?(cost)
+              { image: '/icons/18_royal_gorge/gray_cube.svg' }
+            else
+              blank = true
+              { text: '' }
+            end
+
+          unchoosable_color = color_sym == :gray || !@phase.tiles.include?(color_sym)
+
+          cheapest_in_column = cost == (@available_steel[color_sym][column].min || 40)
+
+          # highlight the next cube to use; check for chosen column+price, if
+          # none chosen default to cheapest available
+          selected =
+            if !active_step.is_a?(G18RoyalGorge::Step::Track) || unchoosable_color
+              false
+            else
+              chosen_column = @round.steel_column_choice[color_sym]
+              if !chosen_column
+                cheapest_column = @available_steel[color_sym].min_by { |_, v| v[-1] || 40 }[0]
+                (cheapest_column == column) && cheapest_in_column
+              elsif chosen_column == column
+                if (price_choice = @round.steel_price_choice[color_sym])
+                  price_choice == cost
+                else
+                  cheapest_in_column
+                end
+              end
+            end
+          bg_color = selected ? 'white' : color.to_s
+
+          onclick = lambda do
+            puts "hello from #{column} #{cost}"
+
+            if selected
+              puts '    NOOP: already using this cell'
+            elsif chosen_column && chosen_column != column && @round.laid_track[color_sym]
+              puts '    NOOP: already using a different column'
+            elsif blank
+              puts '    NOOP: no cube available'
+            elsif unchoosable_color
+              puts '    NOOP: color not available'
+            else
+              puts '    should update choice to this cell'
+              action = Engine::Action::Choose.new(
+                current_entity,
+                choice: "#{column}-#{cost}"
+              )
+              if action_processor
+                action_processor.call(action)
+              else
+                process_action(action, add_auto_actions: true).maybe_raise!
+              end
+            end
+          end
+
+          {
+            **image_text,
+            props: {
+              style: { border: '1px solid', color: 'black', backgroundColor: bg_color, cursor: 'pointer', 'user-select': 'none' },
+              on: { click: onclick },
+            },
+          }
+        end
+
+        def map_legend(font_color, yellow, green, brown, gray, action_processor: nil)
+          [
+            # table-wide props
+            {
+              style: {
+                margin: '0.5rem 0 0.5rem 0',
+                border: '1px solid',
+                borderCollapse: 'collapse',
+              },
+            },
+            # header
+            [
+              { text: "(#{format_currency(@steel_corp.cash)})", props: { style: { border: '1px solid' } } },
+              { text: 'A', props: { style: { border: '1px solid', **legend_header_style('A', :yellow, yellow) } } },
+              { text: 'B', props: { style: { border: '1px solid', **legend_header_style('B', :yellow, yellow) } } },
+              { text: 'C', props: { style: { border: '1px solid', **legend_header_style('C', :yellow, yellow) } } },
+              { text: 'D', props: { style: { border: '1px solid', **legend_header_style('D', :yellow, yellow) } } },
+              { text: 'E', props: { style: { border: '1px solid', **legend_header_style('E', :green, green) } } },
+              { text: 'F', props: { style: { border: '1px solid', **legend_header_style('F', :green, green) } } },
+              { text: 'G', props: { style: { border: '1px solid', **legend_header_style('G', :brown, brown) } } },
+              { text: 'H', props: { style: { border: '1px solid', **legend_header_style('H', :brown, brown) } } },
+              { text: 'I', props: { style: { border: '1px solid', **legend_header_style('I', :gray, gray) } } },
+            ],
+            # body
+            [
+              {
+                text: format_currency(40),
+                props: { style: { border: "1px solid #{font_color}", color: 'white', backgroundColor: 'black' } },
+              },
+              cell(40, 'A', yellow, action_processor),
+              cell(40, 'B', yellow, action_processor),
+              cell(40, 'C', yellow, action_processor),
+              cell(40, 'D', yellow, action_processor),
+              cell(40, 'E', green, action_processor),
+              cell(40, 'F', green, action_processor),
+              cell(40, 'G', brown, action_processor),
+              cell(40, 'H', brown, action_processor),
+              cell(40, 'I', gray, action_processor),
+            ],
+            [
+              {
+                text: format_currency(30),
+                props: { style: { border: "1px solid #{font_color}", color: 'white', backgroundColor: 'black' } },
+              },
+              cell(30, 'A', yellow, action_processor),
+              cell(30, 'B', yellow, action_processor),
+              cell(30, 'C', yellow, action_processor),
+              cell(30, 'D', yellow, action_processor),
+              cell(30, 'E', green, action_processor),
+              cell(30, 'F', green, action_processor),
+              cell(30, 'G', brown, action_processor),
+              cell(30, 'H', brown, action_processor),
+            ],
+            [
+              {
+                text: format_currency(20),
+                props: { style: { border: "1px solid #{font_color}", color: 'white', backgroundColor: 'black' } },
+              },
+              cell(20, 'A', yellow, action_processor),
+              cell(20, 'B', yellow, action_processor),
+              cell(20, 'C', yellow, action_processor),
+              cell(20, 'D', yellow, action_processor),
+              cell(20, 'E', green, action_processor),
+              cell(20, 'F', green, action_processor),
+            ],
+            [
+              {
+                text: format_currency(10),
+                props: { style: { border: "1px solid #{font_color}", color: 'white', backgroundColor: 'black' } },
+              },
+              cell(10, 'A', yellow, action_processor),
+              cell(10, 'B', yellow, action_processor),
+              cell(10, 'C', yellow, action_processor),
+              cell(10, 'D', yellow, action_processor),
+            ],
+            [
+              {
+                text: format_currency(0),
+                props: { style: { border: "1px solid #{font_color}", color: 'white', backgroundColor: 'black' } },
+              },
+              cell(0, 'A', yellow, action_processor),
+              cell(0, 'B', yellow, action_processor),
+              cell(0, 'C', yellow, action_processor),
+              cell(0, 'D', yellow, action_processor),
+            ],
+          ]
+        end
+
+        # highlight the selected columns
+        def legend_header_style(column, color_sym, color)
+          if active_step.is_a?(G18RoyalGorge::Step::Track) &&
+             @round.steel_column_choice.value?(column) &&
+             @round.laid_track[color_sym]
+            { color: 'black', backgroundColor: color.to_s }
+          else
+            { color: 'white', backgroundColor: 'black' }
+          end
+        end
+
         def action_processed(action)
           case action
           when Action::LayTile

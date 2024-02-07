@@ -130,6 +130,7 @@ module View
           }
 
           aquire_company_action = @current_actions.include?('acquire_company')
+          left << h(MapLegend, game: @game) if @game.show_map_legend? && @game.show_map_legend_on_left?
           right << h(Map, game: @game) unless aquire_company_action
           right << h(:div, div_props, [h(BuyCompanies, limit_width: true)]) if @current_actions.include?('buy_company')
           right << h(:div, div_props, [h(AcquireCompanies)]) if aquire_company_action
