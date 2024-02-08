@@ -177,13 +177,13 @@ module Engine
       TURN_SELL_LIMIT = nil
 
       # when can a share holder sell shares
-      # first           -- after first stock round
-      # after_float     -- after stock round in which company floated
-      # operate         -- after operation
-      # full_or_turn    -- after corp completes a full OR turn
-      # p_any_operate   -- pres any time, share holders after operation
-      # any_time        -- at any time
-      # round           -- after the stock round the share was purchased in
+      # first            -- after first stock round
+      # after_sr_floated -- after stock round in which company floated
+      # operate          -- after operation
+      # full_or_turn     -- after corp completes a full OR turn
+      # p_any_operate    -- pres any time, share holders after operation
+      # any_time         -- at any time
+      # round            -- after the stock round the share was purchased in
       SELL_AFTER = :first
 
       # down_share -- down one row per share
@@ -1083,7 +1083,7 @@ module Engine
         case self.class::SELL_AFTER
         when :first
           @turn > 1 || @round.operating?
-        when :after_float
+        when :after_sr_floated
           corporation.operated? || @round.operating?
         when :operate
           corporation.operated?

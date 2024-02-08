@@ -369,7 +369,7 @@ module Engine
           #
           if game_capitalization == :incremental
             redef_const(:SELL_BUY_ORDER, :sell_buy)
-            redef_const(:SELL_AFTER, :after_float)
+            redef_const(:SELL_AFTER, :after_sr_floated)
             redef_const(:SELL_MOVEMENT, :left_block_pres)
             redef_const(:SOLD_OUT_INCREASE, false)
             redef_const(:MUST_EMERGENCY_ISSUE_BEFORE_EBUY, true)
