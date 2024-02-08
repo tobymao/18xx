@@ -36,6 +36,7 @@ module Engine
         STARTING_CASH = { 2 => 600, 3 => 400, 4 => 300, 5 => 240 }.freeze
 
         OR_SETS = [2, 2, 2, 2, 2].freeze
+        LAST_OR = 10
 
         CAPITALIZATION = :incremental
         HOME_TOKEN_TIMING = :operate
@@ -100,7 +101,7 @@ module Engine
                     tiles: %i[yellow green brown],
                   }].freeze
 
-        TRAINS = [{ name: '2', distance: 2, price: 500, rusts_on: '4', num: 5 },
+        TRAINS = [{ name: '2', distance: 2, price: 100, rusts_on: '4', num: 5 },
                   { name: '3', distance: 3, price: 200, rusts_on: '5', num: 4 },
                   { name: '4', distance: 4, price: 300, rusts_on: '6', num: 3 },
                   {
@@ -128,6 +129,7 @@ module Engine
                     ],
                   }].freeze
 
+        # Game ends after 5 sets of ORs - checked in end_now? below
         GAME_END_CHECK = { custom: :current_or, stock_market: :current }.freeze
 
         GAME_END_REASONS_TEXT = Base::GAME_END_REASONS_TEXT.merge(
@@ -136,7 +138,7 @@ module Engine
         ).freeze
 
         GAME_END_REASONS_TIMING_TEXT = Base::EVENTS_TEXT.merge(
-          full_or: 'Ends after the final OR set.',
+          current_or: 'Ends after the final OR set.',
           current: 'Ends after this OR.'
         ).freeze
 
@@ -190,7 +192,6 @@ module Engine
         end
 
         def operating_round(round_num)
-          @round_num = round_num
           Engine::Round::Operating.new(self, [
             Engine::Step::Bankrupt,
             Engine::Step::Assign,
@@ -207,6 +208,43 @@ module Engine
             Engine::Step::BuyTrain,
             [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
+        end
+
+        # needed for the fixed number of rounds in this game
+        def next_round!
+          @round =
+            case @round
+            when Engine::Round::Stock
+              @operating_rounds = 2
+              clear_programmed_actions
+              reorder_players
+              new_operating_round
+            when Engine::Round::Operating
+              if @round.round_num < @operating_rounds
+                or_round_finished
+                new_operating_round(@round.round_num + 1)
+              else
+                @turn += 1
+                or_round_finished
+                or_set_finished
+                new_stock_round
+              end
+            when init_round.class
+              init_round_finished
+              reorder_players
+              new_stock_round
+            end
+        end
+
+        def new_operating_round(round_num = 1)
+          @or += 1
+
+          super
+        end
+
+        # Game ends after the end of OR 5.2
+        def end_now?(_after)
+          @or == LAST_OR
         end
 
         def ipo_name(_entity = nil)
