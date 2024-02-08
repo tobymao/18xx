@@ -28,6 +28,7 @@ module Engine
         CURRENCY_FORMAT_STR = 'fl. %s'
         MUST_SELL_IN_BLOCKS = true
         SELL_MOVEMENT = :left_share
+        MUST_EMERGENCY_ISSUE_BEFORE_EBUY = true
 
         BANK_CASH = 99_999
 
@@ -36,6 +37,7 @@ module Engine
         STARTING_CASH = { 2 => 600, 3 => 400, 4 => 300, 5 => 240 }.freeze
 
         OR_SETS = [2, 2, 2, 2, 2].freeze
+        LAST_OR = 10
 
         CAPITALIZATION = :incremental
         HOME_TOKEN_TIMING = :operate
@@ -51,25 +53,25 @@ module Engine
             { price: 75, types: [:par] },
             { price: 80, types: [:par] },
             { price: 90, types: [:par] },
-            { price: 100, types: [:par] },
+            { price: 100, types: %i[par max_price_1] },
             { price: 110, types: [:ignore_sale_unless_president] },
             { price: 125, types: [:max_one_drop_unless_president] },
-            { price: 140, types: [:max_two_drops_unless_president] },
+            { price: 140, types: %i[max_two_drops_unless_president max_price_1] },
             { price: 160, types: [:ignore_sale_unless_president] },
             { price: 180, types: [:max_one_drop_unless_president] },
-            { price: 210, types: [:max_two_drops_unless_president] },
+            { price: 210, types: %i[max_two_drops_unless_president max_price_1] },
             { price: 240, types: [:ignore_sale_unless_president] },
             { price: 270, types: [:max_one_drop_unless_president] },
-            { price: 300, types: [:max_two_drops_unless_president] },
+            { price: 300, types: %i[max_two_drops_unless_president max_price_1] },
             { price: 330, types: [:ignore_sale_unless_president] },
             { price: 360, types: [:endgame] },
           ],
         ].freeze
 
-        STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(par: :yellow, ignore_unless_president: :green).freeze
+        STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(par: :yellow).freeze
 
         MARKET_TEXT = Base::MARKET_TEXT.merge(
-          ignore_unless_president: 'Price will not drop below these values in Stock Round unless president sells'
+          max_price_1: 'Price will not drop below black line in Stock Round unless president sells'
         ).freeze
 
         PHASES = [{ name: '2', train_limit: 4, tiles: [:yellow] },
@@ -100,7 +102,7 @@ module Engine
                     tiles: %i[yellow green brown],
                   }].freeze
 
-        TRAINS = [{ name: '2', distance: 2, price: 500, rusts_on: '4', num: 5 },
+        TRAINS = [{ name: '2', distance: 2, price: 100, rusts_on: '4', num: 5 },
                   { name: '3', distance: 3, price: 200, rusts_on: '5', num: 4 },
                   { name: '4', distance: 4, price: 300, rusts_on: '6', num: 3 },
                   {
@@ -128,6 +130,7 @@ module Engine
                     ],
                   }].freeze
 
+        # Game ends after 5 sets of ORs - checked in end_now? below
         GAME_END_CHECK = { custom: :current_or, stock_market: :current }.freeze
 
         GAME_END_REASONS_TEXT = Base::GAME_END_REASONS_TEXT.merge(
@@ -136,7 +139,7 @@ module Engine
         ).freeze
 
         GAME_END_REASONS_TIMING_TEXT = Base::EVENTS_TEXT.merge(
-          full_or: 'Ends after the final OR set.',
+          current_or: 'Ends after the final OR set.',
           current: 'Ends after this OR.'
         ).freeze
 
@@ -190,7 +193,6 @@ module Engine
         end
 
         def operating_round(round_num)
-          @round_num = round_num
           Engine::Round::Operating.new(self, [
             Engine::Step::Bankrupt,
             Engine::Step::Assign,
@@ -209,6 +211,43 @@ module Engine
           ], round_num: round_num)
         end
 
+        # needed for the fixed number of rounds in this game
+        def next_round!
+          @round =
+            case @round
+            when Engine::Round::Stock
+              @operating_rounds = 2
+              clear_programmed_actions
+              reorder_players
+              new_operating_round
+            when Engine::Round::Operating
+              if @round.round_num < @operating_rounds
+                or_round_finished
+                new_operating_round(@round.round_num + 1)
+              else
+                @turn += 1
+                or_round_finished
+                or_set_finished
+                new_stock_round
+              end
+            when init_round.class
+              init_round_finished
+              reorder_players
+              new_stock_round
+            end
+        end
+
+        def new_operating_round(round_num = 1)
+          @or += 1
+
+          super
+        end
+
+        # Game ends after the end of OR 5.2
+        def end_now?(_after)
+          @or == LAST_OR
+        end
+
         def ipo_name(_entity = nil)
           'Treasury'
         end
@@ -225,10 +264,15 @@ module Engine
         end
 
         def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil, movement: nil)
-          super
           num_shares = bundle.num_shares
-          unless bundle.owner == corporation.owner
-            # This allows for the ledges that prevent price drops unless the president is selling
+          corporation = bundle.corporation
+          old_price = corporation.share_price
+          @share_pool.sell_shares(bundle, allow_president_change: allow_president_change, swap: swap)
+
+          if bundle.owner == corporation.owner
+            super
+          else
+            # This section allows for the ledges that prevent price drops unless the president is selling
             case corporation.share_price.type
             when :ignore_sale_unless_president
               num_shares = 0
@@ -237,8 +281,9 @@ module Engine
             when :max_two_drops_unless_president
               num_shares = 2 unless num_shares == 1
             end
+            num_shares.times { @stock_market.move_left(corporation) }
+            log_share_price(corporation, old_price) if sell_movement(corporation) != :none
           end
-          num_shares.times { @stock_market.move_down(corporation) }
         end
 
         def issuable_shares(entity)
