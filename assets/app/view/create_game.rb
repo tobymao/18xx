@@ -259,7 +259,7 @@ module View
 
         desc_text = o_r[:desc] ? ": #{o_r[:desc]}" : ''
         parenthetical = ''
-        if o_r[:players]&.one? && o_r[:players][0] == 1
+        if o_r[:players] == [1]
           parenthetical = 'solo'
         elsif o_r[:players]&.one?
           parenthetical = "#{o_r[:players].min} players"
