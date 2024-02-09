@@ -321,7 +321,6 @@ module Engine
           @company_trains['P3'] = find_and_remove_train_by_id('2P-0', buyable: false)
           @company_trains['P4'] = find_and_remove_train_by_id('2P-1', buyable: false)
           @company_trains['P1'] = find_and_remove_train_by_id('5P-0')
-          @company_trains['P1'].name = '5'
           @company_trains['P5'] = find_and_remove_train_by_id('P-0', buyable: false)
           @company_trains['P6'] = find_and_remove_train_by_id('P-1', buyable: false)
           @company_trains['P2'] = find_and_remove_train_by_id('LP-0', buyable: false)
