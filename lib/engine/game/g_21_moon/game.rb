@@ -497,7 +497,6 @@ module Engine
 
         def corporate_round
           G21Moon::Round::Corporate.new(self, [
-            G21Moon::Step::Exchange,
             G21Moon::Step::CorporateBuySellShares,
           ])
         end
@@ -945,7 +944,8 @@ module Engine
         end
 
         def entity_can_use_company?(entity, company)
-          entity == company.owner
+          # TC can be exercised by corporation's president
+          entity == company.owner || (entity.player? && company.sym == 'TC' && entity == company.owner&.owner)
         end
 
         def corporation_available?(corp)
