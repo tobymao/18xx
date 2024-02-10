@@ -36,8 +36,8 @@ module Engine
           end
 
           def choices
-            big_boy_choices(current_entity).each_with_index.with_object({}) do |(train, index), choices|
-              choices[index.to_s] = "#{train.name} train"
+            big_boy_choices(current_entity).each_with_object({}) do |train, obj|
+              obj[train.id] = "#{train.name} train"
             end
           end
 
@@ -60,7 +60,12 @@ module Engine
           end
 
           def process_choose_big_boy(action)
-            train = big_boy_choices(action.entity)[action.choice.to_i]
+            train = @game.train_by_id(action.choice)
+            unless big_boy_choices(action.entity).include?(train)
+              raise GameError,
+                    "Invalid train choice for Big Boy token: #{action.choice}"
+            end
+
             @game.attach_big_boy(train, action.entity)
             @chosen = true
           end

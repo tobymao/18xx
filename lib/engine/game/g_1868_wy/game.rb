@@ -1828,7 +1828,8 @@ module Engine
           update_cache(:trains)
         end
 
-        def attach_big_boy(train, entity = nil, log: true)
+        def attach_big_boy(train, entity = nil, log: true, double_head: false)
+          @big_boy_train_dh_original = nil unless double_head
           detached = detach_big_boy(log: false)
 
           @big_boy_train_original = train.dup
@@ -1878,7 +1879,8 @@ module Engine
         end
 
         def rust_trains!(train, _entity)
-          detach_big_boy if train.sym == @big_boy_train&.rusts_on
+          @big_boy_train_dh_original = nil if train.sym == @big_boy_train_dh_original&.rusts_on
+          detach_big_boy(log: true) if train.sym == @big_boy_train&.rusts_on
           super
         end
 

@@ -181,7 +181,10 @@ module Engine
             swap = nil
 
             if bundle.partial?
-              @log << "#{player.name} swaps the 20% UP certificate with a 10% UP certifcate from the Market to sell 10%"
+              if corporation == @game.union_pacific && !bundle.presidents_share
+                @log << "#{player.name} swaps the 20% UP certificate with a 10% UP certifcate from the Market to sell 10%"
+              end
+
               swap = @game.share_pool.shares_by_corporation[corporation].first
             end
 
