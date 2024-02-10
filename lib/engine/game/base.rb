@@ -3200,6 +3200,10 @@ module Engine
         false
       end
 
+      def show_map_legend_on_left?
+        false
+      end
+
       def train_purchase_name(train)
         train.name
       end
