@@ -21,16 +21,16 @@ module Engine
         OPTIONAL_RULES = [
           {
             sym: :map_NEUS,
-            short_name: 'Northeast US',
-            desc: 'Map: Northeast United States',
+            short_name: 'Map: Northeast US',
             players: [2, 3],
-            default: true,
+            designer: 'Scott Petersen',
           },
           {
             sym: :map_France,
-            short_name: 'France',
-            desc: 'Map: France',
+            short_name: 'Map: France',
             players: [2, 3, 4],
+            designer: 'Scott Petersen',
+            default: true,
           },
         ].freeze
 

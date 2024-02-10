@@ -40,6 +40,7 @@ module Engine
             'B5' => 'Detroit & Cleveland',
             'B7' => 'Erie',
             'B11' => 'Boston',
+            'C4' => 'Cincinnati',
             'C10' => 'New York City',
             'D9' => 'Washington DC',
           }
@@ -70,7 +71,7 @@ module Engine
               %w[C6] => 'town=revenue:0;town=revenue:0;upgrade=cost:120,terrain:mountain',
               %w[C8] => 'town=revenue:0;town=revenue:0;upgrade=cost:40,terrain:mountain',
               %w[B9 D5] => 'upgrade=cost:40,terrain:mountain',
-              ['D7'] => 'upgrade=cost:120,terrain:mountain',
+              ['D7'] => 'upgrade=cost:40,terrain:mountain',
             },
             yellow: {
               ['B3'] => 'city=revenue:30;path=a:2,b:_0;path=a:4,b:_0;label=B',
@@ -92,6 +93,8 @@ module Engine
           corps.each_with_index do |c, idx|
             c[:coordinates] = %w[B7 D9 B5 C10 B11][idx]
           end
+          find_corp(corps, 'KKN')[:city] = 0
+          find_corp(corps, 'GFN')[:city] = 0
 
           corps
         end

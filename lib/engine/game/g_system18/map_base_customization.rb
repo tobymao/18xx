@@ -60,7 +60,7 @@ module Engine
                                on: '8',
                                train_limit: 2,
                                tiles: %i[yellow green brown gray],
-                               operating_rounds: 3,
+                               operating_rounds: 2,
                              })
           base_phases
         end

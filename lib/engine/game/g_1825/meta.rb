@@ -20,37 +20,32 @@ module Engine
           {
             sym: :unit_1,
             short_name: 'Unit 1',
-            desc: '2-5 players',
             players: [2, 3, 4, 5],
           },
           {
             sym: :unit_2,
             short_name: 'Unit 2',
-            desc: '2-3 players',
             players: [2, 3],
           },
           {
             sym: :unit_3,
             short_name: 'Unit 3',
-            desc: '2 players',
             players: [2],
           },
           {
             sym: :unit_12,
             short_name: 'Units 1+2',
-            desc: '3-7 players',
             players: [3, 4, 5, 6, 7],
           },
           {
             sym: :unit_23,
             short_name: 'Units 2+3',
-            desc: '3-5 players',
             players: [3, 4, 5],
           },
           {
             sym: :unit_123,
             short_name: 'Units 1+2+3',
-            desc: '4-8 players (4-9 with regionals)',
+            desc: '4-8 players w/o regionals',
             players: [4, 5, 6, 7, 8, 9],
           },
           {

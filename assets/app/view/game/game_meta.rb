@@ -62,7 +62,9 @@ module View
         used_optional_rules = @game.meta::OPTIONAL_RULES.map do |o_r|
           next unless @game.optional_rules.include?(o_r[:sym])
 
-          h(:p, " * #{o_r[:short_name]}: #{o_r[:desc]}")
+          desc_text = o_r[:desc] ? ": #{o_r[:desc]}" : ''
+          desc_text += o_r[:designer] ? " by #{o_r[:designer]}" : ''
+          h(:p, " * #{o_r[:short_name]}#{desc_text}")
         end.compact
         return [] if used_optional_rules.empty?
 

@@ -199,21 +199,21 @@ module Engine
             on: '5',
             train_limit: 2,
             tiles: %i[yellow green brown],
-            operating_rounds: 3,
+            operating_rounds: 2,
           },
           {
             name: '6',
             on: '6',
             train_limit: 2,
             tiles: %i[yellow green brown],
-            operating_rounds: 3,
+            operating_rounds: 2,
           },
           {
             name: 'D',
             on: 'D',
             train_limit: 2,
             tiles: %i[yellow green brown gray],
-            operating_rounds: 3,
+            operating_rounds: 2,
           },
         ].freeze
 
@@ -265,7 +265,7 @@ module Engine
         ONLY_HIGHEST_BID_COMMITTED = true
         HOME_TOKEN_TIMING = :operate
         SELL_BUY_ORDER = :sell_buy_sell
-        GAME_END_CHECK = { bankrupt: :immediate, final_phase: :full_or }.freeze
+        GAME_END_CHECK = { bankrupt: :immediate, final_phase: :one_more_full_or_set }.freeze
         LAYOUT = :pointy
 
         # need to define constants that could be redefined
@@ -312,6 +312,10 @@ module Engine
               **corporation.merge(corporation_opts),
             )
           end
+        end
+
+        def find_corp(corps, sym)
+          corps.find { |c| c[:sym] == sym }
         end
 
         def location_name(coord)
