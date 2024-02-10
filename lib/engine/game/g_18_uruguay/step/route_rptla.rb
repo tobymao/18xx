@@ -46,7 +46,7 @@ module Engine
           end
 
           def ship_capacity(train)
-            SHIP_CAPAITY[train.name.partition('+')[0]]
+            SHIP_CAPACITY[train.name.partition('+')[0]]
           end
 
           def total_ship_capacity?(entity)
