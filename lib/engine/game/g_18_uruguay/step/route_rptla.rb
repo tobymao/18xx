@@ -7,7 +7,7 @@ module Engine
     module G18Uruguay
       module Step
         class RouteRptla < Engine::Step::Route
-          SHIP_CAPAITY =
+          SHIP_CAPACITY =
             {
               'Ship 1' => 1,
               'Ship 2' => 1,
