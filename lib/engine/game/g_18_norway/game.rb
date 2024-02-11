@@ -95,9 +95,17 @@ module Engine
           MOUNTAIN_BIG_HEXES.each { |hex| hex_by_id(hex).assign!('MOUNTAIN_BIG') }
           MOUNTAIN_SMALL_HEXES.each { |hex| hex_by_id(hex).assign!('MOUNTAIN_SMALL') }
           corporation_by_id('R').add_ability(Engine::Ability::Base.new(
-            type: 'FreeTunnel',
+            type: 'free_tunnel',
             description: 'Free tunnel'
           ))
+        end
+
+        def thunes_mekaniske
+          @thunes_mekaniske ||= company_by_id('P2')
+        end
+
+        def owns_thunes_mekaniske?(owner)
+          thunes_mekaniske.owner == owner
         end
 
         def big_mountain?(hex)
@@ -112,6 +120,27 @@ module Engine
           big_mountain?(hex) || small_mountain?(hex)
         end
 
+        def route_cost(route)
+          cost = 0
+
+          # P2 Thunes mekaniske verksted do not need to pay maintainance
+          return 0 if owns_thunes_mekaniske?(route.train.owner)
+
+          route.all_hexes.each { |hex| cost += 10 if mountain?(hex) }
+          cost
+        end
+
+        def revenue_str(route)
+          str = super
+          cost = route_cost(route)
+          str += " -Maintainance(#{cost})" if cost.positive?
+          str
+        end
+
+        def revenue_for(route, stops)
+          super - route_cost(route)
+        end
+
         def operating_round(round_num)
           Round::Operating.new(self, [
             Engine::Step::Bankrupt,
@@ -120,7 +149,8 @@ module Engine
             Engine::Step::SpecialToken,
             Engine::Step::BuyCompany,
             Engine::Step::HomeToken,
-            Engine::Step::Track,
+            G18Norway::Step::Track,
+            G18Norway::Step::BuildTunnel,
             Engine::Step::Token,
             Engine::Step::Route,
             Engine::Step::Dividend,
