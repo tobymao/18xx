@@ -91,6 +91,9 @@ module Engine
         }.freeze
         RETURNED_TOKEN_PRICES = [80, 60, 40].freeze
 
+        SULPHUR_SPRINGS_HEX = 'E3'
+        SULPHUR_SPRINGS_BROWN_REVENUE = 50
+
         GAME_END_CHECK = {
           bankrupt: :immediate,
           custom: :one_more_full_or_set,
@@ -168,6 +171,9 @@ module Engine
           @treaty_of_boston = false
 
           @local_jeweler_cash = 0
+
+          @sulphur_springs_connected = false
+          @updated_sulphur_springs_company_revenue = false
         end
 
         def game_hexes
@@ -267,6 +273,32 @@ module Engine
           @log << "-- Event: #{EVENTS_TEXT[:brown_par]} --"
           @available_par_groups << :par_2
           update_cache(:share_prices)
+        end
+
+        def event_sulphur_springs_revenue!
+          return unless sulphur_springs&.owner&.player?
+
+          update_sulphur_springs_company_revenue! if @sulphur_springs_connected
+        end
+
+        def event_gray_phase!; end
+
+        def company_bought(company, _buyer)
+          return unless company == sulphur_springs
+
+          company.revenue = 0
+          @updated_sulphur_springs_company_revenue = true
+        end
+
+        def update_sulphur_springs_company_revenue!
+          return if @updated_sulphur_springs_company_revenue
+          return unless sulphur_springs&.owner&.player?
+
+          @updated_sulphur_springs_company_revenue = true
+          revenue = SULPHUR_SPRINGS_BROWN_REVENUE
+          sulphur_springs.revenue = revenue
+          @log << "-- Event: Sulphur Springs (B2)'s revenue increases to #{format_currency(revenue)} --"
+          puts "Sulphur Springs (B2)'s revenue increases to #{format_currency(revenue)}"
         end
 
         def event_treaty_of_boston!
@@ -688,7 +720,6 @@ module Engine
           case action
           when Action::LayTile
             if action.tile.color == :yellow
-
               hex = action.hex
 
               hex.original_tile.icons.each do |icon|
@@ -697,6 +728,10 @@ module Engine
                   @gold_cubes[hex.id] += 1
                 end
               end
+            end
+            if !@updated_sulphur_springs_company_revenue && sulphur_springs&.owner&.player?
+              @sulphur_springs_connected ||= action.hex.id == SULPHUR_SPRINGS_HEX
+              update_sulphur_springs_company_revenue! if @sulphur_springs_connected
             end
           when Action::BuyTrain
             entity = action.entity
@@ -741,6 +776,10 @@ module Engine
           @rio_grande ||= corporation_by_id('RG')
         end
 
+        def sulphur_springs
+          @sulphur_springs ||= company_by_id('B2')
+        end
+
         def doc_holliday
           @doc_holliday ||= company_by_id('G1')
         end
@@ -749,7 +788,20 @@ module Engine
           @gold_nugget ||= company_by_id('G2')
         end
 
-        def upgrades_to?(from, to)
+        def upgrades_to?(from, to, special = false, selected_company: nil)
+          if special && from.hex.id == SULPHUR_SPRINGS_HEX && selected_company == sulphur_springs
+            return case from.color
+                   when :yellow
+                     to.name == 'RG1'
+                   when :green
+                     to.name == 'RG2'
+                   when :brown
+                     to.name == 'RG3'
+                   else
+                     false
+                   end
+          end
+
           return false unless super
 
           if ROYAL_GORGE_HEXES_TO_TILES.include?(from.hex.id)
@@ -853,6 +905,15 @@ module Engine
 
         def company_status_str(company)
           format_currency(@local_jeweler_cash) if company == local_jeweler && company.player
+        end
+
+        def upgrades_to_correct_label?(from, to)
+          # while sulphur springs is a town, it only uses town hexes
+          if from.hex.id == SULPHUR_SPRINGS_HEX && from.towns.one?
+            to.towns.one?
+          else
+            super
+          end
         end
       end
     end

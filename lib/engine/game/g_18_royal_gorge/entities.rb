@@ -205,16 +205,22 @@ module Engine
           {
             sym: 'B2',
             name: 'Sulphur Springs (B2)',
-            desc: 'Special abilities not implemented.',
-            # desc: 'The owning corporation may close this company permanently to turn Sulphur '\
-            #       'Springs (E3) into a city of the same color tile. If owned by a player, once in Brown Phase, '\
-            #       'provides $50 revenue per operating round, only if Sulphur Springs is connected by any rail.',
+            desc: 'The owning corporation may close this company permanently to turn Sulphur '\
+                  'Springs (E3) into a city of the same color tile. If owned by a player, once in Brown Phase, '\
+                  'provides $50 revenue per operating round, only if Sulphur Springs is connected by any rail.',
             value: 50,
             revenue: 0,
             abilities: [
-              { type: 'revenue_change', revenue: 50, on_phase: 'Brown' },
-              # TODO: revenue to player only if rail reaches sulphur springs
-              # TODO: upgrade E3 to a city tile
+              {
+                type: 'tile_lay',
+                when: 'owning_corp_or_turn',
+                hexes: %w[E3],
+                tiles: %w[RG1 RG2 RG3],
+                owner_type: 'corporation',
+                count: 1,
+                closed_when_used_up: true,
+                special: true,
+              },
             ],
           },
           {
