@@ -72,8 +72,9 @@ module Engine
             company = action.company
             player = action.entity
 
-            company.owner = player
             player.hand << company
+            player.unsold_companies << company
+            player.unsold_companies.sort_by! { |item| [item.name, -item.value] }
 
             @companies.delete(company)
 
