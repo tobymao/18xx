@@ -8,14 +8,14 @@ module Engine
       module Meta
         include Game::Meta
 
-        DEV_STAGE = :prealpha
+        DEV_STAGE = :alpha
         PROTOTYPE = true
 
         GAME_DESIGNER = 'Scott Petersen'
         GAME_LOCATION = 'Various'
         GAME_PUBLISHER = :all_aboard_games
-
-        GAME_INFO_URL = 'something'
+        GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/System18'
+        GAME_RULES_URL = 'https://github.com/tobymao/18xx/wiki/System18'
 
         PLAYER_RANGE = [2, 4].freeze
         OPTIONAL_RULES = [
