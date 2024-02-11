@@ -70,6 +70,8 @@ module Engine
             # route auto-selector can use its previous route
             sym = trains.map(&:id).sort.join('_')
 
+            # temporarily detach big boy token from individual train that is
+            # being double-headed
             if (big_boy_train = trains.find { |t| t == @game.big_boy_train })
               @game.detach_big_boy
               @game.big_boy_train_dh_original = big_boy_train
@@ -98,7 +100,8 @@ module Engine
               @game.remove_train(train)
             end
 
-            @game.attach_big_boy(train, log: false) if big_boy_train
+            # temporarily attach big boy token to the double-headed train
+            @game.attach_big_boy(train, log: false, double_head: true) if big_boy_train
 
             # run train this OR, then remove it from company automatically via
             # base logic for obsolete trains

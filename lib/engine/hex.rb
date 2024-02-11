@@ -141,13 +141,16 @@ module Engine
 
       # when upgrading, preserve tokens on previous tile (must be handled after
       # reservations are completely done due to OO weirdness)
-      city_map.each do |old_city, new_city|
+      if city_map.one?
+        old_city, new_city = city_map.to_a[0]
         old_city.tokens.each.with_index do |token, index|
           cheater = (index >= old_city.normal_slots) && index
           new_city.exchange_token(token, cheater: cheater) if token
         end
         old_city.extra_tokens.each { |token| new_city.exchange_token(token, extra_slot: true) }
         old_city.reset!
+      elsif city_map.size > 1
+        move_tokens_to_new_tile_multi_city!(city_map)
       end
 
       new_icons = tile.icons.group_by(&:name)
@@ -285,6 +288,44 @@ module Engine
       end
 
       city_map
+    end
+
+    def move_tokens_to_new_tile_multi_city!(city_map)
+      # collect all tokens on the old tile, grouped by the city they will be
+      # placed in on the new tile
+      city_tokens = city_map.each_with_object(Hash.new { |h, k| h[k] = [] }) do |(old_city, new_city), tokens|
+        # some games replace hexes during setup for variants/etc by laying the
+        # alternate tile on the map, in which case the city map will not find a
+        # new city, but if they are no tokens anyway this is nothing to worry
+        # about
+        if new_city.nil?
+          next if tokens.empty?
+
+          raise GameError, "No city found on new tile #{tile.id} for #{token.corporation.id}'s token from #{@tile}"
+        end
+
+        tokens[new_city].concat(old_city.tokens.compact)
+      end
+
+      # sort cheater tokens to the end so the correct tokens (if any) are
+      # recognized as the cheaters on the new tile
+      city_tokens.transform_values do |tokens|
+        tokens.sort { |t1, t2| (t1.cheater ? 1 : 0) <=> (t2.cheater ? 1 : 0) }
+      end
+
+      # move normal and cheater tokens to new city
+      city_tokens.each do |new_city, tokens|
+        reserved = new_city.reservations.size
+        tokens.each.with_index do |token, index|
+          new_city.exchange_token(token, cheater: (reserved + index) >= new_city.normal_slots)
+        end
+      end
+
+      # move extra tokens to new city
+      city_map.each do |old_city, new_city|
+        old_city.extra_tokens.each { |token| new_city.exchange_token(token, extra_slot: true) }
+        old_city.reset!
+      end
     end
 
     def inspect

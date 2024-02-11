@@ -206,6 +206,12 @@ TEST_CASES = [
      ['GWR (P10) places a token on N16 (Winnipeg)',
       'P10 (Winnipeg Station) closes',
       '1822CA: Phase 7 - Operating Round 8.1 (of 2) - Game Over']]]],
+  ['1868 Wyoming',
+   144_719,
+   [[433,
+     'double headed trains',
+     ['Operating Round 3.2 (of 2)',
+      '3+2 [5+4]']]]],
 ].freeze
 
 AUTO_ACTIONS_TEST_CASES = [

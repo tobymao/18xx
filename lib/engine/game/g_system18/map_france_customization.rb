@@ -6,10 +6,7 @@ module Engine
       module MapFranceCustomization
         # rubocop:disable Layout/LineLength
         def map_france_game_tiles(tiles)
-          tiles['619'] = 1
           tiles.merge!({
-                         '204' => 1,
-                         '611' => 2,
                          'X1' =>
             {
               'count' => 1,
@@ -22,14 +19,14 @@ module Engine
                 'count' => 1,
                 'color' => 'green',
                 'code' =>
-                'city=revenue:60;city=revenue:60;city=revenue:60;path=a:0,b:_0;path=a:5,b:_0;path=a:1,b:_1;path=a:2,b:_1;path=a:3,b:_2;path=a:4,b:_2;label=P',
+                'city=revenue:60,loc:5.5;city=revenue:60,loc:1.5;city=revenue:60,loc:3.5;path=a:5,b:_0;path=a:1,b:_1;path=a:2,b:_1;path=a:3,b:_2;path=a:4,b:_2;label=P',
               },
                          'X4' =>
                 {
                   'count' => 1,
                   'color' => 'brown',
                   'code' =>
-                  'city=revenue:80,slots:2;city=revenue:80;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_1;path=a:3,b:_1;path=a:4,b:_0;path=a:5,b:_0;label=P',
+                  'city=revenue:80,slots:2,loc:5.5;city=revenue:80,loc:2.5;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_1;path=a:3,b:_1;path=a:4,b:_0;path=a:5,b:_0;label=P',
                 },
 
                        })
@@ -118,8 +115,17 @@ module Engine
           self.class::MARKET_1D
         end
 
-        def map_france_game_trains
-          self.class::S18_STD8_TRAINS
+        def map_france_game_trains(trains)
+          # don't use D trains
+          trains.delete(find_train(trains, 'D'))
+          find_train(trains, '4')[:rusts_on] = '8'
+          # udpate quantities
+          find_train(trains, '2')[:num] = 4
+          find_train(trains, '3')[:num] = 3
+          find_train(trains, '4')[:num] = 2
+          find_train(trains, '5')[:num] = 2
+          find_train(trains, '6')[:num] = 1
+          trains
         end
 
         def map_france_game_phases

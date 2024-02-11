@@ -321,7 +321,6 @@ module Engine
           @company_trains['P3'] = find_and_remove_train_by_id('2P-0', buyable: false)
           @company_trains['P4'] = find_and_remove_train_by_id('2P-1', buyable: false)
           @company_trains['P1'] = find_and_remove_train_by_id('5P-0')
-          @company_trains['P1'].name = '5'
           @company_trains['P5'] = find_and_remove_train_by_id('P-0', buyable: false)
           @company_trains['P6'] = find_and_remove_train_by_id('P-1', buyable: false)
           @company_trains['P2'] = find_and_remove_train_by_id('LP-0', buyable: false)
@@ -376,7 +375,7 @@ module Engine
           self.class::COMPANIES_EXTRA_TRACK_LAYS.include?(company.id)
         end
 
-        def sell_movement
+        def sell_movement(_corporation)
           @sell_movement ||= @players.size == 2 ? :left_share_pres : :left_per_10_if_pres_else_left_one
         end
 
