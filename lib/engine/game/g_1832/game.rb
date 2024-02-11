@@ -62,61 +62,72 @@ module Engine
         STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(unlimited: :green, par: :white,
                                                             ignore_one_sale: :red).freeze
 
-        PHASES = [{ name: '2', train_limit: 4, tiles: [:yellow], operating_rounds: 1 },
-                  {
-                    name: '3',
-                    on: '3',
-                    train_limit: 4,
-                    tiles: %i[yellow green],
-                    operating_rounds: 2,
-                    status: ['can_buy_companies'],
-                  },
-                  {
-                    name: '4',
-                    on: '4',
-                    train_limit: 3,
-                    tiles: %i[yellow green],
-                    operating_rounds: 2,
-                    status: %w[can_buy_companies],
-                  },
-                  {
-                    name: '5',
-                    on: '5',
-                    train_limit: 2,
-                    tiles: %i[yellow green brown],
-                    operating_rounds: 3,
-                  },
-                  {
-                    name: '6',
-                    on: '6',
-                    train_limit: 2,
-                    tiles: %i[yellow green brown],
-                    operating_rounds: 3,
-                  },
-                  {
-                    name: '8',
-                    on: '8',
-                    train_limit: 2,
-                    tiles: %i[yellow green brown],
-                    operating_rounds: 3,
-                  },
-                  {
-                    name: '10',
-                    on: '10',
-                    train_limit: 2,
-                    tiles: %i[yellow green brown],
-                    operating_rounds: 3,
-                  },
-                  {
-                    name: '12',
-                    on: '12',
-                    train_limit: 2,
-                    tiles: %i[yellow green brown],
-                    operating_rounds: 3,
-                  }].freeze
+        PHASES = [
+          { name: '2',
+            train_limit: 4,
+            tiles: [:yellow],
+            operating_rounds: 1
+          },
+          {
+            name: '3',
+            on: '3',
+            train_limit: 4,
+            tiles: %i[yellow green],
+            operating_rounds: 2,
+            status: %w[can_buy_companies],
+          },
+          {
+            name: '4',
+            on: '4',
+            train_limit: 3,
+            tiles: %i[yellow green],
+            operating_rounds: 2,
+            status: %w[can_buy_companies],
+          },
+          {
+            name: '5',
+            on: '5',
+            train_limit: 2,
+            tiles: %i[yellow green brown],
+            operating_rounds: 3,
+          },
+          {
+            name: '6',
+            on: '6',
+            train_limit: 2,
+            tiles: %i[yellow green brown],
+            operating_rounds: 3,
+          },
+          {
+            name: '8',
+            on: '8',
+            train_limit: 2,
+            tiles: %i[yellow green brown],
+            operating_rounds: 3,
+          },
+          {
+            name: '10',
+            on: '10',
+            train_limit: 2,
+            tiles: %i[yellow green brown],
+            operating_rounds: 3,
+          },
+          {
+            name: '12',
+            on: '12',
+            train_limit: 2,
+            tiles: %i[yellow green brown],
+            operating_rounds: 3,
+          }].freeze
 
         TRAINS = [
-          { name: '2', distance: 2, price: 80, rusts_on: '4', num: 7 },
+          {
+            name: '2',
+            distance: 2,
+            price: 80,
+            rusts_on: '4',
+            num: 7
+          },
           {
             name: '3',
             distance: 3,
@@ -125,7 +136,13 @@ module Engine
             num: 6,
             events: [{ 'type' => 'companies_buyable' }],
           },
-          { name: '4', distance: 4, price: 300, rusts_on: '8', num: 4 },
+          {
+            name: '4',
+            distance: 4,
+            price: 300,
+            rusts_on: '8',
+            num: 4
+          },
           {
             name: '5',
             distance: 5,
@@ -148,13 +165,23 @@ module Engine
             num: 3,
             events: [{ 'type' => 'remove_key_west_token' }],
           },
-          { name: '10', distance: 10, price: 950, num: 2 },
-          { name: '12', distance: 12, price: 1100, num: 99 },
+          {
+            name: '10',
+            distance: 10,
+            price: 950,
+            num: 2
+          },
+          {
+            name: '12',
+            distance: 12,
+            price: 1100,
+            num: 99
+          },
         ].freeze
 
         def tile_lays(entity)
           return self.class::SYSTEM_TILE_LAYS if system?(entity)
-
+          
           self.class::TILE_LAYS
         end
 
@@ -397,6 +424,7 @@ module Engine
 
         def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
           upgrades = super
+
           return upgrades unless tile_manifest
 
           upgrades |= [@sharp_city, @tile_141, @tile_142, @tile_143] if tile.name == '3' && tile.assigned?('boomtown')
