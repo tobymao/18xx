@@ -94,6 +94,12 @@ module Engine
         SULPHUR_SPRINGS_HEX = 'E3'
         SULPHUR_SPRINGS_BROWN_REVENUE = 50
 
+        ST_CLOUD_START_HEX = 'G17'
+        ST_CLOUD_BROWN_HEX = 'H14'
+        ST_CLOUD_BONUS = 20
+        ST_CLOUD_BONUS_STR = ' (St. Cloud Hotel)'
+        ST_CLOUD_ICON_NAME = 'SCH'
+
         GAME_END_CHECK = {
           bankrupt: :immediate,
           custom: :one_more_full_or_set,
@@ -174,6 +180,12 @@ module Engine
 
           @sulphur_springs_connected = false
           @updated_sulphur_springs_company_revenue = false
+
+          @st_cloud_icon = Part::Icon.new("18_royal_gorge/#{ST_CLOUD_ICON_NAME}", ST_CLOUD_ICON_NAME)
+          return unless st_cloud_hotel
+
+          @st_cloud_hex = hex_by_id(ST_CLOUD_START_HEX)
+          @st_cloud_hex.tile.icons << @st_cloud_icon
         end
 
         def game_hexes
@@ -273,6 +285,21 @@ module Engine
           @log << "-- Event: #{EVENTS_TEXT[:brown_par]} --"
           @available_par_groups << :par_2
           update_cache(:share_prices)
+        end
+
+        def event_brown_phase!
+          event_st_cloud_moves!
+          event_sulphur_springs_revenue!
+        end
+
+        def event_st_cloud_moves!
+          return unless st_cloud_hotel
+
+          @log << '-- Event: St. Cloud Hotel moves to Cañon City --'
+
+          @st_cloud_hex.tile.icons.delete_if { |i| i.name == ST_CLOUD_ICON_NAME }
+          @st_cloud_hex = hex_by_id(ST_CLOUD_BROWN_HEX)
+          @st_cloud_hex.tile.icons << @st_cloud_icon
         end
 
         def event_sulphur_springs_revenue!
@@ -788,6 +815,10 @@ module Engine
           @gold_nugget ||= company_by_id('G2')
         end
 
+        def st_cloud_hotel
+          @st_cloud_hotel ||= company_by_id('Y1')
+        end
+
         def upgrades_to?(from, to, special = false, selected_company: nil)
           if special && from.hex.id == SULPHUR_SPRINGS_HEX && selected_company == sulphur_springs
             return case from.color
@@ -914,6 +945,22 @@ module Engine
           else
             super
           end
+        end
+
+        def st_cloud_bonus?(route, stops)
+          route.corporation == st_cloud_hotel&.owner && stops.any? { |s| s.hex == @st_cloud_hex }
+        end
+
+        def revenue_for(route, stops)
+          revenue = super
+          revenue += ST_CLOUD_BONUS if st_cloud_bonus?(route, stops)
+          revenue
+        end
+
+        def revenue_str(route)
+          str = super
+          str += ST_CLOUD_BONUS_STR if st_cloud_bonus?(route, route.visited_stops)
+          str
         end
       end
     end

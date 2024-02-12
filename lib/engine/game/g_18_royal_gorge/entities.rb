@@ -8,10 +8,9 @@ module Engine
           {
             sym: 'Y1',
             name: 'St. Cloud Hotel (Y1)',
-            desc: 'Special abilities not implemented.',
-            # desc: "Hotel token starts in Silvercliffe (G17). When owned by a corporation, St. Cloud's "\
-            #       'hotel token will generate an additional $20 revenue only for the holding corporation. '\
-            #       'Once in Brown Phase, the hotel is moved to Cañon City (H12). This company never closes.',
+            desc: "Hotel token starts in Silvercliffe (G17). When owned by a corporation, St. Cloud's "\
+                  'hotel token will generate an additional $20 revenue only for the holding corporation. '\
+                  'Once in Brown Phase, the hotel is moved to Cañon City (H12). This company never closes.',
             value: 50,
             revenue: 5,
             abilities: [

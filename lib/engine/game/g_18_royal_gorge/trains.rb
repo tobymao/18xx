@@ -31,7 +31,7 @@ module Engine
                        { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
             price: 400,
             num: 3,
-            events: [{ 'type' => 'brown_par', 'when' => 3 }, { 'type' => 'sulphur_springs_revenue', 'when' => 3 }],
+            events: [{ 'type' => 'brown_par', 'when' => 3 }, { 'type' => 'brown_phase', 'when' => 3 }],
           },
           {
             name: '5+',
