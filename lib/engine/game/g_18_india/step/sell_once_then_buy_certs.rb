@@ -2,19 +2,12 @@
 
 require_relative '../../../step/buy_sell_par_shares'
 require_relative '../../../step/share_buying'
-# require_relative '../../../step/base'
-# require_relative '../../../share_buying'
-# require_relative '../../../programmer'
-# require_relative '../../../action/buy_company'
-# require_relative '../../../action/buy_shares'
-# require_relative '../../../action/par'
-# require_relative '../../../step/base'
-# require_relative '../player'
-# require_relative '../game'
 
 # For 18 India, first action is only sell any, then only buy
 # Selling does not restrict buy actions
 # NOTE: This section isn't completed, in progress for stock round
+# TODO: Convert Bonds -> add ability to bonds
+# TODO: Managed Corps -> modify SharePool to prevent automatic move of Pres if not in play
 module Engine
   module Game
     module G18India
@@ -24,10 +17,10 @@ module Engine
 
           def debugging_log(str)
             @log << "#{str} - stock_turns: #{@round.stock_turns} - selling_round: #{selling_round?} - @game.turn: #{@game.turn}"
-            @log << " current_actions: #{@round.current_actions} - players_history: #{@round.players_history[current_entity].to_s}"
+            @log << " current_actions: #{@round.current_actions} - players_history: #{@round.players_history[current_entity]}"
             @log << " round_num: #{@round.round_num} - pass_order: #{@round.pass_order} - last_to_act: #{@round.last_to_act}"
             @log << " Cert Limit: #{@game.cert_limit(current_entity)} - Num Certs: #{@game.num_certs(current_entity)}"
-            @log << "B: #{bought?} Bank: #{@round.bought_from_market} Hand: #{@round.bought_from_hand} IPO #{@round.bought_from_ipo}"
+            @log << "B: #{bought?} M: #{@round.bought_from_market} H: #{@round.bought_from_hand} IPO #{@round.bought_from_ipo}"
             @log << "buyable companies: #{buyable_companies(current_entity).map(&:name).join(', ')}"
           end
 
@@ -40,7 +33,7 @@ module Engine
           end
 
           def round_state
-            super.merge({ stock_turns: 0, bought_from_market: false, bought_from_hand: false, })
+            super.merge({ stock_turns: 0, bought_from_market: false, bought_from_hand: false })
           end
 
           def selling_round?
@@ -80,30 +73,25 @@ module Engine
             actions = []
             if selling_round?
               # sell anything, only limitation is president share can't be in market
-              # NOTE: GIPR President share CAN be in market [need to modify code]
+              # NOTE: GIPR President share CAN be in market [TODO]
               actions << 'sell_shares' if can_sell_any?(entity)
               actions << 'sell_company' if can_sell_any_companies?(entity)
             else
-              # buy 1 share from market [working by default]
-              # buy 1 or 2 shares from same IPO row [disable buy IPO shares => buy company proxies]
-              # buy 1 or mort matching certs from player hand (privates are matching)
-              # buy 1 private company from bank [working by default]
-              # buy 1 railroad bond [works, but need code to add one to bank vs spaming all 10 copies]
-              # convert BOND into GIPR share (Phase IV)
+              # buy 1 share from market [ok]
+              # buy 1 or 2 shares from same IPO row [ok]
+              # buy 1 or mort matching certs from player hand [ok]
+              # buy 1 private company from bank [ok]
+              # buy 1 railroad bond [prevent spaming all 10 copies]
+              # convert BOND into GIPR share (Phase IV) [TODO]
               actions << 'buy_shares' if can_buy_any?(entity)
               actions << 'buy_company' if can_buy_any_companies?(entity)
             end
-
-            actions << 'pass' unless actions.empty? || (must_sell?(entity) && selling_round?) # may not pass if "must_sell"
+            actions << 'pass' unless actions.empty?
+            actions.delete('pass') if must_sell?(entity) && selling_round? # may not pass during selling round if "must_sell"
             actions
           end
 
           # ------ Code for tracking purchases ------
-
-          # SUPER - may need to modify to reflect multiple buy?
-          def bought?
-            @round.current_actions.any? { |x| self.class::PURCHASE_ACTIONS.include?(x.class) }
-          end
 
           def buying_proxy?
             @round.bought_from_hand || @round.bought_from_ipo
@@ -115,11 +103,11 @@ module Engine
           def can_buy_any_companies?(entity)
             return false if @round.bought_from_market
 
-            buyable_companies(entity).count > 0
+            buyable_companies(entity).count.positive?
           end
 
           def buyable_companies(entity)
-            return [] if !entity.player?
+            return [] unless entity.player?
 
             companies = []
             companies += @game.bank_owned_companies.select { |c| can_buy_from_market?(entity, c) }
@@ -141,9 +129,10 @@ module Engine
           def can_buy_from_market?(entity, company)
             return false if @round.bought_from_market || @round.bought_from_ipo || @round.bought_from_hand
 
-            if @game.num_certs(entity) >= @game.cert_limit(entity)
-              return false unless company.type == :bond # bonds do not count for cert limit
+            if @game.num_certs(entity) >= @game.cert_limit(entity) && company.type != :bond
+              return false # bonds do not count for cert limit
             end
+
             (available_cash(entity) >= company.value)
           end
 
@@ -155,9 +144,9 @@ module Engine
             if @round.bought_from_hand
               prior = @round.bought_from_hand
               if prior.type == :private
-                return company.type == :private
+                company.type == :private
               else
-                return prior.name == company.name
+                prior.name == company.name
               end
             else
               (available_cash(entity) >= company.value)
@@ -172,9 +161,9 @@ module Engine
 
             row, index = @game.ipo_row_and_index(company)
             if @round.bought_from_ipo
-              return (@round.bought_from_ipo == row) && (index == 0) && (available_cash(entity) >= company.value)
+              (@round.bought_from_ipo == row) && index.zero? && (available_cash(entity) >= company.value)
             else
-              return (index == 0) && (available_cash(entity) >= company.value)
+              index.zero? && (available_cash(entity) >= company.value)
             end
           end
 
@@ -186,11 +175,12 @@ module Engine
             owner = company.owner
 
             raise GameError, "Cannot buy #{company.name} from #{owner.name}" if owner&.corporation?
+
             track_action(action, company)
 
             if @game.in_ipo?(company)
-              row, index = @game.ipo_row_and_index(company)
-              location = "IPO Row: " + row.to_s
+              row, _index = @game.ipo_row_and_index(company)
+              location = 'IPO Row: ' + row.to_s
               @game.ipo_remove(row, company)
               @round.bought_from_ipo = row
             elsif owner == @game.bank
@@ -221,39 +211,62 @@ module Engine
             debugging_log('Process Buy Company')
           end
 
-          # buying card from IPO or Player Hand
-          # Acting player gains the share on the card
-          def buy_share_card(card)
-            # Stuff
+          # ------ Code for 'Buy Shares' Action ------
+
+          def process_buy_shares(action)
+            super
+            @round.bought_from_market = true
+          end
+
+          # Modified: only buy shares from Market. Company Proxies used from IPO or Player Hand
+          def can_buy_any?(entity)
+            can_buy_any_from_market?(entity)
+          end
+
+          # Modified to reflect that selling doesn't restrict buying same corp later
+          # Modified to disalow buying IPO or Corp owned shares
+          def can_buy_shares?(entity, shares)
+            return false if shares.empty?
+            return false if shares.first.owner.corporation?
+            return false if bought?
+
+            min_share = nil
+            shares.each do |share|
+              next unless share.buyable
+
+              min_share = share if !min_share || share.percent < min_share.percent
+            end
+
+            bundle = min_share&.to_bundle
+            return unless bundle
+
+            available_cash(entity) >= modify_purchase_price(bundle) && can_gain?(entity, bundle)
+          end
+
+          # Returns if a share can be bought via a normal buy actions
+          # Modified to remove prior sold restriction.
+          def can_buy?(entity, bundle)
+            return unless bundle&.buyable
+            return false if entity == bundle.owner
+            return false if bundle.owner.corporation? && !buying_proxy? # buy IPO shares via company proxy
+
+            available_cash(entity) >= modify_purchase_price(bundle) &&
+              can_gain?(entity, bundle)
           end
 
           # ------ Code for Sell Actions ------
 
-          def can_sell?(entity, bundle)
-            return super unless @game.class::PRESIDENT_SALES_TO_MARKET
-            return unless bundle
-
-            corporation = bundle.corporation
-
-            timing = @game.check_sale_timing(entity, bundle)
-
-            timing &&
-              !(@game.class::MUST_SELL_IN_BLOCKS && @round.players_sold[entity][corporation] == :now) &&
-              can_sell_order? &&
-              @game.share_pool.fit_in_bank?(bundle) &&
-              can_dump?(entity, bundle)
+          # cert limit is the only time one must sell
+          def must_sell?(entity)
+            @game.num_certs(entity) > @game.cert_limit(entity)
           end
 
-          # can't sell partial president's share to pool if pool is empty
+          # modify to allow dumping GIPR president
           def can_dump?(entity, bundle)
             corp = bundle.corporation
-            return true if !bundle.presidents_share || bundle.percent >= corp.presidents_percent
+            return true if !bundle.presidents_share || bundle.percent >= corp.presidents_percent || corp.name == 'GIPR'
 
-            max_shares = corp.player_share_holders.reject { |p, _| p == entity }.values.max || 0
-            return true if max_shares > 10
-
-            pool_shares = @game.share_pool.percent_of(corp) || 0
-            pool_shares.positive?
+            bundle.can_dump?(entity)
           end
 
           def process_sell_company(action)
@@ -297,374 +310,6 @@ module Engine
             @log << "#{player.name} sells #{company.name} to bank for #{@game.format_currency(price)}"
             @round.players_sold[player][company] = :now
           end
-
-          # ------ Code for 'Buy Shares' Action ------
-
-          def process_buy_shares(action)
-            super
-            @round.bought_from_market = true
-          end
-
-          # Modified: only buy shares from Market. Company Proxies used from IPO or Player Hand
-          def can_buy_any?(entity)
-            can_buy_any_from_market?(entity)
-          end
-
-          # Modified to reflect that selling doesn't restrict buying same corp later
-          # Modified to disalow buying IPO or Corp owned shares
-          def can_buy_shares?(entity, shares)
-            return false if shares.empty?
-            return false if shares.first.owner.corporation?
-
-            sample_share = shares.first
-            corporation = sample_share.corporation
-            owner = sample_share.owner
-            return false if bought?
-
-            min_share = nil
-            shares.each do |share|
-              next unless share.buyable
-
-              min_share = share if !min_share || share.percent < min_share.percent
-            end
-
-            bundle = min_share&.to_bundle
-            return unless bundle
-
-            available_cash(entity) >= modify_purchase_price(bundle) && can_gain?(entity, bundle)
-          end
-
-          # Returns if a share can be bought via a normal buy actions
-          # Modified to remove prior sold restriction.
-          def can_buy?(entity, bundle)
-            return unless bundle&.buyable
-            return false if entity == bundle.owner
-            return false if bundle.owner.corporation? && !buying_proxy? # buy IPO shares via company proxy
-
-            corporation = bundle.corporation
-            available_cash(entity) >= modify_purchase_price(bundle) &&
-              can_gain?(entity, bundle)
-          end
-
-=begin   # Following are from buy_sell_par_share and are unmodified
-
-      def must_sell?(entity)
-        return false unless can_sell_any?(entity)
-        return true if @game.num_certs(entity) > @game.cert_limit(entity)
-
-        !@game.can_hold_above_corp_limit?(entity) &&
-          @game.corporations.any? { |corp| !corp.holding_ok?(entity) }
-      end
-
-      def can_sell_order?
-        case @game.class::SELL_BUY_ORDER
-        when :sell_buy_or_buy_sell
-          !(@round.current_actions.uniq(&:class).size == 2 &&
-            self.class::PURCHASE_ACTIONS.include?(@round.current_actions.last.class))
-        when :sell_buy
-          !bought?
-        when :sell_buy_sell
-          true
-        end
-      end
-
-      def sold_this_turn(corporation)
-        sell_actions = @round.current_actions.select do |a|
-          a.is_a?(Action::SellShares) and a.bundle.corporation == corporation
-        end
-
-        # Find out how much was sold this turn
-        sell_actions.sum { |a| a.bundle.percent }
-      end
-
-      def did_sell?(corporation, entity)
-        @round.players_sold[entity][corporation]
-      end
-
-      def last_acted_upon?(corporation, entity)
-        !@round.players_history[entity][corporation]&.empty?
-      end
-
-      def track_action(action, corporation, player_action = true)
-        @round.last_to_act = action.entity.player
-        @round.current_actions << action if player_action
-        @round.players_history[action.entity.player][corporation] << action
-      end
-
-      def process_buy_shares(action)
-        @round.players_bought[action.entity][action.bundle.corporation] += action.bundle.percent
-        @round.bought_from_ipo = true if action.bundle.owner.corporation?
-        buy_shares(action.purchase_for || action.entity, action.bundle,
-                   swap: action.swap, borrow_from: action.borrow_from,
-                   allow_president_change: allow_president_change?(action.bundle.corporation))
-        track_action(action, action.bundle.corporation)
-      end
-
-      def process_sell_shares(action)
-        sell_shares(action.entity, action.bundle, swap: action.swap)
-        track_action(action, action.bundle.corporation)
-      end
-
-      def pass!
-        super
-        if @round.current_actions.any?
-          @round.pass_order.delete(current_entity)
-          current_entity&.unpass!
-        else
-          @round.pass_order |= [current_entity]
-          current_entity&.pass!
-        end
-      end
-
-      def available_cash(entity)
-        entity.cash
-      end
-
-      def can_buy_multiple?(_entity, corporation, owner)
-        if @game.multiple_buy_only_from_market?
-          return false unless owner.share_pool?
-          return false if @round.bought_from_ipo
-        end
-
-        corporation.buy_multiple? &&
-         @round.current_actions.none? { |x| x.is_a?(Action::Par) } &&
-         @round.current_actions.none? { |x| x.is_a?(Action::BuyShares) && x.bundle.corporation != corporation }
-      end
-
-      def can_sell_any?(entity)
-        @game.corporations.any? do |corporation|
-          bundles = @game.bundles_for_corporation(entity, corporation)
-          bundles.any? { |bundle| can_sell?(entity, bundle) }
-        end
-      end
-
-
-
-
-      def can_ipo_any?(entity)
-        !bought? && @game.corporations.any? do |c|
-          @game.can_par?(c, entity) && can_buy?(entity, c.shares.first&.to_bundle)
-        end
-      end
-
-      def ipo_type(_entity)
-        :par
-      end
-
-      def purchasable_companies(entity)
-        return [] if bought? ||
-          !available_cash(entity).positive? ||
-          !@game.phase ||
-          !@game.phase.status.include?('can_buy_companies_from_other_players')
-
-        @game.purchasable_companies(entity)
-      end
-
-      def buyable_bank_owned_companies(entity)
-        return [] if !entity.player? || bought?
-
-        @game.buyable_bank_owned_companies.select { |c| can_buy_company?(entity, c) }
-      end
-
-      def can_buy_company?(player, company)
-        @game.buyable_bank_owned_companies.include?(company) && available_cash(player) >= company.value
-      end
-
-      def get_par_prices(entity, _corp)
-        @game
-          .stock_market
-          .par_prices
-          .select { |p| p.price * 2 <= available_cash(entity) }
-      end
-
-      def sell_shares(entity, shares, swap: nil)
-        raise GameError, "Cannot sell shares of #{shares.corporation.name}" if !can_sell?(entity, shares) && !swap
-
-        @round.players_sold[shares.owner][shares.corporation] = :now
-        @game.sell_shares_and_change_price(shares, swap: swap)
-      end
-
-      def bought?
-        @round.current_actions.any? { |x| self.class::PURCHASE_ACTIONS.include?(x.class) }
-      end
-
-      def sold?
-        @round.current_actions.any? { |x| x.instance_of?(Action::SellShares) }
-      end
-
-      def auto_actions(entity)
-        programmed_auto_actions(entity)
-      end
-
-      def corporation_secure_percent
-        # Most games 50% is fine, those where it's not (e.g. 1817) should subclass
-        50
-      end
-
-      def corporation_secure?(corporation)
-        # Can any other player steal the corporation?
-
-        (corporation.owner.percent_of(corporation)) >= corporation_secure_percent
-      end
-
-      def action_is_shenanigan?(entity, other_entity, action, corporation, share_to_buy)
-        corp_buying = share_to_buy&.corporation
-
-        case action
-        when Action::Par
-
-          # If the player can sell shares or they're passing
-          # they may wish to manipulate share price
-          "Corporation #{corporation.name} parred" if !corp_buying ||
-            @game.check_sale_timing(entity, Share.new(corporation).to_bundle)
-        when Action::BuyShares
-          # Redeeming a share from a player is definitely shenanigans (equivalent to the player selling).
-          # The code doesn't have access to where the share came from, so it could potentially be market,
-          # but a market redemption could still be shenanigans, and it's better to err on the side of safety.
-          return "#{corporation.name} redeemed a share." if action.entity == corporation
-
-          if corporation.owner == entity
-            return if corporation_secure?(corporation) # Don't care...
-
-            unless corporation == corp_buying
-              return "#{other_entity.name} bought on corporation #{corporation.name} and is unsecure"
-            end
-
-            percentage = corporation.owner.percent_of(corporation) + share_to_buy.percent
-            # If next share is bought, is the corp secure? Then it's safe to buy...
-            return if percentage > corporation_secure_percent
-
-            # 1849: Don't automatically buy if shares that could potentially be purchased
-            # Owner has 20% and buys 10%, Other Entity 20% and could buy the 20% becoming president
-            # For simplicity this finds all shares that could potentially make the other player president
-            # it doesn't care where that share is (except for the current president))
-
-            # This assumes there's only one buy per round for other games this needs reexamining.
-            # This doesn't protect against potential brown exploits, players should have already spotted it's
-            # in the brown and made decisions appropriately.
-            bigger_share = @game.shares_for_corporation(corporation).select do |s|
-              s.percent > share_to_buy.percent && (s.owner != entity || s.owner != corporation.owner)
-            end.max(&:percent)
-
-            if bigger_share
-              other_percent = action.entity.percent_of(corporation) + bigger_share.percent
-              if percentage < other_percent
-                "#{action.entity.player.name} has bought, shares exist that could allow them to gain presidency"
-              end
-            end
-          end
-        when Action::SellShares
-          'Shares were sold'
-        when Action::TakeLoan
-          "#{corporation.name} took a loan"
-        else
-          "Unknown action #{action.type} disabling for safety"
-        end
-      end
-
-      def should_stop_applying_program(entity, program, share_to_buy)
-        # don't let players over the cert limit autopass
-        return "#{entity.name} must sell shares" if must_sell?(entity)
-
-        # check for shenanigans, returning the first failure reason it finds
-        @round.players_history.each do |other_entity, corporations|
-          next if other_entity == entity
-
-          corporations.each do |corporation, actions|
-            actions.each do |action|
-              # ignore shenanigans that happened before the program was enabled
-              next if action < program
-
-              reason = action_is_shenanigan?(entity, other_entity, action, corporation, share_to_buy)
-              return reason if reason
-            end
-          end
-        end
-        nil
-      end
-
-      def normal_pass?(_entity)
-        # If the user passes now is it a 'normal' pass? i.e. if it's not inside a bid
-        # not price protection or something similar
-        true
-      end
-
-      def activate_program_share_pass(entity, program)
-        available_actions = actions(entity)
-        return unless available_actions.include?('pass')
-        return unless normal_pass?(entity)
-
-        reason = should_stop_applying_program(entity, program, nil) unless program.unconditional
-        return [Action::ProgramDisable.new(entity, reason: reason)] if reason
-
-        [Action::Pass.new(entity)]
-      end
-
-      def activate_program_buy_shares(entity, program)
-        corporation = program.corporation
-        # check if end condition met
-        finished_reason = if program.until_condition == 'float'
-                            "#{corporation.name} is floated" if corporation.floated?
-                          elsif entity.num_shares_of(corporation, ceil: false) >= program.until_condition
-                            "#{program.until_condition} share(s) bought in #{corporation.name}, end condition met"
-                          end
-        if finished_reason
-          actions = [Action::ProgramDisable.new(entity, reason: finished_reason)]
-          actions << Action::ProgramSharePass.new(entity) if program.auto_pass_after
-          return actions
-        end
-
-        available_actions = actions(entity)
-        if available_actions.include?('buy_shares')
-          shares_by_percent = if from_market?(program)
-                                source = 'market'
-                                @game.share_pool.shares_by_corporation[corporation]
-                              else
-                                source = @game.ipo_name(corporation)
-                                corporation.ipo_shares
-                              end.select { |share| can_buy?(entity, share.to_bundle) }.group_by(&:percent)
-
-          if shares_by_percent.empty?
-            return [Action::ProgramDisable.new(entity,
-                                               reason: "Cannot buy #{corporation.name} from #{source}")]
-          end
-
-          if shares_by_percent.size != 1
-            return [Action::ProgramDisable.new(entity,
-                                               reason: 'Shares of different sizes exist, cannot auto buy'\
-                                                       " #{corporation.name} from #{source}")]
-          end
-
-          share = shares_by_percent.values.first.first
-
-          reason = should_stop_applying_program(entity, program, share)
-          return [Action::ProgramDisable.new(entity, reason: reason)] if reason
-
-          [Action::BuyShares.new(entity, shares: share)]
-        elsif bought? && available_actions.include?('pass')
-          # If the corporation has just been floated, don't pass
-          # as some players like to sell the last share immediately
-          return if program.until_condition == 'float' && corporation.floated?
-
-          # Buy-then-Sell games need the pass.
-          [Action::Pass.new(entity)]
-        end
-      end
-
-      def from_market?(program)
-        program.from_market
-      end
-
-      def modify_purchase_price(bundle)
-        bundle.price
-      end
-
-      def allow_president_change?(_corporation)
-        true
-      end
-
-=end
-
         end
       end
     end

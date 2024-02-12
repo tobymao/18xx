@@ -54,7 +54,7 @@ module Engine
           return @cert_limit if entity.nil?
           return 3 if entity.corporation?
 
-            @cert_limit
+          @cert_limit
         end
 
         # Modify to only count :private type companies (exclude Warrents and Bonds)
@@ -62,7 +62,7 @@ module Engine
           certs = entity.shares.sum do |s|
             s.corporation.counts_for_limit && s.counts_for_limit ? s.cert_size : 0
           end
-          certs + entity.companies.count {|c| c.type == :private}
+          certs + entity.companies.count { |c| c.type == :private }
         end
 
         STARTING_CASH = { 2 => 1100, 3 => 733, 4 => 550, 5 => 440 }.freeze
@@ -472,8 +472,6 @@ module Engine
             timeline << "#{p.name}: #{p.hand.map(&:name).sort.join(', ')}" unless p.hand.empty?
           end
 
-          # timeline << "Companies: #{@companies.map(&:name).sort.join(', ')}" unless @companies.empty?
-
           timeline
         end
 
@@ -496,30 +494,31 @@ module Engine
         end
 
         def first_bond_in_bank
-          [] << bank.companies.select { |c| c.type == :bond}.first
+          [] << bank.companies.find { |c| c.type == :bond }
         end
 
         def count_of_bonds
-          bank.companies.select { |c| c.type == :bond}.size
+          bank.companies.count { |c| c.type == :bond }
         end
 
         def bank_owned_companies
-          bank_certs = [] << bank.companies.select { |c| c.type == :bond}.first
-          bank_certs += bank.companies.select { |c| c.type == :private}
+          bank_certs = [] << bank.companies.find { |c| c.type == :bond }
+          bank_certs += bank.companies.select { |c| c.type == :private }
           bank_certs
         end
 
         def top_of_ipo_rows(row = nil)
           rows = row ? [row - 1] : [0, 1, 2]
           top = []
-          rows.each do |row|
-            top += @ipo_rows[row].first(2)
+          rows.each do |r|
+            top += @ipo_rows[r].first(2)
           end
           top
         end
 
         def hand_companies_for_stock_round
-          return [] unless @round.stock? && !@round.current_entity.nil?
+          return [] unless @round.stock?
+          return [] if @round.current_entity.nil?
 
           @round.current_entity.hand.sort_by { |item| [item.type, -item.value, item.name] }
         end
