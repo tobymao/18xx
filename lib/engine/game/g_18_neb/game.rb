@@ -34,6 +34,8 @@ module Engine
 
         NEXT_SR_PLAYER_ORDER = :first_to_pass
 
+        ALLOW_TRAIN_BUY_FROM_OTHER_PLAYERS = false
+
         MARKET = [
           %w[82 90 100 110 122 135 150 165 180 200 220 245 270 300 330 360 400],
           %w[75 82 90 100p 110 122 135 150 165 180 200 220 245 270 300 330 360],
@@ -224,7 +226,7 @@ module Engine
             Engine::Step::Route,
             G18Neb::Step::Dividend,
             Engine::Step::DiscardTrain,
-            Engine::Step::BuyTrain,
+            G18Neb::Step::BuyTrain,
             [G18Neb::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
@@ -342,6 +344,11 @@ module Engine
 
           multiplier = route.train.name == '4D' ? 2 : 1
           stops.map { |stop| stop.route_revenue(route.phase, route.train) }.max * multiplier
+        end
+
+        def rust(train)
+          train.rusted = true
+          @depot.reclaim_train(train)
         end
       end
     end
