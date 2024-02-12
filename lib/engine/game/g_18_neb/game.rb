@@ -35,6 +35,7 @@ module Engine
         NEXT_SR_PLAYER_ORDER = :first_to_pass
 
         ALLOW_TRAIN_BUY_FROM_OTHER_PLAYERS = false
+        EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
 
         MARKET = [
           %w[82 90 100 110 122 135 150 165 180 200 220 245 270 300 330 360 400],
