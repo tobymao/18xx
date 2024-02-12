@@ -66,8 +66,9 @@ module Engine
         }.freeze
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
-          green_par: ['Green Par Available'],
-          brown_par: ['Brown Par Available'],
+          green_phase: ['Green Phase Begins'],
+          brown_phase: ['Brown Phase Begins'],
+          gray_phase: ['Gray Phase Begins'],
           treaty_of_boston: ['Treaty of Boston'],
         )
 
@@ -275,21 +276,17 @@ module Engine
           can_start?(corporation) && super
         end
 
-        def event_green_par!
-          @log << "-- Event: #{EVENTS_TEXT[:green_par]} --"
+        def event_green_phase!
           @available_par_groups << :par_1
-          update_cache(:share_prices)
-        end
-
-        def event_brown_par!
-          @log << "-- Event: #{EVENTS_TEXT[:brown_par]} --"
-          @available_par_groups << :par_2
           update_cache(:share_prices)
         end
 
         def event_brown_phase!
           event_st_cloud_moves!
           event_sulphur_springs_revenue!
+
+          @available_par_groups << :par_2
+          update_cache(:share_prices)
         end
 
         def event_st_cloud_moves!

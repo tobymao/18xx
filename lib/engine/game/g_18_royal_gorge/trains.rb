@@ -13,7 +13,7 @@ module Engine
             rusts_on: '4+',
             salvage: 20,
             num: 4,
-            events: [{ 'type' => 'green_par', 'when' => 4 }],
+            events: [{ 'type' => 'green_phase', 'when' => 4 }],
           },
           {
             name: '3+',
@@ -31,7 +31,7 @@ module Engine
                        { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
             price: 400,
             num: 3,
-            events: [{ 'type' => 'brown_par', 'when' => 3 }, { 'type' => 'brown_phase', 'when' => 3 }],
+            events: [{ 'type' => 'brown_phase', 'when' => 3 }],
           },
           {
             name: '5+',
@@ -39,6 +39,7 @@ module Engine
                        { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
             price: 500,
             num: 2,
+            events: [{ 'type' => 'gray_phase', 'when' => 2 }],
           },
           {
             name: '6',
