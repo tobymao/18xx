@@ -62,7 +62,7 @@ module Engine
           end
 
           def actions(entity)
-            actions = super
+            actions = super.dup
             actions << 'choose' if entity == current_entity
             actions
           end

@@ -9,6 +9,8 @@ module Engine
         class SpecialTrack < Engine::Step::SpecialTrack
           def actions(entity)
             return [] unless entity.owner == current_entity
+
+            super
           end
 
           def legal_tile_rotation?(entity, hex, tile)
