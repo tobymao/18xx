@@ -36,6 +36,7 @@ module Engine
 
         ALLOW_TRAIN_BUY_FROM_OTHER_PLAYERS = false
         EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
+        EBUY_SELL_MORE_THAN_NEEDED_LIMITS_DEPOT_TRAIN = true
 
         MARKET = [
           %w[82 90 100 110 122 135 150 165 180 200 220 245 270 300 330 360 400],
@@ -218,7 +219,7 @@ module Engine
 
         def operating_round(round_num)
           Round::Operating.new(self, [
-            Engine::Step::Bankrupt,
+            G18Neb::Step::Bankrupt,
             Engine::Step::Exchange,
             G18Neb::Step::BuyCompany,
             G18Neb::Step::SpecialTrack,
