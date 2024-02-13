@@ -34,6 +34,13 @@ module Engine
 
         NEXT_SR_PLAYER_ORDER = :first_to_pass
 
+        ALLOW_TRAIN_BUY_FROM_OTHER_PLAYERS = false
+        EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
+        EBUY_SELL_MORE_THAN_NEEDED_LIMITS_DEPOT_TRAIN = true
+
+        CERT_LIMIT_CHANGE_ON_BANKRUPTCY = true
+        BANKRUPTCY_ENDS_GAME_AFTER = :all_but_one
+
         MARKET = [
           %w[82 90 100 110 122 135 150 165 180 200 220 245 270 300 330 360 400],
           %w[75 82 90 100p 110 122 135 150 165 180 200 220 245 270 300 330 360],
@@ -49,7 +56,7 @@ module Engine
           {
             name: '2',
             train_limit: 4,
-            tiles: [:yellow],
+            tiles: %i[yellow],
             operating_rounds: 2,
             status: ['can_buy_morison_bridging'],
           },
@@ -134,7 +141,6 @@ module Engine
           },
           {
             name: '4D',
-            # Can pick 4 best city or offboards, skipping smaller cities.
             distance: [{ 'nodes' => %w[city offboard], 'pay' => 4, 'visit' => 99, 'multiplier' => 2 },
                        { 'nodes' => %w[town], 'pay' => 0, 'visit' => 99 }],
             price: 900,
@@ -154,11 +160,7 @@ module Engine
           'local_railways_available' => ['Local Railways Available', 'Local Railways can now be started'],
         )
 
-        EBUY_PRES_SWAP = false # allow presidential swaps of other corps when ebuying
-        EBUY_OTHER_VALUE = false # allow ebuying other corp trains for up to face
-
-        # Two tiles can be laid, only one upgrade
-        TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, cost: 20, upgrade: :not_if_upgraded }].freeze
+        TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: :not_if_upgraded }].freeze
 
         def morison_bridging_company
           @morison_bridging_company ||= @companies.find { |company| company.id == 'P2' }
@@ -220,15 +222,16 @@ module Engine
 
         def operating_round(round_num)
           Round::Operating.new(self, [
-            Engine::Step::Bankrupt,
+            G18Neb::Step::Bankrupt,
             Engine::Step::Exchange,
             G18Neb::Step::BuyCompany,
-            Engine::Step::Track,
+            G18Neb::Step::SpecialTrack,
+            G18Neb::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
-            Engine::Step::Dividend,
+            G18Neb::Step::Dividend,
             Engine::Step::DiscardTrain,
-            Engine::Step::BuyTrain,
+            G18Neb::Step::BuyTrain,
             [G18Neb::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
@@ -239,8 +242,13 @@ module Engine
 
         def upgrades_to?(from, to, special = false, selected_company: nil)
           return true if town_to_city_upgrade?(from, to)
+          return true if omaha_green_upgrade?(from, to)
 
           super
+        end
+
+        def omaha_green_upgrade?(from, to)
+          from.color == :yellow && from.label&.to_s == 'O' && to.name == 'X04'
         end
 
         def town_to_city_upgrade?(from, to)
@@ -266,6 +274,10 @@ module Engine
         def after_par(corporation)
           super
           @corporations_to_fully_capitalize << corporation if corporations_fully_capitalize?
+        end
+
+        def after_tile_lay(_hex, _old_tile, _new_tile)
+          # TODO: P5
         end
 
         def corporations_fully_capitalize?
@@ -301,6 +313,47 @@ module Engine
 
         def redeemable_shares(entity)
           [@share_pool.shares_of(entity).find { |s| s.price <= entity.cash }&.to_bundle].compact
+        end
+
+        def operating_order
+          corporations = @corporations.select(&:floated?)
+          if @normal_operating_order
+            corporations.sort
+          else
+            @normal_operating_order = true
+            corporations.sort_by do |c|
+              sp = c.share_price
+              [sp.price, sp.corporations.find_index(c)]
+            end
+          end
+        end
+
+        def revenue_for(route, stops)
+          super + east_west_bonus(route, stops)
+        end
+
+        def revenue_str(route)
+          stops = route.stops
+          stop_hexes = stops.map(&:hex)
+          str = route.hexes.map { |h| stop_hexes.include?(h) ? h&.name : "(#{h&.name})" }.join('-')
+          str += ' + EW' if east_west_route?(route.stops)
+          str
+        end
+
+        def east_west_route?(stops)
+          (stops.flat_map(&:groups) & %w[E W]).size == 2
+        end
+
+        def east_west_bonus(route, stops)
+          return 0 unless east_west_route?(stops)
+
+          multiplier = route.train.name == '4D' ? 2 : 1
+          stops.map { |stop| stop.route_revenue(route.phase, route.train) }.max * multiplier
+        end
+
+        def rust(train)
+          train.rusted = true
+          @depot.reclaim_train(train)
         end
       end
     end
