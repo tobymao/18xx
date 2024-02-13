@@ -15,10 +15,10 @@ module Engine
             revenue: 0,
             min_price: 1,
             max_price: 1,
-            desc: 'When buying the private, a player must immediately place the black “SD” token on any '\
-                  'mineral resource hex on the board in which the black “SD” token blocks an SD spot. '\
-                  'When sold to a corporation, the black SD token will be replaced by a token from the owning corporation. '\
-                  'Can be sold to a corporation for ₡1.',
+            desc: 'When buying the OLS, the buyer must immediately place the OLS token along with a yellow tile on any '\
+                  'mineral resource hex that is at least three hexes away from the Space Port (E9). The owning player '\
+                  'can later sell OLS to a corporation for ₡1. When sold, the OLS token will be replaced by an additional '\
+                  'station token for the owning corporation.',
             abilities: [],
             color: nil,
           },

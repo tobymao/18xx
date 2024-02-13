@@ -224,6 +224,7 @@ module Engine
         }.freeze
 
         MINERAL_HEXES = %w[A7 A9 B4 B12 D10 E15 F2 H10 I7 J2 J10 K5 K13 L10 H2 E5 G13].freeze
+        OLS_HEXES = %w[A7 A9 B4 B12 E15 F2 G13 H2 H10 I7 J2 J10 K5 K13 L10].freeze
 
         X_RESTRICTED_UPGRADES = {
           'X2' => %w[X4 X7],
@@ -398,7 +399,7 @@ module Engine
           @log << "#{player.name} must place tile for OLS"
           @round.pending_tracks << {
             entity: ols_minor,
-            hexes: MINERAL_HEXES.map { |h| hex_by_id(h) },
+            hexes: OLS_HEXES.map { |h| hex_by_id(h) },
           }
           @round.clear_cache!
         end
