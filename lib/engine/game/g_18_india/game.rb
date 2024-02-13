@@ -57,7 +57,7 @@ module Engine
           @cert_limit
         end
 
-        # Modify to only count :private type companies (exclude Warrents and Bonds)
+        # Modify to only count :private type companies (exclude Warrants and Bonds)
         def num_certs(entity)
           certs = entity.shares.sum do |s|
             s.corporation.counts_for_limit && s.counts_for_limit ? s.cert_size : 0
