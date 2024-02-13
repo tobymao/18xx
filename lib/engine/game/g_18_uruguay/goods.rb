@@ -69,7 +69,7 @@ module Engine
           return if ability.nil?
 
           @number_of_goods_at_harbor -= goods_count
-          ability.description = GOODS_DESCRIPTION_STR + count.to_s
+          ability.description = GOODS_DESCRIPTION_STR + goods_count.to_s
         end
 
         # Ship gooods

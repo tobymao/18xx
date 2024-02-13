@@ -27,7 +27,6 @@ module Engine
         end
 
         def can_take_loan?(entity, ebuy: nil)
-          # return false if nationalized?
           return false if entity == @rlpta
           return true if ebuy
 
@@ -38,8 +37,6 @@ module Engine
 
         def take_loan(entity, loan, ebuy: nil)
           raise GameError, "Cannot take more than #{maximum_loans(entity)} loans" unless can_take_loan?(entity, ebuy: ebuy)
-
-          # raise GameError, "Not allowed to take loans after nationalization" if @game.nationalized?
 
           @bank.spend(loan.amount, entity)
           entity.loans << loan
