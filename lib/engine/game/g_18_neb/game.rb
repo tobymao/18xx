@@ -165,17 +165,25 @@ module Engine
           @morison_bridging_company ||= @companies.find { |company| company.id == 'P2' }
         end
 
+        def credit_mobilier_company
+          @credit_mobilier_company ||= @companies.find { |company| company.id == 'P5' }
+        end
+
         def setup_preround
           setup_company_purchase_prices
         end
 
         def setup_company_purchase_prices
           @companies.each do |company|
-            if company == morison_bridging_company
-              set_company_purchase_price(company, 1.0, 1.0)
-            else
-              set_company_purchase_price(company, 0.5, 1.5)
-            end
+            range = case company
+                    when morison_bridging_company
+                      [1.0, 1.0]
+                    when credit_mobilier_company
+                      [0.5, 1.0]
+                    else
+                      [0.5, 1.5]
+                    end
+            set_company_purchase_price(company, *range)
           end
         end
 
@@ -273,10 +281,6 @@ module Engine
         def after_par(corporation)
           super
           @corporations_to_fully_capitalize << corporation if corporations_fully_capitalize?
-        end
-
-        def after_tile_lay(_hex, _old_tile, _new_tile)
-          # TODO: P5
         end
 
         def corporations_fully_capitalize?
