@@ -3,7 +3,7 @@
 require_relative '../../../step/buy_sell_par_shares'
 require_relative '../../../step/share_buying'
 
-# For 18 India, first action is only sell any, then only buy
+# For 18 India, first turn is only sell any, subsequent turns are only buy
 # Selling does not restrict buy actions
 # NOTE: This section isn't completed, in progress for stock round
 # TODO: Convert Bonds -> add ability to bonds
