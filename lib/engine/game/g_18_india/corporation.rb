@@ -6,6 +6,20 @@ module Engine
       class Corporation < Engine::Corporation
         def initialize(sym:, name:, **opts)
           super
+          return unless sym == 'GIPR' # Modify for GIPR differences
+
+          # Create replacement first share such that president: == false (allow sale to market / prevent receivership)
+          replacement = Share.new(self, owner: @ipo_owner, president: false, percent: 10, index: 0)
+          @ipo_owner.shares_by_corporation[self] << replacement
+          @ipo_owner.shares_by_corporation[self].delete(@presidents_share)
+
+          # Add 3 exchange tokens to GIPR
+          ability = Ability::Base.new(
+            type: 'exchange_token',
+            description: 'Exchange tokens: 3',
+            count: 3
+          )
+          add_ability(ability)
         end
 
         def book_value

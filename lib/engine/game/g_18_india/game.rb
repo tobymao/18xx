@@ -30,7 +30,6 @@ module Engine
         TILE_TYPE = :lawson
 
         MARKET_SHARE_LIMIT = 200 # up to 200% of GIPR may be in market
-        PRESIDENT_SALES_TO_MARKET = true # need to set to false and allow GIPR to sell PS
 
         SELL_BUY_ORDER = :sell_buy
         MUST_SELL_IN_BLOCKS = false
@@ -38,13 +37,33 @@ module Engine
         POOL_SHARE_DROP = :none
         SOLD_OUT_INCREASE = false
         NEXT_SR_PLAYER_ORDER = :first_to_pass
+        COMPANY_SALE_FEE = 0
 
         HOME_TOKEN_TIMING = :float
         MUST_BUY_TRAIN = :never
 
-        CERT_LIMIT = { 2 => 37, 3 => 23, 4 => 18, 5 => 15 }.freeze
-        CERT_LIMIT_CLOSE1 = { 2 => 33, 3 => 22, 4 => 17, 5 => 13 }.freeze
-        CERT_LIMIT_CLOSE2 = { 2 => 29, 3 => 19, 4 => 15, 5 => 12 }.freeze
+        CERT_LIMIT = {
+          2 => { 10 => 37, 9 => 33, 8 => 29 },
+          3 => { 10 => 23, 9 => 22, 8 => 19 },
+          4 => { 10 => 18, 9 => 17, 8 => 15 },
+          5 => { 10 => 15, 9 => 13, 8 => 12 },
+        }.freeze
+
+        # Modified for corporation share limit
+        def cert_limit(entity = nil)
+          return @cert_limit if entity.nil?
+          return 3 if entity.corporation?
+
+          @cert_limit
+        end
+
+        # Modify to only count :private type companies (exclude Warrants and Bonds)
+        def num_certs(entity)
+          certs = entity.shares.sum do |s|
+            s.corporation.counts_for_limit && s.counts_for_limit ? s.cert_size : 0
+          end
+          certs + entity.companies.count { |c| c.type == :private }
+        end
 
         STARTING_CASH = { 2 => 1100, 3 => 733, 4 => 550, 5 => 440 }.freeze
 
@@ -115,6 +134,9 @@ module Engine
           # Build draw and draft decks for player hand and IPO rows
           @ipo_rows = [[], [], []]
           create_decks(@corporations)
+
+          # Create Railroad Bonds
+          create_railroad_bonds
         end
 
         def setup
@@ -229,18 +251,12 @@ module Engine
             name: share.corporation.name,
             value: share.price,
             desc: discription,
-            type: share_type(share),
+            type: share.percent == 20 ? :president : :share,
             color: share.corporation.color,
             text_color: share.corporation.text_color,
             # reference to share in treasury
             treasury: share
           )
-        end
-
-        def share_type(share)
-          return :share unless share.percent == 20
-
-          :president
         end
 
         def deal_deck_to_ipo(deck)
@@ -262,15 +278,11 @@ module Engine
           deck
         end
 
-        def sell_card(entity, card)
-          share_pool.buy_shares(entity, card.treasury)
-        end
-
         def deal_deck_to_market(deck)
           deck.each do |card|
             case card.type
             when :share
-              sell_card(@share_pool, card)
+              share_pool.buy_shares(@share_pool, card.treasury)
             else
               @log << "Private #{card.name} is availabe in the Market"
               card.owner = @bank
@@ -284,12 +296,42 @@ module Engine
           @players.each do |player|
             cards = player.hand.dup
             cards.each do |card|
-              next unless card.owner.nil?
-
-              @draft_deck << card
-              player.hand.delete(card)
+              if card.owner == player
+                card.owner = nil
+                player.unsold_companies << card
+              else
+                @draft_deck << card
+                player.hand.delete(card)
+              end
             end
           end
+        end
+
+        # shows value of companies on player card when in "unsold_companies"
+        def show_value_of_companies?(_entity)
+          true
+        end
+
+        def create_railroad_bonds
+          10.times do |n|
+            bond = make_bond(n)
+            bond.owner = @bank
+            @companies << bond
+            @bank.companies << bond
+          end
+        end
+
+        def make_bond(num)
+          ident = 'RB' + num.to_s
+          Company.new(
+            sym: ident,
+            name: 'Railroad Bond',
+            value: 100,
+            revenue: 10,
+            desc: 'May be converted to a 10% share of GIPR in Phase IV. The conversion cost is market value minus 100.',
+            color: :white,
+            type: :bond
+          )
         end
 
         # When converting a Railroad Bond, there is no refund if share price < 100
@@ -325,10 +367,8 @@ module Engine
         end
 
         def stock_round
-          Engine::Round::Stock.new(self, [
-            Engine::Step::Assign,
-            Engine::Step::BuySellParShares,
-          ])
+          # Engine::Round::Stock.new(self, [Engine::Step::BuySellParShares])
+          Engine::Round::Stock.new(self, [G18India::Step::SellOnceThenBuyCerts])
         end
 
         def operating_round(round_num)
@@ -382,18 +422,26 @@ module Engine
         def ipo_row_and_index(company)
           [0, 1, 2].each do |row|
             index = @ipo_rows[row].index(company)
-            return [row + 1, index + 1] if index
+            return [row, index] if index
           end
           nil
+        end
+
+        def ipo_remove(row, company)
+          @ipo_rows[row].delete(company)
         end
 
         # Add status of cert card e.g. IPO ROW
         def company_status_str(company)
           if in_ipo?(company)
             row, index = ipo_row_and_index(company)
-            return "IPO Row:#{row} Index:#{index}"
+            return "IPO Row:#{row + 1} Index:#{index + 1}"
+          elsif (company.type == :bond) && (company.owner == @bank)
+            return "Bank has #{count_of_bonds} / 10 Bonds"
+          elsif current_entity.hand.include?(company)
+            return "Player's Hand"
           end
-          nil
+          ''
         end
 
         # Use to indicate corp status, e.g. managed vs directed companies
@@ -418,13 +466,11 @@ module Engine
           ipo_row_3 = ipo_timeline(2)
           timeline << "IPO ROW 3: #{ipo_row_3.join(', ')}" unless ipo_row_3.empty?
 
-          timeline << "Market: #{bank.companies.join(', ')}" unless bank.companies.empty?
+          timeline << "Market: #{bank.companies.map(&:name).join(', ')}" unless bank.companies.empty?
 
           @players.each do |p|
             timeline << "#{p.name}: #{p.hand.map(&:name).sort.join(', ')}" unless p.hand.empty?
           end
-
-          # timeline << "Companies: #{@companies.map(&:name).sort.join(', ')}" unless @companies.empty?
 
           timeline
         end
@@ -436,20 +482,50 @@ module Engine
           end
         end
 
+        # Called by View::Game::Entities to determine if the company should be shown on entities
         # Lists unowned companies under 'The Bank' on ENTITIES tab
         def unowned_purchasable_companies(_entity)
-          bank.companies + @ipo_rows[0] + @ipo_rows[1] + @ipo_rows[2]
+          bank_owned_companies + @ipo_rows[0] + @ipo_rows[1] + @ipo_rows[2]
         end
 
-        def purchasable_companies(entity)
-          return [] unless entity.player?
-
-          entity.hand
+        # Lists buyable companies for STOCK ROUND in VIEW
+        def buyable_bank_owned_companies
+          bank_owned_companies + top_of_ipo_rows + hand_companies_for_stock_round
         end
 
-        # minors to show on player cards **test using this to show player hand**
-        def player_card_minors(_player)
-          []
+        def first_bond_in_bank
+          [] << bank.companies.find { |c| c.type == :bond }
+        end
+
+        def count_of_bonds
+          bank.companies.count { |c| c.type == :bond }
+        end
+
+        def bank_owned_companies
+          bank_certs = [] << bank.companies.find { |c| c.type == :bond }
+          bank_certs += bank.companies.select { |c| c.type == :private }
+          bank_certs
+        end
+
+        def top_of_ipo_rows(row = nil)
+          rows = row ? [row - 1] : [0, 1, 2]
+          top = []
+          rows.each do |r|
+            top += @ipo_rows[r].first(2)
+          end
+          top
+        end
+
+        def hand_companies_for_stock_round
+          return [] unless @round.stock?
+          return [] if @round.current_entity.nil?
+
+          @round.current_entity.hand.sort_by { |item| [item.type, -item.value, item.name] }
+        end
+
+        def remove_from_hand(player, company)
+          player.hand.delete(company)
+          player.unsold_companies.delete(company)
         end
 
         def price_movement_chart
