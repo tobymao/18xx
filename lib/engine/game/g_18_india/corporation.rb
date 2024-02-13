@@ -8,7 +8,7 @@ module Engine
           super
           return unless sym == 'GIPR' # Modify for GIPR differences
 
-          # Create replacement first share such that president: == false (allow sale to market / prevent receivorship)
+          # Create replacement first share such that president: == false (allow sale to market / prevent receivership)
           replacement = Share.new(self, owner: @ipo_owner, president: false, percent: 10, index: 0)
           @ipo_owner.shares_by_corporation[self] << replacement
           @ipo_owner.shares_by_corporation[self].delete(@presidents_share)
