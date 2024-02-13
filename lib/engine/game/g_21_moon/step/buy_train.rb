@@ -133,8 +133,8 @@ module Engine
 
           def slot_dropdown_options(corp)
             options = []
-            options << { slot: 0, text: 'Local Base' } if room_for_lb?(corp)
             options << { slot: 1, text: 'Space Port Base' } if room_for_sp?(corp)
+            options << { slot: 0, text: 'Local Base' } if room_for_lb?(corp)
             options
           end
 

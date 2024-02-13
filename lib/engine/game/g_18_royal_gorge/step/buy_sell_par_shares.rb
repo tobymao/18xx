@@ -10,6 +10,10 @@ module Engine
           def get_par_prices(entity, _corp)
             @game.par_prices.select { |p| p.price * 2 <= entity.cash }
           end
+
+          def visible_corporations
+            @game.sorted_corporations.reject { |c| c.type == :debt }
+          end
         end
       end
     end

@@ -15,7 +15,8 @@ module Engine
         include Trains
 
         attr_accessor :gold_shipped
-        attr_reader :gold_corp, :steel_corp, :available_steel, :gold_cubes
+        attr_reader :gold_corp, :steel_corp, :available_steel, :gold_cubes, :indebted, :debt_corp,
+                    :treaty_of_boston
 
         CURRENCY_FORMAT_STR = '$%s'
         BANK_CASH = 99_999
@@ -66,7 +67,28 @@ module Engine
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
           green_par: ['Green Par Available'],
           brown_par: ['Brown Par Available'],
+          treaty_of_boston: ['Treaty of Boston'],
         )
+
+        DEBT_PENALTY = {
+          'RG' => [0, 2, 3, 5, 8],
+          'SF' => [0, 1, 3],
+        }.freeze
+
+        ROYAL_GORGE_HEXES_TO_TILES = {
+          'D12' => %w[RG-D12-G RG-D12-B],
+          'E13' => %w[RG-E13-G RG-E13-B],
+          'F12' => %w[RG-F12-G RG-F12-B],
+        }.freeze
+        ROYAL_GORGE_TILES_TO_HEXES = {
+          'RG-D12-B' => 'D12',
+          'RG-D12-G' => 'D12',
+          'RG-E13-B' => 'E13',
+          'RG-E13-G' => 'E13',
+          'RG-F12-B' => 'F12',
+          'RG-F12-G' => 'F12',
+        }.freeze
+        RETURNED_TOKEN_PRICES = [80, 60, 40].freeze
 
         def ipo_name(_entity = nil)
           'Treasury'
@@ -94,7 +116,8 @@ module Engine
 
           @log << "Railroads in the game: #{corporations.map { |c| c[:sym] }.join(', ')}"
 
-          corporations + self.class::METAL_CORPORATIONS
+          # add on non-railway corporations
+          corporations + self.class::METAL_CORPORATIONS + [DEBT_CORPORATION]
         end
 
         def setup
@@ -113,6 +136,12 @@ module Engine
 
           @gold_cubes = Hash.new(0)
           @gold_shipped = 0
+
+          @debt_corp = init_debt_corp(corporation_by_id('DEBT'))
+
+          @indebted = {}
+
+          @treaty_of_boston = false
         end
 
         def init_available_steel
@@ -138,11 +167,20 @@ module Engine
         end
 
         def status_array(corporation)
-          if can_start?(corporation) || corporation.type == :metal
-            nil
-          else
-            ["Available in #{@corporation_phase_color[corporation.name]} Phase"]
+          status = []
+
+          if !can_start?(corporation) && corporation.type == :rail
+            status << "Available in #{@corporation_phase_color[corporation.name]} Phase"
           end
+
+          if corporation.floated? && (_, owed = @indebted[corporation])
+            steps = DEBT_PENALTY[corporation.id][owed]
+
+            price_with_debt = stock_market.find_share_price(corporation, [:left] * steps).price
+            status << "Debt-adjusted share price: #{format_currency(price_with_debt)}"
+          end
+
+          status unless status.empty?
         end
 
         def new_auction_round
@@ -185,6 +223,92 @@ module Engine
           @log << "-- Event: #{EVENTS_TEXT[:brown_par]} --"
           @available_par_groups << :par_2
           update_cache(:share_prices)
+        end
+
+        def event_treaty_of_boston!
+          @log << "-- Event: #{EVENTS_TEXT[:treaty_of_boston]} --"
+          @log << 'RG is indebted to SF'
+          @log << 'SF is indebted to Doc Holliday'
+
+          sf_debt = Company.new(
+            sym: 'SF-D',
+            name: 'Indebted to Doc Holliday',
+            value: 0,
+            desc: "If 2/1 debt is left unpaid, SF's share price will drop 3/1 steps at the end of the game.",
+          )
+          ability = Engine::Ability::ChooseAbility.new(
+            type: 'choose_ability',
+            description: 'Pay debt',
+            desc_detail: 'Once per OR turn, SF may buy a DEBT token from Doc Holliday, paying the '\
+                         'price of the DEBT stock market token.',
+            when: 'owning_corp_or_turn',
+            choices: { 'pay_debt' => 'Pay Doc Holliday for one DEBT token' },
+            count: 2,
+            count_per_or: 1,
+            closed_when_used_up: true,
+          )
+          sf_debt.add_ability(ability)
+          sf_debt.owner = santa_fe
+          santa_fe.companies << sf_debt
+          @_companies['SF-D'] = sf_debt
+          @companies << sf_debt
+
+          rg_debt = Company.new(
+            sym: 'RG-D',
+            name: 'Indebted to Santa Fe',
+            value: 0,
+            desc: "If 4/3/2/1 debt is left unpaid, RG's share price will drop 8/5/3/2 steps at the end of the game",
+          )
+          ability = Engine::Ability::ChooseAbility.new(
+            type: 'choose_ability',
+            description: 'Pay debt',
+            desc_detail: 'Once per OR turn, RG may buy a DEBT token from Santa Fe, paying the '\
+                         'price of the DEBT stock market token.',
+            when: 'owning_corp_or_turn',
+            choices: { 'pay_debt' => 'Pay Santa Fe for one DEBT token' },
+            count: 4,
+            count_per_or: 1,
+            closed_when_used_up: true,
+          )
+          rg_debt.add_ability(ability)
+          rg_debt.owner = rio_grande
+          rio_grande.companies << rg_debt
+          @_companies['RG-D'] = rg_debt
+          @companies << rg_debt
+
+          @indebted = {
+            santa_fe => [doc_holliday&.player || bank, 2],
+            rio_grande => [santa_fe, 4],
+          }
+
+          @treaty_of_boston = true
+
+          # lay green royal gorge tiles, free tokens for Rio Grande
+          returned_token_corps = []
+          ROYAL_GORGE_HEXES_TO_TILES.each do |hex_id, tiles|
+            green_tile, _brown_tile_ = tiles
+
+            hex = hex_by_id(hex_id)
+            city = hex.tile.cities.first
+
+            if city
+              if (token = city.tokens[0])
+                token.remove!
+                reprice_tokens!(token.corporation)
+                returned_token_corps << token.corporation
+              end
+              new_token = Engine::Token.new(rio_grande, price: 0)
+              rio_grande.tokens << new_token
+              city.place_token(rio_grande, new_token)
+            end
+
+            tile = tile_by_id("#{green_tile}-0")
+            hex.lay(tile)
+          end
+
+          @log << 'The Royal Gorge (D12-E13-F12) tiles are upgraded to green'
+          @log << "Tokens are returned: #{returned_token_corps.map(&:name).join(' and ')}" unless returned_token_corps.empty?
+          @log << "#{rio_grande.name} receives free tokens in D12 and F12"
         end
 
         def par_prices
@@ -247,14 +371,13 @@ module Engine
         def operating_round(round_num)
           Round::Operating.new(self, [
             Engine::Step::Bankrupt,
-            Engine::Step::Exchange,
+            G18RoyalGorge::Step::SpecialChoose,
             Engine::Step::SpecialTrack,
             Engine::Step::BuyCompany,
             G18RoyalGorge::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
             G18RoyalGorge::Step::Dividend,
-            Engine::Step::DiscardTrain,
             Engine::Step::BuyTrain,
             [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
@@ -262,6 +385,9 @@ module Engine
 
         def or_round_finished
           # debt increases
+          old_price = @debt_corp.share_price
+          @stock_market.move_right(@debt_corp)
+          log_share_price(@debt_corp, old_price, 1)
         end
 
         def or_set_finished
@@ -532,6 +658,57 @@ module Engine
 
         def update_gold_corp_cash!
           bank.spend(gold_dividend - @gold_corp.cash, @gold_corp)
+        end
+
+        def init_debt_corp(corporation)
+          corporation.ipoed = true
+          corporation.floated = true
+          price = @stock_market.share_price([0, 1])
+          @stock_market.set_par(corporation, price)
+          bundle = ShareBundle.new(corporation.shares_of(corporation))
+          @share_pool.transfer_shares(bundle, @share_pool)
+          corporation
+        end
+
+        def trains_str(corporation)
+          corporation.type == :rail ? super : ''
+        end
+
+        def santa_fe
+          @santa_fe ||= corporation_by_id('SF')
+        end
+
+        def rio_grande
+          @rio_grande ||= corporation_by_id('RG')
+        end
+
+        def doc_holliday
+          @doc_holliday ||= company_by_id('G1')
+        end
+
+        def upgrades_to?(from, to)
+          return false unless super
+
+          if ROYAL_GORGE_HEXES_TO_TILES.include?(from.hex.id)
+            return false unless @treaty_of_boston
+
+            return ROYAL_GORGE_TILES_TO_HEXES[to.name] == from.hex.id
+          end
+
+          if ROYAL_GORGE_TILES_TO_HEXES.include?(to.name)
+            return false unless @treaty_of_boston
+
+            return ROYAL_GORGE_HEXES_TO_TILES[from.hex.id]&.include?(to.name)
+          end
+
+          true
+        end
+
+        def reprice_tokens!(corporation)
+          corporation.tokens.reject(&:used).reverse.each_with_index do |token, index|
+            token.price = RETURNED_TOKEN_PRICES[index]
+          end
+          corporation
         end
 
         def sell_movement(corporation)
