@@ -1,23 +1,21 @@
 # frozen_string_literal: true
 
-require_relative '../../../step/token'
+require_relative '../../../step/tracker'
+require_relative '../../../step/track'
 
 module Engine
   module Game
     module G18Uruguay
       module Step
-        class Token < Engine::Step::Token
+        class Track < Engine::Step::Track
           def actions(entity)
             return [] if entity == @game.rptla
 
             @round.loan_taken |= false
             actions = super
-            actions << 'take_loan' if !actions.empty? && can_take_loan?(entity)
-            actions
-          end
+            actions << 'take_loan' if @game.can_take_loan?(entity) && !@round.loan_taken && !@game.nationalized?
 
-          def can_take_loan?(entity)
-            @game.can_take_loan?(entity) && !@round.loan_taken && !@game.nationalized?
+            actions
           end
 
           def process_take_loan(action)
