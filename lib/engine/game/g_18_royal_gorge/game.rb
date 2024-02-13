@@ -17,7 +17,7 @@ module Engine
 
         attr_accessor :gold_shipped, :local_jeweler_cash
         attr_reader :gold_corp, :steel_corp, :available_steel, :gold_cubes, :indebted, :debt_corp,
-                    :treaty_of_boston
+                    :treaty_of_boston, :hanging_bridge_lease_payment_due
 
         CURRENCY_FORMAT_STR = '$%s'
         BANK_CASH = 99_999
@@ -77,6 +77,7 @@ module Engine
           'SF' => [0, 1, 3],
         }.freeze
 
+        ROYAL_GORGE_TOWN_HEX = 'E13'
         ROYAL_GORGE_HEXES_TO_TILES = {
           'D12' => %w[RG-A RG-D],
           'E13' => %w[RG-B RG-E],
@@ -483,8 +484,9 @@ module Engine
             Engine::Step::BuyCompany,
             G18RoyalGorge::Step::Track,
             Engine::Step::Token,
-            Engine::Step::Route,
+            G18RoyalGorge::Step::Route,
             G18RoyalGorge::Step::Dividend,
+            G18RoyalGorge::Step::BridgeLease,
             G18RoyalGorge::Step::BuyTrain,
             [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
@@ -809,6 +811,10 @@ module Engine
           @gold_nugget ||= company_by_id('G2')
         end
 
+        def hanging_bridge_lease
+          @hanging_bridge_lease ||= company_by_id('G3')
+        end
+
         def st_cloud_hotel
           @st_cloud_hotel ||= company_by_id('Y1')
         end
@@ -971,7 +977,46 @@ module Engine
           str = super
           str += ST_CLOUD_BONUS_STR if st_cloud_bonus?(route, route.visited_stops)
           str += ghost_town_bonus(route)[:description]
+          str += hanging_bridge_lease_revenue_str(route, route.visited_stops)
           str
+        end
+
+        def hanging_bridge_lease_revenue_str(route, stops)
+          return '' unless route.corporation == hanging_bridge_corp
+          return '' unless stops.any? { |s| s.hex.id == ROYAL_GORGE_TOWN_HEX }
+
+          " (10% dividend owed to #{rio_grande.name})"
+        end
+
+        def hanging_bridge_corp
+          @hanging_bridge_corp ||=
+            if (entity = hanging_bridge_lease&.owner)&.corporation? && entity.owner != rio_grande
+              entity
+            end
+        end
+
+        def check_connected(route, corporation)
+          visits = route.visited_stops
+          if visits.size > 2
+            visits[1..-2].each do |node|
+              next if !node.city? || !custom_blocks?(node, corporation)
+
+              raise GameError, 'Route is not connected'
+            end
+          end
+          super(route, nil)
+        end
+
+        def custom_blocks?(node, corporation)
+          return false if corporation == hanging_bridge_corp &&
+                          ROYAL_GORGE_HEXES_TO_TILES.include?(node.hex.id)
+
+          return false unless node.city?
+          return false unless corporation
+          return false if node.tokened_by?(corporation)
+          return false if node.tokens.include?(nil)
+
+          true
         end
       end
     end
