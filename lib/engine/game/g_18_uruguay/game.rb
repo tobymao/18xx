@@ -282,7 +282,7 @@ module Engine
             G18Uruguay::Step::TakeLoanBuyCompany,
             Engine::Step::HomeToken,
             G18Uruguay::Step::Track,
-            G18Uruguay::Step::DestinationToken,
+            G18Uruguay::Step::DestinationBonus,
             G18Uruguay::Step::Token,
             G18Uruguay::Step::Route,
             G18Uruguay::Step::RouteRptla,
