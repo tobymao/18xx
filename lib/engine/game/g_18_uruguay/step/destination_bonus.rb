@@ -4,7 +4,7 @@ module Engine
   module Game
     module G18Uruguay
       module Step
-        class DestinationToken < Engine::Step::Base
+        class DestinationBonus< Engine::Step::Base
           ACTIONS = %w[destination_connection pass].freeze
 
           def description
