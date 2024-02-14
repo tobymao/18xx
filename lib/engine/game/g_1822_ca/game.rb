@@ -233,6 +233,10 @@ module Engine
         )
 
         STATUS_TEXT = G1822::Game::STATUS_TEXT.merge(
+          'can_acquire_minor_bidbox' => ['Acquire a minor from bidbox',
+                                         'Can acquire a minor from bidbox for $200, must have connection '\
+                                         'to start location'],
+          'minor_float_phase1' => ['Minors receive $100 in capital', 'Minors receive 100 capital with 50 stock value'],
           'l_upgrade' => ['$70 L-train upgrades',
                           'The cost to upgrade an L-train to a 2-train is reduced from $80 to $70.']
         )
