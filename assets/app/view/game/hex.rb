@@ -212,6 +212,12 @@ module View
               token_type: next_token
             ))
           end
+          if @actions.include?('choose') && step.choices.include?(@hex.id)
+            return process_action(Engine::Action::Choose.new(
+                @entity,
+                choice: @hex.id,
+              ))
+          end
           return unless @actions.include?('lay_tile')
 
           if @selected && (tile = @tile_selector&.tile)

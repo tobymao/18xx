@@ -74,6 +74,7 @@ module Engine
       log_msg += ') --'
       @log << log_msg
       trigger_events!
+      @game.after_phase_change(name)
     end
 
     def trigger_events!

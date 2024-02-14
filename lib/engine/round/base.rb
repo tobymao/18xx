@@ -216,6 +216,10 @@ module Engine
       def after_process_before_skip(_action); end
 
       def after_process(_action); end
+
+      def inspect
+        "<#{self.class.name} #{@game.turn_round_num.join('.')}>"
+      end
     end
   end
 end

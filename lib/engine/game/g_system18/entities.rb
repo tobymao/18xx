@@ -5,7 +5,7 @@ module Engine
     module GSystem18
       module Entities
         def game_companies
-          []
+          send("map_#{map_name}_game_companies")
         end
 
         S18_CORPORATIONS = [
@@ -73,22 +73,7 @@ module Engine
           corps = []
           S18_CORPORATIONS.each { |c| corps << c.dup }
 
-          # change based on maps
-          if map?(:France)
-            corps.each_with_index do |c, idx|
-              c[:float_percent] = 20
-              c[:always_market_price] = true
-              c[:coordinates] = %w[C5 C5 C5 C9 E7][idx]
-              c[:city] = [0, 1, 2, nil, nil][idx]
-            end
-          else
-            # NEUS
-            corps.each_with_index do |c, idx|
-              c[:coordinates] = %w[B7 D9 B5 C10 B11][idx]
-            end
-          end
-
-          corps
+          send("map_#{map_name}_game_corporations", corps)
         end
       end
     end

@@ -15,6 +15,10 @@ lib/engine/game/g_1846* @michaeljb
 lib/engine/game/g_1868_wy* @michaeljb
 lib/engine/game/g_18_los_angeles* @michaeljb
 lib/engine/game/g_18_royal_gorge* @michaeljb
+Makefile @michaeljb
+TILES.md @michaeljb
+docker-compose* @michaeljb
+scripts/ @michaeljb
 
 lib/engine/game/g_1825* @roseundy
 lib/engine/game/g_1841* @roseundy

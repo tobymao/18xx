@@ -1,13 +1,17 @@
 # frozen_string_literal: true
 
 require './spec/spec_helper'
-
+require 'find'
 require 'json'
 require 'timeout'
 
 module Engine
   describe Game::G18EU do
     let(:players) { %w[a b c] }
+
+    let(:game_file) do
+      Find.find(FIXTURES_DIR).find { |f| File.basename(f) == "#{game_file_name}.json" }
+    end
 
     let(:actions) do
       [
@@ -54,6 +58,25 @@ module Engine
           expect(subject_with_actions.current_entity.name).to be players[2]
           expect(subject.players.map(&:cash)).to eq([450, 350, 40])
         end
+      end
+    end
+
+    # issue 10222
+    # prevent the purchase of stock over 60% in the stock round, can only obtain that through mergers.
+
+    context '18EU cant buy stock while at limit 10222' do
+      let(:game_file_name) { 'prohibit_buy_over_60' }
+      it 'should not allow stock purchase' do
+        game = Engine::Game.load(game_file, at_action: 488)
+        action = Engine::Action::BuyShares.new(game.current_entity, shares: game.corporation_by_id('RPR').available_share,
+                                                                    percent: 10)
+
+        expect(game.exception).to be_nil
+        expect(game.current_entity.shares.length).to be 6
+
+        # Prevent player from attempting to purchase > 60% through normal stock buy.
+        expect(game.process_action(action).exception).to be_a(GameError)
+        expect(game.current_entity.shares.length).to be 6
       end
     end
   end

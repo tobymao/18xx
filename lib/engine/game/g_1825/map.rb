@@ -161,7 +161,7 @@ module Engine
           '66' => 1,
           '67' => 1,
           '68' => 1,
-        }.freeze
+        }.deep_freeze
         # rubocop:enable Layout/LineLength
 
         UNIT2_TILES = {
@@ -216,7 +216,7 @@ module Engine
           '49' => 1,
           '50' => 1,
           '51' => 2,
-        }.freeze
+        }.deep_freeze
 
         UNIT3_TILES = {
           '1' => 1,
@@ -269,7 +269,7 @@ module Engine
             'color' => 'brown',
             'code' => 'city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:_0,b:1;path=a:2,b:_1;path=a:_1,b:3;label=OO',
           },
-        }.freeze
+        }.deep_freeze
 
         R1_TILES = {
           '2' => 1,
@@ -309,7 +309,7 @@ module Engine
           },
           '38' => 1,
           '66' => 1,
-        }.freeze
+        }.deep_freeze
 
         R2_TILES = {
           '3' => 1,
@@ -333,7 +333,7 @@ module Engine
             'color' => 'brown',
             'code' => 'city=revenue:40,loc:0;city=revenue:40,loc:3;path=a:2,b:_0;path=a:5,b:_1;path=a:2,b:5;label=OO',
           },
-        }.freeze
+        }.deep_freeze
 
         R3_TILES = {
           '8' => 1,
@@ -345,7 +345,7 @@ module Engine
             'code' => 'town=revenue:10,visit_cost:0;path=a:0,b:2;path=a:2,b:_0;path=a:_0,b:4;path=a:0,b:4;label=HALT',
           },
           '14' => 1,
-        }.freeze
+        }.deep_freeze
 
         K1_TILES = {
           '17' => 1,
@@ -385,7 +385,7 @@ module Engine
             'color' => 'gray',
             'code' => 'city=revenue:70,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;label=OO',
           },
-        }.freeze
+        }.deep_freeze
         # rubocop:enable Layout/LineLength
 
         K5_TILES = {
@@ -428,7 +428,7 @@ module Engine
           },
           '119' => 2,
           '200' => 2,
-        }.freeze
+        }.deep_freeze
 
         # rubocop:disable Layout/LineLength
         D1_TILES = {
@@ -498,7 +498,7 @@ module Engine
             'code' => 'city=revenue:50,loc:0.5;city=revenue:50,loc:4.5;path=a:0,b:_0;path=a:1,b:_0;path=a:4,b:_1;path=a:5,b:_1;path=a:1,b:4;label=OO',
           },
           '200' => 2,
-        }.freeze
+        }.deep_freeze
 
         DB1_UNIT3_ANTITILES = {
           '14' => -1,
@@ -536,13 +536,13 @@ module Engine
           '115' => '206',
           # HACK: for 119 (green/brown tile that upgrades to gray)
           '119' => %w[51],
-        }.freeze
+        }.deep_freeze
 
         ILLEGAL_UPGRADES = {
           '81' => %w[40],
           '82' => %w[41],
           '83' => %w[42],
-        }.freeze
+        }.deep_freeze
 
         def append_game_tiles(gtiles, new_tiles)
           new_tiles.each do |k, v|
@@ -673,7 +673,7 @@ module Engine
             %w[Y17
                Y19] => 'path=a:2,b:3',
           },
-        }.freeze
+        }.deep_freeze
 
         UNIT2_HEXES = {
           white: {
@@ -720,7 +720,7 @@ module Engine
             ['P8'] => 'path=a:1,b:4;path=a:4,b:5;path=a:1,b:5',
             ['Q11'] => 'city=revenue:10;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:5,b:_0',
           },
-        }.freeze
+        }.deep_freeze
 
         UNIT3_HEXES = {
           white: {
@@ -780,7 +780,7 @@ module Engine
             ['F10'] => 'town=revenue:10,loc:2;path=a:2,b:_0;path=a:5,b:0',
             ['K7'] => 'city=revenue:10,loc:3;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
           },
-        }.freeze
+        }.deep_freeze
 
         UNIT4_HEXES = {
           white: {
@@ -813,7 +813,7 @@ module Engine
                a12] => 'town=revenue:10;path=a:0,b:_0;path=a:5,b:_0',
             ['B0'] => 'town=revenue:10;path=a:4,b:_0;path=a:5,b:_0',
           },
-        }.freeze
+        }.deep_freeze
 
         R1_HEXES = {
           white: {
@@ -836,7 +836,7 @@ module Engine
             ['U1'] => 'city=revenue:10;path=a:3,b:_0;path=a:4,b:_0',
             ['V6'] => 'city=revenue:20;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
           },
-        }.freeze
+        }.deep_freeze
 
         R2_HEXES = {
           white: {
@@ -858,7 +858,7 @@ module Engine
           sepia: {
             ['W9'] => 'city=revenue:10,loc:4.5;path=a:0,b:3;path=a:_0,b:3;path=a:_0,b:4;path=a:_0,b:5',
           },
-        }.freeze
+        }.deep_freeze
 
         R3_HEXES = {
           white: {
@@ -867,13 +867,13 @@ module Engine
           sepia: {
             ['Q23'] => 'city=revenue:10;path=a:0,b:_0;path=a:4,b:_0;path=a:5,b:_0',
           },
-        }.freeze
+        }.deep_freeze
 
         DB2_HEXES = {
           white: {
             ['W23'] => 'city=revenue:0',
           },
-        }.freeze
+        }.deep_freeze
 
         DB3_HEXES = {
           white: {
@@ -886,7 +886,7 @@ module Engine
           sepia: {
             ['F2'] => 'town=revenue:10,loc:4;path=a:4,b:_0;path=a:3,b:_0;town=revenue:10,loc:5;path=a:5,b:_1',
           },
-        }.freeze
+        }.deep_freeze
 
         UNIT1_OFFMAP_HEXES = {
           gray: {
@@ -907,7 +907,7 @@ module Engine
                U7
                Y7] => '',
           },
-        }.freeze
+        }.deep_freeze
 
         UNIT2_OFFMAP_HEXES = {
           gray: {
@@ -924,7 +924,7 @@ module Engine
                R18
                R20] => '',
           },
-        }.freeze
+        }.deep_freeze
 
         UNIT3_OFFMAP_HEXES = {
           gray: {
@@ -939,14 +939,14 @@ module Engine
                L14
                L16] => '',
           },
-        }.freeze
+        }.deep_freeze
 
         R1_OFFMAP_HEXES = {
           gray: {
             %w[P8
                Q9] => '',
           },
-        }.freeze
+        }.deep_freeze
         # rubocop:enable Layout/LineLength
 
         def append_game_hexes(ghexes, new_hexes)
@@ -955,9 +955,12 @@ module Engine
           existing_coords.flatten!
 
           new_hexes.each do |color, hex_hash|
-            hex_hash.each do |coords, value|
+            hex_hash.each do |raw_coords, value|
+              # copy to avoid mutating `new_hexes`
+              coords = raw_coords.dup
+
               # skip over a coordinate that has already been defined, regardless of color
-              coords.dup.each do |new_coord|
+              raw_coords.each do |new_coord|
                 coords.delete(new_coord) if existing_coords.include?(new_coord)
               end
               next if coords.empty?

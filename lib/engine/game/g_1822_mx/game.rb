@@ -148,6 +148,8 @@ module Engine
         BIDDING_BOX_START_PRIVATE = 'P1'
         BIDDING_BOX_START_MINOR = nil
 
+        MINOR_14_ID = nil
+
         DOUBLE_HEX = %w[L19 M22 M26].freeze
 
         def init_graph

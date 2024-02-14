@@ -155,7 +155,8 @@ module Engine
                   'or mountain hex. This closes the company. Or: The acquiring company rejects the token and '\
                   'receives a £20 discount off the cost of all £60 hill and £80 mountain terrain (i.e. NOT off the cost of '\
                   '£40 rough terrain). The private company does not close. Closes if free token taken when acquired. '\
-                  'Otherwise, flips when acquired and does not close.',
+                  'Otherwise, flips when acquired and does not close. Rough terrain and hills are any hexes including a '\
+                  'green dome icon. Mountains are indicated by a brown triangle.',
             abilities: [
               {
                 type: 'tile_lay',

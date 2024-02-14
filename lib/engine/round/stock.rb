@@ -102,6 +102,10 @@ module Engine
       def sold_out?(corporation)
         corporation.player_share_holders.values.sum == 100
       end
+
+      def inspect
+        "<#{self.class.name} Round #{@game.turn}>"
+      end
     end
   end
 end

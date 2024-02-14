@@ -11,6 +11,8 @@ module View
 
       def render
         step = @game.round.active_step
+        return '' if step.respond_to?(:render_choices?) && !step.render_choices?
+
         choices = if step.respond_to?(:entity_choices)
                     step.entity_choices(@entity)
                   else

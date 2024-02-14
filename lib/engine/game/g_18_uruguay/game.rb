@@ -9,6 +9,10 @@ require_relative 'trains'
 require_relative 'phases'
 require_relative 'loans'
 require_relative '../../loan'
+require_relative 'ability_ship'
+require_relative 'goods'
+require_relative 'step/route_rptla'
+require_relative 'nationalization'
 
 module Engine
   module Game
@@ -25,9 +29,10 @@ module Engine
         include Phases
         include InterestOnLoans
         include Loans
+        include Goods
+        include Nationalization
 
         EBUY_SELL_MORE_THAN_NEEDED = true
-        GOODS_TRAIN = 'Goods'
 
         register_colors(darkred: '#ff131a',
                         red: '#d1232a',
@@ -43,7 +48,6 @@ module Engine
         SELL_BUY_ORDER = :sell_buy
         TILE_RESERVATION_BLOCKS_OTHERS = true
         CURRENCY_FORMAT_STR = '$U%d'
-        GOODS_DESCRIPTION_STR = 'Number of goods: '
 
         MUST_BUY_TRAIN = :always
 
@@ -59,7 +63,7 @@ module Engine
         NUMBER_OF_LOANS = 99
         LOAN_VALUE = 100
 
-        GAME_END_CHECK = { custom: :one_more_full_or_set }.freeze
+        GAME_END_CHECK = { bankrupt: :immediate, custom: :one_more_full_or_set }.freeze
 
         GAME_END_REASONS_TEXT = Base::GAME_END_REASONS_TEXT.merge(
           custom: 'Nationalized'
@@ -138,6 +142,11 @@ module Engine
           liquidation: :darkred
         )
 
+        EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+          nationalization: ['Nationalization',
+                            'Time for nationalization']
+        ).freeze
+
         def price_movement_chart
           [
             ['Action', 'Share Price Change'],
@@ -172,8 +181,14 @@ module Engine
 
         def setup
           super
+          goods_setup
           @rptla = @corporations.find { |c| c.id == 'RPTLA' }
           @fce = @corporations.find { |c| c.id == 'FCE' }
+
+          @rptla.add_ability(Engine::G18Uruguay::Ability::Ship.new(
+            type: 'Ship',
+            description: 'Ship goods'
+          ))
 
           @rptla.add_ability(Engine::Ability::Base.new(
             type: 'Goods',
@@ -266,12 +281,13 @@ module Engine
             Engine::Step::SpecialToken,
             G18Uruguay::Step::TakeLoanBuyCompany,
             Engine::Step::HomeToken,
-            Engine::Step::Track,
+            G18Uruguay::Step::Track,
             G18Uruguay::Step::Token,
-            Engine::Step::Route,
-            Engine::Step::Dividend,
+            G18Uruguay::Step::Route,
+            G18Uruguay::Step::RouteRptla,
+            G18Uruguay::Step::Dividend,
             G18Uruguay::Step::DiscardTrain,
-            Engine::Step::BuyTrain,
+            G18Uruguay::Step::BuyTrain,
             [G18Uruguay::Step::TakeLoanBuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
@@ -296,11 +312,6 @@ module Engine
           return active_abilities.first if active_abilities.one?
 
           active_abilities
-        end
-
-        # Nationalized
-        def nationalized?
-          @nationalized
         end
 
         def operating_order
@@ -332,26 +343,6 @@ module Engine
           end
         end
 
-        # Goods
-        def number_of_goods_at_harbor
-          ability = @rptla.abilities.find { |a| a.type == 'Goods' }
-          ability.description[/\d+/].to_i
-        end
-
-        def add_good_to_rptla
-          ability = @rptla.abilities.find { |a| a.type == 'Goods' }
-          count = number_of_goods_at_harbor + 1
-          ability.description = GOODS_DESCRIPTION_STR + count.to_s
-        end
-
-        def remove_goods_from_rptla(goods_count)
-          return if number_of_goods_at_harbor < goods_count
-
-          ability = @rptla.abilities.find { |a| a.type == 'Goods' }
-          count = number_of_goods_at_harbor - goods_count
-          ability.description = GOODS_DESCRIPTION_STR + count.to_s
-        end
-
         def check_distance(route, visits, train = nil)
           @round.current_routes[route.train] = route
           if route.corporation != @rptla && !nationalized?
@@ -366,22 +357,31 @@ module Engine
         end
 
         # Revenue
+        def revenue_str_rptla(route)
+          count = goods_on_ship(route.train)
+          str = 'No goods'
+          str = count.to_s + ' good' if count.positive?
+          str += 's' if count > 1
+          str
+        end
+
         def revenue_str(route)
-          return super unless route&.corporation == @rptla
+          return revenue_str_rptla(route) if route&.corporation == @rptla
 
-          'Ship'
+          good_hex = good_pickup_hex(route.train)
+          str = super
+          str += '+Good(' + good_hex.id + ')' unless good_hex.nil?
+          str
         end
 
-        def routes_revenue(route, corporation)
-          revenue = super
-          return revenue if @rptla != corporation
+        def rptla_revenue(corporation)
+          return 0 if @rptla != corporation
 
-          revenue += (corporation.loans.size.to_f / 2).floor * 10
-          revenue
+          (corporation.loans.size.to_f / 2).floor * 10
         end
 
-        def routes_subsidy(route, corporation)
-          return super if @rptla != corporation
+        def rptla_subsidy(corporation)
+          return 0 if @rptla != corporation
 
           (corporation.loans.size.to_f / 2).ceil * 10
         end
@@ -393,7 +393,7 @@ module Engine
           return revenue unless route&.corporation == @rptla
 
           train = route.train
-          revenue * goods_on_train(train)
+          revenue * goods_on_ship(train)
         end
 
         def or_round_finished
@@ -402,6 +402,63 @@ module Engine
 
         def final_operating_round?
           @final_turn == @turn
+        end
+
+        def place_home_token(corporation)
+          return if corporation == @fce
+
+          super
+        end
+
+        def can_hold_above_corp_limit?(_entity)
+          true
+        end
+
+        def next_round!
+          @round =
+            case @round
+            when G18Uruguay::Round::Nationalization
+              case @round.round_num
+              when 1
+                start_merge(current_entity.owner)
+              when 2
+                retreive_home_tokens
+                close_companies
+                @crowded_corps = nil
+                @cert_limit = CERT_LIMIT_NATIONALIZATION[@players.size][@corporations.size]
+                @log << "New certification limit is #{@cert_limit}"
+              end
+
+              if @round.round_num < 3
+                new_nationalization_round(@round.round_num + 1)
+              elsif @saved_or_round
+                # reorder_players
+                @log << '--Return to Operating Round--'
+                @saved_or_round
+              else
+                new_operating_round
+              end
+            when Engine::Round::Operating
+              if @nationalization_triggered
+                @nationalization_triggered = false
+                @saved_or_round = @round
+                new_nationalization_round(1)
+              else
+                super
+              end
+            else
+              super
+            end
+        end
+
+        def float_str(entity)
+          return super if !entity.corporation || entity.floatable
+
+          'Nationalization'
+        end
+
+        def can_par?(corporation, _parrer)
+          nationalized? || @nationalization_triggered || corporation != @fce
         end
       end
     end

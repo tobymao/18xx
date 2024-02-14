@@ -85,5 +85,19 @@ module Engine
       @extra = extra
       @cheater = cheater
     end
+
+    def inspect
+      if @hex
+        location =
+          if @hex.id == @hex.tile.name
+            [@hex.id, @city.index, @city.tokens.index(self)]
+          else
+            [@hex.id, @hex.tile.name, @city.index, @city.tokens.index(self) || '?']
+          end
+        "<#{self.class.name}: corp:#{corporation.name}, #{location.join('-')}>"
+      else
+        "<#{self.class.name}: corp:#{corporation.name}, price:#{@price}>"
+      end
+    end
   end
 end
