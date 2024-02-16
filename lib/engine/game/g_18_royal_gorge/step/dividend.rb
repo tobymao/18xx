@@ -13,6 +13,18 @@ module Engine
             actions
           end
 
+          def share_price_change(entity, revenue = 0)
+            price = entity.share_price.price
+            return { share_direction: :left, share_times: 1 } if revenue.zero?
+
+            times = [(revenue / price).to_i, 3].min
+            if times.positive?
+              { share_direction: :right, share_times: times }
+            else
+              {}
+            end
+          end
+
           def setup
             @shippable_gold = nil
             @shipped_gold = false
