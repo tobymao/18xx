@@ -115,6 +115,10 @@ module Engine
           self.class::MARKET_2D
         end
 
+        def map_neus_custom_depot?
+          false
+        end
+
         def map_neus_game_trains(trains)
           # don't use 8 trains
           trains.delete(find_train(trains, '8'))
@@ -133,6 +137,8 @@ module Engine
         end
 
         def map_neus_constants; end
+
+        def map_neus_or_round_finished; end
       end
     end
   end

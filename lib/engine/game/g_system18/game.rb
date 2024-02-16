@@ -8,6 +8,8 @@ require_relative '../base'
 require_relative 'map_base_customization'
 require_relative 'map_neus_customization'
 require_relative 'map_france_customization'
+require_relative 'map_twisting_track_customization'
+require_relative 'map_uk_limited_customization'
 
 module Engine
   module Game
@@ -20,6 +22,8 @@ module Engine
         include MapBaseCustomization
         include MapNeusCustomization
         include MapFranceCustomization
+        include MapTwistingTrackCustomization
+        include MapUKLimitedCustomization
 
         register_colors(red: '#d1232a',
                         orange: '#f58121',
@@ -267,6 +271,7 @@ module Engine
         SELL_BUY_ORDER = :sell_buy_sell
         GAME_END_CHECK = { bankrupt: :immediate, final_phase: :one_more_full_or_set }.freeze
         LAYOUT = :pointy
+        COLOR_SEQUENCE = %i[white yellow green brown gray].freeze
 
         # need to define constants that could be redefined
         SELL_AFTER = :first
@@ -282,11 +287,6 @@ module Engine
 
         def map_name
           @map_name ||= find_map_name || 'base'
-        end
-
-        def map?(map)
-          full = "map_#{map}"
-          optional_rules&.include?(full.to_sym)
         end
 
         def init_starting_cash(players, bank)
@@ -336,6 +336,18 @@ module Engine
           trains = []
           S18_TRAINS.each { |t| trains << t.dup }
           send("map_#{map_name}_game_trains", trains)
+        end
+
+        def init_train_handler
+          return super unless send("map_#{map_name}_custom_depot?")
+
+          trains = game_trains.flat_map do |train|
+            Array.new((train[:num] || num_trains(train))) do |index|
+              Train.new(**train, index: index)
+            end
+          end
+
+          GSystem18::Depot.new(trains, self)
         end
 
         def game_phases
@@ -432,6 +444,14 @@ module Engine
             end
             bundles
           end.compact
+        end
+
+        def upgrades_to_correct_color?(from, to, selected_company: nil)
+          COLOR_SEQUENCE.index(to.color) == (COLOR_SEQUENCE.index(from.color) + 1)
+        end
+
+        def or_round_finished
+          send("map_#{map_name}_or_round_finished")
         end
       end
     end

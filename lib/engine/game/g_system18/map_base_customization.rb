@@ -48,6 +48,10 @@ module Engine
           self.class::MARKET_2D
         end
 
+        def map_base_custom_depot?
+          false
+        end
+
         def map_base_game_trains(trains)
           find_train(trains, '4')[:rusts_on] = %w[8 D]
           trains
@@ -66,6 +70,8 @@ module Engine
         end
 
         def map_base_constants; end
+
+        def map_base_or_round_finished; end
       end
     end
   end

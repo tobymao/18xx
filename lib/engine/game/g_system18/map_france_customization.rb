@@ -115,6 +115,10 @@ module Engine
           self.class::MARKET_1D
         end
 
+        def map_france_custom_depot?
+          false
+        end
+
         def map_france_game_trains(trains)
           # don't use D trains
           trains.delete(find_train(trains, 'D'))
@@ -135,6 +139,8 @@ module Engine
         def map_france_constants
           redef_const(:CURRENCY_FORMAT_STR, 'F%s')
         end
+
+        def map_france_or_round_finished; end
       end
     end
   end

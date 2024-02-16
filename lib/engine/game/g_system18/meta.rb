@@ -32,10 +32,22 @@ module Engine
             designer: 'Scott Petersen',
             default: true,
           },
+          {
+            sym: :map_Twisting_Track,
+            short_name: 'Map: Twisting Track',
+            players: [2, 3, 4],
+            designer: 'Scott Petersen',
+          },
+          {
+            sym: :map_UK_Limited,
+            short_name: 'Map: UK Limited',
+            players: [2, 3, 4],
+            designer: 'Scott Petersen',
+          },
         ].freeze
 
         MUTEX_RULES = [
-          %i[map_NEUS map_France],
+          %i[map_NEUS map_France map_Twisting_Track map_UK_Limited],
         ].freeze
       end
     end
