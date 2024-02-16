@@ -271,6 +271,7 @@ module Engine
           # Corp -> Borrowed Train
           @borrowed_trains = {}
           create_destinations(DESTINATIONS)
+          national.destinated!
           national.add_ability(self.class::NATIONAL_IMMOBILE_SHARE_PRICE_ABILITY)
           national.add_ability(self.class::NATIONAL_FORCED_WITHHOLD_ABILITY)
         end
