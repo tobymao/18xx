@@ -12,7 +12,9 @@ module Engine
           end
 
           def visible_corporations
-            @game.sorted_corporations.reject { |c| c.type == :debt }
+            # * hide debt company
+            # * put metal companies always first
+            @game.sorted_corporations.reject { |c| c.type == :debt }.sort_by { |c| c.type == :metal ? 0 : 1 }
           end
         end
       end
