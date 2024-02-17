@@ -282,6 +282,7 @@ module Engine
             G18Uruguay::Step::TakeLoanBuyCompany,
             Engine::Step::HomeToken,
             G18Uruguay::Step::Track,
+            G18Uruguay::Step::DestinationBonus,
             G18Uruguay::Step::Token,
             G18Uruguay::Step::Route,
             G18Uruguay::Step::RouteRptla,
@@ -459,6 +460,13 @@ module Engine
 
         def can_par?(corporation, _parrer)
           nationalized? || @nationalization_triggered || corporation != @fce
+        end
+
+        # Second capatilization
+        def second_capitalization!(corporation)
+          amount = corporation.par_price.price * 5
+          @bank.spend(amount, corporation)
+          @log << "#{corporation.name} connected to destination receives #{format_currency(amount)}"
         end
       end
     end
