@@ -112,8 +112,6 @@ module Engine
       #  full_or - ends at the next end of a complete OR set
       #  one_more_full_or_set - finish the current OR set, then
       #                         end after the next complete OR set
-      #  two_more_full_or_sets - finish the current OR set, then
-      #                          end after the second complete OR set
       GAME_END_CHECK = { bankrupt: :immediate, bank: :full_or }.freeze
 
       BANKRUPTCY_ALLOWED = true
@@ -342,7 +340,6 @@ module Engine
         current_or: 'Next end of an OR',
         full_or: 'Next end of a complete OR set',
         one_more_full_or_set: 'End of the next complete OR set after the current one',
-        two_more_full_or_sets: 'End of the second complete OR set after the current one',
       }.freeze
 
       GAME_END_DESCRIPTION_REASON_MAP_TEXT = {
@@ -2671,13 +2668,12 @@ module Engine
           custom: custom_end_game_reached?,
         }.select { |_, t| t }
 
-        %i[immediate current_round current_or full_or one_more_full_or_set two_more_full_or_sets].each do |after|
+        %i[immediate current_round current_or full_or one_more_full_or_set].each do |after|
           triggers.keys.each do |reason|
-            next unless game_end_check_values[reason] == after
-
-            @final_turn ||= @turn + 1 if after == :one_more_full_or_set
-            @final_turn ||= @turn + 2 if after == :two_more_full_or_sets
-            return [reason, after]
+            if game_end_check_values[reason] == after
+              @final_turn ||= @turn + 1 if after == :one_more_full_or_set
+              return [reason, after]
+            end
           end
         end
 
@@ -2697,8 +2693,7 @@ module Engine
 
         final_or_in_set = final_or_in_set?(@round)
 
-        return (@turn == @final_turn) if final_or_in_set && ((after == :one_more_full_or_set) ||
-                                                             (after == :two_more_full_or_sets))
+        return (@turn == @final_turn) if final_or_in_set && (after == :one_more_full_or_set)
 
         final_or_in_set
       end
@@ -2739,7 +2734,7 @@ module Engine
                          else
                            " : Game Ends at conclusion of #{round_end.short_name} #{turn}.#{@phase.operating_rounds}"
                          end
-                       when :one_more_full_or_set, :two_more_full_or_sets
+                       when :one_more_full_or_set
                          " : Game Ends at conclusion of #{round_end.short_name}"\
                          " #{@final_turn}.#{final_operating_rounds}"
                        end

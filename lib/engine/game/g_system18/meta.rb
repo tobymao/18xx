@@ -33,8 +33,8 @@ module Engine
             default: true,
           },
           {
-            sym: :map_Twisting_Track,
-            short_name: 'Map: Twisting Track',
+            sym: :map_Twisting_Tracks,
+            short_name: 'Map: Twisting Tracks',
             players: [2, 3, 4],
             designer: 'Scott Petersen',
           },
@@ -47,7 +47,7 @@ module Engine
         ].freeze
 
         MUTEX_RULES = [
-          %i[map_NEUS map_France map_Twisting_Track map_UK_Limited],
+          %i[map_NEUS map_France map_Twisting_Tracks map_UK_Limited],
         ].freeze
       end
     end

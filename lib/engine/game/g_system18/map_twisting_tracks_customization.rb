@@ -3,9 +3,9 @@
 module Engine
   module Game
     module GSystem18
-      module MapTwistingTrackCustomization
+      module MapTwistingTracksCustomization
         # rubocop:disable Layout/LineLength
-        def map_twisting_track_game_tiles(tiles)
+        def map_twisting_tracks_game_tiles(tiles)
           tiles.delete('1')
           tiles.delete('2')
           tiles.delete('5')
@@ -15,8 +15,8 @@ module Engine
           tiles.delete('9')
           tiles.delete('12')
           tiles.delete('13')
-          tiles.delete('14')
-          tiles.delete('15')
+          tiles['14'] = 1
+          tiles['15'] = 1
           tiles.delete('23')
           tiles.delete('24')
           tiles.delete('25')
@@ -40,51 +40,49 @@ module Engine
           tiles.delete('61')
           tiles.delete('63')
           tiles.delete('69')
-          tiles.delete('205')
-          tiles.delete('206')
-          tiles.delete('619')
+          tiles['619'] = 1
           tiles.merge!({
                          'X1' =>
                          {
                            'count' => 2,
                            'color' => 'gray',
                            'code' =>
-                           'city=revenue:70,loc:5.5;city=revenue:70,loc:1.5;path=a:0,b:_0;path=a:5,b:_0;path=a:3,b:_0;path=a:1,b:_1;path=a:2,b:_1;path=a:4,b:_1;label=OO',
+                           'city=revenue:60,loc:5.5;city=revenue:60,loc:1.5;path=a:0,b:_0;path=a:5,b:_0;path=a:3,b:_0;path=a:1,b:_1;path=a:2,b:_1;path=a:4,b:_1;label=OO',
                          },
                          'X2' =>
               {
-                'count' => 1,
+                'count' => 2,
                 'color' => 'pink',
                 'code' =>
-                'city=revenue:70,slots:2,loc:5.5;city=revenue:80,loc:1.5;path=a:0,b:_0;path=a:5,b:_0;path=a:3,b:_0;path=a:1,b:_1;path=a:2,b:_1;path=a:4,b:_1;label=OO',
+                'city=revenue:70,loc:5.5;city=revenue:70,loc:1.5;path=a:0,b:_0;path=a:5,b:_0;path=a:3,b:_0;path=a:1,b:_1;path=a:2,b:_1;path=a:4,b:_1;label=OO',
               },
                          'X3' =>
-                {
-                  'count' => 1,
-                  'color' => 'pink',
-                  'code' =>
-                  'city=revenue:80,loc:5.5;city=revenue:70,slots:2,loc:1.5;path=a:0,b:_0;path=a:5,b:_0;path=a:3,b:_0;path=a:1,b:_1;path=a:2,b:_1;path=a:4,b:_1;label=OO',
-                },
-                         'X4' =>
                   {
-                    'count' => 2,
+                    'count' => 1,
                     'color' => 'purple',
                     'code' =>
-                    'city=revenue:80,slots:2,loc:5.5;city=revenue:80,slots:2,loc:1.5;path=a:0,b:_0;path=a:5,b:_0;path=a:3,b:_0;path=a:1,b:_1;path=a:2,b:_1;path=a:4,b:_1;label=OO',
+                    'city=revenue:80,slots:2,loc:5.5;city=revenue:80,loc:1.5;path=a:0,b:_0;path=a:5,b:_0;path=a:3,b:_0;path=a:1,b:_1;path=a:2,b:_1;path=a:4,b:_1;label=OO',
+                  },
+                         'X4' =>
+                  {
+                    'count' => 1,
+                    'color' => 'purple',
+                    'code' =>
+                    'city=revenue:80,loc:5.5;city=revenue:80,slots:2,loc:1.5;path=a:0,b:_0;path=a:5,b:_0;path=a:3,b:_0;path=a:1,b:_1;path=a:2,b:_1;path=a:4,b:_1;label=OO',
                   },
                          'X5' =>
                     {
                       'count' => 1,
                       'color' => 'orange',
                       'code' =>
-                      'city=revenue:90,slots:4;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=OO',
+                      'city=revenue:90,slots:2,loc:5.5;city=revenue:90,slots:2,loc:1.5;path=a:0,b:_0;path=a:5,b:_0;path=a:3,b:_0;path=a:1,b:_1;path=a:2,b:_1;path=a:4,b:_1;label=OO',
                     },
                          'X6' =>
                       {
                         'count' => 1,
                         'color' => 'navy',
                         'code' =>
-                        'city=revenue:100,slots:5;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=OO',
+                        'city=revenue:100,slots:4;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=OO',
                       },
                        })
 
@@ -92,7 +90,7 @@ module Engine
         end
         # rubocop:enable Layout/LineLength
 
-        def map_twisting_track_game_location_names
+        def map_twisting_tracks_game_location_names
           {
             'B5' => 'Linearia',
             'B7' => 'Vortex Vista',
@@ -111,7 +109,7 @@ module Engine
           }
         end
 
-        def map_twisting_track_game_hexes
+        def map_twisting_tracks_game_hexes
           {
             gray: {
               ['A6'] => 'path=a:0,b:4,b_lane:2.1;path=a:5,b:4,b_lane:2.0',
@@ -145,39 +143,39 @@ module Engine
           }
         end
 
-        def map_twisting_track_game_companies
+        def map_twisting_tracks_game_companies
           []
         end
 
         # DGN GFN PHX KKN SPX
-        def map_twisting_track_game_corporations(corps)
+        def map_twisting_tracks_game_corporations(corps)
           corps.each_with_index do |c, idx|
             c[:coordinates] = %w[B5 B9 E6 D3 D9][idx]
           end
           corps
         end
 
-        def map_twisting_track_game_cash
+        def map_twisting_tracks_game_cash
           { 2 => 1100, 3 => 750, 4 => 550 }
         end
 
-        def map_twisting_track_game_cert_limit
+        def map_twisting_tracks_game_cert_limit
           { 2 => 20, 3 => 13, 4 => 11 }
         end
 
-        def map_twisting_track_game_capitalization
+        def map_twisting_tracks_game_capitalization
           :full
         end
 
-        def map_twisting_track_game_market
+        def map_twisting_tracks_game_market
           self.class::MARKET_2D
         end
 
-        def map_twisting_track_custom_depot?
+        def map_twisting_tracks_custom_depot?
           false
         end
 
-        def map_twisting_track_game_trains(trains)
+        def map_twisting_tracks_game_trains(trains)
           # don't use 8 trains
           trains.delete(find_train(trains, '8'))
           find_train(trains, '4')[:rusts_on] = 'D'
@@ -186,17 +184,43 @@ module Engine
           find_train(trains, '3')[:num] = 2
           find_train(trains, '4')[:num] = 1
           find_train(trains, '5')[:num] = 1
+          find_train(trains, '5')[:rusts_on] = 'D-Purple'
           find_train(trains, '6')[:num] = 1
+          find_train(trains, '6')[:rusts_on] = 'D-Orange'
           find_train(trains, 'D')[:num] = 1
           find_train(trains, 'D')[:price] = 700
-          trains.append({ name: 'D-Pink', distance: 999, price: 700, num: 1 })
-          trains.append({ name: 'D-Purple', distance: 999, price: 700, num: 1 })
-          trains.append({ name: 'D-Orange', distance: 999, price: 700, num: 1 })
-          trains.append({ name: 'D-Navy', distance: 999, price: 700, num: 1 })
+          trains.append({
+            name: 'D-Pink',
+            distance: 999,
+            price: 700,
+            num: 1,
+            discount: { '5' => 200, '6' => 200, 'D' => 200 },
+          })
+          trains.append({
+            name: 'D-Purple',
+            distance: 999,
+            price: 700,
+            num: 1,
+            discount: { '5' => 200, '6' => 200, 'D' => 200, 'D-Pink' => 200 },
+          })
+          trains.append({
+            name: 'D-Orange',
+            distance: 999,
+            price: 700,
+            num: 1,
+            discount: { '6' => 200, 'D' => 200, 'D-Pink' => 200, 'D-Purple' => 200 },
+          })
+          trains.append({
+            name: 'D-Navy',
+            distance: 999,
+            price: 700,
+            num: 1,
+            discount: { 'D' => 200, 'D-Pink' => 200, 'D-Purple' => 200, 'D-Orange' => 200 },
+          })
           trains
         end
 
-        def map_twisting_track_game_phases
+        def map_twisting_tracks_game_phases
           [
             { name: '2', train_limit: 4, tiles: [:yellow], operating_rounds: 1 },
             {
@@ -205,7 +229,6 @@ module Engine
               train_limit: 4,
               tiles: %i[yellow green],
               operating_rounds: 2,
-              status: ['can_buy_companies'],
             },
             {
               name: '4',
@@ -213,7 +236,6 @@ module Engine
               train_limit: 3,
               tiles: %i[yellow green],
               operating_rounds: 2,
-              status: ['can_buy_companies'],
             },
             {
               name: '5',
@@ -267,11 +289,11 @@ module Engine
           ]
         end
 
-        def map_twisting_track_constants
+        def map_twisting_tracks_constants
           redef_const(:COLOR_SEQUENCE, %i[white yellow green brown gray pink purple orange navy])
         end
 
-        def map_twisting_track_or_round_finished; end
+        def map_twisting_tracks_or_round_finished; end
       end
     end
   end

@@ -8,7 +8,7 @@ require_relative '../base'
 require_relative 'map_base_customization'
 require_relative 'map_neus_customization'
 require_relative 'map_france_customization'
-require_relative 'map_twisting_track_customization'
+require_relative 'map_twisting_tracks_customization'
 require_relative 'map_uk_limited_customization'
 
 module Engine
@@ -22,7 +22,7 @@ module Engine
         include MapBaseCustomization
         include MapNeusCustomization
         include MapFranceCustomization
-        include MapTwistingTrackCustomization
+        include MapTwistingTracksCustomization
         include MapUKLimitedCustomization
 
         register_colors(red: '#d1232a',
@@ -162,7 +162,6 @@ module Engine
             distance: 5,
             price: 500,
             num: 4,
-            events: [{ 'type' => 'close_companies' }],
           },
           { name: '6', distance: 6, price: 630, num: 3 },
           {
@@ -188,7 +187,6 @@ module Engine
             train_limit: 4,
             tiles: %i[yellow green],
             operating_rounds: 2,
-            status: ['can_buy_companies'],
           },
           {
             name: '4',
@@ -196,7 +194,6 @@ module Engine
             train_limit: 3,
             tiles: %i[yellow green],
             operating_rounds: 2,
-            status: ['can_buy_companies'],
           },
           {
             name: '5',
@@ -229,7 +226,6 @@ module Engine
             train_limit: 4,
             tiles: %i[yellow green],
             operating_rounds: 2,
-            status: ['can_buy_companies'],
           },
           {
             name: '4',
@@ -237,7 +233,6 @@ module Engine
             train_limit: 3,
             tiles: %i[yellow green],
             operating_rounds: 2,
-            status: ['can_buy_companies'],
           },
           {
             name: '5',
