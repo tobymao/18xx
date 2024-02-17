@@ -121,6 +121,27 @@ module Engine
               @log << "#{entity.name} does not run"
             end
           end
+
+          def rptla_share_price_change(entity, revenue)
+            return {} if entity == @game.rptla && @game.phase.current[:name] == '2'
+
+            price = entity.share_price.price
+            times = 0
+            times = 1 if revenue >= price
+            times = 2 if revenue >= price * 2
+
+            if revenue.positive?
+              { share_direction: :right, share_times: times }
+            else
+              { share_direction: :left, share_times: 1 }
+            end
+          end
+
+          def share_price_change(entity, revenue)
+            return rptla_share_price_change(entity, revenue) if entity == @game.rptla
+
+            super
+          end
         end
       end
     end
