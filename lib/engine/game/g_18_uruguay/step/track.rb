@@ -12,7 +12,7 @@ module Engine
             return [] if entity == @game.rptla
 
             @round.loan_taken |= false
-            actions = super
+            actions = super.map(&:clone)
             actions << 'take_loan' if @game.can_take_loan?(entity) && !@round.loan_taken && !@game.nationalized?
 
             actions
