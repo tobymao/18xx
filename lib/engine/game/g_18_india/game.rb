@@ -88,6 +88,9 @@ module Engine
           { name: '5', distance: 999, price: 1100, num: 3 },
         ].freeze
 
+        TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false },
+                    { lay: :not_if_upgraded, upgrade: false }, { lay: :not_if_upgraded, upgrade: false }].freeze
+
         EAST_GROUP = %w[BNR DHR EIR EBR NCR TR].freeze
         WEST_GROUP = %w[BR NWR PNS SPD WR].freeze
         SOUTH_GROUP = %w[CGR KGF MR NSR SIR WIP].freeze
@@ -225,6 +228,8 @@ module Engine
                 # set the share as reserved when in player hands
                 card.treasury.buyable = false
                 @draft_deck << card
+              elsif share.percent == 0
+                # exclude the 0% manager's share
               else
                 draw_deck << card
               end
@@ -367,8 +372,8 @@ module Engine
         end
 
         def stock_round
-          # Engine::Round::Stock.new(self, [Engine::Step::BuySellParShares])
-          Engine::Round::Stock.new(self, [G18India::Step::SellOnceThenBuyCerts])
+          # Test if home token step resolves issues of placing token when company floats
+          Engine::Round::Stock.new(self, [Engine::Step::HomeToken, G18India::Step::SellOnceThenBuyCerts])
         end
 
         def operating_round(round_num)
@@ -438,18 +443,20 @@ module Engine
             return "IPO Row:#{row + 1} Index:#{index + 1}"
           elsif (company.type == :bond) && (company.owner == @bank)
             return "Bank has #{count_of_bonds} / 10 Bonds"
-          elsif current_entity.hand.include?(company)
-            return "Player's Hand"
+          elsif @round.stock?
+            return "Player's Hand" if current_entity.hand.include?(company)
           end
           ''
         end
 
         # Use to indicate corp status, e.g. managed vs directed companies
         def status_str(corporation)
-          if corporation.presidents_share.owner.player? && corporation.name != 'GIPR'
-            'Directed Company'
+          if corporation.presidents_share.percent == 20
+            "Directed Company: #{corporation.owner.name}"
+          elsif !corporation.owner.nil?
+            "Managed Company: #{corporation.owner.name}"
           else
-            'Managed Company'
+            'Need Manager or Director'
           end
         end
 
@@ -526,6 +533,26 @@ module Engine
         def remove_from_hand(player, company)
           player.hand.delete(company)
           player.unsold_companies.delete(company)
+        end
+
+        def assign_manager(corporation, player)
+          corporation.make_manager(player, @phase)
+          @log << "#{corporation.full_name} is a MANAGED corporation"
+        end
+
+        def swap_director_share(presidents_share, swap_to, president, corporation)
+          @share_pool.change_president(presidents_share, swap_to, president)
+          @log << "#{corporation.full_name} is now a DIRECTED corporation"
+        end
+
+        # prevents transfer of president's share before proxy is bought
+        def can_swap_for_presidents_share_directly_from_corporation?
+          false
+        end
+
+        # check implementations?
+        def home_token_locations(_corporation)
+          raise NotImplementedError
         end
 
         def price_movement_chart

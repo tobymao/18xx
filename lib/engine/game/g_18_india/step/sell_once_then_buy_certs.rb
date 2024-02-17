@@ -7,7 +7,6 @@ require_relative '../../../step/share_buying'
 # Selling does not restrict buy actions
 # NOTE: This section isn't completed, in progress for stock round
 # TODO: Convert Bonds -> add ability to bonds
-# TODO: Managed Corps -> modify SharePool to prevent automatic move of Pres if not in play
 module Engine
   module Game
     module G18India
@@ -16,12 +15,31 @@ module Engine
           include Engine::Step::ShareBuying
 
           def debugging_log(str)
-            @log << "#{str} - stock_turns: #{@round.stock_turns} - selling_round: #{selling_round?} - @game.turn: #{@game.turn}"
+            @log << str
+            @log << " stock_turns: #{@round.stock_turns} - selling_round: #{selling_round?} - @game.turn: #{@game.turn}"
             @log << " current_actions: #{@round.current_actions} - players_history: #{@round.players_history[current_entity]}"
-            @log << " round_num: #{@round.round_num} - pass_order: #{@round.pass_order} - last_to_act: #{@round.last_to_act}"
+            @log << " pass_order: #{@round.pass_order} - last_to_act: #{@round.last_to_act}"
             @log << " Cert Limit: #{@game.cert_limit(current_entity)} - Num Certs: #{@game.num_certs(current_entity)}"
             @log << "B: #{bought?} M: #{@round.bought_from_market} H: #{@round.bought_from_hand} IPO #{@round.bought_from_ipo}"
             @log << "buyable companies: #{buyable_companies(current_entity).map(&:name).join(', ')}"
+          end
+
+          def debug_corp_log(share)
+            corp = share.corporation
+            p_s = corp.presidents_share
+            @log << "share: #{share.id} / owner: #{share.owner.name}"
+            @log << "corp owner: #{corp.owner ? corp.owner.name : 'nil'} / Pres Share owner: #{p_s.owner.name} at #{p_s.percent}%"
+            @log << "floated: #{corp.floated} / iposhares #{corp.ipo_shares.to_s}"
+            @log << "#{current_entity&.name} shares: #{current_entity.shares.select { |s| s.corporation == corp }.to_s}"
+            @log << "shareholders: #{corp.player_share_holders.to_h}"
+          end
+
+          def log_pass(entity)
+            return @log << "#{entity.name} passes" if @round.current_actions.empty?
+            return if bought? && sold?
+
+            action = selling_round? ? 'to sell' : 'to buy'
+            @log << "#{entity.name} declines #{action} shares"
           end
 
           def setup
@@ -29,7 +47,7 @@ module Engine
             @round.stock_turns += 1
             @round.bought_from_market = false
             @round.bought_from_hand = false
-            debugging_log('Setup')
+            # debugging_log('Setup')
           end
 
           def round_state
@@ -188,16 +206,31 @@ module Engine
               @game.bank.companies.delete(company)
               @round.bought_from_market = true
             else
-              location = current_entity.to_s + "'s hand"
+              location = current_entity&.name + "'s hand"
               @game.remove_from_hand(current_entity, company)
               @round.bought_from_hand = company
             end
 
             case company.type
-            when :share, :president
-              company.treasury.buyable = true
-              buy_shares(entity, company.treasury, silent: true)
-              name = "a #{company.treasury.percent}% share of #{company.name}"
+            when :share
+              share = company.treasury
+              corp = share.corporation
+              @game.assign_manager(corp, entity) if corp.owner.nil?
+              share.buyable = true
+              buy_shares(entity, share, silent: true)
+              name = "a #{share.percent}% share of #{company.name}"
+              debug_corp_log(share)
+            when :president
+              share = company.treasury
+              corp = share.corporation
+              share.buyable = true
+              corp.change_to_directed_corp(share) # change to directed corporation
+              buy_shares(entity, share, silent: true)
+              # Old manager receives director's cert if at same or higher number of shares as purchaser
+              @game.swap_director_share(share, entity, corp.owner, corp) if corp.manager_need_directors_share?
+              name = "the DIRECTOR's share of #{company.name}"
+              # float corp if not floated?
+              debug_corp_log(share)
             when :private, :bond
               company.owner = entity
               entity.companies << company
@@ -208,12 +241,16 @@ module Engine
 
             @log << "#{entity.name} buys #{name} from #{location} for #{@game.format_currency(price)}"
 
-            debugging_log('Process Buy Company')
+            # debugging_log('Process Buy Company')
           end
 
           # ------ Code for 'Buy Shares' Action ------
 
           def process_buy_shares(action)
+            # Assign Manager if none yet
+            corp = action.bundle.corporation
+            @game.assign_manager(corp, action.entity) if corp.owner.nil?
+
             super
             @round.bought_from_market = true
           end
