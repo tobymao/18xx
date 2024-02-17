@@ -38,6 +38,12 @@ module Engine
             'Pay or Withhold Dividends'
           end
 
+          def auto_actions(entity)
+            return [Engine::Action::Dividend.new(current_entity, kind: 'withhold')] if entity.loans.size.positive?
+
+            []
+          end
+
           def dividend_options(entity)
             total_revenue = routes_revenue(routes, entity)
             revenue = total_revenue
