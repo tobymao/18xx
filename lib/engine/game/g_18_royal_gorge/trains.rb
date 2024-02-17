@@ -8,7 +8,7 @@ module Engine
           {
             name: '2+',
             distance: [{ 'nodes' => %w[city offboard], 'pay' => 2, 'visit' => 2 },
-                       { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
+                       { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
             price: 80,
             rusts_on: '4+',
             salvage: 20,
@@ -18,7 +18,7 @@ module Engine
           {
             name: '3+',
             distance: [{ 'nodes' => %w[city offboard], 'pay' => 3, 'visit' => 3 },
-                       { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
+                       { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
             price: 180,
             rusts_on: '6',
             salvage: 45,
@@ -28,7 +28,7 @@ module Engine
           {
             name: '4+',
             distance: [{ 'nodes' => %w[city offboard], 'pay' => 4, 'visit' => 4 },
-                       { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
+                       { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
             price: 400,
             num: 3,
             events: [{ 'type' => 'brown_par', 'when' => 3 }],
@@ -36,7 +36,7 @@ module Engine
           {
             name: '5+',
             distance: [{ 'nodes' => %w[city offboard], 'pay' => 5, 'visit' => 5 },
-                       { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
+                       { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
             price: 500,
             num: 2,
           },
