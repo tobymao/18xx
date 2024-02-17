@@ -111,28 +111,51 @@ module Engine
 
         def map_twisting_tracks_game_hexes
           {
+            #gray: {
+            #  ['A6'] => 'path=a:0,b:4,b_lane:2.1;path=a:5,b:4,b_lane:2.0',
+            #  ['A8'] => 'path=a:1,b:0,a_lane:2.0;path=a:1,b:5,a_lane:2.1',
+
+            #  ['A10'] => 'path=a:0,b:5',
+            #  ['B11'] => 'path=a:2,b:0;path=a:1,b:5',
+            #  ['C12'] => 'path=a:2,b:1',
+
+            #  ['D11'] => 'path=a:2,b:0,b_lane:2.1;path=a:1,b:0,b_lane:2.0',
+            #  ['E10'] => 'path=a:3,b:2,a_lane:2.0;path=a:3,b:1,a_lane:2.1',
+
+            #  ['F3'] => 'path=a:3,b:4',
+            #  ['F5'] => 'path=a:2,b:4;path=a:1,b:3',
+            #  ['F7'] => 'path=a:2,b:4;path=a:1,b:3',
+            #  ['F9'] => 'path=a:1,b:2',
+
+            #  ['E2'] => 'path=a:3,b:4',
+
+            #  ['D1'] => 'path=a:3,b:4',
+            #  ['C2'] => 'path=a:0,b:4;path=a:3,b:5',
+            #  ['B3'] => 'path=a:0,b:4;path=a:3,b:5',
+            #  ['A4'] => 'path=a:0,b:5',
+            #},
             gray: {
-              ['A6'] => 'path=a:0,b:4,b_lane:2.1;path=a:5,b:4,b_lane:2.0',
-              ['A8'] => 'path=a:1,b:0,a_lane:2.0;path=a:1,b:5,a_lane:2.1',
+              ['A6'] => 'town=revenue:20;path=a:4,b:_0,a_lane:2.1;path=a:_0,b:0;path=a:5,b:4,b_lane:2.0',
+              ['A8'] => 'town=revenue:20;path=a:1,b:0,a_lane:2.0;path=a:1,b:_0,a_lane:2.1;path=a:_0,b:5',
 
-              ['A10'] => 'path=a:0,b:5',
+              ['A10'] => 'town=revenue:20;path=a:0,b:_0;path=a:_0,b:5',
               ['B11'] => 'path=a:2,b:0;path=a:1,b:5',
-              ['C12'] => 'path=a:2,b:1',
+              ['C12'] => 'town=revenue:20;path=a:2,b:_0;path=a:_0,b:1',
 
-              ['D11'] => 'path=a:2,b:0,b_lane:2.1;path=a:1,b:0,b_lane:2.0',
-              ['E10'] => 'path=a:3,b:2,a_lane:2.0;path=a:3,b:1,a_lane:2.1',
+              ['D11'] => 'town=revenue:20;path=a:0,b:_0,a_lane:2.1;path=a:_0,b:2;path=a:1,b:0,b_lane:2.0',
+              ['E10'] => 'town=revenue:20;path=a:3,b:2,a_lane:2.0;path=a:3,b:_0,a_lane:2.1;path=a:_0,b:1',
 
-              ['F3'] => 'path=a:3,b:4',
-              ['F5'] => 'path=a:2,b:4;path=a:1,b:3',
+              ['F3'] => 'town=revenue:20;path=a:3,b:_0;path=a:_0,b:4',
+              ['F5'] => 'town=revenue:20;path=a:1,b:3;path=a:2,b:_0;path=a:_0,b:4',
               ['F7'] => 'path=a:2,b:4;path=a:1,b:3',
-              ['F9'] => 'path=a:1,b:2',
+              ['F9'] => 'town=revenue:20;path=a:1,b:_0;path=a:_0,b:2',
 
-              ['E2'] => 'path=a:3,b:4',
+              ['E2'] => 'town=revenue:20;path=a:3,b:_0;path=a:_0,b:4',
 
-              ['D1'] => 'path=a:3,b:4',
-              ['C2'] => 'path=a:0,b:4;path=a:3,b:5',
+              ['D1'] => 'town=revenue:20;path=a:3,b:_0;path=a:_0,b:4',
+              ['C2'] => 'town=revenue:20;path=a:0,b:4;path=a:3,b:_0;path=a:_0,b:5',
               ['B3'] => 'path=a:0,b:4;path=a:3,b:5',
-              ['A4'] => 'path=a:0,b:5',
+              ['A4'] => 'town=revenue:20;path=a:0,b:_0;path=a:_0,b:5',
             },
             white: {
               %w[B5 B9 D3 D9 E6] => 'city',
