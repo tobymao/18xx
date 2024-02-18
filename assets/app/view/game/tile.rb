@@ -4,6 +4,7 @@ require 'lib/settings'
 require 'view/game/part/blocker'
 require 'view/game/part/borders'
 require 'view/game/part/cities'
+require 'view/game/part/debug_region_weights'
 require 'view/game/part/label'
 require 'view/game/part/location_name'
 require 'view/game/part/revenue'
@@ -119,6 +120,7 @@ module View
         # can be hidden
         children << rendered_loc_name if rendered_loc_name && setting_for(:show_location_names, @game)
         children << render_coords if @show_coords
+        children << render_tile_part(Part::DebugRegionWeights) if Lib::Params['grid']
 
         children.flatten!
 

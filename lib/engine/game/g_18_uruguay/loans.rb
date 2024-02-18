@@ -17,7 +17,7 @@ module Engine
         end
 
         def interest_owed(entity)
-          return 0 if entity == @rptla
+          return 0 if entity == @rptla || nationalized?
 
           10 * loans_due_interest(entity)
         end
