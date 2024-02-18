@@ -403,6 +403,14 @@ module Engine
           @recently_floated = []
         end
 
+        def after_par(corporation)
+          # Remove the information "ability" when it's no longer relevant
+          ability = corporation.all_abilities.find { |a| a.description&.include?('May not be started until') }
+          corporation.remove_ability(ability)
+
+          super
+        end
+
         def after_buy_company(player, company, _price)
           abilities(company, :shares) do |ability|
             ability.shares.each do |share|
