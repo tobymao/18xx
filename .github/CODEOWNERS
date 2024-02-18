@@ -35,3 +35,8 @@ lib/engine/game/g_rolling_stock* @roseundy
 lib/engine/game/g_1822_africa* @vandamm
 lib/engine/game/g_18_jpt* @vandamm
 lib/engine/game/g_18_scan* @vandamm
+
+
+lib/engine/game/g_18_cz* @zwergenpunk
+lib/engine/game/g_1840* @zwergenpunk
+
