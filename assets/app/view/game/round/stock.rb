@@ -426,7 +426,7 @@ module View
 
           div_class = buy_buttons.size < 5 ? '.inline' : ''
           [h(:div, [
-            h("div#{div_class}", { style: { marginTop: '0.5rem' } }, "Buy #{@selected_company.sym}: "),
+            h("div#{div_class}", { style: { marginTop: '0.5rem' } }, "Buy #{company.sym}: "),
             *buy_buttons,
           ])]
         end
