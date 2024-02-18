@@ -34,29 +34,44 @@ module Engine
           add_ability(ability)
         end
 
-        def make_manager(player, phase)
+        def make_manager(player)
           @ipo_owner.shares_by_corporation[self].delete(@managers_share)
           player.shares_by_corporation[self] << @managers_share
           @managers_share.owner = player
-          owner = player
-          return if @name == 'GIPR' && phase.name == 'I' # GIPR can't float in phase I
-          @floatable = true # company can float now that there is a manager
+          self.owner = player
+          @floatable = true # Corp may float now that there is a (potential) manager
         end
 
-        def change_to_directed_corp(pres_share)
-          @presidents_share = pres_share
+        def change_to_directed_corp(share, player)
+          @presidents_share = share
+          # adjust shareholders
+          share_holders[@ipo_owner] -= share.percent
+          share_holders[player] += share.percent
+          # transfer share to player and player pays corp
+          @ipo_owner.shares_by_corporation[self].delete(@presidents_share)
+          player.shares_by_corporation[self] << @presidents_share
+          @presidents_share.owner = player
+          player.spend(share.price, self)
+          self.owner = player
+          # remove Manager's Share
           mgr_share_owner = @managers_share.owner
           mgr_share_owner.shares_by_corporation[self].delete(@managers_share)
-          @floatable = true # company can float now that there is a director
+          @floatable = true # Corp may float now that there is a director
+          @floated = true # Director's share floats corp
+        end
+
+        def manager_count
+          @managers_share.owner.num_shares_of(self)
+        end
+
+        def pres_cert_count
+          @presidents_share.owner.num_shares_of(self)
         end
 
         def manager_need_directors_share?
-          return false if @presidents_share.owner == owner
+          return false if @presidents_share.owner == @managers_share.owner
 
-          owner_count = owner.num_shares_of(self)
-          pres_cert_count = @presidents_share.owner.num_shares_of(self)
-
-          owner_count >= pres_cert_count
+          manager_count >= pres_cert_count
         end
 
         def book_value

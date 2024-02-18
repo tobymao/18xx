@@ -198,7 +198,7 @@ module Engine
 
             if @game.in_ipo?(company)
               row, _index = @game.ipo_row_and_index(company)
-              location = 'IPO Row: ' + row.to_s
+              location = 'IPO Row: ' + (row + 1).to_s
               @game.ipo_remove(row, company)
               @round.bought_from_ipo = row
             elsif owner == @game.bank
@@ -206,7 +206,7 @@ module Engine
               @game.bank.companies.delete(company)
               @round.bought_from_market = true
             else
-              location = current_entity&.name + "'s hand"
+              location = "thier draft hand"
               @game.remove_from_hand(current_entity, company)
               @round.bought_from_hand = company
             end
@@ -215,33 +215,50 @@ module Engine
             when :share
               share = company.treasury
               corp = share.corporation
-              @game.assign_manager(corp, entity) if corp.owner.nil?
+              old_pres = corp.owner
+              log_purchase("a share of #{company.name}", location, price)
+              corp.make_manager(entity) if corp.owner.nil?
               share.buyable = true
               buy_shares(entity, share, silent: true)
-              name = "a #{share.percent}% share of #{company.name}"
-              debug_corp_log(share)
+              log_new_president(corp.owner, old_pres, corp)
+              # debug_corp_log(share)
             when :president
               share = company.treasury
               corp = share.corporation
+              old_pres = corp.owner
               share.buyable = true
-              corp.change_to_directed_corp(share) # change to directed corporation
-              buy_shares(entity, share, silent: true)
-              # Old manager receives director's cert if at same or higher number of shares as purchaser
-              @game.swap_director_share(share, entity, corp.owner, corp) if corp.manager_need_directors_share?
-              name = "the DIRECTOR's share of #{company.name}"
-              # float corp if not floated?
-              debug_corp_log(share)
+              already_floated = corp.floated?
+              log_purchase("the DIRECTOR's share of #{company.name}", location, price)
+              corp.change_to_directed_corp(share, entity)
+              @log << "#{corp.name} is now a DIRECTED company"
+              if already_floated == false
+                # corp wasn't a managed yet therefor director cert has priority and becomes president
+                @game.float_corporation(corp)
+                maybe_place_home_token(corp)
+              elsif corp.manager_need_directors_share?
+                # corp was a managed corp and manager needs director's cert
+                corp.owner = corp.managers_share.owner
+                @game.swap_director_share(share, entity, corp.owner, corp)
+              end
+              log_new_president(corp.owner, old_pres, corp)
+              # debug_corp_log(share)
             when :private, :bond
               company.owner = entity
               entity.companies << company
               entity.spend(price, owner.nil? ? @game.bank : owner)
+              log_purchase(company.name, location, price)
               @game.after_buy_company(entity, company, price) if entity.player?
-              name = company.name
             end
-
-            @log << "#{entity.name} buys #{name} from #{location} for #{@game.format_currency(price)}"
-
             # debugging_log('Process Buy Company')
+          end
+
+          def log_purchase(what, where, price)
+            @log << "#{current_entity.name} buys #{what} from #{where} for #{@game.format_currency(price)}"
+          end
+
+          def log_new_president(new_pres, old_pres, corporation)
+            pres_type = corporation.mangaged_company? ? 'Manager' : 'Director'
+            @log << "#{new_pres.name} becomes the #{pres_type} of #{corporation.name}" unless new_pres == old_pres
           end
 
           # ------ Code for 'Buy Shares' Action ------
@@ -249,7 +266,7 @@ module Engine
           def process_buy_shares(action)
             # Assign Manager if none yet
             corp = action.bundle.corporation
-            @game.assign_manager(corp, action.entity) if corp.owner.nil?
+            corp.make_manager(action.entity) if corp.owner.nil?
 
             super
             @round.bought_from_market = true

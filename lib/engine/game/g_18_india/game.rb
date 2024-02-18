@@ -451,10 +451,11 @@ module Engine
 
         # Use to indicate corp status, e.g. managed vs directed companies
         def status_str(corporation)
+          president = corporation.owner ? corporation.owner.name : 'none'
           if corporation.presidents_share.percent == 20
-            "Directed Company: #{corporation.owner.name}"
+            "Directed Company: #{president}"
           elsif !corporation.owner.nil?
-            "Managed Company: #{corporation.owner.name}"
+            "Managed Company: #{president}"
           else
             'Need Manager or Director'
           end
@@ -536,7 +537,7 @@ module Engine
         end
 
         def assign_manager(corporation, player)
-          corporation.make_manager(player, @phase)
+          corporation.make_manager(player)
           @log << "#{corporation.full_name} is a MANAGED corporation"
         end
 
