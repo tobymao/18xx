@@ -457,7 +457,7 @@ module Engine
           elsif !corporation.owner.nil?
             "Managed Company: #{president}"
           else
-            'Need Manager or Director'
+            "Need manager & #{corporation.percent_to_float}% to float"
           end
         end
 
