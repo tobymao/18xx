@@ -42,8 +42,8 @@ module Engine
             next_entity! if finished?
           end
 
-          def reorder_entities!
-            remaining = @entities[@entity_index..-1].sort.reverse
+          def recalculate_order
+            remaining = @entities[@entity_index..-1].sort
             @entities[@entity_index..-1] = remaining
           end
 
