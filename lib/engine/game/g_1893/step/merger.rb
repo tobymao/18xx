@@ -18,9 +18,17 @@ module Engine
           def actions(entity)
             return [] if entity.company?
             return [] unless choice_available?
-            return [] if @game.round.merger_candidates_for(@game.round.current_entity).empty?
+            return [] if mergable_owned.empty? && !merge_target_shares_owned?
 
             ACTIONS
+          end
+
+          def mergable_owned
+            @game.round.merger_candidates_for(@game.round.current_entity)
+          end
+
+          def merge_target_shares_owned?
+            @game.round.current_entity.shares.any? { |s| s.corporation == @game.round.merge_target }
           end
 
           def description
@@ -48,9 +56,10 @@ module Engine
           end
 
           def help
-            names = @game.round.names(@game.round.merger_candidates_for(@game.round.current_entity))
+            names = @game.round.names(mergable_owned)
             "Vote Yes or No to merge #{names} into #{@game.round.merge_target.name}. " \
               '50% Yes votes is required to execute merge. If No votes exceed 50% merge is postponed. ' \
+              'Shares in Market counts as No vote(s). ' \
               'Note! Even if declined, there is an automatic merge at the start of the Merge Round following '\
               'the next phase change.'
           end
