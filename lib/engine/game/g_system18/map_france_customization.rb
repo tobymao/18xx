@@ -31,7 +31,12 @@ module Engine
 
                        })
         end
+
         # rubocop:enable Layout/LineLength
+        #
+        def map_france_layout
+          :pointy
+        end
 
         def map_france_game_location_names
           {
@@ -139,8 +144,6 @@ module Engine
         def map_france_constants
           redef_const(:CURRENCY_FORMAT_STR, 'F%s')
         end
-
-        def map_france_or_round_finished; end
       end
     end
   end

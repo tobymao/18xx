@@ -34,6 +34,10 @@ module Engine
           tiles
         end
 
+        def map_neus_layout
+          :pointy
+        end
+
         def map_neus_game_location_names
           {
             'B3' => 'Chicago',
@@ -137,8 +141,6 @@ module Engine
         end
 
         def map_neus_constants; end
-
-        def map_neus_or_round_finished; end
       end
     end
   end

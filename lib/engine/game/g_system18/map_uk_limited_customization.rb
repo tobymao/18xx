@@ -13,6 +13,10 @@ module Engine
           tiles
         end
 
+        def map_uk_limited_layout
+          :pointy
+        end
+
         def map_uk_limited_game_location_names
           {
             'B3' => 'Glasgow',

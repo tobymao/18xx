@@ -90,6 +90,10 @@ module Engine
         end
         # rubocop:enable Layout/LineLength
 
+        def map_twisting_tracks_layout
+          :pointy
+        end
+
         def map_twisting_tracks_game_location_names
           {
             'B5' => 'Linearia',
@@ -111,7 +115,7 @@ module Engine
 
         def map_twisting_tracks_game_hexes
           {
-            #gray: {
+            # gray: {
             #  ['A6'] => 'path=a:0,b:4,b_lane:2.1;path=a:5,b:4,b_lane:2.0',
             #  ['A8'] => 'path=a:1,b:0,a_lane:2.0;path=a:1,b:5,a_lane:2.1',
 
@@ -133,7 +137,7 @@ module Engine
             #  ['C2'] => 'path=a:0,b:4;path=a:3,b:5',
             #  ['B3'] => 'path=a:0,b:4;path=a:3,b:5',
             #  ['A4'] => 'path=a:0,b:5',
-            #},
+            # },
             gray: {
               ['A6'] => 'town=revenue:20;path=a:4,b:_0,a_lane:2.1;path=a:_0,b:0;path=a:5,b:4,b_lane:2.0',
               ['A8'] => 'town=revenue:20;path=a:1,b:0,a_lane:2.0;path=a:1,b:_0,a_lane:2.1;path=a:_0,b:5',
@@ -213,33 +217,33 @@ module Engine
           find_train(trains, 'D')[:num] = 1
           find_train(trains, 'D')[:price] = 700
           trains.append({
-            name: 'D-Pink',
-            distance: 999,
-            price: 700,
-            num: 1,
-            discount: { '5' => 200, '6' => 200, 'D' => 200 },
-          })
+                          name: 'D-Pink',
+                          distance: 999,
+                          price: 700,
+                          num: 1,
+                          discount: { '5' => 200, '6' => 200, 'D' => 200 },
+                        })
           trains.append({
-            name: 'D-Purple',
-            distance: 999,
-            price: 700,
-            num: 1,
-            discount: { '5' => 200, '6' => 200, 'D' => 200, 'D-Pink' => 200 },
-          })
+                          name: 'D-Purple',
+                          distance: 999,
+                          price: 700,
+                          num: 1,
+                          discount: { '5' => 200, '6' => 200, 'D' => 200, 'D-Pink' => 200 },
+                        })
           trains.append({
-            name: 'D-Orange',
-            distance: 999,
-            price: 700,
-            num: 1,
-            discount: { '6' => 200, 'D' => 200, 'D-Pink' => 200, 'D-Purple' => 200 },
-          })
+                          name: 'D-Orange',
+                          distance: 999,
+                          price: 700,
+                          num: 1,
+                          discount: { '6' => 200, 'D' => 200, 'D-Pink' => 200, 'D-Purple' => 200 },
+                        })
           trains.append({
-            name: 'D-Navy',
-            distance: 999,
-            price: 700,
-            num: 1,
-            discount: { 'D' => 200, 'D-Pink' => 200, 'D-Purple' => 200, 'D-Orange' => 200 },
-          })
+                          name: 'D-Navy',
+                          distance: 999,
+                          price: 700,
+                          num: 1,
+                          discount: { 'D' => 200, 'D-Pink' => 200, 'D-Purple' => 200, 'D-Orange' => 200 },
+                        })
           trains
         end
 
@@ -315,8 +319,6 @@ module Engine
         def map_twisting_tracks_constants
           redef_const(:COLOR_SEQUENCE, %i[white yellow green brown gray pink purple orange navy])
         end
-
-        def map_twisting_tracks_or_round_finished; end
       end
     end
   end

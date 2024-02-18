@@ -8,6 +8,10 @@ module Engine
           tiles
         end
 
+        def map_base_layout
+          :pointy
+        end
+
         def map_base_game_location_names
           {}
         end
@@ -70,8 +74,6 @@ module Engine
         end
 
         def map_base_constants; end
-
-        def map_base_or_round_finished; end
       end
     end
   end

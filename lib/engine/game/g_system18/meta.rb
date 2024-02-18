@@ -44,10 +44,16 @@ module Engine
             players: [2, 3, 4],
             designer: 'Scott Petersen',
           },
+          {
+            sym: :map_China_Rapid_Development,
+            short_name: 'Map: China Rapid Development',
+            players: [2, 3, 4],
+            designer: 'Scott Petersen',
+          },
         ].freeze
 
         MUTEX_RULES = [
-          %i[map_NEUS map_France map_Twisting_Tracks map_UK_Limited],
+          %i[map_NEUS map_France map_Twisting_Tracks map_UK_Limited map_China_Rapid_Development],
         ].freeze
       end
     end
