@@ -89,7 +89,7 @@ module Engine
         ].freeze
 
         TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false },
-                    { lay: :not_if_upgraded, upgrade: false }, { lay: :not_if_upgraded, upgrade: false }].freeze
+                     { lay: :not_if_upgraded, upgrade: false }, { lay: :not_if_upgraded, upgrade: false }].freeze
 
         EAST_GROUP = %w[BNR DHR EIR EBR NCR TR].freeze
         WEST_GROUP = %w[BR NWR PNS SPD WR].freeze
@@ -224,11 +224,12 @@ module Engine
           corporations.each do |corporation|
             corporation.shares.each do |share|
               card = convert_share_to_company(share)
-              if share.percent == 20
+              case share.percent
+              when 20
                 # set the share as reserved when in player hands
                 card.treasury.buyable = false
                 @draft_deck << card
-              elsif share.percent == 0
+              when 0
                 # exclude the 0% manager's share
               else
                 draw_deck << card
@@ -534,16 +535,6 @@ module Engine
         def remove_from_hand(player, company)
           player.hand.delete(company)
           player.unsold_companies.delete(company)
-        end
-
-        def assign_manager(corporation, player)
-          corporation.make_manager(player)
-          @log << "#{corporation.full_name} is a MANAGED corporation"
-        end
-
-        def swap_director_share(presidents_share, swap_to, president, corporation)
-          @share_pool.change_president(presidents_share, swap_to, president)
-          @log << "#{corporation.full_name} is now a DIRECTED corporation"
         end
 
         # prevents transfer of president's share before proxy is bought

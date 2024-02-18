@@ -29,8 +29,8 @@ module Engine
             p_s = corp.presidents_share
             @log << "share: #{share.id} / owner: #{share.owner.name}"
             @log << "corp owner: #{corp.owner ? corp.owner.name : 'nil'} / Pres Share owner: #{p_s.owner.name} at #{p_s.percent}%"
-            @log << "floated: #{corp.floated} / iposhares #{corp.ipo_shares.to_s}"
-            @log << "#{current_entity&.name} shares: #{current_entity.shares.select { |s| s.corporation == corp }.to_s}"
+            @log << "floated: #{corp.floated} / iposhares #{corp.ipo_shares}"
+            @log << "#{current_entity&.name} shares: #{current_entity.shares.select { |s| s.corporation == corp }}"
             @log << "shareholders: #{corp.player_share_holders.to_h}"
           end
 
@@ -206,7 +206,7 @@ module Engine
               @game.bank.companies.delete(company)
               @round.bought_from_market = true
             else
-              location = "thier draft hand"
+              location = 'thier Draft Hand'
               @game.remove_from_hand(current_entity, company)
               @round.bought_from_hand = company
             end

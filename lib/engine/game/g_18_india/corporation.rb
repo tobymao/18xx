@@ -4,7 +4,6 @@ module Engine
   module Game
     module G18India
       class Corporation < Engine::Corporation
-
         attr_reader :managers_share
 
         def initialize(sym:, name:, **opts)
@@ -96,7 +95,7 @@ module Engine
         end
 
         def mangaged_company?
-          presidents_share.percent == 0
+          presidents_share.percent.zero?
         end
       end
     end
