@@ -545,7 +545,6 @@ module Engine
 
         # Home hexes for GIPR
         def home_token_locations(corporation)
-          @log << 'home_token_locations was called in GAME'
           raise NotImplementedError unless corporation.name == 'GIPR'
 
           hexes = []
