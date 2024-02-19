@@ -16,7 +16,7 @@ Sequel.extension :pg_json_ops
 
 PRODUCTION = ENV['RACK_ENV'] == 'production'
 
-LOGGER = Logger.new($stdout)
+QUEUE_LOGGER = Logger.new($stdout)
 
 Bus.configure
 
@@ -33,10 +33,10 @@ def days_ago(days)
 end
 
 scheduler.cron '00 09 * * *' do
-  LOGGER.info('Calculating user stats')
+  QUEUE_LOGGER.info('Calculating user stats')
   UserStats.calculate_stats
 
-  LOGGER.info('Archiving Games')
+  QUEUE_LOGGER.info('Archiving Games')
 
   filter = <<~SQL
     (status = 'finished' AND created_at <= :finished) OR
@@ -129,7 +129,7 @@ MessageBus.subscribe '/turn' do |msg|
 
   users.each do |user|
     Mail.send(user, "18xx.games Game: #{game.title} - #{game.id} - #{data['type']}", html)
-    LOGGER.info("mail sent for game: #{game.id} to user: #{user.id}")
+    QUEUE_LOGGER.info("mail sent for game: #{game.id} to user: #{user.id}")
     user.settings['email_sent'] = Time.now.to_i
     user.save
   end

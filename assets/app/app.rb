@@ -2,10 +2,12 @@
 
 # backtick_javascript: true
 
+require 'engine/logger'
 require 'index'
 require 'game_manager'
 require 'user_manager'
 require 'lib/connection'
+require 'lib/params'
 require 'lib/settings'
 require 'lib/storage'
 require 'view/about'
@@ -34,6 +36,8 @@ class App < Snabberb::Component
   needs :keywords, default: nil
 
   def render
+    setup_logger
+
     props = {
       props: { id: 'app' },
       style: {
@@ -141,5 +145,9 @@ class App < Snabberb::Component
   def store_app_route(skip: true)
     window_route = `window.location.pathname + window.location.search + window.location.hash`
     store(:app_route, window_route, skip: skip) unless window_route == ''
+  end
+
+  def setup_logger
+    Engine::Logger.set_level(Lib::Params['l'], @production)
   end
 end
