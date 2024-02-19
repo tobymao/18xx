@@ -558,6 +558,11 @@ module Engine
           def name
             "Bot:#{@receivership.name}"
           end
+
+          # GUI calls player? on this entity, so this method is needed. See issue #9895.
+          def player?
+            false
+          end
         end
 
         def acting_for_entity(entity)
