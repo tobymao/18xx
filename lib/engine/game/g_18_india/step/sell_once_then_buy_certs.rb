@@ -318,6 +318,7 @@ module Engine
           # modified to remove sell limit checks and prevent dumping of manager's 0% share
           def can_sell?(entity, bundle)
             return unless bundle
+            return false unless selling_round?
             return false if entity != bundle.owner
             return false if bundle.presidents_share && bundle.corporation.presidents_share.percent.zero?
 
@@ -344,16 +345,16 @@ module Engine
           end
 
           def sellable_companies(entity)
-            return [] unless @game.turn > 1
+            return [] unless selling_round?
             return [] unless entity.player?
 
             entity.companies
           end
 
           def can_sell_company?(entity)
+            return false unless selling_round?
             return false unless entity.company?
             return false if entity.owner == @game.bank
-            return false unless @game.turn > 1
 
             true
           end
