@@ -28,7 +28,7 @@ module View
 
           # Compute total width of rectangles so we can center
           step_size = (computed_revenues.size / @rows.to_f).ceil
-          total_width = @rows.times.map do |row|
+          total_width = Array.new(@rows) do |row|
             computed_revenues[(row - 1) * step_size, step_size].sum do |revenue|
               revenue[:width]
             end
