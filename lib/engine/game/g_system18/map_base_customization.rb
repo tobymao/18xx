@@ -52,10 +52,6 @@ module Engine
           self.class::MARKET_2D
         end
 
-        def map_base_custom_depot?
-          false
-        end
-
         def map_base_game_trains(trains)
           find_train(trains, '4')[:rusts_on] = %w[8 D]
           trains

@@ -139,10 +139,6 @@ module Engine
           self.class::MARKET_1D
         end
 
-        def map_china_rapid_development_custom_depot?
-          false
-        end
-
         def map_china_rapid_development_game_trains(trains)
           # don't use D trains
           trains.delete(find_train(trains, 'D'))

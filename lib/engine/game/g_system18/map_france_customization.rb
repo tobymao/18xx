@@ -120,10 +120,6 @@ module Engine
           self.class::MARKET_1D
         end
 
-        def map_france_custom_depot?
-          false
-        end
-
         def map_france_game_trains(trains)
           # don't use D trains
           trains.delete(find_train(trains, 'D'))

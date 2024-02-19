@@ -198,10 +198,6 @@ module Engine
           self.class::MARKET_2D
         end
 
-        def map_twisting_tracks_custom_depot?
-          false
-        end
-
         def map_twisting_tracks_game_trains(trains)
           # don't use 8 trains
           trains.delete(find_train(trains, '8'))
