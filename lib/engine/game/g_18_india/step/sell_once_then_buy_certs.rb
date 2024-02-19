@@ -315,12 +315,13 @@ module Engine
             @game.num_certs(entity) > @game.cert_limit(entity)
           end
 
-          # modify to allow dumping GIPR president
-          def can_dump?(entity, bundle)
-            corp = bundle.corporation
-            return true if !bundle.presidents_share || bundle.percent >= corp.presidents_percent || corp.name == 'GIPR'
+          # modified to remove sell limit checks and prevent dumping of manager's 0% share
+          def can_sell?(entity, bundle)
+            return unless bundle
+            return false if entity != bundle.owner
+            return false if bundle.presidents_share && bundle.corporation.presidents_share.percent.zero?
 
-            bundle.can_dump?(entity)
+            can_dump?(entity, bundle)
           end
 
           def process_sell_company(action)
@@ -328,7 +329,7 @@ module Engine
             player = action.entity
             raise GameError, "Cannot sell #{company.id}" unless can_sell_company?(company)
 
-            sell_company(player, company, action.price)
+            sell_company(player, company, action.price, @game.bank)
             track_action(action, company)
           end
 
@@ -357,11 +358,12 @@ module Engine
             true
           end
 
-          def sell_company(player, company, price)
-            company.owner = @game.bank
+          def sell_company(player, company, price, bank)
+            company.owner = bank
+            bank.companies.push(company)
             player.companies.delete(company)
-            @game.bank.spend(price, player) if price.positive?
-            @log << "#{player.name} sells #{company.name} to bank for #{@game.format_currency(price)}"
+            bank.spend(price, player) if price.positive?
+            @log << "#{player.name} sells #{company.name} to the Bank for #{@game.format_currency(price)}"
             @round.players_sold[player][company] = :now
           end
         end

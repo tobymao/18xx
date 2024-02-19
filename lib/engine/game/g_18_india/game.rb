@@ -212,7 +212,8 @@ module Engine
             ipo_price = @stock_market.par_prices.find { |p| p.price == corporation.min_price }
             @stock_market.set_par(corporation, ipo_price)
             corporation.ipoed = true
-            # @log << "Set IPO for #{corporation.name} at #{corporation.par_price.price.to_s}"
+            # remove marker from Marker Chart, it will be palced on chart when it Floats
+            corporation.share_price.corporations.delete(corporation)
           end
         end
 
@@ -542,9 +543,23 @@ module Engine
           false
         end
 
-        # check implementations?
-        def home_token_locations(_corporation)
-          raise NotImplementedError
+        # Home hexes for GIPR
+        def home_token_locations(corporation)
+          @log << 'home_token_locations was called in GAME'
+          raise NotImplementedError unless corporation.name == 'GIPR'
+
+          hexes = []
+          # hexes with open city locations
+          hexes += @cities.reject { |c| c.available_slots.zero? }.map { |c| c.tile.hex }
+          # TODO: white or yellow hexes with single town & ability to lay GREEN single city tile on hex
+          # NOTE: L39 and K38 are not legal hexes for a Green single city tile
+          hexes
+        end
+
+        # Modifed to place share price marker on Market Chart
+        def float_corporation(corporation)
+          @log << "#{corporation.name} floats. Share price marker placed at #{corporation.share_price.price}"
+          corporation.share_price.corporations << corporation
         end
 
         def price_movement_chart
