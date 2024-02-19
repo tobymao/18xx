@@ -95,8 +95,8 @@ module Engine
           self.class::MARKET_2D
         end
 
-        def map_uk_limited_custom_depot?
-          true
+        def map_uk_limited_custom_depot
+          GSystem18::UKDepot
         end
 
         def map_uk_limited_game_trains(trains)

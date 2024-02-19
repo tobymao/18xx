@@ -341,15 +341,16 @@ module Engine
         end
 
         def init_train_handler
-          return super unless send("map_#{map_name}_custom_depot?")
+          return super unless respond_to?("map_#{map_name}_custom_depot")
 
+          custom_depot = send("map_#{map_name}_custom_depot")
           trains = game_trains.flat_map do |train|
             Array.new((train[:num] || num_trains(train))) do |index|
               Train.new(**train, index: index)
             end
           end
 
-          GSystem18::Depot.new(trains, self)
+          custom_depot.new(trains, self)
         end
 
         def game_phases
