@@ -411,16 +411,31 @@ module Engine
         def operating_steps
           if respond_to?("map_#{map_name}_operating_steps")
             send("map_#{map_name}_operating_steps")
-          else
+          elsif game_companies.empty?
             [
-              Engine::Step::Bankrupt,
+              GSystem18::Step::Bankrupt,
               Engine::Step::Exchange,
               Engine::Step::SpecialTrack,
               Engine::Step::SpecialToken,
               Engine::Step::BuyCompany,
               Engine::Step::HomeToken,
-              Engine::Step::Track,
-              Engine::Step::Token,
+              GSystem18::Step::Track,
+              GSystem18::Step::Token,
+              Engine::Step::Route,
+              GSystem18::Step::Dividend,
+              Engine::Step::DiscardTrain,
+              GSystem18::Step::BuyTrain,
+            ]
+          else
+            [
+              GSystem18::Step::Bankrupt,
+              Engine::Step::Exchange,
+              Engine::Step::SpecialTrack,
+              Engine::Step::SpecialToken,
+              Engine::Step::BuyCompany,
+              Engine::Step::HomeToken,
+              GSystem18::Step::Track,
+              GSystem18::Step::Token,
               Engine::Step::Route,
               GSystem18::Step::Dividend,
               Engine::Step::DiscardTrain,
@@ -431,7 +446,7 @@ module Engine
         end
 
         def operating_round(round_num)
-          Round::Operating.new(self, operating_steps, round_num: round_num)
+          GSystem18::Round::Operating.new(self, operating_steps, round_num: round_num)
         end
 
         def emergency_issuable_bundles(entity)

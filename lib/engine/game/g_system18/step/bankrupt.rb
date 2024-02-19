@@ -8,7 +8,6 @@ module Engine
       module Step
         class Bankrupt < Engine::Step::Bankrupt
           def process_bankrupt(action)
-
             return super unless @game.game_capitalization == :incremental
 
             corp = action.entity

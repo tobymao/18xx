@@ -7,8 +7,8 @@ module Engine
     module GSystem18
       module Step
         class ChinaDividend < Dividend
-          def share_price_change(entity, revenue = 0)
-            return {}
+          def share_price_change(_entity, _revenue = 0)
+            {}
           end
         end
       end

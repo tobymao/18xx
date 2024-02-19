@@ -13,52 +13,52 @@ module Engine
           tiles.delete('205')
           tiles.delete('206')
           tiles.merge!({
-            'X1' => {
-              'count' => 2,
-              'color' => 'yellow',
-              'code' => 'city=revenue:30;city=revenue:0;path=a:0,b:_0;label=OO',
-            },
-            'X2' => {
-              'count' => 1,
-              'color' => 'green',
-              'code' => 'city=revenue:40;city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:_0,b:3;path=a:1,b:_1;path=a:_1,b:4;path=a:2,b:_2;path=a:_2,b:5;label=S',
-            },
-            'X3' => {
-              'count' => 1,
-              'color' => 'green',
-              'code' => 'city=revenue:40,loc:center;town=revenue:10;path=a:0,b:_0;path=a:_0,b:_1;path=a:_1,b:3;label=X',
-            },
-            'X4' => {
-              'count' => 1,
-              'color' => 'green',
-              'code' => 'city=revenue:40,loc:center;town=revenue:10;path=a:0,b:_0;path=a:_0,b:_1;path=a:_1,b:2;label=X',
-            },
-            'X5' => {
-              'count' => 1,
-              'color' => 'green',
-              'code' => 'city=revenue:40,loc:center;town=revenue:10;path=a:0,b:_0;path=a:_0,b:_1;path=a:_1,b:4;label=X',
-            },
-            'X6' => {
-              'count' => 1,
-              'color' => 'brown',
-              'code' => 'city=revenue:50;city=revenue:50;city=revenue:50;path=a:0,b:_0;path=a:_0,b:3;path=a:1,b:_1;path=a:_1,b:4;path=a:2,b:_2;path=a:_2,b:5;label=S',
-            },
-            'X7' => {
-              'count' => 1,
-              'color' => 'brown',
-              'code' => 'city=revenue:50,loc:center;town=revenue:20,loc:3;path=a:0,b:_0;path=a:_0,b:_1;path=a:_1,b:2;path=a:_1,b:3;path=a:_1,b:4;label=X',
-            },
-            'X8' => {
-              'count' => 1,
-              'color' => 'gray',
-              'code' => 'city=revenue:60;city=revenue:60;city=revenue:60;path=a:0,b:_0;path=a:_0,b:3;path=a:1,b:_1;path=a:_1,b:4;path=a:2,b:_2;path=a:_2,b:5;label=S',
-            },
-            'X9' => {
-              'count' => 1,
-              'color' => 'gray',
-              'code' => 'city=revenue:60,loc:center;town=revenue:20,loc:3;path=a:0,b:_0;path=a:_0,b:_1;path=a:_1,b:2;path=a:_1,b:3;path=a:_1,b:4;label=X',
-            },
-          })
+                         'X1' => {
+                           'count' => 2,
+                           'color' => 'yellow',
+                           'code' => 'city=revenue:30;city=revenue:0;path=a:0,b:_0;label=OO',
+                         },
+                         'X2' => {
+                           'count' => 1,
+                           'color' => 'green',
+                           'code' => 'city=revenue:40;city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:_0,b:3;path=a:1,b:_1;path=a:_1,b:4;path=a:2,b:_2;path=a:_2,b:5;label=S',
+                         },
+                         'X3' => {
+                           'count' => 1,
+                           'color' => 'green',
+                           'code' => 'city=revenue:40,loc:center;town=revenue:10;path=a:0,b:_0;path=a:_0,b:_1;path=a:_1,b:3;label=X',
+                         },
+                         'X4' => {
+                           'count' => 1,
+                           'color' => 'green',
+                           'code' => 'city=revenue:40,loc:center;town=revenue:10;path=a:0,b:_0;path=a:_0,b:_1;path=a:_1,b:2;label=X',
+                         },
+                         'X5' => {
+                           'count' => 1,
+                           'color' => 'green',
+                           'code' => 'city=revenue:40,loc:center;town=revenue:10;path=a:0,b:_0;path=a:_0,b:_1;path=a:_1,b:4;label=X',
+                         },
+                         'X6' => {
+                           'count' => 1,
+                           'color' => 'brown',
+                           'code' => 'city=revenue:50;city=revenue:50;city=revenue:50;path=a:0,b:_0;path=a:_0,b:3;path=a:1,b:_1;path=a:_1,b:4;path=a:2,b:_2;path=a:_2,b:5;label=S',
+                         },
+                         'X7' => {
+                           'count' => 1,
+                           'color' => 'brown',
+                           'code' => 'city=revenue:50,loc:center;town=revenue:20,loc:3;path=a:0,b:_0;path=a:_0,b:_1;path=a:_1,b:2;path=a:_1,b:3;path=a:_1,b:4;label=X',
+                         },
+                         'X8' => {
+                           'count' => 1,
+                           'color' => 'gray',
+                           'code' => 'city=revenue:60;city=revenue:60;city=revenue:60;path=a:0,b:_0;path=a:_0,b:3;path=a:1,b:_1;path=a:_1,b:4;path=a:2,b:_2;path=a:_2,b:5;label=S',
+                         },
+                         'X9' => {
+                           'count' => 1,
+                           'color' => 'gray',
+                           'code' => 'city=revenue:60,loc:center;town=revenue:20,loc:3;path=a:0,b:_0;path=a:_0,b:_1;path=a:_1,b:2;path=a:_1,b:3;path=a:_1,b:4;label=X',
+                         },
+                       })
         end
         # rubocop:enable Layout/LineLength
 
@@ -98,7 +98,7 @@ module Engine
               %w[E1 D2 F2 E9 B10 C11] => '',
               %w[D6 C9] => 'town=revenue:0;town=revenue:0',
               %w[C5 C7 B8] => 'city=revenue:0',
-              %w[D4 D10] => 'city=revenue:0;city=revenue:0;label=OO'
+              %w[D4 D10] => 'city=revenue:0;city=revenue:0;label=OO',
             },
             yellow: {
               %w[E3] => 'city=revenue:0,loc:center;town=revenue:10;path=a:2,b:_1;label=X',
@@ -167,19 +167,18 @@ module Engine
 
         def map_china_rapid_development_operating_steps
           [
-            Engine::Step::Bankrupt,
+            GSystem18::Step::Bankrupt,
             Engine::Step::Exchange,
             Engine::Step::SpecialTrack,
             Engine::Step::SpecialToken,
             Engine::Step::BuyCompany,
             Engine::Step::HomeToken,
             GSystem18::Step::ChinaTrack,
-            Engine::Step::Token,
+            GSystem18::Step::Token,
             Engine::Step::Route,
             GSystem18::Step::ChinaDividend,
             Engine::Step::DiscardTrain,
             GSystem18::Step::BuyTrain,
-            [Engine::Step::BuyCompany, { blocks: true }],
           ]
         end
       end
