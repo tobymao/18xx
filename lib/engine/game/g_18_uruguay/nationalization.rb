@@ -221,7 +221,7 @@ module Engine
           buy_train(@fce, train, :free)
         end
 
-        # Move stock price one step left for each stock more than limit
+        # Move stock price one step left for each loan more than limit
         def decrease_stock_value
           @corporations.each do |corporation|
             over_committed = loans_due_interest(corporation) - maximum_loans(corporation)
