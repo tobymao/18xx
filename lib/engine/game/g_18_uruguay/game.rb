@@ -423,10 +423,12 @@ module Engine
               when 1
                 start_merge(current_entity.owner)
               when 2
+                decrease_stock_value
                 retreive_home_tokens
                 close_companies
                 @crowded_corps = nil
                 @cert_limit = CERT_LIMIT_NATIONALIZATION[@players.size][@corporations.size]
+                remove_goods_from_map
                 @log << "New certification limit is #{@cert_limit}"
               end
 
