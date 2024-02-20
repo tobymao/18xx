@@ -15,7 +15,7 @@ module View
         fill: 'none',
         opacity: 0.5,
         stroke: 'black',
-        'stroke-width' => 2,
+        'stroke-width': 2,
       }
 
       h('g.triangular_grid', { attrs: attrs }, children)

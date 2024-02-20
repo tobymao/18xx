@@ -1,7 +1,7 @@
 require: rubocop-performance
 
 AllCops:
-  TargetRubyVersion: 3.0.2
+  TargetRubyVersion: 3.2
   NewCops: enable
   SuggestExtensions: false
 
@@ -74,6 +74,10 @@ Metrics/ParameterLists:
 Metrics/PerceivedComplexity:
   Enabled: false
 
+Naming/BlockForwarding:
+  EnforcedStyle: explicit
+  BlockForwardingName: block
+
 Naming/MemoizedInstanceVariableName:
   Enabled: false
 
@@ -143,6 +147,11 @@ Style/HashEachMethods:
 # code readibility: case trumps hash-lookup
 Style/HashLikeCase:
   Enabled: false
+
+Style/HashSyntax:
+  Enabled: true
+  EnforcedStyle: no_mixed_keys
+  EnforcedShorthandSyntax: never
 
 Style/NegatedIfElseCondition:
   Enabled: false
