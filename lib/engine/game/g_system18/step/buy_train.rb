@@ -7,9 +7,19 @@ module Engine
     module GSystem18
       module Step
         class BuyTrain < Engine::Step::BuyTrain
+          def actions(entity)
+            return [] if entity.receivership?
+
+            super
+          end
+
           def setup
             @emr_issue = false
             super
+          end
+
+          def skip!
+            @round.receivership_train_buy(self, :process_buy_train)
           end
 
           def process_sell_shares(action)

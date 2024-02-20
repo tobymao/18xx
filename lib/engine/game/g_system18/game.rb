@@ -8,6 +8,9 @@ require_relative '../base'
 require_relative 'map_base_customization'
 require_relative 'map_neus_customization'
 require_relative 'map_france_customization'
+require_relative 'map_twisting_tracks_customization'
+require_relative 'map_uk_limited_customization'
+require_relative 'map_china_rapid_development_customization'
 
 module Engine
   module Game
@@ -20,6 +23,9 @@ module Engine
         include MapBaseCustomization
         include MapNeusCustomization
         include MapFranceCustomization
+        include MapTwistingTracksCustomization
+        include MapUKLimitedCustomization
+        include MapChinaRapidDevelopmentCustomization
 
         register_colors(red: '#d1232a',
                         orange: '#f58121',
@@ -158,7 +164,6 @@ module Engine
             distance: 5,
             price: 500,
             num: 4,
-            events: [{ 'type' => 'close_companies' }],
           },
           { name: '6', distance: 6, price: 630, num: 3 },
           {
@@ -184,7 +189,6 @@ module Engine
             train_limit: 4,
             tiles: %i[yellow green],
             operating_rounds: 2,
-            status: ['can_buy_companies'],
           },
           {
             name: '4',
@@ -192,7 +196,6 @@ module Engine
             train_limit: 3,
             tiles: %i[yellow green],
             operating_rounds: 2,
-            status: ['can_buy_companies'],
           },
           {
             name: '5',
@@ -225,7 +228,6 @@ module Engine
             train_limit: 4,
             tiles: %i[yellow green],
             operating_rounds: 2,
-            status: ['can_buy_companies'],
           },
           {
             name: '4',
@@ -233,7 +235,6 @@ module Engine
             train_limit: 3,
             tiles: %i[yellow green],
             operating_rounds: 2,
-            status: ['can_buy_companies'],
           },
           {
             name: '5',
@@ -267,6 +268,8 @@ module Engine
         SELL_BUY_ORDER = :sell_buy_sell
         GAME_END_CHECK = { bankrupt: :immediate, final_phase: :one_more_full_or_set }.freeze
         LAYOUT = :pointy
+        COLOR_SEQUENCE = %i[white yellow green brown gray].freeze
+        TILE_LAYS = [{ lay: true, upgrade: true, cost: 0 }].freeze
 
         # need to define constants that could be redefined
         SELL_AFTER = :first
@@ -284,9 +287,8 @@ module Engine
           @map_name ||= find_map_name || 'base'
         end
 
-        def map?(map)
-          full = "map_#{map}"
-          optional_rules&.include?(full.to_sym)
+        def layout
+          send("map_#{map_name}_layout")
         end
 
         def init_starting_cash(players, bank)
@@ -336,6 +338,19 @@ module Engine
           trains = []
           S18_TRAINS.each { |t| trains << t.dup }
           send("map_#{map_name}_game_trains", trains)
+        end
+
+        def init_train_handler
+          return super unless respond_to?("map_#{map_name}_custom_depot")
+
+          custom_depot = send("map_#{map_name}_custom_depot")
+          trains = game_trains.flat_map do |train|
+            Array.new((train[:num] || num_trains(train))) do |index|
+              Train.new(**train, index: index)
+            end
+          end
+
+          custom_depot.new(trains, self)
         end
 
         def game_phases
@@ -394,22 +409,45 @@ module Engine
           stock_round
         end
 
+        def operating_steps
+          if respond_to?("map_#{map_name}_operating_steps")
+            send("map_#{map_name}_operating_steps")
+          elsif game_companies.empty?
+            [
+              GSystem18::Step::Bankrupt,
+              Engine::Step::Exchange,
+              Engine::Step::SpecialTrack,
+              Engine::Step::SpecialToken,
+              Engine::Step::BuyCompany,
+              Engine::Step::HomeToken,
+              GSystem18::Step::Track,
+              GSystem18::Step::Token,
+              Engine::Step::Route,
+              GSystem18::Step::Dividend,
+              Engine::Step::DiscardTrain,
+              GSystem18::Step::BuyTrain,
+            ]
+          else
+            [
+              GSystem18::Step::Bankrupt,
+              Engine::Step::Exchange,
+              Engine::Step::SpecialTrack,
+              Engine::Step::SpecialToken,
+              Engine::Step::BuyCompany,
+              Engine::Step::HomeToken,
+              GSystem18::Step::Track,
+              GSystem18::Step::Token,
+              Engine::Step::Route,
+              GSystem18::Step::Dividend,
+              Engine::Step::DiscardTrain,
+              GSystem18::Step::BuyTrain,
+              [Engine::Step::BuyCompany, { blocks: true }],
+            ]
+          end
+        end
+
         def operating_round(round_num)
-          Round::Operating.new(self, [
-            Engine::Step::Bankrupt,
-            Engine::Step::Exchange,
-            Engine::Step::SpecialTrack,
-            Engine::Step::SpecialToken,
-            Engine::Step::BuyCompany,
-            Engine::Step::HomeToken,
-            Engine::Step::Track,
-            Engine::Step::Token,
-            Engine::Step::Route,
-            GSystem18::Step::Dividend,
-            Engine::Step::DiscardTrain,
-            GSystem18::Step::BuyTrain,
-            [Engine::Step::BuyCompany, { blocks: true }],
-          ], round_num: round_num)
+          GSystem18::Round::Operating.new(self, operating_steps, round_num: round_num)
         end
 
         def emergency_issuable_bundles(entity)
@@ -432,6 +470,16 @@ module Engine
             end
             bundles
           end.compact
+        end
+
+        def upgrades_to_correct_color?(from, to, selected_company: nil)
+          COLOR_SEQUENCE.index(to.color) == (COLOR_SEQUENCE.index(from.color) + 1)
+        end
+
+        def or_round_finished
+          return unless respond_to?("map_#{map_name}_or_round_finished")
+
+          send("map_#{map_name}_or_round_finished")
         end
       end
     end
