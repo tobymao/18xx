@@ -73,6 +73,10 @@ module Engine
           manager_count >= pres_cert_count
         end
 
+        def guaranty_warrant?
+          companies.any? {|c| c.type == :warrant}
+        end
+
         def book_value
           # sum of cash and all assets
           cash + @companies.sum(&:value) + value_of_trains + value_of_owned_shares

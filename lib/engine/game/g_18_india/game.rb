@@ -26,7 +26,7 @@ module Engine
         CURRENCY_FORMAT_STR = '₹%s'
         CAPITALIZATION = :incremental
 
-        TRACK_RESTRICTION = :permissive
+        TRACK_RESTRICTION = :city_permissive
         TILE_TYPE = :lawson
 
         MARKET_SHARE_LIMIT = 200 # up to 200% of GIPR may be in market
@@ -78,14 +78,7 @@ module Engine
           { name: 'I', train_limit: 2, tiles: %i[yellow green brown gray], operating_rounds: 2 },
           { name: 'II', on: '3', train_limit: 2, tiles: %i[yellow green brown gray], operating_rounds: 2 },
           { name: 'III', on: '4', train_limit: 2, tiles: %i[yellow green brown gray], operating_rounds: 2 },
-          { name: 'IV', on: '5', train_limit: 2, tiles: %i[yellow green brown gray], operating_rounds: 2 },
-        ].freeze
-
-        TRAINS = [
-          { name: '2', distance: 2, price: 180, num: 6 },
-          { name: '3', distance: 3, price: 300, num: 4 },
-          { name: '4', distance: 4, price: 450, num: 3 },
-          { name: '5', distance: 999, price: 1100, num: 3 },
+          { name: 'IV', on: '3x2', train_limit: 2, tiles: %i[yellow green brown gray], operating_rounds: 2 },
         ].freeze
 
         TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false },
@@ -202,7 +195,7 @@ module Engine
             name: name,
             value: 0,
             desc: "Warrant pays 5\% of share value when company doesn't pay dividend.",
-            type: :warrent
+            type: :warrant
           )
           corporation.companies << warrant
         end
@@ -385,7 +378,7 @@ module Engine
             Engine::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
-            Engine::Step::Dividend,
+            G18India::Step::Dividend,
             Engine::Step::DiscardTrain,
             Engine::Step::BuyTrain,
             [Engine::Step::BuyCompany, { blocks: false }],
@@ -559,6 +552,26 @@ module Engine
         def float_corporation(corporation)
           @log << "#{corporation.name} floats. Share price marker placed at #{corporation.share_price.price}"
           corporation.share_price.corporations << corporation
+        end
+
+        # test using this to control laying yellow tiles from railhead
+        def legal_tile_rotation?(_entity, _hex, _tile)
+          true
+        end
+
+        def company_header(company)
+          case company.type
+          when :share
+            'SHARE CERTIFICATE'
+          when :president
+            'DIRECTOR\'s CERTIFICATE'
+          when :bond
+            'RAILROAD BOND'
+          when :warrant
+            'GUARANTY WARRANT'
+          else
+            super
+          end
         end
 
         def price_movement_chart
