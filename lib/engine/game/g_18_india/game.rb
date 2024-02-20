@@ -88,6 +88,9 @@ module Engine
           { name: '5', distance: 999, price: 1100, num: 3 },
         ].freeze
 
+        TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false },
+                     { lay: :not_if_upgraded, upgrade: false }, { lay: :not_if_upgraded, upgrade: false }].freeze
+
         EAST_GROUP = %w[BNR DHR EIR EBR NCR TR].freeze
         WEST_GROUP = %w[BR NWR PNS SPD WR].freeze
         SOUTH_GROUP = %w[CGR KGF MR NSR SIR WIP].freeze
@@ -209,7 +212,8 @@ module Engine
             ipo_price = @stock_market.par_prices.find { |p| p.price == corporation.min_price }
             @stock_market.set_par(corporation, ipo_price)
             corporation.ipoed = true
-            # @log << "Set IPO for #{corporation.name} at #{corporation.par_price.price.to_s}"
+            # remove marker from Marker Chart, it will be palced on chart when it Floats
+            corporation.share_price.corporations.delete(corporation)
           end
         end
 
@@ -221,10 +225,13 @@ module Engine
           corporations.each do |corporation|
             corporation.shares.each do |share|
               card = convert_share_to_company(share)
-              if share.percent == 20
+              case share.percent
+              when 20
                 # set the share as reserved when in player hands
                 card.treasury.buyable = false
                 @draft_deck << card
+              when 0
+                # exclude the 0% manager's share
               else
                 draw_deck << card
               end
@@ -367,8 +374,8 @@ module Engine
         end
 
         def stock_round
-          # Engine::Round::Stock.new(self, [Engine::Step::BuySellParShares])
-          Engine::Round::Stock.new(self, [G18India::Step::SellOnceThenBuyCerts])
+          # Test if home token step resolves issues of placing token when company floats
+          Engine::Round::Stock.new(self, [Engine::Step::HomeToken, G18India::Step::SellOnceThenBuyCerts])
         end
 
         def operating_round(round_num)
@@ -438,18 +445,21 @@ module Engine
             return "IPO Row:#{row + 1} Index:#{index + 1}"
           elsif (company.type == :bond) && (company.owner == @bank)
             return "Bank has #{count_of_bonds} / 10 Bonds"
-          elsif current_entity.hand.include?(company)
-            return "Player's Hand"
+          elsif @round.stock?
+            return "Player's Hand" if current_entity.hand.include?(company)
           end
           ''
         end
 
         # Use to indicate corp status, e.g. managed vs directed companies
         def status_str(corporation)
-          if corporation.presidents_share.owner.player? && corporation.name != 'GIPR'
-            'Directed Company'
+          president = corporation.owner ? corporation.owner.name : 'none'
+          if corporation.presidents_share.percent == 20
+            "Directed Company: #{president}"
+          elsif !corporation.owner.nil?
+            "Managed Company: #{president}"
           else
-            'Managed Company'
+            "Need manager & #{corporation.percent_to_float}% to float"
           end
         end
 
@@ -526,6 +536,29 @@ module Engine
         def remove_from_hand(player, company)
           player.hand.delete(company)
           player.unsold_companies.delete(company)
+        end
+
+        # prevents transfer of president's share before proxy is bought
+        def can_swap_for_presidents_share_directly_from_corporation?
+          false
+        end
+
+        # Home hexes for GIPR
+        def home_token_locations(corporation)
+          raise NotImplementedError unless corporation.name == 'GIPR'
+
+          hexes = []
+          # hexes with open city locations
+          hexes += @cities.reject { |c| c.available_slots.zero? }.map { |c| c.tile.hex }
+          # TODO: white or yellow hexes with single town & ability to lay GREEN single city tile on hex
+          # NOTE: L39 and K38 are not legal hexes for a Green single city tile
+          hexes
+        end
+
+        # Modifed to place share price marker on Market Chart
+        def float_corporation(corporation)
+          @log << "#{corporation.name} floats. Share price marker placed at #{corporation.share_price.price}"
+          corporation.share_price.corporations << corporation
         end
 
         def price_movement_chart
