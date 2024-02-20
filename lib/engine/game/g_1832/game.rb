@@ -1,9 +1,12 @@
 # frozen_string_literal: true
 
 require_relative '../g_1870/game'
-require_relative 'meta'
-require_relative 'map'
 require_relative 'entities'
+require_relative 'map'
+require_relative 'market'
+require_relative 'meta'
+require_relative 'phases'
+require_relative 'trains'
 require_relative '../base'
 
 module Engine
@@ -13,6 +16,9 @@ module Engine
         include_meta(G1832::Meta)
         include G1832::Entities
         include G1832::Map
+        include G1832::Market
+        include G1832::Phases
+        include G1832::Trains
 
         attr_accessor :sell_queue, :reissued, :coal_token_counter, :coal_company_sold_or_closed
 
@@ -45,143 +51,9 @@ module Engine
 
         STARTING_CASH = { 2 => 1050, 3 => 700, 4 => 525, 5 => 420, 6 => 350, 7 => 300 }.freeze
 
-        MARKET = [
-          %w[64y 68 72 76 82 90 100p 110 120 140 160 180 200 225 250 275 300 325 350 375 400],
-          %w[60y 64y 68 72 76 82 90p 100 110 120 140 160 180 200 225 250 275 300 325 350 375],
-          %w[55y 60y 64y 68 72 76 82p 90 100 110 120 140 160 180 200 225 250i 275i 300i 325i 350i],
-          %w[50o 55y 60y 64y 68 72 76p 82 90 100 110 120 140 160i 180i 200i 225i 250i 275i 300i 325i],
-          %w[40b 50o 55y 60y 64 68 72p 76 82 90 100 110i 120i 140i 160i 180i],
-          %w[30b 40o 50o 55y 60y 64 68p 72 76 82 90i 100i 110i],
-          %w[20b 30b 40o 50o 55y 60y 64 68 72 76i 82i],
-          %w[10b 20b 30b 40o 50y 55y 60y 64 68i 72i],
-          %w[0c 10b 20b 30b 40o 50y 55y 60i 64i],
-          %w[0c 0c 10b 20b 30b 40o 50y],
-          %w[0c 0c 0c 10b 20b 30b 40o],
-        ].freeze
-
-        STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(unlimited: :green, par: :white,
-                                                            ignore_one_sale: :red).freeze
-
-        PHASES = [
-          { name: '2',
-            train_limit: 4,
-            tiles: [:yellow],
-            operating_rounds: 1
-          },
-          {
-            name: '3',
-            on: '3',
-            train_limit: 4,
-            tiles: %i[yellow green],
-            operating_rounds: 2,
-            status: %w[can_buy_companies],
-          },
-          {
-            name: '4',
-            on: '4',
-            train_limit: 3,
-            tiles: %i[yellow green],
-            operating_rounds: 2,
-            status: %w[can_buy_companies],
-          },
-          {
-            name: '5',
-            on: '5',
-            train_limit: 2,
-            tiles: %i[yellow green brown],
-            operating_rounds: 3,
-          },
-          {
-            name: '6',
-            on: '6',
-            train_limit: 2,
-            tiles: %i[yellow green brown],
-            operating_rounds: 3,
-          },
-          {
-            name: '8',
-            on: '8',
-            train_limit: 2,
-            tiles: %i[yellow green brown],
-            operating_rounds: 3,
-          },
-          {
-            name: '10',
-            on: '10',
-            train_limit: 2,
-            tiles: %i[yellow green brown],
-            operating_rounds: 3,
-          },
-          {
-            name: '12',
-            on: '12',
-            train_limit: 2,
-            tiles: %i[yellow green brown],
-            operating_rounds: 3,
-          }].freeze
-
-        TRAINS = [
-          {
-            name: '2',
-            distance: 2,
-            price: 80,
-            rusts_on: '4',
-            num: 7
-          },
-          {
-            name: '3',
-            distance: 3,
-            price: 180,
-            rusts_on: '6',
-            num: 6,
-            events: [{ 'type' => 'companies_buyable' }],
-          },
-          {
-            name: '4',
-            distance: 4,
-            price: 300,
-            rusts_on: '8',
-            num: 4
-          },
-          {
-            name: '5',
-            distance: 5,
-            price: 450,
-            rusts_on: '12',
-            num: 3,
-            events: [{ 'type' => 'close_companies' }],
-          },
-          {
-            name: '6',
-            distance: 6,
-            price: 630,
-            num: 3,
-            events: [{ 'type' => 'remove_tokens' }],
-          },
-          {
-            name: '8',
-            distance: 8,
-            price: 800,
-            num: 3,
-            events: [{ 'type' => 'remove_key_west_token' }],
-          },
-          {
-            name: '10',
-            distance: 10,
-            price: 950,
-            num: 2
-          },
-          {
-            name: '12',
-            distance: 12,
-            price: 1100,
-            num: 99
-          },
-        ].freeze
-
         def tile_lays(entity)
           return self.class::SYSTEM_TILE_LAYS if system?(entity)
-          
+
           self.class::TILE_LAYS
         end
 
