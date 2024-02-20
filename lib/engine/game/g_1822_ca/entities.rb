@@ -472,7 +472,7 @@ module Engine
                 closed_when_used_up: true,
                 special: false,
                 free: true,
-                tiles: [],
+                tiles: %w[1 2 3 4 5 6 7 8 9 55 56 57 58 69 201 202 621 630 631 632 633],
                 hexes: %w[A7 A9 B6 B8 B10 B12 B14 C7 C9 C11 C13 D6 D8 D10 D12
                           D14 D16 E7 E9 E15 F6 F8 F10 F12 G7 G9 G11 G13 G17 G15
                           H6 H8 H10 H12 H14 H16 I7 I9 I11 I13 I15 I17 J6 J8 J10
