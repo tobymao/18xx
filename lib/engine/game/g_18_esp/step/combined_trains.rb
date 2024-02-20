@@ -44,6 +44,7 @@ module Engine
           def create_combined_train!(base, additional_train)
             # combined train's ID is formed by combining the the IDs of the
             # given trains
+            original_base_name = base.name
             distance, name = combined_distance_and_name(base, additional_train)
 
             # simplify name to C+t form, after id is set via sym
@@ -53,7 +54,7 @@ module Engine
 
             @game.update_trains_cache
 
-            @game.combined_trains << base
+            @game.combined_trains[base] = "#{original_base_name}, #{additional_train.name}"
           end
 
           def combined_distance_and_name(base, additional_train)
