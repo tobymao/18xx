@@ -8,7 +8,7 @@ module Engine
       module Meta
         include Game::Meta
 
-        DEV_STAGE = :prealpha
+        DEV_STAGE = :alpha
 
         GAME_SUBTITLE = 'Spain'
         GAME_DESIGNER = 'Lonny Orgler and Enrique Trigueros'
