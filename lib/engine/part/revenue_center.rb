@@ -6,7 +6,7 @@ module Engine
   module Part
     class RevenueCenter < Node
       attr_accessor :groups, :revenue
-      attr_reader :hide, :revenue_to_render, :visit_cost, :route, :loc
+      attr_reader :hide, :revenue_to_render, :visit_cost, :route, :loc, :rows
 
       PHASES = %i[yellow green brown gray diesel].freeze
 
@@ -16,7 +16,7 @@ module Engine
         @hide = opts[:hide]
         @visit_cost = (opts[:visit_cost] || 1).to_i
         @loc = opts[:loc]
-
+        @rows = (opts[:rows] || 1).to_i
         @route = (opts[:route] || :mandatory).to_sym
       end
 

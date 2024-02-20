@@ -264,19 +264,19 @@ module Engine
           },
           blue: {
             ['E1'] => 'offboard=revenue:yellow_30|green_30|brown_40|gray_60,format:+%d,visit_cost:0,route:optional'\
-                      ',groups:England;path=a:4,b:_0;path=a:5,b:_0',
-            ['G1'] => 'offboard=revenue:yellow_30|green_30|brown_40|gray_60,format:+%d,rows:2,visit_cost:0,route:optional'\
-                      ',groups:England;path=a:3,b:_0;path=a:4,b:_0',
+                      ',groups:England,rows:2;path=a:4,b:_0;path=a:5,b:_0',
+            ['G1'] => 'offboard=revenue:yellow_30|green_30|brown_40|gray_60,format:+%d,visit_cost:0,route:optional'\
+                      ',groups:England,rows:2;path=a:3,b:_0;path=a:4,b:_0',
             ['I1'] => 'offboard=revenue:yellow_20|green_30|brown_40|gray_60,format:+%d,visit_cost:0,route:optional'\
-                      ',groups:England;path=a:4,b:_0',
+                      ',groups:England,rows:2;path=a:4,b:_0',
             ['J14'] => 'offboard=revenue:yellow_20|green_30|brown_40|gray_60,format:+%d,visit_cost:0,route:optional'\
-                       ',groups:England;path=a:1,b:_0;path=a:2,b:_0',
+                       ',groups:England,rows:2;path=a:1,b:_0;path=a:2,b:_0',
             ['K5'] => 'offboard=revenue:yellow_20|green_40|brown_60|gray_80,format:+%d,visit_cost:0,route:optional'\
-                      ',groups:England;path=a:3,b:_0',
+                      ',groups:England,rows:2;path=a:3,b:_0',
             ['K7'] => 'offboard=revenue:yellow_20|green_40|brown_60|gray_80,format:+%d,visit_cost:0,route:optional'\
-                      ',groups:England;path=a:2,b:_0',
+                      ',groups:England,rows:2;path=a:2,b:_0',
             ['K13'] => 'offboard=revenue:yellow_20|green_30|brown_40|gray_60,format:+%d,visit_cost:0,route:optional'\
-                       ',groups:England;path=a:2,b:_0',
+                       ',groups:England,rows:2;path=a:2,b:_0',
             ['K15'] => 'city=revenue:0;path=a:4,b:_0,lanes:4',
             ['K17'] => 'offboard=revenue:yellow_30|green_40|brown_50,format:+%d,visit_cost:0,route:optional'\
                        ';path=a:1,b:_0,lanes:4',
