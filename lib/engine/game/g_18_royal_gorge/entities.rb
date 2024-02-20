@@ -58,12 +58,37 @@ module Engine
           {
             sym: 'Y5',
             name: 'Territorial Prison (Y5)',
-            desc: 'Special abilities not implemented.',
-            # desc: 'If a corporation owns the prison, they may use prison labor to build in any terrain at 1/2 price.',
+            desc: 'If a corporation owns the prison, they may use prison labor to build in any terrain at 1/2 price.',
             value: 70,
             revenue: 10,
             abilities: [
-              # 1/2 price to build over terrain
+              {
+                type: 'tile_discount',
+                discount: 5,
+                terrain: 'mountain',
+                owner_type: 'corporation',
+                hexes: %(E9 F16 I11 J10 J8 L6),
+              },
+              {
+                type: 'tile_discount',
+                discount: 10,
+                terrain: 'mountain',
+                owner_type: 'corporation',
+                hexes: %(C9 D16 E5 I5 J4 J6 K5),
+              },
+              {
+                type: 'tile_discount',
+                discount: 15,
+                terrain: 'mountain',
+                owner_type: 'corporation',
+                hexes: %(B10 D4 D6 D8 D18),
+              },
+              {
+                type: 'tile_discount',
+                discount: 10,
+                terrain: 'water',
+                owner_type: 'corporation',
+              },
             ],
           },
           {
@@ -98,13 +123,17 @@ module Engine
           {
             sym: 'G2',
             name: '13LB Gold Nugget (G2)',
-            desc: 'Special abilities not implemented.',
-            # desc: 'Once during the game, the owning corporation may ship 1 Gold for $130 revenue '\
-            #       'increase (instead of the normal $50).',
+            desc: 'Once during the game, the owning corporation may ship 1 Gold for $130 revenue '\
+                  'increase (instead of the normal $50).',
             value: 40,
             revenue: 5,
             abilities: [
-              # 1x ship 1 Gold for +$130 revenue instead of +$50
+              {
+                type: 'choose_ability',
+                owner_type: 'corporation',
+                when: %w[dividend],
+                count: 1,
+              },
             ],
           },
           {
@@ -191,14 +220,22 @@ module Engine
           {
             sym: 'B3',
             name: 'Steel Depot (B3)',
-            desc: 'Special abilities not implemented.',
-            # desc: 'Comes with the Steel Depot card. Once per operating round, owning corporation '\
-            #       'may use 0-2 steel from the Steel Depot card to lay yellow track for free. (Max '\
-            #       'of 6 track applies).',
+            desc: 'Comes with the Steel Depot card. Once per operating round, owning corporation '\
+                  'may use 0-2 steel from the Steel Depot card to lay yellow track for free. (Max '\
+                  'of 6 track applies).',
             value: 55,
             revenue: 10,
             abilities: [
-              # { type: 'free_steel', count: 5, or_count: 2, },
+              {
+                type: 'tile_lay',
+                count: 5,
+                count_per_or: 2,
+                consume_tile_lay: true,
+                hexes: [],
+                tiles: %w[RG4 3 4 5 6 7 8 9 57 58],
+                special: false,
+                reachable: true,
+              },
             ],
           },
           {

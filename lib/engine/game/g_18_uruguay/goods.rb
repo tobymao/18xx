@@ -88,6 +88,15 @@ module Engine
 
           @goods_on_ship[ship.id]
         end
+
+        # Clean up
+        def remove_goods_from_map
+          hexes.select do |hex|
+            hex.assignments.keys.each do |assignment|
+              hex.remove_assignment!(assignment) if assignment.include? 'GOODS'
+            end
+          end
+        end
       end
     end
   end

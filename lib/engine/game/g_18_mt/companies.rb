@@ -79,7 +79,7 @@ module Engine
                           trains: %w[3 4 5],
                           count: 1,
                           closed_when_used_up: true,
-                          when: 'buying_train',
+                          when: 'buy_train',
                         }],
             color: nil,
           },
