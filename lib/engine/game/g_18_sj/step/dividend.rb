@@ -54,7 +54,7 @@ module Engine
             return 0 if entity.minor?
             # For Oscarian era shares in the Bank pool pay to corporation.
             # Corporations cannot have shares in Treasury.
-            return dividends_for_entity(entity, @game.bank, per_share) if @game.oscarian_era
+            return dividends_for_entity(entity, @game.share_pool, per_share) if @game.oscarian_era
 
             # Pay out for shares in treasury only.
             dividends_for_entity(entity, entity, per_share)

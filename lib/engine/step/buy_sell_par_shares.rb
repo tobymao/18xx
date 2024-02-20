@@ -107,9 +107,11 @@ module Engine
         return false unless can_sell_any?(entity)
         return true if @game.num_certs(entity) > @game.cert_limit(entity)
 
-        !@game.can_hold_above_corp_limit?(entity) && @game.corporations.any? do |corp|
-          !corp.holding_ok?(entity) && can_sell_any_bundles(entity, corp)
-        end
+        !@game.can_hold_above_corp_limit?(entity) && !must_sell_corporations(entity).empty?
+      end
+
+      def must_sell_corporations(entity)
+        @game.corporations.select { |corp| !corp.holding_ok?(entity) && can_sell_any_bundles(entity, corp) }
       end
 
       def can_sell?(entity, bundle)

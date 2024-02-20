@@ -17,7 +17,7 @@ module Engine
             color: '#025aaa',
             floatable: false,
             ipoed: false,
-            tokens: [0, 40, 60, 100, 100],
+            tokens: [100, 100, 100, 100, 100],
             text_color: 'white',
             abilities: [],
           },

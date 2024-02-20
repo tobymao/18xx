@@ -31,7 +31,12 @@ module Engine
 
                        })
         end
+
         # rubocop:enable Layout/LineLength
+        #
+        def map_france_layout
+          :pointy
+        end
 
         def map_france_game_location_names
           {

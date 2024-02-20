@@ -10,7 +10,9 @@ module View
 
         needs :revenues
         needs :transform, default: 'translate(0 0)'
+        needs :rows, default: 1
 
+        HEIGHT = 27
         def render
           # Compute text and width first in order to get total_width
           computed_revenues = @revenues.map do |rev|
@@ -25,11 +27,17 @@ module View
           end
 
           # Compute total width of rectangles so we can center
-          total_width = computed_revenues.sum do |revenue|
-            revenue[:width]
+          step_size = (computed_revenues.size / @rows.to_f).ceil
+          total_width = Array.new(@rows) do |row|
+            computed_revenues[(row - 1) * step_size, step_size].sum do |revenue|
+              revenue[:width]
+            end
           end
 
-          t_x = -(total_width * 0.5)
+          row = 0
+          t_x = -(total_width[row] * 0.5)
+          index = 0
+          t_y = 0
           children = computed_revenues.flat_map do |rev|
             fill = rev[:color].start_with?('#') ? rev[:color] : color_for(rev[:color])
             font_color = contrast_on(fill)
@@ -37,8 +45,8 @@ module View
 
             rect_attrs = {
               fill: fill,
-              transform: "translate(#{t_x} 0)",
-              height: 27,
+              transform: "translate(#{t_x} #{t_y})",
+              height: HEIGHT,
               width: width,
               x: 0,
               y: -12,
@@ -46,13 +54,19 @@ module View
 
             text_props = {
               attrs: {
-                transform: "translate(#{t_x + (width * 0.5)} 0)",
+                transform: "translate(#{t_x + (width * 0.5)} #{t_y})",
                 fill: font_color,
                 stroke: font_color,
                 'dominant-baseline': 'central',
               },
             }
             t_x += width
+            index += 1
+            if index == step_size && index < computed_revenues.size
+              row += 1
+              t_x = -(total_width[row] * 0.5)
+              t_y += HEIGHT
+            end
             [
               h(:rect, attrs: rect_attrs),
               h('text.number', text_props, rev[:text]),

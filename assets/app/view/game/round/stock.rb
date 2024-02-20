@@ -65,6 +65,9 @@ module View
           if @step.respond_to?(:must_sell?) && @step.must_sell?(@current_entity)
             children << if @game.num_certs(@current_entity) > @game.cert_limit(@current_entity)
                           h('div.margined', 'Must sell stock: above certificate limit')
+                        elsif @step.respond_to?(:must_sell_corporations)
+                          corps_over_limit = @step.must_sell_corporations(@current_entity).map(&:name).join(', ')
+                          h('div.margined', "Must sell stock: above 60% limit in #{corps_over_limit}")
                         else
                           h('div.margined', 'Must sell stock: above 60% limit in corporation(s)')
                         end
@@ -423,7 +426,7 @@ module View
 
           div_class = buy_buttons.size < 5 ? '.inline' : ''
           [h(:div, [
-            h("div#{div_class}", { style: { marginTop: '0.5rem' } }, "Buy #{@selected_company.sym}: "),
+            h("div#{div_class}", { style: { marginTop: '0.5rem' } }, "Buy #{company.sym}: "),
             *buy_buttons,
           ])]
         end

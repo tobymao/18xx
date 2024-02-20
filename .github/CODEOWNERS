@@ -35,3 +35,16 @@ lib/engine/game/g_rolling_stock* @roseundy
 lib/engine/game/g_1822_africa* @vandamm
 lib/engine/game/g_18_jpt* @vandamm
 lib/engine/game/g_18_scan* @vandamm
+
+lib/engine/game/g_18_cz* @zwergenpunk
+lib/engine/game/g_1840* @zwergenpunk
+
+lib/engine/game/g_18_al* @perwestling
+lib/engine/game/g_18_ga* @perwestling
+lib/engine/game/g_18_mex* @perwestling
+lib/engine/game/g_18_ms* @perwestling
+lib/engine/game/g_18_rhl* @perwestling
+lib/engine/game/g_18_sj* @perwestling
+lib/engine/game/g_18_tn* @perwestling
+lib/engine/game/g_1824* @perwestling
+lib/engine/game/g_1893* @perwestling

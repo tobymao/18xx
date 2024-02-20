@@ -11,7 +11,7 @@ module Engine
             return [] if entity == @game.rptla
 
             @round.loan_taken |= false
-            actions = super
+            actions = super.map(&:clone)
             actions << 'take_loan' if !actions.empty? && can_take_loan?(entity)
             actions
           end

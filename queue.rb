@@ -54,7 +54,7 @@ scheduler.cron '00 09 * * *' do
   pins.each do |pin|
     where_kwargs = {
       Sequel.pg_jsonb_op(:settings).get_text('pin') => pin,
-      status: %w[active finished],
+      :status => %w[active finished],
     }
     if Game.where(**where_kwargs).count.zero?
       file = "#{PINS_DIR}/#{pin}.js.gz"

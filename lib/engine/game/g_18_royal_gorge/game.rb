@@ -3,6 +3,7 @@
 require_relative 'entities'
 require_relative 'map'
 require_relative 'meta'
+require_relative 'stock_market'
 require_relative 'trains'
 
 module Engine
@@ -14,7 +15,7 @@ module Engine
         include Map
         include Trains
 
-        attr_accessor :gold_shipped
+        attr_accessor :gold_shipped, :local_jeweler_cash
         attr_reader :gold_corp, :steel_corp, :available_steel, :gold_cubes, :indebted, :debt_corp,
                     :treaty_of_boston
 
@@ -90,6 +91,27 @@ module Engine
         }.freeze
         RETURNED_TOKEN_PRICES = [80, 60, 40].freeze
 
+        GAME_END_CHECK = {
+          bankrupt: :immediate,
+          custom: :one_more_full_or_set,
+          stock_market: :one_more_full_or_set,
+        }.freeze
+        GAME_END_CHECK_STOCK = {
+          bankrupt: :immediate,
+          custom: :full_or,
+          stock_market: :full_or,
+        }.freeze
+        GAME_END_REASONS_TEXT = {
+          bankrupt: 'Player is bankrupt',
+          custom: '6-train is bought/exported',
+          stock_market: 'Corporation enters end game trigger on stock market',
+        }.freeze
+        GAME_END_DESCRIPTION_REASON_MAP_TEXT = {
+          bankrupt: 'Bankruptcy',
+          custom: '6-train was bought/exported',
+          stock_market: 'Company hit max stock value',
+        }.freeze
+
         def ipo_name(_entity = nil)
           'Treasury'
         end
@@ -121,6 +143,8 @@ module Engine
         end
 
         def setup
+          @game_end_reason = nil
+
           @corporation_phase_color = {}
           @corporations[0..1].each { |c| @corporation_phase_color[c.name] = 'Yellow' }
           @corporations[2..3].each { |c| @corporation_phase_color[c.name] = 'Green' }
@@ -142,6 +166,26 @@ module Engine
           @indebted = {}
 
           @treaty_of_boston = false
+
+          @local_jeweler_cash = 0
+        end
+
+        def game_hexes
+          hexes = self.class::HEXES.dup
+
+          # these corporations' home hexes have cities if they're in play,
+          # otherwise towns
+          %w[FCC NO].each do |corp_id|
+            # can't use corporation_by_id here, this is called during setup
+            # before the cache is available
+            if @corporations.find { |c| c.id == corp_id }
+              hexes[:white].merge!(HOME_TOWN_HEXES[corp_id][:city])
+            else
+              hexes[:white].merge!(HOME_TOWN_HEXES[corp_id][:town])
+            end
+          end
+
+          hexes
         end
 
         def init_available_steel
@@ -330,7 +374,9 @@ module Engine
                 @turn += 1
                 or_round_finished
                 or_set_finished
-                new_stock_round
+                round = new_stock_round
+                move_jeweler_cash!
+                round
               end
             when Round::Auction
               # reorder as normal first so that if there is a tie for most cash,
@@ -368,17 +414,22 @@ module Engine
           @players.size == 2 ? { max_ownership_percent: 70 } : {}
         end
 
+        def info_on_trains(phase)
+          train, = phase[:on]&.split('-')
+          train ? "last #{train}" : ''
+        end
+
         def operating_round(round_num)
           Round::Operating.new(self, [
             Engine::Step::Bankrupt,
             G18RoyalGorge::Step::SpecialChoose,
-            Engine::Step::SpecialTrack,
+            G18RoyalGorge::Step::SpecialTrack,
             Engine::Step::BuyCompany,
             G18RoyalGorge::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
             G18RoyalGorge::Step::Dividend,
-            Engine::Step::BuyTrain,
+            G18RoyalGorge::Step::BuyTrain,
             [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
@@ -398,6 +449,8 @@ module Engine
           handle_metal_payout(@gold_corp)
           @gold_shipped = 0
           update_gold_corp_cash!
+
+          depot.export!
         end
 
         def handle_metal_payout(entity)
@@ -645,6 +698,12 @@ module Engine
                 end
               end
             end
+          when Action::BuyTrain
+            entity = action.entity
+            if num_corp_trains(entity) > train_limit(entity)
+              raise GameError,
+                    'Cannot end train-buying action over the train limit'
+            end
           end
         end
 
@@ -686,6 +745,10 @@ module Engine
           @doc_holliday ||= company_by_id('G1')
         end
 
+        def gold_nugget
+          @gold_nugget ||= company_by_id('G2')
+        end
+
         def upgrades_to?(from, to)
           return false unless super
 
@@ -711,8 +774,85 @@ module Engine
           corporation
         end
 
+        def custom_end_game_reached?
+          @endgame_triggered
+        end
+
+        def event_trigger_endgame!
+          return if @game_end_reason
+
+          @log << '-- Event: Endgame triggered --'
+          @endgame_triggered = true
+        end
+
+        def init_stock_market
+          G18RoyalGorge::StockMarket.new(game_market, [])
+        end
+
+        # a 6-train exporting, or a sold out corp hitting the game end zone on
+        # the stock market mess with the timing, so two GAME_END_CHECK configs
+        # are needed
+        def game_end_check_values
+          if @round&.stock?
+            self.class::GAME_END_CHECK_STOCK
+          else
+            self.class::GAME_END_CHECK
+          end
+        end
+
+        def game_end_check
+          # save the result so that the apparent endgame tirgger doesn't change,
+          # but keep checking for bankruptcy
+          reason, after = super
+          @game_end_reason = reason if !@game_end_reason || (reason == :bankrupt)
+          [@game_end_reason, after] if @game_end_reason
+        end
+
+        def end_game!(player_initiated: false)
+          return if @finished
+
+          logged_drop = false
+          @indebted.each do |corporation, (_, amount)|
+            next unless corporation.floated?
+
+            steps = DEBT_PENALTY.dig(corporation.id, amount) || 0
+            next if steps.zero?
+
+            @log << '-- Debt is "paid off" by moving share price left as described on charter --' unless logged_drop
+            logged_drop = true
+
+            old_price = corporation.share_price
+
+            steps.times do
+              stock_market.move_left(corporation)
+              @loans << corporation.loans.pop
+            end
+            log_share_price(corporation, old_price, steps, log_steps: true)
+          end
+          @indebted.clear
+
+          super
+        end
+
         def sell_movement(corporation)
           corporation.type == :rail ? :left_block_pres : :none
+        end
+
+        def local_jeweler
+          @local_jeweler ||= company_by_id('Y6')
+        end
+
+        def move_jeweler_cash!
+          return unless @local_jeweler_cash.positive?
+
+          player = local_jeweler.player
+          @log << "#{player.name} receives #{format_currency(@local_jeweler_cash)} from #{local_jeweler.name}"
+          player.cash += @local_jeweler_cash
+          @local_jeweler_cash = 0
+        end
+
+        def company_status_str(company)
+          format_currency(@local_jeweler_cash) if company == local_jeweler && company.player
         end
       end
     end

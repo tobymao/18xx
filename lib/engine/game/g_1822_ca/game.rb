@@ -505,6 +505,7 @@ module Engine
                          (dest = destination_bonus(route.routes)) &&
                          dest[:route] == route
           multiplier = sawmill_dest ? 2 : 1
+          multiplier *= 2 if train_type(route.train) == :etrain
 
           { route: route, revenue: @sawmill_bonus * multiplier }
         end

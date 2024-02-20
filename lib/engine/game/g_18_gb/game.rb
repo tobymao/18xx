@@ -809,41 +809,33 @@ module Engine
           !(first.visited_stops & second.visited_stops).reject(&:offboard?).empty?
         end
 
-        def route_sets_intersect(first, second)
-          first.any? { |a| second.any? { |b| routes_intersect(a, b) } }
-        end
+        def add_route_to_set_of_possible_sets(possible_sets, add_route)
+          route_as_set = [[add_route]]
+          return [route_as_set] if possible_sets.empty?
 
-        def combine_route_sets(sets)
-          # simplify overlapping route sets by combining them where possible
-          overlapped = []
-
-          sets.combination(2).select { |first, second| route_sets_intersect(first, second) }.each do |first, second|
-            overlapped << second
-            second.each { |route| first << route }
+          possible_sets.flat_map do |sets|
+            # each possible set becomes multiple new possible sets
+            [].concat(
+              # simplest possibility is adding the new route as an entirely new set:
+              [sets + route_as_set],
+              # but alternatively we could incorporate into one of the existing sets:
+              sets.filter_map.with_index do |set, ix|
+                if set.any? { |route| routes_intersect(route, add_route) }
+                  sets.map.with_index { |s, s_ix| ix == s_ix ? s + [add_route] : s }
+                end
+              end
+            )
           end
-
-          sets.reject { |set| overlapped.include?(set) }
         end
 
-        def route_sets(routes)
-          sets = routes.map { |route| [route] }
-          return [] if sets.empty?
-
-          prev_length = 0
-          while sets.size != prev_length
-            prev_length = sets.size
-            sets = combine_route_sets(sets)
-          end
-          sets
+        def all_possible_route_sets(routes)
+          routes.reduce([]) { |possible_sets, route| add_route_to_set_of_possible_sets(possible_sets, route) }
         end
 
-        def compass_bonuses(route)
+        def compass_bonuses_for_route_set(route_set)
           bonuses = []
-          return bonuses if route.chains.empty?
 
-          route_set = route_sets(route.routes).find { |set| set.include?(route) } || []
-          return bonuses unless route == route_set.first # apply bonus to the first route in the set
-
+          route = route_set.first
           hexes = route_set.flat_map { |r| r.ordered_paths.map { |path| path.hex.coordinates } }
           points = compass_points_in_network(hexes)
           if points.include?('N') && points.include?('S')
@@ -860,6 +852,25 @@ module Engine
           end
 
           bonuses
+        end
+
+        def route_sets(routes)
+          all_possible_route_sets(routes).max_by do |possible_sets|
+            bonuses = possible_sets.reduce(0) do |total, route_set|
+              total + compass_bonuses_for_route_set(route_set).reduce(0) { |subtotal, bonus| subtotal + bonus['revenue'] }
+            end
+            [bonuses, possible_sets.length]
+          end
+        end
+
+        def compass_bonuses(route)
+          bonuses = []
+          return bonuses if route.chains.empty?
+
+          route_set = route_sets(route.routes).find { |set| set.include?(route) } || []
+          return bonuses unless route == route_set.first # apply bonus to the first route in the set
+
+          compass_bonuses_for_route_set(route_set)
         end
 
         def estuary_bonuses(route)

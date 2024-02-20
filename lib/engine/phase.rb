@@ -17,7 +17,7 @@ module Engine
     end
 
     def buying_train!(entity, train, source)
-      next! while @next_on.include?(train.sym)
+      next! while @next_on.include?(train.id) || @next_on.include?(train.sym)
 
       @game.rust_trains!(train, entity)
       @depot.depot_trains(clear: true)

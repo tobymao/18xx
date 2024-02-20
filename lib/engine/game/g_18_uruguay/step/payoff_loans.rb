@@ -27,6 +27,7 @@ module Engine
             return [] if !entity.corporation? || entity != current_entity
             return [] if entity == @game.rptla
             return [] unless entity.loans.size.positive?
+            return [] if entity.owner.cash < @game.class::LOAN_VALUE
 
             actions = []
             actions << 'pass' if blocks?
