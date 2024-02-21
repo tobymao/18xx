@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# backtick_javascript: true
+
 if RUBY_ENGINE == 'opal'
   require_tree '../action'
   require_tree '../round'

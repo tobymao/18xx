@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# backtick_javascript: true
+
 require 'index'
 require 'game_manager'
 require 'user_manager'
