@@ -158,7 +158,22 @@ module Engine
         end
 
         def nationalization_final_export!
-          @log << '  Nationalization: Final Export to be implemented'
+          return if number_of_goods_at_harbor.zero?
+
+          @log << "Nationalization: Final Export #{number_of_goods_at_harbor} goods for #{format_currency(50)} each"
+          amount_per_share = 5 * number_of_goods_at_harbor
+          players.each do |holder|
+            amount = holder.num_shares_of(@rptla) * amount_per_share
+            next unless amount.positive?
+
+            @log << "Nationalization: Final Export #{holder.name} receives #{format_currency(amount)}"
+            @bank.spend(amount, holder)
+          end
+          if @rptla.share_price.price <= amount_per_share * 10 && @rptla.trains.size.positive?
+            return @stock_market.move_right(@rptla)
+          end
+
+          @stock_market.move_left(@rptla)
         end
 
         def nationalization_close_rptla!
@@ -206,6 +221,17 @@ module Engine
           buy_train(@fce, train, :free)
         end
 
+        # Move stock price one step left for each loan more than limit
+        def decrease_stock_value
+          @corporations.each do |corporation|
+            over_committed = loans_due_interest(corporation) - maximum_loans(corporation)
+            if over_committed.positive?
+              @log << "#{corporation.name} stock prices drops #{over_committed} steps due to over commitment"
+              over_committed.times { @stock_market.move_left(corporation) }
+            end
+          end
+        end
+
         def retreive_home_tokens
           home_tokens = []
           tokens = []
@@ -234,6 +260,7 @@ module Engine
           tokens.each do |token|
             new_token = swap_token(@fce, token.corporation, token)
             @merge_data[:tokens].append(new_token) unless new_token.nil?
+            @fce.tokens.delete(@fce.next_token) if new_token.nil?
           end
         end
 

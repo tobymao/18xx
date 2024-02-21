@@ -31,7 +31,7 @@ module Engine
 
         STARTING_CASH = { 3 => 860, 4 => 650, 5 => 520, 6 => 440 }.freeze
 
-        NORTH_CORPS = %w[FdSB FdLR CFEA CFLG SFVA FDC].freeze
+        NORTH_CORPS = %w[FdSB FdLR CFEA CFLG SFVA FdC].freeze
 
         TRACK_RESTRICTION = :permissive
 
@@ -47,11 +47,11 @@ module Engine
 
         CARRIAGE_COST = 80
 
-        HARBOR_MINE_SUBSIDY = 20
-
         COMBINED_BONUS = 150
 
         BONUS = 100
+
+        MINOR_TAKEOVER_COST = 100
 
         MOUNTAIN_SECOND_TOKEN_COST = 50
 
@@ -160,7 +160,7 @@ module Engine
             name: '2',
             distance: 2,
             price: 100,
-            num: 12,
+            num: 11,
             rusts_on: '4',
             variants: [
               {
@@ -317,6 +317,7 @@ module Engine
             Engine::Step::SpecialToken,
             G18ESP::Step::BuyCarriageOrCompany,
             G18ESP::Step::HomeToken,
+            G18ESP::Step::SpecialTrack,
             G18ESP::Step::SpecialChoose,
             G18ESP::Step::Track,
             G18ESP::Step::Route,
@@ -396,7 +397,10 @@ module Engine
             @corporations.delete(c)
             hex = @hexes.find { |h| h.id == c.coordinates }
             hex.tile.cities[c.city || 0].remove_reservation!(c)
+            hex.tile.remove_reservation!(c)
             hex.tile.cities[c.city || 0].remove_tokens!
+            destination_hex = @hexes.find { |h| h.id == c.destination }
+            destination_hex.tile.icons = destination_hex.tile.icons.dup.reject { |icon| icon.name == c.name } if destination_hex
             c.close!
           end
         end
@@ -694,9 +698,7 @@ module Engine
           count = stops.count { |stop| stop.halt? && stop.tile.color != :blue }
           harbor_subsidy = stops.sum { |stop| stop.tile.color == :blue ? stop.route_revenue(route.phase, route.train) : 0 }
           mine_subsidy = count * BASE_MINE_BONUS[@phase.tiles.last]
-          total_subsidy = harbor_subsidy + mine_subsidy
-          total_subsidy += HARBOR_MINE_SUBSIDY if harbor_subsidy.positive? && mine_subsidy.positive?
-          total_subsidy
+          harbor_subsidy + mine_subsidy
         end
 
         def routes_subsidy(routes)
@@ -747,7 +749,7 @@ module Engine
                   'Minors can not run to offboard locations'
           end
 
-          if combined_trains.include?(route.train)
+          if combined_trains.key?(route.train)
             raise GameError, 'Combined train must run through a montain pass' if route.hexes.none? do |hex|
                                                                                    mountain_pass_token_hex?(hex)
                                                                                  end
@@ -770,6 +772,8 @@ module Engine
             raise GameError,
                   '2P first run must include Aranjuez'
           end
+          wrong_track = skip_route_track_type(route.train)
+          raise GameError, 'Routes must use correct gauage' if wrong_track && route.paths.any? { |p| p.track == wrong_track }
 
           super
         end
@@ -871,7 +875,7 @@ module Engine
         end
 
         def place_home_token(corporation)
-          if corporation == mza && corporation_by_id('MZ').ipoed && !corporation.tokens.first.used
+          if corporation == mza && corporation_by_id('MZ')&.ipoed && !corporation.tokens.first.used
             # mza special case if mz already exists on the map
             token = corporation.tokens.first
             hex = hex_by_id(corporation.coordinates)
@@ -955,13 +959,12 @@ module Engine
               reorder_players
               new_operating_round
             when Round::Operating
+              or_round_finished
               if @round.round_num < @operating_rounds
-                or_round_finished
                 new_operating_round(@round.round_num + 1)
               else
-                @turn += 1
-                or_round_finished
                 or_set_finished
+                @turn += 1
                 new_stock_round
               end
             when init_round.class
@@ -1037,6 +1040,8 @@ module Engine
         end
 
         def remove_dest_icon(corp)
+          return unless corp.destination
+
           tile = hex_by_id(corp.destination).tile
           tile.icons = tile.icons.dup.reject { |icon| icon.name == corp.name }
         end
@@ -1062,16 +1067,22 @@ module Engine
         end
 
         def skip_route_track_type(train)
-          train.track_type == :narrow ? :broad : :narrow
+          case train.track_type
+          when :narrow
+            :broad
+          when :broad
+            :narrow
+          end
         end
 
-        def open_mountain_pass(entity, pass_hex, p5_ability = false)
-          pass_tile = hex_by_id(pass_hex).tile
+        def open_mountain_pass(entity, pass_hex_id, p5_ability = false)
+          pass_hax = hex_by_id(pass_hex_id)
+          pass_tile = pass_hax.tile
 
-          mount_pass_cost = mountain_pass_token_cost(hex_by_id(pass_hex), entity, p5_ability)
+          mount_pass_cost = mountain_pass_token_cost(pass_hax, entity, p5_ability)
           entity.spend(mount_pass_cost, @bank) if mount_pass_cost.positive?
 
-          @opened_mountain_passes << pass_hex.id
+          @opened_mountain_passes << pass_hax.id
           pass_tile.cities.first.remove_tokens!
 
           entity_name = p5_ability ? "#{entity.name} (#{p5.name})" : entity.name
@@ -1086,7 +1097,7 @@ module Engine
           openable_passes = @graph.connected_hexes(entity).keys.select do |hex|
             mountain_pass_token_hex?(hex)
           end
-          openable_passes = openable_passes.reject { |hex| @opened_mountain_passes.contains?(hex.id) }
+          openable_passes = openable_passes.reject { |hex| @opened_mountain_passes.include?(hex.id) }
 
           openable_passes.to_h do |hex|
             [hex.id, "#{hex.location_name} (#{format_currency(mountain_pass_token_cost(hex, entity, p5_ability))})"]
@@ -1126,28 +1137,15 @@ module Engine
 
         def pay_compensation(corporation, minor)
           if @minors_stop_operating && minor.player_share_holders.empty?
-            spend_compensation(MINOR_TAKEOVER_COST, corporation, @bank)
+            corporation.spend(MINOR_TAKEOVER_COST, @bank)
             @log << "#{corporation.name} spends #{format_currency(MINOR_TAKEOVER_COST)} to acquire #{minor.name}"
           else
             share_price = minor.share_price
             payout = share_price ? minor.share_price.price : 0
 
-            spend_compensation(payout, corporation, minor.owner)
+            corporation.spend(payout, minor.owner)
 
             @log << "#{minor.owner.name} gets #{format_currency(payout)} compensation"
-          end
-        end
-
-        def spend_compensation(amount, from, to)
-          if from.cash >= amount
-            from.spend(amount, to)
-          else
-            difference = amount - from.cash
-            from.spend(from.cash, to) if from.cash.positive?
-            if to != from
-              take_player_loan(from.owner, differnce - from.owner.cash) unless from.owner.cash >= difference
-              from.owner.spend(difference, to)
-            end
           end
         end
 
@@ -1287,6 +1285,29 @@ module Engine
           corps = self.class::CORPORATIONS
           corps += self.class::EXTRA_CORPORATIONS unless core
           corps
+        end
+
+        def check_overlap(routes)
+          tracks = {}
+
+          check = lambda do |key|
+            raise GameError, "Route cannot reuse track on #{key[0].id}" if tracks[key]
+
+            tracks[key] = true
+          end
+
+          routes.each do |route|
+            route.paths.each do |path|
+              a = path.a
+              b = path.b
+
+              check.call([path.hex, a.num, path.lanes[0][1]]) if a.edge?
+              check.call([path.hex, b.num, path.lanes[1][1]]) if b.edge?
+
+              # check intra-tile paths between nodes
+              check.call([path.hex, path]) if path.nodes.size > 1
+            end
+          end
         end
       end
     end

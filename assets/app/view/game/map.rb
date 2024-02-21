@@ -31,12 +31,20 @@ module View
       GAP = 25 # GAP between the row/col labels and the map hexes
       SCALE = 0.5 # Scale for the map
 
+      def compute_axes(hexes)
+        min, max = hexes.minmax
+        ((min.next)..(max.next)).to_a
+      end
+
       def render
         return h(:div, []) if (@layout = @game.layout) == :none
 
         @hexes = @show_starting_map ? @game.clone([]).hexes : @game.hexes.dup
-        @cols = @hexes.reject(&:ignore_for_axes).map(&:x).uniq.sort.map(&:next)
-        @rows = @hexes.reject(&:ignore_for_axes).map(&:y).uniq.sort.map(&:next)
+
+        axes_hexes = @hexes.reject(&:ignore_for_axes)
+        @cols = compute_axes(axes_hexes.map(&:x))
+        @rows = compute_axes(axes_hexes.map(&:y))
+
         @start_pos = [@cols.first, @rows.first]
 
         @scale = SCALE * map_zoom

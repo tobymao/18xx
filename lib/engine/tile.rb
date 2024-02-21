@@ -165,7 +165,8 @@ module Engine
                                       hide: params['hide'],
                                       visit_cost: params['visit_cost'],
                                       route: params['route'],
-                                      format: params['format'])
+                                      format: params['format'],
+                                      rows: params['rows'])
         cache << offboard
         offboard
       when 'label'

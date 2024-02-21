@@ -6,10 +6,16 @@ module Engine
       module Step
         class Dividend < Engine::Step::Dividend
           GOLD_BONUS = 50
+          NUGGET_BONUS = 130
+
+          def help
+            "You may ship a gold cube from the map for +#{@game.format_currency(GOLD_BONUS)}" if choosing?(current_entity)
+          end
 
           def actions(entity)
             actions = super.dup
-            actions << 'choose' if choosing?(entity)
+            actions << 'choose' if choosing?(entity) ||
+                                   (shipper?(entity) && choosing?(entity.owner))
             actions
           end
 
@@ -34,14 +40,13 @@ module Engine
           #
           # - Y2: after last gold is shipped from a hex, may place a ghost town
           # token there
-          # - G2: one-time +$130 instead of +$50
 
           def choice_name
             "Choose a Gold to ship for +#{@game.format_currency(GOLD_BONUS)}"
           end
 
-          def choosing?
-            !@shipped_gold && @game.gold_slots_available? && !shippable_gold.empty?
+          def choosing?(entity)
+            entity == current_entity && !@shipped_gold && @game.gold_slots_available? && !shippable_gold.empty?
           end
 
           def choices
@@ -72,13 +77,29 @@ module Engine
             hex = @game.hex_by_id(hex_id)
             location = hex.location_name ? " (#{hex.location_name})" : ''
 
-            @log << "#{entity.name} ships gold from #{hex_id}#{location} for +#{@game.format_currency(GOLD_BONUS)}"
-            @round.extra_revenue += GOLD_BONUS
+            if entity == @game.gold_nugget
+              log_entity = "#{entity.owner.name} (#{entity.name})"
+              bonus = NUGGET_BONUS
+              @log << "#{entity.name} closes"
+              entity.close!
+            else
+              log_entity = entity.name
+              bonus = GOLD_BONUS
+            end
+            @round.extra_revenue += bonus
+            @log << "#{log_entity} ships gold from #{hex_id}#{location} for +#{@game.format_currency(bonus)}"
 
             @game.gold_cubes[hex_id] -= 1
             icons = hex.tile.icons
             icon = icons.find { |i| i.name == 'gold' }
             icons.delete(icon)
+
+            if @game.local_jeweler&.player
+              jeweler_bonus = 5
+              @game.local_jeweler_cash += jeweler_bonus
+              @log << "#{@game.local_jeweler.player.name}'s #{@game.local_jeweler.name} receives "\
+                      "#{@game.format_currency(jeweler_bonus)}"
+            end
 
             @game.gold_cubes.delete(hex_id) if @game.gold_cubes[hex_id].zero?
           end
@@ -96,8 +117,18 @@ module Engine
 
           def available_hex(entity, hex)
             !@shipped_gold &&
-              entity == current_entity &&
+              shipper?(entity) &&
               shippable_gold.include?(hex)
+          end
+
+          # choices are accessed via the map
+          def render_choices?
+            false
+          end
+
+          def shipper?(entity)
+            entity == current_entity ||
+              (entity == @game.gold_nugget && entity.owner == current_entity)
           end
         end
       end
