@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# backtick_javascript: true
+
 require 'lib/settings'
 require 'lib/truncate'
 require 'lib/profile_link'
