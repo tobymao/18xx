@@ -690,7 +690,13 @@ module View
       private
 
       def num_ipo_shares(corporation)
-        num_shares_of(@game.separate_treasury? ? @game.bank : corporation, corporation) - num_reserved_shares(corporation)
+        if @game.separate_treasury?
+          num_shares_of(@game.bank, corporation) - num_reserved_shares(corporation)
+        elsif defined? corporation.ipo_owner
+          num_shares_of(corporation.ipo_owner, corporation) - num_reserved_shares(corporation)
+        else
+          num_shares_of(corporation, corporation) - num_reserved_shares(corporation)
+        end
       end
 
       def num_reserved_shares(corporation)
