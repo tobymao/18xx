@@ -41,7 +41,14 @@ module Engine
         CERT_LIMIT_COUNTS_BANKRUPTED = true
         HOME_TOKEN_TIMING = :float
 
+        EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
+        MUST_EMERGENCY_ISSUE_BEFORE_EBUY = true
+
+        BANKRUPTCY_ENDS_GAME_AFTER = :one
+
         BANK_CASH = 999_000
+
+        GAME_END_CHECK = { bankrupt: :immediate, custom: :one_more_full_or_set }.freeze
 
         CERT_LIMIT = {
           3 => { 0 => 12, 1 => 12, 2 => 12, 3 => 15, 4 => 15, 5 => 17, 6 => 17, 7 => 19, 8 => 19 },
@@ -100,6 +107,10 @@ module Engine
           ))
         end
 
+        def p4
+          @p4 ||= company_by_id('P4')
+        end
+
         def big_mountain?(hex)
           hex.assignments.include?('MOUNTAIN_BIG')
         end
@@ -125,13 +136,23 @@ module Engine
             Engine::Step::Route,
             Engine::Step::Dividend,
             Engine::Step::DiscardTrain,
-            Engine::Step::BuyTrain,
+            G18Norway::Step::BuyTrain,
             [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
 
         def ship?(train)
           train.track_type == :narrow
+        end
+
+        def cheapest_train_price
+          depot_trains = depot.depot_trains.reject { |train| ship?(train) }
+          train = depot_trains.min_by(&:price)
+          train.price
+        end
+
+        def can_go_bankrupt?(player, corporation)
+          total_emr_buying_power(player, corporation) < cheapest_train_price
         end
       end
     end
