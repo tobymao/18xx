@@ -9,7 +9,6 @@ module Engine
     module G18India
       module Step
         class Dividend < Engine::Step::Dividend
-
           def guaranty_pay(entity)
             return 0 unless entity.guaranty_warrant?
 

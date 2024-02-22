@@ -281,27 +281,27 @@ module Engine
             name: '2',
             distance: [
               { 'nodes' => ['city'], 'pay' => 2, 'visit' => 2 },
-              { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }
+              { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 },
             ],
             price: 180,
             salvage: 180,
-            num: 6
+            num: 6,
           },
           {
             name: '3',
             distance: [
               { 'nodes' => ['city'], 'pay' => 3, 'visit' => 3 },
-              { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }
+              { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 },
             ],
             price: 300,
             salvage: 300,
-            num: 4
+            num: 4,
           },
           {
             name: '4',
             distance: [
               { 'nodes' => ['city'], 'pay' => 4, 'visit' => 4 },
-              { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }
+              { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 },
             ],
             price: 450,
             salvage: 300,
@@ -310,41 +310,41 @@ module Engine
                 name: '4E',
                 distance: [
                   { 'nodes' => ['city'], 'pay' => 4, 'visit' => 99 },
-                  { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }
+                  { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 },
                 ],
                 price: 450,
                 salvage: 300,
               },
             ],
-            num: 3
+            num: 3,
           },
           {
             name: '3x2',
             distance: [
               { 'nodes' => ['city'], 'pay' => 3, 'visit' => 3 },
-              { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }
+              { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 },
             ],
             multiplier: 2,
             price: 700,
             salvage: 500,
-            num: 3
+            num: 3,
           },
           {
             name: '3x3',
             distance: [
               { 'nodes' => ['city'], 'pay' => 3, 'visit' => 3 },
-              { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }
+              { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 },
             ],
             multiplier: 3,
             price: 900,
             salvage: 700,
-            num: 3
+            num: 3,
           },
           {
             name: '4x2',
             distance: [
               { 'nodes' => ['city'], 'pay' => 4, 'visit' => 4 },
-              { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }
+              { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 },
             ],
             multiplier: 2,
             price: 800,
@@ -354,20 +354,20 @@ module Engine
                 name: '4Ex2',
                 distance: [
                   { 'nodes' => ['city'], 'pay' => 4, 'visit' => 99 },
-                  { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }
+                  { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 },
                 ],
                 multiplier: 2,
                 price: 800,
                 salvage: 650,
               },
             ],
-            num: 3
+            num: 3,
           },
           {
             name: '4x3',
             distance: [
               { 'nodes' => ['city'], 'pay' => 4, 'visit' => 4 },
-              { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }
+              { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 },
             ],
             multiplier: 3,
             price: 1100,
@@ -376,13 +376,13 @@ module Engine
                 name: '4Ex3',
                 distance: [
                   { 'nodes' => ['city'], 'pay' => 4, 'visit' => 99 },
-                  { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }
+                  { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 },
                 ],
                 multiplier: 3,
                 price: 1100,
               },
             ],
-            num: 3
+            num: 3,
           },
         ].freeze
       end

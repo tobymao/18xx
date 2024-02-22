@@ -74,7 +74,7 @@ module Engine
         end
 
         def guaranty_warrant?
-          companies.any? {|c| c.type == :warrant}
+          companies.any? { |c| c.type == :warrant }
         end
 
         def book_value
