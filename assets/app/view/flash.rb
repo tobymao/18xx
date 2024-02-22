@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# backtick_javascript: true
+
 module View
   class Flash < Snabberb::Component
     # flash_opts can be passed as a string which will default to salmon
