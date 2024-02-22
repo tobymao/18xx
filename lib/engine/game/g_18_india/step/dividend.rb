@@ -22,75 +22,46 @@ module Engine
             { corporation: revenue, per_share: guaranty_pay(entity) }
           end
 
+          # total shares should always be 10 (when railroad bonds convert => payout could exceed 100%)
+          def payout_per_share(_entity, revenue)
+            revenue / 10.to_f
+          end
+
+          # overloaded for debugging info
           def process_dividend(action)
             entity = action.entity
             revenue = total_revenue
             kind = action.kind.to_sym
             payout = dividend_options(entity)[kind]
             @log << "Revenue: #{revenue} payout: #{payout.to_h} Guaranty pay: #{guaranty_pay(entity)}"
-
-            entity.operating_history[[@game.turn, @round.round_num]] = OperatingInfo.new(
-              routes,
-              action,
-              revenue,
-              @round.laid_hexes
-            )
-
-            @game.close_companies_on_event!(entity, 'ran_train') unless @round.routes.empty?
-            entity.trains.each { |train| train.operated = true }
-
-            rust_obsolete_trains!(entity)
-
-            @round.routes = []
-            @round.extra_revenue = 0
-
-            log_run_payout(entity, kind, revenue, action, payout)
-
-            payout_corporation(payout[:corporation], entity)
-
-            payout_shares(entity, revenue - payout[:corporation], payout[:per_share]) if payout[:per_share].positive?
-
-            change_share_price(entity, payout)
-
-            pass!
+            super
           end
 
-          # total shares will always be 10 (event when railroad bonds convert)
-          def payout_per_share(_entity, revenue)
-            revenue / 10.to_f
+          # Should "Per Share" or "payout" be used as parameter for this method?
+          def payout_shares(entity, revenue)
+            # if revenue == 0 then use guaranty pay
+            revenue = guaranty_pay(entity) * 10 if revenue.zero?
+            super
           end
 
-          def payout_shares(entity, revenue, per_share)
-            payouts = {}
-            (@game.players + @game.corporations).each do |payee|
-              payout_entity(entity, payee, per_share, payouts)
-            end
-
-            receivers = payouts
-                          .sort_by { |_r, c| -c }
-                          .map { |receiver, cash| "#{@game.format_currency(cash)} to #{receiver.name}" }.join(', ')
-
-            log_payout_shares(entity, revenue, per_share, receivers)
-          end
-
+          # share movement chart
           def share_price_change(entity, revenue)
             curr_price = entity.share_price.price
 
-            if (revenue.positive? || guaranty_pay(entity).positive?) && revenue <= curr_price / 2
-              {}
-            elsif revenue > curr_price / 2 && revenue < 2 * curr_price
-              { share_direction: :right, share_times: 1 }
-            elsif revenue >= 2 * curr_price && revenue < 3 * curr_price
-              { share_direction: :right, share_times: 2 }
-            elsif revenue >= 3 * curr_price && revenue < 4 * curr_price
-              { share_direction: :right, share_times: 3 }
-            elsif revenue >= 4 * curr_price
+            if revenue >= 4 * curr_price
               { share_direction: :right, share_times: 4 }
+            elsif revenue >= 3 * curr_price
+              { share_direction: :right, share_times: 3 }
+            elsif revenue >= 2 * curr_price
+              { share_direction: :right, share_times: 2 }
+            elsif revenue > curr_price / 2
+              { share_direction: :right, share_times: 1 }
+            elsif revenue.positive? || guaranty_pay(entity).positive?
+              {}
             else
               { share_direction: :left, share_times: 1 }
             end
           end
-
         end
       end
     end

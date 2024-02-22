@@ -206,7 +206,7 @@ module Engine
               @game.bank.companies.delete(company)
               @round.bought_from_market = true
             else
-              location = 'thier Draft Hand'
+              location = 'their Draft Hand'
               @game.remove_from_hand(current_entity, company)
               @round.bought_from_hand = company
             end
@@ -219,7 +219,14 @@ module Engine
               log_purchase("a share of #{company.name}", location, price)
               corp.make_manager(entity) if corp.owner.nil?
               share.buyable = true
-              buy_shares(entity, share, silent: true)
+              already_floated = corp.floated?
+              # use transfer share to send payment to corporation
+              bundle = ShareBundle.new(share)
+              @game.share_pool.transfer_shares(bundle, entity, spender: entity, receiver: corp, price: price)
+              if corp.floatable && corp.floated? && (already_floated == false)
+                @game.float_corporation(corp)
+                maybe_place_home_token(corp)
+              end
               log_new_president(corp.owner, old_pres, corp)
               # debug_corp_log(share)
             when :president

@@ -15,7 +15,7 @@ module Engine
         include Entities
         include Map
 
-        attr_accessor :draft_deck
+        attr_accessor :draft_deck, :ipo_pool
 
         register_colors(brown: '#a05a2c',
                         white: '#000000',
@@ -120,6 +120,38 @@ module Engine
           'Player Hands'
         end
 
+        # class to serve as a shareholder for the IPO Pool
+        class ShareHolderEntity
+          include Engine::Entity
+          include Engine::ShareHolder
+          include Engine::Spender
+
+          attr_reader :name
+
+          def initialize(name = nil)
+            @name = name
+            @cash = 0
+          end
+
+          def corporation?
+            true
+          end
+        end
+
+        # modified to use the separate shareholder for ipo_owner
+        def init_corporations(stock_market)
+          @ipo_pool = ShareHolderEntity.new('IPO')
+
+          game_corporations.map do |corporation|
+            self.class::CORPORATION_CLASS.new(
+              ipo_owner: @ipo_pool,
+              min_price: stock_market.par_prices.map(&:price).min,
+              capitalization: self.class::CAPITALIZATION,
+              **corporation.merge(corporation_opts),
+            )
+          end
+        end
+
         def setup_preround
           # remove random corporations based on regions, One from each group is Guaranty Company
           setup_corporations_by_region!(@corporations)
@@ -194,7 +226,7 @@ module Engine
             sym: name,
             name: name,
             value: 0,
-            desc: "Warrant pays 5\% of share value when company doesn't pay dividend.",
+            desc: "Warrant pays 5\% of share value when company doesn't pay dividend. Closes at start of Phase IV",
             type: :warrant
           )
           corporation.companies << warrant
@@ -216,7 +248,7 @@ module Engine
           @draft_deck = []
 
           corporations.each do |corporation|
-            corporation.shares.each do |share|
+            corporation.ipo_shares.each do |share|
               card = convert_share_to_company(share)
               case share.percent
               when 20
@@ -245,7 +277,8 @@ module Engine
         # create a placeholder 'company' for shares in IPO or Player Hands
         def convert_share_to_company(share)
           discription = "Certificate for #{share.percent}\% of #{share.corporation.full_name}."
-          discription += "\nGuaranty Company." if share.corporation.companies.any? { |c| c.name == 'Guaranty Warrant' }
+          discription += "\nConverts to DIRECTED company and Floats." if share.percent == 20
+          discription += "\nHas a Guaranty Warrant." if share.corporation.guaranty_warrant?
           Company.new(
             sym: share.id,
             name: share.corporation.name,
@@ -282,7 +315,9 @@ module Engine
           deck.each do |card|
             case card.type
             when :share
-              share_pool.buy_shares(@share_pool, card.treasury)
+              # Use transfer shares method to control receiver of funds
+              bundle = ShareBundle.new(card.treasury)
+              share_pool.transfer_shares(bundle, @share_pool, spender: @bank, receiver: bundle.corporation, price: bundle.price)
             else
               @log << "Private #{card.name} is availabe in the Market"
               card.owner = @bank
@@ -379,9 +414,9 @@ module Engine
             Engine::Step::Token,
             Engine::Step::Route,
             G18India::Step::Dividend,
-            Engine::Step::DiscardTrain,
             Engine::Step::BuyTrain,
-            [Engine::Step::BuyCompany, { blocks: false }],
+            Engine::Step::CorporateSellShares,
+            Engine::Step::CorporateBuyShares,
           ], round_num: round_num)
         end
 
