@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# backtick_javascript: true
+
 module GameClassLoader
   def self.included(base)
     base.needs :game_classes_loaded, default: {}, store: true if base.respond_to?(:needs)

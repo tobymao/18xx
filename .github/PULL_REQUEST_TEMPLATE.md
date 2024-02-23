@@ -8,17 +8,17 @@ If you are implementing a new game, please break up the changes into multiple PR
 
 -->
 
-### Before clicking "Create"
+## Before clicking "Create"
 
 - [ ] Branch is derived from the latest `master`
-- [ ] Add the `pins` label if this change will break existing games
+- [ ] Add the `pins` or `archive_alpha_games` label if this change will break existing games
 - [ ] Code passes linter with `docker compose exec rack rubocop -a`
 - [ ] Tests pass cleanly with `docker compose exec rack rake`
 
-### Implementation Notes
+## Implementation Notes
 
-* **Explanation of Change**
+### Explanation of Change
 
-* **Screenshots**
+### Screenshots
 
-* **Any Assumptions / Hacks**
+### Any Assumptions / Hacks

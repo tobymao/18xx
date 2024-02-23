@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# backtick_javascript: true
+
 require_relative 'color'
 require_relative 'hex'
 
