@@ -65,26 +65,27 @@ module Engine
             name: '2+',
             num: 4,
             distance: [{ 'nodes' => %w[city offboard], 'pay' => 2, 'visit' => 2 },
-                        { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
+                       { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
             price: 120,
             rusts_on: '6',
             available_on: '3',
           },
           {
-           name: '3+',
+            name: '3+',
             num: 3,
             distance: [{ 'nodes' => %w[city offboard], 'pay' => 3, 'visit' => 3 },
-                        { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
+                       { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
             price: 160,
             rusts_on: '6',
             available_on: '3',
-          }
+          },
         ].freeze
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
           'can_buy_trains' => ['Can buy trains', 'Corporations can buy trains from other corporations'],
           'minor_mergers_allowed' => ['Minor mergers allowed', 'Minors can merge to form Lokalbahn AGs'],
-          'minor_mergers_required' => ['Minor mergers required', 'All minors must merge to form Lokalbahn AGs at the next OR round change'],
+          'minor_mergers_required' => ['Minor mergers required',
+                                       'All minors must merge to form Lokalbahn AGs at the next OR round change'],
         ).freeze
       end
     end
