@@ -66,16 +66,20 @@ module Engine
             ['I19'] => 'offboard=revenue:yellow_20|green_30|brown_30|gray_40;path=a:2,b:_0',
             ['A25'] => 'offboard=revenue:yellow_20|green_30|brown_40|gray_40;path=a:5,b:_0',
             ['C27'] => 'offboard=revenue:yellow_20|green_30|brown_40|gray_50;path=a:1,b:_0',
-            ['E1'] => 'town=style:dot,loc:4.0,revenue:yellow_20|green_30|brown_40|gray_50;town=style:dot,loc:center,revenue:yellow_20|green_30|brown_40|gray_50;path=a:4,b:_0;path=a:2,b:_0;path=a:2,b:_1;path=a:5,b:_1',
+            ['E1'] => 'town=style:dot,loc:4.0,revenue:yellow_20|green_30|brown_40|gray_50;'\
+                      'town=style:dot,loc:center,revenue:yellow_20|green_30|brown_40|gray_50;'\
+                      'path=a:4,b:_0;path=a:2,b:_0;path=a:2,b:_1;path=a:5,b:_1',
             ['I15'] => 'offboard=revenue:yellow_20|green_30|brown_40|gray_50;path=a:3,b:_0',
             ['A19'] => 'offboard=revenue:yellow_20|green_30|brown_50|gray_50;path=a:5,b:_0',
             ['D12'] => 'offboard=revenue:yellow_20|green_30|brown_40|gray_50;'\
                        'path=a:5,b:_0;path=a:0,b:4;icon=image:1854/minus_ten,loc:0.5',
             ['I29'] => 'offboard=revenue:yellow_10|green_20|brown_30;path=a:5,b:_0',
             ['M39'] => 'offboard=revenue:yellow_10|green_20|brown_30;path=a:2,b:_0',
-            ['E27'] => 'town=style:dot,loc:2,revenue:yellow_30|green_40|brown_50|gray_60,groups:Budapest,hide:1;path=a:2,b:_0;path=a:5,b:_0;path=a:5,b:3;border=edge:3',
+            ['E27'] => 'town=style:dot,loc:2,revenue:yellow_30|green_40|brown_50|gray_60,groups:Budapest,hide:1;'\
+                       'path=a:2,b:_0;path=a:5,b:_0;path=a:5,b:3;border=edge:3',
             ['H10'] => 'offboard=revenue:yellow_30|green_40|brown_50|gray_60;path=a:2,b:_0;path=a:3,b:_0',
-            ['D28'] => 'town=style:dot,loc:0.5,revenue:yellow_30|green_40|brown_50|gray_60,groups:Budapest;path=a:1,b:_0;path=a:0,b:_0;border=edge:0',
+            ['D28'] => 'town=style:dot,loc:0.5,revenue:yellow_30|green_40|brown_50|gray_60,groups:Budapest;'\
+                       'path=a:1,b:_0;path=a:0,b:_0;border=edge:0',
           },
           gray: {
             %w[A21 I31 I37] => 'path=a:0,b:5',
