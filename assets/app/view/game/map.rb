@@ -4,6 +4,7 @@ require '../lib/storage'
 require '../lib/settings'
 require 'view/game/axis'
 require 'view/game/hex'
+require 'view/game/map_legend'
 require 'view/game/tile_confirmation'
 require 'view/game/tile_selector'
 require 'view/game/token_selector'
@@ -30,12 +31,20 @@ module View
       GAP = 25 # GAP between the row/col labels and the map hexes
       SCALE = 0.5 # Scale for the map
 
+      def compute_axes(hexes)
+        min, max = hexes.minmax
+        ((min.next)..(max.next)).to_a
+      end
+
       def render
         return h(:div, []) if (@layout = @game.layout) == :none
 
         @hexes = @show_starting_map ? @game.clone([]).hexes : @game.hexes.dup
-        @cols = @hexes.reject(&:ignore_for_axes).map(&:x).uniq.sort.map(&:next)
-        @rows = @hexes.reject(&:ignore_for_axes).map(&:y).uniq.sort.map(&:next)
+
+        axes_hexes = @hexes.reject(&:ignore_for_axes)
+        @cols = compute_axes(axes_hexes.map(&:x))
+        @rows = compute_axes(axes_hexes.map(&:y))
+
         @start_pos = [@cols.first, @rows.first]
 
         @scale = SCALE * map_zoom
@@ -142,7 +151,7 @@ module View
         }
 
         map_elements = [h(:div, props, children), h(MapControls)]
-        map_elements << render_legend if @game.show_map_legend?
+        map_elements << h(MapLegend, game: @game) if @game.show_map_legend? && !@game.show_map_legend_on_left?
 
         h(:div, { style: { marginBottom: '1rem' } }, map_elements)
       end
@@ -195,44 +204,6 @@ module View
 
       def map_zoom
         Lib::Storage['map_zoom'] || 1
-      end
-
-      def render_legend
-        table_props, header, *chart = @game.map_legend(
-          color_for(:font),
-          color_for(:yellow),
-          color_for(:green),
-          color_for(:brown),
-          color_for(:gray)
-        )
-
-        head = header.map do |cell|
-          item = cell[:text] || h(:image, { attrs: { href: cell[:image] } })
-          if cell[:props]
-            h(:th, cell[:props], item)
-          else
-            h(:th, item)
-          end
-        end
-
-        rows = chart.map do |r|
-          columns = r.map do |cell|
-            item = cell[:text] || [h(:img, { attrs: { src: cell[:image], height: cell[:image_height] } })]
-            if cell[:props]
-              h(:td, cell[:props], item)
-            else
-              h(:td, item)
-            end
-          end
-          h(:tr, columns)
-        end
-
-        h(:table, table_props, [
-          h(:thead, [
-            h(:tr, head),
-          ]),
-          h(:tbody, rows),
-        ])
       end
     end
   end

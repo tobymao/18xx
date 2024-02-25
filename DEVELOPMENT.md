@@ -7,7 +7,7 @@ See [Developing on Windows](https://github.com/tobymao/18xx/wiki/Developing-For-
 
 ## Use a Github Codespace
 
-If you would like a repeatable build environment, click the `Code` button in the repo, click `Codespace` then the `plus sign` button to create [a new Codespace](https://github.com/features/codespaces). 
+If you would like a repeatable build environment, click the `Code` button in the repo, click `Codespace` then the `plus sign` button to create [a new Codespace](https://github.com/features/codespaces).
 
 ![Screenshot 2022-11-13 10 09 46 AM](https://user-images.githubusercontent.com/1711810/201537600-294512b8-3a99-4762-8c16-d64294706434.png)
 
@@ -167,9 +167,9 @@ stackprof stackprof.dump
 
 Once a game has been made available on the website, bugs may be found where the solutions requires breaking active gamestates due to missing or added required actions. If the action is known to always need removal, or the additional action needed able to be determined computationally, we can automate this fix. This assumes you have a fixture/json file locally you want to fix.
 
-1. Update `repair` within `migrate_game.rb` with the logic required to add/delete a step
+1. Update `repair` within `scripts/migrate_game.rb` with the logic required to add/delete a step
 2. Run `docker-compose exec rack irb`
-3. Execute `load "migrate_game.rb"`
+3. Execute `load "scripts/migrate_game.rb"`
 4. Execute `migrate_json('your_json_file.json')`
 
 This will apply the migrations to the game file you specified, allowing you to verify it worked as expected.
@@ -179,19 +179,19 @@ This will apply the migrations to the game file you specified, allowing you to v
 You may want example games in your development environment to test. One way to do this is to import games directly from the production website.
 
 1. Run `docker-compose exec rack irb`
-2. Execute `load "import_game.rb"`
+2. Execute `load "scripts/import_game.rb"`
 3. Execute `import_game(<product_game_id>)`
 
-A copy of that game is now available locally. 
+A copy of that game is now available locally.
 
 #### Pinning a game in your local test enviornment
 
 You may want to pin a specific game in your local development environment. Pinning a game allows for breaking changes to be introduced while 'freezing' the existing game to a previous code commit version. Pinning is designed to work in production environments only, the following workaround can be applied to pin games in your local development environment.
 
 1. Run `docker-compose exec rack irb`
-2. Import all the dependcies that will allow you to run `Game` class. Alternativly you can run `load "import_game.rb"`
+2. Import all the dependcies that will allow you to run `Game` class. Alternativly you can run `load "scripts/import_game.rb"`
 3. Run `game = Game[id: <id of game you want to pin>]`
-4. Run `game.settings['pin'] ='<sha of commit>'` . The sha should be of length 9 of the commit you want to pin to. 
+4. Run `game.settings['pin'] ='<sha of commit>'` . The sha should be of length 9 of the commit you want to pin to.
 5. Run `game.save` to save the changes.
 
 For the pin to work you need to generate the pin.js file. Doing so will break your development environment. Perform the following steps to generate the pin file and fix your development environment
@@ -200,4 +200,3 @@ For the pin to work you need to generate the pin.js file. Doing so will break yo
 3. Restart your  development environment server
 
 Note: The precompile step creates a <pinned sha>.js.gzip in public/pinned. If you're still seeing js errors unzip the compressed file. You can run `gzip -d <pin>.js.gz>` to extract the js file
-

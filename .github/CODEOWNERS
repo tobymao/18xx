@@ -3,6 +3,7 @@
 #
 # https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
 
+lib/engine/game/g_1817* @crericha
 lib/engine/game/g_1828* @crericha
 lib/engine/game/g_1844* @crericha
 lib/engine/game/g_1880* @crericha
@@ -14,6 +15,10 @@ lib/engine/game/g_1846* @michaeljb
 lib/engine/game/g_1868_wy* @michaeljb
 lib/engine/game/g_18_los_angeles* @michaeljb
 lib/engine/game/g_18_royal_gorge* @michaeljb
+Makefile @michaeljb
+TILES.md @michaeljb
+docker-compose* @michaeljb
+scripts/ @michaeljb
 
 lib/engine/game/g_1825* @roseundy
 lib/engine/game/g_1841* @roseundy
@@ -26,3 +31,26 @@ lib/engine/game/g_18_mag* @roseundy
 lib/engine/game/g_18_new_england* @roseundy
 lib/engine/game/g_21_moon* @roseundy
 lib/engine/game/g_rolling_stock* @roseundy
+
+lib/engine/game/g_1822_africa* @vandamm
+lib/engine/game/g_18_jpt* @vandamm
+lib/engine/game/g_18_scan* @vandamm
+
+lib/engine/game/g_18_cz* @zwergenpunk
+lib/engine/game/g_1840* @zwergenpunk
+
+lib/engine/game/g_18_al* @perwestling
+lib/engine/game/g_18_ga* @perwestling
+lib/engine/game/g_18_mex* @perwestling
+lib/engine/game/g_18_ms* @perwestling
+lib/engine/game/g_18_rhl* @perwestling
+lib/engine/game/g_18_sj* @perwestling
+lib/engine/game/g_18_tn* @perwestling
+lib/engine/game/g_1824* @perwestling
+lib/engine/game/g_1893* @perwestling
+
+lib/engine/game/g_1858* @ollybh
+lib/engine/game/g_1861* @ollybh
+lib/engine/game/g_1867* @ollybh
+lib/engine/game/g_18_ardennes* @ollybh
+lib/engine/game/g_18_bf* @ollybh

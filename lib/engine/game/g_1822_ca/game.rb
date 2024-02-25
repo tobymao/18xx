@@ -233,6 +233,10 @@ module Engine
         )
 
         STATUS_TEXT = G1822::Game::STATUS_TEXT.merge(
+          'can_acquire_minor_bidbox' => ['Acquire a minor from bidbox',
+                                         'Can acquire a minor from bidbox for $200, must have connection '\
+                                         'to start location'],
+          'minor_float_phase1' => ['Minors receive $100 in capital', 'Minors receive 100 capital with 50 stock value'],
           'l_upgrade' => ['$70 L-train upgrades',
                           'The cost to upgrade an L-train to a 2-train is reduced from $80 to $70.']
         )
@@ -321,7 +325,6 @@ module Engine
           @company_trains['P3'] = find_and_remove_train_by_id('2P-0', buyable: false)
           @company_trains['P4'] = find_and_remove_train_by_id('2P-1', buyable: false)
           @company_trains['P1'] = find_and_remove_train_by_id('5P-0')
-          @company_trains['P1'].name = '5'
           @company_trains['P5'] = find_and_remove_train_by_id('P-0', buyable: false)
           @company_trains['P6'] = find_and_remove_train_by_id('P-1', buyable: false)
           @company_trains['P2'] = find_and_remove_train_by_id('LP-0', buyable: false)
@@ -376,7 +379,7 @@ module Engine
           self.class::COMPANIES_EXTRA_TRACK_LAYS.include?(company.id)
         end
 
-        def sell_movement
+        def sell_movement(_corporation)
           @sell_movement ||= @players.size == 2 ? :left_share_pres : :left_per_10_if_pres_else_left_one
         end
 
@@ -502,6 +505,7 @@ module Engine
                          (dest = destination_bonus(route.routes)) &&
                          dest[:route] == route
           multiplier = sawmill_dest ? 2 : 1
+          multiplier *= 2 if train_type(route.train) == :etrain
 
           { route: route, revenue: @sawmill_bonus * multiplier }
         end

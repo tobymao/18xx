@@ -173,6 +173,8 @@ module Engine
           'MC' => 'C',
         }.freeze
 
+        MINOR_14_ID = nil
+
         def setup_associated_minors
           @minor_associations = {
             '1' => 'CPR',

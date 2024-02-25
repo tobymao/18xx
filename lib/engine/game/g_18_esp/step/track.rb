@@ -19,6 +19,12 @@ module Engine
             actions << 'choose' if opening_mountain_pass?(entity) && @game.can_build_mountain_pass
             actions << 'place_token' if can_place_token?(entity)
             actions << 'pass' if actions.any?
+            actions
+          end
+
+          def setup
+            super
+            @tokened = false
           end
 
           def process_place_token(action)

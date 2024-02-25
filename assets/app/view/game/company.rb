@@ -158,15 +158,10 @@ module View
           ]
           children << h(:div, { style: value_style }, "Value: #{@game.format_currency(@company.value)}") if @company.value
           children << h(:div, { style: revenue_style }, "Revenue: #{revenue_str}") if @company.revenue
-          children << render_bidders if @bids&.any?
-
           unless @company.discount.zero?
-            children << h(
-            :div,
-            { style: { float: 'center' } },
-            "Price: #{@game.format_currency(@company.value - @company.discount)}"
-          )
+            children << h(:div, { style: { float: 'center' } }, "Price: #{@game.format_currency(@company.min_bid)}")
           end
+          children << render_bidders if @bids&.any?
 
           children << h('div.nowrap', { style: bidders_style }, "Owner: #{@company.owner.name}") if @company.owner
           if @game.company_status_str(@company)

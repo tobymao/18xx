@@ -174,6 +174,12 @@ module View
             x: 50,
             y: 37,
           },
+          # bottom center
+          {
+            region_weights: { [21] => 1.0, [22] => 0.5 },
+            x: 0,
+            y: 60,
+          },
         ].freeze
 
         def preferred_render_locations

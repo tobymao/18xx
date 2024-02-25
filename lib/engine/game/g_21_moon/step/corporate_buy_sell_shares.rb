@@ -95,6 +95,7 @@ module Engine
             end
 
             super
+            @round.recalculate_order
           end
 
           def issue_shares(action)

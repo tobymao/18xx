@@ -12,10 +12,21 @@ def raw_action(game, action_index)
   game.instance_variable_get(:@raw_all_actions)[action_index]
 end
 
+# get the title string from the `describe` block
+def game_title_for_test(test)
+  all_titles = Engine::GAME_META_BY_TITLE
+  parent = :parent_example_group
+
+  group = test.metadata[:example_group][parent]
+  group = group[parent] until all_titles.include?((title = group[:description]))
+  title
+end
+
 module Engine
   describe 'Fixture Game State' do
     let(:game_file) do
-      Find.find(FIXTURES_DIR).find { |f| File.basename(f) == "#{described_class}.json" }
+      title = game_title_for_test(RSpec.current_example)
+      Find.find("#{FIXTURES_DIR}/#{title}").find { |f| File.basename(f) == "#{described_class}.json" }
     end
 
     describe '18Chesapeake' do
@@ -816,6 +827,94 @@ module Engine
 
           expect(token.hex).to be(quebec_hex)
           expect(token.city.exits.sort).to eq([4, 5])
+        end
+      end
+
+      describe 4 do
+        it 'M13 Toronto' do
+          game = game_at_action(game_file, 1258)
+
+          toronto_hex = game.hex_by_id('AC21')
+          cities = toronto_hex.tile.cities
+
+          # before
+          expect(cities.map(&:normal_slots)).to eq([1, 1])
+          expect(cities.map(&:slots)).to eq([2, 1])
+
+          # act
+          action = {
+            'type' => 'lay_tile',
+            'entity' => 'P14',
+            'entity_type' => 'company',
+            'hex' => 'AC21',
+            'tile' => 'T4-0',
+            'rotation' => 0,
+          }
+          game.process_action(action)
+
+          # after
+          toronto = game.hex_by_id('AC21').tile.cities[0]
+          expect(toronto.normal_slots).to eq(2)
+          expect(toronto.slots).to eq(3)
+        end
+      end
+    end
+
+    describe '1868 Wyoming' do
+      describe 144_719 do
+        it 'Big Boy' do
+          # OR 3.1
+          # RCL attaches the token to a 3+2, making a [4+3]
+          game = game_at_action(game_file, 283)
+          expect(game.big_boy_train.id).to eq('3-3')
+          expect(game.big_boy_train.name).to eq('[4+3]')
+          expect(game.big_boy_train_original.id).to eq('3-3')
+          expect(game.big_boy_train_original.name).to eq('3+2')
+          expect(game.big_boy_train_dh_original).to eq(nil)
+
+          # RCL combines the 2+2 and [4+3] to a [6+5]
+          game.process_to_action(363)
+          expect(game.big_boy_train.id).to eq('2-4_3-3-0')
+          expect(game.big_boy_train.name).to eq('[6+5]')
+          expect(game.big_boy_train_original.id).to eq('2-4_3-3-0')
+          expect(game.big_boy_train_original.name).to eq('5+4')
+          expect(game.big_boy_train_dh_original.id).to eq('3-3')
+          expect(game.big_boy_train_dh_original.name).to eq('3+2')
+
+          # RCL is done running the [6+5]
+          game.process_to_action(365)
+          expect(game.big_boy_train.id).to eq('3-3')
+          expect(game.big_boy_train.name).to eq('[4+3]')
+          expect(game.big_boy_train_original.id).to eq('3-3')
+          expect(game.big_boy_train_original.name).to eq('3+2')
+          expect(game.big_boy_train_dh_original).to eq(nil)
+
+          # RCL bought a 4+3 and moved the token to it
+          # end of RCL in OR 3.1
+          game.process_to_action(367)
+          expect(game.big_boy_train.id).to eq('4-0')
+          expect(game.big_boy_train.name).to eq('[5+4]')
+          expect(game.big_boy_train_original.id).to eq('4-0')
+          expect(game.big_boy_train_original.name).to eq('4+3')
+          expect(game.big_boy_train_dh_original).to eq(nil)
+
+          # after another company finishes running double-headed trains, RCL and
+          # the Big Boy should be unaffected
+          game.process_to_action(385)
+          expect(game.big_boy_train.id).to eq('4-0')
+          expect(game.big_boy_train.name).to eq('[5+4]')
+          expect(game.big_boy_train_original.id).to eq('4-0')
+          expect(game.big_boy_train_original.name).to eq('4+3')
+          expect(game.big_boy_train_dh_original).to eq(nil)
+
+          # OR 3.2
+          # should be the same as end of OR 3.1
+          game.process_to_action(433)
+          expect(game.big_boy_train.id).to eq('4-0')
+          expect(game.big_boy_train.name).to eq('[5+4]')
+          expect(game.big_boy_train_original.id).to eq('4-0')
+          expect(game.big_boy_train_original.name).to eq('4+3')
+          expect(game.big_boy_train_dh_original).to eq(nil)
         end
       end
     end

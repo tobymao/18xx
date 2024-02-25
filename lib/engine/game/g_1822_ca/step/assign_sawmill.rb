@@ -39,9 +39,8 @@ module Engine
             case action.choice
             when 'open'
               @game.sawmill_bonus = 20
-              @log << "#{action.entity.player.name} chooses the Open Sawmill "\
-                      'token. It will provide a +$20 bonus for one train per '\
-                      "turn at #{@sawmill_hex.id} (#{@sawmill_hex.location_name}), available to all Majors."
+              @log << "Open Sawmill token placed on #{@sawmill_hex.id} (#{@sawmill_hex.location_name}) for a $20 bonus "\
+                      "to the total revenue of any corporation\'s routes that include that location"
 
             when 'closed'
               @game.sawmill_bonus = 10
@@ -52,10 +51,8 @@ module Engine
               )
               @sawmill_owner.add_ability(new_ability)
 
-              @log << "#{action.entity.player.name} chooses the Closed Sawmill "\
-                      'token. It will provide a +$10 bonus for one train per '\
-                      "turn at #{@sawmill_hex.id} (#{@sawmill_hex.location_name}), "\
-                      "exclusively for #{@sawmill_owner.name}."
+              @log << "Closed Sawmill token placed on #{@sawmill_hex.id} (#{@sawmill_hex.location_name}) for a $10 bonus "\
+                      "to the total revenue of #{@sawmill_owner.name}\'s routes which include that location"
             else
               raise GameError, "Invalid choice for Sawmill: #{action.choice}"
             end

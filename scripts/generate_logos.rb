@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
-Dir['./models/**/*.rb'].each { |file| require file }
-require './lib/engine'
-Sequel.extension :pg_json_ops
+require_relative 'scripts_helper'
+
 DB.extension :pg_array, :pg_advisory_lock, :pg_json, :pg_enum
 
 def generate_logos(game_title, simple = false, overwrite = false, minors = false)

@@ -107,8 +107,11 @@ module Engine
         return false unless can_sell_any?(entity)
         return true if @game.num_certs(entity) > @game.cert_limit(entity)
 
-        !@game.can_hold_above_corp_limit?(entity) &&
-          @game.corporations.any? { |corp| !corp.holding_ok?(entity) }
+        !@game.can_hold_above_corp_limit?(entity) && !must_sell_corporations(entity).empty?
+      end
+
+      def must_sell_corporations(entity)
+        @game.corporations.select { |corp| !corp.holding_ok?(entity) && can_sell_any_bundles(entity, corp) }
       end
 
       def can_sell?(entity, bundle)
@@ -221,11 +224,13 @@ module Engine
          @round.current_actions.none? { |x| x.is_a?(Action::BuyShares) && x.bundle.corporation != corporation }
       end
 
+      def can_sell_any_bundles(entity, corporation)
+        bundles = @game.bundles_for_corporation(entity, corporation)
+        bundles.any? { |bundle| can_sell?(entity, bundle) }
+      end
+
       def can_sell_any?(entity)
-        @game.corporations.any? do |corporation|
-          bundles = @game.bundles_for_corporation(entity, corporation)
-          bundles.any? { |bundle| can_sell?(entity, bundle) }
-        end
+        @game.corporations.any? { |corporation| can_sell_any_bundles(entity, corporation) }
       end
 
       def can_buy_shares?(entity, shares)

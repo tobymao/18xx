@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# backtick_javascript: true
+
 module View
   class Confirm < Snabberb::Component
     # confirm_opts can be passed as a string which will default to yellow

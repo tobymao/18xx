@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# backtick_javascript: true
+
 if RUBY_ENGINE == 'opal'
   require_tree '../action'
   require_tree '../round'
@@ -177,13 +179,13 @@ module Engine
       TURN_SELL_LIMIT = nil
 
       # when can a share holder sell shares
-      # first           -- after first stock round
-      # after_ipo       -- after stock round in which company is opened
-      # operate         -- after operation
-      # full_or_turn    -- after corp completes a full OR turn
-      # p_any_operate   -- pres any time, share holders after operation
-      # any_time        -- at any time
-      # round           -- after the stock round the share was purchased in
+      # first            -- after first stock round
+      # after_sr_floated -- after stock round in which company floated
+      # operate          -- after operation
+      # full_or_turn     -- after corp completes a full OR turn
+      # p_any_operate    -- pres any time, share holders after operation
+      # any_time         -- at any time
+      # round            -- after the stock round the share was purchased in
       SELL_AFTER = :first
 
       # down_share -- down one row per share
@@ -1083,7 +1085,7 @@ module Engine
         case self.class::SELL_AFTER
         when :first
           @turn > 1 || @round.operating?
-        when :after_ipo
+        when :after_sr_floated
           corporation.operated? || @round.operating?
         when :operate
           corporation.operated?
@@ -1191,7 +1193,7 @@ module Engine
         self.class::SELL_AFTER == :first ? (@turn > 1 || !@round.stock?) : true
       end
 
-      def sell_movement
+      def sell_movement(_corporation = nil)
         self.class::SELL_MOVEMENT
       end
 
@@ -1200,7 +1202,7 @@ module Engine
         old_price = corporation.share_price
         was_president = corporation.president?(bundle.owner)
         @share_pool.sell_shares(bundle, allow_president_change: allow_president_change, swap: swap)
-        case movement || sell_movement
+        case movement || sell_movement(corporation)
         when :down_share
           bundle.num_shares.times { @stock_market.move_down(corporation) }
         when :down_per_10
@@ -1231,7 +1233,7 @@ module Engine
         else
           raise NotImplementedError
         end
-        log_share_price(corporation, old_price) if sell_movement != :none
+        log_share_price(corporation, old_price) if sell_movement(corporation) != :none
       end
 
       def sold_out_increase?(_corporation)
@@ -2289,6 +2291,8 @@ module Engine
         true
       end
 
+      def after_phase_change(_name); end
+
       private
 
       def init_graph
@@ -3195,6 +3199,10 @@ module Engine
       end
 
       def show_map_legend?
+        false
+      end
+
+      def show_map_legend_on_left?
         false
       end
 

@@ -188,7 +188,7 @@ module Engine
         POOL_SHARE_DROP = :down_share
         SELL_MOVEMENT = :none
         ALL_COMPANIES_ASSIGNABLE = true
-        SELL_AFTER = :after_ipo
+        SELL_AFTER = :after_sr_floated
         OBSOLETE_TRAINS_COUNT_FOR_LIMIT = true
         BANKRUPTCY_ENDS_GAME_AFTER = :all_but_one
 

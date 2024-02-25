@@ -253,11 +253,11 @@ module Engine
             abilities: [
               {
                 type: 'assign_hexes',
-                hexes: %w[A7 A9 AA15 AA9 AB22 AD18 AD20 AE17 AF16 AG13 AG3
+                hexes: %w[A9 AA15 AA9 AB22 AD18 AD20 AE17 AF16 AG13 AG3
                           AG9 AH10 AH12 AK3 AK5 AL2 AM5 AM9 AO9 AP6 C9
-                          D10 D12 D14 D16 F10 F8 G11 G13 G15 G17 H16 H8 I11 I15
-                          I17 J12 J16 K11 K13 K15 K17 K9 L10 L16 L8 M17 M9 N6
-                          O15 O9 P14 Q7 R16 S15 U11 V18 W9 X12 Y17 Z10 Z26],
+                          D10 D12 D14 D16 F10 F8 G11 G13 G17 H16 H8 I11 I15
+                          I17 J12 J16 K11 K13 K17 K9 L10 L16 L8 M17 M9 N6
+                          O15 O9 P14 Q7 S15 U11 W9 X12 Y17 Z10 Z26],
                 count: 1,
                 owner_type: 'corporation',
                 when: 'owning_corp_or_turn',
@@ -472,7 +472,7 @@ module Engine
                 closed_when_used_up: true,
                 special: false,
                 free: true,
-                tiles: [],
+                tiles: %w[1 2 3 4 5 6 7 8 9 55 56 57 58 69 201 202 621 630 631 632 633],
                 hexes: %w[A7 A9 B6 B8 B10 B12 B14 C7 C9 C11 C13 D6 D8 D10 D12
                           D14 D16 E7 E9 E15 F6 F8 F10 F12 G7 G9 G11 G13 G17 G15
                           H6 H8 H10 H12 H14 H16 I7 I9 I11 I13 I15 I17 J6 J8 J10

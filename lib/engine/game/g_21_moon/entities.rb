@@ -44,7 +44,7 @@ module Engine
             max_price: 60,
             desc: 'The corporation owning the SBC can build and upgrade road tiles crossing the rift. '\
                   'The owning company receives a bonus of 60 credits after the connection across the rift is '\
-                  'made for the first time. Can be sold to a corporation for ₡1-₡60.',
+                  'made and the SBC will close. Can be sold to a corporation for ₡1-₡60.',
             abilities: [],
             color: nil,
           },
