@@ -57,9 +57,6 @@ module Engine
           # Transfers treasury cash.
           # @param minor [Corporation] The minor corporation being exchanged.
           # @param major [Corporation] The major corporation receiving the assets.
-          # @param may_decline [Boolean] If true, the major's owner will have
-          #        the option to decline any trains, tokens or forts. If false
-          #        then these will all be transferred. Cash cannot be declined.
           # @return [String, nil] A description of the transfer, or nil if there
           #         was no cash to transfer.
           def transfer_cash(minor, major)
@@ -176,17 +173,18 @@ module Engine
           # @param major [Corporation] The major corporation receiving the assets.
           # @param may_decline [Boolean] If true, the major's owner will have
           #        the option to decline any fort tokens.
-          # @return [String, nil] A description of the transfer, or nil if either
-          #         there were no forts to transfer, or if may_decline is true.
-          def transfer_forts(minor, major, _may_decline)
+          # @return [String, nil] A description of the transfer, or nil if
+          #         there were no forts to transfer.
+          def transfer_forts(minor, major, may_decline)
             forts = minor.assignments.keys.intersection(Map::FORT_HEXES.keys)
             return if forts.empty?
 
+            @round.optional_forts = forts if may_decline
             forts.each do |fort|
               minor.remove_assignment!(fort)
               major.assign!(fort)
             end
-            "#{forts.count} fort token#{forts.count == 1 ? '' : 's'}"
+            "#{forts.size} #{forts.one? ? 'fort' : 'forts'}"
           end
 
           # Returns a description of the location of a token, city name and hex

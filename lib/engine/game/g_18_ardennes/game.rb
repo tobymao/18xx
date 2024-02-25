@@ -103,6 +103,7 @@ module Engine
             G18Ardennes::Step::DeclineTokens,
             G18Ardennes::Step::DeclineTrains,
             Engine::Step::DiscardTrain,
+            G18Ardennes::Step::DeclineForts,
             G18Ardennes::Step::BuySellParSharesCompanies,
           ])
         end
