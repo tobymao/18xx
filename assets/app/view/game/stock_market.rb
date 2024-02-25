@@ -216,33 +216,33 @@ module View
 
           under_shape = [
                           h(:polygon, {
-                            attrs: {
-                              points: "-#{(width/2)+1},0 0,#{(width/2)+1} #{(width/2)+1},0 0,-#{(width/2)+1}",
-                              stroke: corporation.color,
-                              'stroke-width': 2,
-                              fill: 'transparent',
-                            },
-                          }),
+                              attrs: {
+                                points: "-#{(width / 2) + 1},0 0,#{(width / 2) + 1} #{(width / 2) + 1},0 0,-#{(width / 2) + 1}",
+                                stroke: corporation.color,
+                                'stroke-width': 2,
+                                fill: 'transparent',
+                              },
+                            }),
                           h(:polygon, {
-                            attrs: {
-                              points: "-#{(width/2)+1},0 0,#{(width/2)+1} #{(width/2)+1},0 0,-#{(width/2)+1}",
-                              stroke: border_color,
-                              'stroke-width': 2,
-                              fill: 'transparent',
-                              'stroke-dasharray': '4',
-                            },
-                          }),
+                              attrs: {
+                                points: "-#{(width / 2) + 1},0 0,#{(width / 2) + 1} #{(width / 2) + 1},0 0,-#{(width / 2) + 1}",
+                                stroke: border_color,
+                                'stroke-width': 2,
+                                fill: 'transparent',
+                                'stroke-dasharray': '4',
+                              },
+                            }),
 
                         ]
         else
           under_shape = [h(:circle, {
-                            attrs: {
-                              stroke: border_color,
-                              'stroke-width': 2,
-                              fill: 'transparent',
-                              r: "#{width / 2}px",
-                            },
-                          },)]
+                             attrs: {
+                               stroke: border_color,
+                               'stroke-width': 2,
+                               fill: 'transparent',
+                               r: "#{width / 2}px",
+                             },
+                           },)]
         end
 
         g_props = {

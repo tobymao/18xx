@@ -8,7 +8,7 @@ module Engine
       module Step
         class BuySellParShares < Engine::Step::BuySellParShares
           def visible_corporations
-            @game.sorted_corporations.reject(&:closed?).select { |c| c.type != :lokalbahn }
+            @game.sorted_corporations.reject(&:closed?).reject { |c| c.type == :lokalbahn }
           end
         end
       end

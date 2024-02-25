@@ -44,10 +44,10 @@ module Engine
             super
           end
 
-          def merge_name(_entity = nil)
-            return "Form #{_entity&.name}" if @merging
+          def merge_name(entity = nil)
+            return "Form #{entity&.name}" if @merging
 
-            "Merge with #{_entity&.name}"
+            "Merge with #{entity&.name}"
           end
 
           # corps available as a merge target
@@ -86,14 +86,12 @@ module Engine
           end
 
           def mergeable_candidates(corporation)
+            # # Mergeable candidates must be connected by track and not through a regional border
+            # # They must be the same type (major/minor)
+            # parts = @game.token_graph_for_entity(corporation).connected_nodes(corporation).keys
+            # mergeable = parts.select { |n| n.city? && !n.pass? }.flat_map { |c| c.tokens.compact.map(&:corporation) }
             @mergeable_[corporation] ||=
-              begin
-                # # Mergeable candidates must be connected by track and not through a regional border
-                # # They must be the same type (major/minor)
-                # parts = @game.token_graph_for_entity(corporation).connected_nodes(corporation).keys
-                # mergeable = parts.select { |n| n.city? && !n.pass? }.flat_map { |c| c.tokens.compact.map(&:corporation) }
-                @game.minors.uniq.select { |c| c != corporation && @game.mergeable?(c) }
-              end
+              @game.minors.uniq.select { |c| c != corporation && @game.mergeable?(c) }
           end
 
           def mergeable(corporation)

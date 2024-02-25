@@ -62,10 +62,10 @@ module Engine
         MERGERS_MANDATORY_PHASE = 6
 
         MARKET = [
-          ['',    '',    '',    '86',  '89',  '93p', '97S',  '101S', '106S', '112S', '119S', '127S', '136S', '146S', '158S', '170S', '185S',
-           '210S', '230S', '250S', '275S', '300e'],
-          ['',    '',    '',    '81',  '84',  '87p', '91',  '95S', '99S', '104S', '110S', '117S', '125S', '134S', '143S', '153S', '165S',
-           '180S', '200S'],
+          ['',    '', '', '86',  '89', '93p', '97S', '101S', '106S', '112S', '119S', '127S', '136S', '146S', '158S',
+           '170S', '185S', '210S', '230S', '250S', '275S', '300e'],
+          ['',    '', '', '81',  '84', '87p', '91', '95S', '99S', '104S', '110S', '117S', '125S', '134S', '143S',
+           '153S', '165S', '180S', '200S'],
           ['',    '',    '76',  '79',  '82p',  '85', '89',  '93S', '97S', '102S', '108S', '115S', '123S'],
           ['',    '',    '71',  '74',  '77p',  '80', '83',  '87', '91S', '95S', '100S'],
           ['',    '66',  '69',  '72p', '75', '78', '81', '85', '89S'],
@@ -273,7 +273,7 @@ module Engine
         end
 
         def open_minors
-          @minors.select {|m| !m.closed? }
+          @minors.reject(&:closed?)
         end
 
         def mergeable?(entity)
@@ -286,7 +286,7 @@ module Engine
 
         def merge_minors_into_lokalbahn(minor_a, minor_b, corp)
           # name is effectively sorting because they're all single digit numbers as strings
-          lower_minor, upper_minor = [minor_a, minor_b].sort {|a,b| a.name <=> b.name}
+          lower_minor, upper_minor = [minor_a, minor_b].sort_by(&:name)
 
           @log << "#{formatted_minor_name(lower_minor)} gives #{format_currency(lower_minor.cash)} to #{corp.name}"
           lower_minor.spend(lower_minor.cash, corp, check_positive: false)
@@ -328,8 +328,9 @@ module Engine
         end
 
         def home_token_locations(corp)
-          return [] unless corp.corporation? && corp.type == :lokalbahn
-          return lokalbahn_homes
+          return lokalbahn_homes if corp.corporation? && corp.type == :lokalbahn
+
+          []
         end
 
         def float_corporation(corporation)
@@ -340,7 +341,7 @@ module Engine
         end
 
         def formatted_minor_name(minor)
-          return "#{minor.full_name} (#{minor.name})"
+          "#{minor.full_name} (#{minor.name})"
         end
 
         def reservation_corporations
@@ -389,13 +390,13 @@ module Engine
 
           shares = @_shares.values.select { |share| share.corporation == corporation }
           shares.each { |share| share.percent /= 2 }
-          corporation.share_holders.transform_values! {|percent| percent / 2 }
+          corporation.share_holders.transform_values! { |percent| percent / 2 }
           corporation.share_holders.each do |shareholder, percent|
-            if shareholder.player?
-              amount = (percent/10) * corporation.share_price.price
-              @log << "#{shareholder.name} receives #{format_currency(amount)}" unless quiet
-              @bank.spend(amount, shareholder)
-            end
+            next unless shareholder.player?
+
+            amount = (percent / 10) * corporation.share_price.price
+            @log << "#{shareholder.name} receives #{format_currency(amount)}" unless quiet
+            @bank.spend(amount, shareholder)
           end
 
           new_shares = Array.new(5) { |i| Share.new(corporation, percent: 10, index: i + 4) }

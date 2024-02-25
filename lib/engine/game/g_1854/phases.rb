@@ -7,21 +7,21 @@ module Engine
         PHASES = [
           {
             name: '2',
-            train_limit: { minor: 2, major: 4, lokalbahn: 4},
+            train_limit: { minor: 2, major: 4, lokalbahn: 4 },
             tiles: [:yellow],
             operating_rounds: 1,
           },
           {
             name: '3',
             on: '3',
-            train_limit: { minor: 2, major: 4, lokalbahn: 4},
+            train_limit: { minor: 2, major: 4, lokalbahn: 4 },
             tiles: %i[yellow green],
             operating_rounds: 2,
           },
           {
             name: '4',
             on: '4',
-            train_limit: { minor: 1, major: 3, lokalbahn: 3},
+            train_limit: { minor: 1, major: 3, lokalbahn: 3 },
             tiles: %i[yellow green],
             operating_rounds: 2,
           },

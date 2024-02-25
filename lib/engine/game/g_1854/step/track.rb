@@ -12,6 +12,7 @@ module Engine
             to = tile
             # paths get wonky here, so just maintain exits
             return from.exits.sort == to.exits.sort if @game.double_dit_upgrade?(from, to)
+
             super
           end
         end

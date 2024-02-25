@@ -2,13 +2,11 @@
 
 require_relative '../../../step/track_and_token'
 
-
 module Engine
   module Game
     module G1854
       module Step
         class TrackAndToken < Engine::Step::TrackAndToken
-
           def actions(entity)
             actions = []
             return actions unless entity == pending_entity
@@ -64,18 +62,19 @@ module Engine
             [token]
           end
 
-          def can_lay_tile?(entity)
+          def can_lay_tile?(_entity)
             !@laid_tile
           end
 
-          def can_place_token?(entity)
+          def can_place_token?(_entity)
             !@tokened
           end
 
           def process_place_token(action)
             # the action is faked and doesn't represent the actual token laid
             hex = action.city.hex
-            raise GameError, "Cannot place token on #{hex.name} as the hex is not available" unless available_hex(action.entity, hex)
+            raise GameError, "Cannot place token on #{hex.name} as the hex is not available" unless available_hex(action.entity,
+                                                                                                                  hex)
 
             place_token(
               token.corporation,
