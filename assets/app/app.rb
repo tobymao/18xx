@@ -110,6 +110,8 @@ class App < Snabberb::Component
       enter_game(@game_data)
     end
 
+    error = @game_data&.dig('error')
+    return h('div.padded', "Error loading game: #{error}") if error
     return h('div.padded', 'Loading game...') unless @game_data&.dig('loaded')
 
     h(View::GamePage, connection: @connection, user: @user)
