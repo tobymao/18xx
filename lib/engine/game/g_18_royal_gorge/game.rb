@@ -66,8 +66,9 @@ module Engine
         }.freeze
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
-          green_par: ['Green Par Available'],
-          brown_par: ['Brown Par Available'],
+          green_phase: ['Green Phase Begins'],
+          brown_phase: ['Brown Phase Begins'],
+          gray_phase: ['Gray Phase Begins'],
           treaty_of_boston: ['Treaty of Boston'],
         )
 
@@ -90,6 +91,15 @@ module Engine
           'RG-F12-G' => 'F12',
         }.freeze
         RETURNED_TOKEN_PRICES = [80, 60, 40].freeze
+
+        SULPHUR_SPRINGS_HEX = 'E3'
+        SULPHUR_SPRINGS_BROWN_REVENUE = 50
+
+        ST_CLOUD_START_HEX = 'G17'
+        ST_CLOUD_BROWN_HEX = 'H14'
+        ST_CLOUD_BONUS = 20
+        ST_CLOUD_BONUS_STR = ' (St. Cloud Hotel)'
+        ST_CLOUD_ICON_NAME = 'SCH'
 
         GAME_END_CHECK = {
           bankrupt: :immediate,
@@ -168,6 +178,15 @@ module Engine
           @treaty_of_boston = false
 
           @local_jeweler_cash = 0
+
+          @sulphur_springs_connected = false
+          @updated_sulphur_springs_company_revenue = false
+
+          @st_cloud_icon = Part::Icon.new("18_royal_gorge/#{ST_CLOUD_ICON_NAME}", ST_CLOUD_ICON_NAME)
+          return unless st_cloud_hotel
+
+          @st_cloud_hex = hex_by_id(ST_CLOUD_START_HEX)
+          @st_cloud_hex.tile.icons << @st_cloud_icon
         end
 
         def game_hexes
@@ -257,16 +276,53 @@ module Engine
           can_start?(corporation) && super
         end
 
-        def event_green_par!
-          @log << "-- Event: #{EVENTS_TEXT[:green_par]} --"
+        def event_green_phase!
           @available_par_groups << :par_1
           update_cache(:share_prices)
         end
 
-        def event_brown_par!
-          @log << "-- Event: #{EVENTS_TEXT[:brown_par]} --"
+        def event_brown_phase!
+          event_st_cloud_moves!
+          event_sulphur_springs_revenue!
+
           @available_par_groups << :par_2
           update_cache(:share_prices)
+        end
+
+        def event_st_cloud_moves!
+          return unless st_cloud_hotel
+
+          @log << '-- Event: St. Cloud Hotel moves to Cañon City --'
+
+          @st_cloud_hex.tile.icons.delete_if { |i| i.name == ST_CLOUD_ICON_NAME }
+          @st_cloud_hex = hex_by_id(ST_CLOUD_BROWN_HEX)
+          @st_cloud_hex.tile.icons << @st_cloud_icon
+        end
+
+        def event_sulphur_springs_revenue!
+          return unless sulphur_springs&.owner&.player?
+
+          update_sulphur_springs_company_revenue! if @sulphur_springs_connected
+        end
+
+        def event_gray_phase!; end
+
+        def company_bought(company, _buyer)
+          return unless company == sulphur_springs
+
+          company.revenue = 0
+          @updated_sulphur_springs_company_revenue = true
+        end
+
+        def update_sulphur_springs_company_revenue!
+          return if @updated_sulphur_springs_company_revenue
+          return unless sulphur_springs&.owner&.player?
+
+          @updated_sulphur_springs_company_revenue = true
+          revenue = SULPHUR_SPRINGS_BROWN_REVENUE
+          sulphur_springs.revenue = revenue
+          @log << "-- Event: Sulphur Springs (B2)'s revenue increases to #{format_currency(revenue)} --"
+          puts "Sulphur Springs (B2)'s revenue increases to #{format_currency(revenue)}"
         end
 
         def event_treaty_of_boston!
@@ -688,7 +744,6 @@ module Engine
           case action
           when Action::LayTile
             if action.tile.color == :yellow
-
               hex = action.hex
 
               hex.original_tile.icons.each do |icon|
@@ -697,6 +752,10 @@ module Engine
                   @gold_cubes[hex.id] += 1
                 end
               end
+            end
+            if !@updated_sulphur_springs_company_revenue && sulphur_springs&.owner&.player?
+              @sulphur_springs_connected ||= action.hex.id == SULPHUR_SPRINGS_HEX
+              update_sulphur_springs_company_revenue! if @sulphur_springs_connected
             end
           when Action::BuyTrain
             entity = action.entity
@@ -741,6 +800,10 @@ module Engine
           @rio_grande ||= corporation_by_id('RG')
         end
 
+        def sulphur_springs
+          @sulphur_springs ||= company_by_id('B2')
+        end
+
         def doc_holliday
           @doc_holliday ||= company_by_id('G1')
         end
@@ -749,7 +812,24 @@ module Engine
           @gold_nugget ||= company_by_id('G2')
         end
 
-        def upgrades_to?(from, to)
+        def st_cloud_hotel
+          @st_cloud_hotel ||= company_by_id('Y1')
+        end
+
+        def upgrades_to?(from, to, special = false, selected_company: nil)
+          if special && from.hex.id == SULPHUR_SPRINGS_HEX && selected_company == sulphur_springs
+            return case from.color
+                   when :yellow
+                     to.name == 'RG1'
+                   when :green
+                     to.name == 'RG2'
+                   when :brown
+                     to.name == 'RG3'
+                   else
+                     false
+                   end
+          end
+
           return false unless super
 
           if ROYAL_GORGE_HEXES_TO_TILES.include?(from.hex.id)
@@ -853,6 +933,31 @@ module Engine
 
         def company_status_str(company)
           format_currency(@local_jeweler_cash) if company == local_jeweler && company.player
+        end
+
+        def upgrades_to_correct_label?(from, to)
+          # while sulphur springs is a town, it only uses town hexes
+          if from.hex.id == SULPHUR_SPRINGS_HEX && from.towns.one?
+            to.towns.one?
+          else
+            super
+          end
+        end
+
+        def st_cloud_bonus?(route, stops)
+          route.corporation == st_cloud_hotel&.owner && stops.any? { |s| s.hex == @st_cloud_hex }
+        end
+
+        def revenue_for(route, stops)
+          revenue = super
+          revenue += ST_CLOUD_BONUS if st_cloud_bonus?(route, stops)
+          revenue
+        end
+
+        def revenue_str(route)
+          str = super
+          str += ST_CLOUD_BONUS_STR if st_cloud_bonus?(route, route.visited_stops)
+          str
         end
       end
     end
