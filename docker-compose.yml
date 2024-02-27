@@ -34,7 +34,7 @@ services:
     build:
       context: ./db/
     volumes:
-      - ./db/data:/var/lib/postgresql/data:Z
+      - ./db/data:/var/lib/postgresql/data:z
     ports:
       - 127.0.0.1:5433:5432
     logging:
