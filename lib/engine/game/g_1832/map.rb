@@ -151,7 +151,7 @@ module Engine
             %w[A7 A21] => 'offboard=revenue:yellow_30|brown_50;path=a:5,b:_0;path=a:0,b:_0',
             ['B2'] => 'offboard=revenue:yellow_30|brown_50|gray_60;path=a:5,b:_0;path=a:4,b:_0',
             ['N16'] => 'offboard=revenue:yellow_20|brown_30|gray_50;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
-                       'icon=image:port,sticky:1,loc:0.5;icon=image:1850/FECR_key_west,loc:2.5',
+                       'icon=image:port,sticky:1,loc:0.5;icon=image:1832/FECR_key_west,loc:2.5',
           },
           yellow: {
             ['F10'] => 'city=revenue:20;city=revenue:20;city=revenue:20;path=a:4,b:_0;path=a:0,b:_1;path=a:2,b:_2;label=Atl;',

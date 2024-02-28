@@ -48,11 +48,11 @@ module Engine
 
       nodes.each do |node|
         if Time.now - now > path_timeout
-          puts 'Path timeout reached'
+          LOGGER.debug('Path timeout reached')
           path_walk_timed_out = true
           break
         else
-          puts "Path search: #{nodes.index(node)} / #{nodes.size} - paths starting from #{node.hex.name}"
+          LOGGER.debug { "Path search: #{nodes.index(node)} / #{nodes.size} - paths starting from #{node.hex.name}" }
         end
 
         walk_corporation = graph.no_blocking? ? nil : corporation
@@ -142,8 +142,10 @@ module Engine
       end
 
       # Check that there are no duplicate hexside bits (algorithm error)
-      puts "Evaluated #{connections.size} paths, found #{@next_hexside_bit} unique hexsides, and found valid routes "\
-           "#{train_routes.map { |k, v| k.name + ':' + v.size.to_s }.join(', ')} in: #{Time.now - now}"
+      LOGGER.debug do
+        "Evaluated #{connections.size} paths, found #{@next_hexside_bit} unique hexsides, and found valid routes "\
+          "#{train_routes.map { |k, v| k.name + ':' + v.size.to_s }.join(', ')} in: #{Time.now - now}"
+      end
 
       static.each do |route|
         # recompute bitfields of passed-in routes since the bits may have changed across auto-router runs
@@ -158,8 +160,10 @@ module Engine
       sorted_routes = train_routes.map { |_train, routes| routes }
 
       limit = sorted_routes.map(&:size).reduce(&:*)
-      puts "Finding route combos of best #{train_routes.map { |k, v| k.name + ':' + v.size.to_s }.join(', ')} "\
-           "routes with depth #{limit}"
+      LOGGER.debug do
+        "Finding route combos of best #{train_routes.map { |k, v| k.name + ':' + v.size.to_s }.join(', ')} "\
+          "routes with depth #{limit}"
+      end
 
       now = Time.now
       possibilities = js_evaluate_combos(sorted_routes, route_timeout)
@@ -180,7 +184,7 @@ module Engine
         @game.routes_revenue(routes)
       rescue GameError => e
         # report error but still include combo with errored route in the result set
-        puts " Sanity check error, likely an auto_router bug: #{e}"
+        LOGGER.debug { " Sanity check error, likely an auto_router bug: #{e}" }
         routes
       end || []
 
@@ -225,8 +229,8 @@ module Engine
               hexside_right  = node2.edges[0].id
               check_and_set(bitfield, hexside_left, hexside_right, hexside_bits)
             else
-              puts "  ERROR: auto-router found unexpected number of path node edges #{node1.edges.size}. "\
-                   'Route combos may be be incorrect'
+              LOGGER.debug "  ERROR: auto-router found unexpected number of path node edges #{node1.edges.size}. "\
+                           'Route combos may be be incorrect'
             end
           end
         end
@@ -380,8 +384,10 @@ module Engine
         }
       }
 
-      puts "Found #{possibilities_count} possible combos (#{rb_possibilities.size} best) and rejected #{conflicts} "\
-           "conflicting combos in: #{Time.now - now}"
+      LOGGER.debug do
+        "Found #{possibilities_count} possible combos (#{rb_possibilities.size} best) and rejected #{conflicts} "\
+          "conflicting combos in: #{Time.now - now}"
+      end
       rb_possibilities
     end
 

@@ -119,8 +119,8 @@ module Engine
                   },
                   {
                     name: '5+1',
-                    distance: [{ 'nodes' => %w[city offboard town], 'pay' => 5, 'visit' => 5 },
-                               { 'nodes' => ['town'], 'pay' => 1, 'visit' => 1 }],
+                    distance: [{ 'nodes' => ['town'], 'pay' => 1, 'visit' => 1 },
+                               { 'nodes' => %w[city offboard town], 'pay' => 5, 'visit' => 5 }],
                     price: 400,
                     rusts_on: 'D',
                     num: 5,

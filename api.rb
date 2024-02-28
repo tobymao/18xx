@@ -35,9 +35,9 @@ class Api < Roda
     csp.frame_ancestors :none
   end
 
-  LOGGER = Logger.new($stdout)
+  API_LOGGER = Logger.new($stdout)
 
-  plugin :common_logger, LOGGER
+  plugin :common_logger, API_LOGGER
 
   plugin :not_found do
     halt(404, 'Page not found')
@@ -46,8 +46,8 @@ class Api < Roda
   plugin :error_handler
 
   error do |e|
-    LOGGER.error e.backtrace
-    LOGGER.error e.message
+    API_LOGGER.error e.backtrace
+    API_LOGGER.error e.message
     { error: e.message }
   end
 
@@ -122,7 +122,7 @@ class Api < Roda
           begin
             needs[:profile]['stats'] = JSON.parse(Bus[Bus::USER_STATS % id])
           rescue StandardError => e
-            LOGGER.error "Unable to get stats for #{id}: #{e}"
+            API_LOGGER.error "Unable to get stats for #{id}: #{e}"
           end
         end
 

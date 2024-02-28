@@ -13,7 +13,7 @@ module Engine
 
             action.hex.remove_assignment!('boomtown') if action.hex.assigned?('boomtown')
 
-            if action.hex.id.include?(Engine::Game::G1832::Game::BOOMTOWN_HEXES) && action.hex::COLOR == 'white'
+            if Engine::Game::G1832::Game::BOOMTOWN_HEXES.include?(action.hex.id) && action.hex.tile.color == :white
               action.hex.assign!('boomtown')
             end
 

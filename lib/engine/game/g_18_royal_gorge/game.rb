@@ -608,18 +608,15 @@ module Engine
           bg_color = selected ? 'white' : color.to_s
 
           onclick = lambda do
-            puts "hello from #{column} #{cost}"
-
             if selected
-              puts '    NOOP: already using this cell'
+              LOGGER.debug '    NOOP: already using this cell'
             elsif chosen_column && chosen_column != column && @round.laid_track[color_sym]
-              puts '    NOOP: already using a different column'
+              LOGGER.debug '    NOOP: already using a different column'
             elsif blank
-              puts '    NOOP: no cube available'
+              LOGGER.debug '    NOOP: no cube available'
             elsif unchoosable_color
-              puts '    NOOP: color not available'
+              LOGGER.debug '    NOOP: color not available'
             else
-              puts '    should update choice to this cell'
               action = Engine::Action::Choose.new(
                 current_entity,
                 choice: "#{column}-#{cost}"
