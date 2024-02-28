@@ -20,10 +20,14 @@ module Engine
             'Discard trains from minor'
           end
 
+          def pass_description
+            'Done'
+          end
+
           def help
             msg = "#{major.id} may accept or decline minor #{minor.id}’s " \
-                  'trains. Click on a train to discard it or pass to keep ' \
-                  'the trains.'
+                  'trains. Click on a train to discard it or click ' \
+                  '‘Done’ to keep the trains.'
             if over_limit?
               msg += " #{major.id} is currently over the train limit. If you " \
                      'pass then you will be given the option to discard any ' \
