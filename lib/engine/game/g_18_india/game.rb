@@ -15,7 +15,7 @@ module Engine
         include Entities
         include Map
 
-        attr_accessor :draft_deck
+        attr_accessor :draft_deck, :ipo_pool
 
         register_colors(brown: '#a05a2c',
                         white: '#000000',
@@ -26,7 +26,7 @@ module Engine
         CURRENCY_FORMAT_STR = '₹%s'
         CAPITALIZATION = :incremental
 
-        TRACK_RESTRICTION = :permissive
+        TRACK_RESTRICTION = :city_permissive
         TILE_TYPE = :lawson
 
         MARKET_SHARE_LIMIT = 200 # up to 200% of GIPR may be in market
@@ -78,14 +78,7 @@ module Engine
           { name: 'I', train_limit: 2, tiles: %i[yellow green brown gray], operating_rounds: 2 },
           { name: 'II', on: '3', train_limit: 2, tiles: %i[yellow green brown gray], operating_rounds: 2 },
           { name: 'III', on: '4', train_limit: 2, tiles: %i[yellow green brown gray], operating_rounds: 2 },
-          { name: 'IV', on: '5', train_limit: 2, tiles: %i[yellow green brown gray], operating_rounds: 2 },
-        ].freeze
-
-        TRAINS = [
-          { name: '2', distance: 2, price: 180, num: 6 },
-          { name: '3', distance: 3, price: 300, num: 4 },
-          { name: '4', distance: 4, price: 450, num: 3 },
-          { name: '5', distance: 999, price: 1100, num: 3 },
+          { name: 'IV', on: '3x2', train_limit: 2, tiles: %i[yellow green brown gray], operating_rounds: 2 },
         ].freeze
 
         TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false },
@@ -125,6 +118,38 @@ module Engine
 
         def ipo_reserved_name(_entity = nil)
           'Player Hands'
+        end
+
+        # class to serve as a shareholder for the IPO Pool
+        class ShareHolderEntity
+          include Engine::Entity
+          include Engine::ShareHolder
+          include Engine::Spender
+
+          attr_reader :name
+
+          def initialize(name = nil)
+            @name = name
+            @cash = 0
+          end
+
+          def corporation?
+            true
+          end
+        end
+
+        # modified to use the separate shareholder for ipo_owner
+        def init_corporations(stock_market)
+          @ipo_pool = ShareHolderEntity.new('IPO')
+
+          game_corporations.map do |corporation|
+            self.class::CORPORATION_CLASS.new(
+              ipo_owner: @ipo_pool,
+              min_price: stock_market.par_prices.map(&:price).min,
+              capitalization: self.class::CAPITALIZATION,
+              **corporation.merge(corporation_opts),
+            )
+          end
         end
 
         def setup_preround
@@ -201,8 +226,8 @@ module Engine
             sym: name,
             name: name,
             value: 0,
-            desc: "Warrant pays 5\% of share value when company doesn't pay dividend.",
-            type: :warrent
+            desc: "Warrant pays 5\% of share value when company doesn't pay dividend. Closes at start of Phase IV",
+            type: :warrant
           )
           corporation.companies << warrant
         end
@@ -223,7 +248,7 @@ module Engine
           @draft_deck = []
 
           corporations.each do |corporation|
-            corporation.shares.each do |share|
+            corporation.ipo_shares.each do |share|
               card = convert_share_to_company(share)
               case share.percent
               when 20
@@ -252,7 +277,8 @@ module Engine
         # create a placeholder 'company' for shares in IPO or Player Hands
         def convert_share_to_company(share)
           discription = "Certificate for #{share.percent}\% of #{share.corporation.full_name}."
-          discription += "\nGuaranty Company." if share.corporation.companies.any? { |c| c.name == 'Guaranty Warrant' }
+          discription += "\nConverts to DIRECTED company and Floats." if share.percent == 20
+          discription += "\nHas a Guaranty Warrant." if share.corporation.guaranty_warrant?
           Company.new(
             sym: share.id,
             name: share.corporation.name,
@@ -289,7 +315,9 @@ module Engine
           deck.each do |card|
             case card.type
             when :share
-              share_pool.buy_shares(@share_pool, card.treasury)
+              # Use transfer shares method to control receiver of funds
+              bundle = ShareBundle.new(card.treasury)
+              share_pool.transfer_shares(bundle, @share_pool, spender: @bank, receiver: bundle.corporation, price: bundle.price)
             else
               @log << "Private #{card.name} is availabe in the Market"
               card.owner = @bank
@@ -385,10 +413,10 @@ module Engine
             Engine::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
-            Engine::Step::Dividend,
-            Engine::Step::DiscardTrain,
+            G18India::Step::Dividend,
             Engine::Step::BuyTrain,
-            [Engine::Step::BuyCompany, { blocks: false }],
+            Engine::Step::CorporateSellShares,
+            Engine::Step::CorporateBuyShares,
           ], round_num: round_num)
         end
 
@@ -559,6 +587,26 @@ module Engine
         def float_corporation(corporation)
           @log << "#{corporation.name} floats. Share price marker placed at #{corporation.share_price.price}"
           corporation.share_price.corporations << corporation
+        end
+
+        # test using this to control laying yellow tiles from railhead
+        def legal_tile_rotation?(_entity, _hex, _tile)
+          true
+        end
+
+        def company_header(company)
+          case company.type
+          when :share
+            'SHARE CERTIFICATE'
+          when :president
+            'DIRECTOR\'s CERTIFICATE'
+          when :bond
+            'RAILROAD BOND'
+          when :warrant
+            'GUARANTY WARRANT'
+          else
+            super
+          end
         end
 
         def price_movement_chart
