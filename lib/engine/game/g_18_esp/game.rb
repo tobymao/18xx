@@ -384,6 +384,7 @@ module Engine
             hex_by_id(hex).tile.cities.first.exchange_token(block_token)
             hex_by_id(hex).tile.cities.first.exchange_token(block_token)
           end
+          remove_extra_corporation_destination_icons if core
         end
 
         def setup_corporations
@@ -415,6 +416,15 @@ module Engine
         def setup_preround
           setup_corporations unless core
           setup_companies
+        end
+
+        def remove_extra_corporation_destination_icons
+          self.class::EXTRA_CORPORATIONS.each do |c|
+            next unless c[:destination]
+
+            tile = hex_by_id(c[:destination]).tile
+            tile.icons = tile.icons.dup.reject { |icon| icon.name == c[:sym] }
+          end
         end
 
         def setup_company_price(mulitplier)
@@ -960,7 +970,8 @@ module Engine
               new_operating_round
             when Round::Operating
               or_round_finished
-              if @round.round_num < @operating_rounds
+              skip_pre_final_or = custom_end_game_reached? && !final_ors?
+              if @round.round_num < @operating_rounds && !skip_pre_final_or
                 new_operating_round(@round.round_num + 1)
               else
                 or_set_finished
