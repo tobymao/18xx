@@ -2,6 +2,7 @@
 
 require_relative 'engine/deep_freeze'
 require_relative 'engine/jaro_winkler'
+require_relative 'engine/logger'
 
 if RUBY_ENGINE == 'opal'
   require_tree 'engine/game'
