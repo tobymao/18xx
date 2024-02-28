@@ -15,7 +15,7 @@ module Engine
         GAME_LOCATION = 'Spain'
         GAME_PUBLISHER = :lonny_games
         GAME_RULES_URL = 'https://boardgamegeek.com/filepage/273359/18espana-18esp-english-draft-rules'
-        GAME_INFO_URL = ''
+        GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18ESP'
 
         PLAYER_RANGE = [3, 6].freeze
 

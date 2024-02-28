@@ -11,3 +11,6 @@ Sequel.extension :pg_json_ops
 
 # game engine
 require_relative '../lib/engine'
+
+# can override in specific script if necessary
+Engine::Logger.set_level(Logger::FATAL)

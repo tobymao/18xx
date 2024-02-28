@@ -9,6 +9,15 @@ module Engine
         class SpecialTrack < Engine::Step::SpecialTrack
           def actions(entity)
             return [] unless entity.owner == current_entity
+          end
+
+          def legal_tile_rotation?(entity, hex, tile)
+            if entity == @game.sulphur_springs &&
+               hex.id == @game.class::SULPHUR_SPRINGS_HEX &&
+               %w[RG1 RG2 RG3].include?(tile.name)
+
+              return hex.tile.color == tile.color && tile.rotation.zero?
+            end
 
             super
           end

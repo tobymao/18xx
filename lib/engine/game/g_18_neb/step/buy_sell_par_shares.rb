@@ -36,7 +36,7 @@ module Engine
             return [] unless @round.current_actions.empty?
             return [] unless @game.check_sale_timing(entity, Share.new(entity).to_bundle)
 
-            puts "here: #{entity.name}, #{@game.issuable_shares(entity).inspect}"
+            LOGGER.debug { "here: #{entity.name}, #{@game.issuable_shares(entity).inspect}" }
 
             @game.issuable_shares(entity)
           end

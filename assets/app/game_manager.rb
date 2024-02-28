@@ -47,7 +47,7 @@ module GameManager
   end
 
   def enter_fixture(path)
-    @connection.safe_get("/fixtures/#{path}.json", '') do |data|
+    @connection.get("/fixtures/#{path}.json", '') do |data|
       store(:game_data, data, skip: false)
     end
   end
