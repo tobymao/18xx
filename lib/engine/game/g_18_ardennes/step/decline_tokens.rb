@@ -43,13 +43,19 @@ module Engine
             'Done'
           end
 
+          def available_hex(entity, hex)
+            return false unless entity == major
+
+            minor.tokens.any? { |t| t.used && t.city && t.hex == hex }
+          end
+
           def process_pass(_action)
             locations = minor.placed_tokens.map { |t| token_location(t) }
             @log << "#{major.id} keeps minor #{minor.id}’s " \
                     "#{locations.one? ? 'token' : 'tokens'} " \
                     "in #{locations.join(' and ')}"
             minor.placed_tokens.each { |t| transfer_minor_token!(t, major) }
-            @round.corporations_removing_tokens.clear
+            close_minor!
           end
 
           def process_remove_token(action)
@@ -57,7 +63,7 @@ module Engine
             raise GameError, "Cannot remove #{token.corporation.id}’s token." unless token.corporation == minor
 
             remove_minor_token!(token)
-            @round.corporations_removing_tokens.clear if minor.placed_tokens.empty?
+            close_minor! if minor.placed_tokens.empty?
           end
 
           private
@@ -73,6 +79,11 @@ module Engine
           def over_limit?
             (major.placed_tokens.size + minor.placed_tokens.size) >
               @game.class::LIMIT_TOKENS_AFTER_MERGER
+          end
+
+          def close_minor!
+            @game.close_corporation(minor)
+            @round.corporations_removing_tokens.clear
           end
         end
       end
