@@ -260,7 +260,7 @@ remains open but the discount can no longer be used. Default false.
 - `special`: If true, do not check that the tile upgrade preserves
   labels and city count. Default true.
 - `connect`: If true, and `count` is greater than 1, tiles laid must
-  connect to each other. Default true.
+  connect to each other. Default true unless `count_per_or` is used, in which case `connect` isn't checked by default. 
 - `blocks`: If true and `when` is `sold`, then the step
   `TrackLayWhenCompanySold` will require a tile lay. Default false.
 - `reachable`: If true, when tile laid, a check is done if one of the
@@ -280,6 +280,7 @@ remains open but the discount can no longer be used. Default false.
   the number of green or higher tile upgrades. When these are set, the ability
   cannot be used for both new tile lays and upgrades. With these set, you need
   to make sure the `ability.use!` call includes an `upgrade` kwarg.
+- `count_per_or`: used if private ability limits the amount of tile lays that you can use per OR.
 
 ## train_buy
 
