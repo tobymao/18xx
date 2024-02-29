@@ -134,6 +134,12 @@ module Engine
           # that they cannot afford to start?
           bankrupt?(player)
         end
+
+        # If a player has gone above 60% holding in a major (by exchanging
+        # minors for shares) they don't have to sell back down.
+        def can_hold_above_corp_limit?(_entity)
+          true
+        end
       end
     end
   end
