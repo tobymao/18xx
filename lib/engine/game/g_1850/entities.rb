@@ -123,7 +123,6 @@ module Engine
             owner_type: 'corporation',
             count: 3,
             count_per_or: 1,
-            connect: false,
             reachable: true,
             special: false,
             when: 'track',
