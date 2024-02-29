@@ -414,7 +414,7 @@ module Engine
             Engine::Step::Token,
             Engine::Step::Route,
             G18India::Step::Dividend,
-            Engine::Step::BuyTrain,
+            G18India::Step::SellBuyTrain,
             Engine::Step::CorporateSellShares,
             Engine::Step::CorporateBuyShares,
           ], round_num: round_num)
@@ -592,6 +592,12 @@ module Engine
         # test using this to control laying yellow tiles from railhead
         def legal_tile_rotation?(_entity, _hex, _tile)
           true
+        end
+
+        # Sell Train to the Depot
+        def sell_train(operator, train, price)
+          @bank.spend(price, operator) if price.positive?
+          @depot.reclaim_train(train)
         end
 
         def company_header(company)
