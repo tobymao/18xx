@@ -175,6 +175,7 @@ module Engine
         return unless ability.connect
         return if ability.hexes.size < 2
         return if !ability.start_count || ability.start_count < 2 || ability.start_count == ability.count
+        return if ability.count_per_or == 1
 
         # check to see if at least one path on each laid tile connects to at least one path on one of the others
         #
