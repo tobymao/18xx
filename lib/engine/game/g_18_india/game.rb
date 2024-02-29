@@ -600,6 +600,13 @@ module Engine
           @depot.reclaim_train(train)
         end
 
+        def corp_is_trainless(corporation)
+          old_price = corporation.share_price
+          @log << "#{corporation.name} is trainless"
+          @stock_market.move_left(corporation)
+          log_share_price(corporation, old_price)
+        end
+
         def company_header(company)
           case company.type
           when :share
