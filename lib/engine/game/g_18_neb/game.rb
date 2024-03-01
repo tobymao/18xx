@@ -25,12 +25,11 @@ module Engine
         CAPITALIZATION = :incremental
         HOME_TOKEN_TIMING = :par
 
-        # TODO: end of SR movement down and right if at top
-        # TODO OR movement must pay stock price to move right
-
         SELL_BUY_ORDER = :sell_buy
         SELL_AFTER = :operate
         MUST_SELL_IN_BLOCKS = true
+
+        SOLD_OUT_TOP_ROW_MOVEMENT = :down_right
 
         NEXT_SR_PLAYER_ORDER = :first_to_pass
 
