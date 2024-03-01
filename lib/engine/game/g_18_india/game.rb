@@ -600,7 +600,13 @@ module Engine
           @depot.reclaim_train(train)
         end
 
-        def corp_is_trainless(corporation)
+        def after_end_of_operating_turn(operator)
+          return unless operator.corporation?
+
+          drop_price_for_trainless_corp(operator) if operator.trains.empty?
+        end
+
+        def drop_price_for_trainless_corp(corporation)
           old_price = corporation.share_price
           @log << "#{corporation.name} is trainless"
           @stock_market.move_left(corporation)

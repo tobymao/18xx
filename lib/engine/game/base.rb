@@ -934,6 +934,9 @@ module Engine
         end
       end
 
+      # hook from Engine::Round::Operating before next_entity!
+      def after_end_of_operating_turn(_operator); end
+
       def next_turn!
         return if @turn_start_action_id == current_action_id
 

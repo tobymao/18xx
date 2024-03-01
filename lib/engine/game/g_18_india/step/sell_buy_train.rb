@@ -71,12 +71,6 @@ module Engine
             super
           end
 
-          def pass!
-            # if company doesn't have a train, stock price moves left
-            @game.corp_is_trainless(current_entity) if current_entity.trains.empty?
-            super
-          end
-
           # modified from Step::Train to prevent automatic passing after buying
           def pass_if_cannot_buy_train?(_entity)
             false
