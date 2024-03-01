@@ -88,7 +88,7 @@ module Engine
             entity.corporate_shares.map(&:corporation).compact.uniq
           end
 
-          # Added for a hook in VIEW > operating
+          # Added for a hook in View::Game::Round::Operating
           def corporate_stock_round?
             true
           end
