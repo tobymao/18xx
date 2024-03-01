@@ -96,7 +96,6 @@ module Engine
             company = action.company
             price = action.price
             owner = company.owner
-            what = company.type == :share ? "a share of #{company.name}" : "Private #{company.name}"
 
             raise GameError, "Cannot buy #{company.name} from #{owner.name}" if owner&.corporation? || owner&.player?
 
@@ -108,7 +107,9 @@ module Engine
               location = 'the Bank'
               @game.bank.companies.delete(company)
             end
-            @log << "#{current_entity.name} buys #{what} from #{location} for #{@game.format_currency(price)}"
+
+            item_purchased = (company.type == :share) ? "a share of #{company.name}" : "Private #{company.name}"
+            @log << "#{current_entity.name} buys #{item_purchased} from #{location} for #{@game.format_currency(price)}"
 
             case company.type
             when :share
