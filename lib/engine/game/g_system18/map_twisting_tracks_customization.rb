@@ -183,7 +183,7 @@ module Engine
         end
 
         def map_twisting_tracks_game_cash
-          { 2 => 1100, 3 => 750, 4 => 550 }
+          { 2 => 850, 3 => 575, 4 => 425 }
         end
 
         def map_twisting_tracks_game_cert_limit
