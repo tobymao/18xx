@@ -108,7 +108,7 @@ module Engine
               @game.bank.companies.delete(company)
             end
 
-            item_purchased = (company.type == :share) ? "a share of #{company.name}" : "Private #{company.name}"
+            item_purchased = company.type == :share ? "a share of #{company.name}" : "Private #{company.name}"
             @log << "#{current_entity.name} buys #{item_purchased} from #{location} for #{@game.format_currency(price)}"
 
             case company.type
