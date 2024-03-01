@@ -83,7 +83,7 @@ module Engine
             @game.sell_shares_and_change_price(action.bundle, swap: action.swap)
           end
 
-          # Source for items in VIEW > CorporateSellShares, removed restrictions on sales
+          # Source for items in View::Game::CorporateSellShares, removed restrictions on sales
           def source_list(entity)
             entity.corporate_shares.map(&:corporation).compact.uniq
           end
