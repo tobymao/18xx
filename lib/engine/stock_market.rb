@@ -7,10 +7,13 @@ module Engine
   class StockMarket
     attr_reader :market, :par_prices, :has_close_cell, :zigzag
 
-    def initialize(market, unlimited_types, multiple_buy_types: [], zigzag: nil, ledge_movement: nil)
+    def initialize(market, unlimited_types, **opts)
+      multiple_buy_types = opts[:multiple_buy_types] || []
+      ledge_movement = opts[:ledge_movement]
       @par_prices = []
       @has_close_cell = false
-      @zigzag = zigzag
+      @zigzag = opts[:zigzag]
+      @sold_out_top_row_movement = opts[:sold_out_top_row_movement]
       @market = market.map.with_index do |row, r_index|
         row.map.with_index do |code, c_index|
           price = if code.instance_of?(Hash)
@@ -48,6 +51,10 @@ module Engine
       @one_d ||= @market.one?
     end
 
+    def two_d?
+      @two_d ||= !@zigzag && @market.size > 1
+    end
+
     def set_par(corporation, share_price)
       share_price.corporations << corporation
       corporation.share_price = share_price
@@ -58,6 +65,14 @@ module Engine
     def right_ledge?(coordinates)
       row, col = coordinates
       col + 1 == @market[row].size
+    end
+
+    def top_row?(coordinates)
+      coordinates.first.zero? && two_d?
+    end
+
+    def max_share_price?(coordinates)
+      coordinates == [0, @market[0].size - 1]
     end
 
     def move_right(corporation)
@@ -73,7 +88,11 @@ module Engine
     end
 
     def up(corporation, coordinates)
-      @movement.up(corporation, coordinates)
+      if @sold_out_top_row_movement == :down_right && top_row?(coordinates) && !max_share_price?(coordinates)
+        @movement.right(corporation, @movement.down(corporation, coordinates))
+      else
+        @movement.up(corporation, coordinates)
+      end
     end
 
     def move_down(corporation)
