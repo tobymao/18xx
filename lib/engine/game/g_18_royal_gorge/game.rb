@@ -78,17 +78,17 @@ module Engine
         }.freeze
 
         ROYAL_GORGE_HEXES_TO_TILES = {
-          'D12' => %w[RG-D12-G RG-D12-B],
-          'E13' => %w[RG-E13-G RG-E13-B],
-          'F12' => %w[RG-F12-G RG-F12-B],
+          'D12' => %w[RG-A RG-D],
+          'E13' => %w[RG-B RG-E],
+          'F12' => %w[RG-C RG-F],
         }.freeze
         ROYAL_GORGE_TILES_TO_HEXES = {
-          'RG-D12-B' => 'D12',
-          'RG-D12-G' => 'D12',
-          'RG-E13-B' => 'E13',
-          'RG-E13-G' => 'E13',
-          'RG-F12-B' => 'F12',
-          'RG-F12-G' => 'F12',
+          'RG-A' => 'D12',
+          'RG-B' => 'E13',
+          'RG-C' => 'F12',
+          'RG-D' => 'D12',
+          'RG-E' => 'E13',
+          'RG-F' => 'F12',
         }.freeze
         RETURNED_TOKEN_PRICES = [80, 60, 40].freeze
 
@@ -453,7 +453,7 @@ module Engine
         end
 
         def market_share_limit(corporation)
-          corporation.type == :metal ? 10 : self.class::MARKET_SHARE_LIMIT
+          corporation.type == :metal ? 100 : self.class::MARKET_SHARE_LIMIT
         end
 
         def init_metal_corp(corporation)
