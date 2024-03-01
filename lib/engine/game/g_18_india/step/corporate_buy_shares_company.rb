@@ -62,11 +62,8 @@ module Engine
           def buyable_companies(entity)
             return [] unless entity.corporation?
 
-            companies = []
-            companies += @game.bank_owned_companies.select { |c| can_buy_comp_from_market?(entity, c) }
-            companies += @game.top_of_ipo_rows.select { |c| can_buy_comp_from_ipo?(entity, c) }
-
-            companies
+            @game.bank_owned_companies.select { |c| can_buy_comp_from_market?(entity, c) } +
+              @game.top_of_ipo_rows.select { |c| can_buy_comp_from_ipo?(entity, c) }
           end
 
           def can_buy_comp_from_market?(entity, company)
