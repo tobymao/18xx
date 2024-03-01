@@ -24,7 +24,7 @@ module Engine
 
           # for debugging only
           def debugging_log(str)
-            LOGGER.debug (str)
+            LOGGER.debug(str)
             LOGGER.debug ">  Num Certs: #{@game.num_certs(current_entity)} / Cert Limit: #{@game.cert_limit(current_entity)}"
             LOGGER.debug ">  Bought?: #{bought?(current_entity)} - Last Bought: #{last_bought(current_entity).name} "
           end
