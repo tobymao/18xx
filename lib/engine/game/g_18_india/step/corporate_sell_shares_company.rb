@@ -12,7 +12,6 @@ module Engine
         class CorporateSellSharesCompany < Engine::Step::CorporateSellShares
           include Engine::Step::ShareBuying
 
-          # update description
           def description
             'Corporate Sell Certificates to Market'
           end
