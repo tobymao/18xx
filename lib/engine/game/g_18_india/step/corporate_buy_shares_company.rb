@@ -155,11 +155,8 @@ module Engine
             entity.cash >= bundle.price
           end
 
-          # modified for debugging info
           def process_corporate_buy_shares(action)
-            buy_shares(action.entity, action.bundle)
-            @round.corporations_bought[action.entity] << action.bundle.corporation
-            pass! unless can_buy_any?(action.entity)
+            super
             debugging_log('Process > Corporate Buy Shares')
           end
 
