@@ -20,13 +20,17 @@ module Engine
           {
             sym: 'Y2',
             name: 'Ghost Town Tour Co. (Y2)',
-            desc: 'Special abilities not implemented.',
-            # desc: 'When the owning corporation ships the last gold from any mine space, they  may put 1 Ghost Town '\
-            #       'Token in that hex. On future turns, Ghost Town Tokens provide $10 revenue for the owning corporation.',
+            desc: 'When the owning corporation ships the last gold from any mine space, they  may put 1 Ghost Town '\
+                  'Token in that hex. On future turns, Ghost Town Tokens provide $10 revenue for the owning corporation.',
             value: 45,
             revenue: 15,
             abilities: [
-              # after last Gold is shipped from a hex, may add a +$10 ghost town
+              {
+                type: 'choose_ability',
+                owner_type: 'corporation',
+                when: %w[dividend],
+                count: 4,
+              },
             ],
           },
           {
