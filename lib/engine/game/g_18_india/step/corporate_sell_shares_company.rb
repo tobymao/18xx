@@ -72,8 +72,9 @@ module Engine
           # ----- Sell Shares -----
 
           # There are no restrictions on sales. Any amount can be sold to market
-          def can_sell?(_entity, bundle)
+          def can_sell?(entity, bundle)
             return unless bundle
+            return false if entity != bundle.owner
 
             true
           end
