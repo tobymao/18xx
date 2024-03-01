@@ -61,7 +61,7 @@ module Engine
         def num_certs(entity)
           return 0 if entity.nil?
 
-          shares = entity&.player? ? entity.shares : entity.corporate_shares
+          shares = entity.player? ? entity.shares : entity.corporate_shares
           certs = shares.sum do |s|
             s.corporation.counts_for_limit && s.counts_for_limit ? s.cert_size : 0
           end
