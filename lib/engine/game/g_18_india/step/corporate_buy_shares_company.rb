@@ -29,7 +29,6 @@ module Engine
             LOGGER.debug ">  Bought?: #{bought?(current_entity)} - Last Bought: #{last_bought(current_entity).name} "
           end
 
-          # update description
           def description
             'Corporate Purchase Certificates from IPO or Market'
           end
