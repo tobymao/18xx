@@ -82,6 +82,7 @@ module Engine
         ].freeze
 
         VARIABLE_CITY_HEXES = %w[A16 D3 D23 G36 K30 K40 M10 Q10 R17].freeze
+        VARIABLE_CITY_NAMES = %w[KARACHI LAHORE MUMBAI KOCHI CHENNAI COLOMBO NEPAL CHINA DHAKA].freeze
 
         TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false },
                      { lay: :not_if_upgraded, upgrade: false }, { lay: :not_if_upgraded, upgrade: false }].freeze
@@ -604,10 +605,15 @@ module Engine
 
         # modify to include variable value cities
         def revenue_for(route, stops)
-          # @log << "> Revenue For Call: Route, Stops"
-          # @log << route.to_s
-          # @log << stops.to_s
-          stops.sum { |stop| stop.route_revenue(route.phase, route.train) }
+          revenue = stops.sum { |stop| stop.route_revenue(route.phase, route.train) }
+          revenue += variable_city_revenue(route, stops)
+          revenue
+        end
+
+        def revenue_str(route)
+          str = route.hexes.map(&:name).join('-')
+          str += ' ?+' + variable_city_revenue(route, route.stops).to_s if variable_city_revenue(route, route.stops) > 0
+          str
         end
 
         # consider for commodity bonus and route connection bonus
@@ -615,16 +621,54 @@ module Engine
           0
         end
 
+        # calculate addional revenue if non-variable city base value > 20
         def variable_city_revenue(route, stops)
-          # Number of Variable Cities * (Max Non Variable City - 20) * Train Multi(test if needed)
+          non_variable_stops = route.visited_stops.reject { |stop| stop.tile.color == 'red' }
+          return 0 if non_variable_stops.empty?
+
+          max_non_variable_value = non_variable_stops.map { |e| e.revenue_to_render - 20 }.max
+          stop_location_names = stops.map { |stop| stop.tile.location_name }.compact
+          variable_city_stops = stop_location_names & VARIABLE_CITY_NAMES
+
+          variable_city_stops.count * [max_non_variable_value, 0].max
         end
 
         def commodity_route_bonus(route, stops)
-          # stuff
+          # Opium => Lahore [D3] + 100
+          # Opium => Haldia [P19] + 100
+
+          # Ore => Karachi [A16] + 50
+          # Ore => Chennai [K30] + 50
+
+          # Oil => Mumbai [D23] + 30
+
+          # Gold => Kochi [G36] + 50
+
+          # Spices => Kochi [G36] + 70
+          # Spices => Colombo [K40] + 50
+          # Spices => Chennai [K30] + 50
+          # Spices => Lahore [D3] + 40
+          # Spices => Mumbai [D23] + 40
+          # Spices => China [Q10] + 40
+          # Spices => Nepal [M10] + 40
+          # Spices => Karachi [A16] + 30
+          # Spices => Haldia [P19] + 30
+          # Spices => Visakhapatnam [M24] + 30
+
+          # Cotton => Karachi [A16] + 40
+          # Cotton => Chennai [K30] + 40
+
+          # Tea => Visakhapatnam [M24] + 70
+
+          # Rice => China [Q10] + 30
+          # Rice => Nepal [M10] + 30
         end
 
         def connection_route_bonus(route, stops)
-          # stuff
+          # Delhi, Kochi => 100 [G8, G36]
+          # Karachi, Chennai => 80 [A16, K30]
+          # Lahore, Kolkata => 80 [D3, P17]
+          # Nepal, Mumbai => 70 [M10, D23]
         end
 
         def company_header(company)
