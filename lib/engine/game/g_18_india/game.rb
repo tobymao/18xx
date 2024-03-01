@@ -609,32 +609,9 @@ module Engine
           bank_owned_companies + top_of_ipo_rows
         end
 
-        # base method had exception paying corp owned bonds (ArgumentError: comparison of RB_3 to RB_2 failed)
-        def payout_companies(ignore: [])
-          companies = []
-          @players.each do |player|
-            companies += player.companies.select { |c| c.revenue.positive? && !ignore.include?(c.id) }
-          end
-
-          @corporations.each do |corp|
-            companies += corp.companies.select { |c| c.revenue.positive? && !ignore.include?(c.id) }
-          end
-
-          companies.sort_by! do |company|
-            [
-              company.owned_by_player? ? [0, @players.index(company.owner)] : [1, company.owner],
-              company.revenue,
-              company.name,
-            ]
-          end
-
-          companies.each do |company|
-            owner = company.owner
-            next if owner == bank
-
-            revenue = company.revenue
-            @bank.spend(revenue, owner)
-            @log << "#{owner.name} collects #{format_currency(revenue)} from #{company.name}"
+        def companies_to_payout(ignore: [])
+          (@players + @corporations).flat_map do |entity|
+            entity.companies.select { |c| c.revenue.positive? && !ignore.include?(c.id) }
           end
         end
 
