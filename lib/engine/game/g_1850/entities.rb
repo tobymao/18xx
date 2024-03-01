@@ -121,6 +121,7 @@ module Engine
           abilities: [{
             type: 'tile_lay',
             owner_type: 'corporation',
+            connect: false,
             count: 3,
             count_per_or: 1,
             reachable: true,
