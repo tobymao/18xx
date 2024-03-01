@@ -36,15 +36,17 @@ module Engine
           {
             sym: 'Y3',
             name: 'Coal Creek Mines (Y3)',
-            desc: 'Special abilities not implemented.',
-            # desc: 'When any corporation runs through Coal Creek, the owning corporation receives a coal cube '\
-            #       'from the Coal Mine Card. On a future turn, the owning corporation may use up to 2 coal cubes '\
-            #       'to increase their train run by 1 stop for each cube. When used, cubes are removed from the game.',
+            desc: 'When any corporation runs through Coal Creek, the owning corporation receives a coal cube '\
+                  "from the Mine's supply of 12 cubes. On a future turn, the owning corporation may use up to 2 coal cubes "\
+                  'to increase their train run by 1 stop for each cube. When used, cubes are removed from the game.',
             value: 40,
             revenue: 5,
             abilities: [
-              # owning corp gets a coal cube from the coal mine card (supply of
-              # 12) when anyone runs through Coal Creek
+              {
+                type: 'base',
+                desc: 'When any corporation runs through Coal Creek, the owning corporation receives a coal cube.',
+                count: 12,
+              },
             ],
           },
           {
@@ -178,15 +180,11 @@ module Engine
           {
             sym: 'G6',
             name: 'Coal Depot (G6)',
-            desc: 'Special abilities not implemented.',
-            # desc: 'Place one coal cube on this card for every $10 paid for this company in the '\
-            #       'initial auction (rounded down). During operating rounds, the owning corporation may '\
-            #       'spend 1-2 coal cubes to add additional stops on a route, following normal route rules.',
+            desc: 'Place one coal cube on this card for every $10 paid for this company in the '\
+                  'initial auction (rounded down). During operating rounds, the owning corporation may '\
+                  'spend 1-2 coal cubes to add additional stops on a route, following normal route rules.',
             value: 10,
             revenue: 5,
-            abilities: [
-              # 1 coal cube per $10 paid (round down) during auction
-            ],
           },
         ].freeze
 
@@ -259,15 +257,11 @@ module Engine
           },
           {
             sym: 'B5',
-            name: 'Track Engineer (B5)',
-            desc: 'Special abilities not implemented.',
-            # desc: 'Every operating round, this company may treat one train as if it were +1. It may '\
-            #       'be a different train each operating round.',
+            name: 'B5 Track Engineer',
+            desc: 'Every operating round, this company may treat one train as if it were +1. It may '\
+                  'be a different train each operating round.',
             value: 60,
             revenue: 10,
-            abilities: [
-              # extend a train by 1 each OR
-            ],
           },
           {
             sym: 'B6',

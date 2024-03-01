@@ -77,6 +77,8 @@ module Engine
           'SF' => [0, 1, 3],
         }.freeze
 
+        COAL_CREEK_MINES_HEX = 'H14'
+
         ROYAL_GORGE_TOWN_HEX = 'E13'
         ROYAL_GORGE_HEXES_TO_TILES = {
           'D12' => %w[RG-A RG-D],
@@ -308,11 +310,40 @@ module Engine
 
         def event_gray_phase!; end
 
-        def company_bought(company, _buyer)
-          return unless company == sulphur_springs
-
-          company.revenue = 0
-          @updated_sulphur_springs_company_revenue = true
+        # company bought by corporation during OR
+        def company_bought(company, buyer)
+          case company
+          when sulphur_springs
+            company.revenue = 0
+            @updated_sulphur_springs_company_revenue = true
+          when track_engineer
+            active_step.setup_choices if active_step.is_a?(G18RoyalGorge::Step::Route)
+          when coal_creek_mines
+            ability = Ability::Base.new(
+              type: 'coal_mines',
+              description: 'Coal Cubes: 0',
+              count: 0,
+              remove_when_used_up: false,
+            )
+            buyer.add_ability(ability)
+            active_step.setup_choices if active_step.is_a?(G18RoyalGorge::Step::Route)
+            check_for_both_coal_companies!(buyer)
+          when coal_depot
+            company_ability = company.abilities[0]
+            num_cubes = company_ability.count
+            company_ability.use_up!
+            ability = Ability::Base.new(
+              type: 'coal_depot',
+              description: "Coal Cubes: #{num_cubes}",
+              count: num_cubes,
+              remove_when_used_up: true,
+            )
+            buyer.add_ability(ability)
+            @log << "#{buyer.name} receives #{num_cubes} Coal Cube#{num_cubes == 1 ? '' : 's'} "\
+                    "from #{company.name}"
+            active_step.setup_choices if active_step.is_a?(G18RoyalGorge::Step::Route)
+            check_for_both_coal_companies!(buyer)
+          end
         end
 
         def update_sulphur_springs_company_revenue!
@@ -803,6 +834,10 @@ module Engine
           @sulphur_springs ||= company_by_id('B2')
         end
 
+        def track_engineer
+          @track_engineer ||= company_by_id('B5')
+        end
+
         def doc_holliday
           @doc_holliday ||= company_by_id('G1')
         end
@@ -815,12 +850,20 @@ module Engine
           @hanging_bridge_lease ||= company_by_id('G3')
         end
 
+        def coal_depot
+          @coal_depot ||= company_by_id('G6')
+        end
+
         def st_cloud_hotel
           @st_cloud_hotel ||= company_by_id('Y1')
         end
 
         def ghost_town_tours
           @ghost_town_tours ||= company_by_id('Y2')
+        end
+
+        def coal_creek_mines
+          @coal_creek_mines ||= company_by_id('Y3')
         end
 
         def upgrades_to?(from, to, special = false, selected_company: nil)
@@ -932,14 +975,19 @@ module Engine
         def move_jeweler_cash!
           return unless @local_jeweler_cash.positive?
 
-          player = local_jeweler.player
+          player = local_jeweler&.player
           @log << "#{player.name} receives #{format_currency(@local_jeweler_cash)} from #{local_jeweler.name}"
           player.cash += @local_jeweler_cash
           @local_jeweler_cash = 0
         end
 
         def company_status_str(company)
-          format_currency(@local_jeweler_cash) if company == local_jeweler && company.player
+          case company
+          when local_jeweler
+            format_currency(@local_jeweler_cash) if company&.player
+          when coal_depot
+            "Coal Cubes: #{company.abilities[0].count}" if company.owner&.player?
+          end
         end
 
         def upgrades_to_correct_label?(from, to)
@@ -1017,6 +1065,48 @@ module Engine
           return false if node.tokens.include?(nil)
 
           true
+        end
+
+        def check_for_both_coal_companies!(entity)
+          return unless entity == coal_depot&.owner
+          return unless entity == coal_creek_mines&.owner
+
+          depot_ability = entity.abilities.find { |a| a.type == 'coal_depot' }
+          depot_ability.description = depot_ability.description.sub('Cubes:', 'Cubes (depot):')
+
+          mines_ability = entity.abilities.find { |a| a.type == 'coal_mines' }
+          mines_ability.description = mines_ability.description.sub('Cubes:', 'Cubes (mines):')
+        end
+
+        # company bought by player during auction
+        def after_buy_company(player, company, price)
+          return super unless company == coal_depot
+
+          num_cubes = (price / 10.0).floor
+
+          ability = Ability::Base.new(
+            type: 'base',
+            count: num_cubes,
+            remove_when_used_up: false,
+          )
+          company.add_ability(ability)
+
+          @log << "#{company.name} receives #{num_cubes} Coal Cube#{num_cubes == 1 ? '' : 's'} "\
+                  "for its winning bid of #{format_currency(price)}"
+        end
+
+        def move_coal_creek_mines_cube!(operator)
+          company = coal_creek_mines
+          corporation = company.owner
+
+          company.abilities[0].use!
+
+          ability = company.owner.abilities.find { |a| a.type == 'coal_mines' }
+          ability.add_count!(1)
+          ability.description = ability.description.sub(/\d+/, ability.count.to_s)
+
+          @log << "#{corporation.name} receives a Coal Cube from "\
+                  "#{company.name} (#{operator.name} ran through #{COAL_CREEK_MINES_HEX})"
         end
       end
     end
