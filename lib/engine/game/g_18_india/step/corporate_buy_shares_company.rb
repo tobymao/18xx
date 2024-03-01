@@ -14,20 +14,19 @@ module Engine
 
           PURCHASE_ACTIONS = [Action::CorporateBuyShares, Action::CorporateBuyCompany].freeze
 
-          # used for debugging only
+          # for debugging only
           def setup
             entity = current_entity
-            @log << 'Setup'
-            @log << "> step #{inspect}"
-            @log << "> entity: #{entity.name}"
-            @log << "> num_certs: #{@game.num_certs(entity)} / cert_limit: #{@game.cert_limit(entity)}"
-            @log << "> corporations_bought: #{@round.corporations_bought[entity]}"
+            LOGGER.debug "G18India::Step::CorporateBuySharesCompany => Setup for #{entity.name}"
+            LOGGER.debug "> num_certs: #{@game.num_certs(entity)} / cert_limit: #{@game.cert_limit(entity)}"
+            LOGGER.debug "> corporations_bought: #{@round.corporations_bought[entity]}"
           end
 
+          # for debugging only
           def debugging_log(str)
-            @log << str
-            @log << ">  Num Certs: #{@game.num_certs(current_entity)} / Cert Limit: #{@game.cert_limit(current_entity)}"
-            @log << ">  Bought?: #{bought?(current_entity)} - Last: #{last_bought(current_entity).name} "
+            LOGGER.debug (str)
+            LOGGER.debug ">  Num Certs: #{@game.num_certs(current_entity)} / Cert Limit: #{@game.cert_limit(current_entity)}"
+            LOGGER.debug ">  Bought?: #{bought?(current_entity)} - Last Bought: #{last_bought(current_entity).name} "
           end
 
           # update description
