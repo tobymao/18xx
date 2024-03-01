@@ -169,7 +169,7 @@ module Engine
             end
           end
 
-          # Added for a hook in VIEW > operating
+          # Added for a hook in View::Game::Round::Operating
           def corporate_stock_round?
             true
           end
