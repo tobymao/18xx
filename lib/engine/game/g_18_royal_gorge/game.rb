@@ -813,6 +813,10 @@ module Engine
           @st_cloud_hotel ||= company_by_id('Y1')
         end
 
+        def ghost_town_tours
+          @ghost_town_tours ||= company_by_id('Y2')
+        end
+
         def upgrades_to?(from, to, special = false, selected_company: nil)
           if special && from.hex.id == SULPHUR_SPRINGS_HEX && selected_company == sulphur_springs
             return case from.color
@@ -945,15 +949,28 @@ module Engine
           route.corporation == st_cloud_hotel&.owner && stops.any? { |s| s.hex == @st_cloud_hex }
         end
 
+        def ghost_town_bonus(route)
+          bonus = { revenue: 0, description: '' }
+          return bonus  unless route.corporation == ghost_town_tours&.owner
+
+          ghost_towns = route.all_hexes.count { |h| h.tile.icons.find { |i| i.name == 'ghost_town' } }
+
+          return bonus if ghost_towns.zero?
+
+          { revenue: 10 * ghost_towns, description: " (Ghost Town#{ghost_towns == 1 ? '' : 's'})" }
+        end
+
         def revenue_for(route, stops)
           revenue = super
           revenue += ST_CLOUD_BONUS if st_cloud_bonus?(route, stops)
+          revenue += ghost_town_bonus(route)[:revenue]
           revenue
         end
 
         def revenue_str(route)
           str = super
           str += ST_CLOUD_BONUS_STR if st_cloud_bonus?(route, route.visited_stops)
+          str += ghost_town_bonus(route)[:description]
           str
         end
       end
