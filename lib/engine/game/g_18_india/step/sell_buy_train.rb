@@ -77,7 +77,7 @@ module Engine
             super
           end
 
-          # modified from step::train to prevent automatic passing after buying
+          # modified from Step::Train to prevent automatic passing after buying
           def pass_if_cannot_buy_train?(_entity)
             false
           end
