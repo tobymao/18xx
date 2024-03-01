@@ -142,16 +142,11 @@ module Engine
           {
             sym: 'G3',
             name: 'Hanging Bridge Lease (G3)',
-            desc: 'Special abilities not implemented.',
-            # desc: 'The owning corporation may run through The Royal Gorge (D12-E13-F12) by paying a '\
-            #       '10% dividend to the Rio Grande from the proceeds. This money can either come from '\
-            #       "the charter, or the president's personal cash.",
+            desc: 'The owning corporation may run through The Royal Gorge (D12-E13-F12) by paying a '\
+                  '10% dividend to the Rio Grande from the proceeds. This money can either come from '\
+                  "the charter, or the president's personal cash.",
             value: 50,
             revenue: 10,
-            abilities: [
-              # may run route through royal gorge if 10% dividend paid to rio
-              # grande, from the corporation's cash or its president's cash
-            ],
           },
           {
             sym: 'G4',
