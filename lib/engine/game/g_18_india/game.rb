@@ -81,6 +81,8 @@ module Engine
           { name: 'IV', on: '3x2', train_limit: 2, tiles: %i[yellow green brown gray], operating_rounds: 2 },
         ].freeze
 
+        VARIABLE_CITY_HEXES = %w[A16 D3 D23 G36 K30 K40 M10 Q10 R17].freeze
+
         TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false },
                      { lay: :not_if_upgraded, upgrade: false }, { lay: :not_if_upgraded, upgrade: false }].freeze
 
@@ -592,6 +594,37 @@ module Engine
         # test using this to control laying yellow tiles from railhead
         def legal_tile_rotation?(_entity, _hex, _tile)
           true
+        end
+
+        # modify to require route begin and end at city
+        def check_other(route)
+          # @log << route.stops.first.is_a?(City).to_s
+          # true
+        end
+
+        # modify to include variable value cities
+        def revenue_for(route, stops)
+          # @log << "> Revenue For Call: Route, Stops"
+          # @log << route.to_s
+          # @log << stops.to_s
+          stops.sum { |stop| stop.route_revenue(route.phase, route.train) }
+        end
+
+        # consider for commodity bonus and route connection bonus
+        def extra_revenue(_entity, _routes)
+          0
+        end
+
+        def variable_city_revenue(route, stops)
+          # Number of Variable Cities * (Max Non Variable City - 20) * Train Multi(test if needed)
+        end
+
+        def commodity_route_bonus(route, stops)
+          # stuff
+        end
+
+        def connection_route_bonus(route, stops)
+          # stuff
         end
 
         def company_header(company)
