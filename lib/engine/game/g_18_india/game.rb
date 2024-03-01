@@ -603,7 +603,8 @@ module Engine
         end
 
         # source for "buy_company" view
-        # NOTE: needed for "selected_company" to work in view > operating.rb (line 41)
+        # NOTE: needed for "selected_company" to work, see 
+        # https://github.com/tobymao/18xx/blob/d73abfefcb920e884882407cee70c56b0780cccc/assets/app/view/game/round/operating.rb#L41
         def purchasable_companies(_entity = nil)
           bank_owned_companies + top_of_ipo_rows
         end
