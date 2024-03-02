@@ -15,7 +15,7 @@ module Engine
         include Entities
         include Map
 
-        attr_accessor :draft_deck, :ipo_pool, :available_commodities
+        attr_accessor :draft_deck, :ipo_pool, :unclaimed_commodities
 
         register_colors(brown: '#a05a2c',
                         white: '#000000',
@@ -180,7 +180,7 @@ module Engine
           @draft_finished = false
           @last_action = nil
 
-          @available_commodities = COMMODITY_NAMES.dup
+          @unclaimed_commodities = COMMODITY_NAMES.dup
 
           @log << "-- #{round_description('Hand Selection')} --"
           @log << "Select #{certs_to_keep} Certificates for your starting hand"
@@ -665,21 +665,22 @@ module Engine
         end
 
         def available_commodities(corporation)
-          @available_commodities + corporation.commodities
+          @unclaimed_commodities + corporation.commodities
         end
 
+        # TODO: Add visual indicaiton on VIEW for Corporation card for Claimed Commodities
         def claim_connession(commodities, corporation)
           return if corporation.commodities.include?(commodities.first)
 
           commodities.each do |commodity|
-            @available_commodities.delete(commodity)
+            @unclaimed_commodities.delete(commodity)
             corporation.commodities << commodity
           end
-          @log << "#{corporation.name} will claim the #{commodities} connesssion"
+          @log << "#{corporation.name} claims the #{commodities} connesssion"
         end
 
         def commodity_bonus(route, _stops)
-          visited_names = route.all_hexes.map { |hex| hex.location_name }.compact
+          visited_names = route.all_hexes.map(&:location_name).compact
           corporation = route.train.owner
           commodity_sources = visited_names & available_commodities(corporation)
           return 0 unless commodity_sources.count.positive?
@@ -696,21 +697,13 @@ module Engine
             when 'OPIUM'
               # OPIUM => LAHORE [D3] + 100
               # OPIUM => HALDIA [P19] + 100
-              if visited_names.include?('LAHORE')
-                bonus = 100
-              elsif visited_names.include?('HALDIA')
-                bonus = 100
-              end
+              bonus = 100 if visited_names.include?('LAHORE') || visited_names.include?('HALDIA')
               claim_connession(['OPIUM'], corporation) if bonus.positive?
               revenue += bonus
             when 'ORE1', 'ORE2'
               # ORE1 => KARACHI [A16] + 50
               # ORE1 => CHENNAI [K30] + 50
-              if visited_names.include?('KARACHI')
-                bonus = 50
-              elsif visited_names.include?('CHENNAI')
-                bonus = 50
-              end
+              bonus = 50 if visited_names.include?('KARACHI') || visited_names.include?('CHENNAI')
               claim_connession(%w[ORE1 ORE2], corporation) if bonus.positive?
               revenue += bonus
             when 'GOLD'
@@ -731,23 +724,17 @@ module Engine
               # SPICES => VISAKHAPATNAM [M24] + 30
               if visited_names.include?('KOCHI')
                 bonus = 70
-              elsif visited_names.include?('COLOMBO')
+              elsif visited_names.include?('COLOMBO') ||
+                    visited_names.include?('CHENNAI')
                 bonus = 50
-              elsif visited_names.include?('CHENNAI')
-                bonus = 50
-              elsif visited_names.include?('LAHORE')
+              elsif visited_names.include?('LAHORE') ||
+                    visited_names.include?('MUMBAI') ||
+                    visited_names.include?('CHINA') ||
+                    visited_names.include?('NEPAL')
                 bonus = 40
-              elsif visited_names.include?('MUMBAI')
-                bonus = 40
-              elsif visited_names.include?('CHINA')
-                bonus = 40
-              elsif visited_names.include?('NEPAL')
-                bonus = 40
-              elsif visited_names.include?('KARACHI')
-                bonus = 30
-              elsif visited_names.include?('HALDIA')
-                bonus = 30
-              elsif visited_names.include?('VISAKHAPATNAM')
+              elsif visited_names.include?('KARACHI') ||
+                    visited_names.include?('HALDIA') ||
+                    visited_names.include?('VISAKHAPATNAM')
                 bonus = 30
               end
               claim_connession(['SPICES'], corporation) if bonus.positive?
@@ -755,11 +742,7 @@ module Engine
             when 'COTTON'
               # COTTON => KARACHI [A16] + 40
               # COTTON => CHENNAI [K30] + 40
-              if visited_names.include?('KARACHI')
-                bonus = 40
-              elsif visited_names.include?('CHENNAI')
-                bonus = 40
-              end
+              bonus = 40 if visited_names.include?('KARACHI') || visited_names.include?('CHENNAI')
               claim_connession(['COTTON'], corporation) if bonus.positive?
               revenue += bonus
             when 'TEA1', 'TEA2'
@@ -770,11 +753,7 @@ module Engine
             when 'RICE'
               # RICE => CHINA [Q10] + 30
               # RICE => NEPAL [M10] + 30
-              if visited_names.include?('CHINA')
-                bonus = 30
-              elsif visited_names.include?('NEPAL')
-                bonus = 30
-              end
+              bonus = 30 if visited_names.include?('CHINA') || visited_names.include?('NEPAL')
               claim_connession(['RICE'], corporation) if bonus.positive?
               revenue += bonus
             end
