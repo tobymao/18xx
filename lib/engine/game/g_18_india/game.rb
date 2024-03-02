@@ -15,7 +15,7 @@ module Engine
         include Entities
         include Map
 
-        attr_accessor :draft_deck, :ipo_pool
+        attr_accessor :draft_deck, :ipo_pool, :available_commodities
 
         register_colors(brown: '#a05a2c',
                         white: '#000000',
@@ -83,6 +83,8 @@ module Engine
 
         VARIABLE_CITY_HEXES = %w[A16 D3 D23 G36 K30 K40 M10 Q10 R17].freeze
         VARIABLE_CITY_NAMES = %w[KARACHI LAHORE MUMBAI KOCHI CHENNAI COLOMBO NEPAL CHINA DHAKA].freeze
+
+        COMMODITY_NAMES = %w[OIL ORE1 COTTON SPICES GOLD OPIUM TEA1 ORE2 TEA2 RICE].freeze
 
         TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false },
                      { lay: :not_if_upgraded, upgrade: false }, { lay: :not_if_upgraded, upgrade: false }].freeze
@@ -177,6 +179,8 @@ module Engine
           @selection_finished = false
           @draft_finished = false
           @last_action = nil
+
+          @available_commodities = COMMODITY_NAMES
 
           @log << "-- #{round_description('Hand Selection')} --"
           @log << "Select #{certs_to_keep} Certificates for your starting hand"
@@ -611,12 +615,15 @@ module Engine
         def revenue_for(route, stops)
           stops.sum { |stop| stop.route_revenue(route.phase, route.train) } +
             variable_city_revenue(route, stops) +
-            connection_route_bonus(route, stops)
+            connection_bonus(route, stops) +
+            commodity_bonus(route, stops)
         end
 
         def revenue_str(route)
           str = route.hexes.map(&:name).join('-')
-          str += ' ?+' + variable_city_revenue(route, route.stops).to_s if variable_city_revenue(route, route.stops) > 0
+          str << ' ?+' + variable_city_revenue(route, route.stops).to_s if variable_city_revenue(route, route.stops).positive?
+          str << ' R+' + connection_bonus(route, route.stops).to_s if connection_bonus(route, route.stops).positive?
+          str << ' C+' + commodity_bonus(route, route.stops).to_s if commodity_bonus(route, route.stops).positive?
           str
         end
 
@@ -641,9 +648,9 @@ module Engine
           variable_city_stops.count * [max_non_variable_value, 0].max * train_multiplier
         end
 
-        def connection_route_bonus(route, stops)
+        def connection_bonus(route, stops)
           visited_location_names = route.visited_stops.map { |stop| stop.tile.location_name }.compact
-          LOGGER.debug "connection_route_bonus >> visited_location_names: #{visited_location_names}"
+          LOGGER.debug "connection_bonus >> visited_location_names: #{visited_location_names}"
           return 0 if visited_location_names.count < 2
 
           # Delhi, Kochi => 100 [G8, G36]
@@ -651,42 +658,48 @@ module Engine
           # Lahore, Kolkata => 80 [D3, P17]
           # Nepal, Mumbai => 70 [M10, D23]
           revenue = 0
-          revenue += 100 if visited_location_names.include?('Delhi') && visited_location_names.include?('Kochi')
-          revenue += 80 if visited_location_names.include?('Karachi') && visited_location_names.include?('Chennai')
-          revenue += 80 if visited_location_names.include?('Lahore') && visited_location_names.include?('Kolkata')
-          revenue += 70 if visited_location_names.include?('Nepal') && visited_location_names.include?('Mumbai')
+          revenue += 100 if visited_location_names.include?('DELHI') && visited_location_names.include?('KOCHI')
+          revenue += 80 if visited_location_names.include?('KARACHI') && visited_location_names.include?('CHENNAI')
+          revenue += 80 if visited_location_names.include?('LAHORE') && visited_location_names.include?('KOLKATA')
+          revenue += 70 if visited_location_names.include?('NEPAL') && visited_location_names.include?('MUMBAI')
           revenue
         end
 
-        def commodity_route_bonus(route, stops)
-          # Opium => Lahore [D3] + 100
-          # Opium => Haldia [P19] + 100
+        def commodity_bonus(route, stops)
+          visited_names = route.all_hexes.map { |hex| hex.location_name }.compact
+          commodity_sources = visited_names & COMMODITY_NAMES
+          LOGGER.debug "GAME.commodity_bonus >> visited_names: #{visited_names} - commodity_sources: #{commodity_sources}"
 
-          # Ore => Karachi [A16] + 50
-          # Ore => Chennai [K30] + 50
+          # available_commodities
+          # OPIUM => LAHORE [D3] + 100
+          # OPIUM => HALDIA [P19] + 100
 
-          # Oil => Mumbai [D23] + 30
+          # ORE1 => KARACHI [A16] + 50
+          # ORE1 => CHENNAI [K30] + 50
 
-          # Gold => Kochi [G36] + 50
+          # OIL => MUMBAI [D23] + 30
 
-          # Spices => Kochi [G36] + 70
-          # Spices => Colombo [K40] + 50
-          # Spices => Chennai [K30] + 50
-          # Spices => Lahore [D3] + 40
-          # Spices => Mumbai [D23] + 40
-          # Spices => China [Q10] + 40
-          # Spices => Nepal [M10] + 40
-          # Spices => Karachi [A16] + 30
-          # Spices => Haldia [P19] + 30
-          # Spices => Visakhapatnam [M24] + 30
+          # GOLD => KOCHI [G36] + 50
 
-          # Cotton => Karachi [A16] + 40
-          # Cotton => Chennai [K30] + 40
+          # SPICES => KOCHI [G36] + 70
+          # SPICES => COLOMBO [K40] + 50
+          # SPICES => CHENNAI [K30] + 50
+          # SPICES => LAHORE [D3] + 40
+          # SPICES => MUMBAI [D23] + 40
+          # SPICES => CHINA [Q10] + 40
+          # SPICES => NEPAL [M10] + 40
+          # SPICES => KARACHI [A16] + 30
+          # SPICES => HALDIA [P19] + 30
+          # SPICES => VISAKHAPATNAM [M24] + 30
 
-          # Tea => Visakhapatnam [M24] + 70
+          # COTTON => KARACHI [A16] + 40
+          # COTTON => CHENNAI [K30] + 40
 
-          # Rice => China [Q10] + 30
-          # Rice => Nepal [M10] + 30
+          # TEA1 => VISAKHAPATNAM [M24] + 70
+
+          # RICE => CHINA [Q10] + 30
+          # RICE => NEPAL [M10] + 30
+          0
         end
 
 

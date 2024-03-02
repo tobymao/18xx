@@ -130,6 +130,9 @@ module Engine
           'L21' => 'ORE2',
           'O12' => 'TEA2',
           'P15' => 'RICE',
+          # Commodity Destination Towns
+          'P19' => 'HALDIA'
+          'M24' => 'VISAKHAPATNAM'
         }.freeze
 
         HEXES = {
