@@ -599,8 +599,12 @@ module Engine
 
         # modify to require route begin and end at city
         def check_other(route)
-          # @log << route.stops.first.is_a?(City).to_s
-          # true
+          visited_stops = route.visited_stops
+          return if visited_stops.count < 2
+
+          valid_route = visited_stops.first.city? && visited_stops.last.city?
+          LOGGER.debug "GAME.check_other >> valid_route: #{valid_route}"
+          raise GameError, 'Route must begin and end at a city' unless valid_route
         end
 
         # modify to include variable value cities and route bonus
