@@ -249,8 +249,8 @@ module Engine
 
           # Red hexes are variable revenue cities
           red: {
-            ['A16'] => 'label=+?;city=revenue:40;path=a:4,b:_0;path=a:5,b:_0',
-            ['D3'] => 'label=+?;city=revenue:50;path=a:0,b:_0;path=a:4,b:_0;path=a:5,b:_0',
+            ['A16'] => 'city=revenue:40;path=a:4,b:_0;path=a:5,b:_0;label=+?',
+            ['D3'] => 'city=revenue:50;path=a:0,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=+?;',
             ['D23'] => 'city=revenue:60,slots:2;city=revenue:60;path=a:0,b:_0;path=a:3,b:_0;'\
                        'path=a:4,b:_1;path=a:5,b:_1;border=edge:5,type:province;label=+?',
             ['G36'] => 'city=revenue:40,slots:2;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=+?',

@@ -603,11 +603,11 @@ module Engine
           # true
         end
 
-        # modify to include variable value cities
+        # modify to include variable value cities and route bonus
         def revenue_for(route, stops)
-          revenue = stops.sum { |stop| stop.route_revenue(route.phase, route.train) }
-          revenue += variable_city_revenue(route, stops)
-          revenue
+          stops.sum { |stop| stop.route_revenue(route.phase, route.train) } +
+            variable_city_revenue(route, stops) +
+            connection_route_bonus(route, stops)
         end
 
         def revenue_str(route)
@@ -616,7 +616,7 @@ module Engine
           str
         end
 
-        # consider for commodity bonus and route connection bonus
+        # consider for commodity bonus and route connection bonus?
         def extra_revenue(_entity, _routes)
           0
         end
@@ -630,7 +630,28 @@ module Engine
           stop_location_names = stops.map { |stop| stop.tile.location_name }.compact
           variable_city_stops = stop_location_names & VARIABLE_CITY_NAMES
 
-          variable_city_stops.count * [max_non_variable_value, 0].max
+          train_multiplier = route.train.multiplier || 1
+          LOGGER.debug "variable_city_revenue >> train_multiplier: #{train_multiplier}  "\
+            "variable_city_stops: #{variable_city_stops}  max_non_variable_value: #{max_non_variable_value}"
+
+          variable_city_stops.count * [max_non_variable_value, 0].max * train_multiplier
+        end
+
+        def connection_route_bonus(route, stops)
+          visited_location_names = route.visited_stops.map { |stop| stop.tile.location_name }.compact
+          LOGGER.debug "connection_route_bonus >> visited_location_names: #{visited_location_names}"
+          return 0 if visited_location_names.count < 2
+
+          # Delhi, Kochi => 100 [G8, G36]
+          # Karachi, Chennai => 80 [A16, K30]
+          # Lahore, Kolkata => 80 [D3, P17]
+          # Nepal, Mumbai => 70 [M10, D23]
+          revenue = 0
+          revenue += 100 if visited_location_names.include?('Delhi') && visited_location_names.include?('Kochi')
+          revenue += 80 if visited_location_names.include?('Karachi') && visited_location_names.include?('Chennai')
+          revenue += 80 if visited_location_names.include?('Lahore') && visited_location_names.include?('Kolkata')
+          revenue += 70 if visited_location_names.include?('Nepal') && visited_location_names.include?('Mumbai')
+          revenue
         end
 
         def commodity_route_bonus(route, stops)
@@ -664,12 +685,6 @@ module Engine
           # Rice => Nepal [M10] + 30
         end
 
-        def connection_route_bonus(route, stops)
-          # Delhi, Kochi => 100 [G8, G36]
-          # Karachi, Chennai => 80 [A16, K30]
-          # Lahore, Kolkata => 80 [D3, P17]
-          # Nepal, Mumbai => 70 [M10, D23]
-        end
 
         def company_header(company)
           case company.type
