@@ -180,7 +180,7 @@ module Engine
           @draft_finished = false
           @last_action = nil
 
-          @available_commodities = %w[OIL ORE1 COTTON SPICES GOLD OPIUM TEA1 ORE2 TEA2 RICE]
+          @available_commodities = COMMODITY_NAMES.dup
 
           @log << "-- #{round_description('Hand Selection')} --"
           @log << "Select #{certs_to_keep} Certificates for your starting hand"
@@ -642,12 +642,12 @@ module Engine
 
           train_multiplier = route.train.multiplier || 1
           LOGGER.debug "variable_city_revenue >> train_multiplier: #{train_multiplier}  "\
-            "variable_city_stops: #{variable_city_stops}  max_non_variable_value: #{max_non_variable_value}"
+                       "variable_city_stops: #{variable_city_stops}  max_non_variable_value: #{max_non_variable_value}"
 
           variable_city_stops.count * [max_non_variable_value, 0].max * train_multiplier
         end
 
-        def connection_bonus(route, stops)
+        def connection_bonus(route, _stops)
           visited_location_names = route.visited_stops.map { |stop| stop.tile.location_name }.compact
           return 0 if visited_location_names.count < 2
 
@@ -678,7 +678,7 @@ module Engine
           @log << "#{corporation.name} will claim the #{commodities} connesssion"
         end
 
-        def commodity_bonus(route, stops)
+        def commodity_bonus(route, _stops)
           visited_names = route.all_hexes.map { |hex| hex.location_name }.compact
           corporation = route.train.owner
           commodity_sources = visited_names & available_commodities(corporation)
@@ -711,7 +711,7 @@ module Engine
               elsif visited_names.include?('CHENNAI')
                 bonus = 50
               end
-              claim_connession(['ORE1', 'ORE2'], corporation) if bonus.positive?
+              claim_connession(%w[ORE1 ORE2], corporation) if bonus.positive?
               revenue += bonus
             when 'GOLD'
               # GOLD => KOCHI [G36] + 50
@@ -765,7 +765,7 @@ module Engine
             when 'TEA1', 'TEA2'
               # TEA1 => VISAKHAPATNAM [M24] + 70
               bonus = 70 if visited_names.include?('VISAKHAPATNAM')
-              claim_connession(['TEA1', 'TEA2'], corporation) if bonus.positive?
+              claim_connession(%w[TEA1 TEA2], corporation) if bonus.positive?
               revenue += bonus
             when 'RICE'
               # RICE => CHINA [Q10] + 30
@@ -782,7 +782,6 @@ module Engine
           LOGGER.debug "GAME.commodity_bonus >> visited: #{visited_names}  sources: #{commodity_sources}  revenue: #{revenue}"
           revenue
         end
-
 
         def company_header(company)
           case company.type

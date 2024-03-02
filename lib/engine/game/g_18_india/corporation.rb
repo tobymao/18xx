@@ -4,7 +4,6 @@ module Engine
   module Game
     module G18India
       class Corporation < Engine::Corporation
-
         attr_accessor :commodities
         attr_reader :managers_share
 
