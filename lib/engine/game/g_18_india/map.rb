@@ -131,8 +131,8 @@ module Engine
           'O12' => 'TEA2',
           'P15' => 'RICE',
           # Commodity Destination Towns
-          'P19' => 'HALDIA'
-          'M24' => 'VISAKHAPATNAM'
+          'P19' => 'HALDIA',
+          'M24' => 'VISAKHAPATNAM',
         }.freeze
 
         HEXES = {

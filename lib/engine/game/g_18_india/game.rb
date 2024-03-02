@@ -180,7 +180,7 @@ module Engine
           @draft_finished = false
           @last_action = nil
 
-          @available_commodities = COMMODITY_NAMES
+          @available_commodities = %w[OIL ORE1 COTTON SPICES GOLD OPIUM TEA1 ORE2 TEA2 RICE]
 
           @log << "-- #{round_description('Hand Selection')} --"
           @log << "Select #{certs_to_keep} Certificates for your starting hand"
@@ -607,7 +607,6 @@ module Engine
           return if visited_stops.count < 2
 
           valid_route = visited_stops.first.city? && visited_stops.last.city?
-          LOGGER.debug "GAME.check_other >> valid_route: #{valid_route}"
           raise GameError, 'Route must begin and end at a city' unless valid_route
         end
 
@@ -621,9 +620,9 @@ module Engine
 
         def revenue_str(route)
           str = route.hexes.map(&:name).join('-')
-          str << ' ?+' + variable_city_revenue(route, route.stops).to_s if variable_city_revenue(route, route.stops).positive?
-          str << ' R+' + connection_bonus(route, route.stops).to_s if connection_bonus(route, route.stops).positive?
-          str << ' C+' + commodity_bonus(route, route.stops).to_s if commodity_bonus(route, route.stops).positive?
+          str += ' ?+' + variable_city_revenue(route, route.stops).to_s if variable_city_revenue(route, route.stops).positive?
+          str += ' R+' + connection_bonus(route, route.stops).to_s if connection_bonus(route, route.stops).positive?
+          str += ' C+' + commodity_bonus(route, route.stops).to_s if commodity_bonus(route, route.stops).positive?
           str
         end
 
@@ -650,9 +649,9 @@ module Engine
 
         def connection_bonus(route, stops)
           visited_location_names = route.visited_stops.map { |stop| stop.tile.location_name }.compact
-          LOGGER.debug "connection_bonus >> visited_location_names: #{visited_location_names}"
           return 0 if visited_location_names.count < 2
 
+          LOGGER.debug "connection_bonus >> visited_location_names: #{visited_location_names}"
           # Delhi, Kochi => 100 [G8, G36]
           # Karachi, Chennai => 80 [A16, K30]
           # Lahore, Kolkata => 80 [D3, P17]
@@ -665,41 +664,123 @@ module Engine
           revenue
         end
 
+        def available_commodities(corporation)
+          @available_commodities + corporation.commodities
+        end
+
+        def claim_connession(commodities, corporation)
+          return if corporation.commodities.include?(commodities.first)
+
+          commodities.each do |commodity|
+            @available_commodities.delete(commodity)
+            corporation.commodities << commodity
+          end
+          @log << "#{corporation.name} will claim the #{commodities} connesssion"
+        end
+
         def commodity_bonus(route, stops)
           visited_names = route.all_hexes.map { |hex| hex.location_name }.compact
-          commodity_sources = visited_names & COMMODITY_NAMES
-          LOGGER.debug "GAME.commodity_bonus >> visited_names: #{visited_names} - commodity_sources: #{commodity_sources}"
+          corporation = route.train.owner
+          commodity_sources = visited_names & available_commodities(corporation)
+          return 0 unless commodity_sources.count.positive?
 
-          # available_commodities
-          # OPIUM => LAHORE [D3] + 100
-          # OPIUM => HALDIA [P19] + 100
-
-          # ORE1 => KARACHI [A16] + 50
-          # ORE1 => CHENNAI [K30] + 50
-
-          # OIL => MUMBAI [D23] + 30
-
-          # GOLD => KOCHI [G36] + 50
-
-          # SPICES => KOCHI [G36] + 70
-          # SPICES => COLOMBO [K40] + 50
-          # SPICES => CHENNAI [K30] + 50
-          # SPICES => LAHORE [D3] + 40
-          # SPICES => MUMBAI [D23] + 40
-          # SPICES => CHINA [Q10] + 40
-          # SPICES => NEPAL [M10] + 40
-          # SPICES => KARACHI [A16] + 30
-          # SPICES => HALDIA [P19] + 30
-          # SPICES => VISAKHAPATNAM [M24] + 30
-
-          # COTTON => KARACHI [A16] + 40
-          # COTTON => CHENNAI [K30] + 40
-
-          # TEA1 => VISAKHAPATNAM [M24] + 70
-
-          # RICE => CHINA [Q10] + 30
-          # RICE => NEPAL [M10] + 30
-          0
+          revenue = 0
+          commodity_sources.each do |source|
+            bonus = 0
+            case source
+            when 'OIL'
+              # OIL => MUMBAI [D23] + 30
+              bonus = 30 if visited_names.include?('MUMBAI')
+              claim_connession(['OIL'], corporation) if bonus.positive?
+              revenue += bonus
+            when 'OPIUM'
+              # OPIUM => LAHORE [D3] + 100
+              # OPIUM => HALDIA [P19] + 100
+              if visited_names.include?('LAHORE')
+                bonus = 100
+              elsif visited_names.include?('HALDIA')
+                bonus = 100
+              end
+              claim_connession(['OPIUM'], corporation) if bonus.positive?
+              revenue += bonus
+            when 'ORE1', 'ORE2'
+              # ORE1 => KARACHI [A16] + 50
+              # ORE1 => CHENNAI [K30] + 50
+              if visited_names.include?('KARACHI')
+                bonus = 50
+              elsif visited_names.include?('CHENNAI')
+                bonus = 50
+              end
+              claim_connession(['ORE1', 'ORE2'], corporation) if bonus.positive?
+              revenue += bonus
+            when 'GOLD'
+              # GOLD => KOCHI [G36] + 50
+              bonus = 50 if visited_names.include?('KOCHI')
+              claim_connession(['GOLD'], corporation) if bonus.positive?
+              revenue += bonus
+            when 'SPICES'
+              # SPICES => KOCHI [G36] + 70
+              # SPICES => COLOMBO [K40] + 50
+              # SPICES => CHENNAI [K30] + 50
+              # SPICES => LAHORE [D3] + 40
+              # SPICES => MUMBAI [D23] + 40
+              # SPICES => CHINA [Q10] + 40
+              # SPICES => NEPAL [M10] + 40
+              # SPICES => KARACHI [A16] + 30
+              # SPICES => HALDIA [P19] + 30
+              # SPICES => VISAKHAPATNAM [M24] + 30
+              if visited_names.include?('KOCHI')
+                bonus = 70
+              elsif visited_names.include?('COLOMBO')
+                bonus = 50
+              elsif visited_names.include?('CHENNAI')
+                bonus = 50
+              elsif visited_names.include?('LAHORE')
+                bonus = 40
+              elsif visited_names.include?('MUMBAI')
+                bonus = 40
+              elsif visited_names.include?('CHINA')
+                bonus = 40
+              elsif visited_names.include?('NEPAL')
+                bonus = 40
+              elsif visited_names.include?('KARACHI')
+                bonus = 30
+              elsif visited_names.include?('HALDIA')
+                bonus = 30
+              elsif visited_names.include?('VISAKHAPATNAM')
+                bonus = 30
+              end
+              claim_connession(['SPICES'], corporation) if bonus.positive?
+              revenue += bonus
+            when 'COTTON'
+              # COTTON => KARACHI [A16] + 40
+              # COTTON => CHENNAI [K30] + 40
+              if visited_names.include?('KARACHI')
+                bonus = 40
+              elsif visited_names.include?('CHENNAI')
+                bonus = 40
+              end
+              claim_connession(['COTTON'], corporation) if bonus.positive?
+              revenue += bonus
+            when 'TEA1', 'TEA2'
+              # TEA1 => VISAKHAPATNAM [M24] + 70
+              bonus = 70 if visited_names.include?('VISAKHAPATNAM')
+              claim_connession(['TEA1', 'TEA2'], corporation) if bonus.positive?
+              revenue += bonus
+            when 'RICE'
+              # RICE => CHINA [Q10] + 30
+              # RICE => NEPAL [M10] + 30
+              if visited_names.include?('CHINA')
+                bonus = 30
+              elsif visited_names.include?('NEPAL')
+                bonus = 30
+              end
+              claim_connession(['RICE'], corporation) if bonus.positive?
+              revenue += bonus
+            end
+          end
+          LOGGER.debug "GAME.commodity_bonus >> visited: #{visited_names}  sources: #{commodity_sources}  revenue: #{revenue}"
+          revenue
         end
 
 
