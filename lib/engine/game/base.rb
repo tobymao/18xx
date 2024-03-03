@@ -3221,6 +3221,10 @@ module Engine
         false
       end
 
+      def map_legends
+        [:map_legend]
+      end
+
       def train_purchase_name(train)
         train.name
       end

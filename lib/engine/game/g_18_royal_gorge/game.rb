@@ -634,13 +634,49 @@ module Engine
           {
             **image_text,
             props: {
-              style: { border: '1px solid', color: 'black', backgroundColor: bg_color, cursor: 'pointer', 'user-select': 'none' },
+              style: {
+                border: '1px solid',
+                color: 'black',
+                backgroundColor: bg_color,
+                cursor: 'pointer',
+                'user-select': 'none',
+                'text-align': 'center',
+              },
               on: { click: onclick },
             },
           }
         end
 
-        def map_legend(font_color, yellow, green, brown, gray, action_processor: nil)
+        def map_legends
+          %i[gold_legend steel_legend]
+        end
+
+        def gold_legend(_font_color, yellow, green, brown, _gray, red, action_processor: nil)
+          cell_style = {
+            border: '1px solid',
+            color: 'black',
+            'font-weight': 'bold',
+            'text-align': 'center',
+            'vertical-align': 'middle',
+            width: '28px',
+            height: '33px',
+          }
+
+          cells = [
+            { text: '50', props: { style: { **cell_style, backgroundColor: yellow } } },
+            { text: '90', props: { style: { **cell_style, backgroundColor: yellow } } },
+            { text: '140', props: { style: { **cell_style, backgroundColor: green } } },
+            { text: '200', props: { style: { **cell_style, backgroundColor: green } } },
+            { text: '270', props: { style: { **cell_style, backgroundColor: brown } } },
+            { text: '350', props: { style: { **cell_style, backgroundColor: red } } },
+          ]
+          cells.take(@gold_shipped).each do |gold_cell|
+            gold_cell.delete(:text)
+            gold_cell[:image] = '/icons/18_royal_gorge/gold_cube.svg'
+            gold_cell[:image_height] = '20px'
+            gold_cell[:props][:style][:'padding-top'] = '0.3rem'
+          end
+
           [
             # table-wide props
             {
@@ -650,7 +686,29 @@ module Engine
                 borderCollapse: 'collapse',
               },
             },
-            # header
+            [
+              { text: 'Gold Market', props: { attrs: { colspan: 10 } } },
+            ],
+            cells,
+          ]
+        end
+
+        def steel_legend(font_color, yellow, green, brown, gray, _red, action_processor: nil)
+          [
+            # table-wide props
+            {
+              style: {
+                margin: '0.5rem 0 0.5rem 0',
+                border: '1px solid',
+                borderCollapse: 'collapse',
+              },
+            },
+            [
+              {
+                text: 'Steel Market',
+                props: { style: { 'text-align': 'center', 'font-weight': 'bold' }, attrs: { colspan: 10 } },
+              },
+            ],
             [
               { text: "(#{format_currency(@steel_corp.cash)})", props: { style: { border: '1px solid' } } },
               { text: 'A', props: { style: { border: '1px solid', **legend_header_style('A', :yellow, yellow) } } },
@@ -663,7 +721,6 @@ module Engine
               { text: 'H', props: { style: { border: '1px solid', **legend_header_style('H', :brown, brown) } } },
               { text: 'I', props: { style: { border: '1px solid', **legend_header_style('I', :gray, gray) } } },
             ],
-            # body
             [
               {
                 text: format_currency(40),
