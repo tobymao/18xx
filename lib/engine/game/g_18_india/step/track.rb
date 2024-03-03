@@ -7,7 +7,6 @@ module Engine
     module G18India
       module Step
         class Track < Engine::Step::Track
-
           # Bypass some Step::Tracker tests for Town to City upgrade: maintain exits, and check new exits are valid
           def legal_tile_rotation?(entity, hex, tile)
             old_tile = hex.tile
