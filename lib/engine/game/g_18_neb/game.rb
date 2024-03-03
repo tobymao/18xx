@@ -220,7 +220,7 @@ module Engine
         def stock_round
           Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
-            Engine::Step::Exchange,
+            G18Neb::Step::Exchange,
             Engine::Step::HomeToken,
             Engine::Step::SpecialTrack,
             G18Neb::Step::BuySellParShares,
