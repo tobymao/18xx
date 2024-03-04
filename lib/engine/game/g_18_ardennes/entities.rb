@@ -422,6 +422,11 @@ module Engine
           end
         end
 
+        def buyable_bank_owned_companies
+          # Do not show the GL after a corporation grows up.
+          @round.is_a?(Round::Operating) ? [] : super
+        end
+
         private
 
         # Creates a concession company for each major corporations

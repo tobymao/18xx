@@ -111,6 +111,8 @@ module Engine
         def operating_round(round_num)
           Round::Operating.new(self, [
             Engine::Step::Bankrupt,
+            G18Ardennes::Step::Convert,
+            G18Ardennes::Step::PostConversionShares,
             G18Ardennes::Step::Track,
             G18Ardennes::Step::Token,
             G18Ardennes::Step::CollectForts,
@@ -139,6 +141,24 @@ module Engine
         # minors for shares) they don't have to sell back down.
         def can_hold_above_corp_limit?(_entity)
           true
+        end
+
+        def convert!(corporation)
+          corporation.type = :'10-share'
+
+          # Existing shares change from 20% to 10%.
+          @_shares.values
+                  .select { |share| share.corporation == corporation }
+                  .each { |share| share.percent = 10 }
+          corporation.share_holders.transform_values! { |percent| percent / 2 }
+
+          # Five new 10% shares are added to the corporation treasury.
+          (5..9).each do |i|
+            share = Share.new(corporation, percent: 10, index: i)
+            corporation.shares_by_corporation[corporation] << share
+            corporation.share_holders[corporation] += share.percent
+            @_shares[share.id] = share
+          end
         end
       end
     end
