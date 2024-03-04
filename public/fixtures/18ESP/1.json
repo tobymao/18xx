@@ -14189,7 +14189,7 @@
   },
   "created_at": "2024-02-19",
   "loaded": true,
-  "result": {"0":8074, "1":6772, "2":6777, "3":5990},
+  "result": {"0":8074, "1":6772, "2":6486, "3":5990},
   "manually_ended": false,
   "turn": 7,
   "round": "Operating Round",
