@@ -130,6 +130,7 @@ module Engine
           find_train(trains, '4')[:num] = 2
           find_train(trains, '5')[:num] = 2
           find_train(trains, '6')[:num] = 1
+          find_train(trains, '8')[:num] = 10
           trains
         end
 
