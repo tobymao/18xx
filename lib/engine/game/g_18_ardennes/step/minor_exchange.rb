@@ -4,7 +4,6 @@ module Engine
   module Game
     module G18Ardennes
       module Step
-        # Code shared between Step::BuySellParSharesCompanies and Step::Convert.
         module MinorExchange
           private
 

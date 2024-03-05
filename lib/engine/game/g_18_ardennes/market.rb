@@ -20,6 +20,10 @@ module Engine
           repar: 'Minor companies cannot merge'
         )
         MARKET = [%w[0r 50x 55x 60x 70x 80x 90x 100 110 120 140z 160z 180z 200z 220z 240 260 280 300 320 340 360 380 400]].freeze
+
+        def ipo_name(_entity)
+          'Treasury'
+        end
       end
     end
   end

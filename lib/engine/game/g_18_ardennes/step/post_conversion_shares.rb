@@ -13,7 +13,7 @@ module Engine
           def actions(entity)
             return [] unless @round.converted
             return [] unless entity == current_entity
-            return [] unless can_buy?(entity)
+            return [] unless can_acquire?(entity)
 
             ACTIONS
           end
@@ -29,7 +29,7 @@ module Engine
           end
 
           def visible_corporations
-            [corporation]
+            [corporation] + connected_minors
           end
 
           def process_buy_shares(action)
@@ -40,13 +40,40 @@ module Engine
             @round.converted = nil
           end
 
+          def skip!
+            @round.converted = nil
+          end
+
           private
 
-          def can_buy?(player)
+          # Can the company director acquire any additional shares?
+          # This can either be by paying cash or exchanging a minor company.
+          def can_acquire?(player)
             return false if corporation.num_treasury_shares.zero? &&
                             corporation.num_market_shares.zero?
 
+            can_buy?(player) || can_exchange?(player)
+          end
+
+          # Checks whether a player can afford to buy a share in the corporation
+          # that has just been converted.
+          def can_buy?(player)
             player.cash >= corporation.share_price.price
+          end
+
+          # Checks whether a player can afford to exchange one of their minors
+          # for a share in the corporation that has just been converted.
+          # **Note** This does not check whether there is a track connection
+          # between the minor and the major, which is required to carry out the
+          # exchange. This is not checked to avoid having to recalculate the
+          # game graph whilst a game is being loaded.
+          def can_exchange?(player)
+            @game.minor_corporations.any? do |minor|
+              next false unless minor.owner == player
+
+              (minor.share_price.price * 2) + player.cash >=
+                corporation.share_price.price
+            end
           end
 
           def corporation
@@ -55,6 +82,12 @@ module Engine
 
           def president
             corporation&.owner
+          end
+
+          def connected_minors
+            # TODO: check there is a track connection to the major corporation.
+            # Or will that require calculating the game graph on game load?
+            @game.minor_corporations.select { |minor| minor.owner == president }
           end
         end
       end

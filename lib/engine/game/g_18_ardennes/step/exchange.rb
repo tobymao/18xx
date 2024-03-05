@@ -23,6 +23,8 @@ module Engine
           end
 
           def bought?
+            return false unless @round.is_a?(Round::Stock)
+
             @round.current_actions.any? do |action|
               Engine::Step::BuySellParShares::PURCHASE_ACTIONS.include?(action.class)
             end
@@ -44,7 +46,7 @@ module Engine
             @round.minor = action.entity
             @round.major = action.bundle.shares.first.corporation
             exchange_minor(action.entity, action.bundle, true)
-            @round.current_actions << action
+            @round.current_actions << action if @round.is_a?(Round::Stock)
           end
         end
       end

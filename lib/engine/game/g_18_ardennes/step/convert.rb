@@ -34,6 +34,8 @@ module Engine
             @round.converted = corporation
             @game.convert!(corporation)
           end
+
+          def log_skip(_entity); end
         end
       end
     end
