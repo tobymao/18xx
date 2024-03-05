@@ -6,7 +6,8 @@ module Engine
   module Step
     module ShareBuying
       def buy_shares(entity, shares, exchange: nil, exchange_price: nil, swap: nil,
-                     allow_president_change: true, borrow_from: nil, silent: nil)
+                     allow_president_change: true, borrow_from: nil, silent: nil,
+                     discounter: nil)
         check_legal_buy(entity,
                         shares,
                         exchange: exchange,
@@ -20,7 +21,8 @@ module Engine
                                     swap: swap,
                                     borrow_from: borrow_from,
                                     allow_president_change: allow_president_change,
-                                    silent: silent)
+                                    silent: silent,
+                                    discounter: discounter)
 
         maybe_place_home_token(shares.corporation)
       end

@@ -72,7 +72,8 @@ module Engine
             entity.corporation? && entity == @parred&.corporation
           end
 
-          def buy_shares(entity, shares, exchange: nil, swap: nil, allow_president_change: true, borrow_from: nil)
+          def buy_shares(entity, shares, exchange: nil, swap: nil, allow_president_change: true, borrow_from: nil,
+                         discounter: nil)
             # Pres 5_10 5_10 5_10 10_10!
             # 0    1    2    3    4
             # if shares.to_bundle.shares.find { |s| s.index == 4}
