@@ -416,15 +416,15 @@ module Engine
             abilities: [
               {
                 type: 'base',
-                description: 'Gold Market Dividends',
-                desc_detail: 'When gold is shipped from the map, it is added to the Gold Market, '\
+                description: 'Gold Dividend',
+                desc_detail: 'When gold is shipped from the map, it is added to the Gold Dividend table, '\
                              'covering the lowest available slot. At the end of each OR set, VGC '\
                              'pays the amount of the lowest uncovered slot as dividends to '\
                              'shareholders. That amount is also tracked here as VGC\'s cash.',
               },
               {
                 type: 'base',
-                description: 'Gold Market Slots',
+                description: 'Gold Slots',
                 desc_detail: 'Yellow: 50, 90. Green: 140, 200. Brown: 270. Red: 350. Availability '\
                              'for filling slots is determined by the current phase.',
               },

@@ -687,7 +687,7 @@ module Engine
               },
             },
             [
-              { text: 'Gold Market', props: { attrs: { colspan: 10 } } },
+              { text: 'Gold Dividend', props: { attrs: { colspan: 10 } } },
             ],
             cells,
           ]
