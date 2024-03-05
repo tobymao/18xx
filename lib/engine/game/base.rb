@@ -145,6 +145,7 @@ module Engine
       # many remain?
       CERT_LIMIT_COUNTS_BANKRUPTED = false
 
+      # boolean or a Set<String> of corporation IDs
       PRESIDENT_SALES_TO_MARKET = false
 
       MULTIPLE_BUY_TYPES = %i[multiple_buy].freeze
@@ -1121,8 +1122,19 @@ module Engine
         max_bundle&.price || 0
       end
 
+      def president_sales_to_market?(corporation)
+        case self.class::PRESIDENT_SALES_TO_MARKET
+        when true
+          true
+        when Set
+          self.class::PRESIDENT_SALES_TO_MARKET.include?(corporation.id)
+        else
+          false
+        end
+      end
+
       def value_for_dumpable(player, corporation)
-        return value_for_sellable(player, corporation) if self.class::PRESIDENT_SALES_TO_MARKET
+        return value_for_sellable(player, corporation) if president_sales_to_market?(corporation)
 
         max_bundle = bundles_for_corporation(player, corporation)
           .select { |bundle| bundle.can_dump?(player) && @share_pool&.fit_in_bank?(bundle) }
