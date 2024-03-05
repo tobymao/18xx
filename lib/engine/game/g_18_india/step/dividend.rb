@@ -32,7 +32,8 @@ module Engine
             revenue = total_revenue
             kind = action.kind.to_sym
             payout = dividend_options(entity)[kind]
-            @log << "Revenue: #{revenue} payout: #{payout.to_h} Guaranty pay: #{guaranty_pay(entity)}"
+            LOGGER.debug 'Step::Dividend >> process_dividend'
+            LOGGER.debug ">  Revenue: #{revenue} payout: #{payout.to_h} Guaranty pay: #{guaranty_pay(entity)}"
             super
           end
 

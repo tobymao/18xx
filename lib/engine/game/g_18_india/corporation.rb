@@ -4,10 +4,12 @@ module Engine
   module Game
     module G18India
       class Corporation < Engine::Corporation
+        attr_accessor :commodities
         attr_reader :managers_share
 
         def initialize(sym:, name:, **opts)
           super
+          @commodities = []
 
           # Create Manager's Share (a 0% share that is used to track current manager, can not be sold)
           @managers_share = Share.new(self, owner: @ipo_owner, president: true, percent: 0, index: 'M', cert_size: 0)

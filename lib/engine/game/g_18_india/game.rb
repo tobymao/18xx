@@ -15,7 +15,7 @@ module Engine
         include Entities
         include Map
 
-        attr_accessor :draft_deck, :ipo_pool
+        attr_accessor :draft_deck, :ipo_pool, :unclaimed_commodities
 
         register_colors(brown: '#a05a2c',
                         white: '#000000',
@@ -80,6 +80,11 @@ module Engine
           { name: 'III', on: '4', train_limit: 2, tiles: %i[yellow green brown gray], operating_rounds: 2 },
           { name: 'IV', on: '3x2', train_limit: 2, tiles: %i[yellow green brown gray], operating_rounds: 2 },
         ].freeze
+
+        VARIABLE_CITY_HEXES = %w[A16 D3 D23 G36 K30 K40 M10 Q10 R17].freeze
+        VARIABLE_CITY_NAMES = %w[KARACHI LAHORE MUMBAI KOCHI CHENNAI COLOMBO NEPAL CHINA DHAKA].freeze
+
+        COMMODITY_NAMES = %w[OIL ORE1 COTTON SPICES GOLD OPIUM TEA1 ORE2 TEA2 RICE].freeze
 
         TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false },
                      { lay: :not_if_upgraded, upgrade: false }, { lay: :not_if_upgraded, upgrade: false }].freeze
@@ -174,6 +179,8 @@ module Engine
           @selection_finished = false
           @draft_finished = false
           @last_action = nil
+
+          @unclaimed_commodities = COMMODITY_NAMES.dup
 
           @log << "-- #{round_description('Hand Selection')} --"
           @log << "Select #{certs_to_keep} Certificates for your starting hand"
@@ -619,6 +626,167 @@ module Engine
         # test using this to control laying yellow tiles from railhead
         def legal_tile_rotation?(_entity, _hex, _tile)
           true
+        end
+
+        # modify to require route begin and end at city
+        def check_other(route)
+          visited_stops = route.visited_stops
+          return if visited_stops.count < 2
+
+          valid_route = visited_stops.first.city? && visited_stops.last.city?
+          raise GameError, 'Route must begin and end at a city' unless valid_route
+        end
+
+        # modify to include variable value cities and route bonus
+        def revenue_for(route, stops)
+          stops.sum { |stop| stop.route_revenue(route.phase, route.train) } +
+            variable_city_revenue(route, stops) +
+            connection_bonus(route, stops) +
+            commodity_bonus(route, stops)
+        end
+
+        def revenue_str(route)
+          str = route.hexes.map(&:name).join('-')
+          str += ' ?+' + variable_city_revenue(route, route.stops).to_s if variable_city_revenue(route, route.stops).positive?
+          str += ' R+' + connection_bonus(route, route.stops).to_s if connection_bonus(route, route.stops).positive?
+          str += ' C+' + commodity_bonus(route, route.stops).to_s if commodity_bonus(route, route.stops).positive?
+          str
+        end
+
+        # consider for commodity bonus and route connection bonus?
+        def extra_revenue(_entity, _routes)
+          0
+        end
+
+        # calculate addional revenue if non-variable city base value > 20
+        def variable_city_revenue(route, stops)
+          non_variable_stops = route.visited_stops.reject { |stop| stop.tile.color == 'red' }
+          return 0 if non_variable_stops.empty?
+
+          max_non_variable_value = non_variable_stops.map { |e| e.revenue_to_render - 20 }.max
+          stop_location_names = stops.map { |stop| stop.tile.location_name }.compact
+          variable_city_stops = stop_location_names & VARIABLE_CITY_NAMES
+
+          train_multiplier = route.train.multiplier || 1
+          LOGGER.debug "variable_city_revenue >> train_multiplier: #{train_multiplier}  "\
+                       "variable_city_stops: #{variable_city_stops}  max_non_variable_value: #{max_non_variable_value}"
+
+          variable_city_stops.count * [max_non_variable_value, 0].max * train_multiplier
+        end
+
+        def connection_bonus(route, _stops)
+          visited_location_names = route.visited_stops.map { |stop| stop.tile.location_name }.compact
+          return 0 if visited_location_names.count < 2
+
+          LOGGER.debug "connection_bonus >> visited_location_names: #{visited_location_names}"
+          # Delhi, Kochi => 100 [G8, G36]
+          # Karachi, Chennai => 80 [A16, K30]
+          # Lahore, Kolkata => 80 [D3, P17]
+          # Nepal, Mumbai => 70 [M10, D23]
+          revenue = 0
+          revenue += 100 if visited_location_names.include?('DELHI') && visited_location_names.include?('KOCHI')
+          revenue += 80 if visited_location_names.include?('KARACHI') && visited_location_names.include?('CHENNAI')
+          revenue += 80 if visited_location_names.include?('LAHORE') && visited_location_names.include?('KOLKATA')
+          revenue += 70 if visited_location_names.include?('NEPAL') && visited_location_names.include?('MUMBAI')
+          revenue
+        end
+
+        def available_commodities(corporation)
+          @unclaimed_commodities + corporation.commodities
+        end
+
+        # TODO: Add visual indicaiton on VIEW for Corporation card for Claimed Commodities
+        def claim_concession(commodities, corporation)
+          return if corporation.commodities.include?(commodities.first)
+
+          commodities.each do |commodity|
+            @unclaimed_commodities.delete(commodity)
+            corporation.commodities << commodity
+          end
+          @log << "#{corporation.name} claims the #{commodities} concession"
+        end
+
+        def commodity_bonus(route, _stops)
+          visited_names = route.all_hexes.map(&:location_name).compact
+          corporation = route.train.owner
+          commodity_sources = visited_names & available_commodities(corporation)
+          return 0 unless commodity_sources.count.positive?
+
+          revenue = 0
+          commodity_sources.each do |source|
+            bonus = 0
+            case source
+            when 'OIL'
+              # OIL => MUMBAI [D23] + 30
+              bonus = 30 if visited_names.include?('MUMBAI')
+              claim_concession(['OIL'], corporation) if bonus.positive?
+              revenue += bonus
+            when 'OPIUM'
+              # OPIUM => LAHORE [D3] + 100
+              # OPIUM => HALDIA [P19] + 100
+              bonus = 100 if visited_names.include?('LAHORE') || visited_names.include?('HALDIA')
+              claim_concession(['OPIUM'], corporation) if bonus.positive?
+              revenue += bonus
+            when 'ORE1', 'ORE2'
+              # ORE1 => KARACHI [A16] + 50
+              # ORE1 => CHENNAI [K30] + 50
+              bonus = 50 if visited_names.include?('KARACHI') || visited_names.include?('CHENNAI')
+              claim_concession(%w[ORE1 ORE2], corporation) if bonus.positive?
+              revenue += bonus
+            when 'GOLD'
+              # GOLD => KOCHI [G36] + 50
+              bonus = 50 if visited_names.include?('KOCHI')
+              claim_concession(['GOLD'], corporation) if bonus.positive?
+              revenue += bonus
+            when 'SPICES'
+              # SPICES => KOCHI [G36] + 70
+              # SPICES => COLOMBO [K40] + 50
+              # SPICES => CHENNAI [K30] + 50
+              # SPICES => LAHORE [D3] + 40
+              # SPICES => MUMBAI [D23] + 40
+              # SPICES => CHINA [Q10] + 40
+              # SPICES => NEPAL [M10] + 40
+              # SPICES => KARACHI [A16] + 30
+              # SPICES => HALDIA [P19] + 30
+              # SPICES => VISAKHAPATNAM [M24] + 30
+              if visited_names.include?('KOCHI')
+                bonus = 70
+              elsif visited_names.include?('COLOMBO') ||
+                    visited_names.include?('CHENNAI')
+                bonus = 50
+              elsif visited_names.include?('LAHORE') ||
+                    visited_names.include?('MUMBAI') ||
+                    visited_names.include?('CHINA') ||
+                    visited_names.include?('NEPAL')
+                bonus = 40
+              elsif visited_names.include?('KARACHI') ||
+                    visited_names.include?('HALDIA') ||
+                    visited_names.include?('VISAKHAPATNAM')
+                bonus = 30
+              end
+              claim_concession(['SPICES'], corporation) if bonus.positive?
+              revenue += bonus
+            when 'COTTON'
+              # COTTON => KARACHI [A16] + 40
+              # COTTON => CHENNAI [K30] + 40
+              bonus = 40 if visited_names.include?('KARACHI') || visited_names.include?('CHENNAI')
+              claim_concession(['COTTON'], corporation) if bonus.positive?
+              revenue += bonus
+            when 'TEA1', 'TEA2'
+              # TEA1 => VISAKHAPATNAM [M24] + 70
+              bonus = 70 if visited_names.include?('VISAKHAPATNAM')
+              claim_concession(%w[TEA1 TEA2], corporation) if bonus.positive?
+              revenue += bonus
+            when 'RICE'
+              # RICE => CHINA [Q10] + 30
+              # RICE => NEPAL [M10] + 30
+              bonus = 30 if visited_names.include?('CHINA') || visited_names.include?('NEPAL')
+              claim_concession(['RICE'], corporation) if bonus.positive?
+              revenue += bonus
+            end
+          end
+          LOGGER.debug "GAME.commodity_bonus >> visited: #{visited_names}  sources: #{commodity_sources}  revenue: #{revenue}"
+          revenue
         end
 
         # Sell Train to the Depot
