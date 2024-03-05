@@ -65,6 +65,8 @@ module Engine
           'Silver' => 5,
         }.freeze
 
+        PRESIDENT_SALES_TO_MARKET = Set['CF&I', 'VGC'].freeze
+
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
           green_phase: ['Green Phase Begins'],
           brown_phase: ['Brown Phase Begins'],
@@ -1001,6 +1003,10 @@ module Engine
 
           @log << '-- Event: Endgame triggered --'
           @endgame_triggered = true
+        end
+
+        def init_share_pool
+          SharePool.new(self, allow_president_sale: self.class::PRESIDENT_SALES_TO_MARKET, no_rebundle_president_buy: true)
         end
 
         def init_stock_market
