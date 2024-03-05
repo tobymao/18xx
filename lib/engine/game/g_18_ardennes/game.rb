@@ -27,6 +27,9 @@ module Engine
         # the major corporations and the values are the minor corporations.
         attr_accessor :pledged_minors
 
+        # Dummy corporations used for managing neutral tokens.
+        attr_accessor :mine_corp, :port_corp
+
         MIN_BID_INCREMENT = 5
         MUST_BID_INCREMENT_MULTIPLE = true
         COMPANY_SALE_FEE = 0 # Fee for selling Guillaume-Luxembourg to the bank.
@@ -40,6 +43,9 @@ module Engine
         MUST_BUY_TRAIN = :always # Just for majors, minors are handled in #must_buy_train?
         BANKRUPTCY_ALLOWED = true
         BANKRUPTCY_ENDS_GAME_AFTER = :all_but_one
+
+        # The maximum number of tokens a major can have on the map.
+        LIMIT_TOKENS_AFTER_MERGER = 6
 
         def setup
           super
@@ -93,9 +99,11 @@ module Engine
 
         def stock_round
           Round::Stock.new(self, [
+            G18Ardennes::Step::Exchange,
+            G18Ardennes::Step::DeclineTokens,
+            G18Ardennes::Step::DeclineTrains,
             Engine::Step::DiscardTrain,
-            Engine::Step::Exchange,
-            Engine::Step::SpecialTrack,
+            G18Ardennes::Step::DeclineForts,
             G18Ardennes::Step::BuySellParSharesCompanies,
           ])
         end
