@@ -40,6 +40,7 @@ module Engine
 
             # next the president sells all normally allowed shares
             player.shares_by_corporation(sorted: true).each do |corporation, _|
+              next if corporation == corp
               next unless corporation.share_price # if a corporation has not parred
               next unless (bundle = @game.sellable_bundles(player, corporation).max_by(&:price))
 
@@ -49,6 +50,7 @@ module Engine
             # finally, the president sells all their shares, regardless of 50% and
             # presidency restrictions, not changing any share prices
             player.shares_by_corporation(sorted: true).each do |corporation, shares|
+              next if corporation == corp
               next unless corporation.share_price # if a corporation has not parred
               next if shares.empty?
 
@@ -70,14 +72,16 @@ module Engine
               .select { |minor| minor.owner == player }
               .each { |minor| @game.close_corporation(minor, quiet: true) }
 
+            # close/restart target corp
+            @game.close_corporation(corp)
+
             if player.companies.any?
               @log << "#{player.name}'s companies close: #{player.companies.map(&:sym).join(', ')}"
               player.companies.dup.each(&:close!)
             end
 
-            @log << "#{@game.format_currency(player.cash)} is transferred from "\
-                    "#{player.name} to #{corp.name}"
-            player.spend(player.cash, corp) if player.cash.positive?
+            # player cash is moved to bank
+            player.spend(player.cash, @game.bank) if player.cash.positive?
 
             @game.corporations.dup.each do |corporation|
               @game.close_corporation(corporation) if corporation.share_price&.type == :close
