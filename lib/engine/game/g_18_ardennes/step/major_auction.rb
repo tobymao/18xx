@@ -27,7 +27,7 @@ module Engine
           def setup
             setup_auction
             @concessions = @game.companies.select do |company|
-              company.type == :concession && company.owner.nil?
+              company.type == :concession && company.owner.nil? && !company.closed?
             end
             # Hash showing which minors can be used to start a public company.
             # The public companies are the has keys, each value is an array of
