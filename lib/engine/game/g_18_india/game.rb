@@ -676,7 +676,7 @@ module Engine
             @unclaimed_commodities.delete(commodity)
             corporation.commodities << commodity
           end
-          @log << "#{corporation.name} claims the #{commodities} connesssion"
+          @log << "#{corporation.name} claims the #{commodities} concession"
         end
 
         def commodity_bonus(route, _stops)
