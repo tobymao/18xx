@@ -61,7 +61,7 @@ module View
           left << h(Choose) if @current_actions.include?('choose')
           left << h(BuyToken, entity: entity) if @current_actions.include?('buy_token')
 
-          if @current_actions.include?('buy_train')
+          if @current_actions.include?('buy_train') || @current_actions.include?('sell_train')
             left << h(IssueShares) if @current_actions.include?('sell_shares') || @current_actions.include?('buy_shares')
             left << h(BuyTrains)
           elsif @current_actions.include?('buy_power')

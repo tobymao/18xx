@@ -413,13 +413,14 @@ module Engine
           Engine::Round::Operating.new(self, [
             Engine::Step::Exchange,
             Engine::Step::HomeToken,
-            Engine::Step::Track,
+            G18India::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
             G18India::Step::Dividend,
-            Engine::Step::BuyTrain,
+            G18India::Step::SellBuyTrain,
             G18India::Step::CorporateSellSharesCompany,
             G18India::Step::CorporateBuySharesCompany,
+
           ], round_num: round_num)
         end
 
@@ -586,10 +587,37 @@ module Engine
           hexes
         end
 
-        # Modifed to place share price marker on Market Chart
+        # Modified to place share price marker on Market Chart
         def float_corporation(corporation)
           @log << "#{corporation.name} floats. Share price marker placed at #{corporation.share_price.price}"
           corporation.share_price.corporations << corporation
+        end
+
+        # Modified to allow yellow towns to be upgraded to SINGLE slot city green tiles
+        # > Also modified legal_tile_rotation in STEP::Track or STEP::Tracker
+        # Modified do prevent yellow cities upgrading to SINGLE slot city green tiles
+        def upgrades_to?(from, to, special = false, selected_company: nil)
+          return true if yellow_town_to_city_upgrade?(from, to)
+          return false if yellow_city_upgrade_is_single_slot_green?(from, to)
+
+          super
+        end
+
+        def yellow_town_to_city_upgrade?(from, to)
+          case from.name
+          when '3'
+            %w[12 206 205].include?(to.name)
+          when '4'
+            %w[206 205].include?(to.name)
+          when '58'
+            %w[13 12 206 205].include?(to.name)
+          else
+            false
+          end
+        end
+
+        def yellow_city_upgrade_is_single_slot_green?(from, to)
+          %w[5 6 57].include?(from.name) && %w[12 13 205 206].include?(to.name)
         end
 
         # test using this to control laying yellow tiles from railhead
@@ -613,6 +641,24 @@ module Engine
           (@players + @corporations).flat_map do |entity|
             entity.companies.select { |c| c.revenue.positive? && !ignore.include?(c.id) }
           end
+          
+        # Sell Train to the Depot
+        def sell_train(operator, train, price)
+          @bank.spend(price, operator) if price.positive?
+          @depot.reclaim_train(train)
+        end
+
+        def after_end_of_operating_turn(operator)
+          return unless operator.corporation?
+
+          drop_price_for_trainless_corp(operator) if operator.trains.empty?
+        end
+
+        def drop_price_for_trainless_corp(corporation)
+          old_price = corporation.share_price
+          @log << "#{corporation.name} is trainless"
+          @stock_market.move_left(corporation)
+          log_share_price(corporation, old_price)
         end
 
         def company_header(company)
