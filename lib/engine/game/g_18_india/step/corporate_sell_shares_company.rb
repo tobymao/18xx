@@ -12,7 +12,6 @@ module Engine
         class CorporateSellSharesCompany < Engine::Step::CorporateSellShares
           include Engine::Step::ShareBuying
 
-          # update description
           def description
             'Corporate Sell Certificates to Market'
           end
@@ -73,8 +72,9 @@ module Engine
           # ----- Sell Shares -----
 
           # There are no restrictions on sales. Any amount can be sold to market
-          def can_sell?(_entity, bundle)
+          def can_sell?(entity, bundle)
             return unless bundle
+            return false if entity != bundle.owner
 
             true
           end
@@ -84,12 +84,12 @@ module Engine
             @game.sell_shares_and_change_price(action.bundle, swap: action.swap)
           end
 
-          # Source for items in VIEW > CorporateSellShares, removed restrictions on sales
+          # Source for items in View::Game::CorporateSellShares, removed restrictions on sales
           def source_list(entity)
             entity.corporate_shares.map(&:corporation).compact.uniq
           end
 
-          # Added for a hook in VIEW > operating
+          # Added for a hook in View::Game::Round::Operating
           def corporate_stock_round?
             true
           end

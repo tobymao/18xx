@@ -481,6 +481,16 @@ module Engine
 
           send("map_#{map_name}_or_round_finished")
         end
+
+        def close_corporation(corporation, quiet: false)
+          super
+
+          corporation = reset_corporation(corporation)
+          hex_by_id(corporation.coordinates).tile.add_reservation!(corporation, corporation.city)
+          @corporations << corporation
+
+          @log << "#{corporation.name} is now available to start"
+        end
       end
     end
   end

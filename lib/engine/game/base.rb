@@ -938,6 +938,9 @@ module Engine
         end
       end
 
+      # hook from Engine::Round::Operating before next_entity!
+      def after_end_of_operating_turn(_operator); end
+
       def next_turn!
         return if @turn_start_action_id == current_action_id
 
@@ -1517,8 +1520,12 @@ module Engine
         end
       end
 
+      def companies_to_payout(ignore: [])
+        @companies.select { |c| c.owner && c.revenue.positive? && !ignore.include?(c.id) }
+      end
+
       def payout_companies(ignore: [])
-        companies = @companies.select { |c| c.owner && c.revenue.positive? && !ignore.include?(c.id) }
+        companies = companies_to_payout(ignore: ignore)
 
         companies.sort_by! do |company|
           [

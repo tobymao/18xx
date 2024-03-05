@@ -14,23 +14,21 @@ module Engine
 
           PURCHASE_ACTIONS = [Action::CorporateBuyShares, Action::CorporateBuyCompany].freeze
 
-          # used for debugging only
+          # for debugging only
           def setup
             entity = current_entity
-            @log << 'Setup'
-            @log << "> step #{inspect}"
-            @log << "> entity: #{entity.name}"
-            @log << "> num_certs: #{@game.num_certs(entity)} / cert_limit: #{@game.cert_limit(entity)}"
-            @log << "> corporations_bought: #{@round.corporations_bought[entity]}"
+            LOGGER.debug "G18India::Step::CorporateBuySharesCompany => Setup for #{entity.name}"
+            LOGGER.debug "> num_certs: #{@game.num_certs(entity)} / cert_limit: #{@game.cert_limit(entity)}"
+            LOGGER.debug "> corporations_bought: #{@round.corporations_bought[entity]}"
           end
 
+          # for debugging only
           def debugging_log(str)
-            @log << str
-            @log << ">  Num Certs: #{@game.num_certs(current_entity)} / Cert Limit: #{@game.cert_limit(current_entity)}"
-            @log << ">  Bought?: #{bought?(current_entity)} - Last: #{last_bought(current_entity).name} "
+            LOGGER.debug(str)
+            LOGGER.debug ">  Num Certs: #{@game.num_certs(current_entity)} / Cert Limit: #{@game.cert_limit(current_entity)}"
+            LOGGER.debug ">  Bought?: #{bought?(current_entity)} - Last Bought: #{last_bought(current_entity).name} "
           end
 
-          # update description
           def description
             'Corporate Purchase Certificates from IPO or Market'
           end
@@ -64,11 +62,8 @@ module Engine
           def buyable_companies(entity)
             return [] unless entity.corporation?
 
-            companies = []
-            companies += @game.bank_owned_companies.select { |c| can_buy_comp_from_market?(entity, c) }
-            companies += @game.top_of_ipo_rows.select { |c| can_buy_comp_from_ipo?(entity, c) }
-
-            companies
+            @game.bank_owned_companies.select { |c| can_buy_comp_from_market?(entity, c) } +
+              @game.top_of_ipo_rows.select { |c| can_buy_comp_from_ipo?(entity, c) }
           end
 
           def can_buy_comp_from_market?(entity, company)
@@ -101,7 +96,6 @@ module Engine
             company = action.company
             price = action.price
             owner = company.owner
-            what = company.type == :share ? "a share of #{company.name}" : "Private #{company.name}"
 
             raise GameError, "Cannot buy #{company.name} from #{owner.name}" if owner&.corporation? || owner&.player?
 
@@ -113,7 +107,9 @@ module Engine
               location = 'the Bank'
               @game.bank.companies.delete(company)
             end
-            @log << "#{current_entity.name} buys #{what} from #{location} for #{@game.format_currency(price)}"
+
+            item_purchased = company.type == :share ? "a share of #{company.name}" : "Private #{company.name}"
+            @log << "#{current_entity.name} buys #{item_purchased} from #{location} for #{@game.format_currency(price)}"
 
             case company.type
             when :share
@@ -155,11 +151,8 @@ module Engine
             entity.cash >= bundle.price
           end
 
-          # modified for debugging info
           def process_corporate_buy_shares(action)
-            buy_shares(action.entity, action.bundle)
-            @round.corporations_bought[action.entity] << action.bundle.corporation
-            pass! unless can_buy_any?(action.entity)
+            super
             debugging_log('Process > Corporate Buy Shares')
           end
 
@@ -172,7 +165,7 @@ module Engine
             end
           end
 
-          # Added for a hook in VIEW > operating
+          # Added for a hook in View::Game::Round::Operating
           def corporate_stock_round?
             true
           end
