@@ -26,6 +26,22 @@ module Engine
     def up(corporation, coordinates)
       raise NotImplementedError
     end
+
+    def down_left_hex(_corporation, coordinates)
+      raise NotImplementedError
+    end
+
+    def up_left_hex(_corporation, coordinates)
+      raise NotImplementedError
+    end
+
+    def down_right_hex(_corporation, coordinates)
+      raise NotImplementedError
+    end
+
+    def up_right_hex(_corporation, coordinates)
+      raise NotImplementedError
+    end
   end
 
   class TwoDimensionalMovement < BaseMovement
@@ -79,6 +95,57 @@ module Engine
 
     def up(corporation, coordinates)
       @market.right(corporation, coordinates)
+    end
+  end
+
+  class HexMovement < BaseMovement
+    def left(corporation, coordinates)
+      r, c = coordinates
+      new_coords = [r, c - 2]
+      return new_coords if share_price(new_coords)
+
+      @market.down_left_hex(corporation, coordinates)
+    end
+
+    def right(corporation, coordinates)
+      r, c = coordinates
+      new_coords = [r, c + 2]
+      return new_coords if share_price(new_coords)
+
+      @market.up_right_hex(corporation, coordinates)
+    end
+
+    def down_left_hex(_corporation, coordinates)
+      r, c = coordinates
+      new_coords = [r + 1, c - 1]
+      x = share_price(new_coords)
+      return new_coords if x
+
+      coordinates
+    end
+
+    def up_left_hex(_corporation, coordinates)
+      r, c = coordinates
+      new_coords = [r - 1, c - 1]
+      return new_coords if share_price(new_coords)
+
+      coordinates
+    end
+
+    def down_right_hex(_corporation, coordinates)
+      r, c = coordinates
+      new_coords = [r + 1, c + 1]
+      return new_coords if share_price(new_coords)
+
+      coordinates
+    end
+
+    def up_right_hex(_corporation, coordinates)
+      r, c = coordinates
+      new_coords = [r - 1, c + 1]
+      return new_coords if share_price(new_coords)
+
+      coordinates
     end
   end
 
