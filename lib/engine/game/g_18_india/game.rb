@@ -76,10 +76,22 @@ module Engine
 
         PHASES = [
           { name: 'I', train_limit: 2, tiles: %i[yellow green brown gray], operating_rounds: 2 },
-          { name: 'II', on: '3', train_limit: 2, tiles: %i[yellow green brown gray], operating_rounds: 2 },
+          { name: 'II', on: '3', train_limit: 2, tiles: %i[yellow green brown gray], operating_rounds: 2,
+            status: %w[gipr_may_operate], },
           { name: 'III', on: '4', train_limit: 2, tiles: %i[yellow green brown gray], operating_rounds: 2 },
-          { name: 'IV', on: '3x2', train_limit: 2, tiles: %i[yellow green brown gray], operating_rounds: 2 },
+          { name: "III'", on: '4-2', train_limit: 2, tiles: %i[yellow green brown gray], operating_rounds: 2,
+            status: %w[phase_four_trains], },
+          { name: 'IV', on: %w[3x2 3x3 4x2 4x3], train_limit: 2, tiles: %i[yellow green brown gray], operating_rounds: 2,
+            status: %w[warrants_expire no_gauge_change gauge_change_removal], },
         ].freeze
+
+        STATUS_TEXT = Base::STATUS_TEXT.merge(
+          'gipr_may_operate' => ['GIPR may operate', 'GIPR may operate if it has been floated (three 10% shares in play).'],
+          'phase_four_trains' => ['Phase IV trains available','All Phase IV trains are simultaneously available.' ],
+          'warrants_expire' => ['Guaranty Warrants expire', 'Guaranty Warrants immediately expire.'],
+          'no_gauge_change' => ['Gauge Change no longer placed', 'Gauge Change markers are no longer placed with new track.'],
+          'gauge_change_removal' => ['Gauge Change may be removed', 'Gauge Change markers may be removed as a track action.'],
+        ).freeze
 
         TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false },
                      { lay: :not_if_upgraded, upgrade: false }, { lay: :not_if_upgraded, upgrade: false }].freeze

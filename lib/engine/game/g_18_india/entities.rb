@@ -23,6 +23,32 @@ module Engine
             color: nil,
             type: :private,
             # TODO: Add Ability
+            abilities: [
+              {
+                type: 'tile_lay',
+                owner_type: 'corporation',
+                when: %w[track special_track],
+                lay_count: 1,
+                upgrade_count: 0,
+                reachable: true,
+                special: false,
+                closed_when_used_up: true,
+                hexes: [],
+                tiles: [],
+              },
+              {
+                type: 'tile_lay',
+                owner_type: 'player',
+                when: 'owning_player_track',
+                lay_count: 1,
+                upgrade_count: 0,
+                reachable: true,
+                special: false,
+                closed_when_used_up: true,
+                hexes: [],
+                tiles: [],
+              },
+            ],
           },
           {
             name: 'Dutch EIC',
@@ -33,6 +59,32 @@ module Engine
             color: nil,
             type: :private,
             # TODO: Add Ability
+            abilities: [
+              {
+                type: 'tile_lay',
+                owner_type: 'corporation',
+                when: %w[track special_track],
+                lay_count: 0,
+                upgrade_count: 1,
+                reachable: true,
+                special: false,
+                closed_when_used_up: true,
+                hexes: [],
+                tiles: [],
+              },
+              {
+                type: 'tile_lay',
+                owner_type: 'player',
+                when: 'owning_player_track',
+                lay_count: 0,
+                upgrade_count: 1,
+                reachable: true,
+                special: false,
+                closed_when_used_up: true,
+                hexes: [],
+                tiles: [],
+              },
+            ],
           },
           {
             name: 'French EIC',
@@ -43,6 +95,24 @@ module Engine
             color: nil,
             type: :private,
             # TODO: Add Ability
+            abilities: [
+              {
+                type: 'tile_discount',
+                owner_type: 'corporation',
+                when: 'track',
+                discount: 40,
+                terrain: 'river',
+                exact_match: false,
+              },
+              {
+                type: 'tile_discount',
+                owner_type: 'player',
+                when: 'owning_player_track',
+                discount: 40,
+                terrain: 'river',
+                exact_match: false,
+              },
+            ],
           },
           {
             name: 'Danish EIC',
@@ -53,6 +123,34 @@ module Engine
             color: nil,
             type: :private,
             # TODO: Add Ability
+            abilities: [
+              {
+                type: 'token',
+                owner_type: 'corporation',
+                when: 'owning_corp_or_turn',
+                count: 1,
+                extra_action: false,
+                from_owner: true,
+                cheater: true,
+                special_only: true,
+                discount: 100,
+                teleport_price: 0,
+                hexes: [],
+              },
+              {
+                type: 'token',
+                owner_type: 'player',
+                when: 'owning_player_or_turn',
+                count: 1,
+                extra_action: false,
+                from_owner: true,
+                cheater: true,
+                special_only: true,
+                discount: 100,
+                teleport_price: 0,
+                hexes: [],
+              },
+            ],
           },
           {
             name: 'British EIC',
@@ -320,6 +418,7 @@ module Engine
           },
           {
             name: '3x2',
+            available_on: "III'",
             distance: [
               { 'nodes' => ['city'], 'pay' => 3, 'visit' => 3 },
               { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 },
@@ -331,6 +430,7 @@ module Engine
           },
           {
             name: '3x3',
+            available_on: "III'",
             distance: [
               { 'nodes' => ['city'], 'pay' => 3, 'visit' => 3 },
               { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 },
@@ -342,6 +442,7 @@ module Engine
           },
           {
             name: '4x2',
+            available_on: "III'",
             distance: [
               { 'nodes' => ['city'], 'pay' => 4, 'visit' => 4 },
               { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 },
@@ -365,6 +466,7 @@ module Engine
           },
           {
             name: '4x3',
+            available_on: "III'",
             distance: [
               { 'nodes' => ['city'], 'pay' => 4, 'visit' => 4 },
               { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 },
