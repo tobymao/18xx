@@ -630,7 +630,7 @@ module Engine
         def legal_tile_rotation?(_entity, _hex, _tile)
           true
         end
-        
+
         # source for new "corporate_buy_company" view
         def corporate_purchasable_companies(_entity = nil)
           (bank_owned_companies + top_of_ipo_rows).flatten
@@ -648,7 +648,7 @@ module Engine
             entity.companies.select { |c| c.revenue.positive? && !ignore.include?(c.id) }
           end
         end
-        
+
         # modify to require route begin and end at city
         def check_other(route)
           visited_stops = route.visited_stops
@@ -809,7 +809,7 @@ module Engine
           LOGGER.debug "GAME.commodity_bonus >> visited: #{visited_names}  sources: #{commodity_sources}  revenue: #{revenue}"
           revenue
         end
-        
+
         # Sell Train to the Depot
         def sell_train(operator, train, price)
           @bank.spend(price, operator) if price.positive?
