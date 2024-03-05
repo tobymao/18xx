@@ -1520,8 +1520,12 @@ module Engine
         end
       end
 
+      def companies_to_payout(ignore: [])
+        @companies.select { |c| c.owner && c.revenue.positive? && !ignore.include?(c.id) }
+      end
+
       def payout_companies(ignore: [])
-        companies = @companies.select { |c| c.owner && c.revenue.positive? && !ignore.include?(c.id) }
+        companies = companies_to_payout(ignore: ignore)
 
         companies.sort_by! do |company|
           [

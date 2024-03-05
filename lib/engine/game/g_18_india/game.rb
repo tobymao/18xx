@@ -59,7 +59,10 @@ module Engine
 
         # Modify to only count :private type companies (exclude Warrants and Bonds)
         def num_certs(entity)
-          certs = entity.shares.sum do |s|
+          return 0 if entity.nil?
+
+          shares = entity.player? ? entity.shares : entity.corporate_shares
+          certs = shares.sum do |s|
             s.corporation.counts_for_limit && s.counts_for_limit ? s.cert_size : 0
           end
           certs + entity.companies.count { |c| c.type == :private }
@@ -150,6 +153,7 @@ module Engine
           game_corporations.map do |corporation|
             self.class::CORPORATION_CLASS.new(
               ipo_owner: @ipo_pool,
+              treasury_as_holding: true,
               min_price: stock_market.par_prices.map(&:price).min,
               capitalization: self.class::CAPITALIZATION,
               **corporation.merge(corporation_opts),
@@ -228,10 +232,9 @@ module Engine
         end
 
         def assign_guaranty_warrant(corporation)
-          name = 'Guaranty Warrant'
           warrant = Company.new(
-            sym: name,
-            name: name,
+            sym: 'GW',
+            name: 'Guaranty Warrant',
             value: 0,
             desc: "Warrant pays 5\% of share value when company doesn't pay dividend. Closes at start of Phase IV",
             type: :warrant
@@ -422,8 +425,8 @@ module Engine
             Engine::Step::Route,
             G18India::Step::Dividend,
             G18India::Step::SellBuyTrain,
-            Engine::Step::CorporateSellShares,
-            Engine::Step::CorporateBuyShares,
+            G18India::Step::CorporateSellSharesCompany,
+            G18India::Step::CorporateBuySharesCompany,
           ], round_num: round_num)
         end
 
@@ -626,6 +629,24 @@ module Engine
         # test using this to control laying yellow tiles from railhead
         def legal_tile_rotation?(_entity, _hex, _tile)
           true
+        end
+
+        # source for new "corporate_buy_company" view
+        def corporate_purchasable_companies(_entity = nil)
+          (bank_owned_companies + top_of_ipo_rows).flatten
+        end
+
+        # source for "buy_company" view
+        # NOTE: needed for "selected_company" to work, see
+        # https://github.com/tobymao/18xx/blob/d73abfefcb920e884882407cee70c56b0780cccc/assets/app/view/game/round/operating.rb#L41
+        def purchasable_companies(_entity = nil)
+          bank_owned_companies + top_of_ipo_rows
+        end
+
+        def companies_to_payout(ignore: [])
+          (@players + @corporations).flat_map do |entity|
+            entity.companies.select { |c| c.revenue.positive? && !ignore.include?(c.id) }
+          end
         end
 
         # modify to require route begin and end at city
