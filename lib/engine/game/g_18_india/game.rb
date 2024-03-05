@@ -420,7 +420,6 @@ module Engine
             G18India::Step::SellBuyTrain,
             G18India::Step::CorporateSellSharesCompany,
             G18India::Step::CorporateBuySharesCompany,
-
           ], round_num: round_num)
         end
 
@@ -641,6 +640,7 @@ module Engine
           (@players + @corporations).flat_map do |entity|
             entity.companies.select { |c| c.revenue.positive? && !ignore.include?(c.id) }
           end
+        end
           
         # Sell Train to the Depot
         def sell_train(operator, train, price)
