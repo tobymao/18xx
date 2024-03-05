@@ -34,7 +34,10 @@ module Engine
                    allow_president_change: true, silent: nil, borrow_from: nil,
                    discounter: nil)
       bundle = shares.is_a?(ShareBundle) ? shares : ShareBundle.new(shares)
-      if @allow_president_sale && !@no_rebundle_president_buy && bundle.presidents_share && bundle.owner == self
+      if allow_president_sale?(bundle.corporation) &&
+         !@no_rebundle_president_buy &&
+         bundle.presidents_share &&
+         bundle.owner == self
         bundle = ShareBundle.new(bundle.shares, bundle.corporation.share_percent)
       end
 
@@ -218,7 +221,7 @@ module Engine
 
       # handle selling president's share to the pool
       # if partial, move shares from pool to old president
-      if @allow_president_sale && max_shares < corporation.presidents_percent && bundle.presidents_share &&
+      if allow_president_sale?(corporation) && max_shares < corporation.presidents_percent && bundle.presidents_share &&
           to_entity == self
         corporation.owner = self
         @log << "President's share sold to pool. #{corporation.name} enters receivership"
@@ -230,7 +233,7 @@ module Engine
 
       # handle buying president's share from the pool
       # swap existing share for it
-      if @allow_president_sale && owner == self && bundle.presidents_share
+      if allow_president_sale?(corporation) && owner == self && bundle.presidents_share
         corporation.owner = to_entity
         @log << "#{to_entity.name} becomes the president of #{corporation.name}"
         @log << "#{corporation.name} exits receivership"
@@ -239,7 +242,7 @@ module Engine
       end
 
       # skip the rest if no player can be president yet
-      return if @allow_president_sale && max_shares < corporation.presidents_percent
+      return if allow_president_sale?(corporation) && max_shares < corporation.presidents_percent
 
       majority_share_holders = presidency_check_shares(corporation).select { |_, p| p == max_shares }.keys
 
@@ -355,6 +358,17 @@ module Engine
       share.owner.shares_by_corporation[corporation].delete(share)
       to_entity.shares_by_corporation[corporation] << share
       share.owner = to_entity
+    end
+
+    def allow_president_sale?(corporation)
+      case @allow_president_sale
+      when true
+        true
+      when Set
+        @allow_president_sale.include?(corporation.id)
+      else
+        false
+      end
     end
   end
 end
