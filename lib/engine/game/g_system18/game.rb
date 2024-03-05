@@ -260,22 +260,19 @@ module Engine
         ].freeze
 
         CURRENCY_FORMAT_STR = '$%s'
-
         MUST_SELL_IN_BLOCKS = false
         MUST_BID_INCREMENT_MULTIPLE = true
         ONLY_HIGHEST_BID_COMMITTED = true
         HOME_TOKEN_TIMING = :operate
-        SELL_BUY_ORDER = :sell_buy_sell
         GAME_END_CHECK = { bankrupt: :immediate, final_phase: :one_more_full_or_set }.freeze
         LAYOUT = :pointy
-        COLOR_SEQUENCE = %i[white yellow green brown gray].freeze
         TILE_LAYS = [{ lay: true, upgrade: true, cost: 0 }].freeze
-
-        # need to define constants that could be redefined
+        EBUY_OTHER_VALUE = false
+        COLOR_SEQUENCE = %i[white yellow green brown gray].freeze
+        SELL_BUY_ORDER = :sell_buy_sell
         SELL_AFTER = :first
         SELL_MOVEMENT = :down_share
         SOLD_OUT_INCREASE = true
-        EBUY_OTHER_VALUE = false
         MUST_EMERGENCY_ISSUE_BEFORE_EBUY = false
         BANKRUPTCY_ENDS_GAME_AFTER = :one
 
@@ -383,16 +380,35 @@ module Engine
             @log << '-- ||============================================================================'
           end
 
-          #################################################
-          # "Standard" overrides for Incremental Cap games
+          ###################################################
+          # Default constant overrides for most maps
+          # (to be re-overridden if needed by specific maps)
           #
+          redef_const(:CURRENCY_FORMAT_STR, '$%s')
+          redef_const(:COLOR_SEQUENCE, %i[white yellow green brown gray])
+          redef_const(:GAME_END_CHECK, { bankrupt: :immediate, final_phase: :one_more_full_or_set })
+          redef_const(:TILE_LAYS, [{ lay: true, upgrade: true, cost: 0 }])
+
           if game_capitalization == :incremental
+            ######################################################
+            # Default constant overrides for Incremental Cap maps
+            #
             redef_const(:SELL_BUY_ORDER, :sell_buy)
             redef_const(:SELL_AFTER, :after_sr_floated)
             redef_const(:SELL_MOVEMENT, :left_block_pres)
             redef_const(:SOLD_OUT_INCREASE, false)
             redef_const(:MUST_EMERGENCY_ISSUE_BEFORE_EBUY, true)
             redef_const(:BANKRUPTCY_ENDS_GAME_AFTER, :all_but_one)
+          else
+            ######################################################
+            # Default constant overrides for Full Cap maps
+            #
+            redef_const(:SELL_BUY_ORDER, :sell_buy_sell)
+            redef_const(:SELL_AFTER, :first)
+            redef_const(:SELL_MOVEMENT, :down_share)
+            redef_const(:SOLD_OUT_INCREASE, true)
+            redef_const(:MUST_EMERGENCY_ISSUE_BEFORE_EBUY, false)
+            redef_const(:BANKRUPTCY_ENDS_GAME_AFTER, :one)
           end
 
           #################################################
