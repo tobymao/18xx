@@ -12,10 +12,10 @@ module Engine
           def help
             [
               "Used #{@round.num_laid_track}/6 track actions.",
-              'For each track action, a steel cube from the steel table must be bought from CF&I.',
-              'For each color of track tile, only one column of the steel table may be used per turn.',
+              'For each track action, a steel cube from the Steel Market must be bought by paying CF&I.',
+              'For each color of track tile, only one column of the Steel Market may be used per turn.',
               'At the end of each set of operating rounds, CF&I pays its steel earnings as dividends to '\
-              'shareholders, and the steel table is refilled.',
+              'shareholders, and the Steel Market is refilled.',
             ]
           end
 
