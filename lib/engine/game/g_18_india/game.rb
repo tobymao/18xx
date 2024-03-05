@@ -641,7 +641,7 @@ module Engine
             entity.companies.select { |c| c.revenue.positive? && !ignore.include?(c.id) }
           end
         end
-          
+
         # Sell Train to the Depot
         def sell_train(operator, train, price)
           @bank.spend(price, operator) if price.positive?
