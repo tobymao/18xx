@@ -1017,7 +1017,7 @@ module Engine
           @bank.spend(loan, player)
 
           loan_amount = loan
-          interest = loan_amount * 0.5
+          interest = (loan_amount * 0.5).ceil
 
           @log << "#{player.name} recieves #{format_currency(loan)} from the bank. \
                     The loan amount is #{format_currency(loan_amount)}.\

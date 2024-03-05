@@ -183,7 +183,7 @@ module Engine
         end
 
         def map_twisting_tracks_game_cash
-          { 2 => 1100, 3 => 750, 4 => 550 }
+          { 2 => 850, 3 => 575, 4 => 425 }
         end
 
         def map_twisting_tracks_game_cert_limit
@@ -277,35 +277,35 @@ module Engine
             {
               name: 'D',
               on: 'D',
-              train_limit: 2,
+              train_limit: 1,
               tiles: %i[yellow green brown gray],
               operating_rounds: 2,
             },
             {
               name: 'D-Pink',
               on: 'D-Pink',
-              train_limit: 2,
+              train_limit: 1,
               tiles: %i[yellow green brown gray pink],
               operating_rounds: 2,
             },
             {
               name: 'D-Purple',
               on: 'D-Purple',
-              train_limit: 2,
+              train_limit: 1,
               tiles: %i[yellow green brown gray pink purple],
               operating_rounds: 2,
             },
             {
               name: 'D-Orange',
               on: 'D-Orange',
-              train_limit: 2,
+              train_limit: 1,
               tiles: %i[yellow green brown gray pink purple orange],
               operating_rounds: 2,
             },
             {
               name: 'D-Navy',
               on: 'D-Navy',
-              train_limit: 2,
+              train_limit: 1,
               tiles: %i[yellow green brown gray pink purple orange navy],
               operating_rounds: 2,
             },

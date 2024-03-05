@@ -234,6 +234,14 @@ module View
           ])
         end
 
+        if @step.respond_to?(:sellable_trains) && !@step.sellable_trains(@corporation).empty?
+          corp_trains = @step.sellable_trains(@corporation)
+          children << h(:h3, 'Sellable Trains')
+          children << h(:div, div_props, [
+            *sell_corp_trains(corp_trains, @corporation),
+          ])
+        end
+
         @slot_checkboxes = {}
         if @step.respond_to?(:slot_view) && (view = @step.slot_view(@corporation))
           children << send("render_#{view}")
@@ -366,6 +374,29 @@ module View
              h('div.right', train_props, @game.format_currency(price)),
              h('button.no_margin', { on: { click: buy_train } }, president_assist.positive? ? 'Assisted buy' : 'Buy')]
           end
+        end
+      end
+
+      def sell_corp_trains(corp_trains, corporation)
+        corp_trains.flat_map do |train|
+          price = @step.train_sale_price(train) || train.salvage || 0
+          entity = corporation
+          name = train.name
+
+          sell_train = lambda do
+            process_action(Engine::Action::SellTrain.new(
+              entity,
+              train: train,
+              price: price,
+            ))
+          end
+          train_props = { style: {} }
+          source = corporation.name
+
+          [h(:div, train_props, name),
+           h('div.nowrap', train_props, source),
+           h('div.right', train_props, @game.format_currency(price)),
+           h('button.no_margin', { on: { click: sell_train } }, 'Sell')]
         end
       end
 

@@ -11,7 +11,7 @@ module Engine
         if level
           level.to_i
         elsif production
-          ::Logger::INFO
+          ::Logger::FATAL
         else
           ::Logger::DEBUG
         end

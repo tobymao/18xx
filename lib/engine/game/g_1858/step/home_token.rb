@@ -56,7 +56,7 @@ module Engine
 
             super
 
-            delete_reservations(action.entity)
+            delete_reservations(action.entity, city)
           end
 
           def process_pass(action)
@@ -65,13 +65,20 @@ module Engine
             delete_reservations(action.entity)
           end
 
-          def delete_reservations(corporation)
-            return unless @game.private_closure_round == :in_progress
-
-            # Delete any reservations acquired from a just closed private
-            # railway company. These are only needed for this token step.
-            reservations = Array(@game.abilities(corporation, :reservation))
-            reservations.each { |r| corporation.remove_ability(r) }
+          def delete_reservations(corporation, city = nil)
+            if @game.private_closure_round == :in_progress
+              # Delete any reservations acquired from a just closed private
+              # railway company. These are only needed for this token step.
+              reservations = Array(@game.abilities(corporation, :reservation))
+              reservations.each { |r| corporation.remove_ability(r) }
+            elsif city && !corporation.companies.empty?
+              # Delete the private railway company's reservation for the slot
+              # that the token has just been placed in. If this isn't done
+              # then if the tile is upgraded before the private closes then you
+              # can get an extra slot created to accommodate both the token and
+              # the reservation, https://github.com/tobymao/18xx/issues/10442.
+              city.remove_reservation!(corporation.companies.first)
+            end
           end
         end
       end
