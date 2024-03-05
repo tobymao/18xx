@@ -719,24 +719,24 @@ module Engine
             when 'OIL'
               # OIL => MUMBAI [D23] + 30
               bonus = 30 if visited_names.include?('MUMBAI')
-              claim_connession(['OIL'], corporation) if bonus.positive?
+              claim_concession(['OIL'], corporation) if bonus.positive?
               revenue += bonus
             when 'OPIUM'
               # OPIUM => LAHORE [D3] + 100
               # OPIUM => HALDIA [P19] + 100
               bonus = 100 if visited_names.include?('LAHORE') || visited_names.include?('HALDIA')
-              claim_connession(['OPIUM'], corporation) if bonus.positive?
+              claim_concession(['OPIUM'], corporation) if bonus.positive?
               revenue += bonus
             when 'ORE1', 'ORE2'
               # ORE1 => KARACHI [A16] + 50
               # ORE1 => CHENNAI [K30] + 50
               bonus = 50 if visited_names.include?('KARACHI') || visited_names.include?('CHENNAI')
-              claim_connession(%w[ORE1 ORE2], corporation) if bonus.positive?
+              claim_concession(%w[ORE1 ORE2], corporation) if bonus.positive?
               revenue += bonus
             when 'GOLD'
               # GOLD => KOCHI [G36] + 50
               bonus = 50 if visited_names.include?('KOCHI')
-              claim_connession(['GOLD'], corporation) if bonus.positive?
+              claim_concession(['GOLD'], corporation) if bonus.positive?
               revenue += bonus
             when 'SPICES'
               # SPICES => KOCHI [G36] + 70
@@ -764,24 +764,24 @@ module Engine
                     visited_names.include?('VISAKHAPATNAM')
                 bonus = 30
               end
-              claim_connession(['SPICES'], corporation) if bonus.positive?
+              claim_concession(['SPICES'], corporation) if bonus.positive?
               revenue += bonus
             when 'COTTON'
               # COTTON => KARACHI [A16] + 40
               # COTTON => CHENNAI [K30] + 40
               bonus = 40 if visited_names.include?('KARACHI') || visited_names.include?('CHENNAI')
-              claim_connession(['COTTON'], corporation) if bonus.positive?
+              claim_concession(['COTTON'], corporation) if bonus.positive?
               revenue += bonus
             when 'TEA1', 'TEA2'
               # TEA1 => VISAKHAPATNAM [M24] + 70
               bonus = 70 if visited_names.include?('VISAKHAPATNAM')
-              claim_connession(%w[TEA1 TEA2], corporation) if bonus.positive?
+              claim_concession(%w[TEA1 TEA2], corporation) if bonus.positive?
               revenue += bonus
             when 'RICE'
               # RICE => CHINA [Q10] + 30
               # RICE => NEPAL [M10] + 30
               bonus = 30 if visited_names.include?('CHINA') || visited_names.include?('NEPAL')
-              claim_connession(['RICE'], corporation) if bonus.positive?
+              claim_concession(['RICE'], corporation) if bonus.positive?
               revenue += bonus
             end
           end
