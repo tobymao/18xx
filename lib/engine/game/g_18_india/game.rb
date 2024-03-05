@@ -669,7 +669,7 @@ module Engine
         end
 
         # TODO: Add visual indicaiton on VIEW for Corporation card for Claimed Commodities
-        def claim_connession(commodities, corporation)
+        def claim_concession(commodities, corporation)
           return if corporation.commodities.include?(commodities.first)
 
           commodities.each do |commodity|
