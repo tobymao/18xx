@@ -15,23 +15,23 @@ module Engine
           include Engine::Step::ShareBuying
 
           def debugging_log(str)
-            @log << str
-            @log << " stock_turns: #{@round.stock_turns} - selling_round: #{selling_round?} - @game.turn: #{@game.turn}"
-            @log << " current_actions: #{@round.current_actions} - players_history: #{@round.players_history[current_entity]}"
-            @log << " pass_order: #{@round.pass_order} - last_to_act: #{@round.last_to_act}"
-            @log << " Cert Limit: #{@game.cert_limit(current_entity)} - Num Certs: #{@game.num_certs(current_entity)}"
-            @log << "B: #{bought?} M: #{@round.bought_from_market} H: #{@round.bought_from_hand} IPO #{@round.bought_from_ipo}"
-            @log << "buyable companies: #{buyable_companies(current_entity).map(&:name).join(', ')}"
+            LOGGER.debug(str)
+            LOGGER.debug " stock_turns: #{@round.stock_turns} - selling_round: #{selling_round?} - @game.turn: #{@game.turn}"
+            LOGGER.debug " current_actions: #{@round.current_actions} - players_history: #{@round.players_history[current_entity]}"
+            LOGGER.debug " pass_order: #{@round.pass_order} - last_to_act: #{@round.last_to_act}"
+            LOGGER.debug " Cert Limit: #{@game.cert_limit(current_entity)} - Num Certs: #{@game.num_certs(current_entity)}"
+            LOGGER.debug " B: #{bought?} M: #{@round.bought_from_market} H: #{@round.bought_from_hand} IPO #{@round.bought_from_ipo}"
+            LOGGER.debug " buyable companies: #{buyable_companies(current_entity).map(&:name).join(', ')}"
           end
 
-          def debug_corp_log(share)
+          def debug_corp_log(share, str = '')
             corp = share.corporation
             p_s = corp.presidents_share
-            @log << "share: #{share.id} / owner: #{share.owner.name}"
-            @log << "corp owner: #{corp.owner ? corp.owner.name : 'nil'} / Pres Share owner: #{p_s.owner.name} at #{p_s.percent}%"
-            @log << "floated: #{corp.floated} / iposhares #{corp.ipo_shares}"
-            @log << "#{current_entity&.name} shares: #{current_entity.shares.select { |s| s.corporation == corp }}"
-            @log << "shareholders: #{corp.player_share_holders.to_h}"
+            LOGGER.debug(str)
+            LOGGER.debug "> share: #{share.id} / owner: #{share.owner.name} / corp: #{corp}"
+            LOGGER.debug "> corp owner: #{corp.owner ? corp.owner.name : 'nil'} / PS owner: #{p_s.owner.name} at #{p_s.percent}%"
+            LOGGER.debug "> floated: #{corp.floated} / iposhares #{corp.ipo_shares}"
+            LOGGER.debug "> #{current_entity&.name} shares: #{current_entity.shares.select { |s| s.corporation == corp }}"
           end
 
           def log_pass(entity)
@@ -256,7 +256,7 @@ module Engine
               log_purchase(company.name, location, price)
               @game.after_buy_company(entity, company, price) if entity.player?
             end
-            # debugging_log('Process Buy Company')
+            debugging_log('Process Buy Company')
           end
 
           def log_purchase(what, where, price)
@@ -330,6 +330,13 @@ module Engine
             return false if bundle.presidents_share
 
             can_dump?(entity, bundle)
+          end
+
+          # modify for debugging
+          def process_sell_shares(action)
+            debug_corp_log(action.bundle, 'Beginning of Process Sell Shares')
+            super
+            debug_corp_log(action.bundle, 'End of Process Sell Shares')
           end
 
           def process_sell_company(action)
