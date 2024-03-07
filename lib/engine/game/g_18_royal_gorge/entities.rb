@@ -398,12 +398,37 @@ module Engine
             sym: 'CF&I',
             name: 'Colorado Fuel & Iron',
             color: 'gray',
+            abilities: [
+              {
+                type: 'base',
+                description: 'Steel Market',
+                desc_detail: 'Corporations must buy a steel cube from CF&I for each track '\
+                             'laid/upgraded. That money, plus $50, is paid as dividends to CF&I '\
+                             'shareholders at the end of each OR set.',
+              },
+            ],
           ),
           def_metal_corporation(
             sym: 'VGC',
             name: 'Victor Gold Company',
             color: 'gold',
             text_color: 'black',
+            abilities: [
+              {
+                type: 'base',
+                description: 'Gold Market Dividends',
+                desc_detail: 'When gold is shipped from the map, it is added to the Gold Market, '\
+                             'covering the lowest available slot. At the end of each OR set, VGC '\
+                             'pays the amount of the lowest uncovered slot as dividends to '\
+                             'shareholders. That amount is also tracked here as VGC\'s cash.',
+              },
+              {
+                type: 'base',
+                description: 'Gold Market Slots',
+                desc_detail: 'Yellow: 50, 90. Green: 140, 200. Brown: 270. Red: 350. Availability '\
+                             'for filling slots is determined by the current phase.',
+              },
+            ],
           ),
         ].freeze
 
