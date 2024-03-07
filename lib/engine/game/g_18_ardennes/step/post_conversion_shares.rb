@@ -8,7 +8,7 @@ module Engine
       module Step
         class PostConversionShares < Engine::Step::Base
           include Engine::Step::ShareBuying
-          ACTIONS = %w[buy_shares pass]
+          ACTIONS = %w[buy_shares pass].freeze
 
           def actions(entity)
             return [] unless @round.converted

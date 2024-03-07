@@ -7,7 +7,7 @@ module Engine
     module G18Ardennes
       module Step
         class Convert < Engine::Step::Base
-          ACTIONS = %w[convert pass]
+          ACTIONS = %w[convert pass].freeze
 
           def actions(entity)
             return [] unless entity == current_entity
