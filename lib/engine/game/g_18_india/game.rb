@@ -430,10 +430,10 @@ module Engine
 
         def operating_round(round_num)
           Engine::Round::Operating.new(self, [
-            Engine::Step::Exchange,
+            # Engine::Step::Exchange,
             Engine::Step::HomeToken,
             Engine::Step::Assign,
-            Engine::Step::SpecialTrack,
+            G18India::Step::SpecialTrack,
             G18India::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
@@ -841,6 +841,12 @@ module Engine
           @log << "#{corporation.name} is trainless"
           @stock_market.move_left(corporation)
           log_share_price(corporation, old_price)
+        end
+
+        # pay owner value of company before closing
+        def company_is_closing(company, silent = false)
+          @bank.spend(company.value, company.owner)
+          @log << "#{company.name} closes and #{company.owner} receives #{company.value} from the Bank." unless silent
         end
 
         def company_header(company)
