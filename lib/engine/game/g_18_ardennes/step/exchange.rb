@@ -23,7 +23,6 @@ module Engine
           end
 
           def bought?
-            return false unless @round.is_a?(Round::Stock)
 
             @round.current_actions.any? do |action|
               Engine::Step::BuySellParShares::PURCHASE_ACTIONS.include?(action.class)
@@ -31,10 +30,10 @@ module Engine
           end
 
           def can_exchange?(entity, _bundle = nil)
-            return false if bought?
             return false unless entity.corporation?
+            return false unless entity.type == :minor
 
-            entity.type == :minor
+            @round.is_a?(Round::Stock) ? !bought? : !@round.converted.nil?
           end
 
           def process_buy_shares(action)
