@@ -432,6 +432,8 @@ module Engine
           Engine::Round::Operating.new(self, [
             Engine::Step::Exchange,
             Engine::Step::HomeToken,
+            Engine::Step::Assign,
+            Engine::Step::SpecialTrack,
             G18India::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
