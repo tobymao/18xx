@@ -23,7 +23,6 @@ module Engine
           end
 
           def bought?
-
             @round.current_actions.any? do |action|
               Engine::Step::BuySellParShares::PURCHASE_ACTIONS.include?(action.class)
             end
