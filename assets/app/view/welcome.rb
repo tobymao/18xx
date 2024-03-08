@@ -20,7 +20,6 @@ module View
         <p><a href="https://github.com/tobymao/18xx/wiki/1868-Wyoming">1868 Wyoming</a> is in production.
         <a href="https://github.com/tobymao/18xx/wiki/1822CA">1822CA</a> is in beta.
         <a href="https://github.com/tobymao/18xx/wiki/1841">1841</a> is in beta.
-        <a href="https://github.com/tobymao/18xx/wiki/1847-AE">1847AE</a> is in beta.
         <a href="https://github.com/tobymao/18xx/wiki/18ESP">18ESP</a> is in alpha.
         </p>
 
