@@ -127,7 +127,7 @@ module Engine
                 owner_type: 'corporation',
                 trains: %w[3 4 5],
                 count: 1,
-                when: 'buying_train',
+                when: 'buy_train',
               },
             ],
           },

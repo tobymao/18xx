@@ -4,7 +4,6 @@ require_relative 'meta'
 require_relative '../base'
 require_relative 'map'
 require_relative 'entities'
-require_relative 'stock_market'
 require_relative '../../loan'
 require_relative '../interest_on_loans'
 
@@ -38,6 +37,8 @@ module Engine
 
         SELL_BUY_ORDER = :sell_buy_or_buy_sell
         SELL_AFTER = :operate
+
+        SOLD_OUT_TOP_ROW_MOVEMENT = :down_right
 
         GAME_END_CHECK = { bankrupt: :immediate, bank: :full_or, custom: :full_or }.freeze
         GAME_END_REASONS_TEXT = Base::GAME_END_REASONS_TEXT.merge(
@@ -242,11 +243,6 @@ module Engine
 
         def active_minors
           operating_order.select { |c| c.type == :minor && c.floated? }
-        end
-
-        def init_stock_market
-          G18NY::StockMarket.new(game_market, self.class::CERT_LIMIT_TYPES,
-                                 multiple_buy_types: self.class::MULTIPLE_BUY_TYPES)
         end
 
         def init_share_pool

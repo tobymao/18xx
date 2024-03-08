@@ -18,11 +18,18 @@ module Engine
                          'X1' =>
             {
               'count' => 1,
+              'color' => 'yellow',
+              'code' =>
+              'city=revenue:30;path=a:2,b:_0;path=a:4,b:_0;label=B',
+            },
+                         'X2' =>
+            {
+              'count' => 1,
               'color' => 'gray',
               'code' =>
               'city=revenue:70,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=B',
             },
-                         'X2' =>
+                         'X3' =>
               {
                 'count' => 1,
                 'color' => 'gray',
@@ -43,6 +50,7 @@ module Engine
             'B3' => 'Chicago',
             'B5' => 'Detroit & Cleveland',
             'B7' => 'Erie',
+            'B9' => 'Albany',
             'B11' => 'Boston',
             'C4' => 'Cincinnati',
             'C10' => 'New York City',
@@ -53,38 +61,38 @@ module Engine
         def map_neus_game_hexes
           {
             gray: {
-              ['A6'] => 'path=a:0,b:5',
-              ['A2'] => 'path=a:4,b:5',
-              ['A4'] => 'path=a:1,b:5',
-              ['A8'] => 'path=a:0,b:5;path=a:0,b:4',
-              ['A10'] => 'path=a:0,b:5;path=a:1,b:4',
-              ['A12'] => 'path=a:0,b:1',
+              %w[A6] => 'path=a:0,b:5',
+              %w[A2] => 'path=a:4,b:5',
+              %w[A4] => 'path=a:1,b:5',
+              %w[A8] => 'path=a:0,b:5;path=a:0,b:4',
+              %w[A12] => 'path=a:0,b:1',
 
-              ['D3'] => 'path=a:3,b:4',
-              ['D11'] => 'path=a:0,b:1',
+              %w[D3] => 'path=a:3,b:4',
+              %w[D11] => 'path=a:0,b:1',
               %w[E8 E10] => 'path=a:2,b:3',
-              ['B1'] => 'junction;path=a:4,b:_0,terminal:1',
-              ['C2'] => 'junction;path=a:3,b:_0,terminal:1',
+              %w[B1] => 'junction;path=a:4,b:_0,terminal:1',
+              %w[C2] => 'junction;path=a:3,b:_0,terminal:1',
             },
             blue: {
-              ['C12'] => 'junction;path=a:2,b:_0,terminal:1',
+              %w[B13] => 'junction;path=a:1,b:_0,terminal:1',
+              %w[C12] => 'junction;path=a:2,b:_0,terminal:1',
 
             },
             white: {
+              %w[A10] => '',
               %w[B7 C4] => 'city',
+              %w[B3] => 'city=revenue:0;label=B',
+              %w[B9] => 'city=revenue:0;upgrade=cost:40,terrain:mountain',
+              %w[B11] => 'city=revenue:0;label=B',
               %w[C6] => 'town=revenue:0;town=revenue:0;upgrade=cost:120,terrain:mountain',
               %w[C8] => 'town=revenue:0;town=revenue:0;upgrade=cost:40,terrain:mountain',
-              %w[B9 D5] => 'upgrade=cost:40,terrain:mountain',
-              ['D7'] => 'upgrade=cost:40,terrain:mountain',
+              %w[D5] => 'upgrade=cost:40,terrain:mountain',
+              %w[D7] => 'upgrade=cost:40,terrain:mountain',
             },
             yellow: {
-              ['B3'] => 'city=revenue:30;path=a:2,b:_0;path=a:4,b:_0;label=B',
-              ['B5'] => 'city=revenue:0;city=revenue:0;label=OO',
-              ['D9'] => 'city=revenue:30;city=revenue:0;path=a:2,b:_0;label=OO',
-              ['B11'] => 'city=revenue:30;path=a:1,b:_0;path=a:3,b:_0;label=B',
-              ['C10'] => 'city=revenue:40;city=revenue:40;path=a:2,b:_0;label=NY',
-              ['I15'] => 'city=revenue:30;path=a:4,b:_0;path=a:0,b:_0;label=B',
-
+              %w[B5] => 'city=revenue:0;city=revenue:0;label=OO',
+              %w[C10] => 'city=revenue:40;city=revenue:40;path=a:2,b:_0;label=NY',
+              %w[D9] => 'city=revenue:30;city=revenue:0;path=a:2,b:_0;label=OO',
             },
           }
         end
@@ -93,12 +101,13 @@ module Engine
           []
         end
 
+        # DGN GFN PHX KKN SPX
         def map_neus_game_corporations(corps)
           corps.each_with_index do |c, idx|
-            c[:coordinates] = %w[B7 D9 B5 C10 B11][idx]
+            c[:coordinates] = %w[B11 B5 C10 D9 B7][idx]
           end
+          find_corp(corps, 'PHX')[:city] = 0
           find_corp(corps, 'KKN')[:city] = 0
-          find_corp(corps, 'GFN')[:city] = 0
 
           corps
         end
@@ -129,6 +138,7 @@ module Engine
           find_train(trains, '4')[:num] = 2
           find_train(trains, '5')[:num] = 2
           find_train(trains, '6')[:num] = 1
+          find_train(trains, 'D')[:num] = 10
           trains
         end
 

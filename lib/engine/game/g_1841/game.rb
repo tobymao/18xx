@@ -2471,8 +2471,13 @@ module Engine
           event_tuscan_merge!
         end
 
+        # Return corp first in operating order:
+        # 1. Highest price, then
+        # 2. Rightmost price, then
+        # 3. Highest in stack within a price
+        #
         def best_stock_value(corps)
-          corps.compact.select(&:floated?).max_by { |c| c.share_price.price }
+          corps.compact.select(&:floated?).min
         end
 
         def tuscan_merge_start(sflp, sfma, ssfl, sfli, holding, will_run)
@@ -2481,6 +2486,7 @@ module Engine
           @tuscan_merge_run = will_run
 
           decider = best_stock_value([sflp, sfma, ssfl])
+          @log << "#{decider.name} has best stock value"
           @tuscan_merge_decider = decider.player || @round.current_entity.player
           @log << "#{@tuscan_merge_decider.name} will perform Tuscan Merge operations"
           @tuscan_merge_ssfl = ssfl

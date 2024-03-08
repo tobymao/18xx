@@ -212,6 +212,10 @@ module Engine
       # do sold out shares increase the price?
       SOLD_OUT_INCREASE = true
 
+      # :none -- No movement
+      # :down_right -- Moves down and right
+      SOLD_OUT_TOP_ROW_MOVEMENT = :none
+
       # :after_last_to_act -- player after the last to act goes first. Order remains the same.
       # :first_to_pass -- players ordered by when they first started passing.
       NEXT_SR_PLAYER_ORDER = :after_last_to_act
@@ -762,6 +766,7 @@ module Engine
         action = Engine::Action::Base.action_from_h(action, self) if action.is_a?(Hash)
 
         action.id = current_action_id + 1
+        LOGGER.debug { "Game::Base#process_action({ id: #{action.id}, ... }, ...)" }
         @raw_actions << action.to_h
         return clone(@raw_actions) if action.is_a?(Action::Undo) || action.is_a?(Action::Redo)
 
@@ -932,6 +937,9 @@ module Engine
           end
         end
       end
+
+      # hook from Engine::Round::Operating before next_entity!
+      def after_end_of_operating_turn(_operator); end
 
       def next_turn!
         return if @turn_start_action_id == current_action_id
@@ -1205,6 +1213,8 @@ module Engine
         case movement || sell_movement(corporation)
         when :down_share
           bundle.num_shares.times { @stock_market.move_down(corporation) }
+        when :down_left_hex_share
+          bundle.num_shares.times { @stock_market.move_down_left_hex(corporation) }
         when :down_per_10
           percent = bundle.percent
           percent -= swap.percent if swap
@@ -1512,8 +1522,12 @@ module Engine
         end
       end
 
+      def companies_to_payout(ignore: [])
+        @companies.select { |c| c.owner && c.revenue.positive? && !ignore.include?(c.id) }
+      end
+
       def payout_companies(ignore: [])
-        companies = @companies.select { |c| c.owner && c.revenue.positive? && !ignore.include?(c.id) }
+        companies = companies_to_payout(ignore: ignore)
 
         companies.sort_by! do |company|
           [
@@ -2337,7 +2351,8 @@ module Engine
 
       def init_stock_market
         StockMarket.new(game_market, self.class::CERT_LIMIT_TYPES,
-                        multiple_buy_types: self.class::MULTIPLE_BUY_TYPES)
+                        multiple_buy_types: self.class::MULTIPLE_BUY_TYPES,
+                        sold_out_top_row_movement: self.class::SOLD_OUT_TOP_ROW_MOVEMENT)
       end
 
       def game_market

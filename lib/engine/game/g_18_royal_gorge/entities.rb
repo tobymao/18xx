@@ -8,10 +8,9 @@ module Engine
           {
             sym: 'Y1',
             name: 'St. Cloud Hotel (Y1)',
-            desc: 'Special abilities not implemented.',
-            # desc: "Hotel token starts in Silvercliffe (G17). When owned by a corporation, St. Cloud's "\
-            #       'hotel token will generate an additional $20 revenue only for the holding corporation. '\
-            #       'Once in Brown Phase, the hotel is moved to Cañon City (H12). This company never closes.',
+            desc: "Hotel token starts in Silvercliffe (G17). When owned by a corporation, St. Cloud's "\
+                  'hotel token will generate an additional $20 revenue only for the holding corporation. '\
+                  'Once in Brown Phase, the hotel is moved to Cañon City (H12). This company never closes.',
             value: 50,
             revenue: 5,
             abilities: [
@@ -21,13 +20,17 @@ module Engine
           {
             sym: 'Y2',
             name: 'Ghost Town Tour Co. (Y2)',
-            desc: 'Special abilities not implemented.',
-            # desc: 'When the owning corporation ships the last gold from any mine space, they  may put 1 Ghost Town '\
-            #       'Token in that hex. On future turns, Ghost Town Tokens provide $10 revenue for the owning corporation.',
+            desc: 'When the owning corporation ships the last gold from any mine space, they  may put 1 Ghost Town '\
+                  'Token in that hex. On future turns, Ghost Town Tokens provide $10 revenue for the owning corporation.',
             value: 45,
             revenue: 15,
             abilities: [
-              # after last Gold is shipped from a hex, may add a +$10 ghost town
+              {
+                type: 'choose_ability',
+                owner_type: 'corporation',
+                when: %w[dividend],
+                count: 4,
+              },
             ],
           },
           {
@@ -139,16 +142,11 @@ module Engine
           {
             sym: 'G3',
             name: 'Hanging Bridge Lease (G3)',
-            desc: 'Special abilities not implemented.',
-            # desc: 'The owning corporation may run through The Royal Gorge (D12-E13-F12) by paying a '\
-            #       '10% dividend to the Rio Grande from the proceeds. This money can either come from '\
-            #       "the charter, or the president's personal cash.",
+            desc: 'The owning corporation may run through The Royal Gorge (D12-E13-F12) by paying a '\
+                  '10% dividend to the Rio Grande from the proceeds. This money can either come from '\
+                  "the charter, or the president's personal cash.",
             value: 50,
             revenue: 10,
-            abilities: [
-              # may run route through royal gorge if 10% dividend paid to rio
-              # grande, from the corporation's cash or its president's cash
-            ],
           },
           {
             sym: 'G4',
@@ -205,16 +203,22 @@ module Engine
           {
             sym: 'B2',
             name: 'Sulphur Springs (B2)',
-            desc: 'Special abilities not implemented.',
-            # desc: 'The owning corporation may close this company permanently to turn Sulphur '\
-            #       'Springs (E3) into a city of the same color tile. If owned by a player, once in Brown Phase, '\
-            #       'provides $50 revenue per operating round, only if Sulphur Springs is connected by any rail.',
+            desc: 'The owning corporation may close this company permanently to turn Sulphur '\
+                  'Springs (E3) into a city of the same color tile. If owned by a player, once in Brown Phase, '\
+                  'provides $50 revenue per operating round, only if Sulphur Springs is connected by any rail.',
             value: 50,
             revenue: 0,
             abilities: [
-              { type: 'revenue_change', revenue: 50, on_phase: 'Brown' },
-              # TODO: revenue to player only if rail reaches sulphur springs
-              # TODO: upgrade E3 to a city tile
+              {
+                type: 'tile_lay',
+                when: 'owning_corp_or_turn',
+                hexes: %w[E3],
+                tiles: %w[RG1 RG2 RG3],
+                owner_type: 'corporation',
+                count: 1,
+                closed_when_used_up: true,
+                special: true,
+              },
             ],
           },
           {
@@ -394,12 +398,37 @@ module Engine
             sym: 'CF&I',
             name: 'Colorado Fuel & Iron',
             color: 'gray',
+            abilities: [
+              {
+                type: 'base',
+                description: 'Steel Market',
+                desc_detail: 'Corporations must buy a steel cube from CF&I for each track '\
+                             'laid/upgraded. That money, plus $50, is paid as dividends to CF&I '\
+                             'shareholders at the end of each OR set.',
+              },
+            ],
           ),
           def_metal_corporation(
             sym: 'VGC',
             name: 'Victor Gold Company',
             color: 'gold',
             text_color: 'black',
+            abilities: [
+              {
+                type: 'base',
+                description: 'Gold Market Dividends',
+                desc_detail: 'When gold is shipped from the map, it is added to the Gold Market, '\
+                             'covering the lowest available slot. At the end of each OR set, VGC '\
+                             'pays the amount of the lowest uncovered slot as dividends to '\
+                             'shareholders. That amount is also tracked here as VGC\'s cash.',
+              },
+              {
+                type: 'base',
+                description: 'Gold Market Slots',
+                desc_detail: 'Yellow: 50, 90. Green: 140, 200. Brown: 270. Red: 350. Availability '\
+                             'for filling slots is determined by the current phase.',
+              },
+            ],
           ),
         ].freeze
 
