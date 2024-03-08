@@ -119,7 +119,7 @@ module Engine
             name: 'PLM major shareholding',
             sym: 'PLMMS',
             value: 180,
-            revenue: 25,
+            revenue: 40,
             desc: 'Owning player immediately receives the President\'s certificate of the'\
                   ' PLM without further payment. This private company may not be sold to any corporation, and does'\
                   ' not exchange hands if the owning player loses the Presidency of the PLM.'\
@@ -133,7 +133,7 @@ module Engine
             name: 'Ouest major shareholding',
             sym: 'OMMS',
             value: 180,
-            revenue: 25,
+            revenue: 40,
             desc: 'Owning player immediately receives the President\'s certificate of the'\
                   ' Ouest without further payment. This private company may not be sold to any corporation, and does'\
                   ' not exchange hands if the owning player loses the Presidency of the Ouest.'\
@@ -147,7 +147,7 @@ module Engine
             name: 'Nord major shareholding',
             sym: 'NMS',
             value: 180,
-            revenue: 25,
+            revenue: 40,
             desc: 'Owning player immediately receives the President\'s certificate of the'\
                   ' Nord without further payment. This private company may not be sold to any corporation, and does'\
                   ' not exchange hands if the owning player loses the Presidency of the Nord.'\
@@ -161,7 +161,7 @@ module Engine
             name: 'CFOR major shareholding',
             sym: 'CMS',
             value: 180,
-            revenue: 25,
+            revenue: 40,
             desc: 'Owning player immediately receives the President\'s certificate of the'\
                   ' CFOR without further payment. This private company may not be sold to any corporation, and does'\
                   ' not exchange hands if the owning player loses the Presidency of the CFOR.'\
@@ -176,7 +176,7 @@ module Engine
             name: 'Est major shareholding',
             sym: 'EMS',
             value: 180,
-            revenue: 25,
+            revenue: 40,
             desc: 'Owning player immediately receives the President\'s certificate of the'\
                   ' Est without further payment. This private company may not be sold to any corporation, and does'\
                   ' not exchange hands if the owning player loses the Presidency of the Est.'\
@@ -190,7 +190,7 @@ module Engine
             name: 'Belge major shareholding',
             sym: 'BMS',
             value: 200,
-            revenue: 30,
+            revenue: 60,
             desc: 'Owning player immediately receives the President\'s certificate of the'\
                   ' Belge without further payment. This private company may not be sold to any corporation, and does'\
                   ' not exchange hands if the owning player loses the Presidency of the Belge.'\
@@ -228,7 +228,7 @@ module Engine
             name: 'Chemin de fer d\'Anvers à Gand',
             logo: '1894/AG',
             simple_logo: '1894/AG.alt',
-            tokens: [0, 40, 100, 100],
+            tokens: [0, 40, 100, 100, 100],
             max_ownership_percent: 60,
             coordinates: 'D15',
             color: '#fcf75e',
