@@ -522,7 +522,7 @@ module Engine
               'entity' => 'WORK_IN_PROGRESS',
               'entity_type' => 'company',
               'target' => 'L4',
-              'target_type' => 'hex'
+              'target_type' => 'hex',
             }
             expect(game.exception).to be_nil
             expect(game.process_action(action).exception).to be_a(GameError)
@@ -540,7 +540,7 @@ module Engine
               'entity_type' => 'corporation',
               'city' => '793-0-0',
               'slot' => 1,
-              'tokener' => 'PB'
+              'tokener' => 'PB',
             }
             expect(game.exception).to be_nil
             expect(game.process_action(action).exception).to be_a(GameError)
