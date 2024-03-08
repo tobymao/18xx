@@ -82,7 +82,9 @@ module Engine
             should_move = shares.owner == shares.corporation.owner || !@round.share_sold.include?(shares)
             @round.share_sold << shares if shares.owner != shares.corporation.owner && !@round.share_sold.include?(shares)
 
+            @round.players_sold[shares.owner][shares.corporation] = :now
             @game.sell_shares_and_change_price(shares, swap: swap, movement: (should_move ? @game.sell_movement : :none))
+            @game.log << "#{shares.corporation.name}'S share price protected (share protection rule: avoid the \"wait-and-sell-in-player-order\" technique)" unless should_move
           end
         end
       end

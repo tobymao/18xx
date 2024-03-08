@@ -41,7 +41,7 @@ module Engine
     end
 
     def ==(other)
-      other&.player? && (@name == other&.name)
+      other&.player? && other.player != nil && (@name == other.name)
     end
 
     def player?
