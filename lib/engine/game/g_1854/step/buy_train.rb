@@ -8,9 +8,7 @@ module Engine
       module Step
         class BuyTrain < Engine::Step::BuyTrain
           def can_entity_buy_train?(entity)
-            return true if entity.corporation? || entity.minor?
-
-            super
+            entity.corporation? || entity.minor?
           end
 
           def buyable_trains(entity)
