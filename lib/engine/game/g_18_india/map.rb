@@ -130,6 +130,9 @@ module Engine
           'L21' => 'ORE2',
           'O12' => 'TEA2',
           'P15' => 'RICE',
+          # Commodity Destination Towns
+          'P19' => 'HALDIA',
+          'M24' => 'VISAKHAPATNAM',
         }.freeze
 
         HEXES = {
@@ -249,16 +252,16 @@ module Engine
 
           # Red hexes are variable revenue cities
           red: {
-            ['A16'] => 'city=revenue:20;path=a:4,b:_0;path=a:5,b:_0',
-            ['D3'] => 'city=revenue:30;path=a:0,b:_0;path=a:4,b:_0;path=a:5,b:_0',
-            ['D23'] => 'city=revenue:40,slots:2;city=revenue:40;path=a:0,b:_0;path=a:3,b:_0;'\
-                       'path=a:4,b:_1;path=a:5,b:_1;border=edge:5,type:province',
-            ['G36'] => 'city=revenue:20,slots:2;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
-            ['K30'] => 'city=revenue:30,slots:2;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;border=edge:1,type:province',
-            ['K40'] => 'city=revenue:20;path=a:4,b:_0',
-            ['M10'] => 'city=revenue:10;path=a:0,b:_0;path=a:2,b:_0;city=revenue:10;path=a:1,b:_1;path=a:5,b:_1',
-            ['Q10'] => 'city=revenue:20;path=a:0,b:_0;path=a:1,b:_0;path=a:5,b:_0',
-            ['R17'] => 'city=revenue:10;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;border=edge:1,type:water,cost:30',
+            ['A16'] => 'city=revenue:40;path=a:4,b:_0;path=a:5,b:_0;label=+?',
+            ['D3'] => 'city=revenue:50;path=a:0,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=+?;',
+            ['D23'] => 'city=revenue:60,slots:2;city=revenue:60;path=a:0,b:_0;path=a:3,b:_0;'\
+                       'path=a:4,b:_1;path=a:5,b:_1;border=edge:5,type:province;label=+?',
+            ['G36'] => 'city=revenue:40,slots:2;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=+?',
+            ['K30'] => 'city=revenue:50,slots:2;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;border=edge:1,type:province;label=+?',
+            ['K40'] => 'city=revenue:40;path=a:4,b:_0;label=+?',
+            ['M10'] => 'city=revenue:30;path=a:0,b:_0;path=a:2,b:_0;city=revenue:30;path=a:1,b:_1;path=a:5,b:_1;label=+?',
+            ['Q10'] => 'city=revenue:40;path=a:0,b:_0;path=a:1,b:_0;path=a:5,b:_0;label=+?',
+            ['R17'] => 'city=revenue:30;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;border=edge:1,type:water,cost:30;label=+?',
           },
           gray: {
             %w[B11 B13] => 'path=a:0,b:3',

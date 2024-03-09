@@ -240,8 +240,8 @@ module Engine
         }.freeze
 
         def setup_tokens
-          @mine_corp = dummy_corp('Mines', '18_ardennes/mine', MINE_HEXES)
-          @port_corp = dummy_corp('Ports', '18_ardennes/port', PORT_HEXES)
+          @mine_corp = dummy_corp('Mine', '18_ardennes/mine', MINE_HEXES)
+          @port_corp = dummy_corp('Port', '18_ardennes/port', PORT_HEXES)
           FORT_HEXES.each { |fort, coord| hex_by_id(coord).assign!(fort) }
         end
 
@@ -359,6 +359,17 @@ module Engine
           return unless corporation.type == :minor
 
           super
+        end
+
+        # Returns true if there is a route between one of the minor's tokens
+        # and one of the major's tokens, or if they both have tokens co-located
+        # on the same tile.
+        def major_minor_connected?(major, minor)
+          minor_cities = minor.placed_tokens.map(&:city)
+          major_cities = major.placed_tokens.map(&:city)
+
+          minor_cities.map(&:hex).intersect?(major_cities.map(&:hex)) ||
+            minor_cities.any? { |city| @graph.connected_nodes(major)[city] }
         end
       end
     end
