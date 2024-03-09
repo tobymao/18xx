@@ -8,14 +8,23 @@ module Engine
           GOLD_BONUS = 50
           NUGGET_BONUS = 130
 
+          GHOST_BONUS = 10
+          GHOST_CHOICE = 'ghost_town'
+
           def help
-            "You may ship a gold cube from the map for +#{@game.format_currency(GOLD_BONUS)}" if choosing?(current_entity)
+            return unless choosing?(current_entity)
+
+            case @choose_state
+            when :gold
+              "You may ship a gold cube from the map for +#{@game.format_currency(GOLD_BONUS)}"
+            end
           end
 
           def actions(entity)
             actions = super.dup
-            actions << 'choose' if choosing?(entity) ||
-                                   (shipper?(entity) && choosing?(entity.owner))
+            actions << 'choose' if choosing?(entity)
+
+            # puts "actions(#{entity.name}) = #{actions.to_s}" if [entity, entity.owner].include?(current_entity)
             actions
           end
 
@@ -32,25 +41,46 @@ module Engine
           end
 
           def setup
+            # puts 'setup!'
+
+            # :gold, :ghost, :done
+            @choose_state = :gold
+
             @shippable_gold = nil
-            @shipped_gold = false
+            @gold_hex = nil
+
+            @placed_ghost_town = false
           end
 
-          # choices that still need to be implemented:
-          #
-          # - Y2: after last gold is shipped from a hex, may place a ghost town
-          # token there
-
           def choice_name
-            "Choose a Gold to ship for +#{@game.format_currency(GOLD_BONUS)}"
+            case @choose_state
+            when :gold
+              "Choose a Gold to ship for +#{@game.format_currency(GOLD_BONUS)}"
+            when :ghost
+              "You may place a Ghost Town in #{@gold_hex.id} for "\
+              "+#{@game.format_currency(GHOST_BONUS)} on future routes for "\
+              "#{@game.ghost_town_tours&.owner&.name}"
+            end
           end
 
           def choosing?(entity)
-            entity == current_entity && !@shipped_gold && @game.gold_slots_available? && !shippable_gold.empty?
+            case @choose_state
+            when :gold
+              gold_shipper?(entity) &&
+                @game.gold_slots_available? && !shippable_gold.empty?
+            when :ghost
+              ghost_town_corp?(entity) &&
+                ghost_town_ability&.count&.positive? && @gold_hex.tile.icons.none? { |i| i.name == 'gold' }
+            end
           end
 
           def choices
-            ship_gold_choices
+            case @choose_state
+            when :gold
+              ship_gold_choices
+            when :ghost
+              ghost_town_choices
+            end
           end
 
           def ship_gold_choices
@@ -63,18 +93,29 @@ module Engine
             end
           end
 
+          def ghost_town_choices
+            { GHOST_CHOICE => 'Place a Ghost Town' }
+          end
+
           def process_choose(action)
-            ship_gold(action)
+            case @choose_state
+            when :gold
+              ship_gold(action)
+              @choose_state = ghost_town_corp?(current_entity) ? :ghost : :done
+            when :ghost
+              place_ghost_town(action)
+              @choose_state = :done
+            end
           end
 
           def ship_gold(action)
-            @shipped_gold = true
             @game.gold_shipped += 1
             @game.update_gold_corp_cash!
 
             entity = action.entity
             hex_id = action.choice
             hex = @game.hex_by_id(hex_id)
+            @gold_hex = hex
             location = hex.location_name ? " (#{hex.location_name})" : ''
 
             if entity == @game.gold_nugget
@@ -116,19 +157,54 @@ module Engine
           end
 
           def available_hex(entity, hex)
-            !@shipped_gold &&
-              shipper?(entity) &&
-              shippable_gold.include?(hex)
+            case @choose_state
+            when :gold
+              gold_shipper?(entity) &&
+                shippable_gold.include?(hex)
+            when :ghost
+              hex == @gold_hex
+            end
           end
 
-          # choices are accessed via the map
           def render_choices?
-            false
+            case @choose_state
+            when :gold
+              # choices are accessed via the map
+              false
+            when :ghost
+              true
+            end
           end
 
-          def shipper?(entity)
+          def gold_shipper?(entity)
             entity == current_entity ||
               (entity == @game.gold_nugget && entity.owner == current_entity)
+          end
+
+          def ghost_town_corp?(entity)
+            entity == current_entity &&
+              entity == @game.ghost_town_tours&.owner
+          end
+
+          def place_ghost_town(action)
+            raise GameError, "Cannot place ghost town for choice \"#{action.choice}\"" unless action.choice == GHOST_CHOICE
+
+            hex = @gold_hex
+
+            @log << "#{action.entity.name} (#{@game.ghost_town_tours.name}) places a Ghost Town in #{hex.id}"
+
+            # place the icon
+            hex.tile.icons << Part::Icon.new('cow_skull', 'ghost_town')
+
+            # use the cube
+            ability = ghost_town_ability
+            ability.use!
+
+            @log << 'no more ghost town tokens' if ability.count.zero?
+          end
+
+          def ghost_town_ability
+            @ghost_town_ability ||= @game.ghost_town_tours.all_abilities[0]
           end
         end
       end

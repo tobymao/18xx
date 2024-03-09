@@ -21,6 +21,8 @@ require 'view/game/cash_crisis'
 require 'view/game/double_head_trains'
 require 'view/game/combined_trains'
 require 'view/game/buy_token'
+require 'view/game/corporate_buy_companies'
+require 'view/game/corporate_sell_companies'
 
 module View
   module Game
@@ -59,7 +61,7 @@ module View
           left << h(Choose) if @current_actions.include?('choose')
           left << h(BuyToken, entity: entity) if @current_actions.include?('buy_token')
 
-          if @current_actions.include?('buy_train')
+          if @current_actions.include?('buy_train') || @current_actions.include?('sell_train')
             left << h(IssueShares) if @current_actions.include?('sell_shares') || @current_actions.include?('buy_shares')
             left << h(BuyTrains)
           elsif @current_actions.include?('buy_power')
@@ -130,10 +132,15 @@ module View
           }
 
           aquire_company_action = @current_actions.include?('acquire_company')
+          corporate_stock_round = @step.respond_to?(:corporate_stock_round?) && @step.corporate_stock_round?
+          hide_map = aquire_company_action || corporate_stock_round
+
           left << h(MapLegend, game: @game) if @game.show_map_legend? && @game.show_map_legend_on_left?
-          right << h(Map, game: @game) unless aquire_company_action
+          right << h(Map, game: @game) unless hide_map
           right << h(:div, div_props, [h(BuyCompanies, limit_width: true)]) if @current_actions.include?('buy_company')
           right << h(:div, div_props, [h(AcquireCompanies)]) if aquire_company_action
+          right << h(:div, div_props, [h(CorporateSellCompanies)]) if @current_actions.include?('corporate_sell_company')
+          right << h(:div, div_props, [h(CorporateBuyCompanies)]) if @current_actions.include?('corporate_buy_company')
 
           left_props = {
             style: {
