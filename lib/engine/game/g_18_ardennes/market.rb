@@ -8,6 +8,7 @@ module Engine
         BANK_CASH = 12_000
         CERT_LIMIT = { 3 => 11, 4 => 8, 5 => 6 }.freeze
         STARTING_CASH = { 3 => 700, 4 => 525, 5 => 420 }.freeze
+        SOLD_OUT_INCREASE = false
 
         STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(
           par_1: :red,
