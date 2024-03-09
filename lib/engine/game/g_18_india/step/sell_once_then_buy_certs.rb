@@ -322,12 +322,12 @@ module Engine
             @game.num_certs(entity) > @game.cert_limit(entity)
           end
 
-          # modified to remove sell limit checks and prevent dumping of manager's 0% share
+          # modified to remove sell limit checks, can't sell president's share
           def can_sell?(entity, bundle)
             return unless bundle
             return false unless selling_round?
             return false if entity != bundle.owner
-            return false if bundle.presidents_share && bundle.corporation.presidents_share.percent.zero?
+            return false if bundle.presidents_share
 
             can_dump?(entity, bundle)
           end

@@ -51,7 +51,9 @@ module Engine
         next_entity! unless @game.finished
       end
 
-      def after_end_of_turn(operator); end
+      def after_end_of_turn(operator)
+        @game.after_end_of_operating_turn(operator)
+      end
 
       def force_next_entity!
         @steps.each(&:pass!)
