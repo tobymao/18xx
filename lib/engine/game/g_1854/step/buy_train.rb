@@ -17,14 +17,6 @@ module Engine
             # allow purchase of 3 train when 2s are all sold
             trains_to_buy = super
 
-            any_twos_upcoming = @game.depot.upcoming.any? { |t| t.name == '2' }
-            any_threes_upcoming = @game.depot.upcoming.any? { |t| t.name == '3' }
-            depot_three_available = trains_to_buy.any? { |t| t.name == '3' && t.owner == @game.depot }
-
-            if !any_twos_upcoming && any_threes_upcoming && !depot_three_available
-              trains_to_buy << @game.depot.upcoming.find { |t| t.name == '3' }
-            end
-
             trains_to_buy.reject! { |t| t.name == '3+' } if @game.depot.upcoming.any? { |t| t.name == '2+' }
 
             trains_to_buy.reject! { |t| t.name == '2+' } if @game.depot.upcoming.any? { |t| t.name == '1+' }
