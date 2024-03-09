@@ -21,11 +21,11 @@ module Engine
           end
 
           def all_passed!
-            # Everyone has passed so we need to run a fake OR.
             if @companies.include?(@cheapest)
               # No one has bought anything so we reduce the value of the cheapest company.
               increase_discount!(@cheapest, 5)
             else
+              # Everyone has passed so we need to run an OR.
               @game.trigger_auction_or
             end
 
