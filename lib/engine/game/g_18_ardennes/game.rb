@@ -153,7 +153,7 @@ module Engine
           # Existing shares change from 20% to 10%.
           @_shares.values
                   .select { |share| share.corporation == corporation }
-                  .each { |share| share.percent = 10 }
+                  .each { |share| share.percent /= 2 }
           corporation.share_holders.transform_values! { |percent| percent / 2 }
 
           # Five new 10% shares are added to the corporation treasury.
