@@ -2216,6 +2216,12 @@ module Engine
         self.class::ASSIGNMENT_TOKENS[assignment]
       end
 
+      def remove_icons(hex_list, icon_name)
+        hex_list.each do |hex|
+          hex_by_id(hex).tile.icons.reject! { |icon| icon.name == icon_name }
+        end
+      end
+
       def bankruptcy_limit_reached?
         case self.class::BANKRUPTCY_ENDS_GAME_AFTER
         when :one
@@ -2906,7 +2912,9 @@ module Engine
         @log << '-- Event: Private companies close --'
         @companies.each do |company|
           if (ability = abilities(company, :close, on_phase: 'any')) && (ability.on_phase == 'never' ||
-                    @phase.phases.any? { |phase| ability.on_phase == phase[:name] })
+                    @phase.phases.any? do |phase|
+                      ability.on_phase == phase[:name]
+                    end) && ability_right_owner?(company.owner, ability)
             next
           end
 

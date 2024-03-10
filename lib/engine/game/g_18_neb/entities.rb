@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative 'map'
+
 module Engine
   module Game
     module G18Neb
@@ -48,7 +50,11 @@ module Engine
                 closed_when_used_up: true,
                 remove: '6',
               },
-              # TODO: keep tokens on close
+              {
+                type: 'close',
+                owner_type: 'corporation',
+                on_phase: '6',
+              },
             ],
           },
           {
@@ -59,20 +65,21 @@ module Engine
                   'its token placement step. Once placed, the corporation gets a $20 bonus for the selected '\
                   'Town or City. The token starts as an Open token, which allows other corporations to get '\
                   'a $10 bonus for the selected Town or City. The token may be converted to a closed token, '\
-                  'which removes the $10 bonus for other corporations, but closes the private.',
+                  'which removes the $10 bonus for other corporations and closes the private.',
             sym: 'P3',
             abilities: [
               {
                 type: 'assign_hexes',
-                hexes: %w[B6 C3 C7 C9 E7 F6 G7 G11 H8 H10 I3 I5 J8 J12 K3 K7 L10],
+                hexes: Map::CITY_HEXES,
                 count: 1,
                 when: 'token',
                 owner_type: 'corporation',
               },
-              # TODO: convert to closed token
-              # TODO add in route revenue
-              # TODO cattle token
-              # Remove token on phase 6
+              {
+                type: 'close',
+                owner_type: 'corporation',
+                on_phase: '6',
+              },
             ],
           },
           {
@@ -122,7 +129,6 @@ module Engine
                 when: 'owning_player_sr_turn',
                 from: %w[ipo market],
               },
-              # TODO: exchange pay the corporation if incremental
             ],
           },
           {
