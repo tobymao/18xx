@@ -13,17 +13,11 @@ module Engine
             super
           end
 
-          def setup
-            super
-            original_companies = @game.initial_auction_companies.sort_by(&:value)
-            @companies = @game.companies.select { |company| !company.owned_by_player? && !company.closed? }
-            @cheapest = original_companies.first
-          end
-
           def all_passed!
-            if @companies.include?(@cheapest)
+            # FIXME: currently auction is not always resuming with the correct player
+            if @companies.include?(@game.first_company)
               # No one has bought anything so we reduce the value of the cheapest company.
-              increase_discount!(@cheapest, 5)
+              increase_discount!(@game.first_company, 5)
             else
               # Everyone has passed so we need to run an OR.
               @game.trigger_auction_or

@@ -108,7 +108,7 @@ module Engine
             Engine::Step::Exchange,
             G1854::Step::Track,
             Engine::Step::Token,
-            G1854::Step::Route,
+            Engine::Step::Route,
             G1854::Step::Dividend,
             Engine::Step::DiscardTrain,
             G1854::Step::BuyTrain,
@@ -342,6 +342,14 @@ module Engine
 
         def formatted_minor_name(minor)
           "#{minor.full_name} (#{minor.name})"
+        end
+
+        def first_company
+          @companies.first
+        end
+
+        def initial_auction_companies
+          super.select { |company| !company.owned_by_player? && !company.closed? }
         end
 
         def reservation_corporations

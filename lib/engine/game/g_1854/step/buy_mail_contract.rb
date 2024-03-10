@@ -10,6 +10,7 @@ module Engine
           ACTIONS = %w[buy_mail_contract pass].freeze
 
           def actions(entity)
+            # TODO: This functionality is currently incomplete
             return [] if entity != current_entity
             return [] unless can_entity_buy_mail_contract?(entity)
 
