@@ -106,8 +106,8 @@ module Engine
             distance: [{ 'nodes' => %w[town], 'pay' => 2 },
                        { 'nodes' => %w[town city offboard], 'pay' => 2 }],
             price: 100,
-            rusts_on: '4+4',
-            num: 5,
+            rusts_on: '4D',
+            num: 2,
           },
           {
             name: '3+3',
@@ -115,7 +115,7 @@ module Engine
                        { 'nodes' => %w[town city offboard], 'pay' => 3 }],
             price: 200,
             rusts_on: '6/8',
-            num: 4,
+            num: 1,
           },
           {
             name: '4+4',
@@ -123,13 +123,13 @@ module Engine
                        { 'nodes' => %w[town city offboard], 'pay' => 4 }],
             price: 300,
             rusts_on: '4D',
-            num: 3,
+            num: 1,
           },
           {
             name: '5/7',
             distance: [{ 'nodes' => %w[city offboard town], 'pay' => 5, 'visit' => 7 }],
             price: 450,
-            num: 2,
+            num: 1,
             events: [{ 'type' => 'close_companies' },
                      { 'type' => 'full_capitalization' },
                      { 'type' => 'local_railways_available' }],
@@ -168,6 +168,7 @@ module Engine
 
         ASSIGNMENT_TOKENS = {
           CATTLE_OPEN_ICON => '/icons/18_neb/cattle_open.svg',
+          CATTLE_CLOSED_ICON => '/icons/18_neb/cattle_closed.svg',
         }.freeze
 
         TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: :not_if_upgraded }].freeze
@@ -232,11 +233,8 @@ module Engine
           @log << "-- Event: #{EVENTS_TEXT['remove_tokens'][1]} --"
           return unless @cattle_token_hex
 
-          if cattle_company.closed?
-            remove_icons(self.class::CITY_HEXES, self.class::CATTLE_CLOSED_ICON)
-          else
-            remove_icons(self.class::CITY_HEXES, self.class::CATTLE_OPEN_ICON)
-          end
+          @cattle_token_hex.remove_assignment!(self.class::CATTLE_OPEN_ICON)
+          @cattle_token_hex.remove_assignment!(self.class::CATTLE_CLOSED_ICON)
         end
 
         def reorder_players(order = nil, log_player_order: false)
@@ -267,9 +265,9 @@ module Engine
             G18Neb::Step::Assign,
             G18Neb::Step::SpecialChoose,
             G18Neb::Step::BuyCompany,
-            G18Neb::Step::SpecialTrack,
+            Engine::Step::SpecialTrack,
             G18Neb::Step::Track,
-            Engine::Step::Token,
+            G18Neb::Step::Token,
             Engine::Step::Route,
             G18Neb::Step::Dividend,
             Engine::Step::DiscardTrain,
@@ -295,6 +293,25 @@ module Engine
 
         def town_to_city_upgrade?(from, to)
           %w[3 4 58].include?(from.name) && %w[X01 X02 X03].include?(to.name)
+        end
+
+        def upgrade_cost(tile, _hex, entity, spender)
+          terrain_cost = tile.upgrades.sum(&:cost)
+          discounts = 0
+
+          # Tile discounts must be activated
+          if entity.company? && (ability = entity.all_abilities.find { |a| a.type == :tile_discount })
+            discounts = tile.upgrades.sum do |upgrade|
+              next unless upgrade.terrains.include?(ability.terrain)
+
+              discount = [upgrade.cost, ability.discount].min
+              log_cost_discount(spender, ability, discount) if discount.positive?
+              discount
+            end
+          end
+
+          terrain_cost -= TILE_COST if terrain_cost.positive?
+          terrain_cost - discounts
         end
 
         def purchasable_companies(entity = nil)
@@ -393,7 +410,8 @@ module Engine
           closed_cattle = stops.any? { |stop| stop.hex.assigned?(self.class::CATTLE_CLOSED_ICON) }
           open_cattle = !closed_cattle && stops.any? { |stop| stop.hex.assigned?(self.class::CATTLE_OPEN_ICON) }
 
-          if cattle_company.owner == route.train.owner && (open_cattle || closed_cattle)
+          if (open_cattle && route.train.owner.assigned?(self.class::CATTLE_OPEN_ICON)) ||
+              (closed_cattle && route.train.owner.assigned?(self.class::CATTLE_CLOSED_ICON))
             20
           elsif open_cattle
             10
@@ -403,7 +421,8 @@ module Engine
         end
 
         def cattle_token_assigned!(hex)
-          cattle_company.abilities.add_ability(Ability::ChooseAbility(choices: ['Close Token']))
+          cattle_company.add_ability(Engine::Ability::ChooseAbility.new(type: :choose_ability, choices: ['Close Token'],
+                                                                        when: 'token'))
           @cattle_token_hex = hex
         end
 

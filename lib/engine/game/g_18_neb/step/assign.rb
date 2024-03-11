@@ -11,13 +11,14 @@ module Engine
             company = action.entity
             target = action.target
 
-            if !@game.loading && !(ability = @game.abilities(company, :assign_hexes))
+            unless (ability = @game.abilities(company, :assign_hexes))
               raise GameError,
                     "Could not assign #{company.name} to #{target.name}; :assign_hexes ability not found"
             end
 
+            @log << "#{company.owner.name} (#{company.name}) places open cattle token on #{target.name}"
             target.assign!(@game.class::CATTLE_OPEN_ICON)
-            @log << "#{company.owner.name} (#{company.name}) places cattle token (open) on #{target.name}"
+            company.owner.assign!(@game.class::CATTLE_OPEN_ICON)
             ability.use!
             @game.cattle_token_assigned!(target)
           end

@@ -11,11 +11,13 @@ module Engine
             company = action.entity
             raise GameError, "#{company.name} does not have a choice ability" if company != @game.cattle_company
 
-            @game.cattle_token_hex.remove_assignment!(@game.class::CATTLE_OPEN_ICON)
-            @game.cattle_token_hex.assign!(@game.class::CATTLE_CLOSED_ICON)
-            @game.cattle_company.close!
             @log << "#{company.owner.name} (#{company.name}) closes cattle token"
             @log << "#{company.name} closes"
+            @game.cattle_token_hex.remove_assignment!(@game.class::CATTLE_OPEN_ICON)
+            company.owner.remove_assignment!(@game.class::CATTLE_OPEN_ICON)
+            @game.cattle_token_hex.assign!(@game.class::CATTLE_CLOSED_ICON)
+            company.owner.assign!(@game.class::CATTLE_CLOSED_ICON)
+            company.close!
           end
         end
       end

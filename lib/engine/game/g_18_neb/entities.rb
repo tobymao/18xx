@@ -23,6 +23,7 @@ module Engine
               {
                 type: 'tile_lay',
                 owner_type: 'corporation',
+                when: 'track',
                 hexes: %w[B8],
                 tiles: %w[7 8 9 80 81 82 83],
                 count: 1,
@@ -40,15 +41,25 @@ module Engine
             abilities: [
               {
                 type: 'tile_discount',
-                description: 'Bridge discount tokens',
-                discount: 60,
+                when: 'track',
                 terrain: 'water',
                 owner_type: 'corporation',
-                hexes: %w[K3 K5 K7 J8 L8 L10],
+                discount: 60,
+                count_per_or: 1,
+                count: 2,
+              },
+              {
+                type: 'tile_lay',
+                when: 'track',
+                owner_type: 'corporation',
+                tiles: [],
+                hexes: Map::WATER_HEXES,
+                reachable: true,
+                special: false,
+                consume_tile_lay: true,
                 count_per_or: 1,
                 count: 2,
                 closed_when_used_up: true,
-                remove: '6',
               },
               {
                 type: 'close',

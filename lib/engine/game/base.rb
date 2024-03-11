@@ -2911,10 +2911,8 @@ module Engine
       def event_close_companies!
         @log << '-- Event: Private companies close --'
         @companies.each do |company|
-          if (ability = abilities(company, :close, on_phase: 'any')) && (ability.on_phase == 'never' ||
-                    @phase.phases.any? do |phase|
-                      ability.on_phase == phase[:name]
-                    end) && ability_right_owner?(company.owner, ability)
+          if (ability = abilities(company, :close, on_phase: 'any')) &&
+              (ability.on_phase == 'never' || @phase.future.any? { |phase| ability.on_phase == phase[:name] })
             next
           end
 
