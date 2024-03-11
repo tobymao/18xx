@@ -706,6 +706,12 @@ module Engine
           end
         end
 
+        def remove_icons(hex_list, icon_name)
+          hex_list.each do |hex|
+            hex_by_id(hex).tile.icons.reject! { |icon| icon.name == icon_name }
+          end
+        end
+
         def sellable_bundles(player, corporation)
           return [] if corporation.receivership?
 
