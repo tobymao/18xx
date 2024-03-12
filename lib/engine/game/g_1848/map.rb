@@ -69,7 +69,7 @@ module Engine
           '241' => {
             'count' => 1,
             'color' => 'blue',
-            'code' => 'label=TAS;offboard=revenue:50;icon=image:anchor;path=a:2,b:_0;path=a:1,b:_0',
+            'code' => 'label=TAS;offboard=revenue:50;icon=image:anchor;path=a:2,b:_0,terminal:1;path=a:1,b:_0,terminal:1',
           },
           '611' => 4,
           '915' => 1,
@@ -108,11 +108,13 @@ module Engine
         HEXES = {
           red: {
             ['A4'] =>
-                     'offboard=revenue:yellow_10|green_20|brown_40|gray_60;path=a:5,b:_0;path=a:0,b:_0;border=edge:4',
+                     'offboard=revenue:yellow_10|green_20|brown_40|gray_60;path=a:5,b:_0,terminal:1;path=a:0,b:_0,terminal:1;'\
+                     'border=edge:4',
             ['A6'] =>
-                   'offboard=revenue:yellow_10|green_20|brown_40|gray_60;path=a:5,b:_0;path=a:0,b:_0;border=edge:1',
+                   'offboard=revenue:yellow_10|green_20|brown_40|gray_60;path=a:5,b:_0,terminal:1;path=a:0,b:_0,terminal:1;'\
+                   'border=edge:1',
             ['A18'] =>
-                   'offboard=revenue:yellow_10|green_20|brown_30|gray_40;path=a:5,b:_0;path=a:0,b:_0',
+                   'offboard=revenue:yellow_10|green_20|brown_30|gray_40;path=a:5,b:_0,terminal:1;path=a:0,b:_0,terminal:1',
             ['D1'] =>
                    'city=revenue:yellow_20|green_40|brown_60|gray_80;path=a:4,b:_0,terminal:1;' \
                    'path=a:5,b:_0,terminal:1;path=a:3,b:_0,terminal:1;label=K',
