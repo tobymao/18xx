@@ -41,6 +41,10 @@ module Engine
       @phases[@index + 1]
     end
 
+    def future
+      @phases[@index + 1..-1]
+    end
+
     def train_limit(entity)
       if @train_limit.is_a?(Hash)
         @train_limit[entity.type] || 0
