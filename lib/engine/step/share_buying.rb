@@ -47,7 +47,7 @@ module Engine
           (!corporation.counts_for_limit || exchange || @game.num_certs(entity) < @game.cert_limit(entity))
       end
 
-      def can_gain_from_player?(entity, _bundle)
+      def can_gain_from_player?(entity, bundle)
         (@game.class::BUY_SHARE_FROM_OTHER_PLAYER && entity.player?) ||
           (@game.class::CORPORATE_BUY_SHARE_ALLOW_BUY_FROM_PRESIDENT && entity.corporation? && bundle.owner == entity.owner)
       end
