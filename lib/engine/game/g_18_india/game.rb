@@ -99,7 +99,8 @@ module Engine
         VARIABLE_CITY_HEXES = %w[A16 D3 D23 G36 K30 K40 M10 Q10 R17].freeze
         VARIABLE_CITY_NAMES = %w[KARACHI LAHORE MUMBAI KOCHI CHENNAI COLOMBO NEPAL CHINA DHAKA].freeze
 
-        COMMODITY_NAMES = %w[OIL ORE1 COTTON SPICES GOLD OPIUM TEA1 ORE2 TEA2 RICE].freeze
+        COMMODITY_NAMES = %w[OIL ORE1 COTTON SPICES GOLD OPIUM TEA1 ORE2 TEA2 RICE JEWELRY].freeze
+        COMMODITY_DESTINATIONS = %w[KARACHI LAHORE MUMBAI KOCHI CHENNAI COLOMBO NEPAL CHINA HALDIA VISAKHAPATNAM].freeze
 
         TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false },
                      { lay: :not_if_upgraded, upgrade: false }, { lay: :not_if_upgraded, upgrade: false }].freeze
@@ -430,10 +431,11 @@ module Engine
 
         def operating_round(round_num)
           Engine::Round::Operating.new(self, [
-            # Engine::Step::Exchange,
+            # Engine::Step::Exchange, # this step may not be needed?
             Engine::Step::HomeToken,
             Engine::Step::Assign,
-            G18India::Step::SpecialTrack,
+            G18India::Step::SpecialTrack, # used by Portuguese & Dutch EIC (track lay & track upgrade)
+            G18India::Step::SpecialToken, # needed for Danish EIC (cheater token)? [error on player not haveing token]
             G18India::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
@@ -818,6 +820,10 @@ module Engine
               bonus = 30 if visited_names.include?('CHINA') || visited_names.include?('NEPAL')
               claim_concession(['RICE'], corporation) if bonus.positive?
               revenue += bonus
+            when 'JEWELRY'
+              # Jewelry concession pays 20 if delivered to any commodity destination
+              bonus = 20 unless (visited_names & COMMODITY_DESTINATIONS).empty?
+              revenue += bonus
             end
           end
           LOGGER.debug "GAME.commodity_bonus >> visited: #{visited_names}  sources: #{commodity_sources}  revenue: #{revenue}"
@@ -846,7 +852,7 @@ module Engine
         # pay owner value of company before closing
         def company_is_closing(company, silent = false)
           @bank.spend(company.value, company.owner)
-          @log << "#{company.name} closes and #{company.owner} receives #{company.value} from the Bank." unless silent
+          @log << "#{company.name} closes and #{company.owner.name} receives #{company.value} from the Bank." unless silent
         end
 
         def company_header(company)
