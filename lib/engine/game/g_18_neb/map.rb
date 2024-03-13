@@ -190,6 +190,9 @@ module Engine
         # rubocop:enable Layout/LineLength
 
         LAYOUT = :flat
+
+        CITY_HEXES = %w[B6 C3 C7 C9 E7 F6 G7 G11 H8 H10 I3 I5 J8 J12 K3 K7 L10].freeze
+        WATER_HEXES = %w[K3 K5 K7 J8 L8 L10].freeze
       end
     end
   end
