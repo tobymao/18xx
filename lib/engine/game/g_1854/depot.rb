@@ -6,11 +6,11 @@ module Engine
   module Game
     module G1854
       class Depot < Engine::Depot
-        def depot_trains(clear: false)
-          d_trains = super
-          d_trains.reject! { |t| t.name == '3+' } if @game.depot.upcoming.any? { |t| t.name == '2+' }
-          d_trains.reject! { |t| t.name == '2+' } if @game.depot.upcoming.any? { |t| t.name == '1+' }
-          d_trains
+        def available_upcoming_trains
+          available = super
+          available.reject! { |t| t.name == '3+' } if @upcoming.any? { |t| t.name == '2+' }
+          available.reject! { |t| t.name == '2+' } if @upcoming.any? { |t| t.name == '1+' }
+          available
         end
       end
     end
