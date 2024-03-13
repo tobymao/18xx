@@ -440,7 +440,7 @@ module Engine
 
         def tokens_needed(corporation)
           tokens_needed = { 2 => 1, 5 => 2, 10 => 4 }[corporation.total_shares] - corporation.tokens.size
-          tokens_needed += 1 if corporation.companies.any? { |c| c.id == 'TS' }
+          tokens_needed += 1 if corporation.companies.any? { |c| c.id == TRAIN_STATION_PRIVATE_NAME }
           tokens_needed
         end
 
