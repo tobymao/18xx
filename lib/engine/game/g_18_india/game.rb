@@ -435,7 +435,7 @@ module Engine
             Engine::Step::HomeToken,
             Engine::Step::Assign,
             G18India::Step::SpecialTrack, # used by Portuguese & Dutch EIC (track lay & track upgrade)
-            G18India::Step::SpecialToken, # needed for Danish EIC (cheater token)? [error on player not haveing token]
+            # G18India::Step::SpecialToken, # needed for Danish EIC (cheater token)? [error on player not haveing token]
             G18India::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
@@ -777,25 +777,25 @@ module Engine
               revenue += bonus
             when 'SPICES'
               # SPICES => KOCHI [G36] + 70
+              if visited_names.include?('KOCHI')
+                bonus = 70
               # SPICES => COLOMBO [K40] + 50
               # SPICES => CHENNAI [K30] + 50
+              elsif visited_names.include?('COLOMBO') ||
+                    visited_names.include?('CHENNAI')
+                bonus = 50
               # SPICES => LAHORE [D3] + 40
               # SPICES => MUMBAI [D23] + 40
               # SPICES => CHINA [Q10] + 40
               # SPICES => NEPAL [M10] + 40
-              # SPICES => KARACHI [A16] + 30
-              # SPICES => HALDIA [P19] + 30
-              # SPICES => VISAKHAPATNAM [M24] + 30
-              if visited_names.include?('KOCHI')
-                bonus = 70
-              elsif visited_names.include?('COLOMBO') ||
-                    visited_names.include?('CHENNAI')
-                bonus = 50
               elsif visited_names.include?('LAHORE') ||
                     visited_names.include?('MUMBAI') ||
                     visited_names.include?('CHINA') ||
                     visited_names.include?('NEPAL')
                 bonus = 40
+              # SPICES => KARACHI [A16] + 30
+              # SPICES => HALDIA [P19] + 30
+              # SPICES => VISAKHAPATNAM [M24] + 30
               elsif visited_names.include?('KARACHI') ||
                     visited_names.include?('HALDIA') ||
                     visited_names.include?('VISAKHAPATNAM')
@@ -853,6 +853,13 @@ module Engine
         def company_is_closing(company, silent = false)
           @bank.spend(company.value, company.owner)
           @log << "#{company.name} closes and #{company.owner.name} receives #{company.value} from the Bank." unless silent
+        end
+
+        # Adjust token owner if company is player owned?
+        def token_owner(entity)
+          return @step.current_entity if entity&.player?
+
+          entity&.company? ? entity.owner : entity
         end
 
         def company_header(company)
