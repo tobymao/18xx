@@ -136,7 +136,7 @@ module Engine
           },
           {
             name: '6/8',
-            distance: [{ 'pay' => 6, 'visit' => 8 }],
+            distance: [{ 'nodes' => %w[city offboard town], 'pay' => 6, 'visit' => 8 }],
             price: 600,
             num: 2,
             events: [{ 'type' => 'remove_tokens' }],
