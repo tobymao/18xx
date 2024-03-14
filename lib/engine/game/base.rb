@@ -1927,7 +1927,7 @@ module Engine
         place_home_token(corporation) if self.class::HOME_TOKEN_TIMING == :par
       end
 
-      # hook to do something before company closes
+      # This is a hook to do something before company closes
       def company_is_closing(company, silent = false)
         @log << "#{company.name} closes" unless silent
       end

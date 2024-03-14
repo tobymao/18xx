@@ -102,6 +102,12 @@ module Engine
         COMMODITY_NAMES = %w[OIL ORE1 COTTON SPICES GOLD OPIUM TEA1 ORE2 TEA2 RICE JEWELRY].freeze
         COMMODITY_DESTINATIONS = %w[KARACHI LAHORE MUMBAI KOCHI CHENNAI COLOMBO NEPAL CHINA HALDIA VISAKHAPATNAM].freeze
 
+        # TODO: Consider using commodity icons vs location names
+        # Refactor to use assignment (assignable module) for commodies?
+        ASSIGNMENT_TOKENS = {
+          'P6' => '/icons/18_royal_gorge/gold_cube.svg', # TODO: Add actual commodity ICON
+        }.freeze
+
         TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false },
                      { lay: :not_if_upgraded, upgrade: false }, { lay: :not_if_upgraded, upgrade: false }].freeze
 
@@ -433,9 +439,9 @@ module Engine
           Engine::Round::Operating.new(self, [
             # Engine::Step::Exchange, # this step may not be needed?
             Engine::Step::HomeToken,
-            Engine::Step::Assign,
-            G18India::Step::SpecialTrack, # used by Portuguese & Dutch EIC (track lay & track upgrade)
-            # G18India::Step::SpecialToken, # needed for Danish EIC (cheater token)? [error on player not haveing token]
+            G18India::Step::Assign, # used by P6
+            G18India::Step::SpecialTrack, # used by P2 & P3 (track lay & track upgrade)
+            # G18India::Step::SpecialToken, # use for p5? [error on player not haveing token]
             G18India::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
@@ -853,6 +859,14 @@ module Engine
         def company_is_closing(company, silent = false)
           @bank.spend(company.value, company.owner)
           @log << "#{company.name} closes and #{company.owner.name} receives #{company.value} from the Bank." unless silent
+        end
+
+        # use to allow corp to use companies owned by director?
+        def entity_can_use_company?(entity, company)
+          return true if entity.player? && entity == company.owner
+          return true if entity.corporation? && company.owner == entity.corporation.owner
+
+          false
         end
 
         # Adjust token owner if company is player owned?

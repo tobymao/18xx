@@ -127,12 +127,13 @@ module Engine
               {
                 type: 'token',
                 owner_type: 'corporation',
-                when: 'owning_corp_or_turn',
+                when: 'token',
                 count: 1,
                 extra_action: false,
                 from_owner: true,
                 cheater: 1,
                 special_only: true,
+                price: 0,
                 discount: 100,
                 teleport_price: 0,
                 hexes: [],
@@ -140,12 +141,13 @@ module Engine
               {
                 type: 'token',
                 owner_type: 'player',
-                when: 'owning_player_or_turn',
+                when: 'token',
                 count: 1,
                 extra_action: false,
                 from_owner: true,
                 cheater: 1,
                 special_only: true,
+                price: 0,
                 discount: 100,
                 teleport_price: 0,
                 hexes: [],
@@ -160,7 +162,24 @@ module Engine
             desc: 'Receives jewlery concession. Close when used.',
             color: nil,
             type: :private,
-            # TODO: Add Ability
+            abilities: [
+              {
+                type: 'assign_hexes',
+                when: 'owning_player_or_turn',
+                hexes: [], # any hex w/o city or town
+                count: 1,
+                owner_type: 'player',
+                closed_when_used_up: true,
+              },
+              {
+                type: 'assign_hexes',
+                when: 'owning_corp_or_turn',
+                hexes: [], # any hex w/o city or town
+                count: 1,
+                owner_type: 'corporation',
+                closed_when_used_up: true,
+              },
+            ],
           },
         ].freeze
 
