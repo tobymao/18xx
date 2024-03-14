@@ -332,7 +332,9 @@ module Engine
 
         def after_par(corporation)
           super
-          @corporations_to_fully_capitalize << corporation if corporations_fully_capitalize?
+          return if corporation.type == :local || !corporations_fully_capitalize?
+
+          @corporations_to_fully_capitalize << corporation
         end
 
         def corporations_fully_capitalize?
@@ -364,10 +366,10 @@ module Engine
         end
 
         def check_for_full_capitalization(corporation)
-          return unless corporation.num_ipo_shares == 5
-          return unless @corporations_to_fully_capitalize.delete(corporation)
+          return if !@corporations_to_fully_capitalize.include?(corporation) || corporation.num_ipo_shares != 5
 
-          @bank.spend(coproration.num_ipo_shares * corporation.par_price.price, corporation)
+          @corporations_to_fully_capitalize.delete(corporation)
+          @bank.spend(corporation.num_ipo_shares * corporation.par_price.price, corporation)
           @share_pool.transfer_shares(ShareBundle.new(corporation.shares_of(corporation)), @share_pool)
           @log << "#{corporation.name} receives 5x its starting price in its treasury. " \
                   "#{corporation.name}'s remaining shares are placed in the market"
