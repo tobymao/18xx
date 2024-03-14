@@ -235,6 +235,10 @@ module Engine
 
           @cattle_token_hex.remove_assignment!(self.class::CATTLE_OPEN_ICON)
           @cattle_token_hex.remove_assignment!(self.class::CATTLE_CLOSED_ICON)
+          @corporations.each do |corporation|
+            corporation.remove_assignment!(self.class::CATTLE_OPEN_ICON)
+            corporation.remove_assignment!(self.class::CATTLE_CLOSED_ICON)
+          end
         end
 
         def reorder_players(order = nil, log_player_order: false)
@@ -368,11 +372,12 @@ module Engine
         def check_for_full_capitalization(corporation)
           return if !@corporations_to_fully_capitalize.include?(corporation) || corporation.num_ipo_shares != 5
 
-          @corporations_to_fully_capitalize.delete(corporation)
-          @bank.spend(corporation.num_ipo_shares * corporation.par_price.price, corporation)
+          cash = corporation.num_ipo_shares * corporation.par_price.price
+          @bank.spend(cash, corporation)
           @share_pool.transfer_shares(ShareBundle.new(corporation.shares_of(corporation)), @share_pool)
-          @log << "#{corporation.name} receives 5x its starting price in its treasury. " \
-                  "#{corporation.name}'s remaining shares are placed in the market"
+          @corporations_to_fully_capitalize.delete(corporation)
+          @log << "#{corporation.name} becomes fully capitalized, receiving #{format_currency(cash)} in its treasury. " \
+                  "#{corporation.name}'s remaining shares are placed in the market."
         end
 
         def issuable_shares(entity)
