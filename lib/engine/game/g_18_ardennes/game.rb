@@ -163,6 +163,13 @@ module Engine
             corporation.share_holders[corporation] += share.percent
             @_shares[share.id] = share
           end
+
+          # Certificate limit might increase.
+          old_limit = @cert_limit
+          new_limit = init_cert_limit
+          return if old_limit == new_limit
+
+          @log << "Certificate limit increases to #{new_limit}."
         end
       end
     end
