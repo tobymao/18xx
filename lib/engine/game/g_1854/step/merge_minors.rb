@@ -76,7 +76,7 @@ module Engine
           end
 
           def mergeable_candidates(corporation)
-              @game.minors.uniq.select { |c| c != corporation && @game.mergeable?(c) }
+            @game.minors.uniq.select { |c| c != corporation && @game.mergeable?(c) }
           end
 
           def mergeable(corporation)
