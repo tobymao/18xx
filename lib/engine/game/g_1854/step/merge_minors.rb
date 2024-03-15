@@ -31,17 +31,8 @@ module Engine
           end
 
           def setup
-            @mergeable_ = {}
             @merging = nil
             @merge_target = nil
-          end
-
-          def auto_actions(entity)
-            return super if @merging
-
-            return [Engine::Action::Pass.new(entity)] if mergeable_candidates(entity).empty?
-
-            super
           end
 
           def merge_name(entity = nil)
@@ -86,11 +77,6 @@ module Engine
           end
 
           def mergeable_candidates(corporation)
-            # # Mergeable candidates must be connected by track and not through a regional border
-            # # They must be the same type (major/minor)
-            # parts = @game.token_graph_for_entity(corporation).connected_nodes(corporation).keys
-            # mergeable = parts.select { |n| n.city? && !n.pass? }.flat_map { |c| c.tokens.compact.map(&:corporation) }
-            @mergeable_[corporation] ||=
               @game.minors.uniq.select { |c| c != corporation && @game.mergeable?(c) }
           end
 
