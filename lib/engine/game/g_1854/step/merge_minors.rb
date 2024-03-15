@@ -8,15 +8,14 @@ module Engine
       module Step
         class MergeMinors < Engine::Step::Base
           def actions(entity)
-            return [] if entity.corporation? && !entity.minor?
-            return [] if !entity.minor? || entity != current_entity #  || @game.done_this_round[entity]
-            return [] unless @game.mergeable?(entity)
-            return [] if target_corporations.empty?
-            return [] if @merge_target
+            return [] unless entity == current_entity
+            return [] unless entity.minor?
+            return [] unless @game.minor_mergers_allowed?
 
-            actions = []
-            actions << 'merge' if @game.minor_mergers_allowed?
-            actions << 'pass' if @game.minor_mergers_allowed? && !@game.minor_mergers_required?
+            actions << ['merge']
+            # TODO: pass is not working, keeps same minor as current entity
+            # TODO: also need to elimiate pass when the two merging minors are selected.  You can't pass on picking A/B/C
+            actions << 'pass' unless @game.minor_mergers_required?
             actions
           end
 
