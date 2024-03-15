@@ -12,7 +12,7 @@ module Engine
             return [] unless entity.minor?
             return [] unless @game.minor_mergers_allowed?
 
-            actions << ['merge']
+            actions = ['merge']
             # TODO: pass is not working, keeps same minor as current entity
             # TODO: also need to elimiate pass when the two merging minors are selected.  You can't pass on picking A/B/C
             actions << 'pass' unless @game.minor_mergers_required?
