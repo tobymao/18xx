@@ -17,6 +17,10 @@ module Engine
             @round.bought_trains || (action.train.owner == @game.depot && action.train.name != '2P')
           end
 
+          def pass_if_cannot_buy_train?(_entity)
+            false
+          end
+
           def must_take_player_loan?(entity)
             @game.depot.min_depot_price > (entity.cash + entity.owner.cash)
           end
