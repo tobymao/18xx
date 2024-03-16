@@ -11,7 +11,8 @@ module Engine
           include MinorExchange
 
           def actions(entity)
-            return super unless under_obligation?(entity)
+            return super if bought?
+            return super unless @game.under_obligation?(entity)
 
             if @game.bankrupt?(entity)
               %w[bankrupt]
@@ -65,6 +66,7 @@ module Engine
 
             @game.minor_corporations.any? do |minor|
               next false unless minor.owner == player
+              next false if minor.share_price.price.zero?
 
               max_price = (minor.share_price.price * 2) + @game.liquidity(player)
               majors.any? { |corp| corp.share_price.price <= max_price }
@@ -121,16 +123,6 @@ module Engine
           end
 
           private
-
-          # Has the player won any auctions for public companies in the
-          # preceding auction round? If they have then they must start these
-          # majors before they can buy any other shares or pass.
-          def under_obligation?(player)
-            return false unless player == current_entity
-            return false if bought? # Already started a corporation this turn.
-
-            player.companies.any? { |company| company.type == :concession }
-          end
 
           def sell_bankrupt_shares(player)
             @log << "-- #{player.name} goes bankrupt and sells remaining shares --"
