@@ -41,9 +41,7 @@ module Engine
 
       def can_gain?(entity, bundle, exchange: false)
         return if !bundle || !entity
-        return false if bundle.owner.player? &&
-                        !@game.class::BUY_SHARE_FROM_OTHER_PLAYER &&
-                        (!@game.class::CORPORATE_BUY_SHARE_ALLOW_BUY_FROM_PRESIDENT || !entity.corporation?)
+        return false if bundle.owner.player? && !@game.can_gain_from_player?(entity, bundle)
 
         corporation = bundle.corporation
 
