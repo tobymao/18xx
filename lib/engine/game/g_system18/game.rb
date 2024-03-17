@@ -415,6 +415,13 @@ module Engine
           # Map-specific constant overrides
           #
           send("map_#{map_name}_constants")
+
+          #################################################
+          # Map-specific setup
+          #
+          return unless respond_to?("map_#{map_name}_setup")
+
+          send("map_#{map_name}_setup")
         end
 
         def init_round
@@ -506,6 +513,18 @@ module Engine
           @corporations << corporation
 
           @log << "#{corporation.name} is now available to start"
+        end
+
+        def check_other(route)
+          return unless respond_to?("map_#{map_name}_check_other")
+
+          send("map_#{map_name}_check_other", route)
+        end
+
+        def post_lay_tile(entity, tile)
+          return unless respond_to?("map_#{map_name}_post_lay_tile")
+
+          send("map_#{map_name}_post_lay_tile", entity, tile)
         end
       end
     end

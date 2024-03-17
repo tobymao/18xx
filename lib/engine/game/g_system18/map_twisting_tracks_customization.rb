@@ -4,6 +4,9 @@ module Engine
   module Game
     module GSystem18
       module MapTwistingTracksCustomization
+        TT_TC_COST = 25
+        TT_TC_UPGRADE_TILES = %w[14 15 619].freeze
+
         # rubocop:disable Layout/LineLength
         def map_twisting_tracks_game_tiles(tiles)
           tiles.delete('1')
@@ -314,6 +317,45 @@ module Engine
 
         def map_twisting_tracks_constants
           redef_const(:COLOR_SEQUENCE, %i[white yellow green brown gray pink purple orange navy])
+        end
+
+        def map_twisting_tracks_setup
+          # add "Ticket Counter" cube tokens
+          corporations.each do |corp|
+            cube = "/logos/System18/#{corp.id}_CUBE_TOKEN.svg"
+            puts "cube: #{cube}"
+            3.times do
+              corp.tokens << Token.new(corp, price: TT_TC_COST, logo: cube, simple_logo: cube, type: :ticket_counter)
+            end
+          end
+        end
+
+        def tt_sole_tc_token(corp, city)
+          city.tokens.any? { |t| t&.corporation == corp && t.type == :ticket_counter } &&
+            city.tokens.none? { |t| t&.corporation == corp && t.type != :ticket_counter }
+        end
+
+        # Error if passing through more than one Ticket Counter token
+        def map_twisting_tracks_check_other(route)
+          visits = route.visited_stops
+          return unless visits.size > 2
+
+          corp = route.train.owner
+          num_tickets = visits[1..-2].count { |stop| stop.city? && tt_sole_tc_token(corp, stop) }
+
+          raise GameError, 'Can only pass through one ticket counter' if num_tickets > 1
+        end
+
+        # auto-add Ticket Counter token when upgrading any home tile from yellow to a two-slot tile
+        def map_twisting_tracks_post_lay_tile(entity, tile)
+          return unless TT_TC_UPGRADE_TILES.include?(tile.name)
+
+          tc = entity.find_token_by_type(:ticket_counter)
+          raise GameError, 'Cannot upgrade this tile (out of Ticket Counters)' unless tc
+
+          tile.cities.first.place_token(entity, tc, check_tokenable: false)
+          @log << "#{entity.name} places a Ticket Counter on tile"
+          clear_token_graph_for_entity(entity)
         end
       end
     end
