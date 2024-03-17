@@ -45,7 +45,7 @@ module View
         <p>Check out the <a href='https://github.com/tobymao/18xx/wiki/FAQ'>FAQ</a>, <a href='https://github.com/tobymao/18xx/wiki/Power-User-Features'>keyboard shortcuts</a> and <a href='https://github.com/tobymao/18xx/wiki'>the Wiki</a></p>
         <p>Find games in the chat or <a href='https://github.com/tobymao/18xx/wiki/18xx-Online-Communities%2C-Media%2C-and-Resources#community'>on (unofficial) Discord servers</a></p>
         <p>Setup <a href='https://github.com/tobymao/18xx/wiki/Notifications'>turn notifications</a> via webhook to Slack, Discord, and Telegram</p>
-        <p>Ask questions in <code>#18xxgames</code> <a href='https://join.slack.com/t/18xxgames/shared_invite/zt-27imtsj2u-vussFAqtecmACsycjdsIhg'>on the 18XX Slack</a></p>
+        <p>Ask questions in <code>#18xxgames</code> <a href='https://18xxgames.slack.com/join/shared_invite/zt-2evbzlz86-fSip9Zr9W~OSQW_EbP4DGw#/shared-invite/email'>on the 18XX Slack</a></p>
         <p>Buy physical copies of 18XX games from publishers:</br> #{Lib::Publisher.link_list.join}.</p>
         <p>Keep the servers running by becoming a member <a href='https://www.patreon.com/18xxgames'>on Patreon</a></p>
       MESSAGE
