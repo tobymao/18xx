@@ -13,14 +13,16 @@ module Engine
           def actions(entity)
             return super if bought?
             return super unless @game.under_obligation?(entity)
+            return %w[bankrupt] if @game.bankrupt?(entity)
 
-            if @game.bankrupt?(entity)
-              %w[bankrupt]
-            elsif can_sell_any?(entity)
-              %w[sell_shares par]
-            else
-              %w[par]
-            end
+            actions = []
+            actions << 'par' if under_limit?(entity)
+            actions << 'sell_shares' if can_sell_any?(entity)
+            # TODO: handle this properly.
+            # Maybe stop the player from bidding for a major if they are at
+            # certificate limit and do not have any sellable shares.
+            raise GameError, 'Cannot sell shares or start major company' if actions.empty?
+            actions
           end
 
           def bankruptcy_description(player)
@@ -133,6 +135,10 @@ module Engine
               bundles = @game.bundles_for_corporation(player, corporation)
               @game.share_pool.sell_shares(bundles.last)
             end
+          end
+
+          def under_limit?(player)
+            @game.num_certs(player) < @game.cert_limit(player)
           end
         end
       end
