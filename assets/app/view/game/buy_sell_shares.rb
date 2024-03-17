@@ -71,8 +71,9 @@ module View
         children.concat(render_other_player_shares)
         children.concat(render_shares_for_others)
         children.concat(render_price_protection)
-        children.concat(render_reduced_price_shares(@ipo_shares, source: @game.ipo_name(@corporation)))
-        children.concat(render_reduced_price_shares(@pool_shares))
+        children.concat(render_swap_shares(@ipo_shares, source: @game.ipo_name(@corporation)))
+        children.concat(render_swap_shares(@pool_shares))
+        children.concat(render_company_discounted_bundles)
 
         children
       end
@@ -233,7 +234,7 @@ module View
         [h(:button, { on: { click: protect } }, 'Protect Shares')]
       end
 
-      def render_reduced_price_shares(shares, source: 'Market')
+      def render_swap_shares(shares, source: 'Market')
         shares.map do |share|
           next unless (swap_share = @step.swap_buy(@current_entity, @corporation, share))
 
@@ -243,6 +244,19 @@ module View
             entity: @current_entity,
             percentages_available: shares.group_by(&:percent).size,
             source: source)
+        end
+      end
+
+      def render_company_discounted_bundles
+        return [] unless @step.respond_to?(:company_discounted_bundles)
+
+        @step.company_discounted_bundles(@corporation).map do |company, bundle|
+          h(Button::BuyShare,
+            share: bundle,
+            entity: @current_entity,
+            prefix: "#{company.name}: ",
+            discounter: company,
+            percentages_available: bundle.num_shares,)
         end
       end
 

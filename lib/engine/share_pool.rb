@@ -31,7 +31,8 @@ module Engine
     end
 
     def buy_shares(entity, shares, exchange: nil, exchange_price: nil, swap: nil,
-                   allow_president_change: true, silent: nil, borrow_from: nil)
+                   allow_president_change: true, silent: nil, borrow_from: nil,
+                   discounter: nil)
       bundle = shares.is_a?(ShareBundle) ? shares : ShareBundle.new(shares)
       if allow_president_sale?(bundle.corporation) &&
          !@no_rebundle_president_buy &&
@@ -94,7 +95,8 @@ module Engine
         borrowed_text = borrowed.positive? ? " by borrowing #{@game.format_currency(borrowed)} from #{borrow_from.name}" : ''
         verb = entity == corporation ? 'redeems' : 'buys'
         unless silent
-          @log << "#{entity.name} #{verb} #{share_str} "\
+          discounter_str = discounter ? "(#{discounter.name}) " : ''
+          @log << "#{entity.name} #{discounter_str}#{verb} #{share_str} "\
                   "from #{from} "\
                   "for #{@game.format_currency(price)}#{swap_text}#{borrowed_text}"
         end

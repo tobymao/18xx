@@ -18,6 +18,7 @@ module View
         needs :action, default: Engine::Action::BuyShares
         needs :purchase_for, default: nil
         needs :borrow_from, default: nil
+        needs :discounter, default: nil
 
         def render
           step = @game.round.active_step
@@ -43,7 +44,8 @@ module View
           process_buy = lambda do
             do_buy = lambda do
               buy_shares(@entity, bundle, share_price: modified_price, swap: @swap_share,
-                                          purchase_for: @purchase_for, borrow_from: @borrow_from)
+                                          purchase_for: @purchase_for, borrow_from: @borrow_from,
+                                          discounter: @discounter)
             end
 
             if (consenter = @game.consenter_for_buy_shares(@entity, bundle))
@@ -56,9 +58,10 @@ module View
           h(:button, { on: { click: process_buy } }, text)
         end
 
-        def buy_shares(entity, bundle, share_price: nil, swap: nil, purchase_for: nil, borrow_from: nil)
+        def buy_shares(entity, bundle, share_price: nil, swap: nil, purchase_for: nil, borrow_from: nil, discounter: nil)
           process_action(@action.new(entity, shares: bundle.shares, swap: swap, purchase_for: purchase_for,
-                                             share_price: share_price, borrow_from: borrow_from))
+                                             share_price: share_price, borrow_from: borrow_from,
+                                             discounter: discounter))
         end
       end
     end
