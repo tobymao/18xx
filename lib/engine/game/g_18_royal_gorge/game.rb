@@ -1114,6 +1114,16 @@ module Engine
           { revenue: 10 * ghost_towns, description: " (Ghost Town#{ghost_towns == 1 ? '' : 's'})" }
         end
 
+        def route_distance_str(route)
+          if route.train.id.start_with?('6')
+            super
+          else
+            towns = route.visited_stops.count(&:town?)
+            cities = route_distance(route) - towns
+            towns.positive? ? "#{cities}+#{towns}" : cities.to_s
+          end
+        end
+
         def revenue_for(route, stops)
           revenue = super
           revenue += ST_CLOUD_BONUS if st_cloud_bonus?(route, stops)
