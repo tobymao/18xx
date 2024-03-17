@@ -11,6 +11,10 @@ module Engine
             @game.par_prices.select { |p| p.price * 2 <= entity.cash }
           end
 
+          def can_dump?(_entity, bundle)
+            @game.president_sales_to_market?(bundle.corporation) || super
+          end
+
           def visible_corporations
             # * hide debt company
             # * put metal companies always first
