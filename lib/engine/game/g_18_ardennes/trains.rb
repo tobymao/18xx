@@ -44,6 +44,7 @@ module Engine
         TRAINS = [
           {
             name: '2',
+            obsolete_on: '4',
             rusts_on: '4',
             distance: [{ 'nodes' => %w[city], 'pay' => 2, 'visit' => 2 },
                        { 'nodes' => %w[offboard], 'pay' => 2, 'visit' => 2 },
@@ -186,6 +187,25 @@ module Engine
           # Minors are not obliged to buy a train, and cannot enter emergency
           # fund raising.
           false
+        end
+
+        # Before rusting, check if this train individual should rust.
+        def rust?(train, purchased_train)
+          return false unless super
+          return true unless train.name == '2'
+
+          operated_this_round?(train.owner)
+        end
+
+        # Before obsoleting, check if this specific train should obsolete.
+        def obsolete?(train, purchased_train)
+          super && !operated_this_round?(train.owner)
+        end
+
+        def operated_this_round?(entity)
+          return false unless entity&.corporation?
+
+          entity.operating_history.include?([@turn, @round.round_num])
         end
       end
     end
