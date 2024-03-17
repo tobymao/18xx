@@ -165,16 +165,18 @@ module Engine
           {
             sym: 'G5',
             name: 'Metals Investor (G5)',
-            desc: 'Special abilities not implemented.',
-            # desc: 'Each Stock Round, the owning player may purchase 1 CF&I share and/or 1 VGC '\
-            #       'share for one step cheaper than their current value. Once used, the player may '\
-            #       'not sell any of the purchased stocks until the next Stock Round.',
+            desc: 'Each Stock Round, the owning player may purchase 1 CF&I share and/or 1 VGC '\
+                  'share for one step cheaper than their current value. Once used, the player may '\
+                  'not sell any of the purchased stocks until the next Stock Round.',
             value: 25,
             revenue: 5,
             abilities: [
-              # 1 step discount on CF&I/VGC shares; if used, cannot sell the
-              # bought shares till next SR
               { type: 'no_buy' },
+              {
+                type: 'choose_ability',
+                owner_type: 'player',
+                when: %w[owning_player_sr_turn],
+              },
             ],
           },
           {
@@ -243,15 +245,11 @@ module Engine
           {
             sym: 'B4',
             name: 'Gold Miner (B4)',
-            desc: 'Special abilities not implemented.',
-            # desc: 'This card acts as though it were a 20% share of Victor Gold Company. Does not '\
-            #       'count as a certificate. Closes when the first 5+ train is purchased.',
+            desc: 'This card acts as though it were a 20% share of Victor Gold Company. Does not '\
+                  'count as a certificate. Closes when the first 5+ train is purchased.',
             value: 20,
             revenue: 0,
             abilities: [
-              # { type: 'close', on_train: '5+' },
-              # 20% share of gold company
-              # does not count against cert limit
               { type: 'no_buy' },
             ],
           },
@@ -266,14 +264,17 @@ module Engine
           {
             sym: 'B6',
             name: 'U.S. Mint Worker (B6)',
-            desc: 'Special abilities not implemented.',
-            # desc: 'The owning player may close this company to purchase 1-2 Victor Gold Company '\
-            #       'shares at a 50% discount each. These are bought simultaneously.',
+            desc: 'The owning player may close this company to purchase 1-2 Victor Gold Company '\
+                  'shares at a 50% discount each. These are bought simultaneously.',
             value: 40,
             revenue: 5,
             abilities: [
               { type: 'no_buy' },
-              # once per game may buy 1-2 gold shares at 50% discount; closes company
+              {
+                type: 'choose_ability',
+                owner_type: 'player',
+                when: %w[owning_player_sr_turn],
+              },
             ],
           },
         ].freeze

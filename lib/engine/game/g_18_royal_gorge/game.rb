@@ -72,6 +72,7 @@ module Engine
           brown_phase: ['Brown Phase Begins'],
           gray_phase: ['Gray Phase Begins'],
           treaty_of_boston: ['Treaty of Boston'],
+          close_gold_miner: ['Close Gold Miner (B4)'],
         )
 
         DEBT_PENALTY = {
@@ -171,7 +172,6 @@ module Engine
           @gold_corp = init_metal_corp(corporation_by_id('VGC'))
 
           init_available_steel
-          @steel_corp.cash = 50
 
           @gold_cubes = Hash.new(0)
           @gold_shipped = 0
@@ -248,6 +248,10 @@ module Engine
             status << "Debt-adjusted share price: #{format_currency(price_with_debt)}"
           end
 
+          if corporation == @gold_corp && (player = gold_miner&.owner)
+            status << "#{player.name} has 2 virtual shares (#{gold_miner.sym})"
+          end
+
           status unless status.empty?
         end
 
@@ -292,6 +296,13 @@ module Engine
 
           @available_par_groups << :par_2
           update_cache(:share_prices)
+        end
+
+        def event_close_gold_miner!
+          return unless gold_miner
+
+          @log << "-- Event: #{gold_miner.name} closes --"
+          gold_miner.close!
         end
 
         def event_st_cloud_moves!
@@ -497,6 +508,7 @@ module Engine
           @stock_market.set_par(corporation, price)
           bundle = ShareBundle.new(corporation.shares_of(corporation))
           @share_pool.transfer_shares(bundle, @share_pool)
+          corporation.cash = 50
           corporation
         end
 
@@ -549,7 +561,14 @@ module Engine
           per_share = revenue / 10
           payouts = {}
           @players.each do |payee|
-            amount = payee.num_shares_of(entity) * per_share
+            num_shares = payee.num_shares_of(entity)
+
+            if payee == gold_miner&.owner
+              entity.cash += per_share * 2
+              num_shares += 2
+            end
+
+            amount = num_shares * per_share
             payouts[payee] = amount if amount.positive?
             entity.spend(amount, payee, check_positive: false)
           end
@@ -889,6 +908,14 @@ module Engine
           @rio_grande ||= corporation_by_id('RG')
         end
 
+        def mint_worker
+          @mint_worker ||= company_by_id('B6')
+        end
+
+        def gold_miner
+          @gold_miner ||= company_by_id('B4')
+        end
+
         def sulphur_springs
           @sulphur_springs ||= company_by_id('B2')
         end
@@ -903,6 +930,10 @@ module Engine
 
         def gold_nugget
           @gold_nugget ||= company_by_id('G2')
+        end
+
+        def metals_investor
+          @metals_investor ||= company_by_id('G5')
         end
 
         def hanging_bridge_lease
@@ -1060,6 +1091,12 @@ module Engine
           else
             super
           end
+        end
+
+        def num_certs(entity)
+          certs = super
+          certs -= 1 if entity == gold_miner&.owner
+          certs
         end
 
         def st_cloud_bonus?(route, stops)

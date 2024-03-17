@@ -39,7 +39,7 @@ module Engine
                        { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
             price: 500,
             num: 2,
-            events: [{ 'type' => 'gray_phase', 'when' => 2 }],
+            events: [{ 'type' => 'close_gold_miner' }, { 'type' => 'gray_phase', 'when' => 2 }],
           },
           {
             name: '6',
