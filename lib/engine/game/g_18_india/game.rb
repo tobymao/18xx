@@ -440,6 +440,7 @@ module Engine
             # Engine::Step::Exchange, # this step may not be needed?
             Engine::Step::HomeToken,
             G18India::Step::Assign, # used by P6
+            G18India::Step::SpecialChoose, # Used by P4
             G18India::Step::SpecialTrack, # used by P2 & P3 (track lay & track upgrade)
             # G18India::Step::SpecialToken, # use for p5? [error on player not haveing token]
             G18India::Step::Track,
@@ -874,6 +875,38 @@ module Engine
           return @step.current_entity if entity&.player?
 
           entity&.company? ? entity.owner : entity
+        end
+
+        def upgrade_cost(tile, _hex, entity, spender)
+          terrain_cost = tile.upgrades.sum(&:cost)
+          discounts = 0
+
+          # Tile discounts must be activated
+          if entity.company? && (ability = entity.all_abilities.find { |a| a.type == :tile_discount })
+            discounts = tile.upgrades.sum do |upgrade|
+              next unless upgrade.terrains.include?(ability.terrain)
+
+              discount = [upgrade.cost, ability.discount].min
+              log_cost_discount(spender, ability, discount) if discount.positive?
+              discount
+            end
+          end
+
+          terrain_cost -= TILE_COST if terrain_cost.positive?
+          terrain_cost - discounts
+        end
+
+        # modified to apply P4 discount if used
+        def tile_cost_with_discount(_tile, hex, entity, spender, cost)
+          return cost if cost.zero? || @round.terrain_discount.zero?
+
+          discount = [cost, @round.terrain_discount].min
+          company = @round.discount_source
+          @round.terrain_discount -= discount
+          @log << "#{spender.name} receives a discount of "\
+                  "#{format_currency(discount)} from #{company.name}"
+
+          cost - discount
         end
 
         def company_header(company)

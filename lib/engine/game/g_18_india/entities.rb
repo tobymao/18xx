@@ -22,7 +22,6 @@ module Engine
             desc: 'One extra yellow tile placement. Close when used.',
             color: nil,
             type: :private,
-            # TODO: Add Ability
             abilities: [
               {
                 type: 'tile_lay',
@@ -39,7 +38,7 @@ module Engine
               {
                 type: 'tile_lay',
                 owner_type: 'player',
-                when: 'owning_player_track',
+                when: 'owning_player_or_turn',
                 lay_count: 1,
                 upgrade_count: 0,
                 reachable: true,
@@ -58,7 +57,6 @@ module Engine
             desc: 'One extra track upgade. Close when used.',
             color: nil,
             type: :private,
-            # TODO: Add Ability
             abilities: [
               {
                 type: 'tile_lay',
@@ -76,7 +74,7 @@ module Engine
               {
                 type: 'tile_lay',
                 owner_type: 'player',
-                when: 'owning_player_track',
+                when: 'owning_player_or_turn',
                 count: 1,
                 lay_count: 0,
                 upgrade_count: 1,
@@ -93,24 +91,23 @@ module Engine
             sym: 'P4',
             value: 75,
             revenue: 15,
-            desc: '$40 Terrain cost discount. Close when used.',
+            desc: 'A ₹40 discount on total terrain cost during an OR. Close when used.',
             color: nil,
             type: :private,
-            # TODO: Add Ability
             abilities: [
               {
-                type: 'tile_discount',
+                type: 'choose_ability',
                 owner_type: 'corporation',
-                when: 'track',
-                discount: 40,
-                exact_match: false,
+                when: %w[track special_track],
+                choices: { use: 'Use discount and close' },
+                count: 1,
               },
               {
-                type: 'tile_discount',
+                type: 'choose_ability',
                 owner_type: 'player',
                 when: 'owning_player_track',
-                discount: 40,
-                exact_match: false,
+                choices: { use: 'Use discount and close' },
+                count: 1,
               },
             ],
           },
@@ -151,6 +148,34 @@ module Engine
                 discount: 100,
                 teleport_price: 0,
                 hexes: [],
+              },
+              {
+                type: 'tile_lay',
+                when: 'track',
+                owner_type: 'corporation',
+                tiles: [],
+                hexes: [],
+                reachable: true,
+                special: false,
+                consume_tile_lay: true,
+                count: 1,
+                lay_count: 1,
+                upgrade_count: 1,
+                closed_when_used_up: true,
+              },
+              {
+                type: 'tile_lay',
+                when: 'owning_player_track',
+                owner_type: 'player',
+                tiles: [],
+                hexes: [],
+                reachable: true,
+                special: false,
+                consume_tile_lay: true,
+                count: 1,
+                lay_count: 1,
+                upgrade_count: 1,
+                closed_when_used_up: true,
               },
             ],
           },
