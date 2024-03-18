@@ -22,6 +22,7 @@ module Engine
             # Maybe stop the player from bidding for a major if they are at
             # certificate limit and do not have any sellable shares.
             raise GameError, 'Cannot sell shares or start major company' if actions.empty?
+
             actions
           end
 
