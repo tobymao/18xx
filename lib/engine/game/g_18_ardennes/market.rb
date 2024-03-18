@@ -8,6 +8,7 @@ module Engine
         BANK_CASH = 12_000
         STARTING_CASH = { 3 => 700, 4 => 525, 5 => 420 }.freeze
         SOLD_OUT_INCREASE = false
+        POOL_SHARE_DROP = :down_block
 
         # The certificate limit varies according to the number of 10-share
         # companies operating.
