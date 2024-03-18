@@ -43,8 +43,7 @@ module Engine
             return [] unless @round.current_actions.empty?
             return [] if did_sell?(entity, entity)
 
-            # TODO: Can redeem from players
-            @game.redeemable_shares(entity)
+            @game.redeemable_shares(entity).select { |bundle| can_buy?(entity, bundle) }
           end
 
           def process_buy_shares(action)

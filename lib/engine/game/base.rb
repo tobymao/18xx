@@ -1169,6 +1169,11 @@ module Engine
         all_bundles.sort_by(&:percent)
       end
 
+      def can_gain_from_player?(entity, bundle)
+        (self.class::BUY_SHARE_FROM_OTHER_PLAYER && entity.player?) ||
+          (self.class::CORPORATE_BUY_SHARE_ALLOW_BUY_FROM_PRESIDENT && entity.corporation? && bundle.owner == entity.owner)
+      end
+
       def partial_bundles_for_presidents_share(corporation, bundle, percent)
         normal_percent = corporation.share_percent
         difference = corporation.presidents_percent - normal_percent
@@ -3219,6 +3224,10 @@ module Engine
 
       def show_map_legend_on_left?
         false
+      end
+
+      def map_legends
+        [:map_legend]
       end
 
       def train_purchase_name(train)

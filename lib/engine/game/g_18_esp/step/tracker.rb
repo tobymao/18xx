@@ -55,9 +55,13 @@ module Engine
 
         def tracker_available_hex(entity, hex)
           get_tile_lay(entity)
-          return super && @game.mine_hex?(hex) if @round.extra_mine_lay
+          return super && mine_tile?(hex) if @round.extra_mine_lay
 
-          @round.mine_tile_laid ? super && !@game.mine_hex?(hex) : super
+          @round.mine_tile_laid ? super && !mine_tile?(hex) : super
+        end
+
+        def mine_tile?(hex)
+          @game.mine_hex?(hex) && hex.tile.color == :white
         end
 
         def get_tile_lay(entity)

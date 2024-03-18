@@ -83,7 +83,7 @@ module Engine
 
           def close_minor!
             @game.close_corporation(minor)
-            @round.corporations_removing_tokens.clear
+            @round.corporations_removing_tokens = nil
           end
         end
       end
