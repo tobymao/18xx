@@ -126,7 +126,7 @@ module View
             h(:tbody, trains),
           ]),
           actions,
-        ])
+        ].compact)
       end
 
       def cleanup

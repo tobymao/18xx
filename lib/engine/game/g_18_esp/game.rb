@@ -47,7 +47,7 @@ module Engine
 
         CARRIAGE_COST = 80
 
-        COMBINED_BONUS = 150
+        COMBINED_BONUS = 200
 
         BONUS = 100
 
@@ -539,8 +539,6 @@ module Engine
         def event_minors_stop_operating!
           @log << 'Minors stop operating'
           @minors_stop_operating = true
-
-          @corporations.each { |c| c.shares.last.buyable = true if !c.ipoed && c.type != :minor }
         end
 
         def custom_end_game_reached?
@@ -554,22 +552,6 @@ module Engine
           total - remaining > 1
         end
 
-        def close_all_minors!
-          @corporations.dup.each do |c|
-            next unless c
-            next unless c.type == :minor
-
-            close_corporation(c)
-          end
-
-          @corporations.dup.each do |c|
-            next unless c
-            next unless c.floated?
-
-            c.shares.last&.buyable = true
-          end
-        end
-
         def event_close_companies!
           @log << '-- Event: Private companies close --'
           @luxury_carriages_count = 0 # no more luxury carriage buying
@@ -581,26 +563,28 @@ module Engine
 
         def event_float_60!
           @corporations.each do |c|
-            next if c.type == :minor || c.floated?
+            next if c.type == :minor
 
             c.shares.last&.buyable = true
             c.float_percent = 60
+
+            next if c.ipoed
+
+            # release tokens
+            c.tokens.each { |token| token.used = false if token.used == true && !token.hex }
+            # all goals reached, no extra cap
+            c.destination_connected = true
+            c.ran_offboard = true
+            c.ran_harbor_mine = true
+            c.taken_over_minor = true
+            c.full_cap = true
           end
 
           @full_cap = true
         end
 
         def float_corporation(corporation)
-          if @full_cap
-            # release tokens
-            corporation.tokens.each { |token| token.used = false if token.used == true && !token.hex }
-            # all goals reached, no extra cap
-            corporation.destination_connected = true
-            corporation.ran_offboard = true
-            corporation.ran_harbor_mine = true
-            corporation.full_cap = true
-            share_count = 10
-          end
+          share_count = 10 if @full_cap
           @log << "#{corporation.name} floats"
           share_count ||= corporation.type == :major ? 4 : 2
 
@@ -1144,6 +1128,27 @@ module Engine
 
           # close corp
           close_corporation(minor)
+
+          # close unopened minors if all southern majors taken over minors
+          close_unopened_minors if southern_major_corps.none? { |c| !c.taken_over_minor }
+        end
+
+        def southern_major_corps
+          @corporations.select { |c| c.type == :major && !north_corp?(c) }
+        end
+
+        def close_unopened_minors
+          return unless @minors_stop_operating
+
+          @corporations.each do |c|
+            next unless c.type == :minor
+            next if c.ipoed
+
+            hex = hex_by_id(c.coordinates)
+            hex.tile.cities[c.city || 0].remove_reservation!(c)
+            hex.tile.remove_reservation!(c)
+            c.close!
+          end
         end
 
         def pay_compensation(corporation, minor)
@@ -1296,6 +1301,20 @@ module Engine
           corps = self.class::CORPORATIONS
           corps += self.class::EXTRA_CORPORATIONS unless core
           corps
+        end
+
+        def sorted_corporations
+          corps = super
+          corps.reject! { |c| c.type == :minor && !c.ipoed } if @minors_stop_operating
+          corps
+        end
+
+        def can_only_run_narrow?(entity)
+          return unless entity.corporation?
+          return false if entity.type == :minor
+          return false unless north_corp?(entity)
+
+          !entity.southern_token?
         end
 
         def check_overlap(routes)

@@ -6,7 +6,8 @@ module Engine
   module Step
     module ShareBuying
       def buy_shares(entity, shares, exchange: nil, exchange_price: nil, swap: nil,
-                     allow_president_change: true, borrow_from: nil, silent: nil)
+                     allow_president_change: true, borrow_from: nil, silent: nil,
+                     discounter: nil)
         check_legal_buy(entity,
                         shares,
                         exchange: exchange,
@@ -20,7 +21,8 @@ module Engine
                                     swap: swap,
                                     borrow_from: borrow_from,
                                     allow_president_change: allow_president_change,
-                                    silent: silent)
+                                    silent: silent,
+                                    discounter: discounter)
 
         maybe_place_home_token(shares.corporation)
       end
@@ -39,9 +41,7 @@ module Engine
 
       def can_gain?(entity, bundle, exchange: false)
         return if !bundle || !entity
-        return false if bundle.owner.player? &&
-                        !@game.class::BUY_SHARE_FROM_OTHER_PLAYER &&
-                        (!@game.class::CORPORATE_BUY_SHARE_ALLOW_BUY_FROM_PRESIDENT || !entity.corporation?)
+        return false if bundle.owner.player? && !@game.can_gain_from_player?(entity, bundle)
 
         corporation = bundle.corporation
 

@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# backtick_javascript: true
+
 class Turn < Snabberb::Component
   needs :game_url
   needs :game_id

@@ -349,6 +349,20 @@ module Engine
           super
         end
 
+        def can_gain_from_player?(entity, bundle)
+          bundle.corporation == entity && !causes_president_swap?(entity, bundle)
+        end
+
+        def causes_president_swap?(corporation, bundle)
+          return false unless corporation.president?(bundle.owner)
+
+          seller = bundle.owner
+          share_holders = corporation.player_share_holders(corporate: true)
+          remaining = share_holders[seller] - bundle.percent
+          next_highest = share_holders.reject { |k, _| k == seller }.values.max || 0
+          remaining < next_highest
+        end
+
         def check_for_full_capitalization(corporation)
           return unless corporation.num_ipo_shares == 5
           return unless @corporations_to_fully_capitalize.delete(corporation)
@@ -367,7 +381,9 @@ module Engine
         end
 
         def redeemable_shares(entity)
-          [@share_pool.shares_of(entity).find { |s| s.price <= entity.cash }&.to_bundle].compact
+          ([@share_pool] + @players).flat_map do |sh|
+            sh.shares_of(entity).reject(&:president).find { |s| s.price <= entity.cash }&.to_bundle
+          end.compact
         end
 
         def operating_order

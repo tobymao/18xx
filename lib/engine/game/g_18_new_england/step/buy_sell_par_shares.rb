@@ -57,7 +57,8 @@ module Engine
           end
 
           # Overrides method in share_buying
-          def buy_shares(entity, shares, exchange: nil, swap: nil, allow_president_change: true, borrow_from: nil)
+          def buy_shares(entity, shares, exchange: nil, swap: nil, allow_president_change: true, borrow_from: nil,
+                         discounter: nil)
             corp = shares.corporation
             if corp.type == :major && shares.owner == corp.ipo_owner
               @game.share_pool.buy_shares(entity,
