@@ -150,7 +150,8 @@ module Engine
             entity.cash >= @game.next_price_to_right(bundle.corporation.share_price).price
           end
 
-          def buy_shares(entity, bundle, exchange: nil, swap: nil, allow_president_change: true, borrow_from: nil)
+          def buy_shares(entity, bundle, exchange: nil, swap: nil, allow_president_change: true, borrow_from: nil,
+                         discounter: nil)
             @game.share_pool.buy_shares(entity,
                                         bundle,
                                         exchange: exchange,

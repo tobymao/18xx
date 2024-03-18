@@ -7,6 +7,17 @@ module Engine
     module G18Ardennes
       module Step
         class Track < Engine::Step::Track
+          MINOR_TILE_COLORS = %w[yellow green].freeze
+
+          def potential_tiles(entity, hex)
+            colors = @game.phase.tiles
+            colors &= MINOR_TILE_COLORS if entity.type == :minor
+            @game.tiles
+                 .select { |tile| colors.include?(tile.color) }
+                 .uniq(&:name)
+                 .select { |tile| @game.upgrades_to?(hex.tile, tile) }
+          end
+
           def legal_tile_rotation?(entity_or_entities, hex, tile)
             # Special case for the Ruhr green tile, which loses a town.
             return tile.rotation.zero? if hex.name == 'B16' && tile.name == 'X11'
