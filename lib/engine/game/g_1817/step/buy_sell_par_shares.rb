@@ -332,8 +332,6 @@ module Engine
               corporation.tokens << Engine::Token.new(corporation)
               ability.use!
               @log << "#{corporation.name} acquires additonal token from #{company.name}"
-              @log << "#{company.name} closes"
-              company.close!
             end
           end
 

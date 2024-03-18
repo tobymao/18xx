@@ -36,15 +36,17 @@ module Engine
           {
             sym: 'Y3',
             name: 'Coal Creek Mines (Y3)',
-            desc: 'Special abilities not implemented.',
-            # desc: 'When any corporation runs through Coal Creek, the owning corporation receives a coal cube '\
-            #       'from the Coal Mine Card. On a future turn, the owning corporation may use up to 2 coal cubes '\
-            #       'to increase their train run by 1 stop for each cube. When used, cubes are removed from the game.',
+            desc: 'When any corporation runs through Coal Creek, the owning corporation receives a coal cube '\
+                  "from the Mine's supply of 12 cubes. On a future turn, the owning corporation may use up to 2 coal cubes "\
+                  'to increase their train run by 1 stop for each cube. When used, cubes are removed from the game.',
             value: 40,
             revenue: 5,
             abilities: [
-              # owning corp gets a coal cube from the coal mine card (supply of
-              # 12) when anyone runs through Coal Creek
+              {
+                type: 'base',
+                desc: 'When any corporation runs through Coal Creek, the owning corporation receives a coal cube.',
+                count: 12,
+              },
             ],
           },
           {
@@ -163,30 +165,28 @@ module Engine
           {
             sym: 'G5',
             name: 'Metals Investor (G5)',
-            desc: 'Special abilities not implemented.',
-            # desc: 'Each Stock Round, the owning player may purchase 1 CF&I share and/or 1 VGC '\
-            #       'share for one step cheaper than their current value. Once used, the player may '\
-            #       'not sell any of the purchased stocks until the next Stock Round.',
+            desc: 'Each Stock Round, the owning player may purchase 1 CF&I share and/or 1 VGC '\
+                  'share for one step cheaper than their current value. Once used, the player may '\
+                  'not sell any of the purchased stocks until the next Stock Round.',
             value: 25,
             revenue: 5,
             abilities: [
-              # 1 step discount on CF&I/VGC shares; if used, cannot sell the
-              # bought shares till next SR
               { type: 'no_buy' },
+              {
+                type: 'choose_ability',
+                owner_type: 'player',
+                when: %w[owning_player_sr_turn],
+              },
             ],
           },
           {
             sym: 'G6',
             name: 'Coal Depot (G6)',
-            desc: 'Special abilities not implemented.',
-            # desc: 'Place one coal cube on this card for every $10 paid for this company in the '\
-            #       'initial auction (rounded down). During operating rounds, the owning corporation may '\
-            #       'spend 1-2 coal cubes to add additional stops on a route, following normal route rules.',
+            desc: 'Place one coal cube on this card for every $10 paid for this company in the '\
+                  'initial auction (rounded down). During operating rounds, the owning corporation may '\
+                  'spend 1-2 coal cubes to add additional stops on a route, following normal route rules.',
             value: 10,
             revenue: 5,
-            abilities: [
-              # 1 coal cube per $10 paid (round down) during auction
-            ],
           },
         ].freeze
 
@@ -245,41 +245,36 @@ module Engine
           {
             sym: 'B4',
             name: 'Gold Miner (B4)',
-            desc: 'Special abilities not implemented.',
-            # desc: 'This card acts as though it were a 20% share of Victor Gold Company. Does not '\
-            #       'count as a certificate. Closes when the first 5+ train is purchased.',
+            desc: 'This card acts as though it were a 20% share of Victor Gold Company. Does not '\
+                  'count as a certificate. Closes when the first 5+ train is purchased.',
             value: 20,
             revenue: 0,
             abilities: [
-              # { type: 'close', on_train: '5+' },
-              # 20% share of gold company
-              # does not count against cert limit
               { type: 'no_buy' },
             ],
           },
           {
             sym: 'B5',
-            name: 'Track Engineer (B5)',
-            desc: 'Special abilities not implemented.',
-            # desc: 'Every operating round, this company may treat one train as if it were +1. It may '\
-            #       'be a different train each operating round.',
+            name: 'B5 Track Engineer',
+            desc: 'Every operating round, this company may treat one train as if it were +1. It may '\
+                  'be a different train each operating round.',
             value: 60,
             revenue: 10,
-            abilities: [
-              # extend a train by 1 each OR
-            ],
           },
           {
             sym: 'B6',
             name: 'U.S. Mint Worker (B6)',
-            desc: 'Special abilities not implemented.',
-            # desc: 'The owning player may close this company to purchase 1-2 Victor Gold Company '\
-            #       'shares at a 50% discount each. These are bought simultaneously.',
+            desc: 'The owning player may close this company to purchase 1-2 Victor Gold Company '\
+                  'shares at a 50% discount each. These are bought simultaneously.',
             value: 40,
             revenue: 5,
             abilities: [
               { type: 'no_buy' },
-              # once per game may buy 1-2 gold shares at 50% discount; closes company
+              {
+                type: 'choose_ability',
+                owner_type: 'player',
+                when: %w[owning_player_sr_turn],
+              },
             ],
           },
         ].freeze
@@ -416,15 +411,15 @@ module Engine
             abilities: [
               {
                 type: 'base',
-                description: 'Gold Market Dividends',
-                desc_detail: 'When gold is shipped from the map, it is added to the Gold Market, '\
+                description: 'Gold Dividend',
+                desc_detail: 'When gold is shipped from the map, it is added to the Gold Dividend table, '\
                              'covering the lowest available slot. At the end of each OR set, VGC '\
                              'pays the amount of the lowest uncovered slot as dividends to '\
                              'shareholders. That amount is also tracked here as VGC\'s cash.',
               },
               {
                 type: 'base',
-                description: 'Gold Market Slots',
+                description: 'Gold Slots',
                 desc_detail: 'Yellow: 50, 90. Green: 140, 200. Brown: 270. Red: 350. Availability '\
                              'for filling slots is determined by the current phase.',
               },

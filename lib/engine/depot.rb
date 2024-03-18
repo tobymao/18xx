@@ -106,10 +106,12 @@ module Engine
 
     def depot_trains(clear: false)
       @depot_trains = nil if clear
-      @depot_trains ||= [
-        @upcoming.first,
-        *@upcoming.select { |t| @game.phase.available?(t.available_on) },
-      ].compact.uniq(&:name) + @discarded.uniq(&:name)
+      @depot_trains ||= available_upcoming_trains + @discarded.uniq(&:name)
+    end
+
+    def available_upcoming_trains
+      [@upcoming.first,
+       *@upcoming.select { |t| @game.phase.available?(t.available_on) }].compact.uniq(&:name)
     end
 
     def available(corporation)

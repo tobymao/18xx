@@ -39,7 +39,7 @@ module Engine
                        { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
             price: 500,
             num: 2,
-            events: [{ 'type' => 'gray_phase', 'when' => 2 }],
+            events: [{ 'type' => 'close_gold_miner' }, { 'type' => 'gray_phase', 'when' => 2 }],
           },
           {
             name: '6',
@@ -48,7 +48,7 @@ module Engine
             num: 5,
             events: [{ 'type' => 'trigger_endgame' }],
           },
-        ].freeze
+        ].deep_freeze
 
         PHASES = [
           {
@@ -82,7 +82,7 @@ module Engine
             status: %w[can_buy_companies],
             operating_rounds: 2,
           },
-        ].freeze
+        ].deep_freeze
       end
     end
   end
