@@ -56,6 +56,7 @@ module Engine
         discount: @discount,
         salvage: @salvage,
         track_type: @track_type,
+        buyable: @buyable,
       }
 
       # Primary variant should be at the head of the list.
@@ -71,6 +72,16 @@ module Engine
 
       # Remove the @local variable, this to get the local? method evaluate the new variant
       remove_instance_variable(:@local) if defined?(@local)
+    end
+
+    def add_variant(new_variant)
+      return if @variants.include?(new_variant[:name])
+
+      variant = {
+        **@variant,
+        **new_variant,
+      }
+      @variants[variant[:name]] = variant
     end
 
     # remove unused variants, i.e., the physical train card is not allowed to be

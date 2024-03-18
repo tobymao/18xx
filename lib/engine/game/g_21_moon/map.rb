@@ -215,59 +215,65 @@ module Engine
           },
 
           # Gray
-          'X22' =>
+          'SP1' =>
           {
             'count' => 1,
             'color' => 'gray',
             'code' => 'city=revenue:30,slots:7;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=SP',
           },
-          'X23' =>
+          'SP2' =>
           {
             'count' => 1,
             'color' => 'gray',
             'code' => 'city=revenue:40,slots:7;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=SP',
           },
-          'X24' =>
+          'X22' =>
           {
             'count' => 2,
             'color' => 'gray',
             'code' => 'city=revenue:0,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0',
           },
-          'X25' =>
+          'X23' =>
           {
             'count' => 1,
             'color' => 'gray',
             'code' => 'city=revenue:0,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0',
           },
-          'X26' =>
+          'X24' =>
           {
             'count' => 1,
             'color' => 'gray',
             'code' => 'city=revenue:0,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0',
           },
-          'X27' =>
+          'X25' =>
+          {
+            'count' => 1,
+            'color' => 'gray',
+            'code' => 'city=revenue:0,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0',
+          },
+          'X26' =>
           {
             'count' => 1,
             'color' => 'gray',
             'code' => 'city=revenue:0,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
           },
-          'X28' =>
+          'X27' =>
           {
             'count' => 1,
             'color' => 'gray',
             'code' => 'city=revenue:0,slots:2;city=revenue:0,slots:2;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:0,b:_1;path=a:4,b:_1;path=a:5,b:_1;label=OO',
           },
+          'X28' =>
+          {
+            'count' => 1,
+            'color' => 'gray',
+            'code' => 'city=revenue:0,slots:2,loc:0;city=revenue:0,slots:2,loc:3;path=a:0,b:_0;path=a:1,b:_0;path=a:5,b:_0;path=a:2,b:_1;path=a:3,b:_1;path=a:4,b:_1;label=OO',
+          },
           'X29' =>
           {
             'count' => 1,
             'color' => 'gray',
-            'code' => 'city=revenue:0,slots:2;city=revenue:0,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:5,b:_0;path=a:2,b:_1;path=a:3,b:_1;path=a:4,b:_1;label=OO',
-          },
-          'X30' =>
-          {
-            'count' => 1,
-            'color' => 'gray',
-            'code' => 'city=revenue:yellow_30|green_30|brown_40|gray_10,slots:3;path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0;label=T;frame=color:#ffa500',
+            'code' => 'city=revenue:yellow_30|brown_20|gray_10,slots:3;path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0;label=T;frame=color:#ffa500',
           },
         }.freeze
         # rubocop:enable Layout/LineLength

@@ -10,4 +10,4 @@ Special thanks to all the [contributors](https://github.com/tobymao/18xx/graphs/
 
 ## Development
 
-Please submit [issues](https://github.com/tobymao/18xx/issues) and [pull requests](https://github.com/tobymao/18xx/pulls). Most discussion about development happens on the [18xx Slack](https://join.slack.com/t/18xxgames/shared_invite/zt-27imtsj2u-vussFAqtecmACsycjdsIhg) in the #18xxgames and #18xxgamesdev channels.  If you would like to add your game to the site, please contact us on Slack. For more information, see [`DEVELOPMENT.md`](DEVELOPMENT.md).
+Please submit [issues](https://github.com/tobymao/18xx/issues) and [pull requests](https://github.com/tobymao/18xx/pulls). Most discussion about development happens on the [18xx Slack](https://18xxgames.slack.com/join/shared_invite/zt-2evbzlz86-fSip9Zr9W~OSQW_EbP4DGw#/shared-invite/email) in the #18xxgames and #18xxgamesdev channels.  If you would like to add your game to the site, please contact us on Slack. For more information, see [`DEVELOPMENT.md`](DEVELOPMENT.md).

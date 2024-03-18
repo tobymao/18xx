@@ -13,6 +13,8 @@ module Engine
         include Entities
         include Map
 
+        attr_reader :cattle_token_hex
+
         BANK_CASH = 6000
 
         CERT_LIMIT = { 2 => 26, 3 => 17, 4 => 13 }.freeze
@@ -104,8 +106,8 @@ module Engine
             distance: [{ 'nodes' => %w[town], 'pay' => 2 },
                        { 'nodes' => %w[town city offboard], 'pay' => 2 }],
             price: 100,
-            rusts_on: '4+4',
-            num: 5,
+            rusts_on: '4D',
+            num: 2,
           },
           {
             name: '3+3',
@@ -113,7 +115,7 @@ module Engine
                        { 'nodes' => %w[town city offboard], 'pay' => 3 }],
             price: 200,
             rusts_on: '6/8',
-            num: 4,
+            num: 1,
           },
           {
             name: '4+4',
@@ -121,13 +123,13 @@ module Engine
                        { 'nodes' => %w[town city offboard], 'pay' => 4 }],
             price: 300,
             rusts_on: '4D',
-            num: 3,
+            num: 1,
           },
           {
             name: '5/7',
             distance: [{ 'nodes' => %w[city offboard town], 'pay' => 5, 'visit' => 7 }],
             price: 450,
-            num: 2,
+            num: 1,
             events: [{ 'type' => 'close_companies' },
                      { 'type' => 'full_capitalization' },
                      { 'type' => 'local_railways_available' }],
@@ -137,6 +139,7 @@ module Engine
             distance: [{ 'pay' => 6, 'visit' => 8 }],
             price: 600,
             num: 2,
+            events: [{ 'type' => 'remove_tokens' }],
           },
           {
             name: '4D',
@@ -157,12 +160,29 @@ module Engine
           'full_capitalization' => ['Full Capitalization',
                                     'Newly started 10-share corporations receive remaining capitalization once 5 shares sold'],
           'local_railways_available' => ['Local Railways Available', 'Local Railways can now be started'],
+          'remove_tokens' => ['Remove Tokens', 'All private company tokens are removed from the game'],
         )
+
+        CATTLE_OPEN_ICON = 'cattle_open'
+        CATTLE_CLOSED_ICON = 'cattle_closed'
+
+        ASSIGNMENT_TOKENS = {
+          CATTLE_OPEN_ICON => '/icons/18_neb/cattle_open.svg',
+          CATTLE_CLOSED_ICON => '/icons/18_neb/cattle_closed.svg',
+        }.freeze
 
         TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: :not_if_upgraded }].freeze
 
-        def morison_bridging_company
-          @morison_bridging_company ||= @companies.find { |company| company.id == 'P2' }
+        def bridge_company
+          @bridge_company ||= @companies.find { |company| company.id == 'P2' }
+        end
+
+        def cattle_company
+          @cattle_company ||= company_by_id('P3')
+        end
+
+        def tile_income_company
+          @tile_income_company ||= @companies.find { |company| company.id == 'P5' }
         end
 
         def setup_preround
@@ -171,11 +191,15 @@ module Engine
 
         def setup_company_purchase_prices
           @companies.each do |company|
-            if company == morison_bridging_company
-              set_company_purchase_price(company, 1.0, 1.0)
-            else
-              set_company_purchase_price(company, 0.5, 1.5)
-            end
+            range = case company
+                    when bridge_company
+                      [1.0, 1.0]
+                    when tile_income_company
+                      [0.5, 1.0]
+                    else
+                      [0.5, 1.5]
+                    end
+            set_company_purchase_price(company, *range)
           end
         end
 
@@ -188,6 +212,13 @@ module Engine
           @corporations_to_fully_capitalize = []
         end
 
+        def event_close_companies!
+          super
+          # Bridge tokens remain in the game until phase 6
+          company_by_id('P2')&.revenue = 0
+          cattle_company&.revenue = 0
+        end
+
         def event_full_capitalization!
           @log << "-- Event: #{EVENTS_TEXT['full_capitalization'][1]} --"
           @corporations_fully_capitalize = true
@@ -196,6 +227,14 @@ module Engine
         def event_local_railways_available!
           @log << "-- Event: #{EVENTS_TEXT['local_railways_available'][1]} --"
           @locals_available = true
+        end
+
+        def event_remove_tokens!
+          @log << "-- Event: #{EVENTS_TEXT['remove_tokens'][1]} --"
+          return unless @cattle_token_hex
+
+          @cattle_token_hex.remove_assignment!(self.class::CATTLE_OPEN_ICON)
+          @cattle_token_hex.remove_assignment!(self.class::CATTLE_CLOSED_ICON)
         end
 
         def reorder_players(order = nil, log_player_order: false)
@@ -212,7 +251,7 @@ module Engine
         def stock_round
           Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
-            Engine::Step::Exchange,
+            G18Neb::Step::Exchange,
             Engine::Step::HomeToken,
             Engine::Step::SpecialTrack,
             G18Neb::Step::BuySellParShares,
@@ -223,10 +262,12 @@ module Engine
           Round::Operating.new(self, [
             G18Neb::Step::Bankrupt,
             Engine::Step::Exchange,
+            G18Neb::Step::Assign,
+            G18Neb::Step::SpecialChoose,
             G18Neb::Step::BuyCompany,
-            G18Neb::Step::SpecialTrack,
+            Engine::Step::SpecialTrack,
             G18Neb::Step::Track,
-            Engine::Step::Token,
+            G18Neb::Step::Token,
             Engine::Step::Route,
             G18Neb::Step::Dividend,
             Engine::Step::DiscardTrain,
@@ -254,11 +295,30 @@ module Engine
           %w[3 4 58].include?(from.name) && %w[X01 X02 X03].include?(to.name)
         end
 
+        def upgrade_cost(tile, _hex, entity, spender)
+          terrain_cost = tile.upgrades.sum(&:cost)
+          discounts = 0
+
+          # Tile discounts must be activated
+          if entity.company? && (ability = entity.all_abilities.find { |a| a.type == :tile_discount })
+            discounts = tile.upgrades.sum do |upgrade|
+              next unless upgrade.terrains.include?(ability.terrain)
+
+              discount = [upgrade.cost, ability.discount].min
+              log_cost_discount(spender, ability, discount) if discount.positive?
+              discount
+            end
+          end
+
+          terrain_cost -= TILE_COST if terrain_cost.positive?
+          terrain_cost - discounts
+        end
+
         def purchasable_companies(entity = nil)
           if @phase.status.include?('can_buy_morison_bridging') &&
-              morison_bridging_company&.owner&.player? &&
-              entity != morison_bridging_company.owner
-            [morison_bridging_company]
+              bridge_company&.owner&.player? &&
+              entity != bridge_company.owner
+            [bridge_company]
           elsif @phase.status.include?('can_buy_companies')
             super
           else
@@ -267,16 +327,12 @@ module Engine
         end
 
         def after_phase_change(name)
-          set_company_purchase_price(morison_bridging_company, 0.5, 1.5) if name == '3' && morison_bridging_company
+          set_company_purchase_price(bridge_company, 0.5, 1.5) if name == '3' && bridge_company
         end
 
         def after_par(corporation)
           super
           @corporations_to_fully_capitalize << corporation if corporations_fully_capitalize?
-        end
-
-        def after_tile_lay(_hex, _old_tile, _new_tile)
-          # TODO: P5
         end
 
         def corporations_fully_capitalize?
@@ -291,6 +347,20 @@ module Engine
           return false if corporation.type == :local && !locals_available?
 
           super
+        end
+
+        def can_gain_from_player?(entity, bundle)
+          bundle.corporation == entity && !causes_president_swap?(entity, bundle)
+        end
+
+        def causes_president_swap?(corporation, bundle)
+          return false unless corporation.president?(bundle.owner)
+
+          seller = bundle.owner
+          share_holders = corporation.player_share_holders(corporate: true)
+          remaining = share_holders[seller] - bundle.percent
+          next_highest = share_holders.reject { |k, _| k == seller }.values.max || 0
+          remaining < next_highest
         end
 
         def check_for_full_capitalization(corporation)
@@ -311,7 +381,9 @@ module Engine
         end
 
         def redeemable_shares(entity)
-          [@share_pool.shares_of(entity).find { |s| s.price <= entity.cash }&.to_bundle].compact
+          ([@share_pool] + @players).flat_map do |sh|
+            sh.shares_of(entity).reject(&:president).find { |s| s.price <= entity.cash }&.to_bundle
+          end.compact
         end
 
         def operating_order
@@ -328,7 +400,7 @@ module Engine
         end
 
         def revenue_for(route, stops)
-          super + east_west_bonus(route, stops)
+          super + east_west_bonus(route, stops) + cattle_bonus(route, stops)
         end
 
         def revenue_str(route)
@@ -348,6 +420,26 @@ module Engine
 
           multiplier = route.train.name == '4D' ? 2 : 1
           stops.map { |stop| stop.route_revenue(route.phase, route.train) }.max * multiplier
+        end
+
+        def cattle_bonus(route, stops)
+          closed_cattle = stops.any? { |stop| stop.hex.assigned?(self.class::CATTLE_CLOSED_ICON) }
+          open_cattle = !closed_cattle && stops.any? { |stop| stop.hex.assigned?(self.class::CATTLE_OPEN_ICON) }
+
+          if (open_cattle && route.train.owner.assigned?(self.class::CATTLE_OPEN_ICON)) ||
+              (closed_cattle && route.train.owner.assigned?(self.class::CATTLE_CLOSED_ICON))
+            20
+          elsif open_cattle
+            10
+          else
+            0
+          end
+        end
+
+        def cattle_token_assigned!(hex)
+          cattle_company.add_ability(Engine::Ability::ChooseAbility.new(type: :choose_ability, choices: ['Close Token'],
+                                                                        when: 'token'))
+          @cattle_token_hex = hex
         end
 
         def rust(train)

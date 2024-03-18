@@ -1028,7 +1028,7 @@ module Engine
           true
         end
 
-        def map_legend(font_color, yellow, green, brown, gray)
+        def map_legend(font_color, yellow, green, brown, gray, *_extra_colors)
           [
             # table-wide props
             {

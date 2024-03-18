@@ -456,6 +456,10 @@ module Engine
           destination_stop.route_revenue(route.phase, route.train)
         end
 
+        def can_gain_from_player?(entity, _bundle)
+          self.class::CORPORATE_BUY_SHARE_ALLOW_BUY_FROM_PRESIDENT && entity.corporation?
+        end
+
         def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil, movement: nil)
           @sell_queue << [bundle, bundle.corporation.owner]
 
