@@ -11,7 +11,7 @@ module Engine
             revenue: 0,
             desc: "Owning corp may place special 'New Pittsburgh' yellow tile "\
                   'during tile-laying, regardless of connectivity.  The hex is not reserved, and the '\
-                  'power is lost if another company builds there first.',
+                  'power is lost if another corporation builds there first.',
             sym: 'PSM',
             abilities: [
             {
@@ -144,7 +144,7 @@ module Engine
             value: 120,
             revenue: 0,
             desc: 'Pays owning corp $20 at the start of each operating round, '\
-                  'as long as the company has at least one train.',
+                  'as long as the corporation has at least one train.',
             sym: 'MAJM',
             abilities: [
               {

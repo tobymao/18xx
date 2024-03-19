@@ -10,7 +10,7 @@ module Engine
         name: 'Mountain Engineers',
         value: 40,
         revenue: 0,
-        desc: 'Owning company receives 20 ℳ after laying a yellow tile in a '\
+        desc: 'Owning corporation receives 20 ℳ after laying a yellow tile in a '\
               'mountain hex.  Any fees must be paid first.',
         sym: 'ME',
         abilities: [
@@ -134,7 +134,7 @@ module Engine
         value: 60,
         revenue: 0,
         desc: 'Pays owning corp 10 ℳ at the start of each operating round, as '\
-              'long as the company has at least one train.',
+              'long as the corporation has at least one train.',
         sym: 'MINM',
         abilities: [
           {
@@ -151,7 +151,7 @@ module Engine
         value: 120,
         revenue: 0,
         desc: 'Pays owning corp 20 ℳ at the start of each operating round, as '\
-              'long as the company has at least one train.',
+              'long as the corporation has at least one train.',
         sym: 'MAJM',
         abilities: [
           {
