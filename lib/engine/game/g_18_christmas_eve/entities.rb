@@ -47,7 +47,7 @@ module Engine
             name: 'Egg Nog Express',
             value: 80,
             revenue: 15,
-            desc: 'The owning company adds $40 to any train run that includes both the Bar (F7) and the DC hex (C10).',
+            desc: 'The owning corporation adds $40 to any train run that includes both the Bar (F7) and the DC hex (C10).',
             sym: 'ENX',
             color: nil,
           },
