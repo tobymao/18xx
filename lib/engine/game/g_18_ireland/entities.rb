@@ -9,8 +9,8 @@ module Engine
             name: 'Dalkey Atmospheric Railway',
             value: 20,
             revenue: 5,
-            desc: 'No company can build in the Wicklow hex until this company is either bought by'\
-                  ' any company or closed.',
+            desc: 'No Corporation can build in the Wicklow hex until this company is either bought by'\
+                  ' any Corporation or closed.',
             sym: 'DAR',
             abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['J14'] }],
           },
@@ -189,7 +189,7 @@ module Engine
             name: 'Dublin & Kingstown Railway',
             value: 120,
             revenue: 0,
-            desc: 'The owner of this company: Takes the DKR directorship; sets the share'\
+            desc: 'The buyer of this company: Takes the DKR directorship; sets the share'\
                   ' price at half bid; places a 2H-Train on the charter; places the winning bid'\
                   ' in the DKR treasury less the cost of the train and discards this card.',
             sym: 'DK',
