@@ -107,8 +107,8 @@ module Engine
             value: 150,
             revenue: 30,
             desc: 'Does not close while owned by a player. If owned by a player '\
-                  'when the first 5-train is purchased it may no longer be sold '\
-                  'to a public company and the revenue is increased to 50.',
+                  'when the first 5-train is purchased, it may no longer be sold '\
+                  'to a corporation, and the revenue is increased to 50.',
             sym: 'UTF',
             min_players: 4,
             abilities: [{ type: 'close', on_phase: 'never', owner_type: 'player' },
