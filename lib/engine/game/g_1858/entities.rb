@@ -117,7 +117,7 @@ module Engine
             sym: 'H&G',
             name: 'Havana and Güines Railway',
             desc: 'P1. Revenue 10, face value 30. ' \
-                  'Cannot be used to start a public company or exchanged for a share.',
+                  'Cannot be used to start a corporation or exchanged for a share.',
             value: 30,
             discount: 0,
             revenue: 10,
@@ -129,7 +129,7 @@ module Engine
             sym: 'B&M',
             name: 'Barcelona and Mataró Railway',
             desc: 'P2. Revenue 23/35, face value 115. Home hex is O8. ' \
-                  'Can be used to start a public company in Barcelona.',
+                  'Can be used to start a corporation in Barcelona.',
             value: 115,
             discount: 25,
             revenue: 23,
@@ -152,7 +152,7 @@ module Engine
             sym: 'M&A',
             name: 'Madrid and Aranjuez Railway',
             desc: 'P3. Revenue 25/38, face value 125. Home hexes are H11 and H13. ' \
-                  'Can be used to start a public company in Madrid.',
+                  'Can be used to start a corporation in Madrid.',
             value: 125,
             discount: 25,
             revenue: 25,
@@ -176,7 +176,7 @@ module Engine
             sym: 'P&L',
             name: 'Porto and Lisbon Railway',
             desc: 'P4. Revenue 22/33, face value 110. Home hexes are B9 and B11. ' \
-                  'Can be used to start a public company in Porto.',
+                  'Can be used to start a corporation in Porto.',
             value: 110,
             discount: 20,
             revenue: 22,
@@ -199,7 +199,7 @@ module Engine
             sym: 'V&J',
             name: 'Valencia and Jativa Railway',
             desc: 'P5. Revenue 20/30, face value 100. Home hex is L13. ' \
-                  'Can be used to start a public company in Valencia.',
+                  'Can be used to start a corporation in Valencia.',
             value: 100,
             discount: 20,
             revenue: 20,
@@ -222,7 +222,7 @@ module Engine
             sym: 'R&T',
             name: 'Reus and Tarragona Railway',
             desc: 'P6. Revenue 12/18, face value 60. Home hex is N9. ' \
-                  'Cannot be used to start a public company.',
+                  'Cannot be used to start a corporation.',
             value: 60,
             discount: 10,
             revenue: 12,
@@ -237,7 +237,7 @@ module Engine
             sym: 'L&C',
             name: 'Lisbon and Carregado Railway',
             desc: 'P7. Revenue 18/27, face value 90. Home hexes are A14 and B13. ' \
-                  'Can be used to start a public company in Lisboa.',
+                  'Can be used to start a corporation in Lisboa.',
             value: 90,
             discount: 20,
             revenue: 18,
@@ -260,7 +260,7 @@ module Engine
             sym: 'M&V',
             name: 'Madrid and Valladolid Railway',
             desc: 'P8. Revenue 24/36, face value 120. Home hexes are G8, G10 and H11. ' \
-                  'Can be used to start a public company in either Madrid or Valladolid.',
+                  'Can be used to start a corporation in either Madrid or Valladolid.',
             value: 120,
             discount: 25,
             revenue: 24,
@@ -285,7 +285,7 @@ module Engine
             sym: 'M&Z',
             name: 'Madrid and Zaragoza Railway',
             desc: 'P9. Revenue 19/29, face value 95. Home hexes are I10, J9, K8 and L7. ' \
-                  'Can be used to start a public company in Zaragoza.',
+                  'Can be used to start a corporation in Zaragoza.',
             value: 95,
             discount: 20,
             revenue: 19,
@@ -308,7 +308,7 @@ module Engine
             sym: 'C&S',
             name: 'Córdoba and Seville Railway',
             desc: 'P10. Revenue 21/32, face value 105. Home hexes are E18, F17 and G18. ' \
-                  'Can be used to start a public company in either Sevilla or Córdoba.',
+                  'Can be used to start a corporation in either Sevilla or Córdoba.',
             value: 105,
             discount: 20,
             revenue: 21,
@@ -332,7 +332,7 @@ module Engine
             sym: 'SJ&C',
             name: 'Seville, Jerez and Cadiz Railway',
             desc: 'P11. Revenue 14/21, face value 70. Home hexes are E18 and E20. ' \
-                  'Can be used to start a public company in either Sevilla or Cádiz.',
+                  'Can be used to start a corporation in either Sevilla or Cádiz.',
             value: 70,
             discount: 15,
             revenue: 14,
@@ -356,7 +356,7 @@ module Engine
             sym: 'Z&P',
             name: 'Zaragoza and Pamplona Railway',
             desc: 'P12. Revenue 16/24, face value 80. Home hexes are K4, K6 and L7. ' \
-                  'Can be used to start a public company in Zaragoza.',
+                  'Can be used to start a corporation in Zaragoza.',
             value: 80,
             discount: 15,
             revenue: 16,
@@ -379,7 +379,7 @@ module Engine
             sym: 'C&B',
             name: 'Castejón and Bilbao Railway',
             desc: 'P13. Revenue 15/23, face value 75. Home hex is I2. ' \
-                  'Can be used to start a public company in Bilbao.',
+                  'Can be used to start a corporation in Bilbao.',
             value: 75,
             discount: 15,
             revenue: 15,
@@ -402,7 +402,7 @@ module Engine
             sym: 'C&M',
             name: 'Córdoba and Málaga Railway',
             desc: 'P14. Revenue 17/26, face value 85. Home hexes are G18 and G20. ' \
-                  'Can be used to start a public company in either Córdoba or Málaga.',
+                  'Can be used to start a corporation in either Córdoba or Málaga.',
             value: 85,
             discount: 15,
             revenue: 17,
@@ -426,7 +426,7 @@ module Engine
             sym: 'M&C',
             name: 'Murcia and Cartagena Railway',
             desc: 'P15. Revenue 14/21, face value 70. Home hexes are K18 and L19. ' \
-                  'Can be used to start a public company in Murcia.',
+                  'Can be used to start a corporation in Murcia.',
             value: 70,
             discount: 15,
             revenue: 14,
@@ -449,7 +449,7 @@ module Engine
             sym: 'A&S',
             name: 'Alar and Santander Railway',
             desc: 'P16. Revenue 16/24, face value 80. Home hexes are G4 and H3. ' \
-                  'Can be used to start a public company in Santander.',
+                  'Can be used to start a corporation in Santander.',
             value: 80,
             discount: 15,
             revenue: 16,
@@ -472,7 +472,7 @@ module Engine
             sym: 'B&CR',
             name: 'Badajoz and Ciudad Real Railway',
             desc: 'P17. Revenue 13/20, face value 65. Home hexes are D15, E14 and F15. ' \
-                  'Cannot be used to start a public company.',
+                  'Cannot be used to start a corporation.',
             value: 65,
             discount: 15,
             revenue: 13,
@@ -487,7 +487,7 @@ module Engine
             sym: 'S&C',
             name: 'Santiago and La Coruña Railway',
             desc: 'P18. Revenue 30, face value 100. Home hexes are C2 and C4. ' \
-                  'Can be used to start a public company in La Coruña.',
+                  'Can be used to start a corporation in La Coruña.',
             value: 100,
             discount: 0,
             revenue: 30,
@@ -509,7 +509,7 @@ module Engine
             sym: 'M&S',
             name: 'Medina and Salamanca Railway',
             desc: 'P19. Revenue 27, face value 90. Home hex is F9. ' \
-                  'Cannot be used to start a public company.',
+                  'Cannot be used to start a corporation.',
             value: 90,
             discount: 0,
             revenue: 27,
@@ -521,7 +521,7 @@ module Engine
             sym: 'CM&P',
             name: 'Cáceres, Madrid and Portugal Railway',
             desc: 'P20. Revenue 40, face value 135. Home hexes are D13, E12, F13, G12 and H11. ' \
-                  'Can be used to start a public company in Madrid.',
+                  'Can be used to start a corporation in Madrid.',
             value: 135,
             discount: -30,
             revenue: 40,
@@ -544,7 +544,7 @@ module Engine
             sym: 'O&V',
             name: 'Orense and Vigo Railway',
             desc: 'P21. Revenue 33, face value 110. Home hexes are B5 and C4. ' \
-                  'Can be used to start a public company in Vigo.',
+                  'Can be used to start a corporation in Vigo.',
             value: 110,
             discount: 0,
             revenue: 33,
@@ -566,7 +566,7 @@ module Engine
             sym: 'L&G',
             name: 'León and Gijón Railway',
             desc: 'P22. Revenue 36, face value 120. Home hexes are F1, F3 and F5. ' \
-                  'Can be used to start a public company in Gijón.',
+                  'Can be used to start a corporation in Gijón.',
             value: 120,
             discount: 0,
             revenue: 36,
