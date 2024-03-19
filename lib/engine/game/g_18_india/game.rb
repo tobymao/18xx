@@ -442,7 +442,7 @@ module Engine
             G18India::Step::Assign, # used by P6
             G18India::Step::SpecialChoose, # Used by P4
             G18India::Step::SpecialTrack, # used by P2 & P3 (track lay & track upgrade)
-            # G18India::Step::SpecialToken, # use for p5? [error on player not haveing token]
+            Engine::Step::SpecialToken, # use for P5
             G18India::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
@@ -862,38 +862,11 @@ module Engine
           @log << "#{company.name} closes and #{company.owner.name} receives #{company.value} from the Bank." unless silent
         end
 
-        # use to allow corp to use companies owned by director?
-        def entity_can_use_company?(entity, company)
-          return true if entity.player? && entity == company.owner
-          return true if entity.corporation? && company.owner == entity.corporation.owner
-
-          false
-        end
-
-        # Adjust token owner if company is player owned?
+        # Adjust token owner if company is player owned
         def token_owner(entity)
-          return @step.current_entity if entity&.player?
+          return @round.current_operator if @round.current_operator
 
           entity&.company? ? entity.owner : entity
-        end
-
-        def upgrade_cost(tile, _hex, entity, spender)
-          terrain_cost = tile.upgrades.sum(&:cost)
-          discounts = 0
-
-          # Tile discounts must be activated
-          if entity.company? && (ability = entity.all_abilities.find { |a| a.type == :tile_discount })
-            discounts = tile.upgrades.sum do |upgrade|
-              next unless upgrade.terrains.include?(ability.terrain)
-
-              discount = [upgrade.cost, ability.discount].min
-              log_cost_discount(spender, ability, discount) if discount.positive?
-              discount
-            end
-          end
-
-          terrain_cost -= TILE_COST if terrain_cost.positive?
-          terrain_cost - discounts
         end
 
         # modified to apply P4 discount if used
