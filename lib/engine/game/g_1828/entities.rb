@@ -80,7 +80,7 @@ module Engine
             value: 120,
             revenue: 20,
             desc: 'Blocks D22 while owned by a player. ' \
-                  'Owning player may exchange for a share of any company from the market or IPO.',
+                  'Owning player may exchange for a share of any corporation from the market or IPO.',
             sym: 'M&H',
             abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['D22'] },
                         {
@@ -96,8 +96,8 @@ module Engine
             value: 120,
             revenue: 20,
             desc: 'Blocks Adrian & Ann Arbor (E7) while owned by a player. ' \
-                  'A yellow track tile is placed at E7 when purchased by a company. ' \
-                  'Owning company may (once) place one additional yellow track tile ' \
+                  'A yellow track tile is placed at E7 when purchased by a corporation. ' \
+                  'Owning corp may (once) place one additional yellow track tile ' \
                   'at $20 as part of its normal track build.',
             sym: 'E&K',
             abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['E7'] },
