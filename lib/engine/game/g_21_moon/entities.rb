@@ -29,7 +29,7 @@ module Engine
             revenue: 5,
             min_price: 1,
             max_price: 45,
-            desc: 'When this private is bought by a company, the president of the company may choose to add or remove '\
+            desc: 'When this private is bought by a corporation, the president of the corporation may choose to add or remove '\
                   'a 2/3/4/5/6 train to/from the depot. If a train is added, it must be of the '\
                   'current phase or later. This will close the company. Can be sold to a corporation for ₡1-₡45.',
             abilities: [],
@@ -43,7 +43,7 @@ module Engine
             min_price: 1,
             max_price: 60,
             desc: 'The corporation owning the SBC can build and upgrade road tiles crossing the rift. '\
-                  'The owning company receives a bonus of 60 credits after the connection across the rift is '\
+                  'The owning corporation receives a bonus of 60 credits after the connection across the rift is '\
                   'made and the SBC will close. Can be sold to a corporation for ₡1-₡60.',
             abilities: [],
             color: nil,
