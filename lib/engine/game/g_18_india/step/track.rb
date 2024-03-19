@@ -7,6 +7,12 @@ module Engine
     module G18India
       module Step
         class Track < Engine::Step::Track
+          # for debugging
+          def process_lay_tile(action)
+            super
+            LOGGER.debug "process_lay_tile >> terrain_discount: #{@round.terrain_discount}"
+          end
+
           # Bypass some Step::Tracker tests for Town to City upgrade: maintain exits, and check new exits are valid
           def legal_tile_rotation?(entity, hex, tile)
             old_tile = hex.tile
@@ -18,6 +24,16 @@ module Engine
                      !(tile.exits & hex_neighbors(entity, hex)).empty?
             end
 
+            super
+          end
+
+          # close P4 if ability was activated
+          def pass!
+            company = @round.discount_source
+            unless company.nil?
+              @game.company_is_closing(company)
+              company.close!
+            end
             super
           end
         end

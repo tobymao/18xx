@@ -1932,6 +1932,11 @@ module Engine
         place_home_token(corporation) if self.class::HOME_TOKEN_TIMING == :par
       end
 
+      # This is a hook to do something before company closes
+      def company_is_closing(company, silent = false)
+        @log << "#{company.name} closes" unless silent
+      end
+
       def close_companies_on_event!(entity, event)
         @companies.each do |company|
           next if company.closed?
@@ -1939,10 +1944,8 @@ module Engine
           abilities(company, :close, time: event) do |ability|
             next if entity&.name != ability.corporation
 
+            company_is_closing(company, ability.silent)
             company.close!
-            next if ability.silent
-
-            @log << "#{company.name} closes"
           end
         end
       end
@@ -3114,6 +3117,8 @@ module Engine
             @round.operating? && @round.current_operator&.player == ability.player
           when 'owning_player_track'
             @round.operating? && @round.current_operator&.player == ability.player && current_step.is_a?(Step::Track)
+          when 'owning_player_token'
+            @round.operating? && @round.current_operator&.player == ability.player && current_step.is_a?(Step::Token)
           when 'owning_player_sr_turn'
             @round.stock? && @round.current_entity == ability.player
           when 'or_between_turns'

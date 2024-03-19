@@ -79,15 +79,52 @@ module Engine
 
         PHASES = [
           { name: 'I', train_limit: 2, tiles: %i[yellow green brown gray], operating_rounds: 2 },
-          { name: 'II', on: '3', train_limit: 2, tiles: %i[yellow green brown gray], operating_rounds: 2 },
+          {
+            name: 'II',
+            on: '3',
+            train_limit: 2,
+            tiles: %i[yellow green brown gray],
+            operating_rounds: 2,
+            status: %w[gipr_may_operate],
+          },
           { name: 'III', on: '4', train_limit: 2, tiles: %i[yellow green brown gray], operating_rounds: 2 },
-          { name: 'IV', on: '3x2', train_limit: 2, tiles: %i[yellow green brown gray], operating_rounds: 2 },
+          {
+            name: "III'",
+            on: '4-2',
+            train_limit: 2,
+            tiles: %i[yellow green brown gray],
+            operating_rounds: 2,
+            status: %w[phase_four_trains],
+          },
+          {
+            name: 'IV',
+            on: %w[3x2 3x3 4x2 4x3],
+            train_limit: 2,
+            tiles: %i[yellow green brown gray],
+            operating_rounds: 2,
+            status: %w[warrants_expire no_gauge_change gauge_change_removal],
+          },
         ].freeze
+
+        STATUS_TEXT = Base::STATUS_TEXT.merge(
+          'gipr_may_operate' => ['GIPR may operate', 'GIPR may operate if it has been floated (three 10% shares in play).'],
+          'phase_four_trains' => ['Phase IV trains available', 'All Phase IV trains are simultaneously available.'],
+          'warrants_expire' => ['Guaranty Warrants expire', 'Guaranty Warrants immediately expire.'],
+          'no_gauge_change' => ['Gauge Change no longer placed', 'Gauge Change markers are no longer placed with new track.'],
+          'gauge_change_removal' => ['Gauge Change may be removed', 'Gauge Change markers may be removed as a track action.'],
+        ).freeze
 
         VARIABLE_CITY_HEXES = %w[A16 D3 D23 G36 K30 K40 M10 Q10 R17].freeze
         VARIABLE_CITY_NAMES = %w[KARACHI LAHORE MUMBAI KOCHI CHENNAI COLOMBO NEPAL CHINA DHAKA].freeze
 
-        COMMODITY_NAMES = %w[OIL ORE1 COTTON SPICES GOLD OPIUM TEA1 ORE2 TEA2 RICE].freeze
+        COMMODITY_NAMES = %w[OIL ORE1 COTTON SPICES GOLD OPIUM TEA1 ORE2 TEA2 RICE JEWELRY].freeze
+        COMMODITY_DESTINATIONS = %w[KARACHI LAHORE MUMBAI KOCHI CHENNAI COLOMBO NEPAL CHINA HALDIA VISAKHAPATNAM].freeze
+
+        # TODO: Consider using commodity icons vs location names
+        # Refactor to use assignment (assignable module) for commodies?
+        ASSIGNMENT_TOKENS = {
+          'P6' => '/icons/18_royal_gorge/gold_cube.svg', # TODO: Add actual commodity ICON
+        }.freeze
 
         TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false },
                      { lay: :not_if_upgraded, upgrade: false }, { lay: :not_if_upgraded, upgrade: false }].freeze
@@ -418,10 +455,14 @@ module Engine
 
         def operating_round(round_num)
           Engine::Round::Operating.new(self, [
-            Engine::Step::Exchange,
+            # Engine::Step::Exchange, # this step may not be needed?
             Engine::Step::HomeToken,
+            G18India::Step::Assign, # used by P6
+            G18India::Step::SpecialChoose, # Used by P4
+            G18India::Step::SpecialTrack, # used by P2 & P3 (track lay & track upgrade)
+            Engine::Step::SpecialToken, # use for P5
             G18India::Step::Track,
-            Engine::Step::Token,
+            G18India::Step::Token,
             Engine::Step::Route,
             G18India::Step::Dividend,
             G18India::Step::SellBuyTrain,
@@ -761,25 +802,25 @@ module Engine
               revenue += bonus
             when 'SPICES'
               # SPICES => KOCHI [G36] + 70
+              if visited_names.include?('KOCHI')
+                bonus = 70
               # SPICES => COLOMBO [K40] + 50
               # SPICES => CHENNAI [K30] + 50
+              elsif visited_names.include?('COLOMBO') ||
+                    visited_names.include?('CHENNAI')
+                bonus = 50
               # SPICES => LAHORE [D3] + 40
               # SPICES => MUMBAI [D23] + 40
               # SPICES => CHINA [Q10] + 40
               # SPICES => NEPAL [M10] + 40
-              # SPICES => KARACHI [A16] + 30
-              # SPICES => HALDIA [P19] + 30
-              # SPICES => VISAKHAPATNAM [M24] + 30
-              if visited_names.include?('KOCHI')
-                bonus = 70
-              elsif visited_names.include?('COLOMBO') ||
-                    visited_names.include?('CHENNAI')
-                bonus = 50
               elsif visited_names.include?('LAHORE') ||
                     visited_names.include?('MUMBAI') ||
                     visited_names.include?('CHINA') ||
                     visited_names.include?('NEPAL')
                 bonus = 40
+              # SPICES => KARACHI [A16] + 30
+              # SPICES => HALDIA [P19] + 30
+              # SPICES => VISAKHAPATNAM [M24] + 30
               elsif visited_names.include?('KARACHI') ||
                     visited_names.include?('HALDIA') ||
                     visited_names.include?('VISAKHAPATNAM')
@@ -804,6 +845,10 @@ module Engine
               bonus = 30 if visited_names.include?('CHINA') || visited_names.include?('NEPAL')
               claim_concession(['RICE'], corporation) if bonus.positive?
               revenue += bonus
+            when 'JEWELRY'
+              # Jewelry concession pays 20 if delivered to any commodity destination
+              bonus = 20 unless (visited_names & COMMODITY_DESTINATIONS).empty?
+              revenue += bonus
             end
           end
           LOGGER.debug "GAME.commodity_bonus >> visited: #{visited_names}  sources: #{commodity_sources}  revenue: #{revenue}"
@@ -827,6 +872,32 @@ module Engine
           @log << "#{corporation.name} is trainless"
           @stock_market.move_left(corporation)
           log_share_price(corporation, old_price)
+        end
+
+        # pay owner value of company before closing
+        def company_is_closing(company, silent = false)
+          @bank.spend(company.value, company.owner)
+          @log << "#{company.name} closes and #{company.owner.name} receives #{company.value} from the Bank." unless silent
+        end
+
+        # Modified to select operator if company is player owned
+        def token_owner(entity)
+          return @round.current_operator if entity&.company? && entity.owner&.player? && @round.operating?
+
+          entity&.company? ? entity.owner : entity
+        end
+
+        # modified to apply P4 discount if used
+        def tile_cost_with_discount(_tile, _hex, _entity, spender, cost)
+          return cost if cost.zero? || @round.terrain_discount.zero?
+
+          discount = [cost, @round.terrain_discount].min
+          company = @round.discount_source
+          @round.terrain_discount -= discount
+          @log << "#{spender.name} receives a discount of "\
+                  "#{format_currency(discount)} from #{company.name}"
+
+          cost - discount
         end
 
         def company_header(company)

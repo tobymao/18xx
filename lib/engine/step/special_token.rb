@@ -75,7 +75,7 @@ module Engine
 
           if special_ability.count&.zero? && special_ability.closed_when_used_up
             company = special_ability.owner
-            @log << "#{company.name} closes"
+            @game.company_is_closing(company)
             company.close!
           end
         end
