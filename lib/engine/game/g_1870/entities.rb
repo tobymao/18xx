@@ -17,14 +17,14 @@ module Engine
             name: 'Mississippi River Bridge Company',
             value: 40,
             revenue: 10,
-            desc: 'Until this company is closed or sold to a public company, no company may bridge the Mississippi'\
-                  ' River. A company may lay track along the river, but may not lay track to cross the river, or do an'\
-                  ' upgrade that would cause track to cross the river. The public company that purchases the Mississippi'\
+            desc: 'Until this company is closed or sold to a corporation, no corporation may bridge the Mississippi'\
+                  ' River. A corporation may lay track along the river, but may not lay track to cross the river, or do an'\
+                  ' upgrade that would cause track to cross the river. The corporation that purchases the Mississippi'\
                   ' River Bridge Company may build in one of the hexes along the Mississippi River for a $40 discount.'\
-                  ' This company may be purchased by one of the two companies on the Mississippi River (Missouri Pacific'\
-                  ' or St.Louis Southwestern) in phase one for $20 to $40. If one of these two public companies purchases'\
-                  ' this private company during their first operating round, that company can lay a tile at its starting'\
-                  ' city for no cost and in addition to its normal tile lay(s). The company cannot lay a tile in their'\
+                  ' This company may be purchased by one of the two corps on the Mississippi River (Missouri Pacific'\
+                  ' or St.Louis Southwestern) in phase one for $20 to $40. If one of these two corps purchases'\
+                  ' this private company during their first operating round, that corporation can lay a tile at its starting'\
+                  ' city for no cost and in addition to its normal tile lay(s). The corp cannot lay a tile in their'\
                   ' starting city and upgrade it during the same operating round.',
             sym: 'MRBC',
             abilities: [
@@ -53,7 +53,7 @@ module Engine
             revenue: 10,
             desc: 'This company has a token that may be placed on any city west of the Mississippi River. Cities'\
                   ' located in the same hex as any portion of the Mississippi are not eligible for this placement. This'\
-                  ' increases the value of that city by $10 for that company only. Placing the token does not close the'\
+                  ' increases the value of that city by $10 for that corporation only. Placing the token does not close the'\
                   ' company.',
             sym: 'SCC',
             abilities: [
@@ -80,10 +80,10 @@ module Engine
             desc: 'This company has two tokens. One represents an open port and the other is a closed port. One (but'\
                   ' not both) of these tokens may be placed on one of the cities: Memphis (H17), Baton Rouge (M14), Mobile'\
                   ' (M20), Galveston (N7) and New Orleans (N17). Either token increases the value of the city for the owning'\
-                  ' company by $20. The open port token also increases the value of the city for all other companies by $10.'\
-                  ' If the president of the owning company places the closed port token, the private company is closed. If'\
-                  ' the open port token is placed, it may be replaced in a later operating round by the closed port token,'\
-                  ' closing the company.',
+                  ' corporation by $20. The open port token also increases the value of the city for all other corporations by'\
+                  ' $10. If the president of the owning corporation places the closed port token, the private company is'\
+                  ' closed. If the open port token is placed, it may be replaced in a later operating round by the closed'\
+                  ' port token, closing the company.',
             sym: 'GSC',
             abilities: [
               {
@@ -107,8 +107,8 @@ module Engine
             value: 140,
             revenue: 0,
             desc: "This is the President's certificate of the St.Louis-San Francisco Railway. The purchaser sets the"\
-                  ' par value of the railway. Unlike other companies, this company may operate with just 20% sold. It may'\
-                  ' not be purchased by another public company.',
+                  ' par value of the railway. Unlike other corporations, the St.Louis-San Francisco Railway may operate'\
+                  ' with just 20% sold. This private company may not be purchased by a corporation.',
             sym: 'SLSF',
             abilities: [{ type: 'shares', shares: 'SLSF_0' }, { type: 'no_buy' }],
             color: nil,
