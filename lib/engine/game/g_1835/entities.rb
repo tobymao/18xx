@@ -195,7 +195,7 @@ module Engine
             type: 'low',
             float_percent: 60,
             shares: [20, 10, 20, 20, 10, 10, 10],
-            # the shares order creates a 10 share company, but the first 3 sold papers are 20%
+            # the shares order creates a 10-share corporation, but the first 3 sold papers are 20%
             coordinates: 'C13',
             color: :violet,
           },
@@ -208,7 +208,7 @@ module Engine
             float_percent: 60,
             type: 'low',
             shares: [20, 10, 20, 20, 10, 10, 10],
-            # the shares order creates a 10 share company, but the first 3 sold papers are 20%
+            # the shares order creates a 10-share corporation, but the first 3 sold papers are 20%
             coordinates: 'D6',
             color: '#6e6966',
           },
