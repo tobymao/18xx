@@ -450,7 +450,11 @@ module Engine
 
         def stock_round
           # Test if home token step resolves issues of placing token when company floats
-          Engine::Round::Stock.new(self, [Engine::Step::HomeToken, G18India::Step::SellOnceThenBuyCerts])
+          Engine::Round::Stock.new(self, [
+            G18India::Step::HomeTrack,
+            Engine::Step::HomeToken,
+            G18India::Step::SellOnceThenBuyCerts,
+          ])
         end
 
         def operating_round(round_num)
@@ -629,8 +633,13 @@ module Engine
           hexes = []
           # hexes with open city locations
           hexes += @cities.reject { |c| c.available_slots.zero? }.map { |c| c.tile.hex }
-          # TODO: white or yellow hexes with single town & ability to lay GREEN single city tile on hex
+          # white or yellow hexes with a single town
+          tiles = (@hexes.map(&:tile) + @tiles).flatten
+          hexes += tiles.filter { |t| t.towns&.count == 1 && [:white, :yellow].include?(t.color) }.map { |c| c.hex }
+          hexes.compact!
           # NOTE: L39 and K38 are not legal hexes for a Green single city tile
+          hexes.reject! { |h| %w[K38 L39].include?(h.name) }
+          LOGGER.debug " Hexes #{hexes.uniq ? hexes.uniq.to_s : hexes.to_s }"
           hexes
         end
 
