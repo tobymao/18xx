@@ -98,7 +98,7 @@ module Engine
             value: 60,
             revenue: 20,
             discount: 20,
-            desc: 'P6. Gives a £10 revenue bonus for Newcastle (G17) when owned by a public company or a system.',
+            desc: 'P6. Gives a £10 revenue bonus for Newcastle (G17) when owned by a corporation or a system.',
             color: 'yellow',
             abilities: [
               {
@@ -116,7 +116,7 @@ module Engine
             value: 75,
             revenue: 25,
             discount: 25,
-            desc: 'P7. Gives a £10 revenue bonus for London when owned by a public company or a system.',
+            desc: 'P7. Gives a £10 revenue bonus for London when owned by a corporation or a system.',
             color: 'yellow',
             abilities: [
               {
@@ -134,7 +134,7 @@ module Engine
             value: 75,
             revenue: 25,
             discount: 25,
-            desc: 'P8. Gives a £10 revenue bonus for London when owned by a public company or a system.',
+            desc: 'P8. Gives a £10 revenue bonus for London when owned by a corporation or a system.',
             color: 'yellow',
             abilities: [
               {
@@ -153,7 +153,7 @@ module Engine
             value: 75,
             revenue: 25,
             discount: 25,
-            desc: 'P9. Gives a £10 revenue bonus for London when owned by a public company or a system.',
+            desc: 'P9. Gives a £10 revenue bonus for London when owned by a corporation or a system.',
             color: 'yellow',
             abilities: [
               {
@@ -172,7 +172,7 @@ module Engine
             revenue: 30,
             discount: 30,
             desc: 'P10. Gives a £10 revenue bonus for Liverpool (M11) ' \
-                  'when owned by a public company or a system.',
+                  'when owned by a corporation or a system.',
             color: 'yellow',
             abilities: [
               {
@@ -190,7 +190,7 @@ module Engine
             value: 50,
             revenue: 10,
             desc: 'F1. Gives a £10 revenue bonus for one of the Ireland off-board areas ' \
-                  'when owned by a public company or a system.',
+                  'when owned by a corporation or a system.',
             color: 'aqua',
             abilities: [
               { type: 'revenue_change', revenue: 15, on_phase: '3' },
@@ -211,7 +211,7 @@ module Engine
             value: 50,
             revenue: 10,
             desc: 'F2. Gives a £10 revenue bonus for one of the Ireland off-board areas ' \
-                  'when owned by a public company or a system.',
+                  'when owned by a corporation or a system.',
             color: 'aqua',
             abilities: [
               { type: 'revenue_change', revenue: 15, on_phase: '3' },
@@ -232,7 +232,7 @@ module Engine
             value: 50,
             revenue: 10,
             desc: 'F3. Gives a £10 revenue bonus for one of the Ireland off-board areas ' \
-                  'when owned by a public company or a system.',
+                  'when owned by a corporation or a system.',
             color: 'aqua',
             abilities: [
               { type: 'revenue_change', revenue: 15, on_phase: '3' },
@@ -253,7 +253,7 @@ module Engine
             value: 100,
             revenue: 20,
             desc: 'F4. Gives a £10 revenue bonus for the Hull off-board area (L22) ' \
-                  'when owned by a public company or a system.',
+                  'when owned by a corporation or a system.',
             color: 'aqua',
             abilities: [
               { type: 'revenue_change', revenue: 30, on_phase: '3' },
@@ -274,7 +274,7 @@ module Engine
             value: 100,
             revenue: 20,
             desc: 'F5. Gives a £10 revenue bonus for the Harwich off-board area (S29) ' \
-                  'when owned by a public company or a system.',
+                  'when owned by a corporation or a system.',
             color: 'aqua',
             abilities: [
               { type: 'revenue_change', revenue: 30, on_phase: '3' },
@@ -295,7 +295,7 @@ module Engine
             value: 100,
             revenue: 20,
             desc: 'F6. Gives a £10 revenue bonus for the Plymouth off-board area (X8) ' \
-                  'when owned by a public company or a system.',
+                  'when owned by a corporation or a system.',
             color: 'aqua',
             abilities: [
               { type: 'revenue_change', revenue: 30, on_phase: '3' },
@@ -316,7 +316,7 @@ module Engine
             value: 150,
             revenue: 30,
             desc: 'F7. Gives a £10 revenue bonus for the Dover off-board area (V30) ' \
-                  'when owned by a public company or a system.',
+                  'when owned by a corporation or a system.',
             color: 'aqua',
             abilities: [
               { type: 'revenue_change', revenue: 45, on_phase: '3' },
@@ -337,7 +337,7 @@ module Engine
             value: 150,
             revenue: 30,
             desc: 'F8. Gives a £10 revenue bonus for the Aberdeen off-board area (A13) ' \
-                  'when owned by a public company or a system.',
+                  'when owned by a corporation or a system.',
             color: 'aqua',
             abilities: [
               { type: 'revenue_change', revenue: 45, on_phase: '3' },
@@ -357,7 +357,7 @@ module Engine
             type: 'underground',
             value: 100,
             revenue: 40,
-            desc: 'U1. Gives a £10 revenue bonus for London when owned by a public company or a system.',
+            desc: 'U1. Gives a £10 revenue bonus for London when owned by a corporation or a system.',
             color: '#9b0056',
             text_color: 'white',
             abilities: [
@@ -376,7 +376,7 @@ module Engine
             type: 'underground',
             value: 150,
             revenue: 75,
-            desc: 'U2. Gives a £10 revenue bonus for London when owned by a public company or a system.',
+            desc: 'U2. Gives a £10 revenue bonus for London when owned by a corporation or a system.',
             color: 'black',
             text_color: 'white',
             abilities: [
