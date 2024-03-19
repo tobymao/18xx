@@ -786,13 +786,13 @@ module Engine
             when 'OPIUM'
               # OPIUM => LAHORE [D3] + 100
               # OPIUM => HALDIA [P19] + 100
-              bonus = 100 if visited_names.include?('LAHORE') || visited_names.include?('HALDIA')
+              bonus = 100 if visited_names.intersect?(%w[LAHORE HALDIA])
               claim_concession(['OPIUM'], corporation) if bonus.positive?
               revenue += bonus
             when 'ORE1', 'ORE2'
               # ORE1 => KARACHI [A16] + 50
               # ORE1 => CHENNAI [K30] + 50
-              bonus = 50 if visited_names.include?('KARACHI') || visited_names.include?('CHENNAI')
+              bonus = 50 if visited_names.intersect?(%w[KARACHI CHENNAI])
               claim_concession(%w[ORE1 ORE2], corporation) if bonus.positive?
               revenue += bonus
             when 'GOLD'
@@ -812,17 +812,12 @@ module Engine
               # SPICES => MUMBAI [D23] + 40
               # SPICES => CHINA [Q10] + 40
               # SPICES => NEPAL [M10] + 40
-              elsif visited_names.include?('LAHORE') ||
-                    visited_names.include?('MUMBAI') ||
-                    visited_names.include?('CHINA') ||
-                    visited_names.include?('NEPAL')
+              elsif visited_names.intersect?(%w[LAHORE MUMBAI CHINA NEPAL])
                 bonus = 40
               # SPICES => KARACHI [A16] + 30
               # SPICES => HALDIA [P19] + 30
               # SPICES => VISAKHAPATNAM [M24] + 30
-              elsif visited_names.include?('KARACHI') ||
-                    visited_names.include?('HALDIA') ||
-                    visited_names.include?('VISAKHAPATNAM')
+              elsif visited_names.intersect?(%w[KARACHI HALDIA VISAKHAPATNAM])
                 bonus = 30
               end
               claim_concession(['SPICES'], corporation) if bonus.positive?
@@ -830,7 +825,7 @@ module Engine
             when 'COTTON'
               # COTTON => KARACHI [A16] + 40
               # COTTON => CHENNAI [K30] + 40
-              bonus = 40 if visited_names.include?('KARACHI') || visited_names.include?('CHENNAI')
+              bonus = 40 if visited_names.intersect?(%w[KARACHI CHENNAI])
               claim_concession(['COTTON'], corporation) if bonus.positive?
               revenue += bonus
             when 'TEA1', 'TEA2'
@@ -841,7 +836,7 @@ module Engine
             when 'RICE'
               # RICE => CHINA [Q10] + 30
               # RICE => NEPAL [M10] + 30
-              bonus = 30 if visited_names.include?('CHINA') || visited_names.include?('NEPAL')
+              bonus = 30 if visited_names.intersect?(%w[CHINA NEPAL])
               claim_concession(['RICE'], corporation) if bonus.positive?
               revenue += bonus
             when 'JEWELRY'
