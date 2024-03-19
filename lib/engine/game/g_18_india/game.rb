@@ -874,7 +874,7 @@ module Engine
         end
 
         # pay owner value of company before closing
-        def company_is_closing(company, silent = false)
+        def company_closing_after_using_ability(company, silent = false)
           @bank.spend(company.value, company.owner)
           @log << "#{company.name} closes and #{company.owner.name} receives #{company.value} from the Bank." unless silent
         end

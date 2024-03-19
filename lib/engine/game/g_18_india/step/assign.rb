@@ -12,6 +12,7 @@ module Engine
             return unless entity.company?
             return unless entity.id == 'P6'
             return if hex.assigned?(entity.id)
+
             hex.tile.city_towns.empty?
           end
 

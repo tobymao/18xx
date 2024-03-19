@@ -51,7 +51,7 @@ module Engine
 
         return if !ability.count&.zero? || !ability.closed_when_used_up
 
-        @game.company_is_closing(company)
+        @game.company_closing_after_using_ability(company)
         company.close!
       end
 
