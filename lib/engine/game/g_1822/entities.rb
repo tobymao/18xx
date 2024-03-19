@@ -11,9 +11,9 @@ module Engine
             value: 0,
             revenue: 5,
             desc: 'MAJOR, Phase 5. 5-Train. This is a normal 5-train that is subject to all of the normal rules. '\
-                  'Note that a company can acquire this private company at the start of its turn, even if it is '\
+                  'Note that a corporation can acquire this private company at the start of its turn, even if it is '\
                   'already at its train limit as this counts as an acquisition action, not a train buying action. '\
-                  'However, once acquired the acquiring company needs to check whether it is at train limit and '\
+                  'However, once acquired the acquiring corporation needs to check whether it is at train limit and '\
                   'discard any trains held in excess of limit.',
             abilities: [],
             color: nil,
@@ -23,11 +23,11 @@ module Engine
             sym: 'P2',
             value: 0,
             revenue: 10,
-            desc: 'MAJOR/MINOR, Phase 2. Remove Small Station. Allows the owning company to place a plain yellow '\
+            desc: 'MAJOR/MINOR, Phase 2. Remove Small Station. Allows the owning corporation to place a plain yellow '\
                   'track tile directly on an undeveloped small station hex location or upgrade a small station tile '\
                   'of one colour to a plain track tile of the next colour. This closes the company and counts as '\
-                  'the company’s normal track laying step. All other normal track laying restrictions apply. Once '\
-                  'acquired, the private company pays its revenue to the owning company until the power is '\
+                  'the corporation’s normal track laying step. All other normal track laying restrictions apply. Once '\
+                  'acquired, the private company pays its revenue to the owning corporation until the power is '\
                   'exercised and the company is closed.',
             abilities: [
               {
@@ -50,13 +50,13 @@ module Engine
             value: 0,
             revenue: 0,
             desc: 'MAJOR, Phase 2. Permanent 2-Train. 2P-train is a permanent 2-train. It can’t be sold to another '\
-                  'company. It does not count against train limit. It does not count as a train for the purpose of '\
-                  'mandatory train ownership and purchase. A company may not own more than one 2P train. '\
-                  'A company cannot own both a permanent L-train and a permanent 2-train. Dividends '\
-                  'can be separated from other trains and may be split, paid in full, or retained. If a company '\
+                  'corporation. It does not count against train limit. It does not count as a train for the purpose of '\
+                  'mandatory train ownership and purchase. A corporation may not own more than one 2P train. '\
+                  'A corporation cannot own both a permanent L-train and a permanent 2-train. Dividends '\
+                  'can be separated from other trains and may be split, paid in full, or retained. If a corporation '\
                   'runs a 2P-train and pays a dividend (split or full), but retains its dividend from other train '\
                   'operations this still counts as a normal dividend for stock price movement purposes. Vice-versa, '\
-                  'if a company pays a dividend (split or full) with its other trains, but retains the dividend '\
+                  'if a corporation pays a dividend (split or full) with its other trains, but retains the dividend '\
                   'from the 2P, this also still counts as a normal dividend for stock price movement purposes. Does '\
                   'not close.',
             abilities: [],
@@ -68,13 +68,13 @@ module Engine
             value: 0,
             revenue: 0,
             desc: 'MAJOR, Phase 2. Permanent 2-Train. 2P-train is a permanent 2-train. It can’t be sold to another '\
-                  'company. It does not count against train limit. It does not count as a train for the purpose of '\
-                  'mandatory train ownership and purchase. A company may not own more than one 2P train. '\
-                  'A company cannot own both a permanent L-train and a permanent 2-train. Dividends '\
-                  'can be separated from other trains and may be split, paid in full, or retained. If a company '\
+                  'corporation. It does not count against train limit. It does not count as a train for the purpose of '\
+                  'mandatory train ownership and purchase. A corporation may not own more than one 2P train. '\
+                  'A corporation cannot own both a permanent L-train and a permanent 2-train. Dividends '\
+                  'can be separated from other trains and may be split, paid in full, or retained. If a corporation '\
                   'runs a 2P-train and pays a dividend (split or full), but retains its dividend from other train '\
                   'operations this still counts as a normal dividend for stock price movement purposes. Vice-versa, '\
-                  'if a company pays a dividend (split or full) with its other trains, but retains the dividend '\
+                  'if a corporation pays a dividend (split or full) with its other trains, but retains the dividend '\
                   'from the 2P, this also still counts as a normal dividend for stock price movement purposes. '\
                   'Does not close.',
             abilities: [],
@@ -85,15 +85,15 @@ module Engine
             sym: 'P5',
             value: 0,
             revenue: 10,
-            desc: 'MAJOR, Phase 3. English Channel. The owning company may place an exchange station token on the '\
-                  'map, free of charge, in a token space in the English Channel. The company does not need to be '\
-                  'able to trace a route to the English Channel to use this property (i.e. any company can use this '\
+            desc: 'MAJOR, Phase 3. English Channel. The owning corporation may place an exchange station token on the '\
+                  'map, free of charge, in a token space in the English Channel. The corporation does not need to be '\
+                  'able to trace a route to the English Channel to use this property (i.e. any corporation can use this '\
                   'power to place a token in the English Channel). If no token spaces are available, but a space '\
                   'could be created by upgrading the English Channel track then this power may be used to place a '\
-                  'token and upgrade the track simultaneously. This counts as the acquiring company’s tile lay '\
-                  'action and incurs the usual costs for doing so. It does not count as the company’s token placing '\
+                  'token and upgrade the track simultaneously. This counts as the acquiring corporation’s tile lay '\
+                  'action and incurs the usual costs for doing so. It does not count as the corporation’s token placing '\
                   'step. Alternatively, it can move an exchange station token to the available station token section '\
-                  'on its company charter.',
+                  'on its corporation charter.',
             abilities: [
               {
                 type: 'teleport',
@@ -122,9 +122,9 @@ module Engine
             sym: 'P6',
             value: 0,
             revenue: 10,
-            desc: 'MAJOR, Phase 3. Mail Contract. After running trains, the owning company receives income into its '\
+            desc: 'MAJOR, Phase 3. Mail Contract. After running trains, the owning corporation receives income into its '\
                   'treasury equal to one half of the base value of the start and end stations from one of the '\
-                  'trains operated. Doubled values (for E trains or destination tokens) do not count. The company '\
+                  'trains operated. Doubled values (for E trains or destination tokens) do not count. The corporation '\
                   'is not required to maximise the dividend from its run if it wishes to maximise its revenue from '\
                   'the mail contract by stopping at a large city and not running beyond it to include small '\
                   'stations. Does not close.',
@@ -136,9 +136,9 @@ module Engine
             sym: 'P7',
             value: 0,
             revenue: 10,
-            desc: 'MAJOR, Phase 3. Mail Contract. After running trains, the owning company receives income into its '\
+            desc: 'MAJOR, Phase 3. Mail Contract. After running trains, the owning corporation receives income into its '\
                   'treasury equal to one half of the base value of the start and end stations from one of the '\
-                  'trains operated. Doubled values (for E trains or destination tokens) do not count. The company '\
+                  'trains operated. Doubled values (for E trains or destination tokens) do not count. The corporation '\
                   'is not required to maximise the dividend from its run if it wishes to maximise its revenue from '\
                   'the mail contract by stopping at a large city and not running beyond it to include small '\
                   'stations. Does not close.',
@@ -150,9 +150,9 @@ module Engine
             sym: 'P8',
             value: 0,
             revenue: 10,
-            desc: 'MAJOR/MINOR, Phase 3. Mountain/Hill Discount. Either: The acquiring company receives a discount '\
+            desc: 'MAJOR/MINOR, Phase 3. Mountain/Hill Discount. Either: The acquiring corporation receives a discount '\
                   'token that can be used to pay the full cost of a single track tile lay on a rough terrain, hill '\
-                  'or mountain hex. This closes the company. Or: The acquiring company rejects the token and '\
+                  'or mountain hex. This closes the company. Or: The acquiring corporation rejects the token and '\
                   'receives a £20 discount off the cost of all £60 hill and £80 mountain terrain (i.e. NOT off the cost of '\
                   '£40 rough terrain). The private company does not close. Closes if free token taken when acquired. '\
                   'Otherwise, flips when acquired and does not close. Rough terrain and hills are any hexes including a '\
@@ -196,7 +196,7 @@ module Engine
             revenue: 10,
             desc: 'MAJOR/MINOR, Phase 3. Declare 2x Cash Holding. If held by a player, the holding player may '\
                   'declare double their actual cash holding at the end of a stock round to determine player turn '\
-                  'order in the next stock round. If held by a company it pays revenue of '\
+                  'order in the next stock round. If held by a corporation it pays revenue of '\
                   '£20 (green)/£40 (brown)/£60 (grey). Does not close.',
             abilities: [],
             color: nil,
@@ -206,7 +206,7 @@ module Engine
             sym: 'P10',
             value: 0,
             revenue: 10,
-            desc: 'MAJOR/MINOR, Phase 3. River/Estuary Discount. The acquiring company receives two discount tokens '\
+            desc: 'MAJOR/MINOR, Phase 3. River/Estuary Discount. The acquiring corporation receives two discount tokens '\
                   'each of which can be used to pay the cost for one track lay over an estuary crossing. They can '\
                   'be used on the same or different tile lays. Use of the second token closes the company. In '\
                   'addition, until the company closes it provides a discount of £10 against the cost of all river '\
@@ -237,13 +237,13 @@ module Engine
             sym: 'P11',
             value: 0,
             revenue: 10,
-            desc: 'MAJOR/MINOR, Phase 2. Advanced Tile Lay. The owning company may lay one plain or small station '\
+            desc: 'MAJOR/MINOR, Phase 2. Advanced Tile Lay. The owning corporation may lay one plain or small station '\
                   'track upgrade using the next colour of track to be available, before it is actually made '\
                   'available by phase progression. The normal rules for progression of track lay must be followed '\
                   '(i.e. grey upgrades brown upgrades green upgrades yellow) it is not possible to skip a colour '\
                   'using this private. All other normal track laying restrictions apply. This is in place of its '\
                   'normal track lay action. Once acquired, the private company pays its revenue to the owning '\
-                  'company until the power is exercised and the company closes.',
+                  'corporation until the power is exercised and the company closes.',
             abilities: [
               {
                 type: 'tile_lay',
@@ -264,10 +264,10 @@ module Engine
             sym: 'P12',
             value: 0,
             revenue: 10,
-            desc: 'MAJOR/MINOR, Phase 3. Extra Tile Lay. The owning company may lay an additional yellow tile (or '\
-                  'two for major companies), or make one additional tile upgrade in its track laying step. The '\
+            desc: 'MAJOR/MINOR, Phase 3. Extra Tile Lay. The owning corporation may lay an additional yellow tile (or '\
+                  'two for major corporations), or make one additional tile upgrade in its track laying step. The '\
                   'upgrade can be to a tile laid in its normal tile laying step. All other normal track laying '\
-                  'restrictions apply. Once acquired, the private company pays its revenue to the owning company '\
+                  'restrictions apply. Once acquired, the private company pays its revenue to the owning corporation '\
                   'until the power is exercised and the company closes.',
             abilities: [
               {
@@ -292,9 +292,9 @@ module Engine
             value: 0,
             revenue: 10,
             desc: 'MAJOR/MINOR, Phase 5. Pullman. A “Pullman” carriage train that can be added to another train '\
-                  'owned by the company. It converts the train into a + train. Does not count against train limit '\
+                  'owned by the corporation. It converts the train into a + train. Does not count against train limit '\
                   'and does not count as a train for the purposes of train ownership. Can’t be sold to another '\
-                  'company. Does not close.',
+                  'corporation. Does not close.',
             abilities: [],
             color: nil,
           },
@@ -304,9 +304,9 @@ module Engine
             value: 0,
             revenue: 10,
             desc: 'MAJOR/MINOR, Phase 5. Pullman. A “Pullman” carriage train that can be added to another train '\
-                  'owned by the company. It converts the train into a + train. Does not count against train limit '\
+                  'owned by the corporation. It converts the train into a + train. Does not count against train limit '\
                   'and does not count as a train for the purposes of train ownership. Can’t be sold to another '\
-                  'company. Does not close.',
+                  'corporation. Does not close.',
             abilities: [],
             color: nil,
           },
@@ -317,7 +317,7 @@ module Engine
             revenue: 0,
             desc: 'MAJOR/MINOR, Phase 2. £10x Phase. Pays revenue of £10 x phase number to the player, and pays '\
                   'treasury credits of £10 x phase number to the private company. This credit is retained on the '\
-                  'private company charter. When acquired, the acquiring company receives this treasury money and '\
+                  'private company charter. When acquired, the acquiring corporation receives this treasury money and '\
                   'this private company closes. If not acquired beforehand, this company closes at the start of '\
                   'Phase 7 and all treasury credits are returned to the bank.',
             abilities: [],
@@ -330,12 +330,12 @@ module Engine
             revenue: 0,
             desc: 'CAN NOT BE ACQUIRED. Tax Haven. As a stock round action, under the direction and funded by the '\
                   'owning player, the off-shore Tax Haven may purchase an available share certificate and place it '\
-                  'onto P16’s charter. The certificate is not counted for determining directorship of a company. '\
+                  'onto P16’s charter. The certificate is not counted for determining directorship of a corporation. '\
                   'The share held in the tax haven does NOT count against the 60% share limit for purchasing '\
-                  'shares. If at 60% (or more) in hand in a company, a player can still purchase an additional '\
-                  'share in that company and place it in the tax haven. Similarly, if a player holds 50% of a '\
-                  'company, plus has 10% of the same company in the tax haven, they can buy a further 10% share. '\
-                  'A company with a share in the off-shore tax haven CAN be “all sold out” at the end of a stock '\
+                  'shares. If at 60% (or more) in hand in a corporation, a player can still purchase an additional '\
+                  'share in that corporation and place it in the tax haven. Similarly, if a player holds 50% of a '\
+                  'corporation, plus has 10% of the same corporation in the tax haven, they can buy a further 10% share. '\
+                  'A corporation with a share in the off-shore tax haven CAN be “all sold out” at the end of a stock '\
                   'round. Dividends paid to the share are also placed onto the off-shore tax haven charter. At the '\
                   'end of the game, the player receives the share certificate from the off-shore tax haven charter '\
                   'and includes it in their portfolio for determining final worth. The player also receives the '\
@@ -349,8 +349,8 @@ module Engine
             sym: 'P17',
             value: 0,
             revenue: 10,
-            desc: 'MAJOR, Phase 2. Move Card. Allows the director of the owning company to select one concession, '\
-                  'private company, or minor company from the relevant stack of certificates, excluding those items '\
+            desc: 'MAJOR, Phase 2. Move Card. Allows the director of the owning corporation to select one concession, '\
+                  'private company, or minor corporation from the relevant stack of certificates, excluding those items '\
                   'currently in the bidding boxes, and move it to the top or the bottom of the stack. Closes when '\
                   'the power is exercised.',
             abilities: [],
@@ -361,7 +361,7 @@ module Engine
             sym: 'P18',
             value: 0,
             revenue: 10,
-            desc: 'MAJOR, Phase 5. Station Marker Swap. Allows the owning company to move a token from the exchange '\
+            desc: 'MAJOR, Phase 5. Station Marker Swap. Allows the owning corporation to move a token from the exchange '\
                   'token area of its charter to the available token area, or vice versa. This company closes when '\
                   'its power is exercised.',
             abilities: [],
@@ -372,13 +372,13 @@ module Engine
             sym: 'P19',
             value: 0,
             revenue: 0,
-            desc: 'MAJOR/MINOR, Phase 1. Permanent L-Train. An L-train cannot be sold to another company. It does '\
+            desc: 'MAJOR/MINOR, Phase 1. Permanent L-Train. An L-train cannot be sold to another corporation. It does '\
                   'not count as a train for the purposes of mandatory train ownership. It does not count against '\
-                  'train ownership limit. A company cannot own both a permanent L-train and a permanent 2-train. '\
+                  'train ownership limit. A corporation cannot own both a permanent L-train and a permanent 2-train. '\
                   'Dividends can be separated from other trains and may be split, paid in full, or retained. If a '\
-                  'company runs a permanent L-train and pays a dividend (split or full), but retains its dividend '\
+                  'corporation runs a permanent L-train and pays a dividend (split or full), but retains its dividend '\
                   'from other train operations this still counts as a normal dividend for stock price movement '\
-                  'purposes. Vice-versa, if a company pays a dividend (split or full) with its other trains, but '\
+                  'purposes. Vice-versa, if a corporation pays a dividend (split or full) with its other trains, but '\
                   'retains the dividend from the permanent L, this also still counts as a normal dividend for stock '\
                   'price movement purposes. Does not close.',
             abilities: [],
@@ -391,7 +391,7 @@ module Engine
             revenue: 0,
             desc: 'MAJOR/MINOR, Phase 3. £5x Phase. Pays revenue of £5 x phase number to the player, and pays '\
                   'treasury credits of £5 x phase number to the private company. This credit is retained on the '\
-                  'private company charter. When acquired, the acquiring company receives this treasury money and '\
+                  'private company charter. When acquired, the acquiring corporation receives this treasury money and '\
                   'this private company closes. If not acquired beforehand, this company closes at the start of '\
                   'Phase 7 and all treasury credits are returned to the bank.',
             abilities: [],
@@ -402,12 +402,12 @@ module Engine
             sym: 'P21',
             value: 0,
             revenue: 10,
-            desc: 'MAJOR/MINOR, Phase 2. Grimsby/Hull Bridge. Allows the owning company to lay yellow tiles in '\
+            desc: 'MAJOR/MINOR, Phase 2. Grimsby/Hull Bridge. Allows the owning corporation to lay yellow tiles in '\
                   'Grimsby and / or Hull, forming a direct track connection between the two cities over the '\
                   'Humber estuary. If one of the cities already has a yellow tile in place, then if used in phase 3 '\
                   'or later, one of the tile lays may be a green upgrade. No terrain costs apply for these tile '\
-                  'lays. These tile lays count as the normal track laying phase for the operating company. The '\
-                  'owning company must have a token in Hull or Grimsby to use this power. Closes when its power is '\
+                  'lays. These tile lays count as the normal track laying phase for the operating corporation. The '\
+                  'owning corporation must have a token in Hull or Grimsby to use this power. Closes when its power is '\
                   'exercised.',
             abilities: [
               {

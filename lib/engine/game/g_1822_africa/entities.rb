@@ -35,9 +35,9 @@ module Engine
           {
             name: 'P4 (Pullman)',
             sym: 'P4',
-            desc: 'MAJOR/MINOR, Phase 3. A "Pullman" carriage that can be added to another train owned by the company.'\
+            desc: 'MAJOR/MINOR, Phase 3. A "Pullman" carriage that can be added to another train owned by the corporation.'\
                   ' It converts the train into a + train. Does not count against train limit and does not count '\
-                  'as a train for the purposes of train ownership. Can’t be sold to another company.',
+                  'as a train for the purposes of train ownership. Can’t be sold to another corporation.',
             value: 0,
             revenue: 10,
             abilities: [],
@@ -46,11 +46,11 @@ module Engine
           {
             name: 'P5 (Add Town)',
             sym: 'P5',
-            desc: 'MAJOR/MINOR, Phase 2. Add Small Station. Allows the owning company to place a yellow track tile '\
+            desc: 'MAJOR/MINOR, Phase 2. Add Small Station. Allows the owning corporation to place a yellow track tile '\
                   'with a small station directly on an undeveloped plain hex or upgrade a plain tile of one colour '\
-                  'to a small station tile of the next colour. This closes the company and counts as the company’s '\
+                  'to a small station tile of the next colour. This closes the company and counts as the corporation’s '\
                   'normal track laying step. All other normal track laying restrictions apply. Once acquired, the '\
-                  'private company pays its revenue to the owning company until the power is exercised and the '\
+                  'private company pays its revenue to the owning corporation until the power is exercised and the '\
                   'company is closed.',
             value: 0,
             revenue: 10,
@@ -82,11 +82,11 @@ module Engine
           {
             name: 'P7 (Extra tile)',
             sym: 'P7',
-            desc: 'MAJOR/MINOR, Phase 3. Extra Tile Lay. The owning company may lay an additional yellow tile '\
-                  '(or two for major companies beginning in Phase 3), or make one additional tile upgrade '\
+            desc: 'MAJOR/MINOR, Phase 3. Extra Tile Lay. The owning corporation may lay an additional yellow tile '\
+                  '(or two for major corporations beginning in Phase 3), or make one additional tile upgrade '\
                   'in its track laying step. The upgrade can be to a tile laid in its normal tile laying step. '\
                   'All other normal track laying restrictions apply. Once acquired, the private company pays '\
-                  'its revenue to the owning company until the power is exercised and the company closes.',
+                  'its revenue to the owning corporation until the power is exercised and the company closes.',
             value: 0,
             revenue: 10,
             abilities: [
@@ -110,10 +110,10 @@ module Engine
           {
             name: 'P8 (Reserve Three Tiles)',
             sym: 'P8',
-            desc: 'MAJOR/MINOR, Phase 1. Upon acquisition, owning company must reserve three tiles from the stock '\
-                  'of unplayed tiles for future placement. No other company may use these tiles held in reserve. '\
+            desc: 'MAJOR/MINOR, Phase 1. Upon acquisition, owning corporation must reserve three tiles from the stock '\
+                  'of unplayed tiles for future placement. No other corporation may use these tiles held in reserve. '\
                   'The revenue of this private company changes to A5x the number of tiles it holds. '\
-                  'Once the owning company reserves tiles, it may not place any other tiles '\
+                  'Once the owning corporation reserves tiles, it may not place any other tiles '\
                   'until those tiles have been placed, even if it becomes impossible to place the reserved tiles.',
             value: 0,
             revenue: 10,
@@ -123,12 +123,12 @@ module Engine
           {
             name: 'P9 (Remove Town)',
             sym: 'P9',
-            desc: 'MAJOR/MINOR, Phase 2. Remove Small Station. Allows the owning company to place '\
+            desc: 'MAJOR/MINOR, Phase 2. Remove Small Station. Allows the owning corporation to place '\
                   'a plain yellow track tile directly on an undeveloped small station hex location '\
                   'or upgrade a small station tile of one colour to a plain track tile of the next colour. '\
-                  'This closes the company and counts as the company’s normal track laying step. '\
+                  'This closes the company and counts as the corporation’s normal track laying step. '\
                   'All other normal track laying restrictions apply. Once acquired, the private company '\
-                  'pays its revenue to the owning company until the power is exercised and the company is closed.',
+                  'pays its revenue to the owning corporation until the power is exercised and the company is closed.',
             value: 0,
             revenue: 10,
             abilities: [
@@ -149,10 +149,10 @@ module Engine
           {
             name: 'P10 (Game Reserve)',
             sym: 'P10',
-            desc: 'MAJOR/MINOR, Phase 3. When this company is acquired, the owning company must place '\
+            desc: 'MAJOR/MINOR, Phase 3. When this company is acquired, the owning corporation must place '\
                   'the striped Game Reserve tile on any empty (and non-desert) hex. '\
                   'Placement must not run track into an unplayable hex edge. This hex becomes a game reserve. '\
-                  'The company immediately receives a bonus equal to A5x the number of hexes between '\
+                  'The corporation immediately receives a bonus equal to A5x the number of hexes between '\
                   'this game reserve and the preprinted game reserve (excluding the reserve hexes).',
             value: 0,
             revenue: 10,
@@ -176,7 +176,7 @@ module Engine
           {
             name: 'P11 (Mountain Rebate)',
             sym: 'P11',
-            desc: 'MAJOR/MINOR, Phase 3. The owning company may close this company when it lays a yellow tile '\
+            desc: 'MAJOR/MINOR, Phase 3. The owning corporation may close this company when it lays a yellow tile '\
                   'in a mountain hex to earn A50 into its treasury.',
             value: 0,
             revenue: 10,
@@ -205,7 +205,7 @@ module Engine
           {
             name: 'P12 (Fast Sahara Building)',
             sym: 'P12',
-            desc: 'MAJOR/MINOR, Phase 1. The owning company may place any amount of yellow tiles in the hexes marked '\
+            desc: 'MAJOR/MINOR, Phase 1. The owning corporation may place any amount of yellow tiles in the hexes marked '\
                   'with desert terrain as their normal tile laying step at normal cost. '\
                   'Using this ability closes the private company.',
             value: 0,
@@ -233,7 +233,7 @@ module Engine
           {
             name: 'P13 (Station Swap)',
             sym: 'P13',
-            desc: 'MAJOR, Phase 5. Station Marker Swap. Allows the owning company to move a token from the exchange '\
+            desc: 'MAJOR, Phase 5. Station Marker Swap. Allows the owning corporation to move a token from the exchange '\
                   'token area of its charter to the available token area, or vice versa. '\
                   'This company closes when its power is exercised.',
             value: 0,
@@ -244,7 +244,7 @@ module Engine
           {
             name: 'P14 (Gold Mine)',
             sym: 'P14',
-            desc: 'MAJOR, Phase 3. Owning company close this company to place the +20 gold mine token in any city '\
+            desc: 'MAJOR, Phase 3. Owning corporation close this company to place the +20 gold mine token in any city '\
                   'with an open city slot. This token adds 20 to the value of that city for all corporations. '\
                   'The gold mine token occupies a city slot and blocks routes through that city '\
                   'if the city is otherwise full.',
@@ -270,9 +270,9 @@ module Engine
           {
             name: 'P15 (Coffee Plantation)',
             sym: 'P15',
-            desc: 'MAJOR/MINOR, Phase 1. Owning company may close this private company to place the coffee '\
+            desc: 'MAJOR/MINOR, Phase 1. Owning corporation may close this private company to place the coffee '\
                   'plantation token on any hex with mountainous terrain and no tile. '\
-                  'The company immediately receives into its treasury A30. When a tile is placed in that hex, '\
+                  'The corporation immediately receives into its treasury A30. When a tile is placed in that hex, '\
                   'the coffee plantation token is placed on it and prevents upgrading this tile. '\
                   'All routes that use this tile earn an extra A20.',
             value: 0,
@@ -295,7 +295,7 @@ module Engine
             desc: 'MAJOR/MINOR, Phase 2. A10x Phase. Pays revenue of A10 x the phase number to the player, '\
                   'and pays treasury credits of A10 x phase number to the private company. '\
                   'This credit is retained on the private company charter. '\
-                  'When acquired, the acquiring company receives this treasury money and this private company closes. '\
+                  'When acquired, the acquiring corporation receives this treasury money and this private company closes. '\
                   'If not acquired beforehand, this company closes at the start of Phase 6 and all treasury credits '\
                   'are returned to the bank.',
             value: 0,
@@ -306,7 +306,7 @@ module Engine
           {
             name: 'P17 (Bank Share Buy)',
             sym: 'P17',
-            desc: 'MAJOR, Phase 2. Owning company may close this private company for the bank to purchase a share '\
+            desc: 'MAJOR, Phase 2. Owning corporation may close this private company for the bank to purchase a share '\
                   'it owns for the current market value. The share is moved to the bank pool. This does not count '\
                   'as a share issuance and does not affect the stock price.',
             value: 0,
@@ -317,10 +317,10 @@ module Engine
           {
             name: 'P18 (Safari Bonus)',
             sym: 'P18',
-            desc: 'MAJOR/MINOR, Phase 3. The Safari Bonus can be added to a train owned by the company. '\
+            desc: 'MAJOR/MINOR, Phase 3. The Safari Bonus can be added to a train owned by the corporation. '\
                   'It converts the train into a safari train that counts an extra 20 to the earnings for reaching '\
                   'each of the game reserves. Does not count against train limit and does not count as a train '\
-                  'for the purposes of train ownership. Can’t be sold to another company.',
+                  'for the purposes of train ownership. Can’t be sold to another corporation.',
             value: 0,
             revenue: 10,
             abilities: [],

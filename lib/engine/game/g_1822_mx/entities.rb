@@ -10,11 +10,11 @@ module Engine
             sym: 'P1',
             value: 0,
             revenue: 5,
-            desc: 'MAJOR, Phase 5. 5-Train. Once a company acquires it, this is a normal 5-train that is subject to '\
+            desc: 'MAJOR, Phase 5. 5-Train. Once a corporation acquires it, this is a normal 5-train that is subject to '\
                   'all of the normal rules.  It is not a "special train" and is not subject to the rules that are '\
-                  'specific to special trains.  A company can acquire this private company at the start of its turn, '\
+                  'specific to special trains.  A corporation can acquire this private company at the start of its turn, '\
                   'even if it is already at it\'s train limit, as this counts as an acquisition action, not a train '\
-                  'buying action.  However, once acquired the acquiring company must check whether it as at the '\
+                  'buying action.  However, once acquired the acquiring corporation must check whether it as at the '\
                   'train limit and must discard any trains held in excess of limit.',
             abilities: [],
             color: nil,
@@ -25,13 +25,13 @@ module Engine
             value: 0,
             revenue: 0,
             desc: 'MAJOR, Phase 2. Permanent 2-Train. The 2P-train is a permanent 2-train. It is a “special train.” '\
-                  'It cannot be sold to another company. It does not count against the train limit. '\
+                  'It cannot be sold to another corporation. It does not count against the train limit. '\
                   'It does not count as a train for the purpose of mandatory train ownership and '\
-                  'purchase. A company cannot own more than one special train. Dividends can '\
+                  'purchase. A corporation cannot own more than one special train. Dividends can '\
                   'be separated from other trains and may be split, paid in full, or retained. If '\
-                  'a company runs a 2P-train and pays a dividend (split or full), but retains its '\
+                  'a corporation runs a 2P-train and pays a dividend (split or full), but retains its '\
                   'dividend from other train operations, this still counts as a normal dividend '\
-                  'for share price movement purposes. Vice-versa, if a company pays a dividend '\
+                  'for share price movement purposes. Vice-versa, if a corporation pays a dividend '\
                   '(split or full) with its other trains, but retains the dividend from the 2P-train, '\
                   'this also still counts as a normal dividend for share price movement purposes. '\
                   'Does not close.',
@@ -44,15 +44,15 @@ module Engine
             value: 0,
             revenue: 0,
             desc: 'MAJOR/MINOR, Phase 1. Permanent 3/2-Train. It is a “special train.” '\
-                  'It cannot be sold to another company. It does not count against the train limit. '\
+                  'It cannot be sold to another corporation. It does not count against the train limit. '\
                   'It does not count as a train for the purpose of mandatory train ownership and '\
-                  'purchase. A company cannot own more than one special train. Dividends can '\
+                  'purchase. A corporation cannot own more than one special train. Dividends can '\
                   'be separated from other trains and may be split, paid in full, or retained. Runs like a '\
                   'normal 3-train, but its earnings are halved after all bonuses/Pullman revenue are '\
                   'included (round up to a multiple of $10). '\
-                  'If a company runs a 3/2-train and pays a dividend (split or full), but retains its '\
+                  'If a corporation runs a 3/2-train and pays a dividend (split or full), but retains its '\
                   'dividend from other train operations, this still counts as a normal dividend '\
-                  'for share price movement purposes. Vice-versa, if a company pays a dividend '\
+                  'for share price movement purposes. Vice-versa, if a corporation pays a dividend '\
                   '(split or full) with its other trains, but retains the dividend from the 3/2-train, '\
                   'this also still counts as a normal dividend for share price movement purposes. '\
                   'Does not close.',
@@ -65,13 +65,13 @@ module Engine
             value: 0,
             revenue: 0,
             desc: 'MAJOR/MINOR, Phase 1. Permanent L-Train.  It is a “special train.” '\
-                  'It cannot be sold to another company. It does not count against the train limit. '\
+                  'It cannot be sold to another corporation. It does not count against the train limit. '\
                   'It does not count as a train for the purpose of mandatory train ownership and '\
-                  'purchase. A company cannot own more than one special train. Dividends can '\
+                  'purchase. A corporation cannot own more than one special train. Dividends can '\
                   'be separated from other trains and may be split, paid in full, or retained. If '\
-                  'a company runs a LP-train and pays a dividend (split or full), but retains its '\
+                  'a corporation runs a LP-train and pays a dividend (split or full), but retains its '\
                   'dividend from other train operations, this still counts as a normal dividend '\
-                  'for share price movement purposes. Vice-versa, if a company pays a dividend '\
+                  'for share price movement purposes. Vice-versa, if a corporation pays a dividend '\
                   '(split or full) with its other trains, but retains the dividend from the LP-train, '\
                   'this also still counts as a normal dividend for share price movement purposes. '\
                   'Does not close.',
@@ -84,10 +84,10 @@ module Engine
             value: 0,
             revenue: 10,
             desc: 'MAJOR/MINOR, Phase 3. Pullman. A “Pullman” car that can be attached to another train owned by the '\
-                  'company. It is not a train. A train with a Pullman attached to it counts any '\
+                  'corporation. It is not a train. A train with a Pullman attached to it counts any '\
                   'number of towns in addition to its standard number of large stations. Does '\
-                  'not count toward the train limit. Cannot be sold to another company. Does '\
-                  'not close. No company may own more than one Pullman.',
+                  'not count toward the train limit. Cannot be sold to another corporation. Does '\
+                  'not close. No corporation may own more than one Pullman.',
             abilities: [],
             color: nil,
           },
@@ -97,10 +97,10 @@ module Engine
             value: 0,
             revenue: 10,
             desc: 'MAJOR/MINOR, Phase 3. Pullman. A “Pullman” car that can be attached to another train owned by the '\
-                  'company. It is not a train. A train with a Pullman attached to it counts any '\
+                  'corporation. It is not a train. A train with a Pullman attached to it counts any '\
                   'number of towns in addition to its standard number of large stations. Does '\
-                  'not count toward the train limit. Cannot be sold to another company. Does '\
-                  'not close. No company may own more than one Pullman.',
+                  'not count toward the train limit. Cannot be sold to another corporation. Does '\
+                  'not close. No corporation may own more than one Pullman.',
             abilities: [],
             color: nil,
           },
@@ -111,7 +111,7 @@ module Engine
             revenue: 10,
             desc: 'MAJOR, Phase 3. Declare 2x Cash Holding. If held by a player, the holding player may declare '\
                   'double their actual cash holding at the end of a stock round to determine '\
-                  'player turn order in the next stock round. If held by a company it pays '\
+                  'player turn order in the next stock round. If held by a corporation it pays '\
                   'revenue of $20 (green)/$40 (brown)/$60 (gray). Does not close.',
             abilities: [],
             color: nil,
@@ -121,13 +121,13 @@ module Engine
             sym: 'P8',
             value: 0,
             revenue: 10,
-            desc: 'MAJOR/MINOR, Phase 1. Advanced Non-City Tile Lay. The owning company may lay one plain '\
+            desc: 'MAJOR/MINOR, Phase 1. Advanced Non-City Tile Lay. The owning corporation may lay one plain '\
                   'or town track upgrade using the next color of track to be available, before '\
                   'it is actually made available by phase progression. The normal rules for '\
                   'progression of track lay must be followed; it is not possible to skip a color '\
                   'using this private. All other normal track laying restrictions apply. This is '\
                   'in place of its normal track lay action. Once acquired, the private company '\
-                  'pays its revenue to the owning company until the power is exercised and '\
+                  'pays its revenue to the owning corporation until the power is exercised and '\
                   'the company closes. A minor company may not use this power to upgrade '\
                   'beyond green.',
             abilities: [
@@ -150,11 +150,11 @@ module Engine
             sym: 'P9',
             value: 0,
             revenue: 10,
-            desc: 'MAJOR/MINOR, Phase 3. Extra Tile Lay. The owning company may lay an additional yellow tile (or '\
-                  'two for major companies beginning in Phase 3), or make one additional '\
+            desc: 'MAJOR/MINOR, Phase 3. Extra Tile Lay. The owning corporation may lay an additional yellow tile (or '\
+                  'two for major corporation beginning in Phase 3), or make one additional '\
                   'tile upgrade in its track laying step. The upgrade can be to a tile laid in its '\
                   'normal tile laying step. All other normal track laying restrictions apply. Once '\
-                  'acquired, the private company pays its revenue to the owning company until '\
+                  'acquired, the private company pays its revenue to the owning corporation until '\
                   'the power is exercised and the company closes.',
             abilities: [
               {
@@ -179,9 +179,9 @@ module Engine
             sym: 'P10',
             value: 0,
             revenue: 10,
-            desc: 'MAJOR/MINOR, Phase 1. Three Builder Cubes. When acquired by a company, the private company '\
+            desc: 'MAJOR/MINOR, Phase 1. Three Builder Cubes. When acquired by a corporation, the private company '\
                   'closes and is exchanged for three of the builder cubes from the cube pool. '\
-                  'The company may spend one or more of the cubes to place them on the '\
+                  'The corporation may spend one or more of the cubes to place them on the '\
                   'board during their lay track action. These placements are in addition to the '\
                   'tile placement. These cube placements may occur at any time during the '\
                   'action and can be split among turns.',
@@ -204,9 +204,9 @@ module Engine
             sym: 'P11',
             value: 0,
             revenue: 10,
-            desc: 'MAJOR/MINOR, Phase 1. Three Builder Cubes. When acquired by a company, the private company '\
+            desc: 'MAJOR/MINOR, Phase 1. Three Builder Cubes. When acquired by a corporation, the private company '\
                   'closes and is exchanged for three of the builder cubes from the cube pool. '\
-                  'The company may spend one or more of the cubes to place them on the '\
+                  'The corporation may spend one or more of the cubes to place them on the '\
                   'board during their lay track action. These placements are in addition to the '\
                   'tile placement. These cube placements may occur at any time during the '\
                   'action and can be split among turns.',
@@ -229,13 +229,13 @@ module Engine
             sym: 'P12',
             value: 0,
             revenue: 10,
-            desc: 'MAJOR/MINOR, Phase 1. Remove Town. Allows the owning company to place a plain yellow track '\
+            desc: 'MAJOR/MINOR, Phase 1. Remove Town. Allows the owning corporation to place a plain yellow track '\
                   'tile directly on an undeveloped town hex location or upgrade a town tile '\
                   'of one color to a plain track tile of the next color. This closes the company '\
-                  'and counts as the company’s normal track laying step. All other normal '\
+                  'and counts as the corporation’s normal track laying step. All other normal '\
                   'track laying restrictions apply. Cannot be used in hexes with two small '\
                   'towns. Once acquired, the private company pays its revenue to the owning '\
-                  'company until the power is exercised and the company is closed.',
+                  'corporation until the power is exercised and the company is closed.',
             abilities: [
               {
                 type: 'tile_lay',
@@ -256,13 +256,13 @@ module Engine
             sym: 'P13',
             value: 0,
             revenue: 10,
-            desc: 'MAJOR/MINOR, Phase 1. Remove Town. Allows the owning company to place a plain yellow track '\
+            desc: 'MAJOR/MINOR, Phase 1. Remove Town. Allows the owning corporation to place a plain yellow track '\
                   'tile directly on an undeveloped town hex location or upgrade a town tile '\
                   'of one color to a plain track tile of the next color. This closes the company '\
-                  'and counts as the company’s normal track laying step. All other normal '\
+                  'and counts as the corporation’s normal track laying step. All other normal '\
                   'track laying restrictions apply. Cannot be used in hexes with two small '\
                   'towns. Once acquired, the private company pays its revenue to the owning '\
-                  'company until the power is exercised and the company is closed.',
+                  'corporation until the power is exercised and the company is closed.',
             abilities: [
               {
                 type: 'tile_lay',
@@ -283,14 +283,14 @@ module Engine
             sym: 'P14',
             value: 0,
             revenue: 10,
-            desc: 'MAJOR, Phase 3. Mail Contract. After running trains, the owning company receives income '\
+            desc: 'MAJOR, Phase 3. Mail Contract. After running trains, the owning corporation receives income '\
                   'into its treasury equal to one half of the base value of the start and end '\
                   'stations from one of the trains operated. Modifications to values (for '\
                   'E-trains, a 3/2-train, or destination tokens) do not apply. An L-train may '\
-                  'deliver mail within a single city. The company is not required to maximize '\
+                  'deliver mail within a single city. The corporation is not required to maximize '\
                   'the dividend from its run if it wishes to maximize its revenue from the mail '\
                   'contract by stopping at a large city and not running beyond it to include '\
-                  'towns. A company that owns more than one Mail Contract may not use '\
+                  'towns. A corporation that owns more than one Mail Contract may not use '\
                   'more than one on any train.',
             abilities: [],
             color: nil,
@@ -300,14 +300,14 @@ module Engine
             sym: 'P15',
             value: 0,
             revenue: 10,
-            desc: 'MAJOR, Phase 3. Mail Contract. After running trains, the owning company receives income '\
+            desc: 'MAJOR, Phase 3. Mail Contract. After running trains, the owning corporation receives income '\
                   'into its treasury equal to one half of the base value of the start and end '\
                   'stations from one of the trains operated. Modifications to values (for '\
                   'E-trains, a 3/2-train, or destination tokens) do not apply. An L-train may '\
-                  'deliver mail within a single city. The company is not required to maximize '\
+                  'deliver mail within a single city. The corporation is not required to maximize '\
                   'the dividend from its run if it wishes to maximize its revenue from the mail '\
                   'contract by stopping at a large city and not running beyond it to include '\
-                  'towns. A company that owns more than one Mail Contract may not use '\
+                  'towns. A corporation that owns more than one Mail Contract may not use '\
                   'more than one on any train.',
             abilities: [],
             color: nil,
@@ -317,10 +317,10 @@ module Engine
             sym: 'P16',
             value: 0,
             revenue: 10,
-            desc: 'MAJOR, Phase 2.  Stock Drop. Pays $10 while owned by a player. A company must pay the '\
-                  'bank $10 while owned by a company. A major company may close this '\
-                  'company during its operating turn, but that makes its stock drop one space. '\
-                  'If the company ever cannot pay the $10, this private company closes and the '\
+            desc: 'MAJOR, Phase 2.  Stock Drop. Pays $10 while owned by a player. The owning corporation must pay the '\
+                  'bank $10 while owned by a corporation. The owning corporation may close this '\
+                  'company during its operating turn, but this makes its stock drop one space. '\
+                  'If the corporation ever cannot pay the $10, this private company closes and the '\
                   'stock drops immediately.',
             abilities: [
               {
@@ -339,10 +339,10 @@ module Engine
             desc: 'MAJOR/MINOR, Phase 2. Small Port. Replace a spike going to water with this tile. Lay this tile on '\
                   'a spike that does not already have a port. The spike now counts as a 30 '\
                   '(yellow)/40 (green and later) and is treated like a gray off-board area for '\
-                  'counting train runs for all companies. This is in addition to the company’s '\
-                  'normal tile placement and the company does not need a route to the '\
+                  'counting train runs for all corporations. This tile lay is in addition to the corporation’s '\
+                  'normal tile placement and the corporation does not need a route to the '\
                   'spike. Once acquired, the private company pays its revenue to the owning '\
-                  'company until the power is exercised and the company is closed.',
+                  'corporation until the power is exercised and the company is closed.',
             abilities: [
               {
                 type: 'tile_lay',
@@ -366,10 +366,10 @@ module Engine
             desc: 'MAJOR, Phase 3. Replace a spike going to water with this tile. Lay this tile on '\
                   'a spike that does not already have a port. The spike now counts as a 40 '\
                   '(green)/50 (brown)/60 (gray) and is treated like a gray off-board area for '\
-                  'counting train runs for all companies. This is in addition to the company’s '\
-                  'normal tile placement and the company does not need a route to the '\
+                  'counting train runs for all corporations. This tile lay is in addition to the corporation’s '\
+                  'normal tile placement and the corporation does not need a route to the '\
                   'spike. Once acquired, the private company pays its revenue to the owning '\
-                  'company until the power is exercised and the company is closed.',
+                  'corporation until the power is exercised and the company is closed.',
             abilities: [
               {
                 type: 'tile_lay',
