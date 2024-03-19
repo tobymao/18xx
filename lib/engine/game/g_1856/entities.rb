@@ -19,7 +19,7 @@ module Engine
             sym: 'WSRC',
             value: 40,
             revenue: 10,
-            desc: 'The public company that owns this private company may place a free station marker and/or '\
+            desc: 'The corporation that owns this private company may place a free station marker and/or '\
                   'green #59 tile on the Kitchener hex (I12). This action closes the private company.',
             abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['I12'] },
                         {
@@ -47,9 +47,9 @@ module Engine
             sym: 'TCC',
             value: 50,
             revenue: 10,
-            desc: 'During its operating turn, the public company owning this private company may place a '\
+            desc: 'During its operating turn, the corporation owning this private company may place a '\
                   'track tile in the hex occupied by this private company (H11). This track lay is in addition to '\
-                  'the public company\'s normal track lay. This action does not close the private company.',
+                  'the corporation\'s normal track lay. This action does not close the private company.',
             abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['H11'] },
                         {
                           type: 'tile_lay',
@@ -67,7 +67,7 @@ module Engine
             sym: 'GLSC',
             value: 70,
             revenue: 15,
-            desc: 'At any time during its operating turn, the owning public company may place the port marker in '\
+            desc: 'At any time during its operating turn, the owning corporation may place the port marker in '\
                   'any one hex with the port symbol. The port marker raises the value of all revenue locations in that hex '\
                   'by $20 for that corporation. This marker may not be moved and will be removed when the first '\
                   '6 train is purchased. Placement of this marker closes the Great Lakes Shipping Company.',
@@ -105,8 +105,8 @@ module Engine
             sym: 'NFSBC',
             value: 100,
             revenue: 20,
-            desc: 'The public company that owns this private company may add a $10 bonus when running '\
-                  'to Buffalo (P17/P19). Other public companies may purchase the right for $50.',
+            desc: 'The corporation that owns this private company may add a $10 bonus when running '\
+                  'to Buffalo (P17/P19). Other corporations may purchase the right for $50.',
             color: nil,
           },
           {
@@ -114,8 +114,8 @@ module Engine
             sym: 'SCFTC',
             value: 100,
             revenue: 20,
-            desc: 'The public company that owns this private company may add a $10 Port Huron bonus when running '\
-                  'to Sarnia (B13). Other public companies may purchase the right for $50.',
+            desc: 'The corporation that owns this private company may add a $10 Port Huron bonus when running '\
+                  'to Sarnia (B13). Other corporations may purchase the right for $50.',
             color: nil,
           },
         ].freeze
