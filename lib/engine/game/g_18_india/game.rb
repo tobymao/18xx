@@ -806,8 +806,7 @@ module Engine
                 bonus = 70
               # SPICES => COLOMBO [K40] + 50
               # SPICES => CHENNAI [K30] + 50
-              elsif visited_names.include?('COLOMBO') ||
-                    visited_names.include?('CHENNAI')
+              elsif visited_names.intersect?(%w[COLOMBO CHENNAI])
                 bonus = 50
               # SPICES => LAHORE [D3] + 40
               # SPICES => MUMBAI [D23] + 40
