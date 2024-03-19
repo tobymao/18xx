@@ -232,7 +232,7 @@ module Engine
             revenue: 10,
             desc: 'This company has a $10 token which may be placed in any non-coastal city'\
                   ' (Atlantic or Gulf Coast) as an extra token lay during the'\
-                  ' token placement step of an owning public company\'s operating round.',
+                  ' token placement step of an owning corp\'s operating round.',
             sym: 'P2',
             abilities: [
               {
@@ -257,9 +257,9 @@ module Engine
             revenue: 10,
             desc: 'This company has a Port token which may be placed on any city'\
                   ' on the coasts as an extra token lay during the token placement'\
-                  ' step of an owning public company\'s operating round. All eligible cities are marked with an anchor symbol.'\
+                  ' step of an owning public corp\'s operating round. All eligible cities are marked with an anchor symbol.'\
                   ' This token increases the value of the selected city by $20'\
-                  ' for the owning company and by $10 for all other companies.',
+                  ' for the owning corporation and by $10 for all other corps.',
             sym: 'P3',
             abilities: [
               {
@@ -284,8 +284,8 @@ module Engine
             revenue: 10,
             desc: 'This company represents those shrewd investors in London. They have hired'\
                   ' you to invest their money in the new Southern railways.'\
-                  ' They will purchase a share of your choice in any newly started company.'\
-                  ' You get the share. After the company pays its first dividend, '\
+                  ' They will purchase a share of your choice in any newly started corporation.'\
+                  ' You get the share. After the corp pays its first dividend, '\
                   'the London Investment Company is closed, as they realize they have paid you'\
                   ' for nothing and you spent the money for yourself.',
             sym: 'P4',
@@ -310,8 +310,8 @@ module Engine
                 hexes: %w[B12 B16 C13 C15],
               },
             ],
-            desc: 'This private company gives the owning company a Coal token for free.'\
-                  ' When other companies connect to the Coalfields, '\
+            desc: 'This private company gives the owning corporation a Coal token for free.'\
+                  ' When other corporations connect to the Coalfields, '\
                   'they may buy a Coal token (if available) during their operating round for $80'\
                   ' ($40 goes to the corporation owning the Coal private company).',
           },
