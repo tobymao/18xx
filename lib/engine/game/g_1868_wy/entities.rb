@@ -43,7 +43,7 @@ module Engine
               {
                 type: 'base',
                 description: 'Credit Mobilier',
-                desc_detail: 'After yellow track is laid by any Railroad Company in the Credit Mobilier region (row J and south, column 23 and west, outlined in brown) which either extends track west from Omaha or east from Ogden, UP shareholders are paid the total terrain costs of the hex as dividends, even if the track was laid by the Railroad Company for free via a private company ability. Credit Mobilier closes at phase 5, or when the Golden Spike bonus is collected, whichever comes first.',
+                desc_detail: 'After yellow track is laid by any Corporation in the Credit Mobilier region (row J and south, column 23 and west, outlined in brown) which either extends track west from Omaha or east from Ogden, UP shareholders are paid the total terrain costs of the hex as dividends, even if the track was laid by the Corporation for free via a private company ability. Credit Mobilier closes at phase 5, or when the Golden Spike bonus is collected, whichever comes first.',
                 remove: '5',
               },
             ]
@@ -80,7 +80,7 @@ module Engine
               {
                 type: 'base',
                 description: 'Purple Home Hex',
-                desc_detail: 'No other Railroad Company may run routes to Chadron (G27).',
+                desc_detail: 'No other Corporation may run routes to Chadron (G27).',
               },
 
             ],
@@ -118,7 +118,7 @@ module Engine
               {
                 type: 'base',
                 description: 'Purple Home Hex',
-                desc_detail: 'No other Railroad Company may run routes to Rapid City (C27).',
+                desc_detail: 'No other corporation may run routes to Rapid City (C27).',
               },
 
             ],
@@ -157,7 +157,7 @@ module Engine
             desc: 'Buyer or auction winner chooses one of Wylie Permanent Camping Company '\
                   '($10 bonus for running routes to Yellowstone--C5 or D4), Trabing Brothers Frontier Fort Resupply '\
                   '($10 bonus for running routes to Forts), or Midwest Oil Refinery '\
-                  '($10 bonus for any train owned by any Railroad Company running a route to Casper--H18)',
+                  '($10 bonus for any train owned by any Corporation running a route to Casper--H18)',
           },
           {
             name: 'P2a Wylie Permanent Camping Company',
@@ -166,7 +166,7 @@ module Engine
             revenue: 10,
             abilities: [{ type: 'close', on_phase: '5' },
                         { type: 'manual_close_company', when: %w[owning_player_sr_turn owning_player_or_turn] }],
-            desc: 'Provides its owning Railroad Company a +$10 revenue bonus for routes '\
+            desc: 'Provides its owning Corporation a +$10 revenue bonus for routes '\
                   'starting or ending at either of the accessible Yellowstone entrances. '\
                   'Closes at phase 5.',
           },
@@ -177,7 +177,7 @@ module Engine
             revenue: 10,
             abilities: [{ type: 'close', on_phase: '5' },
                         { type: 'manual_close_company', when: %w[owning_player_sr_turn owning_player_or_turn] }],
-            desc: 'Owning Railroad Company receives a +$10 revenue bonus for each fort served. Closes at phase 5.',
+            desc: 'Owning Corporation receives a +$10 revenue bonus for each fort served. Closes at phase 5.',
           },
           {
             name: 'P2c Midwest Oil Refinery',
@@ -274,7 +274,7 @@ module Engine
                           discount: 15,
                         },
                         { type: 'manual_close_company', when: %w[owning_player_sr_turn owning_player_or_turn] }],
-            desc: 'Gives owning Railroad Company a $15 discount to terrain costs for '\
+            desc: 'Gives owning Corporation a $15 discount to terrain costs for '\
                   'each tile lay. Closes at phase 6.',
           },
           {
@@ -295,7 +295,7 @@ module Engine
                           tiles: [],
                         },
                         { type: 'manual_close_company', when: %w[owning_player_sr_turn owning_player_or_turn] }],
-            desc: 'Gives owning Railroad Company a $60 discount for one tile lay per OR. Closes at phase 6.',
+            desc: 'Gives owning Corporation a $60 discount for one tile lay per OR. Closes at phase 6.',
           },
           {
             name: 'P5 Surveyor II',
@@ -328,7 +328,7 @@ module Engine
                           reachable: true,
                         },
                         { type: 'manual_close_company', when: %w[owning_player_sr_turn owning_player_or_turn] }],
-            desc: 'Grants owning Railroad Company one extra tile lay/upgrade. '\
+            desc: 'Grants owning Corporation one extra tile lay/upgrade. '\
                   'May be used 3 times, then closes. Terrain or upgrade costs '\
                   'for this action are ignored. Closes at phase 6.',
           },
@@ -340,7 +340,7 @@ module Engine
             abilities: [{ type: 'close', on_phase: '6' },
                         { type: 'revenue_change', revenue: 0o0, when: 'sold' },
                         { type: 'manual_close_company', when: %w[owning_player_sr_turn owning_player_or_turn] }],
-            desc: 'Owning Railroad Company is paid per yellow tile it places: $40/city, $30/Boomtown or '\
+            desc: 'Owning Corporation is paid per yellow tile it places: $40/city, $30/Boomtown or '\
                   'Boom City, $10/town. $20 revenue is only paid while owned by a player. Closes at phase 6.',
           },
           {
@@ -351,7 +351,7 @@ module Engine
             abilities: [{ type: 'close', on_phase: '6' },
                         { type: 'base', description: 'P5c 50% terrain/upgrade discount', when: 'sold' },
                         { type: 'manual_close_company', when: %w[owning_player_sr_turn owning_player_or_turn] }],
-            desc: 'While player-owned, DT terrain costs are halved; while Railroad Company-owned, tile placement '\
+            desc: 'While player-owned, DT terrain costs are halved; while Corporation-owned, tile placement '\
                   'terrain or upgrade costs are halved. Closes at phase 6.',
           },
           {
@@ -418,7 +418,7 @@ module Engine
             abilities: [{ type: 'close', on_phase: '8' },
                         { type: 'manual_close_company', when: %w[owning_player_sr_turn owning_player_or_turn] }],
             desc: '[+1+1] token extends a train by 1 city and 1 town. The token '\
-                  'is assigned to a train when a Railroad Company buys this '\
+                  'is assigned to a train when a Corporation buys this '\
                   'private company, and may be moved to another train during the '\
                   'train purchasing phase. Closes at phase 8.',
           },
@@ -452,7 +452,7 @@ module Engine
             ],
             desc: 'Comes with a Boomtown token that may be placed (when owned by a Railroad) '\
                   'during any OR anywhere track may be placed. Once it\'s a Boom City, it may '\
-                  'only be tokened by the owning Railroad Company. Closes at '\
+                  'only be tokened by the owning Corporation. Closes at '\
                   'phase 7, removing Boomtown/City and station token, and tile '\
                   'becomes a Ghost Town.',
           },
@@ -468,7 +468,7 @@ module Engine
             desc: 'Pays $40 revenue ONLY in green phases. Closes, becomes '\
                   'LHP train (permanent 2+1) at phase 5. If owned by a player at '\
                   'the start of phase 5, the LHP train may be immediately assigned '\
-                  'to a Railroad Company for no compensation.',
+                  'to a Corporation for no compensation.',
           },
           {
             name: 'P10 Thomas C. Durant',
