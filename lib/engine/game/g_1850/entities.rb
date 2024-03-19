@@ -44,10 +44,10 @@ module Engine
           name: 'Mississippi River Bridge Company',
           value: 40,
           revenue: 10,
-          desc: 'This private company gives the purchasing company a free bridge over the Mississippi River at'\
+          desc: 'This private company gives the purchasing corporation a free bridge over the Mississippi River at'\
                 ' St. Louis (i.e: a free track lay in the St. Louis hex. For the Missouri Pacific this track lay'\
                 ' is in addition to and may be performed before its normal track lay/upgrade.'\
-                ' This private company may be sold during phase two for from half to full face value. If a company'\
+                ' This private company may be sold during phase two for from half to full face value. If a corporation'\
                 ' uses this private to lay the St. Louis hex, it may not upgrade that hex in the same operating turn.',
           sym: 'MRB',
           abilities: [
