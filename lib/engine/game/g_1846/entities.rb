@@ -11,7 +11,7 @@ module Engine
             discount: -80,
             revenue: 0,
             desc: 'Starts with $60, a 2 train, and a token in Detroit (C15). Always operates first. Its train may run in OR1. '\
-                  'Splits dividends equally with owner. Purchasing company receives its cash, train and token '\
+                  'Splits dividends equally with owner. Purchasing corporation receives its cash, train and token '\
                   'but cannot run this 2 train in the same OR in which the MS operated. ',
             sym: 'MS',
             color: nil,
@@ -24,7 +24,7 @@ module Engine
             desc: 'Starts with $40, a 2 train, and a token in Indianapolis (G9). '\
                   'Always operates after the MS and before other corporations. '\
                   'Its train may run in OR1. '\
-                  'Splits dividends equally with owner. Purchasing company receives its cash, train and token '\
+                  'Splits dividends equally with owner. Purchasing corporation receives its cash, train and token '\
                   'but cannot run this 2 train in the same OR in which the BIG4 operated. ',
             sym: 'BIG4',
             color: nil,
@@ -112,7 +112,7 @@ module Engine
             desc: 'Add a bonus to the value of one port city, either a $40 bonus to Wheeling (G19) / Holland (B8) '\
                   'or a $20 bonus to Chicago Conn. (C5) / Toledo (D14) / St. Louis (I1). '\
                   'At the beginning of each OR, this company\'s owner may reassign this bonus '\
-                  'to a different port city and/or train company (including minors). '\
+                  'to a different port city and/or corporation (including minors). '\
                   'Once purchased by a corporation, it becomes permanently assigned to that corporation. '\
                   'Bonus persists after this company closes in Phase III but is removed in Phase IV.',
             sym: 'SC',
