@@ -21,7 +21,7 @@ module Engine
           end
 
           def description
-            'Bid on public companies'
+            'Bid on corporations'
           end
 
           def setup
@@ -29,8 +29,8 @@ module Engine
             @concessions = @game.companies.select do |company|
               company.type == :concession && company.owner.nil? && !company.closed?
             end
-            # Hash showing which minors can be used to start a public company.
-            # The public companies are the has keys, each value is an array of
+            # Hash showing which minors can be used to start a corporation.
+            # The corporations are the hash keys, each value is an array of
             # minor companies.
             @eligible_minors = {}
           end
@@ -152,9 +152,9 @@ module Engine
             @game.corporation_by_id(concession.id)
           end
 
-          # If no public companies have yet been started then there are
+          # If no corporations have yet been started then there are
           # geographical restrictions on which minor companies can be used to
-          # start a public company.
+          # start a corporation.
           def restricted?
             if @restricted.nil?
               @restricted = @game.corporations.none? do |corporation|
@@ -164,7 +164,7 @@ module Engine
             @restricted
           end
 
-          # Finds all the minors that can be used to start the public company
+          # Finds all the minors that can be used to start the corporation
           # associated with the concession. If this isn't the first auction
           # round then any minor can be used.
           def eligible_minors(concession)

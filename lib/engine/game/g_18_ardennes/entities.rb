@@ -338,7 +338,7 @@ module Engine
         def company_header(company)
           case company.type
           when :minor then 'MINOR COMPANY'
-          when :concession then 'PUBLIC COMPANY'
+          when :concession then 'CORPORATION'
           else raise GameError, 'Unknown type of private company'
           end
         end

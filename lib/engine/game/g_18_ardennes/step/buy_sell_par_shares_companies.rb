@@ -79,14 +79,14 @@ module Engine
             end
           end
 
-          # Valid par prices for public companies.
+          # Valid par prices for corporationss.
           def get_par_prices(_player, _corporation)
             @game.stock_market.par_prices.select { |pp| pp.types.include?(:par_2) }
           end
 
           # This function is called from View::Game::Par to calculate how many
           # shares can be bought at each possible par price. In 18Ardennes you
-          # get an extra share when floating a public company, part paid for by
+          # get an extra share when floating a corporation, part paid for by
           # exchanging the pledged minor, so pretend that the player has extra
           # cash to pay for this extra share.
           def available_par_cash(player, corporation, share_price: nil)
@@ -122,7 +122,7 @@ module Engine
 
           private
 
-          # Has the player won any auctions for public companies in the
+          # Has the player won any auctions for corporations in the
           # preceding auction round? If they have then they must start these
           # majors before they can buy any other shares or pass.
           def under_obligation?(player)

@@ -365,7 +365,7 @@ module Engine
         end
 
         def place_home_token(corporation)
-          # Public companies get their starting tokens by exchange.
+          # Corporations get their starting tokens by exchange.
           return unless corporation.type == :minor
 
           super

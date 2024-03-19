@@ -21,7 +21,7 @@ module Engine
         include Tiles
         include Trains
 
-        # Minors that have been pledged in bids to start public companies.
+        # Minors that have been pledged in bids to start corporations.
         # Used by {Step::MajorAuction} to pass this information to
         # {Step::BuySellParSharesCompanies}. This is a hash whose keys are
         # the major corporations and the values are the minor corporations.
