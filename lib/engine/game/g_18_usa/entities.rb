@@ -164,13 +164,13 @@ module Engine
             name: 'P8 - Express Freight Service',
             value: 40,
             revenue: 0,
-            desc: 'Place an extra station marker from the owning company in one red area. The company receives +10 ' \
+            desc: 'Place an extra station marker from the owning corporation in one red area. The corp receives +10 ' \
                   'revenue for each train which runs to that red area for the remainder of the game. The station ' \
                   'marker in the red area is not a normal station. It is only an indicator of which area the ' \
-                  'company receives the +10 revenue bonus. During a merger or acquisition, the station marker in ' \
-                  'the red area must be replaced by a station from the acquiring company if one is available. If ' \
-                  'during a merger or acquisition, the new company has more than 8 station markers (counting the ' \
-                  'station marker in the red area), the new company may choose to either keep or remove the station ' \
+                  'corporation receives the +10 revenue bonus. During a merger or acquisition, the station marker in ' \
+                  'the red area must be replaced by a station from the acquiring corp if one is available. If ' \
+                  'during a merger or acquisition, the new corporation has more than 8 station markers (counting the ' \
+                  'station marker in the red area), the new corp may choose to either keep or remove the station ' \
                   'marker from the red area. If the station marker is removed during a M&A action the Express ' \
                   'Freight Service private company is discarded.',
             sym: 'P8',
@@ -264,9 +264,9 @@ module Engine
             revenue: 0,
             desc: 'Discard when the first 4, 6, or 8-train is purchased or exported to prevent one train from ' \
                   'rusting. The train is instead treated as an obsolete train and will be discarded at the end ' \
-                  'of the corporation’s next Run Trains step. Obsolete trains may not be sold to another company ' \
-                  'and do not count against the company’s train limit. This ability may only be used on a train ' \
-                  'which is owned by the same company that owns Pennsy Boneyard. May not be used on 2+, 3+, or 4+ ' \
+                  'of the corporation’s next Run Trains step. Obsolete trains may not be sold to another corporation ' \
+                  'and do not count against the corporation’s train limit. This ability may only be used on a train ' \
+                  'which is owned by the same corporation that owns Pennsy Boneyard. May not be used on 2+, 3+, or 4+ ' \
                   'trains.',
             sym: 'P13',
             abilities: [], # Implemented in game class and a custom step
@@ -381,7 +381,7 @@ module Engine
             desc: 'Discard during the lay or upgrade track step to place an available station token into any city ' \
                   'which currently has no available open station circles. The station token will immediately fill ' \
                   'a station circle in the city if one becomes available later. This is an extra station token ' \
-                  'placement. A company may use this to place two station tokens in the same round.',
+                  'placement. A corporation may use this to place two station tokens in the same round.',
             sym: 'P20',
             abilities: [
               type: 'token',
@@ -506,8 +506,8 @@ module Engine
             name: 'P25 - American Locomotive Co.',
             value: 90,
             revenue: 0,
-            desc: 'The owning corporation receives a 10% discount on all trains from the bank. During the owning company’s ' \
-                  'turn, this company may be discarded prior to the Run Trains step to buy a train from the bank at a 10% ' \
+            desc: 'The owning corporation receives a 10% discount on all trains from the bank. During the owning corporation’s '\
+                  'turn, this company may be discarded prior to the Run Trains step to buy a train from the bank at a 10% '\
                   'discount. This company is discarded when the first 6-train is purchased.',
             sym: 'P25',
             abilities: [
@@ -556,11 +556,11 @@ module Engine
             desc: 'Comes with 3 company town tiles, only one of which may be played. The owning corporation may place one '\
                   'Company Town tile on any empty hex not adjacent to a metropolis. When placed, the owning corporation '\
                   'receives one bonus station marker which must be placed on the Company Town tile. No other corporations may '\
-                  'place a token on the Company Town hex and receive $10 less for the city than the company with the station '\
-                  'marker in the city. The Company Town can be placed on any hex, city circle or not, as long as it is not '\
-                  'adjacent to a metropolis and has no track or station marker in it. If the Company Town tile is placed on a '\
-                  '$10 river hex, a bridge token may be used. Coal / Oil / Ore markers may not be used with the Company Town. '\
-                  'If the station marker in the Company Town hex is ever removed, no token may ever replace it',
+                  'place a token on the Company Town hex and receive $10 less for the city than the corporation with the ' \
+                  'station marker in the city. The Company Town can be placed on any hex, city circle or not, as long as it is '\
+                  'not adjacent to a metropolis and has no track or station marker in it. If the Company Town tile is placed '\
+                  'on a $10 river hex, a bridge token may be used. Coal / Oil / Ore markers may not be used with the '\
+                  'Company Town. If the station marker in the Company Town hex is ever removed, no token may ever replace it.',
             sym: 'P27',
             abilities: [
               {
