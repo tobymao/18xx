@@ -367,7 +367,7 @@ module Engine
             float_percent: 50,
             max_ownership_percent: 100,
             coordinates: 'G15',
-            # the shares order creates a 10 share company, but the first 2 sold certs are 20%
+            # the shares order creates a 10 share corporation, but the first 2 sold certs are 20%
             shares: [20, 10, 20, 10, 10, 10, 20],
             second_share_double: true,
             last_share_double: true,
@@ -433,7 +433,7 @@ module Engine
             float_percent: 50,
             max_ownership_percent: 100,
             coordinates: 'F12',
-            # the shares order creates a 10 share company, but the first 2 sold certs are 20%
+            # the shares order creates a 10 share corporation, but the first 2 sold certs are 20%
             shares: [20, 10, 20, 10, 10, 10, 20],
             second_share_double: true,
             last_share_double: true,
@@ -467,7 +467,7 @@ module Engine
             float_percent: 50,
             max_ownership_percent: 100,
             coordinates: 'C13',
-            # the shares order creates a 10 share company, but the first 2 sold certs are 20%
+            # the shares order creates a 10 share corporation, but the first 2 sold certs are 20%
             shares: [20, 10, 20, 10, 10, 10, 20],
             second_share_double: true,
             last_share_double: true,
