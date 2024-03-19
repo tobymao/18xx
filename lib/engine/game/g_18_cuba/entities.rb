@@ -70,7 +70,7 @@ module Engine
             sym: 'M2',
             value: 140,
             revenue: 0,
-            desc: '1 Wagon. Must be assigned to a major company.',
+            desc: '1 Wagon. Must be assigned to a corporation.',
             color: nil,
           },
           {
@@ -95,7 +95,7 @@ module Engine
             sym: 'M5',
             value: 180,
             revenue: 0,
-            desc: 'Mail contract. Must be assigned to a major company. Gives the company at the start of '\
+            desc: 'Mail contract. Must be assigned to a corporation. Gives the corporation at the start of '\
                   'their turn during an OR if they own at least one train '\
                   'an income of +10/20/30/40 (depending on the phase).',
             color: nil,
