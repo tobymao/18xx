@@ -17,7 +17,7 @@ module Engine
             name: 'Terracotta Army',
             value: 50,
             revenue: 10,
-            desc: 'Comes with the red Xi’an tile which shows higher value for this off-board location. A company owning this private may lay this tile in addition to it’s normal tile lay step. No connection is required. This does not close the company. If it wasn’t laid when the company closes the red tile is out of the game.',
+            desc: 'Comes with the red Xi’an tile which shows higher value for this off-board location. A corporation owning this private may lay this tile in addition to it’s normal tile lay step. No connection is required. This does not close the company. If it wasn’t laid when the company closes the red tile is out of the game.',
             sym: 'TA',
             abilities: [{
               type: 'tile_lay',
@@ -35,7 +35,7 @@ module Engine
             name: 'Heng Shan',
             value: 75,
             revenue: 15,
-            desc: 'Comes with the yellow mountain tile.  A company owning this private may lay the mine on hex C5 in addition to it’s normal tile laying step. No connection is required. If it wasn’t laid when the company closes the mountain tile is out of the game. If a train runs to or through the mine the company treasury gets ¥40 from the bank. It counts against the range of a train.  Any company may lay a normal tile on hex C5 after this private company was sold to a company or closed at the cost of ¥40. Then the yellow mountain tile can’t be placed.',
+            desc: 'Comes with the yellow mountain tile.  A corporation owning this private may lay the mine on hex C5 in addition to it’s normal tile laying step. No connection is required. If it wasn’t laid when the company closes the mountain tile is out of the game. If a train runs to or through the mine the owning corporation\'s treasury gets ¥40 from the bank. It counts against the range of a train.  Any corporation may lay a normal tile on hex C5 after this private company was sold to a corporation or closed at the cost of ¥40. Then the yellow mountain tile can’t be placed.',
             sym: 'HS',
             abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['C5'] },
                         {
@@ -53,7 +53,7 @@ module Engine
             name: 'Great Wall of China',
             value: 100,
             revenue: 20,
-            desc: 'A company owning this private may lay one or two yellow tiles for free onto hexes with the Great Wall in addition to the normal tile lay step. No connection is required. This does not close the company. If laying two tiles, both tiles must be laid during the same turn and must be connected.',
+            desc: 'A corporation owning this private may lay one or two yellow tiles for free onto hexes with the Great Wall in addition to the normal tile lay step. No connection is required. This does not close the company. If laying two tiles, both tiles must be laid during the same turn and must be connected.',
             sym: 'CW',
             abilities: [{
               type: 'tile_lay',
@@ -71,7 +71,7 @@ module Engine
             name: 'Yanda Railway Ferry',
             value: 125,
             revenue: 25,
-            desc: 'Comes with the blue ferry tiles. A company owning this private may lay these tiles in addition to it’s normal tile laying step on both of the Dalian and Yantai hexes. No connection is required. If they are not laid when the company closes the ferry tiles are out of the game.',
+            desc: 'Comes with the blue ferry tiles. A corporation owning this private may lay these tiles in addition to it’s normal tile laying step on both of the Dalian and Yantai hexes. No connection is required. If they are not laid when the company closes the ferry tiles are out of the game.',
             sym: 'YRF',
             abilities: [{
               type: 'tile_lay',
@@ -92,7 +92,7 @@ module Engine
             name: 'Forbidden City',
             value: 150,
             revenue: 30,
-            desc: 'A player owning this private company may exchange it into an IPO share of a company with a token in Beijing (at the time of exchange). If sold to a company this ability is lost.',
+            desc: 'A player owning this private company may exchange it into an IPO share of a corporation with a token in Beijing (at the time of exchange). If sold to a corporation this ability is lost.',
             sym: 'FC',
             abilities: [{
               type: 'exchange',
