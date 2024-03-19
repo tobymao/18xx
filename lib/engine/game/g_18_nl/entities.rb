@@ -10,7 +10,7 @@ module Engine
             sym: 'P1',
             value: 20,
             revenue: 0,
-            desc: 'Company may build an extra tile on F5 with a ƒ40 discount. Blocks F5 while owned by a player.',
+            desc: 'Owning corp may build an extra tile on F5 with a ƒ40 discount. Blocks F5 while owned by a player.',
             abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['F5'] },
                         {
                           type: 'tile_lay',
