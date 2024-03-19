@@ -27,7 +27,7 @@ module Engine
             sym: 'P2',
             value: 25,
             revenue: 10,
-            desc: 'The owner may use all ferries for free with all their companies',
+            desc: 'The owner may use all ferries for free with all their corporations',
             color: nil,
           },
           {
@@ -35,7 +35,7 @@ module Engine
             sym: 'P3',
             value: 45,
             revenue: 15,
-            desc: 'For the owner, the value of Taiwan is +20 (with all their companies)',
+            desc: 'For the owner, the value of Taiwan is +20 with all their corporations',
             abilities: [
               {
                 type: 'hex_bonus',
@@ -52,7 +52,7 @@ module Engine
             sym: 'P4',
             value: 70,
             revenue: 20,
-            desc: 'Reduce the cost of laying a tile in a river hex by ¥20 (for all their companies)',
+            desc: 'Reduce the cost of laying a tile in a river hex by ¥20 (for all their corporations)',
             abilities: [{
               type: 'tile_discount',
               discount: 20,
@@ -68,7 +68,7 @@ module Engine
             sym: 'P5',
             value: 100,
             revenue: 25,
-            desc: 'Building permit for Phase D (for one of their companies)',
+            desc: 'Building permit for Phase D (for one of their corporations)',
             abilities: [{
               type: 'assign_corporation',
               owner_type: 'player',
@@ -93,7 +93,7 @@ module Engine
             value: 50,
             revenue: 0,
             desc: 'The owner may exchange the Rocket of China for a currently available train, '\
-                  'for one of their companies, during that company’s turn in an Operating Round. '\
+                  'for one of their corporations, during that corporation’s turn in an Operating Round. '\
                   'Forced exchange into second 4-train.',
             abilities: [{
               type: 'purchase_train',
