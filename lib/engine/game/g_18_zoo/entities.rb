@@ -9,7 +9,7 @@ module Engine
             sym: 'DAYS_OFF',
             name: 'Days off',
             value: 3,
-            desc: 'During the SR you can choose a family (company), and its reputation mark (share value) increases!'\
+            desc: 'During the SR you can choose a family (corporation), and its reputation mark (share value) increases!'\
                   ' It goes one space to the right',
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
           },
@@ -41,14 +41,14 @@ module Engine
             name: 'It’s all greek to me',
             value: 1,
             desc: 'After your turn in an SR, you get another turn - it means you can play twice in a row in a SR:'\
-                  ' “who said you can steal a company?”',
+                  ' “who said you can steal a corporation?”',
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
           },
           {
             sym: 'WHATSUP',
             name: 'Whatsup',
             value: 3,
-            desc: 'During the SR, a family (company) can buy the first available squirrel (train), deactivated.'\
+            desc: 'During the SR, a family (corporation) can buy the first available squirrel (train), deactivated.'\
                   ' Reputation (share value) moves one space to the right',
             abilities: [{ type: 'no_buy', owner_type: 'player' }],
           },
@@ -56,7 +56,7 @@ module Engine
             sym: 'RABBITS',
             name: 'Rabbits',
             value: 3,
-            desc: 'The family (company) gets two bonus upgrades, that can be placed even illegally'\
+            desc: 'The family (corporation) gets two bonus upgrades, that can be placed even illegally'\
                   ' (mountains and water pool) or before the correct phase',
             abilities: [
               {
@@ -78,7 +78,7 @@ module Engine
             sym: 'MOLES',
             name: 'Moles',
             value: 2,
-            desc: 'The family (company) gets 4 special tiles, that can be used to upgrade any plain tiles,'\
+            desc: 'The family (corporation) gets 4 special tiles, that can be used to upgrade any plain tiles,'\
                   ' even illegally (mountains and water pool)',
             abilities: [
               {
@@ -100,7 +100,7 @@ module Engine
             sym: 'ANCIENT_MAPS',
             name: 'Ancient maps',
             value: 2,
-            desc: 'The family (company) can build two additional yellow tiles',
+            desc: 'The family (corporation) can build two additional yellow tiles',
             abilities: [
               {
                 type: 'tile_lay',
@@ -136,7 +136,7 @@ module Engine
             sym: 'ON_A_DIET',
             name: 'On a diet',
             value: 1,
-            desc: 'The family (company) can place a station in addition to the allowed spaces'\
+            desc: 'The family (corporation) can place a station in addition to the allowed spaces'\
                   ' - no one can block you out',
             abilities: [
               {
@@ -155,7 +155,7 @@ module Engine
             sym: 'SHINING_GOLD',
             name: 'Shining gold',
             value: 1,
-            desc: 'The family (company) gets 2$N / 1$N when it builds on a M / MM tile',
+            desc: 'The family (corporation) gets 2$N / 1$N when it builds on a M / MM tile',
             abilities: [
               {
                 type: 'tile_discount',
@@ -182,7 +182,7 @@ module Engine
             sym: 'THAT_S_MINE',
             name: "That's mine!",
             value: 2,
-            desc: 'The family (company) reserves an open place on a station tile anywhere'\
+            desc: 'The family (corporation) reserves an open place on a station tile anywhere'\
                   ' (irrespective of connectivity) - it is reserved and open for all to run through,'\
                   ' until the family puts a token there',
             abilities: [
@@ -198,7 +198,7 @@ module Engine
             sym: 'WORK_IN_PROGRESS',
             name: 'Work in progress',
             value: 2,
-            desc: 'The family (company) blocks a free place on a station tile anywhere'\
+            desc: 'The family (corporation) blocks a free place on a station tile anywhere'\
                   ' (irrespective of connectivity)',
             abilities: [
               {
@@ -213,7 +213,7 @@ module Engine
             sym: 'WHEAT',
             name: 'Wheat',
             value: 2,
-            desc: 'The family (company) chooses a tile with its own station; the station is worth +30',
+            desc: 'The family (corporation) chooses a tile with its own station; the station is worth +30',
             abilities: [
               {
                 type: 'assign_hexes',
@@ -232,7 +232,7 @@ module Engine
             sym: 'TWO_BARRELS',
             name: 'Two barrels',
             value: 2,
-            desc: 'The family (company) can use this power on two separate occasions to double the value of all'\
+            desc: 'The family (corporation) can use this power on two separate occasions to double the value of all'\
                   ' O tiles – but the downside is that family doesn\'t collect in treasury the usual 1$N for each O',
             abilities: [
               {
@@ -249,7 +249,7 @@ module Engine
             sym: 'A_SQUEEZE',
             name: 'A squeeze',
             value: 3,
-            desc: 'The family (company) gets an additional 3$N if at least one of its squirrels (train)'\
+            desc: 'The family (corporation) gets an additional 3$N if at least one of its squirrels (train)'\
                   ' runs through or to a O',
           },
           {
@@ -258,7 +258,7 @@ module Engine
             value: 2,
             desc: 'Save from rust: at the phase change the player or the family can choose to mark a squirrel'\
                   ' (train) so that it won\'t rust; it becomes, and run as, a 1S. The 1S cannot be sold.'\
-                  ' The PATCH on 1S can be discarded anytime. If the PATCH stays on, the family (company)'\
+                  ' The PATCH on 1S can be discarded anytime. If the PATCH stays on, the family (corporation)'\
                   ' cannot purchase new squirrels (trains)',
           },
           {
