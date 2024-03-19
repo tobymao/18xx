@@ -47,7 +47,7 @@ module Engine
             sym: 'VES',
             value: 75,
             revenue: 15,
-            desc: 'Fl. 20 bonus revenue for the owning company if it uses the ferry across the Zuiderzee at Enkhuizen (D9).',
+            desc: 'Fl. 20 bonus revenue for the owning corporation if it uses the ferry across the Zuiderzee at Enkhuizen (D9).',
             abilities: [
               {
                 type: 'hex_bonus',
@@ -62,7 +62,7 @@ module Engine
             sym: 'VVL',
             value: 75,
             revenue: 15,
-            desc: 'Fl. 20 bonus for the owning company each time it starts or ends a route in Vlissingen (J1).',
+            desc: 'Fl. 20 bonus for the owning corporation each time it starts or ends a route in Vlissingen (J1).',
             abilities: [
               {
                 type: 'hex_bonus',
@@ -77,7 +77,7 @@ module Engine
             sym: 'RW',
             value: 80,
             revenue: 20,
-            desc: 'Allows the owning company to lay one station token for free. Closes after use.',
+            desc: 'Allows the owning corporation to lay one station token for free. Closes after use.',
             abilities: [
               {
                 type: 'token',
@@ -94,7 +94,7 @@ module Engine
             sym: 'W',
             value: 100,
             revenue: 20,
-            desc: 'Gives a 10% discount on all trains the owning company buys from the bank.',
+            desc: 'Gives a 10% discount on all trains the owning corporation buys from the bank.',
             abilities: [
               {
                 type: 'train_discount',
