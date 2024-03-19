@@ -444,7 +444,7 @@ module Engine
             G18India::Step::SpecialTrack, # used by P2 & P3 (track lay & track upgrade)
             Engine::Step::SpecialToken, # use for P5
             G18India::Step::Track,
-            Engine::Step::Token,
+            G18India::Step::Token,
             Engine::Step::Route,
             G18India::Step::Dividend,
             G18India::Step::SellBuyTrain,
@@ -862,9 +862,9 @@ module Engine
           @log << "#{company.name} closes and #{company.owner.name} receives #{company.value} from the Bank." unless silent
         end
 
-        # Adjust token owner if company is player owned
+        # Modified to select operator if company is player owned
         def token_owner(entity)
-          return @round.current_operator if @round.current_operator
+          return @round.current_operator if entity&.company? && entity.owner&.player? && @round.operating?
 
           entity&.company? ? entity.owner : entity
         end

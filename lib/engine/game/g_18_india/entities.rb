@@ -124,7 +124,7 @@ module Engine
               {
                 type: 'token',
                 owner_type: 'corporation',
-                when: 'token',
+                when: %w[token special_token],
                 count: 1,
                 extra_action: false,
                 from_owner: true,
