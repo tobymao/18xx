@@ -9,7 +9,7 @@ module Engine
             name: 'Brading Harbour Company',
             value: 30,
             revenue: 5,
-            desc: 'Can be exchanged for a share in the BHI&R public company',
+            desc: 'Can be exchanged for a share in the BHI&R corporation',
             sym: 'BHC',
             abilities: [
             {
@@ -25,7 +25,7 @@ module Engine
             name: 'Yarmouth Harbour Company',
             value: 50,
             revenue: 10,
-            desc: 'Can be exchanged for a share in the FYN public company.',
+            desc: 'Can be exchanged for a share in the FYN corporation.',
             sym: 'YHC',
             abilities: [
               {
@@ -41,7 +41,7 @@ module Engine
             name: 'Cowes Marina and Harbour',
             value: 90,
             revenue: 20,
-            desc: 'Can be exchanged for a share in the C&N public company.',
+            desc: 'Can be exchanged for a share in the C&N corporation.',
             sym: 'CMH',
             abilities: [
               {
@@ -57,7 +57,7 @@ module Engine
             name: 'Ryde Pier & Shipping Company',
             value: 130,
             revenue: 30,
-            desc: 'Can be exchanged for a share in the IOW public company.',
+            desc: 'Can be exchanged for a share in the IOW corporation.',
             sym: 'RPSC',
             abilities: [
               {
