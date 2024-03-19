@@ -846,7 +846,7 @@ module Engine
               revenue += bonus
             when 'JEWELRY'
               # Jewelry concession pays 20 if delivered to any commodity destination
-              bonus = 20 unless (visited_names & COMMODITY_DESTINATIONS).empty?
+              bonus = 20 if visited_names.intersect?(COMMODITY_DESTINATIONS)
               revenue += bonus
             end
           end
