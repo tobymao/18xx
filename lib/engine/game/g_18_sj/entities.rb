@@ -49,7 +49,7 @@ module Engine
             value: 45,
             revenue: 15,
             desc: 'May lay or shift port token in Halmstad (A6), Ystad(C2), Kalmar (D5), Sundsvall (F19), Umeå (F23), '\
-                  'and Luleå (G26).  Add 30 kr/symbol to all routes run to this location by owning company.',
+                  'and Luleå (G26).  Add 30 kr/symbol to all routes run to this location by owning corp.',
             sym: 'SB',
             abilities:
             [
