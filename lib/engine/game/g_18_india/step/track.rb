@@ -10,7 +10,7 @@ module Engine
           # for debugging
           def process_lay_tile(action)
             super
-            LOGGER.debug "process_lay_tile >> terrain_discount#{@round.terrain_discount}"
+            LOGGER.debug "process_lay_tile >> terrain_discount: #{@round.terrain_discount}"
           end
 
           # Bypass some Step::Tracker tests for Town to City upgrade: maintain exits, and check new exits are valid
@@ -30,7 +30,7 @@ module Engine
           # close P4 if ability was activated
           def pass!
             company = @round.discount_source
-            if !company.nil?
+            unless company.nil?
               @game.company_is_closing(company)
               company.close!
             end

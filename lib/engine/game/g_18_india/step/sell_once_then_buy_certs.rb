@@ -17,10 +17,8 @@ module Engine
           def debugging_log(str)
             LOGGER.debug(str)
             LOGGER.debug " stock_turns: #{@round.stock_turns} - selling_round: #{selling_round?} - @game.turn: #{@game.turn}"
-            LOGGER.debug " current_actions: #{@round.current_actions} - players_history: #{@round.players_history[current_entity]}"
             LOGGER.debug " pass_order: #{@round.pass_order} - last_to_act: #{@round.last_to_act}"
             LOGGER.debug " Cert Limit: #{@game.cert_limit(current_entity)} - Num Certs: #{@game.num_certs(current_entity)}"
-            LOGGER.debug " B: #{bought?} M: #{@round.bought_from_market} H: #{@round.bought_from_hand} IPO #{@round.bought_from_ipo}"
             LOGGER.debug " buyable companies: #{buyable_companies(current_entity).map(&:name).join(', ')}"
           end
 
@@ -47,7 +45,6 @@ module Engine
             @round.stock_turns += 1
             @round.bought_from_market = false
             @round.bought_from_hand = false
-            # debugging_log('Setup')
           end
 
           def round_state
@@ -256,7 +253,7 @@ module Engine
               log_purchase(company.name, location, price)
               @game.after_buy_company(entity, company, price) if entity.player?
             end
-            debugging_log('Process Buy Company')
+            # debugging_log('Process Buy Company')
           end
 
           def log_purchase(what, where, price)

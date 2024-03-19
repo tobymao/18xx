@@ -20,11 +20,11 @@ module Engine
           # Perform addional steps after using P6
           def process_assign(action)
             super
-            if action.entity.id == 'P6'
-              @game.claim_concession(['JEWELRY'], current_entity)
-              action.target.location_name = 'JEWELRY'
-              action.target.tile.location_name = 'JEWELRY'
-            end
+            return unless action.entity.id == 'P6'
+
+            @game.claim_concession(['JEWELRY'], current_entity)
+            action.target.location_name = 'JEWELRY'
+            action.target.tile.location_name = 'JEWELRY'
           end
         end
       end

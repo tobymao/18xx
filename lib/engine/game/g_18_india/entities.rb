@@ -119,7 +119,6 @@ module Engine
             desc: 'One free station, even if full. Close when used.',
             color: nil,
             type: :private,
-            # TODO: Add Ability
             abilities: [
               {
                 type: 'token',

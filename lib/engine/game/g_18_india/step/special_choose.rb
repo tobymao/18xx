@@ -19,14 +19,12 @@ module Engine
           def process_choose_ability(action)
             entity = action.entity
             ability = abilities(entity)
-            if entity.id == 'P4'
-              @log << "P4 ability active!"
-              @round.terrain_discount = 40
-              @round.discount_source = entity
-              ability.use!
-            else
-              raise GameError, "#{entity.name} does not have a choice ability"
-            end
+            raise GameError, "#{entity.name} does not have a choice ability" unless entity.id == 'P4'
+
+            @log << 'French EIC (P4) discount ability enabled.'
+            @round.terrain_discount = 40
+            @round.discount_source = entity
+            ability.use!
           end
         end
       end

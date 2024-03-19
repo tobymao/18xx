@@ -8,11 +8,8 @@ module Engine
       module Step
         class Token < Engine::Step::Token
           # modified to prevent skipping step if there are token abilities
-          def actions(entity)
-            return [] unless entity == current_entity
-            return [] unless can_place_token?(entity) || @game.abilities(entity, :token)
-
-            ACTIONS
+          def can_place_token?(entity)
+            super || @game.abilities(entity, :token)
           end
         end
       end
