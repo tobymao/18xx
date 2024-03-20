@@ -296,9 +296,9 @@ module Engine
 
         EVENTS_TEXT = {
           'close_concessions' =>
-            ['Concessions close', 'All concessions close without compensation, major companies float at 50%'],
+            ['Concessions close', 'All concessions close without compensation, corporations float at 50%'],
           'full_capitalisation' =>
-            ['Full capitalisation', 'Major companies receive full capitalisation when floated'],
+            ['Full capitalisation', 'Corporations receive full capitalisation when floated'],
           'close_ndem' =>
             ['NdeM privatization', 'NdeM privatized, runs one last time, auctions token'],
         }.freeze

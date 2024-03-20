@@ -300,17 +300,17 @@ module Engine
 
         EVENTS_TEXT = {
           'close_concessions' =>
-            ['Concessions close', 'All concessions close without compensation, major companies float at 50%'],
+            ['Concessions close', 'All concessions close without compensation, corporations float at 50%'],
           'full_capitalisation' =>
-            ['Full capitalisation', 'Major companies receive full capitalisation when floated'],
+            ['Full capitalisation', 'corporations receive full capitalisation when floated'],
           'phase_revenue' =>
-            ['Phase revenue companies close', 'P15-HR and P20-C&WR close if not owned by a major company'],
+            ['Phase revenue companies close', 'P15-HR and P20-C&WR close if not owned by a major corporation'],
         }.freeze
 
         STATUS_TEXT = Base::STATUS_TEXT.merge(
           'can_buy_trains' => ['Buy trains', 'Can buy trains from other corporations'],
           'can_convert_concessions' => ['Convert concessions',
-                                        'Can float a major company by converting a concession'],
+                                        'Can float a major corporation by converting a concession'],
           'can_acquire_minor_bidbox' => ['Acquire a minor from bidbox',
                                          'Can acquire a minor from bidbox for £200, must have connection '\
                                          'to start location'],
@@ -732,7 +732,7 @@ module Engine
         end
 
         def event_full_capitalisation!
-          @log << '-- Event: Major companies receive full capitalisation when floated --'
+          @log << '-- Event: Corporations receive full capitalisation when floated --'
           @corporations.select { |c| !c.floated? && c.type == :major }.each do |corporation|
             corporation.capitalization = :full
           end

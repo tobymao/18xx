@@ -182,11 +182,11 @@ module Engine
 
         EVENTS_TEXT = {
           'close_concessions' =>
-            ['Concessions close', 'All concessions close without compensation, major companies float at 50%'],
+            ['Concessions close', 'All concessions close without compensation, corporations float at 50%'],
           'full_capitalisation' =>
-            ['Full capitalisation', 'Major companies receive full capitalisation when floated'],
+            ['Full capitalisation', 'Corporations receive full capitalisation when floated'],
           'phase_revenue' =>
-            ['Phase revenue company closes', 'P16 closes if not owned by a major company'],
+            ['Phase revenue company closes', 'P16 closes if not owned by a corporation'],
         }.freeze
 
         STATUS_TEXT = G1822::Game::STATUS_TEXT.merge(
