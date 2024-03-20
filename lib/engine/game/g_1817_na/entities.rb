@@ -183,7 +183,7 @@ module Engine
             value: 120,
             revenue: 0,
             desc: 'Pays owning corp $20 at the start of each operating round, as '\
-                  'long as the cocorporationmpany has at least one train.',
+                  'long as the corporation has at least one train.',
             sym: 'MAJM',
             abilities: [
               {

@@ -32,7 +32,7 @@ module Engine
             name: 'Mountain (Ocean) Engineers',
             value: 40,
             revenue: 0,
-            desc: 'Owning company receives $20 after laying a yellow tile in a '\
+            desc: 'Owning corp receives $20 after laying a yellow tile in a '\
                   'mountain (ocean) hex.  Any fees must be paid first.',
             sym: 'ME',
             abilities: [
