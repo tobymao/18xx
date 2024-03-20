@@ -24,7 +24,7 @@ module Engine
           'minors_convert' => ['Minors convert',
                                'Minor companies may merge, convert or be taken over.'],
           'systems_form' => ['Systems form',
-                             'Systems may form by merging major companies.'],
+                             'Systems may form by merging corporations.'],
           'double_jump' => ['Double jumps',
                             'Systems may double-jump.'],
           'train_export' => ['Train exported',
@@ -269,7 +269,7 @@ module Engine
             'Twelve minor companies are available from the first stock round.',
             'Another six minor companies become available for purchase in stock round 2.',
             'The last six minor companes are available once the first 3-train is bought.',
-            'Minors can be merged or converted into major companies from phase 3.',
+            'Minors can be merged or converted into corporations from phase 3.',
             'Majors can be merged to form systems from phase 6.',
             '2+2 and 5+5E trains are available after a 4+4 or 6G train has been purchased.',
           ]
