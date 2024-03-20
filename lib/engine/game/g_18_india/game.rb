@@ -120,6 +120,19 @@ module Engine
         COMMODITY_NAMES = %w[OIL ORE1 COTTON SPICES GOLD OPIUM TEA1 ORE2 TEA2 RICE JEWELRY].freeze
         COMMODITY_DESTINATIONS = %w[KARACHI LAHORE MUMBAI KOCHI CHENNAI COLOMBO NEPAL CHINA HALDIA VISAKHAPATNAM].freeze
 
+        SPICE_BONUSES = {
+          'KOCHI' => 70, # SPICES => KOCHI [G36] => 70,
+          'COLOMBO' => 50, # SPICES => COLOMBO [K40] => 50,
+          'CHENNAI' => 50, # SPICES => CHENNAI [K30] => 50,
+          'LAHORE' => 40, # SPICES => LAHORE [D3] => 40,
+          'MUMBAI' => 40, # SPICES => MUMBAI [D23] => 40,
+          'CHINA' => 40, # SPICES => CHINA [Q10] => 40,
+          'NEPAL' => 40, # SPICES => NEPAL [M10] => 40,
+          'KARACHI' => 30, # SPICES => KARACHI [A16] => 30,
+          'HALDIA' => 30, # SPICES => HALDIA [P19] => 30,
+          'VISAKHAPATNAM' => 30, # SPICES => VISAKHAPATNAM [M24] => 30,
+        }.freeze
+
         # TODO: Consider using commodity icons vs location names
         # Refactor to use assignment (assignable module) for commodies?
         ASSIGNMENT_TOKENS = {
@@ -784,14 +797,12 @@ module Engine
               claim_concession(['OIL'], corporation) if bonus.positive?
               revenue += bonus
             when 'OPIUM'
-              # OPIUM => LAHORE [D3] + 100
-              # OPIUM => HALDIA [P19] + 100
+              # OPIUM => LAHORE [D3] HALDIA [P19] => 100
               bonus = 100 if visited_names.intersect?(%w[LAHORE HALDIA])
               claim_concession(['OPIUM'], corporation) if bonus.positive?
               revenue += bonus
             when 'ORE1', 'ORE2'
-              # ORE1 => KARACHI [A16] + 50
-              # ORE1 => CHENNAI [K30] + 50
+              # ORE1 => KARACHI [A16] CHENNAI [K30] => 50
               bonus = 50 if visited_names.intersect?(%w[KARACHI CHENNAI])
               claim_concession(%w[ORE1 ORE2], corporation) if bonus.positive?
               revenue += bonus
@@ -801,30 +812,11 @@ module Engine
               claim_concession(['GOLD'], corporation) if bonus.positive?
               revenue += bonus
             when 'SPICES'
-              # SPICES => KOCHI [G36] + 70
-              if visited_names.include?('KOCHI')
-                bonus = 70
-              # SPICES => COLOMBO [K40] + 50
-              # SPICES => CHENNAI [K30] + 50
-              elsif visited_names.intersect?(%w[COLOMBO CHENNAI])
-                bonus = 50
-              # SPICES => LAHORE [D3] + 40
-              # SPICES => MUMBAI [D23] + 40
-              # SPICES => CHINA [Q10] + 40
-              # SPICES => NEPAL [M10] + 40
-              elsif visited_names.intersect?(%w[LAHORE MUMBAI CHINA NEPAL])
-                bonus = 40
-              # SPICES => KARACHI [A16] + 30
-              # SPICES => HALDIA [P19] + 30
-              # SPICES => VISAKHAPATNAM [M24] + 30
-              elsif visited_names.intersect?(%w[KARACHI HALDIA VISAKHAPATNAM])
-                bonus = 30
-              end
+              bonus = visited_names.map { |loc| SPICE_BONUSES[loc] || 0 }.max
               claim_concession(['SPICES'], corporation) if bonus.positive?
               revenue += bonus
             when 'COTTON'
-              # COTTON => KARACHI [A16] + 40
-              # COTTON => CHENNAI [K30] + 40
+              # COTTON => KARACHI [A16] CHENNAI [K30] => 40
               bonus = 40 if visited_names.intersect?(%w[KARACHI CHENNAI])
               claim_concession(['COTTON'], corporation) if bonus.positive?
               revenue += bonus
@@ -834,8 +826,7 @@ module Engine
               claim_concession(%w[TEA1 TEA2], corporation) if bonus.positive?
               revenue += bonus
             when 'RICE'
-              # RICE => CHINA [Q10] + 30
-              # RICE => NEPAL [M10] + 30
+              # RICE => CHINA [Q10] NEPAL [M10] => 30
               bonus = 30 if visited_names.intersect?(%w[CHINA NEPAL])
               claim_concession(['RICE'], corporation) if bonus.positive?
               revenue += bonus

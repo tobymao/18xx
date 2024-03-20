@@ -31,7 +31,7 @@ module Engine
           def pass!
             company = @round.discount_source
             unless company.nil?
-              @game.company_is_closing(company)
+              @game.company_closing_after_using_ability(company)
               company.close!
             end
             super
