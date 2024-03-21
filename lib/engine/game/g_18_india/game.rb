@@ -627,21 +627,27 @@ module Engine
           false
         end
 
+        def open_city_hexes
+          hexes = @cities.reject { |c| c.available_slots.zero? }.map { |c| c.tile.hex }.compact
+          hexes.uniq
+        end
+
+        def town_to_green_city_hexes
+          hexes = @hexes.map(&:tile).filter { |t|
+            t.towns&.count == 1 && # only single town hexes
+            [:white, :yellow].include?(t.color) && # only white or yellow hexes
+            !%w[K38 L39].include?(t.hex.name) # L39 and K38 are not legal hexes for a Green single city tile
+          }.map { |t| t.hex }
+          hexes
+        end
+
         # Home hexes for GIPR
         def home_token_locations(corporation)
           raise NotImplementedError unless corporation.name == 'GIPR'
 
-          hexes = []
-          # hexes with open city locations
-          hexes += @cities.reject { |c| c.available_slots.zero? }.map { |c| c.tile.hex }
-          # white or yellow hexes with a single town
-          tiles = (@hexes.map(&:tile) + @tiles).flatten
-          hexes += tiles.filter { |t| t.towns&.count == 1 && [:white, :yellow].include?(t.color) }.map { |c| c.hex }
-          hexes.compact!
-          # NOTE: L39 and K38 are not legal hexes for a Green single city tile
-          hexes.reject! { |h| %w[K38 L39].include?(h.name) }
-          LOGGER.debug " Hexes #{hexes.uniq ? hexes.uniq.to_s : hexes.to_s }"
-          hexes
+          LOGGER.debug " Open City Hexes #{open_city_hexes.to_s }"
+          LOGGER.debug " Town->City Hexes #{town_to_green_city_hexes.to_s }"
+          [] + open_city_hexes + town_to_green_city_hexes
         end
 
         def place_home_token(corporation)
@@ -650,43 +656,16 @@ module Engine
           return if corporation.tokens.first&.used
 
           # slect which hex to place home token
-          @log << "#{corporation.name} (#{corporation.owner.name}) must choose tile for home location"
+          @log << "#{corporation.name} (#{corporation.owner.name}) must choose Open City or Town tile for home location"
           hexes = home_token_locations(corporation)
 
-          @round.pending_tracks << {
+          @round.pending_tokens << {
             entity: corporation,
             hexes: hexes,
+            token: corporation.find_token_by_type,
           }
 
           @round.clear_cache!
-
-=begin
-            hex = hex_by_id(corporation.coordinates)
-
-            tile = hex&.tile
-
-            if corporation.id == 'ATE'
-              @log << "#{corporation.name} must choose city for home token"
-
-              @round.pending_tokens << {
-                entity: corporation,
-                hexes: [hex],
-                token: corporation.find_token_by_type,
-              }
-
-              @round.clear_cache!
-              return
-            end
-
-            cities = tile.cities
-            city = cities.find { |c| c.reserved_by?(corporation) } || cities.first
-            token = corporation.find_token_by_type
-            return unless city.tokenable?(corporation, tokens: token)
-
-            @log << "#{corporation.name} places a token on #{hex.name}"
-            city.place_token(corporation, token)
-=end
-
         end
 
         # Modified to place share price marker on Market Chart
@@ -698,7 +677,9 @@ module Engine
         # Modified to allow yellow towns to be upgraded to SINGLE slot city green tiles
         # > Also modified legal_tile_rotation in STEP::Track or STEP::Tracker
         # Modified do prevent yellow cities upgrading to SINGLE slot city green tiles
+        # Allow GIPR Home Track directly to Green Single City
         def upgrades_to?(from, to, special = false, selected_company: nil)
+          return true if @round.pending_tokens
           return true if yellow_town_to_city_upgrade?(from, to)
           return false if yellow_city_upgrade_is_single_slot_green?(from, to)
 
@@ -944,6 +925,7 @@ module Engine
 
         # modified to apply P4 discount if used
         def tile_cost_with_discount(_tile, _hex, _entity, spender, cost)
+          return cost unless @round.respond_to?(:terrain_discount)
           return cost if cost.zero? || @round.terrain_discount.zero?
 
           discount = [cost, @round.terrain_discount].min

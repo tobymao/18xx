@@ -1,97 +1,41 @@
 # frozen_string_literal: true
 
-require_relative '../../../step/base'
+require_relative '../../../step/home_token'
 require_relative '../../../step/tracker'
-require_relative '../../../step/tokener'
 
 module Engine
   module Game
     module G18India
       module Step
-        class HomeTrack < Engine::Step::Base
+        class HomeTrack < Engine::Step::HomeToken
           include Engine::Step::Tracker
-          include Engine::Step::Tokener
-          ACTIONS = %w[choose lay_tile place_token].freeze
+          ACTIONS = %w[lay_tile place_token].freeze
 
           def actions(entity)
             return [] unless entity == pending_entity
-            # return ['choose']
 
-            ACTIONS
-          end
+            actions = []
+            actions << 'place_token' if any_open_cities?
+            actions << 'lay_tile' if any_town_hex?
 
-          def choice_available?(entity)
-            entity == pending_entity
-          end
-
-          def choice_name
-            'Where to place home token?'
-          end
-
-          def choices
-            choices = {}
-            choices['open city'] = 'Place home token in open city' if any_open_cities?
-            choices['upgrade town'] = 'Upgrade white or yellow town to green city tile for home token' if any_town_hex?
-
-            choices
+            actions
           end
 
           def any_open_cities?
-            true
+            !@game.open_city_hexes.empty?
           end
 
           def any_town_hex?
-            true
-          end
-
-          def process_choose(action)
-            LOGGER.debug "process_choose"
-
-          end
-
-          def active_entities
-            [pending_entity]
-          end
-
-          def round_state
-            super.merge(
-              {
-                pending_tracks: [],
-              }
-            )
-          end
-
-          def active?
-            pending_entity
-          end
-
-          def current_entity
-            pending_entity
-          end
-
-          def pending_entity
-            pending_track[:entity]
-          end
-
-          def pending_track
-            @round.pending_tracks&.first || {}
+            !@game.town_to_green_city_hexes.empty?
           end
 
           def description
-            "Lay home track for #{pending_entity.name}"
+            "Lay home token in open city or upgrade town for #{pending_entity.name}"
           end
 
           def process_lay_tile(action)
-            LOGGER.debug "process_lay_tile"
+            LOGGER.debug ">> Home Track >> process_lay_tile"
             lay_tile_action(action)
-            action.hex.tile.borders.clear
-
-            action.hex.neighbors.each do |neighbor|
-              edge = neighbor[0]
-              neighbor[1].tile.borders.map! { |nb| nb.edge == action.hex.invert(edge) ? nil : nb }.compact!
-            end
-
-            @round.pending_tracks.shift
 
             place_token(
               action.entity,
@@ -100,34 +44,27 @@ module Engine
               connected: false,
               extra_action: true
             )
+            @round.pending_tokens.shift
           end
 
           def hex_neighbors(_entity, hex)
-            pending_track[:hexes].include?(hex)
+            pending_token[:hexes].include?(hex)
           end
 
-          def available_hex(entity, hex)
-            hex_neighbors(entity, hex)
-          end
-
-          def potential_tiles(entity, _hex)
-            @game.potential_tiles(entity)
+          def available_hex(_entity, hex)
+            pending_token[:hexes].include?(hex)
           end
 
           def legal_tile_rotation?(entity, hex, tile)
-            return false unless @game.legal_tile_rotation?(entity, hex, tile)
+            old_tile = hex.tile
+            all_new_exits_valid = tile.exits.all? { |edge| hex.neighbors[edge] }
+            return false unless all_new_exits_valid
 
-            old_paths = hex.tile.paths
-
-            new_paths = tile.paths
-            new_exits = tile.exits
-
-            new_exits.all? { |edge| hex.neighbors[edge] } &&
-              old_paths.all? { |path| new_paths.any? { |p| path <= p } }
+            return (old_tile.exits - tile.exits).empty?
           end
 
-          def track_upgrade?(_from, to, _hex)
-            to.color != :yellow && to.color != :red
+          def potential_tiles(entity_or_entities, hex)
+            @game.tiles.select { |t| %w[13 12 206 205].include?(t.name) }.uniq(&:name)
           end
         end
       end
