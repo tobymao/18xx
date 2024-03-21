@@ -3,6 +3,7 @@
 require_relative 'entities'
 require_relative 'map'
 require_relative 'meta'
+require_relative 'share_pool'
 require_relative 'stock_market'
 require_relative 'trains'
 
@@ -1006,7 +1007,8 @@ module Engine
         end
 
         def init_share_pool
-          SharePool.new(self, allow_president_sale: self.class::PRESIDENT_SALES_TO_MARKET, no_rebundle_president_buy: true)
+          G18RoyalGorge::SharePool.new(self, allow_president_sale: self.class::PRESIDENT_SALES_TO_MARKET,
+                                             no_rebundle_president_buy: true)
         end
 
         def init_stock_market
