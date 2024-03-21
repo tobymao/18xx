@@ -9,8 +9,8 @@ module Engine
             name: 'Dalkey Atmospheric Railway',
             value: 20,
             revenue: 5,
-            desc: 'No Corporation can build in the Wicklow hex until this company is either bought by'\
-                  ' any Corporation or closed.',
+            desc: 'No corporation can build in the Wicklow hex until this company is either bought by'\
+                  ' any corporation or closed.',
             sym: 'DAR',
             abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['J14'] }],
           },
@@ -18,7 +18,7 @@ module Engine
             name: 'Donegal Railway',
             value: 30,
             revenue: 7,
-            desc: 'The owning Corporation can place two connected narrow gauge yellow tiles in the Donegal'\
+            desc: 'The owning corporation can place two connected narrow gauge yellow tiles in the Donegal'\
                   ' hex and one adjacent hex. This action closes the company.',
             sym: 'DR',
             abilities: [
@@ -39,7 +39,7 @@ module Engine
             name: 'Board of Works',
             value: 40,
             revenue: 9,
-            desc: 'The owning Corporation can place a yellow tile without payment of terrain costs.'\
+            desc: 'The owning corporation can place a yellow tile without payment of terrain costs.'\
                   ' The company closes once this ability has been used twice.',
             sym: 'BoW',
             abilities: [
@@ -60,8 +60,8 @@ module Engine
             name: 'City of Dublin Steam Packet Company',
             value: 45,
             revenue: 10,
-            desc: 'The owning Corporation can place the +£10 token on any port (Belfast, Londonderry or Rosslare).'\
-                  ' This action closes the company, but the Corporation adds £10 to the' \
+            desc: 'The owning corporation can place the +£10 token on any port (Belfast, Londonderry or Rosslare).'\
+                  ' This action closes the company, but the corporation adds £10 to the' \
                   " port's revenue until the end of the game.",
             sym: 'CDSPC',
             abilities: [
@@ -84,7 +84,7 @@ module Engine
             name: 'Tralee & Dingle Railway',
             value: 50,
             revenue: 10,
-            desc: 'The owning Corporation can place two connected narrow gauge yellow tiles in the'\
+            desc: 'The owning corporation can place two connected narrow gauge yellow tiles in the'\
                   ' Tralee and Dingle hexes. This action closes the company.',
             sym: 'TDR',
             abilities: [
@@ -105,8 +105,8 @@ module Engine
             name: 'Drumglass Colliery Railway',
             value: 60,
             revenue: 12,
-            desc: 'No Corporation can build in the DCR hex (H4) until this company is bought by any Corporation'\
-                  ' or closed. The owning Corporation may place a yellow tile, subject to normal track laying rules,'\
+            desc: 'No corporation can build in the DCR hex (H4) until this company is bought by any corporation'\
+                  ' or closed. The owning corporation may place a yellow tile, subject to normal track laying rules,'\
                   ' on that hex (H4) without using a tile action or paying terrain costs.',
             sym: 'DCR',
             abilities: [
@@ -130,8 +130,8 @@ module Engine
             name: 'Trans-Atlantic Steam Packet Station',
             value: 75,
             revenue: 15,
-            desc: 'The owning Corporation can place the +£20 token on Galway. This action closes the company,'\
-                  " but the Corporation adds £20 to the city's revenue until the end of the game.",
+            desc: 'The owning corporation can place the +£20 token on Galway. This action closes the company,'\
+                  " but the corporation adds £20 to the city's revenue until the end of the game.",
             sym: 'TASPS',
             abilities: [
               {
@@ -153,7 +153,7 @@ module Engine
             name: 'River Shannon Shipping Co',
             value: 80,
             revenue: 10,
-            desc: 'The owning Corporation controls a river link between Dromod and Limerick and adds the value of the'\
+            desc: 'The owning corporation controls a river link between Dromod and Limerick and adds the value of the'\
                   ' other city to one train ending at either Dromod or Limerick.',
             sym: 'RSSC',
           },
@@ -161,17 +161,17 @@ module Engine
             name: 'William Dargan Esq.',
             value: 90,
             revenue: 10,
-            desc: 'The owning Corporation can upgrade a second track tile during each'\
-                  " OR at a cost of £30 from the Corporation's Treasury.",
+            desc: 'The owning corporation can upgrade a second track tile during each'\
+                  " OR at a cost of £30 from the corporation's Treasury.",
             sym: 'WDE',
           },
           {
             name: 'The Irish Mail',
             value: 110,
             revenue: 20,
-            desc: 'The owning Corporation can place an off-board location tile adjacent'\
+            desc: 'The owning corporation can place an off-board location tile adjacent'\
                   ' to one of: Londonderry, Kingstown, or Waterford. This action closes the company,'\
-                  ' but any Corporation may run to the tile for the rest of the game.',
+                  ' but any corporation may run to the tile for the rest of the game.',
             sym: 'TIM',
             abilities: [
               {
