@@ -24,7 +24,7 @@ module Engine
           'F23' => 'Spokane',
           'G2' => 'Clearwater',
           'G8' => 'Quilcene',
-          'G12' => 'Mikilteo',
+          'G12' => 'Mukilteo',
           'G14' => 'Snohomish',
           'G16' => 'Park Place',
           'G24' => 'Spokane',
