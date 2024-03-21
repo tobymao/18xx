@@ -1126,7 +1126,7 @@ module Engine
         case self.class::PRESIDENT_SALES_TO_MARKET
         when true
           true
-        when Set
+        when ::Set
           self.class::PRESIDENT_SALES_TO_MARKET.include?(corporation.id)
         else
           false

@@ -239,7 +239,7 @@ module Engine
           case @allow_president_sale
           when true
             true
-          when Set
+          when ::Set
             @allow_president_sale.include?(corporation.id)
           else
             false
