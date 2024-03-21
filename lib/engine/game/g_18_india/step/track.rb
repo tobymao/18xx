@@ -20,8 +20,7 @@ module Engine
               all_new_exits_valid = tile.exits.all? { |edge| hex.neighbors[edge] }
               return false unless all_new_exits_valid
 
-              return old_tile.paths.all? { |old| tile.paths.any? { |new| old.exits == new.exits } } &&
-                     !(tile.exits & hex_neighbors(entity, hex)).empty?
+              return (old_tile.exits - tile.exits).empty?
             end
 
             super
