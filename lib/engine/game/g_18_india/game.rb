@@ -451,7 +451,7 @@ module Engine
         def stock_round
           # Test if home token step resolves issues of placing token when company floats
           Engine::Round::Stock.new(self, [
-            G18India::Step::HomeTrack,
+            G18India::Step::HomeTrack, # used by GIPR
             Engine::Step::HomeToken,
             G18India::Step::SellOnceThenBuyCerts,
           ])
@@ -459,7 +459,7 @@ module Engine
 
         def operating_round(round_num)
           Engine::Round::Operating.new(self, [
-            # Engine::Step::Exchange, # this step may not be needed?
+            G18India::Step::HomeTrack, # used by GIPR
             Engine::Step::HomeToken,
             G18India::Step::Assign, # used by P6
             G18India::Step::SpecialChoose, # Used by P4
@@ -679,7 +679,7 @@ module Engine
         # Modified do prevent yellow cities upgrading to SINGLE slot city green tiles
         # Allow GIPR Home Track directly to Green Single City
         def upgrades_to?(from, to, special = false, selected_company: nil)
-          return true if @round.pending_tokens
+          return true unless @round.pending_tokens.empty?
           return true if yellow_town_to_city_upgrade?(from, to)
           return false if yellow_city_upgrade_is_single_slot_green?(from, to)
 

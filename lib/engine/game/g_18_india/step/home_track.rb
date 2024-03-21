@@ -34,13 +34,12 @@ module Engine
           end
 
           def process_lay_tile(action)
-            LOGGER.debug ">> Home Track >> process_lay_tile"
-            lay_tile_action(action)
+            lay_tile(action)
 
             place_token(
               action.entity,
-              action.hex.tile.cities[0],
-              action.entity.find_token_by_type,
+              action.tile.cities[0],
+              token,
               connected: false,
               extra_action: true
             )
