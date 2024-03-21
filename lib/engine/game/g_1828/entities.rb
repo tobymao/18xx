@@ -97,7 +97,7 @@ module Engine
             revenue: 20,
             desc: 'Blocks Adrian & Ann Arbor (E7) while owned by a player. ' \
                   'A yellow track tile is placed at E7 when purchased by a corporation. ' \
-                  'Owning corp may (once) place one additional yellow track tile ' \
+                  'Owning corporation may (once) place one additional yellow track tile ' \
                   'at $20 as part of its normal track build.',
             sym: 'E&K',
             abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['E7'] },
