@@ -48,7 +48,7 @@ module Engine
             type: 'steam',
             value: 315,
             revenue: 25,
-            desc: 'Steam. Pays £40 to corp with token in B17',
+            desc: 'Steam. Pays £40 to corporation with token in B17',
           },
           {
             name: 'Preston',
@@ -56,7 +56,7 @@ module Engine
             value: 435,
             revenue: 30,
             type: 'steam',
-            desc: 'Steam. Pays £40 to corp with token in B7',
+            desc: 'Steam. Pays £40 to corporation with token in B7',
           },
           {
             name: 'Holyhead',
@@ -64,7 +64,7 @@ module Engine
             value: 570,
             type: 'steam',
             revenue: 35,
-            desc: 'Steam. Pays £40 to corp with token in D1',
+            desc: 'Steam. Pays £40 to corporation with token in D1',
           },
           {
             name: 'Harwich',
@@ -72,7 +72,7 @@ module Engine
             type: 'steam',
             value: 720,
             revenue: 40,
-            desc: 'Steam. Pays £40 to corp with token in I22',
+            desc: 'Steam. Pays £40 to corporation with token in I22',
           },
           {
             name: 'Dover',
@@ -80,7 +80,7 @@ module Engine
             value: 900,
             revenue: 45,
             type: 'steam',
-            desc: 'Steam. Pays £40 to corp with token in K22',
+            desc: 'Steam. Pays £40 to corporation with token in K22',
           },
         ].freeze
 
