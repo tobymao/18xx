@@ -11,6 +11,7 @@ module Engine
           def available_hex(entity, hex)
             return unless entity.company?
             return unless entity.id == 'P6'
+            return if hex.tile.color == :blue
             return if hex.assigned?(entity.id)
 
             hex.tile.city_towns.empty?
