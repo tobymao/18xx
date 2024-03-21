@@ -28,9 +28,9 @@ module Engine
             sym: 'P2',
             value: 40,
             revenue: 10,
-            desc: 'This company allows a Corporation to increase the value of a City by F10 for all its runs. Once chosen,'\
-                  ' the corp and city cannot be changed. This closes the private company. Bonus is removed when the first E'\
-                  ' train is purchased.',
+            desc: 'This company allows a corporation to increase the value of a city by F10 for all its runs. Once chosen,'\
+                  ' the corporation and city cannot be changed. This closes the private company. Bonus is removed when the '\
+                  ' first E train is purchased.',
             abilities: [
               {
                 type: 'assign_hexes',
