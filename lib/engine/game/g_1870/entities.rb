@@ -24,7 +24,7 @@ module Engine
                   ' This company may be purchased by one of the two corps on the Mississippi River (Missouri Pacific'\
                   ' or St.Louis Southwestern) in phase one for $20 to $40. If one of these two corps purchases'\
                   ' this private company during their first operating round, that corporation can lay a tile at its starting'\
-                  ' city for no cost and in addition to its normal tile lay(s). The corp cannot lay a tile in their'\
+                  ' city for no cost and in addition to its normal tile lay(s). The corporation cannot lay a tile in their'\
                   ' starting city and upgrade it during the same operating round.',
             sym: 'MRBC',
             abilities: [
