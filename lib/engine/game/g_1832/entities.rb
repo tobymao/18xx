@@ -285,8 +285,8 @@ module Engine
             desc: 'This company represents those shrewd investors in London. They have hired'\
                   ' you to invest their money in the new Southern railways.'\
                   ' They will purchase a share of your choice in any newly started corporation.'\
-                  ' You get the share. After the corp pays its first dividend, '\
-                  'the London Investment Company is closed, as they realize they have paid you'\
+                  ' You get the share. After the corporation pays its first dividend,'\
+                  ' the London Investment Company is closed, as they realize they have paid you'\
                   ' for nothing and you spent the money for yourself.',
             sym: 'P4',
             abilities: [{
