@@ -529,6 +529,7 @@ module Engine
           elsif (company.type == :bond) && (company.owner == @bank)
             return "Bank has #{count_of_bonds} / 10 Bonds"
           elsif @round.stock?
+            return if !current_entity.player?
             return "Player's Hand" if current_entity.hand.include?(company)
           end
           ''
@@ -611,7 +612,7 @@ module Engine
 
         def hand_companies_for_stock_round
           return [] unless @round.stock?
-          return [] if @round.current_entity.nil?
+          return [] if @round.current_entity.nil? || !@round.current_entity.player?
 
           @round.current_entity.hand.sort_by { |item| [item.type, -item.value, item.name] }
         end
@@ -641,6 +642,51 @@ module Engine
           hexes.reject! { |h| %w[K38 L39].include?(h.name) }
           LOGGER.debug " Hexes #{hexes.uniq ? hexes.uniq.to_s : hexes.to_s }"
           hexes
+        end
+
+        def place_home_token(corporation)
+          return super unless corporation.name == 'GIPR'
+          # If a corp has laid it's first token assume it's their home token
+          return if corporation.tokens.first&.used
+
+          # slect which hex to place home token
+          @log << "#{corporation.name} (#{corporation.owner.name}) must choose tile for home location"
+          hexes = home_token_locations(corporation)
+
+          @round.pending_tracks << {
+            entity: corporation,
+            hexes: hexes,
+          }
+
+          @round.clear_cache!
+
+=begin
+            hex = hex_by_id(corporation.coordinates)
+
+            tile = hex&.tile
+
+            if corporation.id == 'ATE'
+              @log << "#{corporation.name} must choose city for home token"
+
+              @round.pending_tokens << {
+                entity: corporation,
+                hexes: [hex],
+                token: corporation.find_token_by_type,
+              }
+
+              @round.clear_cache!
+              return
+            end
+
+            cities = tile.cities
+            city = cities.find { |c| c.reserved_by?(corporation) } || cities.first
+            token = corporation.find_token_by_type
+            return unless city.tokenable?(corporation, tokens: token)
+
+            @log << "#{corporation.name} places a token on #{hex.name}"
+            city.place_token(corporation, token)
+=end
+
         end
 
         # Modified to place share price marker on Market Chart

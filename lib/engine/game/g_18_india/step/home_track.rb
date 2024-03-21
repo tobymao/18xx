@@ -2,6 +2,7 @@
 
 require_relative '../../../step/base'
 require_relative '../../../step/tracker'
+require_relative '../../../step/tokener'
 
 module Engine
   module Game
@@ -9,15 +10,43 @@ module Engine
       module Step
         class HomeTrack < Engine::Step::Base
           include Engine::Step::Tracker
-          ACTIONS = %w[lay_tile].freeze
-          ALL_ACTIONS = %w[pass lay_tile].freeze
+          include Engine::Step::Tokener
+          ACTIONS = %w[choose lay_tile place_token].freeze
 
           def actions(entity)
             return [] unless entity == pending_entity
-            return [] unless entity.name == 'GIPR'
-            return ALL_ACTIONS unless any_tiles?(entity)
+            # return ['choose']
 
             ACTIONS
+          end
+
+          def choice_available?(entity)
+            entity == pending_entity
+          end
+
+          def choice_name
+            'Where to place home token?'
+          end
+
+          def choices
+            choices = {}
+            choices['open city'] = 'Place home token in open city' if any_open_cities?
+            choices['upgrade town'] = 'Upgrade white or yellow town to green city tile for home token' if any_town_hex?
+
+            choices
+          end
+
+          def any_open_cities?
+            true
+          end
+
+          def any_town_hex?
+            true
+          end
+
+          def process_choose(action)
+            LOGGER.debug "process_choose"
+
           end
 
           def active_entities
@@ -52,37 +81,53 @@ module Engine
             "Lay home track for #{pending_entity.name}"
           end
 
-          def any_tiles?(entity)
-            hex = pending_track[:hexes].first
-            any_upgradeable_tiles?(entity, hex)
-          end
-
-          def process_pass(action)
-            log_pass(action.entity)
-            @round.pending_tracks.shift
-            pass!
-          end
-
-          def get_tile_lay(_entity)
-            { lay: true, upgrade: false, cost: 0, upgrade_cost: 0, cannot_reuse_same_hex: false }
-          end
-
           def process_lay_tile(action)
-            @round.num_laid_track = 0
+            LOGGER.debug "process_lay_tile"
             lay_tile_action(action)
+            action.hex.tile.borders.clear
+
+            action.hex.neighbors.each do |neighbor|
+              edge = neighbor[0]
+              neighbor[1].tile.borders.map! { |nb| nb.edge == action.hex.invert(edge) ? nil : nb }.compact!
+            end
+
             @round.pending_tracks.shift
+
+            place_token(
+              action.entity,
+              action.hex.tile.cities[0],
+              action.entity.find_token_by_type,
+              connected: false,
+              extra_action: true
+            )
           end
 
-          def reachable_node?(_entity, _node)
-            true
-          end
-
-          def reachable_hex?(_entity, _hex)
-            true
-          end
-
-          def available_hex(_entity, hex)
+          def hex_neighbors(_entity, hex)
             pending_track[:hexes].include?(hex)
+          end
+
+          def available_hex(entity, hex)
+            hex_neighbors(entity, hex)
+          end
+
+          def potential_tiles(entity, _hex)
+            @game.potential_tiles(entity)
+          end
+
+          def legal_tile_rotation?(entity, hex, tile)
+            return false unless @game.legal_tile_rotation?(entity, hex, tile)
+
+            old_paths = hex.tile.paths
+
+            new_paths = tile.paths
+            new_exits = tile.exits
+
+            new_exits.all? { |edge| hex.neighbors[edge] } &&
+              old_paths.all? { |path| new_paths.any? { |p| path <= p } }
+          end
+
+          def track_upgrade?(_from, to, _hex)
+            to.color != :yellow && to.color != :red
           end
         end
       end
