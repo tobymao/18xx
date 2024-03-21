@@ -41,8 +41,8 @@ module Engine
             value: 40,
             revenue: 0,
             desc: 'Comes with one $10 bridge token that may be placed by the owning '\
-                  'corp in a city with $10 water cost, max one token '\
-                  'per city. Allows owning corp to '\
+                  'corporation in a city with $10 water cost, max one token '\
+                  'per city. Allows owning corporation to '\
                   'skip $10 river fee when placing track.',
             sym: 'P2',
             abilities: [
@@ -164,13 +164,13 @@ module Engine
             name: 'P8 - Express Freight Service',
             value: 40,
             revenue: 0,
-            desc: 'Place an extra station marker from the owning corporation in one red area. The corp receives +10 ' \
+            desc: 'Place an extra station marker from the owning corporation in one red area. The corporation receives +10 ' \
                   'revenue for each train which runs to that red area for the remainder of the game. The station ' \
                   'marker in the red area is not a normal station. It is only an indicator of which area the ' \
                   'corporation receives the +10 revenue bonus. During a merger or acquisition, the station marker in ' \
-                  'the red area must be replaced by a station from the acquiring corp if one is available. If ' \
+                  'the red area must be replaced by a station from the acquiring corporation if one is available. If ' \
                   'during a merger or acquisition, the new corporation has more than 8 station markers (counting the ' \
-                  'station marker in the red area), the new corp may choose to either keep or remove the station ' \
+                  'station marker in the red area), the new corporation may choose to either keep or remove the station ' \
                   'marker from the red area. If the station marker is removed during a M&A action the Express ' \
                   'Freight Service private company is discarded.',
             sym: 'P8',
@@ -400,8 +400,8 @@ module Engine
             value: 80,
             revenue: 0,
             desc: 'Comes with one $10 bridge token that may be placed by the owning '\
-                  'corp in a city with $10 water cost, max one token '\
-                  'per city. Allows owning corp to '\
+                  'corporation in a city with $10 water cost, max one token '\
+                  'per city. Allows owning corporation to '\
                   'skip $10 river fee when placing track. '\
                   'Also comes with one coal token and one ore token. (see rules on coal and ore) '\
                   'You can only ever use one of these two; using one means you forfeit the other',
@@ -439,8 +439,8 @@ module Engine
             value: 80,
             revenue: 0,
             desc: 'Comes with two $10 bridge tokens that may be placed by the owning '\
-                  'corp in a city with $10 water cost, max one token '\
-                  'per city. Allows owning corp to '\
+                  'corporation in a city with $10 water cost, max one token '\
+                  'per city. Allows owning corporation to '\
                   'skip $10 river fee when placing track.',
             sym: 'P22',
             abilities: [
