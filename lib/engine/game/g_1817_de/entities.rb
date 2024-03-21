@@ -28,9 +28,9 @@ module Engine
         name: 'Bridge Company',
         value: 80,
         revenue: 0,
-        desc: 'Comes with two 10 ℳ bridge token that may be placed by the owning corp '\
+        desc: 'Comes with two 10 ℳ bridge token that may be placed by the owning corporation '\
               'in Frankfurt and Dresden, max one token per city, regardless of '\
-              'connectivity. Allows owning corp to skip 10 ℳ river fee when '\
+              'connectivity. Allows owning corporation to skip 10 ℳ river fee when '\
               'placing yellow tiles.',
         sym: 'UBC',
         abilities: [
@@ -133,7 +133,7 @@ module Engine
         name: 'Minor Mail Contract',
         value: 60,
         revenue: 0,
-        desc: 'Pays owning corp 10 ℳ at the start of each operating round, as '\
+        desc: 'Pays owning corporation 10 ℳ at the start of each operating round, as '\
               'long as the corporation has at least one train.',
         sym: 'MINM',
         abilities: [
@@ -150,7 +150,7 @@ module Engine
         name: 'Major Mail Contract',
         value: 120,
         revenue: 0,
-        desc: 'Pays owning corp 20 ℳ at the start of each operating round, as '\
+        desc: 'Pays owning corporation 20 ℳ at the start of each operating round, as '\
               'long as the corporation has at least one train.',
         sym: 'MAJM',
         abilities: [

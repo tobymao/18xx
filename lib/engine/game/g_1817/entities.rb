@@ -9,9 +9,9 @@ module Engine
             name: 'P4 - Pittsburgh Steel Mill',
             value: 40,
             revenue: 0,
-            desc: 'Owning corp may place a special yellow tile (#X00) on Pittsburgh (F13) during '\
+            desc: 'Owning corporation may place a special yellow tile (#X00) on Pittsburgh (F13) during '\
                   'tile-laying, regardless of connectivity.  The hex is not '\
-                  'reserved, and the power is lost if another corp builds there first.',
+                  'reserved, and the power is lost if another corporation builds there first.',
             sym: 'PSM',
             abilities: [
             {
@@ -32,7 +32,7 @@ module Engine
             name: 'P3 - Mountain Engineers',
             value: 40,
             revenue: 0,
-            desc: 'Owning corp receives $20 after laying a yellow tile in a '\
+            desc: 'Owning corporation receives $20 after laying a yellow tile in a '\
                   'mountain hex.  Any fees must be paid first.',
             sym: 'ME',
             abilities: [
@@ -51,9 +51,9 @@ module Engine
             value: 40,
             revenue: 0,
             desc: 'Comes with one $10 bridge token that may be placed by the '\
-                  'owning corp in Louisville, Cincinnati, or Charleston, max one '\
+                  'owning corporation in Louisville, Cincinnati, or Charleston, max one '\
                   'token per city, regardless of connectivity.  Allows owning '\
-                  'corp to skip $10 river fee when placing yellow tiles.',
+                  'corporation to skip $10 river fee when placing yellow tiles.',
             sym: 'OBC',
             abilities: [
               {
@@ -77,9 +77,9 @@ module Engine
             value: 80,
             revenue: 0,
             desc: 'Comes with two $10 bridge token that may be placed by the '\
-                  'owning corp in Louisville, Cincinnati, or Charleston, max '\
+                  'owning corporation in Louisville, Cincinnati, or Charleston, max '\
                   'one token per city, regardless of connectivity.  Allows '\
-                  'owning corp to skip $10 river fee when placing yellow tiles.',
+                  'owning corporation to skip $10 river fee when placing yellow tiles.',
             sym: 'UBC',
             abilities: [
               {
@@ -235,8 +235,8 @@ module Engine
             name: 'P6 - Minor Mail Contract',
             value: 60,
             revenue: 0,
-            desc: 'Pays owning corp $10 at the start of each operating round, '\
-                  'as long as the corp has at least one train.',
+            desc: 'Pays owning corporation $10 at the start of each operating round, '\
+                  'as long as the corporation has at least one train.',
             sym: 'MINM',
             abilities: [
               {
@@ -252,8 +252,8 @@ module Engine
             name: 'P9 - Mail Contract',
             value: 90,
             revenue: 0,
-            desc: 'Pays owning corp $15 at the start of each operating round, '\
-                  'as long as the corp has at least one train.',
+            desc: 'Pays owning corporation $15 at the start of each operating round, '\
+                  'as long as the corporation has at least one train.',
             sym: 'MAIL',
             abilities: [
               {
@@ -269,8 +269,8 @@ module Engine
             name: 'P11 - Major Mail Contract',
             value: 120,
             revenue: 0,
-            desc: 'Pays owning corp $20 at the start of each operating round, '\
-                  'as long as the corp has at least one train.',
+            desc: 'Pays owning corporation $20 at the start of each operating round, '\
+                  'as long as the corporation has at least one train.',
             sym: 'MAJM',
             abilities: [
               {
@@ -292,8 +292,8 @@ module Engine
             name: 'P12 - Loan Shark',
             value: 60,
             revenue: 0,
-            desc: 'Owning corp receives $60 along with this private company. The owning '\
-                  'corp must pay $10 during the "Pay Loan Interest" phase of each '\
+            desc: 'Owning corporation receives $60 along with this private company. The owning '\
+                  'corporation must pay $10 during the "Pay Loan Interest" phase of each '\
                   'operating round. Failure to pay the $10 results in liquidation. '\
                   'The loan shark remains in force for the entire game, unless the '\
                   "bank purchases the owning corp's assets through liquidation.",
@@ -312,7 +312,7 @@ module Engine
             name: 'P14 - Inventor',
             value: 70,
             revenue: 0,
-            desc: 'The bank pays the owning corp when the first type of each train '\
+            desc: 'The bank pays the owning corporation when the first type of each train '\
                   'is purchased or exported (2: $20, 2+: $0, 3: $30, 4: $40, '\
                   '5: $50, 6: $60, 7: $70, 8: $80).',
             sym: 'P14',
@@ -322,7 +322,7 @@ module Engine
             name: 'P15 - Scrapper',
             value: 40,
             revenue: 0,
-            desc: 'Owning corp receives compensation for each train it owns that become '\
+            desc: 'Owning corporation receives compensation for each train it owns that become '\
                   'obsolete and are eliminated (2: $30, 2+: $30, 3: $75, 4: $150).',
             sym: 'P15',
             abilities: [
@@ -337,9 +337,9 @@ module Engine
             name: 'P16 - Buffalo Rail Center',
             value: 40,
             revenue: 0,
-            desc: 'Owning corp may place a special yellow tile (#X00) on Buffalo (C14) during '\
+            desc: 'Owning corporation may place a special yellow tile (#X00) on Buffalo (C14) during '\
                   'tile-laying, regardless of connectivity.  The hex is not '\
-                  'reserved, and the power is lost if another corp builds there first.',
+                  'reserved, and the power is lost if another corporation builds there first.',
             sym: 'P16',
             abilities: [
               {
@@ -360,9 +360,9 @@ module Engine
             name: 'P17 - Toledo Industry',
             value: 40,
             revenue: 0,
-            desc: 'Owning corp may place a special yellow tile (#X00) on Toledo (D7) during '\
+            desc: 'Owning corporation may place a special yellow tile (#X00) on Toledo (D7) during '\
                   'tile-laying, regardless of connectivity.  The hex is not '\
-                  'reserved, and the power is lost if another corp builds there first.',
+                  'reserved, and the power is lost if another corporation builds there first.',
             sym: 'P17',
             abilities: [
               {
@@ -383,9 +383,9 @@ module Engine
             name: 'P18 - Express Track',
             value: 30,
             revenue: 0,
-            desc: 'Owning corp must pay $10 to perform the first tile operation each '\
-                  'operating round. The corp may perform a second tile operation for '\
-                  'free. The corp may skip all tile operations to avoid the $10 fee. '\
+            desc: 'Owning corporation must pay $10 to perform the first tile operation each '\
+                  'operating round. The corporation may perform a second tile operation for '\
+                  'free. The corporation may skip all tile operations to avoid the $10 fee. '\
                   'If combined with Efficient Track (P19), both first and second track '\
                   'operations are free.',
             sym: 'P18',
@@ -395,7 +395,7 @@ module Engine
             name: 'P19 - Efficient Track',
             value: 40,
             revenue: 0,
-            desc: 'Owning corp may perform a second tile operation for $10, instead of '\
+            desc: 'Owning corporation may perform a second tile operation for $10, instead of '\
                   'the normal $20. If combined with Express Track (P18), both first and '\
                   'second track operations are free.',
             sym: 'P19',
@@ -405,8 +405,8 @@ module Engine
             name: 'P20 - Golden Parachute',
             value: 100,
             revenue: 0,
-            desc: 'The President of the corp owning this private company is paid $100 from the '\
-                  'bank when the Golden Parachute ownership is transferred to a corp '\
+            desc: 'The President of the corporation owning this private company is paid $100 from the '\
+                  'bank when the Golden Parachute ownership is transferred to a corporation '\
                   'with a different player as president, or discarded to the bank.',
             sym: 'P20',
             color: nil,
@@ -415,7 +415,7 @@ module Engine
             name: 'P21 - Station Subsidy',
             value: 70,
             revenue: 0,
-            desc: 'Owning corp receives $50 every time it converts (not merges) to a '\
+            desc: 'Owning corporation receives $50 every time it converts (not merges) to a '\
                   '5-share or 10-share corp.',
             sym: 'P21',
             color: nil,
@@ -478,9 +478,9 @@ module Engine
             name: 'P24 - Indianapolis Market',
             value: 40,
             revenue: 0,
-            desc: 'Owning corp may place a special (#X00) yellow tile on Indianapolis (F3) during '\
+            desc: 'Owning corporation may place a special (#X00) yellow tile on Indianapolis (F3) during '\
                   'tile-laying, regardless of connectivity.  The hex is not '\
-                  'reserved, and the power is lost if another corp builds there first.',
+                  'reserved, and the power is lost if another corporation builds there first.',
             sym: 'P24',
             abilities: [
               {

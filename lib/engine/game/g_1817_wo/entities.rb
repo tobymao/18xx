@@ -9,7 +9,7 @@ module Engine
             name: 'Pittsburgh Steel Mill',
             value: 40,
             revenue: 0,
-            desc: "Owning corp may place special 'New Pittsburgh' yellow tile "\
+            desc: "Owning corporation may place special 'New Pittsburgh' yellow tile "\
                   'during tile-laying, regardless of connectivity.  The hex is not reserved, and the '\
                   'power is lost if another corporation builds there first.',
             sym: 'PSM',
@@ -32,7 +32,7 @@ module Engine
             name: 'Mountain (Ocean) Engineers',
             value: 40,
             revenue: 0,
-            desc: 'Owning corp receives $20 after laying a yellow tile in a '\
+            desc: 'Owning corporation receives $20 after laying a yellow tile in a '\
                   'mountain (ocean) hex.  Any fees must be paid first.',
             sym: 'ME',
             abilities: [
@@ -50,9 +50,9 @@ module Engine
             name: 'Ohio Bridge Company',
             value: 40,
             revenue: 0,
-            desc: 'Comes with one $10 bridge token that may be placed by the owning corp '\
+            desc: 'Comes with one $10 bridge token that may be placed by the owning corporation '\
                   'in Mare Nostrum or Dynasties max one token per city, regardless '\
-                  'of connectivity.  Allows owning corp to skip $10 river fee '\
+                  'of connectivity.  Allows owning corporation to skip $10 river fee '\
                   'when placing yellow tiles.',
             sym: 'OBC',
             abilities: [
@@ -143,7 +143,7 @@ module Engine
             name: 'Major Mail Contract',
             value: 120,
             revenue: 0,
-            desc: 'Pays owning corp $20 at the start of each operating round, '\
+            desc: 'Pays owning corporation $20 at the start of each operating round, '\
                   'as long as the corporation has at least one train.',
             sym: 'MAJM',
             abilities: [

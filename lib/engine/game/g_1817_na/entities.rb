@@ -9,7 +9,7 @@ module Engine
             name: 'Denver Telecommunications',
             value: 40,
             revenue: 0,
-            desc: 'Owning corp may place special Denver yellow tile during tile-laying, '\
+            desc: 'Owning corporation may place special Denver yellow tile during tile-laying, '\
                   'regardless of connectivity.  The hex is not reserved, and the '\
                   'power is lost if another corporation builds there first.',
             sym: 'DTC',
@@ -50,9 +50,9 @@ module Engine
             name: 'Union Bridge Company',
             value: 80,
             revenue: 0,
-            desc: 'Comes with two $10 bridge token that may be placed by the owning corp '\
+            desc: 'Comes with two $10 bridge token that may be placed by the owning corporation '\
                   'in Winnipeg or New Orleans, max one token per city, regardless of '\
-                  'connectivity. Allows owning corp to skip $10 river fee when '\
+                  'connectivity. Allows owning corporation to skip $10 river fee when '\
                   'placing yellow tiles.',
             sym: 'UBC',
             abilities: [
@@ -165,7 +165,7 @@ module Engine
             name: 'Minor Mail Contract',
             value: 60,
             revenue: 0,
-            desc: 'Pays owning corp $10 at the start of each operating round, as '\
+            desc: 'Pays owning corporation $10 at the start of each operating round, as '\
                   'long as the corporation has at least one train.',
             sym: 'MINM',
             abilities: [
@@ -182,7 +182,7 @@ module Engine
             name: 'Major Mail Contract',
             value: 120,
             revenue: 0,
-            desc: 'Pays owning corp $20 at the start of each operating round, as '\
+            desc: 'Pays owning corporation $20 at the start of each operating round, as '\
                   'long as the corporation has at least one train.',
             sym: 'MAJM',
             abilities: [
