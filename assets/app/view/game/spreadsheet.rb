@@ -223,7 +223,7 @@ module View
         players_title = h(:th, th_props[@game.players.size], 'Players')
         bank_title = h(:th, th_props[bank_width], 'Bank')
         prices_title = h(:th, th_props[2], 'Prices')
-        corporation_title = h(:th, th_props[corporation_props_size, false], ['Corporation ', render_toggle_not_floated_link])
+        corporation_title = h(:th, th_props[corporation_props_size, false], ['Corporations ', render_toggle_not_floated_link])
 
         subtitles = []
         players_subtitles = []
