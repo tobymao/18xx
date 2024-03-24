@@ -118,7 +118,7 @@ module Engine
 
           distance = port ? '⚓' : ''
           distance += cities.to_s
-          distance += "+#{towns}" if towns.positive? && route.train.name != '5D'
+          distance += "+#{towns}" if towns.positive? && route.train.name != '4D'
           distance
         end
 
@@ -164,7 +164,8 @@ module Engine
 
           tokens = route.train.owner.placed_tokens
                    .map(&:city).intersection(stops)
-          tokens.size * (north_south && east_west ? 60 : 30)
+          token_bonus = (north_south && east_west ? 60 : 30)
+          tokens.size * token_bonus * route.train.multiplier
         end
 
         def extra_revenue(_entity, routes)
