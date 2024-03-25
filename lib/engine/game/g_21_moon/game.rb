@@ -542,6 +542,7 @@ module Engine
             G21Moon::Step::Assign,
             Engine::Step::HomeToken,
             G21Moon::Step::SpecialTrack,
+            G21Moon::Step::SpecialToken,
             G21Moon::Step::TrainMod,
             G21Moon::Step::Track,
             G21Moon::Step::Token,
