@@ -165,7 +165,7 @@ module Engine
           tokens = route.train.owner.placed_tokens
                    .map(&:city).intersection(stops)
           token_bonus = (north_south && east_west ? 60 : 30)
-          tokens.size * token_bonus * route.train.multiplier
+          tokens.size * token_bonus * (route.train.multiplier || 1)
         end
 
         def extra_revenue(_entity, routes)
