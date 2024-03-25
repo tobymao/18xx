@@ -450,7 +450,7 @@ module Engine
         end
 
         def east_west_route?(stops)
-          (stops.flat_map(&:groups) & %w[E W]).size == 2
+          (stops.map { |s| s.tile.label&.to_s }.uniq & %w[E W]).size == 2
         end
 
         def east_west_bonus(route, stops)
