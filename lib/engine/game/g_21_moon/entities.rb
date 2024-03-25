@@ -81,7 +81,7 @@ module Engine
               {
                 type: 'teleport',
                 owner_type: 'corporation',
-                tiles: ['X30'],
+                tiles: ['X29'],
                 hexes: ['F8'],
               },
             ],
