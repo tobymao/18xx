@@ -511,6 +511,41 @@ module Engine
             expect(game.process_action(action).exception).to be_a(GameError)
           end
         end
+
+        context 'reserved hex in a single city cannot be blocked by Work In Progress' do
+          let(:game_file_name) { 'or_power.work_in_progress.cannot_block_that_s_mine' }
+
+          it 'cannot assign Work in Progress' do
+            game = Engine::Game.load(game_file, at_action: 35)
+            action = {
+              'type' => 'assign',
+              'entity' => 'WORK_IN_PROGRESS',
+              'entity_type' => 'company',
+              'target' => 'L4',
+              'target_type' => 'hex',
+            }
+            expect(game.exception).to be_nil
+            expect(game.process_action(action).exception).to be_a(GameError)
+          end
+        end
+
+        context 'reserved hex in a double city with also Work In Progress' do
+          let(:game_file_name) { 'or_power.work_in_progress.cannot_block_that_s_mine' }
+
+          it 'cannot assign token' do
+            game = Engine::Game.load(game_file, at_action: 38)
+            action = {
+              'type' => 'place_token',
+              'entity' => 'PB',
+              'entity_type' => 'corporation',
+              'city' => '793-0-0',
+              'slot' => 1,
+              'tokener' => 'PB',
+            }
+            expect(game.exception).to be_nil
+            expect(game.process_action(action).exception).to be_a(GameError)
+          end
+        end
       end
 
       describe 'A tip of sugar' do
