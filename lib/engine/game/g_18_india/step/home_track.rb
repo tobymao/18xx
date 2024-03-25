@@ -34,6 +34,7 @@ module Engine
           end
 
           def process_lay_tile(action)
+            LOGGER.debug  "HomeTrack > process_lay_tile"
             lay_tile(action)
 
             place_token(
@@ -44,6 +45,32 @@ module Engine
               extra_action: true
             )
             @round.pending_tokens.shift
+          end
+
+          def process_place_token(action)
+            LOGGER.debug  "HomeTrack > process_place_token"
+            super
+            tile = action.city.tile
+            replace_oo_reservations(tile) unless tile.reservations.empty? # move hex reservation
+          end
+
+          # Base code doesn't handle one token and one reservation on a OO tile
+          # Moves a reservation from hex to untoken city
+          def replace_oo_reservations(tile)
+            return if tile.reservations.empty?
+
+            cities = tile.cities
+            reservations = tile.reservations.dup
+            LOGGER.debug "replace_oo_reservations > reservations: #{reservations.to_s}"
+            tile.reservations.each do |reservation|
+              cities.each do |city|
+                if !city.tokened? || cities.count == 1
+                  city.add_reservation!(reservation)
+                  exit
+                end
+              end
+            end
+            tile.reservations.clear
           end
 
           def hex_neighbors(_entity, hex)

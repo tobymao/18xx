@@ -451,7 +451,7 @@ module Engine
         def stock_round
           # Test if home token step resolves issues of placing token when company floats
           Engine::Round::Stock.new(self, [
-            G18India::Step::HomeTrack, # used by GIPR
+            G18India::Step::HomeTrack, # for GIPR Home Track / Token
             Engine::Step::HomeToken,
             G18India::Step::SellOnceThenBuyCerts,
           ])
@@ -459,8 +459,9 @@ module Engine
 
         def operating_round(round_num)
           Engine::Round::Operating.new(self, [
-            G18India::Step::HomeTrack, # used by GIPR
+            G18India::Step::HomeTrack, # for GIPR Home Track / Token
             Engine::Step::HomeToken,
+            G18India::Step::ExchangeToken, # for GIPR Exchange Tokens
             G18India::Step::Assign, # used by P6
             G18India::Step::SpecialChoose, # Used by P4
             G18India::Step::SpecialTrack, # used by P2 & P3 (track lay & track upgrade)
@@ -473,6 +474,11 @@ module Engine
             G18India::Step::CorporateSellSharesCompany,
             G18India::Step::CorporateBuySharesCompany,
           ], round_num: round_num)
+        end
+
+        def operating_order
+          corps = @corporations.select(&:floated?).sort
+          gipr_may_operate? ? corps : corps.reject { |c| c.name == 'GIPR' }
         end
 
         def next_round!
@@ -540,6 +546,8 @@ module Engine
           president = corporation.owner ? corporation.owner.name : 'none'
           if corporation.presidents_share.percent == 20
             "Directed Company: #{president}"
+          elsif corporation == gipr && @phase.name == 'I'
+            "GIPR doesn't operate until Phase II"
           elsif !corporation.owner.nil?
             "Managed Company: #{president}"
           else
@@ -622,6 +630,19 @@ module Engine
           player.unsold_companies.delete(company)
         end
 
+        # remove all proxy certs from IPO and Player Hands
+        def remove_proxy_certs(corporation)
+          # remove from player hands
+          players.each do |player|
+            player.hand.reject! { |company| company.name == corporation.name }
+            player.unsold_companies.reject! { |company| company.name == corporation.name }
+          end
+          # remove from IPO Rows
+          @ipo_rows.each { |row| row.reject! { |company| company.name == corporation.name } }
+          # remove from companies
+          @companies.reject! { |company| company.name == corporation.name }
+        end
+
         # prevents transfer of president's share before proxy is bought
         def can_swap_for_presidents_share_directly_from_corporation?
           false
@@ -684,6 +705,114 @@ module Engine
           return false if yellow_city_upgrade_is_single_slot_green?(from, to)
 
           super
+        end
+
+        def gipr
+          @gipr ||= @corporations.find { |corp| corp.name == 'GIPR' }
+        end
+
+        def gipr_may_operate?
+          @phase.name != "I" && gipr.floated?
+        end
+
+        def gipr_exchange_tokens
+          ability = gipr.all_abilities.find { |a| a.type == :exchange_token }
+          return 0 unless ability
+
+          ability.count
+        end
+
+        def gipr_may_exchange_token?
+          girp.floated? && gipr_exchange_tokens.positive?
+        end
+
+        def use_gipr_exchange_token(token)
+          new_token = Engine::Token.new(girp, price: self.class::TOKEN_PRICE)
+          token.swap!(new_token, check_tokenable: false)
+          ability = gipr.all_abilities.find { |a| a.type == :exchange_token }
+          ability.use!
+          ability.description = "Exchange tokens: #{ability.count}"
+        end
+
+        def gipr_exchange_with_closing_corp(corporation)
+          corporation.tokens.each_with_index do |token, index|
+            return unless token.used
+
+            exchange_token = Engine::Token.new(girp)
+            if index.zero?
+              token.swap!(exchange_token)
+              next unless exchange_token.used
+              @log << "GIPR replaced home token of #{corporation.name} with exchange token."
+              gipr.tokens << exchange_token
+            elsif token.city.tokenable?(gipr, free: true, tokens: [exchange_token], cheater: true, same_hex_allowed: false)
+              @round.pending_exchange_tokens << {
+                entity: girp,
+                hexes: token.hex,
+                token: token,
+                exchange_token: exchange_token,
+              }
+              @round.clear_cache!
+            end
+          end
+        end
+
+        def close_corporation(corporation, quiet: false)
+          log << "#{corporation.name} closes" unless quiet
+
+          # GIPR exchange Tokens
+          if gipr_may_exchange_token?
+            corporation.tokens.each do |token|
+              use_gipr_exchange_token(token) if token.used && token.city.tokenable?(corporation, free: free, tokens: [other_token])
+            end
+          end
+
+          # remove all corp tokens (after GIPR may exchange)
+          corporation.tokens.each { |t| t.destroy! }
+
+          # move trains to open market
+          corporation.trains.dup.each { |t| depot.reclaim_train(t) }
+
+          # return privates and bonds to market
+          corporation.companies.dup.each do |company|
+            case company.type
+            when :private, :bond
+              @log << "#{company.name} is returned to the Market"
+              company.owner = @bank
+              @bank.companies.push(company)
+            end
+            corporation.companies.delete(company)
+          end
+
+          # move corp owned shares to open market
+          corp_owned_shares = corporation.shares_by_corporation[corporation]
+          corp_owned_shares.each do |shares|
+            bundle = shares.is_a?(ShareBundle) ? shares : ShareBundle.new(shares)
+            @log << "A #{bundle.percent}% share of #{bundle.corporation.name} is returned to the Market"
+            share_pool.transfer_shares(bundle, @share_pool)
+          end
+
+          # return treasury to bank
+          corporation.spend(corporation.cash, @bank) if corporation.cash.positive?
+
+          # remove all corp shares
+          corporation.share_holders.keys.each do |share_holder|
+            share_holder.shares_by_corporation.delete(corporation)
+          end
+          @share_pool.shares_by_corporation.delete(corporation)
+          corporation.share_price&.corporations&.delete(corporation)
+
+          # remove proxy companies (without compensation as share value = 0)
+          remove_proxy_certs(corporation)
+
+          # close corporation
+          @corporations.delete(corporation)
+          corporation.close!
+
+          # adjust cert_limit
+          @cert_limit = init_cert_limit
+
+          # is this needed?
+          @round.force_next_entity! if @round.current_entity == corporation
         end
 
         def yellow_town_to_city_upgrade?(from, to)
