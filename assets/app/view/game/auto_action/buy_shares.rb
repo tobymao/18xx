@@ -13,10 +13,7 @@ module View
         end
 
         def description
-          'Automatically buy shares in a corporation.'\
-            ' This will deactivate itself if other players do actions that may impact you.'\
-            ' It will also deactivate if there are multiple share sizes (5%, 10%, 20%)'\
-            ' available for purchase.'
+          'Deactivates when shares are sold or someone buys into your insecure corporations.'
         end
 
         def render
@@ -24,7 +21,7 @@ module View
           children = [h(:h3, name), h(:p, description)]
 
           if buyable.empty?
-            children << h('p.bold', 'No corporations have shares available to buy, cannot program!')
+            children << h('p.italic', 'No corporations have purchasable shares')
             return children
           end
 

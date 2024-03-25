@@ -22,10 +22,10 @@ module View
 
       def render_content
         children = [
-          h(:h2, 'Auto Actions'),
-          h(:p, 'Auto actions allow you to preprogram your moves ahead of time. '\
-                'On asynchronous games this can shorten a game considerably.'),
-          h(:p, 'Please note, these are not secret from other players.'),
+          h(:h2, 'What are Auto Actions?'),
+          h(:p, "You can pre-program share purchases and passes during #{@game.stock_round_name}s."),
+          h(:p, 'Deactivates when players take actions that may affect you (e.g. shares are sold).'),
+          h('p.bold', 'Your Auto Actions are not secret from other players.'),
           h(:p, render_wiki),
         ]
 
@@ -48,10 +48,10 @@ module View
               children.concat(method.call(settings))
             end
           else
-            children << h('p.bold', 'No auto actions are presently available for this game.')
+            children << h('p.italic', 'No auto actions are presently available for this game.')
           end
         else
-          children << h('p.bold', 'No auto actions available. You are not a player in this game.')
+          children << h('p.italic', 'No auto actions available. You are not a player in this game.')
         end
 
         props = {
@@ -65,7 +65,7 @@ module View
 
       def render_wiki
         [h(:a, { attrs: { href: AUTO_ACTIONS_WIKI, target: '_blank' } },
-           'Please read this for more details when it will deactivate')]
+           'Specifics on when Auto will deactivate.')]
       end
 
       def sender
@@ -114,9 +114,9 @@ module View
         # Which corps can be passed, by default assume all
         passable = @game.merge_corporations.select { |corp| corp.owner == player }
         if @game.round.stock?
-          children << h('p.bold', 'Cannot program while in a stock round!')
+          children << h('p.italic', 'Cannot program while in a stock round')
         elsif passable.empty?
-          children << h('p.bold', 'No mergable corporations are owned by you, cannot program!')
+          children << h('p.italic', 'No mergable corporations are owned by you')
         else
 
           rounds.each do |round|
