@@ -456,8 +456,7 @@ module Engine
         def east_west_bonus(route, stops)
           return 0 unless east_west_route?(stops)
 
-          multiplier = route.train.name == '4D' ? 2 : 1
-          stops.map { |stop| stop.route_revenue(route.phase, route.train) }.max * multiplier
+          stops.map { |stop| stop.route_revenue(route.phase, route.train) }.max
         end
 
         def cattle_bonus(route, stops)
