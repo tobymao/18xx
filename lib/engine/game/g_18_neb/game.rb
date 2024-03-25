@@ -210,6 +210,19 @@ module Engine
 
         def setup
           @corporations_to_fully_capitalize = []
+          @locals = @corporations.select { |c| c.type == :local }
+          move_local_reservations_to_city
+        end
+
+        def move_local_reservations_to_city
+          @locals.each do |local|
+            hex = hex_by_id(local.coordinates)
+            hex.tile.remove_reservation!(local)
+            [@tiles, @all_tiles].each do |tiles|
+              brown_tile = tiles.find { |t| local_home_track_brown_upgrade?(hex.tile, t) }
+              brown_tile.cities.first.add_reservation!(local)
+            end
+          end
         end
 
         def event_close_companies!
@@ -254,10 +267,8 @@ module Engine
 
         def stock_round
           Round::Stock.new(self, [
-            Engine::Step::DiscardTrain,
+            G18Neb::Step::LocalHomeTrack,
             G18Neb::Step::Exchange,
-            Engine::Step::HomeToken,
-            Engine::Step::SpecialTrack,
             G18Neb::Step::BuySellParShares,
           ])
         end
@@ -287,6 +298,7 @@ module Engine
         def upgrades_to?(from, to, special = false, selected_company: nil)
           return true if town_to_city_upgrade?(from, to)
           return true if omaha_green_upgrade?(from, to)
+          return true if @round.is_a?(Round::Stock) && local_home_track_brown_upgrade?(from, to)
 
           super
         end
@@ -297,6 +309,10 @@ module Engine
 
         def town_to_city_upgrade?(from, to)
           %w[3 4 58].include?(from.name) && %w[X01 X02 X03].include?(to.name)
+        end
+
+        def local_home_track_brown_upgrade?(from, to)
+          to.color == :brown && @locals.map(&:coordinates).include?(from.hex.id) && upgrades_to_correct_label?(from, to)
         end
 
         def upgrade_cost(tile, _hex, entity, spender)
@@ -339,6 +355,21 @@ module Engine
           return if corporation.type == :local || !corporations_fully_capitalize?
 
           @corporations_to_fully_capitalize << corporation
+        end
+
+        def place_home_token(corporation)
+          unless can_place_home_token?(corporation)
+            @round.pending_home_track << corporation unless @round.pending_home_track.include?(corporation)
+            return
+          end
+
+          super
+        end
+
+        def can_place_home_token?(corporation)
+          return true unless corporation.type == :local
+
+          %i[brown gray].include?(hex_by_id(corporation.coordinates).tile.color)
         end
 
         def corporations_fully_capitalize?
