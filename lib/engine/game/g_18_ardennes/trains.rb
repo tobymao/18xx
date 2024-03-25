@@ -208,6 +208,66 @@ module Engine
 
           entity.operating_history.include?([@turn, @round.round_num])
         end
+
+        # The 4D is only buyable by 10-share public companies that do not
+        # already own a 4D.
+        def can_buy_4d?(corporation)
+          return false unless corporation.corporation?
+          return false unless corporation.type == :'10-share'
+
+          corporation.trains.none? { |train| train.name == '4D' }
+        end
+
+        def discountable_trains_for(corporation)
+          # The 4D is the only train that can be bought with a discount.
+          # Make sure the currently operating entity is allowed to buy one.
+          return [] unless can_buy_4d?(corporation)
+
+          super
+        end
+
+        # Checks for overlapping routes.
+        # Throws an error if either a single route is reusing track, or two
+        # different routes are using the same section of track.
+        # 4D trains and normal trains can run along the same track, so no
+        # error is thrown when these routes overlap.
+        def check_overlap(routes)
+          tracks_by_type = Hash.new { |h, k| h[k] = [] }
+
+          routes.each do |route|
+            route.paths.each do |path|
+              a = path.a
+              b = path.b
+
+              tracks = tracks_by_type[train_type(route.train)]
+              tracks << [path.hex, a.num, path.lanes[0][1]] if a.edge?
+              tracks << [path.hex, b.num, path.lanes[1][1]] if b.edge?
+            end
+          end
+
+          tracks_by_type.each do |_type, tracks|
+            tracks.group_by(&:itself).each do |k, v|
+              raise GameError, "Route cannot reuse track on #{k[0].id}" if v.size > 1
+            end
+          end
+        end
+
+        # This is called from Route.touch_node, when adding nodes to a route.
+        # Any paths returned from this method cannot be added to the route.
+        # As the 4D train can reuse track that other trains are running along,
+        # this implementation only returns paths used by trains of the same
+        # 'type' (normal/4D).
+        def compute_other_paths(routes, route)
+          routes.reject { |r| r == route || train_type(r.train) != train_type(route.train) }
+                .map(&:paths)
+                .flatten
+        end
+
+        private
+
+        def train_type(train)
+          train.name == '4D' ? :express : :normal
+        end
       end
     end
   end
