@@ -219,7 +219,7 @@ module Engine
           },
           {
             float_percent: 40,
-            sym: 'NR',
+            sym: 'NK',
             name: 'NebKota',
             logo: '18_neb/NK',
             shares: [40, 20, 20, 20],
