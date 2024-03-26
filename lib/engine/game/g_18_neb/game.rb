@@ -107,7 +107,7 @@ module Engine
                        { 'nodes' => %w[town city offboard], 'pay' => 2 }],
             price: 100,
             rusts_on: '4D',
-            num: 2,
+            num: 5,
           },
           {
             name: '3+3',
@@ -115,7 +115,7 @@ module Engine
                        { 'nodes' => %w[town city offboard], 'pay' => 3 }],
             price: 200,
             rusts_on: '6/8',
-            num: 1,
+            num: 4,
           },
           {
             name: '4+4',
@@ -123,13 +123,13 @@ module Engine
                        { 'nodes' => %w[town city offboard], 'pay' => 4 }],
             price: 300,
             rusts_on: '4D',
-            num: 1,
+            num: 3,
           },
           {
             name: '5/7',
             distance: [{ 'nodes' => %w[city offboard town], 'pay' => 5, 'visit' => 7 }],
             price: 450,
-            num: 1,
+            num: 2,
             events: [{ 'type' => 'close_companies' },
                      { 'type' => 'full_capitalization' },
                      { 'type' => 'local_railways_available' }],
