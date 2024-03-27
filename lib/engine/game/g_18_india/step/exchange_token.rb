@@ -1,16 +1,45 @@
 # frozen_string_literal: true
 
-require_relative '../../../step/home_token'
+require_relative '../../../step/base'
 
 module Engine
   module Game
     module G18India
       module Step
-        class ExchangeToken < Engine::Step::HomeToken
-          ACTIONS = %w[pass place_token].freeze
+        class ExchangeToken < Engine::Step::Base
+          ACTIONS = %w[pass remove_token].freeze
+
+          def actions(entity)
+            return [] unless entity == pending_entity
+
+            ACTIONS
+          end
+
+          def process_remove_token(action)
+            entity = action.entity
+            return unless entity == @game.gipr
+
+            closing_corp = token.corporation
+            hex = action.city.hex
+            token.swap!(exchange_token)
+            entity.tokens << exchange_token
+            token.destroy!
+            @log << "GIPR replaced #{closing_corp.name} token at #{hex.name} with exchange token."
+            @game.use_gipr_exchange_token
+            LOGGER.debug "process_remove_token > gipr: #{entity.tokens.to_s} / closing: #{closing_corp.tokens.to_s}"
+
+            @round.pending_exchange_tokens.clear if gipr_exchange_tokens.zero?
+            @round.pending_exchange_tokens.shift
+          end
+
+          def can_replace_token?(_entity, selected_token)
+            return false unless selected_token
+
+            selected_token == token
+          end
 
           def description
-            "GIPR (#{current_entity.owner}) may use exchange tokens for tokens of #{token.corporation.name} or pass"
+            "GIPR (#{current_entity.owner.name}) may use exchange tokens for tokens of #{token.corporation.name} or pass"
           end
 
           def round_state
@@ -21,23 +50,49 @@ module Engine
             )
           end
 
+          def active?
+            pending_entity
+          end
+
+          def current_entity
+            pending_entity
+          end
+
+          def pending_entity
+            pending_token[:entity]
+          end
+
+          def token
+            pending_token[:token]
+          end
+
+          def exchange_token
+            pending_token[:exchange_token]
+          end
+
           def pending_token
             @round.pending_exchange_tokens&.first || {}
           end
 
-          def process_place_token(action)
-            hex = action.city.hex
+          def available_hex(_entity, hex)
+            pending_token[:hexes].include?(hex)
+          end
 
-            @round.pending_exchange_tokens.shift
+          def available_tokens(_entity)
+            [token]
+          end
+
+          def pass_description
+            "Pass: Exchange with #{token.corporation.name} token at #{token.city.hex.name}"
           end
 
           def process_pass(action)
-            log_pass(action.entity)
-            pass!
-          end
-
-          def log_pass(entity)
-            @log << "#{entity.name} passes additional exchanges"
+            closing_corp = token.corporation
+            hex = token.city.hex
+            @log << "#{pending_entity.name} choose not to exchange with #{closing_corp.name} token at #{hex.name}"
+            token.destroy!
+            @round.pending_exchange_tokens.shift
+            # pass!
           end
         end
       end

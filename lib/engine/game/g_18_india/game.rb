@@ -276,7 +276,9 @@ module Engine
             desc: "Warrant pays 5\% of share value when company doesn't pay dividend. Closes at start of Phase IV",
             type: :warrant
           )
+          warrant.owner = corporation
           corporation.companies << warrant
+          @companies << warrant
         end
 
         def assign_initial_ipo_price(corporations)
@@ -291,7 +293,7 @@ module Engine
 
         def create_decks(corporations)
           draw_deck = []
-          draw_deck += @companies
+          draw_deck += @companies.reject { |c| c.type == :warrant }
           @draft_deck = []
 
           corporations.each do |corporation|
@@ -722,55 +724,67 @@ module Engine
           ability.count
         end
 
-        def gipr_may_exchange_token?
-          girp.floated? && gipr_exchange_tokens.positive?
+        def gipr_has_exchange_token?
+          LOGGER.debug "gipr_may_exchange_token > #{gipr.floated?} && #{gipr_exchange_tokens.positive?}"
+          gipr.floated? && gipr_exchange_tokens.positive?
         end
 
-        def use_gipr_exchange_token(token)
-          new_token = Engine::Token.new(girp, price: self.class::TOKEN_PRICE)
-          token.swap!(new_token, check_tokenable: false)
+        def use_gipr_exchange_token
           ability = gipr.all_abilities.find { |a| a.type == :exchange_token }
           ability.use!
           ability.description = "Exchange tokens: #{ability.count}"
         end
 
         def gipr_exchange_with_closing_corp(corporation)
-          corporation.tokens.each_with_index do |token, index|
+          corporation.tokens.dup.each_with_index do |token, index|
+            LOGGER.debug "gipr_exchange > #{corporation.tokens.to_s} && index-#{index} used-#{token.used}"
             return unless token.used
 
-            exchange_token = Engine::Token.new(girp)
+            exchange_token = Engine::Token.new(gipr, type: :exchange)
+            LOGGER.debug "gipr_exchange > tokenable? #{token.city.tokenable?(gipr, free: true, tokens: [exchange_token], cheater: true, same_hex_allowed: false)} "
+            next unless token.city.tokenable?(gipr, free: true, tokens: [exchange_token], cheater: true, same_hex_allowed: false)
+
             if index.zero?
               token.swap!(exchange_token)
-              next unless exchange_token.used
               @log << "GIPR replaced home token of #{corporation.name} with exchange token."
               gipr.tokens << exchange_token
+              token.destroy!
+              use_gipr_exchange_token
+              LOGGER.debug "gipr_exchange > gipr tokens: #{gipr.tokens.to_s} "
             elsif token.city.tokenable?(gipr, free: true, tokens: [exchange_token], cheater: true, same_hex_allowed: false)
               @round.pending_exchange_tokens << {
-                entity: girp,
-                hexes: token.hex,
+                entity: gipr,
+                hexes: [token.hex],
                 token: token,
                 exchange_token: exchange_token,
               }
-              @round.clear_cache!
             end
           end
+          LOGGER.debug "gipr_exchange > pending #{@round.pending_exchange_tokens.to_s} "
+          @round.clear_cache!
         end
 
         def close_corporation(corporation, quiet: false)
-          log << "#{corporation.name} closes" unless quiet
+          return unless @round.pending_exchange_tokens.empty?
+
+          log << "#{corporation.name} closes" unless quiet || corporation.closed?
+          corporation.close!
 
           # GIPR exchange Tokens
-          if gipr_may_exchange_token?
-            corporation.tokens.each do |token|
-              use_gipr_exchange_token(token) if token.used && token.city.tokenable?(corporation, free: free, tokens: [other_token])
-            end
+          if gipr_has_exchange_token? && !corporation.tokens.empty?
+            gipr_exchange_with_closing_corp(corporation)
+            return
           end
 
           # remove all corp tokens (after GIPR may exchange)
+          LOGGER.debug "closing > Corp tokens: #{corporation.tokens}"
           corporation.tokens.each { |t| t.destroy! }
+          LOGGER.debug "closing > Corp tokens: #{corporation.tokens}"
 
           # move trains to open market
+          LOGGER.debug "closing > Corp trains: #{corporation.trains}  depot: #{depot.trains}"
           corporation.trains.dup.each { |t| depot.reclaim_train(t) }
+          LOGGER.debug "closing > Corp trains: #{corporation.trains}  depot: #{depot.trains}"
 
           # return privates and bonds to market
           corporation.companies.dup.each do |company|
@@ -1041,7 +1055,7 @@ module Engine
 
         # pay owner value of company before closing
         def company_is_closing(company, silent = false)
-          @bank.spend(company.value, company.owner)
+          @bank.spend(company.value, company.owner) if company.value.positive?
           @log << "#{company.name} closes and #{company.owner.name} receives #{company.value} from the Bank." unless silent
         end
 
@@ -1064,6 +1078,26 @@ module Engine
                   "#{format_currency(discount)} from #{company.name}"
 
           cost - discount
+        end
+
+        def after_phase_change(name)
+          return unless name == "IV"
+
+          @companies.each do |company|
+            case company.type
+            when :warrant
+              # close Guaranty Warrants
+              @log << "#{company.name} expires for #{company.owner.name}."
+              company.close!
+            when :president, :share
+              # remove Guaranty Warrant text on proxies
+              company.desc = company.desc.delete_suffix("\nHas a Guaranty Warrant.")
+            end
+          end
+
+          # TODO: Railroad bonds can convert to new GIPR shares
+          # TODO: No new Guage Changes (remove existing borders?)
+          # TODO: May remove Guage Changes as Track Action (add ability to corps?)
         end
 
         def company_header(company)
