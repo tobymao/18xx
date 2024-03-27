@@ -51,8 +51,8 @@ module Engine
 
         return if !ability.count&.zero? || !ability.closed_when_used_up
 
-        action.entity.close!
-        @log << "#{company.name} closes"
+        @game.company_closing_after_using_ability(company)
+        company.close!
       end
 
       def assignable_corporations(company = nil)

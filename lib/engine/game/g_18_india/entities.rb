@@ -22,7 +22,32 @@ module Engine
             desc: 'One extra yellow tile placement. Close when used.',
             color: nil,
             type: :private,
-            # TODO: Add Ability
+            abilities: [
+              {
+                type: 'tile_lay',
+                owner_type: 'corporation',
+                when: %w[track special_track],
+                lay_count: 1,
+                upgrade_count: 0,
+                reachable: true,
+                special: false,
+                closed_when_used_up: true,
+                hexes: [],
+                tiles: [],
+              },
+              {
+                type: 'tile_lay',
+                owner_type: 'player',
+                when: 'owning_player_or_turn',
+                lay_count: 1,
+                upgrade_count: 0,
+                reachable: true,
+                special: false,
+                closed_when_used_up: true,
+                hexes: [],
+                tiles: [],
+              },
+            ],
           },
           {
             name: 'Dutch EIC',
@@ -32,17 +57,59 @@ module Engine
             desc: 'One extra track upgade. Close when used.',
             color: nil,
             type: :private,
-            # TODO: Add Ability
+            abilities: [
+              {
+                type: 'tile_lay',
+                owner_type: 'corporation',
+                when: %w[track special_track],
+                count: 1,
+                lay_count: 0,
+                upgrade_count: 1,
+                reachable: true,
+                special: false,
+                closed_when_used_up: true,
+                hexes: [],
+                tiles: [],
+              },
+              {
+                type: 'tile_lay',
+                owner_type: 'player',
+                when: 'owning_player_or_turn',
+                count: 1,
+                lay_count: 0,
+                upgrade_count: 1,
+                reachable: true,
+                special: false,
+                closed_when_used_up: true,
+                hexes: [],
+                tiles: [],
+              },
+            ],
           },
           {
             name: 'French EIC',
             sym: 'P4',
             value: 75,
             revenue: 15,
-            desc: '$40 Terrain cost discount. Close when used.',
+            desc: 'A ₹40 discount on total terrain cost during an OR. Close when used.',
             color: nil,
             type: :private,
-            # TODO: Add Ability
+            abilities: [
+              {
+                type: 'choose_ability',
+                owner_type: 'corporation',
+                when: %w[track special_track],
+                choices: { use: 'Use discount and close' },
+                count: 1,
+              },
+              {
+                type: 'choose_ability',
+                owner_type: 'player',
+                when: 'owning_player_track',
+                choices: { use: 'Use discount and close' },
+                count: 1,
+              },
+            ],
           },
           {
             name: 'Danish EIC',
@@ -52,7 +119,38 @@ module Engine
             desc: 'One free station, even if full. Close when used.',
             color: nil,
             type: :private,
-            # TODO: Add Ability
+            abilities: [
+              {
+                type: 'token',
+                owner_type: 'corporation',
+                when: %w[token special_token],
+                count: 1,
+                extra_action: false,
+                from_owner: true,
+                cheater: 1,
+                special_only: true,
+                price: 0,
+                discount: 100,
+                teleport_price: 0,
+                closed_when_used_up: true,
+                hexes: [],
+              },
+              {
+                type: 'token',
+                owner_type: 'player',
+                when: 'owning_player_token',
+                count: 1,
+                extra_action: false,
+                from_owner: true,
+                cheater: 1,
+                special_only: true,
+                price: 0,
+                discount: 100,
+                teleport_price: 0,
+                closed_when_used_up: true,
+                hexes: [],
+              },
+            ],
           },
           {
             name: 'British EIC',
@@ -62,7 +160,24 @@ module Engine
             desc: 'Receives jewlery concession. Close when used.',
             color: nil,
             type: :private,
-            # TODO: Add Ability
+            abilities: [
+              {
+                type: 'assign_hexes',
+                when: 'owning_player_or_turn',
+                hexes: [], # any hex w/o city or town
+                count: 1,
+                owner_type: 'player',
+                closed_when_used_up: true,
+              },
+              {
+                type: 'assign_hexes',
+                when: 'owning_corp_or_turn',
+                hexes: [], # any hex w/o city or town
+                count: 1,
+                owner_type: 'corporation',
+                closed_when_used_up: true,
+              },
+            ],
           },
         ].freeze
 
@@ -320,6 +435,7 @@ module Engine
           },
           {
             name: '3x2',
+            available_on: "III'",
             distance: [
               { 'nodes' => ['city'], 'pay' => 3, 'visit' => 3 },
               { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 },
@@ -331,6 +447,7 @@ module Engine
           },
           {
             name: '3x3',
+            available_on: "III'",
             distance: [
               { 'nodes' => ['city'], 'pay' => 3, 'visit' => 3 },
               { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 },
@@ -342,6 +459,7 @@ module Engine
           },
           {
             name: '4x2',
+            available_on: "III'",
             distance: [
               { 'nodes' => ['city'], 'pay' => 4, 'visit' => 4 },
               { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 },
@@ -365,6 +483,7 @@ module Engine
           },
           {
             name: '4x3',
+            available_on: "III'",
             distance: [
               { 'nodes' => ['city'], 'pay' => 4, 'visit' => 4 },
               { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 },
