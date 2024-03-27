@@ -2134,6 +2134,11 @@ module Engine
         nil
       end
 
+      # Entities that can own an exchange ability.
+      def exchange_entities
+        companies + minors
+      end
+
       def exchange_corporations(exchange_ability)
         candidates = case exchange_ability.corporations
                      when 'any'

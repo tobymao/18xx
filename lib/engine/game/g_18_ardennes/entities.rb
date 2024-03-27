@@ -412,6 +412,11 @@ module Engine
           (min_par.price * 3) - minor_sale_value(minor, min_par)
         end
 
+        # Entities that can own an exchange ability.
+        def exchange_entities
+          minor_corporations
+        end
+
         def exchange_corporations(exchange_ability)
           minor = exchange_ability.owner
           super.select do |major|
