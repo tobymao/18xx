@@ -106,7 +106,7 @@ module Engine
             distance: [{ 'nodes' => %w[town], 'pay' => 2 },
                        { 'nodes' => %w[town city offboard], 'pay' => 2 }],
             price: 100,
-            rusts_on: '4D',
+            rusts_on: '4+4',
             num: 5,
           },
           {
