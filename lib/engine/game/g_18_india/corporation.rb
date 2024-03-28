@@ -9,7 +9,14 @@ module Engine
 
         def initialize(sym:, name:, **opts)
           super
+          # display commodities as an ability on corp card (condider idea of using type of "company" for commodities)
           @commodities = []
+          ability = Ability::Base.new(
+            type: 'commodities',
+            description: 'Commodities: ',
+            remove_when_used_up: false,
+          )
+          add_ability(ability)
 
           # Create Manager's Share (a 0% share that is used to track current manager, can not be sold)
           @managers_share = Share.new(self, owner: @ipo_owner, president: true, percent: 0, index: 'M', cert_size: 0)
@@ -30,7 +37,8 @@ module Engine
           ability = Ability::Base.new(
             type: 'exchange_token',
             description: 'Exchange tokens: 3',
-            count: 3
+            count: 3,
+            remove_when_used_up: false,
           )
           add_ability(ability)
         end

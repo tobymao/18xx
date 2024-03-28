@@ -45,7 +45,7 @@ module Engine
 
           # can't sell trains that have been just purchased from the Depot
           def sellable_trains(entity)
-            trains = entity.trains || []
+            trains = entity.trains.reject { |t| t.salvage == 0 } || [] # May not sell the 4x3 to bank
             trains - @round.trains_brought
           end
 
@@ -64,11 +64,18 @@ module Engine
           # ----- modified BuyTrains methods -----
 
           def process_buy_train(action)
+            operator = action.entity
             train = action.train
             source = train.owner
             # track trains purchased from the Depot
             @round.trains_brought << action.train if source == @depot
+            raise GameError, 'Cannot buy a 2nd phase IV train' if buying_another_phase_iv_train?
             super
+          end
+
+          def buying_another_phase_iv_train?(operator, train)
+            own_a_phase_iv = !operator.trains.select { |t| t.available_on == "III'"}.empty?
+            own_a_phase_iv && train.available_on == "III'"
           end
 
           # modified from Step::Train to prevent automatic passing after buying

@@ -767,26 +767,25 @@ module Engine
         def close_corporation(corporation, quiet: false)
           return unless @round.pending_exchange_tokens.empty?
 
-          log << "#{corporation.name} closes" unless quiet || corporation.closed?
-          corporation.close!
+          log << "#{corporation.name} closes" if !quiet && !@round.gipr_exchanging
 
           # GIPR exchange Tokens
           if gipr_has_exchange_token? && !corporation.tokens.empty?
             gipr_exchange_with_closing_corp(corporation)
+            @round.gipr_exchanging = true
             return
           end
 
           # remove all corp tokens (after GIPR may exchange)
-          LOGGER.debug "closing > Corp tokens: #{corporation.tokens}"
           corporation.tokens.each { |t| t.destroy! }
           LOGGER.debug "closing > Corp tokens: #{corporation.tokens}"
 
           # move trains to open market
-          LOGGER.debug "closing > Corp trains: #{corporation.trains}  depot: #{depot.trains}"
           corporation.trains.dup.each { |t| depot.reclaim_train(t) }
           LOGGER.debug "closing > Corp trains: #{corporation.trains}  depot: #{depot.trains}"
 
           # return privates and bonds to market
+          LOGGER.debug "closing > companies: #{corporation.companies}  bank: #{@bank.companies}"
           corporation.companies.dup.each do |company|
             case company.type
             when :private, :bond
@@ -796,17 +795,23 @@ module Engine
             end
             corporation.companies.delete(company)
           end
+          LOGGER.debug "closing > companies: #{corporation.companies}  bank: #{@bank.companies}"
 
           # move corp owned shares to open market
           corp_owned_shares = corporation.shares_by_corporation[corporation]
+          LOGGER.debug "closing > corp_owned_shares: #{corp_owned_shares}  share_pool: #{@share_pool.shares_by_corporation}"
           corp_owned_shares.each do |shares|
+            next if shares.corporation == corporation
             bundle = shares.is_a?(ShareBundle) ? shares : ShareBundle.new(shares)
             @log << "A #{bundle.percent}% share of #{bundle.corporation.name} is returned to the Market"
             share_pool.transfer_shares(bundle, @share_pool)
           end
+          LOGGER.debug "closing > corp_owned_shares: #{corp_owned_shares}  share_pool: #{@share_pool.shares_by_corporation}"
 
           # return treasury to bank
+          LOGGER.debug "closing > tresury: #{corporation.cash}  bank: #{@bank.cash}"
           corporation.spend(corporation.cash, @bank) if corporation.cash.positive?
+          LOGGER.debug "closing > tresury: #{corporation.cash}  bank: #{@bank.cash}"
 
           # remove all corp shares
           corporation.share_holders.keys.each do |share_holder|
@@ -823,9 +828,11 @@ module Engine
           corporation.close!
 
           # adjust cert_limit
+          LOGGER.debug "closing > cert_limit: #{@cert_limit}"
           @cert_limit = init_cert_limit
+          LOGGER.debug "closing > cert_limit: #{@cert_limit}"
 
-          # is this needed?
+          # move to next enity if the current entity is the closed corporation
           @round.force_next_entity! if @round.current_entity == corporation
         end
 

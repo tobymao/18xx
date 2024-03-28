@@ -26,9 +26,9 @@ module Engine
             token.destroy!
             @log << "GIPR replaced #{closing_corp.name} token at #{hex.name} with exchange token."
             @game.use_gipr_exchange_token
-            LOGGER.debug "process_remove_token > gipr: #{entity.tokens.to_s} / closing: #{closing_corp.tokens.to_s}"
+            LOGGER.debug "ExchangeToken::process_remove_token > gipr:#{entity.tokens.to_s} closing: #{closing_corp.tokens.to_s}"
 
-            @round.pending_exchange_tokens.clear if gipr_exchange_tokens.zero?
+            @round.pending_exchange_tokens.clear if @game.gipr_exchange_tokens.zero?
             @round.pending_exchange_tokens.shift
           end
 
@@ -46,6 +46,7 @@ module Engine
             super.merge(
               {
                 pending_exchange_tokens: [],
+                gipr_exchanging: false,
               }
             )
           end
@@ -92,7 +93,7 @@ module Engine
             @log << "#{pending_entity.name} choose not to exchange with #{closing_corp.name} token at #{hex.name}"
             token.destroy!
             @round.pending_exchange_tokens.shift
-            # pass!
+            LOGGER.debug "ExchangeToken::process_pass > gipr:#{pending_entity.tokens.to_s} closing: #{closing_corp.tokens.to_s}"
           end
         end
       end
