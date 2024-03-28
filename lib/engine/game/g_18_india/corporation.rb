@@ -4,7 +4,7 @@ module Engine
   module Game
     module G18India
       class Corporation < Engine::Corporation
-        attr_accessor :commodities
+        attr_accessor :commodities, :bond_shares
         attr_reader :managers_share
 
         def initialize(sym:, name:, **opts)
@@ -41,6 +41,11 @@ module Engine
             remove_when_used_up: false,
           )
           add_ability(ability)
+
+          # create addiional GIPR shares for converting Railroad Bonds
+          @bond_shares = (Array.new(10, 10)).map.with_index do |percent, index|
+            Share.new(self, percent: percent, index: index + 10)
+          end
         end
 
         def make_manager(player)

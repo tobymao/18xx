@@ -198,6 +198,11 @@ module Engine
           end
         end
 
+        # Include bond shares for cache_objects
+        def shares
+          @corporations.flat_map(&:shares) + @players.flat_map(&:shares) + @share_pool.shares + gipr.bond_shares
+        end
+
         def setup_preround
           # remove random corporations based on regions, One from each group is Guaranty Company
           setup_corporations_by_region!(@corporations)
@@ -428,12 +433,9 @@ module Engine
         end
 
         def gipr_share_price
-          return 112 unless @corporations
-
-          gipr = @corporations.find { |corp| corp.name == 'GIPR' }
           return 112 unless gipr.share_price
 
-          gipr.share_price
+          gipr.share_price.price
         end
 
         def init_round

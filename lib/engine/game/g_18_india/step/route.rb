@@ -8,6 +8,7 @@ module Engine
       module Step
         class Route < Engine::Step::Route
           # modified to claim commodities when routes are run
+          # TODO: to be completed after prior pull request merged.
           def process_run_routes(action)
             super
             entity = action.entity
