@@ -192,7 +192,7 @@ module Engine
         SP_TILES = %w[X22 X23].freeze
         T_HEX = 'F8'
         T_BONUS = 30
-        T_TILE = 'X30'
+        T_TILE = 'X29'
         RIFT_BONUS = 60
         EW_BONUS = 80
         NE_HEXES = %w[K1 L2 L4].freeze
