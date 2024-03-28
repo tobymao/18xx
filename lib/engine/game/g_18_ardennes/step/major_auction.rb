@@ -30,7 +30,7 @@ module Engine
               company.type == :concession && company.owner.nil? && !company.closed?
             end
             # Hash showing which minors can be used to start a public company.
-            # The public companies are the has keys, each value is an array of
+            # The public companies are the hash keys, each value is an array of
             # minor companies.
             @eligible_minors = {}
           end
