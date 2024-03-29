@@ -39,9 +39,10 @@ module Engine
           end
 
           def auto_actions(entity)
-            return [Engine::Action::Dividend.new(current_entity, kind: 'withhold')] if entity.loans.size.positive?
+            return [] unless @game.nationalized?
+            return [] if entity.loans.empty?
 
-            []
+            [Engine::Action::Dividend.new(current_entity, kind: 'withhold')]
           end
 
           def dividend_options(entity)
