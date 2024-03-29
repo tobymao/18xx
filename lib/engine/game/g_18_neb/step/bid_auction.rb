@@ -40,8 +40,10 @@ module Engine
           end
 
           def process_bid(action)
-            action.entity.unpass!
+            entity = action.entity
+            entity.unpass!
             add_bid(action)
+            @log << "#{entity.name} bids #{@game.format_currency(action.price)} on #{action.company.name}"
             @round.next_entity_index!
           end
 

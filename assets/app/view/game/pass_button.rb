@@ -21,7 +21,7 @@ module View
         }
 
         for_text = @for_player ? " (#{@for_player.name})" : ''
-        h(:button, props, "#{@game.round.pass_description}#{for_text}")
+        h('button#pass', props, "#{@game.round.pass_description}#{for_text}")
       end
     end
   end

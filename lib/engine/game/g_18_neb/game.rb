@@ -106,8 +106,8 @@ module Engine
             distance: [{ 'nodes' => %w[town], 'pay' => 2 },
                        { 'nodes' => %w[town city offboard], 'pay' => 2 }],
             price: 100,
-            rusts_on: '4D',
-            num: 2,
+            rusts_on: '4+4',
+            num: 5,
           },
           {
             name: '3+3',
@@ -115,7 +115,7 @@ module Engine
                        { 'nodes' => %w[town city offboard], 'pay' => 3 }],
             price: 200,
             rusts_on: '6/8',
-            num: 1,
+            num: 4,
           },
           {
             name: '4+4',
@@ -123,20 +123,20 @@ module Engine
                        { 'nodes' => %w[town city offboard], 'pay' => 4 }],
             price: 300,
             rusts_on: '4D',
-            num: 1,
+            num: 3,
           },
           {
             name: '5/7',
             distance: [{ 'nodes' => %w[city offboard town], 'pay' => 5, 'visit' => 7 }],
             price: 450,
-            num: 1,
+            num: 2,
             events: [{ 'type' => 'close_companies' },
                      { 'type' => 'full_capitalization' },
                      { 'type' => 'local_railways_available' }],
           },
           {
             name: '6/8',
-            distance: [{ 'pay' => 6, 'visit' => 8 }],
+            distance: [{ 'nodes' => %w[city offboard town], 'pay' => 6, 'visit' => 8 }],
             price: 600,
             num: 2,
             events: [{ 'type' => 'remove_tokens' }],
@@ -210,6 +210,19 @@ module Engine
 
         def setup
           @corporations_to_fully_capitalize = []
+          @locals = @corporations.select { |c| c.type == :local }
+          move_local_reservations_to_city
+        end
+
+        def move_local_reservations_to_city
+          @locals.each do |local|
+            hex = hex_by_id(local.coordinates)
+            hex.tile.remove_reservation!(local)
+            [@tiles, @all_tiles].each do |tiles|
+              brown_tile = tiles.find { |t| local_home_track_brown_upgrade?(hex.tile, t) }
+              brown_tile.cities.first.add_reservation!(local)
+            end
+          end
         end
 
         def event_close_companies!
@@ -235,6 +248,10 @@ module Engine
 
           @cattle_token_hex.remove_assignment!(self.class::CATTLE_OPEN_ICON)
           @cattle_token_hex.remove_assignment!(self.class::CATTLE_CLOSED_ICON)
+          @corporations.each do |corporation|
+            corporation.remove_assignment!(self.class::CATTLE_OPEN_ICON)
+            corporation.remove_assignment!(self.class::CATTLE_CLOSED_ICON)
+          end
         end
 
         def reorder_players(order = nil, log_player_order: false)
@@ -250,10 +267,8 @@ module Engine
 
         def stock_round
           Round::Stock.new(self, [
-            Engine::Step::DiscardTrain,
+            G18Neb::Step::LocalHomeTrack,
             G18Neb::Step::Exchange,
-            Engine::Step::HomeToken,
-            Engine::Step::SpecialTrack,
             G18Neb::Step::BuySellParShares,
           ])
         end
@@ -281,6 +296,7 @@ module Engine
         end
 
         def upgrades_to?(from, to, special = false, selected_company: nil)
+          return local_home_track_brown_upgrade?(from, to) if @round.is_a?(Round::Stock)
           return true if town_to_city_upgrade?(from, to)
           return true if omaha_green_upgrade?(from, to)
 
@@ -293,6 +309,10 @@ module Engine
 
         def town_to_city_upgrade?(from, to)
           %w[3 4 58].include?(from.name) && %w[X01 X02 X03].include?(to.name)
+        end
+
+        def local_home_track_brown_upgrade?(from, to)
+          to.color == :brown && @locals.map(&:coordinates).include?(from.hex.id) && upgrades_to_correct_label?(from, to)
         end
 
         def upgrade_cost(tile, _hex, entity, spender)
@@ -332,7 +352,24 @@ module Engine
 
         def after_par(corporation)
           super
-          @corporations_to_fully_capitalize << corporation if corporations_fully_capitalize?
+          return if corporation.type == :local || !corporations_fully_capitalize?
+
+          @corporations_to_fully_capitalize << corporation
+        end
+
+        def place_home_token(corporation)
+          unless can_place_home_token?(corporation)
+            @round.pending_home_track << corporation unless @round.pending_home_track.include?(corporation)
+            return
+          end
+
+          super
+        end
+
+        def can_place_home_token?(corporation)
+          return true unless corporation.type == :local
+
+          %i[brown gray].include?(hex_by_id(corporation.coordinates).tile.color)
         end
 
         def corporations_fully_capitalize?
@@ -364,13 +401,14 @@ module Engine
         end
 
         def check_for_full_capitalization(corporation)
-          return unless corporation.num_ipo_shares == 5
-          return unless @corporations_to_fully_capitalize.delete(corporation)
+          return if !@corporations_to_fully_capitalize.include?(corporation) || corporation.num_ipo_shares != 5
 
-          @bank.spend(coproration.num_ipo_shares * corporation.par_price.price, corporation)
+          cash = corporation.num_ipo_shares * corporation.par_price.price
+          @bank.spend(cash, corporation)
           @share_pool.transfer_shares(ShareBundle.new(corporation.shares_of(corporation)), @share_pool)
-          @log << "#{corporation.name} receives 5x its starting price in its treasury. " \
-                  "#{corporation.name}'s remaining shares are placed in the market"
+          @corporations_to_fully_capitalize.delete(corporation)
+          @log << "#{corporation.name} becomes fully capitalized, receiving #{format_currency(cash)} in its treasury. " \
+                  "#{corporation.name}'s remaining shares are placed in the market."
         end
 
         def issuable_shares(entity)
@@ -412,14 +450,13 @@ module Engine
         end
 
         def east_west_route?(stops)
-          (stops.flat_map(&:groups) & %w[E W]).size == 2
+          (stops.map { |s| s.tile.label&.to_s }.uniq & %w[E W]).size == 2
         end
 
         def east_west_bonus(route, stops)
           return 0 unless east_west_route?(stops)
 
-          multiplier = route.train.name == '4D' ? 2 : 1
-          stops.map { |stop| stop.route_revenue(route.phase, route.train) }.max * multiplier
+          stops.map { |stop| stop.route_revenue(route.phase, route.train) }.max
         end
 
         def cattle_bonus(route, stops)
