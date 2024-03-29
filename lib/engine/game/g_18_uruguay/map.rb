@@ -204,28 +204,28 @@ module Engine
         HEXES = {
           white: {
             %w[B4 B6 C9 D6 E3 E13 G11 I9 J12] => 'city=revenue:0',
-            %w[C3 D4 G13 H2 H6] => 'icon=image:18_zoo/wheat;icon=image:18_zoo/wheat',
-            %w[E5 H12 J8] => 'icon=image:1846/meat;icon=image:1846/meat',
-            %w[D8 F12 I5] => 'icon=image:18_los_angeles/meat;icon=image:18_los_angeles/meat',
+            %w[C3 D4 G13 H2 H6] => 'icon=image:18_uruguay/corn;icon=image:18_uruguay/corn',
+            %w[E5 H12 J8] => 'icon=image:18_uruguay/sheep;icon=image:18_uruguay/sheep',
+            %w[D8 F12 I5] => 'icon=image:18_uruguay/cow;icon=image:18_uruguay/cow',
             %w[F14 H10 I7 I13 J4] => 'town=revenue:0',
             %w[C7 G9 H8 I11] => 'upgrade=cost:40,terrain:mountain',
             ['C5'] => 'town=revenue:0;town=revenue:0',
             ['D2'] => 'city=revenue:0;future_label=label:L,color:brown',
             ['D10'] => 'upgrade=cost:20,terrain:water;border=edge:5,type:water,cost:40',
-            ['E7'] => 'icon=image:1846/meat;icon=image:1846/meat;border=edge:5,type:water,cost:40',
+            ['E7'] => 'icon=image:18_uruguay/sheep;icon=image:18_uruguay/sheep;border=edge:5,type:water,cost:40',
             ['E9'] => 'town=revenue:0;border=edge:0,type:water,cost:40;border=edge:4,type:water,cost:40;'\
                       'border=edge:5,type:water,cost:40',
             ['E11'] => 'town=revenue:0;border=edge:1,type:water,cost:40;border=edge:2,type:water,cost:40',
             ['F2'] => 'city=revenue:0;border=edge:5,type:water,cost:40',
-            ['F4'] => 'icon=image:18_los_angeles/meat;icon=image:18_los_angeles/meat;border=edge:5,type:water,cost:40;'\
+            ['F4'] => 'icon=image:18_uruguay/cow;icon=image:18_uruguay/cow;border=edge:5,type:water,cost:40;'\
                       'border=edge:0,type:water,cost:40',
             ['F6'] => 'city=revenue:0;border=edge:0,type:water,cost:40;border=edge:4,type:water,cost:40;'\
                       'border=edge:5,type:water,cost:40',
             ['F8'] => 'upgrade=cost:20,terrain:river;border=edge:1,type:water,cost:40;border=edge:2,type:water,cost:40;'\
                       'border=edge:3,type:water,cost:40',
-            ['F10'] => 'icon=image:18_los_angeles/meat;icon=image:18_los_angeles/meat;border=edge:2,type:water,cost:40',
+            ['F10'] => 'icon=image:18_uruguay/cow;icon=image:18_uruguay/cow;border=edge:2,type:water,cost:40',
             ['G3'] => 'city=revenue:0;border=edge:2,type:water,cost:40;border=edge:3,type:water,cost:40',
-            ['G5'] => 'icon=image:1846/meat;icon=image:1846/meat;border=edge:2,type:water,cost:40;'\
+            ['G5'] => 'icon=image:18_uruguay/sheep;icon=image:18_uruguay/sheep;border=edge:2,type:water,cost:40;'\
                       'border=edge:3,type:water,cost:40',
             ['G7'] => 'city=revenue:0;city=revenue:0;label=XX;border=edge:2,type:water,cost:40',
             ['H4'] => 'town=revenue:0;town=revenue:0',
