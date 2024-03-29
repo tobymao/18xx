@@ -76,6 +76,10 @@ module Engine
             (0..5).to_a
           end
 
+          def old_paths_maintained?(hex, tile)
+            (hex.tile.exits & tile.exits) == hex.tile.exits
+          end
+
           def check_track_restrictions!(_entity, _old_tile, _new_tile); end
         end
       end
