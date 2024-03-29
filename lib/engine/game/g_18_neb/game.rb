@@ -296,9 +296,9 @@ module Engine
         end
 
         def upgrades_to?(from, to, special = false, selected_company: nil)
+          return local_home_track_brown_upgrade?(from, to) if @round.is_a?(Round::Stock)
           return true if town_to_city_upgrade?(from, to)
           return true if omaha_green_upgrade?(from, to)
-          return true if @round.is_a?(Round::Stock) && local_home_track_brown_upgrade?(from, to)
 
           super
         end
