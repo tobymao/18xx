@@ -1,0 +1,477 @@
+{
+  "status": "finished",
+  "actions": [
+    {
+      "type": "bid",
+      "entity": 0,
+      "entity_type": "player",
+      "id": 1,
+      "created_at": 1706953220,
+      "company": "AP",
+      "price": 20
+    },
+    {
+      "type": "bid",
+      "entity": 1,
+      "entity_type": "player",
+      "id": 2,
+      "created_at": 1706953223,
+      "company": "FCCU_PRIV",
+      "price": 225
+    },
+    {
+      "type": "bid",
+      "entity": 2,
+      "entity_type": "player",
+      "id": 3,
+      "created_at": 1706953225,
+      "company": "LA_CORN",
+      "price": 40
+    },
+    {
+      "type": "bid",
+      "entity": 0,
+      "entity_type": "player",
+      "id": 8,
+      "created_at": 1706953269,
+      "company": "LO_SHEEP",
+      "price": 70
+    },
+    {
+      "type": "bid",
+      "entity": 1,
+      "entity_type": "player",
+      "id": 9,
+      "created_at": 1706953279,
+      "company": "JOHN",
+      "price": 405
+    },
+    {
+      "type": "bid",
+      "entity": 2,
+      "entity_type": "player",
+      "id": 10,
+      "created_at": 1706953282,
+      "company": "LO_CATTLE",
+      "price": 110
+    },
+    {
+      "type": "par",
+      "entity": 1,
+      "entity_type": "player",
+      "id": 11,
+      "created_at": 1706953287,
+      "corporation": "FCCU",
+      "share_price": "65,5,4"
+    },
+    {
+      "type": "par",
+      "entity": 0,
+      "entity_type": "player",
+      "id": 12,
+      "created_at": 1706953292,
+      "corporation": "FCNE",
+      "share_price": "65,5,4"
+    },
+    {
+      "type": "buy_shares",
+      "entity": 2,
+      "entity_type": "player",
+      "id": 13,
+      "created_at": 1706953299,
+      "shares": [
+        "FCNE_1"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "buy_shares",
+      "entity": 0,
+      "entity_type": "player",
+      "id": 14,
+      "created_at": 1706953303,
+      "shares": [
+        "FCNE_2"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "buy_shares",
+      "entity": 2,
+      "entity_type": "player",
+      "id": 15,
+      "created_at": 1706953305,
+      "shares": [
+        "FCNE_3"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "par",
+      "entity": 0,
+      "entity_type": "player",
+      "id": 16,
+      "created_at": 1706953310,
+      "corporation": "WER",
+      "share_price": "65,5,4"
+    },
+    {
+      "type": "buy_shares",
+      "entity": 2,
+      "entity_type": "player",
+      "id": 17,
+      "created_at": 1706953312,
+      "shares": [
+        "WER_1"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "buy_shares",
+      "entity": 0,
+      "entity_type": "player",
+      "id": 18,
+      "created_at": 1706953314,
+      "shares": [
+        "WER_2"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "buy_shares",
+      "entity": 2,
+      "entity_type": "player",
+      "id": 19,
+      "created_at": 1706953315,
+      "shares": [
+        "WER_3"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "par",
+      "entity": 0,
+      "entity_type": "player",
+      "id": 20,
+      "created_at": 1706953317,
+      "corporation": "FCNO",
+      "share_price": "65,5,4"
+    },
+    {
+      "type": "buy_shares",
+      "entity": 2,
+      "entity_type": "player",
+      "id": 21,
+      "created_at": 1706953319,
+      "shares": [
+        "FCNO_1"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "buy_shares",
+      "entity": 2,
+      "entity_type": "player",
+      "id": 22,
+      "created_at": 1706953320,
+      "shares": [
+        "FCNO_2"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "buy_shares",
+      "entity": 2,
+      "entity_type": "player",
+      "id": 23,
+      "created_at": 1706953321,
+      "shares": [
+        "FCNO_3"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "assign",
+      "entity": "LA_CORN",
+      "entity_type": "company",
+      "id": 24,
+      "created_at": 1706953326,
+      "target": "C3",
+      "target_type": "hex"
+    },
+    {
+      "type": "assign",
+      "entity": "LA_CORN",
+      "entity_type": "company",
+      "id": 25,
+      "created_at": 1706953328,
+      "target": "D2",
+      "target_type": "hex"
+    },
+    {
+      "type": "assign",
+      "entity": "LO_SHEEP",
+      "entity_type": "company",
+      "id": 26,
+      "created_at": 1706953328,
+      "target": "E5",
+      "target_type": "hex"
+    },
+    {
+      "type": "assign",
+      "entity": "LO_SHEEP",
+      "entity_type": "company",
+      "id": 27,
+      "created_at": 1706953329,
+      "target": "E3",
+      "target_type": "hex"
+    },
+    {
+      "type": "assign",
+      "entity": "LO_CATTLE",
+      "entity_type": "company",
+      "id": 28,
+      "created_at": 1706953331,
+      "target": "I5",
+      "target_type": "hex"
+    },
+    {
+      "type": "assign",
+      "entity": "LO_CATTLE",
+      "entity_type": "company",
+      "id": 29,
+      "created_at": 1706953331,
+      "target": "I3",
+      "target_type": "hex"
+    },
+    {
+      "type": "pass",
+      "entity": "FCNE",
+      "entity_type": "corporation",
+      "id": 30,
+      "created_at": 1708151281,
+      "auto_actions": [
+        {
+          "type": "pass",
+          "entity": "FCNE",
+          "entity_type": "corporation",
+          "created_at": 1708151281
+        }
+      ]
+    },
+    {
+      "type": "buy_train",
+      "entity": "FCNE",
+      "entity_type": "corporation",
+      "id": 31,
+      "created_at": 1708151344,
+      "train": "2-0",
+      "price": 80,
+      "variant": "2"
+    },
+    {
+      "type": "buy_train",
+      "entity": "FCNE",
+      "entity_type": "corporation",
+      "id": 32,
+      "created_at": 1708151345,
+      "train": "2-1",
+      "price": 80,
+      "variant": "2"
+    },
+    {
+      "type": "buy_train",
+      "entity": "FCNE",
+      "entity_type": "corporation",
+      "id": 33,
+      "created_at": 1708151345,
+      "train": "2-2",
+      "price": 80,
+      "variant": "2"
+    },
+    {
+      "type": "buy_train",
+      "entity": "FCNE",
+      "entity_type": "corporation",
+      "id": 34,
+      "created_at": 1708151346,
+      "train": "2-3",
+      "price": 80,
+      "variant": "2"
+    },
+    {
+      "type": "pass",
+      "entity": "WER",
+      "entity_type": "corporation",
+      "id": 35,
+      "created_at": 1708151354,
+      "auto_actions": [
+        {
+          "type": "pass",
+          "entity": "WER",
+          "entity_type": "corporation",
+          "created_at": 1708151354
+        }
+      ]
+    },
+    {
+      "type": "buy_train",
+      "entity": "WER",
+      "entity_type": "corporation",
+      "id": 36,
+      "created_at": 1708151357,
+      "train": "2-4",
+      "price": 80,
+      "variant": "2"
+    },
+    {
+      "type": "buy_train",
+      "entity": "WER",
+      "entity_type": "corporation",
+      "id": 37,
+      "created_at": 1708151358,
+      "train": "2-5",
+      "price": 80,
+      "variant": "2"
+    },
+    {
+      "type": "buy_train",
+      "entity": "WER",
+      "entity_type": "corporation",
+      "id": 38,
+      "created_at": 1708151358,
+      "train": "2-6",
+      "price": 80,
+      "variant": "2"
+    },
+    {
+      "type": "buy_train",
+      "entity": "WER",
+      "entity_type": "corporation",
+      "id": 39,
+      "created_at": 1708151359,
+      "train": "2-7",
+      "price": 80,
+      "variant": "2"
+    },
+    {
+      "type": "pass",
+      "entity": "FCNO",
+      "entity_type": "corporation",
+      "id": 40,
+      "created_at": 1708151365,
+      "auto_actions": [
+        {
+          "type": "pass",
+          "entity": "FCNO",
+          "entity_type": "corporation",
+          "created_at": 1708151365
+        }
+      ]
+    },
+    {
+      "type": "buy_train",
+      "entity": "FCNO",
+      "entity_type": "corporation",
+      "id": 41,
+      "created_at": 1708151367,
+      "train": "2-8",
+      "price": 80,
+      "variant": "2"
+    },
+    {
+      "type": "buy_train",
+      "entity": "FCNO",
+      "entity_type": "corporation",
+      "id": 42,
+      "created_at": 1708151367,
+      "train": "3-0",
+      "price": 180,
+      "variant": "3"
+    },
+    {
+      "type": "pass",
+      "entity": "FCNO",
+      "entity_type": "corporation",
+      "id": 43,
+      "created_at": 1708151374
+    },
+    {
+      "type": "pass",
+      "entity": "FCNO",
+      "entity_type": "corporation",
+      "id": 44,
+      "created_at": 1708151381,
+      "auto_actions": [
+        {
+          "type": "pass",
+          "entity": "RPTLA",
+          "entity_type": "corporation",
+          "created_at": 1708151381
+        }
+      ]
+    },
+    {
+      "type": "run_routes",
+      "entity": "RPTLA",
+      "entity_type": "corporation",
+      "id": 45,
+      "created_at": 1708151386,
+      "routes": [],
+      "extra_revenue": 0
+    },
+    {
+      "type": "dividend",
+      "entity": "RPTLA",
+      "entity_type": "corporation",
+      "id": 46,
+      "created_at": 1708151390,
+      "kind": "payout"
+    },
+    {
+      "type": "bankrupt",
+      "entity": "RPTLA",
+      "entity_type": "corporation",
+      "id": 47,
+      "created_at": 1708151393
+    }
+  ],
+  "id": "hs_obbiawrr_1706953218",
+  "players": [
+    {
+      "name": "Player 1",
+      "id": 0
+    },
+    {
+      "name": "Player 2",
+      "id": 1
+    },
+    {
+      "name": "Player 3",
+      "id": 2
+    }
+  ],
+  "title": "18Uruguay",
+  "description": "",
+  "min_players": "3",
+  "max_players": "3",
+  "settings": {
+    "optional_rules": [],
+    "seed": ""
+  },
+  "mode": "hotseat",
+  "user": {
+    "id": 0,
+    "name": "You"
+  },
+  "created_at": "2024-02-17",
+  "loaded": true,
+  "result": {"0" : 610, "1": 610, "2":625},
+  "manually_ended": false,
+  "turn": 1,
+  "round": "Operating Round",
+  "acting": [
+    1
+  ],
+  "updated_at": 1708151393
+}
