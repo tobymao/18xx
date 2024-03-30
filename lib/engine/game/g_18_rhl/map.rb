@@ -421,7 +421,7 @@ module Engine
                         'border=edge:5,type:impassable,color:blue',
               ['B9'] => 'city=revenue:0',
               %w[B11 D3 D5 E4 F3 F7 G4 G8 H3 H5 H7 I2 I8 J5 J7 K8] => '',
-              %w[B13 E8 F5 J3] => 'town=revenue:0;town=revenue:0',
+              %w[B13 F5 J3] => 'town=revenue:0;town=revenue:0',
               %w[C4 I6 K4] => 'town=revenue:0',
               ['C6'] => 'town=revenue:0;border=edge:3,type:impassable,color:blue',
               ['C8'] => 'stub=edge:3;upgrade=cost:30,terrain:water;border=edge:2,type:impassable,color:blue;'\
