@@ -293,6 +293,13 @@ module Engine
           ], round_num: round_num)
         end
 
+        def stock_round
+          Engine::Round::Stock.new(self, [
+            Step::DiscardTrain,
+            G18Uruguay::Step::BuySellParShares,
+          ])
+        end
+
         def abilities_ignore_owner(entity, type = nil, time: nil, on_phase: nil, passive_ok: nil, strict_time: nil)
           return nil unless entity
 
