@@ -147,6 +147,10 @@ module Engine
                             'Time for nationalization']
         ).freeze
 
+        STATUS_TEXT = Base::STATUS_TEXT.merge(
+          'rptla_available' => ['RPTLA public available', 'RPTLA is available for purchase.'],
+        ).freeze
+
         def price_movement_chart
           [
             ['Action', 'Share Price Change'],
@@ -291,6 +295,13 @@ module Engine
             G18Uruguay::Step::BuyTrain,
             [G18Uruguay::Step::TakeLoanBuyCompany, { blocks: true }],
           ], round_num: round_num)
+        end
+
+        def stock_round
+          Engine::Round::Stock.new(self, [
+            Step::DiscardTrain,
+            G18Uruguay::Step::BuySellParShares,
+          ])
         end
 
         def abilities_ignore_owner(entity, type = nil, time: nil, on_phase: nil, passive_ok: nil, strict_time: nil)
