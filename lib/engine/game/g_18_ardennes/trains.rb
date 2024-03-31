@@ -136,6 +136,10 @@ module Engine
         end
 
         def revenue_for(route, stops)
+          # TODO (maybe): I suspect that the calculation of the revenue for a
+          # long 4D route is inefficient, and might cause slow auto-routing.
+          # It might be worth pruning out some of the stops from the route
+          # to avoid calling this method so often.
           super +
             ferry_bonus(route, stops) +
             mine_bonus(route, stops) +
