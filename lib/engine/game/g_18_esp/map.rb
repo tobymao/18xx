@@ -19,8 +19,8 @@ module Engine
           '77' => 5,
           '8' => 15,
           '78' => 15,
-          '9' => 11,
-          '79' => 11,
+          '9' => 15,
+          '79' => 15,
           '57' => 5,
           '956' => 5,
           '58' => 6,
@@ -86,8 +86,16 @@ module Engine
             'count' => 1,
             'color' => 'yellow',
             'code' =>
-              'town=revenue:10,loc:center;town=revenue:10;path=a:0,b:_0;path=a:3,b:_0;' \
-              'path=a:5,b:_0;path=a:2,b:_1;path=a:4,b:_1',
+              'town=revenue:10;town=revenue:10;path=a:0,b:_0;path=a:4,b:_0;' \
+              'path=a:1,b:_1;path=a:5,b:_1',
+          },
+
+          'L113' => {
+            'count' => 1,
+            'color' => 'yellow',
+            'code' =>
+              'town=revenue:10;town=revenue:10;path=a:0,b:_0;path=a:3,b:_0;' \
+              'path=a:1,b:_1;path=a:5,b:_1',
           },
 
           'L89' =>
@@ -491,7 +499,7 @@ module Engine
           %w[L129 L132],
           %w[L130 L133],
           %w[L131 L134],
-          %w[L79],
+          %w[L79 L113],
           %w[L89 L92],
           %w[L90 L93],
           %w[L91 L94],
@@ -631,7 +639,6 @@ module Engine
           'K31' => 'Cartagena harbor',
           'K15' => 'Paris',
           'K19' => 'Lérida',
-          'K23' => 'Castellón',
           'K25' => 'Valencia',
           'L16' => 'Toulouse',
           'L22' => 'Tarragona',
@@ -645,9 +652,9 @@ module Engine
 
         HEXES = {
           blue: {
-            %w[C1] => 'halt=revenue:yellow_40|green_30|brown_20|gray_20;path=a:0,b:_0,track:dual;icon=image:18_esp/SFVA,sticky:1',
-            %w[E1] => 'halt=revenue:yellow_20|green_30|brown_40|gray_50;path=a:0,b:_0,track:dual',
-            %w[K3] => 'halt=revenue:green_30|brown_40|gray_50;path=a:0,b:_0,track:dual',
+            %w[C1] => 'halt=revenue:yellow_30|green_20|brown_10|gray_10;path=a:0,b:_0,track:dual;icon=image:18_esp/SFVA,sticky:1',
+            %w[E1] => 'halt=revenue:yellow_10|green_20|brown_30|gray_40;path=a:0,b:_0,track:dual',
+            %w[K3] => 'halt=revenue:green_20|brown_30|gray_40;path=a:0,b:_0,track:dual',
             %w[L26] => 'halt=revenue:yellow_20|green_30|brown_50|gray_60,groups:E;path=a:2,b:_0,track:dual;label=E',
             %w[I33] => 'halt=revenue:yellow_20|green_30|brown_30|gray_40,groups:E;path=a:2,b:_0,track:dual;label=E',
             %w[K31] => 'halt=revenue:yellow_40|green_30|brown_30|gray_40,groups:E;path=a:2,b:_0,track:dual;label=E',
@@ -742,10 +749,10 @@ module Engine
             %w[B30 D8 E19 F30 G17 I21 J24] => 'halt=symbol:⚒,route:mandatory;town=revenue:0;upgrade=cost:30,terrain:mine',
             %w[C7 C11 E25 F10 F22 G19 H20 I9 I25 G33] => 'upgrade=cost:40,terrain:mountain',
             %w[E23] => 'upgrade=cost:50,terrain:mountain',
-            %w[E5 K23 N20] => 'town=revenue:0;upgrade=cost:40,terrain:mountain',
+            %w[E5 N20] => 'town=revenue:0;upgrade=cost:40,terrain:mountain',
             %w[G31] => 'upgrade=cost:120,terrain:mountain',
             %w[J18 K17] => 'upgrade=cost:100,terrain:mountain',
-            %w[C29 D28 E27] => 'upgrade=cost:20,terrain:mountain',
+            %w[C29 D28 E27 K23] => 'upgrade=cost:20,terrain:mountain',
             %w[G23] => 'town=revenue:0;upgrade=cost:20,terrain:mountain',
             %w[F28] => 'town=revenue:0;upgrade=cost:20,terrain:mountain;icon=image:18_esp/CRB,sticky:1',
             %w[F26] => 'town=revenue:0;town=revenue:0;upgrade=cost:20,terrain:river',

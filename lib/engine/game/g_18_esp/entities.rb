@@ -56,12 +56,30 @@ module Engine
           },
           {
             sym: 'P4',
+            name: 'Alar del Rey - Santander',
+            value: 100,
+            revenue: 20,
+            min_price: 1,
+            desc: 'The major owning company (both North and '\
+                  'South) can build the mountain pass of Alar del '\
+                  'Rey for free, or any other mountain pass with '\
+                  'a discount of pts40. This action closes this company.',
+            abilities: [{
+              type: 'choose_ability',
+              owner_type: 'corporation',
+              when: 'track',
+              choices: { close: 'Close P5' },
+            }],
+
+          },
+          {
+            sym: 'P5',
             name: 'La Maquinista',
             value: 130,
             revenue: 10,
             min_price: 1,
-            desc: "Provides five tender cards. The owner of this company (only player) can \
-            sell up to four of these five tenders (to any company). Each tender costs pts80 \
+            desc: "Provides six tender cards. The owner of this company (only player) can \
+            sell up to five of these six tenders (to any company). Each tender costs pts80 \
             (20 goes to the owner and 60 to the bank). The fifth tender remains with the company\
              until it is bought by a major or minor company. Then the fifth tender belongs to the\
               company that bought this private. The director of the company that buys this private\
@@ -88,24 +106,6 @@ module Engine
             color: nil,
           },
           {
-            sym: 'P5',
-            name: 'Alar del Rey - Santander',
-            value: 100,
-            revenue: 20,
-            min_price: 1,
-            desc: 'The major owning company (both North and '\
-                  'South) can build the mountain pass of Alar del '\
-                  'Rey for free, or any other mountain pass with '\
-                  'a discount of pts40. This action closes this company.',
-            abilities: [{
-              type: 'choose_ability',
-              owner_type: 'corporation',
-              when: 'track',
-              choices: { close: 'Close P5' },
-            }],
-
-          },
-          {
             sym: 'P6',
             name: 'Zafra - Huelva',
             value: 160,
@@ -126,7 +126,7 @@ module Engine
           {
             sym: 'P7',
             name: 'Ferrocarril de Carreño',
-            value: 190,
+            value: 170,
             revenue: 30,
             desc: 'President share of one Northern major company (randomly selected before the game starts).'\
                   'It closes when the major company buys its first train.',
