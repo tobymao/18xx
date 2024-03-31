@@ -111,6 +111,12 @@ module Engine
           '4D': 80,
         }.freeze
 
+        FERRY_PORTS = {
+          'E3' => %w[E5],
+          'F2' => %w[F4 G3],
+          'G1' => %w[G3],
+        }.freeze
+
         def visited_stops(route)
           return super unless route.train.name == '4D'
 
@@ -149,7 +155,12 @@ module Engine
         def ferry_bonus(route, stops)
           return 0 unless stops.any?(&:offboard?)
 
-          FERRY_BONUS[route.train.name]
+          bonus = FERRY_BONUS[route.train.name]
+          return bonus unless route.train.name == '4D'
+
+          # For 4D trains we need to make sure that both the ferry off-board
+          # area and the adjacent port are scored as part of the route.
+          ferry_port_route?(route, stops) ? bonus : 0
         end
 
         def mine_bonus(route, stops)
@@ -274,6 +285,34 @@ module Engine
 
         def train_type(train)
           train.name == '4D' ? :express : :normal
+        end
+
+        # Checks whether the scored stops on a route includes boths a ferry
+        # off-board hex and its neighbouring port city, and that there is a
+        # direct route between the two.
+        def ferry_port_route?(route, stops)
+          ferries = stops.select(&:offboard?)
+          stops.any? do |port|
+            ferries.any? do |ferry|
+              port_hexes = FERRY_PORTS[ferry.hex.coordinates]
+              next false unless port_hexes.include?(port.hex.coordinates)
+
+              # The F2 off-board area has connections to both Brugge [F4] and
+              # Dunkerque [G3]. We need to make sure that the train has gone
+              # directly between the ferry hex and the port city that is being
+              # counted for revenue.
+              direct_path?(route.ordered_paths, ferry, port)
+            end
+          end
+        end
+
+        # Checks whether there is a direct connection between stop1 and stop2
+        # without any intervening hexes.
+        def direct_path?(ordered_paths, stop1, stop2)
+          ordered_paths.each_cons(2) do |paths|
+            return true if paths.map(&:stops).map(&:first).difference([stop1, stop2]).empty?
+          end
+          false
         end
       end
     end
