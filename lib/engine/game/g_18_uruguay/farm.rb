@@ -78,8 +78,7 @@ module Engine
           end
           target = action.target
           good = retreive_goods!(@farm_id)
-
-          target.assign!(good)
+          target.assign!(good, stack_group: 'GOODS')
 
           if (ability = goods)
             ability.use!
