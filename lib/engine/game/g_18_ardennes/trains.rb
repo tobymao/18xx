@@ -111,6 +111,13 @@ module Engine
           '4D': 80,
         }.freeze
 
+        def visited_stops(route)
+          return super unless route.train.name == '4D'
+
+          # 4D trains ignore towns completely.
+          super.reject(&:town?)
+        end
+
         def route_distance_str(route)
           towns = route.visited_stops.count(&:town?)
           cities = route.visited_stops.count(&:city?)
