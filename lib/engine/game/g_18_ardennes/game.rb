@@ -123,7 +123,7 @@ module Engine
             G18Ardennes::Step::Route,
             G18Ardennes::Step::Dividend,
             Engine::Step::DiscardTrain,
-            Engine::Step::BuyTrain,
+            G18Ardennes::Step::BuyTrain,
           ], round_num: round_num)
         end
 
