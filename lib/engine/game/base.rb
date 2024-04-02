@@ -1932,8 +1932,8 @@ module Engine
         place_home_token(corporation) if self.class::HOME_TOKEN_TIMING == :par
       end
 
-      # This is a hook to do something before company closes
-      def company_is_closing(company, silent = false)
+      # This is a hook to do something before company is closed by using an ability
+      def company_closing_after_using_ability(company, silent = false)
         @log << "#{company.name} closes" unless silent
       end
 
@@ -1944,8 +1944,10 @@ module Engine
           abilities(company, :close, time: event) do |ability|
             next if entity&.name != ability.corporation
 
-            company_is_closing(company, ability.silent)
             company.close!
+            next if ability.silent
+
+            @log << "#{company.name} closes"
           end
         end
       end
@@ -2135,6 +2137,11 @@ module Engine
 
       def exchange_partial_percent(_share)
         nil
+      end
+
+      # Entities that can own an exchange ability.
+      def exchange_entities
+        companies + minors
       end
 
       def exchange_corporations(exchange_ability)
