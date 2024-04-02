@@ -9,7 +9,7 @@ module Engine
         class Track < Engine::Step::Track
           # for debugging
           def process_lay_tile(action)
-            LOGGER.debug "Track >> process_lay_tile"
+            LOGGER.debug 'Track >> process_lay_tile'
             super
             move_oo_reservations(action) unless @round.pending_tokens.empty? # Pending token due to Yellow OO tile
           end
@@ -19,12 +19,12 @@ module Engine
           # Reservation to be moved back to empty city after token is placed (See HomeTrack < HomeToken)
           def move_oo_reservations(action)
             tile = action.tile
-            LOGGER.debug  "Track::move_oo_reservations > tile.labels: #{tile.labels.to_s}"
+            LOGGER.debug "Track::move_oo_reservations > tile.labels: #{tile.labels}"
             cities = tile.cities
             reservations = cities.flat_map(&:reservations).compact + tile.reservations
-            LOGGER.debug "Track::move_oo_reservations > reservations: #{reservations.to_s}"
+            LOGGER.debug "Track::move_oo_reservations > reservations: #{reservations}"
             tile.reservations = reservations.uniq
-            cities.each { |city| city.remove_all_reservations!}
+            cities.each(&:remove_all_reservations!)
           end
 
           # Bypass some Step::Tracker tests for Town to City upgrade: maintain exits, and check new exits are valid

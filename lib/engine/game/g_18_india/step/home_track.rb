@@ -34,7 +34,7 @@ module Engine
           end
 
           def process_lay_tile(action)
-            LOGGER.debug  "HomeTrack > process_lay_tile"
+            LOGGER.debug 'HomeTrack > process_lay_tile'
             lay_tile(action)
 
             place_token(
@@ -48,7 +48,7 @@ module Engine
           end
 
           def process_place_token(action)
-            LOGGER.debug  "HomeTrack > process_place_token"
+            LOGGER.debug 'HomeTrack > process_place_token'
             super
             tile = action.city.tile
             replace_oo_reservations(tile) unless tile.reservations.empty? # move hex reservation
@@ -61,7 +61,7 @@ module Engine
 
             cities = tile.cities
             reservations = tile.reservations.dup
-            LOGGER.debug "replace_oo_reservations > reservations: #{reservations.to_s}"
+            LOGGER.debug "replace_oo_reservations > reservations: #{reservations}"
             tile.reservations.each do |reservation|
               cities.each do |city|
                 if !city.tokened? || cities.count == 1
@@ -81,15 +81,15 @@ module Engine
             pending_token[:hexes].include?(hex)
           end
 
-          def legal_tile_rotation?(entity, hex, tile)
+          def legal_tile_rotation?(_entity, hex, tile)
             old_tile = hex.tile
             all_new_exits_valid = tile.exits.all? { |edge| hex.neighbors[edge] }
             return false unless all_new_exits_valid
 
-            return (old_tile.exits - tile.exits).empty?
+            (old_tile.exits - tile.exits).empty?
           end
 
-          def potential_tiles(entity_or_entities, hex)
+          def potential_tiles(_entity_or_entities, _hex)
             @game.tiles.select { |t| %w[13 12 206 205].include?(t.name) }.uniq(&:name)
           end
         end

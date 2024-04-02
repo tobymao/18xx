@@ -43,7 +43,7 @@ module Engine
           add_ability(ability)
 
           # create addiional GIPR shares for converting Railroad Bonds
-          @bond_shares = (Array.new(10, 10)).map.with_index do |percent, index|
+          @bond_shares = Array.new(10, 10).map.with_index do |percent, index|
             Share.new(self, percent: percent, index: index + 10)
           end
         end

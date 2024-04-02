@@ -552,7 +552,7 @@ module Engine
           elsif (company.type == :bond) && (company.owner == @bank)
             return "Bank has #{count_of_bonds} / 10 Bonds"
           elsif @round.stock?
-            return if !current_entity.player?
+            return unless current_entity.player?
             return "Player's Hand" if current_entity.hand.include?(company)
           end
           ''
@@ -673,20 +673,19 @@ module Engine
         end
 
         def town_to_green_city_hexes
-          hexes = @hexes.map(&:tile).filter { |t|
+          @hexes.map(&:tile).filter do |t|
             t.towns&.count == 1 && # only single town hexes
-            [:white, :yellow].include?(t.color) && # only white or yellow hexes
+            %i[white yellow].include?(t.color) && # only white or yellow hexes
             !%w[K38 L39].include?(t.hex.name) # L39 and K38 are not legal hexes for a Green single city tile
-          }.map { |t| t.hex }
-          hexes
+          end.map(&:hex)
         end
 
         # Home hexes for GIPR
         def home_token_locations(corporation)
           raise NotImplementedError unless corporation.name == 'GIPR'
 
-          LOGGER.debug " Open City Hexes #{open_city_hexes.to_s }"
-          LOGGER.debug " Town->City Hexes #{town_to_green_city_hexes.to_s }"
+          LOGGER.debug " Open City Hexes #{open_city_hexes}"
+          LOGGER.debug " Town->City Hexes #{town_to_green_city_hexes}"
           [] + open_city_hexes + town_to_green_city_hexes
         end
 
@@ -731,7 +730,7 @@ module Engine
         end
 
         def gipr_may_operate?
-          @phase.name != "I" && gipr.floated?
+          @phase.name != 'I' && gipr.floated?
         end
 
         def gipr_exchange_tokens
@@ -754,11 +753,12 @@ module Engine
 
         def gipr_exchange_with_closing_corp(corporation)
           corporation.tokens.dup.each_with_index do |token, index|
-            LOGGER.debug "gipr_exchange > #{corporation.tokens.to_s} && index-#{index} used-#{token.used}"
-            return unless token.used
+            LOGGER.debug "gipr_exchange > #{corporation.tokens} && index-#{index} used-#{token.used}"
+            break unless token.used
 
             exchange_token = Engine::Token.new(gipr, type: :exchange)
-            LOGGER.debug "gipr_exchange > tokenable? #{token.city.tokenable?(gipr, free: true, tokens: [exchange_token], cheater: true, same_hex_allowed: false)} "
+            LOGGER.debug "gipr_exchange > tokenable? #{token.city.tokenable?(gipr, free: true, tokens: [exchange_token],
+                                                                                   cheater: true, same_hex_allowed: false)} "
             next unless token.city.tokenable?(gipr, free: true, tokens: [exchange_token], cheater: true, same_hex_allowed: false)
 
             if index.zero?
@@ -767,7 +767,7 @@ module Engine
               gipr.tokens << exchange_token
               token.destroy!
               use_gipr_exchange_token
-              LOGGER.debug "gipr_exchange > gipr tokens: #{gipr.tokens.to_s} "
+              LOGGER.debug "gipr_exchange > gipr tokens: #{gipr.tokens} "
             elsif token.city.tokenable?(gipr, free: true, tokens: [exchange_token], cheater: true, same_hex_allowed: false)
               @round.pending_exchange_tokens << {
                 entity: gipr,
@@ -777,7 +777,7 @@ module Engine
               }
             end
           end
-          LOGGER.debug "gipr_exchange > pending #{@round.pending_exchange_tokens.to_s} "
+          LOGGER.debug "gipr_exchange > pending #{@round.pending_exchange_tokens} "
           @round.clear_cache!
         end
 
@@ -794,7 +794,7 @@ module Engine
           end
 
           # remove all corp tokens (after GIPR may exchange)
-          corporation.tokens.each { |t| t.destroy! }
+          corporation.tokens.each(&:destroy!)
           LOGGER.debug "closing > Corp tokens: #{corporation.tokens}"
 
           # move trains to open market
@@ -819,6 +819,7 @@ module Engine
           LOGGER.debug "closing > corp_owned_shares: #{corp_owned_shares}  share_pool: #{@share_pool.shares_by_corporation}"
           corp_owned_shares.each do |shares|
             next if shares.corporation == corporation
+
             bundle = shares.is_a?(ShareBundle) ? shares : ShareBundle.new(shares)
             @log << "A #{bundle.percent}% share of #{bundle.corporation.name} is returned to the Market"
             share_pool.transfer_shares(bundle, @share_pool)
@@ -968,10 +969,10 @@ module Engine
           case commodity
           when 'ORE'
             corporation.commodities.concat(%w[ORE1 ORE2])
-            %w[ORE1 ORE2].each { |c| @unclaimed_commodities.delete(c)}
+            %w[ORE1 ORE2].each { |c| @unclaimed_commodities.delete(c) }
           when 'TEA'
             corporation.commodities.concat(%w[TEA1 TEA2])
-            %w[TEA1 TEA2].each { |c| @unclaimed_commodities.delete(c)}
+            %w[TEA1 TEA2].each { |c| @unclaimed_commodities.delete(c) }
           else
             corporation.commodities << commodity
             @unclaimed_commodities.delete(commodity)
@@ -1086,7 +1087,7 @@ module Engine
         end
 
         def after_phase_change(name)
-          return unless name == "IV"
+          return unless name == 'IV'
 
           @companies.each do |company|
             case company.type

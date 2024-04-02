@@ -128,7 +128,7 @@ module Engine
           end
 
           def first_bond(entity)
-            entity.companies.select { |c| c.type == :bond}.first
+            entity.companies.find { |c| c.type == :bond }
           end
 
           def choices
@@ -140,7 +140,6 @@ module Engine
           end
 
           def process_choose(action)
-            choice = action.choice
             entity = action.entity
             corporation = @game.gipr
 
