@@ -8,20 +8,19 @@ module Engine
       module Step
         class Route < Engine::Step::Route
           # modified to claim commodities when routes are run
-          # TODO: to be completed after prior pull request merged.
           def process_run_routes(action)
             super
             entity = action.entity
-            @round.routes = action.routes
-            @round.extra_revenue = action.extra_revenue
-            trains = {}
-            abilities = []
+            routes = action.routes
+            ability = entity.all_abilities.find { |a| a.type == :commodities }
 
-            @round.routes.each do |route|
-
-              @log << "#{entity.name} used XXX commodities "
+            routes.each do |route|
+              @game.commodity_bonus(route)
+              @round.commodities_used.each do |commodity|
+                @log << "#{entity.name} delivered #{commodity}"
+                @game.claim_concession(entity, commodity) unless ability.description.include?(commodity)
+              end
             end
-
           end
 
           def round_state

@@ -134,7 +134,7 @@ module Engine
         }.freeze
 
         # TODO: Consider using commodity icons vs location names
-        # Refactor to use assignment (assignable module) for commodies?
+        # Refactor to use assignment (assignable module) for commodities?
         ASSIGNMENT_TOKENS = {
           'P6' => '/icons/18_royal_gorge/gold_cube.svg', # TODO: Add actual commodity ICON
         }.freeze
@@ -485,7 +485,7 @@ module Engine
             Engine::Step::SpecialToken, # use for P5
             G18India::Step::Track,
             G18India::Step::Token,
-            Engine::Step::Route,
+            G18India::Step::Route,
             G18India::Step::Dividend,
             G18India::Step::SellBuyTrain,
             G18India::Step::CorporateSellSharesCompany,
@@ -586,6 +586,8 @@ module Engine
           timeline << "IPO ROW 3: #{ipo_row_3.join(', ')}" unless ipo_row_3.empty?
 
           timeline << "Market: #{bank.companies.map(&:name).join(', ')}" unless bank.companies.empty?
+
+          timeline << "unclaimed_commodities: #{@unclaimed_commodities.sort.join(', ')}"
 
           @players.each do |p|
             timeline << "#{p.name}: #{p.hand.map(&:name).sort.join(', ')}" unless p.hand.empty?
@@ -958,18 +960,25 @@ module Engine
           @unclaimed_commodities + corporation.commodities
         end
 
-        # TODO: Add visual indicaiton on VIEW for Corporation card for Claimed Commodities
-        def claim_concession(commodities, corporation)
-          return if corporation.commodities.include?(commodities.first)
-
-          commodities.each do |commodity|
-            @unclaimed_commodities.delete(commodity)
+        # Test using Ability to display Claimed Commodities on VIEW for Corporation card
+        def claim_concession(corporation, commodity)
+          ability = corporation.all_abilities.find { |a| a.type == :commodities }
+          ability.description = ability.description + commodity + ' '
+          @log << "#{corporation.name} claims the #{commodity} concession"
+          case commodity
+          when 'ORE'
+            corporation.commodities.concat(%w[ORE1 ORE2])
+            %w[ORE1 ORE2].each { |c| @unclaimed_commodities.delete(c)}
+          when 'TEA'
+            corporation.commodities.concat(%w[TEA1 TEA2])
+            %w[TEA1 TEA2].each { |c| @unclaimed_commodities.delete(c)}
+          else
             corporation.commodities << commodity
+            @unclaimed_commodities.delete(commodity)
           end
-          @log << "#{corporation.name} claims the #{commodities} concession"
         end
 
-        def commodity_bonus(route, _stops)
+        def commodity_bonus(route, _stops = nil)
           visited_names = route.all_hexes.map(&:location_name).compact
           corporation = route.train.owner
           commodity_sources = visited_names & available_commodities(corporation)
@@ -978,49 +987,51 @@ module Engine
           revenue = 0
           commodity_sources.each do |source|
             bonus = 0
+            @round.commodities_used = []
             case source
             when 'OIL'
               # OIL => MUMBAI [D23] + 30
               bonus = 30 if visited_names.include?('MUMBAI')
-              claim_concession(['OIL'], corporation) if bonus.positive?
+              @round.commodities_used << 'OIL' if bonus.positive?
               revenue += bonus
             when 'OPIUM'
               # OPIUM => LAHORE [D3] HALDIA [P19] => 100
               bonus = 100 if visited_names.intersect?(%w[LAHORE HALDIA])
-              claim_concession(['OPIUM'], corporation) if bonus.positive?
+              @round.commodities_used << 'OPIUM' if bonus.positive?
               revenue += bonus
             when 'ORE1', 'ORE2'
               # ORE1 => KARACHI [A16] CHENNAI [K30] => 50
               bonus = 50 if visited_names.intersect?(%w[KARACHI CHENNAI])
-              claim_concession(%w[ORE1 ORE2], corporation) if bonus.positive?
+              @round.commodities_used << 'ORE' if bonus.positive?
               revenue += bonus
             when 'GOLD'
               # GOLD => KOCHI [G36] + 50
               bonus = 50 if visited_names.include?('KOCHI')
-              claim_concession(['GOLD'], corporation) if bonus.positive?
+              @round.commodities_used << 'GOLD' if bonus.positive?
               revenue += bonus
             when 'SPICES'
               bonus = visited_names.map { |loc| SPICE_BONUSES[loc] || 0 }.max
-              claim_concession(['SPICES'], corporation) if bonus.positive?
+              @round.commodities_used << 'SPICES' if bonus.positive?
               revenue += bonus
             when 'COTTON'
               # COTTON => KARACHI [A16] CHENNAI [K30] => 40
               bonus = 40 if visited_names.intersect?(%w[KARACHI CHENNAI])
-              claim_concession(['COTTON'], corporation) if bonus.positive?
+              @round.commodities_used << 'COTTON' if bonus.positive?
               revenue += bonus
             when 'TEA1', 'TEA2'
               # TEA1 => VISAKHAPATNAM [M24] + 70
               bonus = 70 if visited_names.include?('VISAKHAPATNAM')
-              claim_concession(%w[TEA1 TEA2], corporation) if bonus.positive?
+              @round.commodities_used << 'TEA' if bonus.positive?
               revenue += bonus
             when 'RICE'
               # RICE => CHINA [Q10] NEPAL [M10] => 30
               bonus = 30 if visited_names.intersect?(%w[CHINA NEPAL])
-              claim_concession(['RICE'], corporation) if bonus.positive?
+              @round.commodities_used << 'RICE' if bonus.positive?
               revenue += bonus
             when 'JEWELRY'
               # Jewelry concession pays 20 if delivered to any commodity destination
               bonus = 20 if visited_names.intersect?(COMMODITY_DESTINATIONS)
+              @round.commodities_used << 'JEWELRY' if bonus.positive?
               revenue += bonus
             end
           end
