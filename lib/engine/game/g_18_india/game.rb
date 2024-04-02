@@ -649,6 +649,52 @@ module Engine
           end
         end
 
+        # ----- Route Modificatons for Gauge Change stops (modifed from 1848)
+
+        # class to serve as GaugeChange Stop (counts as a zero revenue city)
+        class GaugeChange < Engine::Part::RevenueCenter
+          def city?
+            true
+          end
+        end
+
+        # Add gauge changes to visited stops, they count as 0 revenue City stops,
+        def visited_stops(route)
+          gauge_changes = edge_crossings(route)
+          route_stops = route.connection_data.flat_map { |c| [c[:left], c[:right]] }.uniq.compact # super
+          return route_stops unless gauge_changes.positive?
+
+          LOGGER.debug "GAME::visited_stops > gauge_changes: #{gauge_changes} route_stops: #{route_stops.to_s}"
+          add_gauge_changes_to_stops(gauge_changes, route_stops)
+        end
+
+        def add_gauge_changes_to_stops(num, route_stops)
+          return [] unless num.positive?
+
+          gauge_changes = Array.new(num) { GaugeChange.new('0') }
+          first_stop = route_stops.first
+          gauge_changes.each do |stop|
+            stop.tile = first_stop.tile
+            route_stops.insert(1, stop) # add the gauge change after fist element so that it's not the first or last stop
+          end
+          LOGGER.debug "GAME::add_gauge_changes_to_stops > route_stops: #{route_stops.to_s}"
+          route_stops
+        end
+
+        def edge_crossings(route)
+          sum = route.paths.sum do |path|
+            path.edges.sum do |edge|
+              edge_is_a_border?(edge) ? 1 : 0
+            end
+          end
+          # edges are double counted
+          sum / 2
+        end
+
+        def edge_is_a_border?(edge)
+          edge.hex.tile.borders.any? { |border| border.edge == edge.num }
+        end
+
         # modify to require route begin and end at city
         def check_other(route)
           visited_stops = route.visited_stops
@@ -668,6 +714,7 @@ module Engine
 
         def revenue_str(route)
           str = route.hexes.map(&:name).join('-')
+          str += ' Gauge:' + edge_crossings(route).to_s if edge_crossings(route).positive?
           str += ' ?+' + variable_city_revenue(route, route.stops).to_s if variable_city_revenue(route, route.stops).positive?
           str += ' R+' + connection_bonus(route, route.stops).to_s if connection_bonus(route, route.stops).positive?
           str += ' C+' + commodity_bonus(route, route.stops).to_s if commodity_bonus(route, route.stops).positive?
@@ -681,7 +728,7 @@ module Engine
 
         # calculate addional revenue if non-variable city base value > 20
         def variable_city_revenue(route, stops)
-          non_variable_stops = route.visited_stops.reject { |stop| stop.tile.color == 'red' }
+          non_variable_stops = route.visited_stops.reject { |stop| stop.revenue_to_render.zero? || stop.tile.color == 'red' }
           return 0 if non_variable_stops.empty?
 
           max_non_variable_value = non_variable_stops.map { |e| e.revenue_to_render - 20 }.max
