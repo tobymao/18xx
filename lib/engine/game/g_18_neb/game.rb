@@ -148,7 +148,6 @@ module Engine
             price: 900,
             num: 20,
             available_on: '6',
-            discount: { '4' => 300, '5' => 300, '6' => 300 },
           },
         ].freeze
 
