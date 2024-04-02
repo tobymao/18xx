@@ -419,12 +419,29 @@ module Engine
 
         def exchange_corporations(exchange_ability)
           minor = exchange_ability.owner
+          return [] if minor.share_price.price.zero?
+          return [] if under_obligation?(minor.owner)
+
           super.select do |major|
             max_price = (minor.share_price.price * 2) + liquidity(minor.owner)
 
             major.share_price.price <= max_price &&
               major_minor_connected?(major, minor)
           end
+        end
+
+        def buyable_bank_owned_companies
+          # Do not show the GL after a corporation grows up.
+          @round.is_a?(Round::Operating) ? [] : super
+        end
+
+        # Has the player won any auctions for public companies in the
+        # preceding auction round? If they have then they must start these
+        # majors before they can buy any other shares or pass.
+        def under_obligation?(entity)
+          return false unless entity.player?
+
+          entity.companies.any? { |company| company.type == :concession }
         end
 
         private
