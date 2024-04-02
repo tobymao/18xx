@@ -90,7 +90,7 @@ module Engine
         end
 
         @game.abilities(company, :close, on_phase: @name) do
-          @game.company_is_closing(company)
+          @log << "Company #{company.name} closes"
           company.close!
         end
       end

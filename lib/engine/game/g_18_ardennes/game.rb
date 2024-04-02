@@ -111,6 +111,12 @@ module Engine
         def operating_round(round_num)
           Round::Operating.new(self, [
             Engine::Step::Bankrupt,
+            G18Ardennes::Step::Convert,
+            G18Ardennes::Step::Exchange,
+            G18Ardennes::Step::DeclineTokens,
+            G18Ardennes::Step::DeclineTrains,
+            G18Ardennes::Step::DeclineForts,
+            G18Ardennes::Step::PostConversionShares,
             G18Ardennes::Step::Track,
             G18Ardennes::Step::Token,
             G18Ardennes::Step::CollectForts,
@@ -139,6 +145,36 @@ module Engine
         # minors for shares) they don't have to sell back down.
         def can_hold_above_corp_limit?(_entity)
           true
+        end
+
+        def num_certs(player)
+          # Don't count concession private companies.
+          super - player.companies.count { |c| c.type == :concession }
+        end
+
+        def convert!(corporation)
+          corporation.type = :'10-share'
+
+          # Existing shares change from 20% to 10%.
+          @_shares.values
+                  .select { |share| share.corporation == corporation }
+                  .each { |share| share.percent /= 2 }
+          corporation.share_holders.transform_values! { |percent| percent / 2 }
+
+          # Five new 10% shares are added to the corporation treasury.
+          (5..9).each do |i|
+            share = Share.new(corporation, percent: 10, index: i)
+            corporation.shares_by_corporation[corporation] << share
+            corporation.share_holders[corporation] += share.percent
+            @_shares[share.id] = share
+          end
+
+          # Certificate limit might increase.
+          old_limit = @cert_limit
+          new_limit = init_cert_limit
+          return if old_limit == new_limit
+
+          @log << "Certificate limit increases to #{new_limit}."
         end
       end
     end

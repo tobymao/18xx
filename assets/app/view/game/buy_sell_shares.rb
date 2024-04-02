@@ -272,7 +272,7 @@ module View
       # Allow privates or minors to be exchanged for shares if they have the ability
       def render_exchanges
         children = []
-        source_entities = @game.companies + @game.minors + @game.corporations
+        source_entities = @game.exchange_entities
 
         source_entities.each do |entity|
           @game.abilities(entity, :exchange) do |ability|

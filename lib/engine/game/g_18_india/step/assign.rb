@@ -11,10 +11,10 @@ module Engine
           def available_hex(entity, hex)
             return unless entity.company?
             return unless entity.id == 'P6'
+            return if hex.tile.color == :blue
             return if hex.assigned?(entity.id)
-            return unless hex.tile.city_towns.empty? # hex doesn't have a town or city
 
-            @game.hex_by_id(hex.id).neighbors.keys
+            hex.tile.city_towns.empty?
           end
 
           # Perform addional steps after using P6

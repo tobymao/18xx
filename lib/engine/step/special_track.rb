@@ -71,7 +71,7 @@ module Engine
         if ability.type == :tile_lay
           if ability.count&.zero? && ability.closed_when_used_up
             company = ability.owner
-            @game.company_is_closing(company)
+            @game.company_closing_after_using_ability(company)
             company.close!
           end
           @company = ability.count.positive? ? action.entity : nil if ability.must_lay_together

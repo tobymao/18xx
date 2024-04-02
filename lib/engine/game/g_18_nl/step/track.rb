@@ -9,7 +9,7 @@ module Engine
         class Track < Engine::Step::Track
           def available_hex(entity_or_entities, hex)
             # No corp may upgrade H13 until NZO's home token has been placed.
-            return false if hex.id == 'H13' && !@game.nzo_has_placed_home?
+            return false if hex.id == NZO_HOME_HEX && !@game.nzo_has_placed_home?
 
             super
           end

@@ -34,7 +34,7 @@ module Engine
         ability.use! if action.price < action.train.price &&
           ability.discounted_price(action.train, action.train.price) == action.price
         if closes_company && !action.entity.closed?
-          @game.company_is_closing(company)
+          @game.company_closing_after_using_ability(company)
           company.close!
         end
 
