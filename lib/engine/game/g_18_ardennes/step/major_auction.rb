@@ -35,6 +35,10 @@ module Engine
             @eligible_minors = {}
           end
 
+          def show_map
+            true
+          end
+
           def auctioning
             nil
           end
@@ -168,17 +172,17 @@ module Engine
           # associated with the concession. If this isn't the first auction
           # round then any minor can be used.
           def eligible_minors(concession)
+            coords = Entities::PUBLIC_COMPANY_HEXES[concession.id]
             @eligible_minors[concession] ||=
-              @game.corporations.select do |corporation|
-                next false if corporation.closed?
-                next false unless corporation.type == :minor
+              @game.minor_corporations.select do |minor|
+                next false if minor.closed?
                 next true unless restricted?
 
-                coords ||= concession_corporation(concession).coordinates
-                corporation.placed_tokens
-                           .map(&:hex)
-                           .map(&:coordinates)
-                           .intersect?(coords)
+                minor.placed_tokens.any? do |token|
+                  coords.include?(token.hex.coordinates) &&
+                    (token.hex != paris_hex ||
+                     token.city == eligible_paris_city(concession))
+                end
               end
           end
 
@@ -186,6 +190,16 @@ module Engine
           # Any existing minor <-> concession associations are removed.
           def link_concession_minor(concession, minor)
             @game.pledged_minors[concession_corporation(concession)] = minor
+          end
+
+          def paris_hex
+            @paris_hex ||= @game.hex_by_id(Entities::PARIS_HEX)
+          end
+
+          # Finds the city in Paris that can be used to start a public company.
+          # This is the western city for N, and the eastern city for E.
+          def eligible_paris_city(concession)
+            paris_hex.tile.cities[Entities::PARIS_CITIES[concession.id]]
           end
         end
       end

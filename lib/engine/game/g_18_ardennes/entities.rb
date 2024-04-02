@@ -261,7 +261,6 @@ module Engine
             always_market_price: true,
             capitalization: :incremental,
             tokens: [0, 100, 100, 100, 100, 100],
-            coordinates: %w[E25 G25 H26 I21 J24],
           },
           {
             sym: 'N',
@@ -275,7 +274,6 @@ module Engine
             always_market_price: true,
             capitalization: :incremental,
             tokens: [0, 100, 100, 100, 100, 100],
-            coordinates: %w[G3 H6 K5 M7],
           },
           {
             sym: 'E',
@@ -289,7 +287,6 @@ module Engine
             always_market_price: true,
             capitalization: :incremental,
             tokens: [0, 100, 100, 100, 100, 100],
-            coordinates: %w[I21 J18 J24 K11 M7],
           },
           {
             sym: 'NL',
@@ -303,7 +300,6 @@ module Engine
             always_market_price: true,
             capitalization: :incremental,
             tokens: [0, 100, 100, 100, 100, 100],
-            coordinates: %w[B8 B12 C7 E5 E9 E15],
           },
           {
             sym: 'BE',
@@ -317,7 +313,6 @@ module Engine
             always_market_price: true,
             capitalization: :incremental,
             tokens: [0, 100, 100, 100, 100, 100],
-            coordinates: %w[E9 E15 F4 F10 H6 H10],
           },
           {
             sym: 'P',
@@ -331,9 +326,22 @@ module Engine
             always_market_price: true,
             capitalization: :incremental,
             tokens: [0, 100, 100, 100, 100, 100],
-            coordinates: %w[B16 D18 E15 E25],
           },
         ].freeze
+
+        # Defines where a minor needs to have a token to be used to start a
+        # public company. Paris (hex M7) is a special case, E can only start in
+        # the western city, N only in the eastern.
+        PUBLIC_COMPANY_HEXES = {
+          'BE' => %w[E9 E15 F4 F10 H6 H10],
+          'BY' => %w[E25 G25 H26 I21 J24],
+          'E' => %w[I21 J18 J24 K11 M7],
+          'N' => %w[G3 H6 K5 M7],
+          'NL' => %w[B8 B12 C7 E5 E9 E15],
+          'P' => %w[B16 D18 E15 E25],
+        }.freeze
+        PARIS_HEX = 'M7'
+        PARIS_CITIES = { 'N' => 0, 'E' => 1 }.freeze
 
         def company_header(company)
           case company.type
