@@ -29,10 +29,10 @@ module Engine
           end
 
           def can_exchange?(entity, _bundle = nil)
-            return false if bought?
             return false unless entity.corporation?
+            return false unless entity.type == :minor
 
-            entity.type == :minor
+            @round.is_a?(Round::Stock) ? !bought? : !@round.converted.nil?
           end
 
           def process_buy_shares(action)
@@ -44,7 +44,7 @@ module Engine
             @round.minor = action.entity
             @round.major = action.bundle.shares.first.corporation
             exchange_minor(action.entity, action.bundle, true)
-            @round.current_actions << action
+            @round.current_actions << action if @round.is_a?(Round::Stock)
           end
         end
       end

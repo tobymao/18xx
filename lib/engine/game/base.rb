@@ -1932,6 +1932,11 @@ module Engine
         place_home_token(corporation) if self.class::HOME_TOKEN_TIMING == :par
       end
 
+      # This is a hook to do something before company is closed by using an ability
+      def company_closing_after_using_ability(company, silent = false)
+        @log << "#{company.name} closes" unless silent
+      end
+
       def close_companies_on_event!(entity, event)
         @companies.each do |company|
           next if company.closed?
@@ -2132,6 +2137,11 @@ module Engine
 
       def exchange_partial_percent(_share)
         nil
+      end
+
+      # Entities that can own an exchange ability.
+      def exchange_entities
+        companies + minors
       end
 
       def exchange_corporations(exchange_ability)
@@ -3114,6 +3124,8 @@ module Engine
             @round.operating? && @round.current_operator&.player == ability.player
           when 'owning_player_track'
             @round.operating? && @round.current_operator&.player == ability.player && current_step.is_a?(Step::Track)
+          when 'owning_player_token'
+            @round.operating? && @round.current_operator&.player == ability.player && current_step.is_a?(Step::Token)
           when 'owning_player_sr_turn'
             @round.stock? && @round.current_entity == ability.player
           when 'or_between_turns'
