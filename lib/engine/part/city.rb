@@ -6,7 +6,7 @@ require_relative 'revenue_center'
 module Engine
   module Part
     class City < RevenueCenter
-      attr_accessor :reservations
+      attr_accessor :reservations, :slot_icons
       attr_reader :tokens, :extra_tokens, :boom
 
       def initialize(revenue, **opts)
@@ -17,6 +17,7 @@ module Engine
         @extra_tokens = []
         @reservations = []
         @boom = opts[:boom]
+        @slot_icons = {}
       end
 
       def slots(all: false)
@@ -164,7 +165,7 @@ module Engine
       end
 
       def exchange_token(token, cheater: false, extra_slot: false)
-        token.place(self, extra: extra_slot)
+        token.place(self, extra: extra_slot, cheater: cheater)
         return @extra_tokens << token if extra_slot
 
         slot = get_slot(token.corporation, cheater: cheater)

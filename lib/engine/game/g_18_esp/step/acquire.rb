@@ -66,11 +66,12 @@ module Engine
             return [] if @game.north_corp?(corporation)
 
             @game.corporations.select do |c|
-              if @game.minors_stop_operating && !c.floated?
-                c.type == :minor
-              else
-                c.type == :minor && c.floated? && c.operated?
-              end
+              next unless c.type == :minor
+              next corporation.cash >= @game.class::MINOR_TAKEOVER_COST if @game.minors_stop_operating && !c.floated?
+              next true if @game.minors_stop_operating && corporation.cash >= c.share_price&.price
+              next true if c.floated? && corporation.cash >= c.share_price&.price && c.operated?
+
+              false
             end
           end
 

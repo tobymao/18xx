@@ -26,6 +26,12 @@ module Engine
           end
 
           def rust_obsolete_trains!(entity, log: false)
+            # reattach big boy token to individual train from before the
+            # double-heading
+            if entity == @game.big_boy_private.owner && @game.big_boy_train_dh_original
+              @game.attach_big_boy(@game.big_boy_train_dh_original, log: false)
+            end
+
             super(entity, log: false)
           end
 

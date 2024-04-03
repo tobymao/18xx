@@ -19,7 +19,7 @@ module Engine
 
         attr_reader :can_build_mountain_pass, :can_buy_trains, :minors_stop_operating
 
-        attr_accessor :player_debts, :luxury_carriages_count
+        attr_accessor :player_debts, :combined_trains, :luxury_carriages_count
 
         CURRENCY_FORMAT_STR = '₧%d'
 
@@ -31,7 +31,7 @@ module Engine
 
         STARTING_CASH = { 3 => 860, 4 => 650, 5 => 520, 6 => 440 }.freeze
 
-        NORTH_CORPS = %w[FdSB FdLR CFEA CFLG].freeze
+        NORTH_CORPS = %w[FdSB FdLR CFEA CFLG SFVA FdC].freeze
 
         TRACK_RESTRICTION = :permissive
 
@@ -47,11 +47,11 @@ module Engine
 
         CARRIAGE_COST = 80
 
-        HARBOR_MINE_SUBSIDY = 20
-
-        COMBINED_BONUS = 150
+        COMBINED_BONUS = 200
 
         BONUS = 100
+
+        MINOR_TAKEOVER_COST = 100
 
         MOUNTAIN_SECOND_TOKEN_COST = 50
 
@@ -64,6 +64,8 @@ module Engine
         ARANJUEZ_HEX = 'F26'
 
         P5_HEX = 'H12'
+
+        DOUBLE_HEX = %w[D6 C31 J20].freeze
 
         P5_DISCOUNT = 40
 
@@ -158,7 +160,7 @@ module Engine
             name: '2',
             distance: 2,
             price: 100,
-            num: 12,
+            num: 11,
             rusts_on: '4',
             variants: [
               {
@@ -225,7 +227,8 @@ module Engine
               },
             ],
             events: [{ 'type' => 'close_companies' },
-                     { 'type' => 'minors_stop_operating' }],
+                     { 'type' => 'minors_stop_operating' },
+                     { 'type' => 'float_60' }],
           },
           {
             name: '6',
@@ -241,7 +244,6 @@ module Engine
                 price: 600,
               },
             ],
-            events: [{ 'type' => 'float_60' }],
           },
 
           {
@@ -301,6 +303,7 @@ module Engine
 
         def stock_round
           G18ESP::Round::Stock.new(self, [
+            G18ESP::Step::Acquire,
             Engine::Step::DiscardTrain,
             G18ESP::Step::BuySellParShares,
           ])
@@ -314,6 +317,7 @@ module Engine
             Engine::Step::SpecialToken,
             G18ESP::Step::BuyCarriageOrCompany,
             G18ESP::Step::HomeToken,
+            G18ESP::Step::SpecialTrack,
             G18ESP::Step::SpecialChoose,
             G18ESP::Step::Track,
             G18ESP::Step::Route,
@@ -321,6 +325,7 @@ module Engine
             Engine::Step::DiscardTrain,
             G18ESP::Step::Acquire,
             G18ESP::Step::BuyTrain,
+            G18ESP::Step::CombinedTrains,
             [G18ESP::Step::BuyCarriageOrCompany, { blocks: true }],
           ], round_num: round_num)
         end
@@ -363,6 +368,7 @@ module Engine
           @luxury_carriages_count = 4
 
           @opened_mountain_passes = []
+          @combined_trains = {}
 
           # Initialize the player depts, if player have to take an emergency loan
           init_player_debts
@@ -377,6 +383,47 @@ module Engine
             block_token = Token.new(nil, price: 0, logo: '/logos/18_esp/block.svg')
             hex_by_id(hex).tile.cities.first.exchange_token(block_token)
             hex_by_id(hex).tile.cities.first.exchange_token(block_token)
+          end
+          remove_extra_corporation_destination_icons if core
+        end
+
+        def setup_corporations
+          minors, majors = @corporations.partition { |corporation| corporation.type == :minor }
+          north_majors, south_majors = majors.partition { |corporation| north_corp?(corporation) }
+          remove_corps = north_majors.sort_by { rand }.take(2) + south_majors.sort_by { rand }.take(3) + minors.sort_by do
+                                                                                                           rand
+                                                                                                         end.take(3)
+          @log << "Removing #{remove_corps.map(&:name).join(', ')}"
+          remove_corps.each do |c|
+            @corporations.delete(c)
+            hex = @hexes.find { |h| h.id == c.coordinates }
+            hex.tile.cities[c.city || 0].remove_reservation!(c)
+            hex.tile.remove_reservation!(c)
+            hex.tile.cities[c.city || 0].remove_tokens!
+            destination_hex = @hexes.find { |h| h.id == c.destination }
+            destination_hex.tile.icons = destination_hex.tile.icons.dup.reject { |icon| icon.name == c.name } if destination_hex
+            c.close!
+          end
+        end
+
+        def setup_companies
+          remove_company_name = @corporations.none? { |c| c.name == 'CRB' } ? 'Zafra - Huelva' : 'Ferrocarril Vasco-Navarro'
+          remove_company = @companies.find { |c| c.name == remove_company_name }
+          @log << "Removing #{remove_company_name}"
+          @companies.delete(remove_company)
+        end
+
+        def setup_preround
+          setup_corporations unless core
+          setup_companies
+        end
+
+        def remove_extra_corporation_destination_icons
+          self.class::EXTRA_CORPORATIONS.each do |c|
+            next unless c[:destination]
+
+            tile = hex_by_id(c[:destination]).tile
+            tile.icons = tile.icons.dup.reject { |icon| icon.name == c[:sym] }
           end
         end
 
@@ -405,6 +452,7 @@ module Engine
         def init_company_abilities
           northern_corps = @corporations.select { |c| north_corp?(c) }
           random_corporation = northern_corps[rand % northern_corps.size]
+          another_random_corporation = northern_corps[rand % northern_corps.size]
           @companies.each do |company|
             next unless (ability = abilities(company, :shares))
 
@@ -423,6 +471,12 @@ module Engine
                 when: 'bought_train',
                 corporation: random_corporation.name,
               ))
+              when 'random_share'
+                share = another_random_corporation.shares.find { |s| !s.president }
+                real_shares << share
+                company.desc = "It provides a 10% certificate from a random corporation. \
+                The random corporation in this game is #{another_random_corporation.name}."
+                @log << "#{company.name} comes with a #{share.percent}% share of #{another_random_corporation.name}"
               else
                 real_shares << share_by_id(share)
               end
@@ -485,8 +539,6 @@ module Engine
         def event_minors_stop_operating!
           @log << 'Minors stop operating'
           @minors_stop_operating = true
-
-          @corporations.each { |c| c.shares.last.buyable = true if !c.ipoed && c.type != :minor }
         end
 
         def custom_end_game_reached?
@@ -500,22 +552,6 @@ module Engine
           total - remaining > 1
         end
 
-        def close_all_minors!
-          @corporations.dup.each do |c|
-            next unless c
-            next unless c.type == :minor
-
-            close_corporation(c)
-          end
-
-          @corporations.dup.each do |c|
-            next unless c
-            next unless c.floated?
-
-            c.shares.last&.buyable = true
-          end
-        end
-
         def event_close_companies!
           @log << '-- Event: Private companies close --'
           @luxury_carriages_count = 0 # no more luxury carriage buying
@@ -527,26 +563,28 @@ module Engine
 
         def event_float_60!
           @corporations.each do |c|
-            next if c.type == :minor || c.floated?
+            next if c.type == :minor
 
             c.shares.last&.buyable = true
             c.float_percent = 60
+
+            next if c.ipoed
+
+            # release tokens
+            c.tokens.each { |token| token.used = false if token.used == true && !token.hex }
+            # all goals reached, no extra cap
+            c.destination_connected = true
+            c.ran_offboard = true
+            c.ran_harbor_mine = true
+            c.taken_over_minor = true
+            c.full_cap = true
           end
 
           @full_cap = true
         end
 
         def float_corporation(corporation)
-          if @full_cap
-            # release tokens
-            corporation.tokens.each { |token| token.used = false if token.used == true && !token.hex }
-            # all goals reached, no extra cap
-            corporation.destination_connected = true
-            corporation.ran_offboard = true
-            corporation.ran_harbor_mine = true
-            corporation.full_cap = true
-            share_count = 10
-          end
+          share_count = 10 if @full_cap
           @log << "#{corporation.name} floats"
           share_count ||= corporation.type == :major ? 4 : 2
 
@@ -581,7 +619,16 @@ module Engine
           goal_status << ['Takeover'] if !north_corp?(corporation) && !corporation.taken_over_minor && !corporation.full_cap
 
           goal_status = [] if goal_status.length == 1
-          goal_status
+
+          train_status = corporation.trains.map do |train|
+            next unless combined_trains[train]
+
+            "Combined train #{train.name}: #{combined_trains[train]}"
+          end
+          train_status = [] if train_status.length.zero?
+          status = goal_status + train_status
+          status = nil if status.length.zero?
+          status
         end
 
         def company_status_str(company)
@@ -645,9 +692,7 @@ module Engine
           count = stops.count { |stop| stop.halt? && stop.tile.color != :blue }
           harbor_subsidy = stops.sum { |stop| stop.tile.color == :blue ? stop.route_revenue(route.phase, route.train) : 0 }
           mine_subsidy = count * BASE_MINE_BONUS[@phase.tiles.last]
-          total_subsidy = harbor_subsidy + mine_subsidy
-          total_subsidy += HARBOR_MINE_SUBSIDY if harbor_subsidy.positive? && mine_subsidy.positive?
-          total_subsidy
+          harbor_subsidy + mine_subsidy
         end
 
         def routes_subsidy(routes)
@@ -698,9 +743,22 @@ module Engine
                   'Minors can not run to offboard locations'
           end
 
+          if combined_trains.key?(route.train)
+            raise GameError, 'Combined train must run through a montain pass' if route.hexes.none? do |hex|
+                                                                                   mountain_pass_token_hex?(hex)
+                                                                                 end
+
+            north_stops = route.stops.count { |st| north_hex?(st.hex) && !mountain_pass_token_hex?(st.hex) }
+            south_stops = route.stops.count { |st| !north_hex?(st.hex) && !mountain_pass_token_hex?(st.hex) }
+
+            raise GameError, 'Combined train must stop at both maps' if !north_stops.positive? || !south_stops.positive?
+
+          end
+
           raise GameError, 'Route can only use one mountain pass' if route.hexes.count { |hex| mountain_pass_token_hex?(hex) } > 1
 
-          raise GameError, 'Route visits same hex twice' if route.hexes.size != route.hexes.uniq.size
+          hexes = route.hexes.reject { |h| self.class::DOUBLE_HEX.include?(h.name) }
+          raise GameError, 'Route visits same hex twice' if hexes.size != hexes.uniq.size
 
           if route.train.id == '2P-0' && !@perm2_ran_aranjuez && route.hexes.none? do |hex|
                hex.id == ARANJUEZ_HEX
@@ -708,6 +766,8 @@ module Engine
             raise GameError,
                   '2P first run must include Aranjuez'
           end
+          wrong_track = skip_route_track_type(route.train)
+          raise GameError, 'Routes must use correct gauage' if wrong_track && route.paths.any? { |p| p.track == wrong_track }
 
           super
         end
@@ -809,7 +869,7 @@ module Engine
         end
 
         def place_home_token(corporation)
-          if corporation == mza && corporation_by_id('MZ').ipoed && !corporation.tokens.first.used
+          if corporation == mza && corporation_by_id('MZ')&.ipoed && !corporation.tokens.first.used
             # mza special case if mz already exists on the map
             token = corporation.tokens.first
             hex = hex_by_id(corporation.coordinates)
@@ -893,13 +953,13 @@ module Engine
               reorder_players
               new_operating_round
             when Round::Operating
-              if @round.round_num < @operating_rounds
-                or_round_finished
+              or_round_finished
+              skip_pre_final_or = custom_end_game_reached? && !final_ors?
+              if @round.round_num < @operating_rounds && !skip_pre_final_or
                 new_operating_round(@round.round_num + 1)
               else
-                @turn += 1
-                or_round_finished
                 or_set_finished
+                @turn += 1
                 new_stock_round
               end
             when init_round.class
@@ -941,7 +1001,7 @@ module Engine
           @bank.spend(loan, player)
 
           loan_amount = loan
-          interest = loan_amount * 0.5
+          interest = (loan_amount * 0.5).ceil
 
           @log << "#{player.name} recieves #{format_currency(loan)} from the bank. \
                     The loan amount is #{format_currency(loan_amount)}.\
@@ -975,6 +1035,8 @@ module Engine
         end
 
         def remove_dest_icon(corp)
+          return unless corp.destination
+
           tile = hex_by_id(corp.destination).tile
           tile.icons = tile.icons.dup.reject { |icon| icon.name == corp.name }
         end
@@ -1000,16 +1062,22 @@ module Engine
         end
 
         def skip_route_track_type(train)
-          train.track_type == :narrow ? :broad : :narrow
+          case train.track_type
+          when :narrow
+            :broad
+          when :broad
+            :narrow
+          end
         end
 
-        def open_mountain_pass(entity, pass_hex, p5_ability = false)
-          pass_tile = hex_by_id(pass_hex).tile
+        def open_mountain_pass(entity, pass_hex_id, p5_ability = false)
+          pass_hax = hex_by_id(pass_hex_id)
+          pass_tile = pass_hax.tile
 
-          mount_pass_cost = mountain_pass_token_cost(hex_by_id(pass_hex), entity, p5_ability)
+          mount_pass_cost = mountain_pass_token_cost(pass_hax, entity, p5_ability)
           entity.spend(mount_pass_cost, @bank) if mount_pass_cost.positive?
 
-          @opened_mountain_passes << pass_hex.id
+          @opened_mountain_passes << pass_hax.id
           pass_tile.cities.first.remove_tokens!
 
           entity_name = p5_ability ? "#{entity.name} (#{p5.name})" : entity.name
@@ -1024,7 +1092,7 @@ module Engine
           openable_passes = @graph.connected_hexes(entity).keys.select do |hex|
             mountain_pass_token_hex?(hex)
           end
-          openable_passes = openable_passes.reject { |hex| @opened_mountain_passes.contains?(hex.id) }
+          openable_passes = openable_passes.reject { |hex| @opened_mountain_passes.include?(hex.id) }
 
           openable_passes.to_h do |hex|
             [hex.id, "#{hex.location_name} (#{format_currency(mountain_pass_token_cost(hex, entity, p5_ability))})"]
@@ -1060,32 +1128,40 @@ module Engine
 
           # close corp
           close_corporation(minor)
+
+          # close unopened minors if all southern majors taken over minors
+          close_unopened_minors if southern_major_corps.none? { |c| !c.taken_over_minor }
+        end
+
+        def southern_major_corps
+          @corporations.select { |c| c.type == :major && !north_corp?(c) }
+        end
+
+        def close_unopened_minors
+          return unless @minors_stop_operating
+
+          @corporations.each do |c|
+            next unless c.type == :minor
+            next if c.ipoed
+
+            hex = hex_by_id(c.coordinates)
+            hex.tile.cities[c.city || 0].remove_reservation!(c)
+            hex.tile.remove_reservation!(c)
+            c.close!
+          end
         end
 
         def pay_compensation(corporation, minor)
           if @minors_stop_operating && minor.player_share_holders.empty?
-            spend_compensation(MINOR_TAKEOVER_COST, corporation, @bank)
+            corporation.spend(MINOR_TAKEOVER_COST, @bank)
             @log << "#{corporation.name} spends #{format_currency(MINOR_TAKEOVER_COST)} to acquire #{minor.name}"
           else
             share_price = minor.share_price
             payout = share_price ? minor.share_price.price : 0
 
-            spend_compensation(payout, corporation, minor.owner)
+            corporation.spend(payout, minor.owner)
 
             @log << "#{minor.owner.name} gets #{format_currency(payout)} compensation"
-          end
-        end
-
-        def spend_compensation(amount, from, to)
-          if from.cash >= amount
-            from.spend(amount, to)
-          else
-            difference = amount - from.cash
-            from.spend(from.cash, to)
-            if to != from
-              take_player_loan(from.owner, differnce - from.owner.cash) unless from.owner.cash >= difference
-              from.owner.spend(difference, to)
-            end
           end
         end
 
@@ -1130,7 +1206,8 @@ module Engine
           city = token.city
           yellow_green = city.tile.color == :yellow || city.tile.color == :green
           if !yellow_green
-            city.delete_token!(token)
+            delete_slot = city.slots > 4 ? city.slots : false
+            city.delete_token!(token, remove_slot: delete_slot)
             # add mza reservation if mza not tokened in madrid yet
             mza_token = city.tokens.compact.find { |t| t.corporation == mza }
             city.add_reservation!(mza) unless mza_token
@@ -1184,6 +1261,83 @@ module Engine
           nonsurvivor.companies.clear
 
           @log << "Moved assets from #{nonsurvivor.name} to #{survivor.name}"
+        end
+
+        def combined_base_trains_candidates(corporation)
+          return unless corporation
+
+          corporation.trains.reject { |t| combined_trains.key?(t) || t.name == '2P' }
+        end
+
+        def combined_obsolete_trains_candidates(corporation)
+          return unless corporation
+
+          rusted_trains = @depot.trains.select do |train|
+            train.rusted && corporation.cash >= 2 * train.price
+          end
+
+          rusted_trains.uniq { |train| train.variants.keys[0] }
+        end
+
+        def update_trains_cache
+          update_cache(:trains)
+        end
+
+        def distance(train)
+          if train.distance.is_a?(Numeric)
+            [train.distance, 0]
+          else
+            cities = train.distance[1]['pay']
+            towns = train.distance[0]['pay']
+            [cities, towns]
+          end
+        end
+
+        def core
+          @optional_rules&.include?(:core)
+        end
+
+        def game_corporations
+          corps = self.class::CORPORATIONS
+          corps += self.class::EXTRA_CORPORATIONS unless core
+          corps
+        end
+
+        def sorted_corporations
+          corps = super
+          corps.reject! { |c| c.type == :minor && !c.ipoed } if @minors_stop_operating
+          corps
+        end
+
+        def can_only_run_narrow?(entity)
+          return unless entity.corporation?
+          return false if entity.type == :minor
+          return false unless north_corp?(entity)
+
+          !entity.southern_token?
+        end
+
+        def check_overlap(routes)
+          tracks = {}
+
+          check = lambda do |key|
+            raise GameError, "Route cannot reuse track on #{key[0].id}" if tracks[key]
+
+            tracks[key] = true
+          end
+
+          routes.each do |route|
+            route.paths.each do |path|
+              a = path.a
+              b = path.b
+
+              check.call([path.hex, a.num, path.lanes[0][1]]) if a.edge?
+              check.call([path.hex, b.num, path.lanes[1][1]]) if b.edge?
+
+              # check intra-tile paths between nodes
+              check.call([path.hex, path]) if path.nodes.size > 1
+            end
+          end
         end
       end
     end

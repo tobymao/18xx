@@ -468,6 +468,8 @@ module Engine
     end
 
     def find_matching_chains(hex_ids)
+      return [] if !hex_ids || hex_ids.empty?
+
       start_hex = @game.hex_by_id(hex_ids.first.split.first)
       end_hex = @game.hex_by_id(hex_ids.last.split.first)
       matching = []

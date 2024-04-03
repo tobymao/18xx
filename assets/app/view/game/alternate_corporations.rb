@@ -177,9 +177,12 @@ module View
         machine_size = @game.machine_size(mine)
         switcher_size = @game.switcher_size(mine) || 0
 
-        highlight_prop = { style: { border: '2px solid black' } }
-        shade_prop = { style: { backgroundColor: 'gray' } }
-        shade_highlight_prop = { style: { border: '2px solid black', backgroundColor: 'gray' } }
+        # this will create a reasonable contrast color to work with any background color
+        highlight_color = convert_hex_to_rgba(contrast_on(color_for(:bg)), 0.3)
+
+        highlight_prop = { style: { border: "2px solid #{color_for(:font)}" } }
+        shade_prop = { style: { backgroundColor: highlight_color } }
+        shade_highlight_prop = { style: { border: "2px solid #{color_for(:font)}", backgroundColor: highlight_color } }
         machine_row = @game.minor_info[mine][:machine_revenue].map.with_index do |mr, idx|
           if (idx == machine_size - 1) && (@game.connected_mine?(mine) || idx.zero?)
             h('td.padded_number', highlight_prop, mr)
@@ -228,7 +231,7 @@ module View
       def render_submines(use_checkboxes: true)
         mines = @game.public_mine_mines(@corporation)
 
-        row_props = { style: { border: '1px solid black' } }
+        row_props = { style: { border: "1px solid #{color_for(:font)}" } }
 
         item_props = { style: { verticalAlign: 'middle' } }
 

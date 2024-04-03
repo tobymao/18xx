@@ -1,23 +1,44 @@
 # frozen_string_literal: true
 
-require_relative 'meta'
-require_relative '../base'
+require_relative '../g_1870/game'
+require_relative 'entities'
 require_relative 'map'
-require_relative '../g_1870'
+require_relative 'market'
+require_relative 'meta'
+require_relative 'phases'
+require_relative 'trains'
+require_relative '../base'
 
 module Engine
   module Game
     module G1832
       class Game < Game::Base
         include_meta(G1832::Meta)
-        include Entities
-        include Map
+        include G1832::Entities
+        include G1832::Map
+        include G1832::Market
+        include G1832::Phases
+        include G1832::Trains
 
-        attr_accessor :sell_queue, :connection_run, :reissued
+        attr_accessor :sell_queue, :reissued, :coal_token_counter, :coal_company_sold_or_closed
 
-        CURRENCY_FORMAT_STR = '$%s'
+        CORPORATION_CLASS = G1832::Corporation
+        CORPORATE_BUY_SHARE_ALLOW_BUY_FROM_PRESIDENT = true
+        MULTIPLE_BUY_ONLY_FROM_MARKET = true
+        MUST_SELL_IN_BLOCKS = true
+        EBUY_OTHER_VALUE = false
 
-        BANK_CASH = 12_000
+        CLOSED_CORP_TRAINS_REMOVED = false
+
+        IPO_RESERVED_NAME = 'Treasury'
+
+        BOOMTOWN_HEXES = %w[D8 F14 G9 G9 H6 L14].freeze
+        MIAMI_HEX = 'N16'
+
+        TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }].freeze
+        SYSTEM_TILE_LAYS = [{ lay: true, upgrade: true },
+                            { lay: :not_if_upgraded, upgrade: false },
+                            { lay: true, upgrade: :not_if_upgraded, cannot_reuse_same_hex: true }].freeze
 
         CERT_LIMIT = {
           2 => { '10' => 28, '9' => 24, '8' => 21, '7' => 17, '6' => 14 },
@@ -30,128 +51,28 @@ module Engine
 
         STARTING_CASH = { 2 => 1050, 3 => 700, 4 => 525, 5 => 420, 6 => 350, 7 => 300 }.freeze
 
-        CAPITALIZATION = :full
+        def tile_lays(entity)
+          return self.class::SYSTEM_TILE_LAYS if system?(entity)
 
-        MUST_SELL_IN_BLOCKS = true
+          self.class::TILE_LAYS
+        end
 
-        MARKET = [
-          %w[64y 68 72 76 82 90 100p 110 120 140 160 180 200 225 250 275 300 325 350 375 400],
-          %w[60y 64y 68 72 76 82 90p 100 110 120 140 160 180 200 225 250 275 300 325 350 375],
-          %w[55y 60y 64y 68 72 76 82p 90 100 110 120 140 160 180 200 225 250i 275i 300i 325i 350i],
-          %w[50o 55y 60y 64y 68 72 76p 82 90 100 110 120 140 160i 180i 200i 225i 250i 275i 300i 325i],
-          %w[40b 50o 55y 60y 64 68 72p 76 82 90 100 110i 120i 140i 160i 180i],
-          %w[30b 40o 50o 55y 60y 64 68p 72 76 82 90i 100i 110i],
-          %w[20b 30b 40o 50o 55y 60y 64 68 72 76i 82i],
-          %w[10b 20b 30b 40o 50y 55y 60y 64 68i 72i],
-          %w[0c 10b 20b 30b 40o 50y 55y 60i 64i],
-          %w[0c 0c 10b 20b 30b 40o 50y],
-          %w[0c 0c 0c 10b 20b 30b 40o],
-        ].freeze
+        def system?(corporation)
+          return false unless corporation
 
-        PHASES = [{ name: '2', train_limit: 4, tiles: [:yellow], operating_rounds: 1 },
-                  {
-                    name: '3',
-                    on: '3',
-                    train_limit: 4,
-                    tiles: %i[yellow green],
-                    operating_rounds: 2,
-                    status: ['can_buy_companies'],
-                  },
-                  {
-                    name: '4',
-                    on: '4',
-                    train_limit: 3,
-                    tiles: %i[yellow green],
-                    operating_rounds: 2,
-                    status: %w[can_buy_companies],
-                  },
-                  {
-                    name: '5',
-                    on: '5',
-                    train_limit: 2,
-                    tiles: %i[yellow green brown],
-                    operating_rounds: 3,
-                  },
-                  {
-                    name: '6',
-                    on: '6',
-                    train_limit: 2,
-                    tiles: %i[yellow green brown],
-                    operating_rounds: 3,
-                  },
-                  {
-                    name: '8',
-                    on: '8',
-                    train_limit: 2,
-                    tiles: %i[yellow green brown],
-                    operating_rounds: 3,
-                  },
-                  {
-                    name: '10',
-                    on: '10',
-                    train_limit: 2,
-                    tiles: %i[yellow green brown],
-                    operating_rounds: 3,
-                  },
-                  {
-                    name: '23',
-                    on: '12',
-                    train_limit: 2,
-                    tiles: %i[yellow green brown],
-                    operating_rounds: 3,
-                  }].freeze
+          corporation.type == :system
+        end
 
-        TRAINS = [
-          { name: '2', distance: 2, price: 80, rusts_on: '4', num: 7 },
-          {
-            name: '3',
-            distance: 3,
-            price: 180,
-            rusts_on: '6',
-            num: 6,
-            events: [{ 'type' => 'companies_buyable' }],
-          },
-          { name: '4', distance: 4, price: 300, rusts_on: '8', num: 5 },
-          {
-            name: '5',
-            distance: 5,
-            price: 450,
-            rusts_on: '12',
-            num: 4,
-            events: [{ 'type' => 'close_companies' }],
-          },
-          {
-            name: '6',
-            distance: 6,
-            price: 630,
-            num: 3,
-            events: [{ 'type' => 'remove_tokens' }],
-          },
-          { name: '8', distance: 8, price: 800, num: 3 },
-          { name: '10', distance: 10, price: 950, num: 2 },
-          { name: '12', distance: 12, price: 1100, num: 99 },
-        ].freeze
-
-        LAYOUT = :pointy
-
-        EBUY_OTHER_VALUE = false
-
-        CLOSED_CORP_TRAINS_REMOVED = false
-
-        CORPORATE_BUY_SHARE_ALLOW_BUY_FROM_PRESIDENT = true
-        IPO_RESERVED_NAME = 'Treasury'
-
-        TILE_LAYS = [{ lay: true, upgrade: true, cost: 0, cannot_reuse_same_hex: true },
-                     { lay: :not_if_upgraded, upgrade: false, cost: 0 }].freeze
-
-        STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(unlimited: :green, par: :white,
-                                                            ignore_one_sale: :red).freeze
-
-        MULTIPLE_BUY_ONLY_FROM_MARKET = true
+        ASSIGNMENT_TOKENS = {
+          'boomtown' => '/icons/1832/boomtown_token.svg',
+          'P2' => '/icons/1846/sc_token.svg',
+          'P3' => '/icons/1832/cotton_token.svg',
+        }.freeze
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
           'companies_buyable' => ['Companies become buyable', 'All companies may now be bought in by corporation'],
-          'remove_tokens' => ['Remove Tokens', 'Remove private company tokens']
+          'remove_tokens' => ['Remove Tokens', 'Remove private company tokens'],
+          'remove_key_west_token' => ['Remove Key West Token', 'FECR loses the Key West']
         ).freeze
 
         MARKET_TEXT = Base::MARKET_TEXT.merge(
@@ -160,7 +81,9 @@ module Engine
 
         STATUS_TEXT = Base::STATUS_TEXT.merge(
           'can_buy_companies_from_other_players' => ['Interplayer Company Buy',
-                                                     'Companies can be bought between players']
+                                                     'Companies can be bought between players',
+                                                     'The West Virginia Coalfields private company can be bought in for '\
+                                                     'up to face value from the owning player'],
         ).merge(
           'companies_buyable' => ['Companies become buyable', 'All companies may now be bought in by corporation'],
         )
@@ -176,25 +99,25 @@ module Engine
           G1870::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
             G1870::Step::BuySellParShares,
-            G1870::Step::PriceProtection,
+            G1850::Step::PriceProtection,
           ])
         end
 
         def operating_round(round_num)
-          G1870::Round::Operating.new(self, [
+          Engine::Round::Operating.new(self, [
             Engine::Step::Bankrupt,
             Engine::Step::Exchange,
-            G1870::Step::BuyCompany,
+            G1832::Step::BuyCompany,
             G1870::Step::Assign,
             G1870::Step::SpecialTrack,
-            G1870::Step::Track,
-            Engine::Step::Token,
+            G1832::Step::Track,
+            G1832::Step::Token,
             Engine::Step::Route,
             G1870::Step::Dividend,
             Engine::Step::DiscardTrain,
             G1870::Step::BuyTrain,
-            [G1870::Step::BuyCompany, { blocks: true }],
-            G1870::Step::PriceProtection,
+            [G1832::Step::BuyCompany, { blocks: true }],
+            G1850::Step::PriceProtection,
           ], round_num: round_num)
         end
 
@@ -209,14 +132,54 @@ module Engine
 
         def setup
           @sell_queue = []
-          @connection_run = {}
           @reissued = {}
+          @coal_token_counter = 5
 
           coal_company.max_price = coal_company.value
+
+          @sharp_city ||= @all_tiles.find { |t| t.name == '5' }
+          @gentle_city ||= @all_tiles.find { |t| t.name == '6' }
+          @straight_city ||= @all_tiles.find { |t| t.name == '57' }
+
+          @tile_141 ||= @all_tiles.find { |t| t.name == '141' }
+          @tile_142 ||= @all_tiles.find { |t| t.name == '142' }
+          @tile_143 ||= @all_tiles.find { |t| t.name == '143' }
+          @tile_144 ||= @all_tiles.find { |t| t.name == '144' }
+        end
+
+        def available_programmed_actions
+          [Action::ProgramMergerPass, Action::ProgramBuyShares, Action::ProgramSharePass]
+        end
+
+        def merge_rounds
+          [G1832::Round::Merger]
+        end
+
+        def corps_available_for_systems
+          @corporations.select { |c| c.operated? && c.type != :system }
         end
 
         def event_companies_buyable!
           coal_company.max_price = 2 * coal_company.value
+        end
+
+        def event_close_companies!
+          @log << '-- Event: Private companies close --'
+          company.close!
+
+          @coal_company_sold_or_closed = true
+        end
+
+        def event_close_remaining_companies!
+          @log << '-- Event: All remaining private companies close --'
+          @companies.each(&:close!)
+        end
+
+        # can't run to or through the West Virginia Coalfied hex (B14) without a coal token
+        def check_distance(route, visits, _train = nil)
+          return super if visits.none? { |v| v.hex == coal_hex } || route.train.owner.coal_token
+
+          raise GameError, 'Corporation must own coal token to enter West Virginia Coalfields'
         end
 
         def event_remove_tokens!
@@ -247,10 +210,6 @@ module Engine
           end
         end
 
-        def coal_company
-          @river_company ||= company_by_id('P5')
-        end
-
         def port_company
           @port_company ||= company_by_id('P2')
         end
@@ -261,6 +220,20 @@ module Engine
 
         def can_hold_above_corp_limit?(_entity)
           true
+        end
+
+        def can_par?(corporation, parrer)
+          return false if corporation.type == :system
+
+          super
+        end
+
+        def coal_company
+          @coal_company ||= company_by_id('P5')
+        end
+
+        def coal_hex
+          @coal_hex ||= hex_by_id('B14')
         end
 
         def revenue_for(route, stops)
@@ -298,33 +271,61 @@ module Engine
           true
         end
 
-        # CHECK IF THIS WORKS, IF NOT TRY IMPLEMENTING THIS OVER HERE VVVVV
-        # def upgrades_to?(from, to, _special = false, selected_company: nil)
-        #   return false if to.name == '171K' && from.hex.name != 'B11'
-        #   return false if to.name == '172L' && from.hex.name != 'C18'
+        def purchasable_companies(entity = nil)
+          entity ||= current_entity
+          return super unless @phase.name == '2'
 
-        #   super
-        # end
+          coal_company.owner.player? ? [coal_company] : []
+        end
 
-        # def upgrades_to_correct_label?(from, to)
-        #   return true if to.color != :brown
+        def after_sell_company(buyer, company, _price, _seller)
+          return unless company == coal_company
 
-        #   super
-        # end
+          buyer.coal_token = true
+          @coal_token_counter -= 1
+          @coal_company_sold_or_closed = true
+          log << "#{buyer.name} receives Coal token. #{@coal_token_counter} Coal tokens left in the game."
+          log << '-- Corporations can now buy Coal tokens --'
+        end
+
+        def status_array(corporation)
+          return unless corporation.coal_token
+
+          ['Coal Token']
+        end
+
+        def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
+          upgrades = super
+
+          return upgrades unless tile_manifest
+
+          upgrades |= [@sharp_city, @tile_141, @tile_142, @tile_143] if tile.name == '3' && tile.assigned?('boomtown')
+          upgrades |= [@straight_city, @tile_141, @tile_142] if tile.name == '4' && tile.assigned?('boomtown')
+
+          if tile.name == '58' && tile.assigned?('boomtown')
+            upgrades |= [@gentle_city, @tile_141, @tile_142, @tile_143, @tile_144]
+          end
+
+          upgrades
+        end
 
         def reissued?(corporation)
           @reissued[corporation]
         end
 
-        # TODO: LIST:
-        # Implement the bonuses for P2 and P3
-        # Implement Share Count issues (1856)
-        #
+        def graph_skip_paths(entity)
+          return nil if entity.coal_token
 
-        ASSIGNMENT_TOKENS = {
-          'P2' => '/icons/1846/sc_token.svg',
-          'P3' => '/icons/1832/cotton_token.svg',
-        }.freeze
+          @skip_paths ||= {}
+
+          return @skip_paths unless @skip_paths.empty?
+
+          coal_hex.tile.paths.each do |path|
+            @skip_paths[path] = true
+          end
+
+          @skip_paths
+        end
       end
     end
   end

@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# backtick_javascript: true
+
 require 'view/game/auto_action/auction_bid'
 require 'view/game/auto_action/buy_shares'
 require 'view/game/auto_action/share_pass'

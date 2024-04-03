@@ -14,7 +14,7 @@ module Engine
             sym: 'P1',
             value: 0,
             revenue: 5,
-            desc: 'MAJOR, Phase 5. Montreal Locomotive Works. This is a normal 5-train that is '\
+            desc: 'MAJOR, Phase 5. Montréal Locomotive Works. This is a normal 5-train that is '\
                   'subject to all of the normal rules. Note that a company can acquire this '\
                   'private company at the start of its turn, even if it is already at its train '\
                   'limit as this counts as an acquisition action, not a train buying action. '\
@@ -155,7 +155,7 @@ module Engine
             revenue: 10,
             desc: 'MAJOR, Phase 3. Manitoba South-Western Colonization Railway. The owning company '\
                   'may place an exchange station token on the map, free of charge, in a token '\
-                  'space in Winnipeg. The company does NOT need to be able to trace a route to the '\
+                  'space in Winnipeg (N16). The company does NOT need to be able to trace a route to the '\
                   'station in Winnipeg. Token must be specifically conjoined to one of the five '\
                   'Station slots. Pays company $10 until used. The company does not need to be '\
                   'able to trace a route to Winnipeg to use this property (i.e. any company can '\
@@ -199,7 +199,7 @@ module Engine
                   'charter. At the end of the game, the player receives the share certificate from '\
                   'the off-shore tax haven charter and includes it in their portfolio for '\
                   'determining final worth. The player also receives the cash from dividend income '\
-                  'accumulated on the charter. Can’t be acquired. Does not count against the '\
+                  'accumulated on the charter. Does not count against the '\
                   'certificate limit.',
             abilities: [],
             color: PRIVATE_BLUE,
@@ -253,11 +253,11 @@ module Engine
             abilities: [
               {
                 type: 'assign_hexes',
-                hexes: %w[A7 A9 AA15 AA9 AB22 AD18 AD20 AE17 AF16 AG13 AG3
+                hexes: %w[A9 AA15 AA9 AB22 AD18 AD20 AE17 AF16 AG13 AG3
                           AG9 AH10 AH12 AK3 AK5 AL2 AM5 AM9 AO9 AP6 C9
-                          D10 D12 D14 D16 F10 F8 G11 G13 G15 G17 H16 H8 I11 I15
-                          I17 J12 J16 K11 K13 K15 K17 K9 L10 L16 L8 M17 M9 N6
-                          O15 O9 P14 Q7 R16 S15 U11 V18 W9 X12 Y17 Z10 Z26],
+                          D10 D12 D14 D16 F10 F8 G11 G13 G17 H16 H8 I11 I15
+                          I17 J12 J16 K11 K13 K17 K9 L10 L16 L8 M17 M9 N6
+                          O15 O9 P14 Q7 S15 U11 W9 X12 Y17 Z10 Z26],
                 count: 1,
                 owner_type: 'corporation',
                 when: 'owning_corp_or_turn',
@@ -272,7 +272,7 @@ module Engine
             value: 0,
             revenue: 10,
             desc: 'MAJOR/MINOR, Phase 1. Ontario, Simcoe & Huron Union Railroad. Owner pays no '\
-                  'upgrade fee or terrain costs for the tile placement. This tile placement is in '\
+                  'upgrade fee or terrain costs for tile lays and upgrades to Toronto (AC21). This is in '\
                   'addition to the company’s normal tile placement(s), but happens during the '\
                   'company’s tile laying step. Does not close. Minor may place yellow or green '\
                   'only. The company upgrading the city must be connected to it in order to '\
@@ -298,7 +298,7 @@ module Engine
             value: 0,
             revenue: 10,
             desc: 'MAJOR/MINOR, Phase 1. Pontiac Pacific Junction Railway. Owner pays no upgrade '\
-                  'fee or terrain costs for the tile placement. This tile placement is in addition '\
+                  'fee or terrain costs for tile lays and upgrades to Ottawa (AE15). This is in addition '\
                   'to the company’s normal tile placement(s), but happens during the company’s '\
                   'tile laying step. Does not close. Minor may place yellow or green only. The '\
                   'company upgrading the city must be connected to it in order to exercise the '\
@@ -319,12 +319,12 @@ module Engine
             color: PRIVATE_GREEN,
           },
           {
-            name: 'P16 (Free Montreal Upgrades)',
+            name: 'P16 (Free Montréal Upgrades)',
             sym: 'P16',
             value: 0,
             revenue: 10,
             desc: 'MAJOR/MINOR, Phase 1. South Eastern Railway. Owner pays no upgrade fee or '\
-                  'terrain costs for the tile placement. This tile placement is in addition to the '\
+                  'terrain costs for tile lays and upgrades to Montréal (AF12). This is in addition to the '\
                   'company’s normal tile placement(s), but happens during the company’s tile '\
                   'laying step. Does not close. Minor may place yellow or green only. The company '\
                   'upgrading the city must be connected to it in order to exercise the private '\
@@ -345,12 +345,12 @@ module Engine
             color: PRIVATE_GREEN,
           },
           {
-            name: 'P17 (Free Quebec Upgrades)',
+            name: 'P17 (Free Québec Upgrades)',
             sym: 'P17',
             value: 0,
             revenue: 10,
-            desc: 'MAJOR/MINOR, Phase 1. Quebec & Richmond Railway. Owner pays no upgrade fee or '\
-                  'terrain costs for the tile placement. This tile placement is in addition to the '\
+            desc: 'MAJOR/MINOR, Phase 1. Québec & Richmond Railway. Owner pays no upgrade fee or '\
+                  'terrain costs for tile lays and upgrades to Québec (AH8). This is in addition to the '\
                   'company’s normal tile placement(s), but happens during the company’s tile '\
                   'laying step. Does not close. Minor may place yellow or green only. The company '\
                   'upgrading the city must be connected to it in order to exercise the private '\
@@ -376,7 +376,7 @@ module Engine
             value: 0,
             revenue: 10,
             desc: 'MAJOR/MINOR, Phase 1. Winnipeg & Prince Albert Railway. Owner pays no upgrade '\
-                  'fee or terrain costs for the tile placement. This tile placement is in addition '\
+                  'fee or terrain costs for the tile placement. This is in addition '\
                   'to the company’s normal tile placement(s), but happens during the company’s '\
                   'tile laying step. Does not close. Minor may place yellow or green only. The '\
                   'company upgrading the city must be connected to it in order to exercise the '\
@@ -402,7 +402,7 @@ module Engine
             value: 0,
             revenue: 10,
             desc: 'MAJOR, Phase 3. The Crowsnest Pass. Allows the owning company to place a tile '\
-                  'into the Crowsnest Pass (CP) and ignore the terrain fee. This tile placement '\
+                  'into the Crowsnest Pass (F16) and ignore the terrain fee. This tile placement '\
                   'counts as the company’s full track laying step. Closed when used. The CP hex is '\
                   'not reserved; any company may pay to lay a tile there irrespective of the '\
                   'ownership of P19.',
@@ -429,7 +429,7 @@ module Engine
             value: 0,
             revenue: 10,
             desc: 'MAJOR, Phase 3. The Yellowhead Pass. Allows the owning company to place a tile '\
-                  'into the Yellowhead Pass (YP) and ignore the terrain fee. This tile placement '\
+                  'into the Yellowhead Pass (E11) and ignore the terrain fee. This tile placement '\
                   'counts as the company’s full track laying step. Closed when used. The YP hex is '\
                   'not reserved; any company may pay to lay a tile there irrespective of the '\
                   'ownership of P20.',
@@ -459,8 +459,8 @@ module Engine
                   'to place three yellow tiles in addition to its normal track lay. The owning '\
                   'company’s normal track lay and each of the three extra yellow tile lays may be '\
                   'done in any order. These lays are exempt from terrain fees, but may not be used '\
-                  'to build on hexes with mountainous terrain ($120) or in Montreal, Ottawa, '\
-                  'Quebec, Toronto or Winnipeg.',
+                  'to build on hexes with mountainous terrain costing $120 or in Montréal, Ottawa, '\
+                  'Québec, Toronto or Winnipeg.',
             abilities: [
               {
                 type: 'tile_lay',
@@ -472,7 +472,7 @@ module Engine
                 closed_when_used_up: true,
                 special: false,
                 free: true,
-                tiles: [],
+                tiles: %w[1 2 3 4 5 6 7 8 9 55 56 57 58 69 201 202 621 630 631 632 633],
                 hexes: %w[A7 A9 B6 B8 B10 B12 B14 C7 C9 C11 C13 D6 D8 D10 D12
                           D14 D16 E7 E9 E15 F6 F8 F10 F12 G7 G9 G11 G13 G17 G15
                           H6 H8 H10 H12 H14 H16 I7 I9 I11 I13 I15 I17 J6 J8 J10
@@ -606,9 +606,9 @@ module Engine
                   'colour. This closes the company and counts as the company’s normal track laying '\
                   'step. All other normal track laying restrictions apply. Once acquired, the '\
                   'private company pays its revenue to the owning company until the power is '\
-                  'exercised and the company is closed. May be used in conjunction with P12 and/or '\
-                  'P30 as part of the same tile placement step. May not be used to remove a town '\
-                  'with a sawmill token (P13).',
+                  'exercised and the company is closed. May be used in conjunction with P12 '\
+                  'as part of the same tile placement step. May not be used to remove a town '\
+                  'with a sawmill token (placed by P13).',
             abilities: [
               {
                 type: 'tile_lay',
@@ -638,8 +638,8 @@ module Engine
                   'normal track laying step. All other normal track laying restrictions apply. '\
                   'Once acquired, the private company pays its revenue to the owning company until '\
                   'the power is exercised and the company is closed. May be used in conjunction '\
-                  'with P12 and/or P29 as part of the same tile placement step. May not be used to '\
-                  'remove a town with a sawmill token (P13).',
+                  'with P12 as part of the same tile placement step. May not be used to '\
+                  'remove a town with a sawmill token (placed by P13).',
             abilities: [
               {
                 type: 'tile_lay',
@@ -662,7 +662,8 @@ module Engine
             sym: 'C1',
             value: 100,
             revenue: 10,
-            desc: 'Has a face value of £100 and contributes £100 to conversion into the CNoR director’s certificate.',
+            desc: 'Has a face value of $100 and contributes $100 to conversion into the CNoR director’s '\
+                  'certificate. Home: Winnipeg (N16). Destination: Vancouver (C15).',
             abilities: [
               {
                 type: 'exchange',
@@ -679,8 +680,8 @@ module Engine
             sym: 'C2',
             value: 100,
             revenue: 10,
-            desc: 'Has a face value of £100 and converts into the CPR’s 10% director certificate. CPR may also put '\
-                  'its destination token into Vancouver when converted.',
+            desc: 'Has a face value of $100 and converts into the CPR’s 10% director certificate. CPR may also put '\
+                  'its destination token into Vancouver when converted. Home: Montréal (AF12). Destination: Vancouver (C15).',
             abilities: [
               {
                 type: 'exchange',
@@ -697,8 +698,8 @@ module Engine
             sym: 'C3',
             value: 100,
             revenue: 10,
-            desc: 'Has a face value of £100 and contributes £100 to conversion into the GNWR director’s '\
-                  'certificate.',
+            desc: 'Has a face value of $100 and contributes $100 to conversion into the GNWR director’s '\
+                  'certificate. Home: Thunder Bay (R16). Destination: N Winnipeg (N16).',
             abilities: [
               {
                 type: 'exchange',
@@ -715,8 +716,8 @@ module Engine
             sym: 'C4',
             value: 100,
             revenue: 10,
-            desc: 'Has a face value of £100 and contributes £100 to conversion into the GT director’s '\
-                  'certificate.',
+            desc: 'Has a face value of $100 and contributes $100 to conversion into the GT director’s '\
+                  'certificate. Home: Toronto (AC21). Destination: S Montréal (AF12).',
             abilities: [
               {
                 type: 'exchange',
@@ -733,7 +734,8 @@ module Engine
             sym: 'C5',
             value: 100,
             revenue: 10,
-            desc: 'Has a face value of £100 and contributes £100 to conversion into the GTP director’s certificate.',
+            desc: 'Has a face value of $100 and contributes $100 to conversion into the GTP director’s '\
+                  'certificate. Home: Winnipeg (N16). Destination: Prince Rupert (A7).',
             abilities: [
               {
                 type: 'exchange',
@@ -750,7 +752,8 @@ module Engine
             sym: 'C6',
             value: 100,
             revenue: 10,
-            desc: 'Has a face value of £100 and contributes £100 to conversion into the GWR director’s certificate.',
+            desc: 'Has a face value of $100 and contributes $100 to conversion into the GWR director’s '\
+                  'certificate. Home: Hamilton (AB24). Destination: Windsor (Z28).',
             abilities: [
               {
                 type: 'exchange',
@@ -767,7 +770,8 @@ module Engine
             sym: 'C7',
             value: 100,
             revenue: 10,
-            desc: 'Has a face value of £100 and contributes £100 to conversion into the ICR director’s certificate.',
+            desc: 'Has a face value of $100 and contributes $100 to conversion into the ICR director’s '\
+                  'certificate. Home: Halifax (AP4). Destination: Any Québec (AH8).',
             abilities: [
               {
                 type: 'exchange',
@@ -784,7 +788,8 @@ module Engine
             sym: 'C8',
             value: 100,
             revenue: 10,
-            desc: 'Has a face value of £100 and contributes £100 to conversion into the NTR director’s certificate.',
+            desc: 'Has a face value of $100 and contributes $100 to conversion into the NTR director’s '\
+                  'certificate. Home: Moncton (AO3). Destination: SE Winnipeg (N16).',
             abilities: [
               {
                 type: 'exchange',
@@ -801,7 +806,8 @@ module Engine
             sym: 'C9',
             value: 100,
             revenue: 10,
-            desc: 'Has a face value of £100 and contributes £100 to conversion into the PGE director’s certificate.',
+            desc: 'Has a face value of $100 and contributes $100 to conversion into the PGE director’s '\
+                  'certificate. Home: Vancouver (C15). Destination: Prince George (D10).',
             abilities: [
               {
                 type: 'exchange',
@@ -818,7 +824,8 @@ module Engine
             sym: 'C10',
             value: 100,
             revenue: 10,
-            desc: 'Has a face value of £100 and contributes £100 to conversion into the QMOO director’s certificate.',
+            desc: 'Has a face value of $100 and contributes $100 to conversion into the QMOO director’s '\
+                  'certificate. Home: Québec (AH8). Destination: North Bay (AA15).',
             abilities: [
               {
                 type: 'exchange',
@@ -851,7 +858,7 @@ module Engine
             text_color: 'black',
           },
           {
-            name: 'MINOR: 3. Quebec & New Brunswick Railway',
+            name: 'MINOR: 3. Québec & New Brunswick Railway',
             sym: 'M3',
             value: 100,
             revenue: 0,
@@ -861,7 +868,7 @@ module Engine
             text_color: 'black',
           },
           {
-            name: 'MINOR: 4. Quebec Central Railway',
+            name: 'MINOR: 4. Québec Central Railway',
             sym: 'M4',
             value: 100,
             revenue: 0,
@@ -892,7 +899,7 @@ module Engine
             text_color: 'black',
           },
           {
-            name: 'MINOR: 7. Montreal & Lachine Railway',
+            name: 'MINOR: 7. Montréal & Lachine Railway',
             sym: 'M7',
             value: 100,
             revenue: 0,
@@ -952,12 +959,12 @@ module Engine
             text_color: 'black',
           },
           {
-            name: 'MINOR: 13. Ontario & Quebec Railway',
+            name: 'MINOR: 13. Ontario & Québec Railway',
             sym: 'M13',
             value: 100,
             revenue: 0,
             desc: 'A 50% director’s certificate in the associated minor company. Starting location is AC21 (Toronto). Home '\
-                  'token cost £20, placing home token counts as first tile lay.',
+                  'token cost $20, placing home token counts as first tile lay.',
             abilities: [],
             color: '#ffffff',
             text_color: 'black',
@@ -1167,7 +1174,7 @@ module Engine
           },
           {
             sym: '3',
-            name: 'Quebec & New Brunswick Railway',
+            name: 'Québec & New Brunswick Railway',
             logo: '1822_ca/3',
             tokens: [0],
             type: 'minor',
@@ -1182,7 +1189,7 @@ module Engine
           },
           {
             sym: '4',
-            name: 'Quebec Central Railway',
+            name: 'Québec Central Railway',
             logo: '1822_ca/4',
             tokens: [0],
             type: 'minor',
@@ -1228,7 +1235,7 @@ module Engine
           },
           {
             sym: '7',
-            name: 'Montreal & Lachine Railway',
+            name: 'Montréal & Lachine Railway',
             logo: '1822_ca/7',
             tokens: [0],
             type: 'minor',
@@ -1322,7 +1329,7 @@ module Engine
           },
           {
             sym: '13',
-            name: 'Ontario & Quebec Railway',
+            name: 'Ontario & Québec Railway',
             logo: '1822_ca/13',
             tokens: [20],
             type: 'minor',
@@ -1605,6 +1612,7 @@ module Engine
             text_color: 'black',
             destination_coordinates: 'C15',
             destination_icon: '1822_ca/CNoR_DEST',
+            destination_icon_in_city_slot: [0, 3],
           },
           {
             sym: 'CPR',
@@ -1620,6 +1628,7 @@ module Engine
             color: '#ed242a',
             destination_coordinates: 'C15',
             destination_icon: '1822_ca/CPR_DEST',
+            destination_icon_in_city_slot: [0, 2],
           },
           {
             sym: 'GNWR',
@@ -1635,6 +1644,7 @@ module Engine
             destination_coordinates: 'N16',
             destination_exits: [3],
             destination_icon: '1822_ca/GNWR_DEST',
+            destination_icon_in_city_slot: [1, 0],
           },
           {
             sym: 'GT',
@@ -1650,6 +1660,7 @@ module Engine
             destination_coordinates: 'AF12',
             destination_exits: [0],
             destination_icon: '1822_ca/GT_DEST',
+            destination_icon_in_city_slot: [0, 1],
           },
           {
             sym: 'GTP',
@@ -1707,6 +1718,7 @@ module Engine
             destination_coordinates: 'N16',
             destination_exits: [5],
             destination_icon: '1822_ca/NTR_DEST',
+            destination_icon_in_city_slot: [3, 0],
           },
           {
             sym: 'PGE',
@@ -1723,7 +1735,7 @@ module Engine
           },
           {
             sym: 'QMOO',
-            name: 'Quebec, Montreal, Ottawa and Occidental Railway',
+            name: 'Québec, Montréal, Ottawa and Occidental Railway',
             logo: '1822_ca/QMOO',
             tokens: [0, 100],
             type: 'major',

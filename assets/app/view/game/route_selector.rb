@@ -319,11 +319,11 @@ module View
 
         buttons = [
           h('button.small', { on: { click: clear } }, 'Clear Train'),
-          h('button.small', { on: { click: clear_all } }, 'Clear All'),
+          h('button.small', { attrs: { id: 'clearall' }, on: { click: clear_all } }, 'Clear All'),
           h('button.small', { on: { click: reset_all } }, 'Reset'),
         ]
         if @game_data.dig('settings', 'auto_routing') || @game_data['mode'] == :hotseat
-          buttons << h('button.small', { on: { click: auto } }, 'Auto')
+          buttons << h('button.small', { attrs: { id: 'autoroute' }, on: { click: auto } }, 'Auto')
         end
         if @game.adjustable_train_list?(current_entity)
           buttons << h('button.small', { on: { click: add_train } }, "+#{@game.adjustable_train_label(current_entity)}")
@@ -335,7 +335,7 @@ module View
         end
         h(:div, { style: { overflow: 'auto', marginBottom: '1rem' } }, [
           h(:div, buttons),
-          h(:button, { style: submit_style, on: { click: submit } }, 'Submit ' + revenue_str),
+          h(:button, { style: submit_style, attrs: { id: 'submit' }, on: { click: submit } }, 'Submit ' + revenue_str),
         ])
       end
 

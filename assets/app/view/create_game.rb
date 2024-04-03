@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# backtick_javascript: true
+
 require 'game_manager'
 require 'lib/whats_this'
 require 'view/form'
@@ -258,6 +260,20 @@ module View
         next if o_r[:hidden]
 
         desc_text = o_r[:desc] ? ": #{o_r[:desc]}" : ''
+        parenthetical = ''
+        if o_r[:players] == [1]
+          parenthetical = 'solo'
+        elsif o_r[:players]&.one?
+          parenthetical = "#{o_r[:players].min} players"
+        elsif o_r[:players]
+          parenthetical = "#{o_r[:players].min}-#{o_r[:players].max} players"
+        end
+        if o_r[:designer]
+          parenthetical += ' ' if parenthetical != ''
+          parenthetical += "by #{o_r[:designer]}"
+        end
+        desc_text += " (#{parenthetical})" if parenthetical != ''
+
         label_text = "#{o_r[:short_name]}#{desc_text}"
         h(:li, [render_input(
           label_text,

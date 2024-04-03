@@ -2,7 +2,7 @@
 
 module Engine
   class Token
-    attr_reader :extra
+    attr_reader :extra, :cheater
     attr_accessor :city, :price, :type, :used, :status, :hex, :corporation, :logo, :simple_logo
 
     def initialize(corporation, price: 0, logo: nil, simple_logo: nil, type: :normal)
@@ -12,6 +12,7 @@ module Engine
       @simple_logo = simple_logo || corporation&.simple_logo || @logo
       @used = false
       @extra = nil # Is this in an extra slot? (bull token)
+      @cheater = nil
       @type = type
       @city = nil
       @hex = nil
@@ -36,6 +37,7 @@ module Engine
       @hex = nil
       @used = false
       @extra = false
+      @cheater = false
       @location_type = nil
     end
 
@@ -69,7 +71,7 @@ module Engine
       end
     end
 
-    def place(location, extra: nil)
+    def place(location, extra: nil, cheater: nil)
       @used = true
       case location
       when Engine::Part::City
@@ -81,6 +83,21 @@ module Engine
         @hex = location
       end
       @extra = extra
+      @cheater = cheater
+    end
+
+    def inspect
+      if @hex
+        location =
+          if @hex.id == @hex.tile.name
+            [@hex.id, @city.index, @city.tokens.index(self)]
+          else
+            [@hex.id, @hex.tile.name, @city.index, @city.tokens.index(self) || '?']
+          end
+        "<#{self.class.name}: corp:#{corporation.name}, #{location.join('-')}>"
+      else
+        "<#{self.class.name}: corp:#{corporation.name}, price:#{@price}>"
+      end
     end
   end
 end

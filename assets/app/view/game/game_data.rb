@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# backtick_javascript: true
+
 require 'game_manager'
 
 module View
@@ -74,7 +76,28 @@ module View
           buttons << h(:label, 'to play around in hotseat mode')
         end
 
+        buttons.concat(render_random_seed)
+
         h('div.margined', buttons)
+      end
+
+      def render_random_seed
+        return [] unless (@seed = @game_data.dig('settings', 'seed'))
+
+        copy_seed = lambda do
+          `navigator.clipboard.writeText(self.seed)`
+          store(
+            :flash_opts,
+            { message: "Copied random seed #{@seed} to the clipboard", color: 'lightgreen' },
+            skip: false,
+          )
+        end
+        [
+          h(:br),
+          h(:button, { on: { click: copy_seed } }, 'Copy Random Seed'),
+          h(:a, { attrs: { href: 'https://github.com/tobymao/18xx/wiki/Random-Seeds', target: '_blank' } },
+            'More info on random seeds'),
+        ]
       end
     end
   end

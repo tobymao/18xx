@@ -19,6 +19,12 @@ module Engine
             actions << 'choose' if opening_mountain_pass?(entity) && @game.can_build_mountain_pass
             actions << 'place_token' if can_place_token?(entity)
             actions << 'pass' if actions.any?
+            actions
+          end
+
+          def setup
+            super
+            @tokened = false
           end
 
           def process_place_token(action)
@@ -27,7 +33,7 @@ module Engine
           end
 
           def pay_token_cost(entity, cost, city)
-            return super if !@game.mountain_pass?(city.hex) || city.tokens.compact.size == 1
+            return super if !@game.mountain_pass_token_hex?(city.hex) || city.tokens.compact.size == 1
 
             first_corp = city.tokens.first.corporation
             extra_cost = cost - @game.class::MOUNTAIN_SECOND_TOKEN_COST

@@ -3,6 +3,7 @@
 require 'logger'
 require 'rufus-scheduler'
 require 'require_all'
+require 'sequel'
 require_relative 'models'
 require_rel './models'
 require_relative 'lib/assets'
@@ -11,9 +12,11 @@ require_relative 'lib/hooks'
 require_relative 'lib/mail'
 require_relative 'lib/user_stats'
 
+Sequel.extension :pg_json_ops
+
 PRODUCTION = ENV['RACK_ENV'] == 'production'
 
-LOGGER = Logger.new($stdout)
+QUEUE_LOGGER = Logger.new($stdout)
 
 Bus.configure
 
@@ -21,15 +24,19 @@ ASSETS = Assets.new(precompiled: PRODUCTION)
 
 scheduler = Rufus::Scheduler.new
 
+# give latest pins a chance to be used before they get cleaned up
+UNUSED_RECENT_PINS_TO_KEEP = 2
+PINS_DIR = File.join(File::SEPARATOR, '18xx', 'public', 'pinned')
+
 def days_ago(days)
   Time.now - (86_400 * days)
 end
 
 scheduler.cron '00 09 * * *' do
-  LOGGER.info('Calculating user stats')
+  QUEUE_LOGGER.info('Calculating user stats')
   UserStats.calculate_stats
 
-  LOGGER.info('Archiving Games')
+  QUEUE_LOGGER.info('Archiving Games')
 
   filter = <<~SQL
     (status = 'finished' AND created_at <= :finished) OR
@@ -39,6 +46,21 @@ scheduler.cron '00 09 * * *' do
   Game.where(
     Sequel.lit(filter, finished: days_ago(365), active: days_ago(90))
   ).all.each(&:archive!)
+
+  # clean up unused pins, except for the newest few
+  pins = Dir.glob("#{PINS_DIR}/*.js.gz")
+           .sort_by { |f| File.mtime(f) }[0..-(1 + UNUSED_RECENT_PINS_TO_KEEP)]
+           .map { |f| f.split(%r{[./]})[-3] }
+  pins.each do |pin|
+    where_kwargs = {
+      Sequel.pg_jsonb_op(:settings).get_text('pin') => pin,
+      :status => %w[active finished],
+    }
+    if Game.where(**where_kwargs).count.zero?
+      file = "#{PINS_DIR}/#{pin}.js.gz"
+      FileUtils.rm(file)
+    end
+  end
 
   Game.where(status: 'new').all.each do |game|
     if game.settings['unlisted']
@@ -107,7 +129,7 @@ MessageBus.subscribe '/turn' do |msg|
 
   users.each do |user|
     Mail.send(user, "18xx.games Game: #{game.title} - #{game.id} - #{data['type']}", html)
-    LOGGER.info("mail sent for game: #{game.id} to user: #{user.id}")
+    QUEUE_LOGGER.info("mail sent for game: #{game.id} to user: #{user.id}")
     user.settings['email_sent'] = Time.now.to_i
     user.save
   end

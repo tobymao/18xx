@@ -35,6 +35,8 @@ module Engine
 
         CAPITALIZATION = :full
 
+        DISCARDED_TRAINS = :remove # Rule VII.13, bullet 3
+
         MUST_SELL_IN_BLOCKS = false
 
         MARKET = [
@@ -107,7 +109,7 @@ module Engine
           {
             name: '4',
             on: '4',
-            train_limit: { PreStaatsbahn: 2, Coal: 2, Regional: 3 },
+            train_limit: { PreStaatsbahn: 2, Coal: 2, Regional: 3, Staatsbahn: 4 },
             tiles: %i[yellow green],
             status: %w[can_buy_trains may_exchange_coal_railways],
             operating_rounds: 2,
@@ -162,7 +164,15 @@ module Engine
           'sd_formation' => ['SD formation', 'The Suedbahn is founded at the end of the OR'],
           'close_coal_railways' => ['Coal railways closed', 'Any still open Coal railways are exchanged'],
           'ug_formation' => ['UG formation', 'The Ungarische Staatsbahn is founded at the end of the OR'],
-          'kk_formation' => ['k&k formation', 'k&k Staatsbahn is founded at the end of the OR']
+          'kk_formation' => ['k&k formation', 'k&k Staatsbahn is founded at the end of the OR'],
+          '1g_available' => ['1g available', '1g trains become available for purchase from the Bank'],
+          '2g_available' => ['2g available', '2g trains become available'],
+          '3g_available' => ['3g available', '3g trains become available'],
+          '4g_available' => ['4g available', '4g trains become available'],
+          '5g_available' => ['5g available', '5g trains become available'],
+          '1g_rust' => ['1g rust', 'Any remaining 1g do rust'],
+          '1g2g_rust' => ['2g or lower rust', 'Any remaining 1g or 2g do rust'],
+          '1g2g3g_rust' => ['3g or lower rust', 'Any remaining 1g, 2g, or 3g do rust']
         ).freeze
 
         STATUS_TEXT = Base::STATUS_TEXT.merge(
@@ -460,7 +470,7 @@ module Engine
         end
 
         def timeline
-          @timeline ||= ['At the end of each OR set, the cheapest train in bank is exported.'].freeze
+          @timeline ||= ['At the end of each OR set, the cheapest non-g train in bank is exported.'].freeze
         end
 
         def status_str(entity)
@@ -652,6 +662,57 @@ module Engine
 
         def event_kk_formation!
           @log << 'KK formation not yet implemented'
+        end
+
+        def event_1g_available!
+          @log << '-- Event: 1g trains now available to purchase from the Bank'
+        end
+
+        def event_2g_available!
+          @log << '-- Event: 2g trains now available'
+        end
+
+        def event_3g_available!
+          @log << '-- Event: 3g trains now available'
+        end
+
+        def event_4g_available!
+          @log << '-- Event: 4g trains now available'
+        end
+
+        def event_5g_available!
+          @log << '-- Event: 5g trains now available'
+        end
+
+        def event_1g_rust!
+          rust_g_trains(%w[1g])
+        end
+
+        def event_1g2g_rust!
+          rust_g_trains(%w[1g 2g])
+        end
+
+        def event_1g2g3g_rust!
+          rust_g_trains(%w[1g 2g 3g])
+        end
+
+        def rust_g_trains(g_types)
+          rusted_trains = []
+          owners = Hash.new(0)
+
+          trains.each do |t|
+            next if t.rusted
+            next unless g_types.include?(t.name)
+
+            rusted_trains << t.name
+            owners[t.owner.name] += 1
+            rust(t)
+          end
+
+          return if rusted_trains.empty?
+
+          @log << "-- Event: #{rusted_trains.uniq.join(', ')} trains rust " \
+                  "( #{owners.map { |c, t| "#{c} x#{t}" }.join(', ')}) --"
         end
 
         def exchange_coal_railway(company)

@@ -454,7 +454,7 @@ module Engine
           sfma_idx = @round.entities.find_index(sfma)
           ssfl_idx = @round.entities.find_index(ssfl)
 
-          will_run = true
+          will_run = (version == 2)
           will_run = false if sflp_idx && sflp_idx <= @round.entity_index
           will_run = false if sfma_idx && sfma_idx <= @round.entity_index
           will_run = false if ssfl_idx && ssfl_idx <= @round.entity_index
@@ -1155,7 +1155,7 @@ module Engine
 
           president = majority_share_holders
             .select { |p| p.percent_of(corporation) >= corporation.presidents_percent }
-            .min_by { |p| @share_pool.distance(previous_president, p) }
+            .min_by { |p| player_distance_for_president(previous_president, p) }
           return unless president
 
           corporation.owner = president
@@ -1963,7 +1963,8 @@ module Engine
           min = current_token_cnt == 1 ? 1 : 0
 
           first_price = min.zero? ? XFORM_OPT_TOKEN_COST : XFORM_REQ_TOKEN_COST
-          max_opt_tokens = [((@transform_target.cash - first_price) / XFORM_OPT_TOKEN_COST).to_i, 0].max
+          required_payment = min.zero? ? 0 : XFORM_REQ_TOKEN_COST
+          max_opt_tokens = [((@transform_target.cash - required_payment) / XFORM_OPT_TOKEN_COST).to_i, 0].max
           max = [max_opt_tokens + min, 5 - current_token_cnt].min
 
           if max.zero?
@@ -2084,10 +2085,10 @@ module Engine
           tshares.each_with_index do |share, i|
             if i.even?
               @log << "Moving #{share.percent}% share of #{share.corporation.name} from #{old.name} to #{newa.name} treasury"
-              @share_pool.transfer_shares(share.to_bundle, newa, allow_president_change: true)
+              @share_pool.transfer_shares(share.to_bundle, newa, allow_president_change: true, corporate_transfer: true)
             else
               @log << "Moving #{share.percent}% share of #{share.corporation.name} from #{old.name} to #{newb.name} treasury"
-              @share_pool.transfer_shares(share.to_bundle, newb, allow_president_change: true)
+              @share_pool.transfer_shares(share.to_bundle, newb, allow_president_change: true, corporate_transfer: true)
             end
           end
         end
@@ -2470,8 +2471,13 @@ module Engine
           event_tuscan_merge!
         end
 
+        # Return corp first in operating order:
+        # 1. Highest price, then
+        # 2. Rightmost price, then
+        # 3. Highest in stack within a price
+        #
         def best_stock_value(corps)
-          corps.compact.select(&:floated?).max_by { |c| c.share_price.price }
+          corps.compact.select(&:floated?).min
         end
 
         def tuscan_merge_start(sflp, sfma, ssfl, sfli, holding, will_run)
@@ -2480,6 +2486,7 @@ module Engine
           @tuscan_merge_run = will_run
 
           decider = best_stock_value([sflp, sfma, ssfl])
+          @log << "#{decider.name} has best stock value"
           @tuscan_merge_decider = decider.player || @round.current_entity.player
           @log << "#{@tuscan_merge_decider.name} will perform Tuscan Merge operations"
           @tuscan_merge_ssfl = ssfl

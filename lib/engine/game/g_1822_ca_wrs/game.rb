@@ -44,17 +44,7 @@ module Engine
           },
         ]).freeze
 
-        PENDING_HOME_TOKENERS = [MINOR_14_ID, 'GNWR'].freeze
-
-        def init_companies(players)
-          game_companies.map do |company|
-            next if players.size < (company[:min_players] || 0)
-            next unless starting_companies.include?(company[:sym])
-
-            opts = self.class::STARTING_COMPANIES_OVERRIDE[company[:sym]] || {}
-            Company.new(**company.merge(opts))
-          end.compact
-        end
+        PENDING_HOME_TOKENERS = ['GNWR'].freeze
 
         def after_lay_tile(hex, _old_tile, _tile)
           super

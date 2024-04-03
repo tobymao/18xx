@@ -70,6 +70,13 @@ module Engine
             # route auto-selector can use its previous route
             sym = trains.map(&:id).sort.join('_')
 
+            # temporarily detach big boy token from individual train that is
+            # being double-headed
+            if (big_boy_train = trains.find { |t| t == @game.big_boy_train })
+              @game.detach_big_boy
+              @game.big_boy_train_dh_original = big_boy_train
+            end
+
             if (train = @game.train_by_id("#{sym}-0"))
               # refresh double-headed train that ran previously
               train.operated = false
@@ -93,6 +100,9 @@ module Engine
               @game.remove_train(train)
             end
 
+            # temporarily attach big boy token to the double-headed train
+            @game.attach_big_boy(train, log: false, double_head: true) if big_boy_train
+
             # run train this OR, then remove it from company automatically via
             # base logic for obsolete trains
             train.obsolete = true
@@ -101,26 +111,17 @@ module Engine
           end
 
           def combined_distance_and_name(trains)
-            big_boy_train = false
-
             cities, towns = trains.each_with_object([0, 0]) do |train, c_t|
               c, t = @game.distance(train)
               c_t[0] += c
               c_t[1] += t
-
-              big_boy_train ||= (train == @game.big_boy_train)
             end
 
             distance = [
               { 'nodes' => ['town'], 'pay' => towns, 'visit' => towns },
               { 'nodes' => %w[city offboard town], 'pay' => cities, 'visit' => cities },
             ]
-            name =
-              if big_boy_train
-                "[#{cities}+#{towns}]"
-              else
-                "#{cities}+#{towns}"
-              end
+            name = "#{cities}+#{towns}"
 
             [distance, name]
           end

@@ -8,6 +8,7 @@ module View
     class SwitchTrains < Snabberb::Component
       include Actionable
       include AlternateCorporations
+      include Lib::Settings
 
       def render
         @step = @game.round.active_step

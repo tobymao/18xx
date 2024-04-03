@@ -6,120 +6,114 @@ module Engine
       module Map
         TILE_TYPE = :lawson
 
-        # rubocop:disable Layout/LineLength
         TILES = {
           # Yellow
-          '3a' =>
-          {
-            'count' => 4,
-            'color' => 'yellow',
-            'code' => 'town=revenue:10,to_city:1;path=a:0,b:_0;path=a:_0,b:1',
-          },
-          '4a' =>
-          {
-            'count' => 6,
-            'color' => 'yellow',
-            'code' => 'town=revenue:10,to_city:1;path=a:0,b:_0;path=a:_0,b:3',
-          },
-          '58a' =>
-          {
-            'count' => 6,
-            'color' => 'yellow',
-            'code' => 'town=revenue:10,to_city:1;path=a:0,b:_0;path=a:_0,b:2',
-          },
+          '3' => 4,
+          '4' => 6,
           '7' => 4,
           '8' => 14,
           '9' => 14,
+          '58' => 6,
 
           # Green
           '80' => 2,
           '81' => 2,
           '82' => 6,
           '83' => 6,
-          # Single City green tiles
-          '226' =>
+          'X01' =>
           {
             'count' => 2,
             'color' => 'green',
-            'code' => 'city=revenue:30,slots:1;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:6,b:_0',
+            'code' => 'city=revenue:30,slots:1;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
           },
-          '227' =>
+          'X02' =>
           {
             'count' => 2,
             'color' => 'green',
-            'code' => 'city=revenue:30,slots:1;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;path=a:6,b:_0',
+            'code' => 'city=revenue:30,slots:1;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0',
           },
-          '228' =>
+          'X03' =>
           {
             'count' => 2,
             'color' => 'green',
             'code' => 'city=revenue:30,slots:1;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0',
           },
-          '229' =>
+          'X04' =>
           {
             'count' => 1,
             'color' => 'green',
             'code' => 'city=revenue:40,slots:2;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=O',
           },
-          '407' =>
+          'X05' =>
           {
             'count' => 1,
             'color' => 'green',
-            'code' => 'city=revenue:40,slots:2;path=a:2,b:_0;path=a:3,b:_0;path=a:5,b:_0;path=a:5,b:_0;label=D',
+            'code' => 'city=revenue:40,slots:1;path=a:2,b:_0;path=a:3,b:_0;path=a:5,b:_0;label=D',
           },
 
           # Brown
-          '544' => 2,
-          '545' => 2,
+          '544' => 3,
+          '545' => 3,
           '546' => 2,
           '611' => 6,
-          '230' =>
+          'X10' =>
           {
             'count' => 1,
             'color' => 'brown',
-            'code' => 'city=revenue:50,slots:2;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=O',
+            'code' => 'city=revenue:40,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0' \
+                      ';path=a:5,b:_0;label=C',
           },
-          '233' =>
-          {
-            'count' => 2,
-            'color' => 'brown',
-            'code' => 'city=revenue:40,slots:2;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=LC',
-          },
-          '234' =>
+          'X11' =>
           {
             'count' => 1,
             'color' => 'brown',
             'code' => 'city=revenue:50,slots:2;path=a:2,b:_0;path=a:3,b:_0;path=a:5,b:_0;label=D',
           },
+          'X12' =>
+          {
+            'count' => 1,
+            'color' => 'brown',
+            'code' => 'city=revenue:40,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0' \
+                      ';path=a:5,b:_0;label=L',
+          },
+          'X13' =>
+          {
+            'count' => 1,
+            'color' => 'brown',
+            'code' => 'city=revenue:50,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0' \
+                      ';path=a:5,b:_0;label=O',
+          },
 
           # Gray
-          '231' =>
+          '51' => 2,
+          'X20' =>
           {
             'count' => 1,
             'color' => 'gray',
-            'code' => 'city=revenue:60,slots:3;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=O',
+            'code' => 'city=revenue:50,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0' \
+                      ';path=a:5,b:_0;label=C',
           },
-          '192' =>
-          {
-            'count' => 1,
-            'color' => 'gray',
-            'code' => 'city=revenue:50,slots:3;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=C',
-          },
-          '116' =>
+          'X21' =>
           {
             'count' => 1,
             'color' => 'gray',
             'code' => 'city=revenue:60,slots:3;path=a:2,b:_0;path=a:3,b:_0;path=a:5,b:_0;label=D',
           },
-          '409' =>
+          'X22' =>
           {
             'count' => 1,
             'color' => 'gray',
-            'code' => 'city=revenue:50,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=L',
+            'code' => 'city=revenue:50,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0' \
+                      ';path=a:4,b:_0;path=a:5,b:_0;label=L',
           },
-          '51' => 2,
+          'X23' =>
+          {
+            'count' => 1,
+            'color' => 'gray',
+            'code' => 'city=revenue:60,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0' \
+                      ';path=a:4,b:_0;path=a:5,b:_0;label=O',
+          },
         }.freeze
-        # rubocop:enable Layout/LineLength
 
         LOCATION_NAMES = {
           'A5' => 'Powder River Basin',
@@ -155,16 +149,17 @@ module Engine
             %w[B4 B8 C5 D2 D4 D6 E3 E5 F2 F4 F8 F10 F12 G3 G5 G9 H2 H4 H6 H12 I7 I9 I11 J2 J4 J6 J10 K9 K11] => '',
             %w[K5 L8] => 'upgrade=cost:60,terrain:water',
             # town tiles
-            %w[B6 C3 C7 E7 F6 G7 G11 H8 H10 I3 I5 J12] => 'town=revenue:0',
+            %w[B6 C7 E7 F6 G7 G11 H8 H10 I3 I5 J12] => 'town=revenue:0',
+            %w[C3] => 'town=revenue:0;future_label=label:C,color:brown',
             %w[K3] => 'town=revenue:0;upgrade=cost:20,terrain:water',
-            %w[J8] => 'town=revenue:0;upgrade=cost:40,terrain:water',
+            %w[J8] => 'town=revenue:0;upgrade=cost:40,terrain:water;future_label=label:L,color:brown',
             %w[L10] => 'town=revenue:0;upgrade=cost:60,terrain:water',
           },
           yellow: {
             # city tiles
-            ['C9'] => 'city=revenue:30;path=a:5,b:_0',
+            ['C9'] => 'city=revenue:30;path=a:5,b:_0;label=D',
             # Omaha
-            ['K7'] => 'city=revenue:30,loc:5;town=revenue:10,loc:4,to_city:1;path=a:1,b:_1;path=a:_1,b:4;path=a:1,b:_0;upgrade=cost:60,terrain:water',
+            ['K7'] => 'city=revenue:30,loc:6;town=revenue:10;path=a:1,b:_1;path=a:_1,b:4;path=a:1,b:_0;upgrade=cost:60,terrain:water;label=O',
           },
           gray: {
             ['D8'] => 'path=a:5,b:2',
@@ -195,6 +190,9 @@ module Engine
         # rubocop:enable Layout/LineLength
 
         LAYOUT = :flat
+
+        CITY_HEXES = %w[B6 C3 C7 C9 E7 F6 G7 G11 H8 H10 I3 I5 J8 J12 K3 K7 L10].freeze
+        WATER_HEXES = %w[K3 K5 K7 J8 L8 L10].freeze
       end
     end
   end

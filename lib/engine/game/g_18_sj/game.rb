@@ -351,7 +351,7 @@ module Engine
         end
 
         def select(collection)
-          collection[rand % collection.size]
+          collection.min_by { rand }
         end
 
         def find_company(companies, collection)
@@ -557,6 +557,11 @@ module Engine
 
           def name
             "Bot:#{@receivership.name}"
+          end
+
+          # GUI calls player? on this entity, so this method is needed. See issue #9895.
+          def player?
+            false
           end
         end
 

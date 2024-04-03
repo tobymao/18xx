@@ -55,7 +55,7 @@ module Engine
           },
           {
             sym: 'WSS',
-            name: 'White Sulpur Springs & Yellowstone Park',
+            name: 'White Sulphur Springs & Yellowstone Park',
             value: 50,
             revenue: 15,
             desc: 'The purchasing player immediately receives one share of a railroad '\
@@ -79,7 +79,7 @@ module Engine
                           trains: %w[3 4 5],
                           count: 1,
                           closed_when_used_up: true,
-                          when: 'buying_train',
+                          when: 'buy_train',
                         }],
             color: nil,
           },

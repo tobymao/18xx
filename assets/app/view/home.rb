@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# backtick_javascript: true
+
 require 'game_manager'
 require 'lib/settings'
 require 'lib/storage'
@@ -20,8 +22,7 @@ module View
       your_games, other_games = @games.partition { |game| user_in_game?(@user, game) || user_owns_game?(@user, game) }
 
       children = [
-        render_header,
-        h(Welcome, show_intro: your_games.empty?),
+        h(Welcome),
         h(Chat, user: @user, connection: @connection),
       ]
 
@@ -102,12 +103,6 @@ module View
     def render_filter_row(children)
       filter_row = h(GameRowFilters)
       children << filter_row if filter_row
-    end
-
-    def render_header
-      h('div#greeting.card_header', [
-        h(:h2, "Welcome#{@user ? ' ' + @user['name'] : ''}!"),
-      ])
     end
   end
 end

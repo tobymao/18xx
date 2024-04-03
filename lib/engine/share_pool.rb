@@ -31,17 +31,14 @@ module Engine
     end
 
     def buy_shares(entity, shares, exchange: nil, exchange_price: nil, swap: nil,
-                   allow_president_change: true, silent: nil, borrow_from: nil)
+                   allow_president_change: true, silent: nil, borrow_from: nil,
+                   discounter: nil)
       bundle = shares.is_a?(ShareBundle) ? shares : ShareBundle.new(shares)
       if @allow_president_sale && !@no_rebundle_president_buy && bundle.presidents_share && bundle.owner == self
         bundle = ShareBundle.new(bundle.shares, bundle.corporation.share_percent)
       end
 
-      if bundle.owner.player? &&
-         !@game.class::BUY_SHARE_FROM_OTHER_PLAYER &&
-         (!@game.class::CORPORATE_BUY_SHARE_ALLOW_BUY_FROM_PRESIDENT || !entity.corporation?)
-        raise GameError, 'Cannot buy share from player'
-      end
+      raise GameError, 'Cannot buy share from player' if bundle.owner.player? && !@game.can_gain_from_player?(entity, bundle)
 
       corporation = bundle.corporation
       ipoed = corporation.ipoed
@@ -91,7 +88,8 @@ module Engine
         borrowed_text = borrowed.positive? ? " by borrowing #{@game.format_currency(borrowed)} from #{borrow_from.name}" : ''
         verb = entity == corporation ? 'redeems' : 'buys'
         unless silent
-          @log << "#{entity.name} #{verb} #{share_str} "\
+          discounter_str = discounter ? "(#{discounter.name}) " : ''
+          @log << "#{entity.name} #{discounter_str}#{verb} #{share_str} "\
                   "from #{from} "\
                   "for #{@game.format_currency(price)}#{swap_text}#{borrowed_text}"
         end
@@ -177,7 +175,8 @@ module Engine
                         allow_president_change: true,
                         swap: nil,
                         borrow_from: nil,
-                        swap_to_entity: nil)
+                        swap_to_entity: nil,
+                        corporate_transfer: nil)
       corporation = bundle.corporation
       owner = bundle.owner
       previous_president = bundle.president
@@ -287,7 +286,7 @@ module Engine
       # previous president if they haven't sold the president's share
       # give the president the president's share
       # if the owner only sold half of their president's share, take one away
-      if owner.player? && to_entity.player? && bundle.presidents_share
+      if ((owner.player? && to_entity.player?) || corporate_transfer) && bundle.presidents_share
         # special case when doing a player-to-player purchase of the president's share
         transfer_to = to_entity
         swap_to = to_entity

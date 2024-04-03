@@ -7,11 +7,39 @@ module Engine
   class StockMarket
     attr_reader :market, :par_prices, :has_close_cell, :zigzag
 
-    def initialize(market, unlimited_types, multiple_buy_types: [], zigzag: nil, ledge_movement: nil)
+    def initialize(market, unlimited_types, **opts)
+      multiple_buy_types = opts[:multiple_buy_types] || []
+      ledge_movement = opts[:ledge_movement]
       @par_prices = []
       @has_close_cell = false
-      @zigzag = zigzag
-      @market = market.map.with_index do |row, r_index|
+      @zigzag = opts[:zigzag]
+      @sold_out_top_row_movement = opts[:sold_out_top_row_movement]
+      @hex_market = opts[:hex_market]
+      @market = if @hex_market
+                  hex_market_init(market, unlimited_types, multiple_buy_types)
+                else
+                  orthogonal_market_init(market, unlimited_types, multiple_buy_types)
+                end
+      # note, a lot of behavior depends on the par prices being in descending price order
+      @par_prices.sort_by! do |p|
+        r, c = p.coordinates
+        [p.price, c, r]
+      end.reverse!
+
+      @movement =
+        if @hex_market
+          HexMovement.new(self)
+        elsif @zigzag
+          ZigZagMovement.new(self, ledge_movement)
+        elsif one_d?
+          OneDimensionalMovement.new(self)
+        else
+          TwoDimensionalMovement.new(self)
+        end
+    end
+
+    def orthogonal_market_init(market, unlimited_types, multiple_buy_types)
+      market.map.with_index do |row, r_index|
         row.map.with_index do |code, c_index|
           price = if code.instance_of?(Hash)
                     SharePrice.new([r_index, c_index], unlimited_types: unlimited_types, multiple_buy_types: multiple_buy_types,
@@ -28,24 +56,61 @@ module Engine
           price
         end
       end
-      # note, a lot of behavior depends on the par prices being in descending price order
-      @par_prices.sort_by! do |p|
-        r, c = p.coordinates
-        [p.price, c, r]
-      end.reverse!
+    end
 
-      @movement =
-        if @zigzag
-          ZigZagMovement.new(self, ledge_movement)
-        elsif one_d?
-          OneDimensionalMovement.new(self)
-        else
-          TwoDimensionalMovement.new(self)
+    def hex_market_init(market, unlimited_types, multiple_buy_types)
+      # rows are defined as lists, same as 2D.
+      # assumption: the first two items in rows 0 and 1
+      # are offset such that row 0, col 0 is above and to the left of
+      # row 1, col 0.  rows then alternate in the hex pattern
+      # TODO: this is hard-coded to the 1854 market, where the hexes align this way based on the number of rows
+      # TODO: could be more configurable.
+      new_market = []
+      market.each_with_index do |row, r_index|
+        new_row = []
+        row.each_with_index do |code, c_index|
+          new_c_index = if r_index.odd?
+                          c_index * 2
+                        else
+                          (c_index * 2) + 1
+                        end
+
+          price = if code.instance_of?(Hash)
+                    SharePrice.new(
+                      [r_index, new_c_index],
+                      unlimited_types: unlimited_types,
+                      multiple_buy_types: multiple_buy_types,
+                      **code
+                    )
+                  else
+                    SharePrice.from_code(code,
+                                         r_index,
+                                         new_c_index,
+                                         unlimited_types,
+                                         multiple_buy_types: multiple_buy_types)
+                  end
+          @par_prices << price if price&.can_par?
+          @has_close_cell = true if price&.type == :close
+          if new_c_index.positive?
+            new_row << SharePrice.from_code('', r_index, new_c_index - 1, unlimited_types, multiple_buy_types: multiple_buy_types)
+          end
+          new_row << price
         end
+        new_market << new_row
+      end
+      new_market
+    end
+
+    def hex_market?
+      !@hex_market.nil?
     end
 
     def one_d?
       @one_d ||= @market.one?
+    end
+
+    def two_d?
+      @two_d ||= !@zigzag && @market.size > 1
     end
 
     def set_par(corporation, share_price)
@@ -58,6 +123,14 @@ module Engine
     def right_ledge?(coordinates)
       row, col = coordinates
       col + 1 == @market[row].size
+    end
+
+    def top_row?(coordinates)
+      coordinates.first.zero? && two_d?
+    end
+
+    def max_share_price?(coordinates)
+      coordinates == [0, @market[0].size - 1]
     end
 
     def move_right(corporation)
@@ -73,7 +146,11 @@ module Engine
     end
 
     def up(corporation, coordinates)
-      @movement.up(corporation, coordinates)
+      if @sold_out_top_row_movement == :down_right && top_row?(coordinates) && !max_share_price?(coordinates)
+        @movement.right(corporation, @movement.down(corporation, coordinates))
+      else
+        @movement.up(corporation, coordinates)
+      end
     end
 
     def move_down(corporation)
@@ -90,6 +167,38 @@ module Engine
 
     def left(corporation, coordinates)
       @movement.left(corporation, coordinates)
+    end
+
+    def move_up_left_hex(corporation)
+      move(corporation, up_left_hex(corporation, corporation.share_price.coordinates))
+    end
+
+    def up_left_hex(corporation, coordinates)
+      @movement.up_left_hex(corporation, coordinates)
+    end
+
+    def move_down_left_hex(corporation)
+      move(corporation, down_left_hex(corporation, corporation.share_price.coordinates))
+    end
+
+    def down_left_hex(corporation, coordinates)
+      @movement.down_left_hex(corporation, coordinates)
+    end
+
+    def move_up_right_hex(corporation)
+      move(corporation, up_right_hex(corporation, corporation.share_price.coordinates))
+    end
+
+    def up_right_hex(corporation, coordinates)
+      @movement.up_right_hex(corporation, coordinates)
+    end
+
+    def move_down_right_hex(corporation)
+      move(corporation, down_right_hex(corporation, corporation.share_price.coordinates))
+    end
+
+    def down_right_hex(corporation, coordinates)
+      @movement.down_right_hex(corporation, coordinates)
     end
 
     def find_share_price(corporation, directions)

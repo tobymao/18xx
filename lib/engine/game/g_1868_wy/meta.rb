@@ -8,7 +8,7 @@ module Engine
       module Meta
         include Game::Meta
 
-        DEV_STAGE = :beta
+        DEV_STAGE = :production
 
         GAME_DESIGNER = 'John Harres'
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1868-Wyoming'
@@ -22,17 +22,7 @@ module Engine
         GAME_FULL_TITLE = '1868: Boom and Bust in the Coal Mines and Oil Fields of Wyoming'
         GAME_ISSUE_LABEL = '1868WY'
 
-        PLAYER_RANGE = [3, 5].freeze
-
-        GAME_VARIANTS = [
-          {
-            sym: :simple_2p,
-            name: 'Simple 2p Variant',
-            title: '1868 Wyoming Simple 2p',
-            desc: 'Adjusted cert limit and starting cash, but does not use 2-player rules from '\
-                  'section 11 of the rulebook.',
-          },
-        ].freeze
+        PLAYER_RANGE = [2, 5].freeze
 
         OPTIONAL_RULES = [
           {

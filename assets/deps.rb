@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
+# backtick_javascript: true
+
 `Opal.config.unsupported_features_severity = 'ignore'`
+require 'logger'
 require 'native'
 require 'json'
 require 'snabberb'

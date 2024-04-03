@@ -73,6 +73,8 @@ module Engine
 
         DETROIT_TO_DULUTH_HEXES = %w[Q19 Y27].freeze
 
+        ICONS_IN_CITIES_HEXES = %w[AH8 C15 N16 AF12].freeze
+
         COMPANY_SHORT_NAMES = {
           'P1' => 'P1 (5-Train)',
           'P2' => 'P2 (Permanent L-Train)',
@@ -190,7 +192,7 @@ module Engine
           'P7' => { acquire: %i[major], phase: 3 },
           'P8' => { acquire: %i[major minor], phase: 2 },
           'P9' => { acquire: %i[major minor], phase: 2 },
-          'P10' => { acquire: %i[major minor], phase: 3 },
+          'P10' => { acquire: %i[major], phase: 3 },
           'P11' => { acquire: [], phase: 8 },
           'P12' => { acquire: %i[major minor], phase: 1 },
           'P13' => { acquire: %i[major], phase: 3 },
@@ -231,6 +233,10 @@ module Engine
         )
 
         STATUS_TEXT = G1822::Game::STATUS_TEXT.merge(
+          'can_acquire_minor_bidbox' => ['Acquire a minor from bidbox',
+                                         'Can acquire a minor from bidbox for $200, must have connection '\
+                                         'to start location'],
+          'minor_float_phase1' => ['Minors receive $100 in capital', 'Minors receive 100 capital with 50 stock value'],
           'l_upgrade' => ['$70 L-train upgrades',
                           'The cost to upgrade an L-train to a 2-train is reduced from $80 to $70.']
         )
@@ -268,6 +274,10 @@ module Engine
           @sawmill_owner = nil
 
           block_detroit_duluth
+
+          @pending_destination_tokens = []
+
+          @destinated = Hash.new(false)
         end
 
         # setup_companies from 1822 has too much 1822-specific stuff that doesn't apply to this game
@@ -315,7 +325,6 @@ module Engine
           @company_trains['P3'] = find_and_remove_train_by_id('2P-0', buyable: false)
           @company_trains['P4'] = find_and_remove_train_by_id('2P-1', buyable: false)
           @company_trains['P1'] = find_and_remove_train_by_id('5P-0')
-          @company_trains['P1'].name = '5'
           @company_trains['P5'] = find_and_remove_train_by_id('P-0', buyable: false)
           @company_trains['P6'] = find_and_remove_train_by_id('P-1', buyable: false)
           @company_trains['P2'] = find_and_remove_train_by_id('LP-0', buyable: false)
@@ -348,6 +357,13 @@ module Engine
           ], round_num: round_num)
         end
 
+        def stock_round
+          G1822CA::Round::Stock.new(self, [
+            Engine::Step::DiscardTrain,
+            G1822::Step::BuySellParShares,
+          ])
+        end
+
         def must_remove_town?(entity)
           %w[P29 P30].include?(entity.id)
         end
@@ -363,34 +379,90 @@ module Engine
           self.class::COMPANIES_EXTRA_TRACK_LAYS.include?(company.id)
         end
 
-        def sell_movement
+        def sell_movement(_corporation)
           @sell_movement ||= @players.size == 2 ? :left_share_pres : :left_per_10_if_pres_else_left_one
-        end
-
-        def routes_subsidy(routes)
-          super + small_mail_contract_subsidy(routes)
         end
 
         def upgrades_to_correct_label?(from, to)
           super || (MOUNTAIN_PASS_HEXES.include?(from.hex&.id) && MOUNTAIN_PASS_TILES.include?(to.name))
         end
 
-        def small_mail_contract_subsidy(routes)
-          return 0 if routes.empty?
+        def mail_contract_bonus(entity, routes)
+          mail_contracts = entity.companies.count { |c| self.class::PRIVATE_MAIL_CONTRACTS.include?(c.id) }
+          small_contracts = entity.companies.count { |c| self.class::PRIVATE_SMALL_MAIL_CONTRACTS.include?(c.id) }
+          all_contracts = mail_contracts + small_contracts
+          return [] unless all_contracts.positive?
 
-          entity = routes.first.train.owner
-          contract_count = entity.companies.count { |c| self.class::PRIVATE_SMALL_MAIL_CONTRACTS.include?(c.id) }
-          contract_count *
-            case @phase.name.to_i
-            when (3..4)
-              20
-            when (5..6)
-              30
-            when 7
-              40
+          mail_bonuses =
+            if mail_contracts.positive?
+              bonuses = routes.map do |r|
+                stops = r.visited_stops
+                next if stops.size < 2
+
+                first = stops.first.route_base_revenue(r.phase, r.train)
+                last = stops.last.route_base_revenue(r.phase, r.train)
+                { route: r, subsidy: (first + last) / 2 }
+              end
+              bonuses.compact.sort_by { |v| -v[:subsidy] }.take(mail_contracts)
             else
-              0
+              []
             end
+
+          small_bonuses =
+            if small_contracts.positive?
+              subsidy = small_mail_subsidy
+
+              routes.map do |r|
+                next if r.visited_stops.size < 2
+
+                { route: r, subsidy: subsidy }
+              end.compact.take(small_contracts)
+            else
+              []
+            end
+
+          if routes.size >= all_contracts || mail_bonuses.empty? || small_bonuses.empty?
+            mail_bonuses + small_bonuses
+          else
+            mail_index = 0
+            small_index = 0
+            routes.map do
+              mail = mail_bonuses[mail_index] || { subsidy: 0 }
+              small = small_bonuses[small_index] || { subsidy: 0 }
+              if small[:subsidy] > mail[:subsidy]
+                small_index += 1
+                small
+              else
+                mail_index += 1
+                mail
+              end
+            end
+          end
+        end
+
+        def small_mail_subsidy
+          case @phase.name.to_i
+          when (3..4)
+            20
+          when (5..6)
+            30
+          when 7
+            40
+          else
+            0
+          end
+        end
+
+        def train_help(entity, runnable_trains, _routes)
+          return [] if runnable_trains.empty?
+
+          help = super
+
+          if entity.companies.any? { |c| self.class::PRIVATE_SMALL_MAIL_CONTRACTS.include?(c.id) }
+            help << 'Small mail contract(s) gives a phase-based subsidy for one of the trains operated.'
+          end
+
+          help
         end
 
         def revenue_for(route, stops)
@@ -410,7 +482,7 @@ module Engine
           sawmill_bonus = sawmill_bonus(route.routes)
           str += " + Sawmill ($#{sawmill_bonus[:revenue]})" if sawmill_bonus && sawmill_bonus[:route] == route
 
-          str += grain_and_port_bonus(route.train, route.stops)[:description]
+          str += grain_and_port_bonus(route.train, route.visited_stops)[:description]
 
           str
         end
@@ -433,12 +505,12 @@ module Engine
                          (dest = destination_bonus(route.routes)) &&
                          dest[:route] == route
           multiplier = sawmill_dest ? 2 : 1
+          multiplier *= 2 if train_type(route.train) == :etrain
 
           { route: route, revenue: @sawmill_bonus * multiplier }
         end
 
         def receives_sawmill_bonus?(entity)
-          return false if entity.type != :major
           return @sawmill_owner == entity if @sawmill_owner
 
           true
@@ -717,6 +789,104 @@ module Engine
           else
             super
           end
+        end
+
+        def preprocess_action(action)
+          case action
+          when Action::LayTile
+            hex = action.hex
+            old_tile = hex.tile
+            new_tile = action.tile
+            new_tile.rotate!(action.rotation)
+
+            city_map = hex.city_map_for(new_tile)
+
+            # transfer destination icons
+            @city_slot_icons ||= Hash.new { |h, k| h[k] = [] }
+
+            if ICONS_IN_CITIES_HEXES.include?(hex.id)
+              old_tile.cities.each do |city|
+                next if city.slot_icons.empty?
+
+                city.slot_icons.each do |_slot, icon|
+                  @city_slot_icons[city_map[city]] << icon
+                end
+              end
+            end
+
+            return unless @destination_hexes.include?(hex.id)
+
+            # pick up "cheater" destination tokens to remove the extra slot, put
+            # them back down in action_processed() so that after the upgrade
+            # they use an extra slot onlly if they need it
+            @pending_destination_tokens = old_tile.cities.each_with_object([]) do |city, tokens|
+              city.tokens.each do |token|
+                tokens << [token, city_map[city]] if token&.type == :destination && token.cheater
+              end
+            end
+            @pending_destination_tokens.each { |token, _city| token.remove! }
+          end
+        end
+
+        def action_processed(action)
+          case action
+          when Action::LayTile
+            # transfer destination icons
+            unless @city_slot_icons.empty?
+              @city_slot_icons.each do |new_city, icons|
+                used_slots = {}
+
+                icons.each do |icon|
+                  next unless new_city
+
+                  slot = new_city.get_slot(icon.owner)
+                  slot += 1 while used_slots[slot]
+                  used_slots[slot] = true
+                  new_city.slot_icons[slot] = icon
+                end
+              end
+              @city_slot_icons.clear
+            end
+
+            # put down destination tokens that were in extra slots
+            @pending_destination_tokens.each do |token, city|
+              place_destination_token(token.corporation, city.hex, token, city, log: false)
+            end
+            @pending_destination_tokens.clear
+          end
+        end
+
+        def place_destination_token(entity, hex, token, city = nil, log: true)
+          super
+
+          city ||= token.city
+          city.slot_icons.delete_if { |_, icon| icon.owner == entity }
+
+          @destinated[entity] = true
+        end
+
+        def destinated?(entity)
+          @destinated[entity]
+        end
+
+        def legal_tile_rotation?(_entity, _hex, tile)
+          # special checks for the big cities
+          legal_rotations =
+            case tile.name
+            when 'M5', 'M6', 'M8', 'O2', 'O6', 'O8', 'Q6', 'Q8', 'T1', 'T2', 'T3', 'T4', 'T5', 'W2', 'W4', 'W5', 'W6', 'W7'
+              [0]
+            when 'M1', 'M2', 'M3', 'M4', 'O7'
+              [0, 5]
+            when 'M7', 'O1', 'O3', 'O4', 'O5'
+              [0, 1]
+            when 'Q1', 'Q2', 'Q3', 'Q4', 'Q5', 'Q7'
+              [0, 3, 5]
+            when 'W3'
+              [0, 2, 3]
+            end
+          return false if legal_rotations && !legal_rotations.include?(tile.rotation)
+
+          super
         end
       end
     end

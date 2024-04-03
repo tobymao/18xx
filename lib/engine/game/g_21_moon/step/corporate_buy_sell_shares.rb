@@ -67,7 +67,8 @@ module Engine
           end
 
           # FIXME: move to common location
-          def buy_shares(entity, shares, exchange: nil, swap: nil, allow_president_change: true, borrow_from: nil)
+          def buy_shares(entity, shares, exchange: nil, swap: nil, allow_president_change: true, borrow_from: nil,
+                         discounter: nil)
             corp = shares.corporation
             if shares.owner == corp.ipo_owner
               # IPO shares pay corporation
@@ -95,6 +96,7 @@ module Engine
             end
 
             super
+            @round.recalculate_order
           end
 
           def issue_shares(action)

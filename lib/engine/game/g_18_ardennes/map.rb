@@ -211,6 +211,12 @@ module Engine
           },
         }.freeze
 
+        MAJOR_TILE_LAYS = [
+          { lay: true, upgrade: true },
+          { lay: :not_if_upgraded, upgrade: false },
+        ].freeze
+        MINOR_TILE_LAYS = [{ lay: true, upgrade: true }].freeze
+
         NORTH_HEXES = %w[B8 B16].freeze
         SOUTH_HEXES = %w[M7 M27].freeze
         EAST_HEXES = %w[D18 E25 G25 H26].freeze
@@ -240,8 +246,8 @@ module Engine
         }.freeze
 
         def setup_tokens
-          @mine_corp = dummy_corp('Mines', '18_ardennes/mine', MINE_HEXES)
-          @port_corp = dummy_corp('Ports', '18_ardennes/port', PORT_HEXES)
+          @mine_corp = dummy_corp('Mine', '18_ardennes/mine', MINE_HEXES)
+          @port_corp = dummy_corp('Port', '18_ardennes/port', PORT_HEXES)
           FORT_HEXES.each { |fort, coord| hex_by_id(coord).assign!(fort) }
         end
 
@@ -338,6 +344,10 @@ module Engine
           super
         end
 
+        def tile_lays(entity)
+          entity.type == :minor ? MINOR_TILE_LAYS : MAJOR_TILE_LAYS
+        end
+
         def after_lay_tile(hex, tile, entity)
           # Move mine/port tokens from hex into city if possible.
           return if hex.tokens.empty?
@@ -352,6 +362,24 @@ module Engine
                            free: true,
                            same_hex_allowed: true)
           clear_graph_for_entity(entity)
+        end
+
+        def place_home_token(corporation)
+          # Public companies get their starting tokens by exchange.
+          return unless corporation.type == :minor
+
+          super
+        end
+
+        # Returns true if there is a route between one of the minor's tokens
+        # and one of the major's tokens, or if they both have tokens co-located
+        # on the same tile.
+        def major_minor_connected?(major, minor)
+          minor_cities = minor.placed_tokens.map(&:city)
+          major_cities = major.placed_tokens.map(&:city)
+
+          minor_cities.map(&:hex).intersect?(major_cities.map(&:hex)) ||
+            minor_cities.any? { |city| @graph.connected_nodes(major)[city] }
         end
       end
     end

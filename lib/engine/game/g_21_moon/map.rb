@@ -215,59 +215,65 @@ module Engine
           },
 
           # Gray
-          'X22' =>
+          'SP1' =>
           {
             'count' => 1,
             'color' => 'gray',
             'code' => 'city=revenue:30,slots:7;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=SP',
           },
-          'X23' =>
+          'SP2' =>
           {
             'count' => 1,
             'color' => 'gray',
             'code' => 'city=revenue:40,slots:7;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=SP',
           },
-          'X24' =>
+          'X22' =>
           {
             'count' => 2,
             'color' => 'gray',
             'code' => 'city=revenue:0,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0',
           },
-          'X25' =>
+          'X23' =>
           {
             'count' => 1,
             'color' => 'gray',
             'code' => 'city=revenue:0,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0',
           },
-          'X26' =>
+          'X24' =>
           {
             'count' => 1,
             'color' => 'gray',
             'code' => 'city=revenue:0,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0',
           },
-          'X27' =>
+          'X25' =>
+          {
+            'count' => 1,
+            'color' => 'gray',
+            'code' => 'city=revenue:0,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0',
+          },
+          'X26' =>
           {
             'count' => 1,
             'color' => 'gray',
             'code' => 'city=revenue:0,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
           },
-          'X28' =>
+          'X27' =>
           {
             'count' => 1,
             'color' => 'gray',
             'code' => 'city=revenue:0,slots:2;city=revenue:0,slots:2;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:0,b:_1;path=a:4,b:_1;path=a:5,b:_1;label=OO',
           },
+          'X28' =>
+          {
+            'count' => 1,
+            'color' => 'gray',
+            'code' => 'city=revenue:0,slots:2,loc:0;city=revenue:0,slots:2,loc:3;path=a:0,b:_0;path=a:1,b:_0;path=a:5,b:_0;path=a:2,b:_1;path=a:3,b:_1;path=a:4,b:_1;label=OO',
+          },
           'X29' =>
           {
             'count' => 1,
             'color' => 'gray',
-            'code' => 'city=revenue:0,slots:2;city=revenue:0,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:5,b:_0;path=a:2,b:_1;path=a:3,b:_1;path=a:4,b:_1;label=OO',
-          },
-          'X30' =>
-          {
-            'count' => 1,
-            'color' => 'gray',
-            'code' => 'city=revenue:yellow_30|green_30|brown_40|gray_10,slots:3;path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0;label=T;frame=color:#ffa500',
+            'code' => 'city=revenue:yellow_30|brown_20|gray_10,slots:3;path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0;label=T;frame=color:#ffa500',
           },
         }.freeze
         # rubocop:enable Layout/LineLength
@@ -293,32 +299,32 @@ module Engine
             %w[E9] => 'city=revenue:20,slots:7;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=SP',
           },
           gray60: {
-            %w[B6 C11 F12 H6 J8 J12] => 'upgrade=cost:10,terrain:mountain',
-            %w[H4] => 'upgrade=cost:10,terrain:mountain;border=edge:2,type:divider',
+            %w[B6 C11 F12 H6 J8 J12] => 'upgrade=cost:10,terrain:hill',
+            %w[H4] => 'upgrade=cost:10,terrain:hill;border=edge:2,type:divider',
           },
           gray50: {
             %w[B8 B10 D4 D6 E3 E11 E13 G9 I3 K7 K11] => 'upgrade=cost:40,terrain:mountain',
             %w[F6] => 'upgrade=cost:40,terrain:mountain;border=edge:4,type:divider',
           },
           salmon: {
-            %w[A7 A9 B4 B12 D10 E15 F2 H10 I7 J2 J10 K5 K13 L10] => 'city=revenue:0;upgrade=cost:20,terrain:mountain',
-            %w[H2] => 'city=revenue:0;upgrade=cost:20,terrain:mountain;border=edge:1,type:divider;border=edge:2,type:divider',
-            %w[E5 G13] => 'city=revenue:0;city=revenue:0;upgrade=cost:20,terrain:mountain;label=OO',
+            %w[A7 A9 B4 B12 D10 E15 F2 H10 I7 J2 J10 K5 K13 L10] => 'city=revenue:0;upgrade=cost:20,terrain:hill',
+            %w[H2] => 'city=revenue:0;upgrade=cost:20,terrain:hill;border=edge:1,type:divider;border=edge:2,type:divider',
+            %w[E5 G13] => 'city=revenue:0;city=revenue:0;upgrade=cost:20,terrain:hill;label=OO',
           },
           purple: {
-            %w[B2] => 'offboard=revenue:20,groups:W;path=a:0,b:_0',
-            %w[A3] => 'offboard=revenue:20,groups:W;path=a:5,b:_0',
-            %w[A5] => 'offboard=revenue:20,groups:W;path=a:0,b:_0;path=a:4,b:_0;path=a:5,b:_0',
-            %w[B14] => 'offboard=revenue:20,groups:W;path=a:4,b:_0',
-            %w[C15] => 'offboard=revenue:20,groups:W;path=a:3,b:_0;path=a:4,b:_0',
+            %w[B2] => 'offboard=revenue:20,groups:W0;path=a:0,b:_0',
+            %w[A3] => 'offboard=revenue:20,groups:W0;path=a:5,b:_0',
+            %w[A5] => 'offboard=revenue:20,groups:W0;path=a:0,b:_0;path=a:4,b:_0;path=a:5,b:_0',
+            %w[B14] => 'offboard=revenue:20,groups:W1;path=a:4,b:_0',
+            %w[C15] => 'offboard=revenue:20,groups:W1;path=a:3,b:_0;path=a:4,b:_0',
           },
           orange: {
-            %w[K1] => 'offboard=revenue:20,groups:E;path=a:0,b:_0',
-            %w[L2] => 'offboard=revenue:20,groups:E;path=a:1,b:_0',
-            %w[L4] => 'offboard=revenue:20,groups:E;path=a:2,b:_0',
-            %w[M11] => 'offboard=revenue:20,groups:E;path=a:1,b:_0',
-            %w[M13] => 'offboard=revenue:20,groups:E;path=a:2,b:_0',
-            %w[L14] => 'offboard=revenue:20,groups:E;path=a:2,b:_0;path=a:3,b:_0',
+            %w[K1] => 'offboard=revenue:20,groups:E0;path=a:0,b:_0',
+            %w[L2] => 'offboard=revenue:20,groups:E0;path=a:1,b:_0',
+            %w[L4] => 'offboard=revenue:20,groups:E0;path=a:2,b:_0',
+            %w[M11] => 'offboard=revenue:20,groups:E1;path=a:1,b:_0',
+            %w[M13] => 'offboard=revenue:20,groups:E1;path=a:2,b:_0',
+            %w[L14] => 'offboard=revenue:20,groups:E1;path=a:2,b:_0;path=a:3,b:_0',
           },
         }.freeze
         # rubocop:enable Layout/LineLength

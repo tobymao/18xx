@@ -73,7 +73,6 @@ module Engine
 
           def can_buy?(entity, bundle)
             return false if mandatory_nyc_buy?(entity) && bundle.corporation != @game.nyc_corporation
-            return false if bundle.presidents_share&.owner == @game.nyc_corporation
 
             super
           end

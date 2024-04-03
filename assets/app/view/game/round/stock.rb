@@ -58,12 +58,16 @@ module View
 
           children = []
 
+          children.concat(render_bankruptcy) if @current_actions.include?('bankrupt')
           children << h(Choose) if @current_actions.include?('choose') && @step.choice_available?(@current_entity)
           children << h(FlexibleBuy) if @current_actions.include?('buy_shares') && @flexible_player
 
           if @step.respond_to?(:must_sell?) && @step.must_sell?(@current_entity)
             children << if @game.num_certs(@current_entity) > @game.cert_limit(@current_entity)
                           h('div.margined', 'Must sell stock: above certificate limit')
+                        elsif @step.respond_to?(:must_sell_corporations)
+                          corps_over_limit = @step.must_sell_corporations(@current_entity).map(&:name).join(', ')
+                          h('div.margined', "Must sell stock: above 60% limit in #{corps_over_limit}")
                         else
                           h('div.margined', 'Must sell stock: above 60% limit in corporation(s)')
                         end
@@ -150,6 +154,24 @@ module View
           end
 
           [h(:button, { on: { click: merge } }, @step.merge_action)]
+        end
+
+        def render_bankruptcy
+          resign = lambda do
+            process_action(Engine::Action::Bankrupt.new(@current_entity))
+          end
+
+          props = {
+            style: {
+              width: 'max-content',
+            },
+            on: { click: resign },
+          }
+
+          [h(:div, [
+            h(:button, props, 'Declare Bankruptcy'),
+            h(:div, @step.bankruptcy_description(@current_entity)),
+          ])]
         end
 
         def render_payoff_player_debt_button
@@ -404,7 +426,7 @@ module View
 
           div_class = buy_buttons.size < 5 ? '.inline' : ''
           [h(:div, [
-            h("div#{div_class}", { style: { marginTop: '0.5rem' } }, "Buy #{@selected_company.sym}: "),
+            h("div#{div_class}", { style: { marginTop: '0.5rem' } }, "Buy #{company.sym}: "),
             *buy_buttons,
           ])]
         end

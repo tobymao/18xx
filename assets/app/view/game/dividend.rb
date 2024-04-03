@@ -71,7 +71,11 @@ module View
             process_action(Engine::Action::Dividend.new(@step.current_entity, kind: type))
             cleanup
           end
-          button = h('td.no_padding', [h(:button, { style: { margin: '0.2rem 0' }, on: { click: click } }, text)])
+          button_id = text.downcase.tr(' ', '_') # Generate an ID based on the value of 'text'
+
+          button = h('td.no_padding', [
+            h(:button, { style: { margin: '0.2rem 0' }, on: { click: click }, attrs: { id: button_id } }, text),
+          ])
 
           h(:tr, [
             button,

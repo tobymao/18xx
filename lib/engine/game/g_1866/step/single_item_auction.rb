@@ -102,7 +102,8 @@ module Engine
             min = min_bid(@auctioning)
             passing = @active_bidders.reject do |player|
               (bid_entity && player == bid_entity) || max_bid(player, @auctioning) >= min ||
-                can_buy_stockturn_token?(player) || can_par_corporation?(player)
+                can_buy_stockturn_token?(player) || can_par_corporation?(player) ||
+                highest_bid(@auctioning)&.entity == player
             end
             passing.each do |player|
               @game.log << "#{player.name} cannot bid, buy a stock turn token or par a corporation"\

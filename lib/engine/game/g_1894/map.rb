@@ -185,7 +185,7 @@ module Engine
           'B3' => 'Le Havre',
           'B9' => 'Calais',
           'B11' => 'Dunkerque',
-          'B15' => 'Oostendee',
+          'B15' => 'Oostende',
           'C6' => 'Blangy-sur-Bresle & Abeville',
           'C14' => 'Brugge',
           'C18' => 'Netherlands',
@@ -268,7 +268,7 @@ module Engine
             ['I16'] => 'town=revenue:20;path=a:1,b:_0;path=a:4,b:_0;path=a:1,b:2;path=a:2,b:3;path=a:3,b:4',
           },
           blue: {
-            ['A10'] => 'town=revenue:yellow_30|brown_80;path=a:0,b:_0;path=a:1,b:_0;path=a:5,b:_0',
+            ['A10'] => 'city=revenue:yellow_30|brown_80;path=a:0,b:_0;path=a:1,b:_0;path=a:5,b:_0',
             ['A12'] => 'city=revenue:0;icon=image:1894/ferry;icon=image:1894/ferry;icon=image:1894/ferry;icon=image:1894/ferry',
           },
           red: {

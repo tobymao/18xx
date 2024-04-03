@@ -22,7 +22,7 @@ module Engine
           {
             sym: :north,
             short_name: '1888-N',
-            desc: 'North Map (3-6 players)',
+            desc: 'North Map',
             players: [3, 4, 5, 6],
             default: true,
           },

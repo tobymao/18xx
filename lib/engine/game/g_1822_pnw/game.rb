@@ -98,6 +98,7 @@ module Engine
         DOUBLE_HEX = %w[H19 M4].freeze
 
         # Don't run 1822 specific code for the LCDR
+        COMPANY_CHPR = nil
         COMPANY_LCDR = nil
 
         PRIVATE_COMPANIES_ACQUISITION = {
@@ -171,6 +172,8 @@ module Engine
           'MB' => 'B',
           'MC' => 'C',
         }.freeze
+
+        MINOR_14_ID = nil
 
         def setup_associated_minors
           @minor_associations = {

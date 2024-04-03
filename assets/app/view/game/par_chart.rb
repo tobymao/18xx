@@ -181,7 +181,7 @@ module View
           },
           style: {
             stroke: 'black',
-            'stroke-width' => '0.1rem',
+            'stroke-width': '0.1rem',
           },
         }
 

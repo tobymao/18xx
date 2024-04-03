@@ -27,7 +27,15 @@ module View
           4 => [-SLOT_RADIUS, -SLOT_RADIUS],
           5 => [0, -43],
           6 => [0, -50],
-          7 => [0, -50],
+          7 => [0, -52],
+          8 => [0, -54],
+          9 => [0, -55],
+        }.freeze
+
+        BIG_CITY_SLOT_RADIUS = {
+          7 => 22,
+          8 => 20.5,
+          9 => 19,
         }.freeze
 
         EDGE_CITY_REGIONS = {
@@ -109,11 +117,19 @@ module View
             fill: 'white',
             r: 1.5 * SLOT_DIAMETER,
           }],
+          8 => [:circle, {
+            fill: 'white',
+            r: 1.5 * SLOT_DIAMETER,
+          }],
+          9 => [:circle, {
+            fill: 'white',
+            r: 1.5 * SLOT_DIAMETER,
+          }],
         }.freeze
 
         # index corresponds to number of slots in the city
         REVENUE_DISPLACEMENT = {
-          flat: [nil, 42, 67, 65, 67, 0, 0, 72],
+          flat: [nil, 42, 67, 65, 67, 0, 0, 0, 0, 0],
           pointy: [nil, 42, 62, 57],
         }.freeze
 
@@ -285,7 +301,10 @@ module View
         end
 
         def render_part
-          slots = (0..@city.slots(all: true) - 1).zip(@city.tokens + @city.extra_tokens).map do |slot_index, token|
+          num_slots = @city.slots(all: true)
+          slot_radius = num_slots > 6 ? BIG_CITY_SLOT_RADIUS[num_slots] : SLOT_RADIUS
+
+          slots = (0..(num_slots - 1)).zip(@city.tokens + @city.extra_tokens).map do |slot_index, token|
             slot_rotation = (360 / @city.slots(all: true)) * slot_index
 
             # use the rotation on the outer <g> to position the slot, then use
@@ -293,11 +312,6 @@ module View
             # rotation
             x, y = CITY_SLOT_POSITION[@city.slots(all: true)]
 
-            # handle 7-slot city
-            if @city.slots(all: true) == 7
-              x, y = CITY_SLOT_POSITION[1] if slot_index == 6
-              slot_rotation = (360 / 6) * slot_index
-            end
             revert_angle = render_location[:angle] + slot_rotation
             revert_angle -= angle_for_layout unless @edge
             h(:g, { attrs: { transform: "rotate(#{slot_rotation})" } }, [
@@ -307,7 +321,7 @@ module View
                             token: token,
                             slot_index: slot_index,
                             extra_token: @city.extra_tokens.include?(token),
-                            radius: SLOT_RADIUS,
+                            radius: slot_radius,
                             reservation: @city.reservations[slot_index],
                             tile: @tile,
                             city_render_location: render_location,
@@ -318,7 +332,7 @@ module View
 
           children = []
           children << render_pass if @city.pass?
-          children << render_box(slots.size) if slots.size.between?(2, 7)
+          children << render_box(slots.size) if slots.size.between?(2, 9)
           children.concat(slots)
 
           if @show_revenue && @city&.paths&.any? && (revenue = render_revenue)

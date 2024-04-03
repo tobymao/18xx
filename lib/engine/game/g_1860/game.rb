@@ -4,7 +4,7 @@ require_relative 'entities'
 require_relative 'map'
 require_relative 'meta'
 require_relative '../base'
-require_relative '../trainless_shares_half_value'
+require_relative 'trainless_shares_half_value'
 require_relative '../../distance_graph'
 
 module Engine

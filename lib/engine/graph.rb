@@ -173,6 +173,8 @@ module Engine
     end
 
     def compute(corporation, routes_only: false, one_token: nil)
+      LOGGER.debug { "    Graph#compute(#{corporation.name}, routes_only: #{routes_only}, one_token: #{one_token})" }
+
       hexes = Hash.new { |h, k| h[k] = {} }
       nodes = {}
       paths = {}
@@ -226,7 +228,10 @@ module Engine
       skip_paths = @check_regions ? @game.graph_border_paths(corporation) : @game.graph_skip_paths(corporation)
 
       tokens.keys.each do |node|
-        return nil if routes[:route_train_purchase] && routes_only
+        if routes[:route_train_purchase] && routes_only
+          LOGGER.debug '    Graph computed'
+          return nil
+        end
 
         visited = tokens.reject { |token, _| token == node }
         local_nodes = {}
@@ -291,6 +296,8 @@ module Engine
         @connected_paths[corporation] = paths
         @reachable_hexes[corporation] = paths.to_h { |path, _| [path.hex, true] }
       end
+
+      LOGGER.debug '    Graph computed'
     end
   end
 end

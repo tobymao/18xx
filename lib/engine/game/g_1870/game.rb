@@ -56,6 +56,27 @@ module Engine
           %w[0c 0c 0c 10b 20b 30b 40o],
         ].freeze
 
+        VARIANT_MARKET = [
+          %w[64y 68 72 76 82 90 100p 110 120 140 160 180 200 225 250 275 300 325 350 375 400e],
+          %w[60y 64y 68 72 76 82 90p 100 110 120 140 160 180 200 225 250 275 300 325 350 375],
+          %w[55y 60y 64y 68 72 76 82p 90 100 110 120 140 160 180 200 225 250i 275i 300i 325i 350i],
+          %w[50o 55y 60y 64y 68 72 76p 82 90 100 110 120 140 160i 180i 200i 225i 250i 275i 300i 325i],
+          %w[40b 50o 55y 60y 64 68 72p 76 82 90 100 110i 120i 140i 160i 180i],
+          %w[30b 40o 50o 55y 60y 64 68p 72 76 82 90i 100i 110i],
+          %w[20b 30b 40o 50o 55y 60y 64 68 72 76i 82i],
+          %w[10b 20b 30b 40o 50y 55y 60y 64 68i 72i],
+          %w[0c 10b 20b 30b 40o 50y 55y 60i 64i],
+          %w[0c 0c 10b 20b 30b 40o 50y],
+          %w[0c 0c 0c 10b 20b 30b 40o],
+        ].freeze
+
+        STANDARD_GAME_END_CHECK = { bankrupt: :immediate, bank: :full_or }.freeze
+        VARIANT_GAME_END_CHECK = { bankrupt: :immediate, bank: :full_or, stock_market: :immediate }.freeze
+
+        def game_end_check_values
+          @optional_rules&.include?(:finish_on_400) ? self.class::VARIANT_GAME_END_CHECK : self.class::STANDARD_GAME_END_CHECK
+        end
+
         STANDARD_PHASES = [
           {
             name: '1',
@@ -306,8 +327,13 @@ module Engine
         end
 
         def init_stock_market
-          G1870::StockMarket.new(self.class::MARKET, self.class::CERT_LIMIT_TYPES,
-                                 multiple_buy_types: self.class::MULTIPLE_BUY_TYPES)
+          if @optional_rules&.include?(:finish_on_400)
+            G1870::StockMarket.new(self.class::VARIANT_MARKET, self.class::CERT_LIMIT_TYPES,
+                                   multiple_buy_types: self.class::MULTIPLE_BUY_TYPES)
+          else
+            G1870::StockMarket.new(self.class::MARKET, self.class::CERT_LIMIT_TYPES,
+                                   multiple_buy_types: self.class::MULTIPLE_BUY_TYPES)
+          end
         end
 
         def ipo_reserved_name(_entity = nil)
@@ -428,6 +454,10 @@ module Engine
           return 0 unless destination_stop
 
           destination_stop.route_revenue(route.phase, route.train)
+        end
+
+        def can_gain_from_player?(entity, _bundle)
+          self.class::CORPORATE_BUY_SHARE_ALLOW_BUY_FROM_PRESIDENT && entity.corporation?
         end
 
         def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil, movement: nil)

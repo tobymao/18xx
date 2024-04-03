@@ -5,11 +5,10 @@ require 'lib/publisher'
 module View
   class Welcome < Snabberb::Component
     needs :app_route, default: nil, store: true
-    needs :show_intro, default: true
 
     def render
       children = [render_notification]
-      children << render_introduction if @show_intro
+      children << render_introduction
       children << render_buttons
 
       h('div#welcome.half', children)
@@ -17,18 +16,11 @@ module View
 
     def render_notification
       message = <<~MESSAGE
-        <p><a href="https://github.com/tobymao/18xx/wiki/1868%20Wyoming">1868 Wyoming</a> and <a href="https://github.com/tobymao/18xx/wiki/18NL">18NL</a> are in beta.</p>
-        <p>Learn how to get <a href='https://github.com/tobymao/18xx/wiki/Notifications'>notifications</a> by email, Slack, Discord, and Telegram.</p>
-        <p>Please submit problem reports and make suggestions for improvements on
-        <a href='https://github.com/tobymao/18xx/issues'>GitHub</a>. Join the
-        <a href='https://join.slack.com/t/18xxgames/shared_invite/zt-27imtsj2u-vussFAqtecmACsycjdsIhg'>18xx Slack</a>.
-        to chat about 18xx and the website.
-        </p>
-        <p>The <a href='https://github.com/tobymao/18xx/wiki'>18xx.games Wiki</a> has rules, maps,
-        and other information about all the games, along with an FAQ.</p>
+        <p><a href='https://www.kickstarter.com/projects/1840vienna/18esp/'>18ESP is now on Kickstarter</a>.</p>
+        <p><a href="https://github.com/tobymao/18xx/wiki/18Neb">18Neb</a> is in alpha.</p>
+        <p><a href="https://github.com/tobymao/18xx/wiki/18NL">18NL</a> is in production.</p>
 
-        <p>Support our publishers: #{Lib::Publisher.link_list.join}.</p>
-        <p>You can support this project on <a href='https://www.patreon.com/18xxgames'>Patreon</a>.</p>
+        <p>Report bugs and make feature requests <a href='https://github.com/tobymao/18xx/issues'>on GitHub</a>.</p>
       MESSAGE
 
       props = {
@@ -47,16 +39,12 @@ module View
 
     def render_introduction
       message = <<~MESSAGE
-        <p>18xx.games is a website where you can play async or real-time 18xx games (based on the system originally devised by the brilliant Francis Tresham)!
-        If you are new to 18xx games then Shikoku 1889, 18Chesapeake, or 18MS are good games to begin with.</p>
-
-        <p>You can play locally with hot seat mode without an account. If you want to play multiplayer, you'll need to create an account.</p>
-
-        <p>If you look at other people's games, you can make moves to play around but it won't affect them and changes won't be saved.
-        You can clone games in the tools tab and then play around locally.</p>
-
-        <p>In multiplayer games, you'll also be able to make moves for other players, this is so people can say 'pass me this SR' and you don't
-        need to wait. To use this feature in a game, enable "Master Mode" in the Tools tab. Please use it politely!</p>
+        <p>Check out the <a href='https://github.com/tobymao/18xx/wiki/FAQ'>FAQ</a>, <a href='https://github.com/tobymao/18xx/wiki/Power-User-Features'>keyboard shortcuts</a> and <a href='https://github.com/tobymao/18xx/wiki'>the Wiki</a></p>
+        <p>Find games in the chat or <a href='https://github.com/tobymao/18xx/wiki/18xx-Online-Communities%2C-Media%2C-and-Resources#community'>on (unofficial) Discord servers</a></p>
+        <p><a href='https://github.com/tobymao/18xx/wiki/Notifications'>Turn notifications</a> can be enabled via <a href='https://github.com/tobymao/18xx/wiki/Notifications#discord-notifications'>Discord</a>, <a href='https://github.com/tobymao/18xx/wiki/Notifications#slack-notifications'>Slack</a>, or <a href='https://github.com/tobymao/18xx/wiki/Notifications#telegram-notifications'>Telegram</a></p>
+        <p>Ask any questions about the site in <code>#18xxgames</code> <a href='https://18xxgames.slack.com/join/shared_invite/zt-2evbzlz86-fSip9Zr9W~OSQW_EbP4DGw#/shared-invite/email'>on the 18XX Slack</a></p>
+        <p>Buy physical copies of 18XX games from publishers:</br> #{Lib::Publisher.link_list.join}.</p>
+        <p>Keep the servers running by becoming a member <a href='https://www.patreon.com/18xxgames'>on Patreon</a></p>
       MESSAGE
 
       props = {

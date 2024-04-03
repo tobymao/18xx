@@ -99,7 +99,7 @@ module Engine
                 token.swap!(new_token, check_tokenable: true)
                 major.tokens << new_token
               else
-                puts 'TODO: Confirm if unused minor tokens go onto a majors charter ever'
+                LOGGER.debug 'TODO: Confirm if unused minor tokens go onto a majors charter ever'
                 # If so, uncomment this, perhaps with additional conditioning
                 # unused << new_token
               end

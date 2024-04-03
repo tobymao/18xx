@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative '../../g_1822/step/special_track'
+require_relative 'acquisition_track'
 require_relative 'tracker'
 
 module Engine
@@ -14,11 +15,18 @@ module Engine
             if hex == @game.sawmill_hex
               super && Array(entity_or_entities).none? { |e| @game.must_remove_town?(e) }
             else
-              super
+              entity, = entity_or_entities
+              if @game.class::COMPANIES_BIG_CITY_UPGRADES.include?(entity.id)
+                @game.class::BIG_CITY_HEXES_TO_COMPANIES[hex.id] == entity.id &&
+                  hex_neighbors(entity.owner, hex)
+              else
+                super
+              end
             end
           end
 
           def actions(entity)
+            return [] if @round.active_step.is_a?(G1822CA::Step::AcquisitionTrack)
             return [] unless entity.company?
 
             super

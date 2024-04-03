@@ -56,6 +56,14 @@ module Engine
         end
       end
 
+      def scrap_info(_train)
+        ''
+      end
+
+      def scrap_button_text(_train)
+        'Scrap'
+      end
+
       def process_buy_train(action)
         check_spend(action)
         buy_train_action(action)
