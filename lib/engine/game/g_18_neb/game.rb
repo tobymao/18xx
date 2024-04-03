@@ -216,6 +216,7 @@ module Engine
           @corporations_to_fully_capitalize = []
           @locals = @corporations.select { |c| c.type == :local }
           move_local_reservations_to_city
+          place_neutral_token(valentine_hex)
         end
 
         def move_local_reservations_to_city
@@ -227,6 +228,17 @@ module Engine
               brown_tile.cities.first.add_reservation!(local)
             end
           end
+        end
+
+        def valentine_hex
+          @valentine_hex ||= hex_by_id('G1')
+        end
+
+        def place_neutral_token(hex)
+          @neutral_corp ||= Corporation.new(sym: 'N', name: 'Neutral', logo: '18_neb/neutral', tokens: [])
+          hex.tile.cities.first.place_token(@neutral_corp,
+                                            Token.new(@neutral_corp, price: 0, type: :neutral),
+                                            check_tokenable: false)
         end
 
         def event_close_companies!
