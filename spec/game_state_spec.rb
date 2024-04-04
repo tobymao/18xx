@@ -186,6 +186,18 @@ module Engine
       end
     end
 
+    describe '1848' do
+      describe 101 do
+        it '2nd receivership removes the next permanent and triggers phase change' do
+          game = game_at_action(game_file, 483)
+
+          expect(game.phase.name).to eq('5')
+
+          expect(game.depot.upcoming.count { |train| train.name == '5' }).to eq(2)
+        end
+      end
+    end
+
     describe '1836Jr30' do
       describe 2809 do
         it 'CFLV blocks I3 and J4' do
