@@ -15,6 +15,8 @@ module Engine
 
         attr_reader :cattle_token_hex
 
+        DEPOT_CLASS = G18Neb::Depot
+
         BANK_CASH = 6000
 
         CERT_LIMIT = { 2 => 26, 3 => 17, 4 => 13 }.freeze
@@ -41,6 +43,9 @@ module Engine
 
         CERT_LIMIT_CHANGE_ON_BANKRUPTCY = true
         BANKRUPTCY_ENDS_GAME_AFTER = :all_but_one
+
+        CLOSED_CORP_RESERVATIONS_REMOVED = false
+        CLOSED_CORP_TRAINS_REMOVED = false
 
         MARKET = [
           %w[82 90 100 110 122 135 150 165 180 200 220 245 270 300 330 360 400],
@@ -245,6 +250,10 @@ module Engine
           @log << "-- Event: #{EVENTS_TEXT['remove_tokens'][1]} --"
           return unless @cattle_token_hex
 
+          remove_cattle_token
+        end
+
+        def remove_cattle_token
           @cattle_token_hex.remove_assignment!(self.class::CATTLE_OPEN_ICON)
           @cattle_token_hex.remove_assignment!(self.class::CATTLE_CLOSED_ICON)
           @corporations.each do |corporation|
@@ -481,6 +490,16 @@ module Engine
         def rust(train)
           train.rusted = true
           @depot.reclaim_train(train)
+        end
+
+        def close_corporation(corporation, quiet: false)
+          if corporation.assigned?(self.class::CATTLE_OPEN_ICON) || corporation.assigned?(self.class::CATTLE_CLOSED_ICON)
+            remove_cattle_token
+          end
+          super
+          corporation = reset_corporation(corporation)
+          hex_by_id(corporation.coordinates).tile.add_reservation!(corporation, 0)
+          @corporations << corporation
         end
       end
     end
