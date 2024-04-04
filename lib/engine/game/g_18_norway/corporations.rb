@@ -96,6 +96,19 @@ module Engine
             coordinates: 'G31',
             color: :'#95c054',
           },
+          {
+            floatable: false,
+            hide_shares: true,
+            sym: 'NSB',
+            name: 'Norges Statsbaner',
+            tokens: [],
+            shares: [100],
+            logo: '18_norway/NSB',
+            simple_logo: '18_norway/NSB',
+            coordinates: [],
+            city: 1,
+            color: :'#d7555f',
+          },
         ].freeze
       end
     end

@@ -70,6 +70,14 @@ module Engine
           'MOUNTAIN_BIG' => '/icons/mountain.svg',
         }.freeze
 
+        def hovedbanen
+          @hovedbanen ||= corporation_by_id('H')
+        end
+
+        def hovedbanen?(corporation)
+          hovedbanen == corporation
+        end
+
         def price_movement_chart
           [
             ['Action', 'Share Price Change'],
@@ -113,7 +121,7 @@ module Engine
         end
 
         def operating_round(round_num)
-          Round::Operating.new(self, [
+          Engine::Round::Operating.new(self, [
             Engine::Step::Bankrupt,
             Engine::Step::Exchange,
             Engine::Step::SpecialTrack,
@@ -132,6 +140,71 @@ module Engine
 
         def ship?(train)
           train.track_type == :narrow
+        end
+
+        def new_nationalization_round(round_num)
+          G18Norway::Round::Nationalization.new(self, [
+              G18Norway::Step::NationalizeCorporation,
+              ], round_num: round_num)
+        end
+
+        def next_round!
+          @round =
+            case @round
+            when G18Norway::Round::Nationalization
+              new_stock_round
+            when Engine::Round::Stock
+              @operating_rounds = @phase.operating_rounds
+              reorder_players
+              new_operating_round
+            when Engine::Round::Operating
+              if @round.round_num < @operating_rounds
+                or_round_finished
+                new_operating_round(@round.round_num + 1)
+              else
+                @turn += 1
+                or_round_finished
+                or_set_finished
+                new_nationalization_round
+              end
+            when init_round.class
+              init_round_finished
+              reorder_players
+              new_stock_round
+            end
+        end
+
+        def add_new_share(share)
+          owner = share.owner
+          corporation = share.corporation
+          corporation.share_holders[owner] += share.percent if owner
+          owner.shares_by_corporation[corporation] << share
+          @_shares[share.id] = share
+        end
+
+        def nationalized?(entity)
+          !entity.abilities.find { |ability| ability.type == :Nationalized }.nil?
+        end
+
+        def convert(corporation, number_of_shares)
+          shares = @_shares.values.select { |share| share.corporation == corporation }
+
+          shares.each { |share| share.percent = share.percent.positive? ? 10 : -10 }
+          shares[0].percent = 20
+          new_shares = Array.new(5) { |i| Share.new(corporation, percent: 10, index: i + 4) }
+          new_shares.each do |share|
+            add_new_share(share)
+          end
+          price = shares[1].price
+          @bank.spend(price, corporation)
+          share_pool.buy_shares(corporation_by_id('NSB'), new_shares[4], exchange: :free) if number_of_shares.positive?
+          share_pool.buy_shares(corporation_by_id('NSB'), new_shares[3], exchange: :free) if number_of_shares > 1
+
+          corporation.add_ability(Engine::Ability::Base.new(
+            type: 'Nationalized',
+            description: 'Nationalized'
+          ))
+          price
         end
       end
     end
