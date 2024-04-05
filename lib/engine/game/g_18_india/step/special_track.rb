@@ -7,6 +7,7 @@ module Engine
     module G18India
       module Step
         class SpecialTrack < Engine::Step::SpecialTrack
+
           # Bypass some Step::Tracker tests for Town to City upgrade: maintain exits, and check new exits are valid
           # check tile color to active ability
           def legal_tile_rotation?(entity, hex, tile)

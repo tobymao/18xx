@@ -14,6 +14,7 @@ module Engine
         include_meta(G18India::Meta)
         include Entities
         include Map
+        include CitiesPlusTownsRouteDistanceStr
 
         attr_accessor :draft_deck, :ipo_pool, :unclaimed_commodities
 
@@ -710,6 +711,9 @@ module Engine
           def city?
             true
           end
+          def visit_cost
+            1
+          end
         end
 
         # Add gauge changes to visited stops, they count as 0 revenue City stops,
@@ -725,7 +729,7 @@ module Engine
         def add_gauge_changes_to_stops(num, route_stops)
           return [] unless num.positive?
 
-          gauge_changes = Array.new(num) { GaugeChange.new('0') }
+          gauge_changes = Array.new(num) { Engine::Part::City.new('0') }
           first_stop = route_stops.first
           gauge_changes.each do |stop|
             stop.tile = first_stop.tile

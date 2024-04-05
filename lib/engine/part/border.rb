@@ -17,6 +17,10 @@ module Engine
       def border?
         true
       end
+
+      def inspect
+        "<#{self.class.name}: hex: #{hex&.name} edge: #{self.edge} type: #{self.type} cost: #{self.cost}>"
+      end
     end
   end
 end
