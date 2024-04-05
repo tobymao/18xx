@@ -11,7 +11,7 @@ module Engine
           # for debugging
           def process_lay_tile(action)
             super
-            LOGGER.debug "process_lay_tile >> Test terrain_discount: #{@round.terrain_discount}"
+            LOGGER.debug "process_lay_tile >> Test: #{@round.terrain_discount}"
 
             tile = action.tile
 
