@@ -66,6 +66,8 @@ module View
               :blue
             when :impassable
               :red
+            when :gauge_change
+              :red
             end
 
           setting_for(color)
@@ -101,6 +103,24 @@ module View
           ])
         end
 
+        def render_circle(border)
+          edges = EDGES[border.edge]
+
+          x = [edges[:x1], edges[:x2]].sum / 2.0
+          y = [edges[:y1], edges[:y2]].sum / 2.0
+
+          stroke_color = contrast_on(color(border))
+
+          h(:g, { attrs: { transform: "translate(#{x} #{y}), #{rotation_for_layout}" } }, [
+            h(:circle, attrs: {
+              fill: color(border),
+              r: '20',
+              stroke: 'white',
+              'stroke-width': 3,
+            }),
+          ])
+        end
+
         EDGE_TO_REGION = [21, 13, 6, 2, 10, 17].freeze
         def preferred_render_locations
           [{
@@ -121,8 +141,9 @@ module View
                             stroke: color(border),
                             'stroke-width': border_width(border),
                             'stroke-dasharray': border_dash(border),
-                          })
+                          }) unless border.type == :gauge_change
             children << render_cost(border) if border.cost
+            children << render_circle(border) if border.type == :gauge_change
           end
 
           h(:g, children)

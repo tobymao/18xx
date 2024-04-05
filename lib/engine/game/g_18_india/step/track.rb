@@ -10,13 +10,16 @@ module Engine
 
           # for debugging
           def process_lay_tile(action)
-            super
-            LOGGER.debug "process_lay_tile >> Test: #{@round.terrain_discount}"
-
             tile = action.tile
+            hex = action.hex
+            rotation = action.rotation
+            old_tile = hex.tile
+            LOGGER.debug "Track::process_lay_tile:"
+            LOGGER.debug "process_lay_tile >> old_tile.borders #{old_tile.borders.to_s}"
 
-            LOGGER.debug "Track >> remove_border_calculate_cost "
-            LOGGER.debug " >> tile.borders #{tile.borders.to_s}"
+            super
+
+            LOGGER.debug "process_lay_tile >> tile.borders #{tile.borders.to_s}"
             tile.borders do |border|
               next 0 unless (cost = border.cost)
 
@@ -24,7 +27,7 @@ module Engine
               neighbor = hex.neighbors[edge]
               next 0 if !hex.targeting?(neighbor) || !neighbor.targeting?(hex)
 
-              LOGGER.debug " >> neighbor.tile.borders #{neighbor.tile.borders.to_s}"
+              LOGGER.debug "process_lay_tile >> neighbor.tile.borders #{neighbor.tile.borders.to_s}"
             end
           end
 
@@ -50,8 +53,11 @@ module Engine
             hex = tile.hex
             types = []
 
+            LOGGER.debug "Track::remove_border_calculate_cost >>"
+            LOGGER.debug " >> tile.borders #{tile.borders.to_s}"
+
             total_cost = tile.borders.dup.sum do |border|
-              next 0 unless (cost = border.cost)
+              cost = border.cost ? border.cost : 0
 
               edge = border.edge
               neighbor = hex.neighbors[edge]
@@ -60,29 +66,29 @@ module Engine
               types << border.type
               if border.type == :province && @game.phase.name != 'IV'
                 # if the border is a province prior to phase IV, don't delete, instead change cost to nil
-                new_border = Engine::Part::Border.new(border.edge, border.type, nil, border.color)
+                LOGGER.debug " >> MODIFY Borders!!!"
                 tile.borders.delete(border)
-                tile.borders << new_border
-                LOGGER.debug "Track >> remove_border_calculate_cost "
-                LOGGER.debug " >> tile.borders #{tile.borders.to_s}"
-                LOGGER.debug " >> neighbor.tile.borders #{neighbor.tile.borders.to_s}"
+                tile.borders << gauge_change_border(tile, edge)
+                # add gauge change to neighbor tile also
+                neighbor.tile.borders.map! { |nb| nb.edge == hex.invert(edge) ? nil : nb }.compact!
+                neighbor.tile.borders << gauge_change_border(neighbor.tile, hex.invert(edge))
               else
+                LOGGER.debug " >> DELETE Borders!!!"
                 tile.borders.delete(border)
+                neighbor.tile.borders.map! { |nb| nb.edge == hex.invert(edge) ? nil : nb }.compact!
               end
 
-              neighbor.tile.borders.map! { |nb| nb.edge == hex.invert(edge) ? nil : nb }.compact!
-
-              LOGGER.debug "Track >> remove_border_calculate_cost "
-              LOGGER.debug " >> tile.borders #{tile.borders.to_s}"
               LOGGER.debug " >> neighbor.tile.borders #{neighbor.tile.borders.to_s}"
 
               cost - border_cost_discount(entity, spender, border, cost, hex)
             end
-            LOGGER.debug "Track >> remove_border_calculate_cost "
-            LOGGER.debug " >> tile.borders #{tile.borders.to_s}"
-            LOGGER.debug " >> neighbor.tile.borders #{neighbor.tile.borders.to_s}"
-
             [total_cost, types]
+          end
+
+          def gauge_change_border(tile, edge)
+            new_border = Engine::Part::Border.new(edge, :gauge_change, nil)
+            new_border.tile = tile
+            new_border
           end
 
           # close P4 if ability was activated
