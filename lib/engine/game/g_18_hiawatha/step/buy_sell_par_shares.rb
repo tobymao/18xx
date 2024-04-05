@@ -21,6 +21,16 @@ module Engine
               @log << "#{company.name} assigned to #{corporation.name}. #{company.name} revenue increased to $20 per OR."
             end
           end
+
+          def can_short?(entity, corporation)
+            shorts = @game.shorts(corporation).size
+
+            corporation.floated? &&
+              shorts < corporation.total_shares &&
+              entity.num_shares_of(corporation) <= 0 &&
+              !(corporation.share_price.acquisition? || corporation.share_price.liquidation?) &&
+              !@round.players_sold[entity].value?(:short)
+          end
         end
       end
     end
