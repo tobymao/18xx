@@ -13,13 +13,14 @@ module Engine
         include Entities
         include Map
 
-        attr_accessor :jlbc_home
+        attr_accessor :jlbc_home, :blocking_token
 
         CERT_LIMIT = { 3 => 15, 4 => 12, 5 => 10, 6 => 8 }.freeze
 
         STARTING_CASH = { 3 => 435, 4 => 325, 5 => 260, 6 => 220 }.freeze
 
         TRAIN_STATION_PRIVATE_NAME = 'US'
+        MILKWAUKEE_HEX = 'A7'
 
         SEED_MONEY = 160
         SELL_AFTER = :any_time
@@ -93,7 +94,13 @@ module Engine
 
         TRAINS = [{ name: '2', distance: 2, price: 100, obsolete_on: '3', rusts_on: '4', num: 31 },
                   { name: '2+', distance: 2, price: 100, obsolete_on: '4', num: 3 },
-                  { name: '3', distance: 3, price: 250, num: 10 },
+                  {
+                    name: '3',
+                    distance: 3,
+                    price: 250,
+                    num: 10,
+                    events: [{ 'type' => 'remove_blocking_token' }],
+                  },
                   {
                     name: '4',
                     distance: 4,
@@ -101,6 +108,10 @@ module Engine
                     num: 8,
                     events: [{ 'type' => 'signal_end_game' }],
                   }].freeze
+
+        EVENTS_TEXT = G1817::Game::EVENTS_TEXT.merge(
+          'remove_blocking_token' => ['Remove Blocking Token', "Blocking token in Milwaukee (#{MILKWAUKEE_HEX}) is removed."],
+        ).freeze
 
         ASSIGNMENT_TOKENS = {
           'farm' => '/icons/18_hiawatha/farm.svg',
@@ -116,6 +127,16 @@ module Engine
         def setup_preround
           super
           @pittsburgh_private = @companies.find { |c| c.id == 'MB' }
+
+          blocking_logo = '18_hiawatha/blocking'
+          blocking_corp = Corporation.new(sym: 'B', name: 'blocking', logo: blocking_logo, simple_logo: blocking_logo,
+                                          tokens: [0])
+          blocking_corp.owner = @bank
+          blocking_city = @hexes.find { |hex| hex.id == 'A7' }.tile.cities.first
+          token = blocking_corp.tokens[0]
+          token.type = :blocking
+          blocking_city.exchange_token(token)
+          @blocking_token = token
         end
 
         def setup
@@ -213,6 +234,18 @@ module Engine
 
           raise GameError,
                 'Cannot run to either of the Great Lakes hexes (D10, G13) for zero revenue.'
+        end
+
+        def event_remove_blocking_token!
+          remove_blocking_token
+        end
+
+        def remove_blocking_token
+          return unless blocking_token
+
+          @log << "-- Event: Blocking token token removed from #{blocking_token.hex.id} --"
+          blocking_token.destroy!
+          @blocking_token = nil
         end
 
         # Private company definitions

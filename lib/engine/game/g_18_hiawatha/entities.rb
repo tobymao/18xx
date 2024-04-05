@@ -7,7 +7,7 @@ module Engine
     module G18Hiawatha
       module Entities
         include G18Hiawatha::Map
-        
+
         COMPANIES = [
           {
             name: 'Muntzenberger Brewery',
@@ -129,7 +129,7 @@ module Engine
               {
                 type: 'tile_lay',
                 hexes: [],
-                tiles: %w[14 15 619 592h 592h2],
+                tiles: %w[14 15 619 592H 592H2],
                 special: false,
                 when: %i[track special_track],
                 count: 1,
