@@ -160,6 +160,7 @@ module Engine
             case @choose_state
             when :gold
               gold_shipper?(entity) &&
+                @game.gold_slots_available? &&
                 shippable_gold.include?(hex)
             when :ghost
               hex == @gold_hex

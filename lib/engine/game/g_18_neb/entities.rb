@@ -121,7 +121,7 @@ module Engine
           {
             name: 'P5 - Crédit Mobilier',
             value: 130,
-            revenue: 5,
+            revenue: 0,
             desc: 'The owner receives $5 each time ANY tile is placed or upgraded, regardless of which Corporation '\
                   'laid it. In lieu of a stock purchase during a Stock Round, the owning player may exchange this '\
                   'company, which closes it, for a share of the Union Pacific Railroad, if available. The UP '\
@@ -144,7 +144,7 @@ module Engine
           },
           {
             name: 'P6 - Union Pacific Railroad',
-            value: 175,
+            value: 170,
             revenue: 25,
             desc: "Comes with President's Certificate of the Union Pacific Railroad. This company cannot be sold "\
                   'to a corporation. The company closes when the Union Pacific Railroad buys its first train.',
@@ -219,9 +219,9 @@ module Engine
           },
           {
             float_percent: 40,
-            sym: 'NR',
+            sym: 'NK',
             name: 'NebKota',
-            logo: '18_neb/NR',
+            logo: '18_neb/NK',
             shares: [40, 20, 20, 20],
             tokens: [0, 40],
             coordinates: 'C3',
@@ -236,7 +236,7 @@ module Engine
             logo: '18_neb/OLB',
             shares: [40, 20, 20, 20],
             tokens: [0, 40],
-            coordinates: 'K7',
+            coordinates: 'J8',
             max_ownership_percent: 100,
             color: '#F40003',
             type: 'local',

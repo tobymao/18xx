@@ -211,6 +211,12 @@ module Engine
           },
         }.freeze
 
+        MAJOR_TILE_LAYS = [
+          { lay: true, upgrade: true },
+          { lay: :not_if_upgraded, upgrade: false },
+        ].freeze
+        MINOR_TILE_LAYS = [{ lay: true, upgrade: true }].freeze
+
         NORTH_HEXES = %w[B8 B16].freeze
         SOUTH_HEXES = %w[M7 M27].freeze
         EAST_HEXES = %w[D18 E25 G25 H26].freeze
@@ -336,6 +342,10 @@ module Engine
           return to.name == 'X11' if from.name == 'B16'
 
           super
+        end
+
+        def tile_lays(entity)
+          entity.type == :minor ? MINOR_TILE_LAYS : MAJOR_TILE_LAYS
         end
 
         def after_lay_tile(hex, tile, entity)

@@ -1169,6 +1169,11 @@ module Engine
         all_bundles.sort_by(&:percent)
       end
 
+      def can_gain_from_player?(entity, bundle)
+        (self.class::BUY_SHARE_FROM_OTHER_PLAYER && entity.player?) ||
+          (self.class::CORPORATE_BUY_SHARE_ALLOW_BUY_FROM_PRESIDENT && entity.corporation? && bundle.owner == entity.owner)
+      end
+
       def partial_bundles_for_presidents_share(corporation, bundle, percent)
         normal_percent = corporation.share_percent
         difference = corporation.presidents_percent - normal_percent
@@ -1927,6 +1932,11 @@ module Engine
         place_home_token(corporation) if self.class::HOME_TOKEN_TIMING == :par
       end
 
+      # This is a hook to do something before company is closed by using an ability
+      def company_closing_after_using_ability(company, silent = false)
+        @log << "#{company.name} closes" unless silent
+      end
+
       def close_companies_on_event!(entity, event)
         @companies.each do |company|
           next if company.closed?
@@ -2127,6 +2137,11 @@ module Engine
 
       def exchange_partial_percent(_share)
         nil
+      end
+
+      # Entities that can own an exchange ability.
+      def exchange_entities
+        companies + minors
       end
 
       def exchange_corporations(exchange_ability)
@@ -3109,6 +3124,8 @@ module Engine
             @round.operating? && @round.current_operator&.player == ability.player
           when 'owning_player_track'
             @round.operating? && @round.current_operator&.player == ability.player && current_step.is_a?(Step::Track)
+          when 'owning_player_token'
+            @round.operating? && @round.current_operator&.player == ability.player && current_step.is_a?(Step::Token)
           when 'owning_player_sr_turn'
             @round.stock? && @round.current_entity == ability.player
           when 'or_between_turns'
@@ -3219,6 +3236,10 @@ module Engine
 
       def show_map_legend_on_left?
         false
+      end
+
+      def map_legends
+        [:map_legend]
       end
 
       def train_purchase_name(train)

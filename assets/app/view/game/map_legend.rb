@@ -10,12 +10,18 @@ module View
       needs :game, store: true
 
       def render
-        table_props, header, *chart = @game.map_legend(
+        h(:div, @game.map_legends.map { |method| render_legend(method) })
+      end
+
+      def render_legend(method)
+        table_props, header, *chart = @game.send(
+          method,
           color_for(:font),
           color_for(:yellow),
           color_for(:green),
           color_for(:brown),
           color_for(:gray),
+          color_for(:red),
           action_processor: ->(a) { process_action(a) },
         )
 
