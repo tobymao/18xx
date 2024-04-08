@@ -25,6 +25,8 @@ module Engine
         SEED_MONEY = 160
         SELL_AFTER = :any_time
 
+        ALWAYS_BUY_TRAINS_AT_FACE_VALUE = true
+
         MARKET = [
           %w[0
              0a
@@ -132,7 +134,7 @@ module Engine
           blocking_corp = Corporation.new(sym: 'B', name: 'blocking', logo: blocking_logo, simple_logo: blocking_logo,
                                           tokens: [0])
           blocking_corp.owner = @bank
-          blocking_city = @hexes.find { |hex| hex.id == 'A7' }.tile.cities.first
+          blocking_city = @hexes.find { |hex| hex.id == MILKWAUKEE_HEX }.tile.cities.first
           token = blocking_corp.tokens[0]
           token.type = :blocking
           blocking_city.exchange_token(token)
