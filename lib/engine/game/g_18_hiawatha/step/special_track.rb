@@ -6,7 +6,7 @@ module Engine
   module Game
     module G18Hiawatha
       module Step
-        class SpecialTrack < G1817::Step::SpecialTrack
+        class SpecialTrack < Engine::Step::SpecialTrack
           def process_lay_tile(action)
             tile = action.tile
             corporation = action.entity.owner

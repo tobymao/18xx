@@ -10,8 +10,8 @@ module Engine
     module G18Hiawatha
       class Game < G1817::Game
         include_meta(G18Hiawatha::Meta)
-        include Entities
-        include Map
+        include G18Hiawatha::Entities
+        include G18Hiawatha::Map
 
         attr_accessor :jlbc_home, :blocking_token
 
@@ -169,7 +169,7 @@ module Engine
             G1817::Step::Loan,
             G18Hiawatha::Step::SpecialTrack,
             G18Hiawatha::Step::Assign,
-            G1817::Step::Track,
+            G18Hiawatha::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
             G1817::Step::Dividend,

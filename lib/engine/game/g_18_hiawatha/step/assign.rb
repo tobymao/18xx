@@ -6,7 +6,7 @@ module Engine
   module Game
     module G18Hiawatha
       module Step
-        class Assign < G1817::Step::Assign
+        class Assign < Engine::Step::Assign
           def process_assign(action)
             company = action.entity
             target = action.target
