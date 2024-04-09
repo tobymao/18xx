@@ -182,7 +182,13 @@ You may want example games in your development environment to test. One way to d
 2. Execute `load "scripts/import_game.rb"`
 3. Execute `import_game(<product_game_id>)`
 
-A copy of that game is now available locally.
+A copy of that game is now available locally. If you need to 
+take actions as a user in the imported game:
+
+1. Run `scrub_passwords!`
+
+This will reset all account passwords on your local environment
+to "password". 
 
 #### Pinning a game in your local test enviornment
 
