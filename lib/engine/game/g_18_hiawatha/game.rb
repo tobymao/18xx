@@ -20,7 +20,7 @@ module Engine
         STARTING_CASH = { 3 => 435, 4 => 325, 5 => 260, 6 => 220 }.freeze
 
         TRAIN_STATION_PRIVATE_NAME = 'US'
-        MILKWAUKEE_HEX = 'A7'
+        MILWAUKEE_HEX = 'A7'
 
         SEED_MONEY = 160
         SELL_AFTER = :any_time
@@ -112,7 +112,7 @@ module Engine
                   }].freeze
 
         EVENTS_TEXT = G1817::Game::EVENTS_TEXT.merge(
-          'remove_blocking_token' => ['Remove Blocking Token', "Blocking token in Milwaukee (#{MILKWAUKEE_HEX}) is removed."],
+          'remove_blocking_token' => ['Remove Blocking Token', "Blocking token in Milwaukee (#{MILWAUKEE_HEX}) is removed."],
         ).freeze
 
         ASSIGNMENT_TOKENS = {
@@ -134,7 +134,7 @@ module Engine
           blocking_corp = Corporation.new(sym: 'B', name: 'blocking', logo: blocking_logo, simple_logo: blocking_logo,
                                           tokens: [0])
           blocking_corp.owner = @bank
-          blocking_city = @hexes.find { |hex| hex.id == MILKWAUKEE_HEX }.tile.cities.first
+          blocking_city = @hexes.find { |hex| hex.id == MILWAUKEE_HEX }.tile.cities.first
           token = blocking_corp.tokens[0]
           token.type = :blocking
           blocking_city.exchange_token(token)
