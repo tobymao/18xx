@@ -100,7 +100,7 @@ module Engine
           end
 
           def mz?(entity)
-            entity.name == 'MZ' && @game.corporations.any? { |c| c.name == 'MZA' }
+            entity.id == 'MZ' && @game.corporations.any? { |c| c.id == 'MZA' }
           end
 
           def show_other_players

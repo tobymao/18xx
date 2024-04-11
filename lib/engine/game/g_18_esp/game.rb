@@ -853,15 +853,20 @@ module Engine
         end
 
         def must_buy_train?(entity)
-          trains = entity.trains
-          if (!north_corp?(entity) && !entity.interchange?) || entity.type == :minor
-            trains = trains.dup.reject do |t|
-              t.track_type == :narrow
+          return false if depot.depot_trains.empty?
+
+          entity.trains.none? do |train|
+            next false if extra_train?(train)
+
+            case train.track_type
+            when :narrow
+              north_corp?(entity) || (entity.interchange? && entity.type != :minor)
+            when :broad
+              !north_corp?(entity) || entity.interchange?
+            when :all
+              !combined_train_blocked?(entity)
             end
           end
-          trains = trains.dup.reject { |t| t.track_type == :broad } if north_corp?(entity) && !entity.interchange?
-          trains = trains.dup.reject { |t| t.track_type == :all } if combined_train_blocked?(entity)
-          trains.none? { |t| !extra_train?(t) } && !depot.depot_trains.empty?
         end
 
         def num_corp_trains(entity)
