@@ -707,23 +707,13 @@ module Engine
 
         # ----- Route Modificatons for Gauge Change stops (modifed from 1848)
 
-        # class to serve as GaugeChange Stop (counts as a zero revenue city)
-        class GaugeChange < Engine::Part::RevenueCenter
-          def city?
-            true
-          end
-          def visit_cost
-            1
-          end
-        end
-
         # Add gauge changes to visited stops, they count as 0 revenue City stops,
         def visited_stops(route)
           gauge_changes = edge_crossings(route)
           route_stops = route.connection_data.flat_map { |c| [c[:left], c[:right]] }.uniq.compact # super
           return route_stops unless gauge_changes.positive?
 
-          LOGGER.debug "GAME::visited_stops > gauge_changes: #{gauge_changes} route_stops: #{route_stops.to_s}"
+          LOGGER.debug "GAME::visited_stops > gauge_changes: #{gauge_changes} route_stops: #{route_stops}"
           add_gauge_changes_to_stops(gauge_changes, route_stops)
         end
 
@@ -736,7 +726,7 @@ module Engine
             stop.tile = first_stop.tile
             route_stops.insert(1, stop) # add the gauge change after fist element so that it's not the first or last stop
           end
-          LOGGER.debug "GAME::add_gauge_changes_to_stops > route_stops: #{route_stops.to_s}"
+          LOGGER.debug "GAME::add_gauge_changes_to_stops > route_stops: #{route_stops}"
           route_stops
         end
 

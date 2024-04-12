@@ -7,7 +7,6 @@ module Engine
     module G18India
       module Step
         module Tracker
-
           # modified to prevent removal of province borders that had a cost (the cost is from a water border)
           def remove_border_calculate_cost!(tile, entity_or_entities, spender)
             # entity_or_entities is an array when combining private company abilities
@@ -16,10 +15,10 @@ module Engine
 
             hex = tile.hex
             types = []
-            LOGGER.debug "Tracker::remove_border_calculate_cost >>"
+            LOGGER.debug 'Tracker::remove_border_calculate_cost >>'
 
             total_cost = tile.borders.dup.sum do |border|
-              cost = border.cost ? border.cost : 0
+              cost = border.cost || 0
               edge = border.edge
               neighbor = hex.neighbors[edge]
               next 0 if !hex.targeting?(neighbor) || !neighbor.targeting?(hex)
@@ -27,7 +26,7 @@ module Engine
               types << border.type
               if border.type == :province && @game.phase.name != 'IV'
                 # if the border is a province prior to phase IV, don't delete, instead change to gauge change border
-                LOGGER.debug " >> MODIFY Borders!!!"
+                LOGGER.debug ' >> MODIFY Borders!!!'
                 tile.borders.delete(border)
                 tile.borders << add_gauge_change_border(tile, edge)
                 # remove old border and add gauge change to neighbor tile also
@@ -36,7 +35,7 @@ module Engine
                 # add hex pair to gauge_change_marker array to to keep track of number of active markers (used for removal)
                 @game.add_gauge_change_marker(hex, neighbor)
               else
-                LOGGER.debug " >> DELETE Borders!!!"
+                LOGGER.debug ' >> DELETE Borders!!!'
                 tile.borders.delete(border)
                 neighbor.tile.borders.map! { |nb| nb.edge == hex.invert(edge) ? nil : nb }.compact!
               end

@@ -19,7 +19,7 @@ module Engine
       end
 
       def inspect
-        "<#{self.class.name}: hex: #{hex&.name} edge: #{self.edge} type: #{self.type} cost: #{self.cost}>"
+        "<#{self.class.name}: hex: #{hex&.name} edge: #{edge} type: #{type} cost: #{cost}>"
       end
     end
   end

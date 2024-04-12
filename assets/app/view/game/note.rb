@@ -10,7 +10,6 @@ module View
         round = @game.round
         step = round.active_step
         entity = step.current_entity
-        current_actions = round.actions_for(entity)
         return '' unless entity
 
         children = []
@@ -20,7 +19,6 @@ module View
         end
         h(:div, children)
       end
-
     end
   end
 end

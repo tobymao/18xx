@@ -48,7 +48,7 @@ module Engine
           def note_text_block
             [
               'May remove a Gauge Change Marker as a track action.',
-              'Click on a connected marker to remove it.'
+              'Click on a connected marker to remove it.',
             ]
           end
 
@@ -85,12 +85,12 @@ module Engine
             neighbor = hex.neighbors[edge]
             raise GameError, "#{entity.name} can not reach that marker" unless reachable_gauge_change?(entity, hex, neighbor)
 
-            tile.borders.reject! {|b| b.edge == edge }
+            tile.borders.reject! { |b| b.edge == edge }
             neighbor.tile.borders.reject! { |nb| nb.edge == hex.invert(edge) }
             @log << "#{entity.name} removed the Gauge Change Marker between #{hex.id} and #{neighbor.id}"
             @round.removed_gauge << [hex.id, neighbor.id].sort
             @game.removed_gauge_change_marker(hex, neighbor)
-            LOGGER.debug "Remove GC >> #{@round.removed_gauge} / #{@game.gauge_change_markers.to_s}"
+            LOGGER.debug "Remove GC >> #{@round.removed_gauge} / #{@game.gauge_change_markers}"
             # pass!
           end
 
@@ -103,12 +103,7 @@ module Engine
 
           # for debugging
           def process_lay_tile(action)
-            tile = action.tile
-            hex = action.hex
-            rotation = action.rotation
-            old_tile = hex.tile
-            LOGGER.debug "Track::process_lay_tile:"
-            LOGGER.debug "process_lay_tile >> old_tile.borders #{old_tile.borders.to_s}"
+            LOGGER.debug "Track::process_lay_tile >> tile: #{action.tile}"
             super
           end
 

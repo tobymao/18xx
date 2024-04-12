@@ -66,9 +66,7 @@ module View
               :orange
             when :water
               :blue
-            when :impassable
-              :red
-            when :gauge_change
+            when :impassable, :gauge_change
               :red
             end
 
@@ -112,9 +110,8 @@ module View
           y = [edges[:y1], edges[:y2]].sum / 2.0
 
           h(:g, { attrs: { transform: "translate(#{x} #{y}), #{rotation_for_layout}" } }, [
-            h(:circle, attrs: { fill: color(border), r: '20', stroke: 'white', 'stroke-width': 3, },
-              on: { click: ->(event) { on_click(event, border) } }
-            ),
+            h(:circle, attrs: { fill: color(border), r: '20', stroke: 'white', 'stroke-width': 3 },
+                       on: { click: ->(event) { on_click(event, border) } }),
           ])
         end
 
@@ -124,16 +121,15 @@ module View
           remove_gauge_step = @game.round.step_for(current_entity, 'remove_gauge_change')
           event.JS.stopPropagation
           LOGGER.debug "ON_CLICK event in Borders called remove_gauge_step: #{remove_gauge_step}"
-          if remove_gauge_step
-            return unless border.type == :gauge_change
+          return unless remove_gauge_step
+          return unless border.type == :gauge_change
 
-            action = Engine::Action::RemoveGaugeChange.new(
-              current_entity,
-              hex: border.hex,
-              edge: border.edge,
-            )
-            process_action(action)
-          end
+          action = Engine::Action::RemoveGaugeChange.new(
+            current_entity,
+            hex: border.hex,
+            edge: border.edge,
+          )
+          process_action(action)
         end
 
         EDGE_TO_REGION = [21, 13, 6, 2, 10, 17].freeze
@@ -151,12 +147,14 @@ module View
           @tile.borders.each do |border|
             next unless border.type
 
-            children << h(:line, attrs: {
-                            **EDGES[border.edge],
-                            stroke: color(border),
-                            'stroke-width': border_width(border),
-                            'stroke-dasharray': border_dash(border),
-                          }) unless border.type == :gauge_change
+            unless border.type == :gauge_change
+              children << h(:line, attrs: {
+                              **EDGES[border.edge],
+                              stroke: color(border),
+                              'stroke-width': border_width(border),
+                              'stroke-dasharray': border_dash(border),
+                            })
+            end
             children << render_cost(border) if border.cost
             children << render_circle(border) if border.type == :gauge_change
           end
