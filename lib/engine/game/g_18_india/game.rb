@@ -16,7 +16,7 @@ module Engine
         include Map
         include CitiesPlusTownsRouteDistanceStr
 
-        attr_accessor :draft_deck, :ipo_pool, :unclaimed_commodities
+        attr_accessor :draft_deck, :ipo_pool, :unclaimed_commodities, :gauge_change_markers
 
         register_colors(brown: '#a05a2c',
                         white: '#000000',
@@ -236,6 +236,7 @@ module Engine
           @last_action = nil
 
           @unclaimed_commodities = COMMODITY_NAMES.dup
+          @gauge_change_markers = []
 
           @log << "-- #{round_description('Hand Selection')} --"
           @log << "Select #{certs_to_keep} Certificates for your starting hand"
@@ -751,6 +752,14 @@ module Engine
 
         def edge_is_a_border?(edge)
           edge.hex.tile.borders.any? { |border| border.edge == edge.num }
+        end
+
+        def add_gauge_change_marker(hex, neighbor)
+          @gauge_change_markers << Array.new([hex, neighbor].sort)
+        end
+
+        def removed_gauge_change_marker(hex, neighbor)
+          @gauge_change_markers.delete([hex, neighbor].sort)
         end
 
         # modify to require route begin and end at city

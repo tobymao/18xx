@@ -16,13 +16,10 @@ module Engine
 
             hex = tile.hex
             types = []
-
-            LOGGER.debug "Track::remove_border_calculate_cost >>"
-            LOGGER.debug " >> tile.borders #{tile.borders.to_s}"
+            LOGGER.debug "Tracker::remove_border_calculate_cost >>"
 
             total_cost = tile.borders.dup.sum do |border|
               cost = border.cost ? border.cost : 0
-
               edge = border.edge
               neighbor = hex.neighbors[edge]
               next 0 if !hex.targeting?(neighbor) || !neighbor.targeting?(hex)
@@ -36,14 +33,13 @@ module Engine
                 # remove old border and add gauge change to neighbor tile also
                 neighbor.tile.borders.map! { |nb| nb.edge == hex.invert(edge) ? nil : nb }.compact!
                 neighbor.tile.borders << add_gauge_change_border(neighbor.tile, hex.invert(edge))
+                # add hex pair to gauge_change_marker array to to keep track of number of active markers (used for removal)
+                @game.add_gauge_change_marker(hex, neighbor)
               else
                 LOGGER.debug " >> DELETE Borders!!!"
                 tile.borders.delete(border)
                 neighbor.tile.borders.map! { |nb| nb.edge == hex.invert(edge) ? nil : nb }.compact!
               end
-
-              LOGGER.debug " >> neighbor.tile.borders #{neighbor.tile.borders.to_s}"
-
               cost - border_cost_discount(entity, spender, border, cost, hex)
             end
             [total_cost, types]

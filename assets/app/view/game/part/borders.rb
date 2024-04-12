@@ -3,11 +3,13 @@
 require 'lib/hex'
 require 'lib/settings'
 require 'view/game/part/base'
+require 'view/game/actionable'
 
 module View
   module Game
     module Part
       class Borders < Base
+        include Actionable
         include Lib::Settings
 
         needs :tile
@@ -109,16 +111,29 @@ module View
           x = [edges[:x1], edges[:x2]].sum / 2.0
           y = [edges[:y1], edges[:y2]].sum / 2.0
 
-          stroke_color = contrast_on(color(border))
-
           h(:g, { attrs: { transform: "translate(#{x} #{y}), #{rotation_for_layout}" } }, [
-            h(:circle, attrs: {
-              fill: color(border),
-              r: '20',
-              stroke: 'white',
-              'stroke-width': 3,
-            }),
+            h(:circle, attrs: { fill: color(border), r: '20', stroke: 'white', 'stroke-width': 3, },
+              on: { click: ->(event) { on_click(event, border) } }
+            ),
           ])
+        end
+
+        def on_click(event, border)
+          step = @game.round.active_step(nil)
+          current_entity = step&.current_entity
+          remove_gauge_step = @game.round.step_for(current_entity, 'remove_gauge_change')
+          event.JS.stopPropagation
+          LOGGER.debug "ON_CLICK event in Borders called remove_gauge_step: #{remove_gauge_step}"
+          if remove_gauge_step
+            return unless border.type == :gauge_change
+
+            action = Engine::Action::RemoveGaugeChange.new(
+              current_entity,
+              hex: border.hex,
+              edge: border.edge,
+            )
+            process_action(action)
+          end
         end
 
         EDGE_TO_REGION = [21, 13, 6, 2, 10, 17].freeze
