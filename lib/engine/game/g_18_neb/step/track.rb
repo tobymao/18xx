@@ -7,14 +7,7 @@ module Engine
     module G18Neb
       module Step
         class Track < Engine::Step::Track
-          def legal_tile_rotation?(entity, hex, tile)
-            old_tile = hex.tile
-            if @game.town_to_city_upgrade?(old_tile, tile) || @game.omaha_green_upgrade?(old_tile, tile)
-              return (old_tile.exits & tile.exits) == old_tile.exits && tile.exits.all? { |edge| hex.neighbors[edge] }
-            end
-
-            super
-          end
+          include LegalTileRotationChecker
 
           # Prevent terrain discounts from being applied implicitly.
           def border_cost_discount(_entity, _spender, _border, _cost, _hex)
