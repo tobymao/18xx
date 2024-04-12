@@ -12,10 +12,17 @@ module Engine
             corporation = bundle.corporation
             treasury_share = bundle.owner == corporation
             super
-            return unless treasury_share
+            if treasury_share
+              @game.bank.spend(corporation.share_price.price, corporation)
+              @log << "#{corporation.name} receives #{@game.format_currency(corporation.share_price.price)} from the bank"
+            end
+            @round.current_actions << action
+          end
 
-            @game.bank.spend(corporation.share_price.price, corporation)
-            @log << "#{corporation.name} receives #{@game.format_currency(corporation.share_price.price)} from the bank"
+          def can_gain?(entity, bundle, exchange: false)
+            return false unless bundle.corporation.par_price
+
+            super
           end
         end
       end
