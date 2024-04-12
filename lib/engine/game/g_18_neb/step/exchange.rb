@@ -18,6 +18,12 @@ module Engine
             end
             @round.current_actions << action
           end
+
+          def can_gain?(entity, bundle, exchange: false)
+            return false unless bundle.corporation.par_price
+
+            super
+          end
         end
       end
     end
