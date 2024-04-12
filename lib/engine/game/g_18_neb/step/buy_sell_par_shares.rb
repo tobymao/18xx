@@ -57,6 +57,12 @@ module Engine
             super
             pass! if action.entity.corporation?
           end
+
+          def log_skip(entity)
+            return unless @round.current_actions.empty?
+
+            super
+          end
         end
       end
     end
