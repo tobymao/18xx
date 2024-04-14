@@ -118,9 +118,7 @@ module Engine
           'LM1' => {
             'count' => 1,
             'color' => 'blue',
-            'code' => 'label=LM;junction;path=a:0,b:_0,terminal:1;junction;path=a:1,b:_1,terminal:2;'\
-                      'junction;path=a:2,b:_2,terminal:3;junction;path=a:3,b:_3,terminal:4;'\
-                      'junction;path=a:4,b:_4,terminal:5;junction;path=a:5,b:_5,terminal:6;'\
+            'code' => 'label=LM;'\
                       'path=a:0,b:2,track:thin;path=a:0,b:3,track:thin;path=a:0,b:4,track:thin;' \
                       'path=a:3,b:1,track:thin;path=a:3,b:5,track:thin;', \
           },
@@ -173,9 +171,7 @@ module Engine
           'LM2' => {
             'count' => 1,
             'color' => 'blue',
-            'code' => 'label=LM;junction;path=a:0,b:_0,terminal:1;junction;path=a:1,b:_1,terminal:2;'\
-                      'junction;path=a:2,b:_2,terminal:3;junction;path=a:3,b:_3,terminal:4;'\
-                      'junction;path=a:4,b:_4,terminal:5;junction;path=a:5,b:_5,terminal:6;'\
+            'code' => 'label=LM;junction;path=a:0,b:_0,terminal:1,track:thin;'\
                       'path=a:0,b:_0,track:thin;path=a:1,b:_0,track:thin;path=a:2,b:_0,track:thin;' \
                       'path=a:3,b:_0,track:thin;path=a:4,b:_0,track:thin;path=a:5,b:_0,track:thin;', \
           },
@@ -284,24 +280,6 @@ module Engine
             ['G29'] => 'label=O;city=revenue:30;city=revenue:30;city=revenue:30;path=a:0,b:_0;path=a:2,b:_1;path=a:4,b:_2',
           },
           blue: {
-            %w[C1 E1 G1 I1] => '',
-            %w[A1 A3 A5 A7 A9 A11 A13 A15 A17 A19] => '',
-            %w[D36 E35 F34 F36 G33 G35 H36] => '',
-            %w[B2 D2 F2 H2 J2] => '',
-            %w[C3 E3 G3 I3] => '',
-            %w[B4 D4 F4 H4 J4] => '',
-            %w[C5 E5 G5 I5] => '',
-            %w[B6 D6 F6 H6 J6] => '',
-            %w[C7 E7 G7 I7] => '',
-            %w[B8 D8 F8 H8] => '',
-            %w[C9 E9 G9 I9] => '',
-            %w[B10 D10 F10 H10] => '',
-            %w[C11 E11 G11] => '',
-            %w[B12 D12 F12 H12] => '',
-            %w[C13 E13 G13] => '',
-            %w[B14 D14] => '',
-            %w[C15] => '',
-            %w[B16 B18] => '',
             ['A21'] => 'path=a:0,b:4,track:narrow',
             ['A23'] => 'path=a:0,b:3,track:narrow',
             ['A25'] => 'path=a:3,b:5,track:narrow',
@@ -317,8 +295,7 @@ module Engine
             ['G15'] => 'path=a:0,b:2,track:narrow',
             ['B20'] => 'path=a:1,b:4,track:narrow',
             ['B36'] => 'path=a:2,b:4,track:narrow',
-            ['H26'] => 'label=LM;junction;path=a:0,b:_0,terminal:1;junction;path=a:2,b:_1,terminal:2;'\
-                       'junction;path=a:3,b:_2,terminal:3;junction;path=a:4,b:_3,terminal:4;'\
+            ['H26'] => 'label=LM;'\
                        'path=a:0,b:2,track:thin;path=a:0,b:3,track:thin;path=a:0,b:4,track:thin',
           },
         }.freeze
