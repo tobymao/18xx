@@ -674,7 +674,7 @@ module Engine
 
         def town_to_green_city_hexes
           @hexes.map(&:tile).filter do |t|
-            t.towns&.count == 1 && # only single town hexes
+            t.towns.one? && # only single town hexes
             %i[white yellow].include?(t.color) && # only white or yellow hexes
             !%w[K38 L39].include?(t.hex.name) # L39 and K38 are not legal hexes for a Green single city tile
           end.map(&:hex)
