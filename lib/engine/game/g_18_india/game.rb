@@ -804,8 +804,7 @@ module Engine
           # return privates and bonds to market
           LOGGER.debug "closing > companies: #{corporation.companies}  bank: #{@bank.companies}"
           corporation.companies.dup.each do |company|
-            case company.type
-            when :private, :bond
+            if %i[private bond].include?(company.type)
               @log << "#{company.name} is returned to the Market"
               company.owner = @bank
               @bank.companies.push(company)
