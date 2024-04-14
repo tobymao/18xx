@@ -37,14 +37,15 @@ module Engine
             name: '6',
             distance: 6,
             price: 630,
-            num: 2,
+            num: 3,
           },
           {
             name: 'D',
             distance: 999,
-            price: 850,
+            price: 900,
             num: 20,
             available_on: '6',
+            discount: { '4' => 750, '5' => 750, '6' => 750 },
           },
           {
             name: 'S3',
@@ -72,7 +73,7 @@ module Engine
             track_type: :narrow,
             num: 5,
           },
-].freeze
+        ].freeze
       end
     end
   end
