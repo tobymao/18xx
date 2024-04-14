@@ -88,7 +88,7 @@ module Engine
         def setup
           MOUNTAIN_BIG_HEXES.each { |hex| hex_by_id(hex).assign!('MOUNTAIN_BIG') }
           MOUNTAIN_SMALL_HEXES.each { |hex| hex_by_id(hex).assign!('MOUNTAIN_SMALL') }
-          corporation_by_id('RB').add_ability(Engine::Ability::Base.new(
+          corporation_by_id('R').add_ability(Engine::Ability::Base.new(
             type: 'FreeTunnel',
             description: 'Free tunnel'
           ))

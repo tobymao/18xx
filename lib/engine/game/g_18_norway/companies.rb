@@ -21,7 +21,7 @@ module Engine
             value: 30,
             revenue: 5,
             desc: 'Public company owning P2 does not need to pay for snow on tracks. '\
-                  'Closes when first 5 train is bought',
+                  'Closes when first 5 train is bought.',
             abilities: [],
             color: nil,
           },
@@ -64,7 +64,7 @@ module Engine
                   'Par value is set when its president’s certificate is purchased, '\
                   'and B then floats immediately. Its company treasury receives funds for all three '\
                   'stocks when it floats. Closes when the first 5 train is bought.',
-            abilities: [{ type: 'shares', shares: 'BB_1' }],
+            abilities: [{ type: 'shares', shares: 'B_1' }],
             color: nil,
           },
           {
@@ -72,10 +72,11 @@ module Engine
             sym: 'P7',
             value: 140,
             revenue: 20,
-            desc: 'Accompanied by the 40 percent Hovedbanen’s (HB) President Certificate. '\
+            desc: 'Accompanied by the 40 percent Hovedbanen’s (H) President Certificate. '\
                   'Set market value. The maximum value is equal to the winning bid divided by two rounded down. '\
                   'Gets selected value times two from bank. Closes when the first 3-train is bought',
-            abilities: [{ type: 'shares', shares: 'HB_0' }],
+            abilities: [{ type: 'shares', shares: 'H_0' },
+                        { type: 'close', on_phase: '3' }],
             color: nil,
           },
         ].freeze
