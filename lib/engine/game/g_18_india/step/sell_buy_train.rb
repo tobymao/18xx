@@ -74,8 +74,7 @@ module Engine
           end
 
           def buying_another_phase_iv_train?(operator, train)
-            return false unless operator
-            return false unless operator.operator?
+            return false unless operator&.operator?
 
             own_a_phase_iv = operator.trains.any? { |t| t.available_on == "III'" }
             own_a_phase_iv && train.available_on == "III'"
