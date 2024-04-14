@@ -686,7 +686,7 @@ module Engine
 
           LOGGER.debug " Open City Hexes #{open_city_hexes}"
           LOGGER.debug " Town->City Hexes #{town_to_green_city_hexes}"
-          [] + open_city_hexes + town_to_green_city_hexes
+          open_city_hexes + town_to_green_city_hexes
         end
 
         def place_home_token(corporation)
