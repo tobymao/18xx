@@ -26,7 +26,7 @@ module Engine
                 type?(v[:name], :broad)
               end
             end
-            if !@game.can_only_run_narrow?(entity) && entity.operatable_trains.empty?
+            if @game.can_only_run_broad?(entity) && entity.operatable_trains.empty?
               trains.reject! do |v|
                 type?(v[:name], :narrow)
               end

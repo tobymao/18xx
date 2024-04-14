@@ -691,7 +691,7 @@ module Engine
                       'icon=image:18_esp/FdSB,sticky:1;icon=image:18_esp/FdLR,sticky:1;'\
                       'icon=image:anchor',
 
-            ['I5'] => 'city=revenue:30,slots:2;path=a:2,b:_0,track:narrow;path=a:4,b:_0,track:narrow',
+            ['I5'] => 'city=revenue:20,slots:2;path=a:2,b:_0,track:narrow;path=a:4,b:_0,track:narrow',
             ['F24'] => 'city=revenue:30;city=revenue:30;city=revenue:30;path=a:0,b:_0;path=a:1,b:_0;' \
                        'path=a:2,b:_1;path=a:4,b:_2;path=a:0,b:_2;label=M',
             ['M21'] => 'city=revenue:30;city=revenue:30;path=a:1,b:_0;path=a:2,b:_1;path=a:5,b:_1;label=B;'\
