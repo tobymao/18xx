@@ -54,8 +54,10 @@ module Engine
         MARKET = [
           %w[0c 10 20 30 40
              50p 60p 70p 80p 90p 100p 112p 124p 137p 150p
-             165 180 195 220 245 270 300 330 365 400 440 480],
+             165Y 180Y 195Y 220Y 245Y 270Y 300Y 330Y 365Y 400Y 440Y 480Y],
            ].freeze
+        STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(pays_bonus_3: :white).freeze
+        MARKET_TEXT = Base::MARKET_TEXT.merge(pays_bonus_3: 'Triple jump if dividend ≥ 3X')
 
         ASSIGNMENT_TOKENS = {
           'MOUNTAIN_SMALL' => '/icons/hill.svg',
