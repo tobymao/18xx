@@ -47,7 +47,8 @@ module Engine
             train_limit: 2,
             tiles: %i[yellow green brown gray],
             operating_rounds: 2,
-          }].freeze
+          },
+        ].freeze
       end
     end
   end
