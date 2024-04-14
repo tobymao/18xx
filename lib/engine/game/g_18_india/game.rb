@@ -831,7 +831,7 @@ module Engine
           LOGGER.debug "closing > tresury: #{corporation.cash}  bank: #{@bank.cash}"
 
           # remove all corp shares
-          corporation.share_holders.keys.each do |share_holder|
+          corporation.share_holders.each_key do |share_holder|
             share_holder.shares_by_corporation.delete(corporation)
           end
           @share_pool.shares_by_corporation.delete(corporation)
