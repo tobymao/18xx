@@ -11,7 +11,7 @@ module Engine
         DEV_STAGE = :prealpha
         PROTOTYPE = true
 
-        GAME_DESIGNER = 'Pontus Nilsson and & Kjell Vikhagen'
+        GAME_DESIGNER = 'Pontus Nilsson and Kjell Vikhagen'
         GAME_LOCATION = 'Norway'
         GAME_PUBLISHER = :self_published
         GAME_RULES_URL = ''
