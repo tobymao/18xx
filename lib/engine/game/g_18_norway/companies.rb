@@ -11,7 +11,7 @@ module Engine
             value: 20,
             revenue: 5,
             desc: 'Blocks hex (I23) until bought by a public company, or when the first 5 train is bought, ' \
-                  'which also closes the P1',
+                  'which also closes the P1.',
             abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: ['I23'] }],
             color: nil,
           },
