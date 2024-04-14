@@ -88,7 +88,7 @@ module Engine
           {
             float_percent: 60,
             sym: 'ØB',
-            name: 'Østfoldsbanen',
+            name: 'Østfoldbanen',
             logo: '18_norway/OB',
             simple_logo: '18_norway/OB.alt',
             tokens: [0, 40, 100, 100],
