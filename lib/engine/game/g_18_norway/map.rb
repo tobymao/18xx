@@ -9,7 +9,7 @@ module Engine
           'B26' => 'Bergen',
           'B32' => 'Stavanger',
           'C35' => 'Kristiansand',
-          'C37' => 'Europe',
+          'C37' => 'Rotterdam',
           'C19' => 'Ålesund',
           'D18' => 'Molde',
           'D22' => 'Jostedal',
