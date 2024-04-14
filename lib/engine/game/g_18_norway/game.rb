@@ -81,7 +81,7 @@ module Engine
         end
 
         MOUNTAIN_BIG_HEXES = %w[E21 G21 H22 F26 E27 E29 D30].freeze
-        MOUNTAIN_SMALL_HEXES = %w[G19 H20 E23 D26 D28 G27 H28].freeze
+        MOUNTAIN_SMALL_HEXES = %w[G19 E23 D26 D28 F28 G27 H28].freeze
 
         def setup
           MOUNTAIN_BIG_HEXES.each { |hex| hex_by_id(hex).assign!('MOUNTAIN_BIG') }

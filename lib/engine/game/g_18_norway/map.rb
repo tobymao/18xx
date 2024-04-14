@@ -214,13 +214,14 @@ module Engine
 
         HEXES = {
           white: {
-            %w[K3 K7 J10 I11 H14 F16 E17 F18 H18 H30] => '',
-            %w[C33 D32 E31 E33 F28 I23 I25 I27] => '',
+            %w[K3 K7 J10 I11 H14 F16 E17 F18 H18 H20 H30] => '',
+            %w[C33 D32 E33 I23 I25 I27] => '',
             %w[B34 C29 D34 H32] => 'town=revenue:0',
             %w[E19] => 'city=revenue:0',
-            %w[D28 G19 G27 H20 H28] => 'upgrade=cost:30,terrain:hill',
+            %w[D28 F28 G19 G27 H28] => 'upgrade=cost:30,terrain:hill',
             %w[D30 E29 H22] => 'upgrade=cost:40,terrain:mountain',
-            ['B30'] => 'city=revenue:0;border=edge:0,type:impassable;border=edge:5,type:impassable',
+            ['E31'] => 'upgrade=cost:20,terrain:water',
+            ['B30'] => 'city=revenue:0;border=edge:0,type:impassable;border=edge:5,type:impassable;upgrade=cost:20,terrain:water',
             ['B22'] => 'town=revenue:0;border=edge:0,type:impassable',
             ['C21'] => 'border=edge:5,type:divider',
             ['C31'] => 'border=edge:2,type:impassable',
@@ -233,9 +234,9 @@ module Engine
             ['G21'] => 'upgrade=cost:40,terrain:mountain;border=edge:1,type:divider',
             ['G23'] => 'city=revenue:0;border=edge:1,type:divider;border=edge:2,type:divider',
             ['G25'] => 'border=edge:2,type:divider;border=edge:4,type:impassable',
-            ['H24'] => 'town=revenue:0;border=edge:1,type:impassable',
+            ['H24'] => 'town=revenue:0;border=edge:1,type:impassable;upgrade=cost:20,terrain:water',
             ['B24'] => 'border=edge:3,type:impassable;border=edge:4,type:impassable',
-            ['B28'] => 'border=edge:3,type:impassable',
+            ['B28'] => 'upgrade=cost:20,terrain:water;border=edge:3,type:impassable',
             ['C23'] => 'border=edge:4,type:divider;border=edge:0,type:impassable;border=edge:1,type:impassable;'\
                        'border=edge:5,type:impassable',
             ['C25'] => 'border=edge:0,type:impassable;border=edge:3,type:impassable',
