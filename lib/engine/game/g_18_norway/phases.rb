@@ -44,7 +44,7 @@ module Engine
                     name: 'D',
                     on: 'D',
                     train_limit: 2,
-                    tiles: %i[yellow green brown],
+                    tiles: %i[yellow green brown gray],
                     operating_rounds: 2,
                   }].freeze
       end
