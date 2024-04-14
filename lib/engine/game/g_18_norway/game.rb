@@ -97,7 +97,7 @@ module Engine
         end
 
         def small_mountain?(hex)
-          !hex.assignments.keys.find { |ability| ability.include? :MOUNTAIN_SMALL }.nil?
+          hex.assignments.include?('MOUNTAIN_SMALL')
         end
 
         def mountain?(hex)
