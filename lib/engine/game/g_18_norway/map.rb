@@ -40,7 +40,7 @@ module Engine
           'F32' => 'Larvik',
           'F30' => 'Drammen',
           'G31' => 'Sarpsborg',
-          'K3' => 'Saltfjellet',
+          'D26' => 'Myrdal',
         }.freeze
 
         TILES = {
