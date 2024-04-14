@@ -19,7 +19,7 @@ module Engine
             name: 'P2 Thunes mekaniske verksted',
             sym: 'P2',
             value: 30,
-            revenue: 10,
+            revenue: 5,
             desc: 'Public company owning P2 does not need to pay for snow on tracks. '\
                   'Closes when first 5 train is bought',
             abilities: [],
@@ -39,7 +39,7 @@ module Engine
             name: 'P4 Mellemværftet',
             sym: 'P4',
             value: 50,
-            revenue: 15,
+            revenue: 10,
             desc: 'Owner of P4 receive 10kr as additional payment from the bank each time '\
                   'a ship is bought. Closes when first 5 train is bought.',
             abilities: [],
@@ -56,15 +56,15 @@ module Engine
             color: nil,
           },
           {
-            name: 'P6 Andreas Tandberg Gløersen',
+            name: 'P6 Peter Jebsen',
             sym: 'P6',
             value: 90,
-            revenue: 20,
-            desc: 'Accompanied by a 20 percent share in Jærbanen (JB). '\
+            revenue: 15,
+            desc: 'Accompanied by a 20 percent share in Bergensbanen (B). '\
                   'Par value is set when its president’s certificate is purchased, '\
-                  'and JB then floats immediately. Its company treasury receives funds for all three '\
+                  'and B then floats immediately. Its company treasury receives funds for all three '\
                   'stocks when it floats. Closes when the first 5 train is bought.',
-            abilities: [{ type: 'shares', shares: 'JB_1' }],
+            abilities: [{ type: 'shares', shares: 'BB_1' }],
             color: nil,
           },
           {
