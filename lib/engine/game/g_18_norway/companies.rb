@@ -36,7 +36,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'P4 Mellemværftet:',
+            name: 'P4 Mellemværftet',
             sym: 'P4',
             value: 50,
             revenue: 15,
