@@ -13,7 +13,7 @@ module Engine
         include G18Hiawatha::Entities
         include G18Hiawatha::Map
 
-        attr_accessor :jlbc_home, :blocking_token
+        attr_accessor :jlbc_home, :blocking_token, :payable_loans
 
         CERT_LIMIT = { 3 => 15, 4 => 12, 5 => 10, 6 => 8 }.freeze
 
@@ -163,7 +163,7 @@ module Engine
           @interest_fixed = nil
           @interest_fixed = interest_rate
 
-          G1817::Round::Operating.new(self, [
+          G18Hiawatha::Round::Operating.new(self, [
             G1817::Step::Bankrupt,
             G1817::Step::CashCrisis,
             G1817::Step::Loan,
@@ -309,6 +309,14 @@ module Engine
              Engine::Tile::COLORS.index(to.color) > Engine::Tile::COLORS.index(from.color)
             true
           end
+        end
+
+        def payoff_loan(entity, _loan, adjust_share_price: true)
+          raise GameError, 'Cannot pay off loans taken this OR.' unless @payable_loans.positive?
+
+          super
+
+          @payable_loans -= 1
         end
 
         def event_signal_end_game!
