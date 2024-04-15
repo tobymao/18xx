@@ -84,6 +84,7 @@ module Engine
           'H4' => 'Naperville',
           'H8' => 'Oak Park',
           'H10' => 'South Chicago',
+          'I3' => 'Saint Louis',
           'I5' => 'Joliet',
           'I9' => 'Oak Lawn',
           'I11' => 'Gary',

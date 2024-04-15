@@ -311,6 +311,7 @@ module Engine
           end
         end
 
+        # This prevents paying off loans in the same OR they're taken.
         def payoff_loan(entity, _loan, adjust_share_price: true)
           raise GameError, 'Cannot pay off loans taken this OR.' unless @payable_loans.positive?
 
