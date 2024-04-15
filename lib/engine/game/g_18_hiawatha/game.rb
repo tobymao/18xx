@@ -272,8 +272,8 @@ module Engine
           @receivership_railroad ||= company_by_id('RR')
         end
 
-        def jacob_leinenkugel
-          @jacob_leinenkugel ||= company_by_id('JLBC')
+        def jlbc
+          @jlbc ||= company_by_id('JLBC')
         end
 
         def postal_contract
@@ -300,16 +300,15 @@ module Engine
           end
         end
 
-        # allows JLBC company's owner to skip directly to green tile on its home hex
-        def upgrades_to_correct_color?(from, to, selected_company: nil)
-          if to.color == :green &&
-            @round.current_entity == @jacob_leinenkugel.owner &&
-             from.hex.id == @jlbc_home &&
-             Engine::Tile::COLORS.index(to.color) > Engine::Tile::COLORS.index(from.color)
-            return true
-          end
+        def upgrades_to?(from, to, special = false, selected_company: nil)
+          return super unless selected_company == jlbc
 
-          super
+          if to.color == :green &&
+             from.hex.id == @jlbc_home &&
+             upgrades_to_correct_label?(from, to) &&
+             Engine::Tile::COLORS.index(to.color) > Engine::Tile::COLORS.index(from.color)
+            true
+          end
         end
 
         def event_signal_end_game!
