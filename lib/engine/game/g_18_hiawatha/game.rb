@@ -21,6 +21,8 @@ module Engine
 
         TRAIN_STATION_PRIVATE_NAME = 'US'
         MILWAUKEE_HEX = 'A7'
+        GREAT_LAKES_D10_HEX = 'D10'
+        ROCKFORD_HEX = 'E1'
 
         SEED_MONEY = 160
         SELL_AFTER = :any_time
@@ -95,12 +97,12 @@ module Engine
         ].freeze
 
         TRAINS = [{ name: '2', distance: 2, price: 100, obsolete_on: '3', rusts_on: '4', num: 31 },
-                  { name: '2+', distance: 2, price: 100, obsolete_on: '4', num: 3 },
+                  { name: '2+', distance: 2, price: 1, obsolete_on: '4', num: 1 },
                   {
                     name: '3',
                     distance: 3,
-                    price: 250,
-                    num: 10,
+                    price: 1,
+                    num: 1,
                     events: [{ 'type' => 'remove_blocking_token' }],
                   },
                   {
@@ -203,8 +205,35 @@ module Engine
           revenue += 10 * route.all_hexes.count { |hex| hex.assigned?(farm) }
           revenue += 10 if stops.any? { |stop| stop.hex.assigned?('GLS') }
           revenue += 10 if stops.any? { |stop| stop.hex.assigned?('FC') && route.corporation.assigned?('FC') }
+          revenue += 20 if milwaukee_to_great_lakes_bonus?(stops)
+          revenue += 40 if milwaukee_to_rockford_bonus?(stops)
 
           revenue
+        end
+
+        def revenue_str(route)
+          str = super
+          str += ' + Milwaukee-Great Lakes bonus (+20)' if milwaukee_to_great_lakes_bonus?(route.stops)
+          str += ' + Milwaukee-Rockford bonus (+40)' if milwaukee_to_rockford_bonus?(route.stops)
+          str
+        end
+
+        def milwaukee_to_great_lakes_hexes
+          @milwaukee_to_great_lakes_hexes ||= %w[A7 D10].map { |id| hex_by_id(id) }
+        end
+
+        def milwaukee_to_rockford_hexes
+          @milwaukee_to_rockford_hexes ||= %w[A7 E1].map { |id| hex_by_id(id) }
+        end
+
+        def milwaukee_to_great_lakes_bonus?(stops)
+          stop_hexes = stops.map(&:hex)
+          milwaukee_to_great_lakes_hexes.all? { |hex| stop_hexes.include?(hex) }
+        end
+
+        def milwaukee_to_rockford_bonus?(stops)
+          stop_hexes = stops.map(&:hex)
+          milwaukee_to_rockford_hexes.all? { |hex| stop_hexes.include?(hex) }
         end
 
         def size_corporation(corporation, size)
