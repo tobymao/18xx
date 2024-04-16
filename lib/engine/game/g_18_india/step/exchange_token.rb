@@ -87,13 +87,16 @@ module Engine
             "Pass: Exchange with #{token.corporation.name} token at #{token.city.hex.name}"
           end
 
-          def process_pass(_action)
+          def process_pass(action)
+            entity = action.entity
+            return unless entity == @game.gipr
+
             closing_corp = token.corporation
             hex = token.city.hex
             @log << "#{pending_entity.name} choose not to exchange with #{closing_corp.name} token at #{hex.name}"
-            token.destroy!
+            token.remove!
             @round.pending_exchange_tokens.shift
-            LOGGER.debug "ExchangeToken::process_pass > gipr:#{pending_entity.tokens} closing: #{closing_corp.tokens}"
+            LOGGER.debug "ExchangeToken::process_pass > gipr:#{entity.tokens} closing: #{closing_corp.tokens}"
           end
         end
       end

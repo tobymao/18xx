@@ -133,6 +133,20 @@ module Engine
           'VISAKHAPATNAM' => 30, # SPICES => VISAKHAPATNAM [M24] => 30,
         }.freeze
 
+        COMMODITY_BONUSES = {
+          'OIL' => { value: 30, commodity: 'OIL', locations: ['MUMBAI'] }, # OIL => MUMBAI [D23] + 30
+          'OPIUM' => { value: 100, commodity: 'OPIUM', locations: %w[LAHORE HALDIA] }, # OPIUM => LAHORE [D3] HALDIA [P19] => 100
+          'ORE1' => { value: 50, commodity: 'ORE', locations: %w[KARACHI CHENNAI] }, # ORE => KARACHI [A16] CHENNAI [K30] => 50
+          'ORE2' => { value: 50, commodity: 'ORE', locations: %w[KARACHI CHENNAI] },
+          'GOLD' => { value: 50, commodity: 'GOLD', locations: ['KOCHI'] }, # GOLD => KOCHI [G36] + 50
+          'COTTON' => { value: 40, commodity: 'COTTON', locations: %w[KARACHI CHENNAI] }, # KARACHI [A16] CHENNAI [K30] => 40
+          'TEA1' => { value: 70, commodity: 'TEA', locations: ['VISAKHAPATNAM'] }, # TEA => VISAKHAPATNAM [M24] + 70
+          'TEA2' => { value: 70, commodity: 'TEA', locations: ['VISAKHAPATNAM'] },
+          'RICE' => { value: 30, commodity: 'RICE', locations: %w[CHINA NEPAL] }, # RICE => CHINA [Q10] NEPAL [M10] => 30
+          'JEWELRY' => { value: 20, commodity: 'JEWELRY', locations: COMMODITY_DESTINATIONS },
+          'SPICES' => { value: nil, commodity: 'SPICES', locations: COMMODITY_DESTINATIONS },
+        }.freeze
+
         # TODO: Consider using commodity icons vs location names
         # Refactor to use assignment (assignable module) for commodities?
         ASSIGNMENT_TOKENS = {
@@ -668,12 +682,14 @@ module Engine
         end
 
         def open_city_hexes
-          hexes = @cities.reject { |c| c.available_slots.zero? }.map { |c| c.tile.hex }.compact
-          hexes.uniq
+          @cities.reject { |c| c.available_slots.zero? }
+                 .map { |c| c.tile.hex }
+                 .compact
+                 .uniq
         end
 
         def town_to_green_city_hexes
-          @hexes.map(&:tile).filter do |t|
+          @hexes.map(&:tile).select do |t|
             t.towns.one? && # only single town hexes
             %i[white yellow].include?(t.color) && # only white or yellow hexes
             !%w[K38 L39].include?(t.hex.name) # L39 and K38 are not legal hexes for a Green single city tile
@@ -752,10 +768,8 @@ module Engine
         end
 
         def gipr_exchange_with_closing_corp(corporation)
-          corporation.tokens.dup.each_with_index do |token, index|
+          corporation.placed_tokens.each_with_index do |token, index|
             LOGGER.debug "gipr_exchange > #{corporation.tokens} && index-#{index} used-#{token.used}"
-            break unless token.used
-
             exchange_token = Engine::Token.new(gipr, type: :exchange)
             LOGGER.debug "gipr_exchange > tokenable? #{token.city.tokenable?(gipr, free: true, tokens: [exchange_token],
                                                                                    cheater: true, same_hex_allowed: false)} "
@@ -765,7 +779,7 @@ module Engine
               token.swap!(exchange_token)
               @log << "GIPR replaced home token of #{corporation.name} with exchange token."
               gipr.tokens << exchange_token
-              token.destroy!
+              token.remove!
               use_gipr_exchange_token
               LOGGER.debug "gipr_exchange > gipr tokens: #{gipr.tokens} "
             elsif token.city.tokenable?(gipr, free: true, tokens: [exchange_token], cheater: true, same_hex_allowed: false)
@@ -787,7 +801,7 @@ module Engine
           log << "#{corporation.name} closes" if !quiet && !@round.gipr_exchanging
 
           # GIPR exchange Tokens
-          if gipr_has_exchange_token? && !corporation.tokens.empty?
+          if gipr_has_exchange_token? && !corporation.placed_tokens.empty?
             gipr_exchange_with_closing_corp(corporation)
             @round.gipr_exchanging = true
             return
@@ -803,14 +817,14 @@ module Engine
 
           # return privates and bonds to market
           LOGGER.debug "closing > companies: #{corporation.companies}  bank: #{@bank.companies}"
-          corporation.companies.dup.each do |company|
-            if %i[private bond].include?(company.type)
-              @log << "#{company.name} is returned to the Market"
-              company.owner = @bank
-              @bank.companies.push(company)
-            end
-            corporation.companies.delete(company)
+          corporation.companies.each do |company|
+            next unless %i[private bond].include?(company.type)
+
+            @log << "#{company.name} is returned to the Market"
+            company.owner = @bank
+            @bank.companies.push(company)
           end
+          corporation.companies.clear
           LOGGER.debug "closing > companies: #{corporation.companies}  bank: #{@bank.companies}"
 
           # move corp owned shares to open market
@@ -985,57 +999,17 @@ module Engine
           return 0 unless commodity_sources.count.positive?
 
           revenue = 0
+          @round.commodities_used = []
           commodity_sources.each do |source|
-            bonus = 0
-            @round.commodities_used = []
-            case source
-            when 'OIL'
-              # OIL => MUMBAI [D23] + 30
-              bonus = 30 if visited_names.include?('MUMBAI')
-              @round.commodities_used << 'OIL' if bonus.positive?
-              revenue += bonus
-            when 'OPIUM'
-              # OPIUM => LAHORE [D3] HALDIA [P19] => 100
-              bonus = 100 if visited_names.intersect?(%w[LAHORE HALDIA])
-              @round.commodities_used << 'OPIUM' if bonus.positive?
-              revenue += bonus
-            when 'ORE1', 'ORE2'
-              # ORE1 => KARACHI [A16] CHENNAI [K30] => 50
-              bonus = 50 if visited_names.intersect?(%w[KARACHI CHENNAI])
-              @round.commodities_used << 'ORE' if bonus.positive?
-              revenue += bonus
-            when 'GOLD'
-              # GOLD => KOCHI [G36] + 50
-              bonus = 50 if visited_names.include?('KOCHI')
-              @round.commodities_used << 'GOLD' if bonus.positive?
-              revenue += bonus
-            when 'SPICES'
-              bonus = visited_names.map { |loc| SPICE_BONUSES[loc] || 0 }.max
-              @round.commodities_used << 'SPICES' if bonus.positive?
-              revenue += bonus
-            when 'COTTON'
-              # COTTON => KARACHI [A16] CHENNAI [K30] => 40
-              bonus = 40 if visited_names.intersect?(%w[KARACHI CHENNAI])
-              @round.commodities_used << 'COTTON' if bonus.positive?
-              revenue += bonus
-            when 'TEA1', 'TEA2'
-              # TEA1 => VISAKHAPATNAM [M24] + 70
-              bonus = 70 if visited_names.include?('VISAKHAPATNAM')
-              @round.commodities_used << 'TEA' if bonus.positive?
-              revenue += bonus
-            when 'RICE'
-              # RICE => CHINA [Q10] NEPAL [M10] => 30
-              bonus = 30 if visited_names.intersect?(%w[CHINA NEPAL])
-              @round.commodities_used << 'RICE' if bonus.positive?
-              revenue += bonus
-            when 'JEWELRY'
-              # Jewelry concession pays 20 if delivered to any commodity destination
-              bonus = 20 if visited_names.intersect?(COMMODITY_DESTINATIONS)
-              @round.commodities_used << 'JEWELRY' if bonus.positive?
-              revenue += bonus
+            bonus = COMMODITY_BONUSES[source]
+            LOGGER.debug "GAME.commodity_bonus >> bonus: #{bonus}"
+            if visited_names.intersect?(bonus['locations'])
+              revenue += bonus['value'] || visited_names.map { |loc| SPICE_BONUSES[loc] || 0 }.max
+              @round.commodities_used << bonus['commodity']
             end
           end
-          LOGGER.debug "GAME.commodity_bonus >> visited: #{visited_names}  sources: #{commodity_sources}  revenue: #{revenue}"
+          LOGGER.debug "GAME.commodity_bonus >> visited: #{visited_names}  sources: #{commodity_sources}  revenue: #{revenue}" \
+                       "  used: #{@round.commodities_used}"
           revenue
         end
 
