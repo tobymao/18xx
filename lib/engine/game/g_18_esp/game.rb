@@ -568,7 +568,7 @@ module Engine
             c.shares.last&.buyable = true
             c.float_percent = 60
 
-            next if c.ipoed
+            next if c.floated?
 
             # release tokens
             c.tokens.each { |token| token.used = false if token.used == true && !token.hex }
@@ -853,14 +853,20 @@ module Engine
         end
 
         def must_buy_train?(entity)
-          trains = entity.trains
-          if (!north_corp?(entity) && !entity.interchange?) || entity.type == :minor
-            trains = trains.dup.reject do |t|
-              t.track_type == :narrow
+          return false if depot.depot_trains.empty?
+
+          entity.trains.none? do |train|
+            next false if extra_train?(train)
+
+            case train.track_type
+            when :narrow
+              north_corp?(entity) || (entity.interchange? && entity.type != :minor)
+            when :broad
+              !north_corp?(entity) || entity.interchange?
+            when :all
+              !combined_train_blocked?(entity)
             end
           end
-          trains = trains.dup.reject { |t| t.track_type == :broad } if north_corp?(entity) && !entity.interchange?
-          trains.none? { |t| !extra_train?(t) } && !depot.depot_trains.empty?
         end
 
         def num_corp_trains(entity)
@@ -1315,6 +1321,22 @@ module Engine
           return false unless north_corp?(entity)
 
           !entity.southern_token?
+        end
+
+        def can_only_run_broad?(entity)
+          return unless entity.corporation?
+          return true if entity.type == :minor
+          return false if north_corp?(entity)
+
+          !entity.northern_token?
+        end
+
+        def combined_train_blocked?(entity)
+          return if entity.trains.none? { |t| t.track_type == :all }
+
+          graph_for_entity(entity).connected_nodes(entity).keys.none? do |n|
+            mountain_pass_token_hex?(n.hex) && !n.blocks?(entity)
+          end
         end
 
         def check_overlap(routes)

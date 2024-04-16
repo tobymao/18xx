@@ -3,6 +3,7 @@
 require_relative 'entities'
 require_relative 'map'
 require_relative 'meta'
+require_relative 'share_pool'
 require_relative 'stock_market'
 require_relative 'trains'
 
@@ -64,6 +65,8 @@ module Engine
           'Brown' => 5,
           'Silver' => 5,
         }.freeze
+
+        PRESIDENT_SALES_TO_MARKET = Set['CF&I', 'VGC'].freeze
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
           green_phase: ['Green Phase Begins'],
@@ -1003,6 +1006,11 @@ module Engine
           @endgame_triggered = true
         end
 
+        def init_share_pool
+          G18RoyalGorge::SharePool.new(self, allow_president_sale: self.class::PRESIDENT_SALES_TO_MARKET,
+                                             no_rebundle_president_buy: true)
+        end
+
         def init_stock_market
           G18RoyalGorge::StockMarket.new(game_market, [])
         end
@@ -1211,6 +1219,28 @@ module Engine
 
           @log << "#{corporation.name} receives a Coal Cube from "\
                   "#{company.name} (#{operator.name} ran through #{COAL_CREEK_MINES_HEX})"
+        end
+
+        # TODO: figure out why `when Set` caused problems for other titles, and
+        # move this and `value_for_dumpable` into Engine::Game::Base
+        def president_sales_to_market?(corporation)
+          case self.class::PRESIDENT_SALES_TO_MARKET
+          when true
+            true
+          when ::Set
+            self.class::PRESIDENT_SALES_TO_MARKET.include?(corporation.id)
+          else
+            false
+          end
+        end
+
+        def value_for_dumpable(player, corporation)
+          return value_for_sellable(player, corporation) if president_sales_to_market?(corporation)
+
+          max_bundle = bundles_for_corporation(player, corporation)
+                         .select { |bundle| bundle.can_dump?(player) && @share_pool&.fit_in_bank?(bundle) }
+                         .max_by(&:price)
+          max_bundle&.price || 0
         end
       end
     end

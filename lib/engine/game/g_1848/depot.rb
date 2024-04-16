@@ -7,10 +7,10 @@ module Engine
     module G1848
       class Depot < Engine::Depot
         def export!
-          train = @upcoming.first
-          return if train.rusts_on # only export if upcoming train is permanent
+          # remove next permanent train, no matter what phase we're in
+          train = @upcoming.reject { |t| t.rusts_on || t.name == '2E' }.first
 
-          @game.log << "-- Event: A #{train.name} train exports --"
+          @game.log << "-- Event: Permanent #{train.name} train exports --"
           remove_train(train)
           @game.phase.buying_train!(nil, train, self)
         end
