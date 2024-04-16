@@ -124,7 +124,8 @@ module Engine
           end
 
           def choice_available?(entity)
-            first_bond(entity) && @game.phase.name == 'IV' && !at_cert_limit?(entity) && @round.current_actions.empty?
+            first_bond(entity) && @game.phase.status.include?('convert_bonds') &&
+              !at_cert_limit?(entity) && @round.current_actions.empty?
           end
 
           def first_bond(entity)

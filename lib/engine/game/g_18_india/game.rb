@@ -78,14 +78,19 @@ module Engine
         ].freeze
 
         PHASES = [
-          { name: 'I', train_limit: 2, tiles: %i[yellow green brown gray], operating_rounds: 2 },
+          {
+            name: 'I',
+            train_limit: 2,
+            tiles: %i[yellow green brown gray],
+            operating_rounds: 2,
+            status: %w[gipr_may_not_operate],
+          },
           {
             name: 'II',
             on: '3',
             train_limit: 2,
             tiles: %i[yellow green brown gray],
             operating_rounds: 2,
-            status: %w[gipr_may_operate],
           },
           { name: 'III', on: '4', train_limit: 2, tiles: %i[yellow green brown gray], operating_rounds: 2 },
           {
@@ -102,14 +107,15 @@ module Engine
             train_limit: 2,
             tiles: %i[yellow green brown gray],
             operating_rounds: 2,
-            status: %w[warrants_expire no_gauge_change gauge_change_removal],
+            status: %w[warrants_expire convert_bonds no_gauge_change gauge_change_removal],
           },
         ].freeze
 
         STATUS_TEXT = Base::STATUS_TEXT.merge(
-          'gipr_may_operate' => ['GIPR may operate', 'GIPR may operate if it has been floated (three 10% shares in play).'],
+          'gipr_may_not_operate' => ['GIPR may not operate', 'GIPR may not operate operate before phase II.'],
           'phase_four_trains' => ['Phase IV trains available', 'All Phase IV trains are simultaneously available.'],
           'warrants_expire' => ['Guaranty Warrants expire', 'Guaranty Warrants immediately expire.'],
+          'convert_bonds' => ['May convert Railroad Bonds', 'May convert Railroad Bonds to a GIPR share as a stock action.'],
           'no_gauge_change' => ['Gauge Change no longer placed', 'Gauge Change markers are no longer placed with new track.'],
           'gauge_change_removal' => ['Gauge Change may be removed', 'Gauge Change markers may be removed as a track action.'],
         ).freeze
@@ -577,7 +583,7 @@ module Engine
           president = corporation.owner ? corporation.owner.name : 'none'
           if corporation.presidents_share.percent == 20
             "Directed Company: #{president}"
-          elsif corporation == gipr && @phase.name == 'I'
+          elsif corporation == gipr && @phase.status.include?('gipr_may_not_operate')
             "GIPR doesn't operate until Phase II"
           elsif !corporation.owner.nil?
             "Managed Company: #{president}"
@@ -746,7 +752,7 @@ module Engine
         end
 
         def gipr_may_operate?
-          @phase.name != 'I' && gipr.floated?
+          !@phase.status.include?('gipr_may_not_operate') && gipr.floated?
         end
 
         def gipr_exchange_tokens
