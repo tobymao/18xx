@@ -13,7 +13,7 @@ module Engine
         include G18Hiawatha::Entities
         include G18Hiawatha::Map
 
-        attr_accessor :jlbc_home, :blocking_token, :payable_loans
+        attr_accessor :jlbc_home, :blocking_token
 
         CERT_LIMIT = { 3 => 15, 4 => 12, 5 => 10, 6 => 8 }.freeze
 
@@ -97,12 +97,12 @@ module Engine
         ].freeze
 
         TRAINS = [{ name: '2', distance: 2, price: 100, obsolete_on: '3', rusts_on: '4', num: 31 },
-                  { name: '2+', distance: 2, price: 1, obsolete_on: '4', num: 1 },
+                  { name: '2+', distance: 2, price: 100, obsolete_on: '4', num: 3 },
                   {
                     name: '3',
                     distance: 3,
-                    price: 1,
-                    num: 1,
+                    price: 250,
+                    num: 10,
                     events: [{ 'type' => 'remove_blocking_token' }],
                   },
                   {
@@ -168,7 +168,7 @@ module Engine
           G18Hiawatha::Round::Operating.new(self, [
             G1817::Step::Bankrupt,
             G1817::Step::CashCrisis,
-            G1817::Step::Loan,
+            G18Hiawatha::Step::Loan,
             G18Hiawatha::Step::SpecialTrack,
             G18Hiawatha::Step::Assign,
             G18Hiawatha::Step::Track,
@@ -187,6 +187,26 @@ module Engine
         # for the no privates variant
         def init_round
           no_privates? ? stock_round : new_auction_round
+        end
+
+        def size_corporation(corporation, size)
+          corporation.second_share = nil
+
+          return unless size == 10
+
+          original_shares = @_shares.values.select { |share| share.corporation == corporation }
+
+          corporation.share_holders.clear
+          shares = Array.new(5) { |i| Share.new(corporation, percent: 10, index: i + 1) }
+
+          original_shares.each do |share|
+            share.percent = share.president ? 20 : 10
+            corporation.share_holders[share.owner] += share.percent
+          end
+
+          shares.each do |share|
+            add_new_share(share)
+          end
         end
 
         def tokens_needed(corporation)
@@ -236,23 +256,14 @@ module Engine
           milwaukee_to_rockford_hexes.all? { |hex| stop_hexes.include?(hex) }
         end
 
-        def size_corporation(corporation, size)
-          corporation.second_share = nil
+        def upgrades_to?(from, to, special = false, selected_company: nil)
+          return super unless selected_company == jlbc
 
-          return unless size == 10
-
-          original_shares = @_shares.values.select { |share| share.corporation == corporation }
-
-          corporation.share_holders.clear
-          shares = Array.new(5) { |i| Share.new(corporation, percent: 10, index: i + 1) }
-
-          original_shares.each do |share|
-            share.percent = share.president ? 20 : 10
-            corporation.share_holders[share.owner] += share.percent
-          end
-
-          shares.each do |share|
-            add_new_share(share)
+          if to.color == :green &&
+             from.hex.id == @jlbc_home &&
+             upgrades_to_correct_label?(from, to) &&
+             Engine::Tile::COLORS.index(to.color) > Engine::Tile::COLORS.index(from.color)
+            true
           end
         end
 
@@ -267,6 +278,7 @@ module Engine
                 'Cannot run to either of the Great Lakes hexes (D10, G13) for zero revenue.'
         end
 
+        #  next two methods relate to the blocking token on Milwaukee and removing it in phase 3
         def event_remove_blocking_token!
           remove_blocking_token
         end
@@ -274,7 +286,7 @@ module Engine
         def remove_blocking_token
           return unless blocking_token
 
-          @log << "-- Event: Blocking token token removed from #{blocking_token.hex.id} --"
+          @log << "-- Event: Blocking token token removed from Milwaukee (#{MILWAUKEE_HEX}) --"
           blocking_token.destroy!
           @blocking_token = nil
         end
@@ -301,6 +313,7 @@ module Engine
           @receivership_railroad ||= company_by_id('RR')
         end
 
+        # this is the Jacob Leinenkugel Brewing Company. Name is just too long to use everywhere.
         def jlbc
           @jlbc ||= company_by_id('JLBC')
         end
@@ -327,26 +340,6 @@ module Engine
           company.all_abilities.each do |ability|
             ability.hexes << @jlbc_home
           end
-        end
-
-        def upgrades_to?(from, to, special = false, selected_company: nil)
-          return super unless selected_company == jlbc
-
-          if to.color == :green &&
-             from.hex.id == @jlbc_home &&
-             upgrades_to_correct_label?(from, to) &&
-             Engine::Tile::COLORS.index(to.color) > Engine::Tile::COLORS.index(from.color)
-            true
-          end
-        end
-
-        # This prevents paying off loans in the same OR they're taken.
-        def payoff_loan(entity, _loan, adjust_share_price: true)
-          raise GameError, 'Cannot pay off loans taken this OR.' unless @payable_loans.positive?
-
-          super
-
-          @payable_loans -= 1
         end
 
         def event_signal_end_game!
