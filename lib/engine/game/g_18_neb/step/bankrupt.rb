@@ -32,13 +32,11 @@ module Engine
               next if shares.empty?
 
               @game.close_corporation(corporation)
-              @game.reset_corporation(corporation)
             end
 
             # Companies are discarded
             unless player.companies.empty?
               @log << "#{player.name}'s companies are discarded: #{player.companies.map(&:sym).join(', ')}"
-              # TODO: remove tokens
               player.companies.dup.each(&:close!)
             end
 

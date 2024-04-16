@@ -32,6 +32,8 @@ module Engine
           end
 
           def other_trains(entity)
+            return [] if @owner_sold_shares
+
             super.select { |train| buyable_train?(entity, train) }
           end
 
@@ -83,9 +85,22 @@ module Engine
             @game.depot.reclaim_train(train)
           end
 
+          def process_sell_shares(action)
+            super
+            @owner_sold_shares = true if action.entity != current_entity
+          end
+
+          def spend_minmax(entity, train)
+            min, max = super
+            # In EMR, can use owner's cash if the corporation has no cash
+            max = entity.cash.zero? ? entity.owner.cash : entity.cash if max > entity.cash
+            [min, max]
+          end
+
           def setup
             super
             @trains_to_replace = []
+            @owner_sold_shares = false
           end
         end
       end

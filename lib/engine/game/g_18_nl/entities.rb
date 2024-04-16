@@ -123,7 +123,7 @@ module Engine
           },
           {
             sym: 'DV',
-            name: 'De Vuluwe',
+            name: 'De Veluwe',
             logo: '18_nl/DV',
             tokens: [0, 40, 100, 100],
             coordinates: 'G8',
@@ -140,7 +140,7 @@ module Engine
           },
           {
             sym: 'HIS',
-            name: 'Hollandsche Ijzeren Spoorweg',
+            name: 'Hollandsche IJzeren Spoorweg',
             logo: '18_nl/HIS',
             tokens: [0, 40, 100],
             coordinates: 'E6',
