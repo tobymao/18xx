@@ -7,18 +7,11 @@ module View
     module AutoAction
       class SharePass < Base
         def name
-          "Auto pass in #{@game.stock_round_name}#{' (Enabled)' if @settings}"
+          "Auto Pass #{' (Enabled)' if @settings}"
         end
 
         def description
-          if @game.force_unconditional_stock_pass?
-            "Automatically pass in the #{@game.stock_round_name}."\
-              ' It will only pass on your normal turn and will still allow you to bid etc.'
-          else
-            "Automatically pass in the #{@game.stock_round_name}."\
-              ' This will deactivate itself if other players do actions that may impact you.'\
-              ' It will only pass on your normal turn and allow you to bid etc.'
-          end
+          "Pass your turn during #{@game.stock_round_name} (does not apply to auction rounds)."
         end
 
         def render
@@ -27,12 +20,12 @@ module View
           children = [h(:h3, name), h(:p, description)]
 
           unless @game.force_unconditional_stock_pass?
-            children << render_checkbox('Pass even if other players do actions that may impact you.',
+            children << render_checkbox('Even when players take actions that may impact you (Unconditionally Pass).',
                                         'sr_unconditional',
                                         form,
                                         !!@settings&.unconditional)
           end
-          children << render_checkbox("Continue passing in future #{@game.stock_round_name}s as well.",
+          children << render_checkbox("Continue in future #{@game.stock_round_name}s (Pass forever).",
                                       'sr_indefinite',
                                       form,
                                       !!@settings&.indefinite)

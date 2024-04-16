@@ -299,7 +299,6 @@ module Engine
             logo: '18_esp/SC',
             simple_logo: '18_esp/SC',
             coordinates: 'C31',
-            city: 0,
             color: '#FFF014',
             tokens: [0],
             type: 'minor',
