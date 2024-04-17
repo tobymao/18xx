@@ -103,14 +103,16 @@ module Engine
                   }].freeze
 
         TRAINS = [{ name: '2', distance: 2, price: 100, rusts_on: '4', num: 5 },
-                  { name: '3', distance: 3, price: 200, rusts_on: '5', num: 4 },
-                  { name: '4', distance: 4, price: 300, rusts_on: '6', num: 3 },
+                  { name: '3', distance: 3, price: 200, rusts_on: '5', num: 4, events: [{ 'type' => 'float_30' }] },
+                  { name: '4', distance: 4, price: 300, rusts_on: '6', num: 3, events: [{ 'type' => 'float_40' }] },
                   {
                     name: '5',
                     distance: 3,
                     price: 400,
                     num: 3,
-                    events: [{ 'type' => 'close_companies' }],
+                    events: [{ 'type' => 'close_companies' },
+                             { 'type' => 'float_50' }],
+
                   },
                   {
                     name: '6',
@@ -128,6 +130,7 @@ module Engine
                         price: 600,
                       },
                     ],
+                    events: [{ 'type' => 'float_60' }],
                   }].freeze
 
         # Game ends after 5 sets of ORs - checked in end_now? below
@@ -141,6 +144,13 @@ module Engine
         GAME_END_REASONS_TIMING_TEXT = Base::EVENTS_TEXT.merge(
           current_or: 'Ends after the final OR set.',
           current: 'Ends after this OR.'
+        ).freeze
+
+        EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+          'float_30' => ['30% to Float', 'Players must buy 30% of a corporation to float'],
+          'float_40' => ['40% to Float', 'Players must buy 40% of a corporation to float'],
+          'float_50' => ['50% to Float', 'Players must buy 50% of a corporation to float'],
+          'float_60' => ['60% to Float', 'Players must buy 60% of a corporation to float'],
         ).freeze
 
         def setup_preround
@@ -189,6 +199,15 @@ module Engine
         def new_auction_round
           Engine::Round::Auction.new(self, [
             Engine::Step::SelectionAuction,
+          ])
+        end
+
+        def stock_round
+          Engine::Round::Stock.new(self, [
+            Engine::Step::DiscardTrain,
+            Engine::Step::Exchange,
+            Engine::Step::SpecialTrack,
+            GSteamOverHolland::Step::BuySellParShares,
           ])
         end
 
@@ -261,6 +280,49 @@ module Engine
             ['Dividend ≥ 2X stock price', '2 →'],
             ['Corporation issues shares', '← 1 less than the number of shares issued'],
           ]
+        end
+
+        def percent_to_float
+          return 20 if @phase.name == '2'
+          return 30 if @phase.name == '3'
+          return 40 if @phase.name == '4'
+          return 50 if @phase.name == '5'
+          return 60 if @phase.name == '6'
+
+          # This shouldn't happen
+          raise NotImplementedError
+        end
+
+        def float_str(entity)
+          "Buy #{percent_to_float}% to float" if entity.corporation? && entity.floatable
+        end
+
+        def event_float_30!
+          @log << "-- Event: #{EVENTS_TEXT['float_30'][1]} --"
+          @float_percent = 30
+          non_floated_corporations { |c| c.float_percent = @float_percent }
+        end
+
+        def event_float_40!
+          @log << "-- Event: #{EVENTS_TEXT['float_40'][1]} --"
+          @float_percent = 40
+          non_floated_corporations { |c| c.float_percent = @float_percent }
+        end
+
+        def event_float_50!
+          @log << "-- Event: #{EVENTS_TEXT['float_50'][1]} --"
+          @float_percent = 50
+          non_floated_corporations { |c| c.float_percent = @float_percent }
+        end
+
+        def event_float_60!
+          @log << "-- Event: #{EVENTS_TEXT['float_60'][1]} --"
+          @float_percent = 60
+          non_floated_corporations { |c| c.float_percent = @float_percent }
+        end
+
+        def non_floated_corporations
+          @corporations.each { |c| yield c unless c.floated? }
         end
 
         def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil, movement: nil)
