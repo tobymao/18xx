@@ -124,7 +124,6 @@ module Engine
             revenue: 0,
             desc: 'The owning corporation may lay a green city tile on their home location instead of a yellow city tile, '\
                   'or upgrade their home location to a green city tile if already yellow. This may be used during any phase.',
-            # TODO
             abilities: [
               {
                 type: 'tile_lay',
