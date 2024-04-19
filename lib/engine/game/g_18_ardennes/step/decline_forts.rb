@@ -20,6 +20,14 @@ module Engine
             'Keep or decline fort tokens'
           end
 
+          def active?
+            !forts.empty?
+          end
+
+          def active_entities
+            [major]
+          end
+
           def choice_available?(_entity)
             true
           end
