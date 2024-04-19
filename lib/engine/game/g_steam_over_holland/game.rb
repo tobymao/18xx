@@ -43,6 +43,11 @@ module Engine
         HOME_TOKEN_TIMING = :operate
         SOLD_OUT_INCREASE = false
 
+        TILE_LAYS = [
+          { lay: true, upgrade: true },
+          { lay: true, upgrade: :not_if_upgraded, cannot_reuse_same_hex: true },
+        ].freeze
+
         MARKET = [
           [
             { price: 50 },
@@ -102,12 +107,36 @@ module Engine
                     tiles: %i[yellow green brown],
                   }].freeze
 
-        TRAINS = [{ name: '2', distance: 2, price: 100, rusts_on: '4', num: 5 },
-                  { name: '3', distance: 3, price: 200, rusts_on: '5', num: 4, events: [{ 'type' => 'float_30' }] },
-                  { name: '4', distance: 4, price: 300, rusts_on: '6', num: 3, events: [{ 'type' => 'float_40' }] },
+        TRAINS = [{
+          name: '2',
+          distance: [{ 'nodes' => %w[city offboard], 'pay' => 2, 'visit' => 2 },
+                     { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
+          price: 100,
+          rusts_on: '4',
+          num: 5,
+        },
+                  {
+                    name: '3',
+                    distance: [{ 'nodes' => %w[city offboard], 'pay' => 3, 'visit' => 3 },
+                               { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
+                    price: 200,
+                    rusts_on: '5',
+                    num: 4,
+                    events: [{ 'type' => 'float_30' }],
+                  },
+                  {
+                    name: '4',
+                    distance: [{ 'nodes' => %w[city offboard], 'pay' => 4, 'visit' => 4 },
+                               { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
+                    price: 300,
+                    rusts_on: '6',
+                    num: 3,
+                    events: [{ 'type' => 'float_40' }],
+                  },
                   {
                     name: '5',
-                    distance: 3,
+                    distance: [{ 'nodes' => %w[city offboard], 'pay' => 5, 'visit' => 5 },
+                               { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
                     price: 400,
                     num: 3,
                     events: [{ 'type' => 'close_companies' },
@@ -116,7 +145,8 @@ module Engine
                   },
                   {
                     name: '6',
-                    distance: 6,
+                    distance: [{ 'nodes' => %w[city offboard], 'pay' => 6, 'visit' => 6 },
+                               { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
                     price: 500,
                     num: 6,
                     variants: [
@@ -323,6 +353,18 @@ module Engine
 
         def non_floated_corporations
           @corporations.each { |c| yield c unless c.floated? }
+        end
+
+        def check_distance(route, visits, train = nil)
+          super
+
+          raise GameError, 'Route cannot begin/end in a town' if visits.first.town? || visits.last.town?
+        end
+
+        def revenue_for(route, stops)
+          super
+
+          raise GameError, 'Route visits same hex twice' if route.hexes.size != route.hexes.uniq.size
         end
 
         def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil, movement: nil)
