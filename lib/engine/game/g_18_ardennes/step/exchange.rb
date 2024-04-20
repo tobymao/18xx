@@ -41,9 +41,12 @@ module Engine
                                "#{action.bundle.corporation.id}"
             end
 
+            bundle = action.bundle
+            share = bundle.shares.first
             @round.minor = action.entity
-            @round.major = action.bundle.shares.first.corporation
-            exchange_minor(action.entity, action.bundle, true)
+            @round.major = share.corporation
+            transfer_assets = @round.major.shares.include?(share) ? :choose : :none
+            exchange_minor(@round.minor, bundle, transfer_assets)
             @round.current_actions << action if @round.is_a?(Round::Stock)
           end
         end

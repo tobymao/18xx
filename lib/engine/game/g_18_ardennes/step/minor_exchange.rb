@@ -7,16 +7,18 @@ module Engine
         module MinorExchange
           private
 
-          # Exchanges a minor corporation for a share in a major corporation.
-          # @param minor [Corporation] The minor corporation being exchanged.
+          # Exchanges a minor company for a share in a public company.
+          # @param minor [Corporation] The minor company being exchanged.
           # @param bundle [ShareBundle] The share bundle being received in
-          #        exchange for the minor corporation.
-          # @param may_decline [Boolean] If true, the major's owner will have
-          #        the option to decline any trains, tokens or forts. If false
-          #        then these will all be transferred. Cash cannot be declined.
-          #        This should be false if the minor is being used to start a
-          #        new major company, and true otherwise.
-          def exchange_minor(minor, bundle, may_decline)
+          #        exchange for the minor company.
+          # @param transfer [label] The assets to be transferred.
+          #        :all => All cash, tokens, trains and forts are transferred
+          #        from the minor company to the public company.
+          #        :choose => Cash is transferred, and the president of the
+          #        public company gets to choose whether tokens, trains and
+          #        forts are transferred.
+          #        :none => Nothing is transferred.
+          def exchange_minor(minor, bundle, transfer = :all)
             player = minor.owner
             major = bundle.corporation
             extra_cost = [0, major.share_price.price - (minor.share_price.price * 2)].max
@@ -31,10 +33,39 @@ module Engine
                                         exchange: minor,
                                         exchange_price: extra_cost,
                                         silent: true)
-            transfer_assets(minor, major, may_decline)
+            if transfer == :none
+              discard_assets(minor)
+            else
+              transfer_assets(minor, major, transfer == :choose)
+            end
             # If there are tokens that may optionally be rejected the minor
             # needs to be left open for the DeclineTokens step.
             @game.close_corporation(minor) unless @round.corporations_removing_tokens
+          end
+
+          # Discards a minor company's assets.
+          # @param minor [Corporation] The minor company being closed.
+          def discard_assets(minor)
+            if minor.cash.positive?
+              @game.log << "#{@game.format_currency(minor.cash)} is returned " \
+                           "to the bank from minor #{minor.name}’s treasury."
+              minor.spend(minor.cash, @game.bank)
+            end
+
+            minor.trains.each do |train|
+              @game.log << "Minor #{minor.name}’s #{train.name} train is " \
+                           "discarded to the open market."
+              @game.depot.reclaim_train(train)
+            end
+
+            minor.placed_tokens.each { |token| remove_minor_token!(token) }
+
+            forts = minor.assignments.keys.intersection(Map::FORT_HEXES.keys)
+            return if forts.empty?
+
+            @game.log << "Minor #{minor.name}’s #{forts.size} fort " \
+                         "#{forts.one? ? 'token' : 'tokens'} are discarded."
+            forts.each { |fort| minor.remove_assignment!(fort) }
           end
 
           # Moves assets from a minor to a major and logs what was transferred.

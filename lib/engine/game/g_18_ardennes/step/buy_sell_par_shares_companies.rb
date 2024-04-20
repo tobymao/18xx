@@ -107,7 +107,7 @@ module Engine
             concession = major.par_via_exchange
 
             concession.close!
-            exchange_minor(minor, major.treasury_shares.first.to_bundle, false)
+            exchange_minor(minor, major.treasury_shares.first.to_bundle, :all)
           end
 
           def process_bankrupt(action)
