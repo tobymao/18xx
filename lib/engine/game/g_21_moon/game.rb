@@ -189,7 +189,7 @@ module Engine
         MAX_OWNERSHIP_2P = 60
         LAST_OR = 11
         SP_HEX = 'E9'
-        SP_TILES = %w[X22 X23].freeze
+        SP_TILES = %w[SP1 SP2].freeze
         T_HEX = 'F8'
         T_BONUS = 30
         T_TILE = 'X29'
