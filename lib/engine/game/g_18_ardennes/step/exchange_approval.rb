@@ -15,8 +15,8 @@ module Engine
               {
                 minor: nil,
                 bundle: nil,
-                approvals: {},
                 pending_approval: nil,
+                refusals: Hash.new { |h, k| h[k] = [] },
               }
             )
           end
@@ -65,9 +65,9 @@ module Engine
             if approved
               exchange_minor(@round.minor, bundle, :choose)
             else
-              @round.approvals[major] = :denied
+              @round.refusals[major] << minor
               if major.num_market_shares.positive?
-                @game.log << "#{minor.name} may now be exchanged for a " \
+                @game.log << "Minor #{minor.name} may now be exchanged for a " \
                              "#{major.id} market share."
               end
             end
@@ -102,8 +102,8 @@ module Engine
 
           def log_response(minor, major, approved)
             msg = "#{approver.name} #{approved ? 'approved' : 'denied'} " \
-                  "#{requester.name}’s request to exchange #{minor.name} " \
-                  "for a #{major.id} treasury share."
+                  "#{requester.name}’s request to exchange minor " \
+                  "#{minor.name} for a #{major.id} treasury share."
             @round.process_action(Engine::Action::Log.new(approver, message: msg))
           end
         end
