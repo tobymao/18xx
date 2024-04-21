@@ -54,7 +54,7 @@ module Engine
 
             minor.trains.each do |train|
               @game.log << "Minor #{minor.name}’s #{train.name} train is " \
-                           "discarded to the open market."
+                           'discarded to the open market.'
               @game.depot.reclaim_train(train)
             end
 
