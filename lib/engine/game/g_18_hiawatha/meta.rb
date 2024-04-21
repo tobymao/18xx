@@ -14,7 +14,7 @@ module Engine
         GAME_DESIGNER = 'Anthony Fryer & Nick Neylon'
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18Hiawatha'
         GAME_LOCATION = 'Midwest USA'
-        GAME_TITLE = '18Hiawatha'
+        GAME_TITLE = '18 Hiawatha'
 
         PLAYER_RANGE = [3, 6].freeze
 
