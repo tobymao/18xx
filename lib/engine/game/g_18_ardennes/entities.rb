@@ -432,7 +432,7 @@ module Engine
 
         def buyable_bank_owned_companies
           # Do not show the GL after a corporation grows up.
-          @round.is_a?(Round::Operating) ? [] : super
+          @round.is_a?(Engine::Round::Operating) ? [] : super
         end
 
         # Has the player won any auctions for public companies in the
