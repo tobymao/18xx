@@ -10,11 +10,6 @@ module Engine
           def self.short_name
             'PCA'
           end
-
-          def description
-            puts "#{self.class}.description"
-            super
-          end
         end
       end
     end
