@@ -57,11 +57,11 @@ module Engine
         def next_round!
           @round =
             case @round
+            when G18Ardennes::Round::Auction
+              new_stock_round
             when Engine::Round::Auction
-              if @turn == 1
-                init_round_finished
-                reorder_players
-              end
+              init_round_finished
+              reorder_players
               new_stock_round
             when Engine::Round::Stock
               @operating_rounds = @phase.operating_rounds
@@ -92,7 +92,7 @@ module Engine
         end
 
         def major_auction_round
-          Engine::Round::Auction.new(self, [
+          G18Ardennes::Round::Auction.new(self, [
             G18Ardennes::Step::MajorAuction,
           ])
         end
