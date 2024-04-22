@@ -8,13 +8,13 @@ module Engine
       module Meta
         include Game::Meta
 
-        DEV_STAGE = :prealpha
+        DEV_STAGE = :alpha
         DEPENDS_ON = '1817'
 
-        GAME_DESIGNER = 'Anthony Fryer & Nick Neylon'
+        GAME_DESIGNER = 'Michael Carter, Anthony Fryer, & Nick Neylon'
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18Hiawatha'
         GAME_LOCATION = 'Midwest USA'
-        GAME_TITLE = '18Hiawatha'
+        GAME_TITLE = '18 Hiawatha'
 
         PLAYER_RANGE = [3, 6].freeze
 

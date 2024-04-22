@@ -21,6 +21,8 @@ module Engine
 
         TRAIN_STATION_PRIVATE_NAME = 'US'
         MILWAUKEE_HEX = 'A7'
+        GREAT_LAKES_D10_HEX = 'D10'
+        ROCKFORD_HEX = 'E1'
 
         SEED_MONEY = 160
         SELL_AFTER = :any_time
@@ -38,12 +40,12 @@ module Engine
              55p
              60p
              65p
-             70s
+             70p
              80p
              90p
              100p
              110p
-             120s
+             120p
              135p
              150p
              165p
@@ -163,10 +165,10 @@ module Engine
           @interest_fixed = nil
           @interest_fixed = interest_rate
 
-          G1817::Round::Operating.new(self, [
+          G18Hiawatha::Round::Operating.new(self, [
             G1817::Step::Bankrupt,
             G1817::Step::CashCrisis,
-            G1817::Step::Loan,
+            G18Hiawatha::Step::Loan,
             G18Hiawatha::Step::SpecialTrack,
             G18Hiawatha::Step::Assign,
             G18Hiawatha::Step::Track,
@@ -185,26 +187,6 @@ module Engine
         # for the no privates variant
         def init_round
           no_privates? ? stock_round : new_auction_round
-        end
-
-        def tokens_needed(corporation)
-          tokens_needed = { 5 => 2, 10 => 4 }[corporation.total_shares] - corporation.tokens.size
-          tokens_needed += 1 if corporation.companies.any? { |c| c.id == TRAIN_STATION_PRIVATE_NAME }
-          tokens_needed
-        end
-
-        def revenue_for(route, stops)
-          revenue = super
-
-          raise GameError, 'Route visits same hex twice' if route.hexes.size != route.hexes.uniq.size
-
-          farm = 'farm'
-
-          revenue += 10 * route.all_hexes.count { |hex| hex.assigned?(farm) }
-          revenue += 10 if stops.any? { |stop| stop.hex.assigned?('GLS') }
-          revenue += 10 if stops.any? { |stop| stop.hex.assigned?('FC') && route.corporation.assigned?('FC') }
-
-          revenue
         end
 
         def size_corporation(corporation, size)
@@ -227,6 +209,64 @@ module Engine
           end
         end
 
+        def tokens_needed(corporation)
+          tokens_needed = { 5 => 2, 10 => 4 }[corporation.total_shares] - corporation.tokens.size
+          tokens_needed += 1 if corporation.companies.any? { |c| c.id == TRAIN_STATION_PRIVATE_NAME }
+          tokens_needed
+        end
+
+        def revenue_for(route, stops)
+          revenue = super
+
+          raise GameError, 'Route visits same hex twice' if route.hexes.size != route.hexes.uniq.size
+
+          farm = 'farm'
+
+          revenue += 10 * route.all_hexes.count { |hex| hex.assigned?(farm) }
+          revenue += 10 if stops.any? { |stop| stop.hex.assigned?('GLS') }
+          revenue += 10 if stops.any? { |stop| stop.hex.assigned?('FC') && route.corporation.assigned?('FC') }
+          revenue += 20 if milwaukee_to_great_lakes_bonus?(stops)
+          revenue += 40 if milwaukee_to_rockford_bonus?(stops)
+
+          revenue
+        end
+
+        def revenue_str(route)
+          str = super
+          str += ' + Milwaukee-Great Lakes bonus (+20)' if milwaukee_to_great_lakes_bonus?(route.stops)
+          str += ' + Milwaukee-Rockford bonus (+40)' if milwaukee_to_rockford_bonus?(route.stops)
+          str
+        end
+
+        def milwaukee_to_great_lakes_hexes
+          @milwaukee_to_great_lakes_hexes ||= %w[A7 D10].map { |id| hex_by_id(id) }
+        end
+
+        def milwaukee_to_rockford_hexes
+          @milwaukee_to_rockford_hexes ||= %w[A7 E1].map { |id| hex_by_id(id) }
+        end
+
+        def milwaukee_to_great_lakes_bonus?(stops)
+          stop_hexes = stops.map(&:hex)
+          milwaukee_to_great_lakes_hexes.all? { |hex| stop_hexes.include?(hex) }
+        end
+
+        def milwaukee_to_rockford_bonus?(stops)
+          stop_hexes = stops.map(&:hex)
+          milwaukee_to_rockford_hexes.all? { |hex| stop_hexes.include?(hex) }
+        end
+
+        def upgrades_to?(from, to, special = false, selected_company: nil)
+          return super unless selected_company == jlbc
+
+          if to.color == :green &&
+             from.hex.id == @jlbc_home &&
+             upgrades_to_correct_label?(from, to) &&
+             Engine::Tile::COLORS.index(to.color) > Engine::Tile::COLORS.index(from.color)
+            true
+          end
+        end
+
         def check_other(route)
           return unless route.stops.any? do |stop|
                           stop.route_revenue(route.phase, route.train).zero? &&
@@ -238,6 +278,7 @@ module Engine
                 'Cannot run to either of the Great Lakes hexes (D10, G13) for zero revenue.'
         end
 
+        #  next two methods relate to the blocking token on Milwaukee and removing it in phase 3
         def event_remove_blocking_token!
           remove_blocking_token
         end
@@ -245,7 +286,7 @@ module Engine
         def remove_blocking_token
           return unless blocking_token
 
-          @log << "-- Event: Blocking token token removed from #{blocking_token.hex.id} --"
+          @log << "-- Event: Blocking token token removed from Milwaukee (#{MILWAUKEE_HEX}) --"
           blocking_token.destroy!
           @blocking_token = nil
         end
@@ -272,8 +313,9 @@ module Engine
           @receivership_railroad ||= company_by_id('RR')
         end
 
-        def jacob_leinenkugel
-          @jacob_leinenkugel ||= company_by_id('JLBC')
+        # this is the Jacob Leinenkugel Brewing Company. Name is just too long to use everywhere.
+        def jlbc
+          @jlbc ||= company_by_id('JLBC')
         end
 
         def postal_contract
@@ -298,18 +340,6 @@ module Engine
           company.all_abilities.each do |ability|
             ability.hexes << @jlbc_home
           end
-        end
-
-        # allows JLBC company's owner to skip directly to green tile on its home hex
-        def upgrades_to_correct_color?(from, to, selected_company: nil)
-          if to.color == :green &&
-            @round.current_entity == @jacob_leinenkugel.owner &&
-             from.hex.id == @jlbc_home &&
-             Engine::Tile::COLORS.index(to.color) > Engine::Tile::COLORS.index(from.color)
-            return true
-          end
-
-          super
         end
 
         def event_signal_end_game!

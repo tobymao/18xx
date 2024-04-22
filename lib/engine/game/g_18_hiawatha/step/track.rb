@@ -12,7 +12,7 @@ module Engine
 
             super
 
-            mb = mutzenberger_brewery
+            mb = @game.muntzenberger_brewery
             return if action.hex.name != @game.abilities(mb, 'tile_lay')&.hexes&.first || mb.owned_by_player?
 
             # MB loses its ability if something else goes on Kenosha

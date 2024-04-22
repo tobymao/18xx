@@ -23,7 +23,7 @@ module Engine
             colors = super
             return colors if colors.include?(:green)
 
-            colors << :green if entity == @game.jacob_leinenkugel && hex.id == @game.jlbc_home
+            colors << :green if entity == @game.jlbc && hex.id == @game.jlbc_home
             colors
           end
         end
