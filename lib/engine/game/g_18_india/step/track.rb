@@ -91,7 +91,6 @@ module Engine
             @round.removed_gauge << [hex.id, neighbor.id].sort
             @game.removed_gauge_change_marker(hex, neighbor)
             LOGGER.debug "Remove GC >> #{@round.removed_gauge} / #{@game.gauge_change_markers}"
-            # pass!
           end
 
           # ------  ------
