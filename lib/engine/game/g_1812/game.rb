@@ -64,135 +64,129 @@ module Engine
           ],
         ].freeze
 
-        PHASES = [{
-          name: '2',
-          train_limit: 2,
-          tiles: [:yellow],
-          operating_rounds: 2,
-        },
-                  {
-                    name: '3',
-                    on: '3',
-                    train_limit: { minor: 2, public: 4 },
-                    tiles: %i[yellow green],
-                    operating_rounds: 2,
-                    status: %w[can_buy_companies minors_can_merge],
-                  },
-                  {
-                    name: '4',
-                    on: '4',
-                    train_limit: { minor: 1, public: 3 },
-                    tiles: %i[yellow green brown],
-                    operating_rounds: 2,
-                    status: %w[can_buy_companies minors_can_merge cannot_open_minors],
-                  },
-                  {
-                    name: '5',
-                    on: '5',
-                    train_limit: { minor: 0, public: 2 },
-                    tiles: %i[yellow green brown gray],
-                    operating_rounds: 3,
-                    status: %w[can_par minors_can_merge cannot_open_minors tradeins_allowed],
-                  },
-                  {
-                    name: '6',
-                    on: '3D',
-                    train_limit: 2,
-                    tiles: %i[yellow green brown gray],
-                    operating_rounds: 3,
-                    status: ['minors_can_merge'],
-                  }].freeze
+        PHASES = [
+          {
+            name: '2',
+            train_limit: 4,
+            tiles: [:yellow],
+            operating_rounds: 2,
+          },
+          {
+            name: '3',
+            on: '3',
+            train_limit: 4,
+            tiles: %i[yellow green],
+            operating_rounds: 2,
+            status: %w[can_buy_companies minors_can_merge],
+          },
+          {
+            name: '4',
+            on: '4',
+            train_limit: 3,
+            tiles: %i[yellow green brown],
+            operating_rounds: 2,
+            status: %w[can_buy_companies minors_can_merge cannot_open_minors],
+          },
+          {
+            name: '5',
+            on: '5',
+            train_limit: 2,
+            tiles: %i[yellow green brown gray],
+            operating_rounds: 2,
+            status: %w[can_par minors_can_merge cannot_open_minors tradeins_allowed],
+          },
+        ].freeze
 
         TRAINS = [
-                  {
-                    name: '2',
-                    distance: [{ 'nodes' => %w[city offboard town], 'pay' => 2, 'visit' => 2 },
-                               { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
-                    price: 100,
-                    rusts_on: '4',
-                    variants: [
-                      {
-                        name: '1G',
-                        distance: [{ 'nodes' => %w[city offboard town], 'pay' => 3, 'visit' => 3 },
-                                   { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
-                        price: 90,
-                      },
-                    ],
-                  },
-                  {
-                    name: '3',
-                    distance: [{ 'nodes' => %w[city offboard town], 'pay' => 3, 'visit' => 3 },
-                               { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
-                    price: 200,
-                    rusts_on: '5',
-                    variants: [
-                      {
-                        name: '2G',
-                        distance: [{ 'nodes' => %w[city offboard town], 'pay' => 4, 'visit' => 4 },
-                                   { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
-                        price: 180,
-                      },
-                    ],
-                  },
-                  {
-                    name: '3+1',
-                    distance: [{ 'nodes' => %w[city offboard town], 'pay' => 3, 'visit' => 3 },
-                               { 'nodes' => ['town'], 'pay' => 1, 'visit' => 99 }],
-                    price: 220,
-                    rusts_on: '3D',
-                    variants: [
-                      {
-                        name: '2+1G',
-                        distance: [{ 'nodes' => %w[city offboard town], 'pay' => 5, 'visit' => 5 },
-                                   { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
-                        price: 200,
-                      },
-                    ],
-                  },
-                  {
-                    name: '4',
-                    distance: [{ 'nodes' => %w[city offboard town], 'pay' => 4, 'visit' => 4 },
-                               { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
-                    price: 400,
-                    variants: [
-                      {
-                        name: '3+2G',
-                        distance: [{ 'nodes' => %w[city offboard town], 'pay' => 5, 'visit' => 5 },
-                                   { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
-                        price: 360,
-                      },
-                    ],
-                  },
-                  {
-                    name: '5',
-                    distance: [{ 'nodes' => %w[city offboard town], 'pay' => 3, 'visit' => 3 },
-                               { 'nodes' => ['town'], 'pay' => 1, 'visit' => 99 }],
-                    price: 500,
-                    variants: [
-                      {
-                        name: '4+2G',
-                        distance: [{ 'nodes' => %w[city offboard town], 'pay' => 6, 'visit' => 6 },
-                                   { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
-                        price: 460,
-                      },
-                    ],
-                    events: [{ 'type' => 'close_companies' }],
-                  },
-                  {
-                    name: '3D',
-                    distance: [{ 'nodes' => %w[city offboard], 'pay' => 3, 'visit' => 3, 'multiplier' => 2 },
-                               { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
-                    price: 750,
-                    variants: [
-                      {
-                        name: '2+2GD',
-                        distance: [{ 'nodes' => %w[city offboard town], 'pay' => 6, 'visit' => 6, 'multiplier' => 2 },
-                                   { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
-                        price: 460,
-                      },
-                    ],
-                  },
-].freeze
+          {
+            name: '2',
+            distance: [{ 'nodes' => %w[city offboard town], 'pay' => 2, 'visit' => 2 },
+                       { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
+            price: 100,
+            rusts_on: '4',
+            variants: [
+              {
+                name: '1G',
+                distance: [{ 'nodes' => %w[city offboard town], 'pay' => 3, 'visit' => 3 },
+                           { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
+                price: 90,
+              },
+            ],
+          },
+          {
+            name: '3',
+            distance: [{ 'nodes' => %w[city offboard town], 'pay' => 3, 'visit' => 3 },
+                       { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
+            price: 200,
+            rusts_on: '5',
+            variants: [
+              {
+                name: '2G',
+                distance: [{ 'nodes' => %w[city offboard town], 'pay' => 4, 'visit' => 4 },
+                           { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
+                price: 180,
+              },
+            ],
+          },
+          {
+            name: '3+1',
+            distance: [{ 'nodes' => %w[city offboard town], 'pay' => 3, 'visit' => 3 },
+                       { 'nodes' => ['town'], 'pay' => 1, 'visit' => 99 }],
+            price: 220,
+            rusts_on: '3D',
+            variants: [
+              {
+                name: '2+1G',
+                distance: [{ 'nodes' => %w[city offboard town], 'pay' => 5, 'visit' => 5 },
+                           { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
+                price: 200,
+              },
+            ],
+          },
+          {
+            name: '4',
+            distance: [{ 'nodes' => %w[city offboard town], 'pay' => 4, 'visit' => 4 },
+                       { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
+            price: 400,
+            variants: [
+              {
+                name: '3+2G',
+                distance: [{ 'nodes' => %w[city offboard town], 'pay' => 5, 'visit' => 5 },
+                           { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
+                price: 360,
+              },
+            ],
+          },
+          {
+            name: '5',
+            distance: [{ 'nodes' => %w[city offboard town], 'pay' => 3, 'visit' => 3 },
+                       { 'nodes' => ['town'], 'pay' => 1, 'visit' => 99 }],
+            price: 500,
+            variants: [
+              {
+                name: '4+2G',
+                distance: [{ 'nodes' => %w[city offboard town], 'pay' => 6, 'visit' => 6 },
+                           { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
+                price: 460,
+              },
+            ],
+            events: [{ 'type' => 'close_companies' }],
+          },
+          {
+            name: '3D',
+            distance: [{ 'nodes' => %w[city offboard], 'pay' => 3, 'visit' => 3, 'multiplier' => 2 },
+                       { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
+            price: 750,
+            variants: [
+              {
+                name: '2+2GD',
+                distance: [{ 'nodes' => %w[city offboard town], 'pay' => 6, 'visit' => 6, 'multiplier' => 2 },
+                           { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
+                price: 460,
+              },
+            ],
+          },
+        ].freeze
 
         NORTH_HEXES = %w[A4 A8 F1].freeze
         SOUTH_HEXES = %w[C20 E20 F19].freeze
@@ -237,6 +231,19 @@ module Engine
         def setup
           setup_company_price_up_to_face
           @log << "Minors in the game: #{@minors.map(&:name).sort.join(', ')}" if @optional_rules&.include?(:remove_some_minors)
+        end
+
+        def train_limit(entity)
+          return super unless entity.minor?
+
+          case @phase.name
+          when '2' || '3'
+            2
+          when '4'
+            1
+          when '5'
+            0
+          end
         end
 
         def ns_bonus
