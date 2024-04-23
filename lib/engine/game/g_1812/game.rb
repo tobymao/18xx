@@ -226,19 +226,17 @@ module Engine
         def setup_preround
           # randomize the private companies, choose an amount equal to double the player count, sort numerically
           @companies = @companies.sort_by { rand }.take(@players.size * 2).sort_by(&:sym)
-          # if @optional_rules&.include?(:remove_some_minors)
-          #   minors, corps = corporations.partition { |c| c.type == :minor }
-          #   @corporations = minors.sort_by { rand }.take(2 + @players.size * 2).sort_by { |m| m.name.to_i }  + super(corps)
-          # end
+          @minors = @minors.sort_by { rand }.take((@players.size * 2) + 2) if @optional_rules&.include?(:remove_some_minors)
         end
 
-        def bank_sort(corporations)
-          minors, corps = corporations.partition { |c| c.type == :minor }
+        def bank_sort(entities)
+          minors, corps = entities.partition(&:minor?)
           minors.sort_by { |m| m.name.to_i } + super(corps)
         end
 
         def setup
           setup_company_price_up_to_face
+          @log << "Minors in the game: #{@minors.map(&:name).sort.join(', ')}" if @optional_rules&.include?(:remove_some_minors)
         end
 
         def ns_bonus

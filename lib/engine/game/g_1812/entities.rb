@@ -231,6 +231,48 @@ module Engine
 
         CORPORATIONS = [
           {
+            sym: 'GCR',
+            name: 'Great Central Railway',
+            logo: '1812/GCR',
+            tokens: [0, 40, 100, 100],
+            type: 'public',
+            color: '#025aaa',
+          },
+          {
+            sym: 'GNR',
+            name: 'Great Northern Railway',
+            logo: '1812/GNR',
+            tokens: [0, 40, 100, 100],
+            type: 'public',
+            color: '#32763f',
+          }, {
+            sym: 'LYR',
+            name: 'Lancashire & Yorkshire Railway',
+            logo: '1812/LYR',
+            tokens: [0, 40, 100, 100],
+            type: 'public',
+            color: '#FFFFFFF',
+          },
+          {
+            sym: 'MR',
+            name: 'Midland Railway',
+            logo: '1812/MR',
+            tokens: [0, 40, 100, 100],
+            type: 'public',
+            color: '#d1232a',
+          },
+          {
+            sym: 'NER',
+            name: 'North Eastern Railway',
+            logo: '1812/NER',
+            tokens: [0, 40, 100, 100],
+            color: :'#FFF500',
+            text_color: 'black',
+          }
+        ].freeze
+
+        MINORS = [
+          {
             sym: '1',
             name: 'Doncaster & Peterborough Railway',
             logo: '1812/1',
@@ -336,45 +378,6 @@ module Engine
             city: 0,
             color: '#777777',
           },
-          {
-            sym: 'GCR',
-            name: 'Great Central Railway',
-            logo: '1812/GCR',
-            tokens: [0, 40, 100, 100],
-            type: 'public',
-            color: '#025aaa',
-          },
-          {
-            sym: 'GNR',
-            name: 'Great Northern Railway',
-            logo: '1812/GNR',
-            tokens: [0, 40, 100, 100],
-            type: 'public',
-            color: '#32763f',
-          }, {
-            sym: 'LYR',
-            name: 'Lancashire & Yorkshire Railway',
-            logo: '1812/LYR',
-            tokens: [0, 40, 100, 100],
-            type: 'public',
-            color: '#FFFFFFF',
-          },
-          {
-            sym: 'MR',
-            name: 'Midland Railway',
-            logo: '1812/MR',
-            tokens: [0, 40, 100, 100],
-            type: 'public',
-            color: '#d1232a',
-          },
-          {
-            sym: 'NER',
-            name: 'North Eastern Railway',
-            logo: '1812/NER',
-            tokens: [0, 40, 100, 100],
-            color: :'#FFF500',
-            text_color: 'black',
-          }
         ].freeze
       end
     end
