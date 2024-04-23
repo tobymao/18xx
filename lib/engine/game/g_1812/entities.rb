@@ -35,9 +35,7 @@ module Engine
             min_price: 15,
             revenue: 5,
             desc: 'A corporation owning the Wylam Railway gains a +£10 bonus for all G-train runs to Newcastle Port (F3).',
-            abilities: [
-                         # because this is only for specific trains, it should be coded in def revenue_for, I think.
-                       ],
+            abilities: [], # G-train bonus is defined in game.rb revenue_for method
           },
           {
             name: 'Sheffeild & Rotherham Railway',
@@ -61,21 +59,23 @@ module Engine
             revenue: 10,
             desc: 'A corporation owning the Leeds & Selby Railway gains a +£10 bonus for all runs to York (E14). '\
                   'Additionally, the owning corporation may lay 2 extra yellow tiles, in hexes D15 and E17.',
-            abilities: [{
-              type: 'hex_bonus',
-              owner_type: 'corporation',
-              hexes: ['E14'],
-              amount: 10,
-            },
-                        {
-                          type: 'tile_lay',
-                          owner_type: 'corporation',
-                          hexes: %w[D15 E17],
-                          special: false,
-                          when: 'track',
-                          tiles: [],
-                          cost: 0,
-                        }],
+            abilities: [
+              {
+                type: 'hex_bonus',
+                owner_type: 'corporation',
+                hexes: ['E14'],
+                amount: 10,
+              },
+              {
+                type: 'tile_lay',
+                owner_type: 'corporation',
+                hexes: %w[D15 E17],
+                special: false,
+                when: 'track',
+                tiles: [],
+                cost: 0,
+              },
+            ],
           },
           {
             name: 'Stephenson’s Engine Works',
@@ -102,21 +102,23 @@ module Engine
             revenue: 10,
             desc: 'A corporation owning the Stockton & Darlington Railway gains a +£10 bonus for all runs to Middlesbrough '\
                   '(E8). Additionally, the owning corporation may lay 3 extra yellow tiles, in hexes C8, D9, and E8.',
-            abilities: [{
-              type: 'hex_bonus',
-              owner_type: 'corporation',
-              hexes: ['E8'],
-              amount: 10,
-            },
-                        {
-                          type: 'tile_lay',
-                          owner_type: 'corporation',
-                          hexes: %w[C8 D9 E8],
-                          special: false,
-                          when: 'track',
-                          tiles: [],
-                          cost: 0,
-                        }],
+            abilities: [
+              {
+                type: 'hex_bonus',
+                owner_type: 'corporation',
+                hexes: ['E8'],
+                amount: 10,
+              },
+              {
+                type: 'tile_lay',
+                owner_type: 'corporation',
+                hexes: %w[C8 D9 E8],
+                special: false,
+                when: 'track',
+                tiles: [],
+                cost: 0,
+              },
+            ],
           },
           {
             name: 'Stanhope & Tyne Railway',
@@ -126,18 +128,16 @@ module Engine
             revenue: 10,
             desc: 'A corporation owning the Stanhope & Tyne Railway gains a +£10 bonus for all G-train runs to Newcastle '\
                   'Port (F3). Additionally, the owning corporation may lay 2 extra yellow tiles, in hexes C6 and D7.',
-            abilities: [
-                        # because the bonus is only for specific trains, it should be coded in def revenue_for, I think.
-                        {
-                          type: 'tile_lay',
-                          owner_type: 'corporation',
-                          hexes: %w[C6 D7],
-                          special: false,
-                          when: 'track',
-                          tiles: [],
-                          cost: 0,
-                        },
-                       ],
+            abilities: [{
+              type: 'tile_lay',
+              owner_type: 'corporation',
+              hexes: %w[C6 D7],
+              special: false,
+              when: 'track',
+              tiles: [],
+              cost: 0,
+            }],
+            # G-train bonus is defined in game.rb revenue_for method
           },
           {
             name: 'Whitby & Pickering Railway',
@@ -147,18 +147,16 @@ module Engine
             revenue: 10,
             desc: 'A corporation owning the Whitby & Pickering Railway gains a +£10 bonus for all G-train runs to Whitby '\
                   'Port (H9). Additionally, the owning corporation may lay 3 extra yellow tiles, in hexes F13, G12, and G10.',
-            abilities: [
-                        # because the bonus is only for specific trains, it should be coded in def revenue_for, I think.
-                        {
-                          type: 'tile_lay',
-                          owner_type: 'corporation',
-                          hexes: %w[F13 G10 G12],
-                          special: false,
-                          when: 'track',
-                          tiles: [],
-                          cost: 0,
-                        },
-                       ],
+            abilities: [{
+              type: 'tile_lay',
+              owner_type: 'corporation',
+              hexes: %w[F13 G10 G12],
+              special: false,
+              when: 'track',
+              tiles: [],
+              cost: 0,
+            }],
+            # G-train bonus is defined in game.rb revenue_for method
           },
           {
             name: 'Newcastle & Carlisle Railway',
@@ -168,21 +166,23 @@ module Engine
             revenue: 10,
             desc: 'A corporation owning the Newcastle & Carlisle Railway gains a +£20 bonus for all runs to Carlisle (A8). '\
                   'Additionally, the owning corporation may lay 3 extra yellow tiles, in hexes B3, C4, and D3.',
-            abilities: [{
-              type: 'hex_bonus',
-              owner_type: 'corporation',
-              hexes: ['A8'],
-              amount: 20,
-            },
-                        {
-                          type: 'tile_lay',
-                          owner_type: 'corporation',
-                          hexes: %w[B3 C4 D3],
-                          special: false,
-                          when: 'track',
-                          tiles: [],
-                          cost: 0,
-                        }],
+            abilities: [
+              {
+                type: 'hex_bonus',
+                owner_type: 'corporation',
+                hexes: ['A8'],
+                amount: 20,
+              },
+              {
+                type: 'tile_lay',
+                owner_type: 'corporation',
+                hexes: %w[B3 C4 D3],
+                special: false,
+                when: 'track',
+                tiles: [],
+                cost: 0,
+              },
+            ],
           },
           {
             name: 'Hull Docks Company',
@@ -191,16 +191,18 @@ module Engine
             min_price: 30,
             revenue: 10,
             desc: 'A corporation owning the Newcastle & Carlisle Railway gains a +£20 bonus for all runs to Hull (G16).',
-            abilities: [{
-              type: 'hex_bonus',
-              owner_type: 'corporation',
-              hexes: ['G16'],
-              amount: 20,
-            },
-                        {
-                          type: 'close',
-                          when: 'never',
-                        }],
+            abilities: [
+              {
+                type: 'hex_bonus',
+                owner_type: 'corporation',
+                hexes: ['G16'],
+                amount: 20,
+              },
+              {
+                type: 'close',
+                when: 'never',
+              },
+            ],
           },
           {
             name: 'Hartlepool Docks Company',
@@ -209,23 +211,23 @@ module Engine
             min_price: 30,
             revenue: 10,
             desc: 'A corporation owning the Hull Docks Company gains a +£20 bonus for all G-train runs to Hartlepool '\
-                  'Port (H9). Additionally, the owning corporation may lay 1 extra yellow tile, in hex F7.',
+                  'Port (G6). Additionally, the owning corporation may lay 1 extra yellow tile, in hex F7.',
             abilities: [
-                        # because the bonus is only for specific trains, it should be coded in def revenue_for, I think.
-                        {
-                          type: 'tile_lay',
-                          owner_type: 'corporation',
-                          hexes: ['F7'],
-                          special: false,
-                          when: 'track',
-                          tiles: [],
-                          cost: 0,
-                        },
-                        {
-                          type: 'close',
-                          when: 'never',
-                        },
-                      ],
+              {
+                type: 'tile_lay',
+                owner_type: 'corporation',
+                hexes: ['F7'],
+                special: false,
+                when: 'track',
+                tiles: [],
+                cost: 0,
+              },
+              {
+                type: 'close',
+                when: 'never',
+              },
+              # G-train bonus is defined in game.rb revenue_for method
+            ],
           },
         ].freeze
 

@@ -188,11 +188,6 @@ module Engine
           },
         ].freeze
 
-        NORTH_HEXES = %w[A4 A8 F1].freeze
-        SOUTH_HEXES = %w[C20 E20 F19].freeze
-        PORT_HEXES = %w[F3 G4 G6 G8 H9 H17 H19].freeze
-        MINE_HEXES = %w[B15 D7 D17 E2 E6].freeze
-
         def new_auction_round
           Engine::Round::Auction.new(self, [
             Engine::Step::SelectionAuction,
@@ -233,27 +228,6 @@ module Engine
           @log << "Minors in the game: #{@minors.map(&:name).sort.join(', ')}" if @optional_rules&.include?(:remove_some_minors)
         end
 
-        def train_limit(entity)
-          return super unless entity.minor?
-
-          case @phase.name
-          when '2' || '3'
-            2
-          when '4'
-            1
-          when '5'
-            0
-          end
-        end
-
-        def ns_bonus
-          @hexes.find { |hex| hex.coordinates == 'I1' }.tile.offboards.first
-        end
-
-        def mine_port_bonus
-          @hexes.find { |hex| hex.coordinates == 'I3' }.tile.offboards.first
-        end
-
         def num_trains(train)
           num_players = @players.size
 
@@ -267,10 +241,72 @@ module Engine
           end
         end
 
+        def train_limit(entity)
+          return super unless entity.minor?
+
+          case @phase.name
+          when '2' || '3'
+            2
+          when '4'
+            1
+          when '5'
+            0
+          end
+        end
+
         def can_par?(corporation, parrer)
           @phase.status.include?('can_par')
 
           super
+        end
+
+        NORTH_HEXES = %w[A4 A8 F1].freeze
+        SOUTH_HEXES = %w[C20 E20 F19].freeze
+        PORT_HEXES = %w[F3 G4 G6 G8 H9 H17 H19].freeze
+        MINE_HEXES = %w[B15 D7 D17 E2 E6].freeze
+        GTRAINS = %w[1G 2G 2+1G 3+2G 4+2G 2+2GD].freeze
+        F3_PORT = ['F3'].freeze
+        G6_PORT = ['G6'].freeze
+        H9_PORT = ['H9'].freeze
+
+        def mine_port_bonus
+          @hexes.find { |hex| hex.coordinates == 'I3' }.tile.offboards.first
+        end
+
+        def ns_bonus
+          @hexes.find { |hex| hex.coordinates == 'I1' }.tile.offboards.first
+        end
+
+        def revenue_for(route, stops)
+          revenue = super
+          hex = route.hexes
+          gtrain = route.train.variant.name?(GTRAINS)
+
+          revenue += mine_port_bonus if gtrain && hex.id.include?(MINE_HEXES) && hex.id.include?(PORT_HEXES)
+          revenue += ns_bonus if (hex.first.id(NORTH_HEXES) && hex.last.id(SOUTH_HEXES)) ||
+                                 (hex.first.id(SOUTH_HEXES) && hex.last.id(NORTH_HEXES))
+          revenue += 10 if gtrain && hex.id == F3_PORT && route.corporation.assigned?(p3_company)
+          revenue += 10 if gtrain && hex.id == F3_PORT && route.corporation.assigned?(p8_company)
+          revenue += 10 if gtrain && hex.id == H9_PORT && route.corporation.assigned?(p9_company)
+          revenue += 20 if gtrain && hex.id == G6_PORT && route.corporation.assigned?(p12_company)
+
+          revenue
+        end
+
+        def p3_company
+          @p3 ||= @company.by_id('P3')
+        end
+
+        def p8_company
+          @p8 ||= @company.by_id('P8')
+        end
+
+        def p9_company
+          @p9 ||= @company.by_id('P9')
+        end
+
+        def p12_company
+          @p12 ||= @company.by_id('P12')
         end
       end
     end
