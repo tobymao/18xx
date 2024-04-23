@@ -251,7 +251,7 @@ module Engine
             Engine::Step::BuyCompany,
             GSteamOverHolland::Step::IssueShares,
             GSteamOverHolland::Step::Track,
-            Engine::Step::Token,
+            GSteamOverHolland::Step::Token,
             Engine::Step::Route,
             GSteamOverHolland::Step::Dividend,
             Engine::Step::DiscardTrain,
