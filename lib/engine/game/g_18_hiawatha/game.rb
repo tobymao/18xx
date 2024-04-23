@@ -40,12 +40,12 @@ module Engine
              55p
              60p
              65p
-             70s
+             70p
              80p
              90p
              100p
              110p
-             120s
+             120p
              135p
              150p
              165p

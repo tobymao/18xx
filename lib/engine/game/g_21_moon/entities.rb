@@ -72,7 +72,7 @@ module Engine
             name: 'Terminal',
             sym: 'T',
             value: 80,
-            revenue: 20,
+            revenue: 15,
             min_price: 1,
             max_price: 120,
             desc: 'The owning corporation may teleport place the T tile, then may place its cheapest supply '\
@@ -81,7 +81,7 @@ module Engine
               {
                 type: 'teleport',
                 owner_type: 'corporation',
-                tiles: ['X30'],
+                tiles: ['X29'],
                 hexes: ['F8'],
               },
             ],

@@ -490,6 +490,7 @@ module Engine
             ],
             multiplier: 3,
             price: 1100,
+            salvage: 0,
             variants: [
               {
                 name: '4Ex3',
