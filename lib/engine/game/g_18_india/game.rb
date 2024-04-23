@@ -78,14 +78,19 @@ module Engine
         ].freeze
 
         PHASES = [
-          { name: 'I', train_limit: 2, tiles: %i[yellow green brown gray], operating_rounds: 2 },
+          {
+            name: 'I',
+            train_limit: 2,
+            tiles: %i[yellow green brown gray],
+            operating_rounds: 2,
+            status: %w[gipr_may_not_operate],
+          },
           {
             name: 'II',
             on: '3',
             train_limit: 2,
             tiles: %i[yellow green brown gray],
             operating_rounds: 2,
-            status: %w[gipr_may_operate],
           },
           { name: 'III', on: '4', train_limit: 2, tiles: %i[yellow green brown gray], operating_rounds: 2 },
           {
@@ -102,14 +107,15 @@ module Engine
             train_limit: 2,
             tiles: %i[yellow green brown gray],
             operating_rounds: 2,
-            status: %w[warrants_expire no_gauge_change gauge_change_removal],
+            status: %w[warrants_expire convert_bonds no_gauge_change gauge_change_removal],
           },
         ].freeze
 
         STATUS_TEXT = Base::STATUS_TEXT.merge(
-          'gipr_may_operate' => ['GIPR may operate', 'GIPR may operate if it has been floated (three 10% shares in play).'],
+          'gipr_may_not_operate' => ['GIPR may not operate', 'GIPR may not operate operate before phase II.'],
           'phase_four_trains' => ['Phase IV trains available', 'All Phase IV trains are simultaneously available.'],
           'warrants_expire' => ['Guaranty Warrants expire', 'Guaranty Warrants immediately expire.'],
+          'convert_bonds' => ['May convert Railroad Bonds', 'May convert Railroad Bonds to a GIPR share as a stock action.'],
           'no_gauge_change' => ['Gauge Change no longer placed', 'Gauge Change markers are no longer placed with new track.'],
           'gauge_change_removal' => ['Gauge Change may be removed', 'Gauge Change markers may be removed as a track action.'],
         ).freeze
@@ -133,8 +139,22 @@ module Engine
           'VISAKHAPATNAM' => 30, # SPICES => VISAKHAPATNAM [M24] => 30,
         }.freeze
 
+        COMMODITY_BONUSES = {
+          'OIL' => { value: 30, commodity: 'OIL', locations: ['MUMBAI'] }, # OIL => MUMBAI [D23] + 30
+          'OPIUM' => { value: 100, commodity: 'OPIUM', locations: %w[LAHORE HALDIA] }, # OPIUM => LAHORE [D3] HALDIA [P19] => 100
+          'ORE1' => { value: 50, commodity: 'ORE', locations: %w[KARACHI CHENNAI] }, # ORE => KARACHI [A16] CHENNAI [K30] => 50
+          'ORE2' => { value: 50, commodity: 'ORE', locations: %w[KARACHI CHENNAI] },
+          'GOLD' => { value: 50, commodity: 'GOLD', locations: ['KOCHI'] }, # GOLD => KOCHI [G36] + 50
+          'COTTON' => { value: 40, commodity: 'COTTON', locations: %w[KARACHI CHENNAI] }, # KARACHI [A16] CHENNAI [K30] => 40
+          'TEA1' => { value: 70, commodity: 'TEA', locations: ['VISAKHAPATNAM'] }, # TEA => VISAKHAPATNAM [M24] + 70
+          'TEA2' => { value: 70, commodity: 'TEA', locations: ['VISAKHAPATNAM'] },
+          'RICE' => { value: 30, commodity: 'RICE', locations: %w[CHINA NEPAL] }, # RICE => CHINA [Q10] NEPAL [M10] => 30
+          'JEWELRY' => { value: 20, commodity: 'JEWELRY', locations: COMMODITY_DESTINATIONS },
+          'SPICES' => { value: nil, commodity: 'SPICES', locations: COMMODITY_DESTINATIONS },
+        }.freeze
+
         # TODO: Consider using commodity icons vs location names
-        # Refactor to use assignment (assignable module) for commodies?
+        # Refactor to use assignment (assignable module) for commodities?
         ASSIGNMENT_TOKENS = {
           'P6' => '/icons/18_royal_gorge/gold_cube.svg', # TODO: Add actual commodity ICON
         }.freeze
@@ -209,6 +229,11 @@ module Engine
               **corporation.merge(corporation_opts),
             )
           end
+        end
+
+        # Include bond shares for cache_objects
+        def shares
+          @corporations.flat_map(&:shares) + @players.flat_map(&:shares) + @share_pool.shares + gipr.bond_shares
         end
 
         def setup_preround
@@ -289,7 +314,9 @@ module Engine
             desc: "Warrant pays 5\% of share value when company doesn't pay dividend. Closes at start of Phase IV",
             type: :warrant
           )
+          warrant.owner = corporation
           corporation.companies << warrant
+          @companies << warrant
         end
 
         def assign_initial_ipo_price(corporations)
@@ -304,7 +331,7 @@ module Engine
 
         def create_decks(corporations)
           draw_deck = []
-          draw_deck += @companies
+          draw_deck += @companies.reject { |c| c.type == :warrant }
           @draft_deck = []
 
           corporations.each do |corporation|
@@ -439,12 +466,9 @@ module Engine
         end
 
         def gipr_share_price
-          return 112 unless @corporations
-
-          gipr = @corporations.find { |corp| corp.name == 'GIPR' }
           return 112 unless gipr.share_price
 
-          gipr.share_price
+          gipr.share_price.price
         end
 
         def init_round
@@ -463,25 +487,35 @@ module Engine
 
         def stock_round
           # Test if home token step resolves issues of placing token when company floats
-          Engine::Round::Stock.new(self, [Engine::Step::HomeToken, G18India::Step::SellOnceThenBuyCerts])
+          Engine::Round::Stock.new(self, [
+            G18India::Step::HomeTrack, # for GIPR Home Track / Token
+            Engine::Step::HomeToken,
+            G18India::Step::SellOnceThenBuyCerts,
+          ])
         end
 
         def operating_round(round_num)
           Engine::Round::Operating.new(self, [
-            # Engine::Step::Exchange, # this step may not be needed?
+            G18India::Step::HomeTrack, # for GIPR Home Track / Token
             Engine::Step::HomeToken,
+            G18India::Step::ExchangeToken, # for GIPR Exchange Tokens
             G18India::Step::Assign, # used by P6
             G18India::Step::SpecialChoose, # Used by P4
             G18India::Step::SpecialTrack, # used by P2 & P3 (track lay & track upgrade)
             Engine::Step::SpecialToken, # use for P5
             G18India::Step::Track,
             G18India::Step::Token,
-            Engine::Step::Route,
+            G18India::Step::Route,
             G18India::Step::Dividend,
             G18India::Step::SellBuyTrain,
             G18India::Step::CorporateSellSharesCompany,
             G18India::Step::CorporateBuySharesCompany,
           ], round_num: round_num)
+        end
+
+        def operating_order
+          corps = @corporations.select(&:floated?).sort
+          gipr_may_operate? ? corps : corps.reject { |c| c.name == 'GIPR' }
         end
 
         def next_round!
@@ -538,6 +572,7 @@ module Engine
           elsif (company.type == :bond) && (company.owner == @bank)
             return "Bank has #{count_of_bonds} / 10 Bonds"
           elsif @round.stock?
+            return unless current_entity.player?
             return "Player's Hand" if current_entity.hand.include?(company)
           end
           ''
@@ -548,6 +583,8 @@ module Engine
           president = corporation.owner ? corporation.owner.name : 'none'
           if corporation.presidents_share.percent == 20
             "Directed Company: #{president}"
+          elsif corporation == gipr && @phase.status.include?('gipr_may_not_operate')
+            "GIPR doesn't operate until Phase II"
           elsif !corporation.owner.nil?
             "Managed Company: #{president}"
           else
@@ -569,6 +606,8 @@ module Engine
           timeline << "IPO ROW 3: #{ipo_row_3.join(', ')}" unless ipo_row_3.empty?
 
           timeline << "Market: #{bank.companies.map(&:name).join(', ')}" unless bank.companies.empty?
+
+          timeline << "unclaimed_commodities: #{@unclaimed_commodities.sort.join(', ')}"
 
           @players.each do |p|
             timeline << "#{p.name}: #{p.hand.map(&:name).sort.join(', ')}" unless p.hand.empty?
@@ -620,7 +659,7 @@ module Engine
 
         def hand_companies_for_stock_round
           return [] unless @round.stock?
-          return [] if @round.current_entity.nil?
+          return [] if @round.current_entity.nil? || !@round.current_entity.player?
 
           @round.current_entity.hand.sort_by { |item| [item.type, -item.value, item.name] }
         end
@@ -630,21 +669,64 @@ module Engine
           player.unsold_companies.delete(company)
         end
 
+        # remove all proxy certs from IPO and Player Hands
+        def remove_proxy_certs(corporation)
+          # remove from player hands
+          players.each do |player|
+            player.hand.reject! { |company| company.name == corporation.name }
+            player.unsold_companies.reject! { |company| company.name == corporation.name }
+          end
+          # remove from IPO Rows
+          @ipo_rows.each { |row| row.reject! { |company| company.name == corporation.name } }
+          # remove from companies
+          @companies.reject! { |company| company.name == corporation.name }
+        end
+
         # prevents transfer of president's share before proxy is bought
         def can_swap_for_presidents_share_directly_from_corporation?
           false
+        end
+
+        def open_city_hexes
+          @cities.reject { |c| c.available_slots.zero? }
+                 .map { |c| c.tile.hex }
+                 .compact
+                 .uniq
+        end
+
+        def town_to_green_city_hexes
+          @hexes.map(&:tile).select do |t|
+            t.towns.one? && # only single town hexes
+            %i[white yellow].include?(t.color) && # only white or yellow hexes
+            !%w[K38 L39].include?(t.hex.name) # L39 and K38 are not legal hexes for a Green single city tile
+          end.map(&:hex)
         end
 
         # Home hexes for GIPR
         def home_token_locations(corporation)
           raise NotImplementedError unless corporation.name == 'GIPR'
 
-          hexes = []
-          # hexes with open city locations
-          hexes += @cities.reject { |c| c.available_slots.zero? }.map { |c| c.tile.hex }
-          # TODO: white or yellow hexes with single town & ability to lay GREEN single city tile on hex
-          # NOTE: L39 and K38 are not legal hexes for a Green single city tile
-          hexes
+          LOGGER.debug " Open City Hexes #{open_city_hexes}"
+          LOGGER.debug " Town->City Hexes #{town_to_green_city_hexes}"
+          open_city_hexes + town_to_green_city_hexes
+        end
+
+        def place_home_token(corporation)
+          return super unless corporation.name == 'GIPR'
+          # If a corp has laid it's first token assume it's their home token
+          return if corporation.tokens.first&.used
+
+          # slect which hex to place home token
+          @log << "#{corporation.name} (#{corporation.owner.name}) must choose Open City or Town tile for home location"
+          hexes = home_token_locations(corporation)
+
+          @round.pending_tokens << {
+            entity: corporation,
+            hexes: hexes,
+            token: corporation.find_token_by_type,
+          }
+
+          @round.clear_cache!
         end
 
         # Modified to place share price marker on Market Chart
@@ -656,11 +738,139 @@ module Engine
         # Modified to allow yellow towns to be upgraded to SINGLE slot city green tiles
         # > Also modified legal_tile_rotation in STEP::Track or STEP::Tracker
         # Modified do prevent yellow cities upgrading to SINGLE slot city green tiles
+        # Allow GIPR Home Track directly to Green Single City
         def upgrades_to?(from, to, special = false, selected_company: nil)
+          return true unless @round.pending_tokens.empty?
           return true if yellow_town_to_city_upgrade?(from, to)
           return false if yellow_city_upgrade_is_single_slot_green?(from, to)
 
           super
+        end
+
+        def gipr
+          @gipr ||= @corporations.find { |corp| corp.name == 'GIPR' }
+        end
+
+        def gipr_may_operate?
+          !@phase.status.include?('gipr_may_not_operate') && gipr.floated?
+        end
+
+        def gipr_exchange_tokens
+          ability = gipr.all_abilities.find { |a| a.type == :exchange_token }
+          return 0 unless ability
+
+          ability.count
+        end
+
+        def gipr_has_exchange_token?
+          LOGGER.debug "gipr_may_exchange_token > #{gipr.floated?} && #{gipr_exchange_tokens.positive?}"
+          gipr.floated? && gipr_exchange_tokens.positive?
+        end
+
+        def use_gipr_exchange_token
+          ability = gipr.all_abilities.find { |a| a.type == :exchange_token }
+          ability.use!
+          ability.description = "Exchange tokens: #{ability.count}"
+        end
+
+        def gipr_exchange_with_closing_corp(corporation)
+          corporation.placed_tokens.each_with_index do |token, index|
+            LOGGER.debug "gipr_exchange > #{corporation.tokens} && index-#{index} used-#{token.used}"
+            exchange_token = Engine::Token.new(gipr, type: :exchange)
+            LOGGER.debug "gipr_exchange > tokenable? #{token.city.tokenable?(gipr, free: true, tokens: [exchange_token],
+                                                                                   cheater: true, same_hex_allowed: false)} "
+            next unless token.city.tokenable?(gipr, free: true, tokens: [exchange_token], cheater: true, same_hex_allowed: false)
+
+            if index.zero?
+              token.swap!(exchange_token)
+              @log << "GIPR replaced home token of #{corporation.name} with exchange token."
+              gipr.tokens << exchange_token
+              token.remove!
+              use_gipr_exchange_token
+              LOGGER.debug "gipr_exchange > gipr tokens: #{gipr.tokens} "
+            elsif token.city.tokenable?(gipr, free: true, tokens: [exchange_token], cheater: true, same_hex_allowed: false)
+              @round.pending_exchange_tokens << {
+                entity: gipr,
+                hexes: [token.hex],
+                token: token,
+                exchange_token: exchange_token,
+              }
+            end
+          end
+          LOGGER.debug "gipr_exchange > pending #{@round.pending_exchange_tokens} "
+          @round.clear_cache!
+        end
+
+        def close_corporation(corporation, quiet: false)
+          return unless @round.pending_exchange_tokens.empty?
+
+          log << "#{corporation.name} closes" if !quiet && !@round.gipr_exchanging
+
+          # GIPR exchange Tokens
+          if gipr_has_exchange_token? && !corporation.placed_tokens.empty?
+            gipr_exchange_with_closing_corp(corporation)
+            @round.gipr_exchanging = true
+            return
+          end
+
+          # remove all corp tokens (after GIPR may exchange)
+          corporation.tokens.each(&:destroy!)
+          LOGGER.debug "closing > Corp tokens: #{corporation.tokens}"
+
+          # move trains to open market
+          corporation.trains.dup.each { |t| depot.reclaim_train(t) }
+          LOGGER.debug "closing > Corp trains: #{corporation.trains}  depot: #{depot.trains}"
+
+          # return privates and bonds to market
+          LOGGER.debug "closing > companies: #{corporation.companies}  bank: #{@bank.companies}"
+          corporation.companies.each do |company|
+            next unless %i[private bond].include?(company.type)
+
+            @log << "#{company.name} is returned to the Market"
+            company.owner = @bank
+            @bank.companies.push(company)
+          end
+          corporation.companies.clear
+          LOGGER.debug "closing > companies: #{corporation.companies}  bank: #{@bank.companies}"
+
+          # move corp owned shares to open market
+          corp_owned_shares = corporation.shares_by_corporation[corporation]
+          LOGGER.debug "closing > corp_owned_shares: #{corp_owned_shares}  share_pool: #{@share_pool.shares_by_corporation}"
+          corp_owned_shares.each do |shares|
+            next if shares.corporation == corporation
+
+            bundle = shares.is_a?(ShareBundle) ? shares : ShareBundle.new(shares)
+            @log << "A #{bundle.percent}% share of #{bundle.corporation.name} is returned to the Market"
+            share_pool.transfer_shares(bundle, @share_pool)
+          end
+          LOGGER.debug "closing > corp_owned_shares: #{corp_owned_shares}  share_pool: #{@share_pool.shares_by_corporation}"
+
+          # return treasury to bank
+          LOGGER.debug "closing > tresury: #{corporation.cash}  bank: #{@bank.cash}"
+          corporation.spend(corporation.cash, @bank) if corporation.cash.positive?
+          LOGGER.debug "closing > tresury: #{corporation.cash}  bank: #{@bank.cash}"
+
+          # remove all corp shares
+          corporation.share_holders.each_key do |share_holder|
+            share_holder.shares_by_corporation.delete(corporation)
+          end
+          @share_pool.shares_by_corporation.delete(corporation)
+          corporation.share_price&.corporations&.delete(corporation)
+
+          # remove proxy companies (without compensation as share value = 0)
+          remove_proxy_certs(corporation)
+
+          # close corporation
+          @corporations.delete(corporation)
+          corporation.close!
+
+          # adjust cert_limit
+          LOGGER.debug "closing > cert_limit: #{@cert_limit}"
+          @cert_limit = init_cert_limit
+          LOGGER.debug "closing > cert_limit: #{@cert_limit}"
+
+          # move to next enity if the current entity is the closed corporation
+          @round.force_next_entity! if @round.current_entity == corporation
         end
 
         def yellow_town_to_city_upgrade?(from, to)
@@ -770,73 +980,42 @@ module Engine
           @unclaimed_commodities + corporation.commodities
         end
 
-        # TODO: Add visual indicaiton on VIEW for Corporation card for Claimed Commodities
-        def claim_concession(commodities, corporation)
-          return if corporation.commodities.include?(commodities.first)
-
-          commodities.each do |commodity|
-            @unclaimed_commodities.delete(commodity)
+        # Test using Ability to display Claimed Commodities on VIEW for Corporation card
+        def claim_concession(corporation, commodity)
+          ability = corporation.all_abilities.find { |a| a.type == :commodities }
+          ability.description = ability.description + commodity + ' '
+          @log << "#{corporation.name} claims the #{commodity} concession"
+          case commodity
+          when 'ORE'
+            corporation.commodities.concat(%w[ORE1 ORE2])
+            %w[ORE1 ORE2].each { |c| @unclaimed_commodities.delete(c) }
+          when 'TEA'
+            corporation.commodities.concat(%w[TEA1 TEA2])
+            %w[TEA1 TEA2].each { |c| @unclaimed_commodities.delete(c) }
+          else
             corporation.commodities << commodity
+            @unclaimed_commodities.delete(commodity)
           end
-          @log << "#{corporation.name} claims the #{commodities} concession"
         end
 
-        def commodity_bonus(route, _stops)
+        def commodity_bonus(route, _stops = nil)
           visited_names = route.all_hexes.map(&:location_name).compact
           corporation = route.train.owner
           commodity_sources = visited_names & available_commodities(corporation)
           return 0 unless commodity_sources.count.positive?
 
           revenue = 0
+          @round.commodities_used = []
           commodity_sources.each do |source|
-            bonus = 0
-            case source
-            when 'OIL'
-              # OIL => MUMBAI [D23] + 30
-              bonus = 30 if visited_names.include?('MUMBAI')
-              claim_concession(['OIL'], corporation) if bonus.positive?
-              revenue += bonus
-            when 'OPIUM'
-              # OPIUM => LAHORE [D3] HALDIA [P19] => 100
-              bonus = 100 if visited_names.intersect?(%w[LAHORE HALDIA])
-              claim_concession(['OPIUM'], corporation) if bonus.positive?
-              revenue += bonus
-            when 'ORE1', 'ORE2'
-              # ORE1 => KARACHI [A16] CHENNAI [K30] => 50
-              bonus = 50 if visited_names.intersect?(%w[KARACHI CHENNAI])
-              claim_concession(%w[ORE1 ORE2], corporation) if bonus.positive?
-              revenue += bonus
-            when 'GOLD'
-              # GOLD => KOCHI [G36] + 50
-              bonus = 50 if visited_names.include?('KOCHI')
-              claim_concession(['GOLD'], corporation) if bonus.positive?
-              revenue += bonus
-            when 'SPICES'
-              bonus = visited_names.map { |loc| SPICE_BONUSES[loc] || 0 }.max
-              claim_concession(['SPICES'], corporation) if bonus.positive?
-              revenue += bonus
-            when 'COTTON'
-              # COTTON => KARACHI [A16] CHENNAI [K30] => 40
-              bonus = 40 if visited_names.intersect?(%w[KARACHI CHENNAI])
-              claim_concession(['COTTON'], corporation) if bonus.positive?
-              revenue += bonus
-            when 'TEA1', 'TEA2'
-              # TEA1 => VISAKHAPATNAM [M24] + 70
-              bonus = 70 if visited_names.include?('VISAKHAPATNAM')
-              claim_concession(%w[TEA1 TEA2], corporation) if bonus.positive?
-              revenue += bonus
-            when 'RICE'
-              # RICE => CHINA [Q10] NEPAL [M10] => 30
-              bonus = 30 if visited_names.intersect?(%w[CHINA NEPAL])
-              claim_concession(['RICE'], corporation) if bonus.positive?
-              revenue += bonus
-            when 'JEWELRY'
-              # Jewelry concession pays 20 if delivered to any commodity destination
-              bonus = 20 if visited_names.intersect?(COMMODITY_DESTINATIONS)
-              revenue += bonus
+            bonus = COMMODITY_BONUSES[source]
+            LOGGER.debug "GAME.commodity_bonus >> bonus: #{bonus}"
+            if visited_names.intersect?(bonus['locations'])
+              revenue += bonus['value'] || visited_names.map { |loc| SPICE_BONUSES[loc] || 0 }.max
+              @round.commodities_used << bonus['commodity']
             end
           end
-          LOGGER.debug "GAME.commodity_bonus >> visited: #{visited_names}  sources: #{commodity_sources}  revenue: #{revenue}"
+          LOGGER.debug "GAME.commodity_bonus >> visited: #{visited_names}  sources: #{commodity_sources}  revenue: #{revenue}" \
+                       "  used: #{@round.commodities_used}"
           revenue
         end
 
@@ -860,8 +1039,8 @@ module Engine
         end
 
         # pay owner value of company before closing
-        def company_closing_after_using_ability(company, silent = false)
-          @bank.spend(company.value, company.owner)
+        def company_is_closing(company, silent = false)
+          @bank.spend(company.value, company.owner) if company.value.positive?
           @log << "#{company.name} closes and #{company.owner.name} receives #{company.value} from the Bank." unless silent
         end
 
@@ -874,6 +1053,7 @@ module Engine
 
         # modified to apply P4 discount if used
         def tile_cost_with_discount(_tile, _hex, _entity, spender, cost)
+          return cost unless @round.respond_to?(:terrain_discount)
           return cost if cost.zero? || @round.terrain_discount.zero?
 
           discount = [cost, @round.terrain_discount].min
@@ -883,6 +1063,26 @@ module Engine
                   "#{format_currency(discount)} from #{company.name}"
 
           cost - discount
+        end
+
+        def after_phase_change(name)
+          return unless name == 'IV'
+
+          @companies.each do |company|
+            case company.type
+            when :warrant
+              # close Guaranty Warrants
+              @log << "#{company.name} expires for #{company.owner.name}."
+              company.close!
+            when :president, :share
+              # remove Guaranty Warrant text on proxies
+              company.desc = company.desc.delete_suffix("\nHas a Guaranty Warrant.")
+            end
+          end
+
+          # TODO: Railroad bonds can convert to new GIPR shares
+          # TODO: No new Guage Changes (remove existing borders?)
+          # TODO: May remove Guage Changes as Track Action (add ability to corps?)
         end
 
         def company_header(company)

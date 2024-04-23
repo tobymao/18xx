@@ -97,9 +97,10 @@ module Engine
               # buy 1 or mort matching certs from player hand [ok]
               # buy 1 private company from bank [ok]
               # buy 1 railroad bond [prevent spaming all 10 copies]
-              # convert BOND into GIPR share (Phase IV) [TODO]
+              # convert BOND into GIPR share (Phase IV)
               actions << 'buy_shares' if can_buy_any?(entity)
               actions << 'buy_company' if can_buy_any_companies?(entity)
+              actions << 'choose' if choice_available?(entity)
             end
             actions << 'pass' unless actions.empty?
             actions.delete('pass') if must_sell?(entity) && selling_round? # may not pass during selling round if "must_sell"
@@ -110,6 +111,47 @@ module Engine
 
           def buying_proxy?
             @round.bought_from_hand || @round.bought_from_ipo
+          end
+
+          def at_cert_limit?(entity)
+            @game.num_certs(entity) >= @game.cert_limit(entity)
+          end
+
+          # ------ Code for 'choose' Action [convert Railroad Bond] ------
+
+          def choice_name
+            'Convert Railroad Bond?'
+          end
+
+          def choice_available?(entity)
+            first_bond(entity) && @game.phase.status.include?('convert_bonds') &&
+              !at_cert_limit?(entity) && @round.current_actions.empty?
+          end
+
+          def first_bond(entity)
+            entity.companies.find { |c| c.type == :bond }
+          end
+
+          def choices
+            ["Convert to GIPR Share for #{bond_convert_cost_str}"]
+          end
+
+          def bond_convert_cost_str
+            @game.format_currency(@game.railroad_bond_convert_cost)
+          end
+
+          def process_choose(action)
+            entity = action.entity
+            corporation = @game.gipr
+
+            @log << "#{entity.name} converts a Railrod Bond to a GIPR Share for #{bond_convert_cost_str}"
+            bond = first_bond(entity)
+            entity.companies.delete(bond)
+            bond.close!
+            new_gipr_share = corporation.bond_shares.shift
+            new_gipr_share.owner = entity
+            entity.shares_by_corporation[corporation] << new_gipr_share
+            corporation.share_holders[entity] += new_gipr_share.percent
           end
 
           # ------ Code for 'buy_company' Action ------
@@ -144,7 +186,7 @@ module Engine
           def can_buy_from_market?(entity, company)
             return false if @round.bought_from_market || @round.bought_from_ipo || @round.bought_from_hand
 
-            if @game.num_certs(entity) >= @game.cert_limit(entity) && company.type != :bond
+            if at_cert_limit?(entity) && company.type != :bond
               return false # bonds do not count for cert limit
             end
 
@@ -154,7 +196,7 @@ module Engine
           def can_buy_from_hand?(entity, company)
             return false if @round.bought_from_market
             return false if @round.bought_from_ipo
-            return false if @game.num_certs(entity) >= @game.cert_limit(entity)
+            return false if at_cert_limit?(entity)
 
             if @round.bought_from_hand
               prior = @round.bought_from_hand
