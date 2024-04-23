@@ -9,9 +9,72 @@ module Engine
         class Track < Engine::Step::Track
           # for debugging
           def process_lay_tile(action)
+            multi_yellow_track_hex(action.entity, action.hex)
             super
-            LOGGER.debug "process_lay_tile >> terrain_discount: #{@round.terrain_discount}"
+            # @log << "test"
+            LOGGER.debug "process_lay_tile >> tile: #{action.tile.inspect}"
           end
+
+          # ------ Code for track laying rules
+
+          def multi_yellow_track_hex(entity, hex)
+            return if @game.loading
+            return if @round.laid_hexes.empty?
+            return if @round.num_laid_track >= 4
+
+            legal_hexes = []
+            neighbors = []
+
+            corp = @round.current_operator
+            token_hexes = corp.placed_tokens.map(&:hex)
+            token_nodes = token_hexes.map { |h| h.tile.nodes[0].paths }
+            connected = hex_neighbors(entity, hex)
+
+            hexes = @round.laid_hexes
+            graph = @game.graph_for_entity(current_entity)
+            track_route = Engine::Route.new(@game, @game.phase, nil, hexes: hexes)
+            connected_hexes = @game.graph_for_entity(entity).connected_hexes(entity)
+
+            # walked_path = hex.tile.paths.map { |p| p.walk() }
+
+            LOGGER.debug " Connection Test Called >> entity: #{entity.inspect}, hex: #{hex.inspect}"
+            LOGGER.debug " >> token_hexes: #{token_hexes.inspect}"
+            LOGGER.debug " >> token_nodes: #{token_nodes.inspect}"
+            # LOGGER.debug " >> walked_path: #{walked_path.inspect}"
+
+            LOGGER.debug " >> laid_hexes: #{@round.laid_hexes.inspect}"
+            LOGGER.debug " >> connected hexes: #{connected_hexes}"
+            LOGGER.debug " >> connected_paths: #{@game.graph_for_entity(entity).connected_paths(entity)}"
+            LOGGER.debug " >> reachable_hexes: #{@game.graph_for_entity(entity).reachable_hexes(entity)}"
+            LOGGER.debug " >> route_info: #{@game.graph_for_entity(entity).route_info(entity)}"
+
+            connected_hexes.reject! { |h| h.tile.color != 'white' }
+            LOGGER.debug " >> white hexes: #{connected_hexes}"
+
+            hexes.each do |h|
+              tile = h.tile
+              neighbors = tile.exits.map { |e| h.neighbors[e] }
+              LOGGER.debug " Hex #{h.inspect} exits #{tile.exits} neighbors #{neighbors.inspect} "
+            end
+
+            empty_neighbors = neighbors.select { |h| h.tile.color == 'white' }
+            LOGGER.debug " empty_neighbors #{empty_neighbors.inspect} "
+
+            legal_hexes = empty_neighbors
+            legal_hexes.include?(hex) && connected
+          end
+
+          def available_hex(entity_or_entities, hex)
+            # entity_or_entities is an array when combining private company abilities
+            entities = Array(entity_or_entities)
+            entity, *_combo_entities = entities
+
+            return multi_yellow_track_hex(entity, hex) if @round.num_laid_track.positive? && !@round.upgraded_track
+
+            tracker_available_hex(entity, hex)
+          end
+
+          # ------
 
           # Bypass some Step::Tracker tests for Town to City upgrade: maintain exits, and check new exits are valid
           def legal_tile_rotation?(entity, hex, tile)
