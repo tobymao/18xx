@@ -26,6 +26,26 @@ module Engine
             actions
           end
 
+          def auto_actions(entity)
+            programmed_actions = super
+            return programmed_actions if programmed_actions
+
+            # The only situation that needs an auto action is when the only
+            # possible (non-pass) action is buy_shares, and this is for an
+            # exchange only (no shares can be bought), and there is no legal
+            # exchange possible as the minor companies owned by the player
+            # are not connected to any public companies.  The connection
+            # between the minor and public companies is not checked in
+            # `actions` to avoid calls to the graph when the game is loading.
+            return unless actions(entity) == %w[buy_shares pass]
+            return if @game.under_obligation?(entity)
+            return if can_buy_any_from_market?(entity)
+            return if can_buy_any_from_ipo?(entity)
+            return if can_exchange_any?(entity, check_connection: true)
+
+            [Engine::Action::Pass.new(entity)]
+          end
+
           def bankruptcy_description(player)
             concession = player.companies
                                .select { |c| c.type == :concession }
@@ -47,7 +67,7 @@ module Engine
           def can_buy_any?(entity)
             return false if bought?
 
-            super || can_exchange_any?(entity)
+            super || can_exchange_any?(entity, check_connection: false)
           end
 
           def can_gain?(entity, bundle, exchange: false)
@@ -57,11 +77,11 @@ module Engine
 
           # Checks whether a player can afford to exchange one of their minors
           # for a share in a major corporation.
-          # **Note** This does not check whether there is a track connection
-          # between the minor and the major, which is required to carry out the
-          # exchange. This is not checked to avoid having to recalculate the
-          # game graph whilst a game is being loaded.
-          def can_exchange_any?(player)
+          # If `check_connection` is false this method does not check whether
+          # there is a track connection between the minor and the major, which
+          # is required to carry out the exchange. This is not checked to avoid
+          # having to recalculate the game graph whilst a game is being loaded.
+          def can_exchange_any?(player, check_connection: false)
             majors = @game.major_corporations.select do |corp|
               corp.ipoed && (corp.num_treasury_shares.positive? || corp.num_market_shares.positive?)
             end
@@ -72,7 +92,10 @@ module Engine
               next false if minor.share_price.price.zero?
 
               max_price = (minor.share_price.price * 2) + @game.liquidity(player)
-              majors.any? { |corp| corp.share_price.price <= max_price }
+              majors.any? do |corp|
+                (corp.share_price.price <= max_price) &&
+                  (!check_connection || @game.major_minor_connected?(corp, minor))
+              end
             end
           end
 
