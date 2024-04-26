@@ -9,70 +9,68 @@ module Engine
         class Track < Engine::Step::Track
           # for debugging
           def process_lay_tile(action)
-            LOGGER.debug 'Track >> process_lay_tile'
-            LOGGER.debug " >> tile: #{action.tile.inspect}"
-            multi_yellow_track_hex(action.entity, action.hex)
+            LOGGER.debug "Track >> process_lay_tile >> entity: #{action.entity.inspect}, tile: #{action.tile.inspect}"
+            connected_to_track_laying_path?(action.hex) # verify that hex is connected to laying path
             super
             move_oo_reservations(action) unless @round.pending_tokens.empty? # Pending token due to Yellow OO tile
+            @round.next_empty_hexes = get_railhead_hexes
           end
 
           # ------ Code for track laying rules
+          def round_state
+            { next_empty_hexes: [] }.merge(super)
+          end
 
-          def multi_yellow_track_hex(entity, hex)
+          def connected_to_track_laying_path?(hex)
             return if @game.loading
             return if @round.laid_hexes.empty?
-            return if @round.num_laid_track >= 4
+            return unless hex.tile.color == 'white'
 
-            legal_hexes = []
-            neighbors = []
+            @round.next_empty_hexes = get_railhead_hexes if @round.next_empty_hexes.empty?
+            @round.next_empty_hexes.include?(hex)
+          end
+
+          def get_railhead_hexes
+            return [] if @game.loading
+            return [] if @round.laid_hexes.empty?
+
+            # check if there is only one 'white' neighbor connected to prior tile => return without walking
+            neighbors = @round.laid_hexes.last.tile.exits.map { |e| @round.laid_hexes.last.neighbors[e] }
+            empty_neighbors = neighbors.select { |h| h.tile.color == 'white' }
+            return empty_neighbors if empty_neighbors.size == 1
 
             corp = @round.current_operator
-            token_hexes = corp.placed_tokens.map(&:hex)
-            token_nodes = token_hexes.map { |h| h.tile.nodes[0].paths }
-            connected = hex_neighbors(entity, hex)
+            railheads = corp.placed_tokens.map(&:city)
+            placed_paths = @round.laid_hexes.map(&:tile).map(&:paths) # paths on all previously laid hexes
+            LOGGER.debug "railhead_hexes >> corp: #{corp.inspect}, railheads: #{railheads.inspect}"
+            return [] unless railheads.any?
 
-            hexes = @round.laid_hexes
-            graph = @game.graph_for_entity(current_entity)
-            track_route = Engine::Route.new(@game, @game.phase, nil, hexes: hexes)
-            connected_hexes = @game.graph_for_entity(entity).connected_hexes(entity)
+            next_hexes = []
+            railheads.first.walk(corporation: corp) do |path, v_p, visited|
+              # check if path ends at targeted "white" hex
+              empty_neighbors = path.exits.map { |e| path.hex.neighbors[e] }.reject { |h| h.tile.color != 'white' }
+              next unless empty_neighbors.any?
+              LOGGER.debug " walk >> path: #{path.inspect} > empty_neighbors: #{empty_neighbors.inspect} "
 
-            # walked_path = hex.tile.paths.map { |p| p.walk() }
+              # test if the visted path includes a path from all placed tiles
+              visited_path_array = v_p.keys
+              include_array = placed_paths.map { |paths_on_tile| (paths_on_tile & visited_path_array).any? }
+              next unless include_array.all?
 
-            LOGGER.debug " Connection Test Called >> entity: #{entity.inspect}, hex: #{hex.inspect}"
-            LOGGER.debug " >> token_hexes: #{token_hexes.inspect}"
-            LOGGER.debug " >> token_nodes: #{token_nodes.inspect}"
-            # LOGGER.debug " >> walked_path: #{walked_path.inspect}"
-
-            LOGGER.debug " >> laid_hexes: #{@round.laid_hexes.inspect}"
-            LOGGER.debug " >> connected hexes: #{connected_hexes}"
-            LOGGER.debug " >> connected_paths: #{@game.graph_for_entity(entity).connected_paths(entity)}"
-            LOGGER.debug " >> reachable_hexes: #{@game.graph_for_entity(entity).reachable_hexes(entity)}"
-            LOGGER.debug " >> route_info: #{@game.graph_for_entity(entity).route_info(entity)}"
-
-            connected_hexes.reject! { |h| h.tile.color != 'white' }
-            LOGGER.debug " >> white hexes: #{connected_hexes}"
-
-            hexes.each do |h|
-              tile = h.tile
-              neighbors = tile.exits.map { |e| h.neighbors[e] }
-              LOGGER.debug " Hex #{h.inspect} exits #{tile.exits} neighbors #{neighbors.inspect} "
+              # test that all tiles are visted in the correct sequence along the visted path
+              sequence = placed_paths.map { |t_ps| t_ps.map { |p| visited_path_array.index(p) }.compact.min }
+              next unless sequence.each_cons(2).all? { |x,y| x < y }
+              LOGGER.debug " >> path found!!! >> sequence: #{sequence.inspect} "
+              next_hexes << empty_neighbors
             end
-
-            empty_neighbors = neighbors.select { |h| h.tile.color == 'white' }
-            LOGGER.debug " empty_neighbors #{empty_neighbors.inspect} "
-
-            legal_hexes = empty_neighbors
-            legal_hexes.include?(hex) && connected
+            LOGGER.debug "railhead_hexes >> next_hexes: #{next_hexes.inspect}"
+            next_hexes.flatten
           end
 
           def available_hex(entity_or_entities, hex)
-            # entity_or_entities is an array when combining private company abilities
-            entities = Array(entity_or_entities)
-            entity, *_combo_entities = entities
+            return super unless @round.num_laid_track.positive?
 
-            return multi_yellow_track_hex(entity, hex) if @round.num_laid_track.positive? && !@round.upgraded_track
-
-            tracker_available_hex(entity, hex)
+            connected_to_track_laying_path?(hex)
           end
 
           # ------
