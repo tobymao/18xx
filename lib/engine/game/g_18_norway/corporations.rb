@@ -76,7 +76,7 @@ module Engine
           {
             float_percent: 60,
             sym: 'V',
-            name: 'Vestfoldsbanen',
+            name: 'Vestfoldbanen',
             logo: '18_norway/VB',
             simple_logo: '18_norway/VB.alt',
             tokens: [0, 40, 60, 80],
