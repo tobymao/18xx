@@ -32,6 +32,7 @@ module Engine
       'Y' => :pays_bonus_3,
       'Z' => :pays_bonus_4,
       'S' => :share_split,
+      'f' => :only_president
     }.freeze
 
     # Types which are info only and shouldn't

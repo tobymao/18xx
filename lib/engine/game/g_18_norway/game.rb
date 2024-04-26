@@ -52,12 +52,18 @@ module Engine
         STARTING_CASH = { 3 => 400, 4 => 300, 5 => 240 }.freeze
 
         MARKET = [
-          %w[0c 10 20 30 40
+          %w[0c 10f 20f 30f 40f
              50p 60p 70p 80p 90p 100p 112p 124p 137p 150p
              165Y 180Y 195Y 220Y 245Y 270Y 300Y 330Y 365Y 400Y 440Y 480Y],
            ].freeze
-        STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(pays_bonus_3: :white).freeze
-        MARKET_TEXT = Base::MARKET_TEXT.merge(pays_bonus_3: 'Triple jump if dividend ≥ 3X')
+        STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(
+          pays_bonus_3: :white,
+          only_president: :gray
+        ).freeze
+        MARKET_TEXT = Base::MARKET_TEXT.merge(
+          pays_bonus_3: 'Triple jump if dividend ≥ 3X',
+          only_president: 'Move left only when president sells'
+        )
 
         ASSIGNMENT_TOKENS = {
           'MOUNTAIN_SMALL' => '/icons/hill.svg',
