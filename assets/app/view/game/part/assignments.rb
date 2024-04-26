@@ -34,23 +34,20 @@ module View
 
         def load_from_tile
           @assignments = @tile.hex&.assignments || {}
-          @stack_groups = @tile.hex&.assignment_stack_groups || {}
           @assignments_to_show = []
-          @stack_groups.each do |key, assignemnts|
-            if key == 'NONE'
-              assignemnts.each do |assignemnt, _value|
-                @assignments_to_show.append({
-                                              'img' => @game.assignment_tokens(assignemnt, setting_for(:simple_logos, @game)),
-                                              'count' => 1,
-                                            })
-              end
-            else
-              @assignments_to_show.append({
-                                            'img' => @game.assignment_tokens(assignemnts.keys.last,
-                                                                             setting_for(:simple_logos, @game)),
-                                            'count' => assignemnts.size,
-                                          })
-            end
+          stack_group_count = {}
+          stack_group_img = {}
+          @assignments.keys.each do |assignment|
+            stack_group = @game.assignment_stack_group(assignment)
+            img = @game.assignment_tokens(assignment, setting_for(:simple_logos, @game))
+
+            stack_group_count[stack_group] = (stack_group_count[stack_group] || 0) + 1 unless stack_group.nil?
+            stack_group_img[stack_group] = img unless stack_group.nil?
+            @assignments_to_show.append({ 'img' => img, 'count' => 1 }) if stack_group.nil?
+          end
+
+          stack_group_count.keys.each do |group|
+            @assignments_to_show.append({ 'img' => stack_group_img[group], 'count' => stack_group_count[group] })
           end
         end
 

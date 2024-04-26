@@ -108,6 +108,8 @@ module Engine
           'GOODS_CATTLE10' => '/icons/18_uruguay/cow.svg',
         }.freeze
 
+        ASSIGNMENT_STACK_GROUPS = ASSIGNMENT_TOKENS.transform_values { |_str| 'GOODS' }
+
         PORTS = %w[E1 G1 I1 J4 K5 K7 K13].freeze
         MARKET = [
           %w[70 75 80 90 100p 110 125 150 175 200 225 250 275 300 325 350 375 400 425 450],
