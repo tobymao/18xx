@@ -45,7 +45,7 @@ module Engine
             price: 900,
             num: 20,
             available_on: '6',
-            discount: { '4' => 750, '5' => 750, '6' => 750 },
+            discount: { '4' => 150, '5' => 150, '6' => 150 },
           },
           {
             name: 'S3',
