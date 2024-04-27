@@ -58,9 +58,9 @@ module Engine
 
           # ------ Code for 'remove_gauge_change' Action [Remove Gauge Change Markers in Phase IV] ------
 
-          def may_remove_gauge_change?(entity)
+          def may_remove_gauge_change?(_entity)
             num_track_actions = @round.num_laid_track + @round.num_upgraded_track
-            @game.phase.name == 'IV' && num_track_actions.zero? && any_gauge_changes? && any_reachable_gauge_changes?(entity)
+            @game.phase.name == 'IV' && num_track_actions.zero? && any_gauge_changes?
           end
 
           def any_gauge_changes?
@@ -73,8 +73,6 @@ module Engine
           end
 
           def reachable_gauge_change?(entity, hex, neighbor)
-            return true if @game.loading # prevent graph checks on game load
-
             hex_neighbors(entity, hex) && hex_neighbors(entity, neighbor)
           end
 
@@ -85,7 +83,9 @@ module Engine
             tile = hex.tile
             edge = action.edge
             neighbor = hex.neighbors[edge]
-            raise GameError, "#{entity.name} can not reach that marker" unless reachable_gauge_change?(entity, hex, neighbor)
+            if !@game.loading && !reachable_gauge_change?(entity, hex, neighbor)
+              raise GameError, "#{entity.name} can not reach that marker"
+            end
 
             tile.borders.reject! { |b| b.edge == edge }
             neighbor.tile.borders.reject! { |nb| nb.edge == hex.invert(edge) }
