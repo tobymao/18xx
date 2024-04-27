@@ -13,7 +13,7 @@ module View
         return '' unless entity
 
         children = []
-        if step.respond_to?(:show_note?) && step.show_note?(entity) && step.respond_to?(:note_text_block)
+        if step.respond_to?(:show_note?) && step.show_note?(entity)
           note = step.note_text_block.map { |text_block| h(:p, text_block) }
           children << h(:div, { style: { marginTop: '0.5rem' } }, note)
         end
