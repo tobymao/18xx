@@ -73,6 +73,8 @@ module Engine
           end
 
           def reachable_gauge_change?(entity, hex, neighbor)
+            return true if @game.loading # prevent graph checks on game load
+
             hex_neighbors(entity, hex) && hex_neighbors(entity, neighbor)
           end
 
