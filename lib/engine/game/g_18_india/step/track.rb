@@ -12,11 +12,12 @@ module Engine
             if action.tile.color == 'yellow'
               raise GameError, 'New yellow tiles must extend path from railhead and previously laid tiles' \
                unless connected_to_track_laying_path?(action.hex)
+
               @round.laid_yellow_hexes << action.hex
             end
             super
             move_oo_reservations(action) unless @round.pending_tokens.empty? # Pending token due to Yellow OO tile
-            @round.next_empty_hexes = get_railhead_hexes
+            @round.next_empty_hexes = calculate_railhead_hexes unless @game.loading
           end
 
           def setup
@@ -37,18 +38,18 @@ module Engine
             return true if @round.laid_yellow_hexes.empty?
             return unless hex.tile.color == 'white'
 
-            @round.next_empty_hexes = get_railhead_hexes if @round.next_empty_hexes.empty?
+            @round.next_empty_hexes = calculate_railhead_hexes if @round.next_empty_hexes.empty?
             @round.next_empty_hexes.include?(hex)
           end
 
-          def get_railhead_hexes
-            return [] if @game.loading
+          def calculate_railhead_hexes
             return [] if @round.laid_yellow_hexes.empty?
 
             # check simple case of only one 'white' neighbor connected to prior tile => return without walking
             last_yellow_hex = @round.laid_yellow_hexes.last
             neighbors = last_yellow_hex.tile.exits.map { |e| last_yellow_hex.neighbors[e] }
             empty_neighbors = neighbors.select { |h| h.tile.color == 'white' }
+            LOGGER.debug "railhead_hexes >> empty_neighbors: #{empty_neighbors.uniq.inspect} exits: #{last_yellow_hex.tile.exits.inspect}"
             return empty_neighbors if empty_neighbors.one? && last_yellow_hex.tile.exits.size <= 2 # exclude triple town tiles
 
             corp = @round.current_operator
@@ -59,11 +60,10 @@ module Engine
 
             next_hexes = []
             railheads.each do |railhead|
-              railhead.walk(corporation: corp) do |path, visited_paths, visited|
+              railhead.walk(corporation: corp) do |path, visited_paths, _visited|
                 # check if path ends at targeted "white" hex
-                empty_neighbors = path.exits.map { |e| path.hex.neighbors[e] }.reject { |h| h.tile.color != 'white' }
+                empty_neighbors = path.exits.map { |e| path.hex.neighbors[e] }.select { |h| h.tile.color == 'white' }
                 next unless empty_neighbors.any?
-                LOGGER.debug " walk >> path: #{path.inspect} > empty_neighbors: #{empty_neighbors.inspect} "
 
                 # check if visited path has at least one path from all placed tiles (triple town tiles may have unused paths)
                 visited_path_array = visited_paths.keys
@@ -72,13 +72,14 @@ module Engine
 
                 # confirm that placed tiles are visited in the correct sequence along the visited path
                 sequence = placed_paths.map { |tile_paths| tile_paths.map { |p| visited_path_array.index(p) }.compact.min }
-                next unless sequence.each_cons(2).all? { |x,y| x < y }
-                LOGGER.debug " >> path found!!! >> sequence: #{sequence.inspect} "
-                next_hexes << empty_neighbors
+                next unless sequence.each_cons(2).all? { |x, y| x < y }
+
+                LOGGER.debug " >> path found to hex: #{empty_neighbors.inspect}, sequence: #{sequence.inspect}"
+                next_hexes.concat(empty_neighbors)
               end
             end
-            LOGGER.debug "railhead_hexes >> next_hexes: #{next_hexes.flatten.uniq.inspect}"
-            next_hexes.flatten.uniq
+            LOGGER.debug "railhead_hexes >> next_hexes: #{next_hexes.uniq.inspect}"
+            next_hexes.uniq
           end
 
           def available_hex(entity_or_entities, hex)
@@ -88,7 +89,6 @@ module Engine
           end
 
           # ------
-
 
           # Base code doesn't handle one token and a reservation in first city on OO tile
           # Moves a reservation from city to hex to allow any of the two cities to be tokened
