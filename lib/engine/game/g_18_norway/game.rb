@@ -79,6 +79,11 @@ module Engine
           'MOUNTAIN_BIG' => '/icons/mountain.svg',
         }.freeze
 
+        EVENTS_TEXT = {
+          'lm_green' => ['green_ferries', 'Mjøsa green ferry lines opens up.'],
+          'lm_brown' => ['brown_ferries', 'Mjøsa brown ferry lines opens up.'],
+        }.freeze
+
         def hovedbanen
           @hovedbanen ||= corporation_by_id('H')
         end
@@ -153,6 +158,16 @@ module Engine
             city = hex_by_id(hex_id).tile.cities[0]
             city.place_token(port, token)
           end
+
+          @all_tiles.each { |t| t.ignore_gauge_walk = true }
+          @_tiles.values.each { |t| t.ignore_gauge_walk = true }
+          @hexes.each { |h| h.tile.ignore_gauge_walk = true }
+
+          # Allow to build against Mjosa
+          hex_by_id('H26').neighbors[1] = hex_by_id('G27')
+          hex_by_id('H26').neighbors[5] = hex_by_id('I27')
+          hex_by_id('G27').neighbors[4] = hex_by_id('H26')
+          hex_by_id('I27').neighbors[2] = hex_by_id('H26')
         end
 
         def p4
@@ -179,11 +194,21 @@ module Engine
           big_mountain?(hex) || small_mountain?(hex)
         end
 
-        def route_cost(route)
-          # P2 Thunes mekaniske verksted do not need to pay maintainance
-          return 0 if owns_thunes_mekaniske?(route.train.owner)
+        def mjosa
+          @mjosa ||= hex_by_id('H26')
+        end
 
-          route.all_hexes.count { |hex| mountain?(hex) } * 10
+        def route_cost(route)
+          cost = 0
+          mult = 2
+          mult = 1 if @phase.tiles.include?(:green)
+          mult = 0 if @phase.tiles.include?(:brown)
+          cost += 5 * mult if route.all_hexes.include?(mjosa)
+
+          # P2 Thunes mekaniske verksted do not need to pay maintainance
+          return cost if owns_thunes_mekaniske?(route.train.owner)
+
+          cost + (route.all_hexes.count { |hex| mountain?(hex) } * 10)
         end
 
         def check_other(route)
@@ -197,7 +222,8 @@ module Engine
         end
 
         def revenue_str(route)
-          str = super
+          stop_hexes = route.stops.map(&:hex)
+          str = route.hexes.map { |h| stop_hexes.include?(h) ? h&.name : "(#{h&.name})" }.join('-')
           cost = route_cost(route)
           str += " -Fee(#{cost})" if cost.positive?
           str
@@ -407,6 +433,16 @@ module Engine
               share_pool.buy_shares(player, share, exchange: :free)
             end
           end
+        end
+
+        def event_lm_green!
+          @log << '-- Event: Mjøsa green ferry lines opens up. --'
+          mjosa.lay(tile_by_id('LM1-0'))
+        end
+
+        def event_lm_brown!
+          @log << '-- Event: Mjøsa brown ferry lines opens up. --'
+          mjosa.lay(tile_by_id('LM2-0'))
         end
       end
     end

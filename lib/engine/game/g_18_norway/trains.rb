@@ -18,6 +18,7 @@ module Engine
             price: 180,
             obsolete_on: '5',
             num: 5,
+            events: [{ 'type' => 'lm_green' }],
           },
           {
             name: '4',
@@ -31,7 +32,7 @@ module Engine
             distance: 5,
             price: 450,
             num: 3,
-            events: [{ 'type' => 'close_companies' }],
+            events: [{ 'type' => 'close_companies' }, { 'type' => 'lm_brown' }],
           },
           {
             name: '6',
