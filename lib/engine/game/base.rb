@@ -1366,6 +1366,10 @@ module Engine
         city.tokened_by?(entity)
       end
 
+      def for_graph_city_tokened_by?(_city, _entity, _graph)
+        false
+      end
+
       def check_route_token(_route, token)
         raise NoToken, 'Route must contain token' unless token
       end

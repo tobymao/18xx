@@ -122,8 +122,7 @@ module Engine
             shares: [100],
             logo: '18_norway/NSB',
             simple_logo: '18_norway/NSB',
-            coordinates: [],
-            city: 1,
+            coordinates: %w[G15 A25 C17 A31 B36],
             color: :'#d7555f',
           },
         ].freeze
