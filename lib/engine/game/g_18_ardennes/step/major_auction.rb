@@ -231,7 +231,7 @@ module Engine
                 'place a bid. One extra slot is needed for each public ' \
                 'company being started.'
               when :minors
-                "#{player.name} does not own any minor companies that could " \
+                "#{player.name} does have any minor companies that could " \
                 'be used to place a bid on a public company.'
               when :winning
                 "#{player.name} already is leading the auctions on all " \
