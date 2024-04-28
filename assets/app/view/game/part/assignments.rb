@@ -46,8 +46,8 @@ module View
             @assignments_to_show.append({ 'img' => img, 'count' => 1 }) if stack_group.nil?
           end
 
-          stack_group_count.keys.each do |group|
-            @assignments_to_show.append({ 'img' => stack_group_img[group], 'count' => stack_group_count[group] })
+          stack_group_count.each do |group, count|
+            @assignments_to_show.append({ 'img' => stack_group_img[group], 'count' => count })
           end
         end
 
