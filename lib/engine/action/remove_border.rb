@@ -4,7 +4,7 @@ require_relative 'base'
 
 module Engine
   module Action
-    class RemoveGaugeChange < Base
+    class RemoveBorder < Base
       attr_reader :hex, :edge
 
       def initialize(entity, hex:, edge:)

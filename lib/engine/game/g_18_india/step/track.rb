@@ -17,7 +17,7 @@ module Engine
             return [] if entity.company? || !can_lay_tile?(entity)
 
             actions = %w[lay_tile pass]
-            actions << 'remove_gauge_change' if may_remove_gauge_change?(entity)
+            actions << 'remove_border' if may_remove_gauge_change?(entity)
             actions
           end
 
@@ -77,7 +77,7 @@ module Engine
           end
 
           # NOTE: Triggered by on_click event in View::Game::Borders
-          def process_remove_gauge_change(action)
+          def process_remove_border(action)
             entity = action.entity
             hex = action.hex
             tile = hex.tile

@@ -118,13 +118,12 @@ module View
         def on_click(event, border)
           step = @game.round.active_step(nil)
           current_entity = step&.current_entity
-          remove_gauge_step = @game.round.step_for(current_entity, 'remove_gauge_change')
+          remove_border_step = @game.round.step_for(current_entity, 'remove_border')
           event.JS.stopPropagation
-          LOGGER.debug "ON_CLICK event in Borders called remove_gauge_step: #{remove_gauge_step}"
-          return unless remove_gauge_step
+          return unless remove_border_step
           return unless border.type == :gauge_change
 
-          action = Engine::Action::RemoveGaugeChange.new(
+          action = Engine::Action::RemoveBorder.new(
             current_entity,
             hex: border.hex,
             edge: border.edge,
