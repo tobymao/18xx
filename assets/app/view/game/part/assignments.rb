@@ -35,7 +35,7 @@ module View
         def load_from_tile
           @assignments = @tile.hex&.assignments || {}
           @assignments_to_show = []
-          stack_group_count = {}
+          stack_group_count = Hash.new(0)
           stack_group_img = {}
           @assignments.each_key do |assignment|
             stack_group = @game.assignment_stack_group(assignment)
