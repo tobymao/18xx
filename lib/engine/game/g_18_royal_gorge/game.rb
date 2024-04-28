@@ -368,7 +368,6 @@ module Engine
           revenue = SULPHUR_SPRINGS_BROWN_REVENUE
           sulphur_springs.revenue = revenue
           @log << "-- Event: Sulphur Springs (B2)'s revenue increases to #{format_currency(revenue)} --"
-          puts "Sulphur Springs (B2)'s revenue increases to #{format_currency(revenue)}"
         end
 
         def event_treaty_of_boston!
