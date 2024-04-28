@@ -37,7 +37,7 @@ module View
           @assignments_to_show = []
           stack_group_count = {}
           stack_group_img = {}
-          @assignments.keys.each do |assignment|
+          @assignments.each_key do |assignment|
             stack_group = @game.assignment_stack_group(assignment)
             img = @game.assignment_tokens(assignment, setting_for(:simple_logos, @game))
 
