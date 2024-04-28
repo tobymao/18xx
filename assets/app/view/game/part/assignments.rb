@@ -41,9 +41,12 @@ module View
             stack_group = @game.assignment_stack_group(assignment)
             img = @game.assignment_tokens(assignment, setting_for(:simple_logos, @game))
 
-            stack_group_count[stack_group] = (stack_group_count[stack_group] || 0) + 1 unless stack_group.nil?
-            stack_group_img[stack_group] = img unless stack_group.nil?
-            @assignments_to_show.append({ 'img' => img, 'count' => 1 }) if stack_group.nil?
+            if stack_group
+              stack_group_count[stack_group] += 1
+              stack_group_img[stack_group] = img
+            else
+              @assignments_to_show.append({ 'img' => img, 'count' => 1 })
+            end
           end
 
           stack_group_count.each do |group, count|
