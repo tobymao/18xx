@@ -75,7 +75,7 @@ module Engine
                 @turn += 1
                 or_round_finished
                 or_set_finished
-                new_major_auction_round
+                @phase.name == '2' ? new_stock_round : new_major_auction_round
               end
             end
         end
