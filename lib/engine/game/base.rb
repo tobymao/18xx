@@ -358,6 +358,7 @@ module Engine
       }.freeze
 
       ASSIGNMENT_TOKENS = {}.freeze
+      ASSIGNMENT_STACK_GROUPS = {}.freeze
 
       OPERATING_ROUND_NAME = 'Operating'
       OPERATION_ROUND_SHORT_NAME = 'ORs'
@@ -2228,8 +2229,11 @@ module Engine
 
           return assignment.logo
         end
-
         self.class::ASSIGNMENT_TOKENS[assignment]
+      end
+
+      def assignment_stack_group(assignment)
+        self.class::ASSIGNMENT_STACK_GROUPS[assignment]
       end
 
       def bankruptcy_limit_reached?
