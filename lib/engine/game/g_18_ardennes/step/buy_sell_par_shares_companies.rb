@@ -17,7 +17,7 @@ module Engine
 
             actions = []
             actions << 'par' if under_limit?(entity)
-            actions << 'sell_shares' if can_sell_any?(entity)
+            actions.concat(%w[sell_shares sell_company]) if can_sell_any?(entity)
             # TODO: handle this properly.
             # Maybe stop the player from bidding for a major if they are at
             # certificate limit and do not have any sellable shares.
