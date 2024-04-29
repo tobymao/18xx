@@ -108,6 +108,8 @@ module Engine
           'GOODS_CATTLE10' => '/icons/18_uruguay/cow.svg',
         }.freeze
 
+        ASSIGNMENT_STACK_GROUPS = ASSIGNMENT_TOKENS.transform_values { |_str| 'GOODS' }
+
         PORTS = %w[E1 G1 I1 J4 K5 K7 K13].freeze
         MARKET = [
           %w[70 75 80 90 100p 110 125 150 175 200 225 250 275 300 325 350 375 400 425 450],
@@ -145,6 +147,10 @@ module Engine
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
           nationalization: ['Nationalization',
                             'Time for nationalization']
+        ).freeze
+
+        STATUS_TEXT = Base::STATUS_TEXT.merge(
+          'rptla_available' => ['RPTLA public available', 'RPTLA is available for purchase.'],
         ).freeze
 
         def price_movement_chart
@@ -291,6 +297,13 @@ module Engine
             G18Uruguay::Step::BuyTrain,
             [G18Uruguay::Step::TakeLoanBuyCompany, { blocks: true }],
           ], round_num: round_num)
+        end
+
+        def stock_round
+          Engine::Round::Stock.new(self, [
+            Step::DiscardTrain,
+            G18Uruguay::Step::BuySellParShares,
+          ])
         end
 
         def abilities_ignore_owner(entity, type = nil, time: nil, on_phase: nil, passive_ok: nil, strict_time: nil)

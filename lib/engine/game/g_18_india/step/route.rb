@@ -1,0 +1,37 @@
+# frozen_string_literal: true
+
+require_relative '../../../step/route'
+
+module Engine
+  module Game
+    module G18India
+      module Step
+        class Route < Engine::Step::Route
+          # modified to claim commodities when routes are run
+          def process_run_routes(action)
+            super
+            entity = action.entity
+            routes = action.routes
+            ability = entity.all_abilities.find { |a| a.type == :commodities }
+
+            routes.each do |route|
+              @game.commodity_bonus(route)
+              @round.commodities_used.each do |commodity|
+                @log << "#{entity.name} delivered #{commodity}"
+                @game.claim_concession(entity, commodity) unless ability.description.include?(commodity)
+              end
+            end
+          end
+
+          def round_state
+            super.merge(
+              {
+                commodities_used: [],
+              }
+            )
+          end
+        end
+      end
+    end
+  end
+end

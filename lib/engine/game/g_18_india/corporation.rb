@@ -4,12 +4,19 @@ module Engine
   module Game
     module G18India
       class Corporation < Engine::Corporation
-        attr_accessor :commodities
+        attr_accessor :commodities, :bond_shares
         attr_reader :managers_share
 
         def initialize(sym:, name:, **opts)
           super
+          # display commodities as an ability on corp card (condider idea of using type of "company" for commodities)
           @commodities = []
+          ability = Ability::Base.new(
+            type: 'commodities',
+            description: 'Commodities: ',
+            remove_when_used_up: false,
+          )
+          add_ability(ability)
 
           # Create Manager's Share (a 0% share that is used to track current manager, can not be sold)
           @managers_share = Share.new(self, owner: @ipo_owner, president: true, percent: 0, index: 'M', cert_size: 0)
@@ -30,9 +37,15 @@ module Engine
           ability = Ability::Base.new(
             type: 'exchange_token',
             description: 'Exchange tokens: 3',
-            count: 3
+            count: 3,
+            remove_when_used_up: false,
           )
           add_ability(ability)
+
+          # create addiional GIPR shares for converting Railroad Bonds
+          @bond_shares = Array.new(10, 10).map.with_index do |percent, index|
+            Share.new(self, percent: percent, index: index + 10)
+          end
         end
 
         def make_manager(player)

@@ -9,11 +9,13 @@ module Engine
         class BuySellParShares < G1817::Step::BuySellParShares
           def use_on_assign_abilities(company)
             corporation = company.owner
-            case company.id
-            when 'US'
+
+            @game.abilities(company, :additional_token) do |ability|
               corporation.tokens << Engine::Token.new(corporation)
-              ability.additional_token.use!
+              ability.use!
               @log << "#{corporation.name} acquires additonal token from #{company.name}"
+            end
+            case company.id
             when 'RR'
               @game.assign_rr_train(company, corporation)
             when 'JLBC'

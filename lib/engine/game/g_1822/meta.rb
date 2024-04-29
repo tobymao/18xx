@@ -37,8 +37,8 @@ module Engine
           {
             sym: :plus_expansion,
             short_name: '1822+',
-            desc: '6 more minors and 3 more privates. The privates are categorized into blue (bidbox 1), '\
-                  'dark grey (bidbox 2) and gold (bidbox 3) stacks.',
+            desc: '6 more minors and 3 more privates. The privates are categorized into trains (bidbox 1), track '\
+                  '(bidbox 2) and other (bidbox 3) stacks.',
           },
           {
             sym: :tax_haven_multiple,
