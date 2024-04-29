@@ -115,6 +115,7 @@ module Engine
 
         EVENTS_TEXT = G1817::Game::EVENTS_TEXT.merge(
           'remove_blocking_token' => ['Remove Blocking Token', "Blocking token in Milwaukee (#{MILWAUKEE_HEX}) is removed."],
+          'signal_end_game' => ['Signal End Game', 'First 4 train bought/exported, ending game at the end of the next OR set.'],
         ).freeze
 
         ASSIGNMENT_TOKENS = {
