@@ -132,6 +132,8 @@ module Engine
           switcher == corporation
         end
 
+        EXTRA_TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }].freeze
+
         def setup
           MOUNTAIN_BIG_HEXES.each { |hex| hex_by_id(hex).assign!('MOUNTAIN_BIG') }
           MOUNTAIN_SMALL_HEXES.each { |hex| hex_by_id(hex).assign!('MOUNTAIN_SMALL') }
@@ -143,6 +145,11 @@ module Engine
           switcher.add_ability(Engine::Ability::Base.new(
             type: 'switcher',
             description: 'May pass one tokened out city',
+          ))
+
+          corporation_by_id('S').add_ability(Engine::Ability::Base.new(
+            type: 'extra_tile_lay',
+            description: 'May lay two yellow',
           ))
 
           corporation_by_id('J').add_ability(Engine::Ability::Base.new(
