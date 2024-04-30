@@ -30,7 +30,7 @@ module Engine
         ALWAYS_BUY_TRAINS_AT_FACE_VALUE = true
 
         MARKET = [
-          %w[0
+          %w[0l
              0a
              0a
              0a
