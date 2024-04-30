@@ -889,7 +889,7 @@ module Engine
         def init_debt_corp(corporation)
           corporation.ipoed = true
           corporation.floated = true
-          price = @stock_market.share_price([0, 1])
+          price = @stock_market.share_price([0, 6])
           @stock_market.set_par(corporation, price)
           bundle = ShareBundle.new(corporation.shares_of(corporation))
           @share_pool.transfer_shares(bundle, @share_pool)
