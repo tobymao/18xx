@@ -266,6 +266,16 @@ module Engine
         def can_par?(corporation, _parrer)
           nsb != corporation
         end
+
+        def tile_lays(entity)
+          return EXTRA_TILE_LAYS if abilities(entity, :extra_tile_lay)
+
+          super
+        end
+
+        def oslo
+          @oslo ||= hex_by_id('G29')
+        end
       end
     end
   end
