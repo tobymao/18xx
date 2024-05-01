@@ -108,6 +108,15 @@ module Engine
             shares: [20, 10, 10, 10, 10, 10, 10, 20],
             always_market_price: true,
             color: '#ff0000',
+            abilities: [
+              {
+                type: 'description',
+                description: 'Choose home token location',
+                desc_detail: 'When this corporation floats, president must select location for its home token among '\
+                             'Caltanissetta (H8), Messina (B14), Ragusa (M11), Terranova (M9) or Trapani (C1). '\
+                             'If no token slots are available in these cities, AFG cannot be started.',
+              },
+            ],
           },
           {
             float_percent: 20,
