@@ -1,14 +1,14 @@
 # frozen_string_literal: true
 
 require_relative '../../../step/track'
-require_relative 'tracker'
+require_relative 'gauge_change_border'
 
 module Engine
   module Game
     module G18India
       module Step
         class Track < Engine::Step::Track
-          include Tracker
+          include GaugeChangeBorder
 
           # modified to add remove gauge change option in phase IV
           def actions(entity)

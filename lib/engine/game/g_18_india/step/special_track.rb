@@ -1,14 +1,14 @@
 # frozen_string_literal: true
 
 require_relative '../../../step/special_track'
-require_relative 'tracker'
+require_relative 'gauge_change_border'
 
 module Engine
   module Game
     module G18India
       module Step
         class SpecialTrack < Engine::Step::SpecialTrack
-          include Tracker
+          include GaugeChangeBorder
 
           # Bypass some Step::Tracker tests for Town to City upgrade: maintain exits, and check new exits are valid
           # check tile color to active ability
