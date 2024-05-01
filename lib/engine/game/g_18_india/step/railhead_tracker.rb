@@ -28,7 +28,7 @@ module Engine
             neighbors = last_yellow_hex.tile.exits.map { |e| last_yellow_hex.neighbors[e] }
             empty_neighbors = neighbors.select { |h| h.tile.color == 'white' }
             LOGGER.debug "railhead_hexes >> empty_neighbors: #{empty_neighbors.uniq.inspect}" \
-              " exits: #{last_yellow_hex.tile.exits.inspect}"
+                         " exits: #{last_yellow_hex.tile.exits.inspect}"
             return empty_neighbors if empty_neighbors.one? && last_yellow_hex.tile.exits.size <= 2 # exclude triple town tiles
 
             corp = @round.current_operator
