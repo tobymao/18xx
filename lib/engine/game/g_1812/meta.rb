@@ -22,8 +22,9 @@ module Engine
           {
             sym: :remove_some_minors,
             short_name: 'Remove some minors',
-            desc: 'For variety in 2-3 player games, players could agree before the game to randomly choose 2n+2 minor '\
-                  'companies (where n is the number of players) and remove the rest from the game.',
+            desc: '2-3 players: randomly choose 2n+2 minors (where n is the number of players) and remove the rest '\
+                  'from the game.',
+            players: [2, 3],
           },
         ].freeze
       end

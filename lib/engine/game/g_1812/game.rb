@@ -3,6 +3,8 @@
 require_relative 'entities'
 require_relative 'map'
 require_relative 'meta'
+require_relative 'phases'
+require_relative 'trains'
 require_relative '../base'
 require_relative '../company_price_up_to_face'
 
@@ -13,6 +15,8 @@ module Engine
         include_meta(G1812::Meta)
         include Entities
         include Map
+        include Phases
+        include Trains
         include CompanyPriceUpToFace
 
         register_colors(red: '#d1232a',
@@ -35,173 +39,24 @@ module Engine
 
         STARTING_CASH = 195
 
+        MIN_BID_INCREMENT = 5
+        MUST_BID_INCREMENT_MULTIPLE = true
+
         MARKET = [
-          %w[
-            40
-            45
-            50p
-            55p
-            60p
-            65p
-            70p
-            80p
-            90p
-            100p
-            110p
-            120p
-            135p
-            150
-            165
-            180
-            200
-            220
-            245
-            270
-            300
-            330
-            360
-            400
-          ],
+          %w[40 45 50p 55p 60p 65p 70p 80p 90p 100p 110p 120p 135p 150 165 180 200 220 245 270 300 330 360 400],
         ].freeze
-
-        PHASES = [{
-          name: '2',
-          train_limit: 2,
-          tiles: [:yellow],
-          operating_rounds: 2,
-        },
-                  {
-                    name: '3',
-                    on: '3',
-                    train_limit: { minor: 2, public: 4 },
-                    tiles: %i[yellow green],
-                    operating_rounds: 2,
-                    status: %w[can_buy_companies minors_can_merge],
-                  },
-                  {
-                    name: '4',
-                    on: '4',
-                    train_limit: { minor: 1, public: 3 },
-                    tiles: %i[yellow green brown],
-                    operating_rounds: 2,
-                    status: %w[can_buy_companies minors_can_merge cannot_open_minors],
-                  },
-                  {
-                    name: '5',
-                    on: '5',
-                    train_limit: { minor: 0, public: 2 },
-                    tiles: %i[yellow green brown gray],
-                    operating_rounds: 3,
-                    status: %w[can_par minors_can_merge cannot_open_minors tradeins_allowed],
-                  },
-                  {
-                    name: '6',
-                    on: '3D',
-                    train_limit: 2,
-                    tiles: %i[yellow green brown gray],
-                    operating_rounds: 3,
-                    status: ['minors_can_merge'],
-                  }].freeze
-
-        TRAINS = [
-                  {
-                    name: '2',
-                    distance: [{ 'nodes' => %w[city offboard town], 'pay' => 2, 'visit' => 2 },
-                               { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
-                    price: 100,
-                    rusts_on: '4',
-                    variants: [
-                      {
-                        name: '1G',
-                        distance: [{ 'nodes' => %w[city offboard town], 'pay' => 3, 'visit' => 3 },
-                                   { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
-                        price: 90,
-                      },
-                    ],
-                  },
-                  {
-                    name: '3',
-                    distance: [{ 'nodes' => %w[city offboard town], 'pay' => 3, 'visit' => 3 },
-                               { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
-                    price: 200,
-                    rusts_on: '5',
-                    variants: [
-                      {
-                        name: '2G',
-                        distance: [{ 'nodes' => %w[city offboard town], 'pay' => 4, 'visit' => 4 },
-                                   { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
-                        price: 180,
-                      },
-                    ],
-                  },
-                  {
-                    name: '3+1',
-                    distance: [{ 'nodes' => %w[city offboard town], 'pay' => 3, 'visit' => 3 },
-                               { 'nodes' => ['town'], 'pay' => 1, 'visit' => 99 }],
-                    price: 220,
-                    rusts_on: '3D',
-                    variants: [
-                      {
-                        name: '2+1G',
-                        distance: [{ 'nodes' => %w[city offboard town], 'pay' => 5, 'visit' => 5 },
-                                   { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
-                        price: 200,
-                      },
-                    ],
-                  },
-                  {
-                    name: '4',
-                    distance: [{ 'nodes' => %w[city offboard town], 'pay' => 4, 'visit' => 4 },
-                               { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
-                    price: 400,
-                    variants: [
-                      {
-                        name: '3+2G',
-                        distance: [{ 'nodes' => %w[city offboard town], 'pay' => 5, 'visit' => 5 },
-                                   { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
-                        price: 360,
-                      },
-                    ],
-                  },
-                  {
-                    name: '5',
-                    distance: [{ 'nodes' => %w[city offboard town], 'pay' => 3, 'visit' => 3 },
-                               { 'nodes' => ['town'], 'pay' => 1, 'visit' => 99 }],
-                    price: 500,
-                    variants: [
-                      {
-                        name: '4+2G',
-                        distance: [{ 'nodes' => %w[city offboard town], 'pay' => 6, 'visit' => 6 },
-                                   { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
-                        price: 460,
-                      },
-                    ],
-                    events: [{ 'type' => 'close_companies' }],
-                  },
-                  {
-                    name: '3D',
-                    distance: [{ 'nodes' => %w[city offboard], 'pay' => 3, 'visit' => 3, 'multiplier' => 2 },
-                               { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
-                    price: 750,
-                    variants: [
-                      {
-                        name: '2+2GD',
-                        distance: [{ 'nodes' => %w[city offboard town], 'pay' => 6, 'visit' => 6, 'multiplier' => 2 },
-                                   { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
-                        price: 460,
-                      },
-                    ],
-                  },
-].freeze
-
-        NORTH_HEXES = %w[A4 A8 F1].freeze
-        SOUTH_HEXES = %w[C20 E20 F19].freeze
-        PORT_HEXES = %w[F3 G4 G6 G8 H9 H17 H19].freeze
-        MINE_HEXES = %w[B15 D7 D17 E2 E6].freeze
 
         def new_auction_round
           Engine::Round::Auction.new(self, [
-            Engine::Step::SelectionAuction,
+            G1812::Step::SelectionAuction,
+          ])
+        end
+
+        def stock_round
+          Engine::Round::Stock.new(self, [
+            Engine::Step::DiscardTrain,
+            Engine::Step::HomeToken,
+            G1812::Step::BuySellParShares,
           ])
         end
 
@@ -223,30 +78,33 @@ module Engine
           ], round_num: round_num)
         end
 
-        def setup_preround
-          # randomize the private companies, choose an amount equal to double the player count, sort numerically
-          @companies = @companies.sort_by { rand }.take(@players.size * 2).sort_by(&:sym)
-          # if @optional_rules&.include?(:remove_some_minors)
-          #   minors, corps = corporations.partition { |c| c.type == :minor }
-          #   @corporations = minors.sort_by { rand }.take(2 + @players.size * 2).sort_by { |m| m.name.to_i }  + super(corps)
-          # end
+        def init_companies(players)
+          companies = super
+          companies.sort_by { rand }.take(@players.size * 2).sort_by! { |c| c.sym[1..-1].to_i }
         end
 
-        def bank_sort(corporations)
-          minors, corps = corporations.partition { |c| c.type == :minor }
-          minors.sort_by { |m| m.name.to_i } + super(corps)
+        def game_minors
+          if @optional_rules&.include?(:remove_some_minors)
+            self.class::MINORS.sort_by { rand }.take((@players.size * 2) + 2)
+          else
+            self.class::MINORS
+          end
         end
+
+        # def bank_sort(corporations)
+        #   minors, corps = entities.partition(&:minor?)
+        #   minors.sort_by { |m| m.name.to_i } + super(corps)
+        # end
 
         def setup
           setup_company_price_up_to_face
+          return unless @optional_rules&.include?(:remove_some_minors)
+
+          @log << "Minors in included in this game: #{@minors.map(&:name).sort_by(&:to_i).join(', ')}"
         end
 
-        def ns_bonus
-          @hexes.find { |hex| hex.coordinates == 'I1' }.tile.offboards.first
-        end
-
-        def mine_port_bonus
-          @hexes.find { |hex| hex.coordinates == 'I3' }.tile.offboards.first
+        def all_corporations
+          @minors + @corporations
         end
 
         def num_trains(train)
@@ -262,10 +120,77 @@ module Engine
           end
         end
 
+        def train_limit(entity)
+          return super unless entity.minor?
+
+          case @phase.name
+          when '2' || '3'
+            2
+          when '4'
+            1
+          when '5' || '6'
+            0
+          end
+        end
+
         def can_par?(corporation, parrer)
           @phase.status.include?('can_par')
 
           super
+        end
+
+        def operating_order
+          minors, majors = @entities.select(&:floated?).sort.partition { |c| c.type == :minor }
+          minors + majors
+        end
+
+        NORTH_HEXES = %w[A4 A8 F1].freeze
+        SOUTH_HEXES = %w[C20 E20 F19].freeze
+        PORT_HEXES = %w[F3 G4 G6 G8 H9 H17 H19].freeze
+        MINE_HEXES = %w[B15 D7 D17 E2 E6].freeze
+        GTRAINS = %w[1G 2G 2+1G 3+2G 4+2G 2+2GD].freeze
+        F3_PORT = ['F3'].freeze
+        G6_PORT = ['G6'].freeze
+        H9_PORT = ['H9'].freeze
+
+        def mine_port_bonus
+          @hexes.find { |hex| hex.coordinates == 'I3' }.tile.offboards.first
+        end
+
+        def ns_bonus
+          @hexes.find { |hex| hex.coordinates == 'I1' }.tile.offboards.first
+        end
+
+        def revenue_for(route, stops)
+          revenue = super
+          hex = route.hexes
+          gtrain = route.train.variant.name?(GTRAINS)
+
+          revenue += mine_port_bonus if gtrain && hex.id.include?(MINE_HEXES) && hex.id.include?(PORT_HEXES)
+          revenue += ns_bonus if (hex.first.id(NORTH_HEXES) && hex.last.id(SOUTH_HEXES)) ||
+                                 (hex.first.id(SOUTH_HEXES) && hex.last.id(NORTH_HEXES))
+          revenue += 10 if gtrain && hex.id == F3_PORT && route.corporation.assigned?(p3_company)
+          revenue += 10 if gtrain && hex.id == F3_PORT && route.corporation.assigned?(p8_company)
+          revenue += 10 if gtrain && hex.id == H9_PORT && route.corporation.assigned?(p9_company)
+          revenue += 20 if gtrain && hex.id == G6_PORT && route.corporation.assigned?(p12_company)
+
+          revenue
+        end
+
+        def p3_company
+          @p3 ||= @company.by_id('P3')
+        end
+
+        def p8_company
+          @p8 ||= @company.by_id('P8')
+        end
+
+        def p9_company
+          @p9 ||= @company.by_id('P9')
+        end
+
+        def p12_company
+          @p12 ||= @company.by_id('P12')
         end
       end
     end
