@@ -9,7 +9,7 @@ module Engine
           {
             sym: 'P1',
             name: 'La Habana - Güines',
-            value: 10,
+            value: 20,
             revenue: 5,
             min_price: 1,
             desc: 'It gives a discount of pts30 for laying a yellow
@@ -36,7 +36,7 @@ module Engine
           {
             sym: 'P2',
             name: 'Barcelona - Mataró',
-            value: 40,
+            value: 60,
             revenue: 10,
             min_price: 1,
             desc: 'Owning Corporation receives 2/1+2 train. closes when bought by a corporation.',
