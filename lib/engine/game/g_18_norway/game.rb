@@ -12,7 +12,7 @@ module Engine
   module Game
     module G18Norway
       class Game < Game::Base
-        attr_reader :ferry_graph
+        attr_reader :ferry_graph, :jump_graph
 
         include_meta(G18Norway::Meta)
         include Companies
@@ -120,12 +120,25 @@ module Engine
           'C35' => 'B36',
         }.freeze
 
+        def switcher
+          @switcher ||= corporation_by_id('Ø')
+        end
+
+        def switcher?(corporation)
+          switcher == corporation
+        end
+
         def setup
           MOUNTAIN_BIG_HEXES.each { |hex| hex_by_id(hex).assign!('MOUNTAIN_BIG') }
           MOUNTAIN_SMALL_HEXES.each { |hex| hex_by_id(hex).assign!('MOUNTAIN_SMALL') }
           corporation_by_id('R').add_ability(Engine::Ability::Base.new(
             type: 'free_tunnel',
             description: 'Free tunnel'
+          ))
+
+          switcher.add_ability(Engine::Ability::Base.new(
+            type: 'switcher',
+            description: 'May pass one tokened out city',
           ))
 
           @corporations.each do |corporation|
@@ -302,6 +315,7 @@ module Engine
 
         def init_graph
           @ferry_graph = Graph.new(self, skip_track: :broad)
+          @jump_graph = Graph.new(self, no_blocking: true)
           Graph.new(self, skip_track: :narrow)
         end
 
@@ -355,7 +369,21 @@ module Engine
         def check_connected(route, corporation)
           return if route.ordered_paths.each_cons(2).all? { |a, b| connected?(a, b, corporation) }
 
-          raise GameError, 'Route is not connected'
+          return super unless @round.train_upgrade_assignments[route.train]
+
+          visits = route.visited_stops
+
+          blocked = nil
+
+          if visits.size > 2
+            visits[1..-2].each do |node|
+              next if !node.city? || !node.blocks?(corporation)
+              raise GameError, 'Route can only bypass one tokened-out city' if blocked
+
+              blocked = node
+            end
+          end
+          super(route, nil)
         end
 
         def check_route_token(route, token)
