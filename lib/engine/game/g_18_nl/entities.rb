@@ -92,9 +92,9 @@ module Engine
             sym: 'P6',
             value: 200,
             revenue: 15,
-            desc: "The owner of the Spoorweg-Maatschappij Zuid Beveland immediately receives the President's 30% certificate of the"\
-                  ' NFL without further payment and immediately sets its par price. The private company may not be sold to any'\
-                  ' corporation, and does not exchange hands if the owning player loses the Presidency of the NFL.'\
+            desc: "The owner of the Spoorweg-Maatschappij Zuid Beveland immediately receives the President's 30% certificate"\
+                  ' of the NFL without further payment and immediately sets its par price. The private company may not be'\
+                  ' sold to any corporation, and does not exchange hands if the owning player loses the Presidency of the NFL.'\
                   ' When the NFL purchases its first train the private company is closed.'\
                   ' Blocks J3 & K2 while owned by a player.',
             abilities: [{ type: 'blocks_hexes', owner_type: 'player', hexes: %w[J3 K2] },
