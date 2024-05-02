@@ -92,7 +92,7 @@ module Engine
             sym: 'P6',
             value: 200,
             revenue: 15,
-            desc: "The owner of the Antwerpen-Rotterdamsche immediately receives the President's 30% certificate of the"\
+            desc: "The owner of the Spoorweg-Maatschappij Zuid Beveland immediately receives the President's 30% certificate of the"\
                   ' NFL without further payment and immediately sets its par price. The private company may not be sold to any'\
                   ' corporation, and does not exchange hands if the owning player loses the Presidency of the NFL.'\
                   ' When the NFL purchases its first train the private company is closed.'\
