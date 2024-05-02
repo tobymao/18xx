@@ -479,6 +479,40 @@ module Engine
           mjosa.lay(tile_by_id('LM2-0'))
         end
 
+        def compute_stops(route)
+          stops = super
+          if @round.train_upgrade_assignments[route.train]
+            skipped = skipped_stop(route, stops)
+            stops.reject! { |stop| stop == skipped } if skipped
+          end
+          stops
+        end
+
+        def tokened_out_stop(corporation, stops)
+          stops[1..-2].find { |node| node.city? && node.blocks?(corporation) }
+        end
+
+        def skipped_stop(route, stops)
+          return nil if stops.size <= 2
+
+          # Blocked stop is highest priority as it may stop route from being legal
+          corporation = route.train.owner
+          t = tokened_out_stop(corporation, stops)
+          return t if t
+
+          counted_stops = stops.select { |stop| stop&.visit_cost&.positive? }
+
+          # Skipping is optional - if we are using STRICTLY fewer stops than distance (jumping adds 1) we don't need to skip
+          return nil if counted_stops.size < route.train.distance
+
+          # Count how many of our tokens are on the route; if only one we cannot skip that one.
+          tokened_stops = counted_stops.select { |stop| stop.tokened_by?(route.train.owner) }
+          counted_stops.delete(tokened_stops.first) if tokened_stops.one?
+
+          # Find the lowest revenue stop that can be skipped
+          counted_stops.max_by { |stop| revenue_for(route, stops.reject { |s| s == stop }) }
+        end
+
         def issuable_shares(entity)
           return [] unless entity.corporation?
           return [] unless round.steps.find { |step| step.instance_of?(G18Norway::Step::IssueShares) }.active?
