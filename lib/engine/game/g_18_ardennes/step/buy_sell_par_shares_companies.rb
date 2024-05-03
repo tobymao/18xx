@@ -17,7 +17,8 @@ module Engine
 
             actions = []
             actions << 'par' if under_limit?(entity)
-            actions.concat(%w[sell_shares sell_company]) if can_sell_any?(entity)
+            actions << 'sell_shares' if can_sell_any?(entity)
+            actions << 'sell_company' if can_sell_any_companies?(entity)
             # TODO: handle this properly.
             # Maybe stop the player from bidding for a major if they are at
             # certificate limit and do not have any sellable shares.
@@ -97,6 +98,10 @@ module Engine
                   (!check_connection || @game.major_minor_connected?(corp, minor))
               end
             end
+          end
+
+          def can_sell_any_companies?(player)
+            @game.minor_companies.any? { |company| company.owner == player }
           end
 
           # Corporations whose cards are visible in the stock round.
