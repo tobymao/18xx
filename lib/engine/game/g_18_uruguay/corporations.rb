@@ -31,6 +31,7 @@ module Engine
             tokens: [0],
             coordinates: 'K15',
             text_color: 'black',
+            shares: [30, 10, 10, 10, 10, 10, 10, 10],
             abilities: [],
             type: :bank,
             capitalization: :incremental,
