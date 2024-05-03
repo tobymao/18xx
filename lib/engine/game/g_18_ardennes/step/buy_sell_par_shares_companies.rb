@@ -59,8 +59,10 @@ module Engine
           end
 
           def sellable_companies(entity)
+            return [] unless entity.player?
+
             # Only the GL is sellable. Make sure concessions aren't visible.
-            super.select { |company| company.type == :minor }
+            entity.companies.select { |company| company.type == :minor }
           end
 
           # Exchanging a minor for a share in a floated major corporation is
@@ -98,10 +100,6 @@ module Engine
                   (!check_connection || @game.major_minor_connected?(corp, minor))
               end
             end
-          end
-
-          def can_sell_any_companies?(player)
-            @game.minor_companies.any? { |company| company.owner == player }
           end
 
           # Corporations whose cards are visible in the stock round.
