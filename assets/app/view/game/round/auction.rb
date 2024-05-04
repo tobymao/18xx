@@ -42,6 +42,7 @@ module View
             h(:div, [
               render_turn_bid,
               render_show_button,
+              render_confirm_selections,
               *render_companies,
               *render_minors,
               *render_corporations,
@@ -109,6 +110,28 @@ module View
           h(:button, props, "#{hidden? ? 'Show' : 'Hide'} #{@step.visible? ? 'Player' : 'Companies'}")
         end
 
+        def render_confirm_selections
+          return nil if hidden? && !@step.visible?
+          return nil unless @current_actions.include?('select_multiple_companies')
+
+          mutiple_companies = lambda do
+            hide!
+            process_action(Engine::Action::SelectMultipleCompanies.new(
+              @current_entity,
+              companies: @step.selected_companies
+            ))
+          end
+          select_button = [h(:button, { on: { click: mutiple_companies } }, 'Confirm Selections')]
+
+          children = []
+          if @step.respond_to?(:selection_note)
+            note = @step.selection_note.map { |text_block| h(:p, text_block) }
+            children << h(:div, note)
+          end
+          children << h(:div, select_button) if @step.selections_completed?
+          h(:div, children)
+        end
+
         def render_companies
           return [] if hidden? && !@step.visible?
           return [] if !@current_actions.include?('bid') &&
@@ -169,6 +192,7 @@ module View
           buy_str = @step.respond_to?(:buy_str) ? @step.buy_str(company) : 'Buy'
           return [h(:button, { on: { click: -> { buy(company) } } }, buy_str)] if @step.may_purchase?(company)
           return [h(:button, { on: { click: -> { choose } } }, 'Choose')] if @step.may_choose?(company)
+          return [] if @step.respond_to?(:select_company)
 
           input = h(:input, style: { marginRight: '1rem' }, props: {
                       value: @step.min_bid(company),

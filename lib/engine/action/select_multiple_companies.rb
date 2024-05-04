@@ -7,14 +7,14 @@ module Engine
     class SelectMultipleCompanies < Base
       attr_reader :entity, :companies
 
-      def initialize(entity, companies)
+      def initialize(entity, companies:)
         super(entity)
         @companies = companies
       end
 
       def self.h_to_args(h, game)
         {
-          companies: h['companies'].map { |company| game.company_by_id(company) },
+          companies: h['companies'].map { |id| game.company_by_id(id) },
         }
       end
 

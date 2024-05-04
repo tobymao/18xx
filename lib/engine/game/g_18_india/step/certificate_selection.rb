@@ -11,13 +11,18 @@ module Engine
     module G18India
       module Step
         class CertificateSelection < Engine::Step::Base
-          attr_reader :companies, :choices
+          attr_reader :choices
 
-          ACTIONS = %w[bid].freeze
-          ACTIONS_WITH_PASS = %w[bid pass].freeze
+          ACTIONS = %w[select_multiple_companies].freeze
+
+          def actions(entity)
+            return [] unless entity == current_entity
+            return [] if finished?
+
+            ACTIONS
+          end
 
           def setup
-            @companies = @game.companies
             @choices = Hash.new { |h, k| h[k] = [] }
             @cards_to_keep = @game.certs_to_keep
             @confirmed_selections = 0
@@ -36,9 +41,7 @@ module Engine
           end
 
           def may_choose?(company)
-            return false if selections_completed? && company.owner.nil?
-
-            true
+            false
           end
 
           def auctioning; end
@@ -55,57 +58,75 @@ module Engine
             false
           end
 
+          def show_companies
+            true
+          end
+
+          def show_map
+            true
+          end
+
           def name
-            'Hand Selection'
+            'Initial Hand Selection'
           end
 
           def description
             "Select #{@cards_to_keep} Certificates for your starting hand"
           end
 
-          def finished?
-            @confirmed_selections == @game.players.size
+          def selection_note
+            [
+              "Made #{number_of_selections} of #{@cards_to_keep} selections.",
+              'Click on card to select or unselect it.',
+            ]
+          end
+
+          def select_company(player, company)
+            return if selections_completed? && company.owner.nil? # prevent selecting more than allowed
+
+            # add or remove from choices
+            if company_selected?(company)
+              @choices[player].delete(company)
+              company.owner = nil
+            else
+              @choices[player] << company
+              @choices[player].sort!
+              company.owner = player
+            end
+          end
+
+          def company_selected?(company)
+            @choices[current_entity].include?(company)
+          end
+
+          def selected_companies
+            @choices[current_entity]
+          end
+
+          def number_of_selections
+            selected_companies.size
           end
 
           def selections_completed?
             number_of_selections == @cards_to_keep
           end
 
-          def number_of_selections
-            current_entity.hand.count { |s| s.owner == current_entity }
-          end
-
-          def actions(entity)
-            return [] if finished?
-            return [] unless entity == current_entity
-
-            if selections_completed?
-              ACTIONS_WITH_PASS
-            else
-              ACTIONS
-            end
-          end
-
-          def process_pass(action)
-            @log << "#{action.entity.name} selected #{@cards_to_keep} certificates for hand"
+          def process_select_multiple_companies(action)
+            player = action.entity
+            selected_companies = action.companies
+            @log << "#{player.name} selected #{selected_companies.size} certificates for hand"
+            selected_companies.each { |company| company.owner = player }
+            unselected_companies = player.hand - selected_companies
+            unselected_companies.each { |company| company.owner = nil }
             @confirmed_selections += 1
+            LOGGER.debug " Test  Process Muti-Select => confirmed_selections: #{@confirmed_selections} finished?: #{finished?}  "\
+                         "selected: #{selected_companies.inspect} unselected: #{unselected_companies.inspect}"
             @round.next_entity_index!
             action_finalized
           end
 
-          def process_bid(action)
-            choose_company(action.entity, action.company)
-            @game.next_turn!
-            action_finalized
-          end
-
-          def choose_company(player, company)
-            # toggle company owner: player <=> nil
-            company.owner = if company.owner == player
-                              nil
-                            else
-                              player
-                            end
+          def finished?
+            @confirmed_selections == @game.players.size
           end
 
           def action_finalized
