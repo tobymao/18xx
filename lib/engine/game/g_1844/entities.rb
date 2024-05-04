@@ -60,7 +60,7 @@ module Engine
               {
                 type: 'choose_ability',
                 after_phase: '2',
-                when: %w[track owning_player_track],
+                when: 'any',
                 choices: ['Place tile'],
               },
             ],
@@ -99,7 +99,7 @@ module Engine
               {
                 type: 'choose_ability',
                 after_phase: '4',
-                when: 'owning_player_or_turn',
+                when: 'any',
                 choices: [], # Defined in special_choose step
               },
             ],
