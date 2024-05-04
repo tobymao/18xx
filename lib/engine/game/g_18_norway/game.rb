@@ -140,6 +140,11 @@ module Engine
             description: 'Free tunnel'
           ))
 
+          corporation_by_id('V').add_ability(Engine::Ability::Base.new(
+            type: 'free_ship',
+            description: 'Free S3 ship before phase 4',
+          ))
+
           switcher.add_ability(Engine::Ability::Base.new(
             type: 'switcher',
             description: 'May pass one tokened out city',
