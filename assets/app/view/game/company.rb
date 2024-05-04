@@ -22,6 +22,7 @@ module View
 
       def selected?
         return @step.company_selected?(@company) if @step.respond_to?(:company_selected?)
+
         @company == @selected_company
       end
 

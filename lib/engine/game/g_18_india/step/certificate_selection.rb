@@ -40,7 +40,7 @@ module Engine
             false
           end
 
-          def may_choose?(company)
+          def may_choose?(_company)
             false
           end
 
