@@ -34,8 +34,12 @@ module Engine
           end
 
           def process_choose(action)
-            @log << "#{action.entity.name} declines #{description.downcase}" if action.choice != 'nationalize'
-            return pass! if action.choice == 'decline'
+            if action.choice == 'decline'
+              @log << "#{action.entity.name} declines #{description.downcase}"
+              pass!
+              return
+            end
+            
 
             value = @game.convert(action.entity, action.choice.to_i)
             @log << "#{action.entity.name} nationalized and receives #{@game.format_currency(value)}"
