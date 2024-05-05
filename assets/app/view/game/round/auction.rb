@@ -192,7 +192,6 @@ module View
           buy_str = @step.respond_to?(:buy_str) ? @step.buy_str(company) : 'Buy'
           return [h(:button, { on: { click: -> { buy(company) } } }, buy_str)] if @step.may_purchase?(company)
           return [h(:button, { on: { click: -> { choose } } }, 'Choose')] if @step.may_choose?(company)
-          return [] if @step.respond_to?(:select_company)
 
           input = h(:input, style: { marginRight: '1rem' }, props: {
                       value: @step.min_bid(company),
