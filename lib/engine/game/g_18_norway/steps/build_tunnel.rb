@@ -12,9 +12,8 @@ module Engine
           end
 
           def actions(entity)
-            hex = @round.mountain_hex
             actions = []
-            actions << 'choose' if !hex.nil? && @game.mountain?(hex) && can_build_tunnel?(entity, hex)
+            actions << 'choose' if !mountain_hex.nil? && @game.mountain?(mountain_hex) && can_build_tunnel?(entity, mountain_hex)
             actions
           end
 
@@ -22,10 +21,14 @@ module Engine
             true
           end
 
+          def mountain_hex
+            @round.mountain_hex
+          end
+
           def build_cost(_hex)
             return 0 if current_entity.abilities.any? { |a| a.type == :free_tunnel }
 
-            @game.small_mountain?(@round.mountain_hex) ? 30 : 40
+            @game.small_mountain?(mountain_hex) ? 30 : 40
           end
 
           def can_build_tunnel?(entity, hex)
@@ -37,22 +40,20 @@ module Engine
           end
 
           def choices
-            cost = build_cost(@round.mountain_hex)
+            cost = build_cost(mountain_hex)
             { 'pass' => 'Pass', 'build' => "Build tunnel #{@game.format_currency(cost)}" }
           end
 
           def build_tunnel(entity, cost)
-            hex = @round.mountain_hex
-
-            @log << "#{entity.name} pays #{@game.format_currency(cost)} to build tunnel at #{hex.id}"
+            @log << "#{entity.name} pays #{@game.format_currency(cost)} to build tunnel at #{mountain_hex.id}"
             entity.spend(cost, @game.bank) if cost.positive?
 
             factory_owner = @game.company_by_id('P3').owner
             @game.bank.spend(10, factory_owner)
             @log << "#{factory_owner.name} receives #{@game.format_currency(10)} for building a tunnel"
 
-            mountain = hex.assignments.keys.find { |a| a.include? 'MOUNTAIN' }
-            hex.remove_assignment!(mountain)
+            mountain = mountain_hex.assignments.keys.find { |a| a.include? 'MOUNTAIN' }
+            mountain_hex.remove_assignment!(mountain)
           end
 
           def process_choose(action)
