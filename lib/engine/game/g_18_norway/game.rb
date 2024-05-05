@@ -189,8 +189,7 @@ module Engine
         def convert(corporation, number_of_shares)
           shares = @_shares.values.select { |share| share.corporation == corporation }
 
-          shares.each { |share| share.percent = share.percent.positive? ? 10 : -10 }
-          shares[0].percent = 20
+          shares.each { |share| share.percent /= 2 }
           new_shares = Array.new(5) { |i| Share.new(corporation, percent: 10, index: i + 4) }
           new_shares.each do |share|
             add_new_share(share)
