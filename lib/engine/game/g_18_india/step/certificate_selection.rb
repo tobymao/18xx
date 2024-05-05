@@ -119,7 +119,7 @@ module Engine
             unselected_companies = player.hand - selected_companies
             unselected_companies.each { |company| company.owner = nil }
             @confirmed_selections += 1
-            LOGGER.debug " Test  Process Muti-Select => confirmed_selections: #{@confirmed_selections} finished?: #{finished?}  "\
+            LOGGER.debug "Process Muti-Select => confirmed_selections: #{@confirmed_selections} finished?: #{finished?}  "\
                          "selected: #{selected_companies.inspect} unselected: #{unselected_companies.inspect}"
             @round.next_entity_index!
             action_finalized
