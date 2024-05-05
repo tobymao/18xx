@@ -17,6 +17,10 @@ module Engine
               'Ship 6' => 3,
             }.freeze
 
+          def description
+            'Ship to England'
+          end
+
           def setup
             @goods_shipped = 0
           end
@@ -25,6 +29,12 @@ module Engine
             return [] unless entity.corporation == @game.rptla
 
             %w[run_routes choose].freeze
+          end
+
+          def log_skip(entity)
+            return '' unless entity.corporation == @game.rptla
+
+            super
           end
 
           def choosing?(_entity)

@@ -12,7 +12,7 @@ module Engine
           end
 
           def actions(entity)
-            return %w[].freeze if entity.corporation == @game.rptla
+            return [] if entity.corporation == @game.rptla
             return [] if !entity.operator? || @game.route_trains(entity).empty? || !@game.can_run_route?(entity)
             return [] if entity.corporation? && entity.type == :minor
 
@@ -23,6 +23,13 @@ module Engine
 
           def choosing?(_entity)
             true
+          end
+
+          def log_skip(entity)
+            return '' if entity.minor?
+            return '' if entity.corporation == @game.rptla
+
+            super
           end
 
           def choice_name

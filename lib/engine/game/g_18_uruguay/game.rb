@@ -189,6 +189,7 @@ module Engine
 
         def setup
           super
+
           goods_setup
           @rptla = @corporations.find { |c| c.id == 'RPTLA' }
           @fce = @corporations.find { |c| c.id == 'FCE' }
@@ -213,18 +214,30 @@ module Engine
           @stock_market.set_par(@rptla, lookup_rptla_price(RPTLA_STARTING_PRICE))
 
           ability = abilities(corn_farm, :assign_hexes, time: 'or_start', strict_time: false)
+          count = 0
           ability.hexes.each do |farm_id|
-            hex_by_id(farm_id).assign!('GOODS_CORN')
+            hex_by_id(farm_id).assign!('GOODS_CORN' + count.to_s)
+            count += 1
+            hex_by_id(farm_id).assign!('GOODS_CORN' + count.to_s)
+            count += 1
           end
 
+          count = 0
           ability = abilities(sheep_farm, :assign_hexes, time: 'or_start', strict_time: false)
           ability.hexes.each do |farm_id|
-            hex_by_id(farm_id).assign!('GOODS_SHEEP')
+            hex_by_id(farm_id).assign!('GOODS_SHEEP' + count.to_s)
+            count += 1
+            hex_by_id(farm_id).assign!('GOODS_SHEEP' + count.to_s)
+            count += 1
           end
 
+          count = 0
           ability = abilities(cattle_farm, :assign_hexes, time: 'or_start', strict_time: false)
           ability.hexes.each do |farm_id|
-            hex_by_id(farm_id).assign!('GOODS_CATTLE')
+            hex_by_id(farm_id).assign!('GOODS_CATTLE' + count.to_s)
+            count += 1
+            hex_by_id(farm_id).assign!('GOODS_CATTLE' + count.to_s)
+            count += 1
           end
 
           setup_destinations
@@ -276,15 +289,17 @@ module Engine
               ability.use!
             end
           end
+          minor = minors.find { |m| m.id == company.id }
+          return unless minor
+
+          minor.owner = player
         end
 
         def operating_round(round_num)
           Round::Operating.new(self, [
             Engine::Step::Bankrupt,
             Engine::Step::Exchange,
-            G18Uruguay::Step::CornFarm,
-            G18Uruguay::Step::SheepFarm,
-            G18Uruguay::Step::CattleFarm,
+            G18Uruguay::Step::Farm2,
             Engine::Step::SpecialTrack,
             Engine::Step::SpecialToken,
             G18Uruguay::Step::TakeLoanBuyCompany,
@@ -331,7 +346,7 @@ module Engine
         end
 
         def operating_order
-          super.sort.partition { |c| c.type != :bank }.flatten
+          @minors + super.sort.partition { |c| c.type != :bank }.flatten
         end
 
         # Loans
@@ -425,6 +440,7 @@ module Engine
         end
 
         def place_home_token(corporation)
+          return if corporation.minor?
           return if corporation == @fce
 
           super
