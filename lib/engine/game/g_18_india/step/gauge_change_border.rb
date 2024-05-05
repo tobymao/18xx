@@ -30,8 +30,7 @@ module Engine
               types << border.type
               if border.type == BORDER_TYPE_TO_CHANGE
                 # Remove the existing border on tile and neighbor
-                tile.borders.delete(border)
-                neighbor.tile.borders.reject! { |nb| nb.edge == hex.invert(edge) }
+                remove_border(border, tile, neighbor)
                 # Add a gague change marker to tile and neighbor unless disabled by phase status
                 unless @game.phase.status.include?(STATUS_TO_DISABLE_CHANGE)
                   LOGGER.debug ' >> Added Gauge Change Marker'
@@ -43,12 +42,16 @@ module Engine
                 end
               elsif cost # Remove border with a cost from tile and connected neighbor (super)
                 LOGGER.debug ' >> Removed border with a cost'
-                tile.borders.delete(border)
-                neighbor.tile.borders.map! { |nb| nb.edge == hex.invert(edge) ? nil : nb }.compact!
+                remove_border(border, tile, neighbor)
               end
               cost - border_cost_discount(entity, spender, border, cost, hex)
             end
             [total_cost, types]
+          end
+
+          def remove_border(border, tile, neighbor)
+            tile.borders.delete(border)
+            neighbor.tile.borders.reject! { |nb| nb.edge == tile.hex.invert(border.edge) }
           end
 
           def add_gauge_change_border(tile, edge)

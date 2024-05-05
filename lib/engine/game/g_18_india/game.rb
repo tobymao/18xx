@@ -923,7 +923,7 @@ module Engine
           route_stops = route.connection_data.flat_map { |c| [c[:left], c[:right]] }.uniq.compact # super
           return route_stops unless gauge_changes.positive?
 
-          LOGGER.debug "GAME::visited_stops > gauge_changes: #{gauge_changes} route_stops: #{route_stops}"
+          LOGGER.debug "GAME::visited_stops > gauge_changes: #{gauge_changes} route_stops: #{route_stops.inspect}"
           add_gauge_changes_to_stops(gauge_changes, route_stops)
         end
 
@@ -934,7 +934,7 @@ module Engine
             stop.tile = first_stop.tile
             route_stops.insert(1, stop) # add the gauge change after fist element so that it's not the first or last stop
           end
-          LOGGER.debug "GAME::add_gauge_changes_to_stops > route_stops: #{route_stops}"
+          LOGGER.debug "GAME::add_gauge_changes_to_stops > route_stops: #{route_stops.inspect}"
           route_stops
         end
 
