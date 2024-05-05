@@ -24,9 +24,8 @@ module Engine
 
           def build_cost(_hex)
             return 0 if current_entity.abilities.any? { |a| a.type == :free_tunnel }
-            return 30 if @game.small_mountain?(@round.mountain_hex)
-
-            40
+            
+            @game.small_mountain?(@round.mountain_hex) ? 30 : 40
           end
 
           def can_build_tunnel?(entity, hex)
