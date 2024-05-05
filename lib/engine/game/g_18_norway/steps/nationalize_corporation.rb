@@ -26,9 +26,9 @@ module Engine
 
           def choices
             choices_hash = {}
-            choices_hash['0'] = 'Nationalize company by selling 0 share to NSB' if @game.hovedbanen?(current_entity)
+            choices_hash['0'] = 'Nationalize company by selling 0 shares to NSB' if @game.hovedbanen?(current_entity)
             choices_hash['1'] = 'Nationalize company by selling 1 share to NSB'
-            choices_hash['2'] = 'Nationalize company by selling 2 share to NSB' if @game.hovedbanen?(current_entity)
+            choices_hash['2'] = 'Nationalize company by selling 2 shares to NSB' if @game.hovedbanen?(current_entity)
             choices_hash['decline'] = 'Decline nationalization offer'
             choices_hash
           end
