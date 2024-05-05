@@ -40,9 +40,11 @@ module Engine
           end
 
           def buyable_trains(entity)
-            val = super(entity)
-            val = val.reject { |train| @game.ship?(train) } if must_buy_train?(entity)
-            val.reject { |train| @game.ship?(train) && entity.trains.any? { |ship| ship.name == train.name } }
+            super.reject do |train|
+              next false unless @game.ship?(train)
+              
+              must_buy_train?(entity) || entity.trains.any? { |ship| ship.name == train.name }
+            end
           end
 
           def add_ship_revenue(company)
