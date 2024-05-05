@@ -23,8 +23,7 @@ module Engine
           end
 
           def build_cost(_hex)
-            free = current_entity.abilities.find { |a| a.type == :free_tunnel }
-            return 0 unless free.nil?
+            return 0 if current_entity.abilities.any? { |a| a.type == :free_tunnel }
             return 30 if @game.small_mountain?(@round.mountain_hex)
 
             40
