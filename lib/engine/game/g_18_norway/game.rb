@@ -133,7 +133,7 @@ module Engine
         def revenue_str(route)
           str = super
           cost = route_cost(route)
-          str += " -Maintainance(#{cost})" if cost.positive?
+          str += " -Maintenance(#{cost})" if cost.positive?
           str
         end
 
