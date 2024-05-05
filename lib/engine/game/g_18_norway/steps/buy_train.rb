@@ -54,7 +54,7 @@ module Engine
 
           def process_buy_train(action)
             super
-            add_ship_revenue(@game.p4) if action.train.track_type == :narrow
+            add_ship_revenue(@game.p4) if @game.ship?(train)
           end
         end
       end
