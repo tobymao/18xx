@@ -124,7 +124,7 @@ module Engine
           # P2 Thunes mekaniske verksted do not need to pay maintainance
           return 0 if owns_thunes_mekaniske?(route.train.owner)
 
-          route.all_hexes.select { |hex| mountain?(hex) }.size * 10
+          route.all_hexes.count { |hex| mountain?(hex) } * 10
         end
 
         def revenue_str(route)
