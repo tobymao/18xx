@@ -48,7 +48,7 @@ module Engine
           end
 
           def add_ship_revenue(company)
-            return if company.nil? || company.owner.nil?
+            return if company.owner.nil?
 
             @game.bank.spend(10, company.owner)
             @game.log << "#{company.owner.name} receives #{@game.format_currency(10)} for building a ship"
