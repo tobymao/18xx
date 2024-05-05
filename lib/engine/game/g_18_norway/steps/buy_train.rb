@@ -31,9 +31,8 @@ module Engine
 
           def can_issue?(entity)
             return false unless entity.corporation?
-            return false unless issuable_shares(entity).any?
-
-            true
+            
+            !issuable_shares(entity).empty?
           end
 
           def must_buy_train?(entity)
