@@ -56,12 +56,13 @@ module Engine
           end
 
           def process_choose(action)
-            cost = 0
-            cost = build_cost(@round.mountain_hex) unless action.choice == 'pass'
+            @round.mountain_hex = nil
+            return if action.choice == 'pass'
+            
+            cost = build_cost(@round.mountain_hex)
             raise GameError, "Cannot afford #{cost} to build a tunnel" if action.entity.cash < cost
 
-            build_tunnel(action.entity, cost) unless action.choice == 'pass'
-            pass!
+            build_tunnel(action.entity, cost)
           end
         end
       end
