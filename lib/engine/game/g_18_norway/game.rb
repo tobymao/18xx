@@ -121,13 +121,10 @@ module Engine
         end
 
         def route_cost(route)
-          cost = 0
-
           # P2 Thunes mekaniske verksted do not need to pay maintainance
           return 0 if owns_thunes_mekaniske?(route.train.owner)
 
-          route.all_hexes.each { |hex| cost += 10 if mountain?(hex) }
-          cost
+          route.all_hexes.select { |hex| mountain?(hex) }.size * 10
         end
 
         def revenue_str(route)
