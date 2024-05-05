@@ -19,7 +19,7 @@ module Engine
           end
 
           def choice_name
-            'Nationalize Croporation'
+            'Nationalize Corporation'
           end
 
           def log_skip(entity)
