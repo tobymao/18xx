@@ -13,9 +13,7 @@ module Engine
             return [] if !entity.corporation? || entity != current_entity
             return [] if @game.nationalized?(entity.corporation)
 
-            actions = []
-            actions << 'choose'
-            actions
+            ['choose']
           end
 
           def choice_name
