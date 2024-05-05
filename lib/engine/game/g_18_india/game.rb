@@ -928,8 +928,6 @@ module Engine
         end
 
         def add_gauge_changes_to_stops(num, route_stops)
-          return [] unless num.positive?
-
           gauge_changes = Array.new(num) { Engine::Part::City.new('0') }
           first_stop = route_stops.first
           gauge_changes.each do |stop|

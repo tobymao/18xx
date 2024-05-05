@@ -38,7 +38,7 @@ module Engine
                   tile.borders << add_gauge_change_border(tile, edge)
                   neighbor.tile.borders << add_gauge_change_border(neighbor.tile, hex.invert(edge))
                   # Add hex pair to track of number of GC markers (Implement if markers are to be removed)
-                  @game.add_gauge_change_marker(hex, neighbor) if @game.respond_to?(:add_gauge_change_marker)
+                  @game.add_gauge_change_marker(hex, neighbor)
                   @log << "Gauge Change Marker added between #{hex.id} and #{neighbor.id}"
                 end
               elsif cost # Remove border with a cost from tile and connected neighbor (super)
