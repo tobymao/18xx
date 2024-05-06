@@ -78,6 +78,10 @@ module Engine
           hovedbanen == corporation
         end
 
+        def nsb
+          @nsb ||= corporation_by_id('NSB')
+        end
+
         def price_movement_chart
           [
             ['Action', 'Share Price Change'],
@@ -200,9 +204,13 @@ module Engine
 
           bundle = ShareBundle.new(new_shares.take(number_of_shares))
           @bank.spend(bundle.price, corporation)
-          share_pool.buy_shares(corporation_by_id('NSB'), bundle, exchange: :free)
+          share_pool.buy_shares(nsb, bundle, exchange: :free)
 
           bundle.price
+        end
+
+        def can_par?(corporation, _parrer)
+          nsb != corporation
         end
       end
     end
