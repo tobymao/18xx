@@ -1845,7 +1845,7 @@ module Engine
         @_shares.reject! do |_, share|
           next if share.corporation != corporation
 
-          share.owner.shares_by_corporation[corporation].clear
+          share.owner.shares_by_corporation.delete(corporation)
 
           true
         end
