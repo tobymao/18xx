@@ -71,7 +71,7 @@ module Engine
           end
 
           def available_hex(entity_or_entities, hex)
-            return super unless @round.laid_yellow_hexes.any?
+            return super if @round.laid_yellow_hexes.empty?
 
             connected_to_track_laying_path?(hex)
           end
