@@ -27,7 +27,7 @@ module Engine
 
           def can_issue?(entity)
             return false unless entity.corporation?
-            
+
             !issuable_shares(entity).empty?
           end
 
@@ -38,7 +38,7 @@ module Engine
           def buyable_trains(entity)
             super.reject do |train|
               next false unless @game.ship?(train)
-              
+
               must_buy_train?(entity) || entity.trains.any? { |ship| ship.name == train.name }
             end
           end
