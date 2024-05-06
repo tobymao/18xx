@@ -45,8 +45,7 @@ module Engine
                 next if empty_neighbors.empty?
 
                 # check if visited path has at least one path from all placed tiles (triple town tiles may have unused paths)
-                placed_tiles_visited = placed_paths.map { |paths_on_tile| !(paths_on_tile & visited_paths.keys).empty? }
-                next unless placed_tiles_visited.all?
+                next unless placed_paths.all? { |paths_on_tile| !(paths_on_tile & visited_paths.keys).empty? }
 
                 # confirm that placed tiles are visited in the correct sequence along the visited path
                 sequence = placed_paths.map { |tile_paths| tile_paths.map { |p| visited_paths.keys.index(p) }.compact.min }
