@@ -23,34 +23,33 @@ module Engine
           def calculate_railhead_hexes
             return [] if @round.laid_yellow_hexes.empty?
 
-            # check simple case of only one 'white' neighbor connected to prior tile => return without walking
-            last_yellow_hex = @round.laid_yellow_hexes.last
-            neighbors = last_yellow_hex.tile.exits.map { |e| last_yellow_hex.neighbors[e] }
-            empty_neighbors = neighbors.select { |h| h.tile.color :white }
-            LOGGER.debug "railhead_hexes >> empty_neighbors: #{empty_neighbors.uniq.inspect}" \
-                         " exits: #{last_yellow_hex.tile.exits.inspect}"
-            return empty_neighbors if empty_neighbors.one? && last_yellow_hex.tile.exits.size <= 2 # exclude triple town tiles
+            # check simple case of only one or two 'white' neighbor connected to prior tile => return without walking
+            last_tile = @round.laid_yellow_hexes.last.tile
+            unless [1, 6].include?(last_tile.exits.size) # exclude triple town tiles (6 exits) and OO tiles (1 exit)
+              empty_neighbors = empty_neighbors(last_tile.hex, last_tile.exits)
+              LOGGER.debug "railhead_hexes >> empty_neighbors: #{empty_neighbors.inspect}"
+              return empty_neighbors if [1, 2].include?(empty_neighbors.size)
+            end
 
             corp = @round.current_operator
             railheads = corp.placed_tokens.map(&:city)
             placed_paths = @round.laid_yellow_hexes.map(&:tile).map(&:paths) # paths on all previously laid yellow hexes
             LOGGER.debug "railhead_hexes >> corp: #{corp.inspect}, railheads: #{railheads.inspect}"
-            return [] unless railheads.any?
+            return nil if railheads.empty? # Can happen if OO token is waiting to be placed
 
             next_hexes = []
             railheads.each do |railhead|
               railhead.walk(corporation: corp) do |path, visited_paths, _visited|
                 # check if path ends at targeted "white" hex
-                empty_neighbors = path.exits.map { |e| path.hex.neighbors[e] }.select { |h| h.tile.color == 'white' }
-                next unless empty_neighbors.any?
+                empty_neighbors = empty_neighbors(path.hex, path.exits)
+                next if empty_neighbors.empty?
 
                 # check if visited path has at least one path from all placed tiles (triple town tiles may have unused paths)
-                visited_path_array = visited_paths.keys
-                placed_paths_visited = placed_paths.map { |paths_on_tile| (paths_on_tile & visited_path_array).any? }
-                next unless placed_paths_visited.all?
+                placed_tiles_visited = placed_paths.map { |paths_on_tile| !(paths_on_tile & visited_paths.keys).empty? }
+                next unless placed_tiles_visited.all?
 
                 # confirm that placed tiles are visited in the correct sequence along the visited path
-                sequence = placed_paths.map { |tile_paths| tile_paths.map { |p| visited_path_array.index(p) }.compact.min }
+                sequence = placed_paths.map { |tile_paths| tile_paths.map { |p| visited_paths.keys.index(p) }.compact.min }
                 next unless sequence.each_cons(2).all? { |x, y| x < y }
 
                 LOGGER.debug " >> path found to hex: #{empty_neighbors.inspect}, sequence: #{sequence.inspect}"
@@ -59,6 +58,10 @@ module Engine
             end
             LOGGER.debug "railhead_hexes >> next_hexes: #{next_hexes.uniq.inspect}"
             next_hexes.uniq
+          end
+
+          def empty_neighbors(hex, exits)
+            hex.neighbors.values_at(*exits).select { |neighbor| neighbor.tile.color == :white }
           end
 
           def connected_to_track_laying_path?(hex)
