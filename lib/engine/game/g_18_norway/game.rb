@@ -183,7 +183,7 @@ module Engine
         end
 
         def nationalized?(entity)
-          !entity.abilities.find { |ability| ability.type == :Nationalized }.nil?
+          entity.type == :nationalized
         end
 
         def convert(corporation, number_of_shares)
@@ -194,17 +194,15 @@ module Engine
           new_shares.each do |share|
             add_new_share(share)
           end
-          return if number_of_shares.zero?
+          corporation.type = :nationalized
+
+          return 0 if number_of_shares.zero?
           
           bundle = ShareBundle.new(new_shares.take(number_of_shares))
           @bank.spend(bundle.price, corporation)
           share_pool.buy_shares(corporation_by_id('NSB'), bundle, exchange: :free)
 
-          corporation.add_ability(Engine::Ability::Base.new(
-            type: 'Nationalized',
-            description: 'Nationalized'
-          ))
-          price
+          bundle.price
         end
       end
     end
