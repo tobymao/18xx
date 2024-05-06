@@ -194,7 +194,7 @@ module Engine
             value: 40,
             revenue: 15,
             desc: 'Owning corporation may lay up to two extra free yellow tiles '\
-                  'in reserved hexes F14 and F15. '\
+                  'in reserved hexes F14 and F16. '\
                   'If both tiles are laid, they must connect to each other. '\
                   'Owning corporation does not need to be connected to either hex to use this ability.',
             sym: 'O&I',
