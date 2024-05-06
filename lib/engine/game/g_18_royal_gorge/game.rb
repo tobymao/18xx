@@ -1212,7 +1212,7 @@ module Engine
 
           company.abilities[0].use!
 
-          ability = company.owner.abilities.find { |a| a.type == 'coal_mines' }
+          ability = company.owner.abilities.find { |a| a.type == :coal_mines }
           ability.add_count!(1)
           ability.description = ability.description.sub(/\d+/, ability.count.to_s)
 
