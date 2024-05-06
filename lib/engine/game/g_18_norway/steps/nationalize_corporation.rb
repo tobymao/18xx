@@ -22,6 +22,8 @@ module Engine
 
           def log_skip(entity)
             return if @game.nationalized?(entity.corporation)
+
+            super
           end
 
           def choices
@@ -39,7 +41,6 @@ module Engine
               pass!
               return
             end
-            
 
             value = @game.convert(action.entity, action.choice.to_i)
             @log << "#{action.entity.name} nationalized and receives #{@game.format_currency(value)}"

@@ -197,7 +197,7 @@ module Engine
           corporation.type = :nationalized
 
           return 0 if number_of_shares.zero?
-          
+
           bundle = ShareBundle.new(new_shares.take(number_of_shares))
           @bank.spend(bundle.price, corporation)
           share_pool.buy_shares(corporation_by_id('NSB'), bundle, exchange: :free)
