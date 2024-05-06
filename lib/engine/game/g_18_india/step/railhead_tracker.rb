@@ -64,7 +64,7 @@ module Engine
           def connected_to_track_laying_path?(hex)
             return true if @game.loading
             return true if @round.laid_yellow_hexes.empty?
-            return unless hex.tile.color == 'white'
+            return unless hex.tile.color == :white
 
             @round.next_empty_hexes = calculate_railhead_hexes if @round.next_empty_hexes.nil?
             @round.next_empty_hexes.include?(hex)
