@@ -30,7 +30,7 @@ module Engine
         ALWAYS_BUY_TRAINS_AT_FACE_VALUE = true
 
         MARKET = [
-          %w[0
+          %w[0l
              0a
              0a
              0a
@@ -115,6 +115,7 @@ module Engine
 
         EVENTS_TEXT = G1817::Game::EVENTS_TEXT.merge(
           'remove_blocking_token' => ['Remove Blocking Token', "Blocking token in Milwaukee (#{MILWAUKEE_HEX}) is removed."],
+          'signal_end_game' => ['Signal End Game', 'Game Ends at the end of the OR set after purchase/export of first 4 train.'],
         ).freeze
 
         ASSIGNMENT_TOKENS = {
