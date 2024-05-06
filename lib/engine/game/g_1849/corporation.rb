@@ -5,7 +5,7 @@ module Engine
     module G1849
       class Corporation < Engine::Corporation
         attr_reader :token_fee
-        attr_accessor :next_to_par, :closed_recently, :slot_open, :reached_max_value, :sms_hexes
+        attr_accessor :next_to_par, :closed_recently, :slot_open, :reached_max_value, :sms_hexes, :e_token
 
         def initialize(sym:, name:, **opts)
           super

@@ -7,6 +7,8 @@ module Engine
     module G1849
       module Step
         class BuyTrain < Engine::Step::BuyTrain
+          attr_accessor :e_token
+
           def setup
             super
           end
@@ -39,7 +41,8 @@ module Engine
             # Cannot buy E-train without E-token
             trains_to_buy = super
 
-            trains_to_buy = trains_to_buy.reject { |t| t.name == 'E' } unless entity.e_token == true
+            trains_to_buy = trains_to_buy.reject { |t| t.name == 'E' }
+            trains_to_buy << e_train if @game.electric_dreams? && can_buy_e?(entity)
             trains_to_buy.uniq
           end
 
