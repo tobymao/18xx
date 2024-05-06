@@ -127,7 +127,7 @@ module Engine
           route.all_hexes.count { |hex| mountain?(hex) } * 10
         end
 
-        def revenue_for(route, stops)
+        def check_other(route)
           track_types = route.chains.flat_map { |connections| connections[:paths] }.flat_map(&:track).uniq
 
           raise GameError, 'Ships cannot run on land' if ship?(route.train) && track_types != [route.train.track_type]
@@ -135,8 +135,6 @@ module Engine
 
           cost = route_cost(route)
           raise GameError, 'Cannot afford the fees for this route' if route.train.owner.cash < cost
-
-          super
         end
 
         def revenue_str(route)
