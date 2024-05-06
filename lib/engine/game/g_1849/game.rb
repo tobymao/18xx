@@ -509,6 +509,7 @@ module Engine
             G1849::Step::Token,
             Engine::Step::Route,
             G1849::Step::Dividend,
+            G1849::Step::BuyToken,
             Engine::Step::DiscardTrain,
             G1849::Step::BuyTrain,
             G1849::Step::IssueShares,
