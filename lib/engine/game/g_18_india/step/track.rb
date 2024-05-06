@@ -12,7 +12,7 @@ module Engine
 
           # Added multple yellow tile check and Yellow OO reservation check
           def process_lay_tile(action)
-            if action.tile.color == 'yellow'
+            if action.tile.color == :yellow
               raise GameError, 'New yellow tiles must extend path from railhead and previously laid tiles' \
                unless connected_to_track_laying_path?(action.hex)
 
