@@ -29,6 +29,11 @@ module Engine
         BANK_CASH = 7760
 
         CERT_LIMIT = { 3 => 12, 4 => 11, 5 => 9 }.freeze
+        REDUCED_CERT_LIMIT = { 3 => 12, 4 => 9, 5 => 9 }.freeze
+
+        def game_cert_limit
+          reduced_4p_corps? ? self.class::REDUCED_CERT_LIMIT : self.class::CERT_LIMIT
+        end
 
         STARTING_CASH = { 3 => 500, 4 => 375, 5 => 300 }.freeze
 
@@ -284,6 +289,7 @@ module Engine
           setup_companies
           afg # init afg helper
           remove_corp if @players.size == 3
+          remove_corp if @players.size == 4 && reduced_4p_corps?
           @corporations[0].next_to_par = true
 
           @available_par_groups = %i[par]
@@ -316,7 +322,7 @@ module Engine
         end
 
         def num_trains(train)
-          fewer = @players.size < 4
+          fewer = @players.size < 4 || (@players.size == 4 && reduced_4p_corps?)
           case train[:name]
           when '6H'
             fewer ? 3 : 4
@@ -776,6 +782,10 @@ module Engine
 
         def par_prices
           @stock_market.share_prices_with_types(@available_par_groups)
+        end
+
+        def reduced_4p_corps?
+          @reduced_4p_corps ||= @optional_rules&.include?(:reduced_4p_corps)
         end
       end
     end

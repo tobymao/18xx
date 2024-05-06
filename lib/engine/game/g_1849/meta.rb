@@ -24,6 +24,12 @@ module Engine
             short_name: 'Delay IFT',
             desc: 'IFT may not be one of the first three corporations (recommended for newer players)',
           },
+          {
+            sym: :reduced_4p_corps,
+            short_name: 'Reduced corps at 4 players',
+            desc: 'Six corporations are recommended in a 4-player game, but it is possible to play with five',
+            players: [4],
+          },
         ].freeze
       end
     end
