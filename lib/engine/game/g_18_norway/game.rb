@@ -194,10 +194,11 @@ module Engine
           new_shares.each do |share|
             add_new_share(share)
           end
-          price = shares[1].price
-          @bank.spend(price, corporation)
-          share_pool.buy_shares(corporation_by_id('NSB'), new_shares[4], exchange: :free) if number_of_shares.positive?
-          share_pool.buy_shares(corporation_by_id('NSB'), new_shares[3], exchange: :free) if number_of_shares > 1
+          return if number_of_shares.zero?
+          
+          bundle = ShareBundle.new(new_shares.take(number_of_shares))
+          @bank.spend(bundle.price, corporation)
+          share_pool.buy_shares(corporation_by_id('NSB'), bundle, exchange: :free)
 
           corporation.add_ability(Engine::Ability::Base.new(
             type: 'Nationalized',
