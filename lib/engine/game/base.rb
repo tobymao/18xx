@@ -836,6 +836,7 @@ module Engine
       end
 
       def rescue_exception(e, action)
+        LOGGER.debug { "Caught exception #{e.inspect}, backtrace: [#{e.backtrace.join(', ')}]" }
         @raw_actions.pop
         @actions.pop
         @exception = e
