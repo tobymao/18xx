@@ -34,6 +34,23 @@ module Engine
 
             super
           end
+
+          def buyable_trains(entity)
+            # Cannot buy E-train without E-token
+            trains_to_buy = super
+
+            trains_to_buy = trains_to_buy.reject { |t| t.name == 'E' } unless entity.e_token == true
+            trains_to_buy.uniq
+          end
+
+          def e_train
+            @depot.depot_trains.find { |t| t.name == 'E' }
+          end
+
+          def can_buy_e?(entity)
+            e_train.price <= entity.cash &&
+              entity.e_token == true
+          end
         end
       end
     end

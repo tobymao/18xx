@@ -245,13 +245,15 @@ module Engine
         CORP_CHOOSES_HOME_HEXES = %w[C1 H8 M9 M11 B14].freeze
         PORT_HEXES = %w[a12 A5 L14 N8].freeze
         SMS_HEXES = %w[B14 C1 C5 E1 H12 J6 M9 M13].freeze
+        DOUBLE_FOR_E_TRAIN = %w[B14 C5 H12 M13].freeze
 
         IFT_BUFFER = 3
 
         attr_accessor :swap_choice_player, :swap_location, :swap_other_player, :swap_corporation,
                       :loan_choice_player, :player_debts,
                       :max_value_reached,
-                      :old_operating_order, :moved_this_turn
+                      :old_operating_order, :moved_this_turn,
+                      :e_tokens_counter, :e_token_sold
 
         def option_delay_ift?
           @optional_rules&.include?(:delay_ift)
@@ -315,6 +317,9 @@ module Engine
 
           @player_debts = Hash.new { |h, k| h[k] = 0 }
           @moved_this_turn = []
+
+          # below this line is code for variant rules
+          set_e_token_sold if electric_dreams?
         end
 
         def setup_companies
@@ -462,6 +467,8 @@ module Engine
           corporation.next_to_par = true if @corporations[index - 1].floated?
           update_garibaldi
           # code below is for variant rules
+          @log << 'E-token returned to bank' if corporation.e_token
+          corporation.e_token = false if electric_dreams?
 
           repaid_bond = entity.loans.pop if bonds? && entity.loans.any?
           @loans << repaid_bond if repaid_bond
@@ -510,6 +517,7 @@ module Engine
             Engine::Step::Route,
             G1849::Step::Dividend,
             G1849::Step::BuyToken,
+            G1849::Step::BuyEToken,
             Engine::Step::DiscardTrain,
             G1849::Step::BuyTrain,
             G1849::Step::IssueShares,
@@ -564,13 +572,25 @@ module Engine
         end
 
         def check_other(route)
+          check_track_type(route)
           return unless (route.stops.map(&:hex).map(&:id) & PORT_HEXES).any?
 
           raise GameError, 'Route must include two non-port stops.' unless route.stops.size > 2
         end
 
+        def check_track_type(route)
+          train = route.train
+          paths = route.paths
+
+          raise GameError, 'E-Trains cannot use narrow gauge' if paths.any? { |p| p.track == :narrow } && train.name == 'E'
+        end
+
         def revenue_for(route, stops)
-          total = stops.sum { |stop| stop_revenue(stop, route.phase, route.train) }
+          total = stops.sum do |stop|
+            revenue = stop_revenue(stop, route.phase, route.train)
+            revenue *= 2 if route.train.name == 'E' && DOUBLE_FOR_E_TRAIN.include?(stop.hex.id)
+            revenue
+          end
           total + cnm_bonus(route.corporation, stops)
         end
 
@@ -579,9 +599,9 @@ module Engine
         end
 
         def stop_revenue(stop, phase, train)
-          return gray_revenue(stop) if GRAY_REVENUE_CENTERS.key?(stop.hex.id)
-
-          stop.route_revenue(phase, train)
+          revenue = gray_revenue(stop) if GRAY_REVENUE_CENTERS.key?(stop.hex.id)
+          revenue ||= stop.route_revenue(phase, train)
+          revenue
         end
 
         def gray_revenue(stop)
@@ -911,6 +931,18 @@ module Engine
 
         def can_pay_interest?(entity, extra_cash = 0)
           entity.cash + extra_cash >= interest_owed(entity)
+        end
+
+        # code below is for the Electric Dreams variant
+
+        def status_array(corporation)
+          return unless corporation.e_token
+
+          ['E-Token Purchased']
+        end
+
+        def set_e_token_sold
+          @e_token_sold = false
         end
       end
     end
