@@ -8,10 +8,6 @@ module Engine
       module Step
         class BuyTrain < Engine::Step::BuyTrain
           def actions(entity)
-            if entity == current_entity.owner
-              return can_issue?(current_entity) ? [] : %w[sell_shares]
-            end
-
             return [] unless entity.corporation?
 
             actions_ = []
