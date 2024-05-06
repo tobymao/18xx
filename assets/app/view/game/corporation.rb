@@ -638,9 +638,10 @@ module View
           loan_props[:style][:color] = contrast_on(color)
         end
 
+        corp_loans_text = @corporation.respond_to?(:corp_loans_text) ? @corporation.corp_loans_text : 'Loans'
         [
           h('tr.ipo', loan_props, [
-            h('td.right', 'Loans'),
+            h('td.right', corp_loans_text),
             h('td.padded_number', "#{@corporation.loans.size}/"\
                                   "#{@game.maximum_loans(@corporation)}"),
           ]),

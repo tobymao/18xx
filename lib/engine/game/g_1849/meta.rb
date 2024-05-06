@@ -30,6 +30,21 @@ module Engine
             desc: 'Six corporations are recommended in a 4-player game, but it is possible to play with five',
             players: [4],
           },
+          {
+            sym: :acquiring_station_tokens,
+            short_name: 'Buy tokens',
+            desc: 'Corporations can buy station tokens from other corporations',
+          },
+          {
+            sym: :bonds,
+            short_name: 'Bonds',
+            desc: 'Corporations have a single L.500 bond they can issue',
+          },
+          {
+            sym: :electric_dreams,
+            short_name: 'Electric Dreams',
+            desc: 'Adds E-trains to the game',
+          },
         ].freeze
       end
     end
