@@ -40,10 +40,6 @@ module Engine
             false
           end
 
-          def may_choose?(_company)
-            false
-          end
-
           def auctioning; end
 
           def bids
@@ -113,14 +109,15 @@ module Engine
 
           def process_select_multiple_companies(action)
             player = action.entity
-            selected_companies = action.companies
-            @log << "#{player.name} selected #{selected_companies.size} certificates for hand"
-            selected_companies.each { |company| company.owner = player }
-            unselected_companies = player.hand - selected_companies
-            unselected_companies.each { |company| company.owner = nil }
+            selected = action.companies
+            raise GameError, "Selected companies are not in #{player.name}'s hand" unless (selected - player.hand).empty?
+            @log << "#{player.name} selected #{selected.size} certificates for hand"
+            selected.each { |company| company.owner = player }
+            unselected = player.hand - selected
+            unselected.each { |company| company.owner = nil }
             @confirmed_selections += 1
             LOGGER.debug "Process Muti-Select => confirmed_selections: #{@confirmed_selections} finished?: #{finished?}  "\
-                         "selected: #{selected_companies.inspect} unselected: #{unselected_companies.inspect}"
+                         "selected: #{selected.inspect} unselected: #{unselected.inspect}"
             @round.next_entity_index!
             action_finalized
           end
