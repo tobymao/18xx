@@ -72,14 +72,14 @@ module Engine
 
           def selection_note
             [
-              "Made #{number_of_selections} of #{@cards_to_keep} selections.",
               'Click on card to select or unselect it.',
+              "Made #{number_of_selections} of #{@cards_to_keep} selections.",
+              number_of_selections > @cards_to_keep ? 'Too many certs selected.' : '',
+              number_of_selections < @cards_to_keep ? 'Select more certs.' : '',
             ]
           end
 
           def select_company(player, company)
-            return if selections_completed? && company.owner.nil? # prevent selecting more than allowed
-
             # add or remove from choices
             if company_selected?(company)
               @choices[player].delete(company)
@@ -111,6 +111,7 @@ module Engine
             player = action.entity
             selected = action.companies
             raise GameError, "Selected companies are not in #{player.name}'s hand" unless (selected - player.hand).empty?
+
             @log << "#{player.name} selected #{selected.size} certificates for hand"
             selected.each { |company| company.owner = player }
             unselected = player.hand - selected
