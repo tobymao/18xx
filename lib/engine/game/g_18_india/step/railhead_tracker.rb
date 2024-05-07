@@ -21,6 +21,7 @@ module Engine
           end
 
           def calculate_railhead_hexes
+            return nil unless @round.pending_tokens.empty? # by placed yellow OO tile
             return [] if @round.laid_yellow_hexes.empty?
 
             # check simple case of only one or two 'white' neighbor connected to prior tile => return without walking
@@ -35,7 +36,6 @@ module Engine
             railheads = corp.placed_tokens.map(&:city)
             placed_paths = @round.laid_yellow_hexes.map(&:tile).map(&:paths) # paths on all previously laid yellow hexes
             LOGGER.debug "railhead_hexes >> corp: #{corp.inspect}, railheads: #{railheads.inspect}"
-            return nil if railheads.empty? # Can happen if OO token is waiting to be placed
 
             next_hexes = []
             railheads.each do |railhead|
