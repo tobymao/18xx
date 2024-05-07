@@ -216,6 +216,7 @@ module Engine
         def rust?(train, purchased_train)
           return false unless super
           return true unless train.name == '2'
+          return true if train.owner == @depot
 
           operated_this_round?(train.owner)
         end
