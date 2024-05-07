@@ -124,7 +124,7 @@ module View
           select_button = [h(:button, { on: { click: mutiple_companies } }, 'Confirm Selections')]
 
           children = []
-          children << h(:div, @step.selection_note.map { |text_block| h(:p, text_block) } )
+          children << h(:div, @step.selection_note.map { |text_block| h(:p, text_block) })
           children << h(:div, select_button) if @step.selections_completed?
           h(:div, children)
         end
