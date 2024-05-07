@@ -36,7 +36,7 @@ module View
           return process_action(Engine::Action::Assign.new(entity, target: selected_company))
         end
 
-        if @game.round.actions_for(entity).include?('select_multiple_companies') && @step.respond_to?(:select_company)
+        if @game.round.actions_for(entity).include?('select_multiple_companies')
           @step.select_company(entity, @company)
           return store(:selected_company, nil)
         end
