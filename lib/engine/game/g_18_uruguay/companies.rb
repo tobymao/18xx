@@ -89,7 +89,7 @@ module Engine
           name: 'P5 John Eldon Gorst',
           value: 160,
           revenue: 25,
-          desc: 'Accompanied by the 20%
+          desc: 'Accompanied by the 30%
                     President’s Certificate of The River Plate Trust, Loan
                     & Agency Company, ltd (RPTLA). Closes when
                     RPTLA buys its first non-yellow ship. P5 is not available for purchase.',

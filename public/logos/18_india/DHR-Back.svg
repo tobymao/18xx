@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 33.1 33.1">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #158c4f;
+      }
+
+      .cls-1, .cls-2, .cls-3 {
+        stroke-width: 0px;
+      }
+
+      .cls-2, .cls-4 {
+        fill: none;
+      }
+
+      .cls-5 {
+        clip-path: url(#clippath-1);
+      }
+
+      .cls-6 {
+        clip-path: url(#clippath);
+      }
+
+      .cls-4 {
+        stroke: #231f20;
+        stroke-miterlimit: 10;
+        stroke-width: .5px;
+      }
+
+      .cls-3 {
+        fill: #fff;
+      }
+    </style>
+    <clipPath id="clippath">
+      <rect class="cls-2" x="2.56" y="1.83" width="29.45" height="29.45"/>
+    </clipPath>
+    <clipPath id="clippath-1">
+      <rect class="cls-2" x="2.56" y="1.83" width="29.45" height="29.45"/>
+    </clipPath>
+  </defs>
+  <g id="Tokens">
+    <g id="Darjeeling">
+      <circle class="cls-1" cx="16.55" cy="16.55" r="16.3"/>
+      <g class="cls-6">
+        <g class="cls-5">
+          <path class="cls-3" d="M29.89,20.17l-4.77-9.48-2.48,4.37-4.43-9.97-5.3,10.55-2.82-5.86-6.53,11.99,6.25.03-.96,1.91,17.69.1-1.63-3.68,4.99.02ZM25.11,10.96l.47.97s-.62-.29-1.09.19c-.03.03.62-1.15.62-1.15M10.81,11.81c-.79.13-1.49,1.9-2.2,1.04-.04-.05,1.42-2.66,1.42-2.66,0,0,.87,1.6.78,1.61M19.34,8.36c-1.31-.56-1.35.92-3.17,1.39-.08.02,2.04-4.11,2.04-4.11,0,0,1.23,2.76,1.13,2.72"/>
+        </g>
+      </g>
+    </g>
+  </g>
+  <g id="Dire_line" data-name="Dire line">
+    <circle class="cls-4" cx="16.55" cy="16.55" r="16.3"/>
+  </g>
+</svg>

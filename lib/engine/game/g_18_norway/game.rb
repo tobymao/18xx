@@ -77,6 +77,18 @@ module Engine
           'MOUNTAIN_BIG' => '/icons/mountain.svg',
         }.freeze
 
+        def hovedbanen
+          @hovedbanen ||= corporation_by_id('H')
+        end
+
+        def hovedbanen?(corporation)
+          hovedbanen == corporation
+        end
+
+        def nsb
+          @nsb ||= corporation_by_id('NSB')
+        end
+
         def price_movement_chart
           [
             ['Action', 'Share Price Change'],
@@ -102,13 +114,22 @@ module Engine
           MOUNTAIN_BIG_HEXES.each { |hex| hex_by_id(hex).assign!('MOUNTAIN_BIG') }
           MOUNTAIN_SMALL_HEXES.each { |hex| hex_by_id(hex).assign!('MOUNTAIN_SMALL') }
           corporation_by_id('R').add_ability(Engine::Ability::Base.new(
-            type: 'FreeTunnel',
+            type: 'free_tunnel',
             description: 'Free tunnel'
           ))
         end
 
+
         def p4
           @p4 ||= company_by_id('P4')
+        end
+
+        def thunes_mekaniske
+          @thunes_mekaniske ||= company_by_id('P2')
+        end
+
+        def owns_thunes_mekaniske?(owner)
+          thunes_mekaniske.owner == owner
         end
 
         def big_mountain?(hex)
@@ -123,18 +144,43 @@ module Engine
           big_mountain?(hex) || small_mountain?(hex)
         end
 
+        def route_cost(route)
+          # P2 Thunes mekaniske verksted do not need to pay maintainance
+          return 0 if owns_thunes_mekaniske?(route.train.owner)
+
+          route.all_hexes.count { |hex| mountain?(hex) } * 10
+        end
+
+        def check_other(route)
+          track_types = route.chains.flat_map { |connections| connections[:paths] }.flat_map(&:track).uniq
+
+          raise GameError, 'Ships cannot run on land' if ship?(route.train) && track_types != [route.train.track_type]
+          raise GameError, 'Trains cannot run on water' if !ship?(route.train) && track_types.include?(:narrow)
+
+          cost = route_cost(route)
+          raise GameError, 'Cannot afford the fees for this route' if route.train.owner.cash < cost
+        end
+
+        def revenue_str(route)
+          str = super
+          cost = route_cost(route)
+          str += " -Fee(#{cost})" if cost.positive?
+          str
+        end
+
         def operating_round(round_num)
-          Round::Operating.new(self, [
+          Engine::Round::Operating.new(self, [
             Engine::Step::Bankrupt,
             Engine::Step::Exchange,
             Engine::Step::SpecialTrack,
             Engine::Step::SpecialToken,
             Engine::Step::BuyCompany,
             Engine::Step::HomeToken,
-            Engine::Step::Track,
+            G18Norway::Step::Track,
+            G18Norway::Step::BuildTunnel,
             Engine::Step::Token,
             Engine::Step::Route,
-            Engine::Step::Dividend,
+            G18Norway::Step::Dividend,
             Engine::Step::DiscardTrain,
             G18Norway::Step::BuyTrain,
             [Engine::Step::BuyCompany, { blocks: true }],
@@ -153,6 +199,73 @@ module Engine
 
         def can_go_bankrupt?(player, corporation)
           total_emr_buying_power(player, corporation) < cheapest_train_price
+        end
+
+        def new_nationalization_round(round_num)
+          G18Norway::Round::Nationalization.new(self, [
+              G18Norway::Step::NationalizeCorporation,
+              ], round_num: round_num)
+        end
+
+        def next_round!
+          @round =
+            case @round
+            when G18Norway::Round::Nationalization
+              new_stock_round
+            when Engine::Round::Stock
+              @operating_rounds = @phase.operating_rounds
+              reorder_players
+              new_operating_round
+            when Engine::Round::Operating
+              if @round.round_num < @operating_rounds
+                or_round_finished
+                new_operating_round(@round.round_num + 1)
+              else
+                @turn += 1
+                or_round_finished
+                or_set_finished
+                new_nationalization_round
+              end
+            when init_round.class
+              init_round_finished
+              reorder_players
+              new_stock_round
+            end
+        end
+
+        def add_new_share(share)
+          owner = share.owner
+          corporation = share.corporation
+          corporation.share_holders[owner] += share.percent if owner
+          owner.shares_by_corporation[corporation] << share
+          @_shares[share.id] = share
+        end
+
+        def nationalized?(entity)
+          entity.type == :nationalized
+        end
+
+        def convert(corporation, number_of_shares)
+          shares = @_shares.values.select { |share| share.corporation == corporation }
+
+          shares.each { |share| share.percent /= 2 }
+          new_shares = Array.new(5) { |i| Share.new(corporation, percent: 10, index: i + 4) }
+          new_shares.each do |share|
+            add_new_share(share)
+          end
+          corporation.type = :nationalized
+
+          return 0 if number_of_shares.zero?
+
+          bundle = ShareBundle.new(new_shares.take(number_of_shares))
+          @bank.spend(bundle.price, corporation)
+          share_pool.buy_shares(nsb, bundle, exchange: :free)
+
+          bundle.price
+        end
+
+        def can_par?(corporation, _parrer)
+          nsb != corporation
         end
       end
     end
