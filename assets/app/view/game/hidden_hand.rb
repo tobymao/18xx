@@ -20,18 +20,19 @@ module View
         @current_entity = @round.current_entity
 
         user_name = @user&.dig('name')
-        user_is_player = !hotseat? && user_name && @game.players.map(&:name).include?(user_name)
-        @user_is_current_player = user_is_player && @current_entity.name == user_name
+        user_in_game = !hotseat? && user_name && @game.players.map(&:name).include?(user_name)
+        user_is_this_player = user_name == @player.name || hotseat?
+        @user_is_current_player = user_in_game && @current_entity.name == user_name
         @master_mode = Lib::Storage[@game.id]&.dig('master_mode')
-        @block_show = user_is_player && !@user_is_current_player && !Lib::Storage[@game.id]&.dig('master_mode')
+        @block_show = user_in_game && !@user_is_current_player && !Lib::Storage[@game.id]&.dig('master_mode')
         @current_entity_is_player = @current_entity.name == @player.name
 
-        LOGGER.debug "HiddenHand >> @user: #{@user} user_name: #{user_name} user_is_player: #{user_is_player}" \
+        LOGGER.debug "HiddenHand >> @user: #{@user} user_name: #{user_name} user_in_game: #{user_in_game}" \
           " @user_is_current_player: #{@user_is_current_player} hotseat?: #{hotseat?} " \
           " @player: #{@player.name} current_entity: #{@current_entity.name} " \
           " @show_hand: #{@show_hand} @master_mode: #{@master_mode} "
 
-        return h(:div) unless @current_entity_is_player
+        return h(:div) if !@current_entity_is_player || !user_is_this_player
 
         children = []
         children << render_show_button if !@block_show
