@@ -22,6 +22,7 @@ module View
       needs :show_hidden, default: false
       needs :hide_logo, store: true, default: false
       needs :show_companies, default: true
+      needs :hidden_hand, default: true
 
       def render
         card_style = {
@@ -38,6 +39,7 @@ module View
         if @show_companies
           divs << h(Companies, owner: @player, game: @game, show_hidden: @show_hidden) if @player.companies.any? || @show_hidden
           divs << h(UnsoldCompanies, owner: @player, game: @game) unless @player.unsold_companies.empty?
+          divs << h(HiddenHand, player: @player, game: @game, user: @user) if @hidden_hand
         end
 
         unless (minors = @game.player_card_minors(@player)).empty?
