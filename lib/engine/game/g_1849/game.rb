@@ -508,6 +508,7 @@ module Engine
           G1849::Round::Operating.new(self, [
             G1849::Step::LoanChoice,
             G1849::Step::Bankrupt,
+            G1849::Step::EmergencyMoneyRaising,
             G1849::Step::SwapChoice,
             Engine::Step::BuyCompany,
             G1849::Step::SMSTeleport,
