@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative '../../../step/base'
 require_relative '../../../step/buy_train'
 
 module Engine
@@ -51,8 +52,8 @@ module Engine
           end
 
           def can_buy_e?(entity)
-            e_train.price <= entity.cash &&
-              entity.e_token == true
+            entity.e_token == true &&
+              e_train.price <= entity.cash
           end
         end
       end
