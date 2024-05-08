@@ -119,7 +119,6 @@ module Engine
           ))
         end
 
-
         def p4
           @p4 ||= company_by_id('P4')
         end
