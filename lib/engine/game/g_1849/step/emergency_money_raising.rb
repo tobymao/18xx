@@ -46,10 +46,6 @@ module Engine
             [@round.cash_crisis_entity]
           end
 
-          def issuable_shares(entity)
-            super.select { |bundle| selling_minimum_shares?(bundle) }
-          end
-
           def needed_cash(entity)
             return needed_cash(@active_entity) if @active_entity.corporation? && @active_entity.owner == entity
 
@@ -57,8 +53,6 @@ module Engine
           end
 
           def can_sell_shares?(entity)
-            return issuable_shares(entity).any? if entity.corporation?
-
             entity.cash < needed_cash(entity)
           end
 
