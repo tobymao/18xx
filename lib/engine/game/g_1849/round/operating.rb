@@ -18,6 +18,8 @@ module Engine
           def after_setup
             @repaid_bond = {}
             @issued_bond = {}
+
+            super
           end
         end
       end

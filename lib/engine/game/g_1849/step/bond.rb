@@ -11,7 +11,7 @@ module Engine
             return [] if !entity.corporation? || entity != current_entity
 
             actions = []
-            actions << 'payoff_loan' if can_payoff?(entity)
+            actions << 'payoff_loan' if can_payoff_loan?(entity)
             actions << 'take_loan' if @game.can_take_loan?(entity)
             actions << 'pass' if blocks? && !actions.empty?
 
@@ -19,7 +19,7 @@ module Engine
           end
 
           def description
-            can_payoff?(current_entity) ? 'Repay Bond' : 'Issue Bond'
+            can_payoff_loan?(current_entity) ? 'Repay Bond' : 'Issue Bond'
           end
 
           def log_skip(entity)
@@ -34,7 +34,7 @@ module Engine
             "Repay Bond (#{@game.format_currency(@game.loan_value)})"
           end
 
-          def can_payoff?(entity)
+          def can_payoff_loan?(entity)
             !@round.issued_bond[entity] &&
               entity.loans.any? &&
               entity.cash >= entity.loans.first.amount
