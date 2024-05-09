@@ -86,31 +86,35 @@ module Engine
           },
         ].freeze
 
-        TRAINS = [{ name: '4H', num: 4, distance: 4, price: 100, rusts_on: '8H' },
-                  {
-                    name: '6H',
-                    num: 4,
-                    distance: 6,
-                    price: 200,
-                    rusts_on: '10H',
-                    events: [{ 'type' => 'green_par' }],
-                  },
-                  { name: '8H', distance: 8, price: 350, rusts_on: '16H' },
-                  {
-                    name: '10H',
-                    distance: 10,
-                    price: 550,
-                    events: [{ 'type' => 'brown_par' }],
-                  },
-                  {
-                    name: '12H',
-                    num: 1,
-                    distance: 12,
-                    price: 800,
-                    events: [{ 'type' => 'close_companies' }, { 'type' => 'earthquake' }],
-                  },
-                  { name: '16H', distance: 16, price: 1100 },
-                  { name: 'R6H', num: 2, available_on: '16H', distance: 6, price: 600 }].freeze
+        def game_trains
+          [
+            { name: '4H', num: 4, distance: 4, price: 100, rusts_on: '8H' },
+            {
+              name: '6H',
+              num: 4,
+              distance: 6,
+              price: 200,
+              rusts_on: '10H',
+              events: [{ 'type' => 'green_par' }],
+            },
+            { name: '8H', distance: 8, price: 350, rusts_on: '16H' },
+            {
+              name: '10H',
+              distance: 10,
+              price: 550,
+              events: [{ 'type' => 'brown_par' }],
+            },
+            {
+              name: '12H',
+              num: 1,
+              distance: 12,
+              price: 800,
+              events: [{ 'type' => 'close_companies' }, { 'type' => 'earthquake' }],
+            },
+            { name: '16H', distance: 16, price: 1100 },
+            { name: 'R6H', num: 2, available_on: '16H', distance: 6, price: 600 },
+          ]
+        end
 
         CORP_CHOOSES_HOME = 'SFR'
         CORP_CHOOSES_HOME_HEXES = %w[E11 H8 I13 I17 J18 K19 L12 L20 O9 P2].freeze
