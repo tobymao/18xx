@@ -59,7 +59,7 @@ module Engine
             train_limit: 4,
             tiles: [:yellow],
             operating_rounds: 1,
-            status: %w[gray_uses_white no_bonds],
+            status: %w[gray_uses_white no_bonds no_buying_tokens],
           },
           {
             name: '6H',

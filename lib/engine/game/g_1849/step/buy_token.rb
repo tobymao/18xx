@@ -43,8 +43,10 @@ module Engine
             entity.tokens_by_type
           end
 
-          def can_sell_token?(token)
-            token.corporation.placed_tokens.size > 1
+          def can_sell_token?(token, entity)
+            token.corporation.placed_tokens.size > 1 &&
+            token != token.corporation.tokens.first &&
+            !token.city.tokened_by?(entity)
           end
 
           # look for any cities reachable from entity that are tokened by another corporation that
@@ -59,7 +61,7 @@ module Engine
                 next unless token
                 next if token.corporation == entity
 
-                return true if can_sell_token?(token)
+                return true if can_sell_token?(token, entity)
               end
             end
             false
@@ -100,7 +102,13 @@ module Engine
           end
 
           def log_skip(entity)
-            super if @game.acquiring_station_tokens? && !@game.phase.status.include?('no_buying_tokens')
+            return if !@game.acquiring_station_tokens? || @game.phase.status.include?('no_buying_tokens')
+
+            @log << "#{entity.name} can't buy any tokens from other corporations"
+          end
+
+          def log_pass(entity)
+            @log << "#{entity.name} can't buy any tokens from other corporations"
           end
 
           def max_price(entity)
