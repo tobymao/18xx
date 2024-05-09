@@ -631,7 +631,7 @@ module Engine
 
         # Lists buyable companies for STOCK ROUND in VIEW
         def buyable_bank_owned_companies
-          bank_owned_companies + top_of_ipo_rows + hand_companies_for_stock_round
+          bank_owned_companies + top_of_ipo_rows
         end
 
         def first_bond_in_bank

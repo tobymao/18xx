@@ -3291,6 +3291,10 @@ module Engine
         false
       end
 
+      def hand_companies_for_stock_round
+        []
+      end
+
       def second_icon(corporation); end
     end
   end

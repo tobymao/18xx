@@ -24,6 +24,7 @@ module View
         needs :corporation_to_par, default: nil, store: true
         needs :show_other_players, default: nil, store: true
         needs :flexible_player, default: nil, store: true
+        needs :show_hand, default: false, store: true
 
         def render
           round = @game.round
@@ -88,6 +89,8 @@ module View
           children.concat(render_corporations) unless @hide_corporations
           children.concat(render_mergeable_entities) if @current_actions.include?('merge')
           children.concat(render_player_companies) if @current_actions.include?('sell_company')
+          children << render_show_hand_button unless @game.hand_companies_for_stock_round.empty?
+          children.concat(render_hand_companies) if show_hand?
           children.concat(render_bank_companies) unless @bank_first
           children << h(Players, game: @game)
           if @step.respond_to?(:purchasable_companies) && !@step.purchasable_companies(@current_entity).empty?
@@ -435,6 +438,61 @@ module View
           return [] if !@step.respond_to?(:can_bid_company?) || !@step.can_bid_company?(@current_entity, company)
 
           [h(Bid, entity: @current_entity, biddable: company)]
+        end
+
+        def render_hand_companies
+          props = {
+            style: {
+              display: 'inline-block',
+              verticalAlign: 'top',
+            },
+          }
+
+          @game.hand_companies_for_stock_round.map do |company|
+            inputs = []
+            inputs.concat(render_buy_input(company)) if @current_actions.include?('buy_company')
+
+            children = []
+            children << h(Company, company: company, interactive: !inputs.empty?)
+            if !inputs.empty? && @selected_company == company
+              children << h('div.margined_bottom', { style: { width: '20rem' } }, inputs)
+            end
+            h(:div, props, children)
+          end
+        end
+
+        def render_show_hand_button
+          return nil unless @current_entity.player?
+
+          user_name = @user&.dig('name')
+          user_in_game = !hotseat? && user_name && @game.players.map(&:name).include?(user_name)
+          user_is_this_player = !hotseat? && @user&.dig('name') == @current_entity.name
+          user_in_master_mode = user_in_game && Lib::Storage[@game.id]&.dig('master_mode')
+          can_show_hand = user_is_this_player || user_in_master_mode || hotseat?
+
+          toggle = lambda do
+            if can_show_hand
+              store(:show_hand, !@show_hand)
+            else
+              store(:flash_opts, 'Enter master mode to reveal hand. Use this feature fairly.')
+            end
+          end
+
+          props = {
+            style: {
+              display: 'block',
+              width: '8.5rem',
+              padding: '0.2rem 0',
+              margin: '1rem 0',
+            },
+            on: { click: toggle },
+          }
+
+          h(:button, props, "#{show_hand? ? 'Hide' : 'Show'} Player Hand")
+        end
+
+        def show_hand?
+          @show_hand
         end
 
         def render_bank

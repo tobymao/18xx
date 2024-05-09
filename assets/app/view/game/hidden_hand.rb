@@ -13,7 +13,7 @@ module View
       needs :game
       needs :user
       needs :flash_opts, default: {}, store: true
-      needs :hide_hand, default: true, store: true
+      needs :show_hand, default: false, store: true
 
       def render
         @round = @game.round
@@ -21,22 +21,17 @@ module View
 
         user_name = @user&.dig('name')
         user_in_game = !hotseat? && user_name && @game.players.map(&:name).include?(user_name)
-        user_is_this_player = user_name == @player.name || hotseat?
-        @user_is_current_player = user_in_game && @current_entity.name == user_name
-        @master_mode = Lib::Storage[@game.id]&.dig('master_mode')
-        @block_show = user_in_game && !@user_is_current_player && !Lib::Storage[@game.id]&.dig('master_mode')
-        @current_entity_is_player = @current_entity.name == @player.name
+        user_is_this_player = user_name == @player.name && !hotseat?
+        current_entity_is_this_player = @current_entity.name == @player.name
+        master_mode = Lib::Storage[@game.id]&.dig('master_mode')
+        user_in_master_mode = user_in_game && master_mode && current_entity_is_this_player
 
-        LOGGER.debug "HiddenHand >> @user: #{@user} user_name: #{user_name} user_in_game: #{user_in_game}" \
-          " @user_is_current_player: #{@user_is_current_player} hotseat?: #{hotseat?} " \
-          " @player: #{@player.name} current_entity: #{@current_entity.name} " \
-          " @show_hand: #{@show_hand} @master_mode: #{@master_mode} "
-
-        return h(:div) if !@current_entity_is_player || !user_is_this_player
+        @show_button = user_is_this_player || current_entity_is_this_player
+        @can_use_button = user_is_this_player || user_in_master_mode || hotseat?
 
         children = []
-        children << render_show_button if !@block_show
-        children << render_companies unless hide_hand?
+        children << render_show_button if @show_button
+        children << render_companies if @show_button && show_hand?
         h(:div, children)
       end
 
@@ -65,13 +60,11 @@ module View
       end
 
       def render_show_button
-        return nil if @user_is_current_player
-
         toggle = lambda do
-          if @block_show
-            store(:flash_opts, 'Enter master mode to reveal other hand. Use this feature fairly.')
+          if @can_use_button
+            store(:show_hand, !@show_hand)
           else
-            store(:hide_hand, !@hide_hand)
+            store(:flash_opts, 'Enter master mode to reveal other hand. Use this feature fairly.')
           end
         end
 
@@ -85,13 +78,11 @@ module View
           on: { click: toggle },
         }
 
-        h(:button, props, "#{hide_hand? ? 'Show' : 'Hide'} Hand")
+        h(:button, props, "#{show_hand? ? 'Hide' : 'Show'} Hand")
       end
 
-      def hide_hand?
-        return false if @user_is_current_player
-
-        @block_show || @hide_hand
+      def show_hand?
+        @show_hand
       end
     end
   end

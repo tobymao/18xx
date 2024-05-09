@@ -79,7 +79,7 @@ module Engine
 
           # Test showing bank certs / companies at top before corporations in stock view
           def bank_first?
-            true
+            false
           end
 
           def actions(entity)
