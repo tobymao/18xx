@@ -1,1 +1,51 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" fill="#da193a"/><text x="4" y="5.1" text-anchor="middle" font-weight="700" font-size="3.25" textLength="7.2" lengthAdjust="spacingAndGlyphs" font-family="Arial" fill="white">KGF</text></svg>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 33.1 33.1">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: none;
+      }
+
+      .cls-1, .cls-2, .cls-3 {
+        stroke-width: 0px;
+      }
+
+      .cls-4 {
+        clip-path: url(#clippath-1);
+      }
+
+      .cls-5 {
+        clip-path: url(#clippath);
+      }
+
+      .cls-2 {
+        fill: #fff;
+      }
+
+      .cls-3 {
+        fill: #d81f3d;
+      }
+    </style>
+    <clipPath id="clippath">
+      <rect class="cls-1" x="3" y="2.3" width="28.5" height="28.5"/>
+    </clipPath>
+    <clipPath id="clippath-1">
+      <rect class="cls-1" x="3" y="2.3" width="28.5" height="28.5"/>
+    </clipPath>
+  </defs>
+  <g id="Dire_line" data-name="Dire line">
+    <circle class="cls-2" cx="16.5" cy="16.5" r="16.3"/>
+  </g>
+  <g id="Tokens">
+    <g id="Kolar">
+      <g class="cls-5">
+        <g>
+          <path class="cls-3" d="M25.9,10.9v-3.2h-3.3v-2.6h-11.3v2.6h-3.2v3.2h-2.6v11.3h2.6v3.3h3.2v2.5h11.3v-2.5h3.3v-3.3h2.5v-11.3h-2.5ZM27.5,21.3h-1.6v-2.3h-.9v5.7h-5.4v.9h2.1v1.5h-9.5v-1.5h2.6v-.9h-5.9v-5.7h-.9v2.3h-1.6v-9.5h1.6v2.4h.9v-5.6h5.9v-.9h-2.6v-1.7h9.5v1.7h-2.1v.9h5.4v5.6h.9v-2.4h1.6v9.5Z"/>
+          <g class="cls-4">
+            <path class="cls-3" d="M17,10c-3.7,0-6.7,3-6.7,6.7s3,6.7,6.7,6.7,6.7-3,6.7-6.7-3-6.7-6.7-6.7M17,22.4l-5.8-5.8,5.8-5.8,5.8,5.8-5.8,5.8Z"/>
+          </g>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

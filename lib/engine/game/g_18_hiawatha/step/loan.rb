@@ -19,7 +19,6 @@ module Engine
             raise GameError, 'Cannot pay off loans taken this OR.' unless @round.payable_loans.positive?
 
             super
-            print action.entity.id
 
             @round.payable_loans -= 1
             return if @round.payable_loans.positive?

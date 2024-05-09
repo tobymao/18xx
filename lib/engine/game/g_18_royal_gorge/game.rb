@@ -390,7 +390,7 @@ module Engine
             choices: { 'pay_debt' => 'Pay Doc Holliday for one DEBT token' },
             count: 2,
             count_per_or: 1,
-            closed_when_used_up: true,
+            remove_when_used_up: true,
           )
           sf_debt.add_ability(ability)
           sf_debt.owner = santa_fe
@@ -413,7 +413,7 @@ module Engine
             choices: { 'pay_debt' => 'Pay Santa Fe for one DEBT token' },
             count: 4,
             count_per_or: 1,
-            closed_when_used_up: true,
+            remove_when_used_up: true,
           )
           rg_debt.add_ability(ability)
           rg_debt.owner = rio_grande
@@ -1212,7 +1212,7 @@ module Engine
 
           company.abilities[0].use!
 
-          ability = company.owner.abilities.find { |a| a.type == 'coal_mines' }
+          ability = company.owner.abilities.find { |a| a.type == :coal_mines }
           ability.add_count!(1)
           ability.description = ability.description.sub(/\d+/, ability.count.to_s)
 

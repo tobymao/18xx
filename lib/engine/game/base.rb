@@ -836,6 +836,7 @@ module Engine
       end
 
       def rescue_exception(e, action)
+        LOGGER.debug { "Caught exception #{e.inspect}, backtrace: [#{e.backtrace.join(', ')}]" }
         @raw_actions.pop
         @actions.pop
         @exception = e
@@ -1845,7 +1846,7 @@ module Engine
         @_shares.reject! do |_, share|
           next if share.corporation != corporation
 
-          share.owner.shares_by_corporation[corporation].clear
+          share.owner.shares_by_corporation.delete(corporation)
 
           true
         end
