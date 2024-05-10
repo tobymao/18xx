@@ -945,6 +945,16 @@ module Engine
         def set_e_token_sold
           @e_token_sold = false
         end
+
+        def init_train_handler
+          trains = game_trains.flat_map do |train|
+            Array.new((train[:num] || num_trains(train))) do |index|
+              Train.new(**train, index: index)
+            end
+          end
+
+          electric_dreams? ? G1849::Depot.new(trains, self) : self.class::DEPOT_CLASS.new(trains, self)
+        end
       end
     end
   end
