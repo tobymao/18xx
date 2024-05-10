@@ -134,7 +134,7 @@ module Engine
 
         # Checks whether a player really is bankrupt.
         def can_go_bankrupt?(player, _corporation)
-          return super if @round.is_a?(Engine::Round::Operating)
+          return super if @round.operating?
 
           # Has the player won the auction for a major company concession
           # that they cannot afford to start?

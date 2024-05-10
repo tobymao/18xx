@@ -29,12 +29,7 @@ module Engine
                   'trains. Click on a train to discard it or click ' \
                   '‘Done’ to keep the trains.'
             if over_limit?
-              time =
-                if @round.is_a?(Engine::Round::Operating)
-                  ", at the end of #{major.id}’s operating turn,"
-                else
-                  ''
-                end
+              time = @round.operating? ? ", at the end of #{major.id}’s operating turn," : ''
               msg += " #{major.id} is currently over the train limit. If you " \
                      "pass then you will be given#{time} the option to discard " \
                      "any of its trains (not just those from minor #{minor.id}) " \
