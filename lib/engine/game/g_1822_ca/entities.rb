@@ -376,7 +376,7 @@ module Engine
             value: 0,
             revenue: 10,
             desc: 'MAJOR/MINOR, Phase 1. Winnipeg & Prince Albert Railway. Owner pays no upgrade '\
-                  'fee or terrain costs for the tile placement. This is in addition '\
+                  'fee or terrain costs for tile lays and upgrades to Winnipeg (N16). This is in addition '\
                   'to the company’s normal tile placement(s), but happens during the company’s '\
                   'tile laying step. Does not close. Minor may place yellow or green only. The '\
                   'company upgrading the city must be connected to it in order to exercise the '\
