@@ -63,7 +63,7 @@ module Engine
               init_round_finished
               reorder_players
               new_stock_round
-            when Engine::Round::Stock
+            when G18Ardennes::Round::Stock
               @operating_rounds = @phase.operating_rounds
               reorder_players
               new_operating_round
@@ -98,7 +98,7 @@ module Engine
         end
 
         def stock_round
-          Engine::Round::Stock.new(self, [
+          G18Ardennes::Round::Stock.new(self, [
             G18Ardennes::Step::Exchange,
             G18Ardennes::Step::DeclineTokens,
             G18Ardennes::Step::DeclineTrains,
