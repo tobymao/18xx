@@ -59,6 +59,10 @@ module Engine
             }
           end
 
+          def ipo_type(_entity)
+            nil
+          end
+
           def process_choose(action)
             approved = (action.choice == 'approve')
             log_response(minor, major, approved)
