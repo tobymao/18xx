@@ -75,7 +75,11 @@ module Engine
                 @turn += 1
                 or_round_finished
                 or_set_finished
-                @phase.name == '2' ? new_stock_round : new_major_auction_round
+                if @phase.name == '2' || concession_companies.all?(&:closed?)
+                  new_stock_round
+                else
+                  new_major_auction_round
+                end
               end
             end
         end
