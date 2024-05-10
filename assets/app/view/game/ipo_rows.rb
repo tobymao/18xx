@@ -1,25 +1,32 @@
 # frozen_string_literal: true
 
 require 'lib/settings'
-require 'lib/text'
-require 'lib/profile_link'
-require 'view/game/companies'
-require 'view/game/unsold_companies'
-require 'view/share_calculation'
+require 'view/game/company'
 
 module View
   module Game
     class IpoRows < Snabberb::Component
       include Lib::Settings
 
-      needs :player
       needs :game
-      needs :user, default: nil, store: true
       needs :display, default: 'inline-block'
-      needs :show_hidden, default: false
-      needs :hide_logo, store: true, default: false
 
       def render
+        @owner = @game.bank
+        ipo_rows = @game.ipo_rows
+
+        props = {
+          style: { margin: '1rem 0 1.5rem 0' },
+        }
+
+        ipo_cards = ipo_rows.map.with_index do |ipo_row, index|
+          render_ipo_row(ipo_row, index + 1)
+        end
+
+        h('div.ipo.cards', props, ipo_cards.compact)
+      end
+
+      def render_ipo_row(ipo_row, number)
         card_style = {
           border: '1px solid gainsboro',
           paddingBottom: '0.2rem',
@@ -27,18 +34,16 @@ module View
         card_style[:display] = @display
 
         divs = [
-          render_title,
-          render_body,
+          render_title(number),
+          # render_companies(ipo_row),
         ]
+        divs << render_companies(ipo_row)
 
-        divs << h(Companies, owner: @player, game: @game)
-
-        h('div.player.card', { style: card_style }, divs)
+        h('div.ipo.card', { style: card_style }, divs)
       end
 
-      def render_title
+      def render_title(number)
         bg_color = color_for(:bg2)
-
         props = {
           style: {
             padding: '0.4rem',
@@ -47,29 +52,30 @@ module View
           },
         }
 
-        h('div.player.title.nowrap', props, "IPO Row #{}")
+        h('div.ipo.title.nowrap', props, "IPO Row #{number}")
       end
 
-      def render_body
-        props = {
+      def render_companies(ipo_row)
+        companies = ipo_row.flat_map do |c|
+          h(Company, company: c, layout: :table)
+        end
+
+        top_padding = @owner.companies.empty? ? '0' : '1em'
+        table_props = {
           style: {
-            margin: '0.2rem',
-            display: 'grid',
-            grid: '1fr / auto-flow',
-            justifyItems: 'center',
-            alignItems: 'start',
+            padding: "#{top_padding} 0.5rem 0.2rem",
+            grid: @game.show_value_of_companies?(@owner) ? 'auto / 1fr auto auto' : 'auto / 1fr auto',
+            gap: '0 0.3rem',
           },
         }
 
-        divs = [
-
-        ]
-
-        # divs << render_shares if @player.shares.any?
-
-        h(:div, props, divs)
+        h('div.unsold_company_table', table_props, [
+          h('div.bold', 'Unsold'),
+          @game.show_value_of_companies?(@owner) ? h('div.bold.right', 'Value') : '',
+          h('div.bold.right', 'Income'),
+          *companies,
+        ])
       end
-
     end
   end
 end

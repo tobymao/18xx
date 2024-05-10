@@ -16,6 +16,7 @@ module Engine
         include Map
 
         attr_accessor :draft_deck, :ipo_pool, :unclaimed_commodities
+        attr_reader :ipo_rows
 
         register_colors(brown: '#a05a2c',
                         white: '#000000',
@@ -568,7 +569,7 @@ module Engine
         def company_status_str(company)
           if in_ipo?(company)
             row, index = ipo_row_and_index(company)
-            return "IPO Row:#{row + 1} Index:#{index + 1}"
+            return "Row:#{row + 1} ##{index + 1}"
           elsif (company.type == :bond) && (company.owner == @bank)
             return "Bank has #{count_of_bonds} / 10 Bonds"
           elsif @round.stock?
@@ -626,7 +627,7 @@ module Engine
         # Called by View::Game::Entities to determine if the company should be shown on entities
         # Lists unowned companies under 'The Bank' on ENTITIES tab
         def unowned_purchasable_companies(_entity)
-          bank_owned_companies + @ipo_rows[0] + @ipo_rows[1] + @ipo_rows[2]
+          bank_owned_companies # + @ipo_rows[0] + @ipo_rows[1] + @ipo_rows[2]
         end
 
         # Lists buyable companies for STOCK ROUND in VIEW

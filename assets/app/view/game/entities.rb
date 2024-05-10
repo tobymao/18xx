@@ -39,6 +39,8 @@ module View
           ])
         end
 
+        children << h(IpoRows, game: @game)
+
         extra_bank = []
         if @game.respond_to?(:unstarted_corporation_summary)
           others = @game.unstarted_corporation_summary.last
