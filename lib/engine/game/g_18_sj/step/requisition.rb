@@ -47,7 +47,7 @@ module Engine
           end
 
           def process_choose(action)
-            @game.requisit_corporation(action.choice)
+            @game.requisit_corporation(@game.corporation_by_id(action.choice))
             @game.requisition_turn = @game.turn
             pass!
           end

@@ -16,6 +16,7 @@ module Engine
             coordinates: 'G29',
             city: 2,
             color: '#32763f',
+            type: :minor,
           },
           {
             float_percent: 60,
@@ -27,6 +28,7 @@ module Engine
             shares: [40, 20, 20, 20],
             color: '#025aaa',
             coordinates: 'G17',
+            type: :minor,
           },
           {
             float_percent: 60,
@@ -38,6 +40,7 @@ module Engine
             shares: [40, 20, 20, 20],
             coordinates: 'B26',
             color: '#d1232a',
+            type: :minor,
           },
           {
             float_percent: 60,
@@ -49,6 +52,7 @@ module Engine
             shares: [40, 20, 20, 20],
             color: :'#474548',
             coordinates: 'E19',
+            type: :minor,
           },
           {
             float_percent: 60,
@@ -61,6 +65,7 @@ module Engine
             color: :'#FFF500',
             text_color: 'black',
             coordinates: 'C35',
+            type: :minor,
           },
           {
             float_percent: 60,
@@ -72,6 +77,7 @@ module Engine
             shares: [40, 20, 20, 20],
             color: :'#d88e39',
             coordinates: 'B32',
+            type: :minor,
           },
           {
             float_percent: 60,
@@ -84,6 +90,7 @@ module Engine
             color: :'#ADD8E6',
             text_color: 'black',
             coordinates: 'F30',
+            type: :minor,
           },
           {
             float_percent: 60,
@@ -95,6 +102,20 @@ module Engine
             shares: [40, 20, 20, 20],
             coordinates: 'G31',
             color: :'#95c054',
+            type: :minor,
+          },
+          {
+            floatable: false,
+            hide_shares: true,
+            sym: 'NSB',
+            name: 'Norges Statsbaner',
+            tokens: [],
+            shares: [100],
+            logo: '18_norway/NSB',
+            simple_logo: '18_norway/NSB',
+            coordinates: [],
+            city: 1,
+            color: :'#d7555f',
           },
         ].freeze
       end
