@@ -75,7 +75,11 @@ module Engine
                 @turn += 1
                 or_round_finished
                 or_set_finished
-                major_auction_round
+                if @phase.name == '2' || concession_companies.all?(&:closed?)
+                  new_stock_round
+                else
+                  new_major_auction_round
+                end
               end
             end
         end
@@ -95,6 +99,11 @@ module Engine
           Engine::Round::Auction.new(self, [
             G18Ardennes::Step::MajorAuction,
           ])
+        end
+
+        def new_major_auction_round
+          @log << "-- #{round_description('Auction')} --"
+          major_auction_round
         end
 
         def stock_round
@@ -123,7 +132,7 @@ module Engine
             G18Ardennes::Step::Route,
             G18Ardennes::Step::Dividend,
             Engine::Step::DiscardTrain,
-            Engine::Step::BuyTrain,
+            G18Ardennes::Step::BuyTrain,
           ], round_num: round_num)
         end
 
