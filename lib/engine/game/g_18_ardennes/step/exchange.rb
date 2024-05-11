@@ -32,7 +32,7 @@ module Engine
             return false unless entity.corporation?
             return false unless entity.type == :minor
 
-            @round.is_a?(Round::Stock) ? !bought? : !@round.converted.nil?
+            @round.stock? ? !bought? : !@round.converted.nil?
           end
 
           def process_buy_shares(action)

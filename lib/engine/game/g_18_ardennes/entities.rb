@@ -15,6 +15,13 @@ module Engine
             color: :yellow,
             text_color: :black,
             abilities: [{ type: 'no_buy' }],
+            desc: 'The player who owns the Guillaume-Luxembourg receives F25 ' \
+                  'income at the beginning of each operating round. The ' \
+                  'Guillaume-Luxembourg is treated as a single share worth ' \
+                  'F100. The player who owns it may sell it to the open ' \
+                  'market during a stock round. If the Guillaume-Luxembourg ' \
+                  'is in the open market then it may be bought by any ' \
+                  'player, unless they sold it earlier in the same stock round.',
           },
         ].freeze
 
@@ -440,7 +447,7 @@ module Engine
 
         def buyable_bank_owned_companies
           # Do not show the GL after a corporation grows up.
-          @round.is_a?(Round::Operating) ? [] : super
+          @round.operating? ? [] : super
         end
 
         # Has the player won any auctions for public companies in the
@@ -459,11 +466,16 @@ module Engine
           major_corporations.map do |corporation|
             concession = Company.new(
               sym: corporation.id,
-              name: corporation.name,
+              name: corporation.full_name,
               type: :concession,
               value: 0,
               color: corporation.color,
               text_color: corporation.text_color,
+              desc: 'The player who wins the auction for this item has the ' \
+                    "right to form the #{corporation.full_name} " \
+                    "[#{corporation.id}] public company. Public companies " \
+                    'must be started as the player’s first actions in the ' \
+                    'stock round.',
             )
             corporation.par_via_exchange = concession
             concession
