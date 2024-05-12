@@ -1,17 +1,26 @@
 # frozen_string_literal: true
 
 require_relative '../../../step/track'
+require_relative 'railhead_tracker'
 
 module Engine
   module Game
     module G18India
       module Step
         class Track < Engine::Step::Track
-          # for debugging
+          include RailheadTracker
+
+          # Added multple yellow tile check and Yellow OO reservation check
           def process_lay_tile(action)
-            LOGGER.debug 'Track >> process_lay_tile'
+            if action.tile.color == :yellow
+              raise GameError, 'New yellow tiles must extend path from railhead and previously laid tiles' \
+               unless connected_to_track_laying_path?(action.hex)
+
+              @round.laid_yellow_hexes << action.hex
+            end
             super
             move_oo_reservations(action) unless @round.pending_tokens.empty? # Pending token due to Yellow OO tile
+            @round.next_empty_hexes = calculate_railhead_hexes unless @game.loading
           end
 
           # Base code doesn't handle one token and a reservation in first city on OO tile
