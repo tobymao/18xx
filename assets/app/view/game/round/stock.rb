@@ -12,11 +12,13 @@ require 'view/game/sell_shares'
 require 'view/game/stock_market'
 require 'view/game/tranches'
 require 'view/game/bid'
+require 'lib/settings'
 
 module View
   module Game
     module Round
       class Stock < Snabberb::Component
+        include Lib::Settings
         include Actionable
         needs :selected_corporation, default: nil, store: true
         needs :selected_company, default: nil, store: true
@@ -91,6 +93,7 @@ module View
           children.concat(render_player_companies) if @current_actions.include?('sell_company')
           children << render_show_hand_button unless @game.hand_companies_for_stock_round.empty?
           children.concat(render_hand_companies) if show_hand?
+          children.concat(render_ipo_rows) if @game.show_ipo_rows?
           children.concat(render_bank_companies) unless @bank_first
           children << h(Players, game: @game)
           if @step.respond_to?(:purchasable_companies) && !@step.purchasable_companies(@current_entity).empty?
@@ -493,6 +496,43 @@ module View
 
         def show_hand?
           @show_hand
+        end
+
+        def render_ipo_rows
+          ipo_rows = @game.ipo_rows
+
+          props = {
+            style: {
+              display: 'inline-block',
+              verticalAlign: 'top',
+            },
+          }
+
+          ipo_cards = ipo_rows.map.with_index do |ipo_row, index|
+            h(:div, props, [render_ipo_row(ipo_row, index + 1)])
+          end
+        end
+
+        def render_ipo_row(ipo_row, number)
+          card_style = {
+            border: '1px solid gainsboro',
+            paddingBottom: '0.2rem',
+          }
+
+          bg_color = color_for(:bg2)
+          props = {
+            style: {
+              padding: '0.4rem',
+              backgroundColor: bg_color,
+              color: contrast_on(bg_color),
+            },
+          }
+
+          divs = [
+            h('div.player.title.nowrap', props, ["IPO Row #{number}"])
+          ]
+
+          h('div.player.card', { style: card_style }, divs)
         end
 
         def render_bank

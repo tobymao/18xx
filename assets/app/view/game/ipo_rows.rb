@@ -15,15 +15,9 @@ module View
         @owner = @game.bank
         ipo_rows = @game.ipo_rows
 
-        props = {
-          style: { margin: '1rem 0 1.5rem 0' },
-        }
-
         ipo_cards = ipo_rows.map.with_index do |ipo_row, index|
-          render_ipo_row(ipo_row, index + 1)
+          h(:div, [render_ipo_row(ipo_row, index + 1)])
         end
-
-        h('div.ipo.cards', props, ipo_cards.compact)
       end
 
       def render_ipo_row(ipo_row, number)
@@ -35,11 +29,11 @@ module View
 
         divs = [
           render_title(number),
-          # render_companies(ipo_row),
         ]
+
         divs << render_companies(ipo_row)
 
-        h('div.ipo.card', { style: card_style }, divs)
+        h('div.player.card', { style: card_style }, divs)
       end
 
       def render_title(number)
@@ -52,15 +46,17 @@ module View
           },
         }
 
-        h('div.ipo.title.nowrap', props, "IPO Row #{number}")
+        h('div.player.title.nowrap', props, ["IPO Row #{number}"])
       end
 
       def render_companies(ipo_row)
-        companies = ipo_row.flat_map do |c|
+        row_companies = ipo_row
+
+        companies = row_companies.flat_map do |c|
           h(Company, company: c, layout: :table)
         end
 
-        top_padding = @owner.companies.empty? ? '0' : '1em'
+        top_padding = row_companies.empty? ? '0' : '1em'
         table_props = {
           style: {
             padding: "#{top_padding} 0.5rem 0.2rem",
@@ -69,8 +65,8 @@ module View
           },
         }
 
-        h('div.unsold_company_table', table_props, [
-          h('div.bold', 'Unsold'),
+        h('div.hand_company_table', table_props, [
+          h('div.bold', 'Certificates'),
           @game.show_value_of_companies?(@owner) ? h('div.bold.right', 'Value') : '',
           h('div.bold.right', 'Income'),
           *companies,

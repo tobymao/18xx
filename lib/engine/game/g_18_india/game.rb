@@ -549,6 +549,10 @@ module Engine
             end
         end
 
+        def show_ipo_rows?
+          true
+        end
+
         def in_ipo?(company)
           @ipo_rows.flatten.include?(company)
         end

@@ -39,7 +39,7 @@ module View
           ])
         end
 
-        children << h(IpoRows, game: @game)
+        children.concat(h(IpoRows, game: @game)) if @game.show_ipo_rows?
 
         extra_bank = []
         if @game.respond_to?(:unstarted_corporation_summary)

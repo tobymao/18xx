@@ -3296,6 +3296,8 @@ module Engine
         []
       end
 
+      def show_ipo_rows?; end
+
       def second_icon(corporation); end
     end
   end
