@@ -154,7 +154,6 @@ module Engine
           if allow_president_sale?(corporation) && max_shares < corporation.presidents_percent && bundle.presidents_share &&
              to_entity == self
             corporation.owner = self
-            @log << "President's share sold to pool. #{corporation.name} enters receivership"
             return unless bundle.partial?
 
             handle_partial(bundle, self, owner)
@@ -165,8 +164,7 @@ module Engine
           # swap existing share for it
           if allow_president_sale?(corporation) && owner == self && bundle.presidents_share
             corporation.owner = to_entity
-            @log << "#{to_entity.name} becomes the president of #{corporation.name}"
-            @log << "#{corporation.name} exits receivership"
+            @log << "#{to_entity.name} becomes the president of #{corporation.name}" if corporation.type == :rail
             handle_partial(bundle, to_entity, self)
             return
           end
@@ -194,7 +192,7 @@ module Engine
           return unless president
 
           corporation.owner = president
-          @log << "#{president.name} becomes the president of #{corporation.name}"
+          @log << "#{president.name} becomes the president of #{corporation.name}" if corporation.type == :rail
 
           # skip the president's share swap if the new share owner is becoming president and
           # the old owner is the outgoing president and the full president's cert was just transfered

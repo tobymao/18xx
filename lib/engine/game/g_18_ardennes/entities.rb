@@ -15,6 +15,13 @@ module Engine
             color: :yellow,
             text_color: :black,
             abilities: [{ type: 'no_buy' }],
+            desc: 'The player who owns the Guillaume-Luxembourg receives F25 ' \
+                  'income at the beginning of each operating round. The ' \
+                  'Guillaume-Luxembourg is treated as a single share worth ' \
+                  'F100. The player who owns it may sell it to the open ' \
+                  'market during a stock round. If the Guillaume-Luxembourg ' \
+                  'is in the open market then it may be bought by any ' \
+                  'player, unless they sold it earlier in the same stock round.',
           },
         ].freeze
 
@@ -30,7 +37,7 @@ module Engine
             type: :minor,
             shares: [100],
             max_ownership_percent: 100,
-            hide_shares: true,
+            capitalization: :none,
             coordinates: 'B8',
             city: 0,
             abilities: [{ type: 'exchange', corporations: 'ipoed', from: %w[ipo market] }],
@@ -46,7 +53,7 @@ module Engine
             type: :minor,
             shares: [100],
             max_ownership_percent: 100,
-            hide_shares: true,
+            capitalization: :none,
             coordinates: 'B8',
             city: 1,
             abilities: [{ type: 'exchange', corporations: 'ipoed', from: %w[ipo market] }],
@@ -62,7 +69,7 @@ module Engine
             type: :minor,
             shares: [100],
             max_ownership_percent: 100,
-            hide_shares: true,
+            capitalization: :none,
             coordinates: 'E15',
             abilities: [{ type: 'exchange', corporations: 'ipoed', from: %w[ipo market] }],
           },
@@ -77,7 +84,7 @@ module Engine
             type: :minor,
             shares: [100],
             max_ownership_percent: 100,
-            hide_shares: true,
+            capitalization: :none,
             coordinates: 'G25',
             abilities: [{ type: 'exchange', corporations: 'ipoed', from: %w[ipo market] }],
           },
@@ -92,7 +99,7 @@ module Engine
             type: :minor,
             shares: [100],
             max_ownership_percent: 100,
-            hide_shares: true,
+            capitalization: :none,
             coordinates: 'J24',
             abilities: [{ type: 'exchange', corporations: 'ipoed', from: %w[ipo market] }],
           },
@@ -107,7 +114,7 @@ module Engine
             type: :minor,
             shares: [100],
             max_ownership_percent: 100,
-            hide_shares: true,
+            capitalization: :none,
             coordinates: 'H6',
             abilities: [{ type: 'exchange', corporations: 'ipoed', from: %w[ipo market] }],
           },
@@ -122,7 +129,7 @@ module Engine
             type: :minor,
             shares: [100],
             max_ownership_percent: 100,
-            hide_shares: true,
+            capitalization: :none,
             coordinates: 'I21',
             abilities: [{ type: 'exchange', corporations: 'ipoed', from: %w[ipo market] }],
           },
@@ -137,7 +144,7 @@ module Engine
             type: :minor,
             shares: [100],
             max_ownership_percent: 100,
-            hide_shares: true,
+            capitalization: :none,
             coordinates: 'M7',
             city: 0,
             abilities: [{ type: 'exchange', corporations: 'ipoed', from: %w[ipo market] }],
@@ -153,7 +160,7 @@ module Engine
             type: :minor,
             shares: [100],
             max_ownership_percent: 100,
-            hide_shares: true,
+            capitalization: :none,
             coordinates: 'M7',
             city: 1,
             abilities: [{ type: 'exchange', corporations: 'ipoed', from: %w[ipo market] }],
@@ -169,7 +176,7 @@ module Engine
             type: :minor,
             shares: [100],
             max_ownership_percent: 100,
-            hide_shares: true,
+            capitalization: :none,
             coordinates: 'D18',
             abilities: [{ type: 'exchange', corporations: 'ipoed', from: %w[ipo market] }],
           },
@@ -184,7 +191,7 @@ module Engine
             type: :minor,
             shares: [100],
             max_ownership_percent: 100,
-            hide_shares: true,
+            capitalization: :none,
             coordinates: 'B16',
             abilities: [{ type: 'exchange', corporations: 'ipoed', from: %w[ipo market] }],
           },
@@ -199,7 +206,7 @@ module Engine
             type: :minor,
             shares: [100],
             max_ownership_percent: 100,
-            hide_shares: true,
+            capitalization: :none,
             coordinates: 'K11',
             abilities: [{ type: 'exchange', corporations: 'ipoed', from: %w[ipo market] }],
           },
@@ -214,7 +221,7 @@ module Engine
             type: :minor,
             shares: [100],
             max_ownership_percent: 100,
-            hide_shares: true,
+            capitalization: :none,
             coordinates: 'E9',
             abilities: [{ type: 'exchange', corporations: 'ipoed', from: %w[ipo market] }],
           },
@@ -229,7 +236,7 @@ module Engine
             type: :minor,
             shares: [100],
             max_ownership_percent: 100,
-            hide_shares: true,
+            capitalization: :none,
             coordinates: 'F10',
             abilities: [{ type: 'exchange', corporations: 'ipoed', from: %w[ipo market] }],
           },
@@ -244,7 +251,7 @@ module Engine
             type: :minor,
             shares: [100],
             max_ownership_percent: 100,
-            hide_shares: true,
+            capitalization: :none,
             coordinates: 'E25',
             city: 1,
             abilities: [{ type: 'exchange', corporations: 'ipoed', from: %w[ipo market] }],
@@ -261,7 +268,6 @@ module Engine
             always_market_price: true,
             capitalization: :incremental,
             tokens: [0, 100, 100, 100, 100, 100],
-            coordinates: %w[E25 G25 H26 I21 J24],
           },
           {
             sym: 'N',
@@ -275,7 +281,6 @@ module Engine
             always_market_price: true,
             capitalization: :incremental,
             tokens: [0, 100, 100, 100, 100, 100],
-            coordinates: %w[G3 H6 K5 M7],
           },
           {
             sym: 'E',
@@ -289,7 +294,6 @@ module Engine
             always_market_price: true,
             capitalization: :incremental,
             tokens: [0, 100, 100, 100, 100, 100],
-            coordinates: %w[I21 J18 J24 K11 M7],
           },
           {
             sym: 'NL',
@@ -303,7 +307,6 @@ module Engine
             always_market_price: true,
             capitalization: :incremental,
             tokens: [0, 100, 100, 100, 100, 100],
-            coordinates: %w[B8 B12 C7 E5 E9 E15],
           },
           {
             sym: 'BE',
@@ -317,7 +320,6 @@ module Engine
             always_market_price: true,
             capitalization: :incremental,
             tokens: [0, 100, 100, 100, 100, 100],
-            coordinates: %w[E9 E15 F4 F10 H6 H10],
           },
           {
             sym: 'P',
@@ -331,9 +333,22 @@ module Engine
             always_market_price: true,
             capitalization: :incremental,
             tokens: [0, 100, 100, 100, 100, 100],
-            coordinates: %w[B16 D18 E15 E25],
           },
         ].freeze
+
+        # Defines where a minor needs to have a token to be used to start a
+        # public company. Paris (hex M7) is a special case, E can only start in
+        # the western city, N only in the eastern.
+        PUBLIC_COMPANY_HEXES = {
+          'BE' => %w[E9 E15 F4 F10 H6 H10],
+          'BY' => %w[E25 G25 H26 I21 J24],
+          'E' => %w[I21 J18 J24 K11 M7],
+          'N' => %w[G3 H6 K5 M7],
+          'NL' => %w[B8 B12 C7 E5 E9 E15],
+          'P' => %w[B16 D18 E15 E25],
+        }.freeze
+        PARIS_HEX = 'M7'
+        PARIS_CITIES = { 'N' => 0, 'E' => 1 }.freeze
 
         def company_header(company)
           case company.type
@@ -432,7 +447,7 @@ module Engine
 
         def buyable_bank_owned_companies
           # Do not show the GL after a corporation grows up.
-          @round.is_a?(Round::Operating) ? [] : super
+          @round.operating? ? [] : super
         end
 
         # Has the player won any auctions for public companies in the
@@ -451,11 +466,16 @@ module Engine
           major_corporations.map do |corporation|
             concession = Company.new(
               sym: corporation.id,
-              name: corporation.name,
+              name: corporation.full_name,
               type: :concession,
               value: 0,
               color: corporation.color,
               text_color: corporation.text_color,
+              desc: 'The player who wins the auction for this item has the ' \
+                    "right to form the #{corporation.full_name} " \
+                    "[#{corporation.id}] public company. Public companies " \
+                    'must be started as the player’s first actions in the ' \
+                    'stock round.',
             )
             corporation.par_via_exchange = concession
             concession

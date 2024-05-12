@@ -71,7 +71,7 @@ module Engine
 
         STARTING_CASH = { 2 => 1100, 3 => 733, 4 => 550, 5 => 440 }.freeze
 
-        GAME_END_CHECK = { bank: :current_or, stock_market: :current_or }.freeze
+        GAME_END_CHECK = { bank: :full_or, stock_market: :current_or }.freeze
 
         MARKET = [
           %w[0c 56 58 61 64p 67p 71p 76p 82p 90p 100p 112p 126 142 160

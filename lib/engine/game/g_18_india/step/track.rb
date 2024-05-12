@@ -2,6 +2,7 @@
 
 require_relative '../../../step/track'
 require_relative 'gauge_change_border'
+require_relative 'railhead_tracker'
 
 module Engine
   module Game
@@ -9,6 +10,7 @@ module Engine
       module Step
         class Track < Engine::Step::Track
           include GaugeChangeBorder
+          include RailheadTracker
 
           # modified to add remove gauge change option in phase IV
           def actions(entity)
@@ -102,11 +104,17 @@ module Engine
             super
           end
 
-          # for debugging
+          # Added multple yellow tile check and Yellow OO reservation check
           def process_lay_tile(action)
-            LOGGER.debug "Track::process_lay_tile >> tile: #{action.tile}"
+            if action.tile.color == :yellow
+              raise GameError, 'New yellow tiles must extend path from railhead and previously laid tiles' \
+               unless connected_to_track_laying_path?(action.hex)
+
+              @round.laid_yellow_hexes << action.hex
+            end
             super
             move_oo_reservations(action) unless @round.pending_tokens.empty? # Pending token due to Yellow OO tile
+            @round.next_empty_hexes = calculate_railhead_hexes unless @game.loading
           end
 
           # Base code doesn't handle one token and a reservation in first city on OO tile
