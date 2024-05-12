@@ -100,6 +100,15 @@ module Engine
             exchange || super
           end
 
+          # Can this ShareBundle be sold to the open market?
+          def can_dump?(entity, bundle)
+            # The implementation of this method in Step::BuySellParSharesCompanies
+            # is for games where the president's certificate can be sold to the
+            # market. This isn't true in 18Ardennes, the method implemented in
+            # Step::BuySellParShares is correct.
+            bundle.can_dump?(entity)
+          end
+
           # Checks whether a player can afford to exchange one of their minors
           # for a share in a major corporation.
           # If `check_connection` is false this method does not check whether
