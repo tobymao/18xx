@@ -62,7 +62,7 @@ module Engine
             when Engine::Round::Auction
               init_round_finished
               reorder_players
-              new_stock_round
+              new_operating_round
             when G18Ardennes::Round::Stock
               @operating_rounds = @phase.operating_rounds
               reorder_players
