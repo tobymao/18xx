@@ -109,6 +109,7 @@ module Engine
         def stock_round
           G18Ardennes::Round::Stock.new(self, [
             G18Ardennes::Step::Exchange,
+            G18Ardennes::Step::ExchangeApproval,
             G18Ardennes::Step::DeclineTokens,
             G18Ardennes::Step::DeclineTrains,
             Engine::Step::DiscardTrain,

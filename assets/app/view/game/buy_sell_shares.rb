@@ -289,7 +289,14 @@ module View
                                                     source: 'Presidency'))
             end
 
-            children.concat(render_share_exchange(@pool_shares, entity)) if ability.from.include?(:market)
+            if ability.from.include?(:market)
+              pool_shares = if @step.respond_to?(:exchangeable_pool_shares)
+                              @step.exchangeable_pool_shares(@corporation, ability)
+                            else
+                              @pool_shares
+                            end
+              children.concat(render_share_exchange(pool_shares, entity))
+            end
             if ability.from.include?(:reserved)
               children.concat(render_share_exchange(@reserved_shares[0, 1], entity,
                                                     source: 'Reserved'))

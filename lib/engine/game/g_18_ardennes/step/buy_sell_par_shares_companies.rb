@@ -65,6 +65,28 @@ module Engine
             entity.companies.select { |company| company.type == :minor }
           end
 
+          # Returns an array of shares that can be gained in exchange for a
+          # minor company. This is used to stop any pool shares being offered
+          # for exchange unless the president of the public company has
+          # previously denied a request to exchange for a treasury share, or
+          # if there are no treasury shares available. It does not check for
+          # connection between the public and minor companies, that will have
+          # already been tested in Entities#exchange_corporations.
+          # @param corporation [Corporation] The public company to check for
+          #        exchangeable pool shares.
+          # @param ability [Ability::Exchange] The exchange ability associated
+          #        with a minor company.
+          # @return [Array<Share>] The pool shares that could be gained in
+          #         exchange for the minor company.
+          def exchangeable_pool_shares(corporation, ability)
+            minor = ability.owner
+            shares = @game.share_pool.shares_by_corporation[corporation]
+            return [] if shares.empty?
+            return shares if corporation.owner == minor.owner
+
+            @round.refusals[corporation].include?(minor) ? shares : []
+          end
+
           # Exchanging a minor for a share in a floated major corporation is
           # done as a buy_share action.
           def can_buy_any?(entity)
@@ -138,7 +160,7 @@ module Engine
             concession = major.par_via_exchange
 
             concession.close!
-            exchange_minor(minor, major.treasury_shares.first.to_bundle, false)
+            exchange_minor(minor, major.treasury_shares.first.to_bundle, :all)
           end
 
           def process_bankrupt(action)
