@@ -844,10 +844,9 @@ module Engine
           upgrades
         end
 
-        def requisit_corporation(name)
-          requisited = corporation_by_id(name)
+        def requisit_corporation(requisited)
           @log << "#{operator_for_edelsward_requisition.name} selects #{requisited.name} to be requisited by #{@edelsward.name}"
-          shares = requisited.shares_of(requisited)
+          shares = requisited.ipo_shares
           @share_pool.transfer_shares(Engine::ShareBundle.new(shares), @edelsward, price: 0)
           @stock_market.set_par(requisited, @stock_market.par_prices.find { |p| p.price == 67 })
 

@@ -11,10 +11,10 @@ module Engine
         DEV_STAGE = :prealpha
         PROTOTYPE = true
 
-        GAME_DESIGNER = 'Pontus Nilsson and Kjell Vikhagen'
+        GAME_DESIGNER = 'Pontus Nilsson and Arne Kjell Vikhagen'
         GAME_LOCATION = 'Norway'
         GAME_PUBLISHER = :self_published
-        GAME_RULES_URL = ''
+        GAME_RULES_URL = 'https://github.com/akvik/18Norway/blob/main/18Norway_Rules.pdf'
         GAME_INFO_URL = ''
 
         PLAYER_RANGE = [3, 5].freeze

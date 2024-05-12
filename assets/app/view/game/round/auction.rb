@@ -42,6 +42,7 @@ module View
             h(:div, [
               render_turn_bid,
               render_show_button,
+              render_confirm_selections,
               *render_companies,
               *render_minors,
               *render_corporations,
@@ -107,6 +108,25 @@ module View
           }
 
           h(:button, props, "#{hidden? ? 'Show' : 'Hide'} #{@step.visible? ? 'Player' : 'Companies'}")
+        end
+
+        def render_confirm_selections
+          return nil if hidden? && !@step.visible?
+          return nil unless @current_actions.include?('select_multiple_companies')
+
+          mutiple_companies = lambda do
+            hide!
+            process_action(Engine::Action::SelectMultipleCompanies.new(
+              @current_entity,
+              companies: @step.selected_companies
+            ))
+          end
+          select_button = [h(:button, { on: { click: mutiple_companies } }, 'Confirm Selections')]
+
+          children = []
+          children << h(:div, @step.selection_note.map { |text_block| h(:p, text_block) })
+          children << h(:div, select_button) if @step.selections_completed?
+          h(:div, children)
         end
 
         def render_companies

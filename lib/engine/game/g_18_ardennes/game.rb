@@ -57,17 +57,17 @@ module Engine
         def next_round!
           @round =
             case @round
-            when Round::Auction
-              if @turn == 1
-                init_round_finished
-                reorder_players
-              end
+            when G18Ardennes::Round::Auction
               new_stock_round
-            when Round::Stock
+            when Engine::Round::Auction
+              init_round_finished
+              reorder_players
+              new_stock_round
+            when G18Ardennes::Round::Stock
               @operating_rounds = @phase.operating_rounds
               reorder_players
               new_operating_round
-            when Round::Operating
+            when Engine::Round::Operating
               if @round.round_num < @operating_rounds
                 or_round_finished
                 new_operating_round(@round.round_num + 1)
@@ -75,7 +75,11 @@ module Engine
                 @turn += 1
                 or_round_finished
                 or_set_finished
-                major_auction_round
+                if @phase.name == '2' || concession_companies.all?(&:closed?)
+                  new_stock_round
+                else
+                  new_major_auction_round
+                end
               end
             end
         end
@@ -92,14 +96,20 @@ module Engine
         end
 
         def major_auction_round
-          Engine::Round::Auction.new(self, [
+          G18Ardennes::Round::Auction.new(self, [
             G18Ardennes::Step::MajorAuction,
           ])
         end
 
+        def new_major_auction_round
+          @log << "-- #{round_description('Auction')} --"
+          major_auction_round
+        end
+
         def stock_round
-          Round::Stock.new(self, [
+          G18Ardennes::Round::Stock.new(self, [
             G18Ardennes::Step::Exchange,
+            G18Ardennes::Step::ExchangeApproval,
             G18Ardennes::Step::DeclineTokens,
             G18Ardennes::Step::DeclineTrains,
             Engine::Step::DiscardTrain,
@@ -109,7 +119,7 @@ module Engine
         end
 
         def operating_round(round_num)
-          Round::Operating.new(self, [
+          Engine::Round::Operating.new(self, [
             Engine::Step::Bankrupt,
             G18Ardennes::Step::Convert,
             G18Ardennes::Step::Exchange,
@@ -123,7 +133,7 @@ module Engine
             G18Ardennes::Step::Route,
             G18Ardennes::Step::Dividend,
             Engine::Step::DiscardTrain,
-            Engine::Step::BuyTrain,
+            G18Ardennes::Step::BuyTrain,
           ], round_num: round_num)
         end
 
@@ -134,7 +144,7 @@ module Engine
 
         # Checks whether a player really is bankrupt.
         def can_go_bankrupt?(player, _corporation)
-          return super if @round.is_a?(Round::Operating)
+          return super if @round.operating?
 
           # Has the player won the auction for a major company concession
           # that they cannot afford to start?

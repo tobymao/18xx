@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 33.1 33.1">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #3765a1;
+      }
+
+      .cls-1, .cls-2, .cls-3 {
+        stroke-width: 0px;
+      }
+
+      .cls-2, .cls-4 {
+        fill: none;
+      }
+
+      .cls-5 {
+        clip-path: url(#clippath-1);
+      }
+
+      .cls-6 {
+        clip-path: url(#clippath);
+      }
+
+      .cls-4 {
+        stroke: #231f20;
+        stroke-miterlimit: 10;
+        stroke-width: .5px;
+      }
+
+      .cls-3 {
+        fill: #fff;
+      }
+    </style>
+    <clipPath id="clippath">
+      <rect class="cls-2" x="5.22" y="5.21" width="22.67" height="22.67"/>
+    </clipPath>
+    <clipPath id="clippath-1">
+      <rect class="cls-2" x="5.22" y="5.21" width="22.67" height="22.67"/>
+    </clipPath>
+  </defs>
+  <g id="Tokens">
+    <g id="Western">
+      <circle class="cls-1" cx="16.55" cy="16.55" r="16.3"/>
+      <g class="cls-6">
+        <g class="cls-5">
+          <path class="cls-3" d="M21.66,26.99h-3.71l-7.56-9.39v-2.48h3.52c1.55,0,2.87-.9,3.39-2.17h2.38c-.59,2.45-2.95,4.29-5.76,4.29-.14,0-.26.01-.4,0l8.14,9.75Z"/>
+          <polygon class="cls-3" points="21.96 12.69 9.68 12.69 11.26 10.15 23.54 10.15 21.96 12.69"/>
+          <path class="cls-3" d="M23.47,6.25l-1.58,2.54h-2.97c.23.34.42.71.56,1.1h-2.55c-.32-.45-.74-.83-1.23-1.1h-6.09l1.03-1.66.55-.88h12.27Z"/>
+        </g>
+      </g>
+    </g>
+  </g>
+  <g id="Dire_line" data-name="Dire line">
+    <circle class="cls-4" cx="16.55" cy="16.55" r="16.3"/>
+  </g>
+</svg>
