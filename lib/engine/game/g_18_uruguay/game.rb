@@ -289,7 +289,7 @@ module Engine
               ability.use!
             end
           end
-          minor = minors.find { |m| m.id == company.id }
+          minor = minor_by_id(company.id)
           return unless minor
 
           minor.owner = player
