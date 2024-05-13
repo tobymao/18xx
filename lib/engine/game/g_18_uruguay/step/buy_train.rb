@@ -20,7 +20,7 @@ module Engine
           end
 
           def log_skip(entity)
-            return '' if entity.minor?
+            return if entity.minor?
 
             super
           end
