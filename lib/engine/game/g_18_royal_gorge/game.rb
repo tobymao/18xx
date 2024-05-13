@@ -18,7 +18,7 @@ module Engine
 
         attr_accessor :gold_shipped, :local_jeweler_cash
         attr_reader :gold_corp, :steel_corp, :available_steel, :gold_cubes, :indebted, :debt_corp,
-                    :treaty_of_boston, :hanging_bridge_lease_payment_due
+                    :treaty_of_boston, :hanging_bridge_lease_payment_due, :sf_debt
 
         CURRENCY_FORMAT_STR = '$%s'
         BANK_CASH = 99_999
@@ -375,7 +375,7 @@ module Engine
           @log << 'RG is indebted to SF'
           @log << 'SF is indebted to Doc Holliday'
 
-          sf_debt = Company.new(
+          @sf_debt = Company.new(
             sym: 'SF-D',
             name: 'Indebted to Doc Holliday',
             value: 0,
@@ -1182,10 +1182,10 @@ module Engine
           return unless entity == coal_depot&.owner
           return unless entity == coal_creek_mines&.owner
 
-          depot_ability = entity.abilities.find { |a| a.type == 'coal_depot' }
-          depot_ability.description = depot_ability.description.sub('Cubes:', 'Cubes (depot):')
+          return unless (depot_ability = entity.abilities.find { |a| a.type == 'coal_depot' })
+          return unless (mines_ability = entity.abilities.find { |a| a.type == 'coal_mines' })
 
-          mines_ability = entity.abilities.find { |a| a.type == 'coal_mines' }
+          depot_ability.description = depot_ability.description.sub('Cubes:', 'Cubes (depot):')
           mines_ability.description = mines_ability.description.sub('Cubes:', 'Cubes (mines):')
         end
 

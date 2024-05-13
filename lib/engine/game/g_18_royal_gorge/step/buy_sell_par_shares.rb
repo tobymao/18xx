@@ -68,7 +68,8 @@ module Engine
             return [] unless current_entity == @game.metals_investor&.owner
             return [] unless [@game.gold_corp, @game.steel_corp].include?(corporation)
 
-            share = @game.share_pool.shares_by_corporation[corporation][0]
+            return [] unless (share = @game.share_pool.shares_by_corporation[corporation][0])
+
             bundle = ShareBundle.new(share)
             @_modify_purchase_price[bundle] = @game.stock_market.find_share_price(corporation, :left).price
             [[@game.metals_investor, bundle]]
