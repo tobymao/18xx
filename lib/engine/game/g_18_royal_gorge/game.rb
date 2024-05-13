@@ -1182,10 +1182,10 @@ module Engine
           return unless entity == coal_depot&.owner
           return unless entity == coal_creek_mines&.owner
 
-          depot_ability = entity.abilities.find { |a| a.type == 'coal_depot' }
-          depot_ability.description = depot_ability.description.sub('Cubes:', 'Cubes (depot):')
+          return unless (depot_ability = entity.abilities.find { |a| a.type == 'coal_depot' })
+          return unless (mines_ability = entity.abilities.find { |a| a.type == 'coal_mines' })
 
-          mines_ability = entity.abilities.find { |a| a.type == 'coal_mines' }
+          depot_ability.description = depot_ability.description.sub('Cubes:', 'Cubes (depot):')
           mines_ability.description = mines_ability.description.sub('Cubes:', 'Cubes (mines):')
         end
 
