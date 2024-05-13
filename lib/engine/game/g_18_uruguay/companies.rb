@@ -134,8 +134,7 @@ module Engine
                 count_per_or: 1,
                 when: 'or_start',
                 count: 10,
-                description: 'Owner (or controlling president) moves one crop cube from a countryside'\
-                             'hex to an adjacent town or city hex each OR. Closes when the last crop cube has been moved.',
+                description: 'Delivers goods to towns and cities.',
               },
             ],
           },
@@ -154,8 +153,7 @@ module Engine
                 count_per_or: 1,
                 when: 'or_start',
                 count: 10,
-                description: 'Owner (or controlling president) moves one crop cube from a countryside'\
-                             'hex to an adjacent town or city hex each OR. Closes when the last crop cube has been moved.',
+                description: 'Delivers goods to towns and cities.',
               },
             ],
           },
@@ -175,8 +173,7 @@ module Engine
                 when: 'or_start',
                 owner_type: 'player',
                 count: 10,
-                description: 'Owner (or controlling president) moves one crop cube from a countryside'\
-                             'hex to an adjacent town or city hex each OR. Closes when the last crop cube has been moved.',
+                description: 'Delivers goods to towns and cities.',
               },
             ],
           },

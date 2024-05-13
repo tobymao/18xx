@@ -26,13 +26,13 @@ module Engine
           end
 
           def actions(entity)
-            return [] unless entity.corporation == @game.rptla
+            return [] unless entity == @game.rptla
 
             %w[run_routes choose].freeze
           end
 
           def log_skip(entity)
-            return '' unless entity.corporation == @game.rptla
+            return unless entity == @game.rptla
 
             super
           end

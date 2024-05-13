@@ -187,6 +187,14 @@ module Engine
           @cattle_farm ||= company_by_id('LO_CATTLE')
         end
 
+        def assign_goods(entity, goods_type)
+          ability = abilities(entity, :assign_hexes, time: 'or_start', strict_time: false)
+          ability.hexes.each_with_index do |farm_id, i|
+            hex_by_id(farm_id).assign!("#{goods_type}#{i * 2}")
+            hex_by_id(farm_id).assign!("#{goods_type}#{(i * 2) + 1}")
+          end
+        end
+
         def setup
           super
 
@@ -213,32 +221,9 @@ module Engine
 
           @stock_market.set_par(@rptla, lookup_rptla_price(RPTLA_STARTING_PRICE))
 
-          ability = abilities(corn_farm, :assign_hexes, time: 'or_start', strict_time: false)
-          count = 0
-          ability.hexes.each do |farm_id|
-            hex_by_id(farm_id).assign!('GOODS_CORN' + count.to_s)
-            count += 1
-            hex_by_id(farm_id).assign!('GOODS_CORN' + count.to_s)
-            count += 1
-          end
-
-          count = 0
-          ability = abilities(sheep_farm, :assign_hexes, time: 'or_start', strict_time: false)
-          ability.hexes.each do |farm_id|
-            hex_by_id(farm_id).assign!('GOODS_SHEEP' + count.to_s)
-            count += 1
-            hex_by_id(farm_id).assign!('GOODS_SHEEP' + count.to_s)
-            count += 1
-          end
-
-          count = 0
-          ability = abilities(cattle_farm, :assign_hexes, time: 'or_start', strict_time: false)
-          ability.hexes.each do |farm_id|
-            hex_by_id(farm_id).assign!('GOODS_CATTLE' + count.to_s)
-            count += 1
-            hex_by_id(farm_id).assign!('GOODS_CATTLE' + count.to_s)
-            count += 1
-          end
+          assign_goods(corn_farm, 'GOODS_CORN')
+          assign_goods(sheep_farm, 'GOODS_SHEEP')
+          assign_goods(cattle_farm, 'GOODS_CATTLE')
 
           setup_destinations
         end
@@ -293,13 +278,14 @@ module Engine
           return unless minor
 
           minor.owner = player
+          minor.float!
         end
 
         def operating_round(round_num)
           Round::Operating.new(self, [
             Engine::Step::Bankrupt,
             Engine::Step::Exchange,
-            G18Uruguay::Step::Farm2,
+            G18Uruguay::Step::Farm,
             Engine::Step::SpecialTrack,
             Engine::Step::SpecialToken,
             G18Uruguay::Step::TakeLoanBuyCompany,
@@ -343,10 +329,6 @@ module Engine
           return active_abilities.first if active_abilities.one?
 
           active_abilities
-        end
-
-        def operating_order
-          @minors + super.sort.partition { |c| c.type != :bank }.flatten
         end
 
         # Loans
@@ -508,6 +490,12 @@ module Engine
 
         def corporation_show_loans?(corporation)
           !corporation.minor?
+        end
+
+        def purchasable_companies(entity = nil)
+          return [] if entity&.minor?
+
+          super
         end
 
         def sell_movement(corporation = nil)

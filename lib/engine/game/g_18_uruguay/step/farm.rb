@@ -6,7 +6,7 @@ module Engine
   module Game
     module G18Uruguay
       module Step
-        class Farm2 < Engine::Step::Assign
+        class Farm < Engine::Step::Assign
           def setup
             @farm_id = nil
           end
@@ -32,7 +32,7 @@ module Engine
           end
 
           def description
-            'Deliver cattle'
+            'Deliver goods'
           end
 
           def active?
