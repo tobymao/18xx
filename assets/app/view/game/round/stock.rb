@@ -485,8 +485,8 @@ module View
             style: {
               display: 'block',
               width: '8.5rem',
-              padding: '0.2rem 0',
-              margin: '1rem 0',
+              padding: '0.2rem',
+              margin: '0.4rem',
             },
             on: { click: toggle },
           }
@@ -505,6 +505,7 @@ module View
             style: {
               display: 'inline-block',
               verticalAlign: 'top',
+              marginRight: '0.4rem',
             },
           }
 
@@ -514,25 +515,46 @@ module View
         end
 
         def render_ipo_row(ipo_row, number)
+          return h(:div) if ipo_row.empty?
+
           card_style = {
             border: '1px solid gainsboro',
+            width: '100%',
             paddingBottom: '0.2rem',
           }
-
           bg_color = color_for(:bg2)
-          props = {
+          title_props = {
             style: {
               padding: '0.4rem',
               backgroundColor: bg_color,
               color: contrast_on(bg_color),
             },
           }
+          comp_props = {
+            style: {
+              margin: '0.2rem',
+              display: 'grid',
+              justifyItems: 'center',
+            },
+          }
 
           divs = [
-            h('div.player.title.nowrap', props, ["IPO Row #{number}"])
+            h('div.ipo.title.nowrap', title_props, ["IPO Row #{number}"])
           ]
 
-          h('div.player.card', { style: card_style }, divs)
+          ipo_row.first(2).map do |company|
+            inputs = []
+            inputs.concat(render_buy_input(company)) if @current_actions.include?('buy_company')
+
+            children = []
+            children << h(Company, company: company, interactive: !inputs.empty?)
+            if !inputs.empty? && @selected_company == company
+              children << h('div.margined_bottom', { style: { width: '20rem' } }, inputs)
+            end
+            divs << h(:div, comp_props, children)
+          end
+
+          h('div.ipo.card', { style: card_style }, divs)
         end
 
         def render_bank
