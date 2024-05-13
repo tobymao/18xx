@@ -252,6 +252,7 @@ module Engine
             Engine::Step::SpecialTrack,
             Engine::Step::SpecialToken,
             Engine::Step::BuyCompany,
+            G18Norway::Step::IssueShares,
             Engine::Step::HomeToken,
             G18Norway::Step::Track,
             G18Norway::Step::BuildTunnel,
@@ -459,6 +460,67 @@ module Engine
         def event_lm_brown!
           @log << '-- Event: Mjøsa brown ferry lines opens up. --'
           mjosa.lay(tile_by_id('LM2-0'))
+        end
+
+        def issuable_shares(entity)
+          return [] unless entity.corporation?
+          return [] unless round.steps.find { |step| step.instance_of?(G18Norway::Step::IssueShares) }.active?
+
+          num_shares = entity.num_player_shares - entity.num_market_shares
+          bundles = bundles_for_corporation(entity, entity)
+          share_price = stock_market.find_share_price(entity, :left).price
+
+          bundles
+            .each { |bundle| bundle.share_price = share_price }
+            .reject { |bundle| bundle.num_shares > num_shares }
+        end
+
+        def redeemable_shares(entity)
+          return [] unless entity.corporation?
+          return [] unless round.steps.find { |step| step.instance_of?(G18Norway::Step::IssueShares) }.active?
+
+          share_price = stock_market.find_share_price(entity, :right).price
+
+          bundles_for_corporation(share_pool, entity)
+            .each { |bundle| bundle.share_price = share_price }
+            .reject { |bundle| entity.cash < bundle.price }
+        end
+
+        def emergency_issuable_bundles(corp)
+          return [] if corp.trains.any?
+
+          available = @depot.available_upcoming_trains.reject { |train| ship?(train) }
+          return [] unless (train = available.min_by(&:price))
+          return [] if corp.cash >= train.price
+
+          bundles = bundles_for_corporation(corp, corp)
+
+          num_issuable_shares = corp.num_player_shares - corp.num_market_shares
+          bundles.reject! { |bundle| bundle.num_shares > num_issuable_shares }
+
+          bundles.each do |bundle|
+            directions = [:left] * (1 + bundle.num_shares)
+            bundle.share_price = stock_market.find_share_price(corp, directions).price
+          end
+
+          bundles.reject! { |b| b.price.zero? }
+
+          bundles.sort_by!(&:price)
+
+          train_buying_bundles = bundles.select { |b| (corp.cash + b.price) >= train.price }
+          if train_buying_bundles.any?
+            bundles = train_buying_bundles
+
+            index = bundles.find_index { |b| (corp.cash + b.price) >= train.price }
+            return bundles.take(index + 1) if index
+
+            return bundles
+          end
+
+          biggest_bundle = bundles.max_by(&:num_shares)
+          return [biggest_bundle] if biggest_bundle
+
+          []
         end
       end
     end
