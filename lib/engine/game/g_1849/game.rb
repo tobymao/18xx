@@ -32,10 +32,11 @@ module Engine
         BANK_CASH = 7760
 
         CERT_LIMIT = { 3 => 12, 4 => 11, 5 => 9 }.freeze
-        REDUCED_CERT_LIMIT = { 3 => 12, 4 => 9, 5 => 9 }.freeze
 
         def game_cert_limit
-          reduced_4p_corps? ? self.class::REDUCED_CERT_LIMIT : self.class::CERT_LIMIT
+          limit = super.dup
+          limit[4] = 9 if reduced_4p_corps?
+          limit
         end
 
         STARTING_CASH = { 3 => 500, 4 => 375, 5 => 300 }.freeze
@@ -103,35 +104,37 @@ module Engine
           },
         ].freeze
 
+        TRAINS = [
+          { name: '4H', num: 4, distance: 4, price: 100, rusts_on: '8H' },
+          {
+            name: '6H',
+            distance: 6,
+            price: 200,
+            rusts_on: '10H',
+            events: [{ 'type' => 'green_par' }],
+          },
+          { name: '8H', distance: 8, price: 350, rusts_on: '16H', events: [] },
+          {
+            name: '10H',
+            num: 2,
+            distance: 10,
+            price: 550,
+            events: [{ 'type' => 'brown_par' }],
+          },
+          {
+            name: '12H',
+            num: 1,
+            distance: 12,
+            price: 800,
+            events: [{ 'type' => 'close_companies' }, { 'type' => 'earthquake' }],
+          },
+          { name: '16H', distance: 16, price: 1100 },
+          { name: 'E', num: 6, available_on: '12H', distance: 99, price: 550 },
+          { name: 'R6H', num: 2, available_on: '16H', distance: 6, price: 350 },
+        ].freeze
+
         def game_trains
-          train_list = [
-            { name: '4H', num: 4, distance: 4, price: 100, rusts_on: '8H' },
-            {
-              name: '6H',
-              distance: 6,
-              price: 200,
-              rusts_on: '10H',
-              events: [{ 'type' => 'green_par' }],
-            },
-            { name: '8H', distance: 8, price: 350, rusts_on: '16H', events: [] },
-            {
-              name: '10H',
-              num: 2,
-              distance: 10,
-              price: 550,
-              events: [{ 'type' => 'brown_par' }],
-            },
-            {
-              name: '12H',
-              num: 1,
-              distance: 12,
-              price: 800,
-              events: [{ 'type' => 'close_companies' }, { 'type' => 'earthquake' }],
-            },
-            { name: '16H', distance: 16, price: 1100 },
-            { name: 'E', num: 6, available_on: '12H', distance: 99, price: 550 },
-            { name: 'R6H', num: 2, available_on: '16H', distance: 6, price: 350 },
-          ]
+          train_list = super.dup
           train_list.reject! { |t| t[:name] == 'E' } unless electric_dreams?
           train_list.find { |t| t[:name] == '6H' }[:events] << { 'type' => 'buy_tokens' } if acquiring_station_tokens?
           train_list.find { |t| t[:name] == '8H' }[:events] << { 'type' => 'bonds' } if bonds?
@@ -573,17 +576,17 @@ module Engine
         end
 
         def check_other(route)
-          check_track_type(route)
+          check_e_train_track_type(route)
           return unless (route.stops.map(&:hex).map(&:id) & PORT_HEXES).any?
 
           raise GameError, 'Route must include two non-port stops.' unless route.stops.size > 2
         end
 
-        def check_track_type(route)
+        def check_e_train_track_type(route)
           train = route.train
           paths = route.paths
 
-          raise GameError, 'E-Trains cannot use narrow gauge' if paths.any? { |p| p.track == :narrow } && train.name == 'E'
+          raise GameError, 'E-Trains cannot use narrow gauge' if train.name == 'E' && paths.any? { |p| p.track == :narrow }
         end
 
         def revenue_for(route, stops)
@@ -600,9 +603,9 @@ module Engine
         end
 
         def stop_revenue(stop, phase, train)
-          revenue = gray_revenue(stop) if GRAY_REVENUE_CENTERS.key?(stop.hex.id)
-          revenue ||= stop.route_revenue(phase, train)
-          revenue
+          return gray_revenue(stop) if GRAY_REVENUE_CENTERS.key?(stop.hex.id)
+
+          stop.route_revenue(phase, train)
         end
 
         def gray_revenue(stop)
@@ -878,15 +881,15 @@ module Engine
         end
 
         def maximum_loans(_entity)
-          MAXIMUM_LOANS
+          self.class::MAXIMUM_LOANS
         end
 
         def loan_value(_entity = nil)
-          LOAN_VALUE
+          self.class::LOAN_VALUE
         end
 
         def interest_rate
-          INTEREST_RATE
+          self.class::INTEREST_RATE
         end
 
         def interest_owed_for_loans(loans)
