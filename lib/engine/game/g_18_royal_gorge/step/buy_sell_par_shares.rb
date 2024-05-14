@@ -55,8 +55,11 @@ module Engine
             return [] unless current_entity == @game.mint_worker&.owner
             return [] unless corporation == @game.gold_corp
 
+            corp_shares = @game.share_pool.shares_by_corporation[corporation]
+            return [] if corp_shares.empty?
+
             (1..2).map do |num_shares|
-              shares = @game.share_pool.shares_by_corporation[corporation].take(num_shares)
+              shares = corp_shares.take(num_shares)
               bundle = ShareBundle.new(shares)
               @_modify_purchase_price[bundle] = (bundle.price / 2.0).ceil
               [@game.mint_worker, bundle]
