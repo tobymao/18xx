@@ -381,6 +381,26 @@ module Engine
           G1849::SharePool.new(self)
         end
 
+        def bank_corporations
+          @corporations.select do |c|
+            !c.owner || c.owner == @bank
+          end
+        end
+
+        def timeline
+          timeline = []
+
+          corporations = bank_corporations.map do |c|
+            name = c.name.to_s
+            name += ' (cannot be started now)' if c == afg && home_token_locations(afg).empty?
+            name
+          end
+
+          timeline << corporations.join(', ') unless corporations.empty?
+
+          timeline
+        end
+
         def update_garibaldi
           return if !afg || afg.slot_open || home_token_locations(afg).empty?
 

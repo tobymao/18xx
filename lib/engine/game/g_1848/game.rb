@@ -738,6 +738,13 @@ module Engine
 
         # recievership
 
+        def timeline
+          @timeline = [
+            'On the 2nd and 5th corporations to enter receivership, the next permanent train is removed as if purchased \
+            (may trigger a phase change)',
+          ]
+        end
+
         def close_corporation(corporation, quiet: false)
           @close_corp_count += 1
           @player_corp_close_count[corporation.owner] += 1

@@ -117,6 +117,13 @@ module Engine
           'G1' => %w[G3],
         }.freeze
 
+        def check_other(route)
+          # A single city and a port off-board area is not a valid route.
+          return if visited_stops(route).count { |stop| !stop.offboard? } > 1
+
+          raise RouteTooShort, 'Route must have at least 2 stops'
+        end
+
         def visited_stops(route)
           return super unless route.train.name == '4D'
 
@@ -216,6 +223,7 @@ module Engine
         def rust?(train, purchased_train)
           return false unless super
           return true unless train.name == '2'
+          return true if train.owner == @depot
 
           operated_this_round?(train.owner)
         end

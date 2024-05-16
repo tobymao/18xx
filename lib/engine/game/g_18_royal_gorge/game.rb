@@ -3,6 +3,7 @@
 require_relative 'entities'
 require_relative 'map'
 require_relative 'meta'
+require_relative 'share_pool'
 require_relative 'stock_market'
 require_relative 'trains'
 
@@ -17,7 +18,7 @@ module Engine
 
         attr_accessor :gold_shipped, :local_jeweler_cash
         attr_reader :gold_corp, :steel_corp, :available_steel, :gold_cubes, :indebted, :debt_corp,
-                    :treaty_of_boston, :hanging_bridge_lease_payment_due
+                    :treaty_of_boston, :hanging_bridge_lease_payment_due, :sf_debt
 
         CURRENCY_FORMAT_STR = '$%s'
         BANK_CASH = 99_999
@@ -65,12 +66,16 @@ module Engine
           'Silver' => 5,
         }.freeze
 
+        PRESIDENT_SALES_TO_MARKET = Set['CF&I', 'VGC'].freeze
+
+        COMPANIES_CLOSE_PHASE_5 = %w[Y2 Y3 Y4 Y5 Y6 G2 G3 G5 G6 B3 B4 B5].freeze
+
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
           green_phase: ['Green Phase Begins'],
           brown_phase: ['Brown Phase Begins'],
           gray_phase: ['Gray Phase Begins'],
           treaty_of_boston: ['Treaty of Boston'],
-          close_gold_miner: ['Close Gold Miner (B4)'],
+          close_companies: ["Close private companies (#{COMPANIES_CLOSE_PHASE_5.join(',')})"],
         )
 
         DEBT_PENALTY = {
@@ -296,11 +301,15 @@ module Engine
           update_cache(:share_prices)
         end
 
-        def event_close_gold_miner!
-          return unless gold_miner
+        def event_close_companies!
+          @log << '-- Event: private companies close  --'
 
-          @log << "-- Event: #{gold_miner.name} closes --"
-          gold_miner.close!
+          COMPANIES_CLOSE_PHASE_5.each do |id|
+            next unless (company = company_by_id(id))
+
+            @log << "#{company.name} closes"
+            company.close!
+          end
         end
 
         def event_st_cloud_moves!
@@ -365,7 +374,6 @@ module Engine
           revenue = SULPHUR_SPRINGS_BROWN_REVENUE
           sulphur_springs.revenue = revenue
           @log << "-- Event: Sulphur Springs (B2)'s revenue increases to #{format_currency(revenue)} --"
-          puts "Sulphur Springs (B2)'s revenue increases to #{format_currency(revenue)}"
         end
 
         def event_treaty_of_boston!
@@ -373,7 +381,7 @@ module Engine
           @log << 'RG is indebted to SF'
           @log << 'SF is indebted to Doc Holliday'
 
-          sf_debt = Company.new(
+          @sf_debt = Company.new(
             sym: 'SF-D',
             name: 'Indebted to Doc Holliday',
             value: 0,
@@ -388,7 +396,7 @@ module Engine
             choices: { 'pay_debt' => 'Pay Doc Holliday for one DEBT token' },
             count: 2,
             count_per_or: 1,
-            closed_when_used_up: true,
+            remove_when_used_up: true,
           )
           sf_debt.add_ability(ability)
           sf_debt.owner = santa_fe
@@ -411,7 +419,7 @@ module Engine
             choices: { 'pay_debt' => 'Pay Santa Fe for one DEBT token' },
             count: 4,
             count_per_or: 1,
-            closed_when_used_up: true,
+            remove_when_used_up: true,
           )
           rg_debt.add_ability(ability)
           rg_debt.owner = rio_grande
@@ -887,7 +895,7 @@ module Engine
         def init_debt_corp(corporation)
           corporation.ipoed = true
           corporation.floated = true
-          price = @stock_market.share_price([0, 1])
+          price = @stock_market.share_price([0, 6])
           @stock_market.set_par(corporation, price)
           bundle = ShareBundle.new(corporation.shares_of(corporation))
           @share_pool.transfer_shares(bundle, @share_pool)
@@ -1001,6 +1009,11 @@ module Engine
 
           @log << '-- Event: Endgame triggered --'
           @endgame_triggered = true
+        end
+
+        def init_share_pool
+          G18RoyalGorge::SharePool.new(self, allow_president_sale: self.class::PRESIDENT_SALES_TO_MARKET,
+                                             no_rebundle_president_buy: true)
         end
 
         def init_stock_market
@@ -1175,10 +1188,10 @@ module Engine
           return unless entity == coal_depot&.owner
           return unless entity == coal_creek_mines&.owner
 
-          depot_ability = entity.abilities.find { |a| a.type == 'coal_depot' }
-          depot_ability.description = depot_ability.description.sub('Cubes:', 'Cubes (depot):')
+          return unless (depot_ability = entity.abilities.find { |a| a.type == 'coal_depot' })
+          return unless (mines_ability = entity.abilities.find { |a| a.type == 'coal_mines' })
 
-          mines_ability = entity.abilities.find { |a| a.type == 'coal_mines' }
+          depot_ability.description = depot_ability.description.sub('Cubes:', 'Cubes (depot):')
           mines_ability.description = mines_ability.description.sub('Cubes:', 'Cubes (mines):')
         end
 
@@ -1205,12 +1218,34 @@ module Engine
 
           company.abilities[0].use!
 
-          ability = company.owner.abilities.find { |a| a.type == 'coal_mines' }
+          ability = company.owner.abilities.find { |a| a.type == :coal_mines }
           ability.add_count!(1)
           ability.description = ability.description.sub(/\d+/, ability.count.to_s)
 
           @log << "#{corporation.name} receives a Coal Cube from "\
                   "#{company.name} (#{operator.name} ran through #{COAL_CREEK_MINES_HEX})"
+        end
+
+        # TODO: figure out why `when Set` caused problems for other titles, and
+        # move this and `value_for_dumpable` into Engine::Game::Base
+        def president_sales_to_market?(corporation)
+          case self.class::PRESIDENT_SALES_TO_MARKET
+          when true
+            true
+          when ::Set
+            self.class::PRESIDENT_SALES_TO_MARKET.include?(corporation.id)
+          else
+            false
+          end
+        end
+
+        def value_for_dumpable(player, corporation)
+          return value_for_sellable(player, corporation) if president_sales_to_market?(corporation)
+
+          max_bundle = bundles_for_corporation(player, corporation)
+                         .select { |bundle| bundle.can_dump?(player) && @share_pool&.fit_in_bank?(bundle) }
+                         .max_by(&:price)
+          max_bundle&.price || 0
         end
       end
     end

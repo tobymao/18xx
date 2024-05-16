@@ -226,7 +226,7 @@ module Engine
       end
 
       def must_buy_at_face_value?(train, entity)
-        face_value_ability?(entity) || face_value_ability?(train.owner)
+        @game.class::ALWAYS_BUY_TRAINS_AT_FACE_VALUE || face_value_ability?(entity) || face_value_ability?(train.owner)
       end
 
       def spend_minmax(entity, train)
