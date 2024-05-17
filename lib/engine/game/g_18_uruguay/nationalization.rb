@@ -180,7 +180,11 @@ module Engine
           @log << '  Nationalization: RPTLA closes'
           corporation = @rptla
           corporation.share_holders.keys.each do |share_holder|
+            next if share_holder == share_pool
+
             shares = share_holder.shares_of(corporation)
+            next if shares.empty?
+
             bundle = ShareBundle.new(shares)
             sell_shares_and_change_price(bundle) unless corporation == share_holder
           end
