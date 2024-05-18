@@ -459,6 +459,25 @@ module Engine
           entity.companies.any? { |company| company.type == :concession }
         end
 
+        def place_home_token(corporation)
+          city = cities.find { |c| c.reserved_by?(corporation) }
+          token = corporation.find_token_by_type
+          super
+          change_token_icon(city, token, corporation)
+        end
+
+        # Set a minor company's token logo to show which public companies can be
+        # started from the city it is in.
+        def change_token_icon(city, token, minor)
+          # TODO: return if after first public company auction round
+          return unless minor.type == :minor
+
+          majors = associated_majors(city)
+          return if majors.empty? # Basel
+
+          token.logo = logo_path(majors, minor.id)
+        end
+
         private
 
         # Creates a concession company for each major corporations
@@ -496,6 +515,31 @@ module Engine
           @lowest_major_par ||= stock_market.par_prices.reverse.find do |pp|
             pp.types.include?(:par_2)
           end
+        end
+
+        # Finds which public companies can be started from a minor company
+        # that has a token in this city.
+        # @param city [City] The city with a minor company's token.
+        # @return [Array<String>] IDs of the public companies that could be
+        # started by a minor company with a token in this city.
+        def associated_majors(city)
+          coords = city.hex.coordinates
+          if coords == PARIS_HEX
+            Array(PARIS_CITIES.key(city.tile.cities.index(city)))
+          else
+            PUBLIC_COMPANY_HEXES.select { |_, hexes| hexes.include?(coords) }.keys
+          end
+        end
+
+        # Returns the path to a token logo indicating which public companies
+        # can be started in a city. If minor is not nil, then this logo also
+        # has the minor company number on it.
+        # @param majors [Array<String>] The IDs of the major companies.
+        # @param minor [String] The ID of the minor company (optional).
+        # @return [String] Path to the logo file.
+        def logo_path(majors, minor = nil)
+          minor += '-' if minor
+          "/logos/18_ardennes/#{minor}#{majors.join('+')}.svg"
         end
       end
     end
