@@ -296,11 +296,10 @@ module Engine
         def operating_round(round_num)
           Round::Operating.new(self, [
             G18Neb::Step::Bankrupt,
-            Engine::Step::Exchange,
             G18Neb::Step::Assign,
             G18Neb::Step::SpecialChoose,
             G18Neb::Step::BuyCompany,
-            Engine::Step::SpecialTrack,
+            G18Neb::Step::SpecialTrack,
             G18Neb::Step::Track,
             G18Neb::Step::Token,
             Engine::Step::Route,

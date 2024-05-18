@@ -54,7 +54,7 @@ module Engine
             return true if choose_state == :engineer
 
             ability = coal_cube_ability(choose_state)
-            ability.count.positive?
+            ability&.count&.positive?
           end
 
           def available_hex(entity, hex)

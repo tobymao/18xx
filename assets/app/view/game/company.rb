@@ -21,6 +21,8 @@ module View
       needs :interactive, default: true
 
       def selected?
+        return @step.company_selected?(@company) if @step.respond_to?(:company_selected?)
+
         @company == @selected_company
       end
 
@@ -32,6 +34,11 @@ module View
         if selected_company && @game.round.actions_for(entity).include?('assign') &&
           (@game.class::ALL_COMPANIES_ASSIGNABLE || entity.respond_to?(:assign!))
           return process_action(Engine::Action::Assign.new(entity, target: selected_company))
+        end
+
+        if @game.round.actions_for(entity).include?('select_multiple_companies')
+          @step.select_company(entity, @company)
+          return store(:selected_company, nil)
         end
 
         store(:tile_selector, nil, skip: true)
@@ -81,6 +88,7 @@ module View
       end
 
       def render
+        @step = @game.round.active_step
         # use alternate view of corporation if needed
         if @game.respond_to?(:company_view) && (view = @game.company_view(@company))
           return send("render_#{view}")

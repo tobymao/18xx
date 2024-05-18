@@ -24,6 +24,10 @@ module Engine
             @game.par_prices.select { |p| p.price * 2 <= entity.cash }
           end
 
+          def can_dump?(_entity, bundle)
+            @game.president_sales_to_market?(bundle.corporation) || super
+          end
+
           def visible_corporations
             # * hide debt company
             # * put metal companies always first
@@ -51,8 +55,11 @@ module Engine
             return [] unless current_entity == @game.mint_worker&.owner
             return [] unless corporation == @game.gold_corp
 
+            corp_shares = @game.share_pool.shares_by_corporation[corporation]
+            return [] if corp_shares.empty?
+
             (1..2).map do |num_shares|
-              shares = @game.share_pool.shares_by_corporation[corporation].take(num_shares)
+              shares = corp_shares.take(num_shares)
               bundle = ShareBundle.new(shares)
               @_modify_purchase_price[bundle] = (bundle.price / 2.0).ceil
               [@game.mint_worker, bundle]
@@ -64,7 +71,8 @@ module Engine
             return [] unless current_entity == @game.metals_investor&.owner
             return [] unless [@game.gold_corp, @game.steel_corp].include?(corporation)
 
-            share = @game.share_pool.shares_by_corporation[corporation][0]
+            return [] unless (share = @game.share_pool.shares_by_corporation[corporation][0])
+
             bundle = ShareBundle.new(share)
             @_modify_purchase_price[bundle] = @game.stock_market.find_share_price(corporation, :left).price
             [[@game.metals_investor, bundle]]

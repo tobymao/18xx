@@ -81,11 +81,15 @@ module Engine
             abilities: [
               {
                 type: 'token',
-                price: 0,
+                owner_type: 'corporation',
+                count: 1,
                 from_owner: true,
                 special_only: true,
                 connected: true,
-                hexes: [],
+                price: 0,
+                when: 'token',
+                hexes: %w[B13 B17 E14 H5 H9 H13 I6 I12 J7 K12],
+                closed_when_used_up: true,
               },
             ],
           },

@@ -1,12 +1,21 @@
 # frozen_string_literal: true
 
 require_relative '../../../step/special_track'
+require_relative 'railhead_tracker'
 
 module Engine
   module Game
     module G18India
       module Step
         class SpecialTrack < Engine::Step::SpecialTrack
+          include RailheadTracker
+
+          # reset next empty hexes after using track laying private ability
+          def process_lay_tile(action)
+            super
+            @round.next_empty_hexes = calculate_railhead_hexes unless @game.loading
+          end
+
           # Bypass some Step::Tracker tests for Town to City upgrade: maintain exits, and check new exits are valid
           # check tile color to active ability
           def legal_tile_rotation?(entity, hex, tile)

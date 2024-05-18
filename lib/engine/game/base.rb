@@ -283,6 +283,7 @@ module Engine
       ALLOW_TRAIN_BUY_FROM_OTHERS = true # Allows train buy from other corporations
       ALLOW_TRAIN_BUY_FROM_OTHER_PLAYERS = true # Allows train buy from other player's corporations
       ALLOW_OBSOLETE_TRAIN_BUY = false # Allows obsolete trains to be bought from other corporations
+      ALWAYS_BUY_TRAINS_AT_FACE_VALUE = false # Defines if corps must pay face value when buying trains from other corps
 
       # Default tile lay, one tile either upgrade or lay at zero cost
       # allows multiple lays, value must be either true, false or :not_if_upgraded
@@ -357,6 +358,7 @@ module Engine
       }.freeze
 
       ASSIGNMENT_TOKENS = {}.freeze
+      ASSIGNMENT_STACK_GROUPS = {}.freeze
 
       OPERATING_ROUND_NAME = 'Operating'
       OPERATION_ROUND_SHORT_NAME = 'ORs'
@@ -834,6 +836,7 @@ module Engine
       end
 
       def rescue_exception(e, action)
+        LOGGER.debug { "Caught exception #{e.inspect}, backtrace: [#{e.backtrace.join(', ')}]" }
         @raw_actions.pop
         @actions.pop
         @exception = e
@@ -1843,7 +1846,7 @@ module Engine
         @_shares.reject! do |_, share|
           next if share.corporation != corporation
 
-          share.owner.shares_by_corporation[corporation].clear
+          share.owner.shares_by_corporation.delete(corporation)
 
           true
         end
@@ -2227,8 +2230,11 @@ module Engine
 
           return assignment.logo
         end
-
         self.class::ASSIGNMENT_TOKENS[assignment]
+      end
+
+      def assignment_stack_group(assignment)
+        self.class::ASSIGNMENT_STACK_GROUPS[assignment]
       end
 
       def bankruptcy_limit_reached?
