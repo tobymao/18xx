@@ -8,7 +8,7 @@ module Engine
       module Step
         class BuySellParShares < Engine::Step::BuySellParShares
           def can_buy?(entity, bundle)
-            return false if bundle.corporation == @game.rptla && !@game.phase.status.include?('rptla_available')
+            return false if bundle&.corporation == @game.rptla && !@game.phase.status.include?('rptla_available')
 
             super(entity, bundle)
           end
