@@ -3125,15 +3125,21 @@ module Engine
             (@round.operating? && @round.current_operator == ability.corporation) ||
               (@round.stock? && @round.current_entity == ability.player)
           when 'owning_corp_or_turn'
-            @round.operating? && @round.current_operator == ability.corporation
+            @round.operating? && corporation_owned_ability?(ability) && @round.current_operator == ability.corporation
           when 'owning_player_or_turn'
-            @round.operating? && @round.current_operator&.player == ability.player
+            @round.operating? && player_owned_ability?(ability) && @round.current_operator&.player == ability.player
           when 'owning_player_track'
-            @round.operating? && @round.current_operator&.player == ability.player && current_step.is_a?(Step::Track)
+            @round.operating? &&
+              player_owned_ability?(ability) &&
+              @round.current_operator&.player == ability.player &&
+              current_step.is_a?(Step::Track)
           when 'owning_player_token'
-            @round.operating? && @round.current_operator&.player == ability.player && current_step.is_a?(Step::Token)
+            @round.operating? &&
+              player_owned_ability?(ability) &&
+              @round.current_operator&.player == ability.player &&
+              current_step.is_a?(Step::Token)
           when 'owning_player_sr_turn'
-            @round.stock? && @round.current_entity == ability.player
+            @round.stock? && player_owned_ability?(ability) && @round.current_entity == ability.player
           when 'or_between_turns'
             @round.operating? && !@round.current_operator_acted
           when 'or_start'
@@ -3182,6 +3188,14 @@ module Engine
         else
           true
         end
+      end
+
+      def player_owned_ability?(ability)
+        ability.owner&.player? || (ability.owner&.company? && ability.owner&.owner&.player?)
+      end
+
+      def corporation_owned_ability?(ability)
+        ability.owner&.corporation? || (ability.owner&.company? && ability.owner&.owner&.corporation?)
       end
 
       def token_ability_from_owner_usable?(ability, corporation)
