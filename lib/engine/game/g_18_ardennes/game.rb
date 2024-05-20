@@ -36,6 +36,7 @@ module Engine
 
         SELL_BUY_ORDER = :sell_buy
         SELL_AFTER = :operate
+        SELL_MOVEMENT = :left_block_pres
 
         CAPITALIZATION = :incremental
         HOME_TOKEN_TIMING = :par
