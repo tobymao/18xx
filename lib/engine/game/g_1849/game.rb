@@ -877,7 +877,7 @@ module Engine
         end
 
         def num_loans
-          bonds? ? NUM_LOANS : 0
+          bonds? ? self.class::NUM_LOANS : 0
         end
 
         def maximum_loans(_entity)
