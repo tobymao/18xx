@@ -468,7 +468,7 @@ module Engine
           update_garibaldi
           # code below is for variant rules
           @log << 'E-token returned to bank' if corporation.e_token
-          corporation.e_token = false if electric_dreams?
+          corporation.e_token = false
 
           repaid_bond = corporation.loans.pop if bonds? && corporation.loans.any?
           @loans << repaid_bond if repaid_bond
