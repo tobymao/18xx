@@ -320,9 +320,6 @@ module Engine
 
           @player_debts = Hash.new { |h, k| h[k] = 0 }
           @moved_this_turn = []
-
-          # below this line is code for variant rules
-          set_e_token_sold if electric_dreams?
         end
 
         def setup_companies
@@ -943,10 +940,6 @@ module Engine
           return unless corporation.e_token
 
           ['E-Token Purchased']
-        end
-
-        def set_e_token_sold
-          @e_token_sold = false
         end
 
         def init_train_handler
