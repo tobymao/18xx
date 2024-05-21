@@ -60,7 +60,7 @@ module Engine
             train_limit: 4,
             tiles: [:yellow],
             operating_rounds: 1,
-            status: %w[gray_uses_white no_bonds no_buying_tokens],
+            status: %w[gray_uses_white],
           },
           {
             name: '6H',
@@ -68,7 +68,7 @@ module Engine
             train_limit: 4,
             tiles: %i[yellow green],
             operating_rounds: 2,
-            status: %w[gray_uses_white can_buy_companies no_bonds],
+            status: %w[gray_uses_white can_buy_companies],
           },
           {
             name: '8H',
@@ -92,7 +92,7 @@ module Engine
             train_limit: 2,
             tiles: %i[yellow green brown],
             operating_rounds: 3,
-            status: %w[gray_uses_black e_tokens],
+            status: %w[gray_uses_black],
           },
           {
             name: '16H',
@@ -100,7 +100,7 @@ module Engine
             train_limit: 2,
             tiles: %i[yellow green brown],
             operating_rounds: 3,
-            status: %w[gray_uses_black blue_zone e_tokens],
+            status: %w[gray_uses_black blue_zone],
           },
         ].freeze
 
@@ -927,7 +927,7 @@ module Engine
             entity.corporation? &&
             !@round.repaid_bond[entity] &&
             entity.loans.size < maximum_loans(entity) &&
-            !@phase.status.include?('no_bonds')
+            !@phase.status.include?('gray_uses_white')
         end
 
         def can_pay_interest?(entity, extra_cash = 0)

@@ -32,10 +32,10 @@ module Engine
 
           def can_buy_token?(entity)
             @game.acquiring_station_tokens? &&
+              @game.phase.tiles.include?(:green) &&
               current_entity == entity &&
               !@round.bought_token &&
               !available_tokens(entity).empty? &&
-              !@game.phase.status.include?('no_buying_tokens') &&
               MIN_PRICE <= buying_power(entity)
           end
 
@@ -102,7 +102,7 @@ module Engine
           end
 
           def log_skip(entity)
-            return if !@game.acquiring_station_tokens? || @game.phase.status.include?('no_buying_tokens')
+            return if !@game.acquiring_station_tokens? || !@game.phase.tiles.include?(:green)
 
             @log << "#{entity.name} can't buy any tokens from other corporations"
           end
