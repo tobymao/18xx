@@ -21,7 +21,8 @@ module Engine
             sym: 'Y2',
             name: 'Ghost Town Tour Co. (Y2)',
             desc: 'When the owning corporation ships the last gold from any mine space, they  may put 1 Ghost Town '\
-                  'Token in that hex. On future turns, Ghost Town Tokens provide $10 revenue for the owning corporation.',
+                  'Token in that hex. On future turns, Ghost Town Tokens provide $10 revenue for the owning corporation. '\
+                  'Closes when the first 5+ train is purchased.',
             value: 45,
             revenue: 15,
             abilities: [
@@ -38,7 +39,8 @@ module Engine
             name: 'Coal Creek Mines (Y3)',
             desc: 'When any corporation runs through Coal Creek, the owning corporation receives a coal cube '\
                   "from the Mine's supply of 12 cubes. On a future turn, the owning corporation may use up to 2 coal cubes "\
-                  'to increase their train run by 1 stop for each cube. When used, cubes are removed from the game.',
+                  'to increase their train run by 1 stop for each cube. When used, cubes are removed from the game. '\
+                  'Closes when the first 5+ train is purchased.',
             value: 40,
             revenue: 5,
             abilities: [
@@ -52,7 +54,8 @@ module Engine
           {
             sym: 'Y4',
             name: 'William Palmer (Y4)',
-            desc: 'Owning player will start the game with a 10% of Rio Grande and a 10% share of CF&I.',
+            desc: 'Owning player will start the game with a 10% of Rio Grande and a 10% share of CF&I. '\
+                  'Closes when the first 5+ train is purchased.',
             value: 75,
             revenue: 5,
             abilities: [
@@ -63,7 +66,8 @@ module Engine
           {
             sym: 'Y5',
             name: 'Territorial Prison (Y5)',
-            desc: 'If a corporation owns the prison, they may use prison labor to build in any terrain at 1/2 price.',
+            desc: 'If a corporation owns the prison, they may use prison labor to build in any terrain at 1/2 price. '\
+                  'Closes when the first 5+ train is purchased.',
             value: 70,
             revenue: 10,
             abilities: [
@@ -100,7 +104,8 @@ module Engine
             sym: 'Y6',
             name: 'Local Jeweler (Y6)',
             desc: 'Every time any corporation ships gold, the jeweler receives $5 from the Bank onto this card. '\
-                  'At the beginning of each Stock Round, any money on this card becomes personal cash.',
+                  'At the beginning of each Stock Round, any money on this card becomes personal cash. '\
+                  'Closes when the first 5+ train is purchased.',
             value: 20,
             revenue: 5,
             abilities: [
@@ -129,7 +134,8 @@ module Engine
             sym: 'G2',
             name: '13LB Gold Nugget (G2)',
             desc: 'Once during the game, the owning corporation may ship 1 Gold for $130 revenue '\
-                  'increase (instead of the normal $50).',
+                  'increase (instead of the normal $50). '\
+                  'Closes when the first 5+ train is purchased.',
             value: 40,
             revenue: 5,
             abilities: [
@@ -146,7 +152,8 @@ module Engine
             name: 'Hanging Bridge Lease (G3)',
             desc: 'The owning corporation may run through The Royal Gorge (D12-E13-F12) by paying a '\
                   '10% dividend to the Rio Grande from the proceeds. This money can either come from '\
-                  "the charter, or the president's personal cash.",
+                  "the charter, or the president's personal cash. '\
+                                                '  Closes when the first 5+ train is purchased.",
             value: 50,
             revenue: 10,
           },
@@ -167,7 +174,8 @@ module Engine
             name: 'Metals Investor (G5)',
             desc: 'Each Stock Round, the owning player may purchase 1 CF&I share and/or 1 VGC '\
                   'share for one step cheaper than their current value. Once used, the player may '\
-                  'not sell any of the purchased stocks until the next Stock Round.',
+                  'not sell any of the purchased stocks until the next Stock Round. '\
+                  'Closes when the first 5+ train is purchased.',
             value: 25,
             revenue: 5,
             abilities: [
@@ -184,7 +192,8 @@ module Engine
             name: 'Coal Depot (G6)',
             desc: 'Place one coal cube on this card for every $10 paid for this company in the '\
                   'initial auction (rounded down). During operating rounds, the owning corporation may '\
-                  'spend 1-2 coal cubes to add additional stops on a route, following normal route rules.',
+                  'spend 1-2 coal cubes to add additional stops on a route, following normal route rules. '\
+                  'Closes when the first 5+ train is purchased.',
             value: 10,
             revenue: 5,
           },
@@ -226,7 +235,8 @@ module Engine
             name: 'Steel Depot (B3)',
             desc: 'Comes with the Steel Depot card. Once per operating round, owning corporation '\
                   'may use 0-2 steel from the Steel Depot card to lay yellow track for free. (Max '\
-                  'of 6 track applies).',
+                  'of 6 track applies). '\
+                  'Closes when the first 5+ train is purchased.',
             value: 55,
             revenue: 10,
             abilities: [
@@ -246,7 +256,8 @@ module Engine
             sym: 'B4',
             name: 'Gold Miner (B4)',
             desc: 'This card acts as though it were a 20% share of Victor Gold Company. Does not '\
-                  'count as a certificate. Closes when the first 5+ train is purchased.',
+                  'count as a certificate. '\
+                  'Closes when the first 5+ train is purchased.',
             value: 20,
             revenue: 0,
             abilities: [
@@ -257,7 +268,8 @@ module Engine
             sym: 'B5',
             name: 'B5 Track Engineer',
             desc: 'Every operating round, this company may treat one train as if it were +1. It may '\
-                  'be a different train each operating round.',
+                  'be a different train each operating round. '\
+                  'Closes when the first 5+ train is purchased.',
             value: 60,
             revenue: 10,
           },
