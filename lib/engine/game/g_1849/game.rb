@@ -909,8 +909,7 @@ module Engine
         def take_loan(entity, loan)
           raise GameError, 'Cannot issue bond' unless can_take_loan?(entity)
 
-          name = entity.name
-          @log << "#{name} issues its bond and receives #{format_currency(loan_value)}"
+          @log << "#{entity.name} issues its bond and receives #{format_currency(loan_value)}"
           @bank.spend(loan_value, entity)
           entity.loans << loan
           @loans.delete(loan)
