@@ -18,7 +18,7 @@ module Engine
 
         attr_accessor :gold_shipped, :local_jeweler_cash
         attr_reader :gold_corp, :steel_corp, :available_steel, :gold_cubes, :indebted, :debt_corp,
-                    :treaty_of_boston, :hanging_bridge_lease_payment_due
+                    :treaty_of_boston, :hanging_bridge_lease_payment_due, :sf_debt
 
         CURRENCY_FORMAT_STR = '$%s'
         BANK_CASH = 99_999
@@ -68,12 +68,14 @@ module Engine
 
         PRESIDENT_SALES_TO_MARKET = Set['CF&I', 'VGC'].freeze
 
+        COMPANIES_CLOSE_PHASE_5 = %w[Y2 Y3 Y4 Y5 Y6 G2 G3 G5 G6 B3 B4 B5].freeze
+
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
           green_phase: ['Green Phase Begins'],
           brown_phase: ['Brown Phase Begins'],
           gray_phase: ['Gray Phase Begins'],
           treaty_of_boston: ['Treaty of Boston'],
-          close_gold_miner: ['Close Gold Miner (B4)'],
+          close_companies: ["Close private companies (#{COMPANIES_CLOSE_PHASE_5.join(',')})"],
         )
 
         DEBT_PENALTY = {
@@ -299,11 +301,15 @@ module Engine
           update_cache(:share_prices)
         end
 
-        def event_close_gold_miner!
-          return unless gold_miner
+        def event_close_companies!
+          @log << '-- Event: private companies close  --'
 
-          @log << "-- Event: #{gold_miner.name} closes --"
-          gold_miner.close!
+          COMPANIES_CLOSE_PHASE_5.each do |id|
+            next unless (company = company_by_id(id))
+
+            @log << "#{company.name} closes"
+            company.close!
+          end
         end
 
         def event_st_cloud_moves!
@@ -375,7 +381,7 @@ module Engine
           @log << 'RG is indebted to SF'
           @log << 'SF is indebted to Doc Holliday'
 
-          sf_debt = Company.new(
+          @sf_debt = Company.new(
             sym: 'SF-D',
             name: 'Indebted to Doc Holliday',
             value: 0,
@@ -1182,10 +1188,10 @@ module Engine
           return unless entity == coal_depot&.owner
           return unless entity == coal_creek_mines&.owner
 
-          depot_ability = entity.abilities.find { |a| a.type == 'coal_depot' }
-          depot_ability.description = depot_ability.description.sub('Cubes:', 'Cubes (depot):')
+          return unless (depot_ability = entity.abilities.find { |a| a.type == 'coal_depot' })
+          return unless (mines_ability = entity.abilities.find { |a| a.type == 'coal_mines' })
 
-          mines_ability = entity.abilities.find { |a| a.type == 'coal_mines' }
+          depot_ability.description = depot_ability.description.sub('Cubes:', 'Cubes (depot):')
           mines_ability.description = mines_ability.description.sub('Cubes:', 'Cubes (mines):')
         end
 
