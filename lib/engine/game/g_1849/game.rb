@@ -948,7 +948,7 @@ module Engine
             end
           end
 
-          electric_dreams? ? G1849::Depot.new(trains, self) : self.class::DEPOT_CLASS.new(trains, self)
+          G1849::Depot.new(trains, self)
         end
       end
     end
