@@ -2,21 +2,30 @@
 
 require 'lib/settings'
 require 'view/game/company'
+require 'view/game/actionable'
 
 module View
   module Game
     class IpoRows < Snabberb::Component
       include Lib::Settings
+      include Actionable
 
-      needs :game
+      needs :game, store: true
       needs :display, default: 'inline-block'
+      needs :selected_company, default: nil, store: true
+      needs :show_first, default: true
 
       def render
         @owner = @game.bank
         ipo_rows = @game.ipo_rows
 
-        ipo_cards = ipo_rows.map.with_index do |ipo_row, index|
-          h(:div, [render_ipo_row(ipo_row, index + 1)])
+        round = @game.round
+        @step = round.active_step
+        @current_entity = @step.current_entity
+        @current_actions = round.actions_for(@current_entity)
+
+        ipo_rows.map.with_index do |ipo_row, index|
+          h(:span, [render_ipo_row(ipo_row, index + 1)])
         end
       end
 
@@ -27,11 +36,11 @@ module View
         }
         card_style[:display] = @display
 
-        divs = [
-          render_title(number),
-        ]
+        companies = ipo_row.dup
+        divs = [render_title(number)]
 
-        divs << render_companies(ipo_row)
+        divs << render_first_ipo(companies) if @show_first
+        divs << h(IpoRowCompanies, game: @game, companies: companies) unless companies.empty?
 
         h('div.player.card', { style: card_style }, divs)
       end
@@ -49,28 +58,37 @@ module View
         h('div.player.title.nowrap', props, ["IPO Row #{number}"])
       end
 
-      def render_companies(ipo_row)
-        row_companies = ipo_row
-
-        companies = row_companies.flat_map do |c|
-          h(Company, company: c, layout: :table)
-        end
-
-        top_padding = row_companies.empty? ? '0' : '1em'
-        table_props = {
+      def render_first_ipo(ipo_row)
+        button_props = {
           style: {
-            padding: "#{top_padding} 0.5rem 0.2rem",
-            grid: @game.show_value_of_companies?(@owner) ? 'auto / 1fr auto auto' : 'auto / 1fr auto',
-            gap: '0 0.3rem',
+            display: 'grid',
+            gridColumn: '1/4',
+            width: 'max-content',
           },
         }
+        first_company = ipo_row.shift
+        inputs = []
+        inputs.concat(render_buy_input(first_company)) if @current_actions.include?('buy_company')
+        children = []
+        children << h(Company, company: first_company, interactive: !inputs.empty?)
+        children << h('div.margined_bottom', button_props, inputs) if !inputs.empty? && @selected_company == first_company
+        h(:div, children)
+      end
 
-        h('div.hand_company_table', table_props, [
-          h('div.bold', 'Certificates'),
-          @game.show_value_of_companies?(@owner) ? h('div.bold.right', 'Value') : '',
-          h('div.bold.right', 'Income'),
-          *companies,
-        ])
+      def render_buy_input(company)
+        return [] unless @step.can_buy_company?(@current_entity, company)
+
+        buy = lambda do
+          process_action(Engine::Action::BuyCompany.new(
+            @current_entity,
+            company: company,
+            price: company.value,
+          ))
+          store(:selected_company, nil, skip: true)
+        end
+        [h(:button,
+           { on: { click: buy } },
+           "Buy #{company.name} from IPO Row for #{@game.format_currency(company.value)}")]
       end
     end
   end

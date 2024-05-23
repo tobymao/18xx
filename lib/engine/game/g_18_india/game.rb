@@ -573,7 +573,7 @@ module Engine
         def company_status_str(company)
           if in_ipo?(company)
             row, index = ipo_row_and_index(company)
-            return "Row:#{row + 1} ##{index + 1}"
+            return "##{index + 1}"
           elsif (company.type == :bond) && (company.owner == @bank)
             return "Bank has #{count_of_bonds} / 10 Bonds"
           elsif @round.stock?
@@ -631,12 +631,12 @@ module Engine
         # Called by View::Game::Entities to determine if the company should be shown on entities
         # Lists unowned companies under 'The Bank' on ENTITIES tab
         def unowned_purchasable_companies(_entity)
-          bank_owned_companies # + @ipo_rows[0] + @ipo_rows[1] + @ipo_rows[2]
+          bank_owned_companies
         end
 
         # Lists buyable companies for STOCK ROUND in VIEW
         def buyable_bank_owned_companies
-          bank_owned_companies + top_of_ipo_rows
+          bank_owned_companies
         end
 
         def first_bond_in_bank

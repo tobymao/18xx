@@ -12,7 +12,7 @@ require 'view/game/sell_shares'
 require 'view/game/stock_market'
 require 'view/game/tranches'
 require 'view/game/bid'
-require 'lib/settings'
+require 'view/game/ipo_rows'
 
 module View
   module Game
@@ -499,62 +499,13 @@ module View
         end
 
         def render_ipo_rows
-          ipo_rows = @game.ipo_rows
-
-          props = {
+          div_props = {
             style: {
               display: 'inline-block',
-              verticalAlign: 'top',
-              marginRight: '0.4rem',
             },
           }
-
-          ipo_cards = ipo_rows.map.with_index do |ipo_row, index|
-            h(:div, props, [render_ipo_row(ipo_row, index + 1)])
-          end
-        end
-
-        def render_ipo_row(ipo_row, number)
-          return h(:div) if ipo_row.empty?
-
-          card_style = {
-            border: '1px solid gainsboro',
-            width: '100%',
-            paddingBottom: '0.2rem',
-          }
-          bg_color = color_for(:bg2)
-          title_props = {
-            style: {
-              padding: '0.4rem',
-              backgroundColor: bg_color,
-              color: contrast_on(bg_color),
-            },
-          }
-          comp_props = {
-            style: {
-              margin: '0.2rem',
-              display: 'grid',
-              justifyItems: 'center',
-            },
-          }
-
-          divs = [
-            h('div.ipo.title.nowrap', title_props, ["IPO Row #{number}"])
-          ]
-
-          ipo_row.first(2).map do |company|
-            inputs = []
-            inputs.concat(render_buy_input(company)) if @current_actions.include?('buy_company')
-
-            children = []
-            children << h(Company, company: company, interactive: !inputs.empty?)
-            if !inputs.empty? && @selected_company == company
-              children << h('div.margined_bottom', { style: { width: '20rem' } }, inputs)
-            end
-            divs << h(:div, comp_props, children)
-          end
-
-          h('div.ipo.card', { style: card_style }, divs)
+          ipo_cards = h(IpoRows, game: @game, show_first: true)
+          [h(:div, div_props, ipo_cards)]
         end
 
         def render_bank
