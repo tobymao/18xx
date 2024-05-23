@@ -91,10 +91,10 @@ module View
           children.concat(render_corporations) unless @hide_corporations
           children.concat(render_mergeable_entities) if @current_actions.include?('merge')
           children.concat(render_player_companies) if @current_actions.include?('sell_company')
-          children << render_show_hand_button unless @game.hand_companies_for_stock_round.empty?
-          children.concat(render_hand_companies) if show_hand?
           children.concat(render_ipo_rows) if @game.show_ipo_rows?
           children.concat(render_bank_companies) unless @bank_first
+          children << render_show_hand_button unless @game.hand_companies_for_stock_round.empty?
+          children.concat(render_hand_companies) if show_hand?
           children << h(Players, game: @game)
           if @step.respond_to?(:purchasable_companies) && !@step.purchasable_companies(@current_entity).empty?
             children << h(BuyCompanyFromOtherPlayer, game: @game)

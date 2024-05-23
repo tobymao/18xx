@@ -421,7 +421,6 @@ module Engine
             cards.each do |card|
               if card.owner == player
                 card.owner = nil
-                player.unsold_companies << card
               else
                 @draft_deck << card
                 player.hand.delete(card)
@@ -572,7 +571,7 @@ module Engine
         # Add status of cert card e.g. IPO ROW
         def company_status_str(company)
           if in_ipo?(company)
-            row, index = ipo_row_and_index(company)
+            _row, index = ipo_row_and_index(company)
             return "##{index + 1}"
           elsif (company.type == :bond) && (company.owner == @bank)
             return "Bank has #{count_of_bonds} / 10 Bonds"
@@ -671,7 +670,6 @@ module Engine
 
         def remove_from_hand(player, company)
           player.hand.delete(company)
-          player.unsold_companies.delete(company)
         end
 
         # remove all proxy certs from IPO and Player Hands
@@ -679,7 +677,6 @@ module Engine
           # remove from player hands
           players.each do |player|
             player.hand.reject! { |company| company.name == corporation.name }
-            player.unsold_companies.reject! { |company| company.name == corporation.name }
           end
           # remove from IPO Rows
           @ipo_rows.each { |row| row.reject! { |company| company.name == corporation.name } }
