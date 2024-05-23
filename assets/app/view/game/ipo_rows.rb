@@ -40,7 +40,7 @@ module View
         divs = [render_title(number)]
 
         divs << render_first_ipo(companies) if @show_first
-        divs << h(IpoRowCompanies, game: @game, companies: companies) unless companies.empty?
+        divs << h(CompaniesTable, game: @game, companies: companies) unless companies.empty?
 
         h('div.player.card', { style: card_style }, divs)
       end

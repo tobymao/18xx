@@ -670,6 +670,7 @@ module Engine
 
         def remove_from_hand(player, company)
           player.hand.delete(company)
+          player.unsold_companies.delete(company)
         end
 
         # remove all proxy certs from IPO and Player Hands
@@ -677,6 +678,7 @@ module Engine
           # remove from player hands
           players.each do |player|
             player.hand.reject! { |company| company.name == corporation.name }
+            player.unsold_companies.reject! { |company| company.name == corporation.name }
           end
           # remove from IPO Rows
           @ipo_rows.each { |row| row.reject! { |company| company.name == corporation.name } }

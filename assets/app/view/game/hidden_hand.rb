@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'view/game/unsold_companies'
 require 'view/game/company'
 require 'view/game/actionable'
 
@@ -31,7 +30,7 @@ module View
 
         children = []
         children << render_show_button if @show_button
-        children << render_companies if @show_button && show_hand?
+        children << h(CompaniesTable, game: @game, companies: @player.hand, title: 'Hidden Hand') if @show_button && show_hand?
         h(:div, children)
       end
 
