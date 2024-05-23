@@ -978,6 +978,8 @@ module Engine
         end
 
         def or_round_finished
+          return if @depot.upcoming.empty?
+
           if @depot.upcoming.first.name == '2'
             depot.export_all!('2')
           else

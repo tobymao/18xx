@@ -937,6 +937,21 @@ module Engine
 
           super
         end
+
+        def price_movement_chart
+          [
+            ['Action', 'Share Price Change'],
+            ['Dividend 0 or withheld', '1 ←'],
+            ['Dividend < 2x share price ', '1 →'],
+            ['Dividend ≥ 2x share price', '2 →'],
+            ['Dividend ≥ 3x share price', '3 →'],
+            ['Dividend ≥ 4x share price', '4 →'],
+            ['Convert to 10-share during EMR', '3 ←'],
+            ['Each share sold', '1 ←'],
+            ['Each share sold (by director in Grey phase)', '1 ←'],
+            ['Convert to 10-share in SR', '2 ←'],
+          ]
+        end
       end
     end
   end

@@ -163,7 +163,7 @@ module Engine
             trains: %w[Y2 Y2 G3 G4 3E 5 6],
             count: 1,
             closed_when_used_up: true,
-            when: 'buying_train',
+            when: 'buy_train',
           },
           ],
            color: nil,
