@@ -16,7 +16,7 @@ module View
 
         table_props = {
           style: {
-            padding: "0 0.5rem 0.2rem",
+            padding: '0 0.5rem 0.2rem',
             grid: 'auto / 1fr auto auto',
             gap: '0 0.3rem',
           },
