@@ -489,11 +489,13 @@ module Engine
               # reorder as normal first so that if there is a tie for most cash,
               # the player who would be first with :after_last_to_act turn order
               # gets the tiebreaker
-              reorder_players
+              reorder_players(silent: true)
 
               # most cash goes first, but keep same relative order; don't
               # reorder by descending cash
               @players.rotate!(@players.index(@players.max_by(&:cash)))
+
+              @log << "#{@players.first.name} has priority deal"
 
               new_stock_round
             end
