@@ -1247,6 +1247,14 @@ module Engine
                          .max_by(&:price)
           max_bundle&.price || 0
         end
+
+        def rust(train)
+          if (amount = train.salvage || 0).positive?
+            @bank.spend(amount, train.owner)
+            @log << "#{train.owner.name} salvages a #{train.name} train for #{format_currency(amount)}"
+          end
+          super
+        end
       end
     end
   end
