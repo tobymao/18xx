@@ -60,7 +60,7 @@ module Engine
               {
                 type: 'choose_ability',
                 after_phase: '2',
-                when: %w[track owning_player_track],
+                when: %w[owning_player_sr_turn owning_player_or_turn owning_corp_or_turn],
                 choices: ['Place tile'],
               },
             ],

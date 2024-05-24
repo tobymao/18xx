@@ -615,6 +615,7 @@ module Engine
 
         def stock_round
           Engine::Round::Stock.new(self, [
+            G1844::Step::SpecialChoose,
             G1844::Step::MountainRailwayTrack,
             G1844::Step::BuySellParShares,
           ])
