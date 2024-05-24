@@ -54,11 +54,6 @@ module Engine
           '887' => 1,
           '888' => 1,
           '596' => 1,
-          '235' => {
-            'count' => 1,
-            'color' => 'yellow',
-            'code' => 'city=revenue:30;city=revenue:0;path=a:0,b:_0;label=XX',
-          },
           '210' => {
             'count' => 1,
             'color' => 'green',
@@ -113,6 +108,12 @@ module Engine
             'code' => 'city=revenue:60,slots:3;label=XX;'\
                       'path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
           },
+          'URUXX' => {
+            'count' => 1,
+            'color' => 'gray',
+            'code' => 'city=revenue:50,slots:4;label=XX'\
+                      ';path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;path=a:3,b:_0;path=a:5,b:_0',
+          },
           'URU01' => {
             'count' => 1,
             'color' => 'green',
@@ -131,12 +132,6 @@ module Engine
             'count' => 1,
             'color' => 'gray',
             'code' => 'city=revenue:70,slots:5;label=MV'\
-                      ';path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;path=a:3,b:_0;path=a:5,b:_0',
-          },
-          'URUXX' => {
-            'count' => 1,
-            'color' => 'gray',
-            'code' => 'city=revenue:50,slots:4;label=MV'\
                       ';path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;path=a:3,b:_0;path=a:5,b:_0',
           },
           'L125' => {
@@ -227,7 +222,6 @@ module Engine
             ['G3'] => 'city=revenue:0;border=edge:2,type:water,cost:40;border=edge:3,type:water,cost:40',
             ['G5'] => 'icon=image:18_uruguay/sheep;icon=image:18_uruguay/sheep;border=edge:2,type:water,cost:40;'\
                       'border=edge:3,type:water,cost:40',
-            ['G7'] => 'city=revenue:0;city=revenue:0;label=XX;border=edge:2,type:water,cost:40',
             ['H4'] => 'town=revenue:0;town=revenue:0',
             ['H14'] => 'city=revenue:0;future_label=label:L,color:brown',
             ['I3'] => 'city=revenue:0;future_label=label:L,color:brown',
@@ -261,6 +255,7 @@ module Engine
                       'path=a:1,b:_0;path=a:2,b:_1;path=a:3,b:_2;path=a:4,b:_3;'\
                       'path=a:6,b:_0;path=a:6,b:_1;path=a:5,b:_2;path=a:5,b:_3;'\
                       'label=MV',
+            ['G7'] => 'city=revenue:0;city=revenue:0;label=XX;border=edge:2,type:water,cost:40',
           },
           blue: {
             ['E1'] => 'offboard=revenue:yellow_30|green_30|brown_40|gray_60,format:+%d,visit_cost:0,route:optional'\
