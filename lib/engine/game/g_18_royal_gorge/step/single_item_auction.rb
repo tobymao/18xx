@@ -70,7 +70,7 @@ module Engine
             company.close!
             @companies.delete(company)
 
-            auction_entity(@companies.first)
+            auction_entity_log(@companies.first) unless @companies.empty?
           end
 
           def process_bid(action)
