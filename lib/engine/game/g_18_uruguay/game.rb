@@ -403,7 +403,7 @@ module Engine
         def revenue_for(route, stops)
           revenue = super
           revenue *= 2 if route.train.name == '4D'
-          revenue *= 2 if final_operating_round?
+          revenue *= 2 if final_operating_round? && final_or_in_set?(@round)
           return revenue unless route&.corporation == @rptla
 
           train = route.train
