@@ -26,6 +26,7 @@ module Engine
           end
 
           def choice_name
+            return '' if @game.nationalized?
             return 'Attach goods to ships' if current_entity == @game.rptla
 
             'Attach good to a train'
