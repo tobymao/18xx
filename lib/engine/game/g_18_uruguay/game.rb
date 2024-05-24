@@ -198,7 +198,7 @@ module Engine
 
           @rptla.add_ability(Engine::Ability::Base.new(
             type: 'Goods',
-            description: GOODS_DESCRIPTION_STR + '0',
+            description: GOODS_DESCRIPTION_STR + '3',
             count: 0
           ))
 
