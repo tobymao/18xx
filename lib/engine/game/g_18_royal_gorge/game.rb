@@ -105,7 +105,7 @@ module Engine
         SULPHUR_SPRINGS_BROWN_REVENUE = 50
 
         ST_CLOUD_START_HEX = 'G17'
-        ST_CLOUD_BROWN_HEX = 'H14'
+        ST_CLOUD_BROWN_HEX = 'H12'
         ST_CLOUD_BONUS = 20
         ST_CLOUD_BONUS_STR = ' (St. Cloud Hotel)'
         ST_CLOUD_ICON_NAME = 'SCH'
@@ -489,11 +489,13 @@ module Engine
               # reorder as normal first so that if there is a tie for most cash,
               # the player who would be first with :after_last_to_act turn order
               # gets the tiebreaker
-              reorder_players
+              reorder_players(silent: true)
 
               # most cash goes first, but keep same relative order; don't
               # reorder by descending cash
               @players.rotate!(@players.index(@players.max_by(&:cash)))
+
+              @log << "#{@players.first.name} has priority deal"
 
               new_stock_round
             end
@@ -1075,8 +1077,8 @@ module Engine
 
         def move_jeweler_cash!
           return unless @local_jeweler_cash.positive?
+          return unless (player = local_jeweler&.player)
 
-          player = local_jeweler&.player
           @log << "#{player.name} receives #{format_currency(@local_jeweler_cash)} from #{local_jeweler.name}"
           player.cash += @local_jeweler_cash
           @local_jeweler_cash = 0
@@ -1246,6 +1248,14 @@ module Engine
                          .select { |bundle| bundle.can_dump?(player) && @share_pool&.fit_in_bank?(bundle) }
                          .max_by(&:price)
           max_bundle&.price || 0
+        end
+
+        def rust(train)
+          if (amount = train.salvage || 0).positive?
+            @bank.spend(amount, train.owner)
+            @log << "#{train.owner.name} salvages a #{train.name} train for #{format_currency(amount)}"
+          end
+          super
         end
       end
     end
