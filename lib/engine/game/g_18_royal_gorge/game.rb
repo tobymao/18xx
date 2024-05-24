@@ -105,7 +105,7 @@ module Engine
         SULPHUR_SPRINGS_BROWN_REVENUE = 50
 
         ST_CLOUD_START_HEX = 'G17'
-        ST_CLOUD_BROWN_HEX = 'H14'
+        ST_CLOUD_BROWN_HEX = 'H12'
         ST_CLOUD_BONUS = 20
         ST_CLOUD_BONUS_STR = ' (St. Cloud Hotel)'
         ST_CLOUD_ICON_NAME = 'SCH'
