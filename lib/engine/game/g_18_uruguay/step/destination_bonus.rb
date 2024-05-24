@@ -27,6 +27,7 @@ module Engine
           end
 
           def destination_node_check?(corporation)
+            return if corporation.closed?
             return if corporation.destination_coordinates.nil?
 
             ability = @game.abilities(corporation, :destination_bonus)
@@ -34,6 +35,7 @@ module Engine
 
             destination_hex = @game.hex_by_id(corporation.destination_coordinates)
             home_node = corporation.tokens.first.city
+
             destination_hex.tile.nodes.first&.walk(corporation: corporation) do |path, _, _|
               return true if path.nodes.include?(home_node)
             end
