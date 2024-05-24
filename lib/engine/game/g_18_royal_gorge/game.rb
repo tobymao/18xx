@@ -1077,8 +1077,8 @@ module Engine
 
         def move_jeweler_cash!
           return unless @local_jeweler_cash.positive?
+          return unless (player = local_jeweler&.player)
 
-          player = local_jeweler&.player
           @log << "#{player.name} receives #{format_currency(@local_jeweler_cash)} from #{local_jeweler.name}"
           player.cash += @local_jeweler_cash
           @local_jeweler_cash = 0
