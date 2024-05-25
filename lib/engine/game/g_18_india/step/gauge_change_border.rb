@@ -31,7 +31,7 @@ module Engine
               if border.type == BORDER_TYPE_TO_CHANGE
                 # Remove the existing border on tile and neighbor
                 remove_border(border, tile, neighbor)
-                # Add a gague change marker to tile and neighbor unless disabled by phase status
+                # Add a gauge change marker to tile and neighbor unless disabled by phase status
                 unless @game.phase.status.include?(STATUS_TO_DISABLE_CHANGE)
                   LOGGER.debug ' >> Added Gauge Change Marker'
                   tile.borders << add_gauge_change_border(tile, edge)
