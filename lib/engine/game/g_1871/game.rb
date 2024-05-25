@@ -539,6 +539,22 @@ module Engine
           player.value
         end
 
+        # This code limits the liquidity calculation to only include a maximum of
+        # 3 shares per corporation, since that is the most a player can sell in
+        # a single turn. It also doesn't count the value of shares for corporations
+        # that the player has already sold this turn.
+        def value_for_dumpable(player, corporation)
+          max_bundle = bundles_for_corporation(player, corporation)
+            .select do |bundle|
+            @round.active_step&.can_sell?(player, bundle) &&
+                        bundle.num_shares <= 3 &&
+                        bundle.can_dump?(player, bundle) &&
+                        @share_pool&.fit_in_bank?(bundle)
+          end
+            .max_by(&:price)
+          max_bundle&.price || 0
+        end
+
         # Need to redefine this in order to add in union bank to the mix after
         # each round. The base function removes the bank since it's not active
         # during the stock round.
