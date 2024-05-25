@@ -146,16 +146,18 @@ module View
           @tile.borders.each do |border|
             next unless border.type
 
-            unless border.type == :gauge_change
-              children << h(:line, attrs: {
-                              **EDGES[border.edge],
-                              stroke: color(border),
-                              'stroke-width': border_width(border),
-                              'stroke-dasharray': border_dash(border),
-                            })
-            end
+            children <<
+              if border.type == :gauge_change
+                render_circle(border)
+              else
+                h(:line, attrs: {
+                    **EDGES[border.edge],
+                    stroke: color(border),
+                    'stroke-width': border_width(border),
+                    'stroke-dasharray': border_dash(border),
+                  })
+              end
             children << render_cost(border) if border.cost
-            children << render_circle(border) if border.type == :gauge_change
           end
 
           h(:g, children)
