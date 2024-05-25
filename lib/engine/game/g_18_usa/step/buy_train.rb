@@ -7,6 +7,10 @@ module Engine
     module G18USA
       module Step
         class BuyTrain < G1817::Step::BuyTrain
+          def pass_if_cannot_buy_train?(_entity)
+            super && !@game.pending_rusting_event
+          end
+
           def should_buy_train?(entity)
             :liquidation if entity.trains.reject { |t| @game.pullman_train?(t) }.empty?
           end
