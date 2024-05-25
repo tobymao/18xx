@@ -938,7 +938,7 @@ module Engine
           route_stops
         end
 
-        def edge_crossings(route)
+        def border_crossings(route)
           sum = route.paths.sum do |path|
             path.edges.sum do |edge|
               edge_is_a_border?(edge) ? 1 : 0
