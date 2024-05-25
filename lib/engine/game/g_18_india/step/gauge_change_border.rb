@@ -55,7 +55,7 @@ module Engine
           end
 
           def add_gauge_change_border(tile, edge)
-            new_border = Engine::Part::Border.new(edge, :gauge_change, nil, GAGUE_CHANGE_COLOR)
+            new_border = Engine::Part::Border.new(edge, :gauge_change, nil, GAUGE_CHANGE_COLOR)
             new_border.tile = tile
             new_border
           end
