@@ -106,8 +106,8 @@ module View
         def render_circle(border)
           edges = EDGES[border.edge]
 
-          x = [edges[:x1], edges[:x2]].sum / 2.0
-          y = [edges[:y1], edges[:y2]].sum / 2.0
+          x = (edges[:x1] + edges[:x2]) / 2.0
+          y = (edges[:y1] + edges[:y2]) / 2.0
 
           h(:g, { attrs: { transform: "translate(#{x} #{y}), #{rotation_for_layout}" } }, [
             h(:circle, attrs: { fill: color(border), r: '20', stroke: 'white', 'stroke-width': 3 },
