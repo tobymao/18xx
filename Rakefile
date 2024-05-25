@@ -102,7 +102,7 @@ desc 'Precompile assets for production'
 task :precompile do
   require_relative 'lib/assets'
   assets = Assets.new(cache: false, compress: true, gzip: true)
-  assets.combine
+  assets.combine(:all)
 
   # Copy to the pin directory
   git_rev = `git rev-parse --short HEAD`.strip

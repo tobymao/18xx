@@ -25,81 +25,96 @@ class Assets
     @compress = compress
     @gzip = gzip
     @precompiled = precompiled
+
+    @builds = {}
+    @game_builds = {}
   end
 
-  def context
-    combine
+  def context(titles)
+    combine(titles)
     @context ||= JsContext.new(@server_path)
   end
 
-  def html(script, **needs)
-    context.eval(Snabberb.html_script(script, **needs))
+  def html(script, titles: :all, **needs)
+    context(titles).eval(Snabberb.html_script(script, **needs))
   end
 
-  def game_builds
-    @game_builds ||= Dir['lib/engine/game/*/game.rb'].to_h do |dir|
-      game = dir.split('/')[-2]
+  def game_builds(titles = [])
+    if @precompiled || titles == :all
+      titles = Dir['lib/engine/game/*/game.rb'].map do |dir|
+        dir.split('/')[-2]
+      end
+    end
+
+    titles.each do |title|
+      # convert `title` to "g_1889" format
+      game = to_fs_name(title)
+
       path = "#{@out_path}/#{game}.js"
       build = {
         'path' => path,
         'files' => @precompiled ? [path] : [compile(nil, nil, nil, game: game)],
       }
-      [game, build]
+
+      @game_builds[game] = build
     end
+
+    @game_builds
   end
 
   def game_paths
     Dir["#{@out_path}/g_*.js"]
   end
 
-  def builds
-    @builds ||=
-      if @precompiled
-        {
-          'deps' => {
-            'path' => @deps_path,
-            'files' => [@deps_path],
-          },
-          'main' => {
-            'path' => @main_path,
-            'files' => [@main_path],
-          },
-          'server' => {
-            'path' => @server_path,
-            'files' => [@server_path],
-          },
-          **game_builds,
-        }
-      else
-        opal = compile_lib('opal')
-        deps = compile_lib('deps', 'assets')
-        engine = compile('engine', 'lib', 'engine')
-        app = compile('app', 'assets/app', '')
-        game_files = game_builds.values.flat_map { |g| g['files'] }
-        {
-          'deps' => {
-            'path' => @deps_path,
-            'files' => [opal, deps],
-          },
-          'main' => {
-            'path' => @main_path,
-            'files' => [engine, app],
-          },
-          'server' => {
-            'path' => @server_path,
-            'files' => [opal, deps, engine, app, *game_files],
-          },
-          **game_builds,
-        }
-      end
+  def builds(titles = [])
+    if @precompiled
+      @builds ||= {
+        'deps' => {
+          'path' => @deps_path,
+          'files' => [@deps_path],
+        },
+        'main' => {
+          'path' => @main_path,
+          'files' => [@main_path],
+        },
+        'server' => {
+          'path' => @server_path,
+          'files' => [@server_path],
+        },
+        **game_builds(:all),
+      }
+    else
+      # cache builds which don't have game-specific files
+      @_opal ||= compile_lib('opal')
+      @_deps ||= compile_lib('deps', 'assets')
+      @_engine ||= compile('engine', 'lib', 'engine')
+      @_app ||= compile('app', 'assets/app', '')
+      @builds['deps'] ||= {
+        'path' => @deps_path,
+        'files' => [@_opal, @_deps],
+      }
+      @builds['main'] ||= {
+        'path' => @main_path,
+        'files' => [@_engine, @_app],
+      }
+
+      g_builds = game_builds(titles)
+      game_files = g_builds.values.flat_map { |g| g['files'] }
+      @builds['server'] = {
+        'path' => @server_path,
+        'files' => [@_opal, @_deps, @_engine, @_app, *game_files],
+      }
+      @builds.merge!(g_builds)
+
+      @builds
+    end
   end
 
-  def js_tags(titles)
-    combine
-    titles.delete('all')
+  def js_tags(titles = [])
+    combine(titles)
 
     scripts = %w[deps main].map do |key|
-      file = builds[key]['path'].gsub(@out_path, @root_path)
+      file = builds(titles)[key]['path'].gsub(@out_path, @root_path)
       %(<script type="text/javascript" src="#{file}"></script>)
     end
     scripts.concat(titles.flat_map { |title| game_js_tags(title) }.uniq).compact.join
@@ -108,41 +123,53 @@ class Assets
   def game_js_tags(title)
     return [] unless title
 
-    game = Engine.meta_by_title(title)
-    tags = game_js_tags(game::DEPENDS_ON)
+    titles = title_with_ancestors(title)
+    builds_for_games = builds(titles)
 
-    key = game.fs_name
-    return [] unless builds.key?(key)
+    titles.each_with_object([]) do |game_title, _tags|
+      key = to_fs_name(game_title)
+      next unless builds_for_games.key?(key)
 
-    file = builds[key]['path'].gsub(@out_path, @root_path)
-    tags << %(<script type="text/javascript" src="#{file}"></script>)
-    tags.compact
+      file = builds_for_games[key]['path'].gsub(@out_path, @root_path)
+      %(<script type="text/javascript" src="#{file}"></script>)
+    end
   end
 
-  def combine
-    @combine ||=
-      begin
-        builds.each do |key, build|
-          next if @precompiled
+  def combine(titles = [])
+    @_combine ||= Set.new
 
-          source = build['files'].map { |file| File.read(file).to_s }.join("\n")
-          source = compress(key, source) if @compress
-          File.write(build['path'], source)
-
-          next if !@gzip || build['path'] == @server_path
-
-          Zlib::GzipWriter.open("#{build['path']}.gz") do |gz|
-            # two gzipped files with identical contents look different to
-            # tools like rsync if their mtimes are different; we don't want
-            # rsync to deploy "new" versions of deps.js.gz, etc if they
-            # haven't changed
-            gz.mtime = 0
-            gz.write(source)
-          end
-        end
-
-        [@deps_path, @main_path, *game_paths]
+    combine_titles =
+      if titles == :all
+        :all
+      else
+        titles.flat_map do |title|
+          title_with_ancestors(title)
+        end.uniq
       end
+
+    builds(combine_titles).each do |key, build|
+      next if @precompiled
+      next if @_combine.include?(key)
+
+      @_combine.add(key)
+
+      source = build['files'].map { |file| File.read(file).to_s }.join("\n")
+      source = compress(key, source) if @compress
+      File.write(build['path'], source)
+
+      next if !@gzip || build['path'] == @server_path
+
+      Zlib::GzipWriter.open("#{build['path']}.gz") do |gz|
+        # two gzipped files with identical contents look different to
+        # tools like rsync if their mtimes are different; we don't want
+        # rsync to deploy "new" versions of deps.js.gz, etc if they
+        # haven't changed
+        gz.mtime = 0
+        gz.write(source)
+      end
+    end
+
+    [@deps_path, @main_path, *game_paths]
   end
 
   def compile_lib(name, *append_paths)
@@ -262,5 +289,18 @@ class Assets
       .flat_map { |_, build| build['files'] }
       .uniq
       .each { |file| File.delete(file) if File.exist?(file) }
+  end
+
+  def to_fs_name(title)
+    Engine.meta_by_title(title).fs_name
+  end
+
+  # returns an array of game titles, starting with the earliest ancestor and
+  # ending with the given game, e.g.,
+  # `title_with_ancestors('1822CA WRS') -> ['1822', '1822CA', '1822CA WRS']`
+  def title_with_ancestors(title)
+    return [] unless (game = Engine.meta_by_title(title))
+
+    [*title_with_ancestors(game::DEPENDS_ON), title]
   end
 end

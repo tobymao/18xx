@@ -28,6 +28,10 @@ module Engine
         GAME_IS_VARIANT_OF = G18LosAngeles::Meta
         GAME_ALIASES = ['18LA_1'].freeze
         GAME_VARIANTS = [].freeze
+
+        def self.fs_name
+          @fs_name ||= 'g_18_los_angeles1'
+        end
       end
     end
   end
