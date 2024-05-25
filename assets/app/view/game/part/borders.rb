@@ -84,8 +84,8 @@ module View
         def render_cost(border)
           edges = EDGES[border.edge]
 
-          x = [edges[:x1], edges[:x2]].sum / 2.0
-          y = [edges[:y1], edges[:y2]].sum / 2.0
+          x = (edges[:x1] + edges[:x2]) / 2.0
+          y = (edges[:y1] + edges[:y2]) / 2.0
 
           stroke_color = contrast_on(color(border))
           text_props = {
