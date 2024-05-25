@@ -9,7 +9,7 @@ module Engine
         module GaugeChangeBorder
           BORDER_TYPE_TO_CHANGE = :province
           STATUS_TO_DISABLE_CHANGE = 'no_gauge_change'
-          GAGUE_CHANGE_COLOR = :red
+          GAUGE_CHANGE_COLOR = :red
 
           # modified to prevent removal of province borders that had a cost (the cost is from a water border)
           def remove_border_calculate_cost!(tile, entity_or_entities, spender)
