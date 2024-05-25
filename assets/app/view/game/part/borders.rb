@@ -116,7 +116,7 @@ module View
         end
 
         def on_click(event, border)
-          step = @game.round.active_step(nil)
+          step = @game.round.active_step
           current_entity = step&.current_entity
           remove_border_step = @game.round.step_for(current_entity, 'remove_border')
           event.JS.stopPropagation
