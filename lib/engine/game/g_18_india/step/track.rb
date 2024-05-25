@@ -78,7 +78,7 @@ module Engine
             hex_neighbors(entity, hex) && hex_neighbors(entity, neighbor)
           end
 
-          # NOTE: Triggered by on_click event in View::Game::Borders
+          # NOTE: Triggered by on_click event in View::Game::Part::Borders
           def process_remove_border(action)
             entity = action.entity
             hex = action.hex
