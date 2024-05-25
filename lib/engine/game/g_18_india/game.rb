@@ -919,7 +919,7 @@ module Engine
 
         # Add gauge changes to visited stops, they count as 0 revenue City stops,
         def visited_stops(route)
-          gauge_changes = edge_crossings(route)
+          gauge_changes = border_crossings(route)
           route_stops = route.connection_data.flat_map { |c| [c[:left], c[:right]] }.uniq.compact # super
           return route_stops unless gauge_changes.positive?
 
