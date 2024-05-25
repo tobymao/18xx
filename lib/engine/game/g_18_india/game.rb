@@ -979,7 +979,7 @@ module Engine
 
         def revenue_str(route)
           str = route.hexes.map(&:name).join('-')
-          str += ' Gauge:' + edge_crossings(route).to_s if edge_crossings(route).positive?
+          str += ' Gauge:' + border_crossings(route).to_s if border_crossings(route).positive?
           str += ' ?+' + variable_city_revenue(route, route.stops).to_s if variable_city_revenue(route, route.stops).positive?
           str += ' R+' + connection_bonus(route, route.stops).to_s if connection_bonus(route, route.stops).positive?
           str += ' C+' + commodity_bonus(route, route.stops).to_s if commodity_bonus(route, route.stops).positive?
