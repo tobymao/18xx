@@ -69,7 +69,7 @@ module Engine
             !@game.gauge_change_markers.empty?
           end
 
-          # A gague change marker is a pair of hexes, which is reachable if both hexes are connected to entity
+          # A gauge change marker is a pair of hexes, which is reachable if both hexes are connected to entity
           def any_reachable_gauge_changes?(entity)
             @game.gauge_change_markers.map { |marker| reachable_gauge_change?(entity, marker[0], marker[1]) }.any?
           end
