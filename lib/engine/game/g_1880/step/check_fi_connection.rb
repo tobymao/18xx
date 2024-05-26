@@ -10,7 +10,6 @@ module Engine
           ACTIONS = %w[destination_connection pass].freeze
 
           def actions(entity)
-            puts current_entity&.name
             return [] unless entity == current_entity
             return ['choose'] if @merging
             return [] unless entity.minor?
