@@ -23,7 +23,7 @@ module Engine
             @round.payable_loans -= 1
             return if @round.payable_loans.positive?
 
-            @log << "-- #{action.entity.id} paid all off all loans taken before this round --"
+            @log << "#{action.entity.id} has paid off all loans taken before this round"
           end
         end
       end
