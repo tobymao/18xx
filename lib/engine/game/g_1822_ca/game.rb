@@ -278,6 +278,8 @@ module Engine
           @pending_destination_tokens = []
 
           @destinated = Hash.new(false)
+
+          remove_new_york_border
         end
 
         # setup_companies from 1822 has too much 1822-specific stuff that doesn't apply to this game
@@ -887,6 +889,16 @@ module Engine
           return false if legal_rotations && !legal_rotations.include?(tile.rotation)
 
           super
+        end
+
+        # there is a river crossing between New York and Prescott; in 1822 both
+        # sides of the river crossing must be paid when track is added, but New
+        # York is gray and already has track pointed to the border, so its side
+        # should be removed at the start of the game
+        def remove_new_york_border
+          return unless (hex = hex_by_id('AG17'))
+
+          hex.tile.borders.clear
         end
       end
     end
