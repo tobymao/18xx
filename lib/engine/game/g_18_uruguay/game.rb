@@ -404,7 +404,7 @@ module Engine
         def revenue_for(route, stops)
           revenue = super
           revenue *= 2 if route.train.name == '4D'
-          revenue *= 2 if final_operating_round? && final_or_in_set?(@round)
+          revenue *= 2 if last_or?
           return revenue unless route&.corporation == @rptla
 
           train = route.train
@@ -413,6 +413,10 @@ module Engine
 
         def or_round_finished
           corps_pay_interest unless nationalized?
+        end
+
+        def last_or?
+          final_operating_round? && final_or_in_set?(@round)
         end
 
         def final_operating_round?
