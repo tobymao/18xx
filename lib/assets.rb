@@ -143,30 +143,38 @@ class Assets
     tags.compact
   end
 
-  def combine
-    @combine ||=
-      begin
-        builds.each do |key, build|
-          next if @precompiled
+  def combine(titles = [])
+    @_combined ||= Set.new
 
-          source = build['files'].map { |file| File.read(file).to_s }.join("\n")
-          source = compress(key, source) if @compress
-          File.write(build['path'], source)
-
-          next if !@gzip || build['path'] == @server_path
-
-          Zlib::GzipWriter.open("#{build['path']}.gz") do |gz|
-            # two gzipped files with identical contents look different to
-            # tools like rsync if their mtimes are different; we don't want
-            # rsync to deploy "new" versions of deps.js.gz, etc if they
-            # haven't changed
-            gz.mtime = 0
-            gz.write(source)
-          end
-        end
-
-        [@deps_path, @main_path, *game_paths]
+    combine_titles =
+      if titles == :all
+        :all
+      else
+        titles_with_ancestors(titles)
       end
+
+    builds(combine_titles).each do |key, build|
+      next if @precompiled
+
+      @_combined.include?(key) ? next : @_combined.add(key)
+
+      source = build['files'].map { |file| File.read(file).to_s }.join("\n")
+      source = compress(key, source) if @compress
+      File.write(build['path'], source)
+
+      next if !@gzip || build['path'] == @server_path
+
+      Zlib::GzipWriter.open("#{build['path']}.gz") do |gz|
+        # two gzipped files with identical contents look different to
+        # tools like rsync if their mtimes are different; we don't want
+        # rsync to deploy "new" versions of deps.js.gz, etc if they
+        # haven't changed
+        gz.mtime = 0
+        gz.write(source)
+      end
+    end
+
+    [@deps_path, @main_path, *game_paths]
   end
 
   def compile_lib(name, *append_paths)
