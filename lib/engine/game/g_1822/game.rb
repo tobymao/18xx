@@ -1140,7 +1140,7 @@ module Engine
           @minor_14_city_exit = nil
 
           # Initialize a dummy player for Tax haven to hold the share and the cash it generates
-          @tax_haven = Engine::Player.new(-1, 'Tax Haven')
+          @tax_haven = Engine::Player.new(-1, self.class::COMPANY_OSTH)
 
           # Initialize the stock round choice for P9-M&GNR
           @double_cash_choice = nil
@@ -1968,6 +1968,16 @@ module Engine
 
         def pending_home_tokeners
           self.class::PENDING_HOME_TOKENERS
+        end
+
+        def share_owning_players
+          @tax_haven_company ||= company_by_id(self.class::COMPANY_OSTH)
+
+          if @tax_haven_company&.owned_by_player?
+            [*@players, @tax_haven]
+          else
+            @players
+          end
         end
 
         private

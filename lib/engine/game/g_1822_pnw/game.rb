@@ -97,9 +97,10 @@ module Engine
 
         DOUBLE_HEX = %w[H19 M4].freeze
 
-        # Don't run 1822 specific code for the LCDR
+        # Don't run 1822 specific code for certain private companies
         COMPANY_CHPR = nil
         COMPANY_LCDR = nil
+        COMPANY_OSTH = nil
 
         PRIVATE_COMPANIES_ACQUISITION = {
           'P1' => { acquire: %i[major], phase: 5 },
