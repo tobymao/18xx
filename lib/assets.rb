@@ -25,6 +25,8 @@ class Assets
     @compress = compress
     @gzip = gzip
     @precompiled = precompiled
+
+    @game_builds = {}
   end
 
   def context
@@ -36,16 +38,32 @@ class Assets
     context.eval(Snabberb.html_script(script, **needs))
   end
 
-  def game_builds
-    @game_builds ||= Dir['lib/engine/game/*/game.rb'].to_h do |dir|
-      game = dir.split('/')[-2]
+  def game_builds(titles = [])
+    build_titles =
+      if @precompiled || titles == :all
+        Dir['lib/engine/game/*/game.rb'].map do |dir|
+          dir.split('/')[-2]
+        end
+      else
+        titles_with_ancestors(titles)
+      end
+
+    build_titles.each do |title|
+      # convert `title` to "g_1889" format
+      game = to_fs_name(title)
+
+      next if @game_builds.key?(game)
+
       path = "#{@out_path}/#{game}.js"
       build = {
         'path' => path,
         'files' => @precompiled ? [path] : [compile(nil, nil, nil, game: game)],
       }
-      [game, build]
+
+      @game_builds[game] = build
     end
+
+    @game_builds
   end
 
   def game_paths
