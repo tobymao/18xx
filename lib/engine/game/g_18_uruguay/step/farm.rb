@@ -55,15 +55,13 @@ module Engine
             return unless ability.hexes&.include?(hex.coordinates)
 
             # Do we have goods?
-            return false if !@farm_id.nil? || hex.assignments.none? { |a, _| a.start_with?('GOODS') }
-
-            @game.hex_by_id(hex.id).neighbors.keys
+            hex.assignments.any? { |a, _| a.start_with?('GOODS') }
           end
 
           def available_hex(entity, hex)
             return unless entity.minor?
 
-            return neighbor_to_chosen_farm?(@farm_id, hex) if !@farm_id.nil?
+            return neighbor_to_chosen_farm?(@farm_id, hex) unless @farm_id.nil?
 
             available_farm_hex(entity, hex)
           end
