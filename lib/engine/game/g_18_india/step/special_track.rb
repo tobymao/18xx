@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative '../../../step/special_track'
+require_relative 'gauge_change_border'
 require_relative 'railhead_tracker'
 
 module Engine
@@ -8,6 +9,7 @@ module Engine
     module G18India
       module Step
         class SpecialTrack < Engine::Step::SpecialTrack
+          include GaugeChangeBorder
           include RailheadTracker
 
           # reset next empty hexes after using track laying private ability

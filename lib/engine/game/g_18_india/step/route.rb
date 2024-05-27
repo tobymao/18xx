@@ -30,6 +30,16 @@ module Engine
               }
             )
           end
+
+          def help
+            return [] if @game.gauge_change_markers.empty?
+
+            [
+              'Note: You do not need to click on Gauge Change Markers.',
+              'They are included if the route passes though it',
+              'They count as a zero revenue city location.',
+            ]
+          end
         end
       end
     end

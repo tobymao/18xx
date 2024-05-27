@@ -15,6 +15,7 @@ module Engine
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18Hiawatha'
         GAME_LOCATION = 'Midwest USA'
         GAME_TITLE = '18 Hiawatha'
+        GAME_RULES_URL = 'https://boardgamegeek.com/filepage/279555/18-hiawatha-official-game-rules'
 
         PLAYER_RANGE = [3, 6].freeze
 

@@ -85,7 +85,7 @@ module Engine
           },
           {
             name: '7',
-            distance: 6,
+            distance: 7,
             price: 1,
             num: 1,
             variants: [

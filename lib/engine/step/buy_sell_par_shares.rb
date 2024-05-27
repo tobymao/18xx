@@ -349,8 +349,12 @@ module Engine
         entity.companies << company
         entity.spend(price, owner.nil? ? @game.bank : owner)
         @round.current_actions << action
-        @log << "#{owner ? '-- ' : ''}#{entity.name} buys #{company.name} from "\
-                "#{owner ? owner.name : 'the market'} for #{@game.format_currency(price)}"
+        @log << if owner == @game.bank
+                  "#{entity.name} buys #{company.name} from #{owner.name} for #{@game.format_currency(price)}"
+                else
+                  "#{owner ? '-- ' : ''}#{entity.name} buys #{company.name} from "\
+                    "#{owner ? owner.name : 'the market'} for #{@game.format_currency(price)}"
+                end
         @game.after_buy_company(entity, company, price) if entity.player?
       end
 
