@@ -3296,6 +3296,10 @@ module Engine
         []
       end
 
+      def show_hidden_hand?
+        false
+      end
+
       def show_ipo_rows?
         false
       end

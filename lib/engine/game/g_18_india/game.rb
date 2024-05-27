@@ -661,6 +661,10 @@ module Engine
           top
         end
 
+        def show_hidden_hand?
+          true
+        end
+
         def hand_companies_for_stock_round
           return [] unless @round.stock?
           return [] if @round.current_entity.nil? || !@round.current_entity.player?
