@@ -31,8 +31,8 @@ module Engine
             debt_company.close!
 
             return unless debt_company == @game.sf_debt
+            return unless (doc = @game.doc_holliday)
 
-            doc = @game.doc_holliday
             @log << "#{doc.name} closes"
             doc.close!
           end

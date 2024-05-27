@@ -145,7 +145,10 @@ module Engine
             value: 40,
             revenue: 10,
             abilities: [{ type: 'close', on_phase: '5' },
-                        { type: 'manual_close_company', when: %w[owning_player_sr_turn owning_player_or_turn] }],
+                        {
+                          type: 'manual_close_company',
+                          when: %w[owning_player_sr_turn owning_player_or_turn owning_corp_or_turn],
+                        }],
             desc: 'Closes at phase 5, or the Golden Spike.',
           },
           {
@@ -165,7 +168,10 @@ module Engine
             value: 45,
             revenue: 10,
             abilities: [{ type: 'close', on_phase: '5' },
-                        { type: 'manual_close_company', when: %w[owning_player_sr_turn owning_player_or_turn] }],
+                        {
+                          type: 'manual_close_company',
+                          when: %w[owning_player_sr_turn owning_player_or_turn owning_corp_or_turn],
+                        }],
             desc: 'Provides its owning Railroad Company a +$10 revenue bonus for routes '\
                   'starting or ending at either of the accessible Yellowstone entrances. '\
                   'Closes at phase 5.',
@@ -176,7 +182,10 @@ module Engine
             value: 45,
             revenue: 10,
             abilities: [{ type: 'close', on_phase: '5' },
-                        { type: 'manual_close_company', when: %w[owning_player_sr_turn owning_player_or_turn] }],
+                        {
+                          type: 'manual_close_company',
+                          when: %w[owning_player_sr_turn owning_player_or_turn owning_corp_or_turn],
+                        }],
             desc: 'Owning Railroad Company receives a +$10 revenue bonus for each fort served. Closes at phase 5.',
           },
           {
@@ -185,7 +194,10 @@ module Engine
             value: 45,
             revenue: 10,
             abilities: [{ type: 'close', on_phase: '5' },
-                        { type: 'manual_close_company', when: %w[owning_player_sr_turn owning_player_or_turn] }],
+                        {
+                          type: 'manual_close_company',
+                          when: %w[owning_player_sr_turn owning_player_or_turn owning_corp_or_turn],
+                        }],
             desc: 'Every train which serves Casper (H18) triggers a $10 payment '\
                   'to the owner of this private company. Closes at phase 5.',
           },
@@ -204,8 +216,11 @@ module Engine
             sym: 'P3a',
             value: 70,
             revenue: 10,
-            abilities: [{ type: 'close', on_phase: '5' }, { type: 'no_buy' },
-                        { type: 'manual_close_company', when: %w[owning_player_sr_turn owning_player_or_turn] }],
+            abilities:
+              [
+                { type: 'close', on_phase: '5' }, { type: 'no_buy' },
+                { type: 'manual_close_company', when: %w[owning_player_sr_turn owning_player_or_turn owning_corp_or_turn] }
+              ],
             desc: 'Comes with black coal DT, usable in phases 2-4. Can be placed '\
                   'or moved for terrain cost. May exceed hex\'s coal DT limit. '\
                   'No RR buy-in. Closes at phase 5, removing DT from the game.',
@@ -215,8 +230,11 @@ module Engine
             sym: 'P3b',
             value: 70,
             revenue: 10,
-            abilities: [{ type: 'close', on_phase: '8' }, { type: 'no_buy' },
-                        { type: 'manual_close_company', when: %w[owning_player_sr_turn owning_player_or_turn] }],
+            abilities:
+              [
+                { type: 'close', on_phase: '8' }, { type: 'no_buy' },
+                { type: 'manual_close_company', when: %w[owning_player_sr_turn owning_player_or_turn owning_corp_or_turn] }
+              ],
             desc: 'Comes with Oil DT available in phase 5. May exceed hex\'s oil '\
                   'DT limit. No RR buy-in. Closes at phase 8, removing DT from the game.',
           },
@@ -225,8 +243,11 @@ module Engine
             sym: 'P3c',
             value: 70,
             revenue: 10,
-            abilities: [{ type: 'close', on_phase: '6' }, { type: 'no_buy' },
-                        { type: 'manual_close_company', when: %w[owning_player_sr_turn owning_player_or_turn] }],
+            abilities:
+              [
+                { type: 'close', on_phase: '6' }, { type: 'no_buy' },
+                { type: 'manual_close_company', when: %w[owning_player_sr_turn owning_player_or_turn owning_corp_or_turn] }
+              ],
             desc: 'Gives a $20 discount to terrain costs for each Development Token '\
                   'placement. No RR buy-in. Closes at phase 6.',
           },
@@ -259,7 +280,10 @@ module Engine
                           type: 'tile_lay',
                           when: 'owning_corp_or_turn',
                         },
-                        { type: 'manual_close_company', when: %w[owning_player_sr_turn owning_player_or_turn] }],
+                        {
+                          type: 'manual_close_company',
+                          when: %w[owning_player_sr_turn owning_player_or_turn owning_corp_or_turn],
+                        }],
             desc: 'Allows placement of up to three yellow tiles ignoring terrain costs '\
                   'as a free action during tile laying phase. Closes on tile placement or at phase 5.',
           },
@@ -273,7 +297,10 @@ module Engine
                           type: 'tile_discount',
                           discount: 15,
                         },
-                        { type: 'manual_close_company', when: %w[owning_player_sr_turn owning_player_or_turn] }],
+                        {
+                          type: 'manual_close_company',
+                          when: %w[owning_player_sr_turn owning_player_or_turn owning_corp_or_turn],
+                        }],
             desc: 'Gives owning Railroad Company a $15 discount to terrain costs for '\
                   'each tile lay. Closes at phase 6.',
           },
@@ -294,7 +321,10 @@ module Engine
                           hexes: [],
                           tiles: [],
                         },
-                        { type: 'manual_close_company', when: %w[owning_player_sr_turn owning_player_or_turn] }],
+                        {
+                          type: 'manual_close_company',
+                          when: %w[owning_player_sr_turn owning_player_or_turn owning_corp_or_turn],
+                        }],
             desc: 'Gives owning Railroad Company a $60 discount for one tile lay per OR. Closes at phase 6.',
           },
           {
@@ -327,7 +357,10 @@ module Engine
                           closed_when_used_up: true,
                           reachable: true,
                         },
-                        { type: 'manual_close_company', when: %w[owning_player_sr_turn owning_player_or_turn] }],
+                        {
+                          type: 'manual_close_company',
+                          when: %w[owning_player_sr_turn owning_player_or_turn owning_corp_or_turn],
+                        }],
             desc: 'Grants owning Railroad Company one extra tile lay/upgrade. '\
                   'May be used 3 times, then closes. Terrain or upgrade costs '\
                   'for this action are ignored. Closes at phase 6.',
@@ -339,7 +372,10 @@ module Engine
             revenue: 20,
             abilities: [{ type: 'close', on_phase: '6' },
                         { type: 'revenue_change', revenue: 0o0, when: 'sold' },
-                        { type: 'manual_close_company', when: %w[owning_player_sr_turn owning_player_or_turn] }],
+                        {
+                          type: 'manual_close_company',
+                          when: %w[owning_player_sr_turn owning_player_or_turn owning_corp_or_turn],
+                        }],
             desc: 'Owning Railroad Company is paid per yellow tile it places: $40/city, $30/Boomtown or '\
                   'Boom City, $10/town. $20 revenue is only paid while owned by a player. Closes at phase 6.',
           },
@@ -350,7 +386,10 @@ module Engine
             revenue: 20,
             abilities: [{ type: 'close', on_phase: '6' },
                         { type: 'base', description: 'P5c 50% terrain/upgrade discount', when: 'sold' },
-                        { type: 'manual_close_company', when: %w[owning_player_sr_turn owning_player_or_turn] }],
+                        {
+                          type: 'manual_close_company',
+                          when: %w[owning_player_sr_turn owning_player_or_turn owning_corp_or_turn],
+                        }],
             desc: 'While player-owned, DT terrain costs are halved; while Railroad Company-owned, tile placement '\
                   'terrain or upgrade costs are halved. Closes at phase 6.',
           },
@@ -375,7 +414,10 @@ module Engine
             revenue: 10,
             abilities: [{ type: 'close', on_phase: '8' },
                         { type: 'no_buy' },
-                        { type: 'manual_close_company', when: %w[owning_player_sr_turn owning_player_or_turn] }],
+                        {
+                          type: 'manual_close_company',
+                          when: %w[owning_player_sr_turn owning_player_or_turn owning_corp_or_turn],
+                        }],
             desc: 'The owning player receives one extra Coal DT of each color (the extra gray cube '\
                   'remains even when this closes). In first Development Round of each phase, owning '\
                   'player may place one extra Coal DT. No RR buy-in. Closes at phase 8.',
@@ -387,7 +429,10 @@ module Engine
             revenue: 10,
             abilities: [{ type: 'close', on_phase: '8' },
                         { type: 'no_buy' },
-                        { type: 'manual_close_company', when: %w[owning_player_sr_turn owning_player_or_turn] }],
+                        {
+                          type: 'manual_close_company',
+                          when: %w[owning_player_sr_turn owning_player_or_turn owning_corp_or_turn],
+                        }],
             desc: 'For each of the owning player\'s Oil DTs adjacent to/in a Boom City, add $5 revenue '\
                   'to that city. Only applies to the owning player\'s Railroad Companies. No RR buy-in. Closes at phase 8.',
           },
@@ -405,7 +450,10 @@ module Engine
                           count: 1,
                           owner_type: 'player',
                         },
-                        { type: 'manual_close_company', when: %w[owning_player_sr_turn owning_player_or_turn] }],
+                        {
+                          type: 'manual_close_company',
+                          when: %w[owning_player_sr_turn owning_player_or_turn owning_corp_or_turn],
+                        }],
             desc: 'Comes with a NO BUST token which may be placed on Boomtown/Boom City hex other '\
                   'than J12, J20, or the Pure Oil Camp hex. The Boom City does not BUST, but '\
                   'revenue changes as normal. No RR buy-in. Closes at phase 8.',
@@ -416,7 +464,10 @@ module Engine
             value: 100,
             revenue: 20,
             abilities: [{ type: 'close', on_phase: '8' },
-                        { type: 'manual_close_company', when: %w[owning_player_sr_turn owning_player_or_turn] }],
+                        {
+                          type: 'manual_close_company',
+                          when: %w[owning_player_sr_turn owning_player_or_turn owning_corp_or_turn],
+                        }],
             desc: '[+1+1] token extends a train by 1 city and 1 town. The token '\
                   'is assigned to a train when a Railroad Company buys this '\
                   'private company, and may be moved to another train during the '\
@@ -428,7 +479,7 @@ module Engine
             value: 120,
             revenue: 20,
             abilities: [
-              { type: 'manual_close_company', when: %w[owning_player_sr_turn owning_player_or_turn] },
+              { type: 'manual_close_company', when: %w[owning_player_sr_turn owning_player_or_turn owning_corp_or_turn] },
               {
                 type: 'assign_hexes',
                 owner_type: 'corporation',
@@ -464,7 +515,10 @@ module Engine
             abilities: [{ type: 'revenue_change', revenue: 40, on_phase: '3' },
                         { type: 'revenue_change', revenue: 0, on_phase: '5' },
                         { type: 'assign_corporation', owner_type: 'player' },
-                        { type: 'manual_close_company', when: %w[owning_player_sr_turn owning_player_or_turn] }],
+                        {
+                          type: 'manual_close_company',
+                          when: %w[owning_player_sr_turn owning_player_or_turn owning_corp_or_turn],
+                        }],
             desc: 'Pays $40 revenue ONLY in green phases. Closes, becomes '\
                   'LHP train (permanent 2+1) at phase 5. If owned by a player at '\
                   'the start of phase 5, the LHP train may be immediately assigned '\

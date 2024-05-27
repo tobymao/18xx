@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative '../../../step/track'
+require_relative 'gauge_change_border'
 require_relative 'railhead_tracker'
 
 module Engine
@@ -8,7 +9,98 @@ module Engine
     module G18India
       module Step
         class Track < Engine::Step::Track
+          include GaugeChangeBorder
           include RailheadTracker
+
+          # modified to add remove gauge change option in phase IV
+          def actions(entity)
+            return [] unless entity == current_entity
+            return [] unless @round.removed_gauge.empty?
+            return [] if entity.company? || !can_lay_tile?(entity)
+
+            actions = %w[lay_tile pass]
+            actions << 'remove_border' if may_remove_gauge_change?
+            actions
+          end
+
+          def setup
+            super
+            @round.removed_gauge = []
+          end
+
+          def round_state
+            super.merge({ removed_gauge: [] })
+          end
+
+          def description
+            tile_lay = get_tile_lay(current_entity)
+            return 'Lay Track' unless tile_lay
+
+            if tile_lay[:lay] && tile_lay[:upgrade]
+              @game.phase.name == 'IV' ? 'Lay/Upgrade Track OR Remove Gauge Change Marker' : 'Lay/Upgrade Track'
+            elsif tile_lay[:lay]
+              'Lay Track'
+            else
+              'Upgrade Track'
+            end
+          end
+
+          # ------ Show a note that gauge changes may be removed ------
+
+          def help
+            return [] unless may_remove_gauge_change?
+
+            [
+              'May remove a Gauge Change Marker as a track action.',
+              'Click on a connected marker to remove it.',
+            ]
+          end
+
+          # ------ Code for 'remove_gauge_change' Action [Remove Gauge Change Markers in Phase IV] ------
+
+          def may_remove_gauge_change?
+            num_track_actions = @round.num_laid_track + @round.num_upgraded_track
+            @game.phase.name == 'IV' && num_track_actions.zero? && any_gauge_changes?
+          end
+
+          def any_gauge_changes?
+            !@game.gauge_change_markers.empty?
+          end
+
+          # A gauge change marker is a pair of hexes, which is reachable if both hexes are connected to entity
+          def any_reachable_gauge_changes?(entity)
+            @game.gauge_change_markers.any? { |marker| reachable_gauge_change?(entity, marker[0], marker[1]) }
+          end
+
+          def reachable_gauge_change?(entity, hex, neighbor)
+            hex_neighbors(entity, hex) && hex_neighbors(entity, neighbor)
+          end
+
+          # NOTE: Triggered by on_click event in View::Game::Part::Borders
+          def process_remove_border(action)
+            entity = action.entity
+            hex = action.hex
+            tile = hex.tile
+            edge = action.edge
+            neighbor = hex.neighbors[edge]
+            if !@game.loading && !reachable_gauge_change?(entity, hex, neighbor)
+              raise GameError, "#{entity.name} can not reach that marker"
+            end
+
+            tile.borders.reject! { |b| b.edge == edge }
+            neighbor.tile.borders.reject! { |nb| nb.edge == hex.invert(edge) }
+            @log << "#{entity.name} removed the Gauge Change Marker between #{hex.id} and #{neighbor.id}"
+            @round.removed_gauge << [hex.id, neighbor.id].sort
+            @game.removed_gauge_change_marker(hex, neighbor)
+            LOGGER.debug "Remove GC >> #{@round.removed_gauge} / #{@game.gauge_change_markers}"
+          end
+
+          # ------  ------
+          def can_lay_tile?(entity)
+            return false unless @round.removed_gauge.empty?
+
+            super
+          end
 
           # Added multple yellow tile check and Yellow OO reservation check
           def process_lay_tile(action)
