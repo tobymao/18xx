@@ -60,7 +60,6 @@ module View
           left << h(CombinedTrains) if @current_actions.include?('combined_trains')
           left << h(Choose) if @current_actions.include?('choose')
           left << h(BuyToken, entity: entity) if @current_actions.include?('buy_token')
-          left << h(Note, game: @game) if @step.respond_to?(:show_note?) && @step.show_note?(entity)
 
           if @current_actions.include?('buy_train') || @current_actions.include?('sell_train')
             left << h(IssueShares) if @current_actions.include?('sell_shares') || @current_actions.include?('buy_shares')

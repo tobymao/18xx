@@ -19,7 +19,7 @@ module Engine
             return [] if entity.company? || !can_lay_tile?(entity)
 
             actions = %w[lay_tile pass]
-            actions << 'remove_border' if may_remove_gauge_change?(entity)
+            actions << 'remove_border' if may_remove_gauge_change?
             actions
           end
 
@@ -47,20 +47,18 @@ module Engine
 
           # ------ Show a note that gauge changes may be removed ------
 
-          def note_text_block
+          def help
+            return [] unless may_remove_gauge_change?
+
             [
               'May remove a Gauge Change Marker as a track action.',
               'Click on a connected marker to remove it.',
             ]
           end
 
-          def show_note?(entity)
-            may_remove_gauge_change?(entity)
-          end
-
           # ------ Code for 'remove_gauge_change' Action [Remove Gauge Change Markers in Phase IV] ------
 
-          def may_remove_gauge_change?(_entity)
+          def may_remove_gauge_change?
             num_track_actions = @round.num_laid_track + @round.num_upgraded_track
             @game.phase.name == 'IV' && num_track_actions.zero? && any_gauge_changes?
           end
