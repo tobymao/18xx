@@ -554,6 +554,15 @@ module Engine
           max_bundle&.price || 0
         end
 
+        # Forces Union Bank's liquidity to only every display its cash holding unless emergency funding,
+        # since the Union Bank cannot sell shares outside of emergency money raising.
+
+        def liquidity(player, emergency: false)
+          return player.cash if player == @union_bank && !emergency
+
+          super
+        end
+
         # Need to redefine this in order to add in union bank to the mix after
         # each round. The base function removes the bank since it's not active
         # during the stock round.
