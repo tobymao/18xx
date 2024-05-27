@@ -546,10 +546,9 @@ module Engine
         def value_for_dumpable(player, corporation)
           max_bundle = bundles_for_corporation(player, corporation)
             .select do |bundle|
-            @round.active_step&.can_sell?(player, bundle) &&
-                        bundle.num_shares <= 3 &&
-                        bundle.can_dump?(player, bundle) &&
-                        @share_pool&.fit_in_bank?(bundle)
+            @round.active_step&.can_sell?(player, bundle) if @round.is_a?(G1871::Round::Stock)
+            bundle.num_shares <= 3 &&
+            bundle.can_dump?(player, bundle)
           end
             .max_by(&:price)
           max_bundle&.price || 0
