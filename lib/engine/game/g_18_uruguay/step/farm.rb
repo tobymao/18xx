@@ -43,10 +43,9 @@ module Engine
             active?
           end
 
-          def neighbor_to_choosen_farm?(farm_id, hex_id)
-            @game.hex_by_id(farm_id).neighbors.find do |neighbor|
-              neighbor[1].id == hex_id \
-              && neighbor[1].tile.city_towns.size.positive?
+          def neighbor_to_chosen_farm?(farm_id, hex)
+            @game.hex_by_id(farm_id).neighbors.any? do |_, neighbor|
+              neighbor == hex && !neighbor.tile.city_towns.empty?
             end
           end
 
