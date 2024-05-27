@@ -3308,6 +3308,18 @@ module Engine
         false
       end
 
+      def hand_companies_for_stock_round
+        []
+      end
+
+      def show_hidden_hand?
+        false
+      end
+
+      def show_ipo_rows?
+        false
+      end
+
       def second_icon(corporation); end
     end
   end
