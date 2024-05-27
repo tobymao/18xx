@@ -330,6 +330,8 @@ module Engine
         end
 
         def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil, movement: nil)
+          return super if @round.current_entity == bundle.corporation
+
           @sell_queue << [bundle, bundle.corporation.owner, bundle.owner]
 
           @share_pool.sell_shares(bundle)
