@@ -96,7 +96,25 @@ class Api < Roda
   end
 
   route do |r|
-    r.public unless PRODUCTION
+    unless PRODUCTION
+      r.public
+
+      # build missing files for specific games on-demand; game files that are
+      # already in public/assets/ will be served by `r.public` above
+      r.on 'assets' do
+        r.get(/(g_.*\.js$)/) do |g_fs_name|
+          ASSETS.combine([g_fs_name])
+          path = "public/assets/#{g_fs_name}"
+          if File.file?(path) && File.readable?(path)
+            # now that the file exists, redirect to the same route and
+            # `r.public` will serve it
+            r.redirect "/assets/#{g_fs_name}"
+          else
+            halt(404, "Game file #{g_fs_name} not found")
+          end
+        end
+      end
+    end
 
     r.hash_branches
 
