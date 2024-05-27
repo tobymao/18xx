@@ -23,7 +23,7 @@ module Engine
                           special: false,
                           reachable: true,
                           hexes: [],
-                          tiles: %w[X1 X2 X3 1 7 8 9 55 56 57 58 69 630],
+                          tiles: %w[X1 X2 X3 1 7 8 9 56 57 630 631 632 633],
                         }],
             color: '#d9d9d9',
           },

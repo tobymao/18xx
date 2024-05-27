@@ -9,7 +9,7 @@ module Engine
         def goods_setup
           @pickup_hex_for_train = {}
           @goods_on_ship = {}
-          @number_of_goods_at_harbor = 0
+          @number_of_goods_at_harbor = 3
         end
 
         # Train delivery
@@ -69,7 +69,7 @@ module Engine
           return if ability.nil?
 
           @number_of_goods_at_harbor -= goods_count
-          ability.description = GOODS_DESCRIPTION_STR + goods_count.to_s
+          ability.description = GOODS_DESCRIPTION_STR + @number_of_goods_at_harbor.to_s
         end
 
         # Ship gooods

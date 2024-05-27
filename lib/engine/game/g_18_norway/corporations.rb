@@ -29,6 +29,15 @@ module Engine
             color: '#025aaa',
             coordinates: 'G17',
             type: :minor,
+            abilities: [
+              {
+                description: '10% discount on trains',
+                type: 'train_discount',
+                discount: 0.10,
+                trains: %w[2 3 4 5 6 D],
+                when: 'buying_train',
+              },
+            ],
           },
           {
             float_percent: 60,
