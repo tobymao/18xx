@@ -29,13 +29,13 @@ class Assets
     @game_builds = {}
   end
 
-  def context
-    combine
+  def context(titles)
+    combine(titles)
     @context ||= JsContext.new(@server_path)
   end
 
-  def html(script, **needs)
-    context.eval(Snabberb.html_script(script, **needs))
+  def html(script, titles: :all, **needs)
+    context(titles).eval(Snabberb.html_script(script, **needs))
   end
 
   def game_builds(titles = [])
@@ -118,12 +118,11 @@ class Assets
     end
   end
 
-  def js_tags(titles)
-    combine
-    titles.delete('all')
+  def js_tags(titles = [])
+    combine(titles)
 
     scripts = %w[deps main].map do |key|
-      file = builds[key]['path'].gsub(@out_path, @root_path)
+      file = builds(titles)[key]['path'].gsub(@out_path, @root_path)
       %(<script type="text/javascript" src="#{file}"></script>)
     end
     scripts.concat(titles.flat_map { |title| game_js_tags(title) }.uniq).compact.join
