@@ -132,15 +132,16 @@ class Assets
   def game_js_tags(title)
     return [] unless title
 
-    game = Engine.meta_by_title(title)
-    tags = game_js_tags(game::DEPENDS_ON)
+    titles = title_with_ancestors(title)
+    builds_for_games = builds(titles)
 
-    key = game.fs_name
-    return [] unless builds.key?(key)
+    titles.each_with_object([]) do |game_title, _tags|
+      key = to_fs_name(game_title)
+      next unless builds_for_games.key?(key)
 
-    file = builds[key]['path'].gsub(@out_path, @root_path)
-    tags << %(<script type="text/javascript" src="#{file}"></script>)
-    tags.compact
+      file = builds_for_games[key]['path'].gsub(@out_path, @root_path)
+      %(<script type="text/javascript" src="#{file}"></script>)
+    end
   end
 
   def combine(titles = [])
