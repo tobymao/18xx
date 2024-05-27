@@ -49,20 +49,23 @@ module Engine
             end
           end
 
+          def available_farm_hex(entity, hex)
+            ability = entity.abilities.find { |a| a.type == :assign_hexes }
+            return unless ability
+            return unless ability.hexes&.include?(hex.coordinates)
+
+            # Do we have goods?
+            return false if !@farm_id.nil? || hex.assignments.none? { |a, _| a.start_with?('GOODS') }
+
+            @game.hex_by_id(hex.id).neighbors.keys
+          end
+
           def available_hex(entity, hex)
             return unless entity.minor?
 
-            return true if !@farm_id.nil? && neighbor_to_choosen_farm?(@farm_id, hex.id)
+            return neighbor_to_chosen_farm?(@farm_id, hex) if !@farm_id.nil?
 
-            # Is it mine?
-            ability = entity.abilities.find { |a| a.type == :assign_hexes }
-            return unless ability
-            return unless ability.hexes&.include?(hex.id)
-
-            # Do we have goods?
-            return false if !@farm_id.nil? || !hex.assignments.keys.find { |a| a.include? 'GOODS' }
-
-            @game.hex_by_id(hex.id).neighbors.keys
+            available_farm_hex(entity, hex)
           end
 
           def retreive_goods!(farm_id)
