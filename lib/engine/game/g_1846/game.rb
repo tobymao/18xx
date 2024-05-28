@@ -146,6 +146,12 @@ module Engine
         CERT_LIMIT_COUNTS_BANKRUPTED = true
         BANKRUPTCY_ENDS_GAME_AFTER = :all_but_one
 
+        GAME_END_CHECK = {
+          bankrupt: :immediate,
+          bank: :full_or,
+          all_closed: :immediate,
+        }.freeze
+
         ORANGE_GROUP = [
           'Lake Shore Line',
           'Michigan Central',

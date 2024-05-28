@@ -106,7 +106,7 @@ module Engine
       #   after: When game should end if check triggered
       # Leave out a reason if game does not support that.
       # Allowed reasons:
-      #  bankrupt, stock_market, bank, final_train, final_phase, custom
+      #  bankrupt, stock_market, bank, final_train, final_phase, all_closed, custom
       # Allowed after:
       #  immediate - ends in current turn
       #  current_round - ends at the end of the current round
@@ -2704,6 +2704,7 @@ module Engine
 
       def game_end_check
         triggers = {
+          all_closed: all_closed?,
           bankrupt: bankruptcy_limit_reached?,
           bank: @bank.broken?,
           stock_market: @stock_market.max_reached?,
@@ -2722,6 +2723,10 @@ module Engine
         end
 
         nil
+      end
+
+      def all_closed?
+        (@corporations + @companies).reject(&:closed?).empty?
       end
 
       def final_or_in_set?(round)
