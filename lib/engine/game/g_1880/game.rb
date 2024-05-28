@@ -571,6 +571,15 @@ module Engine
           super - player_debt(player)
         end
 
+        def value_for_dumpable(player, corporation)
+          return 0 if @communism && corporation.owner == player
+
+          max_bundle = bundles_for_corporation(player, corporation)
+            .select { |bundle| bundle.can_dump?(player) && @share_pool&.fit_in_bank?(bundle) }
+            .max_by(&:price)
+          max_bundle ? max_bundle.price - (max_bundle.num_shares * 5) : 0
+        end
+
         def player_debt(player)
           @player_debts[player] || 0
         end
