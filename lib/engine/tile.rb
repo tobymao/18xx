@@ -346,9 +346,14 @@ module Engine
       end
     end
 
-    def add_blocker!(private_company, hidden: false)
-      @blockers << private_company
-      @hidden_blockers << private_company if hidden
+    def add_blocker!(entity, hidden: false)
+      @blockers << entity
+      @hidden_blockers << entity if hidden
+    end
+
+    def remove_blocker!(entity)
+      @blockers.delete(entity)
+      @hidden_blockers.delete(entity)
     end
 
     def inspect
