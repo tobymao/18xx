@@ -2328,6 +2328,11 @@ module Engine
 
       def after_phase_change(_name); end
 
+      # players and dummy players to show up as shareholders on entity cards
+      def share_owning_players
+        @players
+      end
+
       private
 
       def init_graph
