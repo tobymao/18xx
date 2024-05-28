@@ -17,6 +17,7 @@ module Engine
         include CitiesPlusTownsRouteDistanceStr
 
         attr_accessor :draft_deck, :ipo_pool, :unclaimed_commodities, :gauge_change_markers
+        attr_reader :ipo_rows
 
         register_colors(brown: '#a05a2c',
                         white: '#000000',
@@ -422,7 +423,6 @@ module Engine
             cards.each do |card|
               if card.owner == player
                 card.owner = nil
-                player.unsold_companies << card
               else
                 @draft_deck << card
                 player.hand.delete(card)
@@ -550,6 +550,10 @@ module Engine
             end
         end
 
+        def show_ipo_rows?
+          true
+        end
+
         def in_ipo?(company)
           @ipo_rows.flatten.include?(company)
         end
@@ -569,8 +573,8 @@ module Engine
         # Add status of cert card e.g. IPO ROW
         def company_status_str(company)
           if in_ipo?(company)
-            row, index = ipo_row_and_index(company)
-            return "IPO Row:#{row + 1} Index:#{index + 1}"
+            _row, index = ipo_row_and_index(company)
+            return "##{index + 1}"
           elsif (company.type == :bond) && (company.owner == @bank)
             return "Bank has #{count_of_bonds} / 10 Bonds"
           elsif @round.stock?
@@ -628,12 +632,12 @@ module Engine
         # Called by View::Game::Entities to determine if the company should be shown on entities
         # Lists unowned companies under 'The Bank' on ENTITIES tab
         def unowned_purchasable_companies(_entity)
-          bank_owned_companies + @ipo_rows[0] + @ipo_rows[1] + @ipo_rows[2]
+          bank_owned_companies
         end
 
         # Lists buyable companies for STOCK ROUND in VIEW
         def buyable_bank_owned_companies
-          bank_owned_companies + top_of_ipo_rows + hand_companies_for_stock_round
+          bank_owned_companies
         end
 
         def first_bond_in_bank
@@ -657,6 +661,10 @@ module Engine
             top += @ipo_rows[r].first(2)
           end
           top
+        end
+
+        def show_hidden_hand?
+          true
         end
 
         def hand_companies_for_stock_round

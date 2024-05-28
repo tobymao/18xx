@@ -229,7 +229,8 @@ module View
           },
           on: { click: ->(event) { toggle_desc(event, company) } },
         }
-        is_possessed = @company.owner&.player? || @game.players.any? { |p| p.unsold_companies.include?(@company) }
+        is_possessed = @company.owner&.player? || @game.players.any? { |p| p.unsold_companies.include?(@company) } ||
+                       @game.show_value_of_companies?(@company.owner)
         hidden_props = {
           style: {
             display: 'none',

@@ -451,6 +451,10 @@ module Engine
           str += ' - $20 (Dump)' if dump_penalty(route, route.stops).positive?
           str
         end
+
+        def unowned_purchasable_companies
+          []
+        end
       end
     end
   end
