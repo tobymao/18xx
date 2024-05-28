@@ -5,8 +5,6 @@ require_relative '../../../step/share_buying'
 
 # For 18 India, first turn is only sell any, subsequent turns are only buy
 # Selling does not restrict buy actions
-# NOTE: This section isn't completed, in progress for stock round
-# TODO: Convert Bonds -> add ability to bonds
 module Engine
   module Game
     module G18India
@@ -88,7 +86,6 @@ module Engine
             actions = []
             if selling_round?
               # sell anything, only limitation is president share can't be in market
-              # NOTE: GIPR President share CAN be in market [TODO]
               actions << 'sell_shares' if can_sell_any?(entity)
               actions << 'sell_company' if can_sell_any_companies?(entity)
             else
@@ -361,12 +358,11 @@ module Engine
             @game.num_certs(entity) > @game.cert_limit(entity)
           end
 
-          # modified to remove sell limit checks, can't sell president's share
+          # modified to remove sell limit checks, can't sell Manager's share (in can_dump?)
           def can_sell?(entity, bundle)
             return unless bundle
             return false unless selling_round?
             return false if entity != bundle.owner
-            return false if bundle.presidents_share
 
             can_dump?(entity, bundle)
           end
@@ -419,6 +415,37 @@ module Engine
             bank.spend(price, player) if price.positive?
             @log << "#{player.name} sells #{company.name} to the Bank for #{@game.format_currency(price)}"
             @round.players_sold[player][company] = :now
+          end
+
+          # Manager's 0% share may NOT be sold (it is only transfered if another player has a higher percent owned)
+          def bundle_has_manager_share(bundle)
+            return false unless bundle.presidents_share
+
+            bundle.presidents_share.percent.zero?
+          end
+
+          # Modify to prevent sale of Director's share unless another player has at least 2 shares
+          def can_dump?(entity, bundle)
+            return true unless bundle.presidents_share
+            return false if bundle.presidents_share.percent.zero? # Can't sell Manager's (0%) share
+
+            sh = bundle.corporation.player_share_holders(corporate: false) # set to false to remove IPO holders
+            (sh.reject { |k, _| k == entity }.values.max || 0) >= 20
+          end
+
+          # ----- Passing Code
+
+          # modified to prevent ending stock round if all passed selling round.
+          def pass!
+            super
+            if @round.current_actions.any?
+              @round.pass_order.delete(current_entity)
+              current_entity&.unpass!
+            else
+              @round.pass_order |= [current_entity]
+              current_entity&.pass!
+            end
+            current_entity&.unpass! if selling_round? # unpass during selling round to allow buy action
           end
         end
       end
