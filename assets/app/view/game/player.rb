@@ -38,6 +38,7 @@ module View
         if @show_companies
           divs << h(Companies, owner: @player, game: @game, show_hidden: @show_hidden) if @player.companies.any? || @show_hidden
           divs << h(UnsoldCompanies, owner: @player, game: @game) unless @player.unsold_companies.empty?
+          divs << h(HiddenHand, player: @player, game: @game, user: @user) if @game.show_hidden_hand?
         end
 
         unless (minors = @game.player_card_minors(@player)).empty?

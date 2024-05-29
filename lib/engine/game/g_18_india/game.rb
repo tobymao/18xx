@@ -14,8 +14,10 @@ module Engine
         include_meta(G18India::Meta)
         include Entities
         include Map
+        include CitiesPlusTownsRouteDistanceStr
 
-        attr_accessor :draft_deck, :ipo_pool, :unclaimed_commodities
+        attr_accessor :draft_deck, :ipo_pool, :unclaimed_commodities, :gauge_change_markers
+        attr_reader :ipo_rows
 
         register_colors(brown: '#a05a2c',
                         white: '#000000',
@@ -260,6 +262,7 @@ module Engine
           @last_action = nil
 
           @unclaimed_commodities = COMMODITY_NAMES.dup
+          @gauge_change_markers = []
 
           @log << "-- #{round_description('Hand Selection')} --"
           @log << "Select #{certs_to_keep} Certificates for your starting hand"
@@ -420,7 +423,6 @@ module Engine
             cards.each do |card|
               if card.owner == player
                 card.owner = nil
-                player.unsold_companies << card
               else
                 @draft_deck << card
                 player.hand.delete(card)
@@ -548,6 +550,10 @@ module Engine
             end
         end
 
+        def show_ipo_rows?
+          true
+        end
+
         def in_ipo?(company)
           @ipo_rows.flatten.include?(company)
         end
@@ -567,8 +573,8 @@ module Engine
         # Add status of cert card e.g. IPO ROW
         def company_status_str(company)
           if in_ipo?(company)
-            row, index = ipo_row_and_index(company)
-            return "IPO Row:#{row + 1} Index:#{index + 1}"
+            _row, index = ipo_row_and_index(company)
+            return "##{index + 1}"
           elsif (company.type == :bond) && (company.owner == @bank)
             return "Bank has #{count_of_bonds} / 10 Bonds"
           elsif @round.stock?
@@ -626,12 +632,12 @@ module Engine
         # Called by View::Game::Entities to determine if the company should be shown on entities
         # Lists unowned companies under 'The Bank' on ENTITIES tab
         def unowned_purchasable_companies(_entity)
-          bank_owned_companies + @ipo_rows[0] + @ipo_rows[1] + @ipo_rows[2]
+          bank_owned_companies
         end
 
         # Lists buyable companies for STOCK ROUND in VIEW
         def buyable_bank_owned_companies
-          bank_owned_companies + top_of_ipo_rows + hand_companies_for_stock_round
+          bank_owned_companies
         end
 
         def first_bond_in_bank
@@ -655,6 +661,10 @@ module Engine
             top += @ipo_rows[r].first(2)
           end
           top
+        end
+
+        def show_hidden_hand?
+          true
         end
 
         def hand_companies_for_stock_round
@@ -913,6 +923,51 @@ module Engine
           end
         end
 
+        # ----- Route Modificatons for Gauge Change stops (modifed from 1848)
+
+        # Add gauge changes to visited stops, they count as 0 revenue City stops,
+        def visited_stops(route)
+          gauge_changes = border_crossings(route)
+          route_stops = route.connection_data.flat_map { |c| [c[:left], c[:right]] }.uniq.compact # super
+          return route_stops unless gauge_changes.positive?
+
+          LOGGER.debug "GAME::visited_stops > gauge_changes: #{gauge_changes} route_stops: #{route_stops.inspect}"
+          add_gauge_changes_to_stops(gauge_changes, route_stops)
+        end
+
+        def add_gauge_changes_to_stops(num, route_stops)
+          gauge_changes = Array.new(num) { Engine::Part::City.new('0') }
+          first_stop = route_stops.first
+          gauge_changes.each do |stop|
+            stop.tile = first_stop.tile
+            route_stops.insert(1, stop) # add the gauge change after fist element so that it's not the first or last stop
+          end
+          LOGGER.debug "GAME::add_gauge_changes_to_stops > route_stops: #{route_stops.inspect}"
+          route_stops
+        end
+
+        def border_crossings(route)
+          sum = route.paths.sum do |path|
+            path.edges.sum do |edge|
+              edge_is_a_border?(edge) ? 1 : 0
+            end
+          end
+          # edges are double counted
+          sum / 2
+        end
+
+        def edge_is_a_border?(edge)
+          edge.hex.tile.borders.any? { |border| border.edge == edge.num }
+        end
+
+        def add_gauge_change_marker(hex, neighbor)
+          @gauge_change_markers << Array.new([hex, neighbor].sort)
+        end
+
+        def removed_gauge_change_marker(hex, neighbor)
+          @gauge_change_markers.delete([hex, neighbor].sort)
+        end
+
         # modify to require route begin and end at city
         def check_other(route)
           visited_stops = route.visited_stops
@@ -932,6 +987,7 @@ module Engine
 
         def revenue_str(route)
           str = route.hexes.map(&:name).join('-')
+          str += ' Gauge:' + border_crossings(route).to_s if border_crossings(route).positive?
           str += ' ?+' + variable_city_revenue(route, route.stops).to_s if variable_city_revenue(route, route.stops).positive?
           str += ' R+' + connection_bonus(route, route.stops).to_s if connection_bonus(route, route.stops).positive?
           str += ' C+' + commodity_bonus(route, route.stops).to_s if commodity_bonus(route, route.stops).positive?
@@ -945,7 +1001,7 @@ module Engine
 
         # calculate addional revenue if non-variable city base value > 20
         def variable_city_revenue(route, stops)
-          non_variable_stops = route.visited_stops.reject { |stop| stop.tile.color == 'red' }
+          non_variable_stops = route.visited_stops.reject { |stop| stop.revenue_to_render.zero? || stop.tile.color == 'red' }
           return 0 if non_variable_stops.empty?
 
           max_non_variable_value = non_variable_stops.map { |e| e.revenue_to_render - 20 }.max

@@ -106,7 +106,7 @@ module Engine
       #   after: When game should end if check triggered
       # Leave out a reason if game does not support that.
       # Allowed reasons:
-      #  bankrupt, stock_market, bank, final_train, final_phase, custom
+      #  bankrupt, stock_market, bank, final_train, final_phase, all_closed, custom
       # Allowed after:
       #  immediate - ends in current turn
       #  current_round - ends at the end of the current round
@@ -2176,7 +2176,7 @@ module Engine
       end
 
       def hex_blocked_by_ability?(_entity, ability, hex, _tile = nil)
-        ability.hexes.include?(hex.id)
+        ability.hexes.include?(hex)
       end
 
       def rust_trains!(train, _entity)
@@ -2328,6 +2328,11 @@ module Engine
 
       def after_phase_change(_name); end
 
+      # players and dummy players to show up as shareholders on entity cards
+      def share_owning_players
+        @players
+      end
+
       private
 
       def init_graph
@@ -2458,15 +2463,13 @@ module Engine
 
       def init_hexes(companies, corporations)
         blockers = Hash.new { |h, k| h[k] = [] }
-        (companies + minors + corporations).each do |company|
-          abilities(company, :blocks_hexes) do |ability|
-            ability.hexes.each do |hex|
-              blockers[hex] << [company, ability.hidden?]
-            end
-          end
-          abilities(company, :blocks_hexes_consent) do |ability|
-            ability.hexes.each do |hex|
-              blockers[hex] << [company, ability.hidden?]
+        (companies + minors + corporations).each do |entity|
+          %i[blocks_hexes blocks_hexes_consent].each do |type|
+            abilities(entity, type) do |ability|
+              ability.hexes.each do |hex|
+                blockers[hex].append(ability)
+              end
+              ability.hexes = []
             end
           end
         end
@@ -2511,8 +2514,15 @@ module Engine
                   Tile.from_code(coord, color, tile_string, preprinted: true, index: index)
                 end
 
-              blockers[coord].each do |blocker, hidden|
-                tile.add_blocker!(blocker, hidden: hidden)
+              # name the location (city/town)
+              location_name = location_name(coord)
+
+              hex = Hex.new(coord, layout: layout, axes: axes, tile: tile, location_name: location_name,
+                                   hide_location_name: self.class::HEXES_HIDE_LOCATION_NAMES[coord])
+
+              blockers[coord].each do |ability|
+                tile.add_blocker!(ability.owner, hidden: ability.hidden?)
+                ability.hexes.append(hex)
               end
 
               tile.partitions.each do |partition|
@@ -2526,11 +2536,7 @@ module Engine
                 tile.add_reservation!(res[:entity], res[:city], res[:slot])
               end
 
-              # name the location (city/town)
-              location_name = location_name(coord)
-
-              Hex.new(coord, layout: layout, axes: axes, tile: tile, location_name: location_name,
-                             hide_location_name: self.class::HEXES_HIDE_LOCATION_NAMES[coord])
+              hex
             end
           end
         end.flatten.compact
@@ -2698,6 +2704,7 @@ module Engine
 
       def game_end_check
         triggers = {
+          all_closed: all_closed?,
           bankrupt: bankruptcy_limit_reached?,
           bank: @bank.broken?,
           stock_market: @stock_market.max_reached?,
@@ -2716,6 +2723,10 @@ module Engine
         end
 
         nil
+      end
+
+      def all_closed?
+        (@corporations + @companies).reject(&:closed?).empty?
       end
 
       def final_or_in_set?(round)
@@ -3305,6 +3316,18 @@ module Engine
       end
 
       def force_unconditional_stock_pass?
+        false
+      end
+
+      def hand_companies_for_stock_round
+        []
+      end
+
+      def show_hidden_hand?
+        false
+      end
+
+      def show_ipo_rows?
         false
       end
 
