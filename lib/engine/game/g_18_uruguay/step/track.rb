@@ -10,6 +10,7 @@ module Engine
         class Track < Engine::Step::Track
           def actions(entity)
             return [] if entity == @game.rptla
+            return [] if @game.last_or?
 
             @round.loan_taken |= false
             actions = super.map(&:clone)

@@ -440,12 +440,12 @@ module View
         }
 
         if @game.corporations_can_ipo?
-          player_rows = entities_rows(@game.players + @game.operating_order.reject do |c|
-                                                        c == @corporation && !c.treasury_as_holding
-                                                      end.sort, true)
+          player_rows = entities_rows(@game.share_owning_players + @game.operating_order.reject do |c|
+                                                                     c == @corporation && !c.treasury_as_holding
+                                                                   end.sort, true)
           other_corp_rows = []
         else
-          player_rows = entities_rows(@game.players, true)
+          player_rows = entities_rows(@game.share_owning_players, true)
           other_corp_rows = entities_rows(@game.corporations.reject { |c| c == @corporation && !c.treasury_as_holding })
         end
 
