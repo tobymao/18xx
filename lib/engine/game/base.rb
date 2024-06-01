@@ -2806,13 +2806,24 @@ module Engine
       end
 
       def action_processed(_action)
-        close_corporations_in_close_cell!
+        return unless close_corporations_in_close_cell!
+
+        # Closing corporations can end up removing the current entity's only
+        # available actions, for example if all they could do was sell shares in
+        # the now closed corporation. If that is the case, skip to the next
+        # entity.
+        return unless active_step&.actions(current_entity)&.empty?
+
+        @round.skip_steps
+        @round.next_entity!
       end
 
       # close_corporation() might cause another corporation to need closing; if
       # this function is called multiple times before resolving, corporations
       # that should be closed are added to @closing_queue, but the closing loop
       # is not re-entered
+      #
+      # returns true if any corporations were closed
       def close_corporations_in_close_cell!
         return unless stock_market.has_close_cell
 
@@ -2822,13 +2833,18 @@ module Engine
 
         return if @corporations_are_closing
 
+        closed_any = false
+
         @corporations_are_closing = true
         until @closing_queue.empty?
           corp = @closing_queue.first[0]
           @closing_queue.delete(corp)
           close_corporation(corp)
+          closed_any = true
         end
         @corporations_are_closing = false
+
+        closed_any
       end
 
       def show_priority_deal_player?(order)
