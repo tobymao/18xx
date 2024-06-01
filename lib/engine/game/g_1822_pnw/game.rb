@@ -953,7 +953,11 @@ module Engine
           if to.name == 'PNW3' || boomtown_company?(selected_company)
             return to.name == 'PNW3' && boomtown_company?(selected_company)
           end
-          return from.color == :brown if to.name == 'PNW4'
+
+          if to.name == 'PNW4'
+            return false unless coal_company?(selected_company)
+            return true if from.color == :brown || from.color == :white
+          end
           return to.name == 'PNW5' if from.name == 'PNW4'
           return tokencity_upgrades_to?(from, to) if tokencity?(from.hex)
 
