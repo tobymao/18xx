@@ -546,6 +546,8 @@ module Engine
         end
 
         def or_round_finished
+          return unless @treaty_of_boston
+
           # debt increases
           old_price = @debt_corp.share_price
           @stock_market.move_right(@debt_corp)
