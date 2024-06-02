@@ -1,10 +1,12 @@
 # frozen_string_literal: true
 
 require 'view/game/hex'
+require '../lib/settings'
 
 module View
   module Game
     class Axis < Snabberb::Component
+      include Lib::Settings
       needs :cols
       needs :rows
       needs :layout
@@ -29,63 +31,77 @@ module View
           'font-size': "#{@font_size}px",
         }
 
+        rotate_map = setting_for(:rotate_map, @game)
+        layout =
+          if rotate_map
+            @layout == :flat ? :pointy : :flat
+          else
+            @layout
+          end
         h('g#map-axis', { attrs: attrs }, [
-          col_labels,
-          row_labels,
+          col_labels(rotate_map, layout),
+          row_labels(rotate_map, layout),
         ])
       end
 
       private
 
-      def hex_size
-        Hex::LAYOUT[@layout]
+      def hex_size(layout)
+        Hex::LAYOUT[layout]
       end
 
-      def col_labels
-        hex_x, hex_y = hex_size
+      def create_col_labels(rotate_map, layout)
+        hex_x, _hex_y = hex_size(layout)
+        list = rotate_map ? @rows : @cols
+        list.map do |col|
+          pos = rotate_map ? list.size - col.to_i + 1 : col.to_i
+          x = hex_x * (pos - @start_pos[0])
 
-        labels = @cols.map do |col|
-          x = hex_x * (col.to_i - @start_pos[0])
-
+          axes = rotate_map ? @axes[:y] : @axes[:x]
           label =
-            if @axes[:x] == :letter
+            if axes == :letter
               LETTERS[col - 1]
             else
               col
             end
           h(:text, { attrs: { x: x, dy: '1em' } }, label)
         end
+      end
+
+      def col_labels(rotate_map, layout)
+        _hex_x, hex_y = hex_size(layout)
 
         t_x = X_OFFSET + @gap
 
-        rows_offset = @layout == :flat ? (@rows.size + 1) : @rows.size
+        rows_offset = rotate_map ? @cols.size : @rows.size
+        rows_offset += 1 if layout == :flat
         bottom_t_y = (hex_y * rows_offset) + (@font_size * 2) + (@gap * 2)
 
-        bottom_t_y += @font_size * 2 if @layout == :pointy
-
+        bottom_t_y += @font_size * 2 if layout == :pointy
         h(:g,
           { attrs: { transform: "translate(#{t_x + @font_size} 0)" } },
           [
-            h(:g, { attrs: { 'dominant-baseline': 'top' } }, labels),
+            h(:g, { attrs: { 'dominant-baseline': 'top' } }, create_col_labels(rotate_map, layout)),
             h(:g, {
                 attrs: {
                   transform: "translate(0 #{bottom_t_y - @font_size})",
                   'dominant-baseline': 'baseline',
                 },
-              }, labels),
+              }, create_col_labels(rotate_map, layout)),
           ])
       end
 
-      def row_labels
-        hex_x, hex_y = hex_size
-
-        labels = @rows.map do |row|
+      def create_row_labels(rotate_map, layout)
+        _hex_x, hex_y = hex_size(layout)
+        list = rotate_map ? @cols : @rows
+        list.map do |row|
           multiplier = row.to_i - @start_pos[1] + 1
-          multiplier -= 0.5 if @layout == :pointy
+          multiplier -= 0.5 if layout == :pointy
           y = hex_y * multiplier
 
+          axes = rotate_map ? @axes[:x] : @axes[:y]
           label =
-            if @axes[:y] == :letter
+            if axes == :letter
               LETTERS[row - 1]
             else
               row
@@ -93,14 +109,18 @@ module View
 
           h(:text, { attrs: { y: y } }, label)
         end
+      end
+
+      def row_labels(rotate_map, layout)
+        hex_x, _hex_y = hex_size(layout)
 
         t_x = @font_size / 2
-        t_y = @map_y + (@layout == :flat ? 0 : @font_size / 2)
-
-        cols_offset = @layout == :flat ? (@cols.size.to_i + 1) : (@cols.size.to_i + 2)
+        t_y = @map_y + (layout == :flat ? 0 : @font_size / 2)
+        cols_offset = rotate_map ? @rows.size.to_i : @cols.size.to_i
+        cols_offset = layout == :flat ? (cols_offset + 1) : (cols_offset + 2)
         right_t_x = (hex_x * cols_offset) - X_OFFSET + (2 * @gap) + @font_size
 
-        right_t_x += @font_size if @layout == :pointy
+        right_t_x += @font_size if layout == :pointy
 
         h(:g, {
             attrs: {
@@ -112,7 +132,7 @@ module View
           [
             h(:g,
               { attrs: { 'text-anchor': 'middle' } },
-              labels),
+              create_row_labels(rotate_map, layout)),
             h(:g,
               {
                 attrs: {
@@ -120,7 +140,7 @@ module View
                   'text-anchor': 'middle',
                 },
               },
-              labels),
+              create_row_labels(rotate_map, layout)),
           ])
       end
     end

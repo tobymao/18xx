@@ -37,6 +37,7 @@ module View
       end
 
       def render
+        rotate_map = setting_for(:rotate_map, @game)
         return h(:div, []) if (@layout = @game.layout) == :none
 
         @hexes = @show_starting_map ? @game.clone([]).hexes : @game.hexes.dup
@@ -82,11 +83,17 @@ module View
         end
         @hexes.compact!
 
-        children = [render_map, h(MapZoom, map_zoom: map_zoom)]
+        children = [render_map(rotate_map), h(MapZoom, map_zoom: map_zoom)]
 
         if current_entity && @tile_selector
-          left = (@tile_selector.x + map_x) * @scale
-          top = (@tile_selector.y + map_y) * @scale
+          if rotate_map
+            top = (@tile_selector.x + map_x) * @scale
+            left = (@tile_selector.y + map_y) * @scale
+          else
+            left = (@tile_selector.x + map_x) * @scale
+            top = (@tile_selector.y + map_y) * @scale
+          end
+
           selector =
             if @tile_selector.is_a?(Lib::TokenSelector)
               # 1882
@@ -118,7 +125,7 @@ module View
                 h(:div)
               else
                 distance = TileSelector::DISTANCE * map_zoom
-                width, height = map_size
+                width, height = map_size(rotate_map)
                 ts_ds = [TileSelector::DROP_SHADOW_SIZE - 5, 0].max # ignore up to 5px of ds (< 2vmin padding of #app)
                 left_col = left < distance
                 right_col = width - left < distance + ts_ds
@@ -164,18 +171,26 @@ module View
         GAP + (@layout == :flat ? (FONT_SIZE / 2) : FONT_SIZE)
       end
 
-      def map_size
+      def map_size(rotate_map)
         if @layout == :flat
-          [((((@cols.size * 1.5) + 0.5) * EDGE_LENGTH) + (2 * GAP)) * map_zoom,
-           ((((@rows.size / 2) + 0.5) * SIDE_TO_SIDE) + (2 * GAP)) * map_zoom]
+          if rotate_map
+            [((((@rows.size / 2) + 0.5) * SIDE_TO_SIDE) + (2 * GAP)) * map_zoom,
+             ((((@cols.size * 1.5) + 0.5) * EDGE_LENGTH) + (2 * GAP)) * map_zoom]
+          else
+            [((((@cols.size * 1.5) + 0.5) * EDGE_LENGTH) + (2 * GAP)) * map_zoom,
+             ((((@rows.size / 2) + 0.5) * SIDE_TO_SIDE) + (2 * GAP)) * map_zoom]
+          end
+        elsif rotate_map
+          [((((@rows.size * 1.5) + 0.5) * EDGE_LENGTH) + (2 * GAP)) * map_zoom,
+           (((((@cols.size / 2) + 0.5) * SIDE_TO_SIDE) + (2 * GAP)) + 1) * map_zoom]
         else
           [(((((@cols.size / 2) + 0.5) * SIDE_TO_SIDE) + (2 * GAP)) + 1) * map_zoom,
            ((((@rows.size * 1.5) + 0.5) * EDGE_LENGTH) + (2 * GAP)) * map_zoom]
         end
       end
 
-      def render_map
-        width, height = map_size
+      def render_map(rotate_map)
+        width, height = map_size(rotate_map)
 
         props = {
           attrs: {

@@ -17,6 +17,7 @@ module View
           render_controls('Simple Logos', :simple_logos),
           render_controls('Location Names', :show_location_names),
           render_controls('Hex Coordinates', :show_coords),
+          render_controls('Rotate Map', :rotate_map),
           starting_map_controls,
           route_controls,
         ].compact

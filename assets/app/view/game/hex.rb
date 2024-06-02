@@ -103,7 +103,7 @@ module View
         props = {
           key: @hex.id,
           attrs: {
-            transform: transform,
+            transform: transform(setting_for(:rotate_map, @game), find_max_row),
             fill: color_for(@tile&.color) || (Lib::Hex::COLOR[@tile&.color || 'white']),
             stroke: 'black',
           },
@@ -154,22 +154,28 @@ module View
         h(:polygon, polygon_props)
       end
 
-      def translation
-        x, y = coordinates
+      def translation(rotate_map, row_size)
+        x, y = coordinates(rotate_map, row_size)
         "translate(#{x}, #{y})"
       end
 
-      def self.coordinates(hex, start_pos = [1, 1])
+      def self.coordinates(hex, rotate_map, row_size, start_pos = [1, 1])
         t_x, t_y = LAYOUT[hex.layout]
-        [((t_x * (hex.x - start_pos[0] + 1)) + SIZE).round(2), ((t_y * (hex.y - start_pos[1] + 1)) + SIZE).round(2)]
+        if rotate_map && !(hex.x.zero? && hex.y.zero?)
+          [((t_y * (row_size - hex.y - start_pos[1] + 1)) + SIZE).round(2), ((t_x * (hex.x - start_pos[0] + 1)) + SIZE).round(2)]
+        else
+          [((t_x * (hex.x - start_pos[0] + 1)) + SIZE).round(2), ((t_y * (hex.y - start_pos[1] + 1)) + SIZE).round(2)]
+        end
       end
 
-      def coordinates
-        self.class.coordinates(@hex, @start_pos)
+      def coordinates(rotate_map, row_size)
+        self.class.coordinates(@hex, rotate_map, row_size, @start_pos)
       end
 
-      def transform
-        "#{translation}#{@hex.layout == :pointy ? ' rotate(30)' : ''}"
+      def transform(rotate_map, row_size)
+        rotate = @hex.layout == :pointy ? 30 : 0
+        rotate += 90 if rotate_map
+        "#{translation(rotate_map, row_size)} rotate(#{rotate})"
       end
 
       def on_hex_click
@@ -230,6 +236,12 @@ module View
         when :tile_selector
           @tile_selector.tile = @tile
         end
+      end
+
+      def find_max_row
+        return @game.hexes.map(&:y).max unless @game.nil?
+
+        0
       end
     end
   end
