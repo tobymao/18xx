@@ -349,7 +349,12 @@ module Engine
         end
 
         def after_lay_tile(hex, tile, entity)
-          # Move mine/port tokens from hex into city if possible.
+          move_hex_tokens(hex, tile, entity)
+          tile.cities.each { |city| set_slot_icons(city) }
+        end
+
+        # Move mine/port tokens from hex into city if possible.
+        def move_hex_tokens(hex, tile, entity)
           return if hex.tokens.empty?
 
           city = tile.cities.first

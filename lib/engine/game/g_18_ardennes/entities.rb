@@ -370,17 +370,7 @@ module Engine
         end
 
         def setup_icons
-          @hexes.map(&:tile).flat_map(&:cities).each do |city|
-            city.tokens.each_with_index do |token, ix|
-              next if token || city.reservations[ix]
-
-              majors = associated_majors(city)
-              next if majors.empty? # Basel does not have an associated public companies
-
-              path = "18_ardennes/#{majors.join('+')}"
-              city.slot_icons[ix] = Engine::Part::Icon.new(path)
-            end
-          end
+          @hexes.map(&:tile).flat_map(&:cities).each { |c| set_slot_icons(c) }
         end
 
         def concession_companies
@@ -528,6 +518,20 @@ module Engine
         def lowest_major_par
           @lowest_major_par ||= stock_market.par_prices.reverse.find do |pp|
             pp.types.include?(:par_2)
+          end
+        end
+
+        # Adds slot icons to empty city slots, showing which public companies
+        # can be started using a token in this city.
+        def set_slot_icons(city)
+          city.tokens.each_with_index do |token, ix|
+            next if token || city.reservations[ix]
+
+            majors = associated_majors(city)
+            next if majors.empty? # Basel does not have an associated public companies
+
+            path = "18_ardennes/#{majors.join('+')}"
+            city.slot_icons[ix] = Engine::Part::Icon.new(path)
           end
         end
 
