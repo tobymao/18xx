@@ -571,6 +571,25 @@ module Engine
         def setup_game_specific
           setup_regional_payout_count
           setup_tokencity_tiles
+
+          # placeholder company to fill up spots in a bidbox when one is emptied
+          # during a SR due to a Major starting directly and its associated
+          # Minor being removed
+          init_empty_bidboxes!(true)
+          @empty_bidbox_minor = Company.new(
+            name: 'EMPTY BIDBOX',
+            sym: 'EMPTY',
+            value: 0,
+          )
+        end
+
+        def init_empty_bidboxes!(init = @any_bidboxes_empty)
+          @empty_bidboxes = Array.new(BIDDING_BOX_MINOR_COUNT, false) if init
+          @any_bidboxes_empty = false
+        end
+
+        def empty_bidbox_minor?(company)
+          company == @empty_bidbox_minor
         end
 
         def setup_optional_rules
@@ -617,6 +636,11 @@ module Engine
             minor_id = @minor_associations.keys.find { |m| @minor_associations[m] == corporation.id }
             minor_company = company_by_id(company_id_from_corp_id(minor_id))
             unless minor_company.closed?
+              if (bidbox_index = bidbox_minors.index(minor_company))
+                @empty_bidboxes[bidbox_index] = true
+                @any_bidboxes_empty = true
+              end
+
               @log << "Associated minor #{minor_id} closes"
               minor_corporation = corporation_by_id(minor_id)
               minor_city = hex_by_id(minor_corporation.coordinates).tile.cities.find { |c| c.reserved_by?(minor_corporation) }
@@ -625,6 +649,21 @@ module Engine
             end
           end
           super
+        end
+
+        def bidbox_minors_refill!
+          init_empty_bidboxes!
+          super
+        end
+
+        def bidbox_minors
+          minors = super
+          return minors unless @any_bidboxes_empty
+
+          minors.each_with_object([]) do |minor, minors_with_empty|
+            minors_with_empty << @empty_bidbox_minor while @empty_bidboxes[minors_with_empty.size]
+            minors_with_empty << minor
+          end
         end
 
         def float_corporation(corporation)
