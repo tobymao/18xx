@@ -51,6 +51,7 @@ module Engine
           super
 
           setup_tokens
+          setup_icons
           @pledged_minors = major_corporations.to_h { |corp| [corp, nil] }
         end
 

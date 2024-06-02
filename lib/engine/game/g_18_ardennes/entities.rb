@@ -369,6 +369,20 @@ module Engine
           @companies.concat(init_concessions)
         end
 
+        def setup_icons
+          @hexes.map(&:tile).flat_map(&:cities).each do |city|
+            city.tokens.each_with_index do |token, ix|
+              next if token || city.reservations[ix]
+
+              majors = associated_majors(city)
+              next if majors.empty? # Basel does not have an associated public companies
+
+              path = "18_ardennes/#{majors.join('+')}"
+              city.slot_icons[ix] = Engine::Part::Icon.new(path)
+            end
+          end
+        end
+
         def concession_companies
           companies.select { |company| company.type == :concession }
         end
