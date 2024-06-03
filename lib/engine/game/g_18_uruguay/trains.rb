@@ -118,11 +118,6 @@ module Engine
                 ],
                 price: 850,
               },
-              {
-                name: 'Ship 8',
-                distance: 2,
-                price: 850,
-              },
             ],
           },
         ].freeze
