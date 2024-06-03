@@ -1148,6 +1148,14 @@ module Engine
         def buyable_bank_owned_companies
           @round.active_step.respond_to?(:hide_bank_companies?) && @round.active_step.hide_bank_companies? ? [] : super
         end
+
+        def game_end_check
+          if @stock_market.max_reached?
+            %i[stock_market current_or]
+          elsif @bank.broken?
+            [:bank, @round.is_a?(Engine::Round::Operating) ? :full_or : :current_or]
+          end
+        end
       end
     end
   end
