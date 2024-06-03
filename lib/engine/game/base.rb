@@ -3208,7 +3208,7 @@ module Engine
       end
 
       def player_owned_ability?(ability)
-        ability.owner&.player? || (ability.owner&.company? && ability.owner&.owner&.player?)
+        ability.owner&.player? || (!ability.owner&.corporation? && ability.owner&.owner&.player?)
       end
 
       def corporation_owned_ability?(ability)
