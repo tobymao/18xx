@@ -651,7 +651,7 @@ module Engine
             return "Bid box #{index + 1}" if c == company
           end
 
-          if optional_plus_expansion?
+          if optional_plus_expansion? && !optional_plus_expansion_single_stack?
             bidbox_privates.each do |c|
               next unless c == company
 
@@ -1176,7 +1176,7 @@ module Engine
           concessions = timeline_companies(self.class::COMPANY_CONCESSION_PREFIX, bidbox_concessions)
           timeline << "Concessions: #{concessions.join(', ')}" unless concessions.empty?
 
-          if optional_plus_expansion?
+          if optional_plus_expansion? && !optional_plus_expansion_single_stack?
             b1_privates = timeline_companies_plus(self.class::COMPANY_PRIVATE_PREFIX,
                                                   self.class::PLUS_EXPANSION_BIDBOX_1)
             timeline << "Privates bidbox 1 : #{b1_privates.join(', ')}" unless b1_privates.empty?
@@ -1331,7 +1331,7 @@ module Engine
         end
 
         def bidbox_privates
-          if optional_plus_expansion?
+          if optional_plus_expansion? && !optional_plus_expansion_single_stack?
             companies = bank_companies(self.class::COMPANY_PRIVATE_PREFIX)
             privates = []
             privates << companies.find { |c| self.class::PLUS_EXPANSION_BIDBOX_1.include?(c.id) }
@@ -1751,6 +1751,14 @@ module Engine
           @optional_rules&.include?(:plus_expansion)
         end
 
+        def optional_plus_expansion_no_removals?
+          @optional_rules&.include?(:plus_expansion_no_removals)
+        end
+
+        def optional_plus_expansion_single_stack?
+          @optional_rules&.include?(:plus_expansion_single_stack)
+        end
+
         def payoff_player_loan(player)
           # Pay full or partial of the player loan. The money from loans is outside money, doesnt count towards
           # the normal bank money.
@@ -2016,7 +2024,7 @@ module Engine
           privates.unshift(p1)
 
           # If have have activated 1822+, 3 companies will be removed from the game
-          if optional_plus_expansion?
+          if optional_plus_expansion? && !optional_plus_expansion_no_removals?
             # Make sure we have correct order of the bidboxes
             bid_box_1 = privates.map { |c| c if self.class::PLUS_EXPANSION_BIDBOX_1.include?(c.id) }.compact
             bid_box_2 = privates.map { |c| c if self.class::PLUS_EXPANSION_BIDBOX_2.include?(c.id) }.compact
