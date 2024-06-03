@@ -674,12 +674,22 @@ module Engine
         def add_home_icon(corporation, coordinates)
           hex = hex_by_id(coordinates)
           # Logo and Icon each add '.svg' to the end - so chop one of them off
-          hex.tile.icons << Part::Icon.new("../#{corporation.logo.chop.chop.chop.chop}", "#{corporation.id}_home")
+          hex.tile.icons << Part::Icon.new("../#{corporation.logo[0..-5]}", "#{corporation.id}_home")
         end
 
         def remove_home_icon(corporation, coordinates)
           hex = hex_by_id(coordinates)
           hex.tile.icons.reject! { |icon| icon.name == "#{corporation.id}_home" }
+        end
+
+        def add_destination_icon(corporation, coordinates)
+          hex = hex_by_id(coordinates)
+          hex.tile.icons << Part::Icon.new("../#{corporation.destination_icon}", "#{corporation.id}_destination")
+        end
+
+        def remove_destination_icon(corporation, coordinates)
+          hex = hex_by_id(coordinates)
+          hex.tile.icons.reject! { |icon| icon.name == "#{corporation.id}_destination" }
         end
 
         def corp_id_from_company_id(id)
