@@ -394,6 +394,20 @@ module Engine
 
           raise NoToken, 'Route must contain token' unless token
         end
+
+        def after_buy_company(player, company, price)
+          return super if company.id != 'P7'
+
+          h = hovedbanen
+          share_price = @stock_market.par_prices.find { |pp| pp.price * 2 <= price }
+          @stock_market.set_par(h, share_price)
+          @bank.spend(price, h)
+          abilities(company, :shares) do |ability|
+            ability.shares.each do |share|
+              share_pool.buy_shares(player, share, exchange: :free)
+            end
+          end
+        end
       end
     end
   end
