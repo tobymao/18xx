@@ -2337,6 +2337,10 @@ module Engine
         @players
       end
 
+      def show_company_owners?
+        true
+      end
+
       private
 
       def init_graph
