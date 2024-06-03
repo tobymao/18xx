@@ -825,7 +825,7 @@ module Engine
         while @round.finished? && !@finished
           @round.entities.each(&:unpass!)
 
-          if end_now?(end_timing)
+          if end_now?(end_timing) || @turn >= 100
             end_game!
           else
             transition_to_next_round!
