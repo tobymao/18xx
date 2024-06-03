@@ -55,6 +55,15 @@ module Engine
            players: [3, 4, 5, 6],
          },
         ].freeze
+
+        def self.check_options(options, _min_players, _max_players)
+          optional_rules = (options || []).map(&:to_sym)
+
+          if optional_rules.include?(:new_minors_challenge) &&
+             optional_rules.include?(:new_minors_simple)
+            { error: "Can't use both 'New minors' options together." }
+          end
+        end
       end
     end
   end
