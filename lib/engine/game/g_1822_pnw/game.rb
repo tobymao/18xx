@@ -950,7 +950,9 @@ module Engine
         def upgrades_to?(from, to, special = false, selected_company: nil)
           return true if legal_city_and_town_tile(from.hex, to) && from.color == :white
           return true if from.color == :blue && to.color == :blue
-          return to.name == 'PNW3' if boomtown_company?(selected_company)
+          if to.name == 'PNW3' || boomtown_company?(selected_company)
+            return to.name == 'PNW3' && boomtown_company?(selected_company)
+          end
           return from.color == :brown if to.name == 'PNW4'
           return to.name == 'PNW5' if from.name == 'PNW4'
           return tokencity_upgrades_to?(from, to) if tokencity?(from.hex)
