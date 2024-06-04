@@ -508,7 +508,7 @@ module Engine
           bundles.sort_by!(&:price)
 
           train_buying_bundles = bundles.select { |b| (corp.cash + b.price) >= train.price }
-          if train_buying_bundles.any?
+          unless train_buying_bundles.empty?
             bundles = train_buying_bundles
 
             index = bundles.find_index { |b| (corp.cash + b.price) >= train.price }
