@@ -233,7 +233,7 @@ module Engine
           end
         end
 
-        # Include bond shares for cache_objects
+        # Include IPO Pool shares and bond shares for cache_objects
         def shares
           LOGGER.debug "@corporations.flat_map(&:shares) => #{@corporations.flat_map(&:shares)}"
           LOGGER.debug "@players.flat_map(&:shares) => #{@players.flat_map(&:shares)}"
@@ -272,8 +272,6 @@ module Engine
 
           @log << "-- #{round_description('Hand Selection')} --"
           @log << "Select #{certs_to_keep} Certificates for your starting hand"
-
-          LOGGER.debug "shares: #{shares.map(&:id)}"
         end
 
         def setup_corporations_by_region!(corporations)
@@ -976,13 +974,17 @@ module Engine
           @gauge_change_markers.delete([hex, neighbor].sort)
         end
 
-        # modify to require route begin and end at city
+        # modify to require route begin and end at city and may not visit MUMBAI or MUMBAI twice.
         def check_other(route)
           visited_stops = route.visited_stops
           return if visited_stops.count < 2
 
           valid_route = visited_stops.first.city? && visited_stops.last.city?
           raise GameError, 'Route must begin and end at a city' unless valid_route
+
+          visited_names = visited_stops.map { |stop| stop.tile.location_name }
+          raise GameError, 'Route may not visit MUMBAI more than once' if visited_names.count('MUMBAI') > 1
+          raise GameError, 'Route may not visit NEPAL more than once' if visited_names.count('NEPAL') > 1
         end
 
         # modify to include variable value cities and route bonus
