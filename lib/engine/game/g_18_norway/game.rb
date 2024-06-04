@@ -487,7 +487,7 @@ module Engine
         end
 
         def emergency_issuable_bundles(corp)
-          return [] if corp.trains.any?
+          return [] unless corp.trains.empty?
 
           available = @depot.available_upcoming_trains.reject { |train| ship?(train) }
           return [] unless (train = available.min_by(&:price))
