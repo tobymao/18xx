@@ -999,6 +999,10 @@ module Engine
         def unowned_purchasable_companies
           @round.is_a?(Engine::Round::Draft) ? @companies.reject { |c| c.name.start_with?('Pass') }.sort_by(&:name) : []
         end
+
+        def show_company_owners?
+          !@round.is_a?(Engine::Round::Draft)
+        end
       end
     end
   end

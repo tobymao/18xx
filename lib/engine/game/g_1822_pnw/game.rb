@@ -571,6 +571,25 @@ module Engine
         def setup_game_specific
           setup_regional_payout_count
           setup_tokencity_tiles
+
+          # placeholder company to fill up spots in a bidbox when one is emptied
+          # during a SR due to a Major starting directly and its associated
+          # Minor being removed
+          init_empty_bidboxes!(true)
+          @empty_bidbox_minor = Company.new(
+            name: 'EMPTY BIDBOX',
+            sym: 'EMPTY',
+            value: 0,
+          )
+        end
+
+        def init_empty_bidboxes!(init = @any_bidboxes_empty)
+          @empty_bidboxes = Array.new(BIDDING_BOX_MINOR_COUNT, false) if init
+          @any_bidboxes_empty = false
+        end
+
+        def empty_bidbox_minor?(company)
+          company == @empty_bidbox_minor
         end
 
         def setup_optional_rules
@@ -617,6 +636,11 @@ module Engine
             minor_id = @minor_associations.keys.find { |m| @minor_associations[m] == corporation.id }
             minor_company = company_by_id(company_id_from_corp_id(minor_id))
             unless minor_company.closed?
+              if (bidbox_index = bidbox_minors.index(minor_company))
+                @empty_bidboxes[bidbox_index] = true
+                @any_bidboxes_empty = true
+              end
+
               @log << "Associated minor #{minor_id} closes"
               minor_corporation = corporation_by_id(minor_id)
               minor_city = hex_by_id(minor_corporation.coordinates).tile.cities.find { |c| c.reserved_by?(minor_corporation) }
@@ -627,6 +651,21 @@ module Engine
           super
         end
 
+        def bidbox_minors_refill!
+          init_empty_bidboxes!
+          super
+        end
+
+        def bidbox_minors
+          minors = super
+          return minors unless @any_bidboxes_empty
+
+          minors.each_with_object([]) do |minor, minors_with_empty|
+            minors_with_empty << @empty_bidbox_minor while @empty_bidboxes[minors_with_empty.size]
+            minors_with_empty << minor
+          end
+        end
+
         def float_corporation(corporation)
           remove_home_icon(corporation, corporation.coordinates) if corporation.type == :major
           super
@@ -635,12 +674,22 @@ module Engine
         def add_home_icon(corporation, coordinates)
           hex = hex_by_id(coordinates)
           # Logo and Icon each add '.svg' to the end - so chop one of them off
-          hex.tile.icons << Part::Icon.new("../#{corporation.logo.chop.chop.chop.chop}", "#{corporation.id}_home")
+          hex.tile.icons << Part::Icon.new("../#{corporation.logo[0..-5]}", "#{corporation.id}_home")
         end
 
         def remove_home_icon(corporation, coordinates)
           hex = hex_by_id(coordinates)
           hex.tile.icons.reject! { |icon| icon.name == "#{corporation.id}_home" }
+        end
+
+        def add_destination_icon(corporation, coordinates)
+          hex = hex_by_id(coordinates)
+          hex.tile.icons << Part::Icon.new("../#{corporation.destination_icon}", "#{corporation.id}_destination")
+        end
+
+        def remove_destination_icon(corporation, coordinates)
+          hex = hex_by_id(coordinates)
+          hex.tile.icons.reject! { |icon| icon.name == "#{corporation.id}_destination" }
         end
 
         def corp_id_from_company_id(id)
@@ -950,8 +999,14 @@ module Engine
         def upgrades_to?(from, to, special = false, selected_company: nil)
           return true if legal_city_and_town_tile(from.hex, to) && from.color == :white
           return true if from.color == :blue && to.color == :blue
-          return to.name == 'PNW3' if boomtown_company?(selected_company)
-          return from.color == :brown if to.name == 'PNW4'
+          if to.name == 'PNW3' || boomtown_company?(selected_company)
+            return to.name == 'PNW3' && boomtown_company?(selected_company)
+          end
+
+          if to.name == 'PNW4'
+            return false unless coal_company?(selected_company)
+            return true if from.color == :brown || from.color == :white
+          end
           return to.name == 'PNW5' if from.name == 'PNW4'
           return tokencity_upgrades_to?(from, to) if tokencity?(from.hex)
 
@@ -1102,6 +1157,14 @@ module Engine
 
         def buyable_bank_owned_companies
           @round.active_step.respond_to?(:hide_bank_companies?) && @round.active_step.hide_bank_companies? ? [] : super
+        end
+
+        def game_end_check
+          if @stock_market.max_reached?
+            %i[stock_market current_or]
+          elsif @bank.broken?
+            [:bank, @round.is_a?(Engine::Round::Operating) ? :full_or : :current_or]
+          end
         end
       end
     end

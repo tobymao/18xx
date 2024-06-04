@@ -12,6 +12,8 @@ module Engine
   module Game
     module G18Norway
       class Game < Game::Base
+        attr_reader :ferry_graph, :jump_graph
+
         include_meta(G18Norway::Meta)
         include Companies
         include Corporations
@@ -109,6 +111,22 @@ module Engine
 
         MOUNTAIN_BIG_HEXES = %w[E21 G21 H22 F26 E27 E29 D30].freeze
         MOUNTAIN_SMALL_HEXES = %w[G19 E23 D26 D28 F28 G27 H28].freeze
+        HARBOR_HEXES = %w[G15 A25 C17 A31 B36].freeze
+        CITY_HARBOR_MAP = {
+          'G17' => 'G15',
+          'B26' => 'A25',
+          'C19' => 'C17',
+          'B32' => 'A31',
+          'C35' => 'B36',
+        }.freeze
+
+        def switcher
+          @switcher ||= corporation_by_id('Ø')
+        end
+
+        def switcher?(corporation)
+          switcher == corporation
+        end
 
         def setup
           MOUNTAIN_BIG_HEXES.each { |hex| hex_by_id(hex).assign!('MOUNTAIN_BIG') }
@@ -117,6 +135,24 @@ module Engine
             type: 'free_tunnel',
             description: 'Free tunnel'
           ))
+
+          switcher.add_ability(Engine::Ability::Base.new(
+            type: 'switcher',
+            description: 'May pass one tokened out city',
+          ))
+
+          @corporations.each do |corporation|
+            ability = Ability::Token.new(type: 'token', hexes: HARBOR_HEXES, extra_slot: true,
+                                         from_owner: true, discount: 0, connected: true)
+            corporation.add_ability(ability)
+          end
+
+          port = corporation_by_id('NSB')
+          port.coordinates.each do |hex_id|
+            token = Token.new(port, logo: '/icons/port.svg', simple_logo: '/icons/port.svg')
+            city = hex_by_id(hex_id).tile.cities[0]
+            city.place_token(port, token)
+          end
         end
 
         def p4
@@ -177,8 +213,8 @@ module Engine
             Engine::Step::HomeToken,
             G18Norway::Step::Track,
             G18Norway::Step::BuildTunnel,
-            Engine::Step::Token,
-            Engine::Step::Route,
+            G18Norway::Step::Token,
+            G18Norway::Step::Route,
             G18Norway::Step::Dividend,
             Engine::Step::DiscardTrain,
             G18Norway::Step::BuyTrain,
@@ -275,6 +311,102 @@ module Engine
 
         def oslo
           @oslo ||= hex_by_id('G29')
+        end
+
+        def init_graph
+          @ferry_graph = Graph.new(self, skip_track: :broad)
+          @jump_graph = Graph.new(self, no_blocking: true)
+          Graph.new(self, skip_track: :narrow)
+        end
+
+        def clear_graph
+          @graph.clear
+          @ferry_graph.clear
+        end
+
+        def clear_graph_for_entity(_entity)
+          clear_graph
+        end
+
+        def can_run_route?(entity)
+          return true if graph_for_entity(entity).route_info(entity)&.dig(:route_available)
+
+          ferry_graph.route_info(entity)&.dig(:route_available)
+        end
+
+        def token_graph_for_entity(_entity)
+          @graph
+        end
+
+        def harbor_token?(city, corporation)
+          harbor_id = CITY_HARBOR_MAP[city.hex.id]
+          return false if harbor_id.nil?
+
+          harbor = hex_by_id(harbor_id)
+          return true if harbor.tile.cities[0].extra_tokens.find { |t| t.corporation == corporation }
+
+          false
+        end
+
+        def for_graph_city_tokened_by?(city, entity, graph)
+          return city_tokened_by?(city, entity) if graph == @graph
+
+          harbor_token?(city, entity)
+        end
+
+        def connected?(a, b, corporation)
+          return true if a.connects_to?(b, corporation)
+
+          [a.a, a.b].each do |part|
+            next unless b.nodes.include?(part)
+            next unless part.city?
+
+            return harbor_token?(part, corporation)
+          end
+          false
+        end
+
+        def check_connected(route, corporation)
+          return if route.ordered_paths.each_cons(2).all? { |a, b| connected?(a, b, corporation) }
+
+          return super unless @round.train_upgrade_assignments[route.train]
+
+          visits = route.visited_stops
+
+          blocked = nil
+
+          if visits.size > 2
+            visits[1..-2].each do |node|
+              next if !node.city? || !node.blocks?(corporation)
+              raise GameError, 'Route can only bypass one tokened-out city' if blocked
+
+              blocked = node
+            end
+          end
+          super(route, nil)
+        end
+
+        def check_route_token(route, token)
+          return if token
+
+          visited = route.visited_stops
+          token = visited.find { |stop| harbor_token?(stop, route.corporation) }
+
+          raise NoToken, 'Route must contain token' unless token
+        end
+
+        def after_buy_company(player, company, price)
+          return super if company.id != 'P7'
+
+          h = hovedbanen
+          share_price = @stock_market.par_prices.find { |pp| pp.price * 2 <= price }
+          @stock_market.set_par(h, share_price)
+          @bank.spend(price, h)
+          abilities(company, :shares) do |ability|
+            ability.shares.each do |share|
+              share_pool.buy_shares(player, share, exchange: :free)
+            end
+          end
         end
       end
     end

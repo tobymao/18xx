@@ -54,9 +54,31 @@ module Engine
             @new_associated_minor.color = old_company.color
             @new_associated_minor.text_color = old_company.text_color
 
-            @game.remove_home_icon(major, major.coordinates)
+            original_home_coordinates = major.coordinates
+            @game.remove_home_icon(major, original_home_coordinates)
             @game.add_home_icon(major, @new_associated_minor.coordinates)
             major.coordinates = @new_associated_minor.coordinates
+
+            home_hex = @game.hex_by_id(major.coordinates)
+            ability = major.all_abilities.find { |a| a.type == :base && a.description.start_with?('Home: ') }
+            ability.description = "Home: #{home_hex.location_name} (#{home_hex.name})"
+            @log << "#{major.name}'s home is now #{home_hex.location_name} (#{home_hex.name})"
+
+            # * M3's home is Great Northern's destination
+            # * M10's home is Northern Pacific's destination
+            # if either of those associations are chosen, the major's original
+            # home becomes its new destination
+            if major.coordinates == major.destination_coordinates
+              dest_coordinates = original_home_coordinates
+              major.destination_coordinates = dest_coordinates
+              dest_hex = @game.hex_by_id(dest_coordinates)
+              ability = major.all_abilities.find { |a| a.type == :base && a.description.start_with?('Destination: ') }
+              ability.description = "Destination: #{dest_hex.location_name} (#{dest_hex.name})"
+              @log << "#{major.name}'s destination is now #{dest_hex.location_name} (#{dest_hex.name})"
+
+              @game.remove_destination_icon(major, major.coordinates)
+              @game.add_destination_icon(major, major.destination_coordinates)
+            end
 
             @game.companies.delete(old_company)
 

@@ -28,7 +28,7 @@ module View
           reduced_price = @game.format_currency(bundle.price - @swap_share.price) if @swap_share
           if step.respond_to?(:modify_purchase_price)
             modified_price = step.modify_purchase_price(bundle)
-            modified_price = nil if bundle.price == modified_price
+            modified_price = nil if bundle.price == modified_price * bundle.num_shares
           end
 
           text = @prefix.to_s
@@ -38,7 +38,7 @@ module View
           text += ' Preferred' if @share.preferred
           text += ' Share'
           text += " (#{reduced_price} + #{@swap_share.percent}% Share)" if @swap_share
-          text += " (#{@game.format_currency(modified_price)})" if modified_price
+          text += " (#{@game.format_currency(modified_price * bundle.num_shares)})" if modified_price
           text += " for #{@purchase_for.name}" if @purchase_for
 
           process_buy = lambda do

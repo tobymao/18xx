@@ -54,12 +54,16 @@ module Engine
           end
 
           def choice_name
+            total_minors_value = (@associated_minor.share_price.price + @unassociated_minor.share_price.price) * 2
+            total_minors_value_str = @game.format_currency(total_minors_value)
+
             case @merge_state
             when :selecting_par
-              'Choose par value for new company'
+              'Choose par value for new company (total value of minors is '\
+              "#{total_minors_value_str})"
             when :selecting_shares
               'Choose number of shares to make up minors value of '\
-              "#{@game.format_currency((@associated_minor.share_price.price + @unassociated_minor.share_price.price) * 2)}"
+              "#{total_minors_value_str}"
             when :selecting_token
               'What to do with the token'
             end

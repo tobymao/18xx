@@ -60,7 +60,7 @@ module Engine
           end
 
           def must_take_loan?(corporation)
-            return false if corporation == @game.rptla
+            return false if corporation == @game.rptla || @game.nationalized?
 
             price = cheapest_train_price(corporation)
             @game.buying_power(corporation) < price
@@ -91,7 +91,7 @@ module Engine
             price = action.price
             remaining = price - buying_power(entity)
             ebuy = must_buy_train?(entity) && remaining.positive? && entity != @game.rptla
-            @game.perform_ebuy_loans(entity, remaining) if ebuy
+            @game.perform_ebuy_loans(entity, remaining) if ebuy && !@game.nationalized?
             @round.loan_taken = true if ebuy
             @game.close_rptla_private! if entity == @game.rptla && action.train.name != '2'
 
@@ -124,6 +124,8 @@ module Engine
           end
 
           def buyable_trains_others(trains)
+            return trains.select { |train| train.owner == @game.depot } if current_entity.cash.zero?
+
             trains.reject { |train| train.name == '7' }
           end
 

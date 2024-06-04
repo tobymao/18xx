@@ -41,7 +41,7 @@ module Engine
             sym: 'GLG',
             value: 50,
             revenue: 10,
-            desc: 'Owning corporation may lay or upgrade a tile in Liège'\
+            desc: 'Owning corporation may lay a or upgrade a yellow tile in Liège'\
                   ' (H17), even if not connected. If it does, it may then'\
                   ' optionally place a token for free there.'\
                   ' This counts as one of the corporation\'s tile builds and token laying'\
@@ -51,7 +51,7 @@ module Engine
                           type: 'teleport',
                           owner_type: 'corporation',
                           hexes: ['H17'],
-                          tiles: %w[14 15 57 619 X14 X15 X16 X17 X18 X19 35 36 118],
+                          tiles: %w[57 14 15 619],
                         }],
             color: '#d9d9d9',
           },
@@ -60,7 +60,7 @@ module Engine
             sym: 'SAC',
             value: 50,
             revenue: 10,
-            desc: 'Owning corporation may lay or upgrade a tile in Antwerpen'\
+            desc: 'Owning corporation may lay or upgrade a yellow tile in Antwerpen'\
                   ' (D17), even if not connected. If it does, it may then '\
                   ' optionally place a token for free there.'\
                   ' This counts as one of the corporation\'s tile builds and token laying'\
@@ -70,7 +70,7 @@ module Engine
                           type: 'teleport',
                           owner_type: 'corporation',
                           hexes: ['D17'],
-                          tiles: %w[14 15 57 619 X14 X15 X16 X17 X18 X19 35 36 118],
+                          tiles: %w[57 14 15 619],
                         }],
             color: '#d9d9d9',
           },
