@@ -20,14 +20,16 @@ module Engine
             LOGGER.debug " buyable companies: #{buyable_companies(current_entity).map(&:name).join(', ')}"
           end
 
-          def debug_corp_log(share, str = '')
-            corp = share.corporation
+          def debug_corp_log(bundle, str = '')
+            corp = bundle.corporation
             p_s = corp.presidents_share
             LOGGER.debug(str)
-            LOGGER.debug "> share: #{share.id} / owner: #{share.owner.name} / corp: #{corp}"
-            LOGGER.debug "> corp owner: #{corp.owner ? corp.owner.name : 'nil'} / PS owner: #{p_s.owner.name} at #{p_s.percent}%"
-            LOGGER.debug "> floated: #{corp.floated} / iposhares #{corp.ipo_shares}"
-            LOGGER.debug "> #{current_entity&.name} shares: #{current_entity.shares.select { |s| s.corporation == corp }}"
+            LOGGER.debug "> bundle: #{bundle.inspect} / owner: #{bundle.owner.name} "
+            LOGGER.debug "> corp owner: #{corp.owner ? corp.owner.name : 'nil'} / PS owner: #{p_s.owner.name} at "\
+                         "#{p_s.percent}% / shares: #{p_s.owner.shares.select { |s| s.corporation == corp }.map(&:id)}"
+            LOGGER.debug "> floated: #{corp.floated} / iposhares: #{corp.ipo_shares.map(&:id)}"
+            LOGGER.debug "> #{current_entity&.name} shares: "\
+                         " #{current_entity.shares.select { |s| s.corporation == corp }.map(&:id)}"
           end
 
           def log_pass(entity)
@@ -223,6 +225,7 @@ module Engine
 
           # Separates share proxies from companies, track location of poxy when bought
           def process_buy_company(action)
+            LOGGER.debug "Process Buy Company: #{action.inspect}"
             entity = action.entity
             company = action.company
             price = action.price
@@ -264,9 +267,10 @@ module Engine
                 maybe_place_home_token(corp)
               end
               log_new_president(corp.owner, old_pres, corp)
-              # debug_corp_log(share)
+              debug_corp_log(bundle, 'Process Buy Company (proxy share)')
             when :president
               share = company.treasury
+              bundle = ShareBundle.new(share)
               corp = share.corporation
               old_pres = corp.owner
               share.buyable = true
@@ -280,11 +284,12 @@ module Engine
                 maybe_place_home_token(corp)
               elsif corp.manager_need_directors_share?
                 # corp was a managed corp and manager needs director's cert
-                corp.owner = corp.managers_share.owner
-                @game.swap_director_share(share, entity, corp.owner, corp)
+                old_manager = corp.managers_share.owner
+                corp.owner = old_manager
+                @game.share_pool.change_president(share, entity, old_manager)
               end
               log_new_president(corp.owner, old_pres, corp)
-              # debug_corp_log(share)
+              debug_corp_log(bundle, 'Process Buy Company (Director Cert)')
             when :private, :bond
               company.owner = entity
               entity.companies << company
@@ -292,7 +297,6 @@ module Engine
               log_purchase(company.name, location, price)
               @game.after_buy_company(entity, company, price) if entity.player?
             end
-            # debugging_log('Process Buy Company')
           end
 
           def log_purchase(what, where, price)
@@ -310,7 +314,7 @@ module Engine
             # Assign Manager if none yet
             corp = action.bundle.corporation
             corp.make_manager(action.entity) if corp.owner.nil?
-
+            LOGGER.debug "Process Buy Shares: #{action.inspect}"
             super
             @round.bought_from_market = true
           end
@@ -369,7 +373,7 @@ module Engine
 
           # modify for debugging
           def process_sell_shares(action)
-            debug_corp_log(action.bundle, 'Beginning of Process Sell Shares')
+            LOGGER.debug "Process Sell Shares: #{action.inspect} "
             super
             debug_corp_log(action.bundle, 'End of Process Sell Shares')
           end

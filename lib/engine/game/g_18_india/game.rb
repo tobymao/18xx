@@ -235,7 +235,13 @@ module Engine
 
         # Include bond shares for cache_objects
         def shares
-          @corporations.flat_map(&:shares) + @players.flat_map(&:shares) + @share_pool.shares + gipr.bond_shares
+          LOGGER.debug "@corporations.flat_map(&:shares) => #{@corporations.flat_map(&:shares)}"
+          LOGGER.debug "@players.flat_map(&:shares) => #{@players.flat_map(&:shares)}"
+          LOGGER.debug "@share_pool.shares => #{@share_pool.shares}"
+          LOGGER.debug "gipr.bond_shares => #{gipr.bond_shares}"
+          LOGGER.debug "@ipo_pool shares => #{@ipo_pool.shares}"
+          @ipo_pool.shares + @corporations.flat_map(&:shares) + @players.flat_map(&:shares) +
+            @share_pool.shares + gipr.bond_shares
         end
 
         def setup_preround
@@ -266,6 +272,8 @@ module Engine
 
           @log << "-- #{round_description('Hand Selection')} --"
           @log << "Select #{certs_to_keep} Certificates for your starting hand"
+
+          LOGGER.debug "shares: #{shares.map(&:id)}"
         end
 
         def setup_corporations_by_region!(corporations)
