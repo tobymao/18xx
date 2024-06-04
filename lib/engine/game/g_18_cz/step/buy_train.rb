@@ -73,6 +73,7 @@ module Engine
           end
 
           def train_available?(entity, train)
+            return false if needs_usable_train?(entity) && !@game.train_of_size?(train, entity.type)
             return true if @game.train_of_size?(train, entity.type) || @game.train_of_size?(train, :small)
             return false if entity.type == :small
 
@@ -99,6 +100,10 @@ module Engine
           def must_take_player_loan?(corporation)
             price = cheapest_train_price(corporation)
             (@game.buying_power(corporation) + corporation.owner.cash) < price
+          end
+
+          def needs_usable_train?(entity)
+            @game.train_limit(entity) - @game.num_corp_trains(entity) == 1 && must_buy_train?(entity)
           end
         end
       end

@@ -218,6 +218,8 @@ module View
             children << if @step.must_issue_before_ebuy?(@corporation)
                           h(:div, "#{@corporation.name} must buy a train from another corporation, "\
                                   'or issue shares and then buy an available train ')
+                        elsif @step.respond_to?(:needs_usable_train?) && @step.needs_usable_train?(@corporation)
+                          h(:div, "#{@corporation.name} must buy a train that it can run")
                         else
                           h(:div, "#{@corporation.name} must buy an available train")
                         end
