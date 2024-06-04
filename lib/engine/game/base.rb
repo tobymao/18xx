@@ -106,7 +106,7 @@ module Engine
       #   after: When game should end if check triggered
       # Leave out a reason if game does not support that.
       # Allowed reasons:
-      #  bankrupt, stock_market, bank, final_train, final_phase, custom
+      #  bankrupt, stock_market, bank, final_train, final_phase, all_closed, custom
       # Allowed after:
       #  immediate - ends in current turn
       #  current_round - ends at the end of the current round
@@ -825,7 +825,7 @@ module Engine
         while @round.finished? && !@finished
           @round.entities.each(&:unpass!)
 
-          if end_now?(end_timing)
+          if end_now?(end_timing) || @turn >= 100
             end_game!
           else
             transition_to_next_round!
@@ -836,7 +836,7 @@ module Engine
       end
 
       def rescue_exception(e, action)
-        LOGGER.debug { "Caught exception #{e.inspect}, backtrace: [#{e.backtrace.join(', ')}]" }
+        LOGGER.debug { %(Caught exception #{e.inspect}, backtrace: [#{e.backtrace.join("\n")}]) }
         @raw_actions.pop
         @actions.pop
         @exception = e
@@ -1364,6 +1364,10 @@ module Engine
 
       def city_tokened_by?(city, entity)
         city.tokened_by?(entity)
+      end
+
+      def for_graph_city_tokened_by?(_city, _entity, _graph)
+        false
       end
 
       def check_route_token(_route, token)
@@ -2333,6 +2337,10 @@ module Engine
         @players
       end
 
+      def show_company_owners?
+        true
+      end
+
       private
 
       def init_graph
@@ -2704,6 +2712,7 @@ module Engine
 
       def game_end_check
         triggers = {
+          all_closed: all_closed?,
           bankrupt: bankruptcy_limit_reached?,
           bank: @bank.broken?,
           stock_market: @stock_market.max_reached?,
@@ -2722,6 +2731,10 @@ module Engine
         end
 
         nil
+      end
+
+      def all_closed?
+        (@corporations + @companies).reject(&:closed?).empty?
       end
 
       def final_or_in_set?(round)
@@ -2793,13 +2806,24 @@ module Engine
       end
 
       def action_processed(_action)
-        close_corporations_in_close_cell!
+        return unless close_corporations_in_close_cell!
+
+        # Closing corporations can end up removing the current entity's only
+        # available actions, for example if all they could do was sell shares in
+        # the now closed corporation. If that is the case, skip to the next
+        # entity.
+        return unless active_step&.actions(current_entity)&.empty?
+
+        @round.skip_steps
+        @round.next_entity!
       end
 
       # close_corporation() might cause another corporation to need closing; if
       # this function is called multiple times before resolving, corporations
       # that should be closed are added to @closing_queue, but the closing loop
       # is not re-entered
+      #
+      # returns true if any corporations were closed
       def close_corporations_in_close_cell!
         return unless stock_market.has_close_cell
 
@@ -2809,13 +2833,18 @@ module Engine
 
         return if @corporations_are_closing
 
+        closed_any = false
+
         @corporations_are_closing = true
         until @closing_queue.empty?
           corp = @closing_queue.first[0]
           @closing_queue.delete(corp)
           close_corporation(corp)
+          closed_any = true
         end
         @corporations_are_closing = false
+
+        closed_any
       end
 
       def show_priority_deal_player?(order)

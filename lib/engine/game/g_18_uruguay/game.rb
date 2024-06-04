@@ -33,6 +33,7 @@ module Engine
         include Nationalization
 
         EBUY_SELL_MORE_THAN_NEEDED = true
+        EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
 
         register_colors(darkred: '#ff131a',
                         red: '#d1232a',
@@ -489,6 +490,10 @@ module Engine
           @log << "#{corporation.name} connected to destination receives #{format_currency(amount)}"
         end
 
+        def corporation_show_loans?(corporation)
+          !corporation.minor?
+        end
+
         def sell_movement(corporation = nil)
           return :left_block if corporation == @rptla
 
@@ -499,6 +504,24 @@ module Engine
           return false if @turn <= 1 && !@round.operating?
 
           super(entity, bundle)
+        end
+
+        def can_rptla_go_bankrupt?(player, corporation, train)
+          price = train.variants.map { |_, v| v[:name].include?('Ship') ? v[:price] : 999 }.min
+
+          total_emr_buying_power(player, corporation) < price
+        end
+
+        def can_go_bankrupt?(player, corporation)
+          depot_trains = @depot.depot_trains
+          train = depot_trains.min_by(&:price)
+
+          return can_rptla_go_bankrupt?(player, corporation, train) if corporation == @rptla
+          return false unless nationalized?
+
+          price = train.variants.map { |_, v| v[:name].include?('Ship') ? 999 : v[:price] }.min
+
+          total_emr_buying_power(player, corporation) < price
         end
       end
     end

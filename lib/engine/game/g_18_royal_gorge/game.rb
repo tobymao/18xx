@@ -546,6 +546,8 @@ module Engine
         end
 
         def or_round_finished
+          return unless @treaty_of_boston
+
           # debt increases
           old_price = @debt_corp.share_price
           @stock_market.move_right(@debt_corp)
@@ -863,10 +865,16 @@ module Engine
               hex = action.hex
 
               hex.original_tile.icons.each do |icon|
-                if icon.name == 'mine'
-                  action.hex.tile.icons << Part::Icon.new('../icons/18_royal_gorge/gold_cube', 'gold')
-                  @gold_cubes[hex.id] += 1
-                end
+                next unless icon.name == 'mine'
+
+                action.hex.tile.icons << Part::Icon.new(
+                  '../icons/18_royal_gorge/gold_cube',
+                  'gold', # name
+                  true, # sticky
+                  nil, # blocks_lay
+                  false, # preprinted
+                )
+                @gold_cubes[hex.id] += 1
               end
             end
             if !@updated_sulphur_springs_company_revenue && sulphur_springs&.owner&.player?

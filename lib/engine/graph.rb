@@ -126,7 +126,7 @@ module Engine
       compute(corporation)
       @game.hexes.each do |hex|
         hex.tile.cities.each do |city|
-          next unless @game.city_tokened_by?(city, corporation)
+          next if !@game.city_tokened_by?(city, corporation) && !@game.for_graph_city_tokened_by?(city, corporation, self)
           next if @check_tokens && @game.skip_token?(self, corporation, city)
 
           compute(corporation, one_token: city)
@@ -183,7 +183,7 @@ module Engine
         hex.tile.cities.each do |city|
           next if one_token && (city != one_token)
 
-          next unless @game.city_tokened_by?(city, corporation)
+          next if !@game.city_tokened_by?(city, corporation) && !@game.for_graph_city_tokened_by?(city, corporation, self)
           next if @check_tokens && @game.skip_token?(self, corporation, city)
 
           hex.neighbors.each { |e, _| hexes[hex][e] = true }
