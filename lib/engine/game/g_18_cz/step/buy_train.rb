@@ -103,7 +103,7 @@ module Engine
           end
 
           def needs_usable_train?(entity)
-            @game.train_limit(entity) - @game.num_corp_trains(entity) == 1 && must_buy_train?(entity)
+            must_buy_train?(entity) && @game.train_limit(entity) - @game.num_corp_trains(entity) == 1
           end
         end
       end
