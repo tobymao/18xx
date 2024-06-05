@@ -61,7 +61,7 @@ module Engine
             (1..2).map do |num_shares|
               shares = corp_shares.take(num_shares)
               bundle = ShareBundle.new(shares)
-              @_modify_purchase_price[bundle] = (bundle.price_per_share / 2.0).ceil
+              @_modify_purchase_price[bundle] = (bundle.price / 2.0).ceil
               [@game.mint_worker, bundle]
             end
           end
