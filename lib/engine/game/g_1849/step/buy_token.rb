@@ -49,10 +49,6 @@ module Engine
             !token.city.tokened_by?(entity)
           end
 
-          # look for any cities reachable from entity that are tokened by another corporation that
-          # has at least 2 tokens placed
-          #
-          # this is expensive - move to auto_actions
           def any_buyable_tokens_placed?(entity)
             @game.token_graph_for_entity(entity).connected_nodes(entity).keys.each do |node|
               next unless node.city?
@@ -73,7 +69,7 @@ module Engine
             super
           end
 
-          # 1849 doesn't allow more than one token per corporation per tile
+          # Can't buy a token from another corp if your corp already has a token on that city
           def can_token_city?(entity, city)
             city.tile.nodes.select(&:city?).none? { |c| c.tokened_by?(entity) }
           end
