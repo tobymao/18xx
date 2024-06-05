@@ -44,7 +44,6 @@ module Engine
           end
 
           def can_sell_token?(token, entity)
-            token.corporation.placed_tokens.size > 1 &&
             token != token.corporation.tokens.first &&
             !token.city.tokened_by?(entity)
           end
