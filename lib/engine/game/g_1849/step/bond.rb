@@ -23,7 +23,7 @@ module Engine
           end
 
           def log_skip(entity)
-            super if @game.bonds? && !@game.phase.status.include?('gray_uses_white')
+            super if @game.bonds? && !@game.phase.status.include?('no_bonds')
           end
 
           def take_loan_button_text
