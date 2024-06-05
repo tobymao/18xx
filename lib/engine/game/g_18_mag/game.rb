@@ -683,7 +683,7 @@ module Engine
                        0
                      end
 
-          ciwl_add = ciwl_delta if new_major? && red_to_red_route?(route)
+          ciwl_add =  new_major? && red_to_red_route?(route) ? ciwl_delta : 0
 
           corp_tokens = stops.select(&:city?).sum { |c| c.tokens.count { |t| t&.corporation&.corporation? } }
 
