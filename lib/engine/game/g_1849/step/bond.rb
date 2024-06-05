@@ -36,7 +36,7 @@ module Engine
 
           def can_payoff_loan?(entity)
             !@round.issued_bond[entity] &&
-              entity.loans.any? &&
+              !entity.loans.empty? &&
               entity.cash >= entity.loans.first.amount
           end
 
