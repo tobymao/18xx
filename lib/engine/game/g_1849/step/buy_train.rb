@@ -52,7 +52,7 @@ module Engine
           end
 
           def can_buy_e?(entity)
-            entity.e_token == true &&
+            entity.e_token &&
               e_train.price <= entity.cash
           end
 

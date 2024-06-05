@@ -43,7 +43,7 @@ module Engine
           end
 
           def e_token_cost
-            if @game.e_token_sold == true
+            if @game.e_token_sold
               @game.phase.name == '12H' ? 800 : 550
             else
               @game.phase.name == '12H' ? 1100 : 800
