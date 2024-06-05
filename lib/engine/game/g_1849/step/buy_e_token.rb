@@ -63,7 +63,6 @@ module Engine
             @log << "#{corporation.name} can now buy E-Trains."
             corporation.e_token = true
             @game.e_token_sold = true
-            # @acted = false
           end
 
           def can_buy_e_token?(entity)
