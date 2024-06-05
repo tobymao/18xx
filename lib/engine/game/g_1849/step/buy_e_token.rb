@@ -8,9 +8,8 @@ module Engine
       module Step
         class BuyEToken < Engine::Step::Base
           def actions(entity)
-            actions = super.dup
+            actions = []
             actions += %w[choose pass] if can_buy_e_token?(entity)
-
             actions.uniq
           end
 
@@ -24,7 +23,7 @@ module Engine
 
           def choices
             choices = []
-            choices << ["Buy E-Token for #{@game.format_currency(e_token_cost)}"] if can_buy_e_token?(current_entity)
+            choices << ["Buy E-Token for #{@game.format_currency(e_token_cost)}"]
             choices
           end
 
