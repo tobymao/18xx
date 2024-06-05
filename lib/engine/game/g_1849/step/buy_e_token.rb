@@ -52,7 +52,7 @@ module Engine
           def process_choose(action)
             raise GameError, 'Cannot buy E-token' unless can_buy_e_token?(action.entity)
 
-            buy_e_token(action.entity) if action.choice == "Buy E-Token for #{@game.format_currency(e_token_cost)}"
+            buy_e_token(action.entity)
           end
 
           def buy_e_token(corporation)
