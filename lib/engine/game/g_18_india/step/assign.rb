@@ -22,7 +22,7 @@ module Engine
             super
             return unless action.entity.id == 'P6'
 
-            @game.claim_concession(['JEWELRY'], current_entity)
+            @game.claim_concession(current_entity, 'JEWELRY')
             action.target.location_name = 'JEWELRY'
             action.target.tile.location_name = 'JEWELRY'
           end
