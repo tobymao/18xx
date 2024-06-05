@@ -93,7 +93,7 @@ module Engine
           end
 
           def pass_description
-            'Skip (Buy a Token)'
+            'Pass (Buy a Token)'
           end
 
           def log_skip(entity)
