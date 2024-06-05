@@ -907,7 +907,7 @@ module Engine
 
         # source for new "corporate_buy_company" view
         def corporate_purchasable_companies(_entity = nil)
-          (bank_owned_companies + top_of_ipo_rows).flatten
+          bank_owned_companies
         end
 
         # source for "buy_company" view
