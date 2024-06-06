@@ -28,6 +28,13 @@ module Engine
             short_name: '$400 Finish',
             desc: 'Game ends as soon as a corporation hits 400 on the stock market. No further operations.',
           },
+          {
+            sym: :station_wars,
+            short_name: 'Station Wars',
+            desc: 'Destination tokens on non-offboard hexes now use up a token space. A new space is created if '\
+                  'no space is available, but if the tile is later upgraded and a new token space would be opened, the '\
+                  'destination token will fill that space.',
+          },
         ].freeze
       end
     end
