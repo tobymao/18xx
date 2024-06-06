@@ -30,7 +30,7 @@ module Engine
           },
           {
             sym: :station_wars,
-            short_name: 'Station Wars',
+            short_name: 'Station Marker Wars',
             desc: 'Destination tokens on non-offboard hexes now use up a token space. A new space is created if '\
                   'no space is available, but if the tile is later upgraded and a new token space would be opened, the '\
                   'destination token will fill that space.',
