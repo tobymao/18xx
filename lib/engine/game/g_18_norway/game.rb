@@ -197,6 +197,7 @@ module Engine
           @all_tiles.each { |t| t.ignore_gauge_walk = true }
           @_tiles.values.each { |t| t.ignore_gauge_walk = true }
           @hexes.each { |h| h.tile.ignore_gauge_walk = true }
+          update_cert_limit
 
           # Allow to build against Mjosa
           hex_by_id('H26').neighbors[1] = hex_by_id('G27')
@@ -481,6 +482,17 @@ module Engine
           token = visited.find { |stop| harbor_token?(stop, route.corporation) }
 
           raise NoToken, 'Route must contain token' unless token
+        end
+
+        def update_cert_limit_to(new_cert_limit)
+          @cert_limit = new_cert_limit
+          @log << "Certificate limit is now #{@cert_limit}"
+        end
+
+        def update_cert_limit
+          nr = @corporations.sum(0) { |corporation| nationalized?(corporation) ? 1 : 0 }
+          new_cert_limit = CERT_LIMIT[@players.size][nr]
+          update_cert_limit_to(new_cert_limit) unless @cert_limit == new_cert_limit
         end
 
         def after_buy_company(player, company, price)
