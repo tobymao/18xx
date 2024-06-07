@@ -256,7 +256,7 @@ module Engine
                       :loan_choice_player, :player_debts,
                       :max_value_reached,
                       :old_operating_order, :moved_this_turn,
-                      :e_tokens_counter, :e_token_sold, :e_token
+                      :e_token_sold, :e_token
 
         def option_delay_ift?
           @optional_rules&.include?(:delay_ift)
