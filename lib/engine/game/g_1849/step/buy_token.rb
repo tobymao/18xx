@@ -10,21 +10,29 @@ module Engine
           ACTIONS = %w[buy_token pass].freeze
           MIN_PRICE = 1
 
-          def setup
-            super
-
-            @bought_token = false
-          end
-
           def actions(entity)
+            return [] unless entity == current_entity
             return [] unless can_buy_token?(entity)
 
             ACTIONS
           end
 
+          def round_state
+            super.merge(
+              {
+                bought_token: false,
+              }
+            )
+          end
+
+          def setup
+            super
+            @round.bought_token = false
+          end
+
           def can_buy_token?(entity)
             @game.acquiring_station_tokens? &&
-              @game.phase.status.include?(:no_buy_tokens) &&
+              @game.phase.tiles.include?(:green) &&
               current_entity == entity &&
               !@round.bought_token &&
               !available_tokens(entity).empty? &&
@@ -55,9 +63,9 @@ module Engine
           end
 
           def auto_actions(entity)
-            return super if @game.phase.status.include?(:no_buy_tokens) || any_buyable_tokens_placed
+            return [Engine::Action::Pass.new(entity)] unless any_buyable_tokens_placed?(entity)
 
-            [Engine::Action::Pass.new(entity)]
+            super
           end
 
           # Can't buy a token from another corp if your corp already has a token on that city
@@ -89,7 +97,7 @@ module Engine
           end
 
           def log_skip(entity)
-            return if !@game.acquiring_station_tokens? || !@game.phase.status.include?(:no_buy_tokens)
+            return if !@game.acquiring_station_tokens? || !@game.phase.tiles.include?(:green)
 
             @log << "#{entity.name} can't buy any tokens from other corporations"
           end

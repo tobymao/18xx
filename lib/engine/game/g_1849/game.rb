@@ -60,7 +60,7 @@ module Engine
             train_limit: 4,
             tiles: [:yellow],
             operating_rounds: 1,
-            status: %w[gray_uses_white no_bonds no_buy_tokens],
+            status: %w[gray_uses_white no_bonds],
           },
           {
             name: '6H',
@@ -256,7 +256,7 @@ module Engine
                       :loan_choice_player, :player_debts,
                       :max_value_reached,
                       :old_operating_order, :moved_this_turn,
-                      :e_token_sold, :e_token
+                      :e_tokens_counter, :e_token_sold, :e_token
 
         def option_delay_ift?
           @optional_rules&.include?(:delay_ift)
