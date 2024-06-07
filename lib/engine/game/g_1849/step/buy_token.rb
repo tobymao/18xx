@@ -55,9 +55,9 @@ module Engine
           end
 
           def auto_actions(entity)
-            return [Engine::Action::Pass.new(entity)] unless any_buyable_tokens_placed?(entity)
+            return super if @game.phase.status.include?(:no_buy_tokens) || any_buyable_tokens_placed
 
-            super
+            [Engine::Action::Pass.new(entity)]
           end
 
           # Can't buy a token from another corp if your corp already has a token on that city
