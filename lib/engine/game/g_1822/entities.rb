@@ -1132,6 +1132,7 @@ module Engine
             city: 4,
             color: '#ffffff',
             text_color: 'black',
+            abilities: [{ type: 'blocks_hexes_consent', owner_type: 'player', hexes: ['N37'], hidden: true }],
           },
           {
             sym: '16',
@@ -1148,6 +1149,7 @@ module Engine
             city: 2,
             color: '#ffffff',
             text_color: 'black',
+            abilities: [{ type: 'blocks_hexes_consent', owner_type: 'player', hexes: ['L37'], hidden: true }],
           },
           {
             sym: '17',
