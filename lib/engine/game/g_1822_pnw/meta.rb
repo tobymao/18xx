@@ -38,6 +38,12 @@ module Engine
             name: 'Short Scenario',
             title: '1822PNW Short Scenario',
           },
+          {
+            sym: :srs,
+            name: 'Southern Regional Scenario',
+            title: '1822PNW SRS',
+            desc: '(2-3 players) shorter game using only companies on the southern part of the map',
+          },
         ].freeze
 
         def self.check_options(options, _min_players, _max_players)
