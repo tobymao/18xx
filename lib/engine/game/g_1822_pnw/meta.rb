@@ -32,6 +32,14 @@ module Engine
           },
         ].freeze
 
+        GAME_VARIANTS = [
+          {
+            sym: :short,
+            name: 'Short Scenario',
+            title: '1822PNW Short Scenario',
+          },
+        ].freeze
+
         def self.check_options(options, _min_players, _max_players)
           optional_rules = (options || []).map(&:to_sym)
           return if !optional_rules.include?(:remove_two_ls) || !optional_rules.include?(:remove_three_ls)
