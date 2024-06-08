@@ -23,6 +23,11 @@ module Engine
         PLAYER_RANGE = [3, 5].freeze
         OPTIONAL_RULES = [
           {
+            sym: :starting_packet,
+            short_name: 'Starting Packet Variant',
+            desc: 'Quick start setup for players new to 1822/1822PNW to jump right into operating round action.',
+          },
+          {
             sym: :remove_two_ls,
             short_name: 'Remove two L/2 trains',
           },
@@ -48,9 +53,13 @@ module Engine
 
         def self.check_options(options, _min_players, _max_players)
           optional_rules = (options || []).map(&:to_sym)
-          return if !optional_rules.include?(:remove_two_ls) || !optional_rules.include?(:remove_three_ls)
-
-          { error: 'Cannot use both L/2 Train Roster Adjustment Variants' }
+          remove_two = optional_rules.include?(:remove_two_ls)
+          remove_three = optional_rules.include?(:remove_three_ls)
+          if optional_rules.include?(:starting_packet) && (remove_two || remove_three)
+            { error: 'Cannot use L/2 Train Roster Adjustment with the Starting Packet Variant' }
+          elsif remove_two && remove_three
+            { error: 'Cannot use both L/2 Train Roster Adjustment Variants' }
+          end
         end
       end
     end
