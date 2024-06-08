@@ -182,8 +182,6 @@ module Engine
 
         TWO_HOME_CORPORATION = 'CPR'
 
-        COMPANIES_NONCERT = ['P11'].freeze
-
         PRIVATE_COMPANIES_ACQUISITION = {
           'P1' => { acquire: %i[major], phase: 5 },
           'P2' => { acquire: %i[major minor], phase: 1 },
