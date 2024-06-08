@@ -13,7 +13,7 @@ module Engine
 
           def log_skip(entity)
             return if entity.minor?
-            return if entity== @game.rptla
+            return if entity == @game.rptla
 
             super
           end
