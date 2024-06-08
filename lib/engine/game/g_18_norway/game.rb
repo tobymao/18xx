@@ -141,6 +141,11 @@ module Engine
             description: 'May pass one tokened out city',
           ))
 
+          corporation_by_id('J').add_ability(Engine::Ability::Base.new(
+            type: 'mail_contract',
+            description: 'Mail contract 10/20/30',
+          ))
+
           @corporations.each do |corporation|
             ability = Ability::Token.new(type: 'token', hexes: HARBOR_HEXES, extra_slot: true,
                                          from_owner: true, discount: 0, connected: true)
@@ -201,6 +206,18 @@ module Engine
           cost = route_cost(route)
           str += " -Fee(#{cost})" if cost.positive?
           str
+        end
+
+        def routes_revenue(routes)
+          revenue = super(routes)
+          return 0 if revenue.zero?
+          return revenue if routes.empty?
+          return revenue unless abilities(routes.first.train.owner, :mail_contract)
+
+          revenue += 10 if @phase.tiles.include?(:yellow)
+          revenue += 10 if @phase.tiles.include?(:green)
+          revenue += 10 if @phase.tiles.include?(:brown)
+          revenue
         end
 
         def operating_round(round_num)
