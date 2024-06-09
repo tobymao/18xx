@@ -540,7 +540,15 @@ module Engine
         end
 
         def acting_for_entity(entity)
-          entity == ndem ? active_players.first : super
+          if entity == ndem
+            if current_entity == ndem
+              active_players.first
+            else
+              players.find { |p| ndem.player_share_holders[p]&.positive? } || players.first
+            end
+          else
+            super
+          end
         end
 
         def set_private_revenues
