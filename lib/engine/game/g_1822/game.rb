@@ -1350,7 +1350,7 @@ module Engine
 
           # Set the reservation color of all the minors in the bid boxes
           @bidbox_minors_cache.each do |company_id|
-            corporation_by_id(company_id[1..-1]).reservation_color = self.class::BIDDING_BOX_MINOR_COLOR
+            corporation_by_id(company_id[1..-1])&.reservation_color = self.class::BIDDING_BOX_MINOR_COLOR
           end
         end
 
