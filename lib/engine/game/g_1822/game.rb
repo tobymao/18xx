@@ -1918,14 +1918,14 @@ module Engine
           return false if tile.name == 'BC'
           return false unless ability.player
           return false if entity.player == ability.player
-          return false unless ability.hexes.include?(hex.id)
-          return false if hex.tile.blockers.map(&:player).include?(entity.player)
+          return false if ability.hexes.none? { |h| h.id == hex.id }
+          return false if hex.tile.blockers.any? { |b| b.player == entity.player }
 
           true
         end
 
         def legal_tile_rotation?(entity, hex, tile)
-          rights_owners = hex.tile.blockers.map(&:owner).compact.uniq
+          rights_owners = hex.tile.blockers.map(&:player).compact.uniq
           return true if rights_owners.delete(acting_for_entity(entity))
 
           rights_owners.empty? ? legal_if_stubbed?(hex, tile) : super
