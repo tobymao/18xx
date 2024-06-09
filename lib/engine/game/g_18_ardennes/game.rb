@@ -41,6 +41,7 @@ module Engine
         HOME_TOKEN_TIMING = :par
 
         MUST_BUY_TRAIN = :always # Just for majors, minors are handled in #must_buy_train?
+        EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
         BANKRUPTCY_ALLOWED = true
         BANKRUPTCY_ENDS_GAME_AFTER = :all_but_one
 
