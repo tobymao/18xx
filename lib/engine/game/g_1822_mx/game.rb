@@ -143,7 +143,7 @@ module Engine
         end
 
         def cube_company?(entity)
-          entity.id == 'P10' || entity.id == 'P11'
+          entity && (entity.id == 'P10' || entity.id == 'P11')
         end
 
         BIDDING_BOX_START_PRIVATE = 'P1'
@@ -655,6 +655,7 @@ module Engine
 
         def upgrades_to?(from, to, special = false, selected_company: nil)
           return true if from.color == :blue && to.color == :blue
+          return false if cube_company?(selected_company) && to.name != 'BC'
 
           super
         end
