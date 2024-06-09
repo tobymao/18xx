@@ -140,6 +140,7 @@ module Engine
       CERT_LIMIT_TYPES = %i[multiple_buy unlimited no_cert_limit].freeze
       # Does the cert limit decrease when a player becomes bankrupt?
       CERT_LIMIT_CHANGE_ON_BANKRUPTCY = false
+      CERT_LIMIT_CHANGE_ON_CORP_CLOSE = false
       CERT_LIMIT_INCLUDES_PRIVATES = true
       # Does the cert limit care about how many players started the game or how
       # many remain?
@@ -1835,7 +1836,7 @@ module Engine
         end
 
         corporation.close!
-        @cert_limit = init_cert_limit
+        @cert_limit = init_cert_limit if self.class::CERT_LIMIT_CHANGE_ON_CORP_CLOSE
 
         # when the entity after the closing one starts operating, it might skip
         # all its steps and land in a closing cell too
