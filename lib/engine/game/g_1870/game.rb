@@ -36,8 +36,6 @@ module Engine
           6 => { 10 => 11, 9 => 9 },
         }.freeze
 
-        CERT_LIMIT_CHANGE_ON_CORP_CLOSE = true
-
         STARTING_CASH = { 2 => 1050, 3 => 700, 4 => 525, 5 => 420, 6 => 350 }.freeze
 
         CAPITALIZATION = :full

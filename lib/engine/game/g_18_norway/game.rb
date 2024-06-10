@@ -40,7 +40,6 @@ module Engine
         POOL_SHARE_DROP = :left_block
         SELL_AFTER = :p_any_operate
         SELL_MOVEMENT = :left_block
-        CERT_LIMIT_COUNTS_BANKRUPTED = true
         HOME_TOKEN_TIMING = :float
 
         EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false

@@ -34,8 +34,6 @@ module Engine
 
         CERT_LIMIT_RECEIVERSHIP_REDUCTION = { 3 => 2, 4 => 2, 5 => 1, 6 => 1 }.freeze
 
-        CERT_LIMIT_CHANGE_ON_CORP_CLOSE = true
-
         STARTING_CASH = { 3 => 840, 4 => 630, 5 => 510, 6 => 430 }.freeze
 
         K_BONUS = { 0 => 0, 1 => 0, 2 => 50, 3 => 100, 4 => 150, 5 => 200 }.freeze
