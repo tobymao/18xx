@@ -32,12 +32,6 @@ module Engine
               @game.share_pool.fit_in_bank?(bundle)
             # For NDEM, removed the "bundle.can_dump?" check
           end
-
-          def can_dump?(entity, bundle)
-            return super unless bundle.corporation.id == 'NDEM'
-
-            true
-          end
         end
       end
     end

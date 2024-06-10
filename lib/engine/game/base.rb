@@ -1128,17 +1128,9 @@ module Engine
         return value_for_sellable(player, corporation) if self.class::PRESIDENT_SALES_TO_MARKET
 
         max_bundle = bundles_for_corporation(player, corporation)
-          .select { |bundle| can_dump?(player, bundle) && @share_pool&.fit_in_bank?(bundle) }
+          .select { |bundle| bundle.can_dump?(player) && @share_pool&.fit_in_bank?(bundle) }
           .max_by(&:price)
         max_bundle&.price || 0
-      end
-
-      def can_dump?(entity, bundle)
-        if active_step.respond_to?(:can_dump?)
-          active_step.can_dump?(entity, bundle)
-        else
-          bundle.can_dump?(entity)
-        end
       end
 
       def issuable_shares(_entity)
