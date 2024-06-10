@@ -41,11 +41,13 @@ module Engine
             destination.remove_assignment!(entity)
 
             if action.choice == 'Map'
-              if @game.station_wars? && STATION_WARS_CORPS.include?(entity.id)
-                destination.tile.cities.first.place_token(entity, token, free: true, cheater: true)
-              else
-                destination.tile.cities.first.place_token(entity, token, free: true, extra_slot: true)
-              end
+              token_placement_arg =
+                if @game.station_wars? && STATION_WARS_CORPS.include?(entity.id)
+                  { cheater: true }
+                else
+                  { extra_slot: true }
+                end
+              destination.tile.cities.first.place_token(entity, token, free: true, **token_placement_arg)
               @game.graph.clear
               ability.description = 'Reached ' + ability.description
 
