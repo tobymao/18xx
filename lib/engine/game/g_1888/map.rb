@@ -163,7 +163,7 @@ module Engine
         }.freeze
 
         # rubocop:disable Layout/LineLength
-        HEXES = {
+        NORTH_HEXES = {
           white: {
             %w[D8 D18 E9 F8 G17] => '',
             ['F14'] => 'border=edge:1,type:impassable',
@@ -221,6 +221,70 @@ module Engine
             ['E17'] => 'city=revenue:yellow_20|green_30|brown_40|gray_50,slots:2;path=a:2,b:_0;path=a:3,b:_0;icon=image:1888/CDL_dest,sticky:1',
             ['F16'] => 'city=revenue:40,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:5,b:_0',
             ['H16'] => 'offboard=revenue:10,visit_cost:0;path=a:1,b:_0',
+          },
+        }.freeze
+
+
+        EAST_HEXES = {
+          white: {
+            %w[B8 B10 B16 B18 C7 C9 C11 C13 C19 D4 D6 D10 D14 D18 E3 E5 H4 H20] => '',
+            ['E13'] => 'border=edge:5,type:impassable',
+            ['F6'] => 'border=edge:0,type:impassable;border=edge:5,type:impassable',
+            ['F10'] => 'border=edge:0,type:impassable',
+            ['F12'] => 'border=edge:4,type:impassable;border=edge:5,type:impassable',
+            ['F14'] => 'border=edge:1,type:impassable;border=edge:2,type:impassable',
+            ['G5'] => 'city=revenue:0;border=edge:3,type:impassable',
+            ['G7'] => 'border=edge:2,type:impassable;upgrade=cost:20,terrain:mountain',
+            ['G9'] => 'border=edge:3,type:impassable',
+            ['G13'] => 'border=edge:2,type:impassable;upgrade=cost:30,terrain:mountain',
+            %w[E7 E9 E11 F16 H6 G20 H18] => 'upgrade=cost:20,terrain:mountain',
+            %w[G13 H8 H14] => 'upgrade=cost:30,terrain:mountain',
+            %w[B4 B6 H2] => 'upgrade=cost:40,terrain:mountain',
+            ['H2'] => 'upgrade=cost:50,terrain:mountain',
+            %w[F18 G5 H10 H16] => 'city=revenue:0',
+            ['H12'] => 'town=revenue:0;upgrade=cost:20,terrain:mountain',
+            %w[C5 C17] => 'town=revenue:0',
+            ['F4'] => 'town=revenue:0;town=revenue:0;upgrade=cost:20,terrain:water',
+
+
+            # ['D16'] => 'border=edge:2,type:impassable',
+            # %w[E7 G13 H8] => 'town=revenue:0',
+            # ['C17'] => 'town=revenue:0;border=edge:1,type:impassable',
+            # ['G5'] => 'town=revenue:0;town=revenue:0',
+            # ['D12'] => 'town=revenue:0;icon=image:1888/JHR_dest,sticky:1',
+            # ['F12'] => 'town=revenue:0;upgrade=cost:20,terrain:water;icon=image:1888/ZDR_dest,sticky:1;border=edge:4,type:impassable',
+            # ['H14'] => 'city=revenue:0;icon=image:1888/LYR_dest,sticky:1',
+            # %w[D10 E5 F6] => 'city=revenue:0',
+            # ['C7'] => 'upgrade=cost:10,terrain:wall',
+            # ['C15'] => 'upgrade=cost:10,terrain:wall;border=edge:4,type:impassable;border=edge:5,type:impassable',
+            # ['B16'] => 'town=revenue:0;town=revenue:0;upgrade=cost:10,terrain:wall',
+            # %w[F10 G7 H6] => 'upgrade=cost:20,terrain:water',
+            # ['G9'] => 'city=revenue:0;upgrade=cost:20,terrain:water;icon=image:1888/HJR_dest,sticky:1',
+            # %w[C19 G15] => 'upgrade=cost:30,terrain:mountain',
+            # %w[B14 H12] => 'upgrade=cost:20,terrain:mountain',
+            # %w[B10 C11] => 'upgrade=cost:20,terrain:wall|mountain',
+            # ['B12'] => 'town=revenue:0;upgrade=cost:20,terrain:mountain',
+            # ['G11'] => 'city=revenue:0',
+            # ['H10'] => 'upgrade=cost:20,terrain:mountain',
+            # ['C13'] => 'city=revenue:0;upgrade=cost:20,terrain:wall|mountain;icon=image:1888/SSL_dest,sticky:1',
+            # ['B8'] => 'upgrade=cost:30,terrain:wall|mountain',
+            # ['B6'] => 'town=revenue:0;town=revenue:0;upgrade=cost:30,terrain:wall|mountain;icon=image:1888/JZR_dest,sticky:1',
+            # %w[B4 D2 D4 D6 F4] => 'upgrade=cost:40,terrain:wall|mountain',
+            # %w[C5 G3] => 'upgrade=cost:40,terrain:mountain',
+            # %w[C3 E3] => 'city=revenue:0;upgrade=cost:40,terrain:wall|mountain',
+            # %w[B2 F2] => 'town=revenue:0;upgrade=cost:40,terrain:mountain',
+          },
+          red: {
+          
+          },
+          gray: {
+            
+          },
+          yellow: {
+           
+          },
+          blue: {
+          
           },
         }.freeze
         # rubocop:enable Layout/LineLength

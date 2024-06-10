@@ -307,6 +307,11 @@ module Engine
         def status_array(corp)
           ["Dest: #{destination_str(corp)}"]
         end
+
+        def game_hexes
+          return self.class::EAST_HEXES if @optional_rules.include?(:east)
+          return self.class::NORTH_HEXES
+        end
       end
     end
   end
