@@ -321,7 +321,7 @@ module Engine
           belgian_starting_corporation = corporation_by_id('Belge')
 
           remove_random_teleport_company
-          teleport_company = @companies.find { |c| c.value == 50 }
+          teleport_company = @companies.find { |c| c.value == 50 && !c.closed? }
           @log << "-- The teleport company is #{teleport_company.name} --"
 
           @players.each do |player|

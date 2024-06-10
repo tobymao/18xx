@@ -648,7 +648,7 @@ module Engine
             return "Bid box #{index + 1}" if c == company
           end
 
-          if optional_plus_expansion?
+          if optional_plus_expansion? && !optional_plus_expansion_single_stack?
             bidbox_privates.each do |c|
               next unless c == company
 
@@ -1137,7 +1137,7 @@ module Engine
           @minor_14_city_exit = nil
 
           # Initialize a dummy player for Tax haven to hold the share and the cash it generates
-          @tax_haven = Engine::Player.new(-1, 'Tax Haven')
+          @tax_haven = Engine::Player.new(-1, self.class::COMPANY_OSTH)
 
           # Initialize the stock round choice for P9-M&GNR
           @double_cash_choice = nil
@@ -1173,7 +1173,7 @@ module Engine
           concessions = timeline_companies(self.class::COMPANY_CONCESSION_PREFIX, bidbox_concessions)
           timeline << "Concessions: #{concessions.join(', ')}" unless concessions.empty?
 
-          if optional_plus_expansion?
+          if optional_plus_expansion? && !optional_plus_expansion_single_stack?
             b1_privates = timeline_companies_plus(self.class::COMPANY_PRIVATE_PREFIX,
                                                   self.class::PLUS_EXPANSION_BIDBOX_1)
             timeline << "Privates bidbox 1 : #{b1_privates.join(', ')}" unless b1_privates.empty?
@@ -1328,7 +1328,7 @@ module Engine
         end
 
         def bidbox_privates
-          if optional_plus_expansion?
+          if optional_plus_expansion? && !optional_plus_expansion_single_stack?
             companies = bank_companies(self.class::COMPANY_PRIVATE_PREFIX)
             privates = []
             privates << companies.find { |c| self.class::PLUS_EXPANSION_BIDBOX_1.include?(c.id) }
@@ -1347,7 +1347,7 @@ module Engine
 
           # Set the reservation color of all the minors in the bid boxes
           @bidbox_minors_cache.each do |company_id|
-            corporation_by_id(company_id[1..-1]).reservation_color = self.class::BIDDING_BOX_MINOR_COLOR
+            corporation_by_id(company_id[1..-1])&.reservation_color = self.class::BIDDING_BOX_MINOR_COLOR
           end
         end
 
@@ -1748,6 +1748,14 @@ module Engine
           @optional_rules&.include?(:plus_expansion)
         end
 
+        def optional_plus_expansion_no_removals?
+          @optional_rules&.include?(:plus_expansion_no_removals)
+        end
+
+        def optional_plus_expansion_single_stack?
+          @optional_rules&.include?(:plus_expansion_single_stack)
+        end
+
         def payoff_player_loan(player)
           # Pay full or partial of the player loan. The money from loans is outside money, doesnt count towards
           # the normal bank money.
@@ -1910,14 +1918,14 @@ module Engine
           return false if tile.name == 'BC'
           return false unless ability.player
           return false if entity.player == ability.player
-          return false unless ability.hexes.include?(hex.id)
-          return false if hex.tile.blockers.map(&:player).include?(entity.player)
+          return false if ability.hexes.none? { |h| h.id == hex.id }
+          return false if hex.tile.blockers.any? { |b| b.player == entity.player }
 
           true
         end
 
         def legal_tile_rotation?(entity, hex, tile)
-          rights_owners = hex.tile.blockers.map(&:owner).compact.uniq
+          rights_owners = hex.tile.blockers.map(&:player).compact.uniq
           return true if rights_owners.delete(acting_for_entity(entity))
 
           rights_owners.empty? ? legal_if_stubbed?(hex, tile) : super
@@ -1967,6 +1975,16 @@ module Engine
           self.class::PENDING_HOME_TOKENERS
         end
 
+        def share_owning_players
+          @tax_haven_company ||= company_by_id(self.class::COMPANY_OSTH)
+
+          if @tax_haven_company&.owned_by_player?
+            [*@players, @tax_haven]
+          else
+            @players
+          end
+        end
+
         private
 
         def find_and_remove_train_by_id(train_id, buyable: true)
@@ -2003,7 +2021,7 @@ module Engine
           privates.unshift(p1)
 
           # If have have activated 1822+, 3 companies will be removed from the game
-          if optional_plus_expansion?
+          if optional_plus_expansion? && !optional_plus_expansion_no_removals?
             # Make sure we have correct order of the bidboxes
             bid_box_1 = privates.map { |c| c if self.class::PLUS_EXPANSION_BIDBOX_1.include?(c.id) }.compact
             bid_box_2 = privates.map { |c| c if self.class::PLUS_EXPANSION_BIDBOX_2.include?(c.id) }.compact

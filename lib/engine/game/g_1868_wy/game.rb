@@ -1010,8 +1010,10 @@ module Engine
         # extends the given array with the string representation of the
         # corporation stacks
         def corp_stacks_str_arr(arr = [])
-          @corp_stacks.each.with_index do |stack, index|
-            arr << "- Railroad Company stack #{index + 1}: #{stack.map(&:name).reverse.join(', ')}" unless stack.empty?
+          if @phase && @phase.name.to_i < 5
+            @corp_stacks.each.with_index do |stack, index|
+              arr << "- Railroad Company stack #{index + 1}: #{stack.map(&:name).reverse.join(', ')}" unless stack.empty?
+            end
           end
           arr
         end

@@ -24,6 +24,7 @@ module Engine
             variants = super
 
             return variants if variants.size < 2
+            return [train.variant] if train.owned_by_corporation?
 
             min, max = variants.sort_by { |v| v[:price] }
             return [min] if (min[:price] <= entity.cash) && (entity.cash < max[:price])

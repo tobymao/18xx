@@ -48,7 +48,7 @@ module Engine
             name: '7',
             on: '7',
             train_limit: 2,
-            tiles: %i[yellow green brown],
+            tiles: %i[yellow green brown gray],
             operating_rounds: 3,
           },
           {

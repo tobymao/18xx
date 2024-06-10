@@ -44,7 +44,7 @@ module Engine
             logo: '18_uruguay/FCCU',
             simple_logo: '18_uruguay/FCCU.alt',
             color: :'#1a1919',
-            reservation_color: '#1a1919',
+            reservation_color: '#FFFFFF',
             text_color: 'white',
             tokens: [0, 40, 60, 100],
             coordinates: 'J6',

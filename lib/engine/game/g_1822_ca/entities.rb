@@ -187,7 +187,7 @@ module Engine
             revenue: 0,
             desc: 'CANNOT BE ACQUIRED. Registered Retirement Savings Plan. As a stock round '\
                   'action, under the direction and funded by the owning player, the off-shore Tax '\
-                  'Haven may purchase an available share certificate and place it onto P7’s '\
+                  'Haven may purchase an available share certificate and place it onto P11’s '\
                   'charter. The certificate is not counted for determining directorship of a '\
                   'company. The share held in the tax haven does NOT count against the 60% share '\
                   'limit for purchasing shares. If at 60% (or more) in hand in a company, a player '\
