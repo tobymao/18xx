@@ -24,7 +24,7 @@ module Engine
 
             min_shares = min_exchange_shares(par, minors_value, minors_cash)
             max_shares = max_exchange_shares(par, minors_value, player_cash)
-            (2..10).to_a.select { |n| n >= min_shares && n <= max_shares }
+            (2..10).select { |n| (min_shares..max_shares).cover?(n) }
           end
 
           def can_par_at?(par, minors_cash, minors_value, player_cash)
