@@ -16,7 +16,7 @@ module Engine
         include Map
         include CitiesPlusTownsRouteDistanceStr
 
-        attr_accessor :draft_deck, :ipo_pool, :unclaimed_commodities, :gauge_change_markers
+        attr_accessor :draft_deck, :ipo_pool, :unclaimed_commodities, :gauge_change_markers, :jewlery_hex
         attr_reader :ipo_rows
 
         register_colors(brown: '#a05a2c',
@@ -155,10 +155,8 @@ module Engine
           'SPICES' => { value: nil, commodity: 'SPICES', locations: COMMODITY_DESTINATIONS },
         }.freeze
 
-        # TODO: Consider using commodity icons vs location names
-        # Refactor to use assignment (assignable module) for commodities?
         ASSIGNMENT_TOKENS = {
-          'P6' => '/icons/18_royal_gorge/gold_cube.svg', # TODO: Add actual commodity ICON
+          'P6' => '/icons/18_india/jewlery.svg',
         }.freeze
 
         TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false },
@@ -268,6 +266,7 @@ module Engine
           @last_action = nil
 
           @unclaimed_commodities = COMMODITY_NAMES.dup
+          @jewlery_hex = nil
           @gauge_change_markers = []
 
           @log << "-- #{round_description('Hand Selection')} --"
@@ -1067,8 +1066,17 @@ module Engine
           LOGGER.debug "  unclaimed: #{@unclaimed_commodities}"
         end
 
+        # NOTE: Jewlery hex may be the same as another commodity, therefore should not use/change location name for Jewlery
+        def assign_jewlery_location(hex)
+          @jewlery_hex = hex
+        end
+
+        def visit_jewelery(route)
+          route.all_hexes.include?(@jewlery_hex) ? ['JEWELRY'] : []
+        end
+
         def commodity_bonus(route, _stops = nil)
-          visited_names = route.all_hexes.map(&:location_name).compact
+          visited_names = (route.all_hexes.map(&:location_name) + visit_jewelery(route)).compact
           corporation = route.train.owner
           commodity_sources = visited_names & available_commodities(corporation)
           return 0 unless commodity_sources.count.positive?
@@ -1108,7 +1116,7 @@ module Engine
         end
 
         # pay owner value of company before closing
-        def company_is_closing(company, silent = false)
+        def company_closing_after_using_ability(company, silent = false)
           @bank.spend(company.value, company.owner) if company.value.positive?
           @log << "#{company.name} closes and #{company.owner.name} receives #{company.value} from the Bank." unless silent
         end
