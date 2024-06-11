@@ -1048,6 +1048,7 @@ module Engine
 
         # Test using Ability to display Claimed Commodities on VIEW for Corporation card
         def claim_concession(corporation, commodity)
+          LOGGER.debug "claim_concession: #{corporation.name} => #{commodity}"
           ability = corporation.all_abilities.find { |a| a.type == :commodities }
           ability.description = ability.description + commodity + ' '
           @log << "#{corporation.name} claims the #{commodity} concession"
@@ -1062,6 +1063,8 @@ module Engine
             corporation.commodities << commodity
             @unclaimed_commodities.delete(commodity)
           end
+          LOGGER.debug "  claimed: #{corporation.commodities}"
+          LOGGER.debug "  unclaimed: #{@unclaimed_commodities}"
         end
 
         def commodity_bonus(route, _stops = nil)
