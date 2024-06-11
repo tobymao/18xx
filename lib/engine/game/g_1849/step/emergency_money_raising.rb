@@ -37,7 +37,7 @@ module Engine
           end
 
           def active?
-            active_entities.any?
+            !active_entities.empty?
           end
 
           def active_entities
