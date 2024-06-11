@@ -136,8 +136,8 @@ module Engine
         end
 
         def game_companies
-          YELLOW_COMPANIES.sort_by { rand }.take(2).sort_by { |c| c[:sym] } +
-            GREEN_COMPANIES.sort_by { rand }.take(2).sort_by { |c| c[:sym] } +
+          YELLOW_COMPANIES.sort_by { rand }.take(2).sort_by { |c| c[:value] } +
+            GREEN_COMPANIES.sort_by { rand }.take(2).sort_by { |c| c[:value] } +
             BROWN_COMPANIES.sort_by { rand }.take(1)
         end
 
