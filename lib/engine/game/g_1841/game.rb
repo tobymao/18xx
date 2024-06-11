@@ -2551,8 +2551,7 @@ module Engine
           @round.recalculate_order if @round.respond_to?(:recalculate_order)
         end
 
-        # can sell any amount?
-        def can_dump?(owner, corp, active)
+        def can_sell_any_amount?(owner, corp, active)
           # can dump IPO stock
           owner == corp ||
             # can dump stock if not president of corp
@@ -2569,7 +2568,7 @@ module Engine
         end
 
         def corp_minimum_to_retain(owner, corp, active)
-          return 0 if can_dump?(owner, corp, active)
+          return 0 if can_sell_any_amount?(owner, corp, active)
           return 0 if historical?(corp)
 
           corp.player_share_holders.reject { |s_h, _| s_h == owner }.values.max || 0
@@ -2580,7 +2579,7 @@ module Engine
           corp = bundle.corporation
 
           return false if bundle.partial? && !can_sell_partial?(owner, corp)
-          return true if can_dump?(owner, corp, active)
+          return true if can_sell_any_amount?(owner, corp, active)
 
           corp_minimum_to_retain(owner, corp, active) <= (owner.percent_of(corp) - bundle.percent) &&
             !bundle.presidents_share
@@ -2592,7 +2591,7 @@ module Engine
           bundles = all_bundles_for_corporation(owner, corp)
           bundles.each { |b| b.share_price = corp.share_price.price / 2.0 }
           max = owner.percent_of(corp) - corp_minimum_to_retain(owner, corp, active)
-          bundles.reject!(&:presidents_share) unless can_dump?(owner, corp, active)
+          bundles.reject!(&:presidents_share) unless can_sell_any_amount?(owner, corp, active)
           bundles.reject { |b| b.percent > max }
         end
 
