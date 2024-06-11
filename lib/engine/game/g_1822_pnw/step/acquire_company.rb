@@ -53,6 +53,8 @@ module Engine
             old_company = @game.company_by_id(@game.company_id_from_corp_id(action.choice))
             @new_associated_minor.color = old_company.color
             @new_associated_minor.text_color = old_company.text_color
+            @new_associated_minor.logo = "1822_pnw/#{major.id.downcase}/#{@new_associated_minor.name}"
+            @new_associated_minor.tokens.first.logo = @new_associated_minor.logo
 
             original_home_coordinates = major.coordinates
             @game.remove_home_icon(major, original_home_coordinates)

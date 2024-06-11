@@ -708,7 +708,7 @@ module Engine
           {
             sym: '1',
             name: 'Pacific Great Eastern Railway',
-            logo: '1822/1',
+            logo: '1822_pnw/1',
             tokens: [0],
             type: 'minor',
             always_market_price: true,
@@ -778,7 +778,7 @@ module Engine
           {
             sym: '5',
             name: 'Idaho & Washington Northern Railway',
-            logo: '1822/5',
+            logo: '1822_pnw/5',
             tokens: [0],
             type: 'minor',
             always_market_price: true,
@@ -816,7 +816,7 @@ module Engine
           {
             sym: '7',
             name: 'Spokane Falls and Northern Railway',
-            logo: '1822/7',
+            logo: '1822_pnw/7',
             tokens: [0],
             type: 'minor',
             always_market_price: true,
@@ -838,7 +838,7 @@ module Engine
           {
             sym: '8',
             name: 'Puget Sound Shore Railroad',
-            logo: '1822/8',
+            logo: '1822_pnw/8',
             tokens: [0],
             type: 'minor',
             always_market_price: true,
@@ -988,7 +988,7 @@ module Engine
           {
             sym: '17',
             name: 'Oregon Central Railroad',
-            logo: '1822/17',
+            logo: '1822_pnw/17',
             tokens: [0],
             type: 'minor',
             always_market_price: true,
@@ -1010,7 +1010,7 @@ module Engine
           {
             sym: '18',
             name: 'Portland and Willamette Valley Railway',
-            logo: '1822/18',
+            logo: '1822_pnw/18',
             tokens: [0],
             type: 'minor',
             always_market_price: true,
@@ -1048,7 +1048,7 @@ module Engine
           {
             sym: '20',
             name: 'Walla Walla Valley Railway',
-            logo: '1822/20',
+            logo: '1822_pnw/20',
             tokens: [0],
             type: 'minor',
             always_market_price: true,
