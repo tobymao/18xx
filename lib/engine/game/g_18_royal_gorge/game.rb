@@ -368,6 +368,7 @@ module Engine
 
         def update_sulphur_springs_company_revenue!
           return if @updated_sulphur_springs_company_revenue
+          return if %w[Yellow Green].include?(@phase.name)
           return unless sulphur_springs&.owner&.player?
 
           @updated_sulphur_springs_company_revenue = true

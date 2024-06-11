@@ -84,7 +84,13 @@ module View
       end
 
       def render_info
-        num_certs = @game.num_certs(@player)
+        num_certs =
+          if @game.active_step.respond_to?(:num_certs_with_bids)
+            @game.active_step.num_certs_with_bids(@player)
+          else
+            @game.num_certs(@player)
+          end
+
         cert_limit = @game.cert_limit(@player)
 
         td_cert_props = {
