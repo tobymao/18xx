@@ -518,6 +518,10 @@ module Engine
           @reissued[corporation]
         end
 
+        def station_wars?
+          @station_wars ||= @optional_rules&.include?(:station_wars)
+        end
+
         # allows implementation of diesels variant
         def game_trains
           @optional_rules&.include?(:diesels) ? self.class::DIESEL_VARIANT_TRAINS : self.class::STANDARD_TRAINS
