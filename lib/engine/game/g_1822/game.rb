@@ -488,9 +488,6 @@ module Engine
         PLUS_EXPANSION_BIDBOX_2 = %w[P2 P5 P8 P10 P11 P12 P21].freeze
         PLUS_EXPANSION_BIDBOX_3 = %w[P6 P7 P9 P15 P16 P17 P18 P20].freeze
 
-        # companies that don't count against the cert limit, even when bidding
-        COMPANIES_NONCERT = [].freeze
-
         PRIVATE_COMPANIES_ACQUISITION = {
           'P1' => { acquire: %i[major], phase: 5 },
           'P2' => { acquire: %i[major minor], phase: 2 },
@@ -1350,7 +1347,7 @@ module Engine
 
           # Set the reservation color of all the minors in the bid boxes
           @bidbox_minors_cache.each do |company_id|
-            corporation_by_id(company_id[1..-1]).reservation_color = self.class::BIDDING_BOX_MINOR_COLOR
+            corporation_by_id(company_id[1..-1])&.reservation_color = self.class::BIDDING_BOX_MINOR_COLOR
           end
         end
 
@@ -1921,14 +1918,14 @@ module Engine
           return false if tile.name == 'BC'
           return false unless ability.player
           return false if entity.player == ability.player
-          return false unless ability.hexes.include?(hex.id)
-          return false if hex.tile.blockers.map(&:player).include?(entity.player)
+          return false if ability.hexes.none? { |h| h.id == hex.id }
+          return false if hex.tile.blockers.any? { |b| b.player == entity.player }
 
           true
         end
 
         def legal_tile_rotation?(entity, hex, tile)
-          rights_owners = hex.tile.blockers.map(&:owner).compact.uniq
+          rights_owners = hex.tile.blockers.map(&:player).compact.uniq
           return true if rights_owners.delete(acting_for_entity(entity))
 
           rights_owners.empty? ? legal_if_stubbed?(hex, tile) : super
