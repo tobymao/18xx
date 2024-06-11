@@ -8,8 +8,6 @@ module Engine
     module G1849
       module Step
         class BuyTrain < Engine::Step::BuyTrain
-          attr_accessor :e_token
-
           def setup
             super
           end
@@ -42,24 +40,14 @@ module Engine
             # Cannot buy E-train without E-token
             trains_to_buy = super
 
-            trains_to_buy = trains_to_buy.reject { |t| t.name == 'E' }
-            trains_to_buy << e_train if @game.electric_dreams? && can_buy_e?(entity)
+            trains_to_buy = trains_to_buy.reject { |t| t.name == 'E' } unless entity.e_token
             trains_to_buy.uniq
-          end
-
-          def e_train
-            @depot.depot_trains.find { |t| t.name == 'E' }
-          end
-
-          def can_buy_e?(entity)
-            entity.e_token &&
-              e_train.price <= entity.cash
           end
 
           def check_for_cheapest_train(train)
             entity = @game.round.current_operator
 
-            cheapest = @depot.send(@game.electric_dreams? && !entity.e_token ? :min_depot_train_no_e_token : :min_depot_train)
+            cheapest = entity.e_token ? @depot.min_depot_train : @depot.min_depot_train_no_e_token
             cheapest_names = names_of_cheapest_variants(cheapest)
 
             raise GameError, "Cannot purchase #{train.name} train: cheaper train available (#{cheapest_names.first})" unless
