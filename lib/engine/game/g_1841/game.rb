@@ -454,7 +454,7 @@ module Engine
           sfma_idx = @round.entities.find_index(sfma)
           ssfl_idx = @round.entities.find_index(ssfl)
 
-          will_run = (version == 2)
+          will_run = (version == 2) || sfli_run_variant?
           will_run = false if sflp_idx && sflp_idx <= @round.entity_index
           will_run = false if sfma_idx && sfma_idx <= @round.entity_index
           will_run = false if ssfl_idx && ssfl_idx <= @round.entity_index
@@ -1109,6 +1109,10 @@ module Engine
 
         def lite?
           @lite ||= @optional_rules&.include?(:lite)
+        end
+
+        def sfli_run_variant?
+          @sfli_run_variant ||= @optional_rules&.include?(:sfli_run_variant)
         end
 
         def event_close_companies!

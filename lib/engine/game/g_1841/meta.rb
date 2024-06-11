@@ -35,6 +35,11 @@ module Engine
             short_name: 'Version 1',
             desc: 'Original auction, map and corporations',
           },
+          {
+            sym: :sfli_run_variant,
+            short_name: 'Use Version 2 SFLi formation',
+            desc: 'For Version 1 rules, allow SFLi to run during the OR it is formed the same as Version 2',
+          },
         ].freeze
       end
     end
