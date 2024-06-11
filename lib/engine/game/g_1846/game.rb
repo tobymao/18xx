@@ -143,7 +143,6 @@ module Engine
         MUST_EMERGENCY_ISSUE_BEFORE_EBUY = true
         HOME_TOKEN_TIMING = :float
         MUST_BUY_TRAIN = :always
-        CERT_LIMIT_COUNTS_BANKRUPTED = true
         BANKRUPTCY_ENDS_GAME_AFTER = :all_but_one
 
         GAME_END_CHECK = {

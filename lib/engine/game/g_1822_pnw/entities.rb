@@ -4,6 +4,9 @@ module Engine
   module Game
     module G1822PNW
       module Entities
+        PRIVATE_RED = '#FF7276'
+        PRIVATE_GREEN = '#90EE90'
+
         COMPANIES = [
           {
             name: 'P1-The Olympian Hiawatha (5-Train)',
@@ -17,7 +20,7 @@ module Engine
                   'buying action.  However, once acquired the acquiring company must check whether it as at the '\
                   'train limit and must discard any trains held in excess of limit.',
             abilities: [],
-            color: nil,
+            color: PRIVATE_RED,
           },
           {
             name: 'P2-J.S. Ruckle OSNC 4-4-0 (Permanent 2T)',
@@ -36,7 +39,7 @@ module Engine
                   'this also still counts as a normal dividend for share price movement purposes. '\
                   'Does not close.',
             abilities: [],
-            color: nil,
+            color: PRIVATE_RED,
           },
           {
             name: 'P3-Portland Streetcar (Permanent LT)',
@@ -55,7 +58,7 @@ module Engine
                   'this also still counts as a normal dividend for share price movement purposes. '\
                   'Does not close.',
             abilities: [],
-            color: nil,
+            color: PRIVATE_GREEN,
           },
           {
             name: 'P4-South Lake Union Trolley (Permanent LT)',
@@ -74,7 +77,7 @@ module Engine
                   'this also still counts as a normal dividend for share price movement purposes. '\
                   'Does not close.',
             abilities: [],
-            color: nil,
+            color: PRIVATE_GREEN,
           },
           {
             name: 'P5-Pullman (Pullman)',
@@ -87,7 +90,7 @@ module Engine
                   'not count toward the train limit. Cannot be sold to another company. Does '\
                   'not close. No company may own more than one Pullman.',
             abilities: [],
-            color: nil,
+            color: PRIVATE_GREEN,
           },
           {
             name: 'P6-Pullman (Pullman)',
@@ -100,7 +103,7 @@ module Engine
                   'not count toward the train limit. Cannot be sold to another company. Does '\
                   'not close. No company may own more than one Pullman.',
             abilities: [],
-            color: nil,
+            color: PRIVATE_GREEN,
           },
           {
             name: 'P7-Dit Crusher (Remove Town)',
@@ -127,7 +130,7 @@ module Engine
               combo_entities: %w[P11],
             },
             ],
-            color: nil,
+            color: PRIVATE_GREEN,
           },
           {
             name: 'P8-Dit Crusher (Remove Town)',
@@ -154,7 +157,7 @@ module Engine
                 combo_entities: %w[P11],
               },
             ],
-            color: nil,
+            color: PRIVATE_GREEN,
           },
           {
             name: 'P9-USPS Mail Service (Mail Contract)',
@@ -171,7 +174,7 @@ module Engine
                   'towns. A company that owns more than one Mail Contract may not use '\
                   'more than one on any train.',
             abilities: [],
-            color: nil,
+            color: PRIVATE_RED,
           },
           {
             name: 'P10-American Bridge Company (Three Builder Cubes)',
@@ -196,7 +199,7 @@ module Engine
                 tiles: [],
               },
             ],
-            color: nil,
+            color: PRIVATE_GREEN,
           },
           {
             name: 'P11-Surveyors (Extra Tile Lay)',
@@ -224,7 +227,7 @@ module Engine
                 combo_entities: %w[P7 P8],
               },
             ],
-            color: nil,
+            color: PRIVATE_GREEN,
           },
           {
             name: 'P12-Dock Upgrades (Small Port)',
@@ -251,7 +254,7 @@ module Engine
                 consume_tile_lay: false,
               },
             ],
-            color: nil,
+            color: PRIVATE_GREEN,
           },
           {
             name: 'P13-Harbor Improvements (Large Port)',
@@ -278,7 +281,7 @@ module Engine
                 consume_tile_lay: false,
               },
             ],
-            color: nil,
+            color: PRIVATE_RED,
           },
           {
             name: 'P14-Lumber Baron (2x Timber Value)',
@@ -291,7 +294,7 @@ module Engine
                   'connection requirements. Once acquired by a company '\
                   'this private no longer pays its revenue.',
             abilities: [],
-            color: nil,
+            color: PRIVATE_GREEN,
           },
           {
             name: 'P15-Paper Mill (City Revenue)',
@@ -314,7 +317,7 @@ module Engine
                 closed_when_used_up: true,
               },
             ],
-            color: nil,
+            color: PRIVATE_GREEN,
           },
           {
             name: 'P16-Pacific Portage Company (Special Tile Placement)',
@@ -343,7 +346,7 @@ module Engine
                 tiles: %w[PNW1 PNW2],
               },
             ],
-            color: nil,
+            color: PRIVATE_GREEN,
           },
           {
             name: 'P17-Ski Haus (Route Enhancement)',
@@ -367,7 +370,7 @@ module Engine
                 closed_when_used_up: true,
               },
             ],
-            color: nil,
+            color: PRIVATE_GREEN,
           },
           {
             name: 'P18-Boom Town (Special Tile Upgrade)',
@@ -389,7 +392,7 @@ module Engine
                 tiles: %w[PNW3],
               },
             ],
-            color: nil,
+            color: PRIVATE_GREEN,
           },
           {
             name: 'P19-Rockport Coal Mine (Special Tile Placement)',
@@ -419,7 +422,7 @@ module Engine
                 free: true,
               },
             ],
-            color: nil,
+            color: PRIVATE_GREEN,
           },
           {
             name: 'P20-Backroom Negotiations (Minor Status Upgrade)',
@@ -437,7 +440,7 @@ module Engine
                   'company and its location becomes the major’s new home '\
                   'token location.',
             abilities: [],
-            color: nil,
+            color: PRIVATE_GREEN,
           },
           {
             name: 'P21-Credit Mobilier (Move Card/Exchange Token)',
@@ -452,7 +455,7 @@ module Engine
                   'a major company to move a station token from exchange to '\
                   'available. Closes when the power is exercised.',
             abilities: [],
-            color: nil,
+            color: PRIVATE_GREEN,
           },
           {
             name: 'MINOR: 1. Pacific Great Eastern Railway',
@@ -708,7 +711,7 @@ module Engine
           {
             sym: '1',
             name: 'Pacific Great Eastern Railway',
-            logo: '1822/1',
+            logo: '1822_pnw/1',
             tokens: [0],
             type: 'minor',
             always_market_price: true,
@@ -778,7 +781,7 @@ module Engine
           {
             sym: '5',
             name: 'Idaho & Washington Northern Railway',
-            logo: '1822/5',
+            logo: '1822_pnw/5',
             tokens: [0],
             type: 'minor',
             always_market_price: true,
@@ -816,7 +819,7 @@ module Engine
           {
             sym: '7',
             name: 'Spokane Falls and Northern Railway',
-            logo: '1822/7',
+            logo: '1822_pnw/7',
             tokens: [0],
             type: 'minor',
             always_market_price: true,
@@ -838,7 +841,7 @@ module Engine
           {
             sym: '8',
             name: 'Puget Sound Shore Railroad',
-            logo: '1822/8',
+            logo: '1822_pnw/8',
             tokens: [0],
             type: 'minor',
             always_market_price: true,
@@ -988,7 +991,7 @@ module Engine
           {
             sym: '17',
             name: 'Oregon Central Railroad',
-            logo: '1822/17',
+            logo: '1822_pnw/17',
             tokens: [0],
             type: 'minor',
             always_market_price: true,
@@ -1010,7 +1013,7 @@ module Engine
           {
             sym: '18',
             name: 'Portland and Willamette Valley Railway',
-            logo: '1822/18',
+            logo: '1822_pnw/18',
             tokens: [0],
             type: 'minor',
             always_market_price: true,
@@ -1048,7 +1051,7 @@ module Engine
           {
             sym: '20',
             name: 'Walla Walla Valley Railway',
-            logo: '1822/20',
+            logo: '1822_pnw/20',
             tokens: [0],
             type: 'minor',
             always_market_price: true,

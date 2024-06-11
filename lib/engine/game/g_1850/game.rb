@@ -137,6 +137,8 @@ module Engine
           phase_2_companies.each { |c| c.max_price = c.value }
 
           @corporations.each do |corporation|
+            corporation.tokens.pop if reduced_tokens? && corporation.tokens.size == 4
+
             ability = abilities(corporation, :assign_hexes)
             next unless ability
 
@@ -379,6 +381,10 @@ module Engine
           end
 
           @skip_paths
+        end
+
+        def reduced_tokens?
+          @reduced_tokens ||= @optional_rules&.include?(:reduced_tokens)
         end
       end
     end

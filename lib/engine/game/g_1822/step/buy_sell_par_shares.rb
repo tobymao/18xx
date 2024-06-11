@@ -239,16 +239,10 @@ module Engine
           end
 
           def can_bid_company?(entity, company)
-            return false unless cert_room_for_bid?(entity, company)
+            return false unless num_certs_with_bids(entity) < @game.cert_limit
             return false if max_bid(entity, company) < min_bid(company) || highest_player_bid?(entity, company)
 
             !(!find_bid(entity, company) && bidding_tokens(entity).zero?)
-          end
-
-          def cert_room_for_bid?(entity, company)
-            return true if @game.class::COMPANIES_NONCERT.include?(company.id)
-
-            num_certs_with_bids(entity) < @game.cert_limit
           end
 
           def store_bids!

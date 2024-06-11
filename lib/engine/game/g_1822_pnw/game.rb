@@ -496,7 +496,10 @@ module Engine
             when Engine::Round::Stock
               G1822::Round::Choices.new(self, choose_step, round_num: @round.round_num)
             when Engine::Round::Operating
-              if @phase.name.to_i >= 2
+              if starting_packet? && @phase.name.to_i == 1
+                @turn += 1
+                new_operating_round
+              elsif @phase.name.to_i >= 2
                 @log << "-- #{round_description('Merger', @round.round_num)} --"
                 G1822PNW::Round::Merger.new(self, [
                   G1822PNW::Step::Merge,
@@ -520,10 +523,6 @@ module Engine
                 or_set_finished
                 new_stock_round
               end
-            when init_round.class
-              init_round_finished
-              reorder_players
-              new_stock_round
             end
         end
 
@@ -569,6 +568,11 @@ module Engine
         end
 
         def setup_game_specific
+          if starting_packet?
+            setup_starting_packets
+            @round = init_round(silent: true)
+          end
+
           setup_regional_payout_count
           setup_tokencity_tiles
 
@@ -597,6 +601,68 @@ module Engine
             remove_l_trains(3)
           elsif @optional_rules&.include?(:remove_two_ls)
             remove_l_trains(2)
+          end
+        end
+
+        def init_round(silent: false)
+          if starting_packet?
+            # @operating_rounds = 1
+            round_num = 1
+            @log << "-- #{round_description(self.class::OPERATING_ROUND_NAME, round_num)} --" unless silent
+            @round_counter += 1
+            operating_round(round_num)
+          else
+            stock_round
+          end
+        end
+
+        def starting_packet?
+          @optional_rules&.include?(:starting_packet)
+        end
+
+        def setup_starting_packets
+          minors = [
+            %w[M18 M21],
+            %w[M7 M9],
+            %w[M1 M2],
+            %w[M6 M8],
+            %w[M10 M20],
+          ]
+
+          privates = [
+            %w[P8 P16],
+            %w[P18 P19],
+            %w[P12 P17],
+            %w[P14 P15],
+            %w[P10 P11],
+          ]
+
+          par_price = stock_market.par_prices[0]
+
+          @players.each.with_index do |player, index|
+            player.cash = 0
+            minors[index].each do |id|
+              company = company_by_id(id)
+              corp = find_corporation(company)
+              corp.reservation_color = :white
+
+              stock_market.set_par(corp, par_price)
+
+              share = corp.shares.first
+              bundle = share.to_bundle
+              bundle.share_price = 0
+              share_pool.buy_shares(player, bundle)
+              after_par(corp)
+              bank.spend(100, corp)
+
+              companies.delete(company)
+            end
+
+            privates[index].each do |id|
+              company = company_by_id(id)
+              company.owner = player
+              player.companies << company
+            end
           end
         end
 
@@ -705,24 +771,29 @@ module Engine
           setup_associated_minors
           @companies.sort_by! { rand }
 
-          minors = @companies.select { |c| c.id[0] == self.class::COMPANY_MINOR_PREFIX }
-          minor_6, minors = minors.partition { |c| c.id == 'M6' }
-          minors_assoc, minors = minors.partition { |c| @minor_associations.key?(corp_id_from_company_id(c.id)) }
-
           privates = @companies.select { |c| c.id[0] == self.class::COMPANY_PRIVATE_PREFIX }
           private_1 = privates.find { |c| c.id == 'P1' }
           privates.delete(private_1)
           privates.unshift(private_1)
 
-          # Clear and add the companies in the correct randomize order sorted by type
-          @companies.clear
-          @companies.concat(minor_6)
-          stack_1 = (minors_assoc[0..2] + minors[0..5]).sort_by! { rand }
-          @companies.concat(stack_1)
-          stack_2 = (minors_assoc[3..4] + minors[6..10]).sort_by! { rand }
-          @companies.concat(stack_2)
-          stack_3 = (minors_assoc[5..6] + minors[11..15]).sort_by! { rand }
-          @companies.concat(stack_3)
+          minors = @companies.select { |c| c.id[0] == self.class::COMPANY_MINOR_PREFIX }
+          if starting_packet?
+            @companies.clear
+            @companies.concat(minors)
+          else
+            minor_6, minors = minors.partition { |c| c.id == 'M6' }
+            minors_assoc, minors = minors.partition { |c| @minor_associations.key?(corp_id_from_company_id(c.id)) }
+
+            # Clear and add the companies in the correct randomize order sorted by type
+            @companies.clear
+            @companies.concat(minor_6)
+            stack_1 = (minors_assoc[0..2] + minors[0..5]).sort_by! { rand }
+            @companies.concat(stack_1)
+            stack_2 = (minors_assoc[3..4] + minors[6..10]).sort_by! { rand }
+            @companies.concat(stack_2)
+            stack_3 = (minors_assoc[5..6] + minors[11..15]).sort_by! { rand }
+            @companies.concat(stack_3)
+          end
           @companies.concat(privates)
 
           # Setup company abilities

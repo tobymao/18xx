@@ -86,7 +86,7 @@ module Engine
             @merging[:state] = :choose_token
             return if cheapest_unused_token(@merging[:corporation])
 
-            process_token(Action::Choose.new(fi, choice: 'Discard'))
+            process_token(Action::Choose.new(@merging[:corporation], choice: 'Discard'))
           end
 
           def process_token(action)
@@ -96,6 +96,7 @@ module Engine
             else
               @game.log << "#{fi.name} token is discarded"
             end
+            @merging = nil
             @game.close_corporation(fi)
           end
 
