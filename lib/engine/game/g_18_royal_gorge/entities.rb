@@ -244,10 +244,10 @@ module Engine
           {
             sym: 'B3',
             name: 'Steel Depot (B3)',
-            desc: 'Comes with the Steel Depot card. Once per operating round, owning corporation '\
-                  'may use 0-2 steel from the Steel Depot card to lay yellow track for free. (Max '\
-                  'of 6 track applies). '\
-                  'Closes when the first 5+ train is purchased.',
+            desc: 'Comes with the Steel Depot card, which holds 5 steel cubes. '\
+                  'Once per operating round, owning corporation may use 0-2 steel '\
+                  'from the Steel Depot card to lay yellow track for free. (Max '\
+                  'of 6 track applies). Closes when the first 5+ train is purchased.',
             value: 55,
             revenue: 10,
             abilities: [
