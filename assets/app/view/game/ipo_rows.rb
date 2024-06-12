@@ -78,8 +78,9 @@ module View
       def render_buy_input(company)
         return [] unless @step.can_buy_company?(@current_entity, company)
 
+        action = @current_actions.include?('buy_company') ? Engine::Action::BuyCompany : Engine::Action::CorporateBuyCompany
         buy = lambda do
-          process_action(Engine::Action::BuyCompany.new(
+          process_action(action.new(
             @current_entity,
             company: company,
             price: company.value,

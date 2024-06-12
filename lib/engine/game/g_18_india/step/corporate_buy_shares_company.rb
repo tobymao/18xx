@@ -92,6 +92,7 @@ module Engine
           end
 
           def process_corporate_buy_company(action)
+            LOGGER.debug "process_corporate_buy_company #{action.inspect}"
             entity = action.entity
             company = action.company
             price = action.price
