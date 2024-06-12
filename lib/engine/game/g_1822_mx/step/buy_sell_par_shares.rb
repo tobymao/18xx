@@ -10,6 +10,7 @@ module Engine
           def process_buy_shares(action)
             return super unless action.bundle.corporation.id == 'NDEM'
 
+            @game.something_sold_in_sr!
             @round.bought_from_ipo = true if action.bundle.owner.corporation?
             buy_shares(action.entity, action.bundle, swap: action.swap, allow_president_change: false)
             track_action(action, action.bundle.corporation)
