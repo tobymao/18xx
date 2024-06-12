@@ -84,7 +84,7 @@ module View
           end
 
           children.concat(render_buttons)
-          children << render_bid if @current_actions.include?('bid')
+          children << render_bid if should_render_bid?
           children << h(SpecialBuy) if @current_actions.include?('special_buy')
           children.concat(render_failed_merge) if @current_actions.include?('failed_merge')
           children.concat(render_bank_companies) if @bank_first
@@ -254,7 +254,7 @@ module View
           when :par
             children << h(Par, corporation: corporation) if @current_actions.include?('par')
           when :bid
-            children << h(Bid, entity: @current_entity, biddable: corporation) if @current_actions.include?('bid')
+            children << h(Bid, entity: @current_entity, biddable: corporation) if should_render_bid?
           when :form
             children << h(FormCorporation, corporation: corporation) if @current_actions.include?('par')
           when String
@@ -377,11 +377,11 @@ module View
           @game.buyable_bank_owned_companies.map do |company|
             inputs = []
             inputs.concat(render_buy_input(company)) if @current_actions.include?('buy_company')
-            inputs.concat(render_company_bid_input(company)) if @current_actions.include?('bid')
+            inputs.concat(render_company_bid_input(company)) if should_render_bid?
 
             children = []
             children << h(Company, company: company,
-                                   bids: (@current_actions.include?('bid') ? @step.bids[company] : nil),
+                                   bids: (should_render_bid? ? @step.bids[company] : nil),
                                    interactive: !inputs.empty?)
             if !inputs.empty? && @selected_company == company
               children << h('div.margined_bottom', { style: { width: '20rem' } }, inputs)
@@ -548,6 +548,10 @@ module View
             children << h(Bid, entity: @current_entity, biddable: @step.bid_entity)
           end
           h(:div, children)
+        end
+
+        def should_render_bid?
+          @current_actions.include?('bid') || @step.auctioneer?
         end
       end
     end
