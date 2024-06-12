@@ -705,17 +705,14 @@ module Engine
           discount_info
         end
 
-        def end_game!(player_initiated: false)
-          finalize_end_game_values
-          super
-        end
-
-        def finalize_end_game_values
+        def tax_haven_value(player)
           company = company_by_id(self.class::COMPANY_OSTH)
-          return if !company || !@tax_haven.value.positive?
 
-          # Make sure tax havens value is correct
-          company.value = @tax_haven.value
+          return 0 unless company
+          return 0 if company.owner != player
+          return 0 unless @tax_haven.value.positive?
+
+          @tax_haven.value
         end
 
         def entity_can_use_company?(entity, company)
@@ -1002,7 +999,7 @@ module Engine
         end
 
         def player_value(player)
-          player.value - @player_debts[player]
+          player.value - @player_debts[player] + tax_haven_value(player)
         end
 
         def purchasable_companies(entity = nil)
