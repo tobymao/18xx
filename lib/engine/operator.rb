@@ -68,6 +68,7 @@ module Engine
     def logo=(logo)
       @logo_filename = "#{logo}.svg"
       @logo = "/logos/#{@logo_filename}"
+      @simple_logo = @logo
     end
   end
 end
