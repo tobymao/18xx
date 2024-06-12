@@ -26,6 +26,9 @@ module Engine
                         nerGreen: '#aade87',
                         black: '#000',
                         white: '#ffffff')
+        PRIVATE_RED = '#FF7276'
+        PRIVATE_GREEN = '#90EE90'
+        PRIVATE_BLUE = '#89CFF0'
 
         BANKRUPTCY_ALLOWED = false
 
@@ -869,8 +872,24 @@ module Engine
             next if players.size < (company[:min_players] || 0)
             next unless starting_companies.include?(company[:sym])
 
+            company = init_private_company_color(company)
             Company.new(**company)
           end.compact
+        end
+
+        def init_private_company_color(company)
+          return company unless company[:sym][0] == self.class::COMPANY_PRIVATE_PREFIX
+
+          company[:color] =
+            if company[:desc].start_with?('MAJOR/MINOR,')
+              self.class::PRIVATE_GREEN
+            elsif company[:desc].start_with?('MAJOR,')
+              self.class::PRIVATE_RED
+            elsif company[:desc].start_with?('CANNOT BE ACQUIRED.')
+              self.class::PRIVATE_BLUE
+            end
+
+          company
         end
 
         def init_company_abilities
