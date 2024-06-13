@@ -212,6 +212,11 @@ TEST_CASES = [
      'double headed trains',
      ['Operating Round 3.2 (of 2)',
       '3+2 [5+4]']]]],
+  ['1841',
+   132_002,
+   [[939,
+     'endgame',
+     ['1841: Phase 8 - Operating Round 7.1 (of 3) - Game Over - Company hit max stock value']]]],
 ].freeze
 
 AUTO_ACTIONS_TEST_CASES = [
