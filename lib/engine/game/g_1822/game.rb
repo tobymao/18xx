@@ -1772,19 +1772,23 @@ module Engine
           @optional_rules&.include?(:plus_expansion_single_stack)
         end
 
-        def payoff_player_loan(player)
-          # Pay full or partial of the player loan. The money from loans is outside money, doesnt count towards
-          # the normal bank money.
-          if player.cash >= @player_debts[player]
-            player.cash -= @player_debts[player]
-            @log << "#{player.name} pays off their loan of #{format_currency(@player_debts[player])}"
-            @player_debts[player] = 0
-          else
-            @player_debts[player] -= player.cash
-            @log << "#{player.name} decreases their loan by #{format_currency(player.cash)} "\
-                    "(#{format_currency(@player_debts[player])})"
-            player.cash = 0
-          end
+        # Pay full or partial of the player loan. The money from loans is
+        # outside money, doesnt count towards the normal bank money.
+        def payoff_player_loan(player, payoff_amount: nil)
+          loan_balance = @player_debts[player]
+          payoff_amount = player.cash if !payoff_amount || payoff_amount > player.cash
+          payoff_amount = [payoff_amount, loan_balance].min
+
+          @player_debts[player] -= payoff_amount
+          player.cash -= payoff_amount
+
+          @log <<
+            if payoff_amount == loan_balance
+              "#{player.name} pays off their loan of #{format_currency(loan_balance)}"
+            else
+              "#{player.name} decreases their loan by #{format_currency(payoff_amount)} "\
+                "(#{format_currency(@player_debts[player])})"
+            end
         end
 
         def place_destination_token(entity, hex, token, city = nil, log: true)
