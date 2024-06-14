@@ -37,8 +37,9 @@ module View
         card_style[:display] = @display
 
         companies = ipo_row.dup
-        divs = [render_title(number)]
+        return h(:div) if companies.empty?
 
+        divs = [render_title(number)]
         divs << render_first_ipo(companies) if @show_first
         divs << h(CompaniesTable, game: @game, companies: companies) unless companies.empty?
 
