@@ -567,6 +567,11 @@ module Engine
         def check_distance(route, visits)
           raise GameError, 'Cannot run Pullman train' if pullman_train?(route.train)
 
+          if train_type(route.train) == :etrain &&
+             visits.count { |v| v.city? && v.tokened_by?(route.corporation) } < 2
+            raise GameError, 'E-train route must have at least 2 tokened cities'
+          end
+
           english_channel_visit = english_channel_visit(visits)
           # Permanent local train cant run in the english channel
           if self.class::LOCAL_TRAINS.include?(route.train.name) && english_channel_visit.positive?
