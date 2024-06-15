@@ -33,7 +33,6 @@ module Engine
             'Corporate Purchase Certificates from IPO or Market'
           end
 
-          # TODO: Convert Royal Bond in Phase IV
           def actions(entity)
             return [] if entity.nil? || !entity&.corporation?
             return [] unless entity == current_entity
@@ -42,11 +41,11 @@ module Engine
             # May buy Private Company from Market / Bank [working]
             # May buy Railroad Bond from Market / Bank (doesn't count against Cert Limit of 3) [working]
             # may buy One Proxy Cert from the IPO Row (but NOT itself) [working]
-            # convert a Royal Bond to a share of GIPR (Phase IV && must have space) [TODO]
+            # convert a Royal Bond to a share of GIPR (Phase IV && must have space) [working]
             actions = []
             actions << 'corporate_buy_company' if can_buy_any_companies?(entity)
             actions << 'corporate_buy_shares' if can_buy_any?(entity)
-            # actions << 'choose' if choice_available?(entity) # Convert Bond to share of GIPR
+            actions << 'choose' if choice_available?(entity) # Convert Bond to share of GIPR
             actions << 'pass' if actions.any?
 
             actions

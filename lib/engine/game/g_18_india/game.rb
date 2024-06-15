@@ -779,7 +779,7 @@ module Engine
           new_gipr_share.owner = entity
           entity.shares_by_corporation[gipr] << new_gipr_share
           gipr.share_holders[entity] += new_gipr_share.percent
-          entity.spend(railroad_bond_convert_cost, @bank) # Pay bank the conversion cost
+          entity.spend(railroad_bond_convert_cost, @bank) if railroad_bond_convert_cost.positive? # Pay conversion cost
           @bank.spend(bond.value, gipr) # Bank pays GIPR $100
           @log << "#{entity.name} converts a Railrod Bond to a GIPR Share for #{format_currency(railroad_bond_convert_cost)}"
           @log << "The Bank pays GIPR #{format_currency(bond.value)}"
