@@ -1053,6 +1053,11 @@ module Engine
         def end_game!(player_initiated: false)
           return if @finished
 
+          if !@manually_ended && @round.finished?
+            handle_metal_payout(@steel_corp)
+            handle_metal_payout(@gold_corp)
+          end
+
           logged_drop = false
           @indebted.each do |corporation, (_, amount)|
             next unless corporation.floated?
