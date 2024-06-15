@@ -122,12 +122,12 @@ module Engine
         }.freeze
         GAME_END_REASONS_TEXT = {
           bankrupt: 'Player is bankrupt',
-          custom: '6-train is bought/exported',
+          custom: '6x2-train is bought/exported',
           stock_market: 'Corporation enters end game trigger on stock market',
         }.freeze
         GAME_END_DESCRIPTION_REASON_MAP_TEXT = {
           bankrupt: 'Bankruptcy',
-          custom: '6-train was bought/exported',
+          custom: '6x2-train was bought/exported',
           stock_market: 'Company hit max stock value',
         }.freeze
 
