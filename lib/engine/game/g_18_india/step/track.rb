@@ -104,6 +104,7 @@ module Engine
 
           # Added multple yellow tile check and Yellow OO reservation check
           def process_lay_tile(action)
+            debug_track_info(action, "before")
             if action.tile.color == :yellow
               raise GameError, 'New yellow tiles must extend path from railhead and previously laid tiles' \
                unless connected_to_track_laying_path?(action.hex)
@@ -113,6 +114,13 @@ module Engine
             super
             move_oo_reservations(action) unless @round.pending_tokens.empty? # Pending token due to Yellow OO tile
             @round.next_empty_hexes = calculate_railhead_hexes unless @game.loading
+            debug_track_info(action, "after")
+          end
+
+          def debug_track_info(action, str)
+            LOGGER.debug "Track > Lay Tile > #{str}"
+            LOGGER.debug "hex: #{action.hex} - tile: #{action.hex.tile} - borders: #{action.hex.tile.borders.inspect}"
+            LOGGER.debug "New tile: #{action.tile} - borders: #{action.tile.borders.inspect}"
           end
 
           # Base code doesn't handle one token and a reservation in first city on OO tile
