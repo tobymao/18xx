@@ -55,6 +55,7 @@ module Engine
             @new_associated_minor.text_color = old_company.text_color
             @new_associated_minor.logo = "1822_pnw/#{major.id.downcase}/#{@new_associated_minor.name}"
             @new_associated_minor.tokens.first.logo = @new_associated_minor.logo
+            @new_associated_minor.tokens.first.simple_logo = @new_associated_minor.logo
 
             original_home_coordinates = major.coordinates
             @game.remove_home_icon(major, original_home_coordinates)

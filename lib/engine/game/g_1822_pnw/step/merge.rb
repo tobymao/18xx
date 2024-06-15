@@ -18,7 +18,7 @@ module Engine
           def actions(entity)
             return [] if !entity.corporation? || entity != current_entity
             return %w[choose] if @merge_state != :none
-            return %w[merge pass] if mergeable(entity).any?
+            return %w[merge pass] unless mergeable(entity).empty?
 
             []
           end
@@ -46,7 +46,8 @@ module Engine
           def mergeable(corporation)
             return [] unless @merge_state == :none
 
-            @game.unassociated_minors.select do |m|
+            mergeable_minors = @game.associated_minor?(corporation) ? @game.unassociated_minors : @game.associated_minors
+            mergeable_minors.select do |m|
               (entity_connects?(corporation, m) || entity_connects?(m, corporation)) &&
                 !valid_par_prices(corporation, m).empty? &&
                 corporation.owner == m.owner
@@ -109,8 +110,12 @@ module Engine
           end
 
           def process_merge(action)
-            @associated_minor = action.entity
-            @unassociated_minor = action.corporation
+            @associated_minor, @unassociated_minor =
+              if @game.associated_minor?(action.entity)
+                [action.entity, action.corporation]
+              else
+                [action.corporation, action.entity]
+              end
 
             if !@game.loading && (!@unassociated_minor || !mergeable(@associated_minor).include?(@unassociated_minor))
               raise GameError, "Choose a corporation to merge with #{@associated_minor.name}"
