@@ -127,6 +127,7 @@ module View
           buttons = []
           buttons.concat(render_merge_button) if @current_actions.include?('merge')
           buttons.concat(render_payoff_player_debt_button) if @current_actions.include?('payoff_player_debt')
+          buttons.concat(render_payoff_player_debt_partial_button) if @current_actions.include?('payoff_player_debt_partial')
           buttons.concat(render_take_loan) if @current_actions.include?('take_loan')
           buttons.concat(render_payoff_loan) if @current_actions.include?('payoff_loan')
           buttons.any? ? [h(:div, buttons)] : []
@@ -185,7 +186,39 @@ module View
             process_action(Engine::Action::PayoffPlayerDebt.new(@current_entity))
           end
           partial = @current_entity.cash < @game.player_debt(@current_entity)
-          [h(:button, { on: { click: payoffdebt } }, "Payoff Debt#{partial ? ' (Partial)' : ''}")]
+          amount = [@current_entity.cash, @game.player_debt(@current_entity)].min
+          [h(:button, { on: { click: payoffdebt } },
+             "Pay off debt#{partial ? ' (Partial)' : ''} - #{@game.format_currency(amount)}")]
+        end
+
+        def render_payoff_player_debt_partial_button
+          max_payoff = [@current_entity.cash, @game.player_debt(@current_entity)].min
+
+          input = h(
+            'input.no_margin',
+            style: {
+              height: '1.2rem',
+              width: '4rem',
+              padding: '0 0 0 0.2rem',
+            },
+            attrs: {
+              type: 'number',
+              min: 1,
+              max: max_payoff,
+              value: max_payoff,
+            },
+          )
+
+          payoff_debt_partial = lambda do
+            amount = input.JS['elm'].JS['value'].to_i
+            process_action(Engine::Action::PayoffPlayerDebtPartial.new(@current_entity, amount: amount))
+          end
+
+          [h(:div, [
+               input,
+               h(:button, { on: { click: payoff_debt_partial } },
+                 'Partially pay off debt'),
+          ])]
         end
 
         def render_failed_merge
