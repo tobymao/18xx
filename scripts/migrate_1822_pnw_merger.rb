@@ -99,9 +99,8 @@ def repair(game, original_actions, actions, broken_action, data, pry_db: false)
   # Generic handling for when a change just needs pass actions to be
   # inserted/deleted
 
-  # action seems ok, try deleting auto_action pass
-  if entity_matches_action_entity?(game.current_entity, broken_action) &&
-     game.round.actions_for(game.current_entity).include?(broken_action['type']) &&
+  # try deleting auto_action pass
+  if game.round.actions_for(game.current_entity).include?(broken_action['type']) &&
      (broken_action['auto_actions'] || []).map { |aa| aa['type'] } == ['pass']
      actions[broken_action_idx].delete('auto_actions')
      puts '        patched: removed auto_action pass from broken_action'
