@@ -1181,10 +1181,11 @@ module Engine
               company.desc = company.desc.delete_suffix("\nHas a Guaranty Warrant.")
             end
           end
+        end
 
-          # TODO: Railroad bonds can convert to new GIPR shares
-          # TODO: No new Guage Changes (remove existing borders?)
-          # TODO: May remove Guage Changes as Track Action (add ability to corps?)
+        # Modified to include Book Value (assets) of corporations
+        def player_value(player)
+          player.shares.map{ |s| s.corporation.book_value_per_share * s.num_shares }.sum(player.value)
         end
 
         def company_header(company)
