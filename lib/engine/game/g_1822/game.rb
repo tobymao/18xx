@@ -592,15 +592,10 @@ module Engine
           # Tracks by e-train and normal trains
           tracks_by_type = Hash.new { |h, k| h[k] = [] }
 
-          # Check local train not use the same token more then one time
-          local_cities = []
-
           # Merthyr Tydfil and Pontypool
           merthyr_tydfil_pontypool = {}
 
           routes.each do |route|
-            local_cities.concat(route.visited_stops.select(&:city?)) if route.train.local? && !route.chains.empty?
-
             route.paths.each do |path|
               a = path.a
               b = path.b
@@ -629,14 +624,30 @@ module Engine
             end
           end
 
-          local_cities.group_by(&:itself).each do |k, v|
-            raise GameError, "Local train can only use each token on #{k.hex.id} once" if v.size > 1
-          end
+          check_local_cities(routes)
 
           # Check Merthyr Tydfil and Pontypool, only one of the 2 tracks may be used
           return if !merthyr_tydfil_pontypool[1] || !merthyr_tydfil_pontypool[2]
 
           raise GameError, 'May only use one of the tracks connecting Merthyr Tydfil and Pontypool'
+        end
+
+        # Check local train not use the same token more then one time
+        def check_local_cities(routes)
+          local_cities = []
+          routes.each do |route|
+            local_cities.concat(route.visited_stops.select(&:city?)) if route.train.local? && !route.chains.empty?
+          end
+
+          local_cities.group_by(&:itself).each do |k, v|
+            puts "Local train can only use each token on #{k.hex.id} once"
+            raise GameError, "Local train can only use each token on #{k.hex.id} once" if v.size > 1
+          end
+        end
+
+        # called by AutoRouter
+        def check_other(route)
+          check_local_cities(route.routes)
         end
 
         def company_bought(company, entity)
