@@ -552,6 +552,8 @@ module Engine
           # debt increases
           old_price = @debt_corp.share_price
           @stock_market.move_right(@debt_corp)
+          @debt_corp.cash = @debt_corp.share_price.price
+
           log_share_price(@debt_corp, old_price, 1)
         end
 
@@ -907,6 +909,7 @@ module Engine
           corporation.ipoed = true
           corporation.floated = true
           price = @stock_market.share_price([0, 6])
+          corporation.cash = price.price
           @stock_market.set_par(corporation, price)
           bundle = ShareBundle.new(corporation.shares_of(corporation))
           @share_pool.transfer_shares(bundle, @share_pool)
