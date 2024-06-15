@@ -20,7 +20,7 @@ module Engine
           end
 
           def select_entities
-            @game.associated_minors.sort
+            @game.operating_order.select { |c| c.type == :minor }
           end
 
           def setup
@@ -30,8 +30,10 @@ module Engine
           end
 
           def next_entity!
-            next_entity_index! if @entities.any?
-            return if @entity_index.zero?
+            return if @entities.empty?
+            return if @entity_index == @entities.size - 1
+
+            next_entity_index!
 
             @steps.each(&:unpass!)
             @steps.each(&:setup)

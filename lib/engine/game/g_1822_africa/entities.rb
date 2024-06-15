@@ -4,9 +4,6 @@ module Engine
   module Game
     module G1822Africa
       module Entities
-        PRIVATE_RED = '#FF7276'
-        PRIVATE_GREEN = '#90EE90'
-
         COMPANIES = [
           {
             name: 'P1 (Permanent L-train)',
@@ -15,7 +12,6 @@ module Engine
             value: 0,
             revenue: 0,
             abilities: [],
-            color: PRIVATE_GREEN,
           },
           {
             name: 'P2 (Permanent 2-train)',
@@ -24,7 +20,6 @@ module Engine
             value: 0,
             revenue: 0,
             abilities: [],
-            color: PRIVATE_RED,
           },
           {
             name: 'P3 (Permanent 2-train)',
@@ -33,7 +28,6 @@ module Engine
             value: 0,
             revenue: 0,
             abilities: [],
-            color: PRIVATE_RED,
           },
           {
             name: 'P4 (Pullman)',
@@ -44,7 +38,6 @@ module Engine
             value: 0,
             revenue: 10,
             abilities: [],
-            color: PRIVATE_GREEN,
           },
           {
             name: 'P5 (Add Town)',
@@ -70,7 +63,6 @@ module Engine
                 combo_entities: %w[P7 P11],
               },
             ],
-            color: PRIVATE_GREEN,
           },
           {
             name: 'P6 (Recycled train)',
@@ -80,7 +72,6 @@ module Engine
             value: 0,
             revenue: 10,
             abilities: [],
-            color: PRIVATE_GREEN,
           },
           {
             name: 'P7 (Extra tile)',
@@ -108,7 +99,6 @@ module Engine
                 combo_entities: %w[P9 P11],
               },
             ],
-            color: PRIVATE_GREEN,
           },
           {
             name: 'P8 (Reserve Three Tiles)',
@@ -121,7 +111,6 @@ module Engine
             value: 0,
             revenue: 10,
             abilities: [],
-            color: PRIVATE_GREEN,
           },
           {
             name: 'P9 (Remove Town)',
@@ -147,7 +136,6 @@ module Engine
                 combo_entities: %w[P7 P11],
               },
             ],
-            color: PRIVATE_GREEN,
           },
           {
             name: 'P10 (Game Reserve)',
@@ -174,7 +162,6 @@ module Engine
                 closed_when_used_up: true,
               },
             ],
-            color: PRIVATE_GREEN,
           },
           {
             name: 'P11 (Mountain Rebate)',
@@ -203,7 +190,6 @@ module Engine
                 owner_only: true,
               },
             ],
-            color: PRIVATE_GREEN,
           },
           {
             name: 'P12 (Fast Sahara Building)',
@@ -231,7 +217,6 @@ module Engine
                 combo_entities: %w[P7 P9 P11],
               },
             ],
-            color: PRIVATE_GREEN,
           },
           {
             name: 'P13 (Station Swap)',
@@ -242,7 +227,6 @@ module Engine
             value: 0,
             revenue: 10,
             abilities: [],
-            color: PRIVATE_RED,
           },
           {
             name: 'P14 (Gold Mine)',
@@ -268,7 +252,6 @@ module Engine
                 check_tokenable: false,
               },
             ],
-            color: PRIVATE_RED,
           },
           {
             name: 'P15 (Coffee Plantation)',
@@ -290,7 +273,6 @@ module Engine
                 owner_type: 'corporation',
               },
             ],
-            color: PRIVATE_GREEN,
           },
           {
             name: 'P16 (A10x Phase)',
@@ -304,7 +286,6 @@ module Engine
             value: 0,
             revenue: 0,
             abilities: [],
-            color: PRIVATE_GREEN,
           },
           {
             name: 'P17 (Bank Share Buy)',
@@ -315,7 +296,6 @@ module Engine
             value: 0,
             revenue: 10,
             abilities: [],
-            color: PRIVATE_RED,
           },
           {
             name: 'P18 (Safari Bonus)',
@@ -327,7 +307,6 @@ module Engine
             value: 0,
             revenue: 10,
             abilities: [],
-            color: PRIVATE_GREEN,
           },
           {
             name: 'CONCESSION: NAR',
