@@ -811,8 +811,6 @@ module Engine
         def company_tax_haven_payout(entity, per_share); end
         def num_certs_modification(_entity) = 0
 
-        def finalize_end_game_values; end
-
         def set_private_revenues; end
 
         def setup_regional_payout_count

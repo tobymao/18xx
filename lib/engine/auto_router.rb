@@ -103,9 +103,16 @@ module Engine
             next unless left
 
             chains << { nodes: [left, nil], paths: [] }
+
+            # use the Local train's 1 city instead of any paths as their key;
+            # only 1 train can visit each city, but we want Locals to be able to
+            # visit multiple different cities if a corporation has more than one
+            # of them
+            id = [left]
+          else
+            id = chains.flat_map { |c| c[:paths] }.sort!
           end
 
-          id = chains.flat_map { |c| c[:paths] }.sort!
           next if connections[id]
 
           connections[id] = chains.map do |c|
