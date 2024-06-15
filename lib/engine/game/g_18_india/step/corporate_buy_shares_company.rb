@@ -46,9 +46,47 @@ module Engine
             actions = []
             actions << 'corporate_buy_company' if can_buy_any_companies?(entity)
             actions << 'corporate_buy_shares' if can_buy_any?(entity)
+            # actions << 'choose' if choice_available?(entity) # Convert Bond to share of GIPR
             actions << 'pass' if actions.any?
 
             actions
+          end
+
+          def at_cert_limit?(entity)
+            @game.num_certs(entity) >= @game.cert_limit(entity)
+          end
+
+          # ------ Code for 'choose' Action [convert Railroad Bond] ------
+
+          def choice_name
+            'Convert Railroad Bond?'
+          end
+
+          def choice_available?(entity)
+            first_bond(entity) && @game.phase.status.include?('convert_bonds') && can_afford_conversion(entity) &&
+              !at_cert_limit?(entity)
+          end
+
+          def can_afford_conversion(entity)
+            entity.cash >= @game.railroad_bond_convert_cost
+          end
+
+          def first_bond(entity)
+            entity.companies.find { |c| c.type == :bond }
+          end
+
+          def choices
+            ["Convert to GIPR Share for #{bond_convert_cost_str}"]
+          end
+
+          def bond_convert_cost_str
+            @game.format_currency(@game.railroad_bond_convert_cost)
+          end
+
+          def process_choose(action)
+            entity = action.entity
+            bond = first_bond(entity)
+            @game.convert_bond_to_gipr(entity, bond)
           end
 
           # ----- methods for buying companies (new) -----
@@ -68,14 +106,14 @@ module Engine
 
           def can_buy_comp_from_market?(entity, company)
             return false if bought?(entity)
-            return false if (@game.num_certs(entity) >= @game.cert_limit(entity)) && (company.type != :bond)
+            return false if at_cert_limit?(entity) && (company.type != :bond)
 
             entity.cash >= company.value
           end
 
           def can_buy_comp_from_ipo?(entity, company)
             return false if bought?(entity)
-            return false if @game.num_certs(entity) >= @game.cert_limit(entity)
+            return false if at_cert_limit?(entity)
             return false if company.type == :share && (entity == company.treasury.corporation) # may NOT buy self from IPO
 
             _row, index = @game.ipo_row_and_index(company)

@@ -18,6 +18,7 @@ module Engine
             LOGGER.debug " pass_order: #{@round.pass_order} - last_to_act: #{@round.last_to_act}"
             LOGGER.debug " Cert Limit: #{@game.cert_limit(current_entity)} - Num Certs: #{@game.num_certs(current_entity)}"
             LOGGER.debug " buyable companies: #{buyable_companies(current_entity).map(&:name).join(', ')}"
+            LOGGER.debug " choice_available?: #{choice_available?(current_entity)}"
           end
 
           def debug_corp_log(bundle, str = '')
@@ -45,6 +46,7 @@ module Engine
             @round.stock_turns += 1
             @round.bought_from_market = false
             @round.bought_from_hand = false
+            debugging_log("Stock Round Setup")
           end
 
           def round_state
@@ -123,8 +125,12 @@ module Engine
           end
 
           def choice_available?(entity)
-            first_bond(entity) && @game.phase.status.include?('convert_bonds') &&
+            first_bond(entity) && @game.phase.status.include?('convert_bonds') && can_afford_conversion(entity) &&
               !at_cert_limit?(entity) && @round.current_actions.empty?
+          end
+
+          def can_afford_conversion(entity)
+            entity.cash >= @game.railroad_bond_convert_cost
           end
 
           def first_bond(entity)
@@ -140,17 +146,17 @@ module Engine
           end
 
           def process_choose(action)
+            debug_corp_log(@game.gipr.presidents_share, str = 'Before Convert')
             entity = action.entity
-            corporation = @game.gipr
-
-            @log << "#{entity.name} converts a Railrod Bond to a GIPR Share for #{bond_convert_cost_str}"
             bond = first_bond(entity)
-            entity.companies.delete(bond)
-            bond.close!
-            new_gipr_share = corporation.bond_shares.shift
-            new_gipr_share.owner = entity
-            entity.shares_by_corporation[corporation] << new_gipr_share
-            corporation.share_holders[entity] += new_gipr_share.percent
+            @game.convert_bond_to_gipr(entity, bond)
+            debug_corp_log(@game.gipr.presidents_share, str = 'After Convert')
+
+            track_action(action, bond)
+          end
+
+          def converted_bond?
+            @round.current_actions.any? { |x| x.instance_of?(Action::Choose) }
           end
 
           # ------ Code for 'buy_company' Action ------
@@ -158,6 +164,7 @@ module Engine
           # Modify to track ability to buy companies (mulitple buy from same IPO row and matching Player Hands)
           def can_buy_any_companies?(entity)
             return false if @round.bought_from_market
+            return false if converted_bond?
 
             buyable_companies(entity).count.positive?
           end
@@ -321,6 +328,8 @@ module Engine
 
           # Modified: only buy shares from Market. Company Proxies used from IPO or Player Hand
           def can_buy_any?(entity)
+            return false if converted_bond?
+
             can_buy_any_from_market?(entity)
           end
 

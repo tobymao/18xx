@@ -646,17 +646,19 @@ module Engine
         end
 
         def first_bond_in_bank
-          [] << bank.companies.find { |c| c.type == :bond }
+          [bank.companies.find { |c| c.type == :bond }].compact
         end
 
         def count_of_bonds
           bank.companies.count { |c| c.type == :bond }
         end
 
+        def privates_in_bank
+          bank.companies.select { |c| c.type == :private }
+        end
+
         def bank_owned_companies
-          bank_certs = [] << bank.companies.find { |c| c.type == :bond }
-          bank_certs += bank.companies.select { |c| c.type == :private }
-          bank_certs
+          first_bond_in_bank + privates_in_bank
         end
 
         def top_of_ipo_rows(row = nil)
@@ -768,6 +770,29 @@ module Engine
 
         def gipr_may_operate?
           !@phase.status.include?('gipr_may_not_operate') && gipr.floated?
+        end
+
+        def convert_bond_to_gipr(entity, bond)
+          entity.companies.delete(bond)
+          bond.close!
+          new_gipr_share = gipr.bond_shares.shift
+          new_gipr_share.owner = entity
+          entity.shares_by_corporation[gipr] << new_gipr_share
+          gipr.share_holders[entity] += new_gipr_share.percent
+          entity.spend(railroad_bond_convert_cost, @bank) # Pay bank the conversion cost
+          @bank.spend(bond.value, gipr) # Bank pays GIPR $100
+          @log << "#{entity.name} converts a Railrod Bond to a GIPR Share for #{format_currency(railroad_bond_convert_cost)}"
+          @log << "The Bank pays GIPR #{format_currency(bond.value)}"
+          # Check if if there is new Manager for GIPR
+          check_manager_change(entity, gipr) if entity.player?
+        end
+
+        def check_manager_change(entity, corporation)
+          return unless entity.percent_of(corporation) > gipr.owner.percent_of(corporation)
+
+          @share_pool.change_president(corporation.presidents_share, corporation.owner, entity)
+          corporation.owner = entity
+          @log << "#{entity.name} is the new Mangager of #{corporation.name}"
         end
 
         def gipr_exchange_tokens
@@ -884,7 +909,7 @@ module Engine
           @cert_limit = init_cert_limit
           LOGGER.debug "closing > cert_limit: #{@cert_limit}"
 
-          # move to next enity if the current entity is the closed corporation
+          # move to next entity if the current entity is the closed corporation
           @round.force_next_entity! if @round.current_entity == corporation
         end
 
