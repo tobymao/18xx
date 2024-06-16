@@ -14,13 +14,30 @@ module Engine
     end
 
     def compute(corporation, **opts)
+      trains = @game.route_trains(corporation).sort_by(&:price).reverse
+
+      train_groups =
+        if (groups = @game.class::TRAIN_AUTOROUTE_GROUPS)
+          trains.group_by { |t| groups.index { |g| g.include?(t.name) } }.values
+        else
+          [trains]
+        end
+
+      routes = opts.delete(:routes)
+
+      train_groups.flat_map do |train_group|
+        opts[:routes] = routes.select { |r| train_group.include?(r.train) }
+        compute_for_train_group(train_group, corporation, **opts)
+      end
+    end
+
+    def compute_for_train_group(trains, corporation, **opts)
       static = opts[:routes] || []
       path_timeout = opts[:path_timeout] || 30
       route_timeout = opts[:route_timeout] || 10
       route_limit = opts[:route_limit] || 10_000
 
       connections = {}
-      trains = @game.route_trains(corporation).sort_by(&:price).reverse
 
       graph = @game.graph_for_entity(corporation)
       nodes = graph.connected_nodes(corporation).keys.sort_by do |node|

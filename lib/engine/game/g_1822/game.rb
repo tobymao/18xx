@@ -288,6 +288,10 @@ module Engine
           },
         ].freeze
 
+        TRAIN_AUTOROUTE_GROUPS = [
+          %w[E],
+        ].freeze
+
         LAYOUT = :flat
 
         SELL_MOVEMENT = :down_share
