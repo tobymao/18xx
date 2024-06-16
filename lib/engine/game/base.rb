@@ -137,6 +137,12 @@ module Engine
 
       TRAINS = [].freeze
 
+      # Array of groups (arrays) of train names; trains within a group cannot
+      # have overlapping routes, but a train in one group can overlap with
+      # routes of trains in another group. Any trains not listed here fall into
+      # a default group.
+      TRAIN_AUTOROUTE_GROUPS = nil
+
       CERT_LIMIT_TYPES = %i[multiple_buy unlimited no_cert_limit].freeze
       # Does the cert limit decrease when a player becomes bankrupt?
       CERT_LIMIT_CHANGE_ON_BANKRUPTCY = false
