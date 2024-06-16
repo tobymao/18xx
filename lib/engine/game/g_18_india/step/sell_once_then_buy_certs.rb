@@ -46,7 +46,7 @@ module Engine
             @round.stock_turns += 1
             @round.bought_from_market = false
             @round.bought_from_hand = false
-            debugging_log("Stock Round Setup")
+            debugging_log('Stock Round Setup')
           end
 
           def round_state
@@ -146,11 +146,11 @@ module Engine
           end
 
           def process_choose(action)
-            debug_corp_log(@game.gipr.presidents_share, str = 'Before Convert')
+            debug_corp_log(@game.gipr.presidents_share, 'Before Convert')
             entity = action.entity
             bond = first_bond(entity)
             @game.convert_bond_to_gipr(entity, bond)
-            debug_corp_log(@game.gipr.presidents_share, str = 'After Convert')
+            debug_corp_log(@game.gipr.presidents_share, 'After Convert')
 
             track_action(action, bond)
           end

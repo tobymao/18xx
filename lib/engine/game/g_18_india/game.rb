@@ -1185,7 +1185,7 @@ module Engine
 
         # Modified to include Book Value (assets) of corporations
         def player_value(player)
-          player.shares.map{ |s| s.corporation.book_value_per_share * s.num_shares }.sum(player.value)
+          player.shares.sum(player.value) { |s| s.corporation.book_value_per_share * s.num_shares }
         end
 
         def company_header(company)
