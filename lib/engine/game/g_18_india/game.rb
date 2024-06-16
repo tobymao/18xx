@@ -998,7 +998,7 @@ module Engine
           @gauge_change_markers.delete([hex, neighbor].sort)
         end
 
-        # modify to require route begin and end at city and may not visit MUMBAI or MUMBAI twice.
+        # modify to require route begin and end at city and may not visit MUMBAI or NEPAL twice.
         def check_other(route)
           visited_stops = route.visited_stops
           return if visited_stops.count < 2
