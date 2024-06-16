@@ -1620,13 +1620,18 @@ module Engine
         city = cities.find { |c| c.reserved_by?(corporation) } || cities.first
         token = corporation.find_token_by_type
 
-        if city.tokenable?(corporation, tokens: token)
+        same_hex_allowed = multiple_tokens_allowed_on_home_hex?
+        if city.tokenable?(corporation, tokens: token, same_hex_allowed: same_hex_allowed)
           @log << "#{corporation.name} places a token on #{hex.name}"
-          city.place_token(corporation, token)
+          city.place_token(corporation, token, same_hex_allowed: same_hex_allowed)
         elsif home_token_can_be_cheater
           @log << "#{corporation.name} places a token on #{hex.name}"
           city.place_token(corporation, token, cheater: true)
         end
+      end
+
+      def multiple_tokens_allowed_on_home_hex?
+        false
       end
 
       def graph_for_entity(_entity)
