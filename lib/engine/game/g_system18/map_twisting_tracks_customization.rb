@@ -118,29 +118,6 @@ module Engine
 
         def map_twisting_tracks_game_hexes
           {
-            # gray: {
-            #  ['A6'] => 'path=a:0,b:4,b_lane:2.1;path=a:5,b:4,b_lane:2.0',
-            #  ['A8'] => 'path=a:1,b:0,a_lane:2.0;path=a:1,b:5,a_lane:2.1',
-
-            #  ['A10'] => 'path=a:0,b:5',
-            #  ['B11'] => 'path=a:2,b:0;path=a:1,b:5',
-            #  ['C12'] => 'path=a:2,b:1',
-
-            #  ['D11'] => 'path=a:2,b:0,b_lane:2.1;path=a:1,b:0,b_lane:2.0',
-            #  ['E10'] => 'path=a:3,b:2,a_lane:2.0;path=a:3,b:1,a_lane:2.1',
-
-            #  ['F3'] => 'path=a:3,b:4',
-            #  ['F5'] => 'path=a:2,b:4;path=a:1,b:3',
-            #  ['F7'] => 'path=a:2,b:4;path=a:1,b:3',
-            #  ['F9'] => 'path=a:1,b:2',
-
-            #  ['E2'] => 'path=a:3,b:4',
-
-            #  ['D1'] => 'path=a:3,b:4',
-            #  ['C2'] => 'path=a:0,b:4;path=a:3,b:5',
-            #  ['B3'] => 'path=a:0,b:4;path=a:3,b:5',
-            #  ['A4'] => 'path=a:0,b:5',
-            # },
             gray: {
               ['A6'] => 'town=revenue:20;path=a:4,b:_0,a_lane:2.1;path=a:_0,b:0;path=a:5,b:4,b_lane:2.0',
               ['A8'] => 'town=revenue:20;path=a:1,b:0,a_lane:2.0;path=a:1,b:_0,a_lane:2.1;path=a:_0,b:5',
@@ -186,7 +163,7 @@ module Engine
         end
 
         def map_twisting_tracks_game_cash
-          { 2 => 850, 3 => 575, 4 => 425 }
+          { 2 => 1000, 3 => 700, 4 => 500 }
         end
 
         def map_twisting_tracks_game_cert_limit
@@ -206,9 +183,9 @@ module Engine
           trains.delete(find_train(trains, '8'))
           find_train(trains, '4')[:rusts_on] = 'D'
           # udpate quantities
-          find_train(trains, '2')[:num] = 3
-          find_train(trains, '3')[:num] = 2
-          find_train(trains, '4')[:num] = 1
+          find_train(trains, '2')[:num] = 4
+          find_train(trains, '3')[:num] = 3
+          find_train(trains, '4')[:num] = 2
           find_train(trains, '5')[:num] = 1
           find_train(trains, '5')[:rusts_on] = 'D-Purple'
           find_train(trains, '6')[:num] = 1
@@ -356,6 +333,14 @@ module Engine
           tile.cities.first.place_token(entity, tc, check_tokenable: false)
           @log << "#{entity.name} places a Ticket Counter on tile"
           clear_token_graph_for_entity(entity)
+        end
+
+        # allow 2nd token on hex if it's a different type
+        def map_twisting_tracks_token_same_hex?(entity, hex, token)
+          existing_token = entity.tokens.find { |t| t.hex == hex }
+          return false unless existing_token
+
+          existing_token.type != token.type
         end
       end
     end

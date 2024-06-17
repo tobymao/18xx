@@ -523,6 +523,12 @@ module Engine
 
           send("map_#{map_name}_post_lay_tile", entity, tile)
         end
+
+        def token_same_hex?(entity, hex, token)
+          return false unless respond_to?("map_#{map_name}_token_same_hex?")
+
+          send("map_#{map_name}_token_same_hex?", entity, hex, token)
+        end
       end
     end
   end
