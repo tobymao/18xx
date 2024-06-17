@@ -337,6 +337,8 @@ module Engine
 
         # allow 2nd token on hex if it's a different type
         def map_twisting_tracks_token_same_hex?(entity, hex, token)
+          return false if entity.tokens.count { |t| t.hex == hex } > 1
+
           existing_token = entity.tokens.find { |t| t.hex == hex }
           return false unless existing_token
 
