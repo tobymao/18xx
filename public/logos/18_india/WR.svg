@@ -1,1 +1,52 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" fill="#3766ba"/><text x="4" y="5.1" text-anchor="middle" font-weight="700" font-size="3.25" textLength="7.2" lengthAdjust="spacingAndGlyphs" font-family="Arial" fill="white">WR</text></svg>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 33.1 33.1">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #246bb5;
+      }
+
+      .cls-1, .cls-2, .cls-3 {
+        stroke-width: 0px;
+      }
+
+      .cls-2 {
+        fill: none;
+      }
+
+      .cls-4 {
+        clip-path: url(#clippath-1);
+      }
+
+      .cls-5 {
+        clip-path: url(#clippath);
+      }
+
+      .cls-3 {
+        fill: #fff;
+      }
+    </style>
+    <clipPath id="clippath">
+      <rect class="cls-2" x="2.9" y="3.2" width="27.3" height="26.8"/>
+    </clipPath>
+    <clipPath id="clippath-1">
+      <rect class="cls-2" x="2.9" y="3.2" width="27.3" height="26.8"/>
+    </clipPath>
+  </defs>
+  <g id="Dire_line" data-name="Dire line">
+    <circle class="cls-3" cx="16.5" cy="16.5" r="16.3"/>
+  </g>
+  <g id="Tokens">
+    <g id="Western">
+      <g class="cls-5">
+        <g class="cls-4">
+          <g>
+            <path class="cls-1" d="M22.7,28.9h-4.5l-9.1-11.1v-2.9h4.2c1.9,0,3.5-1.1,4.1-2.6h2.9c-.7,2.9-3.6,5.1-6.9,5.1s-.3,0-.5,0c0,0,9.8,11.5,9.8,11.5Z"/>
+            <polygon class="cls-1" points="23.1 12 8.3 12 10.2 9 25 9 23.1 12"/>
+            <path class="cls-1" d="M24.9,4.4l-1.9,3h-3.6c.3.4.5.8.7,1.3h-3.1c-.4-.5-.9-1-1.5-1.3h-7.3l1.2-2,.7-1h14.8Z"/>
+          </g>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

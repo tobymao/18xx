@@ -1,109 +1,153 @@
 # frozen_string_literal: true
 
+require_relative 'map'
+
 module Engine
   module Game
     module G18Neb
       module Entities
         COMPANIES = [
           {
-            name: 'Denver Pacific Railroad',
+            name: 'P1 - Denver Pacific Railroad',
             value: 20,
             revenue: 5,
-            desc: 'Once per game, allows Corporation owner to lay or upgrade a tile in B8',
+            desc: 'Once per game, allows Corporation to lay or upgrade a tile in B8, '\
+                  'in addition to and either before or after its normal tile lay(s).',
             sym: 'DPR',
             abilities: [
               {
                 type: 'blocks_hexes',
-                owner_type: 'player',
-                remove: 3, # No tile may be placed on C7 until phase 3.
-                hexes: ['B8'],
+                remove: '3',
+                hexes: %w[B8],
               },
               {
                 type: 'tile_lay',
                 owner_type: 'corporation',
-                hexes: ['B8'],
-                tiles: %w[3 4 5 80 81 82 83],
+                when: 'track',
+                hexes: %w[B8],
+                tiles: %w[7 8 9 80 81 82 83],
                 count: 1,
-                on_phase: 3,
               },
             ],
           },
           {
-            name: 'Morison Bridging Company',
+            name: 'P2 - Morison Bridging Company',
             value: 40,
             revenue: 10,
-            desc: 'Corporation owner gets two bridge discount tokens',
+            desc: 'Corporation gets two bridge discount tokens, each of which will offset up to $60 '\
+                  'off bridge building in a single OR. Company closes if both tokens are used. Tokens '\
+                  'are available until phase 6.',
             sym: 'P2',
             abilities: [
               {
                 type: 'tile_discount',
-                discount: 60,
+                when: 'track',
                 terrain: 'water',
                 owner_type: 'corporation',
-                hexes: %w[K3 K5 K7 J8 L8 L10],
+                discount: 60,
+                count_per_or: 1,
                 count: 2,
-                remove: 5,
+              },
+              {
+                type: 'tile_lay',
+                when: 'track',
+                owner_type: 'corporation',
+                tiles: [],
+                hexes: Map::WATER_HEXES,
+                reachable: true,
+                special: false,
+                consume_tile_lay: true,
+                count_per_or: 1,
+                count: 2,
+                closed_when_used_up: true,
+              },
+              {
+                type: 'close',
+                owner_type: 'corporation',
+                on_phase: '6',
               },
             ],
           },
           {
-            name: 'Armour and Company',
+            name: 'P3 - Armour and Company',
             value: 70,
             revenue: 15,
-            desc: 'An owning Corporation may place a cattle token in any Town or City',
+            desc: 'Corporation may place a cattle token in any Town or City (not offboard) during '\
+                  'its token placement step. Once placed, the corporation gets a $20 bonus for the selected '\
+                  'Town or City. The token starts as an Open token, which allows other corporations to get '\
+                  'a $10 bonus for the selected Town or City. The token may be converted to a closed token, '\
+                  'which removes the $10 bonus for other corporations and closes the private.',
             sym: 'P3',
             abilities: [
               {
                 type: 'assign_hexes',
-                hexes: %w[B6 C3 C7 C9 E7 F6 G7 G11 H8 H10 I3 I5 J8 J12 K3 K7 L10],
+                hexes: Map::CITY_HEXES,
                 count: 1,
-                when: 'track_and_token',
+                when: 'token',
                 owner_type: 'corporation',
               },
-              { type: 'hex_bonus', owner_type: 'corporation', amount: 20, hexes: [] },
+              {
+                type: 'close',
+                owner_type: 'corporation',
+                on_phase: '6',
+              },
             ],
           },
           {
-            name: 'Central Pacific Railroad',
+            name: 'P4 - Central Pacific Railroad',
             value: 100,
             revenue: 15,
-            desc: 'May exchange for share in Colorado & Southern Railroad',
+            desc: 'In lieu of a stock purchase during a Stock Round, the owning player may exchange '\
+                  'this company, which closes it, for a share of the Colorado and Southern Railway, '\
+                  'if available. The C&S receives its current Stock Price from the Bank if the share '\
+                  'was taken from its Treasury.',
             sym: 'P4',
             abilities: [
                 {
                   type: 'exchange',
-                  corporations: ['C&S'],
+                  corporations: %w[C&S],
                   owner_type: 'player',
-                  when: 'owning_player_stock_round',
+                  when: 'owning_player_sr_turn',
                   from: %w[ipo market],
                 },
                 {
                   type: 'blocks_hexes',
                   owner_type: 'player',
                   hexes: ['C7'],
-                  # on_phase: 3,
-                  remove: 3, # No tile may be placed on C7 until phase 3.
+                  remove: '3',
                 },
               ],
           },
           {
-            name: 'Crédit Mobilier',
+            name: 'P5 - Crédit Mobilier',
             value: 130,
-            revenue: 5,
-            desc: '$5 revenue each time ANY tile is laid or upgraded.',
+            revenue: 0,
+            desc: 'The owner receives $5 each time ANY tile is placed or upgraded, regardless of which Corporation '\
+                  'laid it. In lieu of a stock purchase during a Stock Round, the owning player may exchange this '\
+                  'company, which closes it, for a share of the Union Pacific Railroad, if available. The UP '\
+                  'receives its current Stock Price from the Bank if the share was taken from its Treasury. '\
+                  'May not be sold to a corporation for more than face value.',
             sym: 'P5',
             abilities: [
               {
                 type: 'tile_income',
                 income: 5,
               },
+              {
+                type: 'exchange',
+                corporations: %w[UP],
+                owner_type: 'player',
+                when: 'owning_player_sr_turn',
+                from: %w[ipo market],
+              },
             ],
           },
           {
-            name: 'Union Pacific Railroad',
-            value: 175,
+            name: 'P6 - Union Pacific Railroad',
+            value: 170,
             revenue: 25,
-            desc: 'Comes with President\'s Certificate of the Union Pacific Railroad',
+            desc: "Comes with President's Certificate of the Union Pacific Railroad. This company cannot be sold "\
+                  'to a corporation. The company closes when the Union Pacific Railroad buys its first train.',
             sym: 'P6',
             abilities: [
               { type: 'shares', shares: 'UP_0' },
@@ -123,6 +167,7 @@ module Engine
             sym: 'CBQ',
             name: 'Chicago Burlington & Quincy',
             logo: '18_neb/CBQ',
+            simple_logo: '18_neb/CBQ.alt',
             tokens: [0, 40, 100, 100],
             coordinates: 'L6',
             color: '#666666',
@@ -132,6 +177,7 @@ module Engine
             sym: 'CNW',
             name: 'Chicago & Northwestern',
             logo: '18_neb/CNW',
+            simple_logo: '18_neb/CNW.alt',
             tokens: [0, 40, 100],
             coordinates: 'L4',
             color: '#2C9846',
@@ -141,6 +187,7 @@ module Engine
             sym: 'C&S',
             name: 'Colorado & Southern',
             logo: '18_neb/CS',
+            simple_logo: '18_neb/CS.alt',
             tokens: [0, 40, 100, 100],
             coordinates: 'A7',
             color: '#AE4A84',
@@ -150,6 +197,7 @@ module Engine
             sym: 'DRG',
             name: 'Denver & Rio Grande',
             logo: '18_neb/DRG',
+            simple_logo: '18_neb/DRG.alt',
             tokens: [0, 40],
             coordinates: 'C9',
             color: '#D4AF37',
@@ -160,6 +208,7 @@ module Engine
             sym: 'MP',
             name: 'Missouri Pacific',
             logo: '18_neb/MP',
+            simple_logo: '18_neb/MP.alt',
             tokens: [0, 40, 100],
             coordinates: 'L12',
             color: '#874301',
@@ -169,15 +218,17 @@ module Engine
             sym: 'UP',
             name: 'Union Pacific',
             logo: '18_neb/UP',
+            simple_logo: '18_neb/UP.alt',
             tokens: [0, 40, 100],
             coordinates: 'K7',
             color: '#376FFF',
           },
           {
             float_percent: 40,
-            sym: 'NR',
+            sym: 'NK',
             name: 'NebKota',
-            logo: '18_neb/NR',
+            logo: '18_neb/NK',
+            simple_logo: '18_neb/NK.alt',
             shares: [40, 20, 20, 20],
             tokens: [0, 40],
             coordinates: 'C3',
@@ -190,9 +241,10 @@ module Engine
             sym: 'OLB',
             name: 'Omaha, Lincoln & Beatrice',
             logo: '18_neb/OLB',
+            simple_logo: '18_neb/OLB.alt',
             shares: [40, 20, 20, 20],
             tokens: [0, 40],
-            coordinates: 'K7',
+            coordinates: 'J8',
             max_ownership_percent: 100,
             color: '#F40003',
             type: 'local',

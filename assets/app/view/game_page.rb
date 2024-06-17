@@ -260,6 +260,15 @@ module View
           change_anchor('#tools')
         when 'a'
           change_anchor('#auto')
+        when '1'
+          button_click('pass')
+        when '2'
+          button_click('clearall')
+        when '3'
+          button_click('autoroute')
+        when 'Enter'
+          button_click('submit')
+          button_click('pay_out')
         when 'c'
           if (chatbar = Native(`document.getElementById('chatbar')`))
             chatbar.focus

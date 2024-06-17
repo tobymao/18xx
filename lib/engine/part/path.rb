@@ -17,7 +17,7 @@ module Engine
 
       def self.decode_lane_spec(x_lane)
         if x_lane
-          [x_lane.to_i, ((x_lane.to_f - x_lane.to_i) * 10).to_i]
+          [x_lane.to_i, ((x_lane.to_f - x_lane.to_i) * 10).round.to_i]
         else
           [1, 0]
         end

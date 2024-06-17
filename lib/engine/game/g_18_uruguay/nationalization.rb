@@ -180,9 +180,13 @@ module Engine
           @log << '  Nationalization: RPTLA closes'
           corporation = @rptla
           corporation.share_holders.keys.each do |share_holder|
+            next if share_holder == share_pool
+
             shares = share_holder.shares_of(corporation)
+            next if shares.empty?
+
             bundle = ShareBundle.new(shares)
-            sell_shares_and_change_price(bundle) unless corporation == share_holder
+            sell_shares_and_change_price(bundle, movement: :none) unless corporation == share_holder
           end
           @rptla.close!
           @corporations.delete(@rptla)
@@ -219,6 +223,8 @@ module Engine
           @nationalized = true
           train = train_by_id('7-0')
           buy_train(@fce, train, :free)
+          phase.buying_train!(@fce, train, train.owner)
+          minors.each(&:close!)
         end
 
         # Move stock price one step left for each loan more than limit

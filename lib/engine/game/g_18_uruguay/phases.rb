@@ -18,7 +18,7 @@ module Engine
             train_limit: 4,
             tiles: %i[yellow green],
             operating_rounds: 2,
-            status: ['can_buy_companies'],
+            status: %w[can_buy_companies rptla_available],
           },
           {
             name: '4',
@@ -26,7 +26,7 @@ module Engine
             train_limit: 3,
             tiles: %i[yellow green],
             operating_rounds: 2,
-            status: ['can_buy_companies'],
+            status: %w[can_buy_companies rptla_available],
           },
           {
             name: '5',
@@ -34,6 +34,7 @@ module Engine
             train_limit: 2,
             tiles: %i[yellow green brown],
             operating_rounds: 3,
+            status: ['rptla_available'],
           },
           {
             name: '6',
@@ -41,19 +42,20 @@ module Engine
             train_limit: 2,
             tiles: %i[yellow green brown],
             operating_rounds: 3,
+            status: ['rptla_available'],
           },
           {
             name: '7',
             on: '7',
             train_limit: 2,
-            tiles: %i[yellow green brown],
+            tiles: %i[yellow green brown gray],
             operating_rounds: 3,
           },
           {
             name: 'D',
             on: 'D',
             train_limit: 2,
-            tiles: %i[yellow green brown grey],
+            tiles: %i[yellow green brown gray],
             operating_rounds: 3,
           },
         ].freeze

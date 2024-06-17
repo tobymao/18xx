@@ -56,8 +56,10 @@ module Engine
         exchange = action.exchange
 
         # Check if the train is actually buyable in the current situation
-        raise GameError, 'Not a buyable train' unless buyable_exchangeable_train_variants(train, entity,
-                                                                                          exchange).include?(train.variant)
+        if !buyable_exchangeable_train_variants(train, entity, exchange).include?(train.variant) ||
+           !(@game.depot.available(entity).include?(train) || buyable_trains(entity).include?(train))
+          raise GameError, "Not a buyable train: #{train.id}"
+        end
         raise GameError, 'Must pay face value' if must_pay_face_value?(train, entity, price)
         raise GameError, 'An entity cannot buy a train from itself' if train.owner == entity
 
@@ -226,7 +228,7 @@ module Engine
       end
 
       def must_buy_at_face_value?(train, entity)
-        face_value_ability?(entity) || face_value_ability?(train.owner)
+        @game.class::ALWAYS_BUY_TRAINS_AT_FACE_VALUE || face_value_ability?(entity) || face_value_ability?(train.owner)
       end
 
       def spend_minmax(entity, train)

@@ -41,11 +41,15 @@ module Engine
     end
 
     def ==(other)
-      other&.player? && (@name == other&.name)
+      !!other&.player? && (@name == other.name)
     end
 
     def player?
       true
+    end
+
+    def rename!(new_name)
+      @name = new_name
     end
 
     def to_s

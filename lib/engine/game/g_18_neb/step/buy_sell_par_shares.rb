@@ -36,8 +36,6 @@ module Engine
             return [] unless @round.current_actions.empty?
             return [] unless @game.check_sale_timing(entity, Share.new(entity).to_bundle)
 
-            LOGGER.debug { "here: #{entity.name}, #{@game.issuable_shares(entity).inspect}" }
-
             @game.issuable_shares(entity)
           end
 
@@ -45,8 +43,7 @@ module Engine
             return [] unless @round.current_actions.empty?
             return [] if did_sell?(entity, entity)
 
-            # TODO: Can redeem from players
-            @game.redeemable_shares(entity)
+            @game.redeemable_shares(entity).select { |bundle| can_buy?(entity, bundle) }
           end
 
           def process_buy_shares(action)
@@ -59,6 +56,12 @@ module Engine
           def process_sell_shares(action)
             super
             pass! if action.entity.corporation?
+          end
+
+          def log_skip(entity)
+            return unless @round.current_actions.empty?
+
+            super
           end
         end
       end

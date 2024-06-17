@@ -7,6 +7,7 @@ lib/engine/game/g_1817* @crericha
 lib/engine/game/g_1828* @crericha
 lib/engine/game/g_1844* @crericha
 lib/engine/game/g_1880* @crericha
+lib/engine/game/g_18_neb* @crericha
 lib/engine/game/g_18_ny* @crericha
 lib/engine/game/g_18_usa* @crericha
 
@@ -56,3 +57,8 @@ lib/engine/game/g_18_ardennes* @ollybh
 lib/engine/game/g_18_bf* @ollybh
 
 lib/engine/game/g_1854* @andrewzwicky
+
+lib/engine/game/g_18_nl* @philcampeau
+lib/engine/game/g_1850_jr* @philcampeau
+lib/engine/game/g_18_hiawatha* @philcampeau
+lib/engine/game/g_steam_over_holland* @philcampeau

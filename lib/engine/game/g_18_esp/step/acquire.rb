@@ -67,7 +67,7 @@ module Engine
 
             @game.corporations.select do |c|
               next unless c.type == :minor
-              next true if @game.minors_stop_operating && !c.floated? && corporation.cash >= @game.class::MINOR_TAKEOVER_COST
+              next corporation.cash >= @game.class::MINOR_TAKEOVER_COST if @game.minors_stop_operating && !c.floated?
               next true if @game.minors_stop_operating && corporation.cash >= c.share_price&.price
               next true if c.floated? && corporation.cash >= c.share_price&.price && c.operated?
 
@@ -100,7 +100,7 @@ module Engine
           end
 
           def mz?(entity)
-            entity.name == 'MZ'
+            entity.id == 'MZ' && @game.corporations.any? { |c| c.id == 'MZA' }
           end
 
           def show_other_players

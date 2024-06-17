@@ -11,15 +11,40 @@ module Engine
           include MinorExchange
 
           def actions(entity)
-            return super unless under_obligation?(entity)
+            return super if bought?
+            return super unless @game.under_obligation?(entity)
+            return %w[bankrupt] if @game.bankrupt?(entity)
 
-            if @game.bankrupt?(entity)
-              %w[bankrupt]
-            elsif can_sell_any?(entity)
-              %w[sell_shares par]
-            else
-              %w[par]
-            end
+            actions = []
+            actions << 'par' if under_limit?(entity)
+            actions << 'sell_shares' if can_sell_any?(entity)
+            actions << 'sell_company' if can_sell_any_companies?(entity)
+            # TODO: handle this properly.
+            # Maybe stop the player from bidding for a major if they are at
+            # certificate limit and do not have any sellable shares.
+            raise GameError, 'Cannot sell shares or start major company' if actions.empty?
+
+            actions
+          end
+
+          def auto_actions(entity)
+            programmed_actions = super
+            return programmed_actions if programmed_actions
+
+            # The only situation that needs an auto action is when the only
+            # possible (non-pass) action is buy_shares, and this is for an
+            # exchange only (no shares can be bought), and there is no legal
+            # exchange possible as the minor companies owned by the player
+            # are not connected to any public companies.  The connection
+            # between the minor and public companies is not checked in
+            # `actions` to avoid calls to the graph when the game is loading.
+            return unless actions(entity) == %w[buy_shares pass]
+            return if @game.under_obligation?(entity)
+            return if can_buy_any_from_market?(entity)
+            return if can_buy_any_from_ipo?(entity)
+            return if can_exchange_any?(entity, check_connection: true)
+
+            [Engine::Action::Pass.new(entity)]
           end
 
           def bankruptcy_description(player)
@@ -34,8 +59,32 @@ module Engine
           end
 
           def sellable_companies(entity)
+            return [] unless entity.player?
+
             # Only the GL is sellable. Make sure concessions aren't visible.
-            super.select { |company| company.type == :minor }
+            entity.companies.select { |company| company.type == :minor }
+          end
+
+          # Returns an array of shares that can be gained in exchange for a
+          # minor company. This is used to stop any pool shares being offered
+          # for exchange unless the president of the public company has
+          # previously denied a request to exchange for a treasury share, or
+          # if there are no treasury shares available. It does not check for
+          # connection between the public and minor companies, that will have
+          # already been tested in Entities#exchange_corporations.
+          # @param corporation [Corporation] The public company to check for
+          #        exchangeable pool shares.
+          # @param ability [Ability::Exchange] The exchange ability associated
+          #        with a minor company.
+          # @return [Array<Share>] The pool shares that could be gained in
+          #         exchange for the minor company.
+          def exchangeable_pool_shares(corporation, ability)
+            minor = ability.owner
+            shares = @game.share_pool.shares_by_corporation[corporation]
+            return [] if shares.empty?
+            return shares if corporation.owner == minor.owner
+
+            @round.refusals[corporation].include?(minor) ? shares : []
           end
 
           # Exchanging a minor for a share in a floated major corporation is
@@ -43,7 +92,7 @@ module Engine
           def can_buy_any?(entity)
             return false if bought?
 
-            super || can_exchange_any?(entity)
+            super || can_exchange_any?(entity, check_connection: false)
           end
 
           def can_gain?(entity, bundle, exchange: false)
@@ -53,11 +102,11 @@ module Engine
 
           # Checks whether a player can afford to exchange one of their minors
           # for a share in a major corporation.
-          # **Note** This does not check whether there is a track connection
-          # between the minor and the major, which is required to carry out the
-          # exchange. This is not checked to avoid having to recalculate the
-          # game graph whilst a game is being loaded.
-          def can_exchange_any?(player)
+          # If `check_connection` is false this method does not check whether
+          # there is a track connection between the minor and the major, which
+          # is required to carry out the exchange. This is not checked to avoid
+          # having to recalculate the game graph whilst a game is being loaded.
+          def can_exchange_any?(player, check_connection: false)
             majors = @game.major_corporations.select do |corp|
               corp.ipoed && (corp.num_treasury_shares.positive? || corp.num_market_shares.positive?)
             end
@@ -65,18 +114,27 @@ module Engine
 
             @game.minor_corporations.any? do |minor|
               next false unless minor.owner == player
+              next false if minor.share_price.price.zero?
 
               max_price = (minor.share_price.price * 2) + @game.liquidity(player)
-              majors.any? { |corp| corp.share_price.price <= max_price }
+              majors.any? do |corp|
+                (corp.share_price.price <= max_price) &&
+                  (!check_connection || @game.major_minor_connected?(corp, minor))
+              end
             end
           end
 
           # Corporations whose cards are visible in the stock round.
-          # Hide those whose concessions have not yet been auctioned.
+          # Hide public companies whose concessions have not yet been auctioned,
+          # and show the current player's minor companies.
           def visible_corporations
-            @game.major_corporations.select do |corporation|
+            minors = @game.minor_corporations.select do |corporation|
+              corporation.owner == current_entity
+            end
+            majors = @game.sorted_corporations.select do |corporation|
               corporation.floated || !corporation.par_via_exchange.owner.nil?
             end
+            majors.sort + minors.sort
           end
 
           # Valid par prices for public companies.
@@ -102,7 +160,7 @@ module Engine
             concession = major.par_via_exchange
 
             concession.close!
-            exchange_minor(minor, major.treasury_shares.first.to_bundle, false)
+            exchange_minor(minor, major.treasury_shares.first.to_bundle, :all)
           end
 
           def process_bankrupt(action)
@@ -122,16 +180,6 @@ module Engine
 
           private
 
-          # Has the player won any auctions for public companies in the
-          # preceding auction round? If they have then they must start these
-          # majors before they can buy any other shares or pass.
-          def under_obligation?(player)
-            return false unless player == current_entity
-            return false if bought? # Already started a corporation this turn.
-
-            player.companies.any? { |company| company.type == :concession }
-          end
-
           def sell_bankrupt_shares(player)
             @log << "-- #{player.name} goes bankrupt and sells remaining shares --"
 
@@ -141,6 +189,10 @@ module Engine
               bundles = @game.bundles_for_corporation(player, corporation)
               @game.share_pool.sell_shares(bundles.last)
             end
+          end
+
+          def under_limit?(player)
+            @game.num_certs(player) < @game.cert_limit(player)
           end
         end
       end

@@ -21,8 +21,16 @@ module Engine
             trains = super
 
             trains.reject! { |v| type?(v[:name], :narrow) } if entity.type == :minor
-            trains.reject! { |v| type?(v[:name], :broad) } if @game.north_corp?(entity) && entity.operatable_trains.empty?
-            trains.reject! { |v| type?(v[:name], :narrow) } if !@game.north_corp?(entity) && entity.operatable_trains.empty?
+            if @game.can_only_run_narrow?(entity) && entity.operatable_trains.empty?
+              trains.reject! do |v|
+                type?(v[:name], :broad)
+              end
+            end
+            if @game.can_only_run_broad?(entity) && entity.operatable_trains.empty?
+              trains.reject! do |v|
+                type?(v[:name], :narrow)
+              end
+            end
             trains
           end
 

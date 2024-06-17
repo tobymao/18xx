@@ -14,7 +14,8 @@ module Engine
                   :on_phase, :after_phase, :use_across_ors
 
       def initialize(type:, description: nil, desc_detail: nil, owner_type: nil, count: nil, remove: nil,
-                     use_across_ors: nil, count_per_or: nil, passive: nil, on_phase: nil, after_phase: nil, **opts)
+                     use_across_ors: nil, count_per_or: nil, passive: nil, on_phase: nil, after_phase: nil,
+                     remove_when_used_up: nil, **opts)
         @type = type&.to_sym
         @description = description&.to_s
         @desc_detail = desc_detail&.to_s
@@ -30,6 +31,7 @@ module Engine
         @remove = remove&.to_s
         @start_count = @count
         @passive = passive.nil? ? @when.empty? : passive
+        @remove_when_used_up = remove_when_used_up.nil? ? true : remove_when_used_up
 
         setup(**opts)
       end
@@ -46,7 +48,7 @@ module Engine
         return unless @count
 
         @count -= 1
-        owner.remove_ability(self) unless @count.positive?
+        owner.remove_ability(self) if !@count.positive? && @remove_when_used_up
       end
 
       def use_up!
@@ -59,6 +61,10 @@ module Engine
 
       def when?(*times)
         !(@when & times).empty?
+      end
+
+      def add_count!(amount)
+        @count += amount
       end
     end
   end

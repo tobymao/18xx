@@ -102,6 +102,9 @@ module Engine
             price = bid.price
 
             company.owner = player
+
+            @game.tax_haven.rename!("#{@game.tax_haven.name} (#{player.name})") if company.id == @game.class::COMPANY_OSTH
+
             player.companies << company
             player.spend(price, @game.bank) if price.positive?
             @log << "#{player.name} wins the bid #{company.name} for #{@game.format_currency(price)}"

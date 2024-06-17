@@ -189,10 +189,10 @@ module Engine
         MAX_OWNERSHIP_2P = 60
         LAST_OR = 11
         SP_HEX = 'E9'
-        SP_TILES = %w[X22 X23].freeze
+        SP_TILES = %w[SP1 SP2].freeze
         T_HEX = 'F8'
         T_BONUS = 30
-        T_TILE = 'X30'
+        T_TILE = 'X29'
         RIFT_BONUS = 60
         EW_BONUS = 80
         NE_HEXES = %w[K1 L2 L4].freeze
@@ -542,6 +542,7 @@ module Engine
             G21Moon::Step::Assign,
             Engine::Step::HomeToken,
             G21Moon::Step::SpecialTrack,
+            G21Moon::Step::SpecialToken,
             G21Moon::Step::TrainMod,
             G21Moon::Step::Track,
             G21Moon::Step::Token,
@@ -1028,7 +1029,7 @@ module Engine
           true
         end
 
-        def map_legend(font_color, yellow, green, brown, gray)
+        def map_legend(font_color, yellow, green, brown, gray, *_extra_colors)
           [
             # table-wide props
             {

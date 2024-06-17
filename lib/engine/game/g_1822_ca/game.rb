@@ -263,7 +263,7 @@ module Engine
           @double_cash_choice = nil
 
           # Initialize a dummy player for Tax haven to hold the share and the cash it generates
-          @tax_haven = Engine::Player.new(-1, 'Tax Haven')
+          @tax_haven = Engine::Player.new(-1, self.class::COMPANY_OSTH)
 
           # Initialize the extra city which minor 14 (actually 13 in 22CA) might add
           @minor_14_city_exit = nil

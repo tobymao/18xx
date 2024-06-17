@@ -143,8 +143,13 @@ module Engine
         MUST_EMERGENCY_ISSUE_BEFORE_EBUY = true
         HOME_TOKEN_TIMING = :float
         MUST_BUY_TRAIN = :always
-        CERT_LIMIT_COUNTS_BANKRUPTED = true
         BANKRUPTCY_ENDS_GAME_AFTER = :all_but_one
+
+        GAME_END_CHECK = {
+          bankrupt: :immediate,
+          bank: :full_or,
+          all_closed: :immediate,
+        }.freeze
 
         ORANGE_GROUP = [
           'Lake Shore Line',
@@ -988,6 +993,14 @@ module Engine
           return [] if entity&.minor?
 
           super
+        end
+
+        def unowned_purchasable_companies
+          @round.is_a?(Engine::Round::Draft) ? @companies.reject { |c| c.name.start_with?('Pass') }.sort_by(&:name) : []
+        end
+
+        def show_company_owners?
+          !@round.is_a?(Engine::Round::Draft)
         end
       end
     end

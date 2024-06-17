@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 33.1 33.1">
+  <defs>
+    <style>
+      .cls-1, .cls-2 {
+        fill: none;
+      }
+
+      .cls-1, .cls-3, .cls-4 {
+        stroke-width: 0px;
+      }
+
+      .cls-5 {
+        clip-path: url(#clippath-1);
+      }
+
+      .cls-6 {
+        clip-path: url(#clippath);
+      }
+
+      .cls-2 {
+        stroke: #231f20;
+        stroke-miterlimit: 10;
+        stroke-width: .5px;
+      }
+
+      .cls-3 {
+        fill: #fff;
+      }
+
+      .cls-4 {
+        fill: #ed1a3a;
+      }
+    </style>
+    <clipPath id="clippath">
+      <rect class="cls-1" x="2.29" y="2.29" width="28.52" height="28.52"/>
+    </clipPath>
+    <clipPath id="clippath-1">
+      <rect class="cls-1" x="2.29" y="2.29" width="28.52" height="28.52"/>
+    </clipPath>
+  </defs>
+  <g id="Tokens">
+    <g id="Kolar">
+      <circle class="cls-4" cx="16.55" cy="16.55" r="16.3"/>
+      <g class="cls-6">
+        <path class="cls-3" d="M25.17,10.9v-3.16h-3.26v-2.63h-11.33v2.63h-3.24v3.16h-2.55v11.33h2.55v3.34h3.24v2.45h11.33v-2.45h3.26v-3.34h2.53v-11.33h-2.53ZM26.78,21.3h-1.61v-2.34h-.92v5.68h-5.4v.92h2.14v1.53h-9.49v-1.53h2.65v-.92h-5.88v-5.68h-.92v2.34h-1.63v-9.49h1.63v2.44h.92v-5.6h5.88v-.92h-2.65v-1.71h9.49v1.71h-2.14v.92h5.4v5.6h.92v-2.44h1.61v9.49Z"/>
+        <g class="cls-5">
+          <path class="cls-3" d="M16.25,9.99c-3.68,0-6.66,2.98-6.66,6.66s2.98,6.66,6.66,6.66,6.66-2.98,6.66-6.66-2.98-6.66-6.66-6.66M16.28,22.41l-5.78-5.78,5.78-5.78,5.78,5.78-5.78,5.78Z"/>
+        </g>
+      </g>
+    </g>
+  </g>
+  <g id="Dire_line" data-name="Dire line">
+    <circle class="cls-2" cx="16.55" cy="16.55" r="16.3"/>
+  </g>
+</svg>

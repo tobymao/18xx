@@ -1033,7 +1033,7 @@ module Engine
             expect(corporation.trains).to be_empty
 
             # buying it raises error
-            expect { real_buy_depot_train(corporation, '7/8') }.to raise_error GameError, 'Not a buyable train'
+            expect { real_buy_depot_train(corporation, '7/8') }.to raise_error GameError, 'Not a buyable train: 6-1'
           end
 
           it 'does allow the corporation to emergency issue shares to purchase a 7/8' do
@@ -1078,7 +1078,7 @@ module Engine
                                          share_price: bundle.price_per_share,
                                          percent: bundle.percent,
                                        ))
-                expect { real_buy_depot_train(corporation, '7/8') }.to raise_error GameError, 'Not a buyable train'
+                expect { real_buy_depot_train(corporation, '7/8') }.to raise_error GameError, 'Not a buyable train: 6-1'
 
                 real_buy_depot_train(corporation, '6')
                 expect(corporation.trains.map(&:name)).to eq(%w[6])
@@ -1094,14 +1094,14 @@ module Engine
                                          share_price: bundle.price_per_share,
                                          percent: bundle.percent,
                                        ))
-                expect { real_buy_depot_train(corporation, '6') }.to raise_error GameError, 'Not a buyable train'
+                expect { real_buy_depot_train(corporation, '6') }.to raise_error GameError, 'Not a buyable train: 6-1'
                 real_buy_depot_train(corporation, '7/8')
                 expect(corporation.trains.map(&:name)).to eq(%w[7/8])
               end
             end
 
             it 'does not allow president contributing cash to purchase a 7/8' do
-              expect { real_buy_depot_train(corporation, '7/8') }.to raise_error GameError, 'Not a buyable train'
+              expect { real_buy_depot_train(corporation, '7/8') }.to raise_error GameError, 'Not a buyable train: 6-1'
             end
           end
 

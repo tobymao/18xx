@@ -115,11 +115,16 @@ class Api
               end
             end
 
+            other_users = users.reject { |u| u.id == user&.id }
             type, user_ids, force =
               if action['type'] == 'message'
-                pinged = users.select do |user|
-                  action['message'].include?("@#{user.name}")
-                end
+                pinged = if action['message'].include?('@all')
+                           other_users
+                         else
+                           other_users.select do |u|
+                             action['message'].include?("@#{u.name}")
+                           end
+                         end
                 ['Received Message', pinged.map(&:id), false]
               elsif game.status == 'finished'
                 ['Game Finished', users.map(&:id), true]

@@ -178,7 +178,7 @@ module Engine
             # Pacific NW
             ['B2'] => 'offboard=revenue:yellow_30|green_40|brown_50;path=a:0,b:_0;path=a:5,b:_0;label=W',
             # Valentine
-            ['G1'] => 'town=revenue:yellow_30|green_40|brown_50;path=a:0,b:_0;path=a:5,b:_0;path=a:1,b:_0',
+            ['G1'] => 'city=revenue:yellow_30|green_40|brown_50;path=a:0,b:_0;path=a:5,b:_0;path=a:1,b:_0',
             # Chi North
             ['L4'] => 'city=revenue:yellow_30|green_50|brown_60;path=a:1,b:_0,terminal:1;path=a:2,b:_0,terminal:1;label=E',
             # South Chi
@@ -190,6 +190,9 @@ module Engine
         # rubocop:enable Layout/LineLength
 
         LAYOUT = :flat
+
+        CITY_HEXES = %w[B6 C3 C7 C9 E7 F6 G7 G11 H8 H10 I3 I5 J8 J12 K3 K7 L10].freeze
+        WATER_HEXES = %w[K3 K5 K7 J8 L8 L10].freeze
       end
     end
   end

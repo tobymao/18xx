@@ -141,7 +141,6 @@ module Engine
         SELL_BUY_ORDER = :sell_buy
         SELL_MOVEMENT = :down_per_10
         POOL_SHARE_DROP = :down_block
-        CERT_LIMIT_COUNTS_BANKRUPTED = true
 
         MARKET_TEXT = Base::MARKET_TEXT.merge(phase_limited: 'Can only enter during phase 16',
                                               par: 'Yellow phase par',
@@ -379,6 +378,26 @@ module Engine
 
         def init_share_pool
           G1849::SharePool.new(self)
+        end
+
+        def bank_corporations
+          @corporations.select do |c|
+            !c.owner || c.owner == @bank
+          end
+        end
+
+        def timeline
+          timeline = []
+
+          corporations = bank_corporations.map do |c|
+            name = c.name.to_s
+            name += ' (cannot be started now)' if c == afg && home_token_locations(afg).empty?
+            name
+          end
+
+          timeline << corporations.join(', ') unless corporations.empty?
+
+          timeline
         end
 
         def update_garibaldi

@@ -32,6 +32,8 @@ module Engine
           end
 
           def other_trains(entity)
+            return [] if @owner_sold_shares
+
             super.select { |train| buyable_train?(entity, train) }
           end
 
@@ -39,15 +41,25 @@ module Engine
             entity.type == :local ? train.rusted : !train.rusted
           end
 
+          def scrap_button_text(_train)
+            'Discard'
+          end
+
           def scrappable_trains(entity)
             return [] unless entity.type == :local
 
-            max_buyable_distance = buyable_trains(entity).map { |t| train_distance(t) }.max
+            max_buyable_distance =
+              buyable_trains(entity).select { |t| t.price <= entity.cash }.map { |t| train_distance(t) }.max
+            return [] unless max_buyable_distance
+
             entity.trains.select { |t| train_distance(t) < max_buyable_distance }
           end
 
-          def train_distance(_train)
-            t.distance[0]['pay']
+          def train_distance(train)
+            distance = train.distance
+            return distance if distance.is_a?(Numeric)
+
+            distance.sum { |dist| dist['visit'] || dist['pay'] }
           end
 
           def can_scrap_train?(entity)
@@ -73,9 +85,22 @@ module Engine
             @game.depot.reclaim_train(train)
           end
 
+          def process_sell_shares(action)
+            super
+            @owner_sold_shares = true if action.entity != current_entity
+          end
+
+          def spend_minmax(entity, train)
+            min, max = super
+            # In EMR, can use owner's cash if the corporation has no cash
+            max = entity.cash.zero? ? entity.owner.cash : entity.cash if max > entity.cash
+            [min, max]
+          end
+
           def setup
             super
             @trains_to_replace = []
+            @owner_sold_shares = false
           end
         end
       end

@@ -23,7 +23,7 @@ module View
         STRAIGHT_CROSSOVER = '1 55 63 56'
         GENTLE_CROSSOVER = '1 55 47 56'
 
-        PARALLEL_SPACING = [8, 7, 6].freeze
+        PARALLEL_SPACING = [8, 7, 6, 5].freeze
 
         EDGE_PERP_ANGLES = [90, 30, -30, -90, -150, 150].freeze
 

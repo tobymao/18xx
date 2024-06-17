@@ -454,7 +454,7 @@ module Engine
           sfma_idx = @round.entities.find_index(sfma)
           ssfl_idx = @round.entities.find_index(ssfl)
 
-          will_run = (version == 2)
+          will_run = (version == 2) || sfli_run_variant?
           will_run = false if sflp_idx && sflp_idx <= @round.entity_index
           will_run = false if sfma_idx && sfma_idx <= @round.entity_index
           will_run = false if ssfl_idx && ssfl_idx <= @round.entity_index
@@ -1111,6 +1111,10 @@ module Engine
           @lite ||= @optional_rules&.include?(:lite)
         end
 
+        def sfli_run_variant?
+          @sfli_run_variant ||= @optional_rules&.include?(:sfli_run_variant)
+        end
+
         def event_close_companies!
           @log << '-- Event: Concessions close --'
           @companies.each do |company|
@@ -1155,7 +1159,7 @@ module Engine
 
           president = majority_share_holders
             .select { |p| p.percent_of(corporation) >= corporation.presidents_percent }
-            .min_by { |p| @share_pool.distance(previous_president, p) }
+            .min_by { |p| player_distance_for_president(previous_president, p) }
           return unless president
 
           corporation.owner = president
@@ -2547,8 +2551,7 @@ module Engine
           @round.recalculate_order if @round.respond_to?(:recalculate_order)
         end
 
-        # can sell any amount?
-        def can_dump?(owner, corp, active)
+        def can_sell_any_amount?(owner, corp, active)
           # can dump IPO stock
           owner == corp ||
             # can dump stock if not president of corp
@@ -2565,7 +2568,7 @@ module Engine
         end
 
         def corp_minimum_to_retain(owner, corp, active)
-          return 0 if can_dump?(owner, corp, active)
+          return 0 if can_sell_any_amount?(owner, corp, active)
           return 0 if historical?(corp)
 
           corp.player_share_holders.reject { |s_h, _| s_h == owner }.values.max || 0
@@ -2576,7 +2579,7 @@ module Engine
           corp = bundle.corporation
 
           return false if bundle.partial? && !can_sell_partial?(owner, corp)
-          return true if can_dump?(owner, corp, active)
+          return true if can_sell_any_amount?(owner, corp, active)
 
           corp_minimum_to_retain(owner, corp, active) <= (owner.percent_of(corp) - bundle.percent) &&
             !bundle.presidents_share
@@ -2588,7 +2591,7 @@ module Engine
           bundles = all_bundles_for_corporation(owner, corp)
           bundles.each { |b| b.share_price = corp.share_price.price / 2.0 }
           max = owner.percent_of(corp) - corp_minimum_to_retain(owner, corp, active)
-          bundles.reject!(&:presidents_share) unless can_dump?(owner, corp, active)
+          bundles.reject!(&:presidents_share) unless can_sell_any_amount?(owner, corp, active)
           bundles.reject { |b| b.percent > max }
         end
 

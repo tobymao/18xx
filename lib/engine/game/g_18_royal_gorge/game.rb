@@ -3,6 +3,7 @@
 require_relative 'entities'
 require_relative 'map'
 require_relative 'meta'
+require_relative 'share_pool'
 require_relative 'stock_market'
 require_relative 'trains'
 
@@ -17,7 +18,7 @@ module Engine
 
         attr_accessor :gold_shipped, :local_jeweler_cash
         attr_reader :gold_corp, :steel_corp, :available_steel, :gold_cubes, :indebted, :debt_corp,
-                    :treaty_of_boston, :hanging_bridge_lease_payment_due
+                    :treaty_of_boston, :hanging_bridge_lease_payment_due, :sf_debt
 
         CURRENCY_FORMAT_STR = '$%s'
         BANK_CASH = 99_999
@@ -65,17 +66,24 @@ module Engine
           'Silver' => 5,
         }.freeze
 
+        PRESIDENT_SALES_TO_MARKET = Set['CF&I', 'VGC'].freeze
+
+        COMPANIES_CLOSE_PHASE_5 = %w[Y2 Y3 Y4 Y5 Y6 G2 G3 G5 G6 B3 B4 B5].freeze
+
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
           green_phase: ['Green Phase Begins'],
           brown_phase: ['Brown Phase Begins'],
           gray_phase: ['Gray Phase Begins'],
           treaty_of_boston: ['Treaty of Boston'],
+          close_companies: ["Close private companies (#{COMPANIES_CLOSE_PHASE_5.join(',')})"],
         )
 
         DEBT_PENALTY = {
           'RG' => [0, 2, 3, 5, 8],
           'SF' => [0, 1, 3],
         }.freeze
+
+        COAL_CREEK_MINES_HEX = 'H14'
 
         ROYAL_GORGE_TOWN_HEX = 'E13'
         ROYAL_GORGE_HEXES_TO_TILES = {
@@ -97,7 +105,7 @@ module Engine
         SULPHUR_SPRINGS_BROWN_REVENUE = 50
 
         ST_CLOUD_START_HEX = 'G17'
-        ST_CLOUD_BROWN_HEX = 'H14'
+        ST_CLOUD_BROWN_HEX = 'H12'
         ST_CLOUD_BONUS = 20
         ST_CLOUD_BONUS_STR = ' (St. Cloud Hotel)'
         ST_CLOUD_ICON_NAME = 'SCH'
@@ -114,12 +122,12 @@ module Engine
         }.freeze
         GAME_END_REASONS_TEXT = {
           bankrupt: 'Player is bankrupt',
-          custom: '6-train is bought/exported',
+          custom: '6x2-train is bought/exported',
           stock_market: 'Corporation enters end game trigger on stock market',
         }.freeze
         GAME_END_DESCRIPTION_REASON_MAP_TEXT = {
           bankrupt: 'Bankruptcy',
-          custom: '6-train was bought/exported',
+          custom: '6x2-train was bought/exported',
           stock_market: 'Company hit max stock value',
         }.freeze
 
@@ -128,8 +136,8 @@ module Engine
         end
 
         def game_companies
-          YELLOW_COMPANIES.sort_by { rand }.take(2).sort_by { |c| c[:sym] } +
-            GREEN_COMPANIES.sort_by { rand }.take(2).sort_by { |c| c[:sym] } +
+          YELLOW_COMPANIES.sort_by { rand }.take(2).sort_by { |c| c[:value] } +
+            GREEN_COMPANIES.sort_by { rand }.take(2).sort_by { |c| c[:value] } +
             BROWN_COMPANIES.sort_by { rand }.take(1)
         end
 
@@ -167,7 +175,6 @@ module Engine
           @gold_corp = init_metal_corp(corporation_by_id('VGC'))
 
           init_available_steel
-          @steel_corp.cash = 50
 
           @gold_cubes = Hash.new(0)
           @gold_shipped = 0
@@ -244,6 +251,10 @@ module Engine
             status << "Debt-adjusted share price: #{format_currency(price_with_debt)}"
           end
 
+          if corporation == @gold_corp && (player = gold_miner&.owner)
+            status << "#{player.name} has 2 virtual shares (#{gold_miner.sym})"
+          end
+
           status unless status.empty?
         end
 
@@ -290,6 +301,17 @@ module Engine
           update_cache(:share_prices)
         end
 
+        def event_close_companies!
+          @log << '-- Event: private companies close  --'
+
+          COMPANIES_CLOSE_PHASE_5.each do |id|
+            next unless (company = company_by_id(id))
+
+            @log << "#{company.name} closes"
+            company.close!
+          end
+        end
+
         def event_st_cloud_moves!
           return unless st_cloud_hotel
 
@@ -308,22 +330,51 @@ module Engine
 
         def event_gray_phase!; end
 
-        def company_bought(company, _buyer)
-          return unless company == sulphur_springs
-
-          company.revenue = 0
-          @updated_sulphur_springs_company_revenue = true
+        # company bought by corporation during OR
+        def company_bought(company, buyer)
+          case company
+          when sulphur_springs
+            company.revenue = 0
+            @updated_sulphur_springs_company_revenue = true
+          when track_engineer
+            active_step.setup_choices if active_step.is_a?(G18RoyalGorge::Step::Route)
+          when coal_creek_mines
+            ability = Ability::Base.new(
+              type: 'coal_mines',
+              description: 'Coal Cubes: 0',
+              count: 0,
+              remove_when_used_up: false,
+            )
+            buyer.add_ability(ability)
+            active_step.setup_choices if active_step.is_a?(G18RoyalGorge::Step::Route)
+            check_for_both_coal_companies!(buyer)
+          when coal_depot
+            company_ability = company.abilities[0]
+            num_cubes = company_ability.count
+            company_ability.use_up!
+            ability = Ability::Base.new(
+              type: 'coal_depot',
+              description: "Coal Cubes: #{num_cubes}",
+              count: num_cubes,
+              remove_when_used_up: true,
+            )
+            buyer.add_ability(ability)
+            @log << "#{buyer.name} receives #{num_cubes} Coal Cube#{num_cubes == 1 ? '' : 's'} "\
+                    "from #{company.name}"
+            active_step.setup_choices if active_step.is_a?(G18RoyalGorge::Step::Route)
+            check_for_both_coal_companies!(buyer)
+          end
         end
 
         def update_sulphur_springs_company_revenue!
           return if @updated_sulphur_springs_company_revenue
+          return if %w[Yellow Green].include?(@phase.name)
           return unless sulphur_springs&.owner&.player?
 
           @updated_sulphur_springs_company_revenue = true
           revenue = SULPHUR_SPRINGS_BROWN_REVENUE
           sulphur_springs.revenue = revenue
           @log << "-- Event: Sulphur Springs (B2)'s revenue increases to #{format_currency(revenue)} --"
-          puts "Sulphur Springs (B2)'s revenue increases to #{format_currency(revenue)}"
         end
 
         def event_treaty_of_boston!
@@ -331,7 +382,7 @@ module Engine
           @log << 'RG is indebted to SF'
           @log << 'SF is indebted to Doc Holliday'
 
-          sf_debt = Company.new(
+          @sf_debt = Company.new(
             sym: 'SF-D',
             name: 'Indebted to Doc Holliday',
             value: 0,
@@ -346,7 +397,7 @@ module Engine
             choices: { 'pay_debt' => 'Pay Doc Holliday for one DEBT token' },
             count: 2,
             count_per_or: 1,
-            closed_when_used_up: true,
+            remove_when_used_up: true,
           )
           sf_debt.add_ability(ability)
           sf_debt.owner = santa_fe
@@ -369,7 +420,7 @@ module Engine
             choices: { 'pay_debt' => 'Pay Santa Fe for one DEBT token' },
             count: 4,
             count_per_or: 1,
-            closed_when_used_up: true,
+            remove_when_used_up: true,
           )
           rg_debt.add_ability(ability)
           rg_debt.owner = rio_grande
@@ -439,11 +490,13 @@ module Engine
               # reorder as normal first so that if there is a tie for most cash,
               # the player who would be first with :after_last_to_act turn order
               # gets the tiebreaker
-              reorder_players
+              reorder_players(silent: true)
 
               # most cash goes first, but keep same relative order; don't
               # reorder by descending cash
               @players.rotate!(@players.index(@players.max_by(&:cash)))
+
+              @log << "#{@players.first.name} has priority deal"
 
               new_stock_round
             end
@@ -464,6 +517,7 @@ module Engine
           @stock_market.set_par(corporation, price)
           bundle = ShareBundle.new(corporation.shares_of(corporation))
           @share_pool.transfer_shares(bundle, @share_pool)
+          corporation.cash = 50
           corporation
         end
 
@@ -493,9 +547,13 @@ module Engine
         end
 
         def or_round_finished
+          return unless @treaty_of_boston
+
           # debt increases
           old_price = @debt_corp.share_price
           @stock_market.move_right(@debt_corp)
+          @debt_corp.cash = @debt_corp.share_price.price
+
           log_share_price(@debt_corp, old_price, 1)
         end
 
@@ -516,7 +574,14 @@ module Engine
           per_share = revenue / 10
           payouts = {}
           @players.each do |payee|
-            amount = payee.num_shares_of(entity) * per_share
+            num_shares = payee.num_shares_of(entity)
+
+            if payee == gold_miner&.owner
+              entity.cash += per_share * 2
+              num_shares += 2
+            end
+
+            amount = num_shares * per_share
             payouts[payee] = amount if amount.positive?
             entity.spend(amount, payee, check_positive: false)
           end
@@ -634,13 +699,49 @@ module Engine
           {
             **image_text,
             props: {
-              style: { border: '1px solid', color: 'black', backgroundColor: bg_color, cursor: 'pointer', 'user-select': 'none' },
+              style: {
+                border: '1px solid',
+                color: 'black',
+                backgroundColor: bg_color,
+                cursor: 'pointer',
+                'user-select': 'none',
+                'text-align': 'center',
+              },
               on: { click: onclick },
             },
           }
         end
 
-        def map_legend(font_color, yellow, green, brown, gray, action_processor: nil)
+        def map_legends
+          %i[gold_legend steel_legend]
+        end
+
+        def gold_legend(_font_color, yellow, green, brown, _gray, red, action_processor: nil)
+          cell_style = {
+            border: '1px solid',
+            color: 'black',
+            'font-weight': 'bold',
+            'text-align': 'center',
+            'vertical-align': 'middle',
+            width: '28px',
+            height: '33px',
+          }
+
+          cells = [
+            { text: '50', props: { style: { **cell_style, backgroundColor: yellow } } },
+            { text: '90', props: { style: { **cell_style, backgroundColor: yellow } } },
+            { text: '140', props: { style: { **cell_style, backgroundColor: green } } },
+            { text: '200', props: { style: { **cell_style, backgroundColor: green } } },
+            { text: '270', props: { style: { **cell_style, backgroundColor: brown } } },
+            { text: '350', props: { style: { **cell_style, backgroundColor: red } } },
+          ]
+          cells.take(@gold_shipped).each do |gold_cell|
+            gold_cell.delete(:text)
+            gold_cell[:image] = '/icons/18_royal_gorge/gold_cube.svg'
+            gold_cell[:image_height] = '20px'
+            gold_cell[:props][:style][:'padding-top'] = '0.3rem'
+          end
+
           [
             # table-wide props
             {
@@ -650,7 +751,29 @@ module Engine
                 borderCollapse: 'collapse',
               },
             },
-            # header
+            [
+              { text: 'Gold Dividend', props: { attrs: { colspan: 10 } } },
+            ],
+            cells,
+          ]
+        end
+
+        def steel_legend(font_color, yellow, green, brown, gray, _red, action_processor: nil)
+          [
+            # table-wide props
+            {
+              style: {
+                margin: '0.5rem 0 0.5rem 0',
+                border: '1px solid',
+                borderCollapse: 'collapse',
+              },
+            },
+            [
+              {
+                text: 'Steel Market',
+                props: { style: { 'text-align': 'center', 'font-weight': 'bold' }, attrs: { colspan: 10 } },
+              },
+            ],
             [
               { text: "(#{format_currency(@steel_corp.cash)})", props: { style: { border: '1px solid' } } },
               { text: 'A', props: { style: { border: '1px solid', **legend_header_style('A', :yellow, yellow) } } },
@@ -663,7 +786,6 @@ module Engine
               { text: 'H', props: { style: { border: '1px solid', **legend_header_style('H', :brown, brown) } } },
               { text: 'I', props: { style: { border: '1px solid', **legend_header_style('I', :gray, gray) } } },
             ],
-            # body
             [
               {
                 text: format_currency(40),
@@ -746,10 +868,16 @@ module Engine
               hex = action.hex
 
               hex.original_tile.icons.each do |icon|
-                if icon.name == 'mine'
-                  action.hex.tile.icons << Part::Icon.new('../icons/18_royal_gorge/gold_cube', 'gold')
-                  @gold_cubes[hex.id] += 1
-                end
+                next unless icon.name == 'mine'
+
+                action.hex.tile.icons << Part::Icon.new(
+                  '../icons/18_royal_gorge/gold_cube',
+                  'gold', # name
+                  true, # sticky
+                  nil, # blocks_lay
+                  false, # preprinted
+                )
+                @gold_cubes[hex.id] += 1
               end
             end
             if !@updated_sulphur_springs_company_revenue && sulphur_springs&.owner&.player?
@@ -780,7 +908,8 @@ module Engine
         def init_debt_corp(corporation)
           corporation.ipoed = true
           corporation.floated = true
-          price = @stock_market.share_price([0, 1])
+          price = @stock_market.share_price([0, 6])
+          corporation.cash = price.price
           @stock_market.set_par(corporation, price)
           bundle = ShareBundle.new(corporation.shares_of(corporation))
           @share_pool.transfer_shares(bundle, @share_pool)
@@ -799,8 +928,20 @@ module Engine
           @rio_grande ||= corporation_by_id('RG')
         end
 
+        def mint_worker
+          @mint_worker ||= company_by_id('B6')
+        end
+
+        def gold_miner
+          @gold_miner ||= company_by_id('B4')
+        end
+
         def sulphur_springs
           @sulphur_springs ||= company_by_id('B2')
+        end
+
+        def track_engineer
+          @track_engineer ||= company_by_id('B5')
         end
 
         def doc_holliday
@@ -811,8 +952,16 @@ module Engine
           @gold_nugget ||= company_by_id('G2')
         end
 
+        def metals_investor
+          @metals_investor ||= company_by_id('G5')
+        end
+
         def hanging_bridge_lease
           @hanging_bridge_lease ||= company_by_id('G3')
+        end
+
+        def coal_depot
+          @coal_depot ||= company_by_id('G6')
         end
 
         def st_cloud_hotel
@@ -821,6 +970,10 @@ module Engine
 
         def ghost_town_tours
           @ghost_town_tours ||= company_by_id('Y2')
+        end
+
+        def coal_creek_mines
+          @coal_creek_mines ||= company_by_id('Y3')
         end
 
         def upgrades_to?(from, to, special = false, selected_company: nil)
@@ -872,6 +1025,11 @@ module Engine
           @endgame_triggered = true
         end
 
+        def init_share_pool
+          G18RoyalGorge::SharePool.new(self, allow_president_sale: self.class::PRESIDENT_SALES_TO_MARKET,
+                                             no_rebundle_president_buy: true)
+        end
+
         def init_stock_market
           G18RoyalGorge::StockMarket.new(game_market, [])
         end
@@ -897,6 +1055,11 @@ module Engine
 
         def end_game!(player_initiated: false)
           return if @finished
+
+          if !@manually_ended && @round.finished?
+            handle_metal_payout(@steel_corp)
+            handle_metal_payout(@gold_corp)
+          end
 
           logged_drop = false
           @indebted.each do |corporation, (_, amount)|
@@ -931,15 +1094,20 @@ module Engine
 
         def move_jeweler_cash!
           return unless @local_jeweler_cash.positive?
+          return unless (player = local_jeweler&.player)
 
-          player = local_jeweler.player
           @log << "#{player.name} receives #{format_currency(@local_jeweler_cash)} from #{local_jeweler.name}"
           player.cash += @local_jeweler_cash
           @local_jeweler_cash = 0
         end
 
         def company_status_str(company)
-          format_currency(@local_jeweler_cash) if company == local_jeweler && company.player
+          case company
+          when local_jeweler
+            format_currency(@local_jeweler_cash) if company&.player
+          when coal_depot
+            "Coal Cubes: #{company.abilities[0].count}" if company.owner&.player?
+          end
         end
 
         def upgrades_to_correct_label?(from, to)
@@ -949,6 +1117,12 @@ module Engine
           else
             super
           end
+        end
+
+        def num_certs(entity)
+          certs = super
+          certs -= 1 if entity == gold_miner&.owner
+          certs
         end
 
         def st_cloud_bonus?(route, stops)
@@ -964,6 +1138,16 @@ module Engine
           return bonus if ghost_towns.zero?
 
           { revenue: 10 * ghost_towns, description: " (Ghost Town#{ghost_towns == 1 ? '' : 's'})" }
+        end
+
+        def route_distance_str(route)
+          if route.train.id.start_with?('6')
+            super
+          else
+            towns = route.visited_stops.count(&:town?)
+            cities = route_distance(route) - towns
+            towns.positive? ? "#{cities}+#{towns}" : cities.to_s
+          end
         end
 
         def revenue_for(route, stops)
@@ -1017,6 +1201,78 @@ module Engine
           return false if node.tokens.include?(nil)
 
           true
+        end
+
+        def check_for_both_coal_companies!(entity)
+          return unless entity == coal_depot&.owner
+          return unless entity == coal_creek_mines&.owner
+
+          return unless (depot_ability = entity.abilities.find { |a| a.type == 'coal_depot' })
+          return unless (mines_ability = entity.abilities.find { |a| a.type == 'coal_mines' })
+
+          depot_ability.description = depot_ability.description.sub('Cubes:', 'Cubes (depot):')
+          mines_ability.description = mines_ability.description.sub('Cubes:', 'Cubes (mines):')
+        end
+
+        # company bought by player during auction
+        def after_buy_company(player, company, price)
+          return super unless company == coal_depot
+
+          num_cubes = (price / 10.0).floor
+
+          ability = Ability::Base.new(
+            type: 'base',
+            count: num_cubes,
+            remove_when_used_up: false,
+          )
+          company.add_ability(ability)
+
+          @log << "#{company.name} receives #{num_cubes} Coal Cube#{num_cubes == 1 ? '' : 's'} "\
+                  "for its winning bid of #{format_currency(price)}"
+        end
+
+        def move_coal_creek_mines_cube!(operator)
+          company = coal_creek_mines
+          corporation = company.owner
+
+          company.abilities[0].use!
+
+          ability = company.owner.abilities.find { |a| a.type == :coal_mines }
+          ability.add_count!(1)
+          ability.description = ability.description.sub(/\d+/, ability.count.to_s)
+
+          @log << "#{corporation.name} receives a Coal Cube from "\
+                  "#{company.name} (#{operator.name} ran through #{COAL_CREEK_MINES_HEX})"
+        end
+
+        # TODO: figure out why `when Set` caused problems for other titles, and
+        # move this and `value_for_dumpable` into Engine::Game::Base
+        def president_sales_to_market?(corporation)
+          case self.class::PRESIDENT_SALES_TO_MARKET
+          when true
+            true
+          when ::Set
+            self.class::PRESIDENT_SALES_TO_MARKET.include?(corporation.id)
+          else
+            false
+          end
+        end
+
+        def value_for_dumpable(player, corporation)
+          return value_for_sellable(player, corporation) if president_sales_to_market?(corporation)
+
+          max_bundle = bundles_for_corporation(player, corporation)
+                         .select { |bundle| bundle.can_dump?(player) && @share_pool&.fit_in_bank?(bundle) }
+                         .max_by(&:price)
+          max_bundle&.price || 0
+        end
+
+        def rust(train)
+          if (amount = train.salvage || 0).positive?
+            @bank.spend(amount, train.owner)
+            @log << "#{train.owner.name} salvages a #{train.name} train for #{format_currency(amount)}"
+          end
+          super
         end
       end
     end

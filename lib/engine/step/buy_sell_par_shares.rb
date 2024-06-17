@@ -173,7 +173,8 @@ module Engine
         @round.bought_from_ipo = true if action.bundle.owner.corporation?
         buy_shares(action.purchase_for || action.entity, action.bundle,
                    swap: action.swap, borrow_from: action.borrow_from,
-                   allow_president_change: allow_president_change?(action.bundle.corporation))
+                   allow_president_change: allow_president_change?(action.bundle.corporation),
+                   discounter: action.discounter)
         track_action(action, action.bundle.corporation)
       end
 
@@ -348,8 +349,12 @@ module Engine
         entity.companies << company
         entity.spend(price, owner.nil? ? @game.bank : owner)
         @round.current_actions << action
-        @log << "#{owner ? '-- ' : ''}#{entity.name} buys #{company.name} from "\
-                "#{owner ? owner.name : 'the market'} for #{@game.format_currency(price)}"
+        @log << if owner == @game.bank
+                  "#{entity.name} buys #{company.name} from #{owner.name} for #{@game.format_currency(price)}"
+                else
+                  "#{owner ? '-- ' : ''}#{entity.name} buys #{company.name} from "\
+                    "#{owner ? owner.name : 'the market'} for #{@game.format_currency(price)}"
+                end
         @game.after_buy_company(entity, company, price) if entity.player?
       end
 

@@ -10,9 +10,15 @@ module Engine
         class MajorAuction < Engine::Step::Base
           include Engine::Step::Auctioner
           ACTIONS = %w[bid pass].freeze
+
+          # Minimum bid on a concession.
           MIN_PRICE = 0
+          # Cash needed to start a public company at the lowest possible par
+          # price (Fr140).
+          MIN_STARTING_COST = 280
 
           def actions(entity)
+            return [] if @concessions.empty?
             return [] unless entity.player?
             return [] unless entity == current_entity
             return [] unless can_bid_any?(entity)
@@ -26,13 +32,16 @@ module Engine
 
           def setup
             setup_auction
-            @concessions = @game.companies.select do |company|
-              company.type == :concession && company.owner.nil? && !company.closed?
-            end
+            @concessions = @game.concession_companies.reject(&:closed?)
             # Hash showing which minors can be used to start a public company.
-            # The public companies are the has keys, each value is an array of
+            # The public companies are the hash keys, each value is an array of
             # minor companies.
             @eligible_minors = {}
+            maybe_skip_entity!
+          end
+
+          def show_map
+            true
           end
 
           def auctioning
@@ -100,16 +109,137 @@ module Engine
           private
 
           def can_bid_any?(player)
-            # TODO: bids + 280 * number winning bids
-            player.cash >= 280
+            check_biddable(player) == :bid
           end
 
           def next_entity!
             return all_passed! if entities.all?(&:passed?)
 
             @round.next_entity_index!
-            # # Skip any players who are unable to add a new bid.
-            # next_entity! unless can_bid_any?(entities[entity_index])
+            maybe_skip_entity!
+          end
+
+          # Skips a player who is unable to add a new bid.
+          def maybe_skip_entity!
+            player = entities[entity_index]
+            biddable = check_biddable(player)
+            return if biddable == :bid
+
+            log_skip_player(player, biddable)
+            player.pass!
+            next_entity!
+          end
+
+          # Returns all the bids for a player where they are currently winning
+          # an auction.
+          def winning_bids(player)
+            @bids.values.select { |bid| bid.first&.entity == player }.flatten
+          end
+
+          # Returns the concessions up for auctions where the player does not
+          # already have the winning bid.
+          def unbid_concessions(player)
+            @concessions.reject do |concession|
+              @bids[concession].first&.entity == player
+            end
+          end
+
+          # Checks whether the player is able to place a bid on a public
+          # company.
+          # @param player [Player] The player to check whether they can bid.
+          # @return [label] :bid if the player can legally place a bid, or
+          #   another value (one of :cash, :certificates, :minor or :winning)
+          #   if they are not allowed to bid.
+          def check_biddable(player)
+            if winning_all_concessions?(player)
+              :winning
+            elsif no_qualifying_minors?(player)
+              :minors
+            elsif not_enough_cash?(player)
+              :cash
+            elsif too_many_certificates?(player)
+              :certificates
+            else
+              :bid
+            end
+          end
+
+          # Check if the player is already winning all the auctions.
+          def winning_all_concessions?(player)
+            unbid_concessions(player).empty?
+          end
+
+          # Check if the player has no minors that can be used to place a bid
+          # on a public company.
+          def no_qualifying_minors?(player)
+            @game.minor_corporations.none? do |minor|
+              next false unless minor.president?(player)
+              next false if @game.pledged_minors.value?(minor)
+
+              unbid_concessions(player).any? do |concession|
+                eligible_minors(concession).include?(minor)
+              end
+            end
+          end
+
+          # Check the player has enough liquidity.
+          def not_enough_cash?(player)
+            bids = winning_bids(player)
+            @game.liquidity(player) < bids.sum(&:price) + cash_needed(bids.size + 1)
+          end
+
+          # The minimum cash is needed to start new public companies.
+          def cash_needed(num_corporations)
+            MIN_STARTING_COST * num_corporations
+          end
+
+          # Check the player has enough certificate slots. It is very, very
+          # unlikely that this is ever going to be a problem, but starting a
+          # new public company takes up one certificate slot and if the player
+          # does not have enough certificate slots available for all the public
+          # companies they win in the auction then they will go bankrupt.
+          def too_many_certificates?(_player)
+            # TODO: attempt to spot if this is going to be a problem. This is
+            # going to be a bit tricky as a lot of things may or may not be
+            # sellable when it comes to the stock round. Minor companies cannot
+            # be sold (other than the GL which is always sellable). Public
+            # company share certificates are sellable unless there is already
+            # 50% of that company in the pool, or it is the president's
+            # certificate, which is not sellable unless another player has at
+            # least 20% of that company.
+            false
+          end
+
+          # Logs the reason why a player isn't able to place a bid.
+          # @param player [Player] The player who isn't able to bid.
+          # @param reason [label] The value returned from {check_biddable}.
+          def log_skip_player(player, reason)
+            @log <<
+              case reason
+              when :cash
+                bids = winning_bids(player)
+                winning = bids.size
+                liquidity = @game.liquidity(player) - bids.sum(&:price)
+                "#{player.name} does not have enough money to place a bid. " \
+                  "#{@game.format_currency(cash_needed(winning + 1))} would " \
+                  "be needed to start #{winning + 1} public " \
+                  "#{winning.zero? ? 'company' : 'companies'} but " \
+                  "#{player.name}’s total liquidity is " \
+                  "#{@game.format_currency(liquidity)} after paying for bids."
+              when :certificates
+                "#{player.name} does not have enough certificate slots to " \
+                'place a bid. One extra slot is needed for each public ' \
+                'company being started.'
+              when :minors
+                "#{player.name} does have any minor companies that could " \
+                'be used to place a bid on a public company.'
+              when :winning
+                "#{player.name} already is leading the auctions on all " \
+                'available public companies.'
+              else
+                raise GameError, 'Unknown reason for being unable to place a ' \
+                                 "bid [#{reason}]"
+              end
           end
 
           def all_passed!
@@ -169,23 +299,39 @@ module Engine
           # round then any minor can be used.
           def eligible_minors(concession)
             @eligible_minors[concession] ||=
-              @game.corporations.select do |corporation|
-                next false if corporation.closed?
-                next false unless corporation.type == :minor
-                next true unless restricted?
-
-                coords ||= concession_corporation(concession).coordinates
-                corporation.placed_tokens
-                           .map(&:hex)
-                           .map(&:coordinates)
-                           .intersect?(coords)
+              @game.minor_corporations.select do |minor|
+                qualifying_minor?(minor, concession)
               end
+          end
+
+          # Checks whether this minor can be used to place a bid for the public
+          # company concession.
+          def qualifying_minor?(minor, concession)
+            return false if minor.closed?
+            return true unless restricted?
+
+            coords = Entities::PUBLIC_COMPANY_HEXES[concession.id]
+            minor.placed_tokens.any? do |token|
+              coords.include?(token.hex.coordinates) &&
+                (token.hex != paris_hex ||
+                 token.city == eligible_paris_city(concession))
+            end
           end
 
           # Associates a minor corporation to the concession for a major.
           # Any existing minor <-> concession associations are removed.
           def link_concession_minor(concession, minor)
             @game.pledged_minors[concession_corporation(concession)] = minor
+          end
+
+          def paris_hex
+            @paris_hex ||= @game.hex_by_id(Entities::PARIS_HEX)
+          end
+
+          # Finds the city in Paris that can be used to start a public company.
+          # This is the western city for N, and the eastern city for E.
+          def eligible_paris_city(concession)
+            paris_hex.tile.cities[Entities::PARIS_CITIES[concession.id]]
           end
         end
       end

@@ -7,11 +7,7 @@ module Engine
     module G18Neb
       module Step
         class SpecialTrack < Engine::Step::SpecialTrack
-          def process_lay_tile(action)
-            old_tile = action.hex.tile
-            super
-            @game.after_tile_lay(action.hex, old_tile, action.tile)
-          end
+          include LegalTileRotationChecker
         end
       end
     end
