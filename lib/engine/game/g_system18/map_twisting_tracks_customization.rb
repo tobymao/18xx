@@ -300,7 +300,6 @@ module Engine
           # add "Ticket Counter" cube tokens
           corporations.each do |corp|
             cube = "/logos/System18/#{corp.id}_CUBE_TOKEN.svg"
-            puts "cube: #{cube}"
             3.times do
               corp.tokens << Token.new(corp, price: TT_TC_COST, logo: cube, simple_logo: cube, type: :ticket_counter)
             end
