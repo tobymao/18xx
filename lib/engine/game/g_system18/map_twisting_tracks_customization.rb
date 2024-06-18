@@ -188,35 +188,37 @@ module Engine
           find_train(trains, '4')[:num] = 2
           find_train(trains, '5')[:num] = 1
           find_train(trains, '5')[:rusts_on] = 'D-Purple'
+          find_train(trains, '5')[:price] = 450
           find_train(trains, '6')[:num] = 1
           find_train(trains, '6')[:rusts_on] = 'D-Orange'
+          find_train(trains, '6')[:price] = 450
           find_train(trains, 'D')[:num] = 1
-          find_train(trains, 'D')[:price] = 700
+          find_train(trains, 'D')[:price] = 600
           trains.append({
                           name: 'D-Pink',
                           distance: 999,
-                          price: 700,
+                          price: 600,
                           num: 1,
                           discount: { '5' => 200, '6' => 200, 'D' => 200 },
                         })
           trains.append({
                           name: 'D-Purple',
                           distance: 999,
-                          price: 700,
+                          price: 600,
                           num: 1,
                           discount: { '5' => 200, '6' => 200, 'D' => 200, 'D-Pink' => 200 },
                         })
           trains.append({
                           name: 'D-Orange',
                           distance: 999,
-                          price: 700,
+                          price: 600,
                           num: 1,
                           discount: { '6' => 200, 'D' => 200, 'D-Pink' => 200, 'D-Purple' => 200 },
                         })
           trains.append({
                           name: 'D-Navy',
                           distance: 999,
-                          price: 700,
+                          price: 600,
                           num: 1,
                           discount: { 'D' => 200, 'D-Pink' => 200, 'D-Purple' => 200, 'D-Orange' => 200 },
                         })
