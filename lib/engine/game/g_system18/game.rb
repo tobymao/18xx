@@ -314,6 +314,10 @@ module Engine
           corps.find { |c| c[:sym] == sym }
         end
 
+        def corporation_opts
+          two_player? ? { max_ownership_percent: 70 } : {}
+        end
+
         def location_name(coord)
           @location_names ||= game_location_names
 
