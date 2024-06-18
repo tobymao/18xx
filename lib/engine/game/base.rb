@@ -1131,11 +1131,7 @@ module Engine
       end
 
       def can_dump?(entity, bundle)
-        if active_step.respond_to?(:can_dump?)
-          active_step.can_dump?(entity, bundle)
-        else
-          bundle.can_dump?(entity)
-        end
+        bundle.can_dump?(entity)
       end
 
       def issuable_shares(_entity)
