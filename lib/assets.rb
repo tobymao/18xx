@@ -79,46 +79,48 @@ class Assets
     Dir["#{@out_path}/g_*.js"]
   end
 
-  def builds
-    @builds ||=
-      if @precompiled
-        {
-          'deps' => {
-            'path' => @deps_path,
-            'files' => [@deps_path],
-          },
-          'main' => {
-            'path' => @main_path,
-            'files' => [@main_path],
-          },
-          'server' => {
-            'path' => @server_path,
-            'files' => [@server_path],
-          },
-          **game_builds,
-        }
-      else
-        opal = compile_lib('opal')
-        deps = compile_lib('deps', 'assets')
-        engine = compile('engine', 'lib', 'engine')
-        app = compile('app', 'assets/app', '')
-        game_files = game_builds.values.flat_map { |g| g['files'] }
-        {
-          'deps' => {
-            'path' => @deps_path,
-            'files' => [opal, deps],
-          },
-          'main' => {
-            'path' => @main_path,
-            'files' => [engine, app],
-          },
-          'server' => {
-            'path' => @server_path,
-            'files' => [opal, deps, engine, app, *game_files],
-          },
-          **game_builds,
-        }
-      end
+  def builds(titles = [])
+    if @precompiled
+      @builds ||= {
+        'deps' => {
+          'path' => @deps_path,
+          'files' => [@deps_path],
+        },
+        'main' => {
+          'path' => @main_path,
+          'files' => [@main_path],
+        },
+        'server' => {
+          'path' => @server_path,
+          'files' => [@server_path],
+        },
+        **game_builds(:all),
+      }
+    else
+      @_opal ||= compile_lib('opal')
+      @_deps ||= compile_lib('deps', 'assets')
+      @_engine ||= compile('engine', 'lib', 'engine')
+      @_app ||= compile('app', 'assets/app', '')
+
+      g_builds = game_builds(titles)
+      game_files = g_builds.values.flat_map { |g| g['files'] }
+
+      {
+        'deps' => {
+          'path' => @deps_path,
+          'files' => [@_opal, @_deps],
+        },
+        'main' => {
+          'path' => @main_path,
+          'files' => [@_engine, @_app],
+        },
+        'server' => {
+          'path' => @server_path,
+          'files' => [@_opal, @_deps, @_engine, @_app, *game_files],
+        },
+        **g_builds,
+      }
+    end
   end
 
   def js_tags(titles)
