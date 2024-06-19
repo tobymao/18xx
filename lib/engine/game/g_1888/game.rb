@@ -149,7 +149,7 @@ module Engine
         }.freeze
 
         DESTINATION_HEX_EAST = {
-          'LHR' => ['B12', 'C3'], # todo also C3
+          'LHR' => %w[B12 C3],
           'XGY' => ['D8'],
           'HEN' => ['E15'],
           'HUN' => ['F20'],
@@ -258,7 +258,7 @@ module Engine
                     (from.hex.id == YANTAI_HEX && to.name == YANTAI_FERRY_TILE))
           end
 
-          return (from.hex.id == XIAN_HEX && to.name == TERRACOTTA_TILE) if special && selected_company == terracotta
+          return from.hex.id == XIAN_HEX && to.name == TERRACOTTA_TILE if special && selected_company == terracotta
 
           return false if selected_company != heng_shan && to.name == MINE_TILE
 
@@ -312,19 +312,19 @@ module Engine
 
         def revenue_for(route, stops)
           corp = route.train.owner
-          bonus = destination_hex[corp.name].sum {|hex| destinated?(corp, stops, hex) ? destination_bonus[corp.name] : 0 }
+          bonus = destination_hex[corp.name].sum { |hex| destinated?(corp, stops, hex) ? destination_bonus[corp.name] : 0 }
           super + bonus
         end
 
         def revenue_str(route)
           corp = route.train.owner
-          destination_count = destination_hex[corp.name].sum {|hex| destinated?(corp, route.stops, hex) ? 1 : 0 }
-          bonus = destination_count > 0 ? " (#{destination_count} dest)" : ''
+          destination_count = destination_hex[corp.name].sum { |hex| destinated?(corp, route.stops, hex) ? 1 : 0 }
+          bonus = destination_count.positive? ? " (#{destination_count} dest)" : ''
           super + bonus
         end
 
         def destination_str(corp)
-          hexes = destination_hex[corp.name].map {|hex| "#{location_name(hex)} (#{hex})" }
+          hexes = destination_hex[corp.name].map { |hex| "#{location_name(hex)} (#{hex})" }
           "#{hexes} #{destination_bonus[corp.name]}"
         end
 
@@ -334,31 +334,37 @@ module Engine
 
         def game_hexes
           return self.class::EAST_HEXES if @optional_rules.include?(:east)
-          return self.class::NORTH_HEXES
+
+          self.class::NORTH_HEXES
         end
 
         def destination_hex
           return DESTINATION_HEX_EAST if @optional_rules.include?(:east)
+
           DESTINATION_HEX_NORTH
         end
 
         def destination_bonus
           return DESTINATION_BONUS_EAST if @optional_rules.include?(:east)
+
           DESTINATION_BONUS_NORTH
         end
 
         def game_companies
           return self.class::COMPANIES_EAST if @optional_rules.include?(:east)
+
           self.class::COMPANIES_NORTH
         end
 
         def game_corporations
           return self.class::CORPORATIONS_EAST if @optional_rules.include?(:east)
+
           self.class::CORPORATIONS_NORTH
         end
 
         def location_name(coord)
           return self.class::LOCATION_NAMES_EAST[coord] if @optional_rules.include?(:east)
+
           self.class::LOCATION_NAMES_NORTH[coord]
         end
       end

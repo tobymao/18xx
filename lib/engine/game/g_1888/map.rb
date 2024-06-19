@@ -228,7 +228,6 @@ module Engine
           },
         }.freeze
 
-
         EAST_HEXES = {
           white: {
             %w[B8 B10 B16 B18 C7 C9 C11 C13 C19 D4 D6 D10 D14 D18 E5 H4 H20 G3] => '',

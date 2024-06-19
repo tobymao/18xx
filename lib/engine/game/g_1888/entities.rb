@@ -104,7 +104,7 @@ module Engine
           },
         ].freeze
 
-        COMPANIES_EAST= [
+        COMPANIES_EAST = [
           {
             name: 'Kaiping Tramway',
             value: 25,
@@ -112,7 +112,7 @@ module Engine
             desc: 'No special ability',
             sym: 'KT',
           },
-        ]
+        ].freeze
         # rubocop:enable Layout/LineLength
 
         CORPORATIONS_NORTH = [
