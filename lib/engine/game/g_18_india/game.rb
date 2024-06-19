@@ -16,7 +16,7 @@ module Engine
         include Map
         include CitiesPlusTownsRouteDistanceStr
 
-        attr_accessor :draft_deck, :ipo_pool, :unclaimed_commodities, :gauge_change_markers
+        attr_accessor :draft_deck, :ipo_pool, :unclaimed_commodities, :gauge_change_markers, :jewlery_hex
         attr_reader :ipo_rows
 
         register_colors(brown: '#a05a2c',
@@ -155,10 +155,8 @@ module Engine
           'SPICES' => { value: nil, commodity: 'SPICES', locations: COMMODITY_DESTINATIONS },
         }.freeze
 
-        # TODO: Consider using commodity icons vs location names
-        # Refactor to use assignment (assignable module) for commodities?
         ASSIGNMENT_TOKENS = {
-          'P6' => '/icons/18_royal_gorge/gold_cube.svg', # TODO: Add actual commodity ICON
+          'P6' => '/icons/18_india/jewlery.svg',
         }.freeze
 
         TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false },
@@ -233,9 +231,15 @@ module Engine
           end
         end
 
-        # Include bond shares for cache_objects
+        # Include IPO Pool shares and bond shares for cache_objects
         def shares
-          @corporations.flat_map(&:shares) + @players.flat_map(&:shares) + @share_pool.shares + gipr.bond_shares
+          LOGGER.debug "@corporations.flat_map(&:shares) => #{@corporations.flat_map(&:shares)}"
+          LOGGER.debug "@players.flat_map(&:shares) => #{@players.flat_map(&:shares)}"
+          LOGGER.debug "@share_pool.shares => #{@share_pool.shares}"
+          LOGGER.debug "gipr.bond_shares => #{gipr.bond_shares}"
+          LOGGER.debug "@ipo_pool shares => #{@ipo_pool.shares}"
+          @ipo_pool.shares + @corporations.flat_map(&:shares) + @players.flat_map(&:shares) +
+            @share_pool.shares + gipr.bond_shares
         end
 
         def setup_preround
@@ -262,6 +266,7 @@ module Engine
           @last_action = nil
 
           @unclaimed_commodities = COMMODITY_NAMES.dup
+          @jewlery_hex = nil
           @gauge_change_markers = []
 
           @log << "-- #{round_description('Hand Selection')} --"
@@ -641,17 +646,19 @@ module Engine
         end
 
         def first_bond_in_bank
-          [] << bank.companies.find { |c| c.type == :bond }
+          [bank.companies.find { |c| c.type == :bond }].compact
         end
 
         def count_of_bonds
           bank.companies.count { |c| c.type == :bond }
         end
 
+        def privates_in_bank
+          bank.companies.select { |c| c.type == :private }
+        end
+
         def bank_owned_companies
-          bank_certs = [] << bank.companies.find { |c| c.type == :bond }
-          bank_certs += bank.companies.select { |c| c.type == :private }
-          bank_certs
+          first_bond_in_bank + privates_in_bank
         end
 
         def top_of_ipo_rows(row = nil)
@@ -763,6 +770,29 @@ module Engine
 
         def gipr_may_operate?
           !@phase.status.include?('gipr_may_not_operate') && gipr.floated?
+        end
+
+        def convert_bond_to_gipr(entity, bond)
+          entity.companies.delete(bond)
+          bond.close!
+          new_gipr_share = gipr.bond_shares.shift
+          new_gipr_share.owner = entity
+          entity.shares_by_corporation[gipr] << new_gipr_share
+          gipr.share_holders[entity] += new_gipr_share.percent
+          entity.spend(railroad_bond_convert_cost, @bank) if railroad_bond_convert_cost.positive? # Pay conversion cost
+          @bank.spend(bond.value, gipr) # Bank pays GIPR $100
+          @log << "#{entity.name} converts a Railrod Bond to a GIPR Share for #{format_currency(railroad_bond_convert_cost)}"
+          @log << "The Bank pays GIPR #{format_currency(bond.value)}"
+          # Check if if there is new Manager for GIPR
+          check_manager_change(entity, gipr) if entity.player?
+        end
+
+        def check_manager_change(entity, corporation)
+          return unless entity.percent_of(corporation) > gipr.owner.percent_of(corporation)
+
+          @share_pool.change_president(corporation.presidents_share, corporation.owner, entity)
+          corporation.owner = entity
+          @log << "#{entity.name} is the new Mangager of #{corporation.name}"
         end
 
         def gipr_exchange_tokens
@@ -879,7 +909,7 @@ module Engine
           @cert_limit = init_cert_limit
           LOGGER.debug "closing > cert_limit: #{@cert_limit}"
 
-          # move to next enity if the current entity is the closed corporation
+          # move to next entity if the current entity is the closed corporation
           @round.force_next_entity! if @round.current_entity == corporation
         end
 
@@ -968,13 +998,17 @@ module Engine
           @gauge_change_markers.delete([hex, neighbor].sort)
         end
 
-        # modify to require route begin and end at city
+        # modify to require route begin and end at city and may not visit MUMBAI or NEPAL twice.
         def check_other(route)
           visited_stops = route.visited_stops
           return if visited_stops.count < 2
 
           valid_route = visited_stops.first.city? && visited_stops.last.city?
           raise GameError, 'Route must begin and end at a city' unless valid_route
+
+          visited_names = visited_stops.map { |stop| stop.tile.location_name }
+          raise GameError, 'Route may not visit MUMBAI more than once' if visited_names.count('MUMBAI') > 1
+          raise GameError, 'Route may not visit NEPAL more than once' if visited_names.count('NEPAL') > 1
         end
 
         # modify to include variable value cities and route bonus
@@ -1038,6 +1072,7 @@ module Engine
 
         # Test using Ability to display Claimed Commodities on VIEW for Corporation card
         def claim_concession(corporation, commodity)
+          LOGGER.debug "claim_concession: #{corporation.name} => #{commodity}"
           ability = corporation.all_abilities.find { |a| a.type == :commodities }
           ability.description = ability.description + commodity + ' '
           @log << "#{corporation.name} claims the #{commodity} concession"
@@ -1052,10 +1087,21 @@ module Engine
             corporation.commodities << commodity
             @unclaimed_commodities.delete(commodity)
           end
+          LOGGER.debug "  claimed: #{corporation.commodities}"
+          LOGGER.debug "  unclaimed: #{@unclaimed_commodities}"
+        end
+
+        # NOTE: Jewlery hex may be the same as another commodity, therefore should not use/change location name for Jewlery
+        def assign_jewlery_location(hex)
+          @jewlery_hex = hex
+        end
+
+        def visit_jewelery(route)
+          route.all_hexes.include?(@jewlery_hex) ? ['JEWELRY'] : []
         end
 
         def commodity_bonus(route, _stops = nil)
-          visited_names = route.all_hexes.map(&:location_name).compact
+          visited_names = (route.all_hexes.map(&:location_name) + visit_jewelery(route)).compact
           corporation = route.train.owner
           commodity_sources = visited_names & available_commodities(corporation)
           return 0 unless commodity_sources.count.positive?
@@ -1095,7 +1141,7 @@ module Engine
         end
 
         # pay owner value of company before closing
-        def company_is_closing(company, silent = false)
+        def company_closing_after_using_ability(company, silent = false)
           @bank.spend(company.value, company.owner) if company.value.positive?
           @log << "#{company.name} closes and #{company.owner.name} receives #{company.value} from the Bank." unless silent
         end
@@ -1135,10 +1181,11 @@ module Engine
               company.desc = company.desc.delete_suffix("\nHas a Guaranty Warrant.")
             end
           end
+        end
 
-          # TODO: Railroad bonds can convert to new GIPR shares
-          # TODO: No new Guage Changes (remove existing borders?)
-          # TODO: May remove Guage Changes as Track Action (add ability to corps?)
+        # Modified to include Book Value (assets) of corporations
+        def player_value(player)
+          player.shares.sum(player.value) { |s| s.corporation.book_value_per_share * s.num_shares }
         end
 
         def company_header(company)

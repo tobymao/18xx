@@ -115,6 +115,12 @@ module Engine
             @round.next_empty_hexes = calculate_railhead_hexes unless @game.loading
           end
 
+          def debug_track_info(action, str)
+            LOGGER.debug "Track > Lay Tile > #{str}"
+            LOGGER.debug "hex: #{action.hex} - tile: #{action.hex.tile} - borders: #{action.hex.tile.borders.inspect}"
+            LOGGER.debug "New tile: #{action.tile} - borders: #{action.tile.borders.inspect}"
+          end
+
           # Base code doesn't handle one token and a reservation in first city on OO tile
           # Moves a reservation from city to hex to allow any of the two cities to be tokened
           # Reservation to be moved back to empty city after token is placed (See HomeTrack < HomeToken)

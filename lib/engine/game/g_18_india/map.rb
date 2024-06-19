@@ -237,17 +237,22 @@ module Engine
             ['R13'] => 'town=revenue:0;border=edge:0,type:province;border=edge:1,type:province',
 
             # Commodity Locations
-            ['B17'] => '', # OIL
+            ['B17'] => 'icon=image:18_india/oil,sticky:true,large:true', # OIL
             ['H15'] => 'upgrade=cost:30,terrain:mountain;border=edge:0,type:province;border=edge:4,type:province;'\
-                       'border=edge:5,type:province', # ORE1
-            ['H21'] => 'border=edge:2,type:province;border=edge:3,type:province', # COTTON
-            ['I18'] => 'border=edge:0,type:province', # SPICES
-            ['I28'] => 'upgrade=cost:30,terrain:mountain;border=edge:0,type:province', # GOLD
-            ['J13'] => 'border=edge:3,type:water,cost:30;border=edge:4,type:water,cost:30;border=edge:0,type:province', # OPIUM
-            ['K38'] => 'town=revenue:0', # TEA1
-            ['L21'] => 'upgrade=cost:30,terrain:mountain;border=edge:1,type:province', # ORE2
-            ['O12'] => 'border=edge:0,type:province', # TEA2
-            ['P15'] => 'border=edge:0,type:water,cost:30;border=edge:1,type:water,cost:30;border=edge:3,type:province', # RICE
+                       'border=edge:5,type:province;icon=image:18_india/ore,sticky:true,large:true', # ORE1
+            ['H21'] => 'border=edge:2,type:province;border=edge:3,type:province;'\
+                       'icon=image:18_india/cotton,sticky:true,large:true', # COTTON
+            ['I18'] => 'border=edge:0,type:province;icon=image:18_india/spices,sticky:true,large:true', # SPICES
+            ['I28'] => 'upgrade=cost:30,terrain:mountain;border=edge:0,type:province;'\
+                       'icon=image:18_india/gold,sticky:true,large:true', # GOLD
+            ['J13'] => 'border=edge:3,type:water,cost:30;border=edge:4,type:water,cost:30;border=edge:0,type:province;'\
+                       'icon=image:18_india/opium,sticky:true,large:true', # OPIUM
+            ['K38'] => 'town=revenue:0;icon=image:18_india/tea,sticky:true,large:true', # TEA1
+            ['L21'] => 'upgrade=cost:30,terrain:mountain;border=edge:1,type:province;'\
+                       'icon=image:18_india/ore,sticky:true,large:true', # ORE2
+            ['O12'] => 'border=edge:0,type:province;icon=image:18_india/tea,sticky:true,large:true', # TEA2
+            ['P15'] => 'border=edge:0,type:water,cost:30;border=edge:1,type:water,cost:30;border=edge:3,type:province;'\
+                       'icon=image:18_india/rice,sticky:true,large:true', # RICE
           },
 
           # Red hexes are variable revenue cities

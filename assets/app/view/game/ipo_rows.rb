@@ -37,8 +37,9 @@ module View
         card_style[:display] = @display
 
         companies = ipo_row.dup
-        divs = [render_title(number)]
+        return h(:div) if companies.empty?
 
+        divs = [render_title(number)]
         divs << render_first_ipo(companies) if @show_first
         divs << h(CompaniesTable, game: @game, companies: companies) unless companies.empty?
 
@@ -78,8 +79,9 @@ module View
       def render_buy_input(company)
         return [] unless @step.can_buy_company?(@current_entity, company)
 
+        action = @current_actions.include?('buy_company') ? Engine::Action::BuyCompany : Engine::Action::CorporateBuyCompany
         buy = lambda do
-          process_action(Engine::Action::BuyCompany.new(
+          process_action(action.new(
             @current_entity,
             company: company,
             price: company.value,

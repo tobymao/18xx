@@ -20,6 +20,7 @@ module Engine
                 @log << "#{entity.name} delivered #{commodity}"
                 @game.claim_concession(entity, commodity) unless ability.description.include?(commodity)
               end
+              @round.commodities_used = [] # clear for next route
             end
           end
 
