@@ -36,14 +36,41 @@ class Assets
     context.eval(Snabberb.html_script(script, **needs))
   end
 
-  def game_builds
-    @game_builds ||= Dir['lib/engine/game/*/game.rb'].to_h do |dir|
-      game = dir.split('/')[-2]
+  def game_builds(titles = [])
+    all_titles = Dir['lib/engine/game/*/game.rb'].map do |dir|
+      dir.split('/')[-2]
+    end
+
+    if @precompiled || titles == :all
+      build_titles = all_titles
+    else
+      build_titles = titles_with_ancestors(titles)
+
+      # create empty stubs of all other game titles for the roda :assets
+      # plugin
+      stub_titles = all_titles - build_titles
+      stub_titles.each do |title|
+        game = to_fs_name(title)
+        filename = "#{@out_path}/#{game}.js"
+        next if File.exist?(filename)
+
+        File.write(filename, '')
+        file = File.new(filename)
+        FileUtils.touch(file, mtime: 0)
+        puts "Stubbing #{filename}"
+      end
+    end
+
+    build_titles.to_h do |title|
+      # convert `title` to "g_1889" format
+      game = to_fs_name(title)
+
       path = "#{@out_path}/#{game}.js"
       build = {
         'path' => path,
         'files' => @precompiled ? [path] : [compile(nil, nil, nil, game: game)],
       }
+
       [game, build]
     end
   end
