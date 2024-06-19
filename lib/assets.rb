@@ -263,4 +263,21 @@ class Assets
       .uniq
       .each { |file| File.delete(file) if File.exist?(file) }
   end
+
+  def to_fs_name(title)
+    Engine.meta_by_title(title).fs_name
+  end
+
+  # returns an array of game titles, starting with the earliest ancestor and
+  # ending with the given game, e.g.,
+  # `title_with_ancestors('1822CA WRS') -> ['1822', '1822CA', '1822CA WRS']`
+  def title_with_ancestors(title)
+    return [] unless (game = Engine.meta_by_title(title))
+
+    [*title_with_ancestors(game::DEPENDS_ON), title]
+  end
+
+  def titles_with_ancestors(titles)
+    titles.flat_map { |t| title_with_ancestors(t) }.uniq
+  end
 end
