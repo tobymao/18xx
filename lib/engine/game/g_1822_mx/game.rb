@@ -799,6 +799,10 @@ module Engine
 
           CERT_LIMIT
         end
+
+        def multiple_tokens_allowed_on_home_hex?
+          true
+        end
       end
     end
   end
