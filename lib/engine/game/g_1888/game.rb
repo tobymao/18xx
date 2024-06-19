@@ -149,14 +149,14 @@ module Engine
         }.freeze
 
         DESTINATION_HEX_EAST = {
-          'LHR' => 'B12', # todo also C3
-          'XGY' => 'D8',
-          'HEN' => 'E15',
-          'HUN' => 'F20',
-          'WJR' => 'G11',
-          'XYR' => 'G19',
-          'YTR' => 'I19',
-          'HHR' => 'G17',
+          'LHR' => ['B12', 'C3'], # todo also C3
+          'XGY' => ['D8'],
+          'HEN' => ['E15'],
+          'HUN' => ['F20'],
+          'WJR' => ['G11'],
+          'XYR' => ['G19'],
+          'YTR' => ['I19'],
+          'HHR' => ['G17'],
         }.freeze
 
         DESTINATION_BONUS_NORTH = {
@@ -305,25 +305,27 @@ module Engine
           routes.sum(&:subsidy)
         end
 
-        def destinated?(corp, stops)
+        def destinated?(corp, stops, hex)
           stops.any? { |s| s.hex.id == corp.coordinates } &&
-            stops.any? { |s| s.hex.id == destination_hex[corp.name] }
+            stops.any? { |s| s.hex.id == hex }
         end
 
         def revenue_for(route, stops)
           corp = route.train.owner
-          bonus = destinated?(corp, stops) ? destination_bonus[corp.name] : 0
+          bonus = destination_hex[corp.name].sum {|hex| destinated?(corp, stops, hex) ? destination_bonus[corp.name] : 0 }
           super + bonus
         end
 
         def revenue_str(route)
-          bonus = destinated?(route.train.owner, route.stops) ? ' (dest)' : ''
+          corp = route.train.owner
+          destination_count = destination_hex[corp.name].sum {|hex| destinated?(corp, route.stops, hex) ? 1 : 0 }
+          bonus = destination_count > 0 ? " (#{destination_count} dest)" : ''
           super + bonus
         end
 
         def destination_str(corp)
-          hexid = destination_hex[corp.name]
-          "#{location_name(hexid)} (#{hexid}) +#{destination_bonus[corp.name]}"
+          hexes = destination_hex[corp.name].map {|hex| "#{location_name(hex)} (#{hex})" }
+          "#{hexes} #{destination_bonus[corp.name]}"
         end
 
         def status_array(corp)

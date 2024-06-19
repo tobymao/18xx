@@ -32,6 +32,7 @@ module Engine
             desc: 'East Map',
             players: [3, 4, 5, 6],
             default: false,
+            hidden: true,
           },
           {
             sym: :small_bank,
