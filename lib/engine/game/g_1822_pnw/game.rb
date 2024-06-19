@@ -15,6 +15,8 @@ module Engine
         include G1822PNW::Map
         include G1822PNW::BuilderCubes
 
+        attr_reader :minor_associations
+
         CERT_LIMIT = { 3 => 21, 4 => 15, 5 => 12 }.freeze
 
         STARTING_CASH = { 3 => 500, 4 => 375, 5 => 300 }.freeze
