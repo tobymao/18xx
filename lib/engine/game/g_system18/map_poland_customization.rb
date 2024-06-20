@@ -24,7 +24,6 @@ module Engine
           tiles.delete('12')
           tiles.delete('13')
           tiles.delete('59')
-          tiles.delete('63')
           tiles.delete('64')
           tiles.delete('65')
           tiles.delete('66')
@@ -34,13 +33,13 @@ module Engine
           tiles.delete('206')
           tiles['8'] = 4
           tiles.merge!({
-                         '12' =>
+                         'X1' =>
             {
               'count' => 1,
               'color' => 'green',
               'code' => 'city=revenue:30;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;label=D',
             },
-                         'X1' =>
+                         'X2' =>
             {
               'count' => 1,
               'color' => 'green',
@@ -49,7 +48,7 @@ module Engine
                         'path=a:2,b:_1;path=a:_1,b:3;label=Wa',
 
             },
-                         'X2' =>
+                         'X3' =>
             {
               'count' => 1,
               'color' => 'brown',
@@ -57,7 +56,7 @@ module Engine
                         'path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=Wa',
 
             },
-                         'X3' =>
+                         'X4' =>
             {
               'count' => 1,
               'color' => 'gray',
@@ -65,7 +64,7 @@ module Engine
                         'path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=Wa',
 
             },
-                         'X4' =>
+                         'X5' =>
               {
                 'count' => 2,
                 'color' => 'gray',
