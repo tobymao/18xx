@@ -122,18 +122,18 @@ module Engine
             white: {
               %w[A3] => '',
               %w[B8] => 'border=type:province,color:red,edge:1',
-              %w[C9 D2] => 'upgrade=cost:20',
-              %w[E9] => 'upgrade=cost:20;border=type:province,color:red,edge:2;border=type:province,color:red,edge:3',
-              %w[C5] => 'upgrade=cost:40;border=type:province,color:red,edge:4;border=type:province,color:red,edge:5',
-              %w[D8] => 'town=revenue:0;town=revenue:0;upgrade=cost:20;border=type:province,color:red,edge:0;border=type:province,color:red,edge:5',
-              %w[B6] => 'town=revenue:0;town=revenue:0;upgrade=cost:40;border=type:province,color:red,edge:4;border=type:province,color:red,edge:5',
+              %w[C9 D2] => 'upgrade=cost:20,terrain:water',
+              %w[E9] => 'upgrade=cost:20,terrain:water;border=type:province,color:red,edge:2;border=type:province,color:red,edge:3',
+              %w[C5] => 'upgrade=cost:40,terrain:water;border=type:province,color:red,edge:4;border=type:province,color:red,edge:5',
+              %w[D8] => 'town=revenue:0;town=revenue:0;upgrade=cost:20,terrain:water;border=type:province,color:red,edge:0;border=type:province,color:red,edge:5',
+              %w[B6] => 'town=revenue:0;town=revenue:0;upgrade=cost:40,terrain:water;border=type:province,color:red,edge:4;border=type:province,color:red,edge:5',
               %w[E3] => 'upgrade=cost:80,terrain:mountain',
               %w[B2 B4] => 'city=revenue:0',
               %w[A5] => 'city=revenue:0;future_label=label:D,color:green',
               %w[D10] => 'city=revenue:0;border=type:province,color:red,edge:0',
               %w[E5] => 'city=revenue:0;border=type:province,color:red,edge:4',
               %w[D6] => 'city=revenue:0;border=type:province,color:red,edge:2;border=type:province,color:red,edge:1;border=type:province,color:red,edge:0',
-              %w[C3] => 'city=revenue:0;upgrade=cost:20',
+              %w[C3] => 'city=revenue:0;upgrade=cost:20,terrain:water',
             },
             yellow: {
               %w[C7] => 'city=revenue:40,loc:0;city=revenue:40,loc:2;city=revenue:40,loc:4;path=a:0,b:_0;path=a:2,b:_1;path=a:4,b:_2;border=type:province,color:red,edge:2;border=type:province,color:red,edge:1;label=Wa',
@@ -279,7 +279,6 @@ module Engine
                 map_poland_new_parliament_round
               end
             else # Parliament Round
-              reorder_players
               init_round_finished
               new_stock_round
             end
@@ -356,6 +355,14 @@ module Engine
 
           bonus
         end
+
+        # FIXME: add reopen! method to Engine::Company
+        #
+        # open company associated with closed corporation
+        # def map_poland_close_corporation_extra(corporation)
+        #  company = companies.find { |c| c.sym == corporation.name }
+        #  company.reopen!
+        # end
       end
     end
   end
