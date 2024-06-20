@@ -355,6 +355,14 @@ module Engine
 
           bonus
         end
+
+        # FIXME: add reopen! method to Engine::Company
+        #
+        # open company associated with closed corporation
+        # def map_poland_close_corporation_extra(corporation)
+        #  company = companies.find { |c| c.sym == corporation.name }
+        #  company.reopen!
+        # end
       end
     end
   end

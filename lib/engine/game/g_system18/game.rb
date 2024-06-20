@@ -479,6 +479,16 @@ module Engine
           GSystem18::Round::Operating.new(self, operating_steps, round_num: round_num)
         end
 
+        # hijack method to see if game should end
+        def reorder_players
+          if corporations.none?(&:floated)
+            @log << '-- Stock round ended with no floated corporations. Ending game.'
+            end_game!
+          end
+
+          super
+        end
+
         def next_round!
           return super unless respond_to?("map_#{map_name}_next_round!")
 
@@ -525,6 +535,9 @@ module Engine
           @corporations << corporation
 
           @log << "#{corporation.name} is now available to start"
+          return unless respond_to?("map_#{map_name}_close_corporation_extra")
+
+          send("map_#{map_name}_close_corporation_extra", corporation)
         end
 
         def check_other(route)
