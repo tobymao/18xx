@@ -274,6 +274,7 @@ module Engine
         SOLD_OUT_INCREASE = true
         MUST_EMERGENCY_ISSUE_BEFORE_EBUY = false
         BANKRUPTCY_ENDS_GAME_AFTER = :one
+        STATUS_TEXT = {}.freeze
 
         def find_map_name
           optional_rules&.find { |r| r.to_s.include?('map_') }&.to_s&.delete_prefix('map_')&.downcase

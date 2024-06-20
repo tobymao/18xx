@@ -21,6 +21,7 @@ module Engine
         POLAND_EWNS_BONUS = [0, 0, 0, 50, 50, 50, 60].freeze
 
         def map_poland_game_tiles(tiles)
+          tiles.delete('12')
           tiles.delete('13')
           tiles.delete('59')
           tiles.delete('63')
@@ -33,6 +34,12 @@ module Engine
           tiles.delete('206')
           tiles['8'] = 4
           tiles.merge!({
+                         '12' =>
+            {
+              'count' => 1,
+              'color' => 'green',
+              'code' => 'city=revenue:30;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;label=D',
+            },
                          'X1' =>
             {
               'count' => 1,
@@ -122,7 +129,8 @@ module Engine
               %w[D8] => 'town=revenue:0;town=revenue:0;upgrade=cost:20;border=type:province,color:red,edge:0;border=type:province,color:red,edge:5',
               %w[B6] => 'town=revenue:0;town=revenue:0;upgrade=cost:40;border=type:province,color:red,edge:4;border=type:province,color:red,edge:5',
               %w[E3] => 'upgrade=cost:80,terrain:mountain',
-              %w[A5 B2 B4] => 'city=revenue:0',
+              %w[B2 B4] => 'city=revenue:0',
+              %w[A5] => 'city=revenue:0;future_label=label:D,color:green',
               %w[D10] => 'city=revenue:0;border=type:province,color:red,edge:0',
               %w[E5] => 'city=revenue:0;border=type:province,color:red,edge:4',
               %w[D6] => 'city=revenue:0;border=type:province,color:red,edge:2;border=type:province,color:red,edge:1;border=type:province,color:red,edge:0',
@@ -226,11 +234,16 @@ module Engine
         end
 
         def map_poland_game_phases
-          self.class::S18_INCCAP_PHASES
+          phases = self.class::S18_INCCAP_PHASES
+          phases[0][:status] = ['local_tokens'] # 2
+          phases[1][:status] = ['local_tokens'] # 3
+          phases[2][:status] = ['local_tokens'] # 4
+          phases
         end
 
         def map_poland_constants
           redef_const(:CURRENCY_FORMAT_STR, 'zł%s')
+          redef_const(:STATUS_TEXT, { 'local_tokens' => ['Local Tokens', 'Can only token in home country'] })
         end
 
         def map_poland_company_header(_company)
