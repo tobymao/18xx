@@ -201,7 +201,7 @@ module Engine
           end
 
           def borders_crossed(hex1, hex2)
-            DISTANCES[hex1.coordinates][hex2.coordinates]
+            self.class::DISTANCES[hex1.coordinates][hex2.coordinates]
           end
 
           def available_hex(entity, hex)
