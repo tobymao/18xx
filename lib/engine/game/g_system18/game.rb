@@ -11,6 +11,7 @@ require_relative 'map_france_customization'
 require_relative 'map_twisting_tracks_customization'
 require_relative 'map_uk_limited_customization'
 require_relative 'map_china_rapid_development_customization'
+require_relative 'map_poland_customization'
 
 module Engine
   module Game
@@ -26,6 +27,7 @@ module Engine
         include MapTwistingTracksCustomization
         include MapUKLimitedCustomization
         include MapChinaRapidDevelopmentCustomization
+        include MapPolandCustomization
 
         register_colors(red: '#d1232a',
                         orange: '#f58121',
@@ -426,6 +428,8 @@ module Engine
         end
 
         def init_round
+          return send("map_#{map_name}_init_round") if respond_to?("map_#{map_name}_init_round")
+
           return super unless game_companies.empty?
 
           @log << "-- #{round_description('Stock', 1)} --"
@@ -472,6 +476,12 @@ module Engine
 
         def operating_round(round_num)
           GSystem18::Round::Operating.new(self, operating_steps, round_num: round_num)
+        end
+
+        def next_round!
+          return super unless respond_to?("map_#{map_name}_next_round!")
+
+          send("map_#{map_name}_next_round!")
         end
 
         def emergency_issuable_bundles(entity)
@@ -532,6 +542,52 @@ module Engine
           return false unless respond_to?("map_#{map_name}_token_same_hex?")
 
           send("map_#{map_name}_token_same_hex?", entity, hex, token)
+        end
+
+        def company_header(company)
+          return super unless respond_to?("map_#{map_name}_company_header")
+
+          send("map_#{map_name}_company_header", company)
+        end
+
+        def can_par?(corporation, entity)
+          return super unless respond_to?("map_#{map_name}_can_par?")
+
+          send("map_#{map_name}_can_par?", corporation, entity)
+        end
+
+        def after_par(corporation)
+          return super unless respond_to?("map_#{map_name}_after_par")
+
+          send("map_#{map_name}_after_par", corporation)
+        end
+
+        def tokener_check_connected(entity, city, hex)
+          return true unless respond_to?("map_#{map_name}_tokener_check_connected")
+
+          send("map_#{map_name}_tokener_check_connected", entity, city, hex)
+        end
+
+        def tokener_available_hex(entity, hex)
+          return true unless respond_to?("map_#{map_name}_tokener_available_hex")
+
+          send("map_#{map_name}_tokener_available_hex", entity, hex)
+        end
+
+        def revenue_for(route, stops)
+          revenue = super
+
+          return revenue unless respond_to?("map_#{map_name}_extra_revenue_for")
+
+          revenue + send("map_#{map_name}_extra_revenue_for", route, stops)
+        end
+
+        def revenue_str(route)
+          revenue_str = super
+
+          return revenue_str unless respond_to?("map_#{map_name}_extra_revenue_str")
+
+          revenue_str + send("map_#{map_name}_extra_revenue_str", route)
         end
       end
     end
