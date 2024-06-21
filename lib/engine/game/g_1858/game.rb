@@ -50,6 +50,9 @@ module Engine
           { lay: true, upgrade: true, cost: 20, cannot_reuse_same_hex: true },
         ].freeze
 
+        # These are the train types that determine the rusting timing of phase 4 trains.
+        GREY_TRAINS = %w[7E 6M 5D].freeze
+
         def corporation_opts
           two_player? ? { max_ownership_percent: 70 } : {}
         end
@@ -92,9 +95,9 @@ module Engine
           @graph_metre = Graph.new(self, skip_track: :broad, home_as_token: true)
 
           # The rusting event for 6H/4M trains is triggered by the number of
-          # phase 7 trains purchased, so track the number of these sold.
-          @phase7_trains_bought = 0
-          @phase7_train_trigger = two_player? ? 3 : 5
+          # grey trains purchased, so track the number of these sold.
+          @grey_trains_bought = 0
+          @phase4_train_trigger = two_player? ? 3 : 5
 
           @unbuyable_companies = []
           setup_unbuyable_privates
@@ -475,18 +478,22 @@ module Engine
         def buy_train(operator, train, price = nil)
           bought_from_depot = (train.owner == @depot)
           super
-          return if @phase7_trains_bought >= @phase7_train_trigger
+          return if @grey_trains_bought >= @phase4_train_trigger
           return unless bought_from_depot
-          return unless %w[7E 6M 5D].include?(train.name)
+          return unless self.class::GREY_TRAINS.include?(train.name)
 
-          @phase7_trains_bought += 1
-          ordinal = %w[First Second Third Fourth Fifth][@phase7_trains_bought - 1]
-          @log << "#{ordinal} phase 7 train has been bought"
-          rust_phase4_trains!(train) if @phase7_trains_bought == @phase7_train_trigger
+          @grey_trains_bought += 1
+          ordinal = %w[First Second Third Fourth Fifth][@grey_trains_bought - 1]
+          @log << "#{ordinal} grey train has been bought"
+          maybe_rust_wounded_trains!(@grey_trains_bought, train)
         end
 
-        def rust_phase4_trains!(purchased_train)
-          trains.select { |train| %w[6H 3M].include?(train.name) }
+        def maybe_rust_wounded_trains!(grey_trains_bought, purchased_train)
+          rust_wounded_trains!(%[6H 3M], purchased_train) if grey_trains_bought == @phase4_train_trigger
+        end
+
+        def rust_wounded_trains!(train_names, purchased_train)
+          trains.select { |train| train_names.include?(train.name) }
                 .each { |train| train.rusts_on = purchased_train.sym }
           rust_trains!(purchased_train, purchased_train.owner)
         end
