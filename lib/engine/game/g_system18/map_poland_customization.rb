@@ -101,6 +101,7 @@ module Engine
             'E9' => '(Austria)',
             'E11' => 'Kiev',
             'F4' => 'Wien',
+            'F10' => 'N-S and E-W bonuses',
           }
         end
 
@@ -109,6 +110,7 @@ module Engine
           {
             gray: {
               %w[F6 F8] => 'path=a:2,b:3',
+              %w[F10] => 'offboard=revenue:yellow_0|green_0|brown_50|gray_60',
             },
 
             red: {
