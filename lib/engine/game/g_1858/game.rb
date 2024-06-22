@@ -489,7 +489,7 @@ module Engine
         end
 
         def maybe_rust_wounded_trains!(grey_trains_bought, purchased_train)
-          rust_wounded_trains!(%[6H 3M], purchased_train) if grey_trains_bought == @phase4_train_trigger
+          rust_wounded_trains!(%w[6H 3M], purchased_train) if grey_trains_bought == @phase4_train_trigger
         end
 
         def rust_wounded_trains!(train_names, purchased_train)
