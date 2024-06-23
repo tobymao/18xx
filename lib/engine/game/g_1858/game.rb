@@ -731,6 +731,8 @@ module Engine
           # have any routes to show.
           @corporations.select(&:operated?)
         end
+
+        def after_lay_tile(_hex, _tile, _entity); end
       end
     end
   end
