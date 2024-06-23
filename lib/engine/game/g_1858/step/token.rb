@@ -8,7 +8,6 @@ module Engine
     module G1858
       module Step
         class Token < Engine::Step::Token
-
           def available_tokens(entity)
             return [] unless entity.corporation?
 
