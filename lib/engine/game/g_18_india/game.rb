@@ -646,7 +646,7 @@ module Engine
         end
 
         def first_bond_in_bank
-          [bank.companies.find { |c| c.type == :bond }].compact
+          Array(bank.companies.find { |c| c.type == :bond })
         end
 
         def count_of_bonds
