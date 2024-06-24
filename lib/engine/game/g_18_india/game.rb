@@ -233,7 +233,7 @@ module Engine
 
         # Include IPO Pool shares and bond shares for cache_objects
         def shares
-          LOGGER.debug "@corporations.flat_map(&:shares) => #{@corporations.flat_map(&:shares)}"
+          LOGGER.debug { "@corporations.flat_map(&:shares) => #{@corporations.flat_map(&:shares)}" }
           LOGGER.debug "@players.flat_map(&:shares) => #{@players.flat_map(&:shares)}"
           LOGGER.debug "@share_pool.shares => #{@share_pool.shares}"
           LOGGER.debug "gipr.bond_shares => #{gipr.bond_shares}"
