@@ -234,10 +234,10 @@ module Engine
         # Include IPO Pool shares and bond shares for cache_objects
         def shares
           LOGGER.debug { "@corporations.flat_map(&:shares) => #{@corporations.flat_map(&:shares)}" }
-          LOGGER.debug "@players.flat_map(&:shares) => #{@players.flat_map(&:shares)}"
-          LOGGER.debug "@share_pool.shares => #{@share_pool.shares}"
-          LOGGER.debug "gipr.bond_shares => #{gipr.bond_shares}"
-          LOGGER.debug "@ipo_pool shares => #{@ipo_pool.shares}"
+          LOGGER.debug { "@players.flat_map(&:shares) => #{@players.flat_map(&:shares)}" }
+          LOGGER.debug { "@share_pool.shares => #{@share_pool.shares}" }
+          LOGGER.debug { "gipr.bond_shares => #{gipr.bond_shares}" }
+          LOGGER.debug { "@ipo_pool shares => #{@ipo_pool.shares}" }
           @ipo_pool.shares + @corporations.flat_map(&:shares) + @players.flat_map(&:shares) +
             @share_pool.shares + gipr.bond_shares
         end
@@ -646,7 +646,7 @@ module Engine
         end
 
         def first_bond_in_bank
-          Array(bank.companies.find { |c| c.type == :bond })
+          Array(bank.companies.find { |c| c.type == :bond }).compact
         end
 
         def count_of_bonds
