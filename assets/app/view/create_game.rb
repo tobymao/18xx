@@ -433,6 +433,7 @@ module View
           settings: {
             optional_rules: game_params[:optional_rules] || [],
           },
+          title: game_params[:title],
         }
         game_data[:settings][:seed] = game_params[:seed] if game_params[:seed]
       end
