@@ -150,6 +150,11 @@ module Engine
             description: 'Mail contract 10/20/30',
           ))
 
+          corporation_by_id('B').add_ability(Engine::Ability::Base.new(
+            type: 'ignore_mandatory_train',
+            description: 'Not mandatory to own a train',
+          ))
+
           @corporations.each do |corporation|
             ability = Ability::Token.new(type: 'token', hexes: HARBOR_HEXES, extra_slot: true,
                                          from_owner: true, discount: 0, connected: true)

@@ -32,6 +32,8 @@ module Engine
           end
 
           def must_buy_train?(entity)
+            return false if @game.abilities(entity, :ignore_mandatory_train) && !@game.phase.tiles.include?(:brown)
+
             entity.trains.none? { |train| !@game.ship?(train) }
           end
 
