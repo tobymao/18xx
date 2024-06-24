@@ -350,7 +350,7 @@ module Engine
 
         def after_lay_tile(hex, tile, entity)
           move_hex_tokens(hex, tile, entity)
-          tile.cities.each { |city| set_slot_icons(city) }
+          tile.cities.each { |city| add_slot_icons(city) }
         end
 
         # Move mine/port tokens from hex into city if possible.

@@ -370,7 +370,7 @@ module Engine
         end
 
         def setup_icons
-          @hexes.map(&:tile).flat_map(&:cities).each { |c| set_slot_icons(c) }
+          @hexes.map(&:tile).flat_map(&:cities).each { |c| add_slot_icons(c) }
         end
 
         def concession_companies
@@ -523,7 +523,7 @@ module Engine
 
         # Adds slot icons to empty city slots, showing which public companies
         # can be started using a token in this city.
-        def set_slot_icons(city)
+        def add_slot_icons(city)
           city.tokens.each_with_index do |token, ix|
             next if token || city.reservations[ix]
 
