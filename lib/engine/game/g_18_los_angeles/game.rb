@@ -106,6 +106,11 @@ module Engine
         DUMP_PENALTY_WESTMINSTER = 10
         WESTMINSTER_HEX = 'F9'
 
+        TRAIN_AUTOROUTE_GROUPS = [
+          %w[2 4 5 6],
+          %w[3/5 4/6 7/8],
+        ].freeze
+
         def setup
           super
 

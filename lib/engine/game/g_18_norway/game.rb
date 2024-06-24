@@ -132,6 +132,8 @@ module Engine
           switcher == corporation
         end
 
+        EXTRA_TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }].freeze
+
         def setup
           MOUNTAIN_BIG_HEXES.each { |hex| hex_by_id(hex).assign!('MOUNTAIN_BIG') }
           MOUNTAIN_SMALL_HEXES.each { |hex| hex_by_id(hex).assign!('MOUNTAIN_SMALL') }
@@ -140,14 +142,29 @@ module Engine
             description: 'Free tunnel'
           ))
 
+          corporation_by_id('V').add_ability(Engine::Ability::Base.new(
+            type: 'free_ship',
+            description: 'Free S3 ship before phase 4',
+          ))
+
           switcher.add_ability(Engine::Ability::Base.new(
             type: 'switcher',
             description: 'May pass one tokened out city',
           ))
 
+          corporation_by_id('S').add_ability(Engine::Ability::Base.new(
+            type: 'extra_tile_lay',
+            description: 'May lay two yellow',
+          ))
+
           corporation_by_id('J').add_ability(Engine::Ability::Base.new(
             type: 'mail_contract',
             description: 'Mail contract 10/20/30',
+          ))
+
+          corporation_by_id('B').add_ability(Engine::Ability::Base.new(
+            type: 'ignore_mandatory_train',
+            description: 'Not mandatory to own a train',
           ))
 
           @corporations.each do |corporation|
@@ -252,6 +269,7 @@ module Engine
             Engine::Step::SpecialTrack,
             Engine::Step::SpecialToken,
             Engine::Step::BuyCompany,
+            G18Norway::Step::IssueShares,
             Engine::Step::HomeToken,
             G18Norway::Step::Track,
             G18Norway::Step::BuildTunnel,
@@ -459,6 +477,67 @@ module Engine
         def event_lm_brown!
           @log << '-- Event: Mjøsa brown ferry lines opens up. --'
           mjosa.lay(tile_by_id('LM2-0'))
+        end
+
+        def issuable_shares(entity)
+          return [] unless entity.corporation?
+          return [] unless round.steps.find { |step| step.instance_of?(G18Norway::Step::IssueShares) }.active?
+
+          num_shares = entity.num_player_shares - entity.num_market_shares
+          bundles = bundles_for_corporation(entity, entity)
+          share_price = stock_market.find_share_price(entity, :left).price
+
+          bundles
+            .each { |bundle| bundle.share_price = share_price }
+            .reject { |bundle| bundle.num_shares > num_shares }
+        end
+
+        def redeemable_shares(entity)
+          return [] unless entity.corporation?
+          return [] unless round.steps.find { |step| step.instance_of?(G18Norway::Step::IssueShares) }.active?
+
+          share_price = stock_market.find_share_price(entity, :right).price
+
+          bundles_for_corporation(share_pool, entity)
+            .each { |bundle| bundle.share_price = share_price }
+            .reject { |bundle| entity.cash < bundle.price }
+        end
+
+        def emergency_issuable_bundles(corp)
+          return [] unless corp.trains.empty?
+
+          available = @depot.available_upcoming_trains.reject { |train| ship?(train) }
+          return [] unless (train = available.min_by(&:price))
+          return [] if corp.cash >= train.price
+
+          bundles = bundles_for_corporation(corp, corp)
+
+          num_issuable_shares = corp.num_player_shares - corp.num_market_shares
+          bundles.reject! { |bundle| bundle.num_shares > num_issuable_shares }
+
+          bundles.each do |bundle|
+            directions = [:left] * (1 + bundle.num_shares)
+            bundle.share_price = stock_market.find_share_price(corp, directions).price
+          end
+
+          bundles.reject! { |b| b.price.zero? }
+
+          bundles.sort_by!(&:price)
+
+          train_buying_bundles = bundles.select { |b| (corp.cash + b.price) >= train.price }
+          unless train_buying_bundles.empty?
+            bundles = train_buying_bundles
+
+            index = bundles.find_index { |b| (corp.cash + b.price) >= train.price }
+            return bundles.take(index + 1) if index
+
+            return bundles
+          end
+
+          biggest_bundle = bundles.max_by(&:num_shares)
+          return [biggest_bundle] if biggest_bundle
+
+          []
         end
       end
     end

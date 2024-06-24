@@ -21,8 +21,7 @@ module Engine
 
             return unless @game.unassociated_minors.include?(action.entity)
 
-            bidbox_corporations = @game.bidbox_minors.map { |c| @game.corporation_from_company(c) }
-            targets = @game.corporations.select { |c| @game.associated_minor?(c) && !c.owner && !bidbox_corporations.include?(c) }
+            targets = p20_targets
             return if targets.empty?
 
             @new_associated_minor = action.entity
@@ -47,7 +46,14 @@ module Engine
             @log << "#{old_corporation.id} is removed from the game"
             old_corporation.all_abilities.each { |a| @new_associated_minor.add_ability(a) }
             minor_city = @game.hex_by_id(old_corporation.coordinates).tile.cities.find { |c| c.reserved_by?(old_corporation) }
-            minor_city.reservations.delete(old_corporation)
+
+            if minor_city
+              minor_city.reservations.delete(old_corporation)
+            else
+              old_home_city = @game.hex_by_id(major.coordinates).tile.cities.find { |c| c.reserved_by?(major) }
+              old_home_city.reservations.delete(major)
+            end
+
             @game.corporations.delete(old_corporation)
 
             old_company = @game.company_by_id(@game.company_id_from_corp_id(action.choice))
@@ -86,6 +92,24 @@ module Engine
             @game.companies.delete(old_company)
 
             @choices = nil
+          end
+
+          def p20_targets
+            bidbox_corporations = @game.bidbox_minors.map { |c| @game.corporation_from_company(c) }
+            targets = @game.corporations.select { |c| @game.associated_minor?(c) && !c.owner && !bidbox_corporations.include?(c) }
+
+            # include minors that fell through the bidboxes without bids
+            @game.minor_associations.each do |minor_id, major_id|
+              company = @game.company_by_id("M#{minor_id}")
+              minor = @game.corporation_by_id(minor_id)
+              major = @game.corporation_by_id(major_id)
+
+              targets << minor if !company.owner && company.closed? &&
+                                  !minor.owner && minor.closed? &&
+                                  !major.owner && !major.floated?
+            end
+
+            targets
           end
         end
       end

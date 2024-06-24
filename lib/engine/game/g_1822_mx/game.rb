@@ -518,6 +518,14 @@ module Engine
           @share_pool.sell_shares(bundle, allow_president_change: false, swap: swap)
         end
 
+        def can_dump?(entity, bundle)
+          if active_step.respond_to?(:can_dump?)
+            active_step.can_dump?(entity, bundle)
+          else
+            bundle.can_dump?(entity)
+          end
+        end
+
         def operating_order
           ndem, others = @corporations.select(&:floated?).sort.partition { |c| c.id == 'NDEM' }
           minors, majors = others.sort.partition { |c| c.type == :minor }
@@ -790,6 +798,10 @@ module Engine
           return CERT_LIMIT_INCREASED if @optional_rules&.include?(:higher_cert_limit)
 
           CERT_LIMIT
+        end
+
+        def multiple_tokens_allowed_on_home_hex?
+          true
         end
       end
     end
