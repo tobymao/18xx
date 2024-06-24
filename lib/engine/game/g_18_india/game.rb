@@ -792,7 +792,7 @@ module Engine
 
           @share_pool.change_president(corporation.presidents_share, corporation.owner, entity)
           corporation.owner = entity
-          @log << "#{entity.name} is the new Mangager of #{corporation.name}"
+          @log << "#{entity.name} is the new Manager of #{corporation.name}"
         end
 
         def gipr_exchange_tokens
