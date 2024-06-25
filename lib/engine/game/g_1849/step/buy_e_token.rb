@@ -53,14 +53,20 @@ module Engine
             raise GameError, 'Cannot buy E-token' unless can_buy_e_token?(action.entity)
 
             buy_e_token(action.entity)
+            new_ability = Engine::Ability::Description.new(
+              type: 'description',
+              description: 'E-Token Purchased',
+            )
+            action.entity.add_ability(new_ability)
           end
 
           def buy_e_token(corporation)
+            return unless can_buy_e_token?(corporation)
+
             total_cost = e_token_cost
             corporation.spend(total_cost, @game.bank)
             @log << "#{corporation.name} buys an E-Token for #{@game.format_currency(total_cost)}."
             @log << "#{corporation.name} can now buy E-Trains."
-            corporation.e_token = true
             @game.e_token_sold = true
           end
 
@@ -68,7 +74,7 @@ module Engine
             @game.electric_dreams? &&
               entity.corporation? &&
               @game.phase.status.include?('e_tokens_available') &&
-              !entity.e_token &&
+              !@game.e_token?(entity) &&
               entity.cash >= e_token_cost
           end
         end

@@ -256,7 +256,7 @@ module Engine
                       :loan_choice_player, :player_debts,
                       :max_value_reached,
                       :old_operating_order, :moved_this_turn,
-                      :e_tokens_counter, :e_token_sold, :e_token
+                      :e_token_sold
 
         def option_delay_ift?
           @optional_rules&.include?(:delay_ift)
@@ -935,10 +935,14 @@ module Engine
 
         # code below is for the Electric Dreams variant
 
-        def status_array(corporation)
-          return unless corporation.e_token
+        def e_token?(entity)
+          return false unless entity.corporation?
 
-          ['E-Token Purchased']
+          e_tokens(entity).any?
+        end
+
+        def e_tokens(entity)
+          entity.all_abilities.select { |ability| ability.description == 'E-Token Purchased' }
         end
 
         def init_train_handler
