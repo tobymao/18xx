@@ -81,7 +81,7 @@ module Engine
           end
 
           def destination_node_check?(entity)
-            return @connected_destination_nodes if @dest_checked
+            return !@connected_destination_nodes.empty? if @dest_checked
 
             destination_hex = @game.hex_by_id(entity.destination_coordinates)
             home_node = entity.tokens.first.city
