@@ -330,7 +330,11 @@ module Engine
         end
 
         # Returns true if the hex is this private railway's home hex.
-        def home_hex?(operator, hex)
+        # The gauge parameter is only used when this method is called from
+        # `corporation_private_connected?`. It is set to :broad or :narrow
+        # when testing whether this hex is part of the broad or narrow gauge
+        # graph. 1858 ignores the value of this parameter.
+        def home_hex?(operator, hex, _gauge = nil)
           operator.coordinates.include?(hex.coordinates)
         end
 
@@ -615,8 +619,8 @@ module Engine
           return false if corporation.closed?
           return false unless corporation.floated?
 
-          @graph_broad.reachable_hexes(corporation).any? { |hex, _| home_hex?(minor, hex) } ||
-            @graph_metre.reachable_hexes(corporation).any? { |hex, _| home_hex?(minor, hex) } ||
+          @graph_broad.reachable_hexes(corporation).any? { |hex, _| home_hex?(minor, hex, :broad) } ||
+            @graph_metre.reachable_hexes(corporation).any? { |hex, _| home_hex?(minor, hex, :narrow) } ||
             corporation.placed_tokens.any? { |token| home_hex?(minor, token.city.hex) }
         end
 
