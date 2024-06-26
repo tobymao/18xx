@@ -24,7 +24,7 @@ module Engine
               # Need to handle the case where multiple cities on a hex have
               # merged into a single city, but a private railway that started
               # in city #1 or #2 still exists.
-              city = (city_idx < cities.size) ? cities[city_idx] : cities.first
+              city = city_idx < cities.size ? cities[city_idx] : cities.first
               nodes[city] = true
             elsif hex.tile.city_towns.empty?
               # Plain track in a home hex (or no tile or track). Create a
