@@ -942,7 +942,7 @@ module Engine
         end
 
         def e_tokens(entity)
-          entity.all_abilities.select { |ability| ability.description == 'E-Token Purchased' }
+          entity.all_abilities.select { |ability| ability.description == 'E-Token' }
         end
 
         def init_train_handler

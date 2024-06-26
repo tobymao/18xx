@@ -55,7 +55,7 @@ module Engine
             buy_e_token(action.entity)
             new_ability = Engine::Ability::Description.new(
               type: 'description',
-              description: 'E-Token Purchased',
+              description: 'E-Token',
             )
             action.entity.add_ability(new_ability)
           end
