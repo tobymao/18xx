@@ -86,7 +86,7 @@ module View
             }
             h(:polygon, attrs: attrs)
           end
-          attrs = @hex.layout == :flat ? { attrs: { transform: "rotate(60)" } } : {}
+          attrs = @hex.layout == :flat ? { attrs: { transform: 'rotate(60)' } } : {}
           children << h(:g, attrs, stripes)
         end
 
