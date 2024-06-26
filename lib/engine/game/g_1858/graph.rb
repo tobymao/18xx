@@ -20,7 +20,12 @@ module Engine
           cities = Array(entity.city)
           hexes.zip(cities).each do |hex, city_idx|
             if city_idx
-              nodes[hex.tile.cities[city_idx]] = true
+              cities = hex.tile.cities
+              # Need to handle the case where multiple cities on a hex have
+              # merged into a single city, but a private railway that started
+              # in city #1 or #2 still exists.
+              city = (city_idx < cities.size) ? cities[city_idx] : cities.first
+              nodes[city] = true
             elsif hex.tile.city_towns.empty?
               # Plain track in a home hex (or no tile or track). Create a
               # node for each track path to allow routes to be traced out
