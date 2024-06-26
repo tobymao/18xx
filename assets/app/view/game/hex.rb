@@ -79,13 +79,15 @@ module View
         children << hex_highlight if @highlight
 
         if (color = @tile&.stripes&.color)
-          Lib::Hex.stripe_points.each do |stripe|
+          stripes = Lib::Hex.stripe_points.map do |stripe|
             attrs = {
               fill: Lib::Hex::COLOR[color],
               points: stripe,
             }
-            children << h(:polygon, attrs: attrs)
+            h(:polygon, attrs: attrs)
           end
+          attrs = @hex.layout == :flat ? { attrs: { transform: "rotate(60)" } } : {}
+          children << h(:g, attrs, stripes)
         end
 
         if @tile
