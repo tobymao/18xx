@@ -30,12 +30,23 @@ module Engine
               # Plain track in a home hex (or no tile or track). Create a
               # node for each track path to allow routes to be traced out
               # from this hex.
-              hex.tile.paths.each { |path| nodes[G1858::Part::PathNode.new(path)] = true }
+              hex.tile.paths.each do |path|
+                node = path_node(path, entity)
+                next unless node
+
+                nodes[node] = true
+              end
             else
               hex.tile.city_towns.each { |ct| nodes[ct] = true }
             end
           end
           nodes
+        end
+
+        private
+
+        def path_node(path, _entity)
+          G1858::Part::PathNode.new(path)
         end
       end
     end

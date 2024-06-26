@@ -4,6 +4,7 @@ require_relative 'meta'
 require_relative 'map'
 require_relative 'entities'
 require_relative 'market'
+require_relative 'graph'
 require_relative 'trains'
 require_relative '../base'
 require_relative '../stubs_are_restricted'
@@ -50,6 +51,8 @@ module Engine
           { lay: true, upgrade: true, cost: 20, cannot_reuse_same_hex: true },
         ].freeze
 
+        GRAPH_CLASS = G1858::Graph
+
         # These are the train types that determine the rusting timing of phase 4 trains.
         GREY_TRAINS = %w[7E 6M 5D].freeze
 
@@ -91,8 +94,8 @@ module Engine
           #  - @graph uses any track. This is going to include illegal routes
           #    (using both broad and metre gauge track) but will just be used
           #    by things like the auto-router where the route will get rejected.
-          @graph_broad = Graph.new(self, skip_track: :narrow, home_as_token: true)
-          @graph_metre = Graph.new(self, skip_track: :broad, home_as_token: true)
+          @graph_broad = self.class::GRAPH_CLASS.new(self, skip_track: :narrow, home_as_token: true)
+          @graph_metre = self.class::GRAPH_CLASS.new(self, skip_track: :broad, home_as_token: true)
 
           # The rusting event for 6H/4M trains is triggered by the number of
           # grey trains purchased, so track the number of these sold.
