@@ -192,6 +192,12 @@ module Engine
             @game.declare_bankrupt(player)
           end
 
+          def log_skip(entity)
+            # Don't print a '[player] has no valid actions and passes' message
+            # after exchanging a minor for a share.
+            super if @round.current_actions.empty?
+          end
+
           private
 
           def sell_bankrupt_shares(player)
