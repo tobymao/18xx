@@ -45,6 +45,10 @@ module Engine
         BANKRUPTCY_ALLOWED = true
         BANKRUPTCY_ENDS_GAME_AFTER = :all_but_one
 
+        # 4D trains can share track with other trains. Put them in their own
+        # autoroute group so that the autorouter works correctly.
+        TRAIN_AUTOROUTE_GROUPS = [['4D']].freeze
+
         # The maximum number of tokens a major can have on the map.
         LIMIT_TOKENS_AFTER_MERGER = 6
 
