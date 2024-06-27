@@ -73,13 +73,12 @@ module Engine
           end
 
           def process_place_token(action)
-            entity = action.entity
-            city = action.city
-            slot = action.slot
-
-            city.slot_icons.delete(slot)
             super
-            @game.change_token_icon(city, city.tokens[slot], entity)
+
+            city = action.city
+            slot = city.tokens.index(action.token)
+            city.slot_icons.delete(slot)
+            @game.change_token_icon(city, action.token, action.entity)
           end
         end
       end
