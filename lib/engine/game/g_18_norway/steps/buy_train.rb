@@ -32,6 +32,8 @@ module Engine
           end
 
           def must_buy_train?(entity)
+            return false if @game.abilities(entity, :ignore_mandatory_train) && !@game.phase.tiles.include?(:brown)
+
             entity.trains.none? { |train| !@game.ship?(train) }
           end
 
@@ -43,6 +45,22 @@ module Engine
             end
           end
 
+          def free_ship(corporation)
+            ability = @game.abilities(corporation, :free_ship)
+            return unless ability
+
+            train = @depot.upcoming.find { |t| t.name == 'S3' }
+            return unless train
+            return if corporation.trains.any? { |t| t.name == 'S3' }
+
+            @log << "#{corporation.name} receives a free S3 train"
+            @game.buy_train(corporation, train, :free)
+            @depot.remove_train(train)
+            train.buyable = true
+            train.reserved = true
+            ability.use!
+          end
+
           def add_ship_revenue(company)
             return if company.owner.nil?
 
@@ -52,7 +70,8 @@ module Engine
 
           def process_buy_train(action)
             super
-            add_ship_revenue(@game.p4) if @game.ship?(train)
+            add_ship_revenue(@game.p4) if @game.ship?(action.train)
+            free_ship(action.entity)
           end
         end
       end

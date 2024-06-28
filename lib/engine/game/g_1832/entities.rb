@@ -6,7 +6,6 @@ module Engine
       module Entities
         CORPORATIONS = [
           {
-            float_percent: 60,
             sym: 'ACL',
             name: 'Atlantic Coast Line Railroad',
             logo: '1832/ACL',
@@ -26,7 +25,6 @@ module Engine
             ],
           },
           {
-            float_percent: 60,
             sym: 'A&WP',
             name: 'Atlanta & West Point Railroad',
             logo: '1832/A&WP',
@@ -40,7 +38,6 @@ module Engine
             city: 1,
           },
           {
-            float_percent: 60,
             sym: 'SALR',
             name: 'Seaboard Air Line Railway',
             logo: '1832/SALR',
@@ -53,7 +50,6 @@ module Engine
             coordinates: 'D20',
           },
           {
-            float_percent: 60,
             sym: 'N&W',
             name: 'Norfolk & Western Railway',
             logo: '1832/N&W',
@@ -66,7 +62,6 @@ module Engine
             coordinates: 'B24',
           },
           {
-            float_percent: 60,
             sym: 'CG',
             name: 'Central of Georgia Railway',
             logo: '1832/CG',
@@ -86,7 +81,6 @@ module Engine
             ],
           },
           {
-            float_percent: 60,
             sym: 'L&N',
             name: 'Louisville & Nashville Railroad',
             logo: '1832/L&N',
@@ -99,7 +93,6 @@ module Engine
             coordinates: 'C7',
           },
           {
-            float_percent: 60,
             sym: 'GRR',
             name: 'Georgia Railraod',
             logo: '1832/GRR',
@@ -113,7 +106,6 @@ module Engine
             city: 0,
           },
           {
-            float_percent: 60,
             sym: 'GMO',
             name: 'Gulf, Mobile & Ohio Railroad',
             logo: '1832/GMO',
@@ -126,7 +118,6 @@ module Engine
             coordinates: 'J2',
           },
           {
-            float_percent: 60,
             sym: 'SOU',
             name: 'Southern Railway',
             logo: '1832/SOU',
@@ -146,7 +137,6 @@ module Engine
             ],
           },
           {
-            float_percent: 60,
             sym: 'FECR',
             name: 'Florida East Coast Railroad',
             logo: '1832/FECR',
@@ -160,6 +150,7 @@ module Engine
             abilities: [{ type: 'assign_hexes', hexes: ['N16'], count: 1, cost: 100 }],
           },
           {
+            float_percent: 20,
             sym: 'AMTK',
             name: 'Amtrak System',
             logo: '1832/AMTK',
@@ -171,6 +162,7 @@ module Engine
             text_color: 'black',
           },
           {
+            float_percent: 20,
             sym: 'BNSF',
             name: 'Burlington Northern Santa Fe System',
             logo: '1832/BNSF',
@@ -182,6 +174,7 @@ module Engine
             text_color: 'black',
           },
           {
+            float_percent: 20,
             sym: 'IC',
             name: 'Illinois Central System',
             logo: '1832/IC',
@@ -193,6 +186,7 @@ module Engine
             text_color: 'black',
           },
           {
+            float_percent: 20,
             sym: 'CSX',
             name: 'CSX System',
             logo: '1832/CSX',
@@ -204,6 +198,7 @@ module Engine
             text_color: 'black',
           },
           {
+            float_percent: 20,
             sym: 'NS',
             name: 'Norfolk Southern System',
             logo: '1832/NS',

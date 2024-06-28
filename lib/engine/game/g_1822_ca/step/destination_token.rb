@@ -93,9 +93,24 @@ module Engine
           end
 
           def nodes_connected?(node_a, node_b, entity)
-            node_a&.walk(corporation: entity) do |path, _, _|
-              return true if path.nodes.include?(node_b)
+            LOGGER.debug { "    nodes_connected?(#{node_a}, #{node_b}, #{entity.name})" }
+            walk_calls = Hash.new(0)
+
+            node_a&.walk(corporation: entity, walk_calls: walk_calls) do |path, _, _|
+              if path.nodes.include?(node_b)
+                LOGGER.debug do
+                  "    nodes_connected? returning true after #{walk_calls[:not_skipped]} "\
+                    "walk calls (#{walk_calls[:skipped]} skipped)"
+                end
+                return true
+              end
             end
+
+            LOGGER.debug do
+              "    nodes_connected? returning false after #{walk_calls[:not_skipped]} "\
+                "walk calls (#{walk_calls[:skipped]} skipped)"
+            end
+
             false
           end
 

@@ -61,8 +61,9 @@ module Engine
 
         LOCAL_TRAIN_CAN_CARRY_MAIL = true
 
-        # Don't run 1822 specific code for the LCDR
+        # Don't run 1822 specific code for certain private companies
         COMPANY_LCDR = nil
+        COMPANY_OSTH = nil
 
         PRIVATE_COMPANIES_ACQUISITION = {
           'P1' => { acquire: %i[major], phase: 5 },
@@ -142,7 +143,7 @@ module Engine
         end
 
         def cube_company?(entity)
-          entity.id == 'P10' || entity.id == 'P11'
+          entity && (entity.id == 'P10' || entity.id == 'P11')
         end
 
         BIDDING_BOX_START_PRIVATE = 'P1'
@@ -517,6 +518,14 @@ module Engine
           @share_pool.sell_shares(bundle, allow_president_change: false, swap: swap)
         end
 
+        def can_dump?(entity, bundle)
+          if active_step.respond_to?(:can_dump?)
+            active_step.can_dump?(entity, bundle)
+          else
+            bundle.can_dump?(entity)
+          end
+        end
+
         def operating_order
           ndem, others = @corporations.select(&:floated?).sort.partition { |c| c.id == 'NDEM' }
           minors, majors = others.sort.partition { |c| c.type == :minor }
@@ -539,7 +548,15 @@ module Engine
         end
 
         def acting_for_entity(entity)
-          entity == ndem ? active_players.first : super
+          if entity == ndem
+            if current_entity == ndem
+              active_players.first
+            else
+              players.find { |p| ndem.player_share_holders[p]&.positive? } || players.first
+            end
+          else
+            super
+          end
         end
 
         def set_private_revenues
@@ -646,6 +663,7 @@ module Engine
 
         def upgrades_to?(from, to, special = false, selected_company: nil)
           return true if from.color == :blue && to.color == :blue
+          return false if cube_company?(selected_company) && to.name != 'BC'
 
           super
         end
@@ -734,8 +752,6 @@ module Engine
           train.owner == ndem || super
         end
 
-        def finalize_end_game_values; end
-
         def reduced_bundle_price_for_market_drop(bundle)
           bundle.share_price = @stock_market.find_share_price(bundle.corporation, [:left] * bundle.num_shares).price
           bundle
@@ -782,6 +798,10 @@ module Engine
           return CERT_LIMIT_INCREASED if @optional_rules&.include?(:higher_cert_limit)
 
           CERT_LIMIT
+        end
+
+        def multiple_tokens_allowed_on_home_hex?
+          true
         end
       end
     end

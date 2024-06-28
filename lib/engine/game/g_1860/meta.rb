@@ -30,6 +30,11 @@ module Engine
             desc: 'Use the original (first edition) insolvency rules',
           },
           {
+            sym: :simplified_insolvency,
+            short_name: 'Simplified insolvency',
+            desc: 'Insolvent corporations run trains for fixed amounts',
+          },
+          {
             sym: :no_skip_towns,
             short_name: 'No skipping towns',
             desc: "Use the original (first edition) town rules - they can't be skipped on runs",
@@ -50,6 +55,16 @@ module Engine
             desc: 'Shares of unoperated corps sell for full value',
           },
         ].freeze
+
+        def self.check_options(options, _min_players, _max_players)
+          optional_rules = (options || []).map(&:to_sym)
+
+          if optional_rules.include?(:simplified_insolvency) &&
+             (optional_rules.include?(:original_insolvency) ||
+              optional_rules.include?(:original_game))
+            { error: "Can't combine Simplified Insolvency with Original Insolvency or First edition rules" }
+          end
+        end
       end
     end
   end

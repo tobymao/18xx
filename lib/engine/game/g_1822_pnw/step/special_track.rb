@@ -174,6 +174,14 @@ module Engine
             action.entity.revenue = 0
           end
 
+          def get_tile_lay(entity)
+            # portage company uses up normal tile lay, and needs weird handling
+            # since it lays blue tiles on water hexes
+            return if @round.num_laid_portage.positive? && !@game.portage_company?(entity)
+
+            super
+          end
+
           def process_lay_tile_boomtown_company(action)
             lay_tile(action)
             ability = abilities(action.entity)

@@ -15,15 +15,16 @@ module Engine
             return super unless @game.game_capitalization == :incremental
 
             price = entity.share_price.price
+            puts "price: #{price}, revenue: #{revenue}"
 
             if revenue.zero?
               { share_direction: :left, share_times: 1 }
-            elsif revenue < price
-              {}
-            elsif revenue >= price
-              { share_direction: :right, share_times: 1 }
             elsif revenue >= 2 * price
               { share_direction: :right, share_times: 2 }
+            elsif revenue >= price
+              { share_direction: :right, share_times: 1 }
+            else
+              {}
             end
           end
 

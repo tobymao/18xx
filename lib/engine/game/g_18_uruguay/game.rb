@@ -33,6 +33,7 @@ module Engine
         include Nationalization
 
         EBUY_SELL_MORE_THAN_NEEDED = true
+        EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
 
         register_colors(darkred: '#ff131a',
                         red: '#d1232a',
@@ -46,6 +47,7 @@ module Engine
 
         TRACK_RESTRICTION = :permissive
         SELL_BUY_ORDER = :sell_buy
+        SELL_AFTER = :p_any_operate
         TILE_RESERVATION_BLOCKS_OTHERS = true
         CURRENCY_FORMAT_STR = '$U%d'
 
@@ -123,7 +125,7 @@ module Engine
           %w[30o 35o 40o 45y 50y],
           %w[0c 30o 35o 40o 45y],
           %w[0c 0c 30o 35o 40o],
-          %w[50r 60r 70r 80r 90r 100r 110r 120r 130r 140r 150r 160r 180r 200r],
+          %w[20r 30r 40r 50r 60r 70r 80r 90r 100r 110r 120r 130r 140r 150r 160r 180r 200r],
         ].freeze
 
         CERT_LIMIT_NATIONALIZATION = {
@@ -135,7 +137,7 @@ module Engine
 
         MARKET_TEXT = Base::MARKET_TEXT.merge(
           par: 'Par value',
-          repar: 'RLTP stock price',
+          repar: 'RPTLA stock price',
           close: 'Close',
           endgame: 'End game trigger',
         )
@@ -158,7 +160,7 @@ module Engine
             ['Action', 'Share Price Change'],
             ['Dividend 0 or withheld', '1 ←'],
             ['Dividend paid', '1 →'],
-            ['One or more shares sold (Except RLTP)', '1 ↓'],
+            ['One or more shares sold (Except RPTLA)', '1 ↓'],
             ['Corporation sold out at end of SR', '1 ↑'],
           ]
         end
@@ -198,7 +200,7 @@ module Engine
 
           @rptla.add_ability(Engine::Ability::Base.new(
             type: 'Goods',
-            description: GOODS_DESCRIPTION_STR + '0',
+            description: GOODS_DESCRIPTION_STR + '3',
             count: 0
           ))
 
@@ -300,8 +302,8 @@ module Engine
         end
 
         def stock_round
-          Engine::Round::Stock.new(self, [
-            Step::DiscardTrain,
+          Round::Stock.new(self, [
+            Engine::Step::DiscardTrain,
             G18Uruguay::Step::BuySellParShares,
           ])
         end
@@ -403,7 +405,7 @@ module Engine
         def revenue_for(route, stops)
           revenue = super
           revenue *= 2 if route.train.name == '4D'
-          revenue *= 2 if final_operating_round?
+          revenue *= 2 if last_or?
           return revenue unless route&.corporation == @rptla
 
           train = route.train
@@ -412,6 +414,10 @@ module Engine
 
         def or_round_finished
           corps_pay_interest unless nationalized?
+        end
+
+        def last_or?
+          final_operating_round? && final_or_in_set?(@round)
         end
 
         def final_operating_round?
@@ -482,6 +488,40 @@ module Engine
           amount = corporation.par_price.price * 5
           @bank.spend(amount, corporation)
           @log << "#{corporation.name} connected to destination receives #{format_currency(amount)}"
+        end
+
+        def corporation_show_loans?(corporation)
+          !corporation.minor?
+        end
+
+        def sell_movement(corporation = nil)
+          return :left_block if corporation == @rptla
+
+          self.class::SELL_MOVEMENT
+        end
+
+        def check_sale_timing(entity, bundle)
+          return false if @turn <= 1 && !@round.operating?
+
+          super(entity, bundle)
+        end
+
+        def can_rptla_go_bankrupt?(player, corporation, train)
+          price = train.variants.map { |_, v| v[:name].include?('Ship') ? v[:price] : 999 }.min
+
+          total_emr_buying_power(player, corporation) < price
+        end
+
+        def can_go_bankrupt?(player, corporation)
+          depot_trains = @depot.depot_trains
+          train = depot_trains.min_by(&:price)
+
+          return can_rptla_go_bankrupt?(player, corporation, train) if corporation == @rptla
+          return false unless nationalized?
+
+          price = train.variants.map { |_, v| v[:name].include?('Ship') ? 999 : v[:price] }.min
+
+          total_emr_buying_power(player, corporation) < price
         end
       end
     end

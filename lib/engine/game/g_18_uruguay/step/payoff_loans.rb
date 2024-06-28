@@ -13,6 +13,16 @@ module Engine
             @game.payoff_loan(current_entity, loans_to_pay_off, current_entity) if loans_to_pay_off.positive?
           end
 
+          def log_skip(entity)
+            return if entity == @game.fce
+            return unless @game.round.round_num == 1
+            return if !entity.corporation? || entity != current_entity
+            return if entity == @game.rptla
+            return unless entity.loans.size.positive?
+
+            super
+          end
+
           def pass_description
             'Skip payoff loans'
           end

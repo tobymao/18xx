@@ -38,6 +38,7 @@ module View
         if @show_companies
           divs << h(Companies, owner: @player, game: @game, show_hidden: @show_hidden) if @player.companies.any? || @show_hidden
           divs << h(UnsoldCompanies, owner: @player, game: @game) unless @player.unsold_companies.empty?
+          divs << h(HiddenHand, player: @player, game: @game, user: @user) if @game.show_hidden_hand?
         end
 
         unless (minors = @game.player_card_minors(@player)).empty?
@@ -83,7 +84,13 @@ module View
       end
 
       def render_info
-        num_certs = @game.num_certs(@player)
+        num_certs =
+          if @game.active_step.respond_to?(:num_certs_with_bids)
+            @game.active_step.num_certs_with_bids(@player)
+          else
+            @game.num_certs(@player)
+          end
+
         cert_limit = @game.cert_limit(@player)
 
         td_cert_props = {

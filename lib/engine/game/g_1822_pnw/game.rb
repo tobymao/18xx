@@ -15,6 +15,8 @@ module Engine
         include G1822PNW::Map
         include G1822PNW::BuilderCubes
 
+        attr_reader :minor_associations
+
         CERT_LIMIT = { 3 => 21, 4 => 15, 5 => 12 }.freeze
 
         STARTING_CASH = { 3 => 500, 4 => 375, 5 => 300 }.freeze
@@ -97,9 +99,10 @@ module Engine
 
         DOUBLE_HEX = %w[H19 M4].freeze
 
-        # Don't run 1822 specific code for the LCDR
+        # Don't run 1822 specific code for certain private companies
         COMPANY_CHPR = nil
         COMPANY_LCDR = nil
+        COMPANY_OSTH = nil
 
         PRIVATE_COMPANIES_ACQUISITION = {
           'P1' => { acquire: %i[major], phase: 5 },
@@ -495,7 +498,10 @@ module Engine
             when Engine::Round::Stock
               G1822::Round::Choices.new(self, choose_step, round_num: @round.round_num)
             when Engine::Round::Operating
-              if @phase.name.to_i >= 2
+              if starting_packet? && @phase.name.to_i == 1
+                @turn += 1
+                new_operating_round
+              elsif @phase.name.to_i >= 2
                 @log << "-- #{round_description('Merger', @round.round_num)} --"
                 G1822PNW::Round::Merger.new(self, [
                   G1822PNW::Step::Merge,
@@ -519,10 +525,6 @@ module Engine
                 or_set_finished
                 new_stock_round
               end
-            when init_round.class
-              init_round_finished
-              reorder_players
-              new_stock_round
             end
         end
 
@@ -568,8 +570,32 @@ module Engine
         end
 
         def setup_game_specific
+          if starting_packet?
+            setup_starting_packets
+            @round = init_round(silent: true)
+          end
+
           setup_regional_payout_count
           setup_tokencity_tiles
+
+          # placeholder company to fill up spots in a bidbox when one is emptied
+          # during a SR due to a Major starting directly and its associated
+          # Minor being removed
+          init_empty_bidboxes!(true)
+          @empty_bidbox_minor = Company.new(
+            name: 'EMPTY BIDBOX',
+            sym: 'EMPTY',
+            value: 0,
+          )
+        end
+
+        def init_empty_bidboxes!(init = @any_bidboxes_empty)
+          @empty_bidboxes = Array.new(BIDDING_BOX_MINOR_COUNT, false) if init
+          @any_bidboxes_empty = false
+        end
+
+        def empty_bidbox_minor?(company)
+          company == @empty_bidbox_minor
         end
 
         def setup_optional_rules
@@ -577,6 +603,68 @@ module Engine
             remove_l_trains(3)
           elsif @optional_rules&.include?(:remove_two_ls)
             remove_l_trains(2)
+          end
+        end
+
+        def init_round(silent: false)
+          if starting_packet?
+            # @operating_rounds = 1
+            round_num = 1
+            @log << "-- #{round_description(self.class::OPERATING_ROUND_NAME, round_num)} --" unless silent
+            @round_counter += 1
+            operating_round(round_num)
+          else
+            stock_round
+          end
+        end
+
+        def starting_packet?
+          @optional_rules&.include?(:starting_packet)
+        end
+
+        def setup_starting_packets
+          minors = [
+            %w[M18 M21],
+            %w[M7 M9],
+            %w[M1 M2],
+            %w[M6 M8],
+            %w[M10 M20],
+          ]
+
+          privates = [
+            %w[P8 P16],
+            %w[P18 P19],
+            %w[P12 P17],
+            %w[P14 P15],
+            %w[P10 P11],
+          ]
+
+          par_price = stock_market.par_prices[0]
+
+          @players.each.with_index do |player, index|
+            player.cash = 0
+            minors[index].each do |id|
+              company = company_by_id(id)
+              corp = find_corporation(company)
+              corp.reservation_color = :white
+
+              stock_market.set_par(corp, par_price)
+
+              share = corp.shares.first
+              bundle = share.to_bundle
+              bundle.share_price = 0
+              share_pool.buy_shares(player, bundle)
+              after_par(corp)
+              bank.spend(100, corp)
+
+              companies.delete(company)
+            end
+
+            privates[index].each do |id|
+              company = company_by_id(id)
+              company.owner = player
+              player.companies << company
+            end
           end
         end
 
@@ -616,6 +704,11 @@ module Engine
             minor_id = @minor_associations.keys.find { |m| @minor_associations[m] == corporation.id }
             minor_company = company_by_id(company_id_from_corp_id(minor_id))
             unless minor_company.closed?
+              if (bidbox_index = bidbox_minors.index(minor_company))
+                @empty_bidboxes[bidbox_index] = true
+                @any_bidboxes_empty = true
+              end
+
               @log << "Associated minor #{minor_id} closes"
               minor_corporation = corporation_by_id(minor_id)
               minor_city = hex_by_id(minor_corporation.coordinates).tile.cities.find { |c| c.reserved_by?(minor_corporation) }
@@ -626,6 +719,21 @@ module Engine
           super
         end
 
+        def bidbox_minors_refill!
+          init_empty_bidboxes!
+          super
+        end
+
+        def bidbox_minors
+          minors = super
+          return minors unless @any_bidboxes_empty
+
+          minors.each_with_object([]) do |minor, minors_with_empty|
+            minors_with_empty << @empty_bidbox_minor while @empty_bidboxes[minors_with_empty.size]
+            minors_with_empty << minor
+          end
+        end
+
         def float_corporation(corporation)
           remove_home_icon(corporation, corporation.coordinates) if corporation.type == :major
           super
@@ -634,12 +742,22 @@ module Engine
         def add_home_icon(corporation, coordinates)
           hex = hex_by_id(coordinates)
           # Logo and Icon each add '.svg' to the end - so chop one of them off
-          hex.tile.icons << Part::Icon.new("../#{corporation.logo.chop.chop.chop.chop}", "#{corporation.id}_home")
+          hex.tile.icons << Part::Icon.new("../#{corporation.logo[0..-5]}", "#{corporation.id}_home")
         end
 
         def remove_home_icon(corporation, coordinates)
           hex = hex_by_id(coordinates)
           hex.tile.icons.reject! { |icon| icon.name == "#{corporation.id}_home" }
+        end
+
+        def add_destination_icon(corporation, coordinates)
+          hex = hex_by_id(coordinates)
+          hex.tile.icons << Part::Icon.new("../#{corporation.destination_icon}", "#{corporation.id}_destination")
+        end
+
+        def remove_destination_icon(corporation, coordinates)
+          hex = hex_by_id(coordinates)
+          hex.tile.icons.reject! { |icon| icon.name == "#{corporation.id}_destination" }
         end
 
         def corp_id_from_company_id(id)
@@ -655,24 +773,29 @@ module Engine
           setup_associated_minors
           @companies.sort_by! { rand }
 
-          minors = @companies.select { |c| c.id[0] == self.class::COMPANY_MINOR_PREFIX }
-          minor_6, minors = minors.partition { |c| c.id == 'M6' }
-          minors_assoc, minors = minors.partition { |c| @minor_associations.key?(corp_id_from_company_id(c.id)) }
-
           privates = @companies.select { |c| c.id[0] == self.class::COMPANY_PRIVATE_PREFIX }
           private_1 = privates.find { |c| c.id == 'P1' }
           privates.delete(private_1)
           privates.unshift(private_1)
 
-          # Clear and add the companies in the correct randomize order sorted by type
-          @companies.clear
-          @companies.concat(minor_6)
-          stack_1 = (minors_assoc[0..2] + minors[0..5]).sort_by! { rand }
-          @companies.concat(stack_1)
-          stack_2 = (minors_assoc[3..4] + minors[6..10]).sort_by! { rand }
-          @companies.concat(stack_2)
-          stack_3 = (minors_assoc[5..6] + minors[11..15]).sort_by! { rand }
-          @companies.concat(stack_3)
+          minors = @companies.select { |c| c.id[0] == self.class::COMPANY_MINOR_PREFIX }
+          if starting_packet?
+            @companies.clear
+            @companies.concat(minors)
+          else
+            minor_6, minors = minors.partition { |c| c.id == 'M6' }
+            minors_assoc, minors = minors.partition { |c| @minor_associations.key?(corp_id_from_company_id(c.id)) }
+
+            # Clear and add the companies in the correct randomize order sorted by type
+            @companies.clear
+            @companies.concat(minor_6)
+            stack_1 = (minors_assoc[0..2] + minors[0..5]).sort_by! { rand }
+            @companies.concat(stack_1)
+            stack_2 = (minors_assoc[3..4] + minors[6..10]).sort_by! { rand }
+            @companies.concat(stack_2)
+            stack_3 = (minors_assoc[5..6] + minors[11..15]).sort_by! { rand }
+            @companies.concat(stack_3)
+          end
           @companies.concat(privates)
 
           # Setup company abilities
@@ -689,8 +812,6 @@ module Engine
         def company_tax_haven_bundle(choice); end
         def company_tax_haven_payout(entity, per_share); end
         def num_certs_modification(_entity) = 0
-
-        def finalize_end_game_values; end
 
         def set_private_revenues; end
 
@@ -949,8 +1070,14 @@ module Engine
         def upgrades_to?(from, to, special = false, selected_company: nil)
           return true if legal_city_and_town_tile(from.hex, to) && from.color == :white
           return true if from.color == :blue && to.color == :blue
-          return to.name == 'PNW3' if boomtown_company?(selected_company)
-          return from.color == :brown if to.name == 'PNW4'
+          if to.name == 'PNW3' || boomtown_company?(selected_company)
+            return to.name == 'PNW3' && boomtown_company?(selected_company)
+          end
+
+          if to.name == 'PNW4'
+            return false unless coal_company?(selected_company)
+            return true if from.color == :brown || from.color == :white
+          end
           return to.name == 'PNW5' if from.name == 'PNW4'
           return tokencity_upgrades_to?(from, to) if tokencity?(from.hex)
 
@@ -1101,6 +1228,14 @@ module Engine
 
         def buyable_bank_owned_companies
           @round.active_step.respond_to?(:hide_bank_companies?) && @round.active_step.hide_bank_companies? ? [] : super
+        end
+
+        def game_end_check
+          if @stock_market.max_reached?
+            %i[stock_market current_or]
+          elsif @bank.broken?
+            [:bank, @round.is_a?(Engine::Round::Operating) ? :full_or : :current_or]
+          end
         end
       end
     end

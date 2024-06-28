@@ -11,14 +11,18 @@ module Engine
 
           def actions(entity)
             return [] unless entity == current_entity
-            return [] unless entity.minor?
             return ['choose'] if @merging
+            return [] unless entity.minor?
 
             ACTIONS
           end
 
           def description
             'Foreign investor merge'
+          end
+
+          def active_entities
+            @merging && @merging[:state] == :choose_token ? [@merging[:corporation]] : super
           end
 
           def blocks?
@@ -82,7 +86,7 @@ module Engine
             @merging[:state] = :choose_token
             return if cheapest_unused_token(@merging[:corporation])
 
-            process_token(Action::Choose.new(fi, choice: 'Discard'))
+            process_token(Action::Choose.new(@merging[:corporation], choice: 'Discard'))
           end
 
           def process_token(action)
@@ -92,6 +96,7 @@ module Engine
             else
               @game.log << "#{fi.name} token is discarded"
             end
+            @merging = nil
             @game.close_corporation(fi)
           end
 
@@ -110,7 +115,7 @@ module Engine
             when :choose_percent
               "Choose destination for Foreign Investor cash\n"
             when :choose_token
-              "Replace Token of Foreign Investor with Corporation token?\n"
+              "Replace Foreign Investor #{@merging[:fi].name} token with #{@merging[:corporation].name} token?\n"
             end
           end
 

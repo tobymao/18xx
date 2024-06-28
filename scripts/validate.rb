@@ -59,9 +59,11 @@ $count = 0
 $total = 0
 $total_time = 0
 
-def run_game(game, actions = nil, strict: false)
+def run_game(game, actions = nil, strict: false, silent: false)
   actions ||= game.actions.map(&:to_h)
   data={'id':game.id, 'title': game.title, 'status':game.status}
+
+  puts "running game #{game.id}" unless silent
 
   $total += 1
   time = Time.now
@@ -95,7 +97,7 @@ def run_game(game, actions = nil, strict: false)
   data
 end
 
-def validate_all(*titles, game_ids: nil, strict: false, status: %w[active finished], filename: 'validate.json')
+def validate_all(*titles, game_ids: nil, strict: false, status: %w[active finished], filename: 'validate.json', silent: false)
   $count = 0
   $total = 0
   $total_time = 0
@@ -113,7 +115,7 @@ def validate_all(*titles, game_ids: nil, strict: false, status: %w[active finish
       where_args2[:title] = titles if titles.any?
       games = Game.eager(:user, :players, :actions).where(**where_args2).all
       _ = games.each do |game|
-        data[game.id]=run_game(game, strict: strict)
+        data[game.id]=run_game(game, strict: strict, silent: silent)
       end
       page.clear
     end
@@ -124,7 +126,7 @@ def validate_all(*titles, game_ids: nil, strict: false, status: %w[active finish
 
   games = Game.eager(:user, :players, :actions).where(**where_args3).all
   _ = games.each do |game|
-    data[game.id]=run_game(game)
+    data[game.id]=run_game(game, silent: silent)
   end
   puts "#{$count}/#{$total} avg #{$total_time / $total}"
   data['summary']={'failed':$count, 'total':$total, 'total_time':$total_time, 'avg_time':$total_time / $total}
