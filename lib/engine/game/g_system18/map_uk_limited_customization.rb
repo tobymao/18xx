@@ -119,7 +119,6 @@ module Engine
 
         def map_uk_limited_constants
           redef_const(:CURRENCY_FORMAT_STR, '£%s')
-          redef_const(:GAME_END_CHECK, { bankrupt: :immediate, final_phase: :one_more_full_or_set })
         end
 
         def map_uk_limited_or_round_finished

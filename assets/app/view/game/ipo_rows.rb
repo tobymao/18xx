@@ -68,7 +68,7 @@ module View
         }
         first_company = ipo_row.shift
         inputs = []
-        inputs.concat(render_buy_input(first_company)) if @current_actions.include?('buy_company')
+        inputs.concat(render_buy_input(first_company)) if @current_actions.intersect?(%w[buy_company corporate_buy_company])
         children = []
         children << h(Company, company: first_company, interactive: !inputs.empty?)
         children << h('div.margined_bottom', button_props, inputs) if !inputs.empty? && @selected_company == first_company

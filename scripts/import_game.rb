@@ -46,7 +46,7 @@ def import_game(game_id)
   User.unrestrict_primary_key
 
   players_json.each do |player_json|
-    create_user(player_json['id'], player_json['name'])
+    create_user(player_json['id'], player_json['name'].delete('@'))
   end
   create_user(user_json['id'], user_json['name'])
 
@@ -69,7 +69,7 @@ def import_game(game_id)
 
     # Filter out actions already in the database
     max_existing_action_id = Action.where(game_id: game.id).max(:action_id)
-    actions_json.delete_if { |action_json| action_json['id'] <= max_existing_action_id }
+    actions_json.delete_if { |action_json| action_json['id'] && (action_json['id'] <= max_existing_action_id) }
   else
     # Create new game
     game = Game.create(game_json)

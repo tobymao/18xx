@@ -30,7 +30,10 @@ module Engine
             actions << 'par' if @bid_actions.zero? && can_ipo_any?(entity) && player_debt.zero?
             actions << 'sell_shares' if can_sell_any?(entity)
             actions << 'bid' if player_debt.zero?
-            actions << 'payoff_player_debt' if player_debt.positive? && entity.cash.positive?
+            if player_debt.positive? && entity.cash.positive?
+              actions << 'payoff_player_debt'
+              actions << 'payoff_player_debt_partial'
+            end
             actions << 'pass' unless actions.empty?
             actions
           end
@@ -223,6 +226,13 @@ module Engine
             @round.current_actions << action
           end
 
+          def process_payoff_player_debt_partial(action)
+            player = action.entity
+            @game.payoff_player_loan(player, payoff_amount: action.amount)
+            @round.last_to_act = player
+            @round.current_actions << action
+          end
+
           def setup
             # This sets the initial value of @bids
             setup_auction
@@ -239,16 +249,10 @@ module Engine
           end
 
           def can_bid_company?(entity, company)
-            return false unless cert_room_for_bid?(entity, company)
+            return false unless num_certs_with_bids(entity) < @game.cert_limit
             return false if max_bid(entity, company) < min_bid(company) || highest_player_bid?(entity, company)
 
             !(!find_bid(entity, company) && bidding_tokens(entity).zero?)
-          end
-
-          def cert_room_for_bid?(entity, company)
-            return true if @game.class::COMPANIES_NONCERT.include?(company.id)
-
-            num_certs_with_bids(entity) < @game.cert_limit
           end
 
           def store_bids!

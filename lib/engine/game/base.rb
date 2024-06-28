@@ -137,13 +137,16 @@ module Engine
 
       TRAINS = [].freeze
 
+      # Array of groups (arrays) of train names; trains within a group cannot
+      # have overlapping routes, but a train in one group can overlap with
+      # routes of trains in another group. Any trains not listed here fall into
+      # a default group.
+      TRAIN_AUTOROUTE_GROUPS = nil
+
       CERT_LIMIT_TYPES = %i[multiple_buy unlimited no_cert_limit].freeze
       # Does the cert limit decrease when a player becomes bankrupt?
       CERT_LIMIT_CHANGE_ON_BANKRUPTCY = false
       CERT_LIMIT_INCLUDES_PRIVATES = true
-      # Does the cert limit care about how many players started the game or how
-      # many remain?
-      CERT_LIMIT_COUNTS_BANKRUPTED = false
 
       PRESIDENT_SALES_TO_MARKET = false
 
@@ -825,7 +828,7 @@ module Engine
         while @round.finished? && !@finished
           @round.entities.each(&:unpass!)
 
-          if end_now?(end_timing)
+          if end_now?(end_timing) || @turn >= 100
             end_game!
           else
             transition_to_next_round!
@@ -836,7 +839,7 @@ module Engine
       end
 
       def rescue_exception(e, action)
-        LOGGER.debug { "Caught exception #{e.inspect}, backtrace: [#{e.backtrace.join(', ')}]" }
+        LOGGER.debug { %(Caught exception #{e.inspect}, backtrace: [#{e.backtrace.join("\n")}]) }
         @raw_actions.pop
         @actions.pop
         @exception = e
@@ -1128,9 +1131,13 @@ module Engine
         return value_for_sellable(player, corporation) if self.class::PRESIDENT_SALES_TO_MARKET
 
         max_bundle = bundles_for_corporation(player, corporation)
-          .select { |bundle| bundle.can_dump?(player) && @share_pool&.fit_in_bank?(bundle) }
+          .select { |bundle| can_dump?(player, bundle) && @share_pool&.fit_in_bank?(bundle) }
           .max_by(&:price)
         max_bundle&.price || 0
+      end
+
+      def can_dump?(entity, bundle)
+        bundle.can_dump?(entity)
       end
 
       def issuable_shares(_entity)
@@ -1615,13 +1622,18 @@ module Engine
         city = cities.find { |c| c.reserved_by?(corporation) } || cities.first
         token = corporation.find_token_by_type
 
-        if city.tokenable?(corporation, tokens: token)
+        same_hex_allowed = multiple_tokens_allowed_on_home_hex?
+        if city.tokenable?(corporation, tokens: token, same_hex_allowed: same_hex_allowed)
           @log << "#{corporation.name} places a token on #{hex.name}"
-          city.place_token(corporation, token)
+          city.place_token(corporation, token, same_hex_allowed: same_hex_allowed)
         elsif home_token_can_be_cheater
           @log << "#{corporation.name} places a token on #{hex.name}"
           city.place_token(corporation, token, cheater: true)
         end
+      end
+
+      def multiple_tokens_allowed_on_home_hex?
+        false
       end
 
       def graph_for_entity(_entity)
@@ -2337,6 +2349,10 @@ module Engine
         @players
       end
 
+      def show_company_owners?
+        true
+      end
+
       private
 
       def init_graph
@@ -2353,7 +2369,7 @@ module Engine
       def init_cert_limit
         cert_limit = game_cert_limit
         if cert_limit.is_a?(Hash)
-          player_count = (self.class::CERT_LIMIT_COUNTS_BANKRUPTED ? players : players.reject(&:bankrupt)).size
+          player_count = (self.class::CERT_LIMIT_CHANGE_ON_BANKRUPTCY ? players.reject(&:bankrupt) : players).size
           cert_limit = cert_limit[player_count]
         end
         if cert_limit.is_a?(Hash)
@@ -2802,13 +2818,24 @@ module Engine
       end
 
       def action_processed(_action)
-        close_corporations_in_close_cell!
+        return unless close_corporations_in_close_cell!
+
+        # Closing corporations can end up removing the current entity's only
+        # available actions, for example if all they could do was sell shares in
+        # the now closed corporation. If that is the case, skip to the next
+        # entity.
+        return unless active_step&.actions(current_entity)&.empty?
+
+        @round.skip_steps
+        @round.next_entity!
       end
 
       # close_corporation() might cause another corporation to need closing; if
       # this function is called multiple times before resolving, corporations
       # that should be closed are added to @closing_queue, but the closing loop
       # is not re-entered
+      #
+      # returns true if any corporations were closed
       def close_corporations_in_close_cell!
         return unless stock_market.has_close_cell
 
@@ -2818,13 +2845,18 @@ module Engine
 
         return if @corporations_are_closing
 
+        closed_any = false
+
         @corporations_are_closing = true
         until @closing_queue.empty?
           corp = @closing_queue.first[0]
           @closing_queue.delete(corp)
           close_corporation(corp)
+          closed_any = true
         end
         @corporations_are_closing = false
+
+        closed_any
       end
 
       def show_priority_deal_player?(order)
@@ -3208,7 +3240,7 @@ module Engine
       end
 
       def player_owned_ability?(ability)
-        ability.owner&.player? || (ability.owner&.company? && ability.owner&.owner&.player?)
+        ability.owner&.player? || ((ability.owner&.company? || ability.owner&.minor?) && ability.owner&.owner&.player?)
       end
 
       def corporation_owned_ability?(ability)
