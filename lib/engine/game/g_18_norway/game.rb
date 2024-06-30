@@ -83,6 +83,15 @@ module Engine
           'lm_brown' => ['brown_ferries', 'Mjøsa brown ferry lines opens up.'],
         }.freeze
 
+        def custom_end_game_reached?
+          @custom_end_game
+        end
+
+        def event_custom_end_game!
+          @log << '-- Event: End game --'
+          @custom_end_game = true
+        end
+
         def hovedbanen
           @hovedbanen ||= corporation_by_id('H')
         end
@@ -119,7 +128,7 @@ module Engine
         CITY_HARBOR_MAP = {
           'G17' => 'G15',
           'B26' => 'A25',
-          'C19' => 'C17',
+          'D18' => 'C17',
           'B32' => 'A31',
           'C35' => 'B36',
         }.freeze
@@ -311,7 +320,12 @@ module Engine
           @round =
             case @round
             when G18Norway::Round::Nationalization
-              new_stock_round
+              if @round.round_num < @operating_rounds
+                new_operating_round(@round.round_num + 1)
+              else
+                or_set_finished
+                new_stock_round
+              end
             when Engine::Round::Stock
               @operating_rounds = @phase.operating_rounds
               reorder_players
@@ -319,12 +333,16 @@ module Engine
             when Engine::Round::Operating
               if @round.round_num < @operating_rounds
                 or_round_finished
-                new_operating_round(@round.round_num + 1)
+                new_nationalization_round(@round.round_num)
               else
                 @turn += 1
                 or_round_finished
-                or_set_finished
-                new_nationalization_round
+                if @phase.tiles.include?(:green)
+                  new_nationalization_round(@round.round_num)
+                else
+                  or_set_finished
+                  new_stock_round
+                end
               end
             when init_round.class
               init_round_finished
@@ -348,8 +366,13 @@ module Engine
         def convert(corporation, number_of_shares)
           shares = @_shares.values.select { |share| share.corporation == corporation }
 
+          corporation.share_holders.clear
+
           shares.each { |share| share.percent /= 2 }
           new_shares = Array.new(5) { |i| Share.new(corporation, percent: 10, index: i + 4) }
+
+          shares.each { |share| corporation.share_holders[share.owner] += share.percent }
+
           new_shares.each do |share|
             add_new_share(share)
           end
