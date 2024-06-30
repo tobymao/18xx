@@ -1,11 +1,3 @@
-GIT
-  remote: https://github.com/michaeljb/rubocop-g18xx.git
-  revision: a6a571babffcdac13c124b2bae879278e46edf75
-  tag: v0.2.0
-  specs:
-    rubocop-g18xx (0.2.0)
-      rubocop
-
 GEM
   remote: https://rubygems.org/
   specs:
@@ -146,7 +138,6 @@ DEPENDENCIES
   roda
   rspec
   rubocop
-  rubocop-g18xx!
   rubocop-performance
   rufus-scheduler
   sequel

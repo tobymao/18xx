@@ -24,7 +24,6 @@ group :development do
   gem 'pry-byebug'
   gem 'rerun'
   gem 'rubocop'
-  gem 'rubocop-g18xx', require: 'false', git: 'https://github.com/michaeljb/rubocop-g18xx.git', tag: 'v0.3.0'
   gem 'rubocop-performance', require: 'false'
   gem 'sequel-annotate'
   gem 'stackprof'

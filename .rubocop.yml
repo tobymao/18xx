@@ -1,24 +1,4 @@
-inherit_from: .rubocop_todo.yml
-
-require:
-  - rubocop-g18xx
-  - rubocop-performance
-
-G18xx/Logger:
-  Enabled: true
-  Exclude:
-    - 'lib/engine/game/g_18_india/game.rb'
-    - 'lib/engine/game/g_18_india/step/certificate_selection.rb'
-    - 'lib/engine/game/g_18_india/step/corporate_buy_shares_company.rb'
-    - 'lib/engine/game/g_18_india/step/dividend.rb'
-    - 'lib/engine/game/g_18_india/step/exchange_token.rb'
-    - 'lib/engine/game/g_18_india/step/home_track.rb'
-    - 'lib/engine/game/g_18_india/step/railhead_tracker.rb'
-    - 'lib/engine/game/g_18_india/step/sell_once_then_buy_certs.rb'
-    - 'lib/engine/game/g_18_india/step/track.rb'
-
-G18xx/NoBlocklessAny:
-  Enabled: true
+require: rubocop-performance
 
 AllCops:
   TargetRubyVersion: 3.2
