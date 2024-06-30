@@ -60,7 +60,7 @@ module Engine
             train_limit: 4,
             tiles: [:yellow],
             operating_rounds: 1,
-            status: %w[gray_uses_white no_bonds no_buy_token],
+            status: %w[gray_uses_white],
           },
           {
             name: '6H',
@@ -68,7 +68,7 @@ module Engine
             train_limit: 4,
             tiles: %i[yellow green],
             operating_rounds: 2,
-            status: %w[gray_uses_white no_bonds can_buy_companies],
+            status: %w[gray_uses_white can_buy_companies],
           },
           {
             name: '8H',
@@ -92,7 +92,7 @@ module Engine
             train_limit: 2,
             tiles: %i[yellow green brown],
             operating_rounds: 3,
-            status: %w[gray_uses_black e_tokens_available],
+            status: %w[gray_uses_black],
           },
           {
             name: '16H',
@@ -100,7 +100,7 @@ module Engine
             train_limit: 2,
             tiles: %i[yellow green brown],
             operating_rounds: 3,
-            status: %w[gray_uses_black e_tokens_available blue_zone],
+            status: %w[gray_uses_black blue_zone],
           },
         ].freeze
 
@@ -256,7 +256,7 @@ module Engine
                       :loan_choice_player, :player_debts,
                       :max_value_reached,
                       :old_operating_order, :moved_this_turn,
-                      :e_token_sold
+                      :e_token_sold, :e_tokens_enabled, :issue_bonds_enabled, :buy_tokens_enabled
 
         def option_delay_ift?
           @optional_rules&.include?(:delay_ift)
@@ -320,6 +320,11 @@ module Engine
 
           @player_debts = Hash.new { |h, k| h[k] = 0 }
           @moved_this_turn = []
+
+          # below is for variant rules
+          @e_tokens_enabled = false
+          @buy_tokens_enabled = false
+          @issue_bonds_enabled = false
         end
 
         def setup_companies
@@ -852,14 +857,17 @@ module Engine
         end
 
         def event_buy_tokens!
+          @buy_tokens_enabled = true
           @log << "-- Event: #{EVENTS_TEXT[:buy_tokens][1]} --"
         end
 
         def event_bonds!
+          @issue_bonds_enabled = true
           @log << "-- Event: #{EVENTS_TEXT[:bonds][1]} --"
         end
 
         def event_e_tokens!
+          @e_tokens_enabled = true
           @log << "-- Event: #{EVENTS_TEXT[:e_tokens][1]} --"
         end
 
@@ -923,10 +931,10 @@ module Engine
 
         def can_take_loan?(entity)
           bonds? &&
+          issue_bonds_enabled == true &&
             entity.corporation? &&
             !@round.repaid_bond[entity] &&
-            entity.loans.size < maximum_loans(entity) &&
-            !@phase.status.include?('no_bonds')
+            entity.loans.size < maximum_loans(entity)
         end
 
         def can_pay_interest?(entity, extra_cash = 0)

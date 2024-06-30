@@ -31,7 +31,7 @@ module Engine
 
           def can_buy_token?(entity)
             @game.acquiring_station_tokens? &&
-              !@game.phase.status.include?('no_buy_token') &&
+              @game.buy_tokens_enabled &&
               current_entity == entity &&
               !@round.bought_token &&
               !available_tokens(entity).empty? &&

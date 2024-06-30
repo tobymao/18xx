@@ -32,7 +32,7 @@ module Engine
           end
 
           def log_skip(entity)
-            super if @game.electric_dreams? && @game.phase.status.include?('e_tokens_available')
+            super if @game.electric_dreams? && @game.e_tokens_enabled
           end
 
           def auto_actions(entity)
@@ -73,7 +73,7 @@ module Engine
           def can_buy_e_token?(entity)
             @game.electric_dreams? &&
               entity.corporation? &&
-              @game.phase.status.include?('e_tokens_available') &&
+              @game.e_tokens_enabled &&
               !@game.e_token?(entity) &&
               entity.cash >= e_token_cost
           end
