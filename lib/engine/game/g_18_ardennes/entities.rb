@@ -490,7 +490,7 @@ module Engine
           verb = @round.auction? ? 'bid' : 'won the right'
           [
             "#{player.name} has #{verb} to start this company using " \
-            "minor #{minor.id}.",
+            "minor #{minor.id}."
           ]
         end
 
