@@ -17,6 +17,7 @@ module Engine
             city: 2,
             color: '#32763f',
             type: :minor,
+            always_market_price: true,
           },
           {
             float_percent: 60,
@@ -29,6 +30,7 @@ module Engine
             color: '#025aaa',
             coordinates: 'G17',
             type: :minor,
+            always_market_price: true,
             abilities: [
               {
                 description: '10% discount on trains',
@@ -50,6 +52,7 @@ module Engine
             coordinates: 'B26',
             color: '#d1232a',
             type: :minor,
+            always_market_price: true,
           },
           {
             float_percent: 60,
@@ -62,6 +65,7 @@ module Engine
             color: :'#474548',
             coordinates: 'E19',
             type: :minor,
+            always_market_price: true,
           },
           {
             float_percent: 60,
@@ -75,6 +79,7 @@ module Engine
             text_color: 'black',
             coordinates: 'C35',
             type: :minor,
+            always_market_price: true,
           },
           {
             float_percent: 60,
@@ -87,6 +92,7 @@ module Engine
             color: :'#d88e39',
             coordinates: 'B32',
             type: :minor,
+            always_market_price: true,
           },
           {
             float_percent: 60,
@@ -100,6 +106,7 @@ module Engine
             text_color: 'black',
             coordinates: 'F30',
             type: :minor,
+            always_market_price: true,
           },
           {
             float_percent: 60,
@@ -112,6 +119,7 @@ module Engine
             coordinates: 'G31',
             color: :'#95c054',
             type: :minor,
+            always_market_price: true,
           },
           {
             floatable: false,
