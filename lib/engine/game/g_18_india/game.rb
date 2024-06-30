@@ -16,7 +16,7 @@ module Engine
         include Map
         include CitiesPlusTownsRouteDistanceStr
 
-        attr_accessor :draft_deck, :ipo_pool, :unclaimed_commodities, :gauge_change_markers
+        attr_accessor :draft_deck, :ipo_pool, :unclaimed_commodities, :gauge_change_markers, :jewlery_hex
         attr_reader :ipo_rows
 
         register_colors(brown: '#a05a2c',
@@ -155,10 +155,8 @@ module Engine
           'SPICES' => { value: nil, commodity: 'SPICES', locations: COMMODITY_DESTINATIONS },
         }.freeze
 
-        # TODO: Consider using commodity icons vs location names
-        # Refactor to use assignment (assignable module) for commodities?
         ASSIGNMENT_TOKENS = {
-          'P6' => '/icons/18_royal_gorge/gold_cube.svg', # TODO: Add actual commodity ICON
+          'P6' => '/icons/18_india/jewlery.svg',
         }.freeze
 
         TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false },
@@ -233,9 +231,15 @@ module Engine
           end
         end
 
-        # Include bond shares for cache_objects
+        # Include IPO Pool shares and bond shares for cache_objects
         def shares
-          @corporations.flat_map(&:shares) + @players.flat_map(&:shares) + @share_pool.shares + gipr.bond_shares
+          LOGGER.debug { "@corporations.flat_map(&:shares) => #{@corporations.flat_map(&:shares)}" }
+          LOGGER.debug { "@players.flat_map(&:shares) => #{@players.flat_map(&:shares)}" }
+          LOGGER.debug { "@share_pool.shares => #{@share_pool.shares}" }
+          LOGGER.debug { "gipr.bond_shares => #{gipr.bond_shares}" }
+          LOGGER.debug { "@ipo_pool shares => #{@ipo_pool.shares}" }
+          @ipo_pool.shares + @corporations.flat_map(&:shares) + @players.flat_map(&:shares) +
+            @share_pool.shares + gipr.bond_shares
         end
 
         def setup_preround
@@ -262,6 +266,7 @@ module Engine
           @last_action = nil
 
           @unclaimed_commodities = COMMODITY_NAMES.dup
+          @jewlery_hex = nil
           @gauge_change_markers = []
 
           @log << "-- #{round_description('Hand Selection')} --"
@@ -641,17 +646,19 @@ module Engine
         end
 
         def first_bond_in_bank
-          [] << bank.companies.find { |c| c.type == :bond }
+          Array(bank.companies.find { |c| c.type == :bond }).compact
         end
 
         def count_of_bonds
           bank.companies.count { |c| c.type == :bond }
         end
 
+        def privates_in_bank
+          bank.companies.select { |c| c.type == :private }
+        end
+
         def bank_owned_companies
-          bank_certs = [] << bank.companies.find { |c| c.type == :bond }
-          bank_certs += bank.companies.select { |c| c.type == :private }
-          bank_certs
+          first_bond_in_bank + privates_in_bank
         end
 
         def top_of_ipo_rows(row = nil)
@@ -716,8 +723,8 @@ module Engine
         def home_token_locations(corporation)
           raise NotImplementedError unless corporation.name == 'GIPR'
 
-          LOGGER.debug " Open City Hexes #{open_city_hexes}"
-          LOGGER.debug " Town->City Hexes #{town_to_green_city_hexes}"
+          LOGGER.debug { " Open City Hexes #{open_city_hexes}" }
+          LOGGER.debug { " Town->City Hexes #{town_to_green_city_hexes}" }
           open_city_hexes + town_to_green_city_hexes
         end
 
@@ -765,6 +772,29 @@ module Engine
           !@phase.status.include?('gipr_may_not_operate') && gipr.floated?
         end
 
+        def convert_bond_to_gipr(entity, bond)
+          entity.companies.delete(bond)
+          bond.close!
+          new_gipr_share = gipr.bond_shares.shift
+          new_gipr_share.owner = entity
+          entity.shares_by_corporation[gipr] << new_gipr_share
+          gipr.share_holders[entity] += new_gipr_share.percent
+          entity.spend(railroad_bond_convert_cost, @bank) if railroad_bond_convert_cost.positive? # Pay conversion cost
+          @bank.spend(bond.value, gipr) # Bank pays GIPR $100
+          @log << "#{entity.name} converts a Railrod Bond to a GIPR Share for #{format_currency(railroad_bond_convert_cost)}"
+          @log << "The Bank pays GIPR #{format_currency(bond.value)}"
+          # Check if if there is new Manager for GIPR
+          check_manager_change(entity, gipr) if entity.player?
+        end
+
+        def check_manager_change(entity, corporation)
+          return unless entity.percent_of(corporation) > gipr.owner.percent_of(corporation)
+
+          @share_pool.change_president(corporation.presidents_share, corporation.owner, entity)
+          corporation.owner = entity
+          @log << "#{entity.name} is the new Manager of #{corporation.name}"
+        end
+
         def gipr_exchange_tokens
           ability = gipr.all_abilities.find { |a| a.type == :exchange_token }
           return 0 unless ability
@@ -773,7 +803,7 @@ module Engine
         end
 
         def gipr_has_exchange_token?
-          LOGGER.debug "gipr_may_exchange_token > #{gipr.floated?} && #{gipr_exchange_tokens.positive?}"
+          LOGGER.debug { "gipr_may_exchange_token > #{gipr.floated?} && #{gipr_exchange_tokens.positive?}" }
           gipr.floated? && gipr_exchange_tokens.positive?
         end
 
@@ -785,10 +815,12 @@ module Engine
 
         def gipr_exchange_with_closing_corp(corporation)
           corporation.placed_tokens.each_with_index do |token, index|
-            LOGGER.debug "gipr_exchange > #{corporation.tokens} && index-#{index} used-#{token.used}"
+            LOGGER.debug { "gipr_exchange > #{corporation.tokens} && index-#{index} used-#{token.used}" }
             exchange_token = Engine::Token.new(gipr, type: :exchange)
-            LOGGER.debug "gipr_exchange > tokenable? #{token.city.tokenable?(gipr, free: true, tokens: [exchange_token],
-                                                                                   cheater: true, same_hex_allowed: false)} "
+            LOGGER.debug do
+              "gipr_exchange > tokenable? #{token.city.tokenable?(gipr, free: true, tokens: [exchange_token],
+                                                                        cheater: true, same_hex_allowed: false)} "
+            end
             next unless token.city.tokenable?(gipr, free: true, tokens: [exchange_token], cheater: true, same_hex_allowed: false)
 
             if index.zero?
@@ -797,7 +829,7 @@ module Engine
               gipr.tokens << exchange_token
               token.remove!
               use_gipr_exchange_token
-              LOGGER.debug "gipr_exchange > gipr tokens: #{gipr.tokens} "
+              LOGGER.debug { "gipr_exchange > gipr tokens: #{gipr.tokens} " }
             elsif token.city.tokenable?(gipr, free: true, tokens: [exchange_token], cheater: true, same_hex_allowed: false)
               @round.pending_exchange_tokens << {
                 entity: gipr,
@@ -807,7 +839,7 @@ module Engine
               }
             end
           end
-          LOGGER.debug "gipr_exchange > pending #{@round.pending_exchange_tokens} "
+          LOGGER.debug { "gipr_exchange > pending #{@round.pending_exchange_tokens} " }
           @round.clear_cache!
         end
 
@@ -825,14 +857,14 @@ module Engine
 
           # remove all corp tokens (after GIPR may exchange)
           corporation.tokens.each(&:destroy!)
-          LOGGER.debug "closing > Corp tokens: #{corporation.tokens}"
+          LOGGER.debug { "closing > Corp tokens: #{corporation.tokens}" }
 
           # move trains to open market
           corporation.trains.dup.each { |t| depot.reclaim_train(t) }
-          LOGGER.debug "closing > Corp trains: #{corporation.trains}  depot: #{depot.trains}"
+          LOGGER.debug { "closing > Corp trains: #{corporation.trains}  depot: #{depot.trains}" }
 
           # return privates and bonds to market
-          LOGGER.debug "closing > companies: #{corporation.companies}  bank: #{@bank.companies}"
+          LOGGER.debug { "closing > companies: #{corporation.companies}  bank: #{@bank.companies}" }
           corporation.companies.each do |company|
             next unless %i[private bond].include?(company.type)
 
@@ -841,11 +873,11 @@ module Engine
             @bank.companies.push(company)
           end
           corporation.companies.clear
-          LOGGER.debug "closing > companies: #{corporation.companies}  bank: #{@bank.companies}"
+          LOGGER.debug { "closing > companies: #{corporation.companies}  bank: #{@bank.companies}" }
 
           # move corp owned shares to open market
           corp_owned_shares = corporation.shares_by_corporation[corporation]
-          LOGGER.debug "closing > corp_owned_shares: #{corp_owned_shares}  share_pool: #{@share_pool.shares_by_corporation}"
+          LOGGER.debug { " > corp_owned_shares: #{corp_owned_shares}  share_pool: #{@share_pool.shares_by_corporation}" }
           corp_owned_shares.each do |shares|
             next if shares.corporation == corporation
 
@@ -853,12 +885,12 @@ module Engine
             @log << "A #{bundle.percent}% share of #{bundle.corporation.name} is returned to the Market"
             share_pool.transfer_shares(bundle, @share_pool)
           end
-          LOGGER.debug "closing > corp_owned_shares: #{corp_owned_shares}  share_pool: #{@share_pool.shares_by_corporation}"
+          LOGGER.debug { " > corp_owned_shares: #{corp_owned_shares}  share_pool: #{@share_pool.shares_by_corporation}" }
 
           # return treasury to bank
-          LOGGER.debug "closing > tresury: #{corporation.cash}  bank: #{@bank.cash}"
+          LOGGER.debug { " > prior tresury: #{corporation.cash}  bank: #{@bank.cash}" }
           corporation.spend(corporation.cash, @bank) if corporation.cash.positive?
-          LOGGER.debug "closing > tresury: #{corporation.cash}  bank: #{@bank.cash}"
+          LOGGER.debug { " > post tresury: #{corporation.cash}  bank: #{@bank.cash}" }
 
           # remove all corp shares
           corporation.share_holders.each_key do |share_holder|
@@ -875,11 +907,11 @@ module Engine
           corporation.close!
 
           # adjust cert_limit
-          LOGGER.debug "closing > cert_limit: #{@cert_limit}"
+          LOGGER.debug { " > prior cert_limit: #{@cert_limit}" }
           @cert_limit = init_cert_limit
-          LOGGER.debug "closing > cert_limit: #{@cert_limit}"
+          LOGGER.debug { " > post cert_limit: #{@cert_limit}" }
 
-          # move to next enity if the current entity is the closed corporation
+          # move to next entity if the current entity is the closed corporation
           @round.force_next_entity! if @round.current_entity == corporation
         end
 
@@ -931,7 +963,7 @@ module Engine
           route_stops = route.connection_data.flat_map { |c| [c[:left], c[:right]] }.uniq.compact # super
           return route_stops unless gauge_changes.positive?
 
-          LOGGER.debug "GAME::visited_stops > gauge_changes: #{gauge_changes} route_stops: #{route_stops.inspect}"
+          LOGGER.debug { "GAME::visited_stops > gauge_changes: #{gauge_changes} route_stops: #{route_stops.inspect}" }
           add_gauge_changes_to_stops(gauge_changes, route_stops)
         end
 
@@ -942,7 +974,7 @@ module Engine
             stop.tile = first_stop.tile
             route_stops.insert(1, stop) # add the gauge change after fist element so that it's not the first or last stop
           end
-          LOGGER.debug "GAME::add_gauge_changes_to_stops > route_stops: #{route_stops.inspect}"
+          LOGGER.debug { "GAME::add_gauge_changes_to_stops > route_stops: #{route_stops.inspect}" }
           route_stops
         end
 
@@ -968,13 +1000,17 @@ module Engine
           @gauge_change_markers.delete([hex, neighbor].sort)
         end
 
-        # modify to require route begin and end at city
+        # modify to require route begin and end at city and may not visit MUMBAI or NEPAL twice.
         def check_other(route)
           visited_stops = route.visited_stops
           return if visited_stops.count < 2
 
           valid_route = visited_stops.first.city? && visited_stops.last.city?
           raise GameError, 'Route must begin and end at a city' unless valid_route
+
+          visited_names = visited_stops.map { |stop| stop.tile.location_name }
+          raise GameError, 'Route may not visit MUMBAI more than once' if visited_names.count('MUMBAI') > 1
+          raise GameError, 'Route may not visit NEPAL more than once' if visited_names.count('NEPAL') > 1
         end
 
         # modify to include variable value cities and route bonus
@@ -1009,8 +1045,10 @@ module Engine
           variable_city_stops = stop_location_names & VARIABLE_CITY_NAMES
 
           train_multiplier = route.train.multiplier || 1
-          LOGGER.debug "variable_city_revenue >> train_multiplier: #{train_multiplier}  "\
-                       "variable_city_stops: #{variable_city_stops}  max_non_variable_value: #{max_non_variable_value}"
+          LOGGER.debug do
+            "variable_city_revenue >> train_multiplier: #{train_multiplier}  "\
+              "variable_city_stops: #{variable_city_stops}  max_non_variable_value: #{max_non_variable_value}"
+          end
 
           variable_city_stops.count * [max_non_variable_value, 0].max * train_multiplier
         end
@@ -1019,7 +1057,7 @@ module Engine
           visited_location_names = route.visited_stops.map { |stop| stop.tile.location_name }.compact
           return 0 if visited_location_names.count < 2
 
-          LOGGER.debug "connection_bonus >> visited_location_names: #{visited_location_names}"
+          LOGGER.debug { "connection_bonus >> visited_location_names: #{visited_location_names}" }
           # Delhi, Kochi => 100 [G8, G36]
           # Karachi, Chennai => 80 [A16, K30]
           # Lahore, Kolkata => 80 [D3, P17]
@@ -1038,6 +1076,7 @@ module Engine
 
         # Test using Ability to display Claimed Commodities on VIEW for Corporation card
         def claim_concession(corporation, commodity)
+          LOGGER.debug { "claim_concession: #{corporation.name} => #{commodity}" }
           ability = corporation.all_abilities.find { |a| a.type == :commodities }
           ability.description = ability.description + commodity + ' '
           @log << "#{corporation.name} claims the #{commodity} concession"
@@ -1052,10 +1091,21 @@ module Engine
             corporation.commodities << commodity
             @unclaimed_commodities.delete(commodity)
           end
+          LOGGER.debug { "  claimed: #{corporation.commodities}" }
+          LOGGER.debug { "  unclaimed: #{@unclaimed_commodities}" }
+        end
+
+        # NOTE: Jewlery hex may be the same as another commodity, therefore should not use/change location name for Jewlery
+        def assign_jewlery_location(hex)
+          @jewlery_hex = hex
+        end
+
+        def visit_jewelery(route)
+          route.all_hexes.include?(@jewlery_hex) ? ['JEWELRY'] : []
         end
 
         def commodity_bonus(route, _stops = nil)
-          visited_names = route.all_hexes.map(&:location_name).compact
+          visited_names = (route.all_hexes.map(&:location_name) + visit_jewelery(route)).compact
           corporation = route.train.owner
           commodity_sources = visited_names & available_commodities(corporation)
           return 0 unless commodity_sources.count.positive?
@@ -1064,14 +1114,16 @@ module Engine
           @round.commodities_used = []
           commodity_sources.each do |source|
             bonus = COMMODITY_BONUSES[source]
-            LOGGER.debug "GAME.commodity_bonus >> bonus: #{bonus}"
+            LOGGER.debug { "GAME.commodity_bonus >> bonus: #{bonus}" }
             if visited_names.intersect?(bonus['locations'])
               revenue += bonus['value'] || visited_names.map { |loc| SPICE_BONUSES[loc] || 0 }.max
               @round.commodities_used << bonus['commodity']
             end
           end
-          LOGGER.debug "GAME.commodity_bonus >> visited: #{visited_names}  sources: #{commodity_sources}  revenue: #{revenue}" \
-                       "  used: #{@round.commodities_used}"
+          LOGGER.debug do
+            "GAME.commodity_bonus >> visited: #{visited_names}  sources: #{commodity_sources}  revenue: #{revenue}" \
+              "  used: #{@round.commodities_used}"
+          end
           revenue
         end
 
@@ -1095,7 +1147,7 @@ module Engine
         end
 
         # pay owner value of company before closing
-        def company_is_closing(company, silent = false)
+        def company_closing_after_using_ability(company, silent = false)
           @bank.spend(company.value, company.owner) if company.value.positive?
           @log << "#{company.name} closes and #{company.owner.name} receives #{company.value} from the Bank." unless silent
         end
@@ -1135,10 +1187,11 @@ module Engine
               company.desc = company.desc.delete_suffix("\nHas a Guaranty Warrant.")
             end
           end
+        end
 
-          # TODO: Railroad bonds can convert to new GIPR shares
-          # TODO: No new Guage Changes (remove existing borders?)
-          # TODO: May remove Guage Changes as Track Action (add ability to corps?)
+        # Modified to include Book Value (assets) of corporations
+        def player_value(player)
+          player.shares.sum(player.value) { |s| s.corporation.book_value_per_share * s.num_shares }
         end
 
         def company_header(company)
