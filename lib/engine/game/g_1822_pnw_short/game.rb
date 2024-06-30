@@ -4,6 +4,7 @@ require_relative '../g_1822_pnw/game'
 require_relative '../g_1822/scenario'
 require_relative 'meta'
 require_relative 'trains'
+require_relative 'round/stock'
 
 module Engine
   module Game
@@ -12,6 +13,8 @@ module Engine
         include_meta(G1822PnwShort::Meta)
         include G1822::Scenario
         include Trains
+
+        attr_reader :paired_assoc, :paired_unassoc
 
         STARTING_COMPANIES = %w[P1 P2 P3 P5 P7 P9 P10 P11 P14 P15 P16 P20
                                 M1 M2 M3 M4 M5 M6 M7 M8 M9 M10 M11 M12 M13 M14 M15 M16 M17 M18 M19 M20 M21 MA MB MC].freeze
@@ -57,12 +60,12 @@ module Engine
             %w[M18 M21],
             %w[M20 M10],
           ].min_by { rand }
-          paired_assoc, paired_unassoc = minor_pairing
+          @paired_assoc, @paired_unassoc = minor_pairing
 
           # update description and starting price on the paired associated minor
-          first_minor = minors.find { |c| c.id == paired_assoc }
-          last_minor = minors.find { |c| c.id == paired_unassoc }
-          first_minor.desc += " #{paired_unassoc} is purchased along with #{paired_assoc} for a minimum bid of $200."
+          first_minor = minors.find { |c| c.id == @paired_assoc }
+          last_minor = minors.find { |c| c.id == @paired_unassoc }
+          first_minor.desc += " #{@paired_unassoc} is purchased along with #{@paired_assoc} for a minimum bid of $200."
           first_minor.discount = -100
 
           # collect rest of associated and unassociated minors
@@ -87,6 +90,13 @@ module Engine
           @company_trains['P2'] = find_and_remove_train_by_id('2P-0', buyable: false)
           @company_trains['P3'] = find_and_remove_train_by_id('LP-0', buyable: false)
           @company_trains['P5'] = find_and_remove_train_by_id('P-0', buyable: false)
+        end
+
+        def stock_round
+          G1822PnwShort::Round::Stock.new(self, [
+            G1822::Step::DiscardTrain,
+            G1822PNW::Step::BuySellParShares,
+          ])
         end
       end
     end
