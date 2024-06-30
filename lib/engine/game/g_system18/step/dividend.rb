@@ -15,7 +15,7 @@ module Engine
             return super unless @game.game_capitalization == :incremental
 
             price = entity.share_price.price
-            puts "price: #{price}, revenue: #{revenue}"
+            LOGGER.debug { "price: #{price}, revenue: #{revenue}" }
 
             if revenue.zero?
               { share_direction: :left, share_times: 1 }
