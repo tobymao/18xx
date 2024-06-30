@@ -510,7 +510,7 @@ module Engine
           counted_stops.delete(tokened_stops.first) if tokened_stops.one?
 
           # Find the lowest revenue stop that can be skipped
-          counted_stops.max_by { |stop| revenue_for(route, stops.reject { |s| s == stop }) }
+          counted_stops.min_by { |stop| revenue_for(route, stops.reject { |s| s == stop }) }
         end
 
         def issuable_shares(entity)
