@@ -29,6 +29,7 @@ module Engine
 
         CERT_LIMIT = { 2 => 18, 3 => 14 }.freeze
         STARTING_CASH = { 2 => 750, 3 => 500 }.freeze
+        BIDDING_TOKENS = { '2' => 6, '3' => 5 }.freeze
 
         STATUS_TEXT = G1822PNW::Game::STATUS_TEXT.merge(
           'l_upgrade' => ['$70 L-train upgrades',
