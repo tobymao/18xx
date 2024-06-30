@@ -55,7 +55,7 @@ module Engine
             rusts_on: '4',
             available_on: '2',
             track_type: :narrow,
-            num: 8,
+            num: 7,
           },
           {
             name: 'S4',
@@ -64,7 +64,7 @@ module Engine
             available_on: '3',
             rusts_on: '6',
             track_type: :narrow,
-            num: 8,
+            num: 5,
           },
           {
             name: 'S5',
@@ -72,7 +72,7 @@ module Engine
             price: 400,
             available_on: '5',
             track_type: :narrow,
-            num: 8,
+            num: 3,
           },
         ].freeze
       end
