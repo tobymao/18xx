@@ -11,20 +11,13 @@ module Engine
           include MinorExchange
 
           def actions(entity)
-            return super if bought?
-            return super unless @game.under_obligation?(entity)
+            return [] unless entity == current_entity
+            return [] if bought?
             return %w[bankrupt] if @game.bankrupt?(entity)
+            return limit_actions(entity) if must_sell?(entity)
+            return par_actions(entity) if @game.under_obligation?(entity)
 
-            actions = []
-            actions << 'par' if under_limit?(entity)
-            actions << 'sell_shares' if can_sell_any?(entity)
-            actions << 'sell_company' if can_sell_any_companies?(entity)
-            # TODO: handle this properly.
-            # Maybe stop the player from bidding for a major if they are at
-            # certificate limit and do not have any sellable shares.
-            raise GameError, 'Cannot sell shares or start major company' if actions.empty?
-
-            actions
+            super
           end
 
           def auto_actions(entity)
@@ -199,6 +192,29 @@ module Engine
           end
 
           private
+
+          # Actions when a player is under obligation to start a public company.
+          def par_actions(entity)
+            actions = []
+            actions << 'par' if under_limit?(entity)
+            actions << 'sell_shares' if can_sell_any?(entity)
+            actions << 'sell_company' if can_sell_any_companies?(entity)
+            # TODO: handle this properly.
+            # Maybe stop the player from bidding for a major if they are at
+            # certificate limit and do not have any sellable shares.
+            raise GameError, 'Cannot sell shares or start major company' if actions.empty?
+
+            actions
+          end
+
+          # Actions when a player is over the certificate limit.
+          def limit_actions(entity)
+            if can_sell_any_companies?(entity)
+              %w[sell_shares sell_company]
+            else
+              %w[sell_shares]
+            end
+          end
 
           def sell_bankrupt_shares(player)
             @log << "-- #{player.name} goes bankrupt and sells remaining shares --"
