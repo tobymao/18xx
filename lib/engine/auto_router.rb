@@ -253,8 +253,10 @@ module Engine
               hexside_right  = node2.edges[0].id
               check_and_set(bitfield, hexside_left, hexside_right, hexside_bits)
             else
-              LOGGER.debug "  ERROR: auto-router found unexpected number of path node edges #{node1.edges.size}. "\
-                           'Route combos may be be incorrect'
+              LOGGER.debug do
+                "  ERROR: auto-router found unexpected number of path node edges #{node1.edges.size}. "\
+                  'Route combos may be be incorrect'
+              end
             end
           end
         end
