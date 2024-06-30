@@ -96,7 +96,6 @@ module View
         end
         extras << render_capitalization_type if @corporation.corporation? && @corporation.respond_to?(:capitalization_type_desc)
         extras << render_escrow_account if @corporation.corporation? && @corporation.respond_to?(:escrow) && @corporation.escrow
-        extras << render_corporation_notes if @game.respond_to?(:corporation_notes) && @game.corporation_notes(@corporation)
         if extras.any?
           props = { style: { borderCollapse: 'collapse' } }
           children << h('table.center', props, [h(:tbody, extras)])
@@ -676,11 +675,6 @@ module View
           h('td.right', 'Escrow'),
           h('td.padded_number', @game.format_currency(@corporation.escrow)),
         ])
-      end
-
-      def render_corporation_notes
-        notes = @game.corporation_notes(@corporation).map { |note| h(:div, note) }
-        h('tr.left', notes)
       end
 
       def render_buying_power
