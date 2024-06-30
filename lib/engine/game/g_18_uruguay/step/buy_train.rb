@@ -19,6 +19,12 @@ module Engine
             end
           end
 
+          def log_skip(entity)
+            return if entity.minor?
+
+            super
+          end
+
           def buy_ships?(entity)
             !entity.abilities.find { |ability| ability.type == :Ship }.nil?
           end
