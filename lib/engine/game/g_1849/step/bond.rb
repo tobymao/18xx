@@ -50,7 +50,7 @@ module Engine
             entity = action.entity
             loan = action.loan
             amount = loan.amount
-            raise GameError, "Bond doesn't belong to that entity" unless entity.loans.include?(loan)
+            raise GameError, "#{entity.name} cannot redeem bond" unless can_payoff_loan?(entity)
 
             @log << "#{entity.name} repays its outstanding bond for #{@game.format_currency(amount)}"
             entity.spend(amount, @game.bank)
