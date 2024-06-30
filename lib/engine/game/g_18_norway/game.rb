@@ -137,6 +137,11 @@ module Engine
         def setup
           MOUNTAIN_BIG_HEXES.each { |hex| hex_by_id(hex).assign!('MOUNTAIN_BIG') }
           MOUNTAIN_SMALL_HEXES.each { |hex| hex_by_id(hex).assign!('MOUNTAIN_SMALL') }
+          corporation_by_id('H').add_ability(Engine::Ability::Base.new(
+            type: 'corrupt',
+            description: 'May nationalize using 0, 1 or 2 shares',
+          ))
+
           corporation_by_id('R').add_ability(Engine::Ability::Base.new(
             type: 'free_tunnel',
             description: 'Free tunnel'
