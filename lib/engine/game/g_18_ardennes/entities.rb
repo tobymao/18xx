@@ -482,6 +482,18 @@ module Engine
           end
         end
 
+        def status_array(corporation)
+          return if corporation.floated?
+          return unless (minor = @pledged_minors[corporation])
+
+          player = minor.presidents_share.owner
+          verb = @round.auction? ? 'bid' : 'won the right'
+          [
+            "#{player.name} has #{verb} to start this company using " \
+            "minor #{minor.id}.",
+          ]
+        end
+
         # The minimum amount of cash needed to start one of the corporations
         # that the player is under obligation for.
         def cash_needed(player)
