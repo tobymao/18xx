@@ -104,6 +104,14 @@ module Engine
           @nsb ||= corporation_by_id('NSB')
         end
 
+        def harbor_city_id_by_harbor_id(hex_id)
+          CITY_HARBOR_MAP.key(hex_id)
+        end
+
+        def harbor_hex?(hex)
+          HARBOR_HEXES.include?(hex.id)
+        end
+
         def price_movement_chart
           [
             ['Action', 'Share Price Change'],
