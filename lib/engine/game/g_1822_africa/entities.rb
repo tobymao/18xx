@@ -194,7 +194,8 @@ module Engine
           {
             name: 'P12 (Fast Sahara Building)',
             sym: 'P12',
-            desc: 'MAJOR/MINOR, Phase 1. The owning company may place any amount of yellow tiles in the hexes marked '\
+            desc: 'MAJOR/MINOR, Phase 1. The owning company may place any amount of yellow tiles '\
+                  'following the other tile laying rules in the hexes marked '\
                   'with desert terrain as their normal tile laying step at normal cost. '\
                   'Using this ability closes the private company.',
             value: 0,
@@ -203,9 +204,9 @@ module Engine
               {
                 type: 'tile_lay',
                 hexes: %w[B6 C3 C5 C7 D4 D6 D8 E5 E7 F6 G7],
-                tiles: [],
+                tiles: %w[7 8 9],
                 owner_type: 'corporation',
-                when: 'special_track',
+                when: %w[track special_track],
                 must_lay_together: true,
                 lay_count: 11,
                 upgrade_count: 0,

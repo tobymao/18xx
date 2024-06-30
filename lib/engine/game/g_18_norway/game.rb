@@ -83,6 +83,15 @@ module Engine
           'lm_brown' => ['brown_ferries', 'Mjøsa brown ferry lines opens up.'],
         }.freeze
 
+        def custom_end_game_reached?
+          @custom_end_game
+        end
+
+        def event_custom_end_game!
+          @log << '-- Event: End game --'
+          @custom_end_game = true
+        end
+
         def hovedbanen
           @hovedbanen ||= corporation_by_id('H')
         end
@@ -119,7 +128,7 @@ module Engine
         CITY_HARBOR_MAP = {
           'G17' => 'G15',
           'B26' => 'A25',
-          'C19' => 'C17',
+          'D18' => 'C17',
           'B32' => 'A31',
           'C35' => 'B36',
         }.freeze
@@ -132,12 +141,24 @@ module Engine
           switcher == corporation
         end
 
+        EXTRA_TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }].freeze
+
         def setup
           MOUNTAIN_BIG_HEXES.each { |hex| hex_by_id(hex).assign!('MOUNTAIN_BIG') }
           MOUNTAIN_SMALL_HEXES.each { |hex| hex_by_id(hex).assign!('MOUNTAIN_SMALL') }
+          corporation_by_id('H').add_ability(Engine::Ability::Base.new(
+            type: 'corrupt',
+            description: 'May nationalize using 0, 1 or 2 shares',
+          ))
+
           corporation_by_id('R').add_ability(Engine::Ability::Base.new(
             type: 'free_tunnel',
             description: 'Free tunnel'
+          ))
+
+          corporation_by_id('V').add_ability(Engine::Ability::Base.new(
+            type: 'free_ship',
+            description: 'Free S3 ship before phase 4',
           ))
 
           switcher.add_ability(Engine::Ability::Base.new(
@@ -145,9 +166,19 @@ module Engine
             description: 'May pass one tokened out city',
           ))
 
+          corporation_by_id('S').add_ability(Engine::Ability::Base.new(
+            type: 'extra_tile_lay',
+            description: 'May lay two yellow',
+          ))
+
           corporation_by_id('J').add_ability(Engine::Ability::Base.new(
             type: 'mail_contract',
             description: 'Mail contract 10/20/30',
+          ))
+
+          corporation_by_id('B').add_ability(Engine::Ability::Base.new(
+            type: 'ignore_mandatory_train',
+            description: 'Not mandatory to own a train',
           ))
 
           @corporations.each do |corporation|
@@ -252,6 +283,7 @@ module Engine
             Engine::Step::SpecialTrack,
             Engine::Step::SpecialToken,
             Engine::Step::BuyCompany,
+            G18Norway::Step::IssueShares,
             Engine::Step::HomeToken,
             G18Norway::Step::Track,
             G18Norway::Step::BuildTunnel,
@@ -288,7 +320,12 @@ module Engine
           @round =
             case @round
             when G18Norway::Round::Nationalization
-              new_stock_round
+              if @round.round_num < @operating_rounds
+                new_operating_round(@round.round_num + 1)
+              else
+                or_set_finished
+                new_stock_round
+              end
             when Engine::Round::Stock
               @operating_rounds = @phase.operating_rounds
               reorder_players
@@ -296,12 +333,16 @@ module Engine
             when Engine::Round::Operating
               if @round.round_num < @operating_rounds
                 or_round_finished
-                new_operating_round(@round.round_num + 1)
+                new_nationalization_round(@round.round_num)
               else
                 @turn += 1
                 or_round_finished
-                or_set_finished
-                new_nationalization_round
+                if @phase.tiles.include?(:green)
+                  new_nationalization_round(@round.round_num)
+                else
+                  or_set_finished
+                  new_stock_round
+                end
               end
             when init_round.class
               init_round_finished
@@ -325,8 +366,13 @@ module Engine
         def convert(corporation, number_of_shares)
           shares = @_shares.values.select { |share| share.corporation == corporation }
 
+          corporation.share_holders.clear
+
           shares.each { |share| share.percent /= 2 }
           new_shares = Array.new(5) { |i| Share.new(corporation, percent: 10, index: i + 4) }
+
+          shares.each { |share| corporation.share_holders[share.owner] += share.percent }
+
           new_shares.each do |share|
             add_new_share(share)
           end
@@ -459,6 +505,67 @@ module Engine
         def event_lm_brown!
           @log << '-- Event: Mjøsa brown ferry lines opens up. --'
           mjosa.lay(tile_by_id('LM2-0'))
+        end
+
+        def issuable_shares(entity)
+          return [] unless entity.corporation?
+          return [] unless round.steps.find { |step| step.instance_of?(G18Norway::Step::IssueShares) }.active?
+
+          num_shares = entity.num_player_shares - entity.num_market_shares
+          bundles = bundles_for_corporation(entity, entity)
+          share_price = stock_market.find_share_price(entity, :left).price
+
+          bundles
+            .each { |bundle| bundle.share_price = share_price }
+            .reject { |bundle| bundle.num_shares > num_shares }
+        end
+
+        def redeemable_shares(entity)
+          return [] unless entity.corporation?
+          return [] unless round.steps.find { |step| step.instance_of?(G18Norway::Step::IssueShares) }.active?
+
+          share_price = stock_market.find_share_price(entity, :right).price
+
+          bundles_for_corporation(share_pool, entity)
+            .each { |bundle| bundle.share_price = share_price }
+            .reject { |bundle| entity.cash < bundle.price }
+        end
+
+        def emergency_issuable_bundles(corp)
+          return [] unless corp.trains.empty?
+
+          available = @depot.available_upcoming_trains.reject { |train| ship?(train) }
+          return [] unless (train = available.min_by(&:price))
+          return [] if corp.cash >= train.price
+
+          bundles = bundles_for_corporation(corp, corp)
+
+          num_issuable_shares = corp.num_player_shares - corp.num_market_shares
+          bundles.reject! { |bundle| bundle.num_shares > num_issuable_shares }
+
+          bundles.each do |bundle|
+            directions = [:left] * (1 + bundle.num_shares)
+            bundle.share_price = stock_market.find_share_price(corp, directions).price
+          end
+
+          bundles.reject! { |b| b.price.zero? }
+
+          bundles.sort_by!(&:price)
+
+          train_buying_bundles = bundles.select { |b| (corp.cash + b.price) >= train.price }
+          unless train_buying_bundles.empty?
+            bundles = train_buying_bundles
+
+            index = bundles.find_index { |b| (corp.cash + b.price) >= train.price }
+            return bundles.take(index + 1) if index
+
+            return bundles
+          end
+
+          biggest_bundle = bundles.max_by(&:num_shares)
+          return [biggest_bundle] if biggest_bundle
+
+          []
         end
       end
     end

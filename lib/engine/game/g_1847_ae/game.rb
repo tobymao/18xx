@@ -70,7 +70,7 @@ module Engine
         PHASES = [
           {
             name: '3',
-            train_limit: 3,
+            train_limit: 4,
             tiles: [:yellow],
             operating_rounds: 1,
             status: ['two_yellow_tracks'],
@@ -78,7 +78,7 @@ module Engine
           {
             name: '3+3',
             on: '3+3',
-            train_limit: 3,
+            train_limit: 4,
             tiles: [:yellow],
             operating_rounds: 1,
             status: %w[investor_exchange two_yellow_tracks can_buy_trains],

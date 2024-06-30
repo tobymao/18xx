@@ -9,6 +9,7 @@ module Engine
       module Step
         class Track < Engine::Step::Track
           def actions(entity)
+            return [] if entity.minor?
             return [] if entity == @game.rptla
             return [] if @game.last_or?
 
@@ -17,6 +18,13 @@ module Engine
             actions << 'take_loan' if @game.can_take_loan?(entity) && !@round.loan_taken && !@game.nationalized?
 
             actions
+          end
+
+          def log_skip(entity)
+            return if entity.minor?
+            return if entity.corporation == @game.rptla
+
+            super
           end
 
           def process_take_loan(action)

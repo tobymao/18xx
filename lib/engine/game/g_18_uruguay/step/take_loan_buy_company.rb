@@ -23,6 +23,7 @@ module Engine
           def log_skip(entity)
             return if entity.minor?
             return if @game.nationalized?
+            return if entity.corporation == @game.rptla
 
             super
           end

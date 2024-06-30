@@ -106,7 +106,7 @@ module View
           ]),
         ]
 
-        if @game.active_step&.current_actions&.include?('bid')
+        if @game.active_step&.current_actions&.include?('bid') || @game.active_step&.auctioneer?
           committed = @game.active_step.committed_cash(@player, @show_hidden)
           if committed.positive?
             trs.concat([

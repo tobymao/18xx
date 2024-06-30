@@ -17,6 +17,7 @@ module Engine
       @routes = {}
       @tokens = {}
       @cheater_tokens = {}
+      @walk_calls = Hash.new { |h, k| h[k] = Hash.new(0) }
       @home_as_token = opts[:home_as_token] || false
       @no_blocking = opts[:no_blocking] || false
       @skip_track = opts[:skip_track]
@@ -35,6 +36,7 @@ module Engine
       @tokenable_cities.clear
       @tokens.clear
       @cheater_tokens.clear
+      @walk_calls.clear
       @routes.delete_if do |_, route|
         !route[:route_train_purchase]
       end
@@ -63,6 +65,11 @@ module Engine
       compute(corporation) do |node|
         if node.tokenable?(corporation, free: true, cheater: cheater, tokens: tokens, same_hex_allowed: same_hex_allowed)
           tokeners[corporation] = true
+
+          LOGGER.debug do
+            "    Graph computed for can_token? with #{walk_calls(corporation)[:not_skipped]} "\
+              "completed walk calls (skipped #{walk_calls(corporation)[:skipped]})"
+          end
           break
         end
       end
@@ -172,12 +179,24 @@ module Engine
       nodes
     end
 
+    def walk_calls(corporation)
+      return Hash.new(0) unless (calls = @walk_calls[corporation])
+
+      {
+        all: calls[:all],
+        skipped: calls[:all] - calls[:not_skipped],
+        not_skipped: calls[:not_skipped],
+      }
+    end
+
     def compute(corporation, routes_only: false, one_token: nil)
       LOGGER.debug { "    Graph#compute(#{corporation.name}, routes_only: #{routes_only}, one_token: #{one_token})" }
 
       hexes = Hash.new { |h, k| h[k] = {} }
       nodes = {}
       paths = {}
+
+      @walk_calls[corporation] = Hash.new(0)
 
       @game.hexes.each do |hex|
         hex.tile.cities.each do |city|
@@ -229,7 +248,10 @@ module Engine
 
       tokens.keys.each do |node|
         if routes[:route_train_purchase] && routes_only
-          LOGGER.debug '    Graph computed'
+          LOGGER.debug do
+            "    Graph computed for route_info with #{walk_calls(corporation)[:not_skipped]} "\
+              "completed walk calls (skipped #{walk_calls(corporation)[:skipped]})"
+          end
           return nil
         end
 
@@ -237,7 +259,7 @@ module Engine
         local_nodes = {}
 
         node.walk(visited: visited, corporation: walk_corporation, skip_track: @skip_track,
-                  skip_paths: skip_paths, converging_path: false) do |path, _, _|
+                  skip_paths: skip_paths, converging_path: false, walk_calls: @walk_calls[corporation]) do |path, _, _|
           next if paths[path]
 
           paths[path] = true
@@ -297,7 +319,10 @@ module Engine
         @reachable_hexes[corporation] = paths.to_h { |path, _| [path.hex, true] }
       end
 
-      LOGGER.debug '    Graph computed'
+      LOGGER.debug do
+        "    Graph computed with #{walk_calls(corporation)[:not_skipped]} "\
+          "completed walk calls (skipped #{walk_calls(corporation)[:skipped]})"
+      end
     end
   end
 end

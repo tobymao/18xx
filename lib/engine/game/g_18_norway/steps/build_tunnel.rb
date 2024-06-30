@@ -50,8 +50,8 @@ module Engine
             entity.spend(cost, @game.bank) if cost.positive?
 
             factory_owner = @game.company_by_id('P3').owner
-            @game.bank.spend(10, factory_owner)
-            @log << "#{factory_owner.name} receives #{@game.format_currency(10)} for building a tunnel"
+            @game.bank.spend(10, factory_owner) if factory_owner
+            @log << "#{factory_owner.name} receives #{@game.format_currency(10)} for building a tunnel" if factory_owner
 
             mountain = mountain_hex.assignments.keys.find { |a| a.include? 'MOUNTAIN' }
             mountain_hex.remove_assignment!(mountain)

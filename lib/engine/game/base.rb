@@ -137,6 +137,12 @@ module Engine
 
       TRAINS = [].freeze
 
+      # Array of groups (arrays) of train names; trains within a group cannot
+      # have overlapping routes, but a train in one group can overlap with
+      # routes of trains in another group. Any trains not listed here fall into
+      # a default group.
+      TRAIN_AUTOROUTE_GROUPS = nil
+
       CERT_LIMIT_TYPES = %i[multiple_buy unlimited no_cert_limit].freeze
       # Does the cert limit decrease when a player becomes bankrupt?
       CERT_LIMIT_CHANGE_ON_BANKRUPTCY = false
@@ -1131,11 +1137,7 @@ module Engine
       end
 
       def can_dump?(entity, bundle)
-        if active_step.respond_to?(:can_dump?)
-          active_step.can_dump?(entity, bundle)
-        else
-          bundle.can_dump?(entity)
-        end
+        bundle.can_dump?(entity)
       end
 
       def issuable_shares(_entity)
@@ -1620,13 +1622,18 @@ module Engine
         city = cities.find { |c| c.reserved_by?(corporation) } || cities.first
         token = corporation.find_token_by_type
 
-        if city.tokenable?(corporation, tokens: token)
+        same_hex_allowed = multiple_tokens_allowed_on_home_hex?
+        if city.tokenable?(corporation, tokens: token, same_hex_allowed: same_hex_allowed)
           @log << "#{corporation.name} places a token on #{hex.name}"
-          city.place_token(corporation, token)
+          city.place_token(corporation, token, same_hex_allowed: same_hex_allowed)
         elsif home_token_can_be_cheater
           @log << "#{corporation.name} places a token on #{hex.name}"
           city.place_token(corporation, token, cheater: true)
         end
+      end
+
+      def multiple_tokens_allowed_on_home_hex?
+        false
       end
 
       def graph_for_entity(_entity)

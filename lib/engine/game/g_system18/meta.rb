@@ -50,10 +50,16 @@ module Engine
             players: [2, 3, 4],
             designer: 'Scott Petersen',
           },
+          {
+            sym: :map_Poland,
+            short_name: 'Map: Poland',
+            players: [2, 3, 4],
+            designer: 'Ian Wilson',
+          },
         ].freeze
 
         MUTEX_RULES = [
-          %i[map_NEUS map_France map_Twisting_Tracks map_UK_Limited map_China_Rapid_Development],
+          %i[map_NEUS map_France map_Twisting_Tracks map_UK_Limited map_China_Rapid_Development map_Poland],
         ].freeze
       end
     end

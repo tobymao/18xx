@@ -17,6 +17,13 @@ module Engine
             actions
           end
 
+          def log_skip(entity)
+            return if entity.minor?
+            return if entity.corporation == @game.rptla
+
+            super
+          end
+
           def can_take_loan?(entity)
             @game.can_take_loan?(entity) && !@round.loan_taken && !@game.nationalized?
           end
