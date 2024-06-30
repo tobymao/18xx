@@ -541,7 +541,7 @@ module Engine
         end
 
         def sell_movement(corporation = nil)
-          return self.class::SELL_MOVEMENT if corporation.nil?
+          return self.class::SELL_MOVEMENT unless corporation
           return :left_block_pres if corporation.second_share.price <= 40
 
           self.class::SELL_MOVEMENT
