@@ -450,6 +450,10 @@ module Engine
           @round.operating? ? [] : super
         end
 
+        def company_sale_price(company)
+          company.value
+        end
+
         # Has the player won any auctions for public companies in the
         # preceding auction round? If they have then they must start these
         # majors before they can buy any other shares or pass.
