@@ -921,7 +921,7 @@ module Engine
           @bank.spend(loan_value, entity)
           entity.loans << loan
           @loans.delete(loan)
-          @round.issued_bond[entity] = true
+          @round.issued_bond = true
 
           initial_sp = entity.share_price.price
           @stock_market.move_left(entity)
@@ -933,7 +933,7 @@ module Engine
           bonds? &&
           issue_bonds_enabled == true &&
             entity.corporation? &&
-            !@round.repaid_bond[entity] &&
+            !@round.redeemed_bond &&
             entity.loans.size < maximum_loans(entity)
         end
 
