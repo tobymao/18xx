@@ -638,10 +638,11 @@ module View
           loan_props[:style][:color] = contrast_on(color)
         end
 
-        corp_loans_text = @corporation.respond_to?(:corp_loans_text) ? @corporation.corp_loans_text : 'Loans'
+        # the 'Loans' text is now defined in lib/engine/game/base.rb and linked here as @game.corp_loans_text.
+        # This way, games can customize the text if desired (initially used in 1849's Bonds variant)
         [
           h('tr.ipo', loan_props, [
-            h('td.right', corp_loans_text),
+            h('td.right', @game.corp_loans_text),
             h('td.padded_number', "#{@corporation.loans.size}/"\
                                   "#{@game.maximum_loans(@corporation)}"),
           ]),
