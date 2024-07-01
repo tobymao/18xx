@@ -312,8 +312,7 @@ module Engine
         def setup
           setup_companies
           afg # init afg helper
-          remove_corp if @players.size == 3
-          remove_corp if @players.size == 4 && reduced_4p_corps?
+          remove_corp if @players.size == 3 || (@players.size == 4 && reduced_4p_corps?)
           @corporations[0].next_to_par = true
 
           @available_par_groups = %i[par]
