@@ -15,10 +15,6 @@ module Engine
           shares.last.last_cert = true
           shares.last.double_cert = true
         end
-
-        def corp_loans_text
-          'Bonds Issued'
-        end
       end
     end
   end

@@ -940,6 +940,10 @@ module Engine
           entity.cash + extra_cash >= interest_owed(entity)
         end
 
+        def corp_loans_text
+          'Bonds Issued'
+        end
+
         # code below is for the Electric Dreams variant
 
         def e_token?(entity)
