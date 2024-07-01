@@ -124,7 +124,7 @@ module Engine
           '611' => 6,
         }.freeze
 
-        LOCATION_NAMES = {
+        LOCATION_NAMES_NORTH = {
           'A1' => 'Baotou',
           'A19' => 'Changchun',
           'B2' => 'Hohhot',
@@ -162,8 +162,12 @@ module Engine
           'I11' => 'Xuzhou',
         }.freeze
 
+        LOCATION_NAMES_EAST = {
+          'B12' => 'Xuzhou',
+        }.freeze
+
         # rubocop:disable Layout/LineLength
-        HEXES = {
+        NORTH_HEXES = {
           white: {
             %w[D8 D18 E9 F8 G17] => '',
             ['F14'] => 'border=edge:1,type:impassable',
@@ -221,6 +225,63 @@ module Engine
             ['E17'] => 'city=revenue:yellow_20|green_30|brown_40|gray_50,slots:2;path=a:2,b:_0;path=a:3,b:_0;icon=image:1888/CDL_dest,sticky:1',
             ['F16'] => 'city=revenue:40,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:5,b:_0',
             ['H16'] => 'offboard=revenue:10,visit_cost:0;path=a:1,b:_0',
+          },
+        }.freeze
+
+        EAST_HEXES = {
+          white: {
+            %w[B8 B10 B16 B18 C7 C9 C11 C13 C19 D4 D6 D10 D14 D18 E5 H4 H20 G3] => '',
+            ['E13'] => 'border=edge:5,type:impassable',
+            ['F6'] => 'border=edge:0,type:impassable;border=edge:5,type:impassable',
+            %w[E3 F10] => 'border=edge:0,type:impassable',
+            ['F12'] => 'border=edge:4,type:impassable;border=edge:5,type:impassable',
+            ['F14'] => 'border=edge:1,type:impassable;border=edge:2,type:impassable',
+            ['G5'] => 'city=revenue:0;border=edge:3,type:impassable',
+            ['G7'] => 'border=edge:2,type:impassable;upgrade=cost:20,terrain:mountain',
+            ['G9'] => 'border=edge:3,type:impassable',
+            ['G13'] => 'border=edge:2,type:impassable;upgrade=cost:30,terrain:mountain',
+            %w[E7 E9 E11 F16 H6 G15 H18] => 'upgrade=cost:20,terrain:mountain',
+            %w[H8 H14] => 'upgrade=cost:30,terrain:mountain',
+            %w[B4 B6 H2] => 'upgrade=cost:40,terrain:mountain',
+            ['F2'] => 'border=edge:3,type:impassable;upgrade=cost:50,terrain:mountain',
+            %w[G5 H10 H16] => 'city=revenue:0',
+            ['H12'] => 'town=revenue:0;upgrade=cost:20,terrain:mountain',
+            %w[C5 C17] => 'town=revenue:0',
+            %w[F4 D16] => 'town=revenue:0;town=revenue:0;upgrade=cost:20,terrain:water',
+            ['G19'] => 'city=revenue:0;border=edge:2,type:impassable;icon=image:1888/XYR_dest,sticky:1',
+            ['F18'] => 'city=revenue:0;border=edge:5,type:impassable',
+            ['G17'] => 'city=revenue:0;upgrade=cost:20,terrain:mountain;icon=image:1888/HHR_dest,sticky:1',
+            ['G11'] => 'town=revenue:0;icon=image:1888/WJR_dest,sticky:1',
+            ['D8'] => 'town=revenue:0;icon=image:1888/XGY_dest,sticky:1',
+            ['B12'] => 'city=revenue:0;icon=image:1888/LHR_dest,sticky:1',
+            ['B14'] => '',
+            ['C15'] => '',
+          },
+          red: {
+            ['C3'] => 'offboard=revenue:yellow_20|green_30|brown_40|gray_50;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;icon=image:1888/LHR_dest,sticky:1',
+            ['G1'] => 'city=revenue:40;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
+          },
+          gray: {
+            ['A5'] => 'path=a:0,b:5',
+            ['A9'] => 'city=revenue:yellow_30|green_40|brown_50|gray_60,slots:2;path=a:0,b:_0;path=a:5,b:_0',
+            ['I5'] => 'city=revenue:yellow_30|green_40|brown_50|gray_60,slots:2;path=a:2,b:_0;path=a:3,b:_0',
+            ['I19'] => 'city=revenue:30;path=a:2,b:_0;path=a:3,b:_0;icon=image:1888/YTR_dest,sticky:1',
+            ['F20'] => 'city=revenue:yellow_20|green_30|brown_50|gray_70,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;icon=image:1888/HUN_dest,sticky:1',
+
+            # %w[F14 J16] => 'offboard=revenue:-10,hide:1;path=a:2,b:0',
+
+          },
+          yellow: {
+            ['F8'] => 'city=revenue:30;path=a:0,b:_0;path=a:5,b:_0;upgrade=cost:20,terrain:water;label=NW',
+            ['D12'] => 'city=revenue:0;city=revenue:0;label=OO',
+            ['E17'] => 'city=revenue:0;city=revenue:0;label=OO',
+            ['E15'] => 'city=revenue:20;city=revenue:20;label=NW;path=a:2,b:_0;path=a:5,b:_1;upgrade=cost:20,terrain:water;icon=image:1888/HEN_dest,sticky:1',
+          },
+          green: {
+            ['E19'] => 'city=revenue:40;city=revenue:0;label=NT;path=a:2,b:_0;path=a:1,b:5;upgrade=cost:40,terrain:water',
+          },
+          blue: {
+            ['G21'] => 'offboard=revenue:10,visit_cost:0;path=a:1,b:_0',
           },
         }.freeze
         # rubocop:enable Layout/LineLength
