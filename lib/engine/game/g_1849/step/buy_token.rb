@@ -102,7 +102,7 @@ module Engine
           end
 
           def log_pass(entity)
-            @log << "#{entity.name} can't buy any tokens from other corporations"
+            @log << "#{entity.name} declines to buy a token from another corporation"
           end
 
           def max_price(entity)
