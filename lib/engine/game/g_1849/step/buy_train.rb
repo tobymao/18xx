@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative '../../../step/base'
 require_relative '../../../step/buy_train'
 
 module Engine
@@ -33,6 +34,25 @@ module Engine
             return false if @round.current_operator == corporation && corporation.operating_history.size < 2
 
             super
+          end
+
+          def buyable_trains(entity)
+            # Cannot buy E-train without E-token
+            trains_to_buy = super
+
+            trains_to_buy = trains_to_buy.reject { |t| t.name == 'E' } unless @game.e_token?(entity)
+
+            trains_to_buy.uniq
+          end
+
+          def check_for_cheapest_train(train)
+            entity = @game.round.current_operator
+
+            cheapest = @game.e_token?(entity) ? @depot.min_depot_train : @depot.min_depot_train_no_e_token
+            cheapest_names = names_of_cheapest_variants(cheapest)
+
+            raise GameError, "Cannot purchase #{train.name} train: cheaper train available (#{cheapest_names.first})" unless
+             cheapest_names.include?(train.name)
           end
         end
       end

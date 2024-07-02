@@ -12,6 +12,10 @@ module Engine
 
             super
           end
+
+          def cash_crisis_entity
+            @game.corporations.find { |corp| corp.cash.negative? }
+          end
         end
       end
     end

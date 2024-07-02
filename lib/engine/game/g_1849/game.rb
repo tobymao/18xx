@@ -7,6 +7,8 @@ require_relative 'share_pool'
 require_relative 'stock_market'
 require_relative 'entities'
 require_relative 'map'
+require_relative '../../loan'
+require_relative '../interest_on_loans'
 
 module Engine
   module Game
@@ -15,6 +17,7 @@ module Engine
         include_meta(G1849::Meta)
         include Entities
         include Map
+        include InterestOnLoans
         register_colors(black: '#000000',
                         orange: '#f48221',
                         brightGreen: '#76a042',
@@ -29,6 +32,12 @@ module Engine
         BANK_CASH = 7760
 
         CERT_LIMIT = { 3 => 12, 4 => 11, 5 => 9 }.freeze
+
+        def game_cert_limit
+          limit = super.dup
+          limit[4] = 9 if reduced_4p_corps?
+          limit
+        end
 
         STARTING_CASH = { 3 => 500, 4 => 375, 5 => 300 }.freeze
 
@@ -51,7 +60,7 @@ module Engine
             train_limit: 4,
             tiles: [:yellow],
             operating_rounds: 1,
-            status: ['gray_uses_white'],
+            status: %w[gray_uses_white],
           },
           {
             name: '6H',
@@ -83,7 +92,7 @@ module Engine
             train_limit: 2,
             tiles: %i[yellow green brown],
             operating_rounds: 3,
-            status: ['gray_uses_black'],
+            status: %w[gray_uses_black],
           },
           {
             name: '16H',
@@ -95,31 +104,43 @@ module Engine
           },
         ].freeze
 
-        TRAINS = [{ name: '4H', num: 4, distance: 4, price: 100, rusts_on: '8H' },
-                  {
-                    name: '6H',
-                    distance: 6,
-                    price: 200,
-                    rusts_on: '10H',
-                    events: [{ 'type' => 'green_par' }],
-                  },
-                  { name: '8H', distance: 8, price: 350, rusts_on: '16H' },
-                  {
-                    name: '10H',
-                    num: 2,
-                    distance: 10,
-                    price: 550,
-                    events: [{ 'type' => 'brown_par' }],
-                  },
-                  {
-                    name: '12H',
-                    num: 1,
-                    distance: 12,
-                    price: 800,
-                    events: [{ 'type' => 'close_companies' }, { 'type' => 'earthquake' }],
-                  },
-                  { name: '16H', distance: 16, price: 1100 },
-                  { name: 'R6H', num: 2, available_on: '16H', distance: 6, price: 350 }].freeze
+        TRAINS = [
+          { name: '4H', num: 4, distance: 4, price: 100, rusts_on: '8H' },
+          {
+            name: '6H',
+            distance: 6,
+            price: 200,
+            rusts_on: '10H',
+            events: [{ 'type' => 'green_par' }],
+          },
+          { name: '8H', distance: 8, price: 350, rusts_on: '16H', events: [] },
+          {
+            name: '10H',
+            num: 2,
+            distance: 10,
+            price: 550,
+            events: [{ 'type' => 'brown_par' }],
+          },
+          {
+            name: '12H',
+            num: 1,
+            distance: 12,
+            price: 800,
+            events: [{ 'type' => 'close_companies' }, { 'type' => 'earthquake' }],
+          },
+          { name: '16H', distance: 16, price: 1100 },
+          { name: 'E', num: 6, available_on: '12H', distance: 99, price: 550 },
+          { name: 'R6H', num: 2, available_on: '16H', distance: 6, price: 350 },
+        ].freeze
+
+        def game_trains
+          train_list = super.dup
+          train_list.reject! { |t| t[:name] == 'E' } unless electric_dreams?
+          train_list.find { |t| t[:name] == '6H' }[:events] << { 'type' => 'buy_tokens' } if acquiring_station_tokens?
+          train_list.find { |t| t[:name] == '8H' }[:events] << { 'type' => 'bonds' } if bonds?
+          train_list.find { |t| t[:name] == '12H' }[:events] << { 'type' => 'e_tokens' } if electric_dreams?
+          train_list
+        end
 
         CAPITALIZATION = :incremental
 
@@ -166,7 +187,13 @@ module Engine
                       'Corporations may now par at 216 (in addition to 67, 100, and 144)'],
           earthquake: ['Messina Earthquake',
                        'Messina (B14) downgraded to yellow, tokens removed from game.
-                        Cannot be upgraded until after next stock round']
+                       Cannot be upgraded until after next stock round'],
+          buy_tokens: ['Cross-buy Station Tokens',
+                       'Corporations may now buy station tokens from other corporations'],
+          bonds: ['Bonds Available',
+                  'Corporations can issue a single L.500 bond, with L.50 interest per OR'],
+          e_tokens: ['E-Tokens Available',
+                     'Corporations can buy E-tokens to allow the purchase of E-Trains'],
         ).freeze
 
         STATUS_TEXT = Base::STATUS_TEXT.merge(
@@ -220,13 +247,15 @@ module Engine
         CORP_CHOOSES_HOME_HEXES = %w[C1 H8 M9 M11 B14].freeze
         PORT_HEXES = %w[a12 A5 L14 N8].freeze
         SMS_HEXES = %w[B14 C1 C5 E1 H12 J6 M9 M13].freeze
+        DOUBLE_FOR_E_TRAIN = %w[B14 C5 H12 M13].freeze
 
         IFT_BUFFER = 3
 
         attr_accessor :swap_choice_player, :swap_location, :swap_other_player, :swap_corporation,
                       :loan_choice_player, :player_debts,
                       :max_value_reached,
-                      :old_operating_order, :moved_this_turn
+                      :old_operating_order, :moved_this_turn,
+                      :e_token_sold, :e_tokens_enabled, :issue_bonds_enabled, :buy_tokens_enabled
 
         def option_delay_ift?
           @optional_rules&.include?(:delay_ift)
@@ -282,13 +311,18 @@ module Engine
         def setup
           setup_companies
           afg # init afg helper
-          remove_corp if @players.size == 3
+          remove_corp if @players.size == 3 || (@players.size == 4 && reduced_4p_corps?)
           @corporations[0].next_to_par = true
 
           @available_par_groups = %i[par]
 
           @player_debts = Hash.new { |h, k| h[k] = 0 }
           @moved_this_turn = []
+
+          # below is for variant rules
+          @e_tokens_enabled = false
+          @buy_tokens_enabled = false
+          @issue_bonds_enabled = false
         end
 
         def setup_companies
@@ -315,7 +349,7 @@ module Engine
         end
 
         def num_trains(train)
-          fewer = @players.size < 4
+          fewer = @players.size < 4 || (@players.size == 4 && reduced_4p_corps?)
           case train[:name]
           when '6H'
             fewer ? 3 : 4
@@ -435,6 +469,12 @@ module Engine
           end
           corporation.next_to_par = true if @corporations[index - 1].floated?
           update_garibaldi
+          # code below is for variant rules
+          @log << 'E-token returned to bank' if corporation.e_token
+          corporation.e_token = false
+
+          repaid_bond = corporation.loans.pop unless corporation.loans.empty?
+          @loans << repaid_bond if repaid_bond
         end
 
         def float_str(entity)
@@ -471,6 +511,7 @@ module Engine
           G1849::Round::Operating.new(self, [
             G1849::Step::LoanChoice,
             G1849::Step::Bankrupt,
+            G1849::Step::EmergencyMoneyRaising,
             G1849::Step::SwapChoice,
             Engine::Step::BuyCompany,
             G1849::Step::SMSTeleport,
@@ -479,9 +520,13 @@ module Engine
             G1849::Step::Token,
             Engine::Step::Route,
             G1849::Step::Dividend,
+            G1849::Step::BuyToken,
+            G1849::Step::BuyEToken,
             Engine::Step::DiscardTrain,
             G1849::Step::BuyTrain,
             G1849::Step::IssueShares,
+            G1849::Step::BondInterestPayment,
+            G1849::Step::Bond,
             [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
@@ -531,13 +576,25 @@ module Engine
         end
 
         def check_other(route)
+          check_e_train_track_type(route)
           return unless (route.stops.map(&:hex).map(&:id) & PORT_HEXES).any?
 
           raise GameError, 'Route must include two non-port stops.' unless route.stops.size > 2
         end
 
+        def check_e_train_track_type(route)
+          train = route.train
+          paths = route.paths
+
+          raise GameError, 'E-Trains cannot use narrow gauge' if train.name == 'E' && paths.any? { |p| p.track == :narrow }
+        end
+
         def revenue_for(route, stops)
-          total = stops.sum { |stop| stop_revenue(stop, route.phase, route.train) }
+          total = stops.sum do |stop|
+            revenue = stop_revenue(stop, route.phase, route.train)
+            revenue *= 2 if route.train.name == 'E' && DOUBLE_FOR_E_TRAIN.include?(stop.hex.id)
+            revenue
+          end
           total + cnm_bonus(route.corporation, stops)
         end
 
@@ -770,11 +827,142 @@ module Engine
         end
 
         def player_value(player)
-          player.value - @player_debts[player]
+          player.value - @player_debts[player] - player.shares_by_corporation.sum do |corp, _|
+            player.num_shares_of(corp) * corp.loans.size * 100
+          end
         end
 
         def par_prices
           @stock_market.share_prices_with_types(@available_par_groups)
+        end
+
+        # code below is for variant rules
+
+        def acquiring_station_tokens?
+          @acquiring_station_tokens ||= @optional_rules&.include?(:acquiring_station_tokens)
+        end
+
+        def electric_dreams?
+          @electric_dreams ||= @optional_rules&.include?(:electric_dreams)
+        end
+
+        def bonds?
+          @bonds ||= @optional_rules&.include?(:bonds)
+        end
+
+        def reduced_4p_corps?
+          @reduced_4p_corps ||= @optional_rules&.include?(:reduced_4p_corps)
+        end
+
+        def event_buy_tokens!
+          @buy_tokens_enabled = true
+          @log << "-- Event: #{EVENTS_TEXT[:buy_tokens][1]} --"
+        end
+
+        def event_bonds!
+          @issue_bonds_enabled = true
+          @log << "-- Event: #{EVENTS_TEXT[:bonds][1]} --"
+        end
+
+        def event_e_tokens!
+          @e_tokens_enabled = true
+          @log << "-- Event: #{EVENTS_TEXT[:e_tokens][1]} --"
+        end
+
+        # code below is for Bonds variant
+        NUM_LOANS = 6
+        MAXIMUM_LOANS = 1
+        LOAN_VALUE = 500
+        INTEREST_RATE = 50
+
+        def init_loans
+          Array.new(num_loans) { |id| Loan.new(id, loan_value) }
+        end
+
+        def num_loans
+          bonds? ? self.class::NUM_LOANS : 0
+        end
+
+        def maximum_loans(_entity)
+          self.class::MAXIMUM_LOANS
+        end
+
+        def loan_value(_entity = nil)
+          self.class::LOAN_VALUE
+        end
+
+        def interest_rate
+          self.class::INTEREST_RATE
+        end
+
+        def interest_owed_for_loans(loans)
+          interest_rate * loans
+        end
+
+        def interest_owed(entity)
+          interest_owed_for_loans(entity.loans.size)
+        end
+
+        def loans_due_interest(entity)
+          entity.loans.size
+        end
+
+        def log_interest_payment(entity, amount)
+          amount_fmt = format_currency(amount)
+          @log << "#{entity.name} pays #{amount_fmt} interest for its issued bond"
+        end
+
+        def take_loan(entity, loan)
+          raise GameError, 'Cannot issue bond' unless can_take_loan?(entity)
+
+          @log << "#{entity.name} issues its bond and receives #{format_currency(loan_value)}"
+          @bank.spend(loan_value, entity)
+          entity.loans << loan
+          @loans.delete(loan)
+          @round.issued_bond = true
+
+          initial_sp = entity.share_price.price
+          @stock_market.move_left(entity)
+          @log << "#{entity.name}'s share price changes from" \
+                  " #{format_currency(initial_sp)} to #{format_currency(entity.share_price.price)}"
+        end
+
+        def can_take_loan?(entity)
+          bonds? &&
+          issue_bonds_enabled == true &&
+            entity.corporation? &&
+            !@round.redeemed_bond &&
+            entity.loans.size < maximum_loans(entity)
+        end
+
+        def can_pay_interest?(entity, extra_cash = 0)
+          entity.cash + extra_cash >= interest_owed(entity)
+        end
+
+        def corp_loans_text
+          'Bonds Issued'
+        end
+
+        # code below is for the Electric Dreams variant
+
+        def e_token?(entity)
+          return false unless entity.corporation?
+
+          e_tokens(entity).any?
+        end
+
+        def e_tokens(entity)
+          entity.all_abilities.select { |ability| ability.description == 'E-Token' }
+        end
+
+        def init_train_handler
+          trains = game_trains.flat_map do |train|
+            Array.new((train[:num] || num_trains(train))) do |index|
+              Train.new(**train, index: index)
+            end
+          end
+
+          G1849::Depot.new(trains, self)
         end
       end
     end
