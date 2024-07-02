@@ -89,7 +89,7 @@ module Engine
           @company_trains['P1'] = find_and_remove_train_by_id('5P-0')
           @company_trains['P2'] = find_and_remove_train_by_id('2P-0', buyable: false)
           @company_trains['P3'] = find_and_remove_train_by_id('LP-0', buyable: false)
-          @company_trains['P5'] = find_and_remove_train_by_id('P-0', buyable: false)
+          @company_trains['P5'] = find_and_remove_train_by_id('P+-0', buyable: false)
         end
 
         def stock_round
