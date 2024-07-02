@@ -10,7 +10,7 @@ module Engine
         class BuyTrain < Engine::Step::BuyTrain
           def buyable_trains(entity)
             # Can't buy trains from other corporations until phase 6H
-            return super if @game.phase.status.include?('can_buy_trains')
+            return super if @game.can_buy_trains
 
             super.select(&:from_depot?)
           end
