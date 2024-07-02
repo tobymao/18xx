@@ -95,7 +95,7 @@ module Engine
           end
 
           def p20_targets
-            bidbox_corporations = Set.new(@game.bidbox_minors) { |c| @game.corporation_from_company(c) }
+            bidbox_corporations = ::Set.new(@game.bidbox_minors) { |c| @game.corporation_from_company(c) }
 
             @game.minor_associations.each_with_object([]) do |(minor_id, major_id), targets|
               company = @game.company_by_id("M#{minor_id}")
