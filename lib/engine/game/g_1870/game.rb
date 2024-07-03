@@ -522,6 +522,10 @@ module Engine
           @station_wars ||= @optional_rules&.include?(:station_wars)
         end
 
+        def can_protect_if_sold?
+          @can_protect_if_sold ||= @optional_rules&.include?(:can_protect_if_sold)
+        end
+
         # allows implementation of diesels variant
         def game_trains
           @optional_rules&.include?(:diesels) ? self.class::DIESEL_VARIANT_TRAINS : self.class::STANDARD_TRAINS

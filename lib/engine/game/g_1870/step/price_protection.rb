@@ -52,9 +52,13 @@ module Engine
                              else
                                true # can price protect yellow/green/brown even if over cert limit
                              end
-            entity.cash >= bundle.price &&
-              !@round.players_sold[entity][bundle.corporation] &&
-              have_cert_room
+            if entity.cash >= bundle.price &&
+              have_cert_room &&
+              @game.can_protect_if_sold?
+              price_protection_seller != entity
+            else
+              !@round.players_sold[entity][bundle.corporation]
+            end
           end
 
           def process_buy_shares(action)
