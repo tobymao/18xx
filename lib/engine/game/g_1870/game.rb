@@ -93,7 +93,7 @@ module Engine
         ].freeze
 
         def optional_tiles
-          return if !original_rules? && !original_tiles?
+          return unless original_tiles?
 
           OPTION_TILES_REMOVE_ORIGINAL_GAME.each do |ot|
             @tiles.reject! { |t| t.id == ot }
@@ -551,15 +551,15 @@ module Engine
         end
 
         def station_wars?
-          @station_wars ||= @optional_rules&.include?(:station_wars)
+          @optional_rules&.include?(:original_rules) || @optional_rules&.include?(:station_wars)
         end
 
         def original_tiles?
-          @original_tiles ||= @optional_rules&.include?(:original_tiles)
+          @optional_rules&.include?(:original_rules) || @optional_rules&.include?(:original_tiles)
         end
 
         def max_reissue_200?
-          @max_reissue_200 ||= @optional_rules&.include?(:max_reissue_200)
+          @optional_rules&.include?(:original_rules) || @optional_rules&.include?(:max_reissue_200)
         end
 
         # allows implementation of diesels variant
