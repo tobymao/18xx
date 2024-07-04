@@ -87,6 +87,20 @@ module Engine
         STANDARD_GAME_END_CHECK = { bankrupt: :immediate, bank: :full_or }.freeze
         VARIANT_GAME_END_CHECK = { bankrupt: :immediate, bank: :full_or, stock_market: :immediate }.freeze
 
+        OPTION_TILES_REMOVE_ORIGINAL_GAME = %w[
+          4-0 4-1 7-0 7-1 8-0 8-1 9-0 9-1 9-2 16-0 17-0 18-0 19-0 20-0 25-0
+          25-1 26-0 27-0 28-0 29-0 141-0 142-0 40-0 70-0 145-0 146-0 147-0
+        ].freeze
+
+        def optional_tiles
+          return if !original_rules? && !original_tiles?
+
+          OPTION_TILES_REMOVE_ORIGINAL_GAME.each do |ot|
+            @tiles.reject! { |t| t.id == ot }
+            @all_tiles.reject! { |t| t.id == ot }
+          end
+        end
+
         def game_end_check_values
           @optional_rules&.include?(:finish_on_400) ? self.class::VARIANT_GAME_END_CHECK : self.class::STANDARD_GAME_END_CHECK
         end
@@ -538,6 +552,10 @@ module Engine
 
         def original_rules?
           @original_rules ||= @optional_rules&.include?(:original_rules)
+        end
+
+        def original_tiles?
+          @original_tiles ||= @optional_rules&.include?(:original_tiles)
         end
 
         # allows implementation of diesels variant
