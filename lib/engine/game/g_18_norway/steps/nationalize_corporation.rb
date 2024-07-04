@@ -10,10 +10,24 @@ module Engine
           end
 
           def actions(entity)
+            return [] unless nationalization_candidates.include?(entity)
             return [] if !entity.corporation? || entity != current_entity
             return [] if @game.nationalized?(entity.corporation)
+            return [] if @round.nationalized
 
             ['choose']
+          end
+
+          def active_entities
+            nationalization_candidates.take(1)
+          end
+
+          def active?
+            !nationalization_candidates.empty?
+          end
+
+          def nationalization_candidates
+            @game.nationalization_candidates
           end
 
           def choice_name
@@ -38,6 +52,7 @@ module Engine
           def process_choose(action)
             if action.choice == 'decline'
               @log << "#{action.entity.name} declines #{description.downcase}"
+              @game.skip_nationalization(action.entity)
               pass!
               return
             end
@@ -45,7 +60,15 @@ module Engine
             value = @game.convert(action.entity, action.choice.to_i)
             @log << "#{action.entity.name} nationalized and receives #{@game.format_currency(value)}"
             @game.update_cert_limit
-            @game.next_round!
+            @round.nationalized = true
+          end
+
+          def round_state
+            super.merge(
+              {
+                nationalized: false,
+              }
+            )
           end
         end
       end
