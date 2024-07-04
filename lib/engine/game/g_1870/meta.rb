@@ -16,7 +16,7 @@ module Engine
         GAME_LOCATION = 'Mississippi, USA'
         GAME_RULES_URL = 'http://www.hexagonia.com/rules/MFG_1870.pdf'
 
-        PLAYER_RANGE = [2, 6].freeze
+        PLAYER_RANGE = [2, 7].freeze
         OPTIONAL_RULES = [
           {
             sym: :diesels,
