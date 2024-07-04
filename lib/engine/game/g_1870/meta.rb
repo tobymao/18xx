@@ -29,6 +29,11 @@ module Engine
             desc: 'Game ends as soon as a corporation hits 400 on the stock market. No further operations.',
           },
           {
+            sym: :original_rules,
+            short_name: "Bill Dixon's original rules",
+            desc: "This includes all of Bill Dixon's original rules for the game, listed below.",
+          },
+          {
             sym: :station_wars,
             short_name: 'Station Marker Wars',
             desc: 'Destination tokens on non-offboard hexes now use up a token space. A new space is created if '\
@@ -36,14 +41,14 @@ module Engine
                   'destination token will fill that space.',
           },
           {
-            sym: :original_rules,
-            short_name: "Bill Dixon's original rules",
-            desc: "This includes all of Bill Dixon's original rules for the game, listed below.",
-          },
-          {
             sym: :original_tiles,
             short_name: 'Original, more restrictive tile set',
             desc: "This is the tile set included in Bill Dixon's original rules for the game.",
+          },
+          {
+            sym: :max_reissue_200,
+            short_name: 'Maximum reissue price of $200',
+            desc: 'Limits the maximum price that a corporation can reissue shares at to $200.',
           },
         ].freeze
       end

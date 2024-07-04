@@ -546,16 +546,20 @@ module Engine
           @reissued[corporation]
         end
 
-        def station_wars?
-          @station_wars ||= @optional_rules&.include?(:station_wars)
-        end
-
         def original_rules?
           @original_rules ||= @optional_rules&.include?(:original_rules)
         end
 
+        def station_wars?
+          @station_wars ||= @optional_rules&.include?(:station_wars)
+        end
+
         def original_tiles?
           @original_tiles ||= @optional_rules&.include?(:original_tiles)
+        end
+
+        def max_reissue_200?
+          @max_reissue_200 ||= @optional_rules&.include?(:max_reissue_200)
         end
 
         # allows implementation of diesels variant
