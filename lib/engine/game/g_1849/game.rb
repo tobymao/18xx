@@ -521,15 +521,15 @@ module Engine
             G1849::Step::Token,
             Engine::Step::Route,
             G1849::Step::Dividend,
-            G1849::Step::BuyToken,
-            G1849::Step::BuyEToken,
+            acquiring_station_tokens? ? G1849::Step::BuyToken : nil,
+            electric_dreams? ? G1849::Step::BuyEToken : nil,
             Engine::Step::DiscardTrain,
             G1849::Step::BuyTrain,
             G1849::Step::IssueShares,
-            G1849::Step::BondInterestPayment,
-            G1849::Step::Bond,
+            bonds? ? G1849::Step::BondInterestPayment : nil,
+            bonds? ? G1849::Step::Bond : nil,
             [Engine::Step::BuyCompany, { blocks: true }],
-          ], round_num: round_num)
+        ].compact, round_num: round_num)
         end
 
         def next_round!
