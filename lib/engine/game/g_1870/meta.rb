@@ -35,6 +35,9 @@ module Engine
                   'no space is available, but if the tile is later upgraded and a new token space would be opened, the '\
                   'destination token will fill that space.',
           },
+          sym: :original_rules,
+          short_name: "Bill Dixon's original rules",
+          desc: "This includes a variety of Bill Dixon's original rules for the game.",
         ].freeze
       end
     end

@@ -34,9 +34,23 @@ module Engine
           4 => { 10 => 16, 9 => 14 },
           5 => { 10 => 13, 9 => 11 },
           6 => { 10 => 11, 9 => 9 },
+          7 => { 10 => 9, 9 => 7 },
         }.freeze
 
-        STARTING_CASH = { 2 => 1050, 3 => 700, 4 => 525, 5 => 420, 6 => 350 }.freeze
+        ORIG_CERT_LIMIT = {
+          2 => { 10 => 28, 9 => 24, 8 => 21 },
+          3 => { 10 => 20, 9 => 17, 8 => 15 },
+          4 => { 10 => 16, 9 => 14, 8 => 12 },
+          5 => { 10 => 13, 9 => 11, 8 => 9 },
+          6 => { 10 => 11, 9 => 9, 8 => 8 },
+          7 => { 10 => 9, 9 => 7, 8 => 6 },
+        }.freeze
+
+        def game_cert_limit
+          original_rules? ? self.class::ORIG_CERT_LIMIT : self.class::CERT_LIMIT
+        end
+
+        STARTING_CASH = { 2 => 1050, 3 => 700, 4 => 525, 5 => 420, 6 => 350, 7 => 300 }.freeze
 
         CAPITALIZATION = :full
 
@@ -520,6 +534,10 @@ module Engine
 
         def station_wars?
           @station_wars ||= @optional_rules&.include?(:station_wars)
+        end
+
+        def original_rules?
+          @original_rules ||= @optional_rules&.include?(:original_rules)
         end
 
         # allows implementation of diesels variant
