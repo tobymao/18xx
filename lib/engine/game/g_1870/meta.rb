@@ -31,7 +31,7 @@ module Engine
           {
             sym: :original_rules,
             short_name: "Bill Dixon's original rules",
-            desc: "This includes all of Bill Dixon's original rules for the game, listed below.",
+            desc: "This includes all of the options below, making it Bill Dixon's original rules for the game.",
           },
           {
             sym: :station_wars,
@@ -47,7 +47,7 @@ module Engine
           },
           {
             sym: :max_reissue_200,
-            short_name: 'Maximum reissue price of $200',
+            short_name: 'Maximum reissue $200',
             desc: 'Limits the maximum price that a corporation can reissue shares at to $200.',
           },
           {
@@ -58,7 +58,7 @@ module Engine
           },
           {
             sym: :original_market,
-            short_name: 'Original Market',
+            short_name: 'Original market',
             desc: 'The stock market is as originally designed by Bill Dixon, identical to the market in 1832 and 1850.',
           },
         ].freeze
