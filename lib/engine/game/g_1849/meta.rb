@@ -26,23 +26,23 @@ module Engine
           },
           {
             sym: :reduced_4p_corps,
-            short_name: '(Alpha) Reduced corps at 4 players',
+            short_name: 'Reduced corps at 4 players',
             desc: 'Six corporations are recommended in a 4-player game, but it is possible to play with five',
             players: [4],
           },
           {
             sym: :acquiring_station_tokens,
-            short_name: '(Alpha) Buy tokens',
+            short_name: 'Buy tokens',
             desc: 'Corporations can buy station tokens from other corporations',
           },
           {
             sym: :bonds,
-            short_name: '(Alpha) Bonds',
+            short_name: 'Bonds',
             desc: 'Corporations have a single L.500 bond they can issue',
           },
           {
             sym: :electric_dreams,
-            short_name: '(Alpha) Electric Dreams',
+            short_name: 'Electric Dreams',
             desc: 'Adds E-trains that run infinite distance on broad track and double select cities',
           },
         ].freeze
