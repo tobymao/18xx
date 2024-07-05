@@ -489,7 +489,7 @@ module Engine
         end
 
         def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil, movement: nil)
-          @sell_queue << [bundle, bundle.corporation.owner]
+          @sell_queue << [bundle, bundle.corporation.owner, bundle.owner] if bundle.corporation.ipoed
 
           @share_pool.sell_shares(bundle)
         end
@@ -560,6 +560,10 @@ module Engine
 
         def max_reissue_200?
           @optional_rules&.include?(:original_rules) || @optional_rules&.include?(:max_reissue_200)
+        end
+
+        def can_protect_if_sold?
+          @optional_rules&.include?(:original_rules) || @optional_rules&.include?(:can_protect_if_sold)
         end
 
         # allows implementation of diesels variant

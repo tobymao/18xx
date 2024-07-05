@@ -39,6 +39,10 @@ module Engine
             @game.sell_queue.dig(0, 1)
           end
 
+          def price_protection_seller
+            @game.sell_queue.dig(0, 2)
+          end
+
           def can_sell?(_entity, _bundle)
             false
           end
@@ -52,8 +56,15 @@ module Engine
                              else
                                true # can price protect yellow/green/brown even if over cert limit
                              end
+
+            permitted_to_buy = if @game.can_protect_if_sold?
+                                 price_protection_seller != entity
+                               else
+                                 !@round.players_sold[entity][bundle.corporation]
+                               end
+
             entity.cash >= bundle.price &&
-              !@round.players_sold[entity][bundle.corporation] &&
+              permitted_to_buy &&
               have_cert_room
           end
 

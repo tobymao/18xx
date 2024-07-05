@@ -50,6 +50,12 @@ module Engine
             short_name: 'Maximum reissue price of $200',
             desc: 'Limits the maximum price that a corporation can reissue shares at to $200.',
           },
+          {
+            sym: :can_protect_if_sold,
+            short_name: 'Original price protection rules',
+            desc: 'Allows a player to price protect a corporation even if they sold shares of that corporation '\
+                  'during the current SR.',
+          },
         ].freeze
       end
     end
