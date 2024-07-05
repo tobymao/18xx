@@ -70,20 +70,6 @@ module Engine
           %w[0c 0c 0c 10b 20b 30b 40o],
         ].freeze
 
-        VARIANT_MARKET = [
-          %w[64y 68 72 76 82 90 100p 110 120 140 160 180 200 225 250 275 300 325 350 375 400e],
-          %w[60y 64y 68 72 76 82 90p 100 110 120 140 160 180 200 225 250 275 300 325 350 375],
-          %w[55y 60y 64y 68 72 76 82p 90 100 110 120 140 160 180 200 225 250i 275i 300i 325i 350i],
-          %w[50o 55y 60y 64y 68 72 76p 82 90 100 110 120 140 160i 180i 200i 225i 250i 275i 300i 325i],
-          %w[40b 50o 55y 60y 64 68 72p 76 82 90 100 110i 120i 140i 160i 180i],
-          %w[30b 40o 50o 55y 60y 64 68p 72 76 82 90i 100i 110i],
-          %w[20b 30b 40o 50o 55y 60y 64 68 72 76i 82i],
-          %w[10b 20b 30b 40o 50y 55y 60y 64 68i 72i],
-          %w[0c 10b 20b 30b 40o 50y 55y 60i 64i],
-          %w[0c 0c 10b 20b 30b 40o 50y],
-          %w[0c 0c 0c 10b 20b 30b 40o],
-        ].freeze
-
         STANDARD_GAME_END_CHECK = { bankrupt: :immediate, bank: :full_or }.freeze
         VARIANT_GAME_END_CHECK = { bankrupt: :immediate, bank: :full_or, stock_market: :immediate }.freeze
 
@@ -355,13 +341,40 @@ module Engine
         end
 
         def init_stock_market
-          if @optional_rules&.include?(:finish_on_400)
-            G1870::StockMarket.new(self.class::VARIANT_MARKET, self.class::CERT_LIMIT_TYPES,
-                                   multiple_buy_types: self.class::MULTIPLE_BUY_TYPES)
-          else
-            G1870::StockMarket.new(self.class::MARKET, self.class::CERT_LIMIT_TYPES,
-                                   multiple_buy_types: self.class::MULTIPLE_BUY_TYPES)
+          G1870::StockMarket.new(market_values, self.class::CERT_LIMIT_TYPES,
+                                 multiple_buy_types: self.class::MULTIPLE_BUY_TYPES)
+        end
+
+        def market_values
+          modified_market = MARKET.dup
+
+          if finish_on_400?
+            first_row_modified = modified_market[0].dup
+            first_row_modified[-1] = '400e'
+            modified_market[0] = first_row_modified
           end
+
+          # if original_market?
+          #   fifth_row_modified = modified_market[4].dup
+          #   seventh_row_modified = modified_market[6].dup
+          #   eighth_row_modified = modified_market[7].dup
+          #   fifth_row_modified[0] = '40o'
+          #   seventh_row_modified[5] = '60'
+          #   eighth_row_modified[6] = '60'
+          #   modified_market[4] = fifth_row_modified
+          #   modified_market[6] = seventh_row_modified
+          #   modified_market[7] = eighth_row_modified
+          # end
+
+          if original_market?
+            { 4 => { 0 => '40o' }, 6 => { 5 => '60' }, 7 => { 6 => '60' } }.each do |row_index, changes|
+              row_modified = modified_market[row_index].dup
+              changes.each { |position, value| row_modified[position] = value }
+              modified_market[row_index] = row_modified
+            end
+          end
+
+          modified_market
         end
 
         def ipo_reserved_name(_entity = nil)
@@ -546,6 +559,10 @@ module Engine
           @reissued[corporation]
         end
 
+        def finish_on_400?
+          @finish_on_400 ||= @optional_rules&.include?(:finish_on_400)
+        end
+
         def original_rules?
           @original_rules ||= @optional_rules&.include?(:original_rules)
         end
@@ -564,6 +581,10 @@ module Engine
 
         def can_protect_if_sold?
           @optional_rules&.include?(:original_rules) || @optional_rules&.include?(:can_protect_if_sold)
+        end
+
+        def original_market?
+          @optional_rules&.include?(:original_rules) || @optional_rules&.include?(:original_market)
         end
 
         # allows implementation of diesels variant

@@ -56,6 +56,11 @@ module Engine
             desc: 'Allows a player to price protect a corporation even if they sold shares of that corporation '\
                   'during the current SR.',
           },
+          {
+            sym: :original_market,
+            short_name: 'Original Market',
+            desc: 'The stock market is as originally designed by Bill Dixon, identical to the market in 1832 and 1850.',
+          },
         ].freeze
       end
     end
