@@ -31,7 +31,7 @@ module Engine
           {
             sym: :original_rules,
             short_name: "Bill Dixon's original rules",
-            desc: "This includes all of the options below, making it Bill Dixon's original rules for the game.",
+            desc: "Selecting this option will enable all of the options below, to play by Dixon's original rules for the game.",
           },
           {
             sym: :station_wars,
