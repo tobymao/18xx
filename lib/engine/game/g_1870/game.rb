@@ -354,18 +354,6 @@ module Engine
             modified_market[0] = first_row_modified
           end
 
-          # if original_market?
-          #   fifth_row_modified = modified_market[4].dup
-          #   seventh_row_modified = modified_market[6].dup
-          #   eighth_row_modified = modified_market[7].dup
-          #   fifth_row_modified[0] = '40o'
-          #   seventh_row_modified[5] = '60'
-          #   eighth_row_modified[6] = '60'
-          #   modified_market[4] = fifth_row_modified
-          #   modified_market[6] = seventh_row_modified
-          #   modified_market[7] = eighth_row_modified
-          # end
-
           if original_market?
             { 4 => { 0 => '40o' }, 6 => { 5 => '60' }, 7 => { 6 => '60' } }.each do |row_index, changes|
               row_modified = modified_market[row_index].dup
