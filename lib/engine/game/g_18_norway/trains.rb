@@ -69,7 +69,7 @@ module Engine
           },
           {
             name: 'S5',
-            distance: 4,
+            distance: 5,
             price: 400,
             available_on: '5',
             track_type: :narrow,
