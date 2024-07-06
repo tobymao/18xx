@@ -20,7 +20,7 @@ QUEUE_LOGGER = Logger.new($stdout)
 
 Bus.configure
 
-ASSETS = Assets.new(precompiled: PRODUCTION)
+ASSETS = Assets.new(precompiled: PRODUCTION, source_maps: !PRODUCTION)
 
 scheduler = Rufus::Scheduler.new
 
