@@ -480,6 +480,7 @@ module Engine
           return if majors.empty? # Basel
 
           token.logo = logo_path(majors, minor.id)
+          token.simple_logo = logo_path(majors, minor.id)
         end
 
         private
