@@ -9,7 +9,7 @@ module Engine
   module Game
     module G1826
       class Game < Game::Base
-        attr_reader :recently_floated, :can_buy_trains
+        attr_reader :recently_floated, :can_buy_trains, :e_trains_purchased, :e_train_range, :tgz_purchased
 
         include_meta(G1826::Meta)
         include Entities
@@ -64,7 +64,6 @@ module Engine
                     train_limit: { five_share: 1, ten_share: 3 },
                     tiles: %i[yellow green],
                     operating_rounds: 2,
-                    status: ['can_buy_trains'],
                   },
                   {
                     name: '10H',
@@ -72,7 +71,6 @@ module Engine
                     train_limit: 2,
                     tiles: %i[yellow green brown],
                     operating_rounds: 3,
-                    status: ['can_buy_trains'],
                   },
                   {
                     name: 'E',
@@ -80,7 +78,6 @@ module Engine
                     train_limit: 2,
                     tiles: %i[yellow green brown blue],
                     operating_rounds: 3,
-                    status: ['can_buy_trains'],
                   },
                   {
                     name: 'TVG',
@@ -88,44 +85,52 @@ module Engine
                     train_limit: 2,
                     tiles: %i[yellow green brown blue gray],
                     operating_rounds: 3,
-                    status: ['can_buy_trains'],
                   }].freeze
 
-        TRAINS = [
-                    { name: '2H', distance: 2, price: 100, rusts_on: '6H', num: 8 },
-                    { name: '4H', distance: 4, price: 200, rusts_on: '10H', num: 7 },
-                    {
-                      name: '6H',
-                      distance: 6,
-                      price: 300,
-                      rusts_on: 'E',
-                      num: 6,
-                      events: [{ 'type' => 'can_buy_trains' }],
-                    },
-                    {
-                      name: '10H',
-                      distance: 10,
-                      price: 600,
-                      num: 5,
-                    },
-                    {
-                      name: 'E',
-                      # distance is equal to the number of E and TGV trains in play. The run is doubled until a TVG is purchased.
-                      distance: [{ 'nodes' => %w[city offboard], 'pay' => 99, 'visit' => 99, 'multiplier' => 2 },
-                                 { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
-                      price: 800,
-                      num: 2,
-                      events: [{ 'type' => 'remove_abilities' }],
-                    },
-                    {
-                      name: 'TGV',
-                      distance: [{ 'nodes' => %w[city offboard], 'pay' => 3, 'visit' => 99, 'multiplier' => 2 },
-                                 { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
-                      price: 1000,
-                      num: 20,
-                      discount: { '4' => 300, '5' => 300, '6' => 300 },
-                    },
-                  ].freeze
+        def game_trains
+          [
+            { name: '2H', distance: 2, price: 100, rusts_on: '6H', num: 8 },
+            { name: '4H', distance: 4, price: 200, rusts_on: '10H', num: 7 },
+            {
+              name: '6H',
+              distance: 6,
+              price: 300,
+              rusts_on: 'E',
+              num: 6,
+              events: [{ 'type' => 'can_buy_trains' }],
+            },
+            {
+              name: '10H',
+              distance: 10,
+              price: 600,
+              num: 5,
+            },
+            {
+              name: 'E',
+              # distance is equal to the number of E and TGV trains in play. The run is doubled until a TVG is purchased.
+              distance: [
+                {
+                  'nodes' => %w[city offboard],
+                  'pay' => @e_train_range,
+                  'visit' => @e_train_range,
+                  'multiplier' => @tgv_purchased ? 1 : 2,
+                },
+                { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 },
+              ],
+              price: 800,
+              num: 4,
+              events: [{ 'type' => 'remove_abilities' }],
+            },
+            {
+              name: 'TGV',
+              distance: [{ 'nodes' => %w[city offboard], 'pay' => 3, 'visit' => 99, 'multiplier' => 2 },
+                         { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
+              price: 1000,
+              num: 20,
+              events: [{ 'type' => 'tgz_purchased' }],
+            },
+          ]
+        end
 
         ASSIGNMENT_TOKENS = {
           'P2' => '/icons/1826/mail.svg',
@@ -134,6 +139,7 @@ module Engine
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
           'remove_abilities' => ['Mail Token Removed'],
           'can_buy_trains' => ['Corporations can buy trains from other corporations'],
+          'tgz_purchased' => ['E-trains run 5 stops and count each stop once.'],
         ).freeze
 
         # Corps may lay two yellow tiles on their first OR
@@ -161,6 +167,13 @@ module Engine
           ], round_num: round_num)
         end
 
+        def setup
+          @can_buy_trains = false
+          @tgz_purchased = false
+          @e_trains_purchased = 0
+          @e_train_range = 0
+        end
+
         def regie
           @regie ||= company_by_id('P2')
         end
@@ -176,7 +189,6 @@ module Engine
           revenue += 10 if route.corporation.assigned?(regie.id) && stops.find { |s| s.hex.assigned?(regie.id) }
           raise GameError, 'Route visits same hex twice' if route.hexes.size != route.hexes.uniq.size
 
-          # Add code here for TGV train bonuses
           revenue
         end
 
@@ -202,6 +214,16 @@ module Engine
             corp = removal[:corporation]
             @log << "-- Event: #{corp}'s #{company_by_id(company).name} ability is removed --"
           end
+        end
+
+        def event_can_buy_trains!
+          @can_buy_trains = true
+          @log << 'Corporations can buy trains from other corporations'
+        end
+
+        def event_tgz_purchased!
+          @tgz_purchased = true
+          @log << 'E-trains run 5 stops and count each stop once.'
         end
       end
     end
