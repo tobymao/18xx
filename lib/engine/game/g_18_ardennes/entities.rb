@@ -474,7 +474,7 @@ module Engine
         # started from the city it is in.
         def change_token_icon(city, token, minor)
           # TODO: return if after first public company auction round
-          return unless minor.type == :minor
+          return if minor.type != :minor && minor.type != :dummy
 
           majors = associated_majors(city)
           return if majors.empty? # Basel

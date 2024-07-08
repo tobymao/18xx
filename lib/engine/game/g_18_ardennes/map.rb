@@ -246,8 +246,8 @@ module Engine
         }.freeze
 
         def setup_tokens
-          @mine_corp = dummy_corp('Mine', '18_ardennes/mine', MINE_HEXES)
-          @port_corp = dummy_corp('Port', '18_ardennes/port', PORT_HEXES)
+          @mine_corp = dummy_corp('mine', '18_ardennes/mine', MINE_HEXES)
+          @port_corp = dummy_corp('port', '18_ardennes/port', PORT_HEXES)
           FORT_HEXES.each { |fort, coord| hex_by_id(coord).assign!(fort) }
         end
 
@@ -268,6 +268,8 @@ module Engine
             token = corp.next_token
             if city.tokenable?(corp)
               city.place_token(corp, token)
+              # Show which public companies can be started here.
+              change_token_icon(city, token, corp)
             else
               hex.place_token(token)
             end
@@ -366,6 +368,7 @@ module Engine
                            token,
                            free: true,
                            same_hex_allowed: true)
+          change_token_icon(city, token, token.corporation)
           clear_graph_for_entity(entity)
         end
 
