@@ -40,7 +40,7 @@ module Engine
             connected_city = @game.token_graph_for_entity(entity).connected_nodes(entity)[city]
             if connected_city
               place_token(entity, action.city, action.token)
-            elsif @game.harbor_hex?(city.hex) && !connected_city
+            elsif @game.harbor_hex?(city.hex)
               city_string = city.hex.tile.cities.size > 1 ? " city #{city.index}" : ''
               city_name = @game.harbor_city_id_by_harbor_id(hex.id) + city_string
               raise GameError, "Cannot reach city #{city_name}" unless check_available_harbour(entity, hex)
