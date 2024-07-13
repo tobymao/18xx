@@ -104,7 +104,7 @@ module Engine
           @nsb ||= corporation_by_id('NSB')
         end
 
-        def harbor_city_id_by_harbor_id(hex_id)
+        def harbor_city_coordinates(hex_id)
           CITY_HARBOR_MAP.key(hex_id)
         end
 

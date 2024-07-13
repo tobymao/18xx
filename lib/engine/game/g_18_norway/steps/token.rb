@@ -10,23 +10,18 @@ module Engine
           def available_hex(entity, hex)
             return true if super
 
-            check_available_harbour(entity, hex)
+            harbor_available?(entity, hex)
           end
 
           def tokener_available_hex(entity, hex)
             return true if super
 
-            check_available_harbour(entity, hex)
+            harbor_available?(entity, hex)
           end
 
-          def check_available_harbour(entity, hex)
-            city = @game.harbor_city_id_by_harbor_id(hex.id)
-            return false if city.nil?
-
-            other_hex = @game.hex_by_id(city)
-            return true if @game.graph.reachable_hexes(entity)[other_hex]
-
-            @game.ferry_graph.reachable_hexes(entity)[other_hex]
+          def harbor_available?(entity, hex)
+            other_hex = @game.hex_by_id(@game.harbor_city_coordinates(hex.id))
+            @game.graph.reachable_hexes(entity)[other_hex] || @game.ferry_graph.reachable_hexes(entity)[other_hex]
           end
 
           def can_place_token?(_entity)
@@ -42,8 +37,8 @@ module Engine
               place_token(entity, action.city, action.token)
             elsif @game.harbor_hex?(city.hex)
               city_string = city.hex.tile.cities.size > 1 ? " city #{city.index}" : ''
-              city_name = @game.harbor_city_id_by_harbor_id(hex.id) + city_string
-              raise GameError, "Cannot reach city #{city_name}" unless check_available_harbour(entity, hex)
+              city_name = @game.harbor_city_coordinates(hex.id) + city_string
+              raise GameError, "Cannot reach city #{city_name}" unless harbor_available?(entity, hex)
 
               place_token(entity, action.city, action.token, connected: false)
 
