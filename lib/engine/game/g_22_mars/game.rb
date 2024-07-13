@@ -30,7 +30,7 @@ module Engine
           %w[0c],
         ].freeze
 
-        CERT_LIMIT = { 2 => 12, 3 => 12, 4 => 9, 5 => 7 }.freeze
+        CERT_LIMIT = { 3 => 12, 4 => 9, 5 => 7 }.freeze
 
         PHASES = [
           {
@@ -93,7 +93,7 @@ module Engine
           {
             name: '3',
             distance: 3,
-            price: 17,
+            price: 170,
             rusts_on: '5',
             num: 4,
           },
@@ -115,16 +115,14 @@ module Engine
             name: '6+S',
             distance: 6,
             price: 440,
-            rusts_on: '4',
             num: 4,
           },
           {
             name: '6+SS',
             distance: 6,
             price: 560,
-            rusts_on: '4',
             num: 6,
-            discount: { '5' => 400 },
+            discount: { '5' => 160 },
           },
         ].freeze
 
