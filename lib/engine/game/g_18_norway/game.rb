@@ -37,7 +37,7 @@ module Engine
         EBUY_SELL_MORE_THAN_NEEDED = true
         CAPITALIZATION = :incremental
         MUST_BUY_TRAIN = :always
-        POOL_SHARE_DROP = :left_block
+        POOL_SHARE_DROP = :none
         SELL_AFTER = :p_any_operate
         SELL_MOVEMENT = :left_block
         HOME_TOKEN_TIMING = :float
@@ -566,6 +566,19 @@ module Engine
           return [biggest_bundle] if biggest_bundle
 
           []
+        end
+
+        def sell_movement(corporation = nil)
+          return self.class::SELL_MOVEMENT unless corporation
+          return :left_block_pres if corporation.second_share.price <= 40
+
+          self.class::SELL_MOVEMENT
+        end
+
+        def check_sale_timing(entity, bundle)
+          return false if @turn <= 1 && !@round.operating?
+
+          super(entity, bundle)
         end
       end
     end
