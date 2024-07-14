@@ -95,7 +95,7 @@ module Engine
           end
 
           def p20_targets
-            bidbox_corporations = ::Set.new(@game.bidbox_minors) { |c| @game.corporation_from_company(c) }
+            bidbox_minors = @game.bidbox_minors
 
             @game.minor_associations.each_with_object([]) do |(minor_id, major_id), targets|
               company = @game.company_by_id("M#{minor_id}")
@@ -105,7 +105,7 @@ module Engine
               already_discarded = (!company.owner && company.closed? && minor.closed?)
 
               minor_available = !minor.owner &&
-                                (already_discarded || !bidbox_corporations.include?(minor))
+                                (already_discarded || !bidbox_minors.include?(company))
               major_available = !major.owner && !major.floated?
 
               targets << minor if minor_available && major_available
