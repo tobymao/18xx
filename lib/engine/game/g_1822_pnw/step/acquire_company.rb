@@ -7,6 +7,8 @@ module Engine
     module G1822PNW
       module Step
         class AcquireCompany < Engine::Step::AcquireCompany
+          attr_reader :choices
+
           def actions(entity)
             return ['choose'] if @choices
 
@@ -30,8 +32,6 @@ module Engine
               @choices[t.name] = "Replace #{t.name} as associated minor for #{@game.major_name_for_associated_minor(t.id)}"
             end
           end
-
-          attr_reader :choices
 
           def choice_name
             'Pick which associated minor to replace'
@@ -95,21 +95,21 @@ module Engine
           end
 
           def p20_targets
-            bidbox_corporations = @game.bidbox_minors.map { |c| @game.corporation_from_company(c) }
-            targets = @game.corporations.select { |c| @game.associated_minor?(c) && !c.owner && !bidbox_corporations.include?(c) }
+            bidbox_minors = @game.bidbox_minors
 
-            # include minors that fell through the bidboxes without bids
-            @game.minor_associations.each do |minor_id, major_id|
+            @game.minor_associations.each_with_object([]) do |(minor_id, major_id), targets|
               company = @game.company_by_id("M#{minor_id}")
               minor = @game.corporation_by_id(minor_id)
               major = @game.corporation_by_id(major_id)
 
-              targets << minor if !company.owner && company.closed? &&
-                                  !minor.owner && minor.closed? &&
-                                  !major.owner && !major.floated?
-            end
+              already_discarded = (!company.owner && company.closed? && minor.closed?)
 
-            targets
+              minor_available = !minor.owner &&
+                                (already_discarded || !bidbox_minors.include?(company))
+              major_available = !major.owner && !major.floated?
+
+              targets << minor if minor_available && major_available
+            end
           end
         end
       end
