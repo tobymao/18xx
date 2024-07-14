@@ -490,7 +490,7 @@ module Engine
         end
 
         def update_cert_limit
-          nr = @corporations.sum(0) { |corporation| nationalized?(corporation) ? 1 : 0 }
+          nr = @corporations.count(&:nationalized?)
           new_cert_limit = CERT_LIMIT[@players.size][nr]
           update_cert_limit_to(new_cert_limit) unless @cert_limit == new_cert_limit
         end
