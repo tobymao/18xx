@@ -3227,6 +3227,8 @@ module Engine
 
           return false unless token_ability_from_owner_usable?(ability, corporation)
 
+          return true if ability.same_hex_allowed
+
           tokened_hexes = []
 
           corporation.tokens.each do |token|
