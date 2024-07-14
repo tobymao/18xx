@@ -66,7 +66,7 @@ module Engine
                   'this private company in lieu of performing both its tile '\
                   'and token placement steps. Performing this action allows '\
                   'the corporation to select any coastal city hex (all cities '\
-                  'except Foggia, Campobasso, and Potenza), optionally lay or '\
+                  "except Foggia, Campobasso, L'Aquila, and Potenza), optionally lay or "\
                   'upgrade a tile there, and optionally place a station token '\
                   'there. This power may be used even if the corporation is '\
                   'unable to trace a route to that city, but all other normal '\
