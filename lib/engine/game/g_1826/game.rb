@@ -64,7 +64,6 @@ module Engine
                     train_limit: { five_share: 1, ten_share: 3 },
                     tiles: %i[yellow green],
                     operating_rounds: 2,
-                    status: ['can_buy_trains'],
                   },
                   {
                     name: '10H',
@@ -72,7 +71,6 @@ module Engine
                     train_limit: 2,
                     tiles: %i[yellow green brown],
                     operating_rounds: 3,
-                    status: ['can_buy_trains'],
                   },
                   {
                     name: 'E',
@@ -80,7 +78,6 @@ module Engine
                     train_limit: 2,
                     tiles: %i[yellow green brown blue],
                     operating_rounds: 3,
-                    status: ['can_buy_trains'],
                   },
                   {
                     name: 'TVG',
@@ -88,7 +85,6 @@ module Engine
                     train_limit: 2,
                     tiles: %i[yellow green brown blue gray],
                     operating_rounds: 3,
-                    status: ['can_buy_trains'],
                   }].freeze
 
         TRAINS = [
@@ -161,6 +157,10 @@ module Engine
           ], round_num: round_num)
         end
 
+        def setup
+          @can_buy_trains = false
+        end
+
         def regie
           @regie ||= company_by_id('P2')
         end
@@ -202,6 +202,11 @@ module Engine
             corp = removal[:corporation]
             @log << "-- Event: #{corp}'s #{company_by_id(company).name} ability is removed --"
           end
+        end
+
+        def event_can_buy_trains!
+          @can_buy_trains = true
+          @log << 'Corporations can buy trains from other corporations'
         end
       end
     end
