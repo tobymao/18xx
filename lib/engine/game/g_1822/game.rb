@@ -1962,6 +1962,7 @@ module Engine
 
         def hex_blocked_by_ability?(entity, ability, hex, tile)
           return false if tile.name == 'BC'
+          return false unless hex.tile.color == :white
           return false unless ability.player
           return false if entity.player == ability.player
           return false if ability.hexes.none? { |h| h.id == hex.id }
