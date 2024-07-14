@@ -450,6 +450,10 @@ module Engine
           @round.operating? ? [] : super
         end
 
+        def company_sale_price(company)
+          company.value
+        end
+
         # Has the player won any auctions for public companies in the
         # preceding auction round? If they have then they must start these
         # majors before they can buy any other shares or pass.
@@ -480,6 +484,18 @@ module Engine
             corporation.par_via_exchange = concession
             concession
           end
+        end
+
+        def status_array(corporation)
+          return if corporation.floated?
+          return unless (minor = @pledged_minors[corporation])
+
+          player = minor.presidents_share.owner
+          verb = @round.auction? ? 'bid' : 'won the right'
+          [
+            "#{player.name} has #{verb} to start this company using " \
+            "minor #{minor.id}.",
+          ]
         end
 
         # The minimum amount of cash needed to start one of the corporations

@@ -36,13 +36,19 @@ module Engine
 
         SELL_BUY_ORDER = :sell_buy
         SELL_AFTER = :operate
+        SELL_MOVEMENT = :left_block_pres
 
         CAPITALIZATION = :incremental
         HOME_TOKEN_TIMING = :par
 
         MUST_BUY_TRAIN = :always # Just for majors, minors are handled in #must_buy_train?
+        EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
         BANKRUPTCY_ALLOWED = true
         BANKRUPTCY_ENDS_GAME_AFTER = :all_but_one
+
+        # 4D trains can share track with other trains. Put them in their own
+        # autoroute group so that the autorouter works correctly.
+        TRAIN_AUTOROUTE_GROUPS = [['4D']].freeze
 
         # The maximum number of tokens a major can have on the map.
         LIMIT_TOKENS_AFTER_MERGER = 6
@@ -62,7 +68,7 @@ module Engine
             when Engine::Round::Auction
               init_round_finished
               reorder_players
-              new_stock_round
+              new_operating_round
             when G18Ardennes::Round::Stock
               @operating_rounds = @phase.operating_rounds
               reorder_players
@@ -140,6 +146,12 @@ module Engine
         def operating_order
           minor_corporations.select(&:ipoed).sort +
           major_corporations.select(&:ipoed).sort
+        end
+
+        def liquidity(player, emergency: false)
+          return player.cash unless sellable_turn?
+
+          super + player.companies.sum(&:value)
         end
 
         # Checks whether a player really is bankrupt.
