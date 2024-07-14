@@ -49,6 +49,8 @@ module Engine
 
         BANK_CASH = 999_000
 
+        CLOSED_CORP_RESERVATIONS_REMOVED = false
+
         GAME_END_CHECK = { bankrupt: :immediate, custom: :one_more_full_or_set }.freeze
 
         CERT_LIMIT = {
@@ -495,6 +497,11 @@ module Engine
               share_pool.buy_shares(player, share, exchange: :free)
             end
           end
+        end
+
+        def close_corporation(corporation, quiet: false)
+          super
+          @corporations << reset_corporation(corporation)
         end
 
         def event_lm_green!
