@@ -57,6 +57,7 @@ module Engine
           super
 
           setup_tokens
+          setup_icons
           @pledged_minors = major_corporations.to_h { |corp| [corp, nil] }
         end
 
@@ -64,6 +65,7 @@ module Engine
           @round =
             case @round
             when G18Ardennes::Round::Auction
+              major_auction_finished
               new_stock_round
             when Engine::Round::Auction
               init_round_finished
@@ -110,6 +112,17 @@ module Engine
         def new_major_auction_round
           @log << "-- #{round_description('Auction')} --"
           major_auction_round
+        end
+
+        def major_auction_finished
+          return if restricted?
+
+          # The coloured icons showing which public companies can be started
+          # from each city are no longer needed.
+          @cities.each do |city|
+            city.slot_icons.clear
+            city.tokens.each { |token| reset_token_icon(token) }
+          end
         end
 
         def stock_round

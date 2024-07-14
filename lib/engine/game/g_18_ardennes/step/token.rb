@@ -63,11 +63,22 @@ module Engine
             old_token = city.tokens[action.slot]
             token_type = @game.dummy_token_type(old_token)
             old_token.remove!
-            place_token(corp, city, available_tokens(corp).first)
+            new_token = available_tokens(corp).first
+            place_token(corp, city, new_token)
+            @game.change_token_icon(city, new_token, corp)
             corp.assign!(city.hex.coordinates)
             @game.log << "#{corp.id} collects a #{token_type} token from " \
                          "hex #{hex.coordinates} (#{hex.location_name})"
             pass!
+          end
+
+          def process_place_token(action)
+            super
+
+            city = action.city
+            slot = city.tokens.index(action.token)
+            city.slot_icons.delete(slot)
+            @game.change_token_icon(city, action.token, action.entity)
           end
         end
       end
