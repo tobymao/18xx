@@ -75,7 +75,7 @@ module Engine
             player.hand << company
             player.hand.sort_by! { |item| [item.name, -item.value] }
 
-            player.draft_history = player.draft_history + company.name + (company.type == :president ? '(Dir), ' : ', ')
+            player.draft_history << company.name + (company.type == :president ? '(Dir)' : '')
 
             @companies.delete(company)
 
