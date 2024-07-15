@@ -624,9 +624,9 @@ module Engine
 
           timeline << "unclaimed_commodities: #{@unclaimed_commodities.sort.join(', ')}"
 
-          timeline << 'Player Draft History: '
+          timeline << 'Player Draft History'
           @players.each do |p|
-            timeline << "#{p.name}: #{p.draft_history}"
+            timeline << "#{p.name}: #{p.draft_history.join(', ')}"
           end
 
           timeline

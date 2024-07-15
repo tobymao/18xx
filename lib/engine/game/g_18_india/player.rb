@@ -10,7 +10,7 @@ module Engine
 
         def initialize(id, name)
           @hand = []
-          @draft_history = ''
+          @draft_history = []
           super
         end
       end
