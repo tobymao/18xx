@@ -286,11 +286,7 @@ module Engine
           # geographical restrictions on which minor companies can be used to
           # start a public company.
           def restricted?
-            if @restricted.nil?
-              @restricted = @game.corporations.none? do |corporation|
-                corporation.floated && corporation.type != :minor
-              end
-            end
+            @restricted = @game.restricted? if @restricted.nil?
             @restricted
           end
 

@@ -11,20 +11,13 @@ module Engine
           include MinorExchange
 
           def actions(entity)
-            return super if bought?
-            return super unless @game.under_obligation?(entity)
+            return [] unless entity == current_entity
+            return [] if bought?
             return %w[bankrupt] if @game.bankrupt?(entity)
+            return limit_actions(entity) if must_sell?(entity)
+            return par_actions(entity) if @game.under_obligation?(entity)
 
-            actions = []
-            actions << 'par' if under_limit?(entity)
-            actions << 'sell_shares' if can_sell_any?(entity)
-            actions << 'sell_company' if can_sell_any_companies?(entity)
-            # TODO: handle this properly.
-            # Maybe stop the player from bidding for a major if they are at
-            # certificate limit and do not have any sellable shares.
-            raise GameError, 'Cannot sell shares or start major company' if actions.empty?
-
-            actions
+            super
           end
 
           def auto_actions(entity)
@@ -96,8 +89,22 @@ module Engine
           end
 
           def can_gain?(entity, bundle, exchange: false)
-            # Can go above 60% ownership if exchanging a minor for a share.
-            exchange || super
+            # Can go above 60% ownership if exchanging a minor for a share or
+            # if buying a share from the open market.
+            return true if exchange
+            return true if (bundle.owner == @game.share_pool) &&
+                           (@game.num_certs(entity) < @game.cert_limit)
+
+            super
+          end
+
+          # Can this ShareBundle be sold to the open market?
+          def can_dump?(entity, bundle)
+            # The implementation of this method in Step::BuySellParSharesCompanies
+            # is for games where the president's certificate can be sold to the
+            # market. This isn't true in 18Ardennes, the method implemented in
+            # Step::BuySellParShares is correct.
+            bundle.can_dump?(entity)
           end
 
           # Checks whether a player can afford to exchange one of their minors
@@ -178,7 +185,36 @@ module Engine
             @game.declare_bankrupt(player)
           end
 
+          def log_skip(entity)
+            # Don't print a '[player] has no valid actions and passes' message
+            # after exchanging a minor for a share.
+            super if @round.current_actions.empty?
+          end
+
           private
+
+          # Actions when a player is under obligation to start a public company.
+          def par_actions(entity)
+            actions = []
+            actions << 'par' if under_limit?(entity)
+            actions << 'sell_shares' if can_sell_any?(entity)
+            actions << 'sell_company' if can_sell_any_companies?(entity)
+            # TODO: handle this properly.
+            # Maybe stop the player from bidding for a major if they are at
+            # certificate limit and do not have any sellable shares.
+            raise GameError, 'Cannot sell shares or start major company' if actions.empty?
+
+            actions
+          end
+
+          # Actions when a player is over the certificate limit.
+          def limit_actions(entity)
+            if can_sell_any_companies?(entity)
+              %w[sell_shares sell_company]
+            else
+              %w[sell_shares]
+            end
+          end
 
           def sell_bankrupt_shares(player)
             @log << "-- #{player.name} goes bankrupt and sells remaining shares --"

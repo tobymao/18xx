@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 50 50">
+  <defs>
+    <circle id="circle" cx="50%" cy="50%" r="50%"/>
+    <mask id="left">
+      <rect id="full" x="0" y="0" width="100%" height="100%" fill="white"/>
+      <rect id="half" x="0" y="0" width="50%" height="100%" fill="black" transform="rotate(300 25 25)"/>
+    </mask>
+  </defs>
+  <g opacity="0.6">
+    <use xlink:href="#circle" fill="darkgreen"/>
+    <use xlink:href="#circle" fill="saddlebrown" mask="url(#left)"/>
+  </g>
+  <text text-anchor="middle" dominant-baseline="central" x="50%" y="55%" font-size="40" font-weight="700" font-family="Lato, sans-serif" fill="black">8</text>
+</svg>

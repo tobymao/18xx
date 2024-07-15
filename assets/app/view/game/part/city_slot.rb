@@ -74,6 +74,8 @@ module View
             token_attrs[:stroke] = 'black'
             token_attrs[:'stroke-width'] = '3px'
             token_attrs[:'stroke-dasharray'] = '4'
+          elsif @city&.outline
+            token_attrs[:'fill-opacity'] = '0'
           end
 
           children = [h(:circle, attrs: token_attrs)]
