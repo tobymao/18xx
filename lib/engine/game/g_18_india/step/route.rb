@@ -15,21 +15,13 @@ module Engine
             ability = entity.all_abilities.find { |a| a.type == :commodities }
 
             routes.each do |route|
-              @game.commodity_bonus(route)
-              @round.commodities_used.each do |commodity|
+              commodities_used = @game.commodity_bonus(route, report_commodities: true)
+              LOGGER.debug { "process_run_routes > commodities_used: #{commodities_used}" }
+              commodities_used.each do |commodity|
                 @log << "#{entity.name} delivered #{commodity}"
                 @game.claim_concession(entity, commodity) unless ability.description.include?(commodity)
               end
-              @round.commodities_used = [] # clear for next route
             end
-          end
-
-          def round_state
-            super.merge(
-              {
-                commodities_used: [],
-              }
-            )
           end
 
           def help

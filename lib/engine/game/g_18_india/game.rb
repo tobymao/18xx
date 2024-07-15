@@ -549,10 +549,14 @@ module Engine
                 @log << 'Draft certificates to add to your hand of reserved options'
                 draft_round
               else
-                reorder_players(:after_last_to_act, true)
+                reorder_players(:after_last_to_act, log_player_order: true)
                 new_stock_round
               end
             end
+        end
+
+        def draft_completed
+          @draft_finished = true
         end
 
         def show_ipo_rows?
@@ -620,8 +624,9 @@ module Engine
 
           timeline << "unclaimed_commodities: #{@unclaimed_commodities.sort.join(', ')}"
 
+          timeline << 'Player Draft History: '
           @players.each do |p|
-            timeline << "#{p.name}: #{p.hand.map(&:name).sort.join(', ')}" unless p.hand.empty?
+            timeline << "#{p.name}: #{p.draft_history}"
           end
 
           timeline
@@ -856,7 +861,7 @@ module Engine
           end
 
           # remove all corp tokens (after GIPR may exchange)
-          corporation.tokens.each(&:destroy!)
+          corporation.tokens.each(&:remove!)
           LOGGER.debug { "closing > Corp tokens: #{corporation.tokens}" }
 
           # move trains to open market
@@ -905,6 +910,7 @@ module Engine
           # close corporation
           @corporations.delete(corporation)
           corporation.close!
+          LOGGER.debug { " > closed?: #{corporation.closed?}" }
 
           # adjust cert_limit
           LOGGER.debug { " > prior cert_limit: #{@cert_limit}" }
@@ -1104,27 +1110,27 @@ module Engine
           route.all_hexes.include?(@jewlery_hex) ? ['JEWELRY'] : []
         end
 
-        def commodity_bonus(route, _stops = nil)
+        def commodity_bonus(route, _stops = nil, report_commodities: false)
           visited_names = (route.all_hexes.map(&:location_name) + visit_jewelery(route)).compact
           corporation = route.train.owner
           commodity_sources = visited_names & available_commodities(corporation)
-          return 0 unless commodity_sources.count.positive?
+          return (report_commodities ? [] : 0) unless commodity_sources.count.positive?
 
           revenue = 0
-          @round.commodities_used = []
+          commodities_used = []
           commodity_sources.each do |source|
             bonus = COMMODITY_BONUSES[source]
             LOGGER.debug { "GAME.commodity_bonus >> bonus: #{bonus}" }
-            if visited_names.intersect?(bonus['locations'])
+            if visited_names.intersect?(bonus[:locations])
               revenue += bonus['value'] || visited_names.map { |loc| SPICE_BONUSES[loc] || 0 }.max
-              @round.commodities_used << bonus['commodity']
+              commodities_used << bonus[:commodity]
             end
           end
           LOGGER.debug do
             "GAME.commodity_bonus >> visited: #{visited_names}  sources: #{commodity_sources}  revenue: #{revenue}" \
-              "  used: #{@round.commodities_used}"
+              "  used: #{commodities_used}"
           end
-          revenue
+          report_commodities ? commodities_used : revenue
         end
 
         # Sell Train to the Depot
