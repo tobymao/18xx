@@ -37,7 +37,7 @@ module Engine
         EBUY_SELL_MORE_THAN_NEEDED = true
         CAPITALIZATION = :incremental
         MUST_BUY_TRAIN = :always
-        POOL_SHARE_DROP = :left_block
+        POOL_SHARE_DROP = :none
         SELL_AFTER = :p_any_operate
         SELL_MOVEMENT = :left_block
         HOME_TOKEN_TIMING = :float
@@ -48,6 +48,8 @@ module Engine
         BANKRUPTCY_ENDS_GAME_AFTER = :one
 
         BANK_CASH = 999_000
+
+        CLOSED_CORP_RESERVATIONS_REMOVED = false
 
         GAME_END_CHECK = { bankrupt: :immediate, custom: :one_more_full_or_set }.freeze
 
@@ -197,6 +199,7 @@ module Engine
           @all_tiles.each { |t| t.ignore_gauge_walk = true }
           @_tiles.values.each { |t| t.ignore_gauge_walk = true }
           @hexes.each { |h| h.tile.ignore_gauge_walk = true }
+          update_cert_limit
 
           # Allow to build against Mjosa
           hex_by_id('H26').neighbors[1] = hex_by_id('G27')
@@ -483,6 +486,17 @@ module Engine
           raise NoToken, 'Route must contain token' unless token
         end
 
+        def update_cert_limit_to(new_cert_limit)
+          @cert_limit = new_cert_limit
+          @log << "Certificate limit is now #{@cert_limit}"
+        end
+
+        def update_cert_limit
+          nr = @corporations.count { |c| nationalized?(c) }
+          new_cert_limit = CERT_LIMIT[@players.size][nr]
+          update_cert_limit_to(new_cert_limit) unless @cert_limit == new_cert_limit
+        end
+
         def after_buy_company(player, company, price)
           return super if company.id != 'P7'
 
@@ -497,6 +511,11 @@ module Engine
           end
         end
 
+        def close_corporation(corporation, quiet: false)
+          super
+          @corporations << reset_corporation(corporation)
+        end
+
         def event_lm_green!
           @log << '-- Event: Mjøsa green ferry lines opens up. --'
           mjosa.lay(tile_by_id('LM1-0'))
@@ -505,6 +524,40 @@ module Engine
         def event_lm_brown!
           @log << '-- Event: Mjøsa brown ferry lines opens up. --'
           mjosa.lay(tile_by_id('LM2-0'))
+        end
+
+        def compute_stops(route)
+          stops = super
+          if @round.train_upgrade_assignments[route.train]
+            skipped = skipped_stop(route, stops)
+            stops.reject! { |stop| stop == skipped } if skipped
+          end
+          stops
+        end
+
+        def tokened_out_stop(corporation, stops)
+          stops[1..-2].find { |node| node.city? && node.blocks?(corporation) }
+        end
+
+        def skipped_stop(route, stops)
+          return nil if stops.size <= 2
+
+          # Blocked stop is highest priority as it may stop route from being legal
+          corporation = route.train.owner
+          t = tokened_out_stop(corporation, stops)
+          return t if t
+
+          counted_stops = stops.select { |stop| stop&.visit_cost&.positive? }
+
+          # Skipping is optional - if we are using STRICTLY fewer stops than distance (jumping adds 1) we don't need to skip
+          return nil if counted_stops.size < route.train.distance
+
+          # Count how many of our tokens are on the route; if only one we cannot skip that one.
+          tokened_stops = counted_stops.select { |stop| stop.tokened_by?(route.train.owner) }
+          counted_stops.delete(tokened_stops.first) if tokened_stops.one?
+
+          # Find the lowest revenue stop that can be skipped
+          counted_stops.min_by { |stop| revenue_for(route, stops.reject { |s| s == stop }) }
         end
 
         def issuable_shares(entity)
@@ -566,6 +619,19 @@ module Engine
           return [biggest_bundle] if biggest_bundle
 
           []
+        end
+
+        def sell_movement(corporation = nil)
+          return self.class::SELL_MOVEMENT unless corporation
+          return :left_block_pres if corporation.second_share.price <= 40
+
+          self.class::SELL_MOVEMENT
+        end
+
+        def check_sale_timing(entity, bundle)
+          return false if @turn <= 1 && !@round.operating?
+
+          super(entity, bundle)
         end
       end
     end

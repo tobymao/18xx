@@ -162,6 +162,7 @@ module Engine
                 price: 0,
                 special_only: true,
                 teleport_price: 0,
+                same_hex_allowed: true,
                 when: 'owning_corp_or_turn',
               },
             ],
