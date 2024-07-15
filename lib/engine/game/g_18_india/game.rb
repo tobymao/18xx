@@ -1122,7 +1122,7 @@ module Engine
             bonus = COMMODITY_BONUSES[source]
             LOGGER.debug { "GAME.commodity_bonus >> bonus: #{bonus}" }
             if visited_names.intersect?(bonus[:locations])
-              revenue += bonus['value'] || visited_names.map { |loc| SPICE_BONUSES[loc] || 0 }.max
+              revenue += bonus[:value] || visited_names.map { |loc| SPICE_BONUSES[loc] || 0 }.max
               commodities_used << bonus[:commodity]
             end
           end
