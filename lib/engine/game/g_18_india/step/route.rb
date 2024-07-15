@@ -18,13 +18,17 @@ module Engine
           end
 
           def help
-            return [] if @game.gauge_change_markers.empty?
+            help_str = []
+            help_str << 'Route Bonus Key:'
+            help_str << '?+ = Variable city Bonus'
+            help_str << 'R+ = Route Connection Bonus'
+            help_str << 'C+ = Commodity Delivery Bonus'
+            return help_str if @game.gauge_change_markers.empty?
 
-            [
-              'Note: You do not need to click on Gauge Change Markers.',
-              'They are included if the route passes though it',
-              'They count as a zero revenue city location.',
-            ]
+            help_str << 'Note: You do not need to click on Gauge Change Markers.'
+            help_str << 'They are included if the route passes though it.'
+            help_str << 'They count as a zero revenue city location.'
+            help_str
           end
         end
       end
