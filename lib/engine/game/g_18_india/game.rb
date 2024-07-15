@@ -1110,27 +1110,34 @@ module Engine
           route.all_hexes.include?(@jewlery_hex) ? ['JEWELRY'] : []
         end
 
-        def commodity_bonus(route, _stops = nil, report_commodities: false)
+        # Method `yield` to the block passed to the method, passing the block a couple of parameters;
+        # the `bonus` hash and the `visited_names` array.
+        def route_commodities(route)
           visited_names = (route.all_hexes.map(&:location_name) + visit_jewelery(route)).compact
           corporation = route.train.owner
           commodity_sources = visited_names & available_commodities(corporation)
-          return (report_commodities ? [] : 0) unless commodity_sources.count.positive?
 
-          revenue = 0
-          commodities_used = []
           commodity_sources.each do |source|
             bonus = COMMODITY_BONUSES[source]
-            LOGGER.debug { "GAME.commodity_bonus >> bonus: #{bonus}" }
-            if visited_names.intersect?(bonus[:locations])
-              revenue += bonus[:value] || visited_names.map { |loc| SPICE_BONUSES[loc] || 0 }.max
-              commodities_used << bonus[:commodity]
-            end
+            yield bonus, visited_names if visited_names.intersect?(bonus[:locations])
           end
-          LOGGER.debug do
-            "GAME.commodity_bonus >> visited: #{visited_names}  sources: #{commodity_sources}  revenue: #{revenue}" \
-              "  used: #{commodities_used}"
+        end
+
+        # This method returns the commodity bonus revenue.
+        def commodity_bonus(route)
+          revenue = 0
+          route_commodities(route) do |bonus, visited|
+            revenue += bonus[:value] || visited.map { |loc| SPICE_BONUSES[loc] || 0 }.max
           end
-          report_commodities ? commodities_used : revenue
+          revenue
+        end
+
+        def deliver_commodities(entity, route, ability)
+          route_commodities(route) do |bonus, _|
+            commodity = bonus[:commodity]
+            @log << "#{entity.name} delivered #{commodity}"
+            claim_concession(entity, commodity) unless ability.description.include?(commodity)
+          end
         end
 
         # Sell Train to the Depot

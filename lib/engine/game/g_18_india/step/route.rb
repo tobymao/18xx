@@ -14,14 +14,7 @@ module Engine
             routes = action.routes
             ability = entity.all_abilities.find { |a| a.type == :commodities }
 
-            routes.each do |route|
-              commodities_used = @game.commodity_bonus(route, report_commodities: true)
-              LOGGER.debug { "process_run_routes > commodities_used: #{commodities_used}" }
-              commodities_used.each do |commodity|
-                @log << "#{entity.name} delivered #{commodity}"
-                @game.claim_concession(entity, commodity) unless ability.description.include?(commodity)
-              end
-            end
+            routes.each { |route| @game.deliver_commodities(entity, route, ability) }
           end
 
           def help
