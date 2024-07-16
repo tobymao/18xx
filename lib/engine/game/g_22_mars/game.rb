@@ -133,6 +133,12 @@ module Engine
         HOME_TOKEN_TIMING = :float
 
         CLOSED_CORP_RESERVATIONS_REMOVED = false
+
+        COMPANY_CLASS = G22Mars::Company
+
+        def company_header(company)
+          company.revolt? ? 'REVOLT!' : 'PERMIT'
+        end
       end
     end
   end
