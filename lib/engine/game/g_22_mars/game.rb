@@ -13,10 +13,54 @@ module Engine
         include Entities
         include Map
 
-        CURRENCY_FORMAT_STR = '%sc'
-        BANK_CASH = 9999
+        GAME_END_CHECK = { stock_market: :current_or, custom: :current_or }.freeze
 
-        STARTING_CASH = { 3 => 300, 4 => 225, 5 => 180 }.freeze
+        BANKRUPTCY_ENDS_GAME_AFTER = :all_but_one
+
+        BANK_CASH = 99_999
+        CURRENCY_FORMAT_STR = '%sc'
+
+        STARTING_CASH = { 2 => 450, 3 => 300, 4 => 225, 5 => 180 }.freeze
+
+        CERT_LIMIT = { 2 => 15, 3 => 12, 4 => 9, 5 => 7 }.freeze
+
+        CERT_LIMIT_INCLUDES_PRIVATES = false
+
+        STOCKMARKET_COLORS = {
+          par: :gray,
+          multiple_buy: :red,
+          close: :black,
+          endgame: :green,
+        }.freeze
+
+        # TODO: Aallow swap on EMR to pay taxes in SR
+        EBUY_PRES_SWAP = false
+        MUST_EMERGENCY_ISSUE_BEFORE_EBUY = true
+
+        CLOSED_CORP_TOKENS_REMOVED = false
+
+        MUST_BUY_TRAIN = :always
+
+        CAPITALIZATION = :incremental
+
+        SELL_AFTER = :any_time
+        SELL_BUY_ORDER = :sell_buy
+        SELL_MOVEMENT = :down_share
+        HOME_TOKEN_TIMING = :float
+
+        CLOSED_CORP_RESERVATIONS_REMOVED = false
+
+        MARKET_SHARE_LIMIT = 80
+
+        COMPANY_CLASS = G22Mars::Company
+
+        GAME_END_REASONS_TEXT = Base::GAME_END_REASONS_TEXT.merge(
+          custom: 'Fixed number of ORs'
+        )
+
+        MARKET_TEXT = Base::MARKET_TEXT.merge(
+          multiple_buy: 'Can buy two shares in the corporation per turn',
+        )
 
         MARKET = [
           %w[90 100 110 120 130 145 160 175 195 215 235 255 275 300e],
@@ -26,11 +70,9 @@ module Engine
           %w[50 60p 70 80 90 100 110 120 130 145],
           %w[45 50p 55 65 75 85 95 105],
           %w[40 45 50 55 65 75],
-          %w[35r 40r 45r 50r],
+          %w[35b 40b 45b 50b],
           %w[0c],
         ].freeze
-
-        CERT_LIMIT = { 3 => 12, 4 => 9, 5 => 7 }.freeze
 
         PHASES = [
           {
@@ -66,7 +108,7 @@ module Engine
           },
           {
             name: '7',
-            on: '6+S',
+            on: '7*',
             train_limit: 3,
             tiles: %i[yellow green brown gray],
             operating_rounds: 2,
@@ -74,7 +116,7 @@ module Engine
           },
           {
             name: '8',
-            on: '6+SS',
+            on: '8*',
             train_limit: 3,
             tiles: %i[yellow green brown gray black],
             operating_rounds: 2,
@@ -101,24 +143,24 @@ module Engine
             name: '4',
             distance: 4,
             price: 250,
-            rusts_on: '6+S',
+            rusts_on: '7*',
             num: 3,
           },
           {
             name: '5',
             distance: 5,
             price: 340,
-            rusts_on: '6+SS',
+            rusts_on: '8*',
             num: 3,
           },
           {
-            name: '6+S',
+            name: '7*',
             distance: 6,
             price: 440,
             num: 4,
           },
           {
-            name: '6+SS',
+            name: '8*',
             distance: 6,
             price: 560,
             num: 6,
@@ -126,15 +168,67 @@ module Engine
           },
         ].freeze
 
-        CAPITALIZATION = :incremental
+        LAST_OR = 11
 
-        SELL_BUY_ORDER = :sell_buy
-        SELL_MOVEMENT = :down_share
-        HOME_TOKEN_TIMING = :float
+        @or = 0
 
-        CLOSED_CORP_RESERVATIONS_REMOVED = false
+        def end_now?(_after)
+          @or == LAST_OR
+        end
 
-        COMPANY_CLASS = G22Mars::Company
+        def new_operating_round(round_num = 1)
+          @or += 1
+
+          super
+        end
+
+        def timeline
+          [
+            'OR 7: Revolt! happens with 25% chance ',
+            'OR 8: Revolt! happens with 33% chance if not happened yet',
+            'OR 9: Revolt! happens with 50% chance if not happened yet',
+            'OR 10: Revolt! happens if not happened yet',
+            'Game ends after OR 11',
+          ].freeze
+        end
+
+        def show_progress_bar?
+          true
+        end
+
+        def progress_information
+          [
+            { type: :PRE },
+            { type: :SR, name: '1' },
+            { type: :OR, name: '1' },
+            { type: :OR, name: '2' },
+            { type: :SR, name: '2' },
+            { type: :OR, name: '3' },
+            { type: :OR, name: '4' },
+            { type: :SR, name: '3' },
+            { type: :OR, name: '5' },
+            { type: :OR, name: '6' },
+            { type: :SR, name: '4' },
+            { type: :OR, name: '7', value: '✘/✔' },
+            { type: :OR, name: '8', value: '✘/✔' },
+            { type: :SR, name: '5' },
+            { type: :OR, name: '9', value: '✘/✔' },
+            { type: :OR, name: '10', value: '✔' },
+            { type: :OR, name: '11' },
+            { type: :End },
+          ]
+        end
+
+        def price_movement_chart
+          [
+            ['Action', 'Share Price Change'],
+            ['Dividend 0 or withheld', '1 ←'],
+            ['Dividend < 2x share price ', '1 →'],
+            ['Dividend ≥ 2x share price', '2 →'],
+            ['Each share sold', '1 ↓'],
+            ['Fully owned at the end of SR', '1 ↑'],
+          ]
+        end
 
         def company_header(company)
           company.revolt? ? 'REVOLT!' : 'PERMIT'
