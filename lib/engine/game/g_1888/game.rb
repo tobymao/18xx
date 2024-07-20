@@ -318,7 +318,7 @@ module Engine
 
         def revenue_str(route)
           corp = route.train.owner
-          destination_count = destination_hex[corp.name].sum { |hex| destinated?(corp, route.stops, hex) ? 1 : 0 }
+          destination_count = destination_hex[corp.name].count { |hex| destinated?(corp, route.stops, hex) }
           bonus = destination_count.positive? ? " (#{destination_count} dest)" : ''
           super + bonus
         end
