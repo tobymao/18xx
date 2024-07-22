@@ -64,5 +64,11 @@ module Engine
     def placed_tokens
       @tokens.select(&:city)
     end
+
+    def logo=(logo)
+      @logo_filename = "#{logo}.svg"
+      @logo = "/logos/#{@logo_filename}"
+      @simple_logo = @logo
+    end
   end
 end

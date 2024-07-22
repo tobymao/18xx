@@ -7,6 +7,8 @@ module Engine
     module G1822PNW
       module Step
         class AcquireCompany < Engine::Step::AcquireCompany
+          attr_reader :choices
+
           def actions(entity)
             return ['choose'] if @choices
 
@@ -21,8 +23,7 @@ module Engine
 
             return unless @game.unassociated_minors.include?(action.entity)
 
-            bidbox_corporations = @game.bidbox_minors.map { |c| @game.corporation_from_company(c) }
-            targets = @game.corporations.select { |c| @game.associated_minor?(c) && !c.owner && !bidbox_corporations.include?(c) }
+            targets = p20_targets
             return if targets.empty?
 
             @new_associated_minor = action.entity
@@ -31,8 +32,6 @@ module Engine
               @choices[t.name] = "Replace #{t.name} as associated minor for #{@game.major_name_for_associated_minor(t.id)}"
             end
           end
-
-          attr_reader :choices
 
           def choice_name
             'Pick which associated minor to replace'
@@ -47,12 +46,22 @@ module Engine
             @log << "#{old_corporation.id} is removed from the game"
             old_corporation.all_abilities.each { |a| @new_associated_minor.add_ability(a) }
             minor_city = @game.hex_by_id(old_corporation.coordinates).tile.cities.find { |c| c.reserved_by?(old_corporation) }
-            minor_city.reservations.delete(old_corporation)
+
+            if minor_city
+              minor_city.reservations.delete(old_corporation)
+            else
+              old_home_city = @game.hex_by_id(major.coordinates).tile.cities.find { |c| c.reserved_by?(major) }
+              old_home_city.reservations.delete(major)
+            end
+
             @game.corporations.delete(old_corporation)
 
             old_company = @game.company_by_id(@game.company_id_from_corp_id(action.choice))
             @new_associated_minor.color = old_company.color
             @new_associated_minor.text_color = old_company.text_color
+            @new_associated_minor.logo = "1822_pnw/#{major.id.downcase}/#{@new_associated_minor.name}"
+            @new_associated_minor.tokens.first.logo = @new_associated_minor.logo
+            @new_associated_minor.tokens.first.simple_logo = @new_associated_minor.logo
 
             original_home_coordinates = major.coordinates
             @game.remove_home_icon(major, original_home_coordinates)
@@ -83,6 +92,24 @@ module Engine
             @game.companies.delete(old_company)
 
             @choices = nil
+          end
+
+          def p20_targets
+            bidbox_minors = @game.bidbox_minors
+
+            @game.minor_associations.each_with_object([]) do |(minor_id, major_id), targets|
+              company = @game.company_by_id("M#{minor_id}")
+              minor = @game.corporation_by_id(minor_id)
+              major = @game.corporation_by_id(major_id)
+
+              already_discarded = (!company.owner && company.closed? && minor.closed?)
+
+              minor_available = !minor.owner &&
+                                (already_discarded || !bidbox_minors.include?(company))
+              major_available = !major.owner && !major.floated?
+
+              targets << minor if minor_available && major_available
+            end
           end
         end
       end

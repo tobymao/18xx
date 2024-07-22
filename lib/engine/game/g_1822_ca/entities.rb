@@ -4,10 +4,6 @@ module Engine
   module Game
     module G1822CA
       module Entities
-        PRIVATE_RED = '#FF7276'
-        PRIVATE_GREEN = '#90EE90'
-        PRIVATE_BLUE = '#89CFF0'
-
         COMPANIES = [
           {
             name: 'P1 (5-Train)',
@@ -21,7 +17,6 @@ module Engine
                   'However, once acquired the acquiring company needs to check whether it is at '\
                   'train limit and discard any trains held in excess of limit.',
             abilities: [],
-            color: PRIVATE_RED,
           },
           {
             name: 'P2 (Permanent L-Train)',
@@ -40,7 +35,6 @@ module Engine
                   'the permanent L, this also still counts as a normal dividend for stock price '\
                   'movement purposes. Does not close.',
             abilities: [],
-            color: PRIVATE_GREEN,
           },
           {
             name: 'P3 (Permanent 2-Train)',
@@ -60,7 +54,6 @@ module Engine
                   'still counts as a normal dividend for stock price movement purposes. Does not '\
                   'close.',
             abilities: [],
-            color: PRIVATE_RED,
           },
           {
             name: 'P4 (Permanent 2-Train)',
@@ -80,7 +73,6 @@ module Engine
                   'still counts as a normal dividend for stock price movement purposes. Does not '\
                   'close.',
             abilities: [],
-            color: PRIVATE_RED,
           },
           {
             name: 'P5 (Pullman)',
@@ -93,7 +85,6 @@ module Engine
                   'purposes of train ownership. Can’t be sold to another company. Does not close. '\
                   'May include a maximum of [2 × the train size] number of towns.',
             abilities: [],
-            color: PRIVATE_RED,
           },
           {
             name: 'P6 (Pullman)',
@@ -106,7 +97,6 @@ module Engine
                   'purposes of train ownership. Can’t be sold to another company. Does not close. '\
                   'May include a maximum of [2 × the train size] number of towns.',
             abilities: [],
-            color: PRIVATE_RED,
           },
           {
             name: 'P7 (Declare 2× Cash Holding)',
@@ -118,7 +108,6 @@ module Engine
                   'determine player turn order in the next stock round. If held by a company it '\
                   'pays revenue of $20 (green)/$40 (brown)/$60 (grey). Does not close.',
             abilities: [],
-            color: PRIVATE_RED,
           },
           {
             name: 'P8 ($10× Phase)',
@@ -132,7 +121,6 @@ module Engine
                   'closes. If not acquired beforehand, this company closes at the start of Phase 7 '\
                   'and all treasury credits are returned to the bank.',
             abilities: [],
-            color: PRIVATE_GREEN,
           },
           {
             name: 'P9 ($5× Phase)',
@@ -146,7 +134,6 @@ module Engine
                   'company closes. If not acquired beforehand, this company closes at the start of '\
                   'Phase 7 and all treasury credits are returned to the bank.',
             abilities: [],
-            color: PRIVATE_GREEN,
           },
           {
             name: 'P10 (Winnipeg Station)',
@@ -175,10 +162,10 @@ module Engine
                 price: 0,
                 special_only: true,
                 teleport_price: 0,
+                same_hex_allowed: true,
                 when: 'owning_corp_or_turn',
               },
             ],
-            color: PRIVATE_RED,
           },
           {
             name: 'P11 (Tax Haven)',
@@ -202,7 +189,6 @@ module Engine
                   'accumulated on the charter. Does not count against the '\
                   'certificate limit.',
             abilities: [],
-            color: PRIVATE_BLUE,
           },
           {
             name: 'P12 (Advanced Tile Lay)',
@@ -232,7 +218,6 @@ module Engine
                 consume_tile_lay: true,
               },
             ],
-            color: PRIVATE_GREEN,
           },
           {
             name: 'P13 (Sawmill Bonus)',
@@ -264,7 +249,6 @@ module Engine
                 closed_when_used_up: true,
               },
             ],
-            color: PRIVATE_RED,
           },
           {
             name: 'P14 (Free Toronto Upgrades)',
@@ -290,7 +274,6 @@ module Engine
                 reachable: true,
               },
             ],
-            color: PRIVATE_GREEN,
           },
           {
             name: 'P15 (Free Ottawa Upgrades)',
@@ -316,7 +299,6 @@ module Engine
                 reachable: true,
               },
             ],
-            color: PRIVATE_GREEN,
           },
           {
             name: 'P16 (Free Montréal Upgrades)',
@@ -342,7 +324,6 @@ module Engine
                 reachable: true,
               },
             ],
-            color: PRIVATE_GREEN,
           },
           {
             name: 'P17 (Free Québec Upgrades)',
@@ -368,7 +349,6 @@ module Engine
                 reachable: true,
               },
             ],
-            color: PRIVATE_GREEN,
           },
           {
             name: 'P18 (Free Winnipeg Upgrades)',
@@ -394,7 +374,6 @@ module Engine
                 reachable: true,
               },
             ],
-            color: PRIVATE_GREEN,
           },
           {
             name: 'P19 (Crowsnest Pass Tile)',
@@ -421,7 +400,6 @@ module Engine
                 closed_when_used_up: true,
               },
             ],
-            color: PRIVATE_RED,
           },
           {
             name: 'P20 (Yellowhead Pass Tile)',
@@ -448,7 +426,6 @@ module Engine
                 closed_when_used_up: true,
               },
             ],
-            color: PRIVATE_RED,
           },
           {
             name: 'P21 (3-Tile Grant)',
@@ -493,7 +470,6 @@ module Engine
                           AO3 AO5 AO7 AO9 AP2 AP6 AP8],
               },
             ],
-            color: PRIVATE_RED,
           },
           {
             name: 'P22 (Large Mail Contract)',
@@ -509,7 +485,6 @@ module Engine
                   'include towns. A company may own multiple Large Mail Contracts, but may only '\
                   'use one per train. Does not close.',
             abilities: [],
-            color: PRIVATE_RED,
           },
           {
             name: 'P23 (Large Mail Contract)',
@@ -525,7 +500,6 @@ module Engine
                   'include towns. A company may own multiple Large Mail Contracts, but may only '\
                   'use one per train. Does not close.',
             abilities: [],
-            color: PRIVATE_RED,
           },
           {
             name: 'P24 (Small Mail Contract)',
@@ -536,7 +510,6 @@ module Engine
                   '20 (green)/$30 (brown)/$40 (grey) to the treasury of the company. The company '\
                   'must operate a train to claim the mail income. Does not close.',
             abilities: [],
-            color: PRIVATE_RED,
           },
           {
             name: 'P25 (Small Mail Contract)',
@@ -547,7 +520,6 @@ module Engine
                   '20 (green)/$30 (brown)/$40 (grey) to the treasury of the company. The company '\
                   'must operate a train to claim the mail income. Does not close.',
             abilities: [],
-            color: PRIVATE_RED,
           },
           {
             name: 'P26 (Grain Train)',
@@ -565,7 +537,6 @@ module Engine
                   'includes at least one grain elevator and a port city, the port city adds $20 to '\
                   'the run revenue.',
             abilities: [],
-            color: PRIVATE_RED,
           },
           {
             name: 'P27 (Grain Train)',
@@ -582,7 +553,6 @@ module Engine
                   'city. If the route run by the grain train includes at least one grain '\
                   'elevator and a port city, the port city adds $20 to the run revenue.',
             abilities: [],
-            color: PRIVATE_RED,
           },
           {
             name: 'P28 (Station Token Swap)',
@@ -593,7 +563,6 @@ module Engine
                   'a token from the exchange token area of its charter to the available token '\
                   'area, or vice versa. This company closes when its power is exercised.',
             abilities: [],
-            color: PRIVATE_GREEN,
           },
           {
             name: 'P29 (Remove Single Town)',
@@ -624,7 +593,6 @@ module Engine
               },
 
             ],
-            color: PRIVATE_GREEN,
           },
           {
             name: 'P30 (Remove Single Town)',
@@ -655,7 +623,6 @@ module Engine
               },
 
             ],
-            color: PRIVATE_GREEN,
           },
           {
             name: 'CONCESSION: CNoR',

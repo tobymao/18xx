@@ -98,11 +98,11 @@ module Engine
         end
 
         def book_value_per_share
-          book_value / 10.0.ceil
+          (book_value / 10).floor
         end
 
         def total_value_per_share
-          share_price + book_value_per_share
+          share_price.price + book_value_per_share
         end
 
         def value_of_trains

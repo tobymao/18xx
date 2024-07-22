@@ -81,7 +81,7 @@ module View
         end
         abilities_to_display = @corporation.all_abilities.select(&:description)
         children << render_abilities(abilities_to_display) if abilities_to_display.any?
-        children << render_bidders if @bids&.any?
+        children << render_bidders if @bids && !@bids.empty?
 
         extras = []
         if @game.corporation_show_loans?(@corporation)

@@ -122,12 +122,12 @@ module Engine
         }.freeze
         GAME_END_REASONS_TEXT = {
           bankrupt: 'Player is bankrupt',
-          custom: '6-train is bought/exported',
+          custom: '6x2-train is bought/exported',
           stock_market: 'Corporation enters end game trigger on stock market',
         }.freeze
         GAME_END_DESCRIPTION_REASON_MAP_TEXT = {
           bankrupt: 'Bankruptcy',
-          custom: '6-train was bought/exported',
+          custom: '6x2-train was bought/exported',
           stock_market: 'Company hit max stock value',
         }.freeze
 
@@ -136,8 +136,8 @@ module Engine
         end
 
         def game_companies
-          YELLOW_COMPANIES.sort_by { rand }.take(2).sort_by { |c| c[:sym] } +
-            GREEN_COMPANIES.sort_by { rand }.take(2).sort_by { |c| c[:sym] } +
+          YELLOW_COMPANIES.sort_by { rand }.take(2).sort_by { |c| c[:value] } +
+            GREEN_COMPANIES.sort_by { rand }.take(2).sort_by { |c| c[:value] } +
             BROWN_COMPANIES.sort_by { rand }.take(1)
         end
 
@@ -552,6 +552,8 @@ module Engine
           # debt increases
           old_price = @debt_corp.share_price
           @stock_market.move_right(@debt_corp)
+          @debt_corp.cash = @debt_corp.share_price.price
+
           log_share_price(@debt_corp, old_price, 1)
         end
 
@@ -564,7 +566,7 @@ module Engine
           @gold_shipped = 0
           update_gold_corp_cash!
 
-          depot.export!
+          depot.export! unless @depot.upcoming.empty?
         end
 
         def handle_metal_payout(entity)
@@ -907,6 +909,7 @@ module Engine
           corporation.ipoed = true
           corporation.floated = true
           price = @stock_market.share_price([0, 6])
+          corporation.cash = price.price
           @stock_market.set_par(corporation, price)
           bundle = ShareBundle.new(corporation.shares_of(corporation))
           @share_pool.transfer_shares(bundle, @share_pool)
@@ -1052,6 +1055,11 @@ module Engine
 
         def end_game!(player_initiated: false)
           return if @finished
+
+          if !@manually_ended && @round.finished?
+            handle_metal_payout(@steel_corp)
+            handle_metal_payout(@gold_corp)
+          end
 
           logged_drop = false
           @indebted.each do |corporation, (_, amount)|

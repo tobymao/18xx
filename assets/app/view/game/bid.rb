@@ -11,7 +11,7 @@ module View
         needs :biddable
 
         def render
-          step = @game.round.step_for(@entity, 'bid')
+          return '' unless (step = @game.round.step_for(@entity, 'bid'))
 
           children = []
           children << h(:div, [step.bid_description]) if step.respond_to?(:bid_description) && step.bid_description

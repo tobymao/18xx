@@ -12,7 +12,6 @@ module Engine
             value: 0,
             revenue: 0,
             abilities: [],
-            color: nil,
           },
           {
             name: 'P2 (Permanent 2-train)',
@@ -21,7 +20,6 @@ module Engine
             value: 0,
             revenue: 0,
             abilities: [],
-            color: nil,
           },
           {
             name: 'P3 (Permanent 2-train)',
@@ -30,7 +28,6 @@ module Engine
             value: 0,
             revenue: 0,
             abilities: [],
-            color: nil,
           },
           {
             name: 'P4 (Pullman)',
@@ -41,7 +38,6 @@ module Engine
             value: 0,
             revenue: 10,
             abilities: [],
-            color: nil,
           },
           {
             name: 'P5 (Add Town)',
@@ -67,7 +63,6 @@ module Engine
                 combo_entities: %w[P7 P11],
               },
             ],
-            color: nil,
           },
           {
             name: 'P6 (Recycled train)',
@@ -77,7 +72,6 @@ module Engine
             value: 0,
             revenue: 10,
             abilities: [],
-            color: nil,
           },
           {
             name: 'P7 (Extra tile)',
@@ -105,7 +99,6 @@ module Engine
                 combo_entities: %w[P9 P11],
               },
             ],
-            color: nil,
           },
           {
             name: 'P8 (Reserve Three Tiles)',
@@ -118,7 +111,6 @@ module Engine
             value: 0,
             revenue: 10,
             abilities: [],
-            color: nil,
           },
           {
             name: 'P9 (Remove Town)',
@@ -144,7 +136,6 @@ module Engine
                 combo_entities: %w[P7 P11],
               },
             ],
-            color: nil,
           },
           {
             name: 'P10 (Game Reserve)',
@@ -171,7 +162,6 @@ module Engine
                 closed_when_used_up: true,
               },
             ],
-            color: nil,
           },
           {
             name: 'P11 (Mountain Rebate)',
@@ -200,12 +190,12 @@ module Engine
                 owner_only: true,
               },
             ],
-            color: nil,
           },
           {
             name: 'P12 (Fast Sahara Building)',
             sym: 'P12',
-            desc: 'MAJOR/MINOR, Phase 1. The owning company may place any amount of yellow tiles in the hexes marked '\
+            desc: 'MAJOR/MINOR, Phase 1. The owning company may place any amount of yellow tiles '\
+                  'following the other tile laying rules in the hexes marked '\
                   'with desert terrain as their normal tile laying step at normal cost. '\
                   'Using this ability closes the private company.',
             value: 0,
@@ -214,9 +204,9 @@ module Engine
               {
                 type: 'tile_lay',
                 hexes: %w[B6 C3 C5 C7 D4 D6 D8 E5 E7 F6 G7],
-                tiles: [],
+                tiles: %w[7 8 9],
                 owner_type: 'corporation',
-                when: 'special_track',
+                when: %w[track special_track],
                 must_lay_together: true,
                 lay_count: 11,
                 upgrade_count: 0,
@@ -228,7 +218,6 @@ module Engine
                 combo_entities: %w[P7 P9 P11],
               },
             ],
-            color: nil,
           },
           {
             name: 'P13 (Station Swap)',
@@ -239,7 +228,6 @@ module Engine
             value: 0,
             revenue: 10,
             abilities: [],
-            color: nil,
           },
           {
             name: 'P14 (Gold Mine)',
@@ -265,7 +253,6 @@ module Engine
                 check_tokenable: false,
               },
             ],
-            color: nil,
           },
           {
             name: 'P15 (Coffee Plantation)',
@@ -287,7 +274,6 @@ module Engine
                 owner_type: 'corporation',
               },
             ],
-            color: nil,
           },
           {
             name: 'P16 (A10x Phase)',
@@ -301,7 +287,6 @@ module Engine
             value: 0,
             revenue: 0,
             abilities: [],
-            color: nil,
           },
           {
             name: 'P17 (Bank Share Buy)',
@@ -312,7 +297,6 @@ module Engine
             value: 0,
             revenue: 10,
             abilities: [],
-            color: nil,
           },
           {
             name: 'P18 (Safari Bonus)',
@@ -324,7 +308,6 @@ module Engine
             value: 0,
             revenue: 10,
             abilities: [],
-            color: nil,
           },
           {
             name: 'CONCESSION: NAR',

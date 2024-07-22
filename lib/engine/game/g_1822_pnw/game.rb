@@ -15,6 +15,8 @@ module Engine
         include G1822PNW::Map
         include G1822PNW::BuilderCubes
 
+        attr_reader :minor_associations
+
         CERT_LIMIT = { 3 => 21, 4 => 15, 5 => 12 }.freeze
 
         STARTING_CASH = { 3 => 500, 4 => 375, 5 => 300 }.freeze
@@ -810,8 +812,6 @@ module Engine
         def company_tax_haven_bundle(choice); end
         def company_tax_haven_payout(entity, per_share); end
         def num_certs_modification(_entity) = 0
-
-        def finalize_end_game_values; end
 
         def set_private_revenues; end
 

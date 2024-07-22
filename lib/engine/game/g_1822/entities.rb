@@ -16,7 +16,6 @@ module Engine
                   'However, once acquired the acquiring company needs to check whether it is at train limit and '\
                   'discard any trains held in excess of limit.',
             abilities: [],
-            color: nil,
           },
           {
             name: 'P2-MtonR (Remove Town)',
@@ -42,7 +41,6 @@ module Engine
                 combo_entities: %w[P8 P10 P11 P12],
               },
             ],
-            color: nil,
           },
           {
             name: 'P3-S&HR (Permanent 2T)',
@@ -60,7 +58,6 @@ module Engine
                   'from the 2P, this also still counts as a normal dividend for stock price movement purposes. Does '\
                   'not close.',
             abilities: [],
-            color: nil,
           },
           {
             name: 'P4-SDR (Permanent 2T)',
@@ -78,7 +75,6 @@ module Engine
                   'from the 2P, this also still counts as a normal dividend for stock price movement purposes. '\
                   'Does not close.',
             abilities: [],
-            color: nil,
           },
           {
             name: 'P5-LC&DR (English Channel)',
@@ -115,7 +111,6 @@ module Engine
                 when: 'token',
               },
             ],
-            color: nil,
           },
           {
             name: 'P6-L&SR (Mail Contract)',
@@ -129,7 +124,6 @@ module Engine
                   'the mail contract by stopping at a large city and not running beyond it to include small '\
                   'stations. Does not close.',
             abilities: [],
-            color: nil,
           },
           {
             name: 'P7-S&BR (Mail Contract)',
@@ -143,7 +137,6 @@ module Engine
                   'the mail contract by stopping at a large city and not running beyond it to include small '\
                   'stations. Does not close.',
             abilities: [],
-            color: nil,
           },
           {
             name: 'P8-E&GR (Hill Discount)',
@@ -187,7 +180,6 @@ module Engine
                 terrain: 'mountain',
               },
             ],
-            color: nil,
           },
           {
             name: 'P9-M&GNR (Double Cash)',
@@ -199,7 +191,6 @@ module Engine
                   'order in the next stock round. If held by a company it pays revenue of '\
                   '£20 (green)/£40 (brown)/£60 (grey). Does not close.',
             abilities: [],
-            color: nil,
           },
           {
             name: 'P10-G&SWR (River Discount)',
@@ -230,7 +221,6 @@ module Engine
                 terrain: 'swamp',
               },
             ],
-            color: nil,
           },
           {
             name: 'P11-B&ER (Adv. Tile Lay)',
@@ -257,7 +247,6 @@ module Engine
                 combo_entities: %w[P2 P10 P12],
               },
             ],
-            color: nil,
           },
           {
             name: 'P12-L&SR (Extra Tile Lay)',
@@ -284,7 +273,6 @@ module Engine
                 combo_entities: %w[P2 P8 P10 P11],
               },
             ],
-            color: nil,
           },
           {
             name: 'P13-YN&BR (Pullman)',
@@ -296,7 +284,6 @@ module Engine
                   'and does not count as a train for the purposes of train ownership. Can’t be sold to another '\
                   'company. Does not close.',
             abilities: [],
-            color: nil,
           },
           {
             name: 'P14-K&TR (Pullman)',
@@ -308,7 +295,6 @@ module Engine
                   'and does not count as a train for the purposes of train ownership. Can’t be sold to another '\
                   'company. Does not close.',
             abilities: [],
-            color: nil,
           },
           {
             name: 'P15-HR (£10x Phase)',
@@ -321,14 +307,13 @@ module Engine
                   'this private company closes. If not acquired beforehand, this company closes at the start of '\
                   'Phase 7 and all treasury credits are returned to the bank.',
             abilities: [],
-            color: nil,
           },
           {
             name: 'P16-TH (Tax Haven)',
             sym: 'P16',
             value: 0,
             revenue: 0,
-            desc: 'CAN NOT BE ACQUIRED. Tax Haven. As a stock round action, under the direction and funded by the '\
+            desc: 'CANNOT BE ACQUIRED. Tax Haven. As a stock round action, under the direction and funded by the '\
                   'owning player, the off-shore Tax Haven may purchase an available share certificate and place it '\
                   'onto P16’s charter. The certificate is not counted for determining directorship of a company. '\
                   'The share held in the tax haven does NOT count against the 60% share limit for purchasing '\
@@ -342,7 +327,6 @@ module Engine
                   'cash from dividend income accumulated on the charter. Can’t be acquired. Does not count against '\
                   'the certificate limit.',
             abilities: [],
-            color: nil,
           },
           {
             name: 'P17-LUR (Move Card)',
@@ -354,7 +338,6 @@ module Engine
                   'currently in the bidding boxes, and move it to the top or the bottom of the stack. Closes when '\
                   'the power is exercised.',
             abilities: [],
-            color: nil,
           },
           {
             name: 'P18-C&HPR (Station Swap)',
@@ -365,7 +348,6 @@ module Engine
                   'token area of its charter to the available token area, or vice versa. This company closes when '\
                   'its power is exercised.',
             abilities: [],
-            color: nil,
           },
           {
             name: 'P19-AEC (Perm. L Train)',
@@ -382,7 +364,6 @@ module Engine
                   'retains the dividend from the permanent L, this also still counts as a normal dividend for stock '\
                   'price movement purposes. Does not close.',
             abilities: [],
-            color: nil,
           },
           {
             name: 'P20-C&WR (£5x Phase)',
@@ -395,7 +376,6 @@ module Engine
                   'this private company closes. If not acquired beforehand, this company closes at the start of '\
                   'Phase 7 and all treasury credits are returned to the bank.',
             abilities: [],
-            color: nil,
           },
           {
             name: 'P21-HSBC (Grimsby/Hull Bridge)',
@@ -424,7 +404,6 @@ module Engine
                 consume_tile_lay: true,
               },
             ],
-            color: nil,
           },
           {
             name: 'CONCESSION: LNWR',

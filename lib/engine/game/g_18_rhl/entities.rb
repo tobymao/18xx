@@ -199,7 +199,7 @@ module Engine
           },
           {
             sym: 'Szl',
-            name: 'No. 3 Seilzyganlage',
+            name: 'No. 3 Seilzuganlage',
             value: 50,
             revenue: 15,
             desc: 'As director of a corporation the owner may place a tile on a mountain hex for free during the '\

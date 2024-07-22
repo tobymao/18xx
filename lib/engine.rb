@@ -51,6 +51,8 @@ module Engine
   end
 
   def self.meta_by_title(title)
+    return unless title
+
     GAME_META_BY_TITLE[closest_title(title)]
   end
 

@@ -26,6 +26,9 @@ module Engine
                         nerGreen: '#aade87',
                         black: '#000',
                         white: '#ffffff')
+        PRIVATE_RED = '#FF7276'
+        PRIVATE_GREEN = '#90EE90'
+        PRIVATE_BLUE = '#89CFF0'
 
         BANKRUPTCY_ALLOWED = false
 
@@ -283,6 +286,10 @@ module Engine
             num: 2,
             price: 0,
           },
+        ].freeze
+
+        TRAIN_AUTOROUTE_GROUPS = [
+          %w[E],
         ].freeze
 
         LAYOUT = :flat
@@ -564,6 +571,11 @@ module Engine
         def check_distance(route, visits)
           raise GameError, 'Cannot run Pullman train' if pullman_train?(route.train)
 
+          if train_type(route.train) == :etrain &&
+             visits.count { |v| v.city? && v.tokened_by?(route.corporation) } < 2
+            raise GameError, 'E-train route must have at least 2 tokened cities'
+          end
+
           english_channel_visit = english_channel_visit(visits)
           # Permanent local train cant run in the english channel
           if self.class::LOCAL_TRAINS.include?(route.train.name) && english_channel_visit.positive?
@@ -584,15 +596,10 @@ module Engine
           # Tracks by e-train and normal trains
           tracks_by_type = Hash.new { |h, k| h[k] = [] }
 
-          # Check local train not use the same token more then one time
-          local_cities = []
-
           # Merthyr Tydfil and Pontypool
           merthyr_tydfil_pontypool = {}
 
           routes.each do |route|
-            local_cities.concat(route.visited_stops.select(&:city?)) if route.train.local? && !route.chains.empty?
-
             route.paths.each do |path|
               a = path.a
               b = path.b
@@ -621,14 +628,30 @@ module Engine
             end
           end
 
-          local_cities.group_by(&:itself).each do |k, v|
-            raise GameError, "Local train can only use each token on #{k.hex.id} once" if v.size > 1
-          end
+          check_local_cities(routes)
 
           # Check Merthyr Tydfil and Pontypool, only one of the 2 tracks may be used
           return if !merthyr_tydfil_pontypool[1] || !merthyr_tydfil_pontypool[2]
 
           raise GameError, 'May only use one of the tracks connecting Merthyr Tydfil and Pontypool'
+        end
+
+        # Check local train not use the same token more then one time
+        def check_local_cities(routes)
+          local_cities = []
+          routes.each do |route|
+            local_cities.concat(route.visited_stops.select(&:city?)) if route.train.local? && !route.chains.empty?
+          end
+
+          local_cities.group_by(&:itself).each do |k, v|
+            puts "Local train can only use each token on #{k.hex.id} once"
+            raise GameError, "Local train can only use each token on #{k.hex.id} once" if v.size > 1
+          end
+        end
+
+        # called by AutoRouter
+        def check_other(route)
+          check_local_cities(route.routes)
         end
 
         def company_bought(company, entity)
@@ -705,17 +728,14 @@ module Engine
           discount_info
         end
 
-        def end_game!(player_initiated: false)
-          finalize_end_game_values
-          super
-        end
-
-        def finalize_end_game_values
+        def tax_haven_value(player)
           company = company_by_id(self.class::COMPANY_OSTH)
-          return if !company || !@tax_haven.value.positive?
 
-          # Make sure tax havens value is correct
-          company.value = @tax_haven.value
+          return 0 unless company
+          return 0 if company.owner != player
+          return 0 unless @tax_haven.value.positive?
+
+          @tax_haven.value
         end
 
         def entity_can_use_company?(entity, company)
@@ -872,8 +892,24 @@ module Engine
             next if players.size < (company[:min_players] || 0)
             next unless starting_companies.include?(company[:sym])
 
+            company = init_private_company_color(company)
             Company.new(**company)
           end.compact
+        end
+
+        def init_private_company_color(company)
+          return company unless company[:sym][0] == self.class::COMPANY_PRIVATE_PREFIX
+
+          company[:color] =
+            if company[:desc].start_with?('MAJOR/MINOR,')
+              self.class::PRIVATE_GREEN
+            elsif company[:desc].start_with?('MAJOR,')
+              self.class::PRIVATE_RED
+            elsif company[:desc].start_with?('CANNOT BE ACQUIRED.')
+              self.class::PRIVATE_BLUE
+            end
+
+          company
         end
 
         def init_company_abilities
@@ -1002,7 +1038,13 @@ module Engine
         end
 
         def player_value(player)
-          player.value - @player_debts[player]
+          # tax_haven_company.value can sometimes be zero and sometimes the same
+          # as tax_haven_value() (issues #5200 and #11007) because it is only
+          # set in company_status_str, which is only called by some views, so
+          # substract that value and include only the correct calculation
+          tax_haven_val = tax_haven_value(player) - (tax_haven_company&.value || 0)
+
+          player.value - @player_debts[player] + tax_haven_val
         end
 
         def purchasable_companies(entity = nil)
@@ -1756,19 +1798,23 @@ module Engine
           @optional_rules&.include?(:plus_expansion_single_stack)
         end
 
-        def payoff_player_loan(player)
-          # Pay full or partial of the player loan. The money from loans is outside money, doesnt count towards
-          # the normal bank money.
-          if player.cash >= @player_debts[player]
-            player.cash -= @player_debts[player]
-            @log << "#{player.name} pays off their loan of #{format_currency(@player_debts[player])}"
-            @player_debts[player] = 0
-          else
-            @player_debts[player] -= player.cash
-            @log << "#{player.name} decreases their loan by #{format_currency(player.cash)} "\
-                    "(#{format_currency(@player_debts[player])})"
-            player.cash = 0
-          end
+        # Pay full or partial of the player loan. The money from loans is
+        # outside money, doesnt count towards the normal bank money.
+        def payoff_player_loan(player, payoff_amount: nil)
+          loan_balance = @player_debts[player]
+          payoff_amount = player.cash if !payoff_amount || payoff_amount > player.cash
+          payoff_amount = [payoff_amount, loan_balance].min
+
+          @player_debts[player] -= payoff_amount
+          player.cash -= payoff_amount
+
+          @log <<
+            if payoff_amount == loan_balance
+              "#{player.name} pays off their loan of #{format_currency(loan_balance)}"
+            else
+              "#{player.name} decreases their loan by #{format_currency(payoff_amount)} "\
+                "(#{format_currency(@player_debts[player])})"
+            end
         end
 
         def place_destination_token(entity, hex, token, city = nil, log: true)
@@ -1916,6 +1962,7 @@ module Engine
 
         def hex_blocked_by_ability?(entity, ability, hex, tile)
           return false if tile.name == 'BC'
+          return false unless hex.tile.color == :white
           return false unless ability.player
           return false if entity.player == ability.player
           return false if ability.hexes.none? { |h| h.id == hex.id }
@@ -1975,10 +2022,12 @@ module Engine
           self.class::PENDING_HOME_TOKENERS
         end
 
-        def share_owning_players
+        def tax_haven_company
           @tax_haven_company ||= company_by_id(self.class::COMPANY_OSTH)
+        end
 
-          if @tax_haven_company&.owned_by_player?
+        def share_owning_players
+          if tax_haven_company&.owned_by_player?
             [*@players, @tax_haven]
           else
             @players
