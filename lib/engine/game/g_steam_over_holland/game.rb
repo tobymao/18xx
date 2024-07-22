@@ -111,7 +111,7 @@ module Engine
           name: '2',
           distance: [{ 'nodes' => %w[city offboard], 'pay' => 2, 'visit' => 2 },
                      { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
-          price: 100,
+          price: 1000,
           rusts_on: '4',
           num: 5,
         },
@@ -255,7 +255,7 @@ module Engine
             Engine::Step::Route,
             GSteamOverHolland::Step::Dividend,
             Engine::Step::DiscardTrain,
-            Engine::Step::BuyTrain,
+            GSteamOverHolland::Step::BuyTrain,
             [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
@@ -392,7 +392,6 @@ module Engine
 
         def issuable_shares(entity)
           return [] if round.issued_shares
-          return [] unless round.steps.find { |step| step.instance_of?(GSteamOverHolland::Step::IssueShares) }.active?
 
           num_shares = [entity.num_player_shares, 5 - entity.num_market_shares].min
           bundles = bundles_for_corporation(entity, entity)
@@ -404,8 +403,6 @@ module Engine
         end
 
         def redeemable_shares(entity)
-          return [] unless round.steps.find { |step| step.instance_of?(GSteamOverHolland::Step::IssueShares) }.active?
-
           share_price = stock_market.find_share_price(entity, :current).price
 
           bundles_for_corporation(share_pool, entity)
