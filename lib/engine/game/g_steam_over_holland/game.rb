@@ -391,9 +391,10 @@ module Engine
         end
 
         def issuable_shares(entity)
+          return [] if round.issued_shares
           return [] unless round.steps.find { |step| step.instance_of?(GSteamOverHolland::Step::IssueShares) }.active?
 
-          num_shares = entity.num_player_shares - entity.num_market_shares
+          num_shares = [entity.num_player_shares, 5 - entity.num_market_shares].min
           bundles = bundles_for_corporation(entity, entity)
           share_price = stock_market.find_share_price(entity, :current).price
 
