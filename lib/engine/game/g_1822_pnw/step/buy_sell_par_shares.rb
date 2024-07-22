@@ -139,6 +139,12 @@ module Engine
           def selected_corporation
             @converting_major
           end
+
+          def can_buy?(entity, bundle, available_cash: nil)
+            return true if convertable_by?(bundle.corporation, entity)
+
+            super
+          end
         end
       end
     end

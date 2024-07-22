@@ -8,14 +8,20 @@ module Engine
           ACTIONS = %w[destination_connection pass].freeze
 
           def description
-            'Place the Destination Bonus'
+            'Destination Bonus'
           end
 
-          def pass_description
-            'Skip (Destination Bonus)'
+          def log_skip(entity)
+            return if entity.minor?
+            return if entity == @game.rptla
+
+            super
           end
 
-          def actions(_entity)
+          def actions(entity)
+            return [] if entity.minor?
+            return [] if entity == @game.rptla
+
             self.class::ACTIONS
           end
 

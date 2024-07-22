@@ -84,7 +84,7 @@ module View
           end
 
           children.concat(render_buttons)
-          children << render_bid if @current_actions.include?('bid')
+          children << render_bid if should_render_bid?
           children << h(SpecialBuy) if @current_actions.include?('special_buy')
           children.concat(render_failed_merge) if @current_actions.include?('failed_merge')
           children.concat(render_bank_companies) if @bank_first
@@ -127,6 +127,7 @@ module View
           buttons = []
           buttons.concat(render_merge_button) if @current_actions.include?('merge')
           buttons.concat(render_payoff_player_debt_button) if @current_actions.include?('payoff_player_debt')
+          buttons.concat(render_payoff_player_debt_partial_button) if @current_actions.include?('payoff_player_debt_partial')
           buttons.concat(render_take_loan) if @current_actions.include?('take_loan')
           buttons.concat(render_payoff_loan) if @current_actions.include?('payoff_loan')
           buttons.any? ? [h(:div, buttons)] : []
@@ -185,7 +186,39 @@ module View
             process_action(Engine::Action::PayoffPlayerDebt.new(@current_entity))
           end
           partial = @current_entity.cash < @game.player_debt(@current_entity)
-          [h(:button, { on: { click: payoffdebt } }, "Payoff Debt#{partial ? ' (Partial)' : ''}")]
+          amount = [@current_entity.cash, @game.player_debt(@current_entity)].min
+          [h(:button, { on: { click: payoffdebt } },
+             "Pay off debt#{partial ? ' (Partial)' : ''} - #{@game.format_currency(amount)}")]
+        end
+
+        def render_payoff_player_debt_partial_button
+          max_payoff = [@current_entity.cash, @game.player_debt(@current_entity)].min
+
+          input = h(
+            'input.no_margin',
+            style: {
+              height: '1.2rem',
+              width: '4rem',
+              padding: '0 0 0 0.2rem',
+            },
+            attrs: {
+              type: 'number',
+              min: 1,
+              max: max_payoff,
+              value: max_payoff,
+            },
+          )
+
+          payoff_debt_partial = lambda do
+            amount = input.JS['elm'].JS['value'].to_i
+            process_action(Engine::Action::PayoffPlayerDebtPartial.new(@current_entity, amount: amount))
+          end
+
+          [h(:div, [
+               input,
+               h(:button, { on: { click: payoff_debt_partial } },
+                 'Partially pay off debt'),
+          ])]
         end
 
         def render_failed_merge
@@ -254,7 +287,7 @@ module View
           when :par
             children << h(Par, corporation: corporation) if @current_actions.include?('par')
           when :bid
-            children << h(Bid, entity: @current_entity, biddable: corporation) if @current_actions.include?('bid')
+            children << h(Bid, entity: @current_entity, biddable: corporation) if should_render_bid?
           when :form
             children << h(FormCorporation, corporation: corporation) if @current_actions.include?('par')
           when String
@@ -377,11 +410,11 @@ module View
           @game.buyable_bank_owned_companies.map do |company|
             inputs = []
             inputs.concat(render_buy_input(company)) if @current_actions.include?('buy_company')
-            inputs.concat(render_company_bid_input(company)) if @current_actions.include?('bid')
+            inputs.concat(render_company_bid_input(company)) if should_render_bid?
 
             children = []
             children << h(Company, company: company,
-                                   bids: (@current_actions.include?('bid') ? @step.bids[company] : nil),
+                                   bids: (should_render_bid? ? @step.bids[company] : nil),
                                    interactive: !inputs.empty?)
             if !inputs.empty? && @selected_company == company
               children << h('div.margined_bottom', { style: { width: '20rem' } }, inputs)
@@ -548,6 +581,10 @@ module View
             children << h(Bid, entity: @current_entity, biddable: @step.bid_entity)
           end
           h(:div, children)
+        end
+
+        def should_render_bid?
+          @current_actions.include?('bid') || @step.auctioneer?
         end
       end
     end

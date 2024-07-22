@@ -40,7 +40,7 @@ module Engine
                   @game.add_gauge_change_marker(hex, neighbor)
                   @log << "Gauge Change Marker added between #{hex.id} and #{neighbor.id}"
                 end
-              elsif cost # Remove border with a cost from tile and connected neighbor (super)
+              elsif cost.positive? # Remove border with a cost from tile and connected neighbor (super)
                 LOGGER.debug ' >> Removed border with a cost'
                 remove_border(border, tile, neighbor)
               end

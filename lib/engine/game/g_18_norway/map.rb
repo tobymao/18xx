@@ -137,7 +137,7 @@ module Engine
           'K2' => {
             'count' => 1,
             'color' => 'brown',
-            'code' => 'label=K;city=revenue:30;path=a:0,b:_0,track:narrow;path=a:1,b:_0,track:narrow;'\
+            'code' => 'label=K;city=revenue:50;path=a:0,b:_0,track:narrow;path=a:1,b:_0,track:narrow;'\
                       'path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
           },
           'B2' => {
@@ -277,7 +277,7 @@ module Engine
             ['D18'] => 'label=M;city=revenue:20;path=a:5,b:_0;path=a:2,b:_0,track:narrow;path=a:3,b:_0,track:narrow;'\
                        'border=edge:1,type:impassable',
             ['G17'] => 'label=T;city=revenue:20;path=a:0,b:_0;path=a:3,b:_0,track:narrow',
-            ['G29'] => 'label=O;city=revenue:30;city=revenue:30;city=revenue:30;path=a:0,b:_0;path=a:2,b:_1;path=a:4,b:_2',
+            ['G29'] => 'label=O;city=revenue:30;city=revenue:30;city=revenue:30;path=a:2,b:_1;path=a:4,b:_2',
           },
           blue: {
             %w[J2 J4 J6 I7 I9 H10 H12 G13 B18] => '',

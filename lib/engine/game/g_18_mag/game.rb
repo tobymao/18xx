@@ -683,30 +683,38 @@ module Engine
                        0
                      end
 
+          ciwl_add =  new_major? && red_to_red_route?(route) ? ciwl_delta : 0
+
           corp_tokens = stops.select(&:city?).sum { |c| c.tokens.count { |t| t&.corporation&.corporation? } }
 
           stops.select { |s| s.visit_cost.positive? }.sum { |stop| stop.route_revenue(route.phase, route.train) } +
-            raba_add + (corp_tokens * CORP_TOKEN_REVENUE)
+            raba_add + ciwl_add + (corp_tokens * CORP_TOKEN_REVENUE)
         end
 
         def raba_delta(phase)
           RABA_BONUS[phase.current[:tiles].size - 1]
         end
 
-        # Modify revenue string if RABA is used
+        # Modify revenue string if RABA is used and/or CIWL is included
         def revenue_str(route)
           raba_add = if raba_train?(route) && !other_raba_train?(route)
                        ' (RABA)'
                      else
                        ''
                      end
-          route.hexes.map(&:name).join('-') + raba_add
+
+          ciwl_add = if new_major? && red_to_red_route?(route)
+                       " +#{ciwl_delta} for CIWL bonus"
+                     else
+                       ''
+                     end
+
+          route.hexes.map(&:name).join('-') + raba_add + ciwl_add
         end
 
         def subsidy_for(route, _stops)
           subsidy = 0
           subsidy += snw_delta if snw_train?(route)
-          subsidy += ciwl_delta if new_major? && red_to_red_route?(route)
           subsidy
         end
 

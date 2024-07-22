@@ -84,7 +84,13 @@ module View
       end
 
       def render_info
-        num_certs = @game.num_certs(@player)
+        num_certs =
+          if @game.active_step.respond_to?(:num_certs_with_bids)
+            @game.active_step.num_certs_with_bids(@player)
+          else
+            @game.num_certs(@player)
+          end
+
         cert_limit = @game.cert_limit(@player)
 
         td_cert_props = {
@@ -100,7 +106,7 @@ module View
           ]),
         ]
 
-        if @game.active_step&.current_actions&.include?('bid')
+        if @game.active_step&.current_actions&.include?('bid') || @game.active_step&.auctioneer?
           committed = @game.active_step.committed_cash(@player, @show_hidden)
           if committed.positive?
             trs.concat([

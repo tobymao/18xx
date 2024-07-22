@@ -18,6 +18,7 @@ module Engine
             price: 180,
             obsolete_on: '5',
             num: 5,
+            events: [{ 'type' => 'lm_green' }],
           },
           {
             name: '4',
@@ -31,13 +32,14 @@ module Engine
             distance: 5,
             price: 450,
             num: 3,
-            events: [{ 'type' => 'close_companies' }],
+            events: [{ 'type' => 'close_companies' }, { 'type' => 'lm_brown' }],
           },
           {
             name: '6',
             distance: 6,
             price: 630,
             num: 3,
+            events: [{ 'type' => 'custom_end_game' }],
           },
           {
             name: 'D',
@@ -54,7 +56,7 @@ module Engine
             rusts_on: '4',
             available_on: '2',
             track_type: :narrow,
-            num: 8,
+            num: 7,
           },
           {
             name: 'S4',
@@ -63,7 +65,7 @@ module Engine
             available_on: '3',
             rusts_on: '6',
             track_type: :narrow,
-            num: 8,
+            num: 5,
           },
           {
             name: 'S5',
@@ -71,7 +73,7 @@ module Engine
             price: 400,
             available_on: '5',
             track_type: :narrow,
-            num: 8,
+            num: 3,
           },
         ].freeze
       end

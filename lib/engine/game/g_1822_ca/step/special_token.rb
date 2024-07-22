@@ -29,6 +29,11 @@ module Engine
           def process_place_token(action)
             entity = action.entity.owner
 
+            if (city = action.city).tokened_by?(entity)
+              raise GameError,
+                    "#{entity.name} already has a token in #{city.hex.location_name} (#{city.hex.id}) city #{city.index}"
+            end
+
             super
 
             @game.remove_exchange_token(entity)

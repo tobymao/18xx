@@ -60,6 +60,23 @@ class Api < Roda
   plugin :cookies
   plugin :new_relic if PRODUCTION
 
+  unless PRODUCTION
+    plugin :assets, {
+      path: 'public/assets',
+      js_dir: nil,
+      js_route: nil,
+
+      # g_*.js files for each game
+      js: Dir['lib/engine/game/*/game.rb'].map { |dir| dir.split('/')[-2] + '.js' },
+
+      # compile on demand
+      postprocessor: lambda do |file, _type, _content|
+                       ASSETS.combine([file.split(%r{[./]})[-2]])
+                       File.read(file)
+                     end,
+    }
+  end
+
   ASSETS = Assets.new(precompiled: PRODUCTION)
 
   Bus.configure
@@ -96,7 +113,10 @@ class Api < Roda
   end
 
   route do |r|
-    r.public unless PRODUCTION
+    unless PRODUCTION
+      r.assets
+      r.public
+    end
 
     r.hash_branches
 

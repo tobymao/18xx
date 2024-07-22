@@ -72,13 +72,14 @@ module Engine
           'formation' => ['Formation', 'Forced formation of Major Nationals. Order of forming is: '\
                                        'Switzerland, Spain, Benelux, Austro-Hungarian Empire, Italy, France, '\
                                        'Germany, Great Britain.'],
-          'infrastructure_h' => ['Transit Hub', 'The H, transit hub infrastructure, will be available for purchase. '\
-                                                'The transit hub, gives one tokened city value to the treasury '\
-                                                '(when included on a route).'],
-          'infrastructure_p' => ['Palace Car', 'The P, palace car infrastructure, will be available for purchase. '\
-                                               'The palace car counts 10 for each town for one train, paid to the treasury.'],
-          'infrastructure_m' => ['Mail', 'The M, mail infrastructure, will be available for purchase. The mail, counts '\
-                                         'the sum value of the start and end locations of a route to the treasury.'],
+          'infrastructure_h' => ['Transit Hub', 'Transit Hub Infrastructure available for purchase. '\
+                                                'The Transit Hub (H) gives the value of one tokened city on the '\
+                                                'route to the treasury.'],
+          'infrastructure_p' => ['Palace Car', 'Palace Car Infrastructure available for purchase. '\
+                                               'The palace car gives £10 to the corporate treasury for each town '\
+                                               'visited by one train. Does not work with E-trains.'],
+          'infrastructure_m' => ['Mail', 'Mail infrastructure available for purchase. The Mail counts the sum value of the '\
+                                         'start and end tokened cities of a route and gives this value to the treasury.'],
         }.freeze
 
         MARKET_TEXT = Base::MARKET_TEXT.merge(par_overlap: 'Minor nationals',
@@ -1484,14 +1485,15 @@ module Engine
           end
 
           if entity.trains.any? { |t| t.name == self.class::INFRASTRUCTURE_HUB }
-            help << 'The H, transit hub, gives one tokened city value to the treasury (when included on a route)'
+            help << 'The Transit Hub (H) gives the value of one tokened city on the route to the treasury.'
           end
           if entity.trains.any? { |t| t.name == self.class::INFRASTRUCTURE_PALACE }
-            help << 'The P, palace car, counts 10 for each city for one train, paid to the treasury'
+            help << 'The Palace Car (P) gives £10 to the treasury for each town visited by one train. '\
+                    'Does not work with E-trains.'
           end
           if entity.trains.any? { |t| t.name == self.class::INFRASTRUCTURE_MAIL }
-            help << 'The M, mail, counts the sum value of the start and end tokened city value of a route '\
-                    'to the treasury'
+            help << 'The Mail (M) counts the sum value of the start and end tokened cities of a route and gives '\
+                    'this value to the treasury.'
           end
 
           help << 'Obsolete trains only runs for ½ revenue.' if runnable_trains.any?(&:obsolete)
@@ -1667,19 +1669,19 @@ module Engine
         end
 
         def event_infrastructure_h!
-          @log << '-- Event: The H, transit hub infrastructure, will be available for purchase --'
+          @log << '-- Event: Transit Hub Infrastructure available for purchase --'
 
           @depot_infrastructures.concat(@infrastructure_trains_h)
         end
 
         def event_infrastructure_m!
-          @log << '-- Event: The M, mail infrastructure, will be available for purchase --'
+          @log << '-- Event: Mail Infrastructure available for purchase --'
 
           @depot_infrastructures.concat(@infrastructure_trains_m)
         end
 
         def event_infrastructure_p!
-          @log << '-- Event: The P, palace car infrastructure, will be available for purchase --'
+          @log << '-- Event: Palace Car Infrastructure available for purchase --'
 
           @depot_infrastructures.concat(@infrastructure_trains_p)
         end
@@ -1805,7 +1807,7 @@ module Engine
             stops.each do |stop|
               next unless stop
 
-              palace_car_revenue += 10 if stop.town?
+              palace_car_revenue += 10 if stop.town? && !e_train?(train)
               next if !stop.city? || !stop.tokened_by?(entity)
 
               stop_base_revenue = stop.route_base_revenue(phase, train)
@@ -1844,6 +1846,10 @@ module Engine
 
         def infrastructure_train?(train)
           self.class::INFRASTRUCTURE_TRAINS.include?(train.name)
+        end
+
+        def e_train?(train)
+          self.class::E_TRAINS.include?(train.name)
         end
 
         def init_scenario(optional_rules)

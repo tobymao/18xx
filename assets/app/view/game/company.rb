@@ -169,9 +169,12 @@ module View
           unless @company.discount.zero?
             children << h(:div, { style: { float: 'center' } }, "Price: #{@game.format_currency(@company.min_bid)}")
           end
-          children << render_bidders if @bids&.any?
+          children << render_bidders if @bids && !@bids.empty?
 
-          children << h('div.nowrap', { style: bidders_style }, "Owner: #{@company.owner.name}") if @company.owner
+          if @company.owner && @game.show_company_owners?
+            children << h('div.nowrap', { style: bidders_style },
+                          "Owner: #{@company.owner.name}")
+          end
           if @game.company_status_str(@company)
             status_style = {
               marginTop: '0.5rem',

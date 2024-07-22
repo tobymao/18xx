@@ -12,12 +12,6 @@ module Engine
           @hand = []
           super
         end
-
-        def value
-          # modify to include book value
-          # @cash + shares.select { |s| s.corporation.ipoed }.sum(&:price) + @companies.sum(&:value)
-          super
-        end
       end
     end
   end

@@ -12,7 +12,7 @@ module Engine
   module Game
     module G18Norway
       class Game < Game::Base
-        attr_reader :ferry_graph
+        attr_reader :ferry_graph, :jump_graph
 
         include_meta(G18Norway::Meta)
         include Companies
@@ -37,10 +37,9 @@ module Engine
         EBUY_SELL_MORE_THAN_NEEDED = true
         CAPITALIZATION = :incremental
         MUST_BUY_TRAIN = :always
-        POOL_SHARE_DROP = :left_block
+        POOL_SHARE_DROP = :none
         SELL_AFTER = :p_any_operate
         SELL_MOVEMENT = :left_block
-        CERT_LIMIT_COUNTS_BANKRUPTED = true
         HOME_TOKEN_TIMING = :float
 
         EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
@@ -49,6 +48,8 @@ module Engine
         BANKRUPTCY_ENDS_GAME_AFTER = :one
 
         BANK_CASH = 999_000
+
+        CLOSED_CORP_RESERVATIONS_REMOVED = false
 
         GAME_END_CHECK = { bankrupt: :immediate, custom: :one_more_full_or_set }.freeze
 
@@ -78,6 +79,20 @@ module Engine
           'MOUNTAIN_SMALL' => '/icons/hill.svg',
           'MOUNTAIN_BIG' => '/icons/mountain.svg',
         }.freeze
+
+        EVENTS_TEXT = {
+          'lm_green' => ['green_ferries', 'Mjøsa green ferry lines opens up.'],
+          'lm_brown' => ['brown_ferries', 'Mjøsa brown ferry lines opens up.'],
+        }.freeze
+
+        def custom_end_game_reached?
+          @custom_end_game
+        end
+
+        def event_custom_end_game!
+          @log << '-- Event: End game --'
+          @custom_end_game = true
+        end
 
         def hovedbanen
           @hovedbanen ||= corporation_by_id('H')
@@ -115,17 +130,57 @@ module Engine
         CITY_HARBOR_MAP = {
           'G17' => 'G15',
           'B26' => 'A25',
-          'C19' => 'C17',
+          'D18' => 'C17',
           'B32' => 'A31',
           'C35' => 'B36',
         }.freeze
 
+        def switcher
+          @switcher ||= corporation_by_id('Ø')
+        end
+
+        def switcher?(corporation)
+          switcher == corporation
+        end
+
+        EXTRA_TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }].freeze
+
         def setup
           MOUNTAIN_BIG_HEXES.each { |hex| hex_by_id(hex).assign!('MOUNTAIN_BIG') }
           MOUNTAIN_SMALL_HEXES.each { |hex| hex_by_id(hex).assign!('MOUNTAIN_SMALL') }
+          corporation_by_id('H').add_ability(Engine::Ability::Base.new(
+            type: 'corrupt',
+            description: 'May nationalize using 0, 1 or 2 shares',
+          ))
+
           corporation_by_id('R').add_ability(Engine::Ability::Base.new(
             type: 'free_tunnel',
             description: 'Free tunnel'
+          ))
+
+          corporation_by_id('V').add_ability(Engine::Ability::Base.new(
+            type: 'free_ship',
+            description: 'Free S3 ship before phase 4',
+          ))
+
+          switcher.add_ability(Engine::Ability::Base.new(
+            type: 'switcher',
+            description: 'May pass one tokened out city',
+          ))
+
+          corporation_by_id('S').add_ability(Engine::Ability::Base.new(
+            type: 'extra_tile_lay',
+            description: 'May lay two yellow',
+          ))
+
+          corporation_by_id('J').add_ability(Engine::Ability::Base.new(
+            type: 'mail_contract',
+            description: 'Mail contract 10/20/30',
+          ))
+
+          corporation_by_id('B').add_ability(Engine::Ability::Base.new(
+            type: 'ignore_mandatory_train',
+            description: 'Not mandatory to own a train',
           ))
 
           @corporations.each do |corporation|
@@ -140,6 +195,17 @@ module Engine
             city = hex_by_id(hex_id).tile.cities[0]
             city.place_token(port, token)
           end
+
+          @all_tiles.each { |t| t.ignore_gauge_walk = true }
+          @_tiles.values.each { |t| t.ignore_gauge_walk = true }
+          @hexes.each { |h| h.tile.ignore_gauge_walk = true }
+          update_cert_limit
+
+          # Allow to build against Mjosa
+          hex_by_id('H26').neighbors[1] = hex_by_id('G27')
+          hex_by_id('H26').neighbors[5] = hex_by_id('I27')
+          hex_by_id('G27').neighbors[4] = hex_by_id('H26')
+          hex_by_id('I27').neighbors[2] = hex_by_id('H26')
         end
 
         def p4
@@ -166,11 +232,21 @@ module Engine
           big_mountain?(hex) || small_mountain?(hex)
         end
 
-        def route_cost(route)
-          # P2 Thunes mekaniske verksted do not need to pay maintainance
-          return 0 if owns_thunes_mekaniske?(route.train.owner)
+        def mjosa
+          @mjosa ||= hex_by_id('H26')
+        end
 
-          route.all_hexes.count { |hex| mountain?(hex) } * 10
+        def route_cost(route)
+          cost = 0
+          mult = 2
+          mult = 1 if @phase.tiles.include?(:green)
+          mult = 0 if @phase.tiles.include?(:brown)
+          cost += 5 * mult if route.all_hexes.include?(mjosa)
+
+          # P2 Thunes mekaniske verksted do not need to pay maintainance
+          return cost if owns_thunes_mekaniske?(route.train.owner)
+
+          cost + (route.all_hexes.count { |hex| mountain?(hex) } * 10)
         end
 
         def check_other(route)
@@ -184,10 +260,23 @@ module Engine
         end
 
         def revenue_str(route)
-          str = super
+          stop_hexes = route.stops.map(&:hex)
+          str = route.hexes.map { |h| stop_hexes.include?(h) ? h&.name : "(#{h&.name})" }.join('-')
           cost = route_cost(route)
           str += " -Fee(#{cost})" if cost.positive?
           str
+        end
+
+        def routes_revenue(routes)
+          revenue = super(routes)
+          return 0 if revenue.zero?
+          return revenue if routes.empty?
+          return revenue unless abilities(routes.first.train.owner, :mail_contract)
+
+          revenue += 10 if @phase.tiles.include?(:yellow)
+          revenue += 10 if @phase.tiles.include?(:green)
+          revenue += 10 if @phase.tiles.include?(:brown)
+          revenue
         end
 
         def operating_round(round_num)
@@ -197,6 +286,7 @@ module Engine
             Engine::Step::SpecialTrack,
             Engine::Step::SpecialToken,
             Engine::Step::BuyCompany,
+            G18Norway::Step::IssueShares,
             Engine::Step::HomeToken,
             G18Norway::Step::Track,
             G18Norway::Step::BuildTunnel,
@@ -233,7 +323,12 @@ module Engine
           @round =
             case @round
             when G18Norway::Round::Nationalization
-              new_stock_round
+              if @round.round_num < @operating_rounds
+                new_operating_round(@round.round_num + 1)
+              else
+                or_set_finished
+                new_stock_round
+              end
             when Engine::Round::Stock
               @operating_rounds = @phase.operating_rounds
               reorder_players
@@ -241,12 +336,16 @@ module Engine
             when Engine::Round::Operating
               if @round.round_num < @operating_rounds
                 or_round_finished
-                new_operating_round(@round.round_num + 1)
+                new_nationalization_round(@round.round_num)
               else
                 @turn += 1
                 or_round_finished
-                or_set_finished
-                new_nationalization_round
+                if @phase.tiles.include?(:green)
+                  new_nationalization_round(@round.round_num)
+                else
+                  or_set_finished
+                  new_stock_round
+                end
               end
             when init_round.class
               init_round_finished
@@ -270,8 +369,13 @@ module Engine
         def convert(corporation, number_of_shares)
           shares = @_shares.values.select { |share| share.corporation == corporation }
 
+          corporation.share_holders.clear
+
           shares.each { |share| share.percent /= 2 }
           new_shares = Array.new(5) { |i| Share.new(corporation, percent: 10, index: i + 4) }
+
+          shares.each { |share| corporation.share_holders[share.owner] += share.percent }
+
           new_shares.each do |share|
             add_new_share(share)
           end
@@ -302,6 +406,7 @@ module Engine
 
         def init_graph
           @ferry_graph = Graph.new(self, skip_track: :broad)
+          @jump_graph = Graph.new(self, no_blocking: true)
           Graph.new(self, skip_track: :narrow)
         end
 
@@ -355,7 +460,21 @@ module Engine
         def check_connected(route, corporation)
           return if route.ordered_paths.each_cons(2).all? { |a, b| connected?(a, b, corporation) }
 
-          raise GameError, 'Route is not connected'
+          return super unless @round.train_upgrade_assignments[route.train]
+
+          visits = route.visited_stops
+
+          blocked = nil
+
+          if visits.size > 2
+            visits[1..-2].each do |node|
+              next if !node.city? || !node.blocks?(corporation)
+              raise GameError, 'Route can only bypass one tokened-out city' if blocked
+
+              blocked = node
+            end
+          end
+          super(route, nil)
         end
 
         def check_route_token(route, token)
@@ -365,6 +484,154 @@ module Engine
           token = visited.find { |stop| harbor_token?(stop, route.corporation) }
 
           raise NoToken, 'Route must contain token' unless token
+        end
+
+        def update_cert_limit_to(new_cert_limit)
+          @cert_limit = new_cert_limit
+          @log << "Certificate limit is now #{@cert_limit}"
+        end
+
+        def update_cert_limit
+          nr = @corporations.count { |c| nationalized?(c) }
+          new_cert_limit = CERT_LIMIT[@players.size][nr]
+          update_cert_limit_to(new_cert_limit) unless @cert_limit == new_cert_limit
+        end
+
+        def after_buy_company(player, company, price)
+          return super if company.id != 'P7'
+
+          h = hovedbanen
+          share_price = @stock_market.par_prices.find { |pp| pp.price * 2 <= price }
+          @stock_market.set_par(h, share_price)
+          @bank.spend(price, h)
+          abilities(company, :shares) do |ability|
+            ability.shares.each do |share|
+              share_pool.buy_shares(player, share, exchange: :free)
+            end
+          end
+        end
+
+        def close_corporation(corporation, quiet: false)
+          super
+          @corporations << reset_corporation(corporation)
+        end
+
+        def event_lm_green!
+          @log << '-- Event: Mjøsa green ferry lines opens up. --'
+          mjosa.lay(tile_by_id('LM1-0'))
+        end
+
+        def event_lm_brown!
+          @log << '-- Event: Mjøsa brown ferry lines opens up. --'
+          mjosa.lay(tile_by_id('LM2-0'))
+        end
+
+        def compute_stops(route)
+          stops = super
+          if @round.train_upgrade_assignments[route.train]
+            skipped = skipped_stop(route, stops)
+            stops.reject! { |stop| stop == skipped } if skipped
+          end
+          stops
+        end
+
+        def tokened_out_stop(corporation, stops)
+          stops[1..-2].find { |node| node.city? && node.blocks?(corporation) }
+        end
+
+        def skipped_stop(route, stops)
+          return nil if stops.size <= 2
+
+          # Blocked stop is highest priority as it may stop route from being legal
+          corporation = route.train.owner
+          t = tokened_out_stop(corporation, stops)
+          return t if t
+
+          counted_stops = stops.select { |stop| stop&.visit_cost&.positive? }
+
+          # Skipping is optional - if we are using STRICTLY fewer stops than distance (jumping adds 1) we don't need to skip
+          return nil if counted_stops.size < route.train.distance
+
+          # Count how many of our tokens are on the route; if only one we cannot skip that one.
+          tokened_stops = counted_stops.select { |stop| stop.tokened_by?(route.train.owner) }
+          counted_stops.delete(tokened_stops.first) if tokened_stops.one?
+
+          # Find the lowest revenue stop that can be skipped
+          counted_stops.min_by { |stop| revenue_for(route, stops.reject { |s| s == stop }) }
+        end
+
+        def issuable_shares(entity)
+          return [] unless entity.corporation?
+          return [] unless round.steps.find { |step| step.instance_of?(G18Norway::Step::IssueShares) }.active?
+
+          num_shares = entity.num_player_shares - entity.num_market_shares
+          bundles = bundles_for_corporation(entity, entity)
+          share_price = stock_market.find_share_price(entity, :left).price
+
+          bundles
+            .each { |bundle| bundle.share_price = share_price }
+            .reject { |bundle| bundle.num_shares > num_shares }
+        end
+
+        def redeemable_shares(entity)
+          return [] unless entity.corporation?
+          return [] unless round.steps.find { |step| step.instance_of?(G18Norway::Step::IssueShares) }.active?
+
+          share_price = stock_market.find_share_price(entity, :right).price
+
+          bundles_for_corporation(share_pool, entity)
+            .each { |bundle| bundle.share_price = share_price }
+            .reject { |bundle| entity.cash < bundle.price }
+        end
+
+        def emergency_issuable_bundles(corp)
+          return [] unless corp.trains.empty?
+
+          available = @depot.available_upcoming_trains.reject { |train| ship?(train) }
+          return [] unless (train = available.min_by(&:price))
+          return [] if corp.cash >= train.price
+
+          bundles = bundles_for_corporation(corp, corp)
+
+          num_issuable_shares = corp.num_player_shares - corp.num_market_shares
+          bundles.reject! { |bundle| bundle.num_shares > num_issuable_shares }
+
+          bundles.each do |bundle|
+            directions = [:left] * (1 + bundle.num_shares)
+            bundle.share_price = stock_market.find_share_price(corp, directions).price
+          end
+
+          bundles.reject! { |b| b.price.zero? }
+
+          bundles.sort_by!(&:price)
+
+          train_buying_bundles = bundles.select { |b| (corp.cash + b.price) >= train.price }
+          unless train_buying_bundles.empty?
+            bundles = train_buying_bundles
+
+            index = bundles.find_index { |b| (corp.cash + b.price) >= train.price }
+            return bundles.take(index + 1) if index
+
+            return bundles
+          end
+
+          biggest_bundle = bundles.max_by(&:num_shares)
+          return [biggest_bundle] if biggest_bundle
+
+          []
+        end
+
+        def sell_movement(corporation = nil)
+          return self.class::SELL_MOVEMENT unless corporation
+          return :left_block_pres if corporation.second_share.price <= 40
+
+          self.class::SELL_MOVEMENT
+        end
+
+        def check_sale_timing(entity, bundle)
+          return false if @turn <= 1 && !@round.operating?
+
+          super(entity, bundle)
         end
       end
     end
