@@ -10,6 +10,7 @@ module Engine
 
         DEV_STAGE = :alpha
 
+        GAME_TITLE = '18 India'
         GAME_DESIGNER = 'Michael Carter, Anthony Fryer, John Harres, and Nick Neylon'
         GAME_LOCATION = 'India'
         GAME_PUBLISHER = :gmt_games
