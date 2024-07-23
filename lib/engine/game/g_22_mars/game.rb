@@ -170,8 +170,14 @@ module Engine
 
         # Game specific constants
         LAST_OR = 11
+        FIRST_REVOLT_CHECK_OR = 7
+        LAST_REVOLT_CHECK_OR = 10
 
-        @or = 0
+        def setup
+          @or = 0
+          @revolt_round = -1
+          @three_or_round = false
+        end
 
         def end_now?(_after)
           @or == LAST_OR
@@ -185,12 +191,47 @@ module Engine
             @three_or_round = true
           end
 
-          super
+          round = super
+
+          check_revolt!
+
+          round
         end
 
         def or_round_finished
           # In case we get phase change during the last OR set we ensure we have 3 ORs
           @operating_rounds = 3 if @three_or_round
+        end
+
+        def revolt_happened?
+          @revolt_happened
+        end
+
+        def check_revolt!
+          return if @or < FIRST_REVOLT_CHECK_OR || revolt_happened?
+
+          # Generate a random number 0 to 3 (2, 1) to simulate 1 in 4 (in OR7, 1 in 3 in OR8 etc) cube draw chance
+          revolt_check = (rand % (LAST_REVOLT_CHECK_OR - @or + 1))
+
+          if (@or == LAST_REVOLT_CHECK_OR) || revolt_check.zero?
+            revolt!
+          else
+            @log << 'Revolt! does not happen'
+          end
+        end
+
+        def revolt!
+          @log << '-- Revolt!'
+          @log << '-- All permits were discarded. You can now use abilities of Revolt! cards.'
+          @log << '-- All Convict bases are now neutral and cities with them generate no revenue.'
+
+          @revolt_happened = true
+          @revolt_round = @or
+
+          @companies.each do |company|
+            company.close! unless abilities(company, :close, on_phase: 'never')
+          end
+
         end
 
         def ipo_name(_entity = nil)
@@ -224,14 +265,22 @@ module Engine
             { type: :OR, name: '5' },
             { type: :OR, name: '6' },
             { type: :SR, name: '4' },
-            { type: :OR, name: '7', value: '✘/✔' },
-            { type: :OR, name: '8', value: '✘/✔' },
+            { type: :OR, name: '7', value: draw_revolt_marker(7) },
+            { type: :OR, name: '8', value: draw_revolt_marker(8) },
             { type: :SR, name: '5' },
-            { type: :OR, name: '9', value: '✘/✔' },
-            { type: :OR, name: '10', value: '✔' },
+            { type: :OR, name: '9', value: draw_revolt_marker(9) },
+            { type: :OR, name: '10', value: draw_revolt_marker(10) },,
             { type: :OR, name: '11' },
             { type: :End },
           ]
+        end
+
+        def draw_revolt_marker(or_number)
+          return '—' if @revolt_happened && @revolt_round < or_number
+          return '✔' if [@revolt_round, LAST_REVOLT_CHECK_OR].include?(or_number)
+          return '✘' if @or >= or_number
+
+          '✘/✔'
         end
 
         def price_movement_chart
