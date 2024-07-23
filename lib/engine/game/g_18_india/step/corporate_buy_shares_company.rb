@@ -17,16 +17,17 @@ module Engine
           # for debugging only
           def setup
             entity = current_entity
-            LOGGER.debug "G18India::Step::CorporateBuySharesCompany => Setup for #{entity.name}"
-            LOGGER.debug "> num_certs: #{@game.num_certs(entity)} / cert_limit: #{@game.cert_limit(entity)}"
-            LOGGER.debug "> corporations_bought: #{@round.corporations_bought[entity]}"
+            LOGGER.debug { "G18India::Step::CorporateBuySharesCompany => Setup for #{entity.name}" }
+            LOGGER.debug { "> num_certs: #{@game.num_certs(entity)} / cert_limit: #{@game.cert_limit(entity)}" }
+            LOGGER.debug { "> corporations_bought: #{@round.corporations_bought[entity]}" }
           end
 
           # for debugging only
           def debugging_log(str)
+            entity = current_entity
             LOGGER.debug(str)
-            LOGGER.debug ">  Num Certs: #{@game.num_certs(current_entity)} / Cert Limit: #{@game.cert_limit(current_entity)}"
-            LOGGER.debug ">  Bought?: #{bought?(current_entity)} - Last Bought: #{last_bought(current_entity).name} "
+            LOGGER.debug { "> Num Certs: #{@game.num_certs(entity)} / Cert Limit: #{@game.cert_limit(entity)}" }
+            LOGGER.debug { "> Bought?: #{bought?(entity)} - Last Bought: #{last_bought(entity).name} " }
           end
 
           def description
@@ -34,7 +35,7 @@ module Engine
           end
 
           def actions(entity)
-            return [] if entity.nil? || !entity&.corporation?
+            return [] if entity.nil? || !entity&.corporation? || bought?(entity)
             return [] unless entity == current_entity
 
             # May buy any share from Market (it may may itself from Market) [working]
@@ -86,6 +87,7 @@ module Engine
             entity = action.entity
             bond = first_bond(entity)
             @game.convert_bond_to_gipr(entity, bond)
+            @round.corporations_bought[action.entity] << @game.gipr
           end
 
           # ----- methods for buying companies (new) -----
@@ -129,7 +131,7 @@ module Engine
           end
 
           def process_corporate_buy_company(action)
-            LOGGER.debug "process_corporate_buy_company #{action.inspect}"
+            LOGGER.debug { "process_corporate_buy_company #{action.inspect}" }
             entity = action.entity
             company = action.company
             price = action.price
@@ -175,6 +177,8 @@ module Engine
 
           # modified to only check market
           def can_buy_any?(entity)
+            return false if at_cert_limit?(entity)
+
             can_buy_any_from_market?(entity)
           end
 

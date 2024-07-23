@@ -21,7 +21,7 @@ module View
 
         round = @game.round
         @step = round.active_step
-        @current_entity = @step.current_entity
+        @current_entity = @step&.current_entity
         @current_actions = round.actions_for(@current_entity)
 
         ipo_rows.map.with_index do |ipo_row, index|
