@@ -183,6 +183,36 @@ module Engine
           @or == LAST_OR
         end
 
+        def setup_preround
+          revolts, permits = @companies.partition(&:revolt?)
+          sorted_permits = permits.sort_by { rand }
+          sorted_revolts = revolts.sort_by { rand }
+
+          @companies = sorted_permits + sorted_revolts
+
+          @companies.drop(@players.size).each_with_index do |company, index|
+            if index >= @corporations.size
+              company.close!
+              @log << "#{company.name} is discarded"
+            else
+              corporation = @corporations[index]
+              company.owner = corporation
+              corporation.companies << company
+              @log << "#{company.name} is assigned to #{corporation.name}"
+            end
+
+            @companies.delete(company)
+          end
+        end
+
+        def unowned_purchasable_companies
+          @companies
+        end
+
+        def init_round
+          G22Mars::Round::PermitPurchase.new(self, [G22Mars::Step::SelectOrDiscard])
+        end
+
         def new_operating_round(round_num = 1)
           @or += 1
 
@@ -231,7 +261,6 @@ module Engine
           @companies.each do |company|
             company.close! unless abilities(company, :close, on_phase: 'never')
           end
-
         end
 
         def ipo_name(_entity = nil)
@@ -269,7 +298,7 @@ module Engine
             { type: :OR, name: '8', value: draw_revolt_marker(8) },
             { type: :SR, name: '5' },
             { type: :OR, name: '9', value: draw_revolt_marker(9) },
-            { type: :OR, name: '10', value: draw_revolt_marker(10) },,
+            { type: :OR, name: '10', value: draw_revolt_marker(10) },
             { type: :OR, name: '11' },
             { type: :End },
           ]
@@ -296,6 +325,12 @@ module Engine
 
         def company_header(company)
           company.revolt? ? 'REVOLT!' : 'PERMIT'
+        end
+
+        def round_description(name, round_number = nil)
+          return 'Permit Purchase Round' if name == 'PermitPurchase'
+
+          super
         end
       end
     end
