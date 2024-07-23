@@ -168,6 +168,7 @@ module Engine
           },
         ].freeze
 
+        # Game specific constants
         LAST_OR = 11
 
         @or = 0
@@ -179,7 +180,21 @@ module Engine
         def new_operating_round(round_num = 1)
           @or += 1
 
+          if @or == 9
+            @operating_rounds = 3
+            @three_or_round = true
+          end
+
           super
+        end
+
+        def or_round_finished
+          # In case we get phase change during the last OR set we ensure we have 3 ORs
+          @operating_rounds = 3 if @three_or_round
+        end
+
+        def ipo_name(_entity = nil)
+          'Treasury'
         end
 
         def timeline
