@@ -10,7 +10,7 @@ module Engine
           def actions(entity)
             return [] if entity != current_entity
             return %w[buy_train sell_shares] if must_sell_shares?(entity)
-            return ['buy_train'] if must_buy_train?(entity)
+            return ['buy_train'] if can_buy_needed_train?(entity)
 
             %w[buy_train sell_shares pass]
           end
@@ -41,7 +41,7 @@ module Engine
             end
 
             @game.log_share_price(corporation, old_price)
-            @round.issued_shares = true
+            @game.issued_shares = true
           end
 
           def must_sell_shares?(corporation)
@@ -52,9 +52,13 @@ module Engine
 
           def can_issue?(corporation)
             return false unless corporation.corporation?
-            return false if @round.issued_shares
+            return false if @game.issued_shares
 
             @game.issuable_shares(corporation).any?
+          end
+
+          def should_buy_train?(entity)
+            :close_corp if can_close_corp?(entity)
           end
 
           def can_close_corp?(entity)
@@ -63,9 +67,9 @@ module Engine
               @game.graph.route_info(entity)&.dig(:route_train_purchase)
           end
 
-          def must_buy_train?(entity)
+          def can_buy_needed_train?(entity)
             entity.trains.empty? &&
-              entity.cash >= @game.depot.min_depot_price &&
+              entity.cash + entity.owner.cash >= @game.depot.min_depot_price &&
               @game.graph.route_info(entity)&.dig(:route_train_purchase)
           end
         end

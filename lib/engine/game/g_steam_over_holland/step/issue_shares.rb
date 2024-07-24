@@ -7,15 +7,9 @@ module Engine
     module GSteamOverHolland
       module Step
         class IssueShares < Engine::Step::IssueShares
-          def round_state
-            super.merge(
-              {
-                issued_shares: false,
-              }
-            )
-          end
-
           def process_sell_shares(action)
+            return super if action.bundle.corporation != current_entity
+
             bundle = action.bundle
             corporation = bundle.corporation
             old_price = corporation.share_price
@@ -26,7 +20,7 @@ module Engine
             end
 
             @game.log_share_price(corporation, old_price)
-            @round.issued_shares = true
+            @game.issued_shares = true
           end
 
           def blocks?

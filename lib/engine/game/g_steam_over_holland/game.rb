@@ -29,6 +29,7 @@ module Engine
         MUST_SELL_IN_BLOCKS = true
         SELL_MOVEMENT = :left_share
         MUST_EMERGENCY_ISSUE_BEFORE_EBUY = true
+        BANKRUPTCY_ALLOWED = false
 
         BANK_CASH = 99_999
 
@@ -47,6 +48,8 @@ module Engine
           { lay: true, upgrade: true },
           { lay: true, upgrade: :not_if_upgraded, cannot_reuse_same_hex: true },
         ].freeze
+
+        attr_accessor :issued_shares, :close_corp
 
         MARKET = [
           [
@@ -111,7 +114,7 @@ module Engine
           name: '2',
           distance: [{ 'nodes' => %w[city offboard], 'pay' => 2, 'visit' => 2 },
                      { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
-          price: 1000,
+          price: 100,
           rusts_on: '4',
           num: 5,
         },
@@ -242,7 +245,7 @@ module Engine
         end
 
         def operating_round(round_num)
-          Engine::Round::Operating.new(self, [
+          GSteamOverHolland::Round::Operating.new(self, [
             Engine::Step::Bankrupt,
             Engine::Step::Assign,
             Engine::Step::SpecialToken,
@@ -371,6 +374,8 @@ module Engine
           price_drop = bundle.num_shares
           corporation = bundle.corporation
           old_price = corporation.share_price
+
+          print corporation.id
           @share_pool.sell_shares(bundle, allow_president_change: allow_president_change, swap: swap)
 
           if bundle.owner == corporation.owner
@@ -391,7 +396,7 @@ module Engine
         end
 
         def issuable_shares(entity)
-          return [] if round.issued_shares
+          return [] if @issued_shares
 
           num_shares = [entity.num_player_shares, 5 - entity.num_market_shares].min
           bundles = bundles_for_corporation(entity, entity)
@@ -411,7 +416,7 @@ module Engine
         end
 
         def emergency_issuable_bundles(entity)
-          return [] if round.issued_shares
+          return [] if @issued_shares
 
           num_shares = [entity.num_player_shares, 5 - entity.num_market_shares].min
           bundles = bundles_for_corporation(entity, entity)
