@@ -9,24 +9,14 @@ module Engine
         class BuyTrain < Engine::Step::BuyTrain
           def actions(entity)
             return [] if entity != current_entity
-
             return %w[buy_train sell_shares] if must_sell_shares?(entity)
-            return %w[buy_train] if must_buy_train?(entity)
+            return ['buy_train'] if must_buy_train?(entity)
 
-            if must_buy_train?(entity)
-              actions_ = %w[buy_train]
-              actions_ << 'sell_shares' if can_issue?(entity)
-              actions_ << 'pass' if can_close?(entity)
-              actions_
-            elsif can_buy_train?(entity)
-              %w[buy_train pass]
-            else
-              []
-            end
+            %w[buy_train sell_shares pass]
           end
 
           def pass_description
-            if current_entity.trains.empty?
+            if can_close_corp?(current_entity)
               "Close #{current_entity.name}"
             else
               @acted ? 'Done (Trains)' : 'Skip (Trains)'
@@ -40,26 +30,43 @@ module Engine
             @game.close_corporation(entity)
           end
 
+          def process_sell_shares(action)
+            bundle = action.bundle
+            corporation = bundle.corporation
+            old_price = corporation.share_price
+            @game.share_pool.sell_shares(action.bundle)
+
+            (bundle.num_shares - 1).times do
+              @game.stock_market.move_left(corporation)
+            end
+
+            @game.log_share_price(corporation, old_price)
+            @round.issued_shares = true
+          end
+
           def must_sell_shares?(corporation)
-            return false unless must_buy_train?(corporation)
+            return false if corporation.cash >= @game.depot.min_depot_price || !corporation.trains.empty?
 
-            must_issue_before_ebuy?(corporation)
+            can_issue?(corporation)
           end
 
-          def must_issue_before_ebuy?(entity)
-            can_issue?(entity)
-          end
-
-          def can_close?(entity)
-            !can_issue?(entity) && @game.depot.min_depot_price > (entity.cash + entity.owner.cash)
-          end
-
-          def can_issue?(entity)
-            return false unless entity.corporation?
+          def can_issue?(corporation)
+            return false unless corporation.corporation?
             return false if @round.issued_shares
-            return false unless @game.issuable_shares(entity).any?
 
-            @game.issuable_shares(entity).any?
+            @game.issuable_shares(corporation).any?
+          end
+
+          def can_close_corp?(entity)
+            entity.trains.empty? &&
+              entity.cash + entity.owner.cash < @game.depot.min_depot_price &&
+              @game.graph.route_info(entity)&.dig(:route_train_purchase)
+          end
+
+          def must_buy_train?(entity)
+            entity.trains.empty? &&
+              entity.cash >= @game.depot.min_depot_price &&
+              @game.graph.route_info(entity)&.dig(:route_train_purchase)
           end
         end
       end

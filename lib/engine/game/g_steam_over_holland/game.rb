@@ -409,6 +409,18 @@ module Engine
             .each { |bundle| bundle.share_price = share_price }
             .reject { |bundle| entity.cash < bundle.price }
         end
+
+        def emergency_issuable_bundles(entity)
+          return [] if round.issued_shares
+
+          num_shares = [entity.num_player_shares, 5 - entity.num_market_shares].min
+          bundles = bundles_for_corporation(entity, entity)
+          share_price = stock_market.find_share_price(entity, :current).price
+
+          bundles
+            .each { |bundle| bundle.share_price = share_price }
+            .reject { |bundle| bundle.num_shares > num_shares }
+        end
       end
     end
   end
