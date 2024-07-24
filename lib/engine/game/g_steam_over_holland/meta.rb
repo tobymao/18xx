@@ -8,7 +8,7 @@ module Engine
       module Meta
         include Game::Meta
 
-        DEV_STAGE = :alpha
+        DEV_STAGE = :prealpha
 
         GAME_TITLE = 'Steam Over Holland'
         GAME_DESIGNER = 'Bart van Dijk'
