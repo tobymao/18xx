@@ -92,7 +92,10 @@ module View
         end
 
         inputs << render_keyword_search
-        inputs << render_games_table
+
+        table = render_games_table
+        inputs << h(:span, "#{table[:game_count]} Titles")
+        inputs << table[:rendered]
       end
 
       description = []
@@ -648,7 +651,7 @@ module View
       end
 
       props = { style: { 'text-align': 'left' } }
-      h(
+      rendered = h(
         'table.create-game-table',
         {},
         [
@@ -658,6 +661,8 @@ module View
           h(:tbody, game_rows),
         ]
       )
+
+      { rendered: rendered, game_count: game_rows.size }
     end
 
     def render_keyword_search

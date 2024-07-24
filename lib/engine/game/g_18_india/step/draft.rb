@@ -75,6 +75,8 @@ module Engine
             player.hand << company
             player.hand.sort_by! { |item| [item.name, -item.value] }
 
+            player.draft_history << (company.name + (company.type == :president ? '(Dir)' : ''))
+
             @companies.delete(company)
 
             @log << "#{player.name} drafts #{company.type} cert of #{company.name}"
@@ -101,7 +103,8 @@ module Engine
           def action_finalized
             return unless finished?
 
-            # maintain player priority for stock round
+            # setup for after draft round
+            @game.draft_completed
           end
 
           def min_bid(_company); end

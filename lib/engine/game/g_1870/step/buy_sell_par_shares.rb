@@ -61,9 +61,15 @@ module Engine
           end
 
           def issue_par(corporation)
+            # respond_to? is used here to protect other games that borrow this step from 1870.
+            available_prices = if @game.respond_to?(:max_reissue_200?) && @game.max_reissue_200?
+                                 @game.stock_market.market[0].select { |v| v.price <= 200 }
+                               else
+                                 @game.stock_market.market[0]
+                               end
             # We're adding 1 to force it to round up. We can do this, because
             # we know all the possible values and it is smaller than all gaps.
-            [@game.stock_market.market[0].min_by { |v| ((0.75 * corporation.share_price.price) + 1 - v.price).abs },
+            [available_prices.min_by { |v| ((0.75 * corporation.share_price.price) + 1 - v.price).abs },
              corporation.par_price].max_by(&:price)
           end
 
