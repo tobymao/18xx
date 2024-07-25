@@ -375,13 +375,21 @@ module Engine
           corporation = bundle.corporation
           old_price = corporation.share_price
 
-          print corporation.id
-          @share_pool.sell_shares(bundle, allow_president_change: allow_president_change, swap: swap)
-
           if bundle.owner == corporation.owner
             super
+          elsif bundle.owner == corporation
+            @share_pool.sell_shares(bundle, allow_president_change: false, swap: swap)
+
+            (bundle.num_shares - 1).times do
+              @stock_market.move_left(corporation)
+            end
+
+            log_share_price(corporation, old_price)
+            @issued_shares = true
           else
             # This section allows for the ledges that prevent price drops unless the president is selling
+            @share_pool.sell_shares(bundle, allow_president_change: allow_president_change, swap: swap)
+
             case corporation.share_price.type
             when :ignore_sale_unless_president
               price_drop = 0

@@ -8,8 +8,6 @@ module Engine
       module Step
         class IssueShares < Engine::Step::IssueShares
           def process_sell_shares(action)
-            return super if action.bundle.corporation != current_entity
-
             bundle = action.bundle
             corporation = bundle.corporation
             old_price = corporation.share_price

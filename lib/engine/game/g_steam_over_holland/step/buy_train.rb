@@ -8,11 +8,13 @@ module Engine
       module Step
         class BuyTrain < Engine::Step::BuyTrain
           def actions(entity)
-            return [] if entity != current_entity
-            return %w[buy_train sell_shares] if must_sell_shares?(entity)
-            return ['buy_train'] if can_buy_needed_train?(entity)
+            return ['sell_shares'] if entity == current_entity&.owner && can_ebuy_sell_shares?(current_entity)
 
-            %w[buy_train sell_shares pass]
+            return [] if entity != current_entity
+            return %w[sell_shares buy_train pass] if president_may_contribute?(entity)
+            return %w[buy_train pass] if can_buy_train?(entity)
+
+            []
           end
 
           def pass_description
@@ -28,20 +30,6 @@ module Engine
             return super unless entity.trains.empty?
 
             @game.close_corporation(entity)
-          end
-
-          def process_sell_shares(action)
-            bundle = action.bundle
-            corporation = bundle.corporation
-            old_price = corporation.share_price
-            @game.share_pool.sell_shares(action.bundle)
-
-            (bundle.num_shares - 1).times do
-              @game.stock_market.move_left(corporation)
-            end
-
-            @game.log_share_price(corporation, old_price)
-            @game.issued_shares = true
           end
 
           def must_sell_shares?(corporation)
@@ -63,6 +51,7 @@ module Engine
 
           def can_close_corp?(entity)
             entity.trains.empty? &&
+              !can_issue?(entity) &&
               entity.cash + entity.owner.cash < @game.depot.min_depot_price &&
               @game.graph.route_info(entity)&.dig(:route_train_purchase)
           end
