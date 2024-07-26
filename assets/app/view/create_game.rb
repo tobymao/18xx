@@ -408,14 +408,9 @@ module View
     end
 
     def submit
-      title = selected_game_or_variant.title
-      return if !title && @mode != :json
+      return if !selected_game_or_variant && @mode != :json
 
       game_params = params
-      if game_params[:min_players].to_i < @min_p[title] || game_params[:max_players].to_i > @max_p[title]
-        return store(:flash_opts,
-                     'Invalid playercount')
-      end
 
       if @mode == :multi
         game_params[:seed] = game_params[:seed].to_i
@@ -522,9 +517,9 @@ module View
         max_players = max_p
         min_players = min_p
       else
-        # NOTE: Letters resolve to 0 when converted to integers
-        max_players = max_players_elm&.value.to_i
-        min_players = min_players_elm&.value.to_i
+        # Letters resolve to 0 when converted to integers
+        max_players = (val = max_players_elm&.value.to_i).zero? ? nil : val
+        min_players = (val = min_players_elm&.value.to_i).zero? ? nil : val
       end
       if max_players
         max_players = [max_players, min_p].max
