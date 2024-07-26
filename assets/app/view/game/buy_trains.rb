@@ -223,8 +223,6 @@ module View
                         end
           end
 
-          @should_buy_train ||= nil
-
           case @should_buy_train
           when :liquidation
             children << h(:div, "#{@corporation.name} must buy a train or it will be liquidated")

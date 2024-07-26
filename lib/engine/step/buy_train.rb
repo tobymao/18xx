@@ -71,6 +71,8 @@ module Engine
       end
 
       def swap_sell(_player, _corporation, _bundle, _pool_share); end
+
+      def should_buy_train?(entity); end
     end
   end
 end
