@@ -412,26 +412,20 @@ module View
 
       game_params = params
 
-      if @mode == :multi
+      title = selected_game_or_variant&.title
+
+      case @mode
+      when :multi
+        if game_params[:min_players].to_i < @min_p[title] || game_params[:max_players].to_i > @max_p[title]
+          return store(:flash_opts,
+                       'Invalid playercount')
+        end
+
         game_params[:seed] = game_params[:seed].to_i
         game_params[:seed] = nil if (game_params[:seed]).zero?
         return create_game(game_params)
-      end
 
-      players = game_params
-                  .select { |k, _| k.start_with?('player_') }
-                  .values
-                  .map { |name| name.gsub(/\s+/, ' ').strip }
-
-      return store(:flash_opts, 'Cannot have duplicate player names') if players.uniq.size != players.size
-
-      if @mode == :json
-        begin
-          game_data = JSON.parse(game_params['game_data'])
-        rescue JSON::ParserError => e
-          return store(:flash_opts, e.message)
-        end
-      else
+      when :hotseat
         game_data = {
           settings: {
             optional_rules: game_params[:optional_rules] || [],
@@ -439,7 +433,21 @@ module View
           title: game_params[:title],
         }
         game_data[:settings][:seed] = game_params[:seed] if game_params[:seed]
+
+      when :json
+        begin
+          game_data = JSON.parse(game_params['game_data'])
+        rescue JSON::ParserError => e
+          return store(:flash_opts, e.message)
+        end
       end
+
+      players = game_params
+      .select { |k, _| k.start_with?('player_') }
+      .values
+      .map { |name| name.gsub(/\s+/, ' ').strip }
+
+      return store(:flash_opts, 'Cannot have duplicate player names') if players.uniq.size != players.size
 
       checked_options = Engine.meta_by_title(game_data[:title])
                           .check_options(game_data[:settings][:optional_rules],
@@ -517,9 +525,9 @@ module View
         max_players = max_p
         min_players = min_p
       else
-        # Letters resolve to 0 when converted to integers
-        max_players = (val = max_players_elm&.value.to_i).zero? ? nil : val
-        min_players = (val = min_players_elm&.value.to_i).zero? ? nil : val
+        # NOTE: Letters resolve to 0 when converted to integers
+        max_players = max_players_elm&.value.to_i
+        min_players = min_players_elm&.value.to_i
       end
       if max_players
         max_players = [max_players, min_p].max
