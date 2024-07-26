@@ -29,6 +29,7 @@ module Engine
         MUST_SELL_IN_BLOCKS = true
         SELL_MOVEMENT = :left_share
         MUST_EMERGENCY_ISSUE_BEFORE_EBUY = true
+        BANKRUPTCY_ALLOWED = false
 
         BANK_CASH = 99_999
 
@@ -47,6 +48,8 @@ module Engine
           { lay: true, upgrade: true },
           { lay: true, upgrade: :not_if_upgraded, cannot_reuse_same_hex: true },
         ].freeze
+
+        attr_accessor :close_corp
 
         MARKET = [
           [
@@ -242,7 +245,7 @@ module Engine
         end
 
         def operating_round(round_num)
-          Engine::Round::Operating.new(self, [
+          GSteamOverHolland::Round::Operating.new(self, [
             Engine::Step::Bankrupt,
             Engine::Step::Assign,
             Engine::Step::SpecialToken,
@@ -255,7 +258,7 @@ module Engine
             Engine::Step::Route,
             GSteamOverHolland::Step::Dividend,
             Engine::Step::DiscardTrain,
-            Engine::Step::BuyTrain,
+            GSteamOverHolland::Step::BuyTrain,
             [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
@@ -371,10 +374,20 @@ module Engine
           price_drop = bundle.num_shares
           corporation = bundle.corporation
           old_price = corporation.share_price
+          old_owner = bundle.owner
+          was_president = corporation.president?(bundle.owner)
+
           @share_pool.sell_shares(bundle, allow_president_change: allow_president_change, swap: swap)
 
-          if bundle.owner == corporation.owner
-            super
+          if was_president
+            # presidents selling shares of their own company is left one space per sale, no matter what
+            bundle.num_shares.times { @stock_market.move_left(corporation) }
+          elsif old_owner == corporation
+            # this is for corps emergency issuing shares
+            (bundle.num_shares - 1).times do
+              @stock_market.move_left(corporation)
+            end
+            @round.issued_shares[corporation] = true
           else
             # This section allows for the ledges that prevent price drops unless the president is selling
             case corporation.share_price.type
@@ -386,14 +399,14 @@ module Engine
               price_drop = 2 unless bundle.num_shares == 1
             end
             price_drop.times { @stock_market.move_left(corporation) }
-            log_share_price(corporation, old_price) if sell_movement(corporation) != :none
           end
+          log_share_price(corporation, old_price) if sell_movement(corporation) != :none
         end
 
         def issuable_shares(entity)
-          return [] unless round.steps.find { |step| step.instance_of?(GSteamOverHolland::Step::IssueShares) }.active?
+          return [] if @round.issued_shares[entity]
 
-          num_shares = entity.num_player_shares - entity.num_market_shares
+          num_shares = [entity.num_player_shares, 5 - entity.num_market_shares].min
           bundles = bundles_for_corporation(entity, entity)
           share_price = stock_market.find_share_price(entity, :current).price
 
@@ -403,13 +416,23 @@ module Engine
         end
 
         def redeemable_shares(entity)
-          return [] unless round.steps.find { |step| step.instance_of?(GSteamOverHolland::Step::IssueShares) }.active?
-
           share_price = stock_market.find_share_price(entity, :current).price
 
           bundles_for_corporation(share_pool, entity)
             .each { |bundle| bundle.share_price = share_price }
             .reject { |bundle| entity.cash < bundle.price }
+        end
+
+        def emergency_issuable_bundles(entity)
+          return [] if @round.issued_shares[entity]
+
+          num_shares = [entity.num_player_shares, 5 - entity.num_market_shares].min
+          bundles = bundles_for_corporation(entity, entity)
+          share_price = stock_market.find_share_price(entity, :current).price
+
+          bundles
+            .each { |bundle| bundle.share_price = share_price }
+            .reject { |bundle| bundle.num_shares > num_shares }
         end
       end
     end

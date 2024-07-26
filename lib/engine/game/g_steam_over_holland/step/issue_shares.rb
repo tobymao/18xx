@@ -18,6 +18,7 @@ module Engine
             end
 
             @game.log_share_price(corporation, old_price)
+            @round.issued_shares[corporation] = true
           end
 
           def blocks?
