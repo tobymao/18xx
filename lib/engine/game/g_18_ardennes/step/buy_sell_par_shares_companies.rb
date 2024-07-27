@@ -223,7 +223,17 @@ module Engine
               next if shares.empty?
 
               bundles = @game.bundles_for_corporation(player, corporation)
-              @game.share_pool.sell_shares(bundles.last)
+              pool = @game.share_pool
+              pool.sell_shares(bundles.last)
+
+              # `SharePool.sell_shares` doesn't correctly handle selling the
+              # president's certificate to the market when a player bankrupts.
+              # The certificate is sold to the market, but the corporation's
+              # president (owner) is not changed.
+              if corporation.presidents_share.owner == pool
+                corporation.owner = pool
+                @log << "#{corporation.name} enters receivership"
+              end
             end
           end
 
