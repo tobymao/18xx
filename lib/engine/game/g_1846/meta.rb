@@ -40,6 +40,17 @@ module Engine
             players: [2, 3, 4, 5],
           },
         ].freeze
+
+        MUTEX_RULES = [
+          %i[first_ed second_ed_co],
+].freeze
+
+        def self.check_options(options, _min_players, _max_players)
+          optional_rules = (options || []).map(&:to_sym)
+          return unless (optional_rules & %i[first_ed second_ed_co]).length == 2
+
+          { error: 'Cannot guarantee 2nd Edition companies if using 1st Edition' }
+        end
       end
     end
   end
