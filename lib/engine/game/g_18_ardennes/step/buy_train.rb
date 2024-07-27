@@ -8,6 +8,8 @@ module Engine
       module Step
         class BuyTrain < Engine::Step::BuyTrain
           def actions(entity)
+            return [] if entity.receivership?
+
             actions = super
             actions << 'sell_company' if actions.include?('sell_shares') &&
                                          can_sell_any_companies?(entity)

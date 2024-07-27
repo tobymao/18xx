@@ -7,6 +7,12 @@ module Engine
     module G18Ardennes
       module Step
         class Dividend < Engine::Step::Dividend
+          def auto_actions(entity)
+            return super unless entity.receivership?
+
+            [Action::Dividend.new(entity, kind: 'payout')]
+          end
+
           def payout(entity, revenue)
             return half(entity, revenue) if entity.type == :minor
 

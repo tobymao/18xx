@@ -11,6 +11,7 @@ module Engine
 
           def actions(entity)
             return [] unless entity == current_entity
+            return [] if entity.receivership?
             return [] unless can_place_token?(entity)
 
             ACTIONS
