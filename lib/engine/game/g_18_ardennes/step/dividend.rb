@@ -40,6 +40,12 @@ module Engine
               {}
             end
           end
+
+          def holder_for_corporation(entity)
+            # This is needed to stop minor companies in receivership being
+            # paid for their president's certificate in the share pool.
+            entity
+          end
         end
       end
     end
