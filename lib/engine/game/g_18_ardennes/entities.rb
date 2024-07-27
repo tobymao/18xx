@@ -438,6 +438,7 @@ module Engine
 
         def exchange_corporations(exchange_ability)
           minor = exchange_ability.owner
+          return [] if minor.receivership?
           return [] if minor.share_price.price.zero?
           return [] if under_obligation?(minor.owner)
 
