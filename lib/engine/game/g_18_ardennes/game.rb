@@ -161,6 +161,34 @@ module Engine
           major_corporations.select(&:ipoed).sort
         end
 
+        def acting_for_entity(entity)
+          return super unless entity == current_entity
+          return super unless entity.corporation?
+          return super unless entity.receivership?
+          return super if entity.trains.empty?
+
+          # A company in receivership is operating. Most of the steps in the
+          # operating round are skipped, but someone needs to select routes
+          # if the company has a train. To make this easy for the players, the
+          # player who should select the routes is:
+          # - The last player to operate a company in this round, or (if no
+          #   player-owned companies have yet operated),
+          # - The next player due to operate a company in this round, or (if
+          #   all companies are in receivership),
+          # - The player with priority deal.
+          corps = @round.entities
+          ix = @round.entity_index
+          operated = corps.take(ix).reject(&:receivership?)
+          unoperated = corps.drop(ix + 1).reject(&:receivership?)
+          if ix.positive? && !operated.empty?
+            super(operated.last)
+          elsif !unoperated.empty?
+            super(unoperated.first)
+          else
+            players.first
+          end
+        end
+
         def liquidity(player, emergency: false)
           return player.cash unless sellable_turn?
 
