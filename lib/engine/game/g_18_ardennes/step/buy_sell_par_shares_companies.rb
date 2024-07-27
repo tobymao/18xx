@@ -13,6 +13,7 @@ module Engine
           def actions(entity)
             return [] unless entity == current_entity
             return [] if bought?
+            return [] if entity.bankrupt
             return %w[bankrupt] if @game.bankrupt?(entity)
             return limit_actions(entity) if must_sell?(entity)
             return par_actions(entity) if @game.under_obligation?(entity)
