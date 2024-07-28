@@ -139,7 +139,7 @@ module Engine
 
         def operating_round(round_num)
           Engine::Round::Operating.new(self, [
-            Engine::Step::Bankrupt,
+            G18Ardennes::Step::Bankrupt,
             G18Ardennes::Step::Convert,
             G18Ardennes::Step::Exchange,
             G18Ardennes::Step::DeclineTokens,
@@ -204,6 +204,14 @@ module Engine
           bankrupt?(player)
         end
 
+        def declare_bankrupt(player, cash_target = @bank)
+          @log << "-- #{player.name} goes bankrupt and sells remaining shares --"
+          bankrupt_sell_shares(player)
+          bankrupt_sell_companies(player)
+          bankrupt_transfer_cash(player, cash_target)
+          super
+        end
+
         # If a player has gone above 60% holding in a major (by exchanging
         # minors for shares) they don't have to sell back down.
         def can_hold_above_corp_limit?(_entity)
@@ -238,6 +246,58 @@ module Engine
           return if old_limit == new_limit
 
           @log << "Certificate limit increases to #{new_limit}."
+        end
+
+        private
+
+        def bankrupt_sell_companies(player)
+          player.companies.each do |company|
+            if company.type == :minor
+              # The Guillaume-Luxembourg minor gets put into the open market.
+              @log << "#{player.name} sells #{company.name} to the bank " \
+                      "for #{format_currency(company.value)}."
+              bank.spend(company.value, player)
+              company.owner = @bank
+            else
+              # Concession – make available for another player to start
+              # the public company.
+              company.owner = nil
+              @pledged_minors[corporation_by_id(company.id)] = nil
+            end
+          end
+          player.companies.clear
+        end
+
+        def bankrupt_sell_shares(player)
+          player.shares_by_corporation.each do |corporation, shares|
+            next if shares.empty?
+
+            bundle = bundles_for_corporation(player, corporation).last
+            num = bundle.num_shares == 1 ? 'a share' : "#{bundle.num_shares} shares"
+            msg = "#{player.name} sells #{num} of #{corporation.name} for " \
+                  "#{format_currency(bundle.price)}."
+            @share_pool.sell_shares(bundle, silent: true)
+
+            # `SharePool.sell_shares` doesn't correctly handle selling the
+            # president's certificate to the market when a player bankrupts.
+            # The certificate is sold to the market, but the corporation's
+            # president (owner) is not changed.
+            if corporation.presidents_share.owner == @share_pool
+              corporation.owner = @share_pool
+              msg += " #{corporation.name} enters receivership."
+            end
+
+            @log << msg
+          end
+        end
+
+        def bankrupt_transfer_cash(player, target)
+          return unless player.cash.positive?
+
+          target_name = target == @bank ? 'the bank' : target.name
+          @log << "#{format_currency(player.cash)} is transferred from " \
+                  "#{player.name} to #{target_name}."
+          player.spend(player.cash, target)
         end
       end
     end

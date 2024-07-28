@@ -32,6 +32,10 @@ module Engine
             @log << "#{player.name} sells #{company.name} to bank for #{@game.format_currency(price)}"
           end
 
+          def log_skip(entity)
+            super unless entity.receivership?
+          end
+
           private
 
           def can_sell_any_companies?(entity)

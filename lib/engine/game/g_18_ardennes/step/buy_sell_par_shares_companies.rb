@@ -172,18 +172,7 @@ module Engine
           end
 
           def process_bankrupt(action)
-            player = action.entity
-
-            # All shares and the GL go to the bank pool.
-            # Concessions can be purchased by another player in a future auction.
-            sell_bankrupt_shares(player)
-            player.companies.each do |company|
-              company.owner = company.type == :minor ? @game.bank : nil
-            end
-            player.companies.clear
-
-            player.spend(player.cash, @game.bank) if player.cash.positive?
-            @game.declare_bankrupt(player)
+            @game.declare_bankrupt(action.entity)
           end
 
           def log_skip(entity)
@@ -214,27 +203,6 @@ module Engine
               %w[sell_shares sell_company]
             else
               %w[sell_shares]
-            end
-          end
-
-          def sell_bankrupt_shares(player)
-            @log << "-- #{player.name} goes bankrupt and sells remaining shares --"
-
-            player.shares_by_corporation.each do |corporation, shares|
-              next if shares.empty?
-
-              bundles = @game.bundles_for_corporation(player, corporation)
-              pool = @game.share_pool
-              pool.sell_shares(bundles.last)
-
-              # `SharePool.sell_shares` doesn't correctly handle selling the
-              # president's certificate to the market when a player bankrupts.
-              # The certificate is sold to the market, but the corporation's
-              # president (owner) is not changed.
-              if corporation.presidents_share.owner == pool
-                corporation.owner = pool
-                @log << "#{corporation.name} enters receivership"
-              end
             end
           end
 
