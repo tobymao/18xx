@@ -450,6 +450,10 @@ module Engine
           end
         end
 
+        def unowned_purchasable_companies
+          minor_companies.select { |company| company.owner == bank }
+        end
+
         def buyable_bank_owned_companies
           # Do not show the GL after a corporation grows up.
           @round.operating? ? [] : super
