@@ -133,16 +133,12 @@ module Engine
           end
 
           # Corporations whose cards are visible in the stock round.
-          # Hide public companies whose concessions have not yet been auctioned,
-          # and show the current player's minor companies.
+          # Hide public companies whose concessions have not yet been auctioned.
           def visible_corporations
-            minors = @game.minor_corporations.select do |corporation|
-              corporation.owner == current_entity
-            end
             majors = @game.sorted_corporations.select do |corporation|
               corporation.floated || !corporation.par_via_exchange.owner.nil?
             end
-            majors.sort + minors.sort
+            majors.sort + @game.minor_corporations.sort
           end
 
           # Valid par prices for public companies.
