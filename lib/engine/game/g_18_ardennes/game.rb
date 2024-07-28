@@ -195,6 +195,10 @@ module Engine
           super + player.companies.sum(&:value)
         end
 
+        def can_buy_presidents_share_directly_from_market?(_corporation)
+          true
+        end
+
         # Checks whether a player really is bankrupt.
         def can_go_bankrupt?(player, _corporation)
           return super if @round.operating?
