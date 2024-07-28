@@ -24,9 +24,11 @@ module Engine
 
             train = @game.depot.min_depot_train
             price = train.price
-            if price > corporation.cash
-              @log << 'The bank '
-              @game.bank.spend(price - corporation.cash, corporation)
+            shortfall = price - corporation.cash
+            if shortfall.positive?
+              @log << "The bank gives #{@game.format_currency(shortfall)} " \
+                      "to #{corporation.name} to allow it to purchase a train."
+              @game.bank.spend(shortfall, corporation)
             end
             buy_train_action(Engine::Action::BuyTrain.new(corporation,
                                                           train: train,
