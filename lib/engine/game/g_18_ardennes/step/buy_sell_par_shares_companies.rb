@@ -42,14 +42,23 @@ module Engine
           end
 
           def bankruptcy_description(player)
-            concession = player.companies
-                               .select { |c| c.type == :concession }
-                               .min { |c| @game.min_concession_cost(c) }
+            if !under_limit?(player) &&
+               !can_sell_any?(player) &&
+               !can_sell_any_companies?(player)
 
-            "#{player.name} needs at least " \
-              "#{@game.format_currency(@game.min_concession_cost(concession))} " \
-              "to start #{concession.name} but can only raise " \
-              "#{@game.format_currency(@game.liquidity(player))}."
+              "#{player.name} is at certificate and does not have anything " \
+                'that can be sold to free up the certificate slot needed to ' \
+                'start a public company.'
+            else
+              concession = player.companies
+                                 .select { |c| c.type == :concession }
+                                 .min { |c| @game.min_concession_cost(c) }
+
+              "#{player.name} needs at least " \
+                "#{@game.format_currency(@game.min_concession_cost(concession))} " \
+                "to start #{concession.name} but can only raise " \
+                "#{@game.format_currency(@game.liquidity(player))}."
+            end
           end
 
           def sellable_companies(entity)
@@ -185,10 +194,9 @@ module Engine
             actions << 'par' if under_limit?(entity)
             actions << 'sell_shares' if can_sell_any?(entity)
             actions << 'sell_company' if can_sell_any_companies?(entity)
-            # TODO: handle this properly.
-            # Maybe stop the player from bidding for a major if they are at
-            # certificate limit and do not have any sellable shares.
-            raise GameError, 'Cannot sell shares or start major company' if actions.empty?
+            # The player is at certificate limit and they do not have any
+            # sellable shares.
+            actions << 'bankrupt' if actions.empty?
 
             actions
           end
