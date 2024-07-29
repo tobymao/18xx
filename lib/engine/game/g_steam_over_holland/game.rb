@@ -440,9 +440,9 @@ module Engine
         end
 
         def upgrades_to?(from, to, _special = false, selected_company: nil)
-          return %w[SOH2 SOH3 SOH4 SOH5].include?(to.name) if from.name == '3'
-          return %w[SOH2 SOH3 981 991].include?(to.name) if from.name == '4'
-          return %w[SOH4 SOH5 981 991].include?(to.name) if from.name == '58'
+          return %w[SOH2 SOH3 SOH4 SOH5].include?(to.name) if from.hex.tile.name == '3'
+          return %w[SOH2 SOH3 981 991].include?(to.name) if from.hex.tile.name == '4'
+          return %w[SOH4 SOH5 981 991].include?(to.name) if from.hex.tile.name == '58'
 
           super
         end
