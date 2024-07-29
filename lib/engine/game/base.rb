@@ -221,6 +221,7 @@ module Engine
 
       # :after_last_to_act -- player after the last to act goes first. Order remains the same.
       # :first_to_pass -- players ordered by when they first started passing.
+      # :next_clockwise -- priority passses to the next player in clockwise order.
       NEXT_SR_PLAYER_ORDER = :after_last_to_act
 
       # do tile reservations completely block other companies?
@@ -2891,6 +2892,8 @@ module Engine
                            @players.sort_by { |p| [p.cash, @players.index(p)] }.reverse
                          when :least_cash
                            @players.sort_by { |p| [p.cash, @players.index(p)] }
+                         when next_clockwise
+                           @round.next_entity_index
                          else
                            []
                          end
@@ -2918,6 +2921,9 @@ module Engine
         when :least_cash
           current_order = @players.dup
           @players.sort_by! { |p| [p.cash, current_order.index(p)] }
+        when :next_clockwise
+          current_order = @players.first
+          @players.rotate!
         end
         return if silent
 

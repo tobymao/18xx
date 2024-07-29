@@ -196,6 +196,10 @@ module Engine
           @or = 0
         end
 
+        def next_sr_player_order
+          @round.is_a?(Engine::Round::Auction) ? :most_cash : :next_clockwise
+        end
+
         def timeline
           @timeline ||= [
             'Game ends after OR 5.2!',
