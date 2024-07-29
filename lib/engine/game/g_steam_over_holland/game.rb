@@ -438,6 +438,14 @@ module Engine
             .each { |bundle| bundle.share_price = share_price }
             .reject { |bundle| bundle.num_shares > num_shares }
         end
+
+        def upgrades_to?(from, to, _special = false, selected_company: nil)
+          return %w[SOH2 SOH3 SOH4 SOH5].include?(to.name) if from.name == '3'
+          return %w[SOH2 SOH3 981 991].include?(to.name) if from.name == '4'
+          return %w[SOH4 SOH5 981 991].include?(to.name) if from.name == '58'
+
+          super
+        end
       end
     end
   end
