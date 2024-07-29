@@ -362,14 +362,14 @@ module Engine
           @corporations.each { |c| yield c unless c.floated? }
         end
 
-        def check_distance(route, visits, train)
-          super
-
+        def check_distance(route, visits, train = nil)
           raise GameError, 'Route cannot begin/end in a town' if visits.first.town? || visits.last.town?
+
+          super
         end
 
         def revenue_for(route, stops)
-          raise GameError, 'Route visits same hex twice' if route.hexes.size != route.hexes.uniq.size
+          raise GameError, 'Route cannot include Amsterdam more than once.' if route.hexes.size != route.hexes.uniq.size
 
           super
         end
