@@ -10,11 +10,11 @@ module Engine
           ACTIONS = %w[buy_token pass].freeze
           MIN_PRICE = 1
 
-          def actions(entity)
-            return [] unless can_buy_token?(entity)
+          # def actions(entity)
+          #   return [] unless can_buy_token?(entity)
 
-            ACTIONS
-          end
+          #   ACTIONS
+          # end
 
           def round_state
             super.merge(
