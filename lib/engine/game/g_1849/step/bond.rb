@@ -42,7 +42,7 @@ module Engine
             super if @game.bonds? && @game.issue_bonds_enabled
           end
 
-          def take_loan_button_text
+          def take_loan_text
             "Issue Bond (#{@game.format_currency(@game.loan_value)})"
           end
 

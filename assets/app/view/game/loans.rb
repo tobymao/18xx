@@ -28,7 +28,7 @@ module View
         end
 
         if actions.include?('take_loan')
-          take_loan_button_text = step.respond_to?(:take_loan_button_text) ? step.take_loan_button_text : 'Take Loan'
+          take_loan_text = step.respond_to?(:take_loan_text) ? step.take_loan_text : 'Take Loan'
           children << h(:button, {
                           on: {
                             click: lambda do
@@ -36,7 +36,7 @@ module View
                                    end,
                           },
                         },
-                        take_loan_button_text,)
+                        take_loan_text,)
         end
 
         h(:div, children)
