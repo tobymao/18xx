@@ -473,7 +473,8 @@ module Engine
           @log << 'E-token returned to bank' if corporation.e_token
           corporation.e_token = false
 
-          corporation.loans.pop unless corporation.loans.empty?
+          repaid_bond = corporation.loans.pop unless corporation.loans.empty?
+          @loans << repaid_bond if repaid_bond
         end
 
         def float_str(entity)
@@ -869,6 +870,7 @@ module Engine
         end
 
         # code below is for Bonds variant
+        NUM_LOANS = 6
         MAXIMUM_LOANS = 1
         LOAN_VALUE = 500
         INTEREST_RATE = 50
@@ -878,7 +880,7 @@ module Engine
         end
 
         def num_loans
-          bonds? ? 1 : 0
+          bonds? ? self.class::NUM_LOANS : 0
         end
 
         def maximum_loans(_entity)
@@ -937,7 +939,7 @@ module Engine
         end
 
         def corp_loans_text
-          'Issued Bond'
+          'Bonds Issued'
         end
 
         # code below is for the Electric Dreams variant
