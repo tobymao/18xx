@@ -369,9 +369,18 @@ module Engine
         end
 
         def revenue_for(route, stops)
+          revenue = super
+
           raise GameError, 'Route cannot include Amsterdam more than once.' if route.hexes.size != route.hexes.uniq.size
 
-          super
+          if (ability = abilities(route.corporation, :hex_bonus))
+            stops.each do |stop|
+              next unless ability.hexes.include?(stop.hex.name)
+
+              revenue += 20
+            end
+          end
+          revenue
         end
 
         def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil, movement: nil)
