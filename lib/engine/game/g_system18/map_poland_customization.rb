@@ -292,6 +292,7 @@ module Engine
             player.companies.dup.each do |c|
               @log << "Right to open #{c.sym} lapses for #{player.name}"
               player.companies.delete(c)
+              c.owner = nil
             end
           end
         end

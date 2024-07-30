@@ -621,6 +621,10 @@ module Engine
 
           send("map_#{map_name}_timeline")
         end
+
+        def ipo_name(_corp)
+          game_capitalization == :incremental ? 'Treasury' : 'IPO'
+        end
       end
     end
   end

@@ -26,7 +26,7 @@ module View
         needs :corporation_to_par, default: nil, store: true
         needs :show_other_players, default: nil, store: true
         needs :flexible_player, default: nil, store: true
-        needs :show_hand, default: false, store: true
+        needs :show_sr_hand, default: false, store: true
 
         def render
           round = @game.round
@@ -52,6 +52,7 @@ module View
             store(:selected_corporation, nil, skip: true)
             store(:last_player, @current_entity, skip: true)
             store(:corporation_to_par, nil, skip: true)
+            store(:show_sr_hand, false, skip: true)
           end
 
           if @current_actions.include?('par') && @step.respond_to?(:companies_pending_par) && !@step.companies_pending_par.empty?
@@ -94,7 +95,7 @@ module View
           children.concat(render_ipo_rows) if @game.show_ipo_rows?
           children.concat(render_bank_companies) unless @bank_first
           children << render_show_hand_button unless @game.hand_companies_for_stock_round.empty?
-          children.concat(render_hand_companies) if show_hand?
+          children.concat(render_hand_companies) if show_sr_hand?
           children << h(Players, game: @game)
           if @step.respond_to?(:purchasable_companies) && !@step.purchasable_companies(@current_entity).empty?
             children << h(BuyCompanyFromOtherPlayer, game: @game)
@@ -508,7 +509,7 @@ module View
 
           toggle = lambda do
             if can_show_hand
-              store(:show_hand, !@show_hand)
+              store(:show_sr_hand, !@show_sr_hand)
             else
               store(:flash_opts, 'Enter master mode to reveal hand. Use this feature fairly.')
             end
@@ -524,11 +525,11 @@ module View
             on: { click: toggle },
           }
 
-          h(:button, props, "#{show_hand? ? 'Hide' : 'Show'} Player Hand")
+          h(:button, props, "#{show_sr_hand? ? 'Hide' : 'Show'} Player Hand")
         end
 
-        def show_hand?
-          @show_hand
+        def show_sr_hand?
+          @show_sr_hand
         end
 
         def render_ipo_rows

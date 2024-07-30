@@ -5,7 +5,7 @@ module Engine
     module G1888
       module Entities
         # rubocop:disable Layout/LineLength
-        COMPANIES = [
+        COMPANIES_NORTH = [
           {
             name: 'Kaiping Tramway',
             value: 25,
@@ -103,9 +103,19 @@ module Engine
             color: nil,
           },
         ].freeze
+
+        COMPANIES_EAST = [
+          {
+            name: 'Kaiping Tramway',
+            value: 25,
+            revenue: 5,
+            desc: 'No special ability',
+            sym: 'KT',
+          },
+        ].freeze
         # rubocop:enable Layout/LineLength
 
-        CORPORATIONS = [
+        CORPORATIONS_NORTH = [
           {
             float_percent: 60,
             sym: 'JHR',
@@ -196,6 +206,105 @@ module Engine
             coordinates: 'G11',
             color: '#00ACD0',
             text_color: 'white',
+          },
+        ].freeze
+
+        CORPORATIONS_EAST = [
+          {
+            float_percent: 60,
+            sym: 'LHR',
+            name: 'Longhai Railway',
+            logo: '1888/LHR',
+            simple_logo: '1888/LHR.alt',
+            tokens: [0, 40, 60],
+            city: 1,
+            coordinates: 'A9',
+            color: '#9800FF',
+            text_color: 'white',
+          },
+          {
+            float_percent: 60,
+            sym: 'YTR',
+            name: 'Yongtaiwen Railway',
+            logo: '1888/YTR',
+            simple_logo: '1888/YTR.alt',
+            tokens: [0, 40, 60],
+            city: 1,
+            coordinates: 'G19',
+            color: '#1240E4',
+            text_color: 'white',
+          },
+          {
+            float_percent: 60,
+            sym: 'XYR',
+            name: 'Xiaoyong Railway',
+            logo: '1888/XYR',
+            simple_logo: '1888/XYR.alt',
+            tokens: [0, 40, 60],
+            city: 1,
+            coordinates: 'G17',
+            color: '#FF0000',
+            text_color: 'white',
+          },
+          {
+            float_percent: 60,
+            sym: 'HUN',
+            name: 'Huning Railway',
+            logo: '1888/HUN',
+            simple_logo: '1888/HUN.alt',
+            tokens: [0, 40, 60],
+            city: 1,
+            coordinates: 'E15',
+            color: '#9DFFFD',
+            text_color: 'black',
+          },
+          {
+            float_percent: 60,
+            sym: 'WJR',
+            name: 'Wujiu Railway',
+            logo: '1888/WJR',
+            simple_logo: '1888/WJR.alt',
+            tokens: [0, 40, 60],
+            city: 1,
+            coordinates: 'F8',
+            color: '#983C3C',
+            text_color: 'white',
+          },
+          {
+            float_percent: 60,
+            sym: 'HHR',
+            name: 'Huhang Railway',
+            logo: '1888/HHR',
+            simple_logo: '1888/HHR.alt',
+            tokens: [0, 40, 60],
+            city: 1,
+            coordinates: 'F20',
+            color: '#98FF00',
+            text_color: 'black',
+          },
+          {
+            float_percent: 60,
+            sym: 'HEN',
+            name: 'Hening Railway',
+            logo: '1888/HEN',
+            simple_logo: '1888/HEN.alt',
+            tokens: [0, 40, 60],
+            city: 1,
+            coordinates: 'F20',
+            color: '#FF98CE',
+            text_color: 'black',
+          },
+          {
+            float_percent: 60,
+            sym: 'XGY',
+            name: 'Xiangyu Railway',
+            logo: '1888/XGY',
+            simple_logo: '1888/XGY.alt',
+            tokens: [0, 40, 60],
+            city: 1,
+            coordinates: 'G1',
+            color: '#FFE532',
+            text_color: 'black',
           },
         ].freeze
       end
