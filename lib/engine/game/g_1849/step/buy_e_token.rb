@@ -9,8 +9,8 @@ module Engine
         class BuyEToken < Engine::Step::Base
           def actions(entity)
             actions = []
-            actions += %w[choose pass] if can_buy_e_token?(entity)
-            actions.uniq
+            actions += %w[choose pass] if can_buy_e_token?(entity) && entity == current_entity
+            actions
           end
 
           def description

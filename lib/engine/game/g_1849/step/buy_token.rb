@@ -11,7 +11,7 @@ module Engine
           MIN_PRICE = 1
 
           def actions(entity)
-            return [] unless can_buy_token?(entity)
+            return [] unless entity == current_entity
 
             ACTIONS
           end
