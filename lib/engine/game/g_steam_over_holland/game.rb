@@ -371,8 +371,6 @@ module Engine
         def revenue_for(route, stops)
           revenue = super
 
-          raise GameError, 'Route cannot include Amsterdam more than once.' if route.hexes.size != route.hexes.uniq.size
-
           if (ability = abilities(route.corporation, :hex_bonus))
             stops.each do |stop|
               next unless ability.hexes.include?(stop.hex.name)
