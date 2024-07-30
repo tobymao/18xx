@@ -153,6 +153,7 @@ module Engine
             ['J1'] => 'offboard=revenue:yellow_40|brown_60;path=a:5,b:_0',
             ['J15'] => 'offboard=revenue:yellow_40|brown_50;path=a:0,b:_0;'\
                        'border=edge:0,type:water,cost:50;border=edge:1,type:water',
+            ['L5'] => 'offboard=revenue:yellow_40|brown_50;path=a:3,b:_0',
             ['O12'] => 'offboard=revenue:yellow_40|brown_60;path=a:3,b:_0',
           },
           white: {
