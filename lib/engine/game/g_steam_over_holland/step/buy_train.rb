@@ -8,9 +8,10 @@ module Engine
       module Step
         class BuyTrain < Engine::Step::BuyTrain
           def actions(entity)
-            return ['sell_shares'] if entity == current_entity&.owner && can_ebuy_sell_shares?(current_entity)
-
             return [] if entity != current_entity
+
+            return ['buy_train'] if can_afford_needed_train?(entity)
+            return ['sell_shares'] if entity == current_entity&.owner && can_ebuy_sell_shares?(current_entity)
             return %w[sell_shares buy_train pass] if president_may_contribute?(entity)
             return %w[buy_train pass] if can_buy_train?(entity)
 
@@ -53,6 +54,12 @@ module Engine
             entity.trains.empty? &&
               !can_issue?(entity) &&
               entity.cash + entity.owner.cash < @game.depot.min_depot_price &&
+              @game.graph.route_info(entity)&.dig(:route_train_purchase)
+          end
+
+          def can_afford_needed_train?(entity)
+            entity.trains.empty? &&
+              entity.cash + entity.owner.cash >= @game.depot.min_depot_price &&
               @game.graph.route_info(entity)&.dig(:route_train_purchase)
           end
         end
