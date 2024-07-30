@@ -59,7 +59,7 @@ module Engine
           def process_take_loan(action)
             raise GameError, 'Cannot issue bond' unless @game.can_take_loan?(action.entity)
 
-            @game.take_loan(action.entity, action.loan)
+            @game.take_loan(action.entity)
           end
 
           def process_payoff_loan(action)
@@ -72,7 +72,6 @@ module Engine
             entity.spend(amount, @game.bank)
 
             entity.loans.delete(loan)
-            @game.loans << loan
 
             @round.redeemed_bond = true
 
