@@ -977,7 +977,7 @@ module Engine
           gauge_changes = Array.new(num) { Engine::Part::City.new('0') }
           first_stop = route_stops.first
           gauge_changes.each do |stop|
-            stop.tile = first_stop.tile
+            stop.tile = Tile.new('gc')
             route_stops.insert(1, stop) # add the gauge change after fist element so that it's not the first or last stop
           end
           LOGGER.debug { "GAME::add_gauge_changes_to_stops > route_stops: #{route_stops.inspect}" }
