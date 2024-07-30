@@ -34,11 +34,23 @@ module Engine
             abilities: [
               {
                 type: 'tile_discount',
+                when: 'track',
                 owner_type: 'corporation',
                 discount: 50,
                 terrain: 'water',
                 count: 1,
+              },
+              {
+                type: 'tile_lay',
+                when: 'track',
+                owner_type: 'corporation',
+                tiles: [],
                 hexes: [],
+                reachable: true,
+                special: false,
+                consume_tile_lay: true,
+                count: 1,
+                closed_when_used_up: true,
               },
             ],
           },

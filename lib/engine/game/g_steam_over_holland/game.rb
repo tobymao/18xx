@@ -455,6 +455,24 @@ module Engine
 
           super
         end
+
+        def upgrade_cost(tile, _hex, entity, spender)
+          terrain_cost = tile.upgrades.sum(&:cost)
+          discounts = 0
+
+          # Tile discounts must be activated
+          if entity.company? && (ability = entity.all_abilities.find { |a| a.type == :tile_discount })
+            discounts = tile.upgrades.sum do |upgrade|
+              next unless upgrade.terrains.include?(ability.terrain)
+
+              discount = [upgrade.cost, ability.discount].min
+              log_cost_discount(spender, ability, discount) if discount.positive?
+              discount
+            end
+          end
+
+          terrain_cost - discounts
+        end
       end
     end
   end
