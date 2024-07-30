@@ -58,12 +58,11 @@ module Engine
           # Base code doesn't handle one token and one reservation on a OO tile
           # Moves a reservation from hex to untoken city
           def replace_oo_reservations(tile)
-            return if !tile.label == 'OO'
+            return unless tile.label == 'OO'
 
             cities = tile.cities
             reservations = tile.reservations.dup
             LOGGER.debug { "replace_oo_reservations > reservations: #{reservations}" }
-            LOGGER.debug { "replace_oo_reservations > label: #{tile.label}" }
             cities.each do |city|
               next if city.tokened?
 
