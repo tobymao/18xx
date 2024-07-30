@@ -420,6 +420,8 @@ module Engine
         end
 
         def redeemable_shares(entity)
+          return [] if @round.issued_shares[entity]
+
           share_price = stock_market.find_share_price(entity, :current).price
 
           bundles_for_corporation(share_pool, entity)

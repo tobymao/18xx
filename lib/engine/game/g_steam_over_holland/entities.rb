@@ -125,6 +125,7 @@ module Engine
             logo: 'steam_over_holland/AR',
             tokens: [0, 40, 100, 100],
             coordinates: 'J7',
+            always_market_price: true,
             color: 'red',
           },
           {
@@ -134,6 +135,7 @@ module Engine
             logo: 'steam_over_holland/NSM',
             tokens: [0, 40, 100, 100],
             coordinates: 'I12',
+            always_market_price: true,
             color: 'white',
             text_color: 'black',
           },
@@ -144,6 +146,7 @@ module Engine
             logo: 'steam_over_holland/OSM',
             tokens: [0, 40, 100, 100],
             coordinates: 'E14',
+            always_market_price: true,
             color: 'black',
           },
           {
@@ -153,6 +156,7 @@ module Engine
             logo: 'steam_over_holland/NCS',
             tokens: [0, 40, 100, 100],
             coordinates: 'H9',
+            always_market_price: true,
             color: 'purple',
           },
           {
@@ -163,6 +167,7 @@ module Engine
             tokens: [0, 40, 100, 100],
             coordinates: 'F9',
             city: 1,
+            always_market_price: true,
             color: 'green',
           },
           {
@@ -173,6 +178,7 @@ module Engine
             tokens: [0, 40, 100, 100],
             coordinates: 'F9',
             city: 0,
+            always_market_price: true,
             color: 'yellow',
             text_color: 'black',
           },
@@ -183,6 +189,7 @@ module Engine
             logo: 'steam_over_holland/NBD',
             tokens: [0, 40, 100, 100],
             coordinates: 'K12',
+            always_market_price: true,
             color: 'blue',
           },
         ].freeze
