@@ -34,7 +34,7 @@ module Engine
           end
 
           def process_lay_tile(action)
-            LOGGER.debug 'HomeTrack > process_lay_tile'
+            LOGGER.debug { 'HomeTrack > process_lay_tile' }
             lay_tile(action)
 
             place_token(
@@ -48,29 +48,30 @@ module Engine
           end
 
           def process_place_token(action)
-            LOGGER.debug 'HomeTrack > process_place_token'
+            LOGGER.debug { 'HomeTrack > process_place_token' }
             super
             tile = action.city.tile
+            LOGGER.debug { "HomeTrack > tile: #{tile.inspect}" }
             replace_oo_reservations(tile) unless tile.reservations.empty? # move hex reservation
           end
 
           # Base code doesn't handle one token and one reservation on a OO tile
           # Moves a reservation from hex to untoken city
           def replace_oo_reservations(tile)
-            return if tile.reservations.empty?
+            return if !tile.label == 'OO'
 
             cities = tile.cities
             reservations = tile.reservations.dup
-            LOGGER.debug "replace_oo_reservations > reservations: #{reservations}"
-            tile.reservations.each do |reservation|
-              cities.each do |city|
-                if !city.tokened? || cities.count == 1
-                  city.add_reservation!(reservation)
-                  exit
-                end
-              end
+            LOGGER.debug { "replace_oo_reservations > reservations: #{reservations}" }
+            LOGGER.debug { "replace_oo_reservations > label: #{tile.label}" }
+            cities.each do |city|
+              next if city.tokened?
+
+              corp = reservations.pop
+              tile.remove_reservation!(corp)
+              city.add_reservation!(corp)
+              LOGGER.debug { "replace_oo_reservations > city reservation: #{city.reservations}" }
             end
-            tile.reservations.clear
           end
 
           def hex_neighbors(_entity, hex)
