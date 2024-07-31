@@ -970,18 +970,30 @@ module Engine
           return route_stops unless gauge_changes.positive?
 
           LOGGER.debug { "GAME::visited_stops > gauge_changes: #{gauge_changes} route_stops: #{route_stops.inspect}" }
-          add_gauge_changes_to_stops(gauge_changes, route_stops)
+          add_gauge_changes_to_stops(gauge_changes, route_stops, route)
         end
 
-        def add_gauge_changes_to_stops(num, route_stops)
+        def add_gauge_changes_to_stops(num, route_stops, route)
           gauge_changes = Array.new(num) { Engine::Part::City.new('0') }
-          first_stop = route_stops.first
+          gc_tile = gauge_change_tile(route)
           gauge_changes.each do |stop|
-            stop.tile = Tile.new('gc')
+            stop.tile = gc_tile
             route_stops.insert(1, stop) # add the gauge change after fist element so that it's not the first or last stop
           end
           LOGGER.debug { "GAME::add_gauge_changes_to_stops > route_stops: #{route_stops.inspect}" }
           route_stops
+        end
+
+        def gauge_change_tile(route) # return a tile that can be used for a stop, exclude Mumbai or Nepal
+          gc_hexes = @gauge_change_markers.flatten
+          hexes = route.hexes & gc_hexes
+          hexes.each do |hex|
+            return hex.tile unless %w[MUMBAI NEPAL].include?(hex.tile.location_name)
+          end
+          # in the rare case where Mumbai/Nepal is the only intersecting hex, use the other GC hexes
+          gc_hexes.each do |hex|
+            return hex.tile unless %w[MUMBAI NEPAL].include?(hex.tile.location_name)
+          end
         end
 
         def border_crossings(route)
