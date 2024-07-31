@@ -984,7 +984,8 @@ module Engine
           route_stops
         end
 
-        def gauge_change_tile(route) # return a tile that can be used for a stop, exclude Mumbai or Nepal
+        # return a tile that can be used for a stop, exclude Mumbai or Nepal
+        def gauge_change_tile(route)
           gc_hexes = @gauge_change_markers.flatten
           hexes = route.hexes & gc_hexes
           hexes.each do |hex|
