@@ -963,7 +963,7 @@ module Engine
 
         # ----- Route Modificatons for Gauge Change stops (modifed from 1848)
 
-        # Add gauge changes to visited stops, they count as 0 revenue City stops,
+        # Add gauge changes to visited stops, they count as 0 revenue City stops
         def visited_stops(route)
           gauge_changes = border_crossings(route)
           route_stops = route.connection_data.flat_map { |c| [c[:left], c[:right]] }.uniq.compact # super
@@ -984,14 +984,14 @@ module Engine
           route_stops
         end
 
-        # return a tile that can be used for a stop, exclude Mumbai, Nepal, or any named hex
+        # return a tile that can be used for a stop, exclude any named hex
         def gauge_change_tile(route)
           gc_hexes = @gauge_change_markers.flatten
           hexes = route.hexes & gc_hexes
           hexes.each do |hex|
             return hex.tile unless hex.tile.location_name
           end
-          # in case where there isn't an unnamed intersecting hex, use the other GC hexes
+          # if there isn't an unnamed intersecting hex, use the other GC hexes
           gc_hexes.each do |hex|
             return hex.tile unless hex.tile.location_name
           end
