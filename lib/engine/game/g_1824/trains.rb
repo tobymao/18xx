@@ -20,7 +20,7 @@ module Engine
             num: 6,
             price: 120,
             available_on: '2',
-            rusts_on: %w[3g 4g 5g 10],
+            rusts_on: %w[3g 4g 5g],
           },
           {
             name: '3',
@@ -38,7 +38,7 @@ module Engine
             num: 5,
             price: 240,
             available_on: '3',
-            rusts_on: %w[4g 5g 10],
+            rusts_on: %w[4g 5g],
             discount: { '1g' => 60 },
           },
           {
@@ -57,7 +57,7 @@ module Engine
             num: 4,
             price: 360,
             available_on: '4',
-            rusts_on: %w[5g 10],
+            rusts_on: %w[5g],
             discount: { '2g' => 120 },
             events: [{ 'type' => '1g_rust' }],
           },
@@ -112,7 +112,6 @@ module Engine
             num: 20,
             price: 1000,
             discount: { '8' => 400 },
-            events: [{ 'type' => '1g2g3g_rust' }],
           },
         ].freeze
 

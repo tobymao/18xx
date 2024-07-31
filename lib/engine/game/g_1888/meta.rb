@@ -11,7 +11,7 @@ module Engine
         DEV_STAGE = :production
         PROTOTYPE = true
 
-        GAME_LOCATION = 'North China'
+        GAME_LOCATION = 'China'
         GAME_DESIGNER = 'Leonhard "Lonny" Orgler'
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1888'
         GAME_PUBLISHER = :lonny_games
@@ -25,6 +25,14 @@ module Engine
             desc: 'North Map',
             players: [3, 4, 5, 6],
             default: true,
+          },
+          {
+            sym: :east,
+            short_name: '1888-E',
+            desc: 'East Map',
+            players: [3, 4, 5, 6],
+            default: false,
+            hidden: true,
           },
           {
             sym: :small_bank,

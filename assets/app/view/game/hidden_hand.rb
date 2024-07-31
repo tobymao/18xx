@@ -21,11 +21,11 @@ module View
         user_name = @user&.dig('name')
         user_in_game = !hotseat? && user_name && @game.players.map(&:name).include?(user_name)
         user_is_this_player = user_name == @player.name && !hotseat?
-        current_entity_is_this_player = @current_entity.name == @player.name
+        current_entity_is_this_player = @current_entity&.name == @player.name
         master_mode = Lib::Storage[@game.id]&.dig('master_mode')
         user_in_master_mode = user_in_game && master_mode && current_entity_is_this_player
 
-        @show_button = user_is_this_player || current_entity_is_this_player
+        @show_button = user_is_this_player || (current_entity_is_this_player && hotseat?)
         @can_use_button = user_is_this_player || user_in_master_mode || hotseat?
 
         children = []
