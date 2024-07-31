@@ -991,10 +991,11 @@ module Engine
           hexes.each do |hex|
             return hex.tile unless hex.tile.location_name
           end
-          # in the rare case where there isn't an unnamed intersecting hex, use the other GC hexes
+          # in case where there isn't an unnamed intersecting hex, use the other GC hexes
           gc_hexes.each do |hex|
             return hex.tile unless hex.tile.location_name
           end
+          raise GameError, 'Tile not found for gauge change'
         end
 
         def border_crossings(route)
