@@ -984,16 +984,16 @@ module Engine
           route_stops
         end
 
-        # return a tile that can be used for a stop, exclude Mumbai or Nepal
+        # return a tile that can be used for a stop, exclude Mumbai, Nepal, or any named hex
         def gauge_change_tile(route)
           gc_hexes = @gauge_change_markers.flatten
           hexes = route.hexes & gc_hexes
           hexes.each do |hex|
-            return hex.tile unless %w[MUMBAI NEPAL].include?(hex.tile.location_name)
+            return hex.tile unless hex.tile.location_name
           end
-          # in the rare case where Mumbai/Nepal is the only intersecting hex, use the other GC hexes
+          # in the rare case where there isn't an unnamed intersecting hex, use the other GC hexes
           gc_hexes.each do |hex|
-            return hex.tile unless %w[MUMBAI NEPAL].include?(hex.tile.location_name)
+            return hex.tile unless hex.tile.location_name
           end
         end
 
