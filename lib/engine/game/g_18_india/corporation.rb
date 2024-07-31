@@ -65,7 +65,7 @@ module Engine
           @ipo_owner.shares_by_corporation[self].delete(@presidents_share)
           player.shares_by_corporation[self] << @presidents_share
           @presidents_share.owner = player
-          player.spend(share.price, self)
+          player.spend(@par_price.price * 2, self)
           self.owner = player
           # remove Manager's Share
           mgr_share_owner = @managers_share.owner
