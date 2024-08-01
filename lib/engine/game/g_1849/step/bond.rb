@@ -18,22 +18,6 @@ module Engine
             actions
           end
 
-          def round_state
-            super.merge(
-              {
-                issued_bond: false,
-                redeemed_bond: false,
-              }
-            )
-          end
-
-          def setup
-            @round.issued_bond = false
-            @round.redeemed_bond = false
-
-            super
-          end
-
           def description
             can_payoff_loan?(current_entity) ? 'Repay Bond' : 'Issue Bond'
           end
@@ -51,7 +35,7 @@ module Engine
           end
 
           def can_payoff_loan?(entity)
-            !@round.issued_bond &&
+            !@round.issued_bond[entity] &&
               !entity.loans.empty? &&
               entity.cash >= entity.loans.first.amount
           end
@@ -59,7 +43,7 @@ module Engine
           def process_take_loan(action)
             raise GameError, 'Cannot issue bond' unless @game.can_take_loan?(action.entity)
 
-            @game.take_loan(action.entity)
+            @game.take_loan(action.entity, action.loan)
           end
 
           def process_payoff_loan(action)
@@ -73,7 +57,7 @@ module Engine
 
             entity.loans.delete(loan)
 
-            @round.redeemed_bond = true
+            @round.redeemed_bond[entity] = true
 
             initial_sp = entity.share_price.price
             @game.stock_market.move_right(entity)

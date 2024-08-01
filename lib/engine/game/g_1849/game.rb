@@ -918,12 +918,13 @@ module Engine
           @log << "#{entity.name} pays #{amount_fmt} interest for its issued bond"
         end
 
-        def take_loan(entity)
+        def take_loan(entity, loan)
           raise GameError, 'Cannot issue bond' unless can_take_loan?(entity)
 
           @log << "#{entity.name} issues its bond and receives #{format_currency(loan_value)}"
           @bank.spend(loan_value, entity)
-          @round.issued_bond = true
+          entity.loans << loan
+          @round.issued_bond[entity] = true
 
           initial_sp = entity.share_price.price
           @stock_market.move_left(entity)
@@ -933,10 +934,10 @@ module Engine
 
         def can_take_loan?(entity)
           bonds? &&
-          issue_bonds_enabled == true &&
-            entity.corporation? &&
-            !@round.redeemed_bond &&
-            entity.loans.size < maximum_loans(entity)
+           issue_bonds_enabled &&
+           entity.corporation? &&
+           !@round.redeemed_bond[entity] &&
+           entity.loans.size < maximum_loans(entity)
         end
 
         def can_pay_interest?(entity, extra_cash = 0)
