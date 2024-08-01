@@ -114,6 +114,12 @@ module Engine
           { name: 'R6H', num: 2, available_on: '16H', distance: 6, price: 600 },
         ].freeze
 
+        # the method below is to prevent the 1849 variant code from impacting this game. Eventually if/when
+        # the variants are incorporated into this version, I'll update this.
+        def game_trains
+          self.class::TRAINS
+        end
+
         CORP_CHOOSES_HOME = 'SFR'
         CORP_CHOOSES_HOME_HEXES = %w[E11 H8 I13 I17 J18 K19 L12 L20 O9 P2].freeze
         NEW_PORT_HEXES = %w[B16 G5 J20 L16].freeze

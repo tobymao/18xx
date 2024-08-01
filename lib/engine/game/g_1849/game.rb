@@ -126,7 +126,7 @@ module Engine
             num: 1,
             distance: 12,
             price: 800,
-            events: [{ 'type' => 'close_companies' }, { 'type' => 'earthquake' }, { 'type' => 'e-tokens' }],
+            events: [{ 'type' => 'close_companies' }, { 'type' => 'earthquake' }, { 'type' => 'e_tokens' }],
           },
           { name: '16H', distance: 16, price: 1100 },
           { name: 'E', num: 6, available_on: '12H', distance: 99, price: 550 },
@@ -140,7 +140,7 @@ module Engine
           conditions = [
             { name: '6H', type: 'buy_tokens', condition: !acquiring_station_tokens? },
             { name: '8H', type: 'bonds', condition: !bonds? },
-            { name: '8H', type: 'e_tokens', condition: !electric_dreams? },
+            { name: '12H', type: 'e_tokens', condition: !electric_dreams? },
           ]
 
           conditions.each do |cond|
