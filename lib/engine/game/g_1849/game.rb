@@ -477,11 +477,6 @@ module Engine
           end
           corporation.next_to_par = true if @corporations[index - 1].floated?
           update_garibaldi
-          # code below is for variant rules
-          @log << 'E-token returned to bank' if corporation.e_token
-          corporation.e_token = false
-
-          corporation.loans.pop unless corporation.loans.empty?        
         end
 
         def float_str(entity)
