@@ -111,9 +111,9 @@ module Engine
             distance: 6,
             price: 200,
             rusts_on: '10H',
-            events: [{ 'type' => 'green_par' }],
+            events: [{ 'type' => 'green_par' }, { 'type' => 'buy_tokens' }],
           },
-          { name: '8H', distance: 8, price: 350, rusts_on: '16H', events: [] },
+          { name: '8H', distance: 8, price: 350, rusts_on: '16H', events: [{ 'type' => 'bonds' }] },
           {
             name: '10H',
             num: 2,
@@ -126,7 +126,7 @@ module Engine
             num: 1,
             distance: 12,
             price: 800,
-            events: [{ 'type' => 'close_companies' }, { 'type' => 'earthquake' }],
+            events: [{ 'type' => 'close_companies' }, { 'type' => 'earthquake' }, { 'type' => 'e-tokens' }],
           },
           { name: '16H', distance: 16, price: 1100 },
           { name: 'E', num: 6, available_on: '12H', distance: 99, price: 550 },
@@ -136,9 +136,17 @@ module Engine
         def game_trains
           train_list = super.dup
           train_list.reject! { |t| t[:name] == 'E' } unless electric_dreams?
-          train_list.find { |t| t[:name] == '6H' }[:events] << { 'type' => 'buy_tokens' } if acquiring_station_tokens?
-          train_list.find { |t| t[:name] == '8H' }[:events] << { 'type' => 'bonds' } if bonds?
-          train_list.find { |t| t[:name] == '12H' }[:events] << { 'type' => 'e_tokens' } if electric_dreams?
+
+          conditions = [
+            { name: '6H', type: 'buy_tokens', condition: !acquiring_station_tokens? },
+            { name: '8H', type: 'bonds', condition: !bonds? },
+            { name: '8H', type: 'e_tokens', condition: !electric_dreams? },
+          ]
+
+          conditions.each do |cond|
+            train_list.find { |t| t[:name] == cond[:name] }[:events].reject! { |e| e['type'] == cond[:type] } if cond[:condition]
+          end
+
           train_list
         end
 
