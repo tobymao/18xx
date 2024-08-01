@@ -44,16 +44,6 @@ module Engine
 
             trains_to_buy.uniq
           end
-
-          def check_for_cheapest_train(train)
-            entity = @game.round.current_operator
-
-            cheapest = @game.e_token?(entity) ? @depot.min_depot_train : @depot.min_depot_train_no_e_token
-            cheapest_names = names_of_cheapest_variants(cheapest)
-
-            raise GameError, "Cannot purchase #{train.name} train: cheaper train available (#{cheapest_names.first})" unless
-             cheapest_names.include?(train.name)
-          end
         end
       end
     end

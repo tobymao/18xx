@@ -481,7 +481,7 @@ module Engine
           @log << 'E-token returned to bank' if corporation.e_token
           corporation.e_token = false
 
-          corporation.loans.pop unless corporation.loans.empty?
+          corporation.loans.pop unless corporation.loans.empty?        
         end
 
         def float_str(entity)
