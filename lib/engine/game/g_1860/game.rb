@@ -324,6 +324,10 @@ module Engine
           @optional_rules&.include?(:no_skip_towns) || @optional_rules&.include?(:original_game)
         end
 
+        def option_simplified_insolvency?
+          @optional_rules&.include?(:simplified_insolvency)
+        end
+
         def optional_hexes
           return self.class::HEXES unless option_23p_map?
 
@@ -834,8 +838,13 @@ module Engine
 
           if trains.select { |t| t.owner == @depot }.any? && !option_original_insolvency?
             help << 'Leased trains ignore town/halt allowance.'
-            help << "Revenue = #{format_currency(40)} + number_of_stops * #{format_currency(20)}"
-            help << "Max revenue possible: #{format_currency(40 + (@depot.min_depot_train.distance[0]['pay'] * 20))}"
+            if option_simplified_insolvency?
+              help << "Simplified insolvency revenue: #{@depot.min_depot_train.name} train runs
+                       for #{format_currency(40 + (@depot.min_depot_train.distance[0]['pay'] * 20))}"
+            else
+              help << "Revenue = #{format_currency(40)} + number_of_stops * #{format_currency(20)}"
+              help << "Max revenue possible: #{format_currency(40 + (@depot.min_depot_train.distance[0]['pay'] * 20))}"
+            end
           end
           if trains.select { |t| t.owner == @depot }.any? && option_original_insolvency?
             help << 'Leased trains run for half revenue (but full subsidies).'
@@ -1004,8 +1013,12 @@ module Engine
           route.train.owner == @depot
         end
 
+        def loaner_simplified_insolvency?(route)
+          loaner?(route) && option_simplified_insolvency?
+        end
+
         def loaner_new_rules?(route)
-          loaner?(route) && !option_original_insolvency?
+          loaner?(route) && !option_original_insolvency? && !option_simplified_insolvency?
         end
 
         def loaner_orig_rules?(route)
@@ -1108,6 +1121,8 @@ module Engine
             40 + (20 * stops.size)
           elsif loaner_orig_rules?(route)
             (stops.sum { |stop| stop.route_base_revenue(route.phase, route.train) } / 2).ceil
+          elsif loaner_simplified_insolvency?(route)
+            40 + (20 * route.train.distance[0]['pay'])
           else
             stops.sum { |stop| stop.route_base_revenue(route.phase, route.train) }
           end

@@ -16,6 +16,8 @@ module Engine
               revenue: 20,
               desc: 'Pays L.20 at the end of each Stock Round',
               corporation: nil,
+              color: 'black',
+              text_color: 'white',
             },
           ]
           unless lite?
@@ -26,6 +28,7 @@ module Engine
               revenue: 0,
               desc: 'Can start the SFLP Minor Corporation',
               corporation: 'SFLP',
+              color: 'lightGreen',
             }
           end
           companies << {
@@ -35,6 +38,7 @@ module Engine
             revenue: 0,
             desc: "Can start the SFTC #{version == 1 ? 'Minor' : 'Major'} Corporation",
             corporation: 'SFTC',
+            color: 'yellow',
           }
           unless lite?
             companies << {
@@ -44,6 +48,8 @@ module Engine
               revenue: 0,
               desc: 'Can start the SFMA Minor Corporation',
               corporation: 'SFMA',
+              color: 'red',
+              text_color: 'white',
             }
           end
           companies << {
@@ -53,6 +59,7 @@ module Engine
             revenue: 0,
             desc: 'Can start the SFTN Major Corporation',
             corporation: 'SFTN',
+            color: 'sandyBrown',
           }
           unless lite?
             companies << {
@@ -62,6 +69,8 @@ module Engine
               revenue: 0,
               desc: 'Can start the SSFL Major Corporation',
               corporation: 'SSFL',
+              color: 'purple',
+              text_color: 'white',
             }
           end
           companies << {
@@ -71,6 +80,8 @@ module Engine
             revenue: 0,
             desc: 'Can start the SFTG Major Corporation',
             corporation: 'SFTG',
+            color: 'blue',
+            text_color: 'white',
           }
           companies << {
             name: '8 Imperial Regia Strada Ferrata Ferdinandea',
@@ -79,6 +90,8 @@ module Engine
             revenue: 0,
             desc: 'Can start the IRSFF Major Corporation',
             corporation: 'IRSFF',
+            color: 'orange',
+            text_color: 'white',
           }
           companies
         end

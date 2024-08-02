@@ -9,11 +9,19 @@ module Engine
         class Token < Engine::Step::Token
           def actions(entity)
             return [] if entity == @game.rptla
+            return [] if @game.last_or?
 
             @round.loan_taken |= false
             actions = super.map(&:clone)
             actions << 'take_loan' if !actions.empty? && can_take_loan?(entity)
             actions
+          end
+
+          def log_skip(entity)
+            return if entity.minor?
+            return if entity.corporation == @game.rptla
+
+            super
           end
 
           def can_take_loan?(entity)

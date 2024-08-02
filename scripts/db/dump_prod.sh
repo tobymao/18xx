@@ -17,7 +17,7 @@ else
     DB_FILE="${1}"
 fi
 
-ssh 18xx bash -c "cd ~/18xx; ./scripts/db/dump.sh ${DB_FILE}; mv ${DB_FILE} ~/${DB_FILE}"
+ssh 18xx "bash -c \"cd ~/18xx; ./scripts/db/dump.sh ${DB_FILE}; mv ${DB_FILE} ~/${DB_FILE}\""
 
 # download
 scp deploy@18xx:~/${DB_FILE} .

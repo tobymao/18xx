@@ -21,11 +21,11 @@ module Engine
         STARTING_COMPANIES_OVERRIDE = {
           'C2' => {
             desc: 'Has a face value of $100 and contributes $100 to conversion into the CPR director’s '\
-                  'certificate. Home: Moncton (AO3). Destination: Winnipeg (T14).',
+                  'certificate. Home: Montréal (AF12). Destination: Vancouver (T12).',
           },
           'C8' => {
             desc: 'Has a face value of $100 and contributes $100 to conversion into the NTR director’s '\
-                  'certificate. Home: Montréal (AF12). Destination: Vancouver (T12).',
+                  'certificate. Home: Moncton (AO3). Destination: Winnipeg (T14).',
           },
         }.freeze
 

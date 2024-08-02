@@ -7,7 +7,7 @@ module Engine
   module Part
     class City < RevenueCenter
       attr_accessor :reservations, :slot_icons
-      attr_reader :tokens, :extra_tokens, :boom
+      attr_reader :tokens, :extra_tokens, :boom, :outline
 
       def initialize(revenue, **opts)
         super
@@ -17,6 +17,7 @@ module Engine
         @extra_tokens = []
         @reservations = []
         @boom = opts[:boom]
+        @outline = opts[:outline]
         @slot_icons = {}
       end
 

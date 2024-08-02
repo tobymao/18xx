@@ -367,9 +367,6 @@ module Engine
           ability = abilities(company, :blocks_hexes)
           return unless ability
 
-          ability.hexes.each do |hex|
-            hex_by_id(hex).tile.blockers.reject! { |c| c == company }
-          end
           company.remove_ability(ability)
         end
 
@@ -384,7 +381,7 @@ module Engine
         def close_company_in_hex(hex)
           @companies.each do |company|
             block = abilities(company, :blocks_hexes)
-            close_company(company) if block&.hexes&.include?(hex.coordinates)
+            close_company(company) if block&.hexes&.include?(hex)
           end
         end
 

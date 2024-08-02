@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="-20 -20 40 40">
+  <circle cx="0" cy="0" r="50%" opacity="0.6" fill="saddlebrown"/>
+  <g stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="4">
+    <path d="M0-6V8"/>
+    <path d="M-5-3H5"/>
+    <path d="M-9 5c2 6 16 6 18 0C7 9-7 9-9 5"/>
+    <circle cy="-8" r="2"/>
+  </g>
+  <g>
+    <circle cy="-8" r="1" fill="white"/>
+    <circle cy="-8" r="1" opacity="0.6" fill="saddlebrown"/>
+  </g>
+</svg>

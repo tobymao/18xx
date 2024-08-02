@@ -100,7 +100,7 @@ def repair(game, original_actions, actions, broken_action, data, pry_db: false)
   # inserted/deleted
 
   # action seems ok, try deleting auto_action pass
-  if broken_action['entity'] == game.current_entity.id &&
+  if entity_matches_action_entity?(game.current_entity, broken_action) &&
      game.round.actions_for(game.current_entity).include?(broken_action['type']) &&
      (broken_action['auto_actions'] || []).map { |aa| aa['type'] } == ['pass']
      actions[broken_action_idx].delete('auto_actions')
@@ -109,10 +109,12 @@ def repair(game, original_actions, actions, broken_action, data, pry_db: false)
   end
 
   # fix entity for pass action
-  if broken_action['type'] == 'pass' && game.current_entity.id != broken_action['entity']
+  if broken_action['type'] == 'pass' && !entity_matches_action_entity?(game.current_entity, broken_action)
     entity_type =
       if game.current_entity.company?
         'company'
+      elsif game.current_entity.corporation?
+        'corporation'
       else
         broken_action['entity_type']
       end
@@ -165,7 +167,7 @@ def repair(game, original_actions, actions, broken_action, data, pry_db: false)
 
   # insert pass
   if (!step_actions.include?(broken_action['type']) && step_actions.include?('pass')) ||
-      broken_action['entity'] != current_entity.id
+     !entity_matches_action_entity?(current_entity, broken_action)
     pass = Engine::Action::Pass.new(current_entity)
     pass.user = pass.entity.player.id
     actions.insert(broken_action_idx, pass.to_h)
@@ -177,6 +179,11 @@ def repair(game, original_actions, actions, broken_action, data, pry_db: false)
   ################
 
   raise Exception, "Cannot fix Game #{game.id} at action #{action}"
+end
+
+def entity_matches_action_entity?(entity, action)
+  action['entity'] == entity.id &&
+    entity.send(action['entity_type'] + '?')
 end
 
 def attempt_repair(actions, debug, data, pry_db: false)

@@ -85,7 +85,7 @@ module Engine
           },
           {
             name: '7',
-            distance: 6,
+            distance: 7,
             price: 1,
             num: 1,
             variants: [
@@ -116,11 +116,6 @@ module Engine
                     'visit' => 999,
                   },
                 ],
-                price: 850,
-              },
-              {
-                name: 'Ship 8',
-                distance: 2,
                 price: 850,
               },
             ],

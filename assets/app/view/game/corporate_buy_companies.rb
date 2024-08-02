@@ -15,7 +15,20 @@ module View
         @entity ||= @game.current_entity
         props = { style: { flexGrow: '1', width: '0' } }
 
-        h(:div, props, render_bank_companies.compact)
+        children = render_bank_companies.compact
+        children.concat(render_ipo_rows) if @game.show_ipo_rows?
+
+        h(:div, props, children)
+      end
+
+      def render_ipo_rows
+        div_props = {
+          style: {
+            display: 'inline-block',
+          },
+        }
+        ipo_cards = h(IpoRows, game: @game, show_first: true)
+        [h(:div, div_props, ipo_cards)]
       end
 
       def render_bank_companies

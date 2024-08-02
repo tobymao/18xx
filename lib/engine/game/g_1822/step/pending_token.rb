@@ -43,7 +43,7 @@ module Engine
             ability = Ability::BlocksHexesConsent.new(
               type: :blocks_hexes_consent,
               owner_type: 'player',
-              hexes: [hex.id],
+              hexes: [hex],
               hidden: true,
             )
             m14.add_ability(ability)

@@ -349,8 +349,12 @@ module Engine
         entity.companies << company
         entity.spend(price, owner.nil? ? @game.bank : owner)
         @round.current_actions << action
-        @log << "#{owner ? '-- ' : ''}#{entity.name} buys #{company.name} from "\
-                "#{owner ? owner.name : 'the market'} for #{@game.format_currency(price)}"
+        @log << if owner == @game.bank
+                  "#{entity.name} buys #{company.name} from #{owner.name} for #{@game.format_currency(price)}"
+                else
+                  "#{owner ? '-- ' : ''}#{entity.name} buys #{company.name} from "\
+                    "#{owner ? owner.name : 'the market'} for #{@game.format_currency(price)}"
+                end
         @game.after_buy_company(entity, company, price) if entity.player?
       end
 
@@ -406,7 +410,7 @@ module Engine
             # in the brown and made decisions appropriately.
             bigger_share = @game.shares_for_corporation(corporation).select do |s|
               s.percent > share_to_buy.percent && (s.owner != entity || s.owner != corporation.owner)
-            end.max(&:percent)
+            end.max_by(&:percent)
 
             if bigger_share
               other_percent = action.entity.percent_of(corporation) + bigger_share.percent

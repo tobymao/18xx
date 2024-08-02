@@ -25,6 +25,12 @@ module Engine
               {}
             end
           end
+
+          def pass!
+            super
+
+            @round.steps.find { |s| s.is_a?(G18Norway::Step::IssueShares) }.dividend_step_passes
+          end
         end
       end
     end

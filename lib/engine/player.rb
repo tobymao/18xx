@@ -48,6 +48,10 @@ module Engine
       true
     end
 
+    def rename!(new_name)
+      @name = new_name
+    end
+
     def to_s
       "#{self.class.name} - #{@name}"
     end

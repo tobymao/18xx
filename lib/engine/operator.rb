@@ -6,10 +6,10 @@ module Engine
   module Operator
     include Entity
 
-    attr_accessor :coordinates, :color, :text_color
+    attr_accessor :coordinates, :color, :text_color, :destination_coordinates
     attr_reader :city, :loans, :logo, :logo_filename, :simple_logo,
                 :operating_history, :tokens, :trains, :destination_icon,
-                :destination_coordinates, :destination_exits, :destination_loc,
+                :destination_exits, :destination_loc,
                 :share_price, :destination_icon_in_city_slot
 
     def init_operator(opts)
@@ -63,6 +63,12 @@ module Engine
 
     def placed_tokens
       @tokens.select(&:city)
+    end
+
+    def logo=(logo)
+      @logo_filename = "#{logo}.svg"
+      @logo = "/logos/#{@logo_filename}"
+      @simple_logo = @logo
     end
   end
 end

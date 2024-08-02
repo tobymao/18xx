@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative 'base'
+
 module Engine
   module Part
     class Node < Base
@@ -44,9 +46,14 @@ module Engine
         counter: Hash.new(0),
         skip_track: nil,
         converging_path: true,
+        walk_calls: Hash.new(0),
         &block
       )
+        walk_calls[:all] += 1
+
         return if visited[self]
+
+        walk_calls[:not_skipped] += 1
 
         visited[self] = true
 
@@ -60,6 +67,7 @@ module Engine
             skip_track: skip_track,
             counter: counter,
             converging: converging_path,
+            walk_calls: walk_calls,
           ) do |path, vp, ct, converging|
             ret = yield path, vp, visited
             next if ret == :abort
@@ -77,6 +85,7 @@ module Engine
                 skip_track: skip_track,
                 skip_paths: skip_paths,
                 converging_path: converging_path || converging,
+                walk_calls: walk_calls,
                 &block
               )
             end

@@ -117,6 +117,67 @@ module Engine
           color: nil,
         },
         ].freeze
+
+        MINORS = [
+          {
+            sym: 'LA_CORN',
+            name: 'Latifundio Agrícola',
+            logo: '18_uruguay/corn',
+            simple_logo: '18_uruguay/corn',
+            tokens: [0],
+            color: :pink,
+            text_color: 'black',
+            abilities: [
+              {
+                type: 'assign_hexes',
+                hexes: %w[C3 D4 G13 H2 H6],
+                count_per_or: 1,
+                when: 'or_start',
+                count: 10,
+                description: 'Delivers goods to towns and cities.',
+              },
+            ],
+          },
+          {
+            sym: 'LO_SHEEP',
+            name: 'Latifundio de Ovejas',
+            logo: '18_uruguay/sheep',
+            simple_logo: '18_uruguay/sheep',
+            tokens: [0],
+            color: :cyan,
+            text_color: 'black',
+            abilities: [
+              {
+                type: 'assign_hexes',
+                hexes: %w[E5 E7 G5 H12 J8],
+                count_per_or: 1,
+                when: 'or_start',
+                count: 10,
+                description: 'Delivers goods to towns and cities.',
+              },
+            ],
+          },
+          {
+            sym: 'LO_CATTLE',
+            name: 'Latifundio de Vacas',
+            logo: '18_uruguay/cow',
+            simple_logo: '18_uruguay/cow',
+            tokens: [0],
+            color: :cyan,
+            text_color: 'black',
+            abilities: [
+              {
+                type: 'assign_hexes',
+                hexes: %w[D8 F4 F10 F12 I5],
+                count_per_or: 1,
+                when: 'or_start',
+                owner_type: 'player',
+                count: 10,
+                description: 'Delivers goods to towns and cities.',
+              },
+            ],
+          },
+        ].freeze
       end
     end
   end

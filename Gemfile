@@ -27,6 +27,7 @@ group :development do
   gem 'rubocop-performance', require: 'false'
   gem 'sequel-annotate'
   gem 'stackprof'
+  gem 'tilt'
 end
 
 group :test do

@@ -10,6 +10,8 @@ module Engine
         class ConnectionToken < Engine::Step::Token
           include Connection
 
+          STATION_WARS_CORPS = %w[GMO MP SP SSW TP].freeze
+
           def actions(_entity)
             %w[choose]
           end
@@ -39,7 +41,13 @@ module Engine
             destination.remove_assignment!(entity)
 
             if action.choice == 'Map'
-              destination.tile.cities.first.place_token(entity, token, free: true, extra_slot: true)
+              token_placement_arg =
+                if @game.station_wars? && STATION_WARS_CORPS.include?(entity.id)
+                  { cheater: true }
+                else
+                  { extra_slot: true }
+                end
+              destination.tile.cities.first.place_token(entity, token, free: true, **token_placement_arg)
               @game.graph.clear
               ability.description = 'Reached ' + ability.description
 

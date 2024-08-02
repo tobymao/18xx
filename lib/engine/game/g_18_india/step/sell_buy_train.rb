@@ -68,7 +68,7 @@ module Engine
             source = train.owner
             # track trains purchased from the Depot
             @round.trains_brought << action.train if source == @depot
-            raise GameError, 'Cannot buy a 2nd phase IV train' if buying_another_phase_iv_train?
+            raise GameError, 'Cannot buy a 2nd phase IV train' if buying_another_phase_iv_train?(action.entity, train)
 
             super
           end

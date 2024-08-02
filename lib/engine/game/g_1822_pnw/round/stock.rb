@@ -25,6 +25,12 @@ module Engine
           def sold_out_stock_movement(corp)
             @game.stock_market.move_right(corp)
           end
+
+          def remove_minor_and_first_train(company)
+            return if @game.empty_bidbox_minor?(company)
+
+            super
+          end
         end
       end
     end

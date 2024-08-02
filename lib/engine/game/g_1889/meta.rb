@@ -16,7 +16,7 @@ module Engine
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1889'
         GAME_LOCATION = 'Japan'
         GAME_PUBLISHER = :grand_trunk_games
-        GAME_RULES_URL = 'https://drive.google.com/file/d/1BLgIE3ihEXIjomzbEl4sIrMAz2rTlkvN/view?usp=sharing'
+        GAME_RULES_URL = 'https://boardgamegeek.com/filepage/267620/shikoku-1889-rulebook-compressed'
         GAME_ALIASES = ['History of Shikoku Railways'].freeze
 
         PLAYER_RANGE = [2, 6].freeze

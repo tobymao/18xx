@@ -4,6 +4,9 @@ module Engine
   module Game
     module G18RoyalGorge
       module Entities
+        PRIVATE_GREEN = '#90EE90'
+        PRIVATE_BROWN = '#CB7745'
+
         YELLOW_COMPANIES = [
           {
             sym: 'Y1',
@@ -129,6 +132,7 @@ module Engine
               # treaty of boston: 2 debt tokens; closes after SF buys both of them
               { type: 'no_buy' },
             ],
+            color: PRIVATE_GREEN,
           },
           {
             sym: 'G2',
@@ -146,6 +150,7 @@ module Engine
                 count: 1,
               },
             ],
+            color: PRIVATE_GREEN,
           },
           {
             sym: 'G3',
@@ -156,6 +161,7 @@ module Engine
                                                 '  Closes when the first 5+ train is purchased.",
             value: 50,
             revenue: 10,
+            color: PRIVATE_GREEN,
           },
           {
             sym: 'G4',
@@ -168,6 +174,7 @@ module Engine
               { type: 'revenue_change', revenue: 25, on_phase: 'Green' },
               { type: 'no_buy' },
             ],
+            color: PRIVATE_GREEN,
           },
           {
             sym: 'G5',
@@ -186,6 +193,7 @@ module Engine
                 when: %w[owning_player_sr_turn],
               },
             ],
+            color: PRIVATE_GREEN,
           },
           {
             sym: 'G6',
@@ -196,6 +204,7 @@ module Engine
                   'Closes when the first 5+ train is purchased.',
             value: 10,
             revenue: 5,
+            color: PRIVATE_GREEN,
           },
         ].freeze
 
@@ -208,6 +217,7 @@ module Engine
             value: 70,
             revenue: 0,
             abilities: [{ type: 'revenue_change', revenue: 25, on_phase: 'Brown' }],
+            color: PRIVATE_BROWN,
           },
           {
             sym: 'B2',
@@ -229,14 +239,15 @@ module Engine
                 special: true,
               },
             ],
+            color: PRIVATE_BROWN,
           },
           {
             sym: 'B3',
             name: 'Steel Depot (B3)',
-            desc: 'Comes with the Steel Depot card. Once per operating round, owning corporation '\
-                  'may use 0-2 steel from the Steel Depot card to lay yellow track for free. (Max '\
-                  'of 6 track applies). '\
-                  'Closes when the first 5+ train is purchased.',
+            desc: 'Comes with the Steel Depot card, which holds 5 steel cubes. '\
+                  'Once per operating round, owning corporation may use 0-2 steel '\
+                  'from the Steel Depot card to lay yellow track for free. (Max '\
+                  'of 6 track applies). Closes when the first 5+ train is purchased.',
             value: 55,
             revenue: 10,
             abilities: [
@@ -251,6 +262,7 @@ module Engine
                 reachable: true,
               },
             ],
+            color: PRIVATE_BROWN,
           },
           {
             sym: 'B4',
@@ -263,6 +275,7 @@ module Engine
             abilities: [
               { type: 'no_buy' },
             ],
+            color: PRIVATE_BROWN,
           },
           {
             sym: 'B5',
@@ -272,6 +285,7 @@ module Engine
                   'Closes when the first 5+ train is purchased.',
             value: 60,
             revenue: 10,
+            color: PRIVATE_BROWN,
           },
           {
             sym: 'B6',
@@ -288,6 +302,7 @@ module Engine
                 when: %w[owning_player_sr_turn],
               },
             ],
+            color: PRIVATE_BROWN,
           },
         ].freeze
 

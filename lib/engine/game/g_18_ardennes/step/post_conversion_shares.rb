@@ -22,6 +22,10 @@ module Engine
             'Buy shares'
           end
 
+          def pass_description
+            'Done (buy shares)'
+          end
+
           def log_skip(_entity); end
 
           def active_entities

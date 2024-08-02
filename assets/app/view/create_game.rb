@@ -92,7 +92,10 @@ module View
         end
 
         inputs << render_keyword_search
-        inputs << render_games_table
+
+        table = render_games_table
+        inputs << h(:span, "#{table[:game_count]} Titles")
+        inputs << table[:rendered]
       end
 
       description = []
@@ -405,13 +408,16 @@ module View
     end
 
     def submit
-      return if !selected_game_or_variant && @mode != :json
+      title = selected_game_or_variant.title
+      return if !title && @mode != :json
 
       game_params = params
+      if game_params[:min_players].to_i < @min_p[title] || game_params[:max_players].to_i > @max_p[title]
+        return store(:flash_opts,
+                     'Invalid playercount')
+      end
 
       if @mode == :multi
-        title = selected_game_or_variant.title
-        game_params[:max_players] = @max_p[title] if game_params[:max_players].to_i <= 0
         game_params[:seed] = game_params[:seed].to_i
         game_params[:seed] = nil if (game_params[:seed]).zero?
         return create_game(game_params)
@@ -435,6 +441,7 @@ module View
           settings: {
             optional_rules: game_params[:optional_rules] || [],
           },
+          title: game_params[:title],
         }
         game_data[:settings][:seed] = game_params[:seed] if game_params[:seed]
       end
@@ -515,13 +522,14 @@ module View
         max_players = max_p
         min_players = min_p
       else
-        # Letters resolve to 0 when converted to integers
-        max_players = (val = max_players_elm&.value.to_i).zero? ? nil : val
-        min_players = (val = min_players_elm&.value.to_i).zero? ? nil : val
+        # NOTE: Letters resolve to 0 when converted to integers
+        max_players = max_players_elm&.value.to_i
+        min_players = min_players_elm&.value.to_i
       end
       if max_players
-        max_players = [max_players, max_p].min
         max_players = [max_players, min_p].max
+        max_players = [max_players, max_p].min
+        max_players_elm&.value = max_players
         if selected_game_or_variant.respond_to?(:min_players)
           min_p = selected_game_or_variant.min_players(@optional_rules, max_players)
         end
@@ -643,7 +651,7 @@ module View
       end
 
       props = { style: { 'text-align': 'left' } }
-      h(
+      rendered = h(
         'table.create-game-table',
         {},
         [
@@ -653,6 +661,8 @@ module View
           h(:tbody, game_rows),
         ]
       )
+
+      { rendered: rendered, game_count: game_rows.size }
     end
 
     def render_keyword_search

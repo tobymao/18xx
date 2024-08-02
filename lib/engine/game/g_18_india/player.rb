@@ -6,16 +6,11 @@ module Engine
   module Game
     module G18India
       class Player < Engine::Player
-        attr_accessor :hand
+        attr_accessor :hand, :draft_history
 
         def initialize(id, name)
           @hand = []
-          super
-        end
-
-        def value
-          # modify to include book value
-          # @cash + shares.select { |s| s.corporation.ipoed }.sum(&:price) + @companies.sum(&:value)
+          @draft_history = []
           super
         end
       end

@@ -1,20 +1,11 @@
 # frozen_string_literal: true
 
 require_relative 'base'
+require_relative 'blocks_hexes'
 
 module Engine
   module Ability
-    class BlocksHexesConsent < Base
-      attr_reader :hexes
-
-      def setup(hexes:, hidden: false)
-        @hexes = hexes
-        @hidden = hidden
-      end
-
-      def hidden?
-        @hidden
-      end
+    class BlocksHexesConsent < BlocksHexes
     end
   end
 end

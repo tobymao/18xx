@@ -111,6 +111,10 @@ module Engine
             @game.payoff_loan(current_entity, loans_to_pay_off, current_entity)
           end
 
+          def log_run_payout(entity, kind, revenue, action, payout)
+            super unless entity.minor?
+          end
+
           def log_run_payout_sub(entity, kind, revenue, _subsidy, _action, payout)
             unless Dividend::DIVIDEND_TYPES.include?(kind)
               @log << "#{entity.name} runs for #{@game.format_currency(revenue)} and pays #{action.kind}"
@@ -119,7 +123,7 @@ module Engine
             if payout[:corporation].positive?
               @log << "#{entity.name} withholds #{@game.format_currency(payout[:corporation])}"
             elsif payout[:per_share].zero?
-              @log << "#{entity.name} does not run"
+              @log << "#{entity.name} does not run" unless entity.minor?
             end
           end
 

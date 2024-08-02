@@ -30,7 +30,10 @@ module Engine
             actions << 'par' if @bid_actions.zero? && can_ipo_any?(entity) && player_debt.zero?
             actions << 'sell_shares' if can_sell_any?(entity)
             actions << 'bid' if player_debt.zero?
-            actions << 'payoff_player_debt' if player_debt.positive? && entity.cash.positive?
+            if player_debt.positive? && entity.cash.positive?
+              actions << 'payoff_player_debt'
+              actions << 'payoff_player_debt_partial'
+            end
             actions << 'pass' unless actions.empty?
             actions
           end
@@ -219,6 +222,13 @@ module Engine
           def process_payoff_player_debt(action)
             player = action.entity
             @game.payoff_player_loan(player)
+            @round.last_to_act = player
+            @round.current_actions << action
+          end
+
+          def process_payoff_player_debt_partial(action)
+            player = action.entity
+            @game.payoff_player_loan(player, payoff_amount: action.amount)
             @round.last_to_act = player
             @round.current_actions << action
           end

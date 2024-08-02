@@ -20,6 +20,7 @@ module Engine
         COMPANY_CLASS = G1850::Company
         CORPORATE_BUY_SHARE_ALLOW_BUY_FROM_PRESIDENT = true
         MULTIPLE_BUY_ONLY_FROM_MARKET = true
+        EBUY_OTHER_VALUE = false
 
         CERT_LIMIT = {
           2 => { 9 => 24, 8 => 21 },
@@ -137,6 +138,8 @@ module Engine
           phase_2_companies.each { |c| c.max_price = c.value }
 
           @corporations.each do |corporation|
+            corporation.tokens.pop if reduced_tokens? && corporation.tokens.size == 4
+
             ability = abilities(corporation, :assign_hexes)
             next unless ability
 
@@ -330,6 +333,8 @@ module Engine
         end
 
         def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil, movement: nil)
+          return super if @round.current_entity == bundle.corporation
+
           @sell_queue << [bundle, bundle.corporation.owner, bundle.owner]
 
           @share_pool.sell_shares(bundle)
@@ -377,6 +382,10 @@ module Engine
           end
 
           @skip_paths
+        end
+
+        def reduced_tokens?
+          @reduced_tokens ||= @optional_rules&.include?(:reduced_tokens)
         end
       end
     end

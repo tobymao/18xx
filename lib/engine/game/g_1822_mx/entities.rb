@@ -17,7 +17,6 @@ module Engine
                   'buying action.  However, once acquired the acquiring company must check whether it as at the '\
                   'train limit and must discard any trains held in excess of limit.',
             abilities: [],
-            color: nil,
           },
           {
             name: 'P2-MCSL (Permanent 2T)',
@@ -36,7 +35,6 @@ module Engine
                   'this also still counts as a normal dividend for share price movement purposes. '\
                   'Does not close.',
             abilities: [],
-            color: nil,
           },
           {
             name: 'P3-IGT (Permanent 3/2T)',
@@ -57,7 +55,6 @@ module Engine
                   'this also still counts as a normal dividend for share price movement purposes. '\
                   'Does not close.',
             abilities: [],
-            color: nil,
           },
           {
             name: 'P4-MCST (Permanent LT)',
@@ -76,7 +73,6 @@ module Engine
                   'this also still counts as a normal dividend for share price movement purposes. '\
                   'Does not close.',
             abilities: [],
-            color: nil,
           },
           {
             name: 'P5-Pullman (Pullman)',
@@ -89,7 +85,6 @@ module Engine
                   'not count toward the train limit. Cannot be sold to another company. Does '\
                   'not close. No company may own more than one Pullman.',
             abilities: [],
-            color: nil,
           },
           {
             name: 'P6-Pullman (Pullman)',
@@ -102,7 +97,6 @@ module Engine
                   'not count toward the train limit. Cannot be sold to another company. Does '\
                   'not close. No company may own more than one Pullman.',
             abilities: [],
-            color: nil,
           },
           {
             name: 'P7-EI (Double Cash)',
@@ -114,7 +108,6 @@ module Engine
                   'player turn order in the next stock round. If held by a company it pays '\
                   'revenue of $20 (green)/$40 (brown)/$60 (gray). Does not close.',
             abilities: [],
-            color: nil,
           },
           {
             name: 'P8-CMB (Adv. Tile Lay)',
@@ -143,7 +136,6 @@ module Engine
                 combo_entities: %w[P9 P12 P13],
               },
             ],
-            color: nil,
           },
           {
             name: 'P9-M&GNR (Extra Tile Lay)',
@@ -172,7 +164,6 @@ module Engine
                 combo_entities: %w[P8 P12 P13],
               },
             ],
-            color: nil,
           },
           {
             name: 'P10-CCNM (Three Builder Cubes)',
@@ -197,7 +188,6 @@ module Engine
                 tiles: [],
               },
             ],
-            color: nil,
           },
           {
             name: 'P11-SMB (Three Builder Cubes)',
@@ -222,7 +212,6 @@ module Engine
                 tiles: [],
               },
             ],
-            color: nil,
           },
           {
             name: 'P12-AIAS (Remove Town)',
@@ -249,7 +238,6 @@ module Engine
                 combo_entities: %w[P8 P9],
               },
             ],
-            color: nil,
           },
           {
             name: 'P13-AIDS (Remove Town)',
@@ -276,7 +264,6 @@ module Engine
                 combo_entities: %w[P8 P9],
               },
             ],
-            color: nil,
           },
           {
             name: 'P14-NMS (Mail Contract)',
@@ -293,7 +280,6 @@ module Engine
                   'towns. A company that owns more than one Mail Contract may not use '\
                   'more than one on any train.',
             abilities: [],
-            color: nil,
           },
           {
             name: 'P15-NMS (Mail Contract)',
@@ -310,7 +296,6 @@ module Engine
                   'towns. A company that owns more than one Mail Contract may not use '\
                   'more than one on any train.',
             abilities: [],
-            color: nil,
           },
           {
             name: 'P16-VTPN (Stock Drop)',
@@ -329,7 +314,6 @@ module Engine
                 choices: { 'close_p16' => 'Close P16' },
               },
             ],
-            color: nil,
           },
           {
             name: 'P17-UD (Small Port)',
@@ -356,7 +340,6 @@ module Engine
                 consume_tile_lay: false,
               },
             ],
-            color: nil,
           },
           {
             name: 'P18-HI (Large Port)',
@@ -383,7 +366,6 @@ module Engine
                 consume_tile_lay: false,
               },
             ],
-            color: nil,
           },
           {
             name: 'CONCESSION: FCM',
@@ -647,7 +629,7 @@ module Engine
             value: 100,
             revenue: 0,
             desc: 'A 50% director’s certificate in the associated minor company. Starting location is N23 (Mexico City).',
-            abilities: [],
+            abilities: [{ type: 'blocks_hexes_consent', owner_type: 'player', hexes: ['N21'], hidden: true }],
             color: '#ffffff',
             text_color: 'black',
           },
@@ -657,7 +639,7 @@ module Engine
             value: 100,
             revenue: 0,
             desc: 'A 50% director’s certificate in the associated minor company. Starting location is N23 (Mexico City).',
-            abilities: [],
+            abilities: [{ type: 'blocks_hexes_consent', owner_type: 'player', hexes: ['O22'], hidden: true }],
             color: '#ffffff',
             text_color: 'black',
           },

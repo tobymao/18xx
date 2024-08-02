@@ -33,6 +33,7 @@ module Engine
         include Nationalization
 
         EBUY_SELL_MORE_THAN_NEEDED = true
+        EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
 
         register_colors(darkred: '#ff131a',
                         red: '#d1232a',
@@ -46,6 +47,7 @@ module Engine
 
         TRACK_RESTRICTION = :permissive
         SELL_BUY_ORDER = :sell_buy
+        SELL_AFTER = :p_any_operate
         TILE_RESERVATION_BLOCKS_OTHERS = true
         CURRENCY_FORMAT_STR = '$U%d'
 
@@ -110,7 +112,7 @@ module Engine
 
         ASSIGNMENT_STACK_GROUPS = ASSIGNMENT_TOKENS.transform_values { |_str| 'GOODS' }
 
-        PORTS = %w[E1 G1 I1 J4 K5 K7 K13].freeze
+        PORTS = %w[E1 G1 I1 J14 K5 K7 K13].freeze
         MARKET = [
           %w[70 75 80 90 100p 110 125 150 175 200 225 250 275 300 325 350 375 400 425 450],
           %w[65 70 75 80 90p 100 110 125 150 175 200 225 250 275 300 325 350 375 400 425],
@@ -123,7 +125,7 @@ module Engine
           %w[30o 35o 40o 45y 50y],
           %w[0c 30o 35o 40o 45y],
           %w[0c 0c 30o 35o 40o],
-          %w[50r 60r 70r 80r 90r 100r 110r 120r 130r 140r 150r 160r 180r 200r],
+          %w[20r 30r 40r 50r 60r 70r 80r 90r 100r 110r 120r 130r 140r 150r 160r 180r 200r],
         ].freeze
 
         CERT_LIMIT_NATIONALIZATION = {
@@ -135,7 +137,7 @@ module Engine
 
         MARKET_TEXT = Base::MARKET_TEXT.merge(
           par: 'Par value',
-          repar: 'RLTP stock price',
+          repar: 'RPTLA stock price',
           close: 'Close',
           endgame: 'End game trigger',
         )
@@ -158,7 +160,7 @@ module Engine
             ['Action', 'Share Price Change'],
             ['Dividend 0 or withheld', '1 ←'],
             ['Dividend paid', '1 →'],
-            ['One or more shares sold (Except RLTP)', '1 ↓'],
+            ['One or more shares sold (Except RPTLA)', '1 ↓'],
             ['Corporation sold out at end of SR', '1 ↑'],
           ]
         end
@@ -185,8 +187,17 @@ module Engine
           @cattle_farm ||= company_by_id('LO_CATTLE')
         end
 
+        def assign_goods(entity, goods_type)
+          ability = abilities(entity, :assign_hexes, time: 'or_start', strict_time: false)
+          ability.hexes.each_with_index do |farm_id, i|
+            hex_by_id(farm_id).assign!("#{goods_type}#{i * 2}")
+            hex_by_id(farm_id).assign!("#{goods_type}#{(i * 2) + 1}")
+          end
+        end
+
         def setup
           super
+
           goods_setup
           @rptla = @corporations.find { |c| c.id == 'RPTLA' }
           @fce = @corporations.find { |c| c.id == 'FCE' }
@@ -210,20 +221,9 @@ module Engine
 
           @stock_market.set_par(@rptla, lookup_rptla_price(RPTLA_STARTING_PRICE))
 
-          ability = abilities(corn_farm, :assign_hexes, time: 'or_start', strict_time: false)
-          ability.hexes.each do |farm_id|
-            hex_by_id(farm_id).assign!('GOODS_CORN')
-          end
-
-          ability = abilities(sheep_farm, :assign_hexes, time: 'or_start', strict_time: false)
-          ability.hexes.each do |farm_id|
-            hex_by_id(farm_id).assign!('GOODS_SHEEP')
-          end
-
-          ability = abilities(cattle_farm, :assign_hexes, time: 'or_start', strict_time: false)
-          ability.hexes.each do |farm_id|
-            hex_by_id(farm_id).assign!('GOODS_CATTLE')
-          end
+          assign_goods(corn_farm, 'GOODS_CORN')
+          assign_goods(sheep_farm, 'GOODS_SHEEP')
+          assign_goods(cattle_farm, 'GOODS_CATTLE')
 
           setup_destinations
         end
@@ -274,15 +274,18 @@ module Engine
               ability.use!
             end
           end
+          minor = minor_by_id(company.id)
+          return unless minor
+
+          minor.owner = player
+          minor.float!
         end
 
         def operating_round(round_num)
           Round::Operating.new(self, [
             Engine::Step::Bankrupt,
             Engine::Step::Exchange,
-            G18Uruguay::Step::CornFarm,
-            G18Uruguay::Step::SheepFarm,
-            G18Uruguay::Step::CattleFarm,
+            G18Uruguay::Step::Farm,
             Engine::Step::SpecialTrack,
             Engine::Step::SpecialToken,
             G18Uruguay::Step::TakeLoanBuyCompany,
@@ -300,8 +303,8 @@ module Engine
         end
 
         def stock_round
-          Engine::Round::Stock.new(self, [
-            Step::DiscardTrain,
+          Round::Stock.new(self, [
+            Engine::Step::DiscardTrain,
             G18Uruguay::Step::BuySellParShares,
           ])
         end
@@ -326,10 +329,6 @@ module Engine
           return active_abilities.first if active_abilities.one?
 
           active_abilities
-        end
-
-        def operating_order
-          super.sort.partition { |c| c.type != :bank }.flatten
         end
 
         # Loans
@@ -403,7 +402,7 @@ module Engine
         def revenue_for(route, stops)
           revenue = super
           revenue *= 2 if route.train.name == '4D'
-          revenue *= 2 if final_operating_round? && final_or_in_set?(@round)
+          revenue *= 2 if last_or?
           return revenue unless route&.corporation == @rptla
 
           train = route.train
@@ -414,11 +413,16 @@ module Engine
           corps_pay_interest unless nationalized?
         end
 
+        def last_or?
+          final_operating_round? && final_or_in_set?(@round)
+        end
+
         def final_operating_round?
           @final_turn == @turn
         end
 
         def place_home_token(corporation)
+          return if corporation.minor?
           return if corporation == @fce
 
           super
@@ -482,6 +486,52 @@ module Engine
           amount = corporation.par_price.price * 5
           @bank.spend(amount, corporation)
           @log << "#{corporation.name} connected to destination receives #{format_currency(amount)}"
+        end
+
+        def corporation_show_loans?(corporation)
+          !corporation.minor?
+        end
+
+        def purchasable_companies(entity = nil)
+          return [] if entity&.minor?
+
+          super
+        end
+
+        def sell_movement(corporation = nil)
+          return :left_block if corporation == @rptla
+
+          self.class::SELL_MOVEMENT
+        end
+
+        def check_sale_timing(entity, bundle)
+          return false if @turn <= 1 && !@round.operating?
+
+          super(entity, bundle)
+        end
+
+        def can_rptla_go_bankrupt?(player, corporation, train)
+          price = train.variants.map { |_, v| v[:name].include?('Ship') ? v[:price] : 999 }.min
+
+          total_emr_buying_power(player, corporation) < price
+        end
+
+        def can_go_bankrupt?(player, corporation)
+          depot_trains = @depot.depot_trains
+          train = depot_trains.min_by(&:price)
+
+          return can_rptla_go_bankrupt?(player, corporation, train) if corporation == @rptla
+          return false unless nationalized?
+
+          price = train.variants.map { |_, v| v[:name].include?('Ship') ? 999 : v[:price] }.min
+
+          total_emr_buying_power(player, corporation) < price
+        end
+
+        def operating_order
+          return super if nationalized?
+
+          super.reject { |c| c == @rptla }.append(@rptla)
         end
       end
     end

@@ -202,6 +202,7 @@ module Engine
             next unless starting_companies.include?(company[:sym])
 
             opts = self.class::STARTING_COMPANIES_OVERRIDE[company[:sym]] || {}
+            company = init_private_company_color(company)
             Company.new(**company.merge(opts))
           end.compact
         end

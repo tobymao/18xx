@@ -23,6 +23,8 @@ module Engine
             %w[remove_token].freeze
           end
 
+          def log_skip(entity); end
+
           def active?
             true
           end

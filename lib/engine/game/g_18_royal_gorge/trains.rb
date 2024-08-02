@@ -20,7 +20,7 @@ module Engine
             distance: [{ 'nodes' => %w[city offboard], 'pay' => 3, 'visit' => 3 },
                        { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
             price: 180,
-            rusts_on: '6',
+            rusts_on: '6x2',
             salvage: 45,
             num: 4,
             events: [{ 'type' => 'treaty_of_boston', 'when' => 2 }],
@@ -42,7 +42,7 @@ module Engine
             events: [{ 'type' => 'close_companies' }, { 'type' => 'gray_phase', 'when' => 2 }],
           },
           {
-            name: '6',
+            name: '6x2',
             distance: [{ 'nodes' => %w[city offboard town], 'pay' => 6, 'visit' => 6, 'multiplier' => 2 }],
             price: 650,
             num: 5,

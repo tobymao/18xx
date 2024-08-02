@@ -87,6 +87,10 @@ module Engine
               raise GameError, "#{entity.name} has #{@game.format_currency(entity.cash)} and cannot afford train"
             end
 
+            if entity.cash < price && price > @game.depot.min_depot_price
+              raise GameError, "#{entity.name} must buy cheapest train from bank"
+            end
+
             # need to check this before sweeping owner's (or owner's owner's...) cash into corp
             if entity.cash < price && !issuable_shares(entity).empty?
               raise GameError, "#{entity.name} must sell shares before buying this train"

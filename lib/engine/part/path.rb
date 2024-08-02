@@ -136,13 +136,18 @@ module Engine
         counter: Hash.new(0),
         skip_track: nil,
         converging: true,
+        walk_calls: Hash.new(0),
         &block
       )
+        walk_calls[:all] += 1
+
         return if visited[self] || skip_paths&.key?(self)
         return if @junction && counter[@junction] > 1
         return if edges.sum { |edge| counter[edge.id] }.positive?
         return if track == skip_track
         return if @junction && @terminal
+
+        walk_calls[:not_skipped] += 1
 
         visited[self] = true
         counter[@junction] += 1 if @junction
@@ -151,7 +156,15 @@ module Engine
 
         if @junction && @junction != jskip
           @junction.paths.each do |jp|
-            jp.walk(jskip: @junction, visited: visited, skip_paths: skip_paths, counter: counter, converging: converging, &block)
+            jp.walk(
+              jskip: @junction,
+              visited: visited,
+              skip_paths: skip_paths,
+              counter: counter,
+              converging: converging,
+              walk_calls: walk_calls,
+              &block
+            )
           end
         end
 
@@ -169,7 +182,7 @@ module Engine
             next if !@ignore_gauge_walk && !tracks_match?(np, dual_ok: true)
 
             np.walk(skip: np_edge, visited: visited, skip_paths: skip_paths, counter: counter, skip_track: skip_track,
-                    converging: converging || @tile.converging_exit?(edge), &block)
+                    converging: converging || @tile.converging_exit?(edge), walk_calls: walk_calls, &block)
           end
 
           counter[edge_id] -= 1

@@ -23,6 +23,15 @@ module Engine
             actions
           end
 
+          def log_skip(entity)
+            return unless @game.round.round_num == 2
+            return if entity == @game.rptla
+            return if entity == @game.fce
+            return @log << "#{entity.name} is nationalized" if @game.merge_data[:corps].include?(entity)
+
+            super
+          end
+
           def choice_name
             'Nationalize Croporation'
           end

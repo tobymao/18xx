@@ -14,13 +14,30 @@ module Engine
     end
 
     def compute(corporation, **opts)
+      trains = @game.route_trains(corporation).sort_by(&:price).reverse
+
+      train_groups =
+        if (groups = @game.class::TRAIN_AUTOROUTE_GROUPS)
+          trains.group_by { |t| groups.index { |g| g.include?(t.name) } }.values
+        else
+          [trains]
+        end
+
+      routes = opts.delete(:routes)
+
+      train_groups.flat_map do |train_group|
+        opts[:routes] = routes.select { |r| train_group.include?(r.train) }
+        compute_for_train_group(train_group, corporation, **opts)
+      end
+    end
+
+    def compute_for_train_group(trains, corporation, **opts)
       static = opts[:routes] || []
       path_timeout = opts[:path_timeout] || 30
       route_timeout = opts[:route_timeout] || 10
       route_limit = opts[:route_limit] || 10_000
 
       connections = {}
-      trains = @game.route_trains(corporation).sort_by(&:price).reverse
 
       graph = @game.graph_for_entity(corporation)
       nodes = graph.connected_nodes(corporation).keys.sort_by do |node|
@@ -103,9 +120,16 @@ module Engine
             next unless left
 
             chains << { nodes: [left, nil], paths: [] }
+
+            # use the Local train's 1 city instead of any paths as their key;
+            # only 1 train can visit each city, but we want Locals to be able to
+            # visit multiple different cities if a corporation has more than one
+            # of them
+            id = [left]
+          else
+            id = chains.flat_map { |c| c[:paths] }.sort!
           end
 
-          id = chains.flat_map { |c| c[:paths] }.sort!
           next if connections[id]
 
           connections[id] = chains.map do |c|

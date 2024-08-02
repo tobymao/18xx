@@ -210,7 +210,7 @@ module Engine
 
           expect(i3.tile.blockers).to eq([cflv])
           expect(j4.tile.blockers).to eq([cflv])
-          expect(blocking_ability.hexes).to eq(%w[I3 J4])
+          expect(blocking_ability.hexes).to eq([j4, i3])
         end
 
         it 'CFLV no longer blocks I3 and J4 after the Nord buys a train' do
@@ -221,8 +221,8 @@ module Engine
           cflv = game.company_by_id('CFLV')
           blocking_ability = game.abilities(cflv, :blocks_hexes)
 
-          expect(i3.tile.blockers).to eq([cflv])
-          expect(j4.tile.blockers).to eq([cflv])
+          expect(i3.tile.blockers).to eq([])
+          expect(j4.tile.blockers).to eq([])
           expect(blocking_ability).to be_nil
         end
       end
@@ -868,6 +868,20 @@ module Engine
           toronto = game.hex_by_id('AC21').tile.cities[0]
           expect(toronto.normal_slots).to eq(2)
           expect(toronto.slots).to eq(3)
+        end
+      end
+    end
+
+    describe '1822PNW' do
+      describe 165_580 do
+        it 'does not include associated minors for majors that were started '\
+           'directly as valid choices for P20' do
+          game = game_at_action(game_file, 926)
+
+          actual = game.active_step.p20_targets
+          expected = [game.corporation_by_id('1')]
+
+          expect(actual).to eq(expected)
         end
       end
     end

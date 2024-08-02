@@ -386,6 +386,10 @@ module Engine
         def setup_turn
           1
         end
+
+        def unowned_purchasable_companies
+          []
+        end
       end
     end
   end

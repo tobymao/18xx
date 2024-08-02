@@ -12,11 +12,13 @@ require 'view/game/sell_shares'
 require 'view/game/stock_market'
 require 'view/game/tranches'
 require 'view/game/bid'
+require 'view/game/ipo_rows'
 
 module View
   module Game
     module Round
       class Stock < Snabberb::Component
+        include Lib::Settings
         include Actionable
         needs :selected_corporation, default: nil, store: true
         needs :selected_company, default: nil, store: true
@@ -24,6 +26,7 @@ module View
         needs :corporation_to_par, default: nil, store: true
         needs :show_other_players, default: nil, store: true
         needs :flexible_player, default: nil, store: true
+        needs :show_sr_hand, default: false, store: true
 
         def render
           round = @game.round
@@ -49,6 +52,7 @@ module View
             store(:selected_corporation, nil, skip: true)
             store(:last_player, @current_entity, skip: true)
             store(:corporation_to_par, nil, skip: true)
+            store(:show_sr_hand, false, skip: true)
           end
 
           if @current_actions.include?('par') && @step.respond_to?(:companies_pending_par) && !@step.companies_pending_par.empty?
@@ -81,14 +85,17 @@ module View
           end
 
           children.concat(render_buttons)
-          children << render_bid if @current_actions.include?('bid')
+          children << render_bid if should_render_bid?
           children << h(SpecialBuy) if @current_actions.include?('special_buy')
           children.concat(render_failed_merge) if @current_actions.include?('failed_merge')
           children.concat(render_bank_companies) if @bank_first
           children.concat(render_corporations) unless @hide_corporations
           children.concat(render_mergeable_entities) if @current_actions.include?('merge')
           children.concat(render_player_companies) if @current_actions.include?('sell_company')
+          children.concat(render_ipo_rows) if @game.show_ipo_rows?
           children.concat(render_bank_companies) unless @bank_first
+          children << render_show_hand_button unless @game.hand_companies_for_stock_round.empty?
+          children.concat(render_hand_companies) if show_sr_hand?
           children << h(Players, game: @game)
           if @step.respond_to?(:purchasable_companies) && !@step.purchasable_companies(@current_entity).empty?
             children << h(BuyCompanyFromOtherPlayer, game: @game)
@@ -121,6 +128,7 @@ module View
           buttons = []
           buttons.concat(render_merge_button) if @current_actions.include?('merge')
           buttons.concat(render_payoff_player_debt_button) if @current_actions.include?('payoff_player_debt')
+          buttons.concat(render_payoff_player_debt_partial_button) if @current_actions.include?('payoff_player_debt_partial')
           buttons.concat(render_take_loan) if @current_actions.include?('take_loan')
           buttons.concat(render_payoff_loan) if @current_actions.include?('payoff_loan')
           buttons.any? ? [h(:div, buttons)] : []
@@ -179,7 +187,39 @@ module View
             process_action(Engine::Action::PayoffPlayerDebt.new(@current_entity))
           end
           partial = @current_entity.cash < @game.player_debt(@current_entity)
-          [h(:button, { on: { click: payoffdebt } }, "Payoff Debt#{partial ? ' (Partial)' : ''}")]
+          amount = [@current_entity.cash, @game.player_debt(@current_entity)].min
+          [h(:button, { on: { click: payoffdebt } },
+             "Pay off debt#{partial ? ' (Partial)' : ''} - #{@game.format_currency(amount)}")]
+        end
+
+        def render_payoff_player_debt_partial_button
+          max_payoff = [@current_entity.cash, @game.player_debt(@current_entity)].min
+
+          input = h(
+            'input.no_margin',
+            style: {
+              height: '1.2rem',
+              width: '4rem',
+              padding: '0 0 0 0.2rem',
+            },
+            attrs: {
+              type: 'number',
+              min: 1,
+              max: max_payoff,
+              value: max_payoff,
+            },
+          )
+
+          payoff_debt_partial = lambda do
+            amount = input.JS['elm'].JS['value'].to_i
+            process_action(Engine::Action::PayoffPlayerDebtPartial.new(@current_entity, amount: amount))
+          end
+
+          [h(:div, [
+               input,
+               h(:button, { on: { click: payoff_debt_partial } },
+                 'Partially pay off debt'),
+          ])]
         end
 
         def render_failed_merge
@@ -248,7 +288,7 @@ module View
           when :par
             children << h(Par, corporation: corporation) if @current_actions.include?('par')
           when :bid
-            children << h(Bid, entity: @current_entity, biddable: corporation) if @current_actions.include?('bid')
+            children << h(Bid, entity: @current_entity, biddable: corporation) if should_render_bid?
           when :form
             children << h(FormCorporation, corporation: corporation) if @current_actions.include?('par')
           when String
@@ -371,11 +411,11 @@ module View
           @game.buyable_bank_owned_companies.map do |company|
             inputs = []
             inputs.concat(render_buy_input(company)) if @current_actions.include?('buy_company')
-            inputs.concat(render_company_bid_input(company)) if @current_actions.include?('bid')
+            inputs.concat(render_company_bid_input(company)) if should_render_bid?
 
             children = []
             children << h(Company, company: company,
-                                   bids: (@current_actions.include?('bid') ? @step.bids[company] : nil),
+                                   bids: (should_render_bid? ? @step.bids[company] : nil),
                                    interactive: !inputs.empty?)
             if !inputs.empty? && @selected_company == company
               children << h('div.margined_bottom', { style: { width: '20rem' } }, inputs)
@@ -437,6 +477,71 @@ module View
           [h(Bid, entity: @current_entity, biddable: company)]
         end
 
+        def render_hand_companies
+          props = {
+            style: {
+              display: 'inline-block',
+              verticalAlign: 'top',
+            },
+          }
+
+          @game.hand_companies_for_stock_round.map do |company|
+            inputs = []
+            inputs.concat(render_buy_input(company)) if @current_actions.include?('buy_company')
+
+            children = []
+            children << h(Company, company: company, interactive: !inputs.empty?)
+            if !inputs.empty? && @selected_company == company
+              children << h('div.margined_bottom', { style: { width: '20rem' } }, inputs)
+            end
+            h(:div, props, children)
+          end
+        end
+
+        def render_show_hand_button
+          return nil unless @current_entity.player?
+
+          user_name = @user&.dig('name')
+          user_in_game = !hotseat? && user_name && @game.players.map(&:name).include?(user_name)
+          user_is_this_player = !hotseat? && @user&.dig('name') == @current_entity.name
+          user_in_master_mode = user_in_game && Lib::Storage[@game.id]&.dig('master_mode')
+          can_show_hand = user_is_this_player || user_in_master_mode || hotseat?
+
+          toggle = lambda do
+            if can_show_hand
+              store(:show_sr_hand, !@show_sr_hand)
+            else
+              store(:flash_opts, 'Enter master mode to reveal hand. Use this feature fairly.')
+            end
+          end
+
+          props = {
+            style: {
+              display: 'block',
+              width: '8.5rem',
+              padding: '0.2rem',
+              margin: '0.4rem',
+            },
+            on: { click: toggle },
+          }
+
+          h(:button, props, "#{show_sr_hand? ? 'Hide' : 'Show'} Player Hand")
+        end
+
+        def show_sr_hand?
+          @show_sr_hand
+        end
+
+        def render_ipo_rows
+          div_props = {
+            style: {
+              display: 'inline-block',
+            },
+          }
+          ipo_cards = h(IpoRows, game: @game, show_first: true)
+          [h(:div, div_props, ipo_cards)]
+        end
+
         def render_bank
           children = []
           props = {
@@ -477,6 +582,10 @@ module View
             children << h(Bid, entity: @current_entity, biddable: @step.bid_entity)
           end
           h(:div, children)
+        end
+
+        def should_render_bid?
+          @current_actions.include?('bid') || @step.auctioneer?
         end
       end
     end

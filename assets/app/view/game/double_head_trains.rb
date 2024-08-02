@@ -22,7 +22,7 @@ module View
           end
 
           style = {
-            border: 'solid 1px',
+            border: "solid 1px #{color_for(:font)}",
             display: 'inline-block',
             cursor: 'pointer',
             margin: '0.1rem 0rem',
@@ -33,8 +33,12 @@ module View
           }
 
           bg_color = route_prop(0, :color)
-          style[:backgroundColor] = @selected_trains[train] ? bg_color : color_for(:bg)
-          style[:color] = contrast_on(bg_color)
+          if @selected_trains[train]
+            style[:backgroundColor] = bg_color
+            style[:color] = contrast_on(bg_color)
+          else
+            style[:backgroundColor] = color_for(:bg)
+          end
 
           [
             h(:tr,

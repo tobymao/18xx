@@ -20,6 +20,14 @@ module Engine
             actions
           end
 
+          def log_skip(entity)
+            return if entity.minor?
+            return if @game.nationalized?
+            return if entity.corporation == @game.rptla
+
+            super
+          end
+
           def can_buy_company?(entity)
             companies = @game.purchasable_companies(entity)
 
