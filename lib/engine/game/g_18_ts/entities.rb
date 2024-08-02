@@ -937,126 +937,13 @@ module Engine
         },
         ].freeze
 
-        R1_CORPORATIONS = [
-          {
-            sym: 'Cam',
-            name: 'Cambrian Railway',
-            logo: '18_ts/SRC',
-            simple_logo: '18_ts/SRC.alt',
-            capitalization: :incremental,
-            float_percent: 40,
-            shares: [40, 20, 20, 20],
-            price_percent: 10,
-            max_ownership_percent: 100,
-            tokens: [0],
-            coordinates: 'R8',
-            color: '#48260d',
-            text_color: '#ffffff',
-            abilities: [{ type: 'blocks_hexes', owner_type: nil, hexes: ['R8'] }],
-          },
-          {
-            sym: 'TV',
-            name: 'Taff Vale Railway',
-            logo: '18_ts/DS',
-            simple_logo: '18_ts/DS.alt',
-            capitalization: :incremental,
-            float_percent: 40,
-            shares: [40, 20, 20, 20],
-            price_percent: 10,
-            max_ownership_percent: 100,
-            tokens: [0],
-            coordinates: 'V8',
-            color: '#ffa6c9',
-            text_color: '#000000',
-          },
-        ].freeze
+        
 
-        R2_CORPORATIONS = [
-          {
-            sym: 'S&DR',
-            name: 'Somerset & Dorset Railway',
-            logo: '18_ts/ACR',
-            simple_logo: '18_ts/ACR.alt',
-            capitalization: :incremental,
-            float_percent: 40,
-            shares: [40, 20, 20, 20],
-            price_percent: 10,
-            max_ownership_percent: 100,
-            tokens: [0],
-            coordinates: 'W9',
-            color: '#4666ff',
-            text_color: '#ffffff',
-          },
-        ].freeze
+       
 
-        R3_CORPORATIONS = [
-          {
-            sym: 'M&GN',
-            name: 'Midland & Great Northern Joint Railway',
-            logo: '18_ts/LW',
-            simple_logo: '18_ts/LW.alt',
-            capitalization: :incremental,
-            float_percent: 40,
-            shares: [40, 20, 20, 20],
-            price_percent: 10,
-            max_ownership_percent: 100,
-            tokens: [0],
-            coordinates: 'Q23',
-            color: '#cc5500',
-            text_color: '#ffffff',
-          },
-        ].freeze
+       
 
-        K5_CORPORATIONS = [
-          {
-            sym: 'FR',
-            name: 'Furness Railway',
-            logo: '18_ts/CVRR',
-            simple_logo: '18_ts/CVRR.alt',
-            capitalization: :incremental,
-            float_percent: 40,
-            shares: [40, 20, 20, 20],
-            price_percent: 10,
-            max_ownership_percent: 100,
-            tokens: [0],
-            coordinates: 'M9',
-            color: '#fafad2',
-            text_color: '#000000',
-          },
-          {
-            sym: 'NS',
-            name: 'North Staffordshire Railway',
-            logo: '18_ts/PL',
-            simple_logo: '18_ts/PL.alt',
-            capitalization: :incremental,
-            float_percent: 40,
-            shares: [40, 20, 20, 20],
-            price_percent: 10,
-            max_ownership_percent: 100,
-            tokens: [0],
-            coordinates: 'Q13',
-            color: '#404040',
-            text_color: '#ffffff',
-          },
-        ].freeze
-
-        K7_CORPORATIONS = [
-          {
-            sym: 'LT&S',
-            name: 'London, Tilbury & Southend Railway',
-            logo: '18_ts/IRT',
-            simple_logo: '18_ts/IRT.alt',
-            capitalization: :incremental,
-            float_percent: 40,
-            shares: [40, 20, 20, 20],
-            price_percent: 10,
-            max_ownership_percent: 100,
-            tokens: [0],
-            coordinates: 'V22',
-            color: '#1b967a',
-            text_color: '#ffffff',
-          },
-        ].freeze
+       
 
         PAR_BY_CORPORATION = {
           'PRR' => 100,
@@ -1111,41 +998,9 @@ module Engine
 
         def game_corporations
           corps = []
-          add_entities(corps, UNIT1_CORPORATIONS) if @units[1]
-          if !@units[1] && @units[2]
-            add_entities(corps, UNIT2_CORPORATIONS)
-          elsif @units[1] && @units[2]
-            add_entities(corps, UNIT2_CORPORATIONS.reject { |corp| corp[:sym] == 'PRR' })
-            prr = corps.find { |corp| corp[:sym] == 'PRR' }
-            prr[:tokens] = [0, 0, 40, 100, 100, 100, 100]
-            prr[:coordinates] = %w[T16 Q11]
-            midland = corps.find { |corp| corp[:sym] == 'RR' }
-            midland[:abilities] << { type: 'blocks_hexes', owner_type: nil, hexes: ['R14'] }
-          end
+          add_entities(corps, UNIT1_CORPORATIONS) if @units[1]     
+          add_entities(corps, UNIT2_CORPORATIONS) if @units[2]
           add_entities(corps, UNIT3_CORPORATIONS) if @units[3]
-          add_entities(corps, R1_CORPORATIONS) if @regionals[1]
-          # Modify GWR (Unit 1) if playing with R2
-          if @regionals[2]
-            add_entities(corps, R2_CORPORATIONS)
-            gwr = corps.find { |corp| corp[:sym] == 'GWR' }
-            gwr[:tokens] = [0, 0, 40, 100, 100, 100, 100]
-            gwr[:coordinates] = %w[V14 Y7]
-          end
-          # Modify SECR / LBSC in variant DB2
-          if @optional_rules.include?(:db2)
-            secr = corps.find { |corp| corp[:sym] == 'SECR' }
-            secr[:abilities] << { type: 'blocks_hexes', owner_type: nil, hexes: ['W21'] }
-            li = corps.find { |corp| corp[:sym] == 'LI' }
-            li[:abilities] = []
-          end
-          # Move HR with Unit 4
-          if @optional_rules.include?(:unit_4)
-            hr = corps.find { |corp| corp[:sym] == 'HR' }
-            hr[:coordinates] = 'A5'
-          end
-          add_entities(corps, R3_CORPORATIONS) if @regionals[3]
-          add_entities(corps, K5_CORPORATIONS) if @kits[5]
-          add_entities(corps, K7_CORPORATIONS) if @kits[7]
           corps
         end
       end
