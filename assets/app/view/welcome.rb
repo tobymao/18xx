@@ -16,7 +16,7 @@ module View
 
     def render_notification
       message = <<~MESSAGE
-        <p>Steam Over Holland, 18 India, and 18Uruguay are in alpha.</p>
+        <p>18 India and 18Uruguay are in alpha.</p>
 
         <p>Report bugs and make feature requests <a href='https://github.com/tobymao/18xx/issues'>on GitHub</a>.</p>
       MESSAGE

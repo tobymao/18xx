@@ -197,7 +197,7 @@ module Engine
         end
 
         def next_sr_player_order
-          @round.is_a?(Engine::Round::Auction) ? :most_cash_keep_order : :next_clockwise
+          @round.auction? ? :most_cash_keep_order : :next_clockwise
         end
 
         def timeline
