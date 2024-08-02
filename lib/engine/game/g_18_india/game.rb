@@ -975,27 +975,13 @@ module Engine
 
         def add_gauge_changes_to_stops(num, route_stops, route)
           gauge_changes = Array.new(num) { Engine::Part::City.new('0') }
-          gc_tile = gauge_change_tile(route)
+          gc_tile = Engine::Tile.new('gc', code: '', color: :yellow, parts: [])
           gauge_changes.each do |stop|
             stop.tile = gc_tile
             route_stops.insert(1, stop) # add the gauge change after fist element so that it's not the first or last stop
           end
           LOGGER.debug { "GAME::add_gauge_changes_to_stops > route_stops: #{route_stops.inspect}" }
           route_stops
-        end
-
-        # return a tile that can be used for a stop, exclude any named hex
-        def gauge_change_tile(route)
-          gc_hexes = @gauge_change_markers.flatten
-          hexes = route.hexes & gc_hexes
-          hexes.each do |hex|
-            return hex.tile unless hex.tile.location_name
-          end
-          # if there isn't an unnamed intersecting hex, use the other GC hexes
-          gc_hexes.each do |hex|
-            return hex.tile unless hex.tile.location_name
-          end
-          raise GameError, 'Tile not found for gauge change'
         end
 
         def border_crossings(route)
