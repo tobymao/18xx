@@ -11,29 +11,18 @@ module Engine
           MIN_PRICE = 1
 
           def actions(entity)
-            return [] unless entity == current_entity
+            return [] unless entity == current_entity && can_buy_token?(entity)
 
             ACTIONS
           end
 
-          def round_state
-            super.merge(
-              {
-                bought_token: false,
-              }
-            )
-          end
-
           def setup
-            super
-            @round.bought_token = false
+            @bought_token = false
           end
 
           def can_buy_token?(entity)
-            @game.acquiring_station_tokens? &&
-              @game.buy_tokens_enabled &&
-              current_entity == entity &&
-              !@round.bought_token &&
+            @game.buy_tokens_enabled &&
+              !@bought_token &&
               !available_tokens(entity).empty? &&
               MIN_PRICE <= buying_power(entity)
           end
@@ -92,7 +81,7 @@ module Engine
           end
 
           def pass_description
-            'Pass (Buy a Token)'
+            'Skip (Buy Token)'
           end
 
           def log_skip(entity)
@@ -131,7 +120,7 @@ module Engine
             @game.log << "#{entity.name} buys (replaces) #{old_token.corporation.name} token on #{city.hex.id} for "\
                          "#{@game.format_currency(price)} (paid to #{old_token.corporation.name})"
 
-            @round.bought_token = true
+            @bought_token = true
             @game.token_graph_for_entity(entity).clear
 
             # kill routes for corp selling token
