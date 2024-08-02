@@ -11,7 +11,7 @@ module Engine
           MIN_PRICE = 1
 
           def actions(entity)
-            return [] unless entity == current_entity && can_buy_token?(entity)
+            return [] if entity != current_entity || !can_buy_token?(entity)
 
             ACTIONS
           end
@@ -85,7 +85,7 @@ module Engine
           end
 
           def log_skip(entity)
-            return if !@game.acquiring_station_tokens? || @game.phase.status.include?('no_buy_token')
+            return if !@game.acquiring_station_tokens? || !@game.buy_tokens_enabled
 
             @log << "#{entity.name} can't buy any tokens from other corporations"
           end
