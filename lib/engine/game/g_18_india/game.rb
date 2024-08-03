@@ -1013,10 +1013,6 @@ module Engine
 
           valid_route = visited_stops.first.city? && visited_stops.last.city?
           raise GameError, 'Route must begin and end at a city' unless valid_route
-
-          visited_names = visited_stops.map { |stop| stop.tile.location_name }
-          raise GameError, 'Route may not visit MUMBAI more than once' if visited_names.count('MUMBAI') > 1
-          raise GameError, 'Route may not visit NEPAL more than once' if visited_names.count('NEPAL') > 1
         end
 
         # modify to include variable value cities and route bonus

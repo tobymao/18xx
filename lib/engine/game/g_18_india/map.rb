@@ -259,12 +259,13 @@ module Engine
           red: {
             ['A16'] => 'city=revenue:40;path=a:4,b:_0;path=a:5,b:_0;label=+?',
             ['D3'] => 'city=revenue:50;path=a:0,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=+?;',
-            ['D23'] => 'city=revenue:60,slots:2;city=revenue:60;path=a:0,b:_0;path=a:3,b:_0;'\
+            ['D23'] => 'city=revenue:60,slots:2,groups:Mumbai;city=revenue:60,groups:Mumbai;path=a:0,b:_0;path=a:3,b:_0;'\
                        'path=a:4,b:_1;path=a:5,b:_1;border=edge:5,type:province;label=+?',
             ['G36'] => 'city=revenue:40,slots:2;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=+?',
             ['K30'] => 'city=revenue:50,slots:2;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;border=edge:1,type:province;label=+?',
             ['K40'] => 'city=revenue:40;path=a:4,b:_0;label=+?',
-            ['M10'] => 'city=revenue:30;path=a:0,b:_0;path=a:2,b:_0;city=revenue:30;path=a:1,b:_1;path=a:5,b:_1;label=+?',
+            ['M10'] => 'city=revenue:30,groups:Nepal;path=a:0,b:_0;path=a:2,b:_0;city=revenue:30,groups:Nepal;'\
+                       'path=a:1,b:_1;path=a:5,b:_1;label=+?',
             ['Q10'] => 'city=revenue:40;path=a:0,b:_0;path=a:1,b:_0;path=a:5,b:_0;label=+?',
             ['R17'] => 'city=revenue:30;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;border=edge:1,type:water,cost:30;label=+?',
           },
