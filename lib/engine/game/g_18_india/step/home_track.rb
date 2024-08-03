@@ -58,19 +58,12 @@ module Engine
           # Base code doesn't handle one token and one reservation on a OO tile
           # Moves a reservation from hex to untoken city
           def replace_oo_reservations(tile)
-            return unless tile.label == 'OO'
+            return unless tile.name == '235'
 
-            cities = tile.cities
-            reservations = tile.reservations.dup
-            LOGGER.debug { "replace_oo_reservations > reservations: #{reservations}" }
-            cities.each do |city|
-              next if city.tokened?
-
-              corp = reservations.pop
-              tile.remove_reservation!(corp)
-              city.add_reservation!(corp)
-              LOGGER.debug { "replace_oo_reservations > city reservation: #{city.reservations}" }
-            end
+            corp = tile.reservations.first
+            city = tile.cities.reject(&:tokened?).first
+            city.add_reservation!(corp)
+            tile.reservations.clear
           end
 
           def hex_neighbors(_entity, hex)
