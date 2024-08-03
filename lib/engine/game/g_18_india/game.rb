@@ -970,10 +970,10 @@ module Engine
           return route_stops unless gauge_changes.positive?
 
           LOGGER.debug { "GAME::visited_stops > gauge_changes: #{gauge_changes} route_stops: #{route_stops.inspect}" }
-          add_gauge_changes_to_stops(gauge_changes, route_stops, route)
+          add_gauge_changes_to_stops(gauge_changes, route_stops)
         end
 
-        def add_gauge_changes_to_stops(num, route_stops, route)
+        def add_gauge_changes_to_stops(num, route_stops)
           gauge_changes = Array.new(num) { Engine::Part::City.new('0') }
           gc_tile = Engine::Tile.new('gc', code: '', color: :yellow, parts: [])
           gauge_changes.each do |stop|
