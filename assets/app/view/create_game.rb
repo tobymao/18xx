@@ -412,7 +412,6 @@ module View
 
       game_params = params
 
-
       case @mode
       when :multi
         title = selected_game_or_variant&.title
