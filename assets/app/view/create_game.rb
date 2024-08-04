@@ -408,35 +408,23 @@ module View
     end
 
     def submit
-      title = selected_game_or_variant.title
-      return if !title && @mode != :json
+      return if !selected_game_or_variant && @mode != :json
 
       game_params = params
-      if game_params[:min_players].to_i < @min_p[title] || game_params[:max_players].to_i > @max_p[title]
-        return store(:flash_opts,
-                     'Invalid playercount')
-      end
 
-      if @mode == :multi
+      case @mode
+      when :multi
+        title = selected_game_or_variant&.title
+        if game_params[:min_players].to_i < @min_p[title] || game_params[:max_players].to_i > @max_p[title]
+          return store(:flash_opts,
+                       'Invalid playercount')
+        end
+
         game_params[:seed] = game_params[:seed].to_i
         game_params[:seed] = nil if (game_params[:seed]).zero?
         return create_game(game_params)
-      end
 
-      players = game_params
-                  .select { |k, _| k.start_with?('player_') }
-                  .values
-                  .map { |name| name.gsub(/\s+/, ' ').strip }
-
-      return store(:flash_opts, 'Cannot have duplicate player names') if players.uniq.size != players.size
-
-      if @mode == :json
-        begin
-          game_data = JSON.parse(game_params['game_data'])
-        rescue JSON::ParserError => e
-          return store(:flash_opts, e.message)
-        end
-      else
+      when :hotseat
         game_data = {
           settings: {
             optional_rules: game_params[:optional_rules] || [],
@@ -444,7 +432,20 @@ module View
           title: game_params[:title],
         }
         game_data[:settings][:seed] = game_params[:seed] if game_params[:seed]
+
+      when :json
+        begin
+          game_data = JSON.parse(game_params['game_data'])
+        rescue JSON::ParserError => e
+          return store(:flash_opts, e.message)
+        end
       end
+
+      players = game_params
+      .select { |k, _| k.start_with?('player_') }
+      .map { |_, name| name.gsub(/\s+/, ' ').strip }
+
+      return store(:flash_opts, 'Cannot have duplicate player names') if players.uniq.size != players.size
 
       checked_options = Engine.meta_by_title(game_data[:title])
                           .check_options(game_data[:settings][:optional_rules],
