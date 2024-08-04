@@ -51,6 +51,7 @@ module Engine
             LOGGER.debug { 'HomeTrack > process_place_token' }
             super
             tile = action.city.tile
+            LOGGER.debug { "HomeTrack > tile: #{tile.inspect}" }
             replace_oo_reservations(tile) unless tile.reservations.empty? # move hex reservation
           end
 
