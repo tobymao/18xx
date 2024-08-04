@@ -412,10 +412,10 @@ module View
 
       game_params = params
 
-      title = selected_game_or_variant&.title
 
       case @mode
       when :multi
+        title = selected_game_or_variant&.title
         if game_params[:min_players].to_i < @min_p[title] || game_params[:max_players].to_i > @max_p[title]
           return store(:flash_opts,
                        'Invalid playercount')
@@ -444,8 +444,7 @@ module View
 
       players = game_params
       .select { |k, _| k.start_with?('player_') }
-      .values
-      .map { |name| name.gsub(/\s+/, ' ').strip }
+      .map { |_, name| name.gsub(/\s+/, ' ').strip }
 
       return store(:flash_opts, 'Cannot have duplicate player names') if players.uniq.size != players.size
 
