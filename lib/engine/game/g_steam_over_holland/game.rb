@@ -371,13 +371,14 @@ module Engine
         def revenue_for(route, stops)
           revenue = super
 
-          if (ability = abilities(route.corporation, :hex_bonus))
+          abilities(route.corporation, :hex_bonus).each do |ability|
             stops.each do |stop|
               next unless ability.hexes.include?(stop.hex.name)
 
               revenue += 20
             end
           end
+
           revenue
         end
 
@@ -440,18 +441,12 @@ module Engine
           return [] if @round.issued_shares[entity] || entity.cash >= @depot.min_depot_price
 
           num_shares = [entity.num_player_shares, 5 - entity.num_market_shares].min
-          bundles = bundles_for_corporation(entity, entity)
-          share_price = stock_market.find_share_price(entity, :current).price
 
-          bundles
-            .each { |bundle| bundle.share_price = share_price }
-            .reject { |bundle| bundle.num_shares > num_shares }
+          bundles_for_corporation(entity, entity).reject { |bundle| bundle.num_shares > num_shares }
         end
 
-        def upgrades_to?(from, to, _special = false, selected_company: nil)
-          return %w[SOH2 SOH3 SOH4 SOH5].include?(to.name) if from.hex.tile.name == '3'
-          return %w[SOH2 SOH3 981 991].include?(to.name) if from.hex.tile.name == '4'
-          return %w[SOH4 SOH5 981 991].include?(to.name) if from.hex.tile.name == '58'
+        def upgrades_to_correct_city_town?(from, to)
+          return true if from.towns.size == 1 && to.towns.size == 2
 
           super
         end

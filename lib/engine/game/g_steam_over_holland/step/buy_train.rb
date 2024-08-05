@@ -10,7 +10,6 @@ module Engine
           def actions(entity)
             return [] if entity != current_entity
 
-            return ['buy_train'] if can_afford_needed_train?(entity)
             return ['sell_shares'] if entity == current_entity&.owner && can_ebuy_sell_shares?(current_entity)
             return %w[sell_shares buy_train pass] if president_may_contribute?(entity)
             return %w[buy_train pass] if can_buy_train?(entity)
@@ -28,6 +27,8 @@ module Engine
 
           def process_pass(action)
             entity = action.entity
+
+            raise GameError, 'Corporation can afford train, a train must be purchased.' if can_afford_needed_train?(entity)
             return super unless can_close_corp?(entity)
 
             @game.close_corporation(entity)
@@ -43,7 +44,7 @@ module Engine
             return false unless corporation.corporation?
             return false if @round.issued_shares[corporation]
 
-            @game.issuable_shares(corporation).any?
+            !@game.issuable_shares(corporation).empty?
           end
 
           def should_buy_train?(entity)

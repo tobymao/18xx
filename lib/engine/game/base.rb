@@ -2896,10 +2896,9 @@ module Engine
                          when :least_cash
                            @players.sort_by { |p| [p.cash, @players.index(p)] }
                          when :next_clockwise
-                           @round.next_entity_index
+                           @players.rotate
                          when :most_cash_keep_order
-                           @players.max_by(&:cash)
-                         else
+                           @players.rotate(@players.index(@players.max_by(&:cash)))
                            []
                          end
                        else
