@@ -438,6 +438,7 @@ module Engine
 
         def exchange_corporations(exchange_ability)
           minor = exchange_ability.owner
+          return [] if minor.receivership?
           return [] if minor.share_price.price.zero?
           return [] if under_obligation?(minor.owner)
 
@@ -447,6 +448,10 @@ module Engine
             major.share_price.price <= max_price &&
               major_minor_connected?(major, minor)
           end
+        end
+
+        def unowned_purchasable_companies
+          minor_companies.select { |company| company.owner == bank }
         end
 
         def buyable_bank_owned_companies
