@@ -84,16 +84,6 @@ module Engine
             'Skip (Buy Token)'
           end
 
-          def log_skip(entity)
-            return if !@game.acquiring_station_tokens? || !@game.buy_tokens_enabled
-
-            @log << "#{entity.name} can't buy any tokens from other corporations"
-          end
-
-          def log_pass(entity)
-            @log << "#{entity.name} declines to buy a token from another corporation"
-          end
-
           def max_price(entity)
             buying_power(entity)
           end
