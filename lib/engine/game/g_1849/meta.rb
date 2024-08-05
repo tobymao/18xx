@@ -28,7 +28,6 @@ module Engine
             sym: :reduced_4p_corps,
             short_name: 'Reduced corps at 4 players',
             desc: 'Six corporations are recommended in a 4-player game, but it is possible to play with five',
-            players: [4],
           },
           {
             sym: :acquiring_station_tokens,
