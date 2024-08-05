@@ -105,7 +105,7 @@ module Engine
 
         LOCATION_NAMES = {
           'B13' => 'Leeuwarden',
-          'B17' => 'Broningen',
+          'B17' => 'Groningen',
           'C8' => 'Den Helder',
           'C16' => 'Assen',
           'C20' => 'Papenburg',
