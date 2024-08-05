@@ -3,7 +3,7 @@ CONTAINER_COMPOSE ?= $(CONTAINER_ENGINE)-compose
 CONTAINER_ENGINE ?= docker
 
 clean:
-	sudo rm -rfv build/ public/assets/*.js public/assets/*.js.gz public/assets/version.json
+	sudo rm -rfv build/ public/assets/*.js public/assets/*.js.map public/assets/*.js.gz public/assets/version.json
 
 cleandeps:
 	sudo rm -rfv public/assets/deps.js

@@ -77,7 +77,7 @@ class Api < Roda
     }
   end
 
-  ASSETS = Assets.new(precompiled: PRODUCTION)
+  ASSETS = Assets.new(precompiled: PRODUCTION, source_maps: !PRODUCTION)
 
   Bus.configure
 
