@@ -2899,6 +2899,7 @@ module Engine
                            @players.rotate
                          when :most_cash_keep_order
                            @players.rotate(@players.index(@players.max_by(&:cash)))
+                         else
                            []
                          end
                        else
