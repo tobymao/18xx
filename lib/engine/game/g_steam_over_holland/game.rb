@@ -49,8 +49,6 @@ module Engine
           { lay: true, upgrade: :not_if_upgraded, cannot_reuse_same_hex: true },
         ].freeze
 
-        attr_accessor :close_corp
-
         MARKET = [
           [
             { price: 50 },
@@ -384,7 +382,7 @@ module Engine
           corporation = bundle.corporation
           old_price = corporation.share_price
           old_owner = bundle.owner
-          was_president = corporation.president?(bundle.owner)
+          was_president = corporation.president?(old_owner)
 
           @share_pool.sell_shares(bundle, allow_president_change: allow_president_change, swap: swap)
 
