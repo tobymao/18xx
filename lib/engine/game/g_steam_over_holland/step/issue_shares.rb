@@ -11,7 +11,7 @@ module Engine
             bundle = action.bundle
             corporation = bundle.corporation
             old_price = corporation.share_price
-            @game.share_pool.sell_shares(action.bundle)
+            @game.share_pool.sell_shares(bundle)
 
             (bundle.num_shares - 1).times do
               @game.stock_market.move_left(corporation)

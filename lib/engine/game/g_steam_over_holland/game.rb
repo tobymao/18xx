@@ -370,7 +370,7 @@ module Engine
           revenue = super
 
           abilities = abilities(route.corporation, :hex_bonus)
-          return revenue if abilities.empty?
+          return revenue unless abilities
 
           bonus_hexes = abilities.flat_map(&:hexes)
           bonus = 20 * stops.map(&:hex).map(&:coordinates).intersect(bonus_hexes).size
@@ -381,32 +381,21 @@ module Engine
           price_drop = bundle.num_shares
           corporation = bundle.corporation
           old_price = corporation.share_price
-          old_owner = bundle.owner
-          was_president = corporation.president?(old_owner)
 
-          @share_pool.sell_shares(bundle, allow_president_change: allow_president_change, swap: swap)
-
-          if was_president
-            # presidents selling shares of their own company is left one space per sale, no matter what
-            bundle.num_shares.times { @stock_market.move_left(corporation) }
-          elsif old_owner == corporation
-            # this is for corps emergency issuing shares
-            (bundle.num_shares - 1).times do
-              @stock_market.move_left(corporation)
-            end
-            @round.issued_shares[corporation] = true
-          else
-            # This section allows for the ledges that prevent price drops unless the president is selling
+          # This section below allows for the ledges that prevent price drops unless the president is selling
+          unless corporation.president?(bundle.owner)
             case corporation.share_price.type
             when :ignore_sale_unless_president
               price_drop = 0
             when :max_one_drop_unless_president
               price_drop = 1
             when :max_two_drops_unless_president
-              price_drop = 2 unless bundle.num_shares == 1
+              price_drop = 2 unless price_drop == 1
             end
-            price_drop.times { @stock_market.move_left(corporation) }
           end
+
+          @share_pool.sell_shares(bundle)
+          price_drop.times { @stock_market.move_left(corporation) }
           log_share_price(corporation, old_price) if sell_movement(corporation) != :none
         end
 

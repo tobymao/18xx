@@ -34,6 +34,20 @@ module Engine
             @game.close_corporation(entity)
           end
 
+          def process_sell_shares(action)
+            bundle = action.bundle
+            corporation = bundle.corporation
+            old_price = corporation.share_price
+            @game.share_pool.sell_shares(bundle)
+
+            (bundle.num_shares - 1).times do
+              @game.stock_market.move_left(corporation)
+            end
+
+            @game.log_share_price(corporation, old_price)
+            @round.issued_shares[corporation] = true
+          end
+
           def must_sell_shares?(corporation)
             return false if corporation.cash >= @game.depot.min_depot_price || !corporation.trains.empty?
 
