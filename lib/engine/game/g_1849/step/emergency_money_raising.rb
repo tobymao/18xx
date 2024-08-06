@@ -14,7 +14,7 @@ module Engine
             current = current_entity
             return [] if entity != current && entity != current.owner
 
-            @active_entity = nil if @active_entity != @round.cash_crisis_entity
+            @active_entity = nil if @active_entity != cash_crisis_entity
             if !@active_entity && current == entity
               @active_entity = entity
               @game.log << "#{@active_entity.name} enters #{description} and owes"\
@@ -41,9 +41,9 @@ module Engine
           end
 
           def active_entities
-            return [] unless @round&.cash_crisis_entity&.cash&.negative?
+            return [] unless cash_crisis_entity&.cash&.negative?
 
-            [@round.cash_crisis_entity]
+            [cash_crisis_entity]
           end
 
           def issuable_shares(entity)
@@ -85,6 +85,11 @@ module Engine
             return if @active_entity.cash.negative?
 
             @active_entity = nil
+          end
+
+          # needed for bonds variant
+          def cash_crisis_entity
+            @game.corporations.find { |corp| corp.cash.negative? }
           end
         end
       end

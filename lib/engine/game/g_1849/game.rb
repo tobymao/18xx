@@ -326,11 +326,6 @@ module Engine
 
           @player_debts = Hash.new { |h, k| h[k] = 0 }
           @moved_this_turn = []
-
-          # below is for variant rules
-          @e_tokens_enabled = false
-          @buy_tokens_enabled = false
-          @issue_bonds_enabled = false
         end
 
         def setup_companies
@@ -582,13 +577,6 @@ module Engine
           return unless (route.stops.map(&:hex).map(&:id) & PORT_HEXES).any?
 
           raise GameError, 'Route must include two non-port stops.' unless route.stops.size > 2
-        end
-
-        def check_e_train_track_type(route)
-          train = route.train
-          paths = route.paths
-
-          raise GameError, 'E-Trains cannot use narrow gauge' if train.name == 'E' && paths.any? { |p| p.track == :narrow }
         end
 
         def revenue_for(route, stops)
@@ -913,28 +901,6 @@ module Engine
           @log << "#{entity.name} pays #{amount_fmt} interest for its issued bond"
         end
 
-        def take_loan(entity, loan)
-          raise GameError, 'Cannot issue bond' unless can_take_loan?(entity)
-
-          @log << "#{entity.name} issues its bond and receives #{format_currency(loan_value)}"
-          @bank.spend(loan_value, entity)
-          entity.loans << loan
-          @round.issued_bond[entity] = true
-
-          initial_sp = entity.share_price.price
-          @stock_market.move_left(entity)
-          @log << "#{entity.name}'s share price changes from" \
-                  " #{format_currency(initial_sp)} to #{format_currency(entity.share_price.price)}"
-        end
-
-        def can_take_loan?(entity)
-          bonds? &&
-           issue_bonds_enabled &&
-           entity.corporation? &&
-           !@round.redeemed_bond[entity] &&
-           entity.loans.size < maximum_loans(entity)
-        end
-
         def can_pay_interest?(entity, extra_cash = 0)
           entity.cash + extra_cash >= interest_owed(entity)
         end
@@ -953,6 +919,13 @@ module Engine
 
         def e_tokens(entity)
           entity.all_abilities.select { |ability| ability.description == 'E-Token' }
+        end
+
+        def check_e_train_track_type(route)
+          train = route.train
+          paths = route.paths
+
+          raise GameError, 'E-Trains cannot use narrow gauge' if train.name == 'E' && paths.any? { |p| p.track == :narrow }
         end
 
         def init_train_handler

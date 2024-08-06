@@ -62,6 +62,7 @@ module Engine
           end
 
           def can_replace_token?(entity, token)
+            print token
             return false unless token
 
             other_corporation = token.corporation
@@ -78,10 +79,6 @@ module Engine
 
           def description
             'Buy a Token From Another Corporation'
-          end
-
-          def pass_description
-            'Skip (Buy Token)'
           end
 
           def max_price(entity)

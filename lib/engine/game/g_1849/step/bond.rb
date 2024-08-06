@@ -7,15 +7,22 @@ module Engine
     module G1849
       module Step
         class Bond < Engine::Step::Base
+          attr_reader :issued_bond, :redeemed_bond
+
           def actions(entity)
             return [] if !entity.corporation? || entity != current_entity
 
             actions = []
             actions << 'payoff_loan' if can_payoff_loan?(entity)
-            actions << 'take_loan' if @game.can_take_loan?(entity)
+            actions << 'take_loan' if can_take_loan?(entity)
             actions << 'pass' if blocks? && !actions.empty?
 
             actions
+          end
+
+          def round_state
+            @issued_bond = {}
+            @redeemed_bond = {}
           end
 
           def description
@@ -34,16 +41,39 @@ module Engine
             "Repay Bond (#{@game.format_currency(@game.loan_value)})"
           end
 
+          def take_loan(entity, loan)
+            print 'hi!'
+            raise GameError, 'Cannot issue bond' unless can_take_loan?(entity)
+
+            @log << "#{entity.name} issues its bond and receives #{@game.format_currency(@game.loan_value)}"
+            @game.bank.spend(@game.loan_value, entity)
+            entity.loans << loan
+            @issued_bond[entity] = true
+
+            initial_sp = entity.share_price.price
+            @game.stock_market.move_left(entity)
+            @log << "#{entity.name}'s share price changes from" \
+                    " #{@game.format_currency(initial_sp)} to #{@game.format_currency(entity.share_price.price)}"
+          end
+
+          def can_take_loan?(entity)
+            @game.bonds? &&
+             @game.issue_bonds_enabled &&
+             entity.corporation? &&
+             !@redeemed_bond[entity] &&
+             entity.loans.size < @game.maximum_loans(entity)
+          end
+
           def can_payoff_loan?(entity)
-            !@round.issued_bond[entity] &&
+            !@issued_bond[entity] &&
               !entity.loans.empty? &&
               entity.cash >= entity.loans.first.amount
           end
 
           def process_take_loan(action)
-            raise GameError, 'Cannot issue bond' unless @game.can_take_loan?(action.entity)
+            raise GameError, 'Cannot issue bond' unless can_take_loan?(action.entity)
 
-            @game.take_loan(action.entity, action.loan)
+            take_loan(action.entity, action.loan)
           end
 
           def process_payoff_loan(action)
@@ -57,7 +87,7 @@ module Engine
 
             entity.loans.delete(loan)
 
-            @round.redeemed_bond[entity] = true
+            @redeemed_bond[entity] = true
 
             initial_sp = entity.share_price.price
             @game.stock_market.move_right(entity)
