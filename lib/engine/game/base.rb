@@ -3370,6 +3370,10 @@ module Engine
       end
 
       def second_icon(corporation); end
+
+      def corp_loans_text
+        'Loans'
+      end
     end
   end
 end

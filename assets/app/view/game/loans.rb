@@ -12,8 +12,10 @@ module View
       def render
         actions = @game.round.actions_for(@corporation)
         children = []
+        step = @game.round.active_step
 
         if actions.include?('payoff_loan')
+          payoff_loan_text = step.respond_to?(:payoff_loan_text) ? step.payoff_loan_text : 'Payoff Loan'
           children <<
           h(:button, {
               on: {
@@ -22,10 +24,11 @@ module View
                 end,
               },
             },
-            'Payoff Loan',)
+            payoff_loan_text,)
         end
 
         if actions.include?('take_loan')
+          take_loan_text = step.respond_to?(:take_loan_text) ? step.take_loan_text : 'Take Loan'
           children << h(:button, {
                           on: {
                             click: lambda do
@@ -33,7 +36,7 @@ module View
                                    end,
                           },
                         },
-                        'Take Loan',)
+                        take_loan_text,)
         end
 
         h(:div, children)
