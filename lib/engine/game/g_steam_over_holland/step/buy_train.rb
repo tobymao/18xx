@@ -28,7 +28,10 @@ module Engine
           def process_pass(action)
             entity = action.entity
 
-            raise GameError, 'Corporation can afford train, a train must be purchased.' if can_afford_needed_train?(entity)
+            if !game.loading && can_afford_needed_train?(entity)
+              raise GameError,
+                    'Corporation can afford train, a train must be purchased.'
+            end
             return super unless can_close_corp?(entity)
 
             @game.close_corporation(entity)
