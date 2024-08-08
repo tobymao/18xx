@@ -223,9 +223,14 @@ module View
                         end
           end
 
-          if @should_buy_train == :liquidation
+          case @should_buy_train
+          when :liquidation
             children << h(:div, "#{@corporation.name} must buy a train or it will be liquidated")
+          when :close_corp
+            children << h(:div, "#{@corporation.name}'s president must either sell shares to afford train, "\
+                                'or close the corporation without compensation.')
           end
+
           children << h(:h3, 'Available Trains')
           children << h(:div, div_props, [
             *from_depot(depot_trains, @corporation),

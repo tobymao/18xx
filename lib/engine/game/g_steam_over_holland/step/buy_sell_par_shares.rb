@@ -26,6 +26,13 @@ module Engine
               can_gain?(entity, bundle)
           end
 
+          def get_par_prices(entity, _corp)
+            @game
+              .stock_market
+              .par_prices
+              .select { |p| p.price * @game.percent_to_float * 0.1 <= available_cash(entity) }
+          end
+
           def process_par(action)
             raise GameError, 'Cannot par on behalf of other entities' if action.purchase_for
 

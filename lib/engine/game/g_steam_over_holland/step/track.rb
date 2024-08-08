@@ -13,6 +13,10 @@ module Engine
 
             super
           end
+
+          def border_cost_discount(_entity, _spender, _border, _cost, _hex)
+            0
+          end
         end
       end
     end
