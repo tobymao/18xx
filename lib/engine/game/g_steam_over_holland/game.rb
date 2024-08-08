@@ -369,8 +369,8 @@ module Engine
         def revenue_for(route, stops)
           revenue = super
 
-          abilities = abilities(route.corporation, :hex_bonus)
-          return revenue unless abilities
+          abilities = Array(abilities(route.corporation, :hex_bonus))
+          return revenue if abilities.empty?
 
           bonus_hexes = abilities.flat_map(&:hexes)
           bonus = 20 * stops.map(&:hex).map(&:coordinates).intersect(bonus_hexes).size
