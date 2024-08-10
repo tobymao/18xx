@@ -112,7 +112,7 @@ module Engine
                   },
                   {
                     'nodes' => ['town'],
-                    'pay' => 999,
+                    'pay' => 0,
                     'visit' => 999,
                   },
                 ],
