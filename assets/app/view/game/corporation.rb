@@ -640,7 +640,7 @@ module View
 
         [
           h('tr.ipo', loan_props, [
-            h('td.right', 'Loans'),
+            h('td.right', @game.corp_loans_text),
             h('td.padded_number', "#{@corporation.loans.size}/"\
                                   "#{@game.maximum_loans(@corporation)}"),
           ]),
