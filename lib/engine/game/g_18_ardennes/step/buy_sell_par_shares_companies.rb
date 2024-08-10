@@ -90,6 +90,15 @@ module Engine
             @round.refusals[corporation].include?(minor) ? shares : []
           end
 
+          def can_buy?(entity, bundle)
+            return super unless bundle
+            # If a minor is in receivership and its share price is in the grey
+            # zone then its presidency cannot be bought.
+            return false if bundle.corporation.share_price.price.zero?
+
+            super
+          end
+
           # Exchanging a minor for a share in a floated major corporation is
           # done as a buy_share action.
           def can_buy_any?(entity)
