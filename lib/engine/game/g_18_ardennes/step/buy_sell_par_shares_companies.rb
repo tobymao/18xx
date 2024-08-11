@@ -86,6 +86,7 @@ module Engine
             shares = @game.share_pool.shares_by_corporation[corporation]
             return [] if shares.empty?
             return shares if corporation.owner == minor.owner
+            return shares if corporation.receivership?
 
             @round.refusals[corporation].include?(minor) ? shares : []
           end
@@ -108,6 +109,10 @@ module Engine
           end
 
           def can_gain?(entity, bundle, exchange: false)
+            # Cannot exchange a minor for a treasury share of a public company
+            # that is in receivership.
+            return false if exchange && bundle.corporation.receivership? &&
+                            bundle.owner != @game.share_pool
             # Can go above 60% ownership if exchanging a minor for a share or
             # if buying a share from the open market.
             return true if exchange
