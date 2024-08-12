@@ -20,7 +20,21 @@ module Engine
 
         CERT_LIMIT = { 3 => 28, 4 => 21, 5 => 17, 6 => 14, 7 => 12 }.freeze
 
-        MARKET = [%w[10 20]].freeze
+        MARKET = [
+          %w[95 99 104p 114 121 132 145 162 181 205 240 280 350 400 460],
+          %w[89 93 97p 102 111 118 128 140 154 173 195 225 260 300 360],
+          %w[84 87 91p 95 100 108 115 124 135 148 165 185 210 240 280],
+          %w[79 82 85p 89 93 98 105 112 120 130 142 157 175],
+          %w[74 77 80p 83 87 91 96 102 109 116 125],
+          %w[69y 72 75p 78 81 85 89 94 99 106],
+          %w[64y 67y 70p 73 76 79 83 87],
+          %w[59y 62y 65y 68 71 74 77],
+          %w[54y 57y 60y 63y 66 69 72],
+        ].freeze
+
+        MARKET_TEXT = Base::MARKET_TEXT.merge(par: 'Major Corporation Par')
+
+        STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(par_1: :brown, par_2: :orange, par_3: :pink).freeze
 
         PHASES = [
           {
@@ -160,6 +174,19 @@ module Engine
             price: 960,
           },
         ].freeze
+        
+        def par_chart
+          @par_chart ||=
+            share_prices.select { |sp| sp.type == :par }.sort_by { |sp| -sp.price }.to_h { |sp| [sp, [nil, nil]] }
+        end
+        
+        def set_par(corporation, share_price, slot)
+          par_chart[share_price][slot] = corporation
+        end
+
+        def init_stock_market
+          StockMarket.new(game_market, self.class::CERT_LIMIT_TYPES, hex_market: true)
+        end
       end
     end
   end

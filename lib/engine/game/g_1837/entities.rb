@@ -8,6 +8,7 @@ module Engine
           {
             name: 'Semmering Railway',
             sym: 'Semmering',
+            desc: 'Mountain Railway (H16)',
             value: 100,
             revenue: 5,
             abilities: [
@@ -34,6 +35,7 @@ module Engine
           {
             name: 'Karst Railway',
             sym: 'Karst',
+            desc: 'Mountain Railway (K13)',
             value: 70,
             revenue: 10,
             abilities: [
@@ -60,6 +62,7 @@ module Engine
           {
             name: 'Brenner Railway',
             sym: 'Brenner',
+            desc: 'Mountain Railway (J6)',
             value: 90,
             revenue: 15,
             abilities: [
@@ -86,6 +89,7 @@ module Engine
           {
             name: 'Arlberg Railway',
             sym: 'Arlberg',
+            desc: 'Mountain Railway (I5)',
             value: 135,
             revenue: 20,
             abilities: [
@@ -112,6 +116,7 @@ module Engine
           {
             name: 'Karawanken Railway',
             sym: 'Karawanken',
+            desc: 'Mountain Railway (J12)',
             value: 120,
             revenue: 25,
             abilities: [
@@ -138,6 +143,7 @@ module Engine
           {
             name: 'Wocheiner Railway',
             sym: 'Wocheiner',
+            desc: 'Mountain Railway (K11)',
             value: 50,
             revenue: 30,
             abilities: [
@@ -164,6 +170,7 @@ module Engine
           {
             name: 'Tauern Railway',
             sym: 'Tauern',
+            desc: 'Mountain Railway (J10)',
             value: 70,
             revenue: 35,
             abilities: [
