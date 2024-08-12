@@ -829,7 +829,7 @@ module Engine
         # code below is for variant rules
 
         def acquiring_station_tokens?
-          @acquiring_station_tokens ||= @optional_rules&.include?(:acquiring_station_tokens)
+          @optional_rules&.include?(:electric_dreams) || @optional_rules&.include?(:acquiring_station_tokens)
         end
 
         def electric_dreams?
@@ -837,7 +837,7 @@ module Engine
         end
 
         def bonds?
-          @bonds ||= @optional_rules&.include?(:bonds)
+          @optional_rules&.include?(:electric_dreams) || @optional_rules&.include?(:bonds)
         end
 
         def reduced_4p_corps?

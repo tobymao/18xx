@@ -42,7 +42,8 @@ module Engine
           {
             sym: :electric_dreams,
             short_name: 'Electric Dreams',
-            desc: 'Adds E-trains that run infinite distance on broad track and double select cities',
+            desc: 'Adds E-trains that run infinite distance on broad track and double select cities. Selecting this option '\
+                  'will also automatically include the Bonds and Buy Tokens variants.',
           },
         ].freeze
       end
