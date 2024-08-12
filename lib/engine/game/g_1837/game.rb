@@ -174,12 +174,12 @@ module Engine
             price: 960,
           },
         ].freeze
-        
+
         def par_chart
           @par_chart ||=
             share_prices.select { |sp| sp.type == :par }.sort_by { |sp| -sp.price }.to_h { |sp| [sp, [nil, nil]] }
         end
-        
+
         def set_par(corporation, share_price, slot)
           par_chart[share_price][slot] = corporation
         end

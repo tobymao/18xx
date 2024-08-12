@@ -288,7 +288,7 @@ module Engine
                D32 D34 E19 E29 E37 F14 F24 F36 G25 G31 H12 H24 H28 I17 I19 I31
                I35 I37 J14 J20 J30 K15 K27 L16 L20 L26 L28 M3 M7 M15 N16 O19] => 'blank',
             %w[B16 C17 C25 D28 D30 E21 E23 E27 E31 E33 F12 F20 F34 G33 G35 H14
-               H32 I9 I11 I13 J4 J32 K3 K7 L14 M17 M19 M21 N18] => 'upgrade=cost:70,terrain:mountain',
+               H32 I9 I11 I13 J32 L14 M17 M19 M21 N18] => 'upgrade=cost:70,terrain:mountain',
             %w[C15 D10 D18 D22 E13 E15 E35 F16 F22 F30 F32 G11 I21 I27 I33 J18 J24 K29 L18 M5] => 'town=revenue:0',
             ['C23'] => 'city=revenue:0,slots:1;label=T',
             %w[C27 E25 H36] => 'town=revenue:0;upgrade=cost:70,terrain:mountain',
