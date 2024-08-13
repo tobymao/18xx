@@ -1230,6 +1230,217 @@ module Engine
             ['Dividend ≥ 4x share price', '4 →'],
           ]
         end
+
+        # Map Legends for commodity and connection bounus
+
+        def show_map_legend?
+          true
+        end
+
+        def show_map_legend_on_left?
+          false
+        end
+
+        def map_legends
+          %i[commodity_legend connection_legend]
+        end
+
+        def connection_legend(_font_color, _yellow, green, _brown, _gray, _red, action_processor: nil)
+          cell_style = {
+            border: '1px solid',
+            color: 'black',
+            'font-weight': 'bold',
+            'text-align': 'center',
+            'vertical-align': 'middle',
+            height: '33px',
+          }
+
+          [
+            # table-wide props
+            {
+              style: {
+                margin: '0.5rem 0 0.5rem 0',
+                border: '1px solid',
+                borderCollapse: 'collapse',
+              },
+            },
+            [
+              { text: 'Connection Bonus', props: { attrs: { colspan: 10 }, style: { **cell_style, backgroundColor: green } } },
+            ],
+            [
+              { text: 'Delhi (G8) <=> Kocchi (G36)', props: { style: cell_style } },
+              { text: format_currency(100), props: { style: cell_style } },
+            ],
+            [
+              { text: 'Karachi (A16) <=> Chennai (K30)', props: { style: cell_style } },
+              { text: format_currency(80), props: { style: cell_style } },
+            ],
+            [
+              { text: 'Lahore (D3) <=> Kolkata (P17)', props: { style: cell_style } },
+              { text: format_currency(80), props: { style: cell_style } },
+            ],
+            [
+              { text: 'Nepal (M10) <=> Mumbai (D23)', props: { style: cell_style } },
+              { text: format_currency(70), props: { style: cell_style } },
+            ],
+          ]
+        end
+
+        def commodity_legend(_font_color, yellow, green, _brown, _gray, _red, action_processor: nil)
+          [
+            # table-wide props
+            {
+              style: {
+                margin: '0.5rem 0 0.5rem 0',
+                border: '1px solid',
+                borderCollapse: 'collapse',
+                color: 'black',
+                'font-weight': 'bold',
+                'text-align': 'center',
+                'vertical-align': 'middle',
+                height: '33px',
+              },
+            },
+            [
+              {
+                text: 'Commodity Delivery Bonus',
+                props: { style: { backgroundColor: green }, attrs: { colspan: 10 } },
+              },
+            ],
+            [
+              { text: 'Destination', props: { style: { border: '1px solid', backgroundColor: yellow } } },
+              { text: 'Cotton', props: { style: { border: '1px solid', backgroundColor: yellow } } },
+              { text: 'Gold', props: { style: { border: '1px solid', backgroundColor: yellow  } } },
+              { text: 'Jewlery', props: { style: { border: '1px solid', backgroundColor: yellow  } } },
+              { text: 'Oil', props: { style: { border: '1px solid', backgroundColor: yellow  } } },
+              { text: 'Opium', props: { style: { border: '1px solid', backgroundColor: yellow  } } },
+              { text: 'Ore', props: { style: { border: '1px solid', backgroundColor: yellow  } } },
+              { text: 'Rice', props: { style: { border: '1px solid', backgroundColor: yellow  } } },
+              { text: 'Spices', props: { style: { border: '1px solid', backgroundColor: yellow  } } },
+              { text: 'Tea', props: { style: { border: '1px solid', backgroundColor: yellow  } } },
+            ],
+            [
+              { text: 'Chennai', props: { style: { border: '1px solid' } } },
+              { text: format_currency(40), props: { style: { border: '1px solid' } } },
+              { text: '-', props: { style: { border: '1px solid' } } },
+              { text: format_currency(20), props: { style: { border: '1px solid' } } },
+              { text: '-', props: { style: { border: '1px solid' } } },
+              { text: '-', props: { style: { border: '1px solid' } } },
+              { text: format_currency(50), props: { style: { border: '1px solid' } } },
+              { text: '-', props: { style: { border: '1px solid' } } },
+              { text: format_currency(50), props: { style: { border: '1px solid' } } },
+              { text: '-', props: { style: { border: '1px solid' } } },
+            ],
+            [
+              { text: 'China', props: { style: { border: '1px solid' } } },
+              { text: '-', props: { style: { border: '1px solid' } } },
+              { text: '-', props: { style: { border: '1px solid' } } },
+              { text: format_currency(20), props: { style: { border: '1px solid' } } },
+              { text: '-', props: { style: { border: '1px solid' } } },
+              { text: '-', props: { style: { border: '1px solid' } } },
+              { text: '-', props: { style: { border: '1px solid' } } },
+              { text: format_currency(30), props: { style: { border: '1px solid' } } },
+              { text: format_currency(40), props: { style: { border: '1px solid' } } },
+              { text: '-', props: { style: { border: '1px solid' } } },
+            ],
+            [
+              { text: 'Columbo', props: { style: { border: '1px solid' } } },
+              { text: '-', props: { style: { border: '1px solid' } } },
+              { text: '-', props: { style: { border: '1px solid' } } },
+              { text: format_currency(20), props: { style: { border: '1px solid' } } },
+              { text: '-', props: { style: { border: '1px solid' } } },
+              { text: '-', props: { style: { border: '1px solid' } } },
+              { text: '-', props: { style: { border: '1px solid' } } },
+              { text: '-', props: { style: { border: '1px solid' } } },
+              { text: format_currency(50), props: { style: { border: '1px solid' } } },
+              { text: '-', props: { style: { border: '1px solid' } } },
+            ],
+            [
+              { text: 'Haldia', props: { style: { border: '1px solid' } } },
+              { text: '-', props: { style: { border: '1px solid' } } },
+              { text: '-', props: { style: { border: '1px solid' } } },
+              { text: format_currency(20), props: { style: { border: '1px solid' } } },
+              { text: '-', props: { style: { border: '1px solid' } } },
+              { text: format_currency(100), props: { style: { border: '1px solid' } } },
+              { text: '-', props: { style: { border: '1px solid' } } },
+              { text: '-', props: { style: { border: '1px solid' } } },
+              { text: format_currency(30), props: { style: { border: '1px solid' } } },
+              { text: '-', props: { style: { border: '1px solid' } } },
+            ],
+            [
+              { text: 'Karachi', props: { style: { border: '1px solid' } } },
+              { text: format_currency(40), props: { style: { border: '1px solid' } } },
+              { text: '-', props: { style: { border: '1px solid' } } },
+              { text: format_currency(20), props: { style: { border: '1px solid' } } },
+              { text: '-', props: { style: { border: '1px solid' } } },
+              { text: '-', props: { style: { border: '1px solid' } } },
+              { text: format_currency(50), props: { style: { border: '1px solid' } } },
+              { text: '-', props: { style: { border: '1px solid' } } },
+              { text: format_currency(30), props: { style: { border: '1px solid' } } },
+              { text: '-', props: { style: { border: '1px solid' } } },
+            ],
+            [
+              { text: 'Kochi', props: { style: { border: '1px solid' } } },
+              { text: '-', props: { style: { border: '1px solid' } } },
+              { text: format_currency(50), props: { style: { border: '1px solid' } } },
+              { text: format_currency(20), props: { style: { border: '1px solid' } } },
+              { text: '-', props: { style: { border: '1px solid' } } },
+              { text: '-', props: { style: { border: '1px solid' } } },
+              { text: '-', props: { style: { border: '1px solid' } } },
+              { text: '-', props: { style: { border: '1px solid' } } },
+              { text: format_currency(70), props: { style: { border: '1px solid' } } },
+              { text: '-', props: { style: { border: '1px solid' } } },
+            ],
+            [
+              { text: 'Lahore', props: { style: { border: '1px solid' } } },
+              { text: '-', props: { style: { border: '1px solid' } } },
+              { text: '-', props: { style: { border: '1px solid' } } },
+              { text: format_currency(20), props: { style: { border: '1px solid' } } },
+              { text: '-', props: { style: { border: '1px solid' } } },
+              { text: format_currency(100), props: { style: { border: '1px solid' } } },
+              { text: '-', props: { style: { border: '1px solid' } } },
+              { text: '-', props: { style: { border: '1px solid' } } },
+              { text: format_currency(40), props: { style: { border: '1px solid' } } },
+              { text: '-', props: { style: { border: '1px solid' } } },
+            ],
+            [
+              { text: 'Mumbai', props: { style: { border: '1px solid' } } },
+              { text: '-', props: { style: { border: '1px solid' } } },
+              { text: '-', props: { style: { border: '1px solid' } } },
+              { text: format_currency(20), props: { style: { border: '1px solid' } } },
+              { text: format_currency(30), props: { style: { border: '1px solid' } } },
+              { text: '-', props: { style: { border: '1px solid' } } },
+              { text: '-', props: { style: { border: '1px solid' } } },
+              { text: '-', props: { style: { border: '1px solid' } } },
+              { text: format_currency(40), props: { style: { border: '1px solid' } } },
+              { text: '-', props: { style: { border: '1px solid' } } },
+            ],
+            [
+              { text: 'Nepal', props: { style: { border: '1px solid' } } },
+              { text: '-', props: { style: { border: '1px solid' } } },
+              { text: '-', props: { style: { border: '1px solid' } } },
+              { text: format_currency(20), props: { style: { border: '1px solid' } } },
+              { text: '-', props: { style: { border: '1px solid' } } },
+              { text: '-', props: { style: { border: '1px solid' } } },
+              { text: '-', props: { style: { border: '1px solid' } } },
+              { text: format_currency(30), props: { style: { border: '1px solid' } } },
+              { text: format_currency(40), props: { style: { border: '1px solid' } } },
+              { text: '-', props: { style: { border: '1px solid' } } },
+            ],
+            [
+              { text: 'Visakhapatnam', props: { style: { border: '1px solid' } } },
+              { text: '-', props: { style: { border: '1px solid' } } },
+              { text: '-', props: { style: { border: '1px solid' } } },
+              { text: format_currency(20), props: { style: { border: '1px solid' } } },
+              { text: '-', props: { style: { border: '1px solid' } } },
+              { text: '-', props: { style: { border: '1px solid' } } },
+              { text: '-', props: { style: { border: '1px solid' } } },
+              { text: '-', props: { style: { border: '1px solid' } } },
+              { text: format_currency(30), props: { style: { border: '1px solid' } } },
+              { text: format_currency(70), props: { style: { border: '1px solid' } } },
+            ],
+          ]
+        end
       end
     end
   end

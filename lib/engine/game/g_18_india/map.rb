@@ -268,6 +268,15 @@ module Engine
                        'path=a:1,b:_1;path=a:5,b:_1;label=+?',
             ['Q10'] => 'city=revenue:40;path=a:0,b:_0;path=a:1,b:_0;path=a:5,b:_0;label=+?',
             ['R17'] => 'city=revenue:30;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;border=edge:1,type:water,cost:30;label=+?',
+            # hexes for delivery information
+            ['C2'] => '',
+            ['M8'] => '',
+            ['Q8'] => '',
+            ['A18'] => '',
+            ['C24'] => '',
+            ['L31'] => '',
+            ['L41'] => '',
+            ['F37'] => '',
           },
           gray: {
             %w[B11 B13] => 'path=a:0,b:3',
@@ -281,6 +290,9 @@ module Engine
           },
           blue: {
             ['C18'] => 'junction;path=a:4,b:_0,terminal:1',
+            # hexes for delivery information
+            ['Q20'] => '',
+            ['N25'] => '',
           },
         }.freeze
 
