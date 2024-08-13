@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Icon" xmlns="http://www.w3.org/2000/svg" baseProfile="tiny" version="1.2" viewBox="0 0 1000 1000">
+  <rect id="Top" x="10" y="150" width="980" height="445.5" fill="#603813" stroke="#42210b" stroke-linejoin="round" stroke-width="8"/>
+  <polygon id="Bottom" points="867.5 850 132.5 850 10 595.5 990 595.5 867.5 850" fill="#1a1a1a" stroke="#42210b" stroke-linejoin="round" stroke-width="8"/>
+  <text id="Price" transform="translate(124.1 497) scale(1 1.1)" fill="#fff" font-family="Arial-BoldMT, Arial" font-weight="700"><tspan x="0" y="0" font-size="305.5">+</tspan><tspan x="178.4" y="0" font-size="343.6">₹30</tspan></text>
+  <text id="Commodity" transform="translate(151.5 789.5)" fill="#fff" font-family="Arial-BoldMT, Arial" font-size="190" font-weight="700"><tspan x="0" y="0">SPICES</tspan></text>
+</svg>

@@ -1231,6 +1231,11 @@ module Engine
           ]
         end
 
+        # Modifies the look of Part::largeIcons (controls the how they are decorated)
+        def decorate_marker(_icon)
+          { color: '', shape: :hexagon }
+        end
+
         # Map Legends for commodity and connection bounus
 
         def show_map_legend?
@@ -1310,14 +1315,14 @@ module Engine
             [
               { text: 'Destination', props: { style: { border: '1px solid', backgroundColor: yellow } } },
               { text: 'Cotton', props: { style: { border: '1px solid', backgroundColor: yellow } } },
-              { text: 'Gold', props: { style: { border: '1px solid', backgroundColor: yellow  } } },
-              { text: 'Jewlery', props: { style: { border: '1px solid', backgroundColor: yellow  } } },
-              { text: 'Oil', props: { style: { border: '1px solid', backgroundColor: yellow  } } },
-              { text: 'Opium', props: { style: { border: '1px solid', backgroundColor: yellow  } } },
-              { text: 'Ore', props: { style: { border: '1px solid', backgroundColor: yellow  } } },
-              { text: 'Rice', props: { style: { border: '1px solid', backgroundColor: yellow  } } },
-              { text: 'Spices', props: { style: { border: '1px solid', backgroundColor: yellow  } } },
-              { text: 'Tea', props: { style: { border: '1px solid', backgroundColor: yellow  } } },
+              { text: 'Gold', props: { style: { border: '1px solid', backgroundColor: yellow } } },
+              { text: 'Jewelry', props: { style: { border: '1px solid', backgroundColor: yellow } } },
+              { text: 'Oil', props: { style: { border: '1px solid', backgroundColor: yellow } } },
+              { text: 'Opium', props: { style: { border: '1px solid', backgroundColor: yellow } } },
+              { text: 'Ore', props: { style: { border: '1px solid', backgroundColor: yellow } } },
+              { text: 'Rice', props: { style: { border: '1px solid', backgroundColor: yellow } } },
+              { text: 'Spices', props: { style: { border: '1px solid', backgroundColor: yellow } } },
+              { text: 'Tea', props: { style: { border: '1px solid', backgroundColor: yellow } } },
             ],
             [
               { text: 'Chennai', props: { style: { border: '1px solid' } } },
