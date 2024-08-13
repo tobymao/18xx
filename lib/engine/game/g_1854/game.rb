@@ -69,7 +69,7 @@ module Engine
           %w[66 69 72p 75 78 81 85 89S],
           %w[61y 64 67p 70 73 76y 79y],
           %w[56y 59y 62 65 68y 71y],
-          [nil] + %w[54y 57y 60y 63y],
+          [''] + %w[54y 57y 60y 63y],
 ].freeze
 
         MARKET_TEXT = Base::MARKET_TEXT.merge(share_split: 'Share split when first entered').freeze

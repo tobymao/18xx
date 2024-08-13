@@ -377,17 +377,21 @@ module View
             spacing = num > 1 ? (HEX_RIGHT_TOKEN_POS - HEX_LEFT_TOKEN_POS) / (num - 1) : 0
             tokens = corporations.reverse.map.with_index { |corp, index| token_svgs(corp, index, num, spacing) }
 
-            market_hexes << h(:g, { attrs: { transform: "translate(#{col_spacing * (c_index + c_offset)}, #{row_spacing * (r_index - 0.25)})" } }, [
-                              h(:polygon,
-                                {
-                                  attrs: {
-                                    transform: 'rotate(30)',
-                                    points: Lib::Hex.points(scale: size / 100),
-                                  }.merge(cell_style_hex(price.types)),
-                                }),
-                              *tokens,
-                              h(:text, text_props, price.price),
-                            ])
+            market_hexes <<
+              h(:g,
+                {
+                  attrs: {
+                    transform: "translate(#{col_spacing * (c_index + c_offset)}, #{row_spacing * (r_index - 0.25)})",
+                  },
+                },
+                [h(:polygon,
+                   {
+                     attrs: {
+                       transform: 'rotate(30)', points: Lib::Hex.points(scale: size / 100)
+                     }.merge(cell_style_hex(price.types)),
+                   }),
+                 *tokens,
+                 h(:text, text_props, price.price)])
           end
         end
 
