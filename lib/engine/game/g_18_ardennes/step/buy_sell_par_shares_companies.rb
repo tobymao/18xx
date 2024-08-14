@@ -13,6 +13,7 @@ module Engine
           def actions(entity)
             return [] unless entity == current_entity
             return [] if bought?
+            return [] if entity.bankrupt
             return %w[bankrupt] if @game.bankrupt?(entity)
             return limit_actions(entity) if must_sell?(entity)
             return par_actions(entity) if @game.under_obligation?(entity)
@@ -41,14 +42,23 @@ module Engine
           end
 
           def bankruptcy_description(player)
-            concession = player.companies
-                               .select { |c| c.type == :concession }
-                               .min { |c| @game.min_concession_cost(c) }
+            if !under_limit?(player) &&
+               !can_sell_any?(player) &&
+               !can_sell_any_companies?(player)
 
-            "#{player.name} needs at least " \
-              "#{@game.format_currency(@game.min_concession_cost(concession))} " \
-              "to start #{concession.name} but can only raise " \
-              "#{@game.format_currency(@game.liquidity(player))}."
+              "#{player.name} is at certificate and does not have anything " \
+                'that can be sold to free up the certificate slot needed to ' \
+                'start a public company.'
+            else
+              concession = player.companies
+                                 .select { |c| c.type == :concession }
+                                 .min { |c| @game.min_concession_cost(c) }
+
+              "#{player.name} needs at least " \
+                "#{@game.format_currency(@game.min_concession_cost(concession))} " \
+                "to start #{concession.name} but can only raise " \
+                "#{@game.format_currency(@game.liquidity(player))}."
+            end
           end
 
           def sellable_companies(entity)
@@ -132,16 +142,12 @@ module Engine
           end
 
           # Corporations whose cards are visible in the stock round.
-          # Hide public companies whose concessions have not yet been auctioned,
-          # and show the current player's minor companies.
+          # Hide public companies whose concessions have not yet been auctioned.
           def visible_corporations
-            minors = @game.minor_corporations.select do |corporation|
-              corporation.owner == current_entity
-            end
             majors = @game.sorted_corporations.select do |corporation|
               corporation.floated || !corporation.par_via_exchange.owner.nil?
             end
-            majors.sort + minors.sort
+            majors.sort + @game.minor_corporations.sort
           end
 
           # Valid par prices for public companies.
@@ -171,18 +177,7 @@ module Engine
           end
 
           def process_bankrupt(action)
-            player = action.entity
-
-            # All shares and the GL go to the bank pool.
-            # Concessions can be purchased by another player in a future auction.
-            sell_bankrupt_shares(player)
-            player.companies.each do |company|
-              company.owner = company.type == :minor ? @game.bank : nil
-            end
-            player.companies.clear
-
-            player.spend(player.cash, @game.bank) if player.cash.positive?
-            @game.declare_bankrupt(player)
+            @game.declare_bankrupt(action.entity)
           end
 
           def log_skip(entity)
@@ -199,10 +194,9 @@ module Engine
             actions << 'par' if under_limit?(entity)
             actions << 'sell_shares' if can_sell_any?(entity)
             actions << 'sell_company' if can_sell_any_companies?(entity)
-            # TODO: handle this properly.
-            # Maybe stop the player from bidding for a major if they are at
-            # certificate limit and do not have any sellable shares.
-            raise GameError, 'Cannot sell shares or start major company' if actions.empty?
+            # The player is at certificate limit and they do not have any
+            # sellable shares.
+            actions << 'bankrupt' if actions.empty?
 
             actions
           end
@@ -213,17 +207,6 @@ module Engine
               %w[sell_shares sell_company]
             else
               %w[sell_shares]
-            end
-          end
-
-          def sell_bankrupt_shares(player)
-            @log << "-- #{player.name} goes bankrupt and sells remaining shares --"
-
-            player.shares_by_corporation.each do |corporation, shares|
-              next if shares.empty?
-
-              bundles = @game.bundles_for_corporation(player, corporation)
-              @game.share_pool.sell_shares(bundles.last)
             end
           end
 

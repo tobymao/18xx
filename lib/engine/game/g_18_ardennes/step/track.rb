@@ -9,6 +9,12 @@ module Engine
         class Track < Engine::Step::Track
           MINOR_TILE_COLORS = %w[yellow green].freeze
 
+          def actions(entity)
+            return [] if entity.receivership?
+
+            super
+          end
+
           def potential_tiles(entity, hex)
             colors = @game.phase.tiles
             colors &= MINOR_TILE_COLORS if entity.type == :minor

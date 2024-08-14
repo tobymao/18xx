@@ -61,8 +61,8 @@ GEM
     require_all (3.0.0)
     rerun (0.14.0)
       listen (~> 3.0)
-    rexml (3.2.8)
-      strscan (>= 3.0.9)
+    rexml (3.3.3)
+      strscan
     roda (3.55.0)
       rack
     rspec (3.11.0)

@@ -8,6 +8,8 @@ module Engine
       module Step
         class BuyTrain < Engine::Step::BuyTrain
           def actions(entity)
+            return [] if entity.receivership?
+
             actions = super
             actions << 'sell_company' if actions.include?('sell_shares') &&
                                          can_sell_any_companies?(entity)
@@ -28,6 +30,10 @@ module Engine
             player.companies.delete(company)
             @game.bank.spend(price, player)
             @log << "#{player.name} sells #{company.name} to bank for #{@game.format_currency(price)}"
+          end
+
+          def log_skip(entity)
+            super unless entity.receivership?
           end
 
           private
