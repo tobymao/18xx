@@ -19,7 +19,7 @@ module View
         <p>Steam Over Holland, 18 India, and 18Uruguay are in alpha.</p>
 
         <p>The official variants for 1849 are now available.</p>
-        
+
         <p>18 SJ is now in production.</p>
 
         <p>Report bugs and make feature requests <a href='https://github.com/tobymao/18xx/issues'>on GitHub</a>.</p>
