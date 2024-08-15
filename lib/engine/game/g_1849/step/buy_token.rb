@@ -62,7 +62,6 @@ module Engine
           end
 
           def can_replace_token?(entity, token)
-            print token
             return false unless token
 
             other_corporation = token.corporation
