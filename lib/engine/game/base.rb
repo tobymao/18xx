@@ -221,6 +221,10 @@ module Engine
 
       # :after_last_to_act -- player after the last to act goes first. Order remains the same.
       # :first_to_pass -- players ordered by when they first started passing.
+      # :most_cash -- players ordered from most cash on hand to least.
+      # :least_cash -- players ordered from least cash on hand to most.
+      # :next_clockwise -- priority passes from the player who started this SR to the next player in player order.
+      # :most_cash_keep_order -- player with most cash gets priority, absolutre turn order remains unchanged.
       NEXT_SR_PLAYER_ORDER = :after_last_to_act
 
       # do tile reservations completely block other companies?
@@ -2891,6 +2895,10 @@ module Engine
                            @players.sort_by { |p| [p.cash, @players.index(p)] }.reverse
                          when :least_cash
                            @players.sort_by { |p| [p.cash, @players.index(p)] }
+                         when :next_clockwise
+                           @players.rotate
+                         when :most_cash_keep_order
+                           @players.rotate(@players.index(@players.max_by(&:cash)))
                          else
                            []
                          end
@@ -2918,6 +2926,11 @@ module Engine
         when :least_cash
           current_order = @players.dup
           @players.sort_by! { |p| [p.cash, current_order.index(p)] }
+        when :next_clockwise
+          @players.rotate!
+        when :most_cash_keep_order
+          player_with_most_cash = @players.max_by(&:cash)
+          @players.rotate!(@players.index(player_with_most_cash))
         end
         return if silent
 
