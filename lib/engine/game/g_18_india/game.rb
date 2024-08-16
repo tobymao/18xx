@@ -1273,19 +1273,19 @@ module Engine
               { text: 'Connection Bonus', props: { attrs: { colspan: 10 }, style: { **cell_style, backgroundColor: green } } },
             ],
             [
-              { text: 'Delhi (G8) ⮂ Kocchi (G36)', props: { style: cell_style } },
+              { text: 'Delhi (G8) <=> Kocchi (G36)', props: { style: cell_style } },
               { text: format_currency(100), props: { style: cell_style } },
             ],
             [
-              { text: 'Karachi (A16) ⮂ Chennai (K30)', props: { style: cell_style } },
+              { text: 'Karachi (A16) <=> Chennai (K30)', props: { style: cell_style } },
               { text: format_currency(80), props: { style: cell_style } },
             ],
             [
-              { text: 'Lahore (D3) ⮂ Kolkata (P17)', props: { style: cell_style } },
+              { text: 'Lahore (D3) <=> Kolkata (P17)', props: { style: cell_style } },
               { text: format_currency(80), props: { style: cell_style } },
             ],
             [
-              { text: 'Nepal (M10) ⮂ Mumbai (D23)', props: { style: cell_style } },
+              { text: 'Nepal (M10) <=> Mumbai (D23)', props: { style: cell_style } },
               { text: format_currency(70), props: { style: cell_style } },
             ],
           ]
