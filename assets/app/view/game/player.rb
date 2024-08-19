@@ -106,7 +106,7 @@ module View
           ]),
         ]
 
-        if @game.active_step&.current_actions&.include?('bid')
+        if @game.active_step&.current_actions&.include?('bid') || @game.active_step&.auctioneer?
           committed = @game.active_step.committed_cash(@player, @show_hidden)
           if committed.positive?
             trs.concat([
@@ -190,7 +190,8 @@ module View
         order = @game.next_sr_player_order
         trs << render_priority_deal(priority_props) if @game.show_priority_deal_player?(order) &&
                                                        @player == @game.priority_deal_player
-        trs << render_next_sr_position(priority_props) if %i[first_to_pass most_cash least_cash].include?(order) &&
+        trs << render_next_sr_position(priority_props) if %i[first_to_pass most_cash least_cash next_clockwise
+                                                             max_cash_keep_order].include?(order) &&
                                                           @game.next_sr_position(@player)
 
         h(:table, trs)

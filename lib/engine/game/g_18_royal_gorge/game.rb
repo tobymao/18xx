@@ -566,7 +566,7 @@ module Engine
           @gold_shipped = 0
           update_gold_corp_cash!
 
-          depot.export!
+          depot.export! unless @depot.upcoming.empty?
         end
 
         def handle_metal_payout(entity)

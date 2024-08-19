@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="-10 -10 20 20">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="-10 -10 20 20">
 <circle cx="0" cy="0" r="9" fill="white"/>
 <rect id="square" x="-5" y="-5" width="10" height="10" fill="black"/>
-<use href="#square" transform="rotate(45)"/>
+<use xlink:href="#square" transform="rotate(45)"/>
 <circle cx="0" cy="0" r="4" fill="white"/>
 </svg>

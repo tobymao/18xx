@@ -118,6 +118,7 @@ module Engine
                               route: params['route'],
                               format: params['format'],
                               boom: params['boom'],
+                              outline: params['outline'],
                               loc: params['loc'])
         cache << city
         city

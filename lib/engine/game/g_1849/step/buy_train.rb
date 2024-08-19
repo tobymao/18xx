@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative '../../../step/base'
 require_relative '../../../step/buy_train'
 
 module Engine
@@ -33,6 +34,15 @@ module Engine
             return false if @round.current_operator == corporation && corporation.operating_history.size < 2
 
             super
+          end
+
+          def buyable_trains(entity)
+            # Cannot buy E-train without E-token
+            trains_to_buy = super
+
+            trains_to_buy = trains_to_buy.reject { |t| t.name == 'E' } unless @game.e_token?(entity)
+
+            trains_to_buy.uniq
           end
         end
       end

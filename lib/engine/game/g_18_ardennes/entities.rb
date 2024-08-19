@@ -369,6 +369,10 @@ module Engine
           @companies.concat(init_concessions)
         end
 
+        def setup_icons
+          @hexes.map(&:tile).flat_map(&:cities).each { |c| add_slot_icons(c) }
+        end
+
         def concession_companies
           companies.select { |company| company.type == :concession }
         end
@@ -434,6 +438,7 @@ module Engine
 
         def exchange_corporations(exchange_ability)
           minor = exchange_ability.owner
+          return [] if minor.receivership?
           return [] if minor.share_price.price.zero?
           return [] if under_obligation?(minor.owner)
 
@@ -445,9 +450,17 @@ module Engine
           end
         end
 
+        def unowned_purchasable_companies
+          minor_companies.select { |company| company.owner == bank }
+        end
+
         def buyable_bank_owned_companies
           # Do not show the GL after a corporation grows up.
           @round.operating? ? [] : super
+        end
+
+        def company_sale_price(company)
+          company.value
         end
 
         # Has the player won any auctions for public companies in the
@@ -457,6 +470,41 @@ module Engine
           return false unless entity.player?
 
           entity.companies.any? { |company| company.type == :concession }
+        end
+
+        def place_home_token(corporation)
+          city = cities.find { |c| c.reserved_by?(corporation) }
+          token = corporation.find_token_by_type
+          super
+          change_token_icon(city, token, corporation)
+        end
+
+        # If no public companies have yet been started then there are
+        # geographical restrictions on which minor companies can be used to
+        # start a public company.
+        def restricted?
+          major_corporations.none?(&:floated?) && concession_companies.none?(&:owner)
+        end
+
+        # Set a minor company's token logo to show which public companies can be
+        # started from the city it is in.
+        def change_token_icon(city, token, minor)
+          return unless restricted?
+          return if minor.type != :minor && minor.type != :dummy
+
+          majors = associated_majors(city)
+          return if majors.empty? # Basel
+
+          token.logo = logo_path(majors, minor.id)
+          token.simple_logo = logo_path(majors, minor.id)
+        end
+
+        # Set a minor company's token logo back to its default logo.
+        def reset_token_icon(token)
+          return unless token
+
+          token.logo = token.corporation.logo
+          token.simple_logo = token.corporation.simple_logo
         end
 
         private
@@ -482,6 +530,18 @@ module Engine
           end
         end
 
+        def status_array(corporation)
+          return if corporation.floated?
+          return unless (minor = @pledged_minors[corporation])
+
+          player = minor.presidents_share.owner
+          verb = @round.auction? ? 'bid' : 'won the right'
+          [
+            "#{player.name} has #{verb} to start this company using " \
+            "minor #{minor.id}.",
+          ]
+        end
+
         # The minimum amount of cash needed to start one of the corporations
         # that the player is under obligation for.
         def cash_needed(player)
@@ -496,6 +556,47 @@ module Engine
           @lowest_major_par ||= stock_market.par_prices.reverse.find do |pp|
             pp.types.include?(:par_2)
           end
+        end
+
+        # Adds slot icons to empty city slots, showing which public companies
+        # can be started using a token in this city.
+        def add_slot_icons(city)
+          return unless restricted?
+
+          city.tokens.each_with_index do |token, ix|
+            next if token || city.reservations[ix]
+
+            majors = associated_majors(city)
+            next if majors.empty? # Basel does not have an associated public companies
+
+            path = "18_ardennes/#{majors.join('+')}"
+            city.slot_icons[ix] = Engine::Part::Icon.new(path)
+          end
+        end
+
+        # Finds which public companies can be started from a minor company
+        # that has a token in this city.
+        # @param city [City] The city with a minor company's token.
+        # @return [Array<String>] IDs of the public companies that could be
+        # started by a minor company with a token in this city.
+        def associated_majors(city)
+          coords = city.hex.coordinates
+          if coords == PARIS_HEX
+            Array(PARIS_CITIES.key(city.tile.cities.index(city)))
+          else
+            PUBLIC_COMPANY_HEXES.select { |_, hexes| hexes.include?(coords) }.keys
+          end
+        end
+
+        # Returns the path to a token logo indicating which public companies
+        # can be started in a city. If minor is not nil, then this logo also
+        # has the minor company number on it.
+        # @param majors [Array<String>] The IDs of the major companies.
+        # @param minor [String] The ID of the minor company (optional).
+        # @return [String] Path to the logo file.
+        def logo_path(majors, minor = nil)
+          minor += '-' if minor
+          "/logos/18_ardennes/#{minor}#{majors.join('+')}.svg"
         end
       end
     end

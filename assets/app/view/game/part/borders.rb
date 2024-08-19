@@ -125,7 +125,7 @@ module View
 
           action = Engine::Action::RemoveBorder.new(
             current_entity,
-            hex: border.hex,
+            hex: @tile.hex,
             edge: border.edge,
           )
           process_action(action)

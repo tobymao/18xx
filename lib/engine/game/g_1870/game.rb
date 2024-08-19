@@ -34,9 +34,23 @@ module Engine
           4 => { 10 => 16, 9 => 14 },
           5 => { 10 => 13, 9 => 11 },
           6 => { 10 => 11, 9 => 9 },
+          7 => { 10 => 9, 9 => 7 },
         }.freeze
 
-        STARTING_CASH = { 2 => 1050, 3 => 700, 4 => 525, 5 => 420, 6 => 350 }.freeze
+        ORIG_CERT_LIMIT = {
+          2 => { 10 => 28, 9 => 24, 8 => 21 },
+          3 => { 10 => 20, 9 => 17, 8 => 15 },
+          4 => { 10 => 16, 9 => 14, 8 => 12 },
+          5 => { 10 => 13, 9 => 11, 8 => 9 },
+          6 => { 10 => 11, 9 => 9, 8 => 8 },
+          7 => { 10 => 9, 9 => 7, 8 => 6 },
+        }.freeze
+
+        def game_cert_limit
+          original_rules? ? self.class::ORIG_CERT_LIMIT : self.class::CERT_LIMIT
+        end
+
+        STARTING_CASH = { 2 => 1050, 3 => 700, 4 => 525, 5 => 420, 6 => 350, 7 => 300 }.freeze
 
         CAPITALIZATION = :full
 
@@ -56,22 +70,22 @@ module Engine
           %w[0c 0c 0c 10b 20b 30b 40o],
         ].freeze
 
-        VARIANT_MARKET = [
-          %w[64y 68 72 76 82 90 100p 110 120 140 160 180 200 225 250 275 300 325 350 375 400e],
-          %w[60y 64y 68 72 76 82 90p 100 110 120 140 160 180 200 225 250 275 300 325 350 375],
-          %w[55y 60y 64y 68 72 76 82p 90 100 110 120 140 160 180 200 225 250i 275i 300i 325i 350i],
-          %w[50o 55y 60y 64y 68 72 76p 82 90 100 110 120 140 160i 180i 200i 225i 250i 275i 300i 325i],
-          %w[40b 50o 55y 60y 64 68 72p 76 82 90 100 110i 120i 140i 160i 180i],
-          %w[30b 40o 50o 55y 60y 64 68p 72 76 82 90i 100i 110i],
-          %w[20b 30b 40o 50o 55y 60y 64 68 72 76i 82i],
-          %w[10b 20b 30b 40o 50y 55y 60y 64 68i 72i],
-          %w[0c 10b 20b 30b 40o 50y 55y 60i 64i],
-          %w[0c 0c 10b 20b 30b 40o 50y],
-          %w[0c 0c 0c 10b 20b 30b 40o],
-        ].freeze
-
         STANDARD_GAME_END_CHECK = { bankrupt: :immediate, bank: :full_or }.freeze
         VARIANT_GAME_END_CHECK = { bankrupt: :immediate, bank: :full_or, stock_market: :immediate }.freeze
+
+        OPTION_TILES_REMOVE_ORIGINAL_GAME = %w[
+          4-0 4-1 7-0 7-1 8-0 8-1 9-0 9-1 9-2 16-0 17-0 18-0 19-0 20-0 25-0
+          25-1 26-0 27-0 28-0 29-0 141-0 142-0 40-0 70-0 145-0 146-0 147-0
+        ].freeze
+
+        def optional_tiles
+          return unless original_tiles?
+
+          OPTION_TILES_REMOVE_ORIGINAL_GAME.each do |ot|
+            @tiles.reject! { |t| t.id == ot }
+            @all_tiles.reject! { |t| t.id == ot }
+          end
+        end
 
         def game_end_check_values
           @optional_rules&.include?(:finish_on_400) ? self.class::VARIANT_GAME_END_CHECK : self.class::STANDARD_GAME_END_CHECK
@@ -327,13 +341,28 @@ module Engine
         end
 
         def init_stock_market
-          if @optional_rules&.include?(:finish_on_400)
-            G1870::StockMarket.new(self.class::VARIANT_MARKET, self.class::CERT_LIMIT_TYPES,
-                                   multiple_buy_types: self.class::MULTIPLE_BUY_TYPES)
-          else
-            G1870::StockMarket.new(self.class::MARKET, self.class::CERT_LIMIT_TYPES,
-                                   multiple_buy_types: self.class::MULTIPLE_BUY_TYPES)
+          G1870::StockMarket.new(market_values, self.class::CERT_LIMIT_TYPES,
+                                 multiple_buy_types: self.class::MULTIPLE_BUY_TYPES)
+        end
+
+        def market_values
+          modified_market = MARKET.dup
+
+          if finish_on_400?
+            first_row_modified = modified_market[0].dup
+            first_row_modified[-1] = '400e'
+            modified_market[0] = first_row_modified
           end
+
+          if original_market?
+            { 4 => { 0 => '40o' }, 6 => { 5 => '60' }, 7 => { 6 => '60' } }.each do |row_index, changes|
+              row_modified = modified_market[row_index].dup
+              changes.each { |position, value| row_modified[position] = value }
+              modified_market[row_index] = row_modified
+            end
+          end
+
+          modified_market
         end
 
         def ipo_reserved_name(_entity = nil)
@@ -461,7 +490,7 @@ module Engine
         end
 
         def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil, movement: nil)
-          @sell_queue << [bundle, bundle.corporation.owner]
+          @sell_queue << [bundle, bundle.corporation.owner, bundle.owner] if bundle.corporation.ipoed
 
           @share_pool.sell_shares(bundle)
         end
@@ -518,8 +547,32 @@ module Engine
           @reissued[corporation]
         end
 
+        def finish_on_400?
+          @finish_on_400 ||= @optional_rules&.include?(:finish_on_400)
+        end
+
+        def original_rules?
+          @original_rules ||= @optional_rules&.include?(:original_rules)
+        end
+
         def station_wars?
-          @station_wars ||= @optional_rules&.include?(:station_wars)
+          @optional_rules&.include?(:original_rules) || @optional_rules&.include?(:station_wars)
+        end
+
+        def original_tiles?
+          @optional_rules&.include?(:original_rules) || @optional_rules&.include?(:original_tiles)
+        end
+
+        def max_reissue_200?
+          @optional_rules&.include?(:original_rules) || @optional_rules&.include?(:max_reissue_200)
+        end
+
+        def can_protect_if_sold?
+          @optional_rules&.include?(:original_rules) || @optional_rules&.include?(:can_protect_if_sold)
+        end
+
+        def original_market?
+          @optional_rules&.include?(:original_rules) || @optional_rules&.include?(:original_market)
         end
 
         # allows implementation of diesels variant

@@ -341,17 +341,18 @@ module View
 
       def grid_hex
         size = 40
+        col_spacing = (size * Math.sqrt(3)).round(2)
+        row_spacing = (size * 3 / 2).round(2)
+        num_rows = @game.stock_market.market.size
+        max_cols = @game.stock_market.market.map.with_index { |r, i| r.size + ((num_rows - (i + 1)) / 2.0) }.max
 
         props = {
           attrs: {
             id: 'hex-market',
-            width: '1600px',
-            height: '600px',
+            width: (col_spacing * max_cols).to_s,
+            height: (row_spacing * (num_rows + 0.5)).to_s,
           },
         }
-
-        col_spacing = (size * Math.sqrt(3) / 2).round(2)
-        row_spacing = (size * 3 / 2).round(2)
 
         text_props = {
           attrs: {
@@ -367,6 +368,7 @@ module View
 
         market_hexes = []
         @game.stock_market.market.each_with_index do |row, r_index|
+          c_offset = (num_rows - r_index) / 2.0
           row.each_with_index do |price, c_index|
             next if price.nil?
 
@@ -375,25 +377,25 @@ module View
             spacing = num > 1 ? (HEX_RIGHT_TOKEN_POS - HEX_LEFT_TOKEN_POS) / (num - 1) : 0
             tokens = corporations.reverse.map.with_index { |corp, index| token_svgs(corp, index, num, spacing) }
 
-            market_hexes << h(:g, { attrs: { transform: "translate(#{col_spacing * c_index},#{row_spacing * r_index})" } }, [
-                              h(:polygon,
-                                {
-                                  attrs: {
-                                    transform: 'rotate(30)',
-                                    points: Lib::Hex.points(scale: size / 100),
-                                  }.merge(cell_style_hex(price.types)),
-                                }),
-                              *tokens,
-                              h(:text, text_props, price.price),
-                            ])
+            market_hexes <<
+              h(:g,
+                {
+                  attrs: {
+                    transform: "translate(#{col_spacing * (c_index + c_offset)}, #{row_spacing * (r_index - 0.25)})",
+                  },
+                },
+                [h(:polygon,
+                   {
+                     attrs: {
+                       transform: 'rotate(30)', points: Lib::Hex.points(scale: size / 100)
+                     }.merge(cell_style_hex(price.types)),
+                   }),
+                 *tokens,
+                 h(:text, text_props, price.price)])
           end
         end
 
-        [h(:div, [
-          h(:svg, props, [
-            h(:g, { attrs: { transform: "translate(#{col_border},#{row_border})" } }, market_hexes),
-          ]),
-        ])]
+        [h(:svg, props, [h(:g, { attrs: { transform: "translate(#{col_border},#{row_border})" } }, market_hexes)])]
       end
 
       def grid_2d

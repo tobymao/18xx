@@ -123,7 +123,12 @@ TEST_CASES = [
      ['Convert',
       'Merge',
       'Pittsburgh, Shawmut and Northern Railroad',
-      'Corporations that can merge with J']]]],
+      'Corporations that can merge with J']],
+    [1502,
+     'stock',
+     ['Stock Round 7',
+      'Final phase was reached',
+      'buys a 10% share of Bess from the market for $165']]]],
   ['1817',
    16_852,
    [[889, 'cash_crisis', ['Random Guy owes the bank $294 and must raise cash if possible.']]]],
@@ -217,6 +222,12 @@ TEST_CASES = [
    [[939,
      'endgame',
      ['1841: Phase 8 - Operating Round 7.1 (of 3) - Game Over - Company hit max stock value']]]],
+  ['18NY',
+   108_746,
+   [[130,
+     'stock',
+     ['Stock Round 3',
+      '10 receives $110 in its Treasury']]]],
 ].freeze
 
 AUTO_ACTIONS_TEST_CASES = [

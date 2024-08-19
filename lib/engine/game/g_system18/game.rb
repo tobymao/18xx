@@ -521,10 +521,22 @@ module Engine
           COLOR_SEQUENCE.index(to.color) == (COLOR_SEQUENCE.index(from.color) + 1)
         end
 
+        def upgrade_ignore_num_cities(from)
+          return false unless respond_to?("map_#{map_name}_upgrade_ignore_num_cities")
+
+          send("map_#{map_name}_upgrade_ignore_num_cities", from)
+        end
+
         def or_round_finished
           return unless respond_to?("map_#{map_name}_or_round_finished")
 
           send("map_#{map_name}_or_round_finished")
+        end
+
+        def rust_trains!(train, entity)
+          return super unless respond_to?("map#{map_name}_rust_trains!")
+
+          send("map_#{map_name}_rust_trains!", train, entity)
         end
 
         def close_corporation(corporation, quiet: false)
@@ -602,6 +614,16 @@ module Engine
           return revenue_str unless respond_to?("map_#{map_name}_extra_revenue_str")
 
           revenue_str + send("map_#{map_name}_extra_revenue_str", route)
+        end
+
+        def timeline
+          return super unless respond_to?("map_#{map_name}_timeline")
+
+          send("map_#{map_name}_timeline")
+        end
+
+        def ipo_name(_corp)
+          game_capitalization == :incremental ? 'Treasury' : 'IPO'
         end
       end
     end

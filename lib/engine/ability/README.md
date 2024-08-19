@@ -1,10 +1,10 @@
 # Abilities
 
-This page documents the different ability types and the attributes which may be 
+This page documents the different ability types and the attributes which may be
 set for each type.
 
-Abilities are mainly used to describe private company powers, but may also apply 
-to other entities such as corporations. Examples of how their use can be seen in 
+Abilities are mainly used to describe private company powers, but may also apply
+to other entities such as corporations. Examples of how their use can be seen in
 the [game configuration directory](../config/game).
 
 ## Generic attributes
@@ -38,12 +38,12 @@ These attributes may be set for all ability types.
     - `buying_train`: train buying step.
     - `has_train`: when the owning corporation owns at least one train.
     - `never`: use with `close` abilities to prevent a company from closing.
-    - `operated`: when the owning corporation has finished the dividend step 
+    - `operated`: when the owning corporation has finished the dividend step
       on their first turn.
     - `or_between_turns`: usable at the start of any corporation's OR turn,
       before that corporation has acted.
     - `owning_corp_or_turn`: usable at any point during the owning corporation's OR turn.
-    - `owning_player_or_turn`: usable at any point during any of the owning player's 
+    - `owning_player_or_turn`: usable at any point during any of the owning player's
       OR turns.
     - `owning_player_sr_turn`: usable at any point during any of the owning player's
       SR turns.
@@ -78,8 +78,8 @@ When a company with this ability is sold to a corporation, the company is
 automatically assigned to the new owning corporation.
 
 - `closed_when_used_up`: This ability has a count that is decreased each time
- it is used. If this attribute is true the private is closed when count reaches 
- zero, if false the private remains open but the discount can no longer be used. 
+ it is used. If this attribute is true the private is closed when count reaches
+ zero, if false the private remains open but the discount can no longer be used.
  Default false.
 
 With this configuration, the automatic assignment will happen and the company
@@ -157,7 +157,7 @@ during a step that allows exchange.
 - `corporations`: An array with corporation names, whose share may be exchanged.
   Use a simple `"any"` (no array) to allow for any corporation. Use a simple
   `"ipoed"` (no array) to allow from any company that has been IPOed.
-- `from`: Where the share may be take from, either `"ipo"`, `"market"`, or an 
+- `from`: Where the share may be take from, either `"ipo"`, `"market"`, or an
   array containing both.
 
 ## hex_bonus
@@ -189,7 +189,7 @@ Reserve a token slot.
 Take a station token off the board and place back on the charter
 in the most expensive open location.
 
-- `reimburse`: If true, the corporation is reimbursed the token cost of the 
+- `reimburse`: If true, the corporation is reimbursed the token cost of the
   location where the token is placed.
 
 ## revenue_change
@@ -239,7 +239,7 @@ Discount the cost for laying tiles in the specified terrain type.
 - `exact_match`: Tile may only contain specified terrain type. Default true.
 - `hexes`: If not specified, all applicable hexes qualifies for
   the discount. If specified, only specified hexes qualify.
-- `terrain`: If set, type of terrain for which discount is provided, otherwise 
+- `terrain`: If set, type of terrain for which discount is provided, otherwise
   the discount is off the total cost.
 
 ## tile_income
@@ -247,7 +247,7 @@ Discount the cost for laying tiles in the specified terrain type.
 Generate extra revenue when tiles are laid on specified terrain types.
 
 - `income`: Extra income per tile lay.
-- `owner_only`: Does this income apply to any tile lay (1882 Tresle Bridge) or 
+- `owner_only`: Does this income apply to any tile lay (1882 Tresle Bridge) or
   just the owner (1817 Mountain Engineers).
 - `terrain`: Terrain type for this ability.
 
@@ -256,19 +256,19 @@ Generate extra revenue when tiles are laid on specified terrain types.
 Lay or upgrade one or more track tiles without connectivity, in addition to
 normal tile lay actions.
 
-- `blocks`: If true and `when` is `sold`, then the step `TrackLayWhenCompanySold` 
+- `blocks`: If true and `when` is `sold`, then the step `TrackLayWhenCompanySold`
   will require a tile lay. Default false.
 - `closed_when_used_up`: This ability has a count that is decreased each time it
-  is used. If this attribute is true the private is closed when count reaches 
-  zero, if false the private remains open but the discount can no longer be used. 
+  is used. If this attribute is true the private is closed when count reaches
+  zero, if false the private remains open but the discount can no longer be used.
   Default false.
-- `connect`: If true, and `count` is greater than 1, tiles laid must connect to 
+- `connect`: If true, and `count` is greater than 1, tiles laid must connect to
   each other. Default true unless `count_per_or` is used, in which case `connect`
   isn't checked by default.
-- `consume_tile_lay`: If true, using this private counts as a corporations tile 
-  lay and must follow lay/upgrade rules. Upgrade's also count towards the 
+- `consume_tile_lay`: If true, using this private counts as a corporations tile
+  lay and must follow lay/upgrade rules. Upgrade's also count towards the
   corporations 'upgrade' lays. Default false.
-- `count_per_or`: used if private ability limits the amount of tile lays that 
+- `count_per_or`: used if private ability limits the amount of tile lays that
   you can use per OR.
 - `cost`: Cost to use the ability.
 - `discount`: Discount the cost of laying the tile by the given
@@ -277,8 +277,8 @@ normal tile lay actions.
 - `hexes`: Array of hex coordinates where tiles may be laid.
 - `lay_count` and `upgrade_count` - Use as an alternative to `count`. `lay_count`
   is the number of yellow tile lays, and `upgrade_count` is the number of green
-  or higher tile upgrades. When these are set, the ability cannot be used for 
-  both new tile lays and upgrades. With these set, you need to make sure the 
+  or higher tile upgrades. When these are set, the ability cannot be used for
+  both new tile lays and upgrades. With these set, you need to make sure the
   `ability.use!` call includes an `upgrade` kwarg.
 - `must_lay_all`: If true and `count` is greater than 1 and `must_lay_together`
   is true, all the tile lays must be used; if false, then some tile lays may be
@@ -289,7 +289,7 @@ normal tile lay actions.
 - `reachable`: If true, when tile laid, a check is done if one of the
   controlling corporation's station tokens are reachable; if not a game
   error is triggered. Default false.
-- `special`: If true, do not check that the tile upgrade preserves labels and 
+- `special`: If true, do not check that the tile upgrade preserves labels and
   city count. Default true.
 - `tiles`: Array of tile numbers which may be laid.
 
@@ -312,16 +312,16 @@ Modified station token placement.
 - `city`: Index of the city on the hex where this ability may be used, if
   multiple cities are there.
 - `connected`: If true, when token placed, a check is done if the desired token
-  slot is connected by track with another city that has a token of the 
+  slot is connected by track with another city that has a token of the
   corporation; if not a game error is triggered. Default false.
 - `discount`: ratio discount from the normal price, e.g., `0.25` takes 25% off
   the token price.
 - `extra_action`: If true, this ability may be used in addition to the turn's
   normal token placement step. Default false.
 - `extra_slot`: Simlar to `cheater` except this token does not take a slot -
-  When `cheater` is used, when the city gets an extra city slot the 'cheater' 
+  When `cheater` is used, when the city gets an extra city slot the 'cheater'
   token goes into the newly opened slot. If `extra_slot` is used, when the city
-  gets an extra token slot, the new token slot is open - the extra token does 
+  gets an extra token slot, the new token slot is open - the extra token does
   not consume it. This also means that an `extra_slot` token lay in an city with
   an open slot does not use up the open slot.
 - `from_owner`: If true, this ability uses a token from the owning corporation's
@@ -337,6 +337,8 @@ Modified station token placement.
   placed in a location that the ability is allowed to use. Default false.
 - `teleport_price`: If present, this ability may be used to place a
   token without connectivity, for the given price.
+- `same_hex_allowed`: If `true`, a token may be placed on a hex where the owning
+  corporation already has a token in a different city.
 
 ## train_buy
 
@@ -347,21 +349,21 @@ Modify train buy in some way.
 
 ## train_discount
 
-Discount the train buy cost. The `count` attribute specify how many times the 
+Discount the train buy cost. The `count` attribute specify how many times the
 discount can be used.
 
 - `closed_when_used_up`: This ability has a count that is decreased each time it
-  is used. If this attribute is true the private is closed when count reaches 
+  is used. If this attribute is true the private is closed when count reaches
   zero, if false the private remains open but the discount can no longer be used.
   Default false.
-- `discount`: Discount amount. If > 1 this is an absolute amount. 
+- `discount`: Discount amount. If > 1 this is an absolute amount.
   If 0 < amount < 1 it is the fraction, e.g. 0.75 is a 75% discount.
 - `trains`: An array of all train names that the discount applies to.
 
 ## train_limit
 
 Modify train limit in some way.
-For performance reasons, the supporting code needs to be added directly to the 
+For performance reasons, the supporting code needs to be added directly to the
 game class. See G18MEX#train_limit for an example.
 
 - `increase`: If positive, this will increase the train limit with this
