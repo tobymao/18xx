@@ -262,7 +262,7 @@ module Engine
             color: '#702f2b', # dark red/brown
           },
           {
-            name: 'Bengal Nagur Railway',
+            name: 'Bengal Nagpur Railway',
             sym: 'BNR',
             logo: '18_india/BNR',
             simple_logo: '18_india/BNR.alt',
