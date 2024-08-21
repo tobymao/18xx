@@ -71,6 +71,18 @@ module Engine
             capitalization: :incremental,
             tokens: [0, 20, 20],
           },
+          {
+            sym: 'SBB',
+            name: 'Schweizerische Bundesbahnen',
+            logo: '1858_switzerland/SBB',
+            color: 'red',
+            text_color: 'black',
+            floatable: false,
+            type: 'national',
+            hide_shares: true,
+            capitalization: :none,
+            tokens: [0, 0, 0, 0, 0],
+          },
         ].freeze
 
         COMPANIES = [
