@@ -422,7 +422,7 @@ module Engine
         end
 
         def emergency_issuable_bundles(entity)
-          return [] if @round.issued_shares[entity] || entity.cash >= @depot.min_depot_price
+          return [] if @round.issued_shares[entity] || entity.cash >= @depot.min_price(ability: nil)
 
           num_shares = [entity.num_player_shares, 5 - entity.num_market_shares].min
 
