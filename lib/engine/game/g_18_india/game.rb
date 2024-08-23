@@ -1233,7 +1233,7 @@ module Engine
 
         # Modifies the look of Part::largeIcons (controls the how they are decorated)
         def decorate_marker(_icon)
-          { color: '', shape: :hexagon }
+          { color: '', shape: :none }
         end
 
         # Map Legends for commodity and connection bounus
