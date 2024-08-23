@@ -20,7 +20,7 @@ module View
           # multiple large icons not supported
           @icons = @tile.icons.select(&:large)
           # Setting icon loc to 'hex' will place up to 3 large icons in an empty hex
-          @hex_icons = @icons.select { |icon| icon.loc == 'hex'}
+          @hex_icons = @icons.select { |icon| icon.loc == 'hex' }
         end
 
         def render_part
