@@ -87,9 +87,10 @@ module View
 
         def render_hex_icons
           radius = 34
-          delta = radius + 2
+          delta = radius + 4
+          y_shift = 8
           icon_x_pos = [0, -delta, delta]
-          icon_y_pos = [-delta, delta, delta]
+          icon_y_pos = [-(delta + y_shift), (delta - y_shift), (delta - y_shift)]
 
           children = @hex_icons.map.with_index do |icon, index|
             h(:image,
