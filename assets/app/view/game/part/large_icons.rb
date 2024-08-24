@@ -19,14 +19,9 @@ module View
         def load_from_tile
           # multiple large icons not supported
           @icons = @tile.icons.select(&:large)
-          # Setting icon loc to 'hex' will place up to 3 large icons in an empty hex
-          @hex_icons = @icons.select { |icon| icon.loc == 'hex' }
         end
 
         def render_part
-          # if loc is hex, use alternate render to support up to 3 large icons in an empty hex
-          return render_hex_icons unless @hex_icons.empty?
-
           children = @icons.map.with_index do |icon, index|
             # large icons can have player colors or shape decorations
             radius = LARGE_RADIUS
@@ -83,27 +78,6 @@ module View
           h(:g, { attrs: { transform: "#{rotation_for_layout} translate(#{-LARGE_RADIUS} #{-LARGE_RADIUS})" } }, [
               h(:g, { attrs: { transform: translate } }, children),
             ])
-        end
-
-        def render_hex_icons
-          radius = 34
-          delta = radius + 4
-          y_shift = 8
-          icon_x_pos = [0, -delta, delta]
-          icon_y_pos = [-(delta + y_shift), (delta - y_shift), (delta - y_shift)]
-
-          children = @hex_icons.map.with_index do |icon, index|
-            h(:image,
-              attrs: {
-                href: icon.image,
-                x: icon_x_pos[index] - radius,
-                y: icon_y_pos[index] - radius,
-                width: "#{radius * 2}px",
-                height: "#{radius * 2}px",
-              })
-          end
-
-          h(:g, children)
         end
       end
     end
