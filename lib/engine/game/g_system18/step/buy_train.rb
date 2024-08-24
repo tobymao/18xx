@@ -28,7 +28,7 @@ module Engine
                                                                                                         action.bundle)
 
             @emr_issue = true
-            @game.sell_shares_and_change_price(action.bundle, movement: :left_share)
+            @game.sell_shares_and_change_price(action.bundle, movement: :left_block)
           end
 
           def process_buy_train(action)
