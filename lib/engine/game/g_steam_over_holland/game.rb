@@ -422,11 +422,9 @@ module Engine
         end
 
         def emergency_issuable_bundles(entity)
-          return [] if @round.issued_shares[entity] || entity.cash >= @depot.min_price(entity, ability: nil)
+          return [] if @round.issued_shares[entity]
 
-          num_shares = [entity.num_player_shares, 5 - entity.num_market_shares].min
-
-          bundles_for_corporation(entity, entity).reject { |bundle| bundle.num_shares > num_shares }
+          super
         end
 
         def upgrades_to_correct_city_town?(from, to)
