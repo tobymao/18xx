@@ -369,7 +369,7 @@ module Engine
         def revenue_for(route, stops)
           revenue = super
 
-          abilities(route.corporation, :hex_bonus) do |ability|
+          Array(abilities(route.corporation, :hex_bonus)).each do |ability|
             revenue += ability.amount * stops.count { |s| ability.hexes.include?(s.hex.id) }
           end
 
