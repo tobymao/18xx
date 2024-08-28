@@ -12,6 +12,7 @@ require_relative 'map_twisting_tracks_customization'
 require_relative 'map_uk_limited_customization'
 require_relative 'map_china_rapid_development_customization'
 require_relative 'map_poland_customization'
+require_relative 'map_northern_italy_customization'
 
 module Engine
   module Game
@@ -28,6 +29,7 @@ module Engine
         include MapUKLimitedCustomization
         include MapChinaRapidDevelopmentCustomization
         include MapPolandCustomization
+        include MapNorthernItalyCustomization
 
         register_colors(red: '#d1232a',
                         orange: '#f58121',
