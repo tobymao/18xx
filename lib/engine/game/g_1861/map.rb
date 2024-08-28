@@ -151,7 +151,7 @@ module Engine
           'M9' => 'Simbirsk',
           'M19' => 'Astrakhan',
           'N10' => 'Samara',
-          'P0' => 'Perm',
+          'P2' => 'Perm',
           'P8' => 'Ufa',
           'Q3' => 'Ekaterinburg (₽80 if includes M)',
           'Q11' => 'Central Asia',
