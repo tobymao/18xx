@@ -10,7 +10,7 @@ module Engine
           def setup
             @game.private_closure_round = :in_progress
             # Close unsold privates and the H&G.
-            @game.companies.each do |company|
+            companies.each do |company|
               next if (company.sym != 'H&G') && (company.owner != @game.bank)
 
               @game.close_private(company)
@@ -31,7 +31,7 @@ module Engine
           end
 
           def select_entities
-            @game.minors.reject(&:closed?)
+            minors
           end
 
           def next_entity!
@@ -42,6 +42,16 @@ module Engine
 
           def any_to_act?
             super || !pending_tokens.empty?
+          end
+
+          private
+
+          def companies
+            @game.companies
+          end
+
+          def minors
+            @game.minors.reject(&:closed?)
           end
         end
       end
