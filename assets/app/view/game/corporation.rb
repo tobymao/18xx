@@ -112,7 +112,7 @@ module View
           }
 
           subchildren = render_operating_order
-          subchildren << render_revenue_history if @corporation.operating_history.any?
+          subchildren << render_revenue_history if @game.render_revenue_history?(@corporation)
           children << h(:div, props, subchildren)
         end
 
