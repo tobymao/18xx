@@ -427,7 +427,7 @@ module Engine
             next unless c[:destination]
 
             tile = hex_by_id(c[:destination]).tile
-            tile.icons = tile.icons.reject! { |icon| icon.name == c[:sym] }
+            tile.icons.reject! { |icon| icon.name == c[:sym] }
           end
         end
 
@@ -438,7 +438,7 @@ module Engine
             next unless c.destination
 
             tile = hex_by_id(c.destination).tile
-            tile.icons = tile.icons.reject! { |icon| icon.name == c.name }
+            tile.icons.reject! { |icon| icon.name == c.name }
           end
         end
 
@@ -1050,7 +1050,7 @@ module Engine
           return unless corp.destination
 
           tile = hex_by_id(corp.destination).tile
-          tile.icons = tile.icons.reject! { |icon| icon.name == corp.name }
+          tile.icons.reject! { |icon| icon.name == corp.name }
         end
 
         def extra_train?(train)
