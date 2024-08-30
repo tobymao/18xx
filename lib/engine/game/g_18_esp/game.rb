@@ -405,7 +405,7 @@ module Engine
             hex.tile.remove_reservation!(c)
             hex.tile.cities[c.city || 0].remove_tokens!
             destination_hex = @hexes.find { |h| h.id == c.destination }
-            destination_hex.tile.icons = destination_hex.tile.icons.reject! { |icon| icon.name == c.name } if destination_hex
+            destination_hex.tile.icons.reject! { |icon| icon.name == c.name } if destination_hex
             c.close!
           end
         end
