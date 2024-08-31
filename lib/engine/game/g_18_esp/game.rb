@@ -17,9 +17,9 @@ module Engine
         include CitiesPlusTownsRouteDistanceStr
         include DoubleSidedTiles
 
-        attr_reader :can_build_mountain_pass, :can_buy_trains, :minors_stop_operating
+        attr_reader :can_acquire_minors
 
-        attr_accessor :player_debts, :combined_trains, :luxury_carriages_count
+        attr_accessor :player_debts, :combined_trains, :luxury_carriages
 
         CURRENCY_FORMAT_STR = '₧%d'
 
@@ -61,6 +61,8 @@ module Engine
 
         NORTH_SOUTH_DIVIDE = 13
 
+        P2_TRAIN_ID = '2-0'
+
         ARANJUEZ_HEX = 'F26'
 
         P5_HEX = 'H12'
@@ -73,7 +75,7 @@ module Engine
 
         ALLOW_REMOVING_TOWNS = true
 
-        DISCARDED_TRAIN_DISCOUNT = 50
+        DISCARDED_TRAINS = :remove
 
         BANKRUPTCY_ALLOWED = false
 
@@ -112,7 +114,7 @@ module Engine
                     train_limit: { minor: 2, major: 4 },
                     tiles: %i[yellow green],
                     operating_rounds: 2,
-                    status: %w[can_buy_companies],
+                    status: %w[can_buy_companies can_buy_trains mountain_pass lay_second_tile higher_par_prices],
                   },
                   {
                     name: '4',
@@ -120,7 +122,7 @@ module Engine
                     train_limit: { minor: 1, major: 3 },
                     tiles: %i[yellow green],
                     operating_rounds: 2,
-                    status: %w[can_buy_companies],
+                    status: %w[can_buy_companies can_buy_trains mountain_pass lay_second_tile higher_par_prices],
                   },
                   {
                     name: '5',
@@ -128,7 +130,7 @@ module Engine
                     train_limit: { minor: 1, major: 3 },
                     tiles: %i[yellow green brown],
                     operating_rounds: 3,
-                    status: %w[],
+                    status: %w[can_buy_trains mountain_pass lay_second_tile higher_par_prices],
                   },
                   {
                     name: '6',
@@ -136,7 +138,7 @@ module Engine
                     train_limit: { minor: 1, major: 2 },
                     tiles: %i[yellow green brown],
                     operating_rounds: 3,
-                    status: %w[],
+                    status: %w[can_buy_trains mountain_pass lay_second_tile higher_par_prices],
                   },
                   {
                     name: '8',
@@ -144,7 +146,7 @@ module Engine
                     train_limit: { minor: 1, major: 2 },
                     tiles: %i[yellow green brown gray],
                     operating_rounds: 3,
-                    status: %w[],
+                    status: %w[can_buy_trains mountain_pass lay_second_tile higher_par_prices],
                   }].freeze
 
         TRAINS = [
@@ -189,9 +191,7 @@ module Engine
               },
             ],
             events: [{ 'type' => 'south_majors_available' },
-                     { 'type' => 'companies_bought_150' },
-                     { 'type' => 'mountain_pass' },
-                     { 'type' => 'can_buy_trains' }],
+                     { 'type' => 'companies_bought_150' }],
           },
           {
             name: '4',
@@ -275,8 +275,13 @@ module Engine
                 'companies_bought_200' => ['Companies 200%', 'Companies can be bought in for maximum 200% of value'],
                 'minors_stop_operating' => ['Minors stop operating'],
                 'float_60' => ['60% to Float', 'Corporations must have 60% of their shares sold to float'],
-                'mountain_pass' => ['Can build mountain passes'],
-                'can_buy_trains' => ['Corporations can buy trains from other corporations']
+              ).freeze
+
+        STATUS_TEXT = Base::STATUS_TEXT.merge(
+                'can_buy_trains' => ['Buy trains', 'Can buy trains from other corporations'],
+                'mountain_pass' => ['Mountain pass', 'Can build mountain passes'],
+                'lay_second_tile' => ['Tile Lay', 'Northern corporations can lay a second tile'],
+                'higher_par_prices' => ['Higher Par Prices', 'Northern corporations can now par at 95 and 100'],
               ).freeze
 
         def init_corporations(stock_market)
@@ -296,7 +301,7 @@ module Engine
 
         def new_auction_round
           Engine::Round::Auction.new(self, [
-            Engine::Step::CompanyPendingPar,
+            G18ESP::Step::CompanyPendingPar,
             G18ESP::Step::SelectionAuction,
           ])
         end
@@ -304,7 +309,7 @@ module Engine
         def stock_round
           G18ESP::Round::Stock.new(self, [
             G18ESP::Step::Acquire,
-            Engine::Step::DiscardTrain,
+            G18ESP::Step::DiscardTrain,
             G18ESP::Step::BuySellParShares,
           ])
         end
@@ -316,13 +321,14 @@ module Engine
             Engine::Step::Exchange,
             Engine::Step::SpecialToken,
             G18ESP::Step::BuyCarriageOrCompany,
+            G18ESP::Step::Choose,
             G18ESP::Step::HomeToken,
             G18ESP::Step::SpecialTrack,
             G18ESP::Step::SpecialChoose,
             G18ESP::Step::Track,
             G18ESP::Step::Route,
             G18ESP::Step::Dividend,
-            Engine::Step::DiscardTrain,
+            G18ESP::Step::DiscardTrain,
             G18ESP::Step::Acquire,
             G18ESP::Step::BuyTrain,
             G18ESP::Step::CombinedTrains,
@@ -355,17 +361,15 @@ module Engine
             corporation.type == :minor || north_corp?(corporation)
           end
           @corporations.each { |c| c.shares.first.double_cert = true if c.type == :minor }
-          @future_corporations.each { |c| c.shares.last.buyable = false }
-          @minors_stop_operating = false
 
           @company_trains = {}
-          @company_trains['P2'] = find_and_remove_train_for_minor('2-0')
+          @company_trains['P2'] = find_and_remove_train_for_minor(P2_TRAIN_ID, buyable: false)
           @company_trains['P3'] = find_and_remove_train_for_minor('2P-0', buyable: false)
           @perm2_ran_aranjuez = false
 
           setup_company_price(1)
 
-          @luxury_carriages_count = 4
+          @luxury_carriages = { 'P4' => 5, 'bank' => 0 }
 
           @opened_mountain_passes = []
           @combined_trains = {}
@@ -401,7 +405,7 @@ module Engine
             hex.tile.remove_reservation!(c)
             hex.tile.cities[c.city || 0].remove_tokens!
             destination_hex = @hexes.find { |h| h.id == c.destination }
-            destination_hex.tile.icons = destination_hex.tile.icons.dup.reject { |icon| icon.name == c.name } if destination_hex
+            destination_hex.tile.icons.reject! { |icon| icon.name == c.name } if destination_hex
             c.close!
           end
         end
@@ -423,7 +427,18 @@ module Engine
             next unless c[:destination]
 
             tile = hex_by_id(c[:destination]).tile
-            tile.icons = tile.icons.dup.reject { |icon| icon.name == c[:sym] }
+            tile.icons.reject! { |icon| icon.name == c[:sym] }
+          end
+        end
+
+        def remove_unlaunched_corporation_destination_icons
+          @corporations.each do |c|
+            next if c.type == :minor
+            next if c.ipoed
+            next unless c.destination
+
+            tile = hex_by_id(c.destination).tile
+            tile.icons.reject! { |icon| icon.name == c.name }
           end
         end
 
@@ -487,7 +502,7 @@ module Engine
         end
 
         def tile_lays(entity)
-          return MINOR_TILE_LAYS if entity.type == :minor
+          return MINOR_TILE_LAYS if entity.type == :minor || (north_corp?(entity) && !@phase.status.include?('lay_second_tile'))
 
           MAJOR_TILE_LAYS
         end
@@ -516,15 +531,12 @@ module Engine
 
         def event_south_majors_available!
           @corporations.concat(@future_corporations)
+          @can_acquire_minors = true
           @log << '-- Major corporations in the south now available --'
         end
 
         def event_companies_bought_150!
           setup_company_price(1.5)
-        end
-
-        def event_mountain_pass!
-          @can_build_mountain_pass = true
         end
 
         def event_companies_bought_200!
@@ -537,8 +549,8 @@ module Engine
         end
 
         def event_minors_stop_operating!
-          @log << 'Minors stop operating'
-          @minors_stop_operating = true
+          @log << 'All Minors close'
+          close_all_minors
         end
 
         def custom_end_game_reached?
@@ -554,18 +566,18 @@ module Engine
 
         def event_close_companies!
           @log << '-- Event: Private companies close --'
-          @luxury_carriages_count = 0 # no more luxury carriage buying
+          @luxury_carriages['P4'] = 0 # no more luxury carriage buying
           @companies.each do |company|
             convert_p3_into_2p if company == p3 && company.owner.is_a?(Corporation)
             company.close!
           end
+          remove_unlaunched_corporation_destination_icons # remove unlaunched dest icons
         end
 
         def event_float_60!
           @corporations.each do |c|
             next if c.type == :minor
 
-            c.shares.last&.buyable = true
             c.float_percent = 60
 
             next if c.floated?
@@ -575,8 +587,7 @@ module Engine
             # all goals reached, no extra cap
             c.destination_connected = true
             c.ran_offboard = true
-            c.ran_harbor_mine = true
-            c.taken_over_minor = true
+            c.ran_harbor = true
             c.full_cap = true
           end
 
@@ -615,8 +626,7 @@ module Engine
 
           goal_status << ["Destination #{corporation.destination}"] unless corporation.destination_connected?
           goal_status << ['Offboard'] unless corporation.ran_offboard?
-          goal_status << ['Run mine to harbor'] if north_corp?(corporation) && !corporation.ran_harbor_mine?
-          goal_status << ['Takeover'] if !north_corp?(corporation) && !corporation.taken_over_minor && !corporation.full_cap
+          goal_status << ['Run to harbor'] unless corporation.ran_harbor
 
           goal_status = [] if goal_status.length == 1
 
@@ -634,7 +644,7 @@ module Engine
         def company_status_str(company)
           return if company != p4 || p4.owner.nil? || p4.owner.corporation?
 
-          "#{@luxury_carriages_count} / 4 Buyable Tenders"
+          "#{@luxury_carriages[p4.id]} / 5 Buyable Tenders"
         end
 
         def upgrade_cost(old_tile, hex, entity, spender)
@@ -717,17 +727,14 @@ module Engine
           routes.any? { |route| route.visited_stops.any?(&:offboard?) }
         end
 
-        def check_harbor_mine_goal(entity, routes)
+        def check_harbor_goal(entity, routes)
           return false unless entity.corporation?
-          return false unless north_corp?(entity)
           return false if entity.type == :minor
-          return true if entity.ran_harbor_mine?
+          return true if entity.ran_harbor
 
-          # logic to check if route contains both mine and harbor
+          # logic to check if routes contains harbor
           routes.any? do |route|
-            route.stops.any? { |stop| stop.halt? && stop.tile.color != :blue } && route.stops.any? do |stop|
-              stop.tile.color == :blue
-            end
+            route.stops.any? { |stop| stop.tile.color == :blue }
           end
         end
 
@@ -802,7 +809,7 @@ module Engine
             revenue += gbi_bm_bonus(stops)[:revenue]
           end
 
-          revenue *= 3 if final_ors? && @round.round_num == @operating_rounds && north_corp?(route.train.owner)
+          revenue *= 2 if final_ors? && @round.round_num == @operating_rounds && north_corp?(route.train.owner)
 
           revenue
         end
@@ -890,7 +897,7 @@ module Engine
         end
 
         def rust_trains!(train, _entity)
-          reserved_2t = train_by_id('2-0')
+          reserved_2t = train_by_id(P2_TRAIN_ID)
           return super unless reserved_2t
 
           @depot.reclaim_train(reserved_2t) if rust?(reserved_2t, train)
@@ -900,16 +907,14 @@ module Engine
         def company_bought(company, entity)
           # # On acquired abilities
           transfer_luxury_ability(company, entity) if company == p4
-          on_acquired_train(company, entity) if company == p2
         end
 
         def transfer_luxury_ability(company, entity)
           luxury_ability = company.all_abilities.first
           if luxury_ability(entity)
             # entity already has tender. Do not add, but increase carriage count
-            @luxury_carriages_count += 1
-            @log << "#{entity.name} already has a tender, extra tender is returned to the bank and can be purchased. \
-                    There are #{@luxury_carriages_count} tenders left"
+            @luxury_carriages['bank'] += 1
+            @log << "#{entity.name} already has a tender, extra tender is returned to the bank and can be purchased"
           else
             entity.add_ability(luxury_ability)
             @log << "#{entity.name} can now assign tender to a single train"
@@ -929,22 +934,23 @@ module Engine
           @company_trains.delete(p3.id)
         end
 
-        def on_acquired_train(company, entity)
-          train = @company_trains[company.id]
-          return if train.rusted
+        def on_acquired_train(entity, train_variant)
+          company_id = @p2.id
+          @log << "#{@p2.name} closes"
+          @p2.close!
 
-          if entity.trains.size < train_limit(entity)
-            needed_track_type = north_corp?(entity) ? :narrow : :broad
-            variant = train.variants.values.find { |v| v[:track_type] == needed_track_type }
-            train.variant = variant[:name] if variant
-            train.operated = true
-            buy_train(entity, train, :free)
-            @log << "#{entity.name} gains a #{train.name} train"
+          train = @company_trains[company_id]
+          if train.rusted
+            @log << 'train 2/1+2 has rusted, train is discarded'
+            return
           end
-          @company_trains.delete(company.id)
 
-          @log << "#{company.name} closes"
-          company.close!
+          train.variant = train_variant
+          train.operated = true
+          buy_train(entity, train, :free)
+          @log << "#{entity.name} gains a #{train.name} train"
+
+          @company_trains.delete(company_id)
         end
 
         def get_or_revenue(info)
@@ -1044,7 +1050,7 @@ module Engine
           return unless corp.destination
 
           tile = hex_by_id(corp.destination).tile
-          tile.icons = tile.icons.dup.reject { |icon| icon.name == corp.name }
+          tile.icons.reject! { |icon| icon.name == corp.name }
         end
 
         def extra_train?(train)
@@ -1056,15 +1062,6 @@ module Engine
             trains = c.trains.count { |t| !extra_train?(t) }
             trains > train_limit(c)
           end
-        end
-
-        def legal_tile_rotation?(_entity, hex, tile)
-          return true unless hex.id == 'F26'
-
-          f26_illegal_tile_rotations = [1, 2, 4, 5, 6]
-          return false if f26_illegal_tile_rotations.include? tile.rotation
-
-          true
         end
 
         def skip_route_track_type(train)
@@ -1123,42 +1120,54 @@ module Engine
           # handle token
           keep_token ? swap_token(corporation, minor) : gain_token(corporation, minor)
 
-          # complete goal
-          corporation.goal_reached!(:takeover)
-
           # get share
-          get_reserved_share(minor.owner, corporation) if !@minors_stop_operating || minor.ipoed
+          get_reserved_share(minor.owner, corporation) if minor.ipoed
 
           # gain tender ability
           gain_luxury_carriage_ability_from_minor(corporation, minor)
 
           # close corp
           close_corporation(minor)
-
-          # close unopened minors if all southern majors taken over minors
-          close_unopened_minors if southern_major_corps.none? { |c| !c.taken_over_minor }
         end
 
         def southern_major_corps
           @corporations.select { |c| c.type == :major && !north_corp?(c) }
         end
 
-        def close_unopened_minors
-          return unless @minors_stop_operating
-
-          @corporations.each do |c|
+        def close_all_minors
+          @corporations.dup.each do |c|
             next unless c.type == :minor
-            next if c.ipoed
 
-            hex = hex_by_id(c.coordinates)
-            hex.tile.cities[c.city || 0].remove_reservation!(c)
-            hex.tile.remove_reservation!(c)
-            c.close!
+            if c.operated?
+              @bank.spend(c.share_price.price, c.owner)
+              @log << "#{c.owner.name} recieves compensation of #{format_currency(c.share_price.price)} for #{c.name}"
+            end
+            close_minor(c)
           end
         end
 
+        def close_minor(c)
+          hex = hex_by_id(c.coordinates)
+          c.tokens.first.remove!
+          hex.tile.cities.each do |city|
+            city.remove_reservation!(c)
+          end
+          hex.tile.remove_reservation!(c)
+          @log << "#{c.name} closes"
+
+          c.share_holders.each_key do |share_holder|
+            share_holder.shares_by_corporation.delete(c)
+          end
+
+          @share_pool.shares_by_corporation.delete(c)
+          c.share_price&.corporations&.delete(c)
+
+          @corporations.delete(c)
+          c.close!
+        end
+
         def pay_compensation(corporation, minor)
-          if @minors_stop_operating && minor.player_share_holders.empty?
+          if minor.player_share_holders.empty?
             corporation.spend(MINOR_TAKEOVER_COST, @bank)
             @log << "#{corporation.name} spends #{format_currency(MINOR_TAKEOVER_COST)} to acquire #{minor.name}"
           else
@@ -1172,10 +1181,9 @@ module Engine
         end
 
         def get_reserved_share(owner, corporation)
-          reserved_share = corporation.shares.find { |share| share.buyable == false }
+          reserved_share = corporation.shares.last
           return unless reserved_share
 
-          reserved_share.buyable = true
           @share_pool.transfer_shares(
               reserved_share.to_bundle,
               owner,
@@ -1196,9 +1204,9 @@ module Engine
           return unless minor_luxury_ability
 
           if luxury_ability(corporation)
-            @luxury_carriages_count += 1
-            @log << "#{corporation.name} already has a tender. The additional '\
-            'tender can be bought by another company from the bank"
+            @luxury_carriages['bank'] += 1
+            @log << "#{corporation.name} already has a tender. The additional \
+            tender can be bought by another company from the bank"
           else
             corporation.add_ability(minor_luxury_ability)
             @log << "#{corporation.name} gains tender from #{minor.name}"
@@ -1233,7 +1241,7 @@ module Engine
           new_token = survivor.tokens.last
           old_token = nonsurvivor.tokens.first
           city = old_token.city
-          if city.nil? && @minors_stop_operating
+          if city.nil?
             city = hex_by_id(nonsurvivor.coordinates).tile.cities.find { |c| c.reserved_by?(nonsurvivor) }
             city.remove_reservation!(nonsurvivor)
           end
@@ -1306,12 +1314,6 @@ module Engine
         def game_corporations
           corps = self.class::CORPORATIONS
           corps += self.class::EXTRA_CORPORATIONS unless core
-          corps
-        end
-
-        def sorted_corporations
-          corps = super
-          corps.reject! { |c| c.type == :minor && !c.ipoed } if @minors_stop_operating
           corps
         end
 

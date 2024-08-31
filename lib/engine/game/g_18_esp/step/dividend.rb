@@ -32,7 +32,7 @@ module Engine
             return { share_direction: :left, share_times: 1 } unless revenue.positive?
 
             times = 1 if revenue.positive?
-            times = 3 if @game.final_ors? && @round.round_num == @game.phase.operating_rounds && @game.north_corp?(entity)
+            times = 2 if @game.final_ors? && @round.round_num == @game.phase.operating_rounds && @game.north_corp?(entity)
             if times.positive?
               { share_direction: :right, share_times: times }
             else
