@@ -187,6 +187,52 @@ module Engine
         def init_stock_market
           StockMarket.new(game_market, self.class::CERT_LIMIT_TYPES, hex_market: true)
         end
+
+        def initial_auction_companies
+          @companies.select { |company| company.meta[:start_packet] }
+        end
+
+        def company_header(company)
+          return 'COAL COMPANY' if company.color == :black
+          return 'MOUNTAIN RAILWAY' if company.color == :gray
+          return 'MINOR SHARE' if company.sym.end_with?('_share')
+
+          'MINOR COMPANY'
+        end
+
+        def new_auction_round
+          Engine::Round::Auction.new(self, [
+            G1837::Step::SelectionAuction,
+          ])
+        end
+
+        def unowned_purchasable_companies(_entity)
+          @companies.reject(&:owner)
+        end
+
+        def after_company_assigned(company)
+          player = company.owner
+
+          case company.meta[:type]
+          when :minor, :coal
+            float_minor!(minor_by_id(company.id), player)
+          when :minor_share
+            # todo
+            puts 'todo'
+          end
+
+          Array(company.meta[:additional_companies]).each do |c_id|
+            additional_company = company_by_id(c_id)
+            additional_company.owner = player
+            player.companies << additional_company
+          end
+        end
+
+        def float_minor!(minor, owner)
+          puts owner&.name
+          minor.owner = owner
+          minor.float!
+        end
       end
     end
   end
