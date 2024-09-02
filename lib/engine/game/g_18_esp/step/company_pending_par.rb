@@ -9,7 +9,7 @@ module Engine
         class CompanyPendingPar < Engine::Step::CompanyPendingPar
           def get_par_prices(_entity, _corp)
             super.reject do |p|
-              p.price == 100 || p.price == 95 unless @game.phase.status.include('higher_par_prices')
+              p.price == 100 || p.price == 95 unless @game.phase.status.include?('higher_par_prices')
             end
           end
         end
