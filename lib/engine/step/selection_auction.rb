@@ -64,14 +64,15 @@ module Engine
       def process_bid(action)
         action.entity.unpass!
 
-        if auctioning
-          add_bid(action)
+        if !auctioning
+          selection_bid(action)
+          next_entity! if auctioning
         elsif @active_bidders.length == 1
           add_bid(action)
           resolve_bids
         else
-          selection_bid(action)
-          next_entity! if auctioning
+          auctioning
+          add_bid(action)
         end
       end
 
