@@ -16,7 +16,7 @@ module Engine
           end
 
           def finished?
-            @companies.none?
+            @companies.empty?
           end
 
           def actions(entity)

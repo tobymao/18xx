@@ -175,8 +175,8 @@ module Engine
 
         def setup
           @or = 0
-          @revolt_round = -1
           @three_or_round = false
+          @revolt_round = determine_revolt_round
         end
 
         def end_now?(_after)
@@ -188,20 +188,18 @@ module Engine
           sorted_permits = permits.sort_by { rand }
           sorted_revolts = revolts.sort_by { rand }
 
-          @companies = sorted_permits + sorted_revolts
+          @companies = sorted_permits.take(@players.size)
+          assigned_companies = sorted_permits.drop(@players.size) + sorted_revolts
 
-          @companies.drop(@players.size).each_with_index do |company, index|
-            if index >= @corporations.size
-              company.close!
-              @log << "#{company.name} is discarded"
-            else
-              corporation = @corporations[index]
+          assigned_companies.zip(@corporations).each do |company, corporation|
+            if corporation
               company.owner = corporation
               corporation.companies << company
               @log << "#{company.name} is assigned to #{corporation.name}"
+            else
+              company.close!
+              @log << "#{company.name} is discarded"
             end
-
-            @companies.delete(company)
           end
         end
 
@@ -237,13 +235,18 @@ module Engine
           @revolt_happened
         end
 
+        def determine_revolt_round
+          (FIRST_REVOLT_CHECK_OR..LAST_REVOLT_CHECK_OR).each do |round|
+            probability = LAST_REVOLT_CHECK_OR - round + 1
+
+            return round if (rand % probability).zero?
+          end
+        end
+
         def check_revolt!
           return if @or < FIRST_REVOLT_CHECK_OR || revolt_happened?
 
-          # Generate a random number 0 to 3 (2, 1) to simulate 1 in 4 (in OR7, 1 in 3 in OR8 etc) cube draw chance
-          revolt_check = (rand % (LAST_REVOLT_CHECK_OR - @or + 1))
-
-          if (@or == LAST_REVOLT_CHECK_OR) || revolt_check.zero?
+          if @or == @revolt_round
             revolt!
           else
             @log << 'Revolt! does not happen'
@@ -256,7 +259,6 @@ module Engine
           @log << '-- All Convict bases are now neutral and cities with them generate no revenue.'
 
           @revolt_happened = true
-          @revolt_round = @or
 
           @companies.each do |company|
             company.close! unless abilities(company, :close, on_phase: 'never')
@@ -305,11 +307,13 @@ module Engine
         end
 
         def draw_revolt_marker(or_number)
-          return '—' if @revolt_happened && @revolt_round < or_number
-          return '✔' if [@revolt_round, LAST_REVOLT_CHECK_OR].include?(or_number)
-          return '✘' if @or >= or_number
+          if @revolt_happened
+            return '✔' if or_number == @revolt_round
 
-          '✘/✔'
+            or_number < @revolt_round ? '✘' : '—'
+          else
+            or_number == LAST_REVOLT_CHECK_OR ? '✔' : '✘/✔'
+          end
         end
 
         def price_movement_chart
