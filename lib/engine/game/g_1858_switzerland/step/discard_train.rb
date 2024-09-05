@@ -7,15 +7,10 @@ module Engine
     module G1858Switzerland
       module Step
         class DiscardTrain < G1858::Step::DiscardTrain
-          def actions(entity)
-            return [] unless entity == current_entity
-            return [] if @game.robot_owner?(entity)
+          def crowded_corps
+            return super unless @game.robot?
 
-            super
-          end
-
-          def skip!
-            super unless @game.robot_owner?(current_entity)
+            super.reject { |entity| @game.robot_owner?(entity) }
           end
         end
       end
