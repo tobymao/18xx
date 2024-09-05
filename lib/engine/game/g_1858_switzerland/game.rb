@@ -43,7 +43,7 @@ module Engine
         EVENTS_TEXT = G1858::Trains::EVENTS_TEXT.merge(
           'sbb_starts' => [
             'SBB starts',
-            'The SBB starts operating'
+            'The SBB starts operating',
           ],
           'blue_privates_available' => [
             'Blue privates can start',
@@ -468,7 +468,7 @@ module Engine
           company = private_company(minor)
           @robot.companies.delete(company)
           company.owner = sbb
-          city = @cities.find { |city| city.reserved_by?(company) }
+          city = @cities.find { |c| c.reserved_by?(company) }
           if city&.tokenable?(sbb, free: true)
             @log << "#{sbb.id} places a token in #{city.tile.hex.location_name}."
             city.place_token(sbb, sbb.next_token, free: true)
