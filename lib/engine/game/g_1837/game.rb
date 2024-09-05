@@ -244,7 +244,7 @@ module Engine
         end
 
         def stock_round
-          Engine::Round::Stock.new(self, [
+          G1837::Round::Stock.new(self, [
             G1837::Step::BuySellParShares,
           ])
         end
@@ -278,6 +278,12 @@ module Engine
         def float_minor!(minor, owner)
           minor.owner = owner
           minor.float!
+        end
+
+        def float_corporation(corporation)
+          @log << "#{corporation.name} floats"
+          @bank.spend(corporation.par_price.price * corporation.total_ipo_shares, corporation)
+          @log << "#{corporation.name} receives #{format_currency(corporation.cash)}"
         end
       end
     end

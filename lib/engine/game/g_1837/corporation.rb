@@ -38,6 +38,10 @@ module Engine
         def percent_ipo_buyable
           @ipo_owner.shares_by_corporation[self].select(&:buyable).sum(&:percent)
         end
+
+        def total_ipo_shares
+          @percent_total_ipo_shares / share_percent
+        end
       end
     end
   end
