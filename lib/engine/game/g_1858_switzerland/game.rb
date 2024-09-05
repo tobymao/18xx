@@ -354,22 +354,29 @@ module Engine
           entity.owner == @robot
         end
 
-        def acting_for_entity(entity)
-          return entity if entity&.player?
-          return super unless robot_owner?(entity)
+        def acting_for_player(player)
+          return player unless player == @robot
 
-          if entity.corporation?
-            # SBB is operated by the priority holder in the first round of an
-            # OR set, and the other player in the second.
-            human_players[@round.round_num - 1]
-          else
-            # The players take turns operate the robot's private railway
-            # companies, starting with the priority deal holder.
-            @robot_minors = @round.entities.select do |minor|
-              minor.minor? && minor.owner == @robot
+          acting_for_robot(current_entity)
+        end
+
+        # Finds the player who should take track actions for robot-owned
+        # private railways and public companies.
+        def acting_for_robot(operator)
+          player_index =
+            if operator.corporation?
+              # SBB is operated by the priority holder in the first round of an
+              # OR set, and the other player in the second.
+              @round.round_num - 1
+            else
+              # The players take turns operate the robot's private railway
+              # companies, starting with the priority deal holder.
+              minor_index = @round.entities
+                                  .select { |e| e.minor? && e.owner == @robot }
+                                  .index(operator)
+              minor_index % human_players.size
             end
-            human_players[@robot_minors.index(entity) % human_players.size]
-          end
+          human_players[player_index]
         end
 
         def tile_lays(entity)

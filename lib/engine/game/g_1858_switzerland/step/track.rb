@@ -22,12 +22,12 @@ module Engine
             operator = current_entity
             return super unless @game.robot_owner?(operator)
 
+            name = @game.acting_for_robot(operator).name
             if operator.corporation?
-              "#{@game.acting_for_entity(operator).name} must upgrade one " \
-                "of the cities where #{operator.id} has a station token."
+              "#{name} must upgrade one of the cities where #{operator.id} " \
+                'has a station token.'
             else
-              "#{@game.acting_for_entity(operator).name} must build track in " \
-                "one of #{operator.id}’s home hexes."
+              "#{name} must build track in one of #{operator.id}’s home hexes."
             end
           end
 
