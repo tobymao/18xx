@@ -390,6 +390,14 @@ module Engine
           super(entity, train, price.zero? ? :free : price)
         end
 
+        # Checks whether tiles have been laid in all the hexes of a private
+        # railway company.
+        def home_route_complete?(entity)
+          return false unless entity.minor?
+
+          entity.coordinates.none? { |coord| hex_by_id(coord).tile.color == :white }
+        end
+
         private
 
         def sbb
@@ -442,12 +450,6 @@ module Engine
           return false unless entity.corporation?
 
           entity.assignments.key?(MOUNTAIN_RAILWAY_ASSIGNMENT)
-        end
-
-        def home_route_complete?(entity)
-          return false unless entity.minor?
-
-          entity.coordinates.none? { |coord| hex_by_id(coord).tile.color == :white }
         end
 
         # Called when a private railway company owned by the robot has finished
