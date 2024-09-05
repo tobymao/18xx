@@ -15,12 +15,17 @@ module Engine
             color: :black,
             text_color: :white,
             meta: { start_packet: true, type: :coal },
-            abililties: [
+            abilities: [
+              {
                 type: 'exchange',
                 corporations: ['BK'],
                 owner_type: 'player',
                 when: 'exchange',
                 from: 'reserved',
+              },
+              {
+                type: 'no_buy',
+              },
             ],
           },
           {
@@ -33,12 +38,17 @@ module Engine
             color: :black,
             text_color: :white,
             meta: { start_packet: true, type: :coal },
-            abililties: [
+            abilities: [
+              {
                 type: 'exchange',
                 corporations: ['BK'],
                 owner_type: 'player',
                 when: 'exchange',
                 from: 'reserved',
+              },
+              {
+                type: 'no_buy',
+              },
             ],
           },
           {
@@ -51,12 +61,17 @@ module Engine
             color: :black,
             text_color: :white,
             meta: { start_packet: true, type: :coal },
-            abililties: [
+            abilities: [
+              {
                 type: 'exchange',
                 corporations: ['MS'],
                 owner_type: 'player',
                 when: 'exchange',
                 from: 'reserved',
+              },
+              {
+                type: 'no_buy',
+              },
             ],
           },
           {
@@ -69,12 +84,17 @@ module Engine
             color: :black,
             text_color: :white,
             meta: { start_packet: true, type: :coal },
-            abililties: [
+            abilities: [
+              {
                 type: 'exchange',
                 corporations: ['MS'],
                 owner_type: 'player',
                 when: 'exchange',
                 from: 'reserved',
+              },
+              {
+                type: 'no_buy',
+              },
             ],
           },
           {
@@ -87,12 +107,17 @@ module Engine
             color: :black,
             text_color: :white,
             meta: { start_packet: true, type: :coal },
-            abililties: [
+            abilities: [
+              {
                 type: 'exchange',
                 corporations: ['CL'],
                 owner_type: 'player',
                 when: 'exchange',
                 from: 'reserved',
+              },
+              {
+                type: 'no_buy',
+              },
             ],
           },
           {
@@ -105,12 +130,17 @@ module Engine
             color: :black,
             text_color: :white,
             meta: { start_packet: true, type: :coal },
-            abililties: [
+            abilities: [
+              {
                 type: 'exchange',
                 corporations: ['TR'],
                 owner_type: 'player',
                 when: 'exchange',
                 from: 'reserved',
+              },
+              {
+                type: 'no_buy',
+              },
             ],
           },
           {
@@ -123,12 +153,17 @@ module Engine
             color: :black,
             text_color: :white,
             meta: { start_packet: true, type: :coal },
-            abililties: [
+            abilities: [
+              {
                 type: 'exchange',
                 corporations: ['TR'],
                 owner_type: 'player',
                 when: 'exchange',
                 from: 'reserved',
+              },
+              {
+                type: 'no_buy',
+              },
             ],
           },
           {
@@ -141,12 +176,17 @@ module Engine
             color: :black,
             text_color: :white,
             meta: { start_packet: true, type: :coal },
-            abililties: [
+            abilities: [
+              {
                 type: 'exchange',
                 corporations: ['TI'],
                 owner_type: 'player',
                 when: 'exchange',
                 from: 'reserved',
+              },
+              {
+                type: 'no_buy',
+              },
             ],
           },
           {
@@ -159,12 +199,17 @@ module Engine
             color: :black,
             text_color: :white,
             meta: { start_packet: true, type: :coal },
-            abililties: [
+            abilities: [
+              {
                 type: 'exchange',
                 corporations: ['BH'],
                 owner_type: 'player',
                 when: 'exchange',
                 from: 'reserved',
+              },
+              {
+                type: 'no_buy',
+              },
             ],
           },
           {
@@ -177,12 +222,17 @@ module Engine
             color: :black,
             text_color: :white,
             meta: { start_packet: true, type: :coal },
-            abililties: [
+            abilities: [
+              {
                 type: 'exchange',
                 corporations: ['TI'],
                 owner_type: 'player',
                 when: 'exchange',
                 from: 'reserved',
+              },
+              {
+                type: 'no_buy',
+              },
             ],
           },
           {
@@ -193,6 +243,7 @@ module Engine
                   'starts in Vienna (G17) with 90K starting capital.',
             color: :brown,
             meta: { start_packet: true, type: :minor },
+            abilities: [{ type: 'no_buy' }],
           },
           {
             name: 'Kaiserin Elisabeth-Railway (KK2)',
@@ -202,6 +253,7 @@ module Engine
                   'starts in Vienna (G17) with 140K starting capital.',
             color: :brown,
             meta: { start_packet: true, type: :minor },
+            abilities: [{ type: 'no_buy' }],
           },
           {
             name: 'Kaiser Franz Joseph-Railway (KK3)',
@@ -211,6 +263,7 @@ module Engine
                   'starts in Vienna (G17) with 90K starting capital.',
             color: :brown,
             meta: { start_packet: true, type: :minor },
+            abilities: [{ type: 'no_buy' }],
           },
           {
             name: 'Pest-Waitzen Railway (UG1)',
@@ -220,6 +273,7 @@ module Engine
                   'starts in Budapest (H22) with 180K starting capital.',
             color: :pink,
             meta: { start_packet: true, type: :minor },
+            abilities: [{ type: 'no_buy' }],
           },
           {
             name: 'Mohacs-Fünfkirchener Railway (UG2)',
@@ -229,6 +283,7 @@ module Engine
                   'starts in Fün%irchen (K21) with 90K starting capital.',
             color: :pink,
             meta: { start_packet: true, type: :minor },
+            abilities: [{ type: 'no_buy' }],
           },
           {
             name: 'Pest-Czegled Railway (UG3)',
@@ -238,6 +293,7 @@ module Engine
                   'starts in Budapest (H22) with 180K starting capital.',
             color: :pink,
             meta: { start_packet: true, type: :minor },
+            abilities: [{ type: 'no_buy' }],
           },
           {
             name: 'Vienna-Gloggnitzer Railway (SD1)',
@@ -248,6 +304,7 @@ module Engine
                   'Semmering Railway (H16) that has a value of 100K and a revenue of 5K.',
             color: :orange,
             meta: { start_packet: true, type: :minor, additional_companies: ['Semmering'] },
+            abilities: [{ type: 'no_buy' }],
           },
           {
             name: 'Kärntner Railway (SD2)',
@@ -258,6 +315,7 @@ module Engine
                   'Karawanken Railway (J12) that has a value of 120K and a revenue of 25K.',
             color: :orange,
             meta: { start_packet: true, type: :minor, additional_companies: ['Karawanken'] },
+            abilities: [{ type: 'no_buy' }],
           },
           {
             name: 'North Tyrol Railway (SD3)',
@@ -268,6 +326,7 @@ module Engine
                   'Arlberg Railway (I5) that has a value of 135K and a revenue of 20K.',
             color: :orange,
             meta: { start_packet: true, type: :minor, additional_companies: ['Arlberg'] },
+            abilities: [{ type: 'no_buy' }],
           },
           {
             name: 'South Tyrol Railway (SD4)',
@@ -278,6 +337,7 @@ module Engine
                   'Brenner Railway (J6) that has a value of 90K and a revenue of 15K.',
             color: :orange,
             meta: { start_packet: true, type: :minor, additional_companies: ['Brenner'] },
+            abilities: [{ type: 'no_buy' }],
           },
           {
             name: 'Venice-Lombardy Railway (SD5)',
@@ -288,6 +348,7 @@ module Engine
                   'Comes with the Mountain Railway Karst Railway (K13) that has a value of 70K and a revenue of 10K.',
             color: :orange,
             meta: { start_packet: true, type: :minor, additional_companies: ['Karst'] },
+            abilities: [{ type: 'no_buy' }],
           },
           {
             name: 'Pest-Waitzen Railway (UG1) share',
@@ -296,6 +357,7 @@ module Engine
             desc: 'A share of the minor company Pest-Waitzen Railway (UG1).',
             color: :pink,
             meta: { type: :share },
+            abilities: [{ type: 'no_buy' }],
           },
           {
             name: 'Pest-Czegled Railway (UG3) share',
@@ -304,6 +366,7 @@ module Engine
             desc: 'A share of the minor company Pest-Czegled Railway (UG3).',
             color: :pink,
             meta: { type: :share },
+            abilities: [{ type: 'no_buy' }],
           },
           {
             name: 'Semmering Railway',
@@ -708,6 +771,8 @@ module Engine
             logo: '1837/bk',
             simple_logo: '1837/bk.alt',
             tokens: [0, 20, 40],
+            ipo_shares: [20, 10, 10, 10, 10, 10, 10],
+            reserved_shares: [10, 10],
             float_percent: 50,
             type: 'major',
             coordinates: 'C11',
@@ -719,6 +784,8 @@ module Engine
             logo: '1837/ms',
             simple_logo: '1837/ms.alt',
             tokens: [0, 20, 40],
+            ipo_shares: [20, 10, 10, 10, 10, 10, 10],
+            reserved_shares: [10, 10],
             float_percent: 50,
             type: 'major',
             coordinates: 'E17',
@@ -731,6 +798,8 @@ module Engine
             logo: '1837/bh',
             simple_logo: '1837/bh.alt',
             tokens: [0, 20, 40],
+            ipo_shares: [20, 10, 10, 10, 10, 10, 10, 10],
+            reserved_shares: [10],
             float_percent: 50,
             type: 'major',
             coordinates: 'N20',
@@ -742,6 +811,8 @@ module Engine
             logo: '1837/cl',
             simple_logo: '1837/cl.alt',
             tokens: [0, 20, 40],
+            ipo_shares: [20, 10, 10, 10, 10, 10, 10, 10],
+            reserved_shares: [10],
             float_percent: 50,
             type: 'major',
             coordinates: 'C33',
@@ -753,6 +824,8 @@ module Engine
             logo: '1837/ti',
             simple_logo: '1837/ti.alt',
             tokens: [0, 20, 40],
+            ipo_shares: [20, 10, 10, 10, 10, 10, 10],
+            reserved_shares: [10, 10],
             float_percent: 50,
             type: 'major',
             coordinates: 'F28',
@@ -775,6 +848,8 @@ module Engine
             logo: '1837/tr',
             simple_logo: '1837/tr.alt',
             tokens: [0, 20, 40],
+            ipo_shares: [20, 10, 10, 10, 10, 10, 10],
+            reserved_shares: [10, 10],
             float_percent: 50,
             type: 'major',
             coordinates: 'J36',
@@ -785,8 +860,9 @@ module Engine
             sym: 'SD',
             logo: '1837/sd',
             simple_logo: '1837/sd.alt',
-            shares: [10, 10, 10, 10, 10, 10, 10, 10, 10, 10],
             tokens: [],
+            ipo_shares: [10, 10, 10, 10, 10],
+            reserved_shares: [10, 10, 10, 10, 10],
             type: 'national',
             floatable: false,
             color: :orange,
@@ -796,8 +872,9 @@ module Engine
             sym: 'KK',
             logo: '1837/kk',
             simple_logo: '1837/kk.alt',
-            shares: [10, 10, 10, 10, 10, 10, 10, 10, 10, 10],
             tokens: [],
+            ipo_shares: [10, 10, 10, 10, 10, 10, 10],
+            reserved_shares: [10, 10, 10],
             type: 'national',
             floatable: false,
             color: :brown,
@@ -807,8 +884,9 @@ module Engine
             sym: 'UG',
             logo: '1837/ug',
             simple_logo: '1837/ug.alt',
-            shares: [10, 10, 10, 10, 10, 10, 10, 10, 10, 10],
             tokens: [],
+            ipo_shares: [10, 10, 10, 10, 10],
+            reserved_shares: [10, 10, 10, 10, 10],
             type: 'national',
             floatable: false,
             color: :pink,
