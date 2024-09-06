@@ -65,6 +65,8 @@ module Engine
 
         ARANJUEZ_HEX = 'F26'
 
+        MADRID_HEX = 'F24'
+
         P4_HEX = 'H12'
 
         DOUBLE_HEX = %w[D6 C31 J20].freeze
@@ -354,6 +356,10 @@ module Engine
 
         def mza
           @mza ||= corporation_by_id('MZA')
+        end
+
+        def madrid_hex
+          @madrid_hex ||= @game.hex_by_id(MADRID_HEX)
         end
 
         def setup
