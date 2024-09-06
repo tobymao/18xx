@@ -212,28 +212,15 @@ module Engine
           non_purchasable = @companies.flat_map { |c| c.meta['additional_companies'] }.compact
           @companies.each { |company| company.owner = @bank unless non_purchasable.include?(company.id) }
           par_nationals
-          # setup_reserve_shares
         end
 
         def par_nationals
           market_row = @stock_market.market[3]
-          { KK: 120, SD: 142, UG: 175 }.each do |id, par_value|
+          { 'KK' => 120, 'SD' => 142, 'UG' => 175 }.each do |id, par_value|
             corporation = corporation_by_id(id)
             share_price = market_row.find { |sp| sp.price == par_value }
             @stock_market.set_par(corporation, share_price)
             corporation.ipoed = true
-          end
-        end
-
-        def setup_reserve_shares
-          corporation_reserve_shares = Hash.new { |h, k| h[k] = 0 }
-          corporation_reserve_shares.merge!({ KK: 3, SD: 5, UG: 5 })
-          @companies.flat_map { |c| c.abilities.select { |a| a.type == :exchange } }.each do |a|
-            corporation_reserve_shares[a.corporations.first] += 1
-          end
-          corporation_reserve_shares.each do |id, num|
-            corporation = corporation_by_id(id)
-            corporation.shares.reverse.take(num).each { |share| share.buyable = false }
           end
         end
 
