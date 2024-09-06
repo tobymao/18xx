@@ -16,10 +16,7 @@ module LayTileCheck
       return super unless hex.id == @game.class::ARANJUEZ_HEX
 
       # handle aranjues hex situation. Tile must be connected to madrid.
-      super && tile.exits.any? do |exit|
-        neighbor = hex.neighbors[exit]
-        neighbor&.id == 'F24'
-      end
+      super && tile.exits.any? { |exit| hex.neighbors[exit] == @game.madrid_hex }
     else
       halt_upgrade_legal_rotation?(entity, hex, tile)
     end
