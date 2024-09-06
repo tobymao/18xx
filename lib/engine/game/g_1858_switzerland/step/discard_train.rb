@@ -8,8 +8,6 @@ module Engine
       module Step
         class DiscardTrain < G1858::Step::DiscardTrain
           def crowded_corps
-            return super unless @game.robot?
-
             super.reject { |entity| @game.robot_owner?(entity) }
           end
         end
