@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative 'corporation'
 require_relative 'entities'
 require_relative 'map'
 require_relative 'meta'
@@ -13,12 +14,19 @@ module Engine
         include Entities
         include Map
 
+        CORPORATION_CLASS = G1837::Corporation
+
         CURRENCY_FORMAT_STR = '%sK'
 
         BANK_CASH = 14_268
         STARTING_CASH = { 3 => 730, 4 => 555, 5 => 450, 6 => 380, 7 => 330 }.freeze
 
         CERT_LIMIT = { 3 => 28, 4 => 21, 5 => 17, 6 => 14, 7 => 12 }.freeze
+
+        SELL_AFTER = :operate
+        SELL_MOVEMENT = :down_block
+
+        HOME_TOKEN_TIMING = :float
 
         MARKET = [
           %w[95 99 104p 114 121 132 145 162 181 205 240 280 350 400 460],
@@ -175,6 +183,14 @@ module Engine
           },
         ].freeze
 
+        def company_header(company)
+          return 'COAL COMPANY' if company.color == :black
+          return 'MOUNTAIN RAILWAY' if company.color == :gray
+          return 'MINOR SHARE' if company.sym.end_with?('_share')
+
+          'MINOR COMPANY'
+        end
+
         def par_chart
           @par_chart ||=
             share_prices.select { |sp| sp.type == :par }.sort_by { |sp| -sp.price }.to_h { |sp| [sp, [nil, nil]] }
@@ -192,12 +208,20 @@ module Engine
           @companies.select { |company| company.meta[:start_packet] }
         end
 
-        def company_header(company)
-          return 'COAL COMPANY' if company.color == :black
-          return 'MOUNTAIN RAILWAY' if company.color == :gray
-          return 'MINOR SHARE' if company.sym.end_with?('_share')
+        def setup
+          non_purchasable = @companies.flat_map { |c| c.meta['additional_companies'] }.compact
+          @companies.each { |company| company.owner = @bank unless non_purchasable.include?(company.id) }
+          par_nationals
+        end
 
-          'MINOR COMPANY'
+        def par_nationals
+          market_row = @stock_market.market[3]
+          { 'KK' => 120, 'SD' => 142, 'UG' => 175 }.each do |id, par_value|
+            corporation = corporation_by_id(id)
+            share_price = market_row.find { |sp| sp.price == par_value }
+            @stock_market.set_par(corporation, share_price)
+            corporation.ipoed = true
+          end
         end
 
         def new_auction_round
@@ -206,8 +230,18 @@ module Engine
           ])
         end
 
+        def stock_round
+          G1837::Round::Stock.new(self, [
+            G1837::Step::BuySellParShares,
+          ])
+        end
+
+        def corporation_show_individual_reserved_shares?
+          false
+        end
+
         def unowned_purchasable_companies(_entity)
-          @companies.reject(&:owner)
+          @companies.reject(&:owner).reject(non_purchasable_companies)
         end
 
         def after_company_assigned(company)
@@ -229,9 +263,14 @@ module Engine
         end
 
         def float_minor!(minor, owner)
-          puts owner&.name
           minor.owner = owner
           minor.float!
+        end
+
+        def float_corporation(corporation)
+          @log << "#{corporation.name} floats"
+          @bank.spend(corporation.par_price.price * corporation.total_ipo_shares, corporation)
+          @log << "#{corporation.name} receives #{format_currency(corporation.cash)}"
         end
       end
     end
