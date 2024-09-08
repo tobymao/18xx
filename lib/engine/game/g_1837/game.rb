@@ -212,21 +212,33 @@ module Engine
           non_purchasable = @companies.flat_map { |c| c.meta['additional_companies'] }.compact
           @companies.each { |company| company.owner = @bank unless non_purchasable.include?(company.id) }
           setup_minors
-          par_nationals
+          setup_nationals
         end
 
         def setup_minors
-          @minors.each do |minor|
-            if minor.coordinates.is_a?(Array)
-              minor.coordinates.each { |coords| hex_by_id(coords).tile.cities[0].add_reservation!(minor) }
-            else
-              hex = hex_by_id(minor.coordinates)
-              hex.tile.cities[minor.city || 0].place_token(minor, minor.next_token, free: true)
-            end
+          @minors.each { |minor| reserve_minor_home(minor) }
+        end
+
+        def reserve_minor_home(minor)
+          Array(minor.coordinates).zip(Array(minor.city)).each do |coords, city|
+            hex_by_id(coords).tile.cities[city || 0].add_reservation!(minor)
           end
         end
 
-        def par_nationals
+        def minor_initial_cash(minor)
+          case minor.id
+          when 'SD1', 'SD2', 'SD3', 'SD4', 'SD5', 'KK1', 'KK3', 'UG2'
+            90
+          when 'KK2'
+            140
+          when 'UG1', 'UG3'
+            180
+          else
+            100
+          end
+        end
+
+        def setup_nationals
           market_row = @stock_market.market[3]
           { 'KK' => 120, 'SD' => 142, 'UG' => 175 }.each do |id, par_value|
             corporation = corporation_by_id(id)
@@ -248,6 +260,18 @@ module Engine
           ])
         end
 
+        def operating_round(round_num)
+          Engine::Round::Operating.new(self, [
+            Engine::Step::Bankrupt,
+            Engine::Step::DiscardTrain,
+            Engine::Step::Track,
+            G1837::Step::Token,
+            Engine::Step::Route,
+            G1837::Step::Dividend,
+            G1837::Step::BuyTrain,
+          ], round_num: round_num)
+        end
+
         def corporation_show_individual_reserved_shares?
           false
         end
@@ -261,7 +285,9 @@ module Engine
 
           case company.meta[:type]
           when :minor, :coal
-            float_minor!(minor_by_id(company.id), player)
+            minor = minor_by_id(company.id)
+            minor.owner = player
+            float_minor!(minor)
           when :minor_share
             # todo
             puts 'todo'
@@ -274,8 +300,15 @@ module Engine
           end
         end
 
-        def float_minor!(minor, owner)
-          minor.owner = owner
+        def float_minor!(minor)
+          cash = minor_initial_cash(minor)
+          @bank.spend(cash, minor)
+          @log << "#{minor.name} receives #{format_currency(cash)}"
+          unless minor.coordinates.is_a?(Array)
+            hex = hex_by_id(minor.coordinates)
+            hex.tile.cities[minor.city || 0].place_token(minor, minor.next_token, free: true)
+            @log << "#{minor.name} places a token on #{hex.name}"
+          end
           minor.float!
         end
 
