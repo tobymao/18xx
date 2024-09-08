@@ -124,7 +124,7 @@ module Engine
             name: 'Zarnesti-Kronstadt Railway',
             sym: 'ZKB',
             value: 40,
-            desc: 'Located in J34 with 100K starting capital. Coal companies cannot be sold and can only run ' \
+            desc: 'Located in K33 with 100K starting capital. Coal companies cannot be sold and can only run ' \
                   'G trains. The company can be exchanged for a 10% share of Transylvanian Railway (TR) at the ' \
                   'start of an operating round.',
             color: :black,
@@ -633,7 +633,7 @@ module Engine
             sym: 'ZKB',
             logo: '1837/zkb',
             tokens: [0],
-            coordinates: 'J34',
+            coordinates: 'K33',
             color: :black,
           },
           {
@@ -706,7 +706,7 @@ module Engine
             sym: 'SD5',
             logo: '1837/sd5',
             tokens: [0],
-            coordinates: 'L2',
+            coordinates: %w[L2 L8],
             color: :orange,
           },
           {

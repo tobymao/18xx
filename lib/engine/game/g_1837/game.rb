@@ -211,7 +211,19 @@ module Engine
         def setup
           non_purchasable = @companies.flat_map { |c| c.meta['additional_companies'] }.compact
           @companies.each { |company| company.owner = @bank unless non_purchasable.include?(company.id) }
+          setup_minors
           par_nationals
+        end
+
+        def setup_minors
+          @minors.each do |minor|
+            if minor.coordinates.is_a?(Array)
+              minor.coordinates.each { |coords| hex_by_id(coords).tile.cities[0].add_reservation!(minor) }
+            else
+              hex = hex_by_id(minor.coordinates)
+              hex.tile.cities[minor.city || 0].place_token(minor, minor.next_token, free: true)
+            end
+          end
         end
 
         def par_nationals
@@ -244,7 +256,7 @@ module Engine
           @companies.reject(&:owner).reject(non_purchasable_companies)
         end
 
-        def after_company_assigned(company)
+        def after_company_acquisition(company)
           player = company.owner
 
           case company.meta[:type]
