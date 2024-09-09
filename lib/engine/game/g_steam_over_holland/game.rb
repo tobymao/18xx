@@ -369,12 +369,11 @@ module Engine
         def revenue_for(route, stops)
           revenue = super
 
-          abilities = Array(abilities(route.corporation, :hex_bonus))
-          return revenue if abilities.empty?
+          Array(abilities(route.corporation, :hex_bonus)).each do |ability|
+            revenue += ability.amount * stops.count { |s| ability.hexes.include?(s.hex.id) }
+          end
 
-          bonus_hexes = abilities.flat_map(&:hexes)
-          bonus = 20 * stops.map(&:hex).map(&:coordinates).intersect(bonus_hexes).size
-          revenue + bonus
+          revenue
         end
 
         def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil, movement: nil)
