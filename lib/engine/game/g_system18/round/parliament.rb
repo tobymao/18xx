@@ -6,7 +6,7 @@ module Engine
   module Game
     module GSystem18
       module Round
-        class PolandParliament < Engine::Round::Auction
+        class Parliament < Engine::Round::Auction
         end
       end
     end

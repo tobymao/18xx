@@ -15,6 +15,30 @@ module Engine
             super
             @game.post_lay_tile(action.entity, action.tile)
           end
+
+          def get_tile_lay(entity)
+            action = super
+            @game.modify_tile_lay(entity, action)
+          end
+
+          def lay_tile_action(action, entity: nil, spender: nil)
+            @game.pre_lay_tile_action(action, entity, get_tile_lay(action.entity))
+
+            super
+          end
+
+          def round_state
+            super.merge(
+              {
+                last_old_tile: nil,
+              }
+            )
+          end
+
+          def setup
+            super
+            @round.last_old_tile = nil
+          end
         end
       end
     end
