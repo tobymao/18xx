@@ -5,30 +5,23 @@ module Engine
     module GSystem18
       module MapNorthernItalyCustomization
         NORTHERN_ITALY_REGION_HEXES = {
-          'Prussia' => %w[A3 A5 B2 B4 B6 C3 C5 D2 D4 E3 E5],
-          'Russia' => %w[B8 C7 C9 D6 D8 D10],
-          'Austria' => %w[E7 E9],
+          'Piemonte' => %w[B3 B5 C4 D3 D5 E4],
+          'Lombarida-Veneto' => %w[B7 B9 B11 C6 C8 C10 C12],
+          'Emilia-Romagra' => %w[D7 D9 D11 E12],
+          'Tuscana' => %w[E8 E10 F11],
         }.freeze
 
         NORTHERN_ITALY_CORP_REGIONS = {
-          'SPX' => 'Prussia',
-          'PHX' => 'Prussia',
-          'GFN' => 'Russia',
-          'DGN' => 'Russia',
-          'KKN' => 'Austria',
+          'SPX' => 'Emilia-Romagra',
+          'PHX' => 'Piemonte',
+          'GFN' => 'Lombarida-Veneto',
+          'DGN' => 'Lombarida-Veneto',
+          'KKN' => 'Tuscana',
         }.freeze
-
-        NORTHERN_ITALY_EWNS_BONUS = [0, 0, 0, 50, 50, 50, 60].freeze
 
         def map_northern_italy_game_tiles(tiles)
           tiles.delete('12')
           tiles.delete('13')
-          tiles.delete('59')
-          tiles.delete('64')
-          tiles.delete('65')
-          tiles.delete('66')
-          tiles.delete('67')
-          tiles.delete('68')
           tiles.delete('205')
           tiles.delete('206')
           tiles['8'] = 4
@@ -36,40 +29,38 @@ module Engine
                          'X1' =>
             {
               'count' => 1,
-              'color' => 'green',
-              'code' => 'city=revenue:30;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;label=D',
+              'color' => 'gray',
+              'code' => 'city=revenue:70;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;'\
+                          'path=a:5,b:_0;label=Torino',
             },
                          'X2' =>
             {
               'count' => 1,
-              'color' => 'green',
-              'code' => 'city=revenue:50,loc:0.5;city=revenue:50,loc:2.5;city=revenue:50,loc:4.5;'\
-                        'path=a:0,b:_0;path=a:_0,b:1;path=a:4,b:_2;path=a:_2,b:5;'\
-                        'path=a:2,b:_1;path=a:_1,b:3;label=Wa',
-
+              'color' => 'gray',
+              'code' => 'city=revenue:90;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;'\
+                          'path=a:5,b:_0;label=Milano',
             },
                          'X3' =>
             {
               'count' => 1,
-              'color' => 'brown',
-              'code' => 'city=revenue:70,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
-                        'path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=Wa',
-
+              'color' => 'gray',
+              'code' => 'city=revenue:60;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;'\
+                          'path=a:5,b:_0;label=OO',
             },
-                         'X4' =>
+                         '513' =>
             {
               'count' => 1,
               'color' => 'gray',
-              'code' => 'city=revenue:100,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
-                        'path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=Wa',
+              'code' => 'city=revenue:60,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
+                        'path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
 
             },
-                         'X5' =>
+                         '895' =>
               {
-                'count' => 2,
+                'count' => 1,
                 'color' => 'gray',
-                'code' => 'city=revenue:70,slots:2;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;'\
-                          'path=a:5,b:_0;label=B',
+                'code' => 'city=revenue:50,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
+                          'path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
               },
                        })
         end
@@ -80,28 +71,29 @@ module Engine
 
         def map_northern_italy_game_location_names
           {
-            'A3' => '(Prussia)',
-            'A5' => 'Danzig',
-            'A7' => 'Königsberg',
-            'B2' => 'Stettin',
-            'B4' => 'Bromberg',
-            'B6' => 'Ebling & Thorn',
-            'B8' => '(Russia)',
-            'B10' => 'St Petersburg',
-            'C1' => 'Berlin',
-            'C3' => 'Posen',
-            'C7' => 'Warsaw',
-            'C11' => 'Moscow',
-            'D4' => 'Breslau',
-            'D6' => 'Lodz',
-            'D8' => 'Radom & Deblin',
-            'D10' => 'Lublin',
-            'E5' => 'Kattowitz',
-            'E7' => 'Krakau',
-            'E9' => '(Austria)',
-            'E11' => 'Kiev',
-            'F4' => 'Wien',
-            'F10' => 'N-S and E-W bonuses',
+            'A4' => 'Switzerland',
+            'B7' => 'Bergamo',
+            'B9' => '(Lombardia-Veneto)',
+            'B11' => 'Trento & Vicenza',
+            'B13' => 'Trieste',
+            'C2' => 'France',
+            'C4' => 'Torino',
+            'C6' => 'Milano',
+            'C8' => 'Brescia',
+            'C10' => 'Verona',
+            'C12' => 'Padova & Venzéia',
+            'D5' => 'Genova',
+            'D7' => '(Emilia-Romagra)',
+            'D9' => 'Parma & Modena',
+            'D11' => 'Bologna',
+            'E2' => 'France',
+            'E4' => '(Piemonte)',
+            'E8' => 'La Spezia & Livorno',
+            'E10' => 'Firenze',
+            'E12' => 'Ravenna & Rimini',
+            'F9' => 'Roma',
+            'F11' => '(Tuscana)',
+            'F13' => 'Ancona',
           }
         end
 
@@ -109,20 +101,22 @@ module Engine
         def map_northern_italy_game_hexes
           {
             gray: {
-              %w[F6 F8] => 'path=a:2,b:3',
-              %w[F10] => 'offboard=revenue:yellow_0|green_0|brown_50|gray_60',
+              %w[A8] => 'junction;path=a:0,b:_0,terminal:1',
+              %w[A10] => 'junction;path=a:5,b:_0,terminal:1',
+              %w[D13] => 'path=a:0,b:1;path=a:1,b:2',
             },
 
             red: {
-              %w[A7] => 'offboard=revenue:yellow_20|green_30|brown_40|gray_40;path=a:0,b:_0;path=a:5,b:_0;label=N',
-              %w[B10] => 'offboard=revenue:yellow_30|green_40|brown_50|gray_60;path=a:0,b:_0;path=a:1,b:_0;label=E',
-              %w[C1] => 'offboard=revenue:yellow_30|green_40|brown_60|gray_80;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=W',
-              %w[C11] => 'offboard=revenue:yellow_20|green_30|brown_60|gray_90;path=a:0,b:_0;path=a:1,b:_0;label=E',
-              %w[E11] => 'offboard=revenue:yellow_30|green_40|brown_50|gray_60;path=a:1,b:_0;path=a:2,b:_0;label=E',
-              %w[F4] => 'offboard=revenue:yellow_30|green_40|brown_50|gray_70;path=a:2,b:_0;path=a:3,b:_0;label=S',
+              %w[A4] => 'junction;path=a:5,b:_0,terminal:1',
+              %w[A6] => 'offboard=revenue:yellow_30|green_40|brown_50|gray_70;path=a:5,b:_0;path=a:0,b:_0',
+              %w[B13] => 'offboard=revenue:yellow_30|green_40|brown_50|gray_60;path=a:0,b:_0;path=a:1,b:_0',
+              %w[C2] => 'offboard=revenue:yellow_30|green_40|brown_50|gray_70;path=a:4,b:_0',
+              %w[E2] => 'junction;path=a:3,b:_0,terminal:1;path=a:4,b:_0,terminal:1',
+              %w[F9] => 'offboard=revenue:yellow_30|green_50|brown_70|gray_100;path=a:2,b:_0;path=a:3,b:_0',
+              %w[F9] => 'offboard=revenue:yellow_20|green_30|brown_40|gray_50;path=a:2,b:_0',
             },
             white: {
-              %w[A3] => '',
+              %w[E4 E6] => '',
               %w[B8] => 'border=type:province,color:red,edge:1',
               %w[C9 D2] => 'upgrade=cost:20,terrain:water',
               %w[E9] => 'upgrade=cost:20,terrain:water;border=type:province,color:red,edge:2;border=type:province,color:red,edge:3',
@@ -138,9 +132,9 @@ module Engine
               %w[C3] => 'city=revenue:0;upgrade=cost:20,terrain:water',
             },
             yellow: {
-              %w[C7] => 'city=revenue:40,loc:0;city=revenue:40,loc:2;city=revenue:40,loc:4;path=a:0,b:_0;path=a:2,b:_1;path=a:4,b:_2;border=type:province,color:red,edge:2;border=type:province,color:red,edge:1;label=Wa',
-              %w[D4] => 'city=revenue:30;path=a:1,b:_0;path=a:5,b:_0;border=type:province,color:red,edge:4;label=B',
-              %w[E7] => 'city=revenue:30;path=a:1,b:_0;path=a:5,b:_0;border=type:province,color:red,edge:1;border=type:province,color:red,edge:2;border=type:province,color:red,edge:3;label=B',
+              %w[C12] => 'city=revenue:30,loc:0;city=revenue:30,loc:2;path=a:1,b:_0;border=type:province,color:red,edge:0;border=type:province,color:red,edge:5;label=OO',
+              %w[C6] => 'city=revenue:30;path=a:4,b:_0;border=type:province,color:red,edge:0;border=type:province,color:red,edge:2;label=B',
+              %w[C4] => 'city=revenue:30;path=a:5,b:_0;border=type:province,color:red,edge:4;label=B',
             },
           }
         end
@@ -337,27 +331,6 @@ module Engine
         def map_northern_italy_extra_revenue_str(route)
           bonus = map_northern_italy_east_west_north_south_bonus(route.stops)[:description]
           bonus ? " + #{bonus}" : ''
-        end
-
-        def map_northern_italy_east_west_north_south_bonus(stops)
-          bonus = { revenue: 0 }
-
-          east = stops.find { |stop| stop.tile.label&.to_s == 'E' }
-          west = stops.find { |stop| stop.tile.label&.to_s == 'W' }
-          north = stops.find { |stop| stop.tile.label&.to_s == 'N' }
-          south = stops.find { |stop| stop.tile.label&.to_s == 'S' }
-
-          if east && west
-            bonus[:revenue] += NORTHERN_ITALY_EWNS_BONUS[@phase.name.to_i - 2]
-            bonus[:description] = 'E/W'
-          end
-
-          if north && south
-            bonus[:revenue] += NORTHERN_ITALY_EWNS_BONUS[@phase.name.to_i - 2]
-            bonus[:description] = 'N/S'
-          end
-
-          bonus
         end
 
         # FIXME: add reopen! method to Engine::Company
