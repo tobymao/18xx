@@ -24,7 +24,7 @@ module Engine
           revenue: 10,
           desc: 'Owner (or controlling president) moves one crop cube from a countryside'\
                 'hex to an adjacent town or city hex each OR. Closes when the last crop cube has been moved.',
-          sym: 'LA_CORN',
+          sym: 'LO_CORN',
           abilities: [
                 {
                   type: 'assign_hexes',
@@ -120,7 +120,7 @@ module Engine
 
         MINORS = [
           {
-            sym: 'LA_CORN',
+            sym: 'LO_CORN',
             name: 'Latifundio Agrícola',
             logo: '18_uruguay/corn',
             simple_logo: '18_uruguay/corn',

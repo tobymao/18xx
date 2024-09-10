@@ -24,13 +24,18 @@ module Engine
         super
       end
 
+      def initial_auction_entities
+        entities.rotate(@round.entity_index)
+      end
+
       def active_entities
-        if @auctioning
-          winning_bid = highest_bid(@auctioning)
-          return [@active_bidders[(@active_bidders.index(winning_bid.entity) + 1) % @active_bidders.size]] if winning_bid
+        return super unless auctioning
+
+        if (winning_bid = highest_bid(@auctioning))
+          return [@active_bidders[(@active_bidders.index(winning_bid.entity) + 1) % @active_bidders.size]]
         end
 
-        super
+        [@active_bidders[0]]
       end
 
       def process_pass(action)
@@ -59,14 +64,15 @@ module Engine
       def process_bid(action)
         action.entity.unpass!
 
-        if auctioning
-          add_bid(action)
+        if !auctioning
+          selection_bid(action)
+          next_entity! if auctioning
         elsif @active_bidders.length == 1
           add_bid(action)
           resolve_bids
         else
-          selection_bid(action)
-          next_entity! if auctioning
+          auctioning
+          add_bid(action)
         end
       end
 
@@ -84,12 +90,8 @@ module Engine
         setup_auction
         @companies = @game.initial_auction_companies.dup
         @cheapest = @companies.first
-        auction_entity(@companies.first)
+        auction_entity(initial_auction_entity) if initial_auction_entity
         @auction_triggerer = current_entity
-      end
-
-      def selection_bid(bid)
-        add_bid(bid)
       end
 
       def starting_bid(company)
@@ -113,10 +115,22 @@ module Engine
         player.cash
       end
 
+      protected
+
+      def active_auction
+        company = @auctioning
+        bids = @bids[company]
+        yield company, bids if company
+      end
+
+      def initial_auction_entity
+        @companies.first
+      end
+
       private
 
       def add_bid(bid)
-        super(bid)
+        super
         company = bid.company
         entity = bid.entity
         price = bid.price

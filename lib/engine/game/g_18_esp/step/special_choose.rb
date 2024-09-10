@@ -10,7 +10,7 @@ module Engine
         class SpecialChoose < Engine::Step::SpecialChoose
           include Engine::Step::Tokener
           def actions(entity)
-            return [] unless @game.can_build_mountain_pass
+            return [] unless @game.phase.status.include?('mountain_pass')
             return [] unless opening_mountain_pass?(entity)
 
             super

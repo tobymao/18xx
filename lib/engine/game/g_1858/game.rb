@@ -4,6 +4,7 @@ require_relative 'meta'
 require_relative 'map'
 require_relative 'entities'
 require_relative 'market'
+require_relative 'graph'
 require_relative 'trains'
 require_relative '../base'
 require_relative '../stubs_are_restricted'
@@ -50,6 +51,11 @@ module Engine
           { lay: true, upgrade: true, cost: 20, cannot_reuse_same_hex: true },
         ].freeze
 
+        GRAPH_CLASS = G1858::Graph
+
+        # These are the train types that determine the rusting timing of phase 4 trains.
+        GREY_TRAINS = %w[7E 6M 5D].freeze
+
         def corporation_opts
           two_player? ? { max_ownership_percent: 70 } : {}
         end
@@ -88,13 +94,13 @@ module Engine
           #  - @graph uses any track. This is going to include illegal routes
           #    (using both broad and metre gauge track) but will just be used
           #    by things like the auto-router where the route will get rejected.
-          @graph_broad = Graph.new(self, skip_track: :narrow, home_as_token: true)
-          @graph_metre = Graph.new(self, skip_track: :broad, home_as_token: true)
+          @graph_broad = self.class::GRAPH_CLASS.new(self, skip_track: :narrow, home_as_token: true)
+          @graph_metre = self.class::GRAPH_CLASS.new(self, skip_track: :broad, home_as_token: true)
 
           # The rusting event for 6H/4M trains is triggered by the number of
-          # phase 7 trains purchased, so track the number of these sold.
-          @phase7_trains_bought = 0
-          @phase7_train_trigger = two_player? ? 3 : 5
+          # grey trains purchased, so track the number of these sold.
+          @grey_trains_bought = 0
+          @phase4_train_trigger = two_player? ? 3 : 5
 
           @unbuyable_companies = []
           setup_unbuyable_privates
@@ -324,7 +330,11 @@ module Engine
         end
 
         # Returns true if the hex is this private railway's home hex.
-        def home_hex?(operator, hex)
+        # The gauge parameter is only used when this method is called from
+        # `corporation_private_connected?`. It is set to :broad or :narrow
+        # when testing whether this hex is part of the broad or narrow gauge
+        # graph. 1858 ignores the value of this parameter.
+        def home_hex?(operator, hex, _gauge = nil)
           operator.coordinates.include?(hex.coordinates)
         end
 
@@ -475,18 +485,22 @@ module Engine
         def buy_train(operator, train, price = nil)
           bought_from_depot = (train.owner == @depot)
           super
-          return if @phase7_trains_bought >= @phase7_train_trigger
+          return if @grey_trains_bought >= @phase4_train_trigger
           return unless bought_from_depot
-          return unless %w[7E 6M 5D].include?(train.name)
+          return unless self.class::GREY_TRAINS.include?(train.name)
 
-          @phase7_trains_bought += 1
-          ordinal = %w[First Second Third Fourth Fifth][@phase7_trains_bought - 1]
-          @log << "#{ordinal} phase 7 train has been bought"
-          rust_phase4_trains!(train) if @phase7_trains_bought == @phase7_train_trigger
+          @grey_trains_bought += 1
+          ordinal = %w[First Second Third Fourth Fifth][@grey_trains_bought - 1]
+          @log << "#{ordinal} grey train has been bought"
+          maybe_rust_wounded_trains!(@grey_trains_bought, train)
         end
 
-        def rust_phase4_trains!(purchased_train)
-          trains.select { |train| %w[6H 3M].include?(train.name) }
+        def maybe_rust_wounded_trains!(grey_trains_bought, purchased_train)
+          rust_wounded_trains!(%w[6H 3M], purchased_train) if grey_trains_bought == @phase4_train_trigger
+        end
+
+        def rust_wounded_trains!(train_names, purchased_train)
+          trains.select { |train| train_names.include?(train.name) }
                 .each { |train| train.rusts_on = purchased_train.sym }
           rust_trains!(purchased_train, purchased_train.owner)
         end
@@ -517,9 +531,14 @@ module Engine
           @_shares[share.id] = share
         end
 
+        def private_colors_available(phase)
+          colors = [:yellow]
+          colors << :green if phase.status.include?('green_privates')
+          colors
+        end
+
         def buyable_bank_owned_companies
-          available_colors = [:yellow]
-          available_colors << :green if @phase.status.include?('green_privates')
+          available_colors = private_colors_available(@phase)
           @companies.select do |company|
             !company.closed? && (company.owner == @bank) &&
               available_colors.include?(company.color) &&
@@ -600,8 +619,8 @@ module Engine
           return false if corporation.closed?
           return false unless corporation.floated?
 
-          @graph_broad.reachable_hexes(corporation).any? { |hex, _| home_hex?(minor, hex) } ||
-            @graph_metre.reachable_hexes(corporation).any? { |hex, _| home_hex?(minor, hex) } ||
+          @graph_broad.reachable_hexes(corporation).any? { |hex, _| home_hex?(minor, hex, :broad) } ||
+            @graph_metre.reachable_hexes(corporation).any? { |hex, _| home_hex?(minor, hex, :narrow) } ||
             corporation.placed_tokens.any? { |token| home_hex?(minor, token.city.hex) }
         end
 
@@ -719,6 +738,8 @@ module Engine
           # have any routes to show.
           @corporations.select(&:operated?)
         end
+
+        def after_lay_tile(_hex, _tile, _entity); end
       end
     end
   end

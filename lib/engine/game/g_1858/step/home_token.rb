@@ -77,7 +77,9 @@ module Engine
               # then if the tile is upgraded before the private closes then you
               # can get an extra slot created to accommodate both the token and
               # the reservation, https://github.com/tobymao/18xx/issues/10442.
-              city.remove_reservation!(corporation.companies.first)
+              corporation.companies.each do |company|
+                city.remove_reservation!(company) if city.reserved_by?(company)
+              end
             end
           end
         end
