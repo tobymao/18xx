@@ -63,7 +63,7 @@ module Engine
             'F9' => 'Leeds & Bradford',
             'F11' => 'Hull',
             'G2' => 'Wales Bonus',
-            'G6' => 'Crewe & Stoke on Trend',
+            'G6' => 'Crewe & Stoke on Trent',
             'G8' => 'Derby',
             'G12' => 'Mine Bonus',
             'H3' => '(Wales)',
