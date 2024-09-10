@@ -24,7 +24,7 @@ module Engine
           def can_buy_carriage?(entity)
             return false unless entity
 
-            # have p4 ability left, have carriage cost bucks, doesn't own carriage
+            # have p5 ability left, have carriage cost bucks, doesn't own carriage
             !@game.luxury_ability(entity) &&
             @game.luxury_carriages.values.sum.positive? &&
             entity.cash >= @game.class::CARRIAGE_COST
@@ -51,8 +51,8 @@ module Engine
 
           def process_special_buy(action)
             item = action.item
-            payee = item.description.include?('bank') ?  @game.bank : @game.p4.owner
-            source = item.description.include?('bank') ? 'bank' : 'P4'
+            payee = item.description.include?('bank') ?  @game.bank : @game.p5.owner
+            source = item.description.include?('bank') ? 'bank' : 'P5'
             @game.luxury_carriages[source] -= 1
 
             luxury_ability = Ability::Base.new(
