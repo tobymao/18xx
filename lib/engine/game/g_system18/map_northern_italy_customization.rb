@@ -30,21 +30,21 @@ module Engine
             {
               'count' => 1,
               'color' => 'gray',
-              'code' => 'city=revenue:70;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;'\
-                          'path=a:5,b:_0;label=Torino',
+              'code' => 'city=revenue:70,slots:2;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;'\
+                          'path=a:5,b:_0;label=B',
             },
                          'X2' =>
             {
               'count' => 1,
               'color' => 'gray',
-              'code' => 'city=revenue:90;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;'\
-                          'path=a:5,b:_0;label=Milano',
+              'code' => 'city=revenue:90,slots:2;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;'\
+                          'path=a:5,b:_0;label=B',
             },
                          'X3' =>
             {
               'count' => 1,
               'color' => 'gray',
-              'code' => 'city=revenue:60;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;'\
+              'code' => 'city=revenue:60,slots:2;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;'\
                           'path=a:5,b:_0;label=OO',
             },
                          '513' =>
@@ -113,23 +113,24 @@ module Engine
               %w[C2] => 'offboard=revenue:yellow_30|green_40|brown_50|gray_70;path=a:4,b:_0',
               %w[E2] => 'junction;path=a:3,b:_0,terminal:1;path=a:4,b:_0,terminal:1',
               %w[F9] => 'offboard=revenue:yellow_30|green_50|brown_70|gray_100;path=a:2,b:_0;path=a:3,b:_0',
-              %w[F9] => 'offboard=revenue:yellow_20|green_30|brown_40|gray_50;path=a:2,b:_0',
+              %w[F13] => 'offboard=revenue:yellow_20|green_30|brown_40|gray_50;path=a:2,b:_0',
             },
             white: {
-              %w[E4 E6] => '',
-              %w[B8] => 'border=type:province,color:red,edge:1',
-              %w[C9 D2] => 'upgrade=cost:20,terrain:water',
-              %w[E9] => 'upgrade=cost:20,terrain:water;border=type:province,color:red,edge:2;border=type:province,color:red,edge:3',
-              %w[C5] => 'upgrade=cost:40,terrain:water;border=type:province,color:red,edge:4;border=type:province,color:red,edge:5',
-              %w[D8] => 'town=revenue:0;town=revenue:0;upgrade=cost:20,terrain:water;border=type:province,color:red,edge:0;border=type:province,color:red,edge:5',
-              %w[B6] => 'town=revenue:0;town=revenue:0;upgrade=cost:40,terrain:water;border=type:province,color:red,edge:4;border=type:province,color:red,edge:5',
-              %w[E3] => 'upgrade=cost:80,terrain:mountain',
-              %w[B2 B4] => 'city=revenue:0',
-              %w[A5] => 'city=revenue:0;future_label=label:D,color:green',
-              %w[D10] => 'city=revenue:0;border=type:province,color:red,edge:0',
-              %w[E5] => 'city=revenue:0;border=type:province,color:red,edge:4',
-              %w[D6] => 'city=revenue:0;border=type:province,color:red,edge:2;border=type:province,color:red,edge:1;border=type:province,color:red,edge:0',
-              %w[C3] => 'city=revenue:0;upgrade=cost:20,terrain:water',
+              %w[B3] => 'upgrade=cost:120,terrain:mountain',
+              %w[B7 D5] => 'city=revenue:0;upgrade=cost:40,terrain:mountain',
+              %w[B5] => 'upgrade=cost:40,terrain:mountain;border=type:province,color:red,edge:4',
+              %w[B9 D3] => 'upgrade=cost:80,terrain:mountain',
+              %w[B11] => 'town=revenue:0;town=revenue:0;upgrade=cost:40,terrain:mountain',
+              %w[C8 C10] => 'city=revenue:0;upgrade=cost:20,terrain:water',
+              %w[D7] => 'upgrade=cost:40,terrain:mountain;border=type:province,color:red,edge:1;border=type:province,color:red,edge:2;border=type:province,color:red,edge:3',
+              %w[D9] => 'town=revenue:0;town=revenue:0;border=type:province,color:red,edge:2;border=type:province,color:red,edge:3',
+              %w[D11] => 'city=revenue:0;upgrade=cost:20,terrain:water;border=type:province,color:red,edge:0;border=type:province,color:red,edge:2',
+              %w[E4] => '',
+              %w[E8] => 'town=revenue:0;town=revenue:0;border=type:province,color:red,edge:3;border=edge:3,type:mountain,cost:40;border=type:province,color:red,edge:2',
+              %w[E6] => 'border=type:impassable,color:black,edge:1;border=type:province,color:red,edge:3;border=type:province,color:red,edge:4',
+              %w[E10] => 'city=revenue:0;border=type:province,color:red,edge:2;border=edge:2,type:mountain,cost:40;border=type:province,color:red,edge:3;border=edge:3,type:mountain,cost:40',
+              %w[E12] => 'town=revenue:0;town=revenue:0;border=type:province,color:red,edge:1;border=edge:1,type:mountain,cost:40',
+              %w[F11] => 'upgrade=cost:40,terrain:mountain;border=type:province,color:red,edge:3',
             },
             yellow: {
               %w[C12] => 'city=revenue:30,loc:0;city=revenue:30,loc:2;path=a:1,b:_0;border=type:province,color:red,edge:0;border=type:province,color:red,edge:5;label=OO',
@@ -192,8 +193,8 @@ module Engine
           corps.each_with_index do |c, idx|
             c[:float_percent] = 20
             c[:always_market_price] = true
-            c[:coordinates] = %w[C7 C7 D4 E7 B2][idx]
-            c[:city] = [0, 2, nil, nil, nil][idx]
+            c[:coordinates] = %w[C6 C12 C4 E10 D11][idx]
+            c[:city] = [nil, 0, nil, nil, nil][idx]
           end
           corps
         end
@@ -211,20 +212,23 @@ module Engine
         end
 
         def map_northern_italy_game_market
-          self.class::MARKET_1D
+          self.class::MARKET_2D
         end
 
         def map_northern_italy_game_trains(trains)
-          # don't use D trains
-          trains.delete(find_train(trains, 'D'))
-          find_train(trains, '4')[:rusts_on] = '8'
-          # udpate quantities
-          find_train(trains, '2')[:num] = 4
-          find_train(trains, '3')[:num] = 3
-          find_train(trains, '4')[:num] = 2
+          #rusting
+          find_train(trains, '3')[:rusts_on] = '5'
+          find_train(trains, '5')[:rusts_on] = 'D'
+          #price
+          find_train(trains, '5')[:price] = 450
+          # update quantities
+          find_train(trains, '2')[:num] = 5
+          find_train(trains, '3')[:num] = 4
+          find_train(trains, '4')[:num] = 3
           find_train(trains, '5')[:num] = 2
           find_train(trains, '6')[:num] = 1
-          find_train(trains, '8')[:num] = 10
+          find_train(trains, '8')[:num] = 1
+          find_train(trains, 'D')[:num] = 10
           trains
         end
 
@@ -237,8 +241,8 @@ module Engine
         end
 
         def map_northern_italy_constants
-          redef_const(:CURRENCY_FORMAT_STR, 'zł%s')
-          redef_const(:STATUS_TEXT, { 'local_tokens' => ['Local Tokens', 'Can only token in home country'] })
+          redef_const(:CURRENCY_FORMAT_STR, '$%s')
+          redef_const(:STATUS_TEXT, { 'local_tokens' => ['Local Tokens', 'Can only token in home region'] })
         end
 
         def map_northern_italy_company_header(_company)
@@ -255,8 +259,7 @@ module Engine
             GSystem18::Step::NorthernItalyCharterAuction,
           ])
         end
-        #joost
-
+        
         def map_northern_italy_next_round!
           @round =
             case @round
@@ -319,18 +322,10 @@ module Engine
 
         def map_northern_italy_legal_token_hex?(entity, hex)
           return true unless @phase.name.to_i < 5
+          return true if @phase.name == 'D'
 
           region = NORTHERN_ITALY_CORP_REGIONS[entity&.name]
           NORTHERN_ITALY_REGION_HEXES[region].include?(hex&.id)
-        end
-
-        def map_northern_italy_extra_revenue_for(_route, stops)
-          map_northern_italy_east_west_north_south_bonus(stops)[:revenue]
-        end
-
-        def map_northern_italy_extra_revenue_str(route)
-          bonus = map_northern_italy_east_west_north_south_bonus(route.stops)[:description]
-          bonus ? " + #{bonus}" : ''
         end
 
         # FIXME: add reopen! method to Engine::Company
