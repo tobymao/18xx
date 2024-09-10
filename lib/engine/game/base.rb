@@ -1075,7 +1075,7 @@ module Engine
 
         value = player.cash
         if emergency
-          return liquidity(player) unless @round
+          return liquidity(player, emergency: false) unless @round
 
           value += player.shares_by_corporation.sum do |corporation, shares|
             next 0 if shares.empty?
@@ -2355,6 +2355,10 @@ module Engine
 
       def show_company_owners?
         true
+      end
+
+      def render_revenue_history?(corporation)
+        !corporation.operating_history.empty?
       end
 
       private

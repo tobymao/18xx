@@ -12,7 +12,14 @@ module LayTileCheck
   end
 
   def legal_tile_rotation?(entity, hex, tile)
-    hex.tile.towns.none?(&:halt?) ? super : halt_upgrade_legal_rotation?(entity, hex, tile)
+    if hex.tile.towns.none?(&:halt?)
+      return super unless hex.id == @game.class::ARANJUEZ_HEX
+
+      # handle aranjues hex situation. Tile must be connected to madrid.
+      super && tile.exits.any? { |exit| hex.neighbors[exit] == @game.madrid_hex }
+    else
+      halt_upgrade_legal_rotation?(entity, hex, tile)
+    end
   end
 
   def halt_upgrade_legal_rotation?(entity_or_entities, hex, tile)

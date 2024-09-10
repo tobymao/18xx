@@ -258,15 +258,25 @@ module Engine
           # Red hexes are variable revenue cities
           red: {
             ['A16'] => 'city=revenue:40;path=a:4,b:_0;path=a:5,b:_0;label=+?',
+            ['A18'] => 'icon=image:18_india/cotton-40,large:true,loc:hex;icon=image:18_india/ore-50,large:true,loc:hex;'\
+                       'icon=image:18_india/spices-30,large:true,loc:hex',
             ['D3'] => 'city=revenue:50;path=a:0,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=+?;',
+            ['C4'] => 'icon=image:18_india/opium-100,large:true,loc:hex;icon=image:18_india/spices-40,large:true,loc:hex;',
             ['D23'] => 'city=revenue:60,slots:2,groups:Mumbai;city=revenue:60,groups:Mumbai;path=a:0,b:_0;path=a:3,b:_0;'\
                        'path=a:4,b:_1;path=a:5,b:_1;border=edge:5,type:province;label=+?',
+            ['C24'] => 'icon=image:18_india/oil-30,large:true,loc:hex;icon=image:18_india/spices-40,large:true,loc:hex;',
             ['G36'] => 'city=revenue:40,slots:2;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=+?',
+            ['G38'] => 'icon=image:18_india/gold-50,large:true,loc:hex;icon=image:18_india/spices-70,large:true,loc:hex;',
             ['K30'] => 'city=revenue:50,slots:2;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;border=edge:1,type:province;label=+?',
+            ['L31'] => 'icon=image:18_india/cotton-40,large:true,loc:hex;icon=image:18_india/ore-50,large:true,loc:hex;'\
+                       'icon=image:18_india/spices-50,large:true,loc:hex',
             ['K40'] => 'city=revenue:40;path=a:4,b:_0;label=+?',
+            ['L41'] => 'icon=image:18_india/spices-50,large:true,loc:hex',
             ['M10'] => 'city=revenue:30,groups:Nepal;path=a:0,b:_0;path=a:2,b:_0;city=revenue:30,groups:Nepal;'\
                        'path=a:1,b:_1;path=a:5,b:_1;label=+?',
+            ['N9'] => 'icon=image:18_india/rice-30,large:true,loc:hex;icon=image:18_india/spices-40,large:true,loc:hex;',
             ['Q10'] => 'city=revenue:40;path=a:0,b:_0;path=a:1,b:_0;path=a:5,b:_0;label=+?',
+            ['R9'] => 'icon=image:18_india/rice-30,large:true,loc:hex;icon=image:18_india/spices-40,large:true,loc:hex;',
             ['R17'] => 'city=revenue:30;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;border=edge:1,type:water,cost:30;label=+?',
           },
           gray: {
@@ -277,7 +287,9 @@ module Engine
             ['H39'] => 'town=revenue:10;path=a:3,b:_0;path=a:4,b:_0',
             ['L9'] => 'path=a:1,b:5',
             ['M24'] => 'town=revenue:10;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;border=edge:1,type:water,cost:30',
+            ['N25'] => 'icon=image:18_india/tea-70,large:true,loc:hex;icon=image:18_india/spices-30,large:true,loc:hex;',
             ['P19'] => 'town=revenue:10;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
+            ['Q20'] => 'icon=image:18_india/opium-100,large:true,loc:hex;icon=image:18_india/spices-30,large:true,loc:hex;',
           },
           blue: {
             ['C18'] => 'junction;path=a:4,b:_0,terminal:1',

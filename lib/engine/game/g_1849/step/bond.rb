@@ -15,7 +15,7 @@ module Engine
             actions = []
             actions << 'payoff_loan' if can_payoff_loan?(entity)
             actions << 'take_loan' if can_take_loan?(entity)
-            actions << 'pass' if blocks? && !actions.empty?
+            actions << 'pass' unless actions.empty?
 
             actions
           end

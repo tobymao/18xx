@@ -26,8 +26,8 @@ module Engine
             @round.mine_tile_laid = true
           end
 
-          tokens = hex.tile.cities.first.tokens if hex.id == 'F24'
-          if hex.id == 'F24' && tokens.find { |t| t&.corporation&.name == 'MZ' } && tokens.find do |t|
+          tokens = hex.tile.cities.first.tokens if hex == @game.madrid_hex
+          if hex == @game.madrid_hex && tokens.find { |t| t&.corporation&.name == 'MZ' } && tokens.find do |t|
                t&.corporation&.name == 'MZA'
              end && (action.tile.color == :brown || action.tile.color == :gray)
             mz_token = tokens.find { |t| t&.corporation&.name == 'MZ' }
