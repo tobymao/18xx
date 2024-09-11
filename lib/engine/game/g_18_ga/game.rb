@@ -40,6 +40,16 @@ module Engine
 
         GAME_END_CHECK = { bankrupt: :immediate, stock_market: :current_or, bank: :current_or }.freeze
 
+        OPTION_REMOVE_HEXES = ['G13'].freeze
+        OPTION_ADD_HEXES = {
+          gray: { ['G13'] => 'city=revenue:yellow_30|brown_60,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;' },
+          red: { ['E15'] => 'city=revenue:yellow_30|brown_60;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1' },
+          white: {
+            ['E13'] => '',
+            ['F14'] => 'upgrade=cost:20,terrain:water',
+          },
+        }.freeze
+
         STATUS_TEXT = Base::STATUS_TEXT.merge(
           'can_buy_companies_from_other_players' => ['Interplayer Company Buy',
                                                      'Companies can be bought between players']
@@ -192,6 +202,47 @@ module Engine
 
         def remove_icon_from_waycross
           waycross_hex.tile.icons = []
+        end
+
+        def georgia_railroad
+          corporation_by_id('GA')
+        end
+
+        def savannah
+          @savannah ||= hex_by_id('G13')
+        end
+
+        def charleston
+          @charleston ||= hex_by_id('E15')
+        end
+
+        def optional_hexes
+          return self.class::HEXES unless @optional_rules&.include?(:cotton_port)
+
+          new_hexes = {}
+          HEXES.keys.each do |color|
+            new_map = self.class::HEXES[color].transform_keys do |coords|
+              coords - OPTION_REMOVE_HEXES
+            end
+            OPTION_ADD_HEXES[color]&.each { |coords, tile_str| new_map[coords] = tile_str }
+            new_hexes[color] = new_map
+          end
+
+          new_hexes
+        end
+
+        def place_home_token(corporation)
+          return if corporation.tokens.first&.used == true
+
+          return super unless @optional_rules&.include?(:cotton_port)
+          return super unless corporation == georgia_railroad
+
+          georgia_railroad.coordinates.each do |coordinate|
+            hex = hex_by_id(coordinate)
+            tile = hex&.tile
+            tile.cities.first.place_token(georgia_railroad, georgia_railroad.next_token)
+          end
+          georgia_railroad.coordinates = [georgia_railroad.coordinates.first]
         end
       end
     end
