@@ -789,7 +789,9 @@ module Engine
           end
 
           # Merge the corporation with highest share price, and use the first operated as tie break
-          merged = candidates.max_by { |c| [c.share_price.price, -@round.entities.find_index(c)] }
+          merged = candidates.max_by do |c|
+            [c.share_price.price, -c.share_price.coordinates.last, -c.share_price.coordinates.first]
+          end
 
           nationalize_major(merged)
         end
