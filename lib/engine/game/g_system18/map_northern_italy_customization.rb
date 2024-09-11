@@ -31,14 +31,14 @@ module Engine
               'count' => 1,
               'color' => 'gray',
               'code' => 'city=revenue:70,slots:2;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;'\
-                          'path=a:5,b:_0;label=B',
+                          'path=a:5,b:_0;label=To',
             },
                          'X2' =>
             {
               'count' => 1,
               'color' => 'gray',
               'code' => 'city=revenue:90,slots:2;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;'\
-                          'path=a:5,b:_0;label=B',
+                          'path=a:5,b:_0;label=Mi',
             },
                          'X3' =>
             {
@@ -107,11 +107,11 @@ module Engine
             },
 
             red: {
-              %w[A4] => 'junction;path=a:5,b:_0,terminal:1',
-              %w[A6] => 'offboard=revenue:yellow_30|green_40|brown_50|gray_70;path=a:5,b:_0;path=a:0,b:_0',
+              %w[A4] => 'offboard=revenue:yellow_30|green_40|brown_50|gray_70,hide:1,groups:Switzerland;path=a:5,b:_0',
+              %w[A6] => 'offboard=revenue:yellow_30|green_40|brown_50|gray_70,groups:Switzerland;path=a:5,b:_0;path=a:0,b:_0',
               %w[B13] => 'offboard=revenue:yellow_30|green_40|brown_50|gray_60;path=a:0,b:_0;path=a:1,b:_0',
-              %w[C2] => 'offboard=revenue:yellow_30|green_40|brown_50|gray_70;path=a:4,b:_0',
-              %w[E2] => 'junction;path=a:3,b:_0,terminal:1;path=a:4,b:_0,terminal:1',
+              %w[C2] => 'offboard=revenue:yellow_30|green_40|brown_50|gray_70,groups:France;path=a:4,b:_0',
+              %w[E2] => 'offboard=revenue:yellow_30|green_40|brown_50|gray_70,hide:1,groups:France;path=a:3,b:_0,terminal:1;path=a:4,b:_0',
               %w[F9] => 'offboard=revenue:yellow_30|green_50|brown_70|gray_100;path=a:2,b:_0;path=a:3,b:_0',
               %w[F13] => 'offboard=revenue:yellow_20|green_30|brown_40|gray_50;path=a:2,b:_0',
             },
@@ -123,19 +123,19 @@ module Engine
               %w[B11] => 'town=revenue:0;town=revenue:0;upgrade=cost:40,terrain:mountain',
               %w[C8 C10] => 'city=revenue:0;upgrade=cost:20,terrain:water',
               %w[D7] => 'upgrade=cost:40,terrain:mountain;border=type:province,color:red,edge:1;border=type:province,color:red,edge:2;border=type:province,color:red,edge:3',
-              %w[D9] => 'town=revenue:0;town=revenue:0;border=type:province,color:red,edge:2;border=type:province,color:red,edge:3',
-              %w[D11] => 'city=revenue:0;upgrade=cost:20,terrain:water;border=type:province,color:red,edge:0;border=type:province,color:red,edge:2',
+              %w[D9] => 'town=revenue:0;town=revenue:0;border=type:province,color:red,edge:2;border=type:province,color:red,edge:3;border=edge:0,type:mountain,cost:40;border=edge:5,type:mountain,cost:40',
+              %w[D11] => 'city=revenue:0;upgrade=cost:20,terrain:water;border=type:province,color:red,edge:0;border=type:province,color:red,edge:2;border=edge:0,type:mountain,cost:40',
               %w[E4] => '',
               %w[E8] => 'town=revenue:0;town=revenue:0;border=type:province,color:red,edge:3;border=edge:3,type:mountain,cost:40;border=type:province,color:red,edge:2',
               %w[E6] => 'border=type:impassable,color:black,edge:1;border=type:province,color:red,edge:3;border=type:province,color:red,edge:4',
-              %w[E10] => 'city=revenue:0;border=type:province,color:red,edge:2;border=edge:2,type:mountain,cost:40;border=type:province,color:red,edge:3;border=edge:3,type:mountain,cost:40',
+              %w[E10] => 'city=revenue:0;border=type:province,color:red,edge:2;border=edge:2,type:mountain,cost:40;border=type:province,color:red,edge:3;border=edge:3,type:mountain,cost:40;border=edge:4,type:mountain,cost:40',
               %w[E12] => 'town=revenue:0;town=revenue:0;border=type:province,color:red,edge:1;border=edge:1,type:mountain,cost:40',
               %w[F11] => 'upgrade=cost:40,terrain:mountain;border=type:province,color:red,edge:3',
             },
             yellow: {
               %w[C12] => 'city=revenue:30,loc:0;city=revenue:30,loc:2;path=a:1,b:_0;border=type:province,color:red,edge:0;border=type:province,color:red,edge:5;label=OO',
-              %w[C6] => 'city=revenue:30;path=a:4,b:_0;border=type:province,color:red,edge:0;border=type:province,color:red,edge:2;label=B',
-              %w[C4] => 'city=revenue:30;path=a:5,b:_0;border=type:province,color:red,edge:4;label=B',
+              %w[C6] => 'city=revenue:30;path=a:4,b:_0;border=type:province,color:red,edge:0;border=type:province,color:red,edge:2;future_label=label:Mi,color:gray;label=B',
+              %w[C4] => 'city=revenue:30;path=a:5,b:_0;border=type:province,color:red,edge:4;future_label=label:To,color:gray;label=B',
             },
           }
         end
@@ -211,6 +211,14 @@ module Engine
           :incremental
         end
 
+        def map_northern_italy_half_dividend
+          return false
+        end
+
+        def map_northern_italy_hare_price_change_as_full_cap
+          return false
+        end
+
         def map_northern_italy_game_market
           self.class::MARKET_2D
         end
@@ -221,6 +229,8 @@ module Engine
           find_train(trains, '5')[:rusts_on] = 'D'
           #price
           find_train(trains, '5')[:price] = 450
+          #discount
+          find_train(trains, 'D')[:discount] = { '4' => 200, '5' => 200, '6' => 200, '8' => 200 }
           # update quantities
           find_train(trains, '2')[:num] = 5
           find_train(trains, '3')[:num] = 4
@@ -233,16 +243,27 @@ module Engine
         end
 
         def map_northern_italy_game_phases
-          phases = self.class::S18_INCCAP_PHASES
+          phases = Array.new(self.class::S18_INCCAP_PHASES)
           phases[0][:status] = ['local_tokens'] # 2
           phases[1][:status] = ['local_tokens'] # 3
           phases[2][:status] = ['local_tokens'] # 4
+          
+          phases << {
+              name: 'D',
+              on: 'D',
+              train_limit: 2,
+              tiles: %i[yellow green brown gray],
+              operating_rounds: 2,
+            }
+          
           phases
         end
 
         def map_northern_italy_constants
           redef_const(:CURRENCY_FORMAT_STR, '$%s')
           redef_const(:STATUS_TEXT, { 'local_tokens' => ['Local Tokens', 'Can only token in home region'] })
+          redef_const(:SELL_MOVEMENT, :down_share)
+          redef_const(:SOLD_OUT_INCREASE, true)
         end
 
         def map_northern_italy_company_header(_company)
@@ -326,6 +347,24 @@ module Engine
 
           region = NORTHERN_ITALY_CORP_REGIONS[entity&.name]
           NORTHERN_ITALY_REGION_HEXES[region].include?(hex&.id)
+        end
+
+        def map_northern_italy_operating_steps
+          [
+            GSystem18::Step::Bankrupt,
+            Engine::Step::Exchange,
+            Engine::Step::SpecialTrack,
+            Engine::Step::SpecialToken,
+            Engine::Step::BuyCompany,
+            Engine::Step::HomeToken,
+            GSystem18::Step::Track,
+            GSystem18::Step::Token,
+            Engine::Step::Route,
+            GSystem18::Step::Dividend,
+            Engine::Step::DiscardTrain,
+            GSystem18::Step::BuyTrain,
+            GSystem18::Step::IssueShares,
+          ]
         end
 
         # FIXME: add reopen! method to Engine::Company

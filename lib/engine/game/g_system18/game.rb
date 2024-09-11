@@ -369,7 +369,15 @@ module Engine
         end
 
         def half_dividend_by_map?
-          game_capitalization == :incremental
+          return game_capitalization == :incremental unless respond_to?("map_#{map_name}_half_dividend")
+
+          send("map_#{map_name}_half_dividend")          
+        end
+
+        def share_price_change_as_full_cap_by_map?
+          return game_capitalization == :incremental unless respond_to?("map_#{map_name}_share_price_change_as_full_cap")
+
+          send("map_#{map_name}_share_price_change_as_full_cap")          
         end
 
         def redef_const(const, value)
@@ -626,6 +634,14 @@ module Engine
 
         def ipo_name(_corp)
           game_capitalization == :incremental ? 'Treasury' : 'IPO'
+        end
+
+        def issuable_shares(entity)
+          return [] unless entity.operating_history.size > 1
+          return [] unless entity.corporation?
+
+          bundles_for_corporation(entity, entity)
+            .select { |bundle| @share_pool.fit_in_bank?(bundle) }
         end
       end
     end
