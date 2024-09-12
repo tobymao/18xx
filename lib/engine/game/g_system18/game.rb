@@ -375,7 +375,7 @@ module Engine
         end
 
         def share_price_change_as_full_cap_by_map?
-          return game_capitalization == :incremental unless respond_to?("map_#{map_name}_share_price_change_as_full_cap")
+          return game_capitalization == :full unless respond_to?("map_#{map_name}_share_price_change_as_full_cap")
 
           send("map_#{map_name}_share_price_change_as_full_cap")          
         end

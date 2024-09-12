@@ -215,8 +215,8 @@ module Engine
           return false
         end
 
-        def map_northern_italy_hare_price_change_as_full_cap
-          return false
+        def map_northern_italy_share_price_change_as_full_cap
+          return true
         end
 
         def map_northern_italy_game_market
@@ -226,11 +226,12 @@ module Engine
         def map_northern_italy_game_trains(trains)
           #rusting
           find_train(trains, '3')[:rusts_on] = '5'
-          find_train(trains, '5')[:rusts_on] = 'D'
+          find_train(trains, '4')[:rusts_on] = '8'
+          find_train(trains, '5')[:rusts_on] = 'D'          
           #price
           find_train(trains, '5')[:price] = 450
           #discount
-          find_train(trains, 'D')[:discount] = { '4' => 200, '5' => 200, '6' => 200, '8' => 200 }
+          find_train(trains, 'D')[:discount] = {'5' => 200, '6' => 200, '8' => 200 }
           # update quantities
           find_train(trains, '2')[:num] = 5
           find_train(trains, '3')[:num] = 4
