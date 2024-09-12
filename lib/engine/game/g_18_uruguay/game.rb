@@ -283,6 +283,7 @@ module Engine
 
         def operating_round(round_num)
           Round::Operating.new(self, [
+            G18Uruguay::Step::DestinationBonus,
             Engine::Step::Bankrupt,
             Engine::Step::Exchange,
             G18Uruguay::Step::Farm,

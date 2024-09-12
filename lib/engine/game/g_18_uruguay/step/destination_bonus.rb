@@ -12,8 +12,10 @@ module Engine
           end
 
           def log_skip(entity)
-            return if entity.minor?
+            return unless entity.corporation?
             return if entity == @game.rptla
+            return if @game.abilities(entity, :destination_bonus).nil?
+            return if destination_node_check?(entity).nil?
 
             super
           end
@@ -21,15 +23,16 @@ module Engine
           def actions(entity)
             return [] if entity.minor?
             return [] if entity == @game.rptla
+            return [] if @game.abilities(entity, :destination_bonus).nil?
 
             self.class::ACTIONS
           end
 
           def auto_actions(entity)
-            corporations = @round.entities.select { |c| destination_node_check?(c) }
-            return [Engine::Action::Pass.new(entity)] if corporations.empty?
+            return [] unless entity.corporation?
+            return [Engine::Action::Pass.new(entity)] if destination_node_check?(entity).nil?
 
-            [Engine::Action::DestinationConnection.new(entity, corporations: corporations)]
+            [Engine::Action::DestinationConnection.new(entity, corporations: [entity])]
           end
 
           def destination_node_check?(corporation)
