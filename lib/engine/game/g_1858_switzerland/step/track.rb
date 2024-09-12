@@ -53,7 +53,7 @@ module Engine
           end
 
           def tile_upgradeable?(tile)
-            colors = potential_tile_colors
+            colors = potential_tile_colors(current_entity, tile.hex)
             @game.all_tiles.any? do |upgrade|
               @game.tile_valid_for_phase?(upgrade, phase_color_cache: colors) &&
                 tile.paths_are_subset_of?(upgrade.paths) &&
