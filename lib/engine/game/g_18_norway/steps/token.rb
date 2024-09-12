@@ -40,7 +40,7 @@ module Engine
               city_name = @game.harbor_city_coordinates(hex.id) + city_string
               raise GameError, "Cannot reach city #{city_name}" unless harbor_available?(entity, hex)
 
-              place_token(entity, action.city, action.token, connected: false)
+              place_token(entity, action.city, action.token, connected: false, extra_slot: true)
 
             else
               city_string = hex.tile.cities.size > 1 ? " city #{city.index}" : ''
@@ -48,31 +48,6 @@ module Engine
             end
             @game.clear_graph
             pass!
-          end
-
-          def place_token(entity, city, token, connected: true, extra_action: false,
-                          special_ability: nil, check_tokenable: true, spender: nil, same_hex_allowed: false)
-            hex = city.hex
-
-            check_connected(entity, city, hex) if connected
-            raise GameError, 'Token already placed this turn' if !extra_action && @round.tokened
-
-            raise GameError, 'Token is already used' if token.used
-
-            free = !token.price.positive?
-            cheater = false
-            extra_slot = @game.harbor_hex?(hex)
-            city.place_token(entity, token, free: free, check_tokenable: check_tokenable,
-                                            cheater: cheater, extra_slot: extra_slot, spender: spender,
-                                            same_hex_allowed: same_hex_allowed)
-            pay_token_cost(spender || entity, token.price, city)
-            price_log = " for #{@game.format_currency(token.price)}"
-
-            hex_description = hex.location_name ? "#{hex.name} (#{hex.location_name}) " : "#{hex.name} "
-            @log << "#{entity.name} places a token on #{hex_description}#{price_log}"
-
-            @round.tokened = true
-            @game.clear_token_graph_for_entity(entity)
           end
         end
       end
