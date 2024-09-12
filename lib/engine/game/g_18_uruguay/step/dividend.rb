@@ -39,6 +39,7 @@ module Engine
           end
 
           def auto_actions(entity)
+            return [] unless entity.corporation?
             return [] unless @game.nationalized?
             return [] if entity.loans.empty?
 
