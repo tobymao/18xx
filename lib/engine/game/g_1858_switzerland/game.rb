@@ -347,6 +347,13 @@ module Engine
             (operator == gb_minor && gauge == :broad)
         end
 
+        def corporation_private_connected?(corporation, minor)
+          # Private railway companies cannot be exchanged for shares of SBB.
+          return false if corporation.type == :national
+
+          super
+        end
+
         def robot_owner?(entity)
           return false unless robot?
           return false if !entity.corporation? && !entity.minor?
