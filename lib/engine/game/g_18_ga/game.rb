@@ -40,8 +40,8 @@ module Engine
 
         GAME_END_CHECK = { bankrupt: :immediate, stock_market: :current_or, bank: :current_or }.freeze
 
-        OPTION_REMOVE_HEXES = ['G13'].freeze
-        OPTION_ADD_HEXES = {
+        COTTON_REMOVE_HEXES = ['G13'].freeze
+        COTTON_ADD_HEXES = {
           gray: { ['G13'] => 'city=revenue:yellow_30|brown_60,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;' },
           red: { ['E15'] => 'city=revenue:yellow_30|brown_60;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1' },
           white: {
@@ -222,9 +222,9 @@ module Engine
           new_hexes = {}
           HEXES.keys.each do |color|
             new_map = self.class::HEXES[color].transform_keys do |coords|
-              coords - OPTION_REMOVE_HEXES
+              coords - COTTON_REMOVE_HEXES
             end
-            OPTION_ADD_HEXES[color]&.each { |coords, tile_str| new_map[coords] = tile_str }
+            COTTON_ADD_HEXES[color]&.each { |coords, tile_str| new_map[coords] = tile_str }
             new_hexes[color] = new_map
           end
 
