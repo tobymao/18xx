@@ -442,6 +442,7 @@ module Engine
               when 1
                 start_merge(current_entity.owner)
               when 2
+                acquire_shares
                 decrease_stock_value
                 retreive_home_tokens
                 close_companies

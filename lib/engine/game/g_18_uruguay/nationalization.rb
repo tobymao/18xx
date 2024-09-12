@@ -23,12 +23,15 @@ module Engine
           affected
         end
 
-        def find_president(holders, corps)
+        def find_president(holders, corps, secondary_corps)
           president_candidate = nil
           candidate_sum = 0
           holders.each do |holder|
             entity_shares = affected_shares(holder, corps)
-            sum = entity_shares.sum(&:percent)
+            sum = (entity_shares.sum(&:percent) / 20).to_i * 10
+            sum = secondary_corps.reduce(sum) do |second_sum, secondary_corp|
+              second_sum + (secondary_corp.president?(holder) ? 10 : 0)
+            end
             if sum > candidate_sum
               president_candidate = holder
               candidate_sum = sum
@@ -52,18 +55,22 @@ module Engine
           corporation.owner = owner
         end
 
-        def acquire_shares_in_fce(corp_fce, merge_data)
-          new_president = find_president(merge_data[:holders], merge_data[:corps])
-          transfer_pres_share(corp_fce, new_president)
+        def acquire_shares
+          new_president = find_president(@merge_data[:holders], @merge_data[:corps], @merge_data[:secondary_corps])
+          transfer_pres_share(@fce, new_president)
 
-          merge_data[:holders].each do |holder|
+          @merge_data[:holders].each do |holder|
             aquired = 0
             aquired = 20 if holder == new_president
-            entity_shares = affected_shares(holder, merge_data[:corps])
+            entity_shares = affected_shares(holder, @merge_data[:corps])
+
             total_percent = entity_shares.sum(&:percent)
             aquire_percent = (total_percent / 20).to_i * 10
+            aquire_percent = @merge_data[:secondary_corps].reduce(aquire_percent) do |sum, secondary_corps|
+              sum + (secondary_corps.president?(holder) ? 10 : 0)
+            end
             while aquired < aquire_percent
-              share = corp_fce.shares.first
+              share = @fce.shares.first
               aquired += share.percent
               transfer_share(share, holder)
             end
@@ -72,11 +79,11 @@ module Engine
             odd_share = aquired * 2 != total_percent
             next unless odd_share
 
-            price = corp_fce.share_price.price / 2
+            price = @fce.share_price.price / 2
             @bank.spend(price, holder)
             @log << "#{holder.name} receives  #{price} from half share"
           end
-          @log << "#{new_president.name} becomes new president of #{corp_fce.name}"
+          @log << "#{new_president.name} becomes new president of #{@fce.name}"
         end
 
         def compute_merger_share_price(corps)
@@ -134,12 +141,13 @@ module Engine
           candidates = corps_to_nationalize
           corps = candidates.take(2)
           @merge_data = {
-            holders: share_holder_list(originatior, corps),
+            holders: share_holder_list(originatior, candidates),
             corps: corps,
             secondary_corps: [],
             home_tokens: [],
             tokens: [],
             candidates: candidates,
+            corp_share_sum: 0,
           }
 
           if corps.empty?
@@ -153,8 +161,9 @@ module Engine
           @fce.floatable = true
           @stock_market.set_par(@fce, fce_share_price)
           after_par(@fce)
-
-          acquire_shares_in_fce(@fce, @merge_data)
+          @merge_data[:corp_share_sum] = @merge_data[:holders].reduce(0) do |sum, holder|
+            sum + ((affected_shares(holder, @merge_data[:corps]).sum(&:percent) / 20).to_i * 10)
+          end
         end
 
         def nationalization_final_export!
