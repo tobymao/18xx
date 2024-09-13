@@ -10,12 +10,12 @@ module Engine
           def available_hex(entity, hex)
             return true if super(entity, hex)
 
-            return true if check_available_harbour(entity, hex)
+            return true if harbor_available?(entity, hex)
 
             false
           end
 
-          def check_available_harbour(entity, hex)
+          def harbor_available?(entity, hex)
             city = @game.harbor_city_coordinates(hex.id)
             return false if city.nil?
 
