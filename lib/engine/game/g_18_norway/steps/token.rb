@@ -37,8 +37,6 @@ module Engine
             if connected_city
               place_token(entity, action.city, action.token)
             elsif @game.harbor_hex?(city.hex)
-              reachable_hexes = @game.ferry_graph.reachable_hexes(entity)[city.hex]
-
               @game.abilities(entity, :token) do |ability|
                 place_token(entity, action.city, action.token, connected: false, special_ability: ability)
               end
