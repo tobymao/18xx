@@ -16,7 +16,7 @@ module Engine
           end
 
           def check_available_harbour(entity, hex)
-            city = @game.harbor_city_id_by_harbor_id(hex.id)
+            city = @game.harbor_city_coordinates(hex.id)
             return false if city.nil?
 
             other_hex = @game.hex_by_id(city)
