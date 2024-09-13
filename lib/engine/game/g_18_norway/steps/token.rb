@@ -21,9 +21,8 @@ module Engine
 
             other_hex = @game.hex_by_id(city)
 
-            return false unless @game.ferry_graph.reachable_hexes(entity)[other_hex]
-
-            true
+            @game.ferry_graph.reachable_hexes(entity)[other_hex] ||
+            @game.token_graph_for_entity(entity).reachable_hexes(entity)[other_hex]
           end
 
           def can_place_token?(_entity)
@@ -33,12 +32,14 @@ module Engine
           def process_place_token(action)
             entity = action.entity
             city = action.city
-            connected_city = @game.loading || @game.token_graph_for_entity(entity).connected_nodes(entity)[city]
+            connected_city = @game.token_graph_for_entity(entity).connected_nodes(entity)[city]
             if connected_city
               place_token(entity, action.city, action.token)
-            elsif @game.harbor_hex?(city.hex)
+            elsif harbor_available?(entity, city.hex)
               @game.abilities(entity, :token) do |ability|
                 place_token(entity, action.city, action.token, connected: false, special_ability: ability)
+                entity.add_ability(Ability::Token.new(type: 'token', hexes: Engine::Game::G18Norway::Game::HARBOR_HEXES,
+                                                      from_owner: true, discount: 0, connected: true))
               end
             else
               raise GameError, "Cannot place token on #{city.hex.name} city is not connected"
