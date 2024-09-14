@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'corporation'
+require_relative 'depot'
 require_relative 'entities'
 require_relative 'map'
 require_relative 'meta'
@@ -15,6 +16,7 @@ module Engine
         include Map
 
         CORPORATION_CLASS = G1837::Corporation
+        DEPOT_CLASS = G1837::Depot
 
         CURRENCY_FORMAT_STR = '%sK'
 
@@ -181,7 +183,53 @@ module Engine
             ],
             price: 960,
           },
+          {
+            name: '1G',
+            num: 10,
+            distance: [
+              { 'nodes' => %w[city offboard], 'pay' => 2, 'visit' => 2 },
+              { 'nodes' => %w[town], 'pay' => 99, 'visit' => 99 },
+            ],
+            available_on: '2',
+            rusts_on: %w[3G 4G],
+            price: 100,
+          },
+          {
+            name: '2G',
+            num: 6,
+            distance: [
+              { 'nodes' => %w[city offboard], 'pay' => 3, 'visit' => 3 },
+              { 'nodes' => %w[town], 'pay' => 99, 'visit' => 99 },
+            ],
+            available_on: '3',
+            rusts_on: '4G',
+            price: 230,
+          },
+          {
+            name: '3G',
+            num: 2,
+            distance: [
+              { 'nodes' => %w[city offboard], 'pay' => 4, 'visit' => 4 },
+              { 'nodes' => %w[town], 'pay' => 99, 'visit' => 99 },
+            ],
+            available_on: '4',
+            price: 590,
+          },
+          {
+            name: '4G',
+            num: 20,
+            distance: [
+              { 'nodes' => %w[city offboard], 'pay' => 5, 'visit' => 5 },
+              { 'nodes' => %w[town], 'pay' => 99, 'visit' => 99 },
+            ],
+            available_on: '5',
+            price: 1000,
+          },
         ].freeze
+
+        ASSIGNMENT_TOKENS = {
+          'coal' => '/icons/1837/coalcar.svg',
+        }.freeze
 
         def company_header(company)
           return 'COAL COMPANY' if company.color == :black
@@ -211,8 +259,15 @@ module Engine
         def setup
           non_purchasable = @companies.flat_map { |c| c.meta['additional_companies'] }.compact
           @companies.each { |company| company.owner = @bank unless non_purchasable.include?(company.id) }
+          setup_mines
           setup_minors
           setup_nationals
+        end
+
+        def setup_mines
+          self.class::MINE_HEXES.each do |hex_id|
+            hex_by_id(hex_id).assign!(:coal)
+          end
         end
 
         def setup_minors
@@ -264,6 +319,7 @@ module Engine
           Engine::Round::Operating.new(self, [
             Engine::Step::Bankrupt,
             Engine::Step::DiscardTrain,
+            G1837::Step::SpecialTrack,
             Engine::Step::Track,
             G1837::Step::Token,
             Engine::Step::Route,
@@ -277,7 +333,7 @@ module Engine
         end
 
         def unowned_purchasable_companies(_entity)
-          @companies.reject(&:owner).reject(non_purchasable_companies)
+          @companies.select { |c| c.owner == @bank }
         end
 
         def after_company_acquisition(company)
@@ -316,6 +372,30 @@ module Engine
           @log << "#{corporation.name} floats"
           @bank.spend(corporation.par_price.price * corporation.total_ipo_shares, corporation)
           @log << "#{corporation.name} receives #{format_currency(corporation.cash)}"
+        end
+
+        def must_buy_train?(entity)
+          %i[major national].include?(entity.type)
+        end
+
+        def freight_train?(train_name)
+          train_name.end_with?('G')
+        end
+
+        def can_buy_train_from_others?
+          @phase.name.to_i >= 3
+        end
+
+        def revenue_for(route, stops)
+          super - mine_revenue(route, stops)
+        end
+
+        def routes_subsidy(routes)
+          routes.sum { |route| mine_revenue(route, route.stops) }
+        end
+
+        def mine_revenue(route, stops)
+          stops.select { |s| s.hex.assigned?(:coal) }.sum { |s| s.route_revenue(route.phase, route.train) }
         end
       end
     end
