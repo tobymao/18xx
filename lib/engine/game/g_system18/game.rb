@@ -366,8 +366,8 @@ module Engine
             phases = send("map_#{map_name}_post_game_phases", phases)
           else
             # change last phase based on train roster
-            phases[-1][:name] = game_trains.last[:name]
-            phases[-1][:on] = game_trains.last[:name]
+            phases.last[:name] = game_trains.last[:name]
+            phases.last[:on] = game_trains.last[:name]
           end
 
           phases
@@ -673,6 +673,12 @@ module Engine
           return unless respond_to?("map_#{map_name}_pre_lay_tile_action")
 
           send("map_#{map_name}_pre_lay_tile_action", action, entity, tile_lay)
+        end
+
+        def place_home_token(corporation)
+          return unless respond_to?("map_#{map_name}_place_home_token")
+
+          send("map_#{map_name}_place_home_token", corporation)
         end
       end
     end

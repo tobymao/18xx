@@ -12,10 +12,10 @@ module Engine
         BRITAIN_MINE_HEXES = %w[B7 D9 G10 I4].freeze
         BRITAIN_LONDON_HEX = 'K10'
 
-        BRITAIN_SCOTLAND_BONUS = [10, 20, 20, 30, 30, 30, 40].freeze
-        BRITAIN_WALES_BONUS = [10, 20, 20, 20, 20, 20, 30].freeze
-        BRITAIN_LONDON_BONUS = [10, 20, 20, 30, 30, 30, 40].freeze
-        BRITAIN_MINE_BONUS = [10, 20, 20, 30, 30, 30, 40].freeze
+        BRITAIN_SCOTLAND_BONUS_VAL_HEX = 'A4'
+        BRITAIN_WALES_BONUS_VAL_HEX = 'G2'
+        BRITAIN_LONDON_BONUS_VAL_HEX = 'L11'
+        BRITAIN_MINE_BONUS_VAL_HEX = 'G12'
 
         # rubocop:disable Layout/LineLength
         def map_britain_game_tiles(tiles)
@@ -81,7 +81,7 @@ module Engine
             'K2' => 'Plymouth',
             'K8' => 'Reading & Guildford',
             'K10' => 'London',
-            'L5' => 'Southhampton',
+            'L5' => 'Southampton',
             'L7' => 'Portsmouth',
             'L11' => 'London Port Bonus',
           }
@@ -109,7 +109,7 @@ module Engine
             },
             green: {
               %w[F7] => 'city=revenue:40,pos:0;city=revenue:40,pos:2;path=a:0,b:_0;path=a:2,b:_1;label=OO',
-              %w[H7] => 'city=revenue:40,pos:3;city=revenue:40,pos:5;path=a:5,b:_1;path=a:5,b:_1;label=OO',
+              %w[H7] => 'city=revenue:40,pos:3;city=revenue:40,pos:5;path=a:3,b:_1;path=a:5,b:_0;label=OO',
             },
             yellow: {
               %w[A6] => 'city=revenue:30;path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0;label=B',
@@ -131,11 +131,11 @@ module Engine
               %w[E6 E10] => 'city=revenue:0',
               %w[E8] => 'upgrade=cost:80,terrain:mountain',
               %w[E12] => 'upgrade=cost:40,terrain:mountain',
-              %w[F11] => 'upgrade=cost:20,terrain:water',
+              %w[F11] => 'city=revenue:0;upgrade=cost:20,terrain:water',
               %w[G4] => 'upgrade=cost:40,terrain:mountain;border=type:province,color:brown,edge:4;border=type:province,color:brown,edge:5',
               %w[G6] => 'town=revenue:0;town=revenue:0;border=type:province,color:brown,edge:1',
               %w[G8] => 'city=revenue:0',
-              %w[G10] => 'upgrade=cost:40,terrain:water;icon=image:mine,sticky:1',
+              %w[G10] => 'upgrade=cost:20,terrain:water;icon=image:mine,sticky:1',
               %w[H3] => 'upgrade=cost:40,terrain:mountain;border=type:province,color:brown,edge:4',
               %w[H5] => 'border=type:province,color:brown,edge:0;border=type:province,color:brown,edge:1;border=type:province,color:brown,edge:2',
               %w[H9] => 'city=revenue:0',
@@ -227,8 +227,8 @@ module Engine
           corps.each_with_index do |c, idx|
             c[:float_percent] = 20
             c[:always_market_price] = true
-            c[:tokens].append(100)
-            c[:coordinates] = %w[F7 J5 F9 A6 I12 A8][idx]
+            c[:tokens] = [40, 100, 100, 100]
+            c[:coordinates] = [%w[F7 I8], 'J5', %w[F9 G8], 'A6', 'I12', 'A8'][idx]
             c[:city] = [1, nil, 1, nil, nil, nil][idx]
           end
           corps
@@ -286,17 +286,12 @@ module Engine
         end
 
         def map_britain_setup
-          # add 2 DRG and PHX tokens each to map
-          dragon = corporations.find { |c| c.name == 'DGN' }
-          hexes.find { |h| h.id == 'F7' }.tile.cities[1].place_token(dragon, dragon.tokens[0], free: true)
-          hexes.find { |h| h.id == 'I8' }.tile.cities[0].place_token(dragon, dragon.tokens[1], free: true)
-
-          phoenix = corporations.find { |c| c.name == 'PHX' }
-          hexes.find { |h| h.id == 'F9' }.tile.cities[1].place_token(phoenix, phoenix.tokens[0], free: true)
-          hexes.find { |h| h.id == 'G8' }.tile.cities[0].place_token(phoenix, phoenix.tokens[1], free: true)
-
           @britain_mines = BRITAIN_MINE_HEXES.map { |h| hex_by_id(h) }
           @britain_corps_with_mines = {}
+          @scotland_bonus_val = hex_by_id(BRITAIN_SCOTLAND_BONUS_VAL_HEX).tile.offboards.first
+          @wales_bonus_val = hex_by_id(BRITAIN_WALES_BONUS_VAL_HEX).tile.offboards.first
+          @london_bonus_val = hex_by_id(BRITAIN_LONDON_BONUS_VAL_HEX).tile.offboards.first
+          @mine_bonus_val = hex_by_id(BRITAIN_MINE_BONUS_VAL_HEX).tile.offboards.first
         end
 
         def map_britain_company_header(_company)
@@ -406,14 +401,14 @@ module Engine
           bonus = { revenue: 0 }
           return bonus unless train
 
-          desc = ''
+          desc = []
 
           # mines (no 4D doubling), only on one run
           corp = train.owner
           lowest_train = route.routes.reject { |r| r.stops.empty? }.min_by { |r| corp.trains.index(r.train) }.train
           if (train == lowest_train) && corp && @britain_corps_with_mines[corp.name]
-            bonus[:revenue] += BRITAIN_MINE_BONUS[@phase.name.to_i - 2]
-            desc = 'Mine'
+            bonus[:revenue] += @mine_bonus_val.route_revenue(@phase, train)
+            desc << 'Mine'
           end
 
           # Scotland (doubles with 4D)
@@ -422,30 +417,27 @@ module Engine
           end
           non_scotland_city = stops.find { |stop| !BRITAIN_REGION_HEXES['Scotland'].include?(stop.hex.id) && stop.city? }
           if scotland_city && non_scotland_city
-            bonus[:revenue] += BRITAIN_SCOTLAND_BONUS[@phase.name.to_i - 2] * (train.name == '4D' ? 2 : 1)
-            desc += ', ' unless desc == ''
-            desc += 'Scotland'
+            bonus[:revenue] += @scotland_bonus_val.route_revenue(@phase, train) * (train.name == '4D' ? 2 : 1)
+            desc << 'Scotland'
           end
 
           # Wales (doubles with 4D)
           wales_city = stops.find { |stop| BRITAIN_REGION_HEXES['Wales'].include?(stop.hex.id) && (stop.city? || stop.offboard?) }
           non_wales_city = stops.find { |stop| !BRITAIN_REGION_HEXES['Wales'].include?(stop.hex.id) && stop.city? }
           if wales_city && non_wales_city
-            bonus[:revenue] += BRITAIN_WALES_BONUS[@phase.name.to_i - 2] * (train.name == '4D' ? 2 : 1)
-            desc += ', ' unless desc == ''
-            desc += 'Wales'
+            bonus[:revenue] += @wales_bonus_val.route_revenue(@phase, train) * (train.name == '4D' ? 2 : 1)
+            desc << 'Wales'
           end
 
           # London-Port (doubles with 4D)
           london = stops.find { |stop| stop.hex.id == BRITAIN_LONDON_HEX }
           port = stops.find { |stop| stop.tile.icons.any? { |i| i.name == 'port' } }
           if london && port
-            bonus[:revenue] += BRITAIN_LONDON_BONUS[@phase.name.to_i - 2] * (train.name == '4D' ? 2 : 1)
-            desc += ', ' unless desc == ''
-            desc += 'London-Port'
+            bonus[:revenue] += @london_bonus_val.route_revenue(@phase, train) * (train.name == '4D' ? 2 : 1)
+            desc << 'London-Port'
           end
 
-          bonus[:description] = "(#{desc})" unless desc == ''
+          bonus[:description] = "(#{desc.join(', ')})" unless desc == ''
           bonus
         end
 
@@ -459,8 +451,7 @@ module Engine
           return unless action
 
           if action[:lay_replaced] && @round.upgraded_track &&
-              (@round.laid_hexes.first.tile.color == :green) &&
-              @round.laid_hexes.first.tile.cities.empty?
+              (@round.laid_hexes.first.tile.color == :green)
             action[:lay_replaced] = true
             action[:lay] = true
           else
@@ -482,6 +473,21 @@ module Engine
           end
 
           @round.last_old_tile = old_tile
+        end
+
+        def map_britain_place_home_token(corporation)
+          return if corporation.tokens.first&.used
+
+          Array(corporation.coordinates).each do |coord|
+            hex = hex_by_id(coord)
+            tile = hex&.tile
+            cities = tile.cities
+            city = cities.find { |c| c.reserved_by?(corporation) } || cities.first
+            token = corporation.find_token_by_type
+
+            @log << "#{corporation.name} places a token on #{hex.name}"
+            city.place_token(corporation, token)
+          end
         end
 
         # FIXME: add reopen! method to Engine::Company
