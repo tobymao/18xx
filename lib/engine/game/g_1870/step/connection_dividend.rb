@@ -38,7 +38,7 @@ module Engine
 
             @round.routes = []
 
-            log_run_payout(entity, kind, revenue, action, payout)
+            log_run_payout(entity, kind, revenue, 0, action, payout)
 
             @game.bank.spend(payout[:corporation], entity) if payout[:corporation].positive?
 
