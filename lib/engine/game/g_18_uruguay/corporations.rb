@@ -22,7 +22,7 @@ module Engine
             abilities: [],
           },
           {
-            float_percent: 20,
+            float_percent: 30,
             sym: 'RPTLA',
             name: 'The River Plate Trust, Loan & Agency Company, ltd',
             logo: '1848/BOE',

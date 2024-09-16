@@ -68,7 +68,8 @@ module Engine
 
             !corporation.operating_history.empty? &&
               minor.owner != corporation.owner &&
-              treasury_share?(share)
+              treasury_share?(share) &&
+              !corporation.receivership?
           end
 
           def log_request(minor, major)

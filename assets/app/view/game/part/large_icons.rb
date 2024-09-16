@@ -35,6 +35,9 @@ module View
             if (decoration = @game&.decorate_marker(icon))
               color = decoration[:color]
               case decoration[:shape]
+              when :none # do not render a decoration with the icon [reference 'decorate_marker' method in game]
+                radius += 4
+                decor = nil
               when :circle
                 radius -= 4
                 adjust = 4

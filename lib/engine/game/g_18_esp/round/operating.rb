@@ -14,10 +14,6 @@ module Engine
             end
             super
           end
-
-          def skip_entity?(entity)
-            @game.minors_stop_operating && entity.type == :minor ? true : super
-          end
         end
       end
     end

@@ -16,15 +16,26 @@ module Engine
 
             actions = []
             actions << 'lay_tile' if can_lay_tile?(entity)
-            actions << 'choose' if opening_mountain_pass?(entity) && @game.can_build_mountain_pass
+            if opening_mountain_pass?(entity) && @game.phase.status.include?('mountain_pass') && !@round.opened_mountain_pass
+              actions << 'choose'
+            end
             actions << 'place_token' if can_place_token?(entity)
             actions << 'pass' if actions.any?
             actions
           end
 
+          def round_state
+            super.merge(
+              {
+                opened_mountain_pass: false,
+              }
+            )
+          end
+
           def setup
             super
             @tokened = false
+            @round.opened_mountain_pass = false
           end
 
           def process_place_token(action)
@@ -59,6 +70,7 @@ module Engine
           def process_choose(action)
             @game.open_mountain_pass(action.entity, action.choice)
             @game.graph_for_entity(action.entity).clear
+            @round.opened_mountain_pass = true
           end
 
           def skip!

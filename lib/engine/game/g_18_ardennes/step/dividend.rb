@@ -7,6 +7,9 @@ module Engine
     module G18Ardennes
       module Step
         class Dividend < Engine::Step::Dividend
+          # Public companies cannot enter the left-handmost space on the market.
+          MAJOR_MIN_PRICE = 50
+
           def auto_actions(entity)
             return super unless entity.receivership?
 
@@ -28,7 +31,7 @@ module Engine
             price = entity.share_price.price
             revenue *= 2 if entity.type == :minor
 
-            if revenue.zero?
+            if revenue.zero? && (price > MAJOR_MIN_PRICE || entity.type == :minor)
               { share_direction: :left, share_times: 1 }
             elsif (revenue >= price * 2) &&
                   (entity.type != :'10-share') &&
