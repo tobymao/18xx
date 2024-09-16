@@ -145,7 +145,7 @@ module Engine
           'G20' => 'Blackpool',
           'G22' => 'Liverpool',
           'G24' => 'Chester',
-          'G28' => 'Shrewbury',
+          'G28' => 'Shrewsbury',
           'H1' => 'Aberdeen',
           'H3' => 'Dunfermline',
           'H5' => 'Edinburgh',
