@@ -31,8 +31,6 @@ module Engine
             (revenue / entity.total_shares.to_f)
           end
 
-
-          
           def share_price_change(entity, _revenue)
             # Share price of national does not change until it owns a permanent
             return {} if entity == @game.national && !@game.national_ever_owned_permanent
@@ -49,7 +47,7 @@ module Engine
             super - (@round.interest_penalty[@round.current_operator] || 0)
           end
 
-          def log_run_payout(entity, kind, revenue, subsidy, action, payout)
+          def log_run_payout(entity, kind, revenue, _subsidy, action, payout)
             if (@round.interest_penalty[entity] || 0).positive?
               @log << "#{entity.name} deducts #{@game.format_currency(@round.interest_penalty[entity])}"\
                       ' for unpaid interest'
