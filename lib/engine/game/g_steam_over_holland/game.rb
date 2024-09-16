@@ -422,7 +422,6 @@ module Engine
 
         def emergency_issuable_bundles(entity)
           return [] if @round.issued_shares[entity]
-          return [] if entity.all_abilities.find { |a| a.type == :train_discount } && entity.cash >= @depot.min_depot_price * 0.9
 
           num_shares = [entity.num_player_shares, 5 - entity.num_market_shares].min
 

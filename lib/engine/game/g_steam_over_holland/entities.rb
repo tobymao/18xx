@@ -116,7 +116,7 @@ module Engine
                 type: 'train_discount',
                 discount: 0.1,
                 trains: %w[3 4 5],
-                when: 'buy_train',
+                when: 'buying_train',
                 owner_type: 'corporation',
               },
             ],
