@@ -371,13 +371,13 @@ module Engine
         def half_dividend_by_map?
           return game_capitalization == :incremental unless respond_to?("map_#{map_name}_half_dividend")
 
-          send("map_#{map_name}_half_dividend")          
+          send("map_#{map_name}_half_dividend")
         end
 
         def share_price_change_as_full_cap_by_map?
           return game_capitalization == :full unless respond_to?("map_#{map_name}_share_price_change_as_full_cap")
 
-          send("map_#{map_name}_share_price_change_as_full_cap")          
+          send("map_#{map_name}_share_price_change_as_full_cap")
         end
 
         def redef_const(const, value)

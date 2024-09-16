@@ -31,21 +31,21 @@ module Engine
               'count' => 1,
               'color' => 'gray',
               'code' => 'city=revenue:70,slots:2;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;'\
-                          'path=a:5,b:_0;label=To',
+                        'path=a:5,b:_0;label=To',
             },
                          'X2' =>
             {
               'count' => 1,
               'color' => 'gray',
               'code' => 'city=revenue:90,slots:2;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;'\
-                          'path=a:5,b:_0;label=Mi',
+                        'path=a:5,b:_0;label=Mi',
             },
                          'X3' =>
             {
               'count' => 1,
               'color' => 'gray',
               'code' => 'city=revenue:60,slots:2;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;'\
-                          'path=a:5,b:_0;label=OO',
+                        'path=a:5,b:_0;label=OO',
             },
                          '513' =>
             {
@@ -81,9 +81,9 @@ module Engine
             'C6' => 'Milano',
             'C8' => 'Brescia',
             'C10' => 'Verona',
-            'C12' => 'Padova & Venzéia',
+            'C12' => 'Padova & Venezia',
             'D5' => 'Genova',
-            'D7' => '(Emilia-Romagra)',
+            'D7' => '(Emilia-Romagna)',
             'D9' => 'Parma & Modena',
             'D11' => 'Bologna',
             'E2' => 'France',
@@ -92,7 +92,7 @@ module Engine
             'E10' => 'Firenze',
             'E12' => 'Ravenna & Rimini',
             'F9' => 'Roma',
-            'F11' => '(Tuscana)',
+            'F11' => '(Toscana)',
             'F13' => 'Ancona',
           }
         end
@@ -212,11 +212,11 @@ module Engine
         end
 
         def map_northern_italy_half_dividend
-          return false
+          false
         end
 
         def map_northern_italy_share_price_change_as_full_cap
-          return true
+          true
         end
 
         def map_northern_italy_game_market
@@ -224,14 +224,14 @@ module Engine
         end
 
         def map_northern_italy_game_trains(trains)
-          #rusting
+          # rusting
           find_train(trains, '3')[:rusts_on] = '5'
           find_train(trains, '4')[:rusts_on] = '8'
-          find_train(trains, '5')[:rusts_on] = 'D'          
-          #price
+          find_train(trains, '5')[:rusts_on] = 'D'
+          # price
           find_train(trains, '5')[:price] = 450
-          #discount
-          find_train(trains, 'D')[:discount] = {'5' => 200, '6' => 200, '8' => 200 }
+          # discount
+          find_train(trains, 'D')[:discount] = { '5' => 200, '6' => 200, '8' => 200 }
           # update quantities
           find_train(trains, '2')[:num] = 5
           find_train(trains, '3')[:num] = 4
@@ -248,15 +248,15 @@ module Engine
           phases[0][:status] = ['local_tokens'] # 2
           phases[1][:status] = ['local_tokens'] # 3
           phases[2][:status] = ['local_tokens'] # 4
-          
+
           phases << {
-              name: 'D',
-              on: 'D',
-              train_limit: 2,
-              tiles: %i[yellow green brown gray],
-              operating_rounds: 2,
-            }
-          
+            name: 'D',
+            on: 'D',
+            train_limit: 2,
+            tiles: %i[yellow green brown gray],
+            operating_rounds: 2,
+          }
+
           phases
         end
 
@@ -277,11 +277,11 @@ module Engine
 
         def map_northern_italy_new_parliament_round
           @log << "-- Parliament Round #{@turn} -- "
-          GSystem18::Round::NorthernItalyParliament.new(self, [ 
+          GSystem18::Round::NorthernItalyParliament.new(self, [
             GSystem18::Step::NorthernItalyCharterAuction,
           ])
         end
-        
+
         def map_northern_italy_next_round!
           @round =
             case @round
