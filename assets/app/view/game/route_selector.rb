@@ -264,7 +264,7 @@ module View
         end
 
         auto = lambda do
-        @routes.each(&:reset!)
+          @routes.each(&:reset!)
           router = Engine::AutoRouter.new(@game, flash)
           @routes = router.compute(
             @game.current_entity,
