@@ -16,10 +16,9 @@ module Engine
           end
 
           def harbor_available?(entity, hex)
-            city = @game.harbor_city_coordinates(hex.id)
-            return false if city.nil?
+            other_hex = @game.hex_by_id(@game.harbor_city_coordinates(hex.id))
+            return false unless other_hex
 
-            other_hex = @game.hex_by_id(city)
 
             @game.ferry_graph.reachable_hexes(entity)[other_hex] ||
             @game.token_graph_for_entity(entity).reachable_hexes(entity)[other_hex]
