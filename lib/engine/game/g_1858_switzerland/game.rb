@@ -392,6 +392,12 @@ module Engine
           entity.corporation? ? ROBOT_MAJOR_TILE_LAYS : ROBOT_MINOR_TILE_LAYS
         end
 
+        def can_par?(corporation, parrer)
+          return false if corporation == sbb
+
+          super
+        end
+
         def close_company(company)
           # Bit of a hack to avoid rewriting the method in G1858::Game.
           # This avoids the SBB being paid for any of their companies.
