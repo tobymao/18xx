@@ -403,14 +403,6 @@ module Engine
 
           desc = []
 
-          # mines (no 4D doubling), only on one run
-          corp = train.owner
-          lowest_train = route.routes.reject { |r| r.stops.empty? }.min_by { |r| corp.trains.index(r.train) }.train
-          if (train == lowest_train) && corp && @britain_corps_with_mines[corp.name]
-            bonus[:revenue] += @mine_bonus_val.route_revenue(@phase, train)
-            desc << 'Mine'
-          end
-
           # Scotland (doubles with 4D)
           scotland_city = stops.find do |stop|
             BRITAIN_REGION_HEXES['Scotland'].include?(stop.hex.id) && (stop.city? || stop.offboard?)
@@ -437,8 +429,30 @@ module Engine
             desc << 'London-Port'
           end
 
-          bonus[:description] = "(#{desc.join(', ')})" unless desc == ''
+          bonus[:description] = "(#{desc.join(', ')})" unless desc.empty?
           bonus
+        end
+
+        def map_britain_mine_bonus(routes)
+          valid_route = routes.find { |r| !r.stops.empty? }
+          train = valid_route&.train
+          if train && @britain_corps_with_mines[train.owner.name]
+            @mine_bonus_val.route_revenue(@phase, train)
+          else
+            0
+          end
+        end
+
+        def map_britain_extra_revenue(_entity, routes)
+          map_britain_mine_bonus(routes)
+        end
+
+        def map_britain_submit_revenue_str(routes, _show_subsidy)
+          train_revenue = routes_revenue(routes)
+          mine_revenue = map_britain_mine_bonus(routes)
+          return format_revenue_currency(train_revenue) if mine_revenue.zero?
+
+          "#{format_revenue_currency(train_revenue)} + #{format_revenue_currency(mine_revenue)} mine bonus"
         end
 
         def map_britain_status_str(corporation)

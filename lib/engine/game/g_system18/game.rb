@@ -623,6 +623,18 @@ module Engine
           revenue_str + send("map_#{map_name}_extra_revenue_str", route)
         end
 
+        def extra_revenue(entity, routes)
+          return unless respond_to?("map_#{map_name}_extra_revenue")
+
+          send("map_#{map_name}_extra_revenue", entity, routes)
+        end
+
+        def submit_revenue_str(routes, show_subsidy)
+          return unless respond_to?("map_#{map_name}_submit_revenue_str")
+
+          send("map_#{map_name}_submit_revenue_str", routes, show_subsidy)
+        end
+
         def timeline
           return super unless respond_to?("map_#{map_name}_timeline")
 
