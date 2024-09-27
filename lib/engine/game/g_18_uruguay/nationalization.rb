@@ -38,7 +38,7 @@ module Engine
             bundle = Engine::ShareBundle.new(@fce.shares.reject(&:president).take(num_shares)) unless num_shares == 10
             @share_pool.transfer_shares(bundle, holder, allow_president_change: true)
             number = num_shares
-            @log << "#{holder.name} receives  #{num_shares*10}% in FCE in exchange to the nationalized shares"
+            @log << "#{holder.name} receives  #{num_shares * 10}% in FCE in exchange to the nationalized shares"
 
             next unless odd_share
 
