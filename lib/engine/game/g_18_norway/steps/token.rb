@@ -8,11 +8,7 @@ module Engine
       module Step
         class Token < Engine::Step::Token
           def available_hex(entity, hex)
-            return true if super(entity, hex)
-
-            return true if harbor_available?(entity, hex)
-
-            false
+            super(entity, hex) || harbor_available?(entity, hex)
           end
 
           def harbor_available?(entity, hex)
