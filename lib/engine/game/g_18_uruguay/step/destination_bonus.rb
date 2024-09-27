@@ -29,7 +29,7 @@ module Engine
 
           def auto_actions(entity)
             return [] unless entity.corporation?
-            return [Engine::Action::Pass.new(entity)] if destination_node_check?(entity).nil?
+            return [Engine::Action::Pass.new(entity)] unless destination_node_check?(entity)
 
             [Engine::Action::DestinationConnection.new(entity, corporations: [entity])]
           end
