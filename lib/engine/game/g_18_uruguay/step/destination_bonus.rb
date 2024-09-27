@@ -35,11 +35,11 @@ module Engine
           end
 
           def destination_node_check?(corporation)
-            return if corporation.closed?
-            return if corporation.destination_coordinates.nil?
+            return false if corporation.closed?
+            return false if corporation.destination_coordinates.nil?
 
             ability = @game.abilities(corporation, :destination_bonus)
-            return if ability.nil?
+            return false if ability.nil?
 
             destination_hex = @game.hex_by_id(corporation.destination_coordinates)
             home_node = corporation.tokens.first.city
