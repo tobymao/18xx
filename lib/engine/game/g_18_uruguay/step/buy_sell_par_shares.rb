@@ -7,14 +7,14 @@ module Engine
     module G18Uruguay
       module Step
         class BuySellParShares < Engine::Step::BuySellParShares
-          def can_buy?(entity, bundle)
+          def can_gain?(entity, bundle, exchange: false)
             return false if bundle&.corporation == @game.rptla && !@game.phase.status.include?('rptla_available')
-            return true if loan_limit(entity, bundle)
+            return true if excess_loans?(entity, bundle)
 
-            super(entity, bundle)
+            super
           end
 
-          def loan_limit(_entity, bundle)
+          def excess_loans?(_entity, bundle)
             return false if bundle.nil?
             return false if bundle.owner.corporation?
 
