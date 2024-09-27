@@ -7,16 +7,6 @@ module Engine
     module G18Uruguay
       module Step
         class RouteRptla < Engine::Step::Route
-          SHIP_CAPACITY =
-            {
-              'Ship 1' => 1,
-              'Ship 2' => 1,
-              'Ship 3' => 2,
-              'Ship 4' => 2,
-              'Ship 5' => 3,
-              'Ship 6' => 3,
-            }.freeze
-
           def description
             'Ship to England'
           end

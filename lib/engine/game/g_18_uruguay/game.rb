@@ -547,7 +547,10 @@ module Engine
         end
 
         def ship_capacity(train)
-          SHIP_CAPACITY[train.name.partition('+')[0]]
+          val = SHIP_CAPACITY[train.name]
+          return 0 if val.nil?
+
+          val
         end
       end
     end
