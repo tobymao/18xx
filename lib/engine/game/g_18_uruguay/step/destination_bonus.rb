@@ -14,8 +14,7 @@ module Engine
           def log_skip(entity)
             return unless entity.corporation?
             return if entity == @game.rptla
-            return if @game.abilities(entity, :destination_bonus).nil?
-            return if destination_node_check?(entity).nil?
+            return unless destination_node_check?(entity)
 
             super
           end
