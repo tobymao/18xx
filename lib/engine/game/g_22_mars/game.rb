@@ -168,18 +168,105 @@ module Engine
           },
         ].freeze
 
+        # Game specific constants
         LAST_OR = 11
+        FIRST_REVOLT_CHECK_OR = 7
+        LAST_REVOLT_CHECK_OR = 10
 
-        @or = 0
+        def setup
+          @or = 0
+          @three_or_round = false
+          @revolt_round = determine_revolt_round
+        end
 
         def end_now?(_after)
           @or == LAST_OR
         end
 
+        def setup_preround
+          revolts, permits = @companies.partition(&:revolt?)
+          sorted_permits = permits.sort_by { rand }
+          sorted_revolts = revolts.sort_by { rand }
+
+          @companies = sorted_permits.take(@players.size)
+          assigned_companies = sorted_permits.drop(@players.size) + sorted_revolts
+
+          assigned_companies.zip(@corporations).each do |company, corporation|
+            if corporation
+              company.owner = corporation
+              corporation.companies << company
+              @log << "#{company.name} is assigned to #{corporation.name}"
+            else
+              company.close!
+              @log << "#{company.name} is discarded"
+            end
+          end
+        end
+
+        def unowned_purchasable_companies
+          @companies
+        end
+
+        def init_round
+          G22Mars::Round::PermitPurchase.new(self, [G22Mars::Step::SelectOrDiscard])
+        end
+
         def new_operating_round(round_num = 1)
           @or += 1
 
-          super
+          if @or == 9
+            @operating_rounds = 3
+            @three_or_round = true
+          end
+
+          round = super
+
+          check_revolt!
+
+          round
+        end
+
+        def or_round_finished
+          # In case we get phase change during the last OR set we ensure we have 3 ORs
+          @operating_rounds = 3 if @three_or_round
+        end
+
+        def revolt_happened?
+          @revolt_happened
+        end
+
+        def determine_revolt_round
+          (FIRST_REVOLT_CHECK_OR..LAST_REVOLT_CHECK_OR).each do |round|
+            probability = LAST_REVOLT_CHECK_OR - round + 1
+
+            return round if (rand % probability).zero?
+          end
+        end
+
+        def check_revolt!
+          return if @or < FIRST_REVOLT_CHECK_OR || revolt_happened?
+
+          if @or == @revolt_round
+            revolt!
+          else
+            @log << 'Revolt! does not happen'
+          end
+        end
+
+        def revolt!
+          @log << '-- Revolt!'
+          @log << '-- All permits were discarded. You can now use abilities of Revolt! cards.'
+          @log << '-- All Convict bases are now neutral and cities with them generate no revenue.'
+
+          @revolt_happened = true
+
+          @companies.each do |company|
+            company.close! unless abilities(company, :close, on_phase: 'never')
+          end
+        end
+
+        def ipo_name(_entity = nil)
+          'Treasury'
         end
 
         def timeline
@@ -209,14 +296,24 @@ module Engine
             { type: :OR, name: '5' },
             { type: :OR, name: '6' },
             { type: :SR, name: '4' },
-            { type: :OR, name: '7', value: '✘/✔' },
-            { type: :OR, name: '8', value: '✘/✔' },
+            { type: :OR, name: '7', value: draw_revolt_marker(7) },
+            { type: :OR, name: '8', value: draw_revolt_marker(8) },
             { type: :SR, name: '5' },
-            { type: :OR, name: '9', value: '✘/✔' },
-            { type: :OR, name: '10', value: '✔' },
+            { type: :OR, name: '9', value: draw_revolt_marker(9) },
+            { type: :OR, name: '10', value: draw_revolt_marker(10) },
             { type: :OR, name: '11' },
             { type: :End },
           ]
+        end
+
+        def draw_revolt_marker(or_number)
+          if @revolt_happened
+            return '✔' if or_number == @revolt_round
+
+            or_number < @revolt_round ? '✘' : '—'
+          else
+            or_number == LAST_REVOLT_CHECK_OR ? '✔' : '✘/✔'
+          end
         end
 
         def price_movement_chart
@@ -232,6 +329,12 @@ module Engine
 
         def company_header(company)
           company.revolt? ? 'REVOLT!' : 'PERMIT'
+        end
+
+        def round_description(name, round_number = nil)
+          return 'Permit Purchase Round' if name == 'PermitPurchase'
+
+          super
         end
       end
     end
