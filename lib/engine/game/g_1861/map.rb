@@ -138,7 +138,7 @@ module Engine
           'H8' => 'Moscow',
           'H10' => 'Tula',
           'H18' => 'Yuzovka',
-          'I5' => 'Yaroslav',
+          'I5' => 'Yaroslavl',
           'I13' => 'Voronezh',
           'I17' => 'Lugansk',
           'I19' => 'Rostov',
