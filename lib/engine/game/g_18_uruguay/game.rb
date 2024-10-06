@@ -339,6 +339,7 @@ module Engine
           float_capitalization = nationalized? ? 10 : 5
 
           amount = corporation.par_price.price * float_capitalization
+          abilities(corporation, :destination_bonus).use! if nationalized?
           @bank.spend(amount, corporation)
           @log << "#{corporation.name} receives #{format_currency(corporation.cash)}"
           take_loan(corporation, @loans[0]) if @loans.size.positive? && !nationalized?
