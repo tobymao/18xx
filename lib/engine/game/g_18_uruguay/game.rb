@@ -32,6 +32,16 @@ module Engine
         include Goods
         include Nationalization
 
+        SHIP_CAPACITY =
+          {
+            'Ship 1' => 1,
+            'Ship 2' => 1,
+            'Ship 3' => 2,
+            'Ship 4' => 2,
+            'Ship 5' => 3,
+            'Ship 6' => 3,
+          }.freeze
+
         EBUY_SELL_MORE_THAN_NEEDED = true
         EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
 
@@ -535,6 +545,13 @@ module Engine
           return super if nationalized?
 
           super.reject { |c| c == @rptla }.append(@rptla)
+        end
+
+        def ship_capacity(train)
+          val = SHIP_CAPACITY[train.name]
+          return 0 if val.nil?
+
+          val
         end
       end
     end
