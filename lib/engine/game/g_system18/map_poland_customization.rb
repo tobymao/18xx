@@ -257,8 +257,8 @@ module Engine
 
         def map_poland_new_parliament_round
           @log << "-- Parliament Round #{@turn} -- "
-          GSystem18::Round::PolandParliament.new(self, [
-            GSystem18::Step::PolandCharterAuction,
+          GSystem18::Round::Parliament.new(self, [
+            GSystem18::Step::CharterAuction,
           ])
         end
 

@@ -8,14 +8,14 @@ module Engine
       module Meta
         include Game::Meta
 
-        DEV_STAGE = :alpha
+        DEV_STAGE = :beta
         DEPENDS_ON = '1817'
 
         GAME_DESIGNER = 'Michael Carter, Anthony Fryer, & Nick Neylon'
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18Hiawatha'
         GAME_LOCATION = 'Midwest USA'
         GAME_TITLE = '18 Hiawatha'
-        GAME_RULES_URL = 'https://boardgamegeek.com/filepage/279555/18-hiawatha-official-game-rules'
+        GAME_RULES_URL = 'https://boardgamegeek.com/filepage/279677/18-hiawatha-rules-from-mainline-issue-1'
 
         PLAYER_RANGE = [3, 6].freeze
 
