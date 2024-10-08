@@ -75,7 +75,7 @@ module Engine
           setup_company_price_50_to_150_percent
 
           @recently_floated = []
-          make_train_soft_rust if @optional_rules&.include?(:soft_rust_4t)
+          make_train_soft_rust if @optional_rules.include?(:soft_rust_4t)
 
           # Place neutral tokens in the off board cities
           neutral = Corporation.new(
@@ -89,7 +89,7 @@ module Engine
 
           neutral.tokens.each { |token| token.type = :neutral }
 
-          corporation_by_id('CoG').tokens.pop if @optional_rules&.include?(:remove_cog_token)
+          corporation_by_id('CoG').tokens.pop if @optional_rules.include?(:remove_cog_token)
 
           city_by_id('E1-0-0').place_token(neutral, neutral.next_token)
           city_by_id('J4-0-0').place_token(neutral, neutral.next_token)
@@ -108,7 +108,7 @@ module Engine
         end
 
         def tile_lays(entity)
-          return super if !@optional_rules&.include?(:double_yellow_first_or) ||
+          return super if !@optional_rules.include?(:double_yellow_first_or) ||
             !@recently_floated&.include?(entity)
 
           [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }]
@@ -205,7 +205,7 @@ module Engine
         end
 
         def georgia_railroad
-          corporation_by_id('GA')
+          @georgia_railroad ||= corporation_by_id('GA')
         end
 
         def savannah
@@ -217,10 +217,10 @@ module Engine
         end
 
         def optional_hexes
-          return self.class::HEXES unless @optional_rules&.include?(:cotton_port)
+          return self.class::HEXES unless cotton_port?
 
           new_hexes = {}
-          HEXES.keys.each do |color|
+          HEXES.each_key do |color|
             new_map = self.class::HEXES[color].transform_keys do |coords|
               coords - COTTON_REMOVE_HEXES
             end
@@ -232,9 +232,9 @@ module Engine
         end
 
         def place_home_token(corporation)
-          return if corporation.tokens.first&.used == true
+          return if corporation.tokens.first.used
 
-          return super unless @optional_rules&.include?(:cotton_port)
+          return super unless cotton_port?
           return super unless corporation == georgia_railroad
 
           georgia_railroad.coordinates.each do |coordinate|
@@ -243,6 +243,10 @@ module Engine
             tile.cities.first.place_token(georgia_railroad, georgia_railroad.next_token)
           end
           georgia_railroad.coordinates = [georgia_railroad.coordinates.first]
+        end
+
+        def cotton_port?
+          @cotton_port || @optional_rules.include?(:cotton_port)
         end
       end
     end
