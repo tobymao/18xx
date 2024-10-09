@@ -12,8 +12,9 @@ module Engine
           def actions(entity)
             # National must withhold if it never owned a permanent
             return [] if entity.corporation? && entity == @game.national && !@game.national_ever_owned_permanent
+            return [] if entity.company? || routes.empty?
 
-            super
+            Engine::Step::Dividend::ACTIONS
           end
 
           def dividend_options(entity)
