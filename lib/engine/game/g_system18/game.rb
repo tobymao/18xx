@@ -624,13 +624,13 @@ module Engine
         end
 
         def extra_revenue(entity, routes)
-          return unless respond_to?("map_#{map_name}_extra_revenue")
+          return super unless respond_to?("map_#{map_name}_extra_revenue")
 
           send("map_#{map_name}_extra_revenue", entity, routes)
         end
 
         def submit_revenue_str(routes, show_subsidy)
-          return unless respond_to?("map_#{map_name}_submit_revenue_str")
+          return super unless respond_to?("map_#{map_name}_submit_revenue_str")
 
           send("map_#{map_name}_submit_revenue_str", routes, show_subsidy)
         end
@@ -670,7 +670,7 @@ module Engine
         end
 
         def status_str(corporation)
-          return unless respond_to?("map_#{map_name}_status_str")
+          return super unless respond_to?("map_#{map_name}_status_str")
 
           send("map_#{map_name}_status_str", corporation)
         end
@@ -688,7 +688,7 @@ module Engine
         end
 
         def place_home_token(corporation)
-          return unless respond_to?("map_#{map_name}_place_home_token")
+          return super unless respond_to?("map_#{map_name}_place_home_token")
 
           send("map_#{map_name}_place_home_token", corporation)
         end
