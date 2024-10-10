@@ -141,6 +141,7 @@ module Engine
           Engine::Round::Operating.new(self, [
             G18Ardennes::Step::Bankrupt,
             G18Ardennes::Step::Convert,
+            G18Ardennes::Step::IssueShares,
             G18Ardennes::Step::Exchange,
             G18Ardennes::Step::DeclineTokens,
             G18Ardennes::Step::DeclineTrains,
@@ -250,6 +251,18 @@ module Engine
           return if old_limit == new_limit
 
           @log << "Certificate limit increases to #{new_limit}."
+        end
+
+        # Shares that can be issued as part of a public company's operating
+        # turn. This is not allowed on a public company's first turn.
+        def issuable_shares(corporation)
+          return [] unless corporation.corporation?
+          return [] if corporation.type == :minor
+          return [] if corporation.operating_history.empty?
+
+          bundles_for_corporation(corporation, corporation).select do |bundle|
+            @share_pool.fit_in_bank?(bundle)
+          end
         end
 
         private
