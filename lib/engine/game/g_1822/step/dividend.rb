@@ -41,15 +41,13 @@ module Engine
             if extra_train
               train = find_extra_train(entity)
               extra_train_revenue = routes.find { |r| r.train == train }.revenue
-              extra_train_payout = send(@extra_train_choice, entity, extra_train_revenue, 0)
+              extra_train_payout = send(@extra_train_choice, entity, extra_train_revenue)
               revenue = total_revenue - extra_train_revenue
             else
               revenue = total_revenue
             end
-            subsidy = @game.routes_subsidy(routes)
-            total_revenue += subsidy
             dividend_types.to_h do |type|
-              payout = send(type, entity, revenue, subsidy)
+              payout = send(type, entity, revenue)
               if extra_train
                 payout[:corporation] += extra_train_payout[:corporation]
                 payout[:per_share] += extra_train_payout[:per_share]
@@ -67,9 +65,9 @@ module Engine
             revenue.positive? && revenue != @game.routes_revenue(routes) ? train : nil
           end
 
-          def half(entity, revenue, subsidy)
+          def half(entity, revenue)
             withheld = half_pay_withhold_amount(entity, revenue)
-            { corporation: withheld + subsidy, per_share: payout_per_share(entity, revenue - withheld) }
+            { corporation: withheld, per_share: payout_per_share(entity, revenue - withheld) }
           end
 
           def half_pay_withhold_amount(entity, revenue)
@@ -83,7 +81,7 @@ module Engine
           def log_run_payout(entity, kind, revenue, subsidy, _action, payout)
             @log << "#{entity.name} runs for #{@game.format_currency(revenue)} and pays half" if kind == 'half'
 
-            withhold = payout[:corporation] - subsidy
+            withhold = payout[:corporation]
             if withhold.positive?
               @log << "#{entity.name} withholds #{@game.format_currency(withhold)}"
             elsif payout[:per_share].zero?
@@ -92,8 +90,8 @@ module Engine
             @log << "#{entity.name} earns subsidy of #{@game.format_currency(subsidy)}" if subsidy.positive?
           end
 
-          def payout(entity, revenue, subsidy)
-            { corporation: subsidy, per_share: payout_per_share(entity, revenue) }
+          def payout(entity, revenue)
+            { corporation: 0, per_share: payout_per_share(entity, revenue) }
           end
 
           def payout_shares(entity, revenue)
@@ -138,8 +136,8 @@ module Engine
 
             @round.routes = []
             log_run_payout(entity, kind, revenue, subsidy, action, payout)
-            @game.bank.spend(payout[:corporation], entity) if payout[:corporation].positive?
-            payout_shares(entity, revenue + subsidy - payout[:corporation]) if payout[:per_share].positive?
+            payout_corporation(payout[:corporation] + subsidy, entity)
+            payout_shares(entity, revenue - payout[:corporation]) if payout[:per_share].positive?
             change_share_price(entity, payout)
 
             pass!
@@ -171,8 +169,8 @@ module Engine
             end
           end
 
-          def withhold(_entity, revenue, subsidy)
-            { corporation: revenue + subsidy, per_share: 0 }
+          def withhold(_entity, revenue)
+            { corporation: revenue, per_share: 0 }
           end
         end
       end

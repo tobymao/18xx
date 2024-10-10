@@ -11,10 +11,9 @@ module Engine
 
           def dividend_options(entity)
             revenue = @game.routes_revenue(routes)
-            subsidy = @game.routes_subsidy(routes)
 
             dividend_types.to_h do |type|
-              [type, send(type, entity, revenue, subsidy)]
+              [type, send(type, entity, revenue)]
             end
           end
 
@@ -22,9 +21,9 @@ module Engine
             :right if revenue >= @game.threshold(entity)
           end
 
-          def withhold(_entity, revenue, subsidy)
+          def withhold(_entity, revenue)
             {
-              corporation: (revenue / 25.0).ceil + subsidy,
+              corporation: (revenue / 25.0).ceil,
               per_share: 0,
               share_direction: :left,
               share_times: 1,
@@ -32,9 +31,9 @@ module Engine
             }
           end
 
-          def payout(entity, revenue, subsidy)
+          def payout(entity, revenue)
             {
-              corporation: subsidy,
+              corporation: 0,
               per_share: payout_per_share(entity, revenue),
               share_direction: revenue >= @game.threshold(entity) ? :right : nil,
               share_times: 1,
@@ -63,11 +62,8 @@ module Engine
 
           def process_dividend(action)
             @subsidy = @game.routes_subsidy(routes)
-
             super
-
             @subsidy = 0
-
             action.entity.remove_assignment!('BARREL') if @game.two_barrels_used_this_or?(action.entity)
           end
 

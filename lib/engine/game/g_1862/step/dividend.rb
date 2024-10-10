@@ -65,7 +65,7 @@ module Engine
             revenue = @game.routes_revenue(routes)
             subsidy = @game.routes_subsidy(routes)
             actual_dividend_types(entity, revenue, subsidy).to_h do |type|
-              payout = send(type, entity, revenue, subsidy)
+              payout = send(type, entity, revenue)
               payout[:divs_to_corporation] = corporation_dividends(entity, payout[:per_share])
               net_revenue = revenue
               net_revenue += hudson_delta(entity, revenue) if type == :hudson
@@ -95,10 +95,11 @@ module Engine
             @round.routes = []
 
             log_run_payout(entity, kind, revenue, subsidy, action, payout)
-            if kind == :hudson && payout[:corporation].negative?
-              entity.spend(-payout[:corporation], @game.bank)
-            elsif payout[:corporation].positive?
-              @game.bank.spend(payout[:corporation], entity)
+            corporation_total_payout = payout[:corporation] + subsidy
+            if kind == :hudson && corporation_total_payout.negative?
+              entity.spend(-corporation_total_payout, @game.bank)
+            elsif corporation_total_payout.positive?
+              @game.bank.spend(corporation_total_payout, entity)
             end
             payout_shares(entity, revenue) if payout[:per_share].positive?
             change_share_price(entity, payout)
@@ -151,17 +152,17 @@ module Engine
             end
           end
 
-          def withhold(_entity, revenue, subsidy)
-            { corporation: revenue + subsidy, per_share: 0 }
+          def withhold(_entity, revenue)
+            { corporation: revenue, per_share: 0 }
           end
 
-          def payout(entity, revenue, subsidy)
-            { corporation: subsidy, per_share: payout_per_share(entity, revenue) }
+          def payout(entity, revenue)
+            { corporation: 0, per_share: payout_per_share(entity, revenue) }
           end
 
-          def hudson(entity, revenue, subsidy)
+          def hudson(entity, revenue)
             diff = hudson_delta(entity, revenue)
-            { corporation: subsidy - diff, per_share: payout_per_share(entity, revenue + diff) }
+            { corporation: -diff, per_share: payout_per_share(entity, revenue + diff) }
           end
 
           def handle_warranties!(entity)

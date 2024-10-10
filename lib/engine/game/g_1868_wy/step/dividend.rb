@@ -21,7 +21,7 @@ module Engine
             end
           end
 
-          def log_run_payout(entity, kind, revenue, action, payout)
+          def log_run_payout(entity, kind, revenue, subsidy, action, payout)
             super unless entity.minor?
           end
 
