@@ -11,52 +11,17 @@ module Engine
         class Dividend < Engine::Step::Dividend
           def dividend_options(entity)
             revenue = @game.routes_revenue(routes)
-            subsidy = @game.routes_subsidy(routes)
             dividend_types.to_h do |type|
-              payout = send(type, entity, revenue, subsidy)
+              payout = send(type, entity, revenue)
               payout[:divs_to_corporation] = 0
               [type, payout.merge(share_price_change(entity, payout[:per_share].positive? ? revenue : 0))]
             end
           end
 
           def process_dividend(action)
-            entity = action.entity
-            revenue = @game.routes_revenue(routes)
-            subsidy = @game.routes_subsidy(routes)
-            kind = action.kind.to_sym
-            payout = dividend_options(entity)[kind]
-
-            entity.operating_history[[@game.turn, @round.round_num]] = OperatingInfo.new(
-              routes,
-              (@game.insolvent?(entity) ? @game.actions.last : action),
-              revenue,
-              @round.laid_hexes
-            )
-
-            entity.trains.each { |train| train.operated = true } unless @game.insolvent?(entity)
-
-            @round.routes = []
-
-            log_run_payout(entity, kind, revenue, subsidy, action, payout)
-            @game.bank.spend(payout[:corporation], entity) if payout[:corporation].positive?
-            payout_shares(entity, revenue) if payout[:per_share].positive?
-            change_share_price(entity, payout)
+            super
             @game.check_bank_broken!
-            pass!
-            @game.check_bankruptcy!(entity)
-          end
-
-          def log_run_payout(entity, kind, revenue, subsidy, action, payout)
-            unless Dividend::DIVIDEND_TYPES.include?(kind)
-              @log << "#{entity.name} runs for #{@game.format_currency(revenue)} and pays #{action.kind}"
-            end
-
-            if payout[:per_share].zero? && payout[:corporation].zero?
-              @log << "#{entity.name} does not run"
-            elsif payout[:per_share].zero?
-              @log << "#{entity.name} withholds #{@game.format_currency(revenue)}"
-            end
-            @log << "#{entity.name} earns subsidy of #{@game.format_currency(subsidy)}" if subsidy.positive?
+            @game.check_bankruptcy!(action.entity)
           end
 
           def share_price_change(entity, revenue)
@@ -78,12 +43,12 @@ module Engine
             end
           end
 
-          def withhold(_entity, revenue, subsidy)
-            { corporation: revenue + subsidy, per_share: 0 }
+          def withhold(_entity, revenue)
+            { corporation: revenue, per_share: 0 }
           end
 
-          def payout(entity, revenue, subsidy)
-            { corporation: subsidy, per_share: payout_per_share(entity, revenue) }
+          def payout(entity, revenue)
+            { corporation: 0, per_share: payout_per_share(entity, revenue) }
           end
 
           def payout_shares(entity, revenue)

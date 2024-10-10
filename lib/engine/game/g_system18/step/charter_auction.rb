@@ -7,7 +7,7 @@ module Engine
   module Game
     module GSystem18
       module Step
-        class PolandCharterAuction < GSystem18::Step::UpwardsAuction
+        class CharterAuction < GSystem18::Step::UpwardsAuction
         end
       end
     end

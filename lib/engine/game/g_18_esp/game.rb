@@ -359,7 +359,7 @@ module Engine
         end
 
         def madrid_hex
-          @madrid_hex ||= @game.hex_by_id(MADRID_HEX)
+          @madrid_hex ||= hex_by_id(MADRID_HEX)
         end
 
         def setup

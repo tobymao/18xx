@@ -39,6 +39,7 @@ module Engine
           end
 
           def auto_actions(entity)
+            return [] unless entity.corporation?
             return [] unless @game.nationalized?
             return [] if entity.loans.empty?
 
@@ -49,10 +50,8 @@ module Engine
             total_revenue = routes_revenue(routes, entity)
             revenue = total_revenue
 
-            subsidy = routes_subsidy(routes, entity)
-            total_revenue += subsidy
             dividend_types.to_h do |type|
-              payout = send(type, entity, revenue, subsidy)
+              payout = send(type, entity, revenue)
               payout[:divs_to_corporation] = corporation_dividends(entity, payout[:per_share])
               [type, payout.merge(share_price_change(entity, total_revenue - payout[:corporation]))]
             end
@@ -62,19 +61,19 @@ module Engine
             @game.share_pool
           end
 
-          def payout(entity, revenue, subsidy)
+          def payout(entity, revenue)
             if @game.nationalized? && entity.loans.size.positive?
               return {
-                corporation: subsidy + (payout_per_share(entity, revenue) * 10),
+                corporation: payout_per_share(entity, revenue) * 10,
                 per_share: 0,
               }
             end
 
-            { corporation: subsidy, per_share: payout_per_share(entity, revenue) }
+            { corporation: 0, per_share: payout_per_share(entity, revenue) }
           end
 
-          def withhold(_entity, revenue, subsidy)
-            { corporation: revenue + subsidy, per_share: 0 }
+          def withhold(_entity, revenue)
+            { corporation: revenue, per_share: 0 }
           end
 
           def process_dividend_rptla(action)
@@ -94,8 +93,8 @@ module Engine
 
             @round.routes = []
             log_run_payout_sub(entity, kind, revenue, subsidy, action, payout)
-            @game.bank.spend(payout[:corporation], entity) if payout[:corporation].positive?
-            payout_shares(entity, revenue + subsidy - payout[:corporation]) if payout[:per_share].positive?
+            @game.bank.spend(payout[:corporation] + subsidy, entity) if payout[:corporation].positive?
+            payout_shares(entity, revenue - payout[:corporation]) if payout[:per_share].positive?
             change_share_price(entity, payout)
 
             pass!
@@ -111,7 +110,7 @@ module Engine
             @game.payoff_loan(current_entity, loans_to_pay_off, current_entity)
           end
 
-          def log_run_payout(entity, kind, revenue, action, payout)
+          def log_run_payout(entity, kind, revenue, subisdy, action, payout)
             super unless entity.minor?
           end
 
