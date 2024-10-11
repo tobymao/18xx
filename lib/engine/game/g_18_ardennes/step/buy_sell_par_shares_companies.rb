@@ -193,7 +193,7 @@ module Engine
           end
 
           def process_bankrupt(action)
-            @game.declare_bankrupt(action.entity)
+            @game.bankrupt!(action.entity, @game.bank)
           end
 
           def log_skip(entity)

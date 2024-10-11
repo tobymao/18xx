@@ -35,7 +35,7 @@ module View
               @step.respond_to?(:dividend_name) ? @step.dividend_name(type) : type
             end
 
-          corp_income = option[:corporation] + option[:divs_to_corporation]
+          corp_income = option[:corporation] + option[:divs_to_corporation] + @step.total_subsidy
 
           direction =
             if (new_share_price = entity.share_price) && option[:share_direction]

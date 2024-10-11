@@ -12,13 +12,13 @@ module Engine
           def actions(entity)
             # National must withhold if it never owned a permanent
             return [] if entity.corporation? && entity == @game.national && !@game.national_ever_owned_permanent
+            return [] if entity.company? || routes.empty?
 
-            super
+            Engine::Step::Dividend::ACTIONS
           end
 
           def dividend_options(entity)
-            penalty = @round.interest_penalty[entity] || 0
-            revenue = @game.routes_revenue(routes) - penalty
+            revenue = total_revenue
 
             dividend_types.to_h do |type|
               payout = send(type, entity, revenue)
@@ -30,37 +30,6 @@ module Engine
 
           def payout_per_share(entity, revenue)
             (revenue / entity.total_shares.to_f)
-          end
-
-          def process_dividend(action)
-            entity = action.entity
-            penalty = @round.interest_penalty[entity] || 0
-            revenue = @game.routes_revenue(routes) - penalty
-            kind = action.kind.to_sym
-            payout = dividend_options(entity)[kind]
-
-            rust_obsolete_trains!(entity)
-
-            entity.operating_history[[@game.turn, @round.round_num]] = OperatingInfo.new(
-              routes,
-              action,
-              revenue,
-              @round.laid_hexes
-            )
-
-            entity.trains.each { |train| train.operated = true }
-
-            @round.routes = []
-
-            log_run_payout(entity, kind, revenue, action, payout)
-
-            @game.bank.spend(payout[:corporation], entity) if payout[:corporation].positive?
-
-            payout_shares(entity, revenue - payout[:corporation]) if payout[:per_share].positive?
-
-            change_share_price(entity, payout)
-
-            pass!
           end
 
           def share_price_change(entity, _revenue)
@@ -75,7 +44,11 @@ module Engine
             @game.share_pool
           end
 
-          def log_run_payout(entity, kind, revenue, action, payout)
+          def total_revenue
+            super - (@round.interest_penalty[@round.current_operator] || 0)
+          end
+
+          def log_run_payout(entity, kind, revenue, _subsidy, action, payout)
             if (@round.interest_penalty[entity] || 0).positive?
               @log << "#{entity.name} deducts #{@game.format_currency(@round.interest_penalty[entity])}"\
                       ' for unpaid interest'
