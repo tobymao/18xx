@@ -788,12 +788,8 @@ module Engine
             return
           end
 
-          # Merge the corporation with highest share price, and use highest token on the pile as tie break
-          merged = candidates.max_by do |c|
-            [c.share_price.price, c.share_price.coordinates.last, c.share_price.corporations.find_index(c)]
-          end
-
-          nationalize_major(merged)
+          # nationalizes the highest-valued trainless corp (which has already operated) after a rusting event
+          nationalize_major(candidates.min)
         end
 
         # If there are 2 station markers on the same city the
