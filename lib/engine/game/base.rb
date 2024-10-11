@@ -1031,7 +1031,7 @@ module Engine
       def submit_revenue_str(routes, show_subsidy)
         revenue_str = format_revenue_currency(routes_revenue(routes))
         subsidy = routes_subsidy(routes)
-        subsidy_str = show_subsidy || subsidy.positive? ? " + #{format_currency(routes_subsidy(routes))} (subsidy)" : ''
+        subsidy_str = show_subsidy || subsidy.positive? ? " + #{format_currency(routes_subsidy(routes))} (#{subsidy_name})" : ''
         revenue_str + subsidy_str
       end
 
@@ -2359,6 +2359,10 @@ module Engine
 
       def render_revenue_history?(corporation)
         !corporation.operating_history.empty?
+      end
+
+      def subsidy_name
+        'subsidy'
       end
 
       private
