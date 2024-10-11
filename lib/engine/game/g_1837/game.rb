@@ -356,6 +356,12 @@ module Engine
           end
         end
 
+        def float_str(entity)
+          return 'Not floatable' if entity.corporation? && !entity.floatable
+
+          super
+        end
+
         def float_minor!(minor)
           cash = minor_initial_cash(minor)
           @bank.spend(cash, minor)
@@ -387,6 +393,10 @@ module Engine
         end
 
         def revenue_for(route, stops)
+          mine_stops = stops.count { |s| s.hex.assigned?(:coal) }
+          raise GameError, 'Only freight trains can visit a mine' if mine_stops.positive? && !freight_train?(route.train.name)
+          raise GameError, 'Cannot visit more than one mine' if mine_stops > 1
+
           super - mine_revenue(route, stops)
         end
 
