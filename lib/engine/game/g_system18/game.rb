@@ -662,6 +662,7 @@ module Engine
 
           bundles_for_corporation(entity, entity)
             .select { |bundle| @share_pool.fit_in_bank?(bundle) }
+        end
 
         def can_remove_icon?(entity)
           return false unless respond_to?("map_#{map_name}_can_remove_icon?")
