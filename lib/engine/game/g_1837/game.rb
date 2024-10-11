@@ -397,6 +397,10 @@ module Engine
         def mine_revenue(route, stops)
           stops.select { |s| s.hex.assigned?(:coal) }.sum { |s| s.route_revenue(route.phase, route.train) }
         end
+
+        def subsidy_name
+          'mine revenue'
+        end
       end
     end
   end
