@@ -15,7 +15,6 @@ require_relative 'map_poland_customization'
 require_relative 'map_britain_customization'
 require_relative 'map_northern_italy_customization'
 
-
 module Engine
   module Game
     module GSystem18

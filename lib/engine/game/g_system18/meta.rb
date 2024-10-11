@@ -71,7 +71,8 @@ module Engine
         ].freeze
 
         MUTEX_RULES = [
-          %i[map_NEUS map_France map_Twisting_Tracks map_UK_Limited map_China_Rapid_Development map_Poland map_Britain map_Northern_Italy],
+          %i[map_NEUS map_France map_Twisting_Tracks map_UK_Limited map_China_Rapid_Development map_Poland map_Britain
+             map_Northern_Italy],
         ].freeze
       end
     end
