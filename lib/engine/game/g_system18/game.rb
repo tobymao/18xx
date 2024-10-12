@@ -460,7 +460,7 @@ module Engine
               GSystem18::Step::Token,
               Engine::Step::Route,
               GSystem18::Step::Dividend,
-              Engine::Step::DiscardTrain,
+              GSystem18::Step::DiscardTrain,
               GSystem18::Step::BuyTrain,
             ]
           else
@@ -475,7 +475,7 @@ module Engine
               GSystem18::Step::Token,
               Engine::Step::Route,
               GSystem18::Step::Dividend,
-              Engine::Step::DiscardTrain,
+              GSystem18::Step::DiscardTrain,
               GSystem18::Step::BuyTrain,
               [Engine::Step::BuyCompany, { blocks: true }],
             ]
@@ -691,6 +691,12 @@ module Engine
           return super unless respond_to?("map_#{map_name}_place_home_token")
 
           send("map_#{map_name}_place_home_token", corporation)
+        end
+
+        def remove_discarded_train?(train)
+          return true unless respond_to?("map_#{map_name}_remove_discarded_train?")
+
+          send("map_#{map_name}_remove_discarded_train?", train)
         end
       end
     end
