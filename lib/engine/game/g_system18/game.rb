@@ -278,6 +278,7 @@ module Engine
         BANKRUPTCY_ENDS_GAME_AFTER = :one
         STATUS_TEXT = {}.freeze
         TILE_UPGRADES_MUST_USE_MAX_EXITS = [].freeze
+        DISCARDED_TRAINS = :remove
 
         def find_map_name
           optional_rules&.find { |r| r.to_s.include?('map_') }&.to_s&.delete_prefix('map_')&.downcase
@@ -460,7 +461,7 @@ module Engine
               GSystem18::Step::Token,
               Engine::Step::Route,
               GSystem18::Step::Dividend,
-              GSystem18::Step::DiscardTrain,
+              Engine::Step::DiscardTrain,
               GSystem18::Step::BuyTrain,
             ]
           else
@@ -475,7 +476,7 @@ module Engine
               GSystem18::Step::Token,
               Engine::Step::Route,
               GSystem18::Step::Dividend,
-              GSystem18::Step::DiscardTrain,
+              Engine::Step::DiscardTrain,
               GSystem18::Step::BuyTrain,
               [Engine::Step::BuyCompany, { blocks: true }],
             ]
@@ -691,12 +692,6 @@ module Engine
           return super unless respond_to?("map_#{map_name}_place_home_token")
 
           send("map_#{map_name}_place_home_token", corporation)
-        end
-
-        def remove_discarded_train?(train)
-          return true unless respond_to?("map_#{map_name}_remove_discarded_train?")
-
-          send("map_#{map_name}_remove_discarded_train?", train)
         end
       end
     end
