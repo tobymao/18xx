@@ -30,6 +30,9 @@ module Engine
 
         HOME_TOKEN_TIMING = :float
 
+        EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
+        MUST_BUY_TRAIN = :always
+
         MARKET = [
           %w[95 99 104p 114 121 132 145 162 181 205 240 280 350 400 460],
           %w[89 93 97p 102 111 118 128 140 154 173 195 225 260 300 360],
@@ -97,6 +100,7 @@ module Engine
             distance: 3,
             price: 180,
             rusts_on: '5',
+            events: [{ 'type' => 'buy_across' }],
           },
           {
             name: '3+1',
@@ -227,6 +231,10 @@ module Engine
           },
         ].freeze
 
+        EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+          'buy_across' => ['Buy Across', 'Trains can be bought between companies'],
+        ).freeze
+
         ASSIGNMENT_TOKENS = {
           'coal' => '/icons/1837/coalcar.svg',
         }.freeze
@@ -301,6 +309,10 @@ module Engine
             @stock_market.set_par(corporation, share_price)
             corporation.ipoed = true
           end
+        end
+
+        def event_buy_across!
+          @log << "-- Event: #{EVENTS_TEXT['buy_across'][1]} --"
         end
 
         def new_auction_round
@@ -381,10 +393,10 @@ module Engine
         end
 
         def must_buy_train?(entity)
-          %i[major national].include?(entity.type)
+          %i[major national].include?(entity.type) && super
         end
 
-        def freight_train?(train_name)
+        def goods_train?(train_name)
           train_name.end_with?('G')
         end
 
@@ -393,11 +405,17 @@ module Engine
         end
 
         def revenue_for(route, stops)
-          mine_stops = stops.count { |s| s.hex.assigned?(:coal) }
-          raise GameError, 'Only freight trains can visit a mine' if mine_stops.positive? && !freight_train?(route.train.name)
-          raise GameError, 'Cannot visit more than one mine' if mine_stops > 1
-
           super - mine_revenue(route, stops)
+        end
+
+        def check_other(route)
+          mine_stops = route.stops.count { |s| s.hex.assigned?(:coal) }
+          if goods_train?(route.train.name)
+            raise GameError, 'Must visit one mine' if mine_stops.zero?
+            raise GameError, 'Cannot visit more than one mine' if mine_stops > 1
+          elsif mine_stops.positive?
+            raise GameError, 'Only goods trains can visit a mine'
+          end
         end
 
         def routes_subsidy(routes)

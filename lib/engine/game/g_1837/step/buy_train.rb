@@ -20,13 +20,13 @@ module Engine
 
           def buyable_train_variants(train, entity)
             variants = super
-            variants.select! { |t| @game.freight_train?(t[:name]) } if entity.type == :coal
+            variants.select! { |t| @game.goods_train?(t[:name]) } if entity.type == :coal
             variants
           end
 
           def other_trains(entity)
             trains = super
-            trains.select! { |t| @game.freight_train?(t.name) } if entity.type == :coal
+            trains.select! { |t| @game.goods_train?(t.name) } if entity.type == :coal
             trains
           end
 
@@ -35,6 +35,8 @@ module Engine
           end
 
           def scrappable_trains(entity)
+            return [] if @game.num_corp_trains(entity) < @game.train_limit(entity)
+
             entity.trains.select { |t| surrender_cost(t) <= entity.cash }
           end
 

@@ -8,7 +8,7 @@ module Engine
       class Depot < Engine::Depot
         def available(corporation)
           trains = super
-          trains.select! { |t| @game.freight_train?(t.name) } if corporation.type == :coal
+          trains.select! { |t| @game.goods_train?(t.name) } if corporation.type == :coal
           puts trains.inspect
           trains
         end
