@@ -121,7 +121,7 @@ module Engine
             value: 160,
             revenue: 20,
             min_price: 1,
-            desc: 'It provides a 10% certificate from a randomly chosen company.',
+            desc: 'It provides a 10% certificate from the Southern company CRB.',
             color: nil,
             abilities: [{ type: 'shares', shares: 'random_share' }],
           },
