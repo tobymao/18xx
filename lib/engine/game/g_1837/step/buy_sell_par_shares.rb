@@ -38,6 +38,11 @@ module Engine
             super
             @game.after_company_acquisition(entity.company)
           end
+
+          def process_par(action)
+            super
+            @game.set_par(action.corporation, action.share_price, action.slot)
+          end
         end
       end
     end
