@@ -10,13 +10,13 @@ module Engine
         class Token < Engine::Step::Token
           def actions(entity)
             return [] unless entity == current_entity
-            return [] unless has_multiple_tokens?(entity)
+            return [] unless multiple_tokens?(entity)
 
             Engine::Step::Token::ACTIONS
           end
 
           def auto_actions(entity)
-            return unless has_multiple_tokens?(entity)
+            return unless multiple_tokens?(entity)
 
             [Engine::Action::Pass.new(entity)] unless can_place_token?(entity)
           end
@@ -30,10 +30,10 @@ module Engine
           end
 
           def log_skip(entity)
-            super if has_multiple_tokens?(entity)
+            super if multiple_tokens?(entity)
           end
 
-          def has_multiple_tokens?(entity)
+          def multiple_tokens?(entity)
             entity.tokens.size > 1
           end
 
@@ -48,7 +48,7 @@ module Engine
             home_hex.distance(hex) * token.price
           end
 
-          def adjust_token_price_ability!(entity, token, hex, _city, special_ability: nil)
+          def adjust_token_price_ability!(_entity, token, hex, _city, special_ability: nil)
             token.price = token_price(token, hex)
             [token, nil]
           end
