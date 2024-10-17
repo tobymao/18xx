@@ -236,7 +236,8 @@ module View
           process_action(Engine::Action::RunRoutes.new(
             @game.current_entity,
             routes: routes,
-            extra_revenue: @game.extra_revenue(@game.current_entity, routes)
+            extra_revenue: @game.extra_revenue(@game.current_entity, routes),
+            subsidy: @game.routes_subsidy(routes),
           ))
           cleanup
         end
