@@ -33,6 +33,16 @@ module Engine
 
             entity.cash >= @game.buyable_bank_owned_companies.min_by(&:value).value
           end
+
+          def process_buy_company(entity)
+            super
+            @game.after_company_acquisition(entity.company)
+          end
+
+          def process_par(action)
+            super
+            @game.set_par(action.corporation, action.share_price, action.slot)
+          end
         end
       end
     end
