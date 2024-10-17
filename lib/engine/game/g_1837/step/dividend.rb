@@ -12,6 +12,16 @@ module Engine
           DIVIDEND_TYPES = %i[payout half withhold].freeze
           include Engine::Step::HalfPay
           include Engine::Step::MinorHalfPay
+
+          def share_price_change(_entity, revenue)
+            if revenue.zero?
+              { share_direction: :left, share_times: 1 }
+            elsif revenue == total_revenue
+              { share_direction: :right, share_times: 1 }
+            else
+              { share_direction: :diagonally_down_right, share_times: 1 }
+            end
+          end
         end
       end
     end
