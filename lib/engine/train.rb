@@ -107,9 +107,12 @@ module Engine
     # if set ability must be a :train_discount ability
     def min_price(ability: nil)
       return 1 unless from_depot?
-      return @price unless ability
 
-      Array(ability).map { |a| a.discounted_price(self, @price) }.min
+      variants.keys.map do |v|
+        variant = clone
+        variant.variant = v
+        Array(ability).map { |a| a.discounted_price(variant, variant.price) }.min || variant.price
+      end.min
     end
 
     def from_depot?
