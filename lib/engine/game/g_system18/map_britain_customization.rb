@@ -91,6 +91,7 @@ module Engine
         def map_britain_game_hexes
           {
             gray: {
+              %w[a5] => 'junction;path=a:5,b:_0,terminal:1',
               %w[A4] => 'offboard=revenue:yellow_10|green_20|brown_30|gray_40',
               %w[C12] => 'path=a:0,b:1',
               %w[G2] => 'offboard=revenue:yellow_10|green_20|brown_20|gray_30',
@@ -227,7 +228,12 @@ module Engine
           corps.each_with_index do |c, idx|
             c[:float_percent] = 20
             c[:always_market_price] = true
-            c[:tokens] = [40, 100, 100, 100]
+            c[:tokens] = [[0, 0,  100, 100],      # DGN
+                          [0, 40, 100, 100],      # GFN
+                          [0, 0,  100, 100],      # PHX
+                          [0, 40, 100, 100],      # KKN
+                          [0, 40, 100, 100],      # SPX
+                          [0, 40, 100, 100]][idx] # PGS
             c[:coordinates] = [%w[F7 I8], 'J5', %w[F9 G8], 'A6', 'I12', 'A8'][idx]
             c[:city] = [1, nil, 1, nil, nil, nil][idx]
           end
