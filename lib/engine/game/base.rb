@@ -3227,7 +3227,7 @@ module Engine
       end
 
       def ability_blocking_step
-        supported_steps = [Step::Tracker, Step::Token, Step::Route, Step::BuyTrain]
+        supported_steps = [Step::Tracker, Step::Token, Step::Route, Step::Dividend, Step::BuyTrain]
         @round.steps.find do |step|
           supported_steps.any? { |s| step.is_a?(s) } && !step.passed? && step.active? && step.blocks?
         end
