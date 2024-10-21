@@ -141,12 +141,12 @@ module Engine
           Engine::Round::Operating.new(self, [
             G18Ardennes::Step::Bankrupt,
             G18Ardennes::Step::Convert,
-            G18Ardennes::Step::IssueShares,
             G18Ardennes::Step::Exchange,
             G18Ardennes::Step::DeclineTokens,
             G18Ardennes::Step::DeclineTrains,
             G18Ardennes::Step::DeclineForts,
             G18Ardennes::Step::PostConversionShares,
+            G18Ardennes::Step::IssueShares,
             G18Ardennes::Step::Track,
             G18Ardennes::Step::Token,
             G18Ardennes::Step::CollectForts,
