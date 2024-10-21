@@ -727,7 +727,7 @@ module Engine
         end
 
         def routes_subsidy(routes)
-          routes.sum(&:subsidy)
+          routes.first&.train&.owner&.minor? ? routes.sum(&:subsidy) : 0
         end
 
         # see if minor bought unused rail-cars

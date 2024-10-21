@@ -65,11 +65,13 @@ module Engine
 
         ARANJUEZ_HEX = 'F26'
 
-        P5_HEX = 'H12'
+        MADRID_HEX = 'F24'
+
+        P4_HEX = 'H12'
 
         DOUBLE_HEX = %w[D6 C31 J20].freeze
 
-        P5_DISCOUNT = 40
+        P4_DISCOUNT = 40
 
         BASE_MINE_BONUS = { yellow: 30, green: 20, brown: 10, gray: 0 }.freeze
 
@@ -356,6 +358,10 @@ module Engine
           @mza ||= corporation_by_id('MZA')
         end
 
+        def madrid_hex
+          @madrid_hex ||= hex_by_id(MADRID_HEX)
+        end
+
         def setup
           @corporations, @future_corporations = @corporations.partition do |corporation|
             corporation.type == :minor || north_corp?(corporation)
@@ -369,7 +375,7 @@ module Engine
 
           setup_company_price(1)
 
-          @luxury_carriages = { 'P4' => 5, 'bank' => 0 }
+          @luxury_carriages = { 'P5' => 5, 'bank' => 0 }
 
           @opened_mountain_passes = []
           @combined_trains = {}
@@ -566,7 +572,7 @@ module Engine
 
         def event_close_companies!
           @log << '-- Event: Private companies close --'
-          @luxury_carriages['P4'] = 0 # no more luxury carriage buying
+          @luxury_carriages['P5'] = 0 # no more luxury carriage buying
           @companies.each do |company|
             convert_p3_into_2p if company == p3 && company.owner.is_a?(Corporation)
             company.close!
@@ -642,9 +648,9 @@ module Engine
         end
 
         def company_status_str(company)
-          return if company != p4 || p4.owner.nil? || p4.owner.corporation?
+          return if company != p5 || p5.owner.nil? || p5.owner.corporation?
 
-          "#{@luxury_carriages[p4.id]} / 5 Buyable Tenders"
+          "#{@luxury_carriages[p5.id]} / 5 Buyable Tenders"
         end
 
         def upgrade_cost(old_tile, hex, entity, spender)
@@ -860,20 +866,8 @@ module Engine
         end
 
         def must_buy_train?(entity)
-          return false if depot.depot_trains.empty?
-
-          entity.trains.none? do |train|
-            next false if extra_train?(train)
-
-            case train.track_type
-            when :narrow
-              north_corp?(entity) || (entity.interchange? && entity.type != :minor)
-            when :broad
-              !north_corp?(entity) || entity.interchange?
-            when :all
-              !combined_train_blocked?(entity)
-            end
-          end
+          entity.trains.none? { |t| !extra_train?(t) } &&
+          !depot.depot_trains.empty?
         end
 
         def num_corp_trains(entity)
@@ -906,7 +900,7 @@ module Engine
 
         def company_bought(company, entity)
           # # On acquired abilities
-          transfer_luxury_ability(company, entity) if company == p4
+          transfer_luxury_ability(company, entity) if company == p5
         end
 
         def transfer_luxury_ability(company, entity)
@@ -1073,22 +1067,22 @@ module Engine
           end
         end
 
-        def open_mountain_pass(entity, pass_hex_id, p5_ability = false)
+        def open_mountain_pass(entity, pass_hex_id, p4_ability = false)
           pass_hax = hex_by_id(pass_hex_id)
           pass_tile = pass_hax.tile
 
-          mount_pass_cost = mountain_pass_token_cost(pass_hax, entity, p5_ability)
+          mount_pass_cost = mountain_pass_token_cost(pass_hax, entity, p4_ability)
           entity.spend(mount_pass_cost, @bank) if mount_pass_cost.positive?
 
           @opened_mountain_passes << pass_hax.id
           pass_tile.cities.first.remove_tokens!
 
-          entity_name = p5_ability ? "#{entity.name} (#{p5.name})" : entity.name
+          entity_name = p4_ability ? "#{entity.name} (#{p4.name})" : entity.name
 
           @log << "#{entity_name} spends #{format_currency(mount_pass_cost)} to open mountain pass"
         end
 
-        def opening_new_mountain_pass(entity, p5_ability = false)
+        def opening_new_mountain_pass(entity, p4_ability = false)
           return {} unless entity
 
           @graph.clear
@@ -1098,15 +1092,15 @@ module Engine
           openable_passes = openable_passes.reject { |hex| @opened_mountain_passes.include?(hex.id) }
 
           openable_passes.to_h do |hex|
-            [hex.id, "#{hex.location_name} (#{format_currency(mountain_pass_token_cost(hex, entity, p5_ability))})"]
+            [hex.id, "#{hex.location_name} (#{format_currency(mountain_pass_token_cost(hex, entity, p4_ability))})"]
           end
         end
 
-        def mountain_pass_token_cost(hex, _entity, p5_ability = false)
-          return 0 if hex.id == P5_HEX && p5_ability
+        def mountain_pass_token_cost(hex, _entity, p4_ability = false)
+          return 0 if hex.id == P4_HEX && p4_ability
 
           cost = MOUNTAIN_PASS_TOKEN_COST[hex.id]
-          cost -= P5_DISCOUNT if p5_ability
+          cost -= P4_DISCOUNT if p4_ability
           cost
         end
 

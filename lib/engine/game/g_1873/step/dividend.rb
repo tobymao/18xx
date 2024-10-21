@@ -96,7 +96,7 @@ module Engine
             entity.trains.each { |train| train.operated = true }
             @round.routes = []
 
-            log_run_payout(entity, kind, revenue, action, payout)
+            log_run_payout(entity, kind, revenue, 0, action, payout)
 
             @game.bank.spend(payout[:corporation], entity) if payout[:corporation].positive?
 
@@ -110,7 +110,7 @@ module Engine
             pass!
           end
 
-          def log_run_payout(entity, kind, revenue, action, payout)
+          def log_run_payout(entity, kind, revenue, _subsidy, action, payout)
             unless Dividend::DIVIDEND_TYPES.include?(kind)
               @log << "#{entity.name} runs for #{@game.format_currency(revenue)} and pays #{action.kind}"
             end

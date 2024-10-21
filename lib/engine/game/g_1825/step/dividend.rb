@@ -57,7 +57,7 @@ module Engine
             @round.receivership_loan = 0
             @round.routes = []
 
-            log_run_payout(entity, kind, revenue, action, payout)
+            log_run_payout(entity, kind, revenue, 0, action, payout)
 
             payout_corporation(payout[:corporation], entity)
 

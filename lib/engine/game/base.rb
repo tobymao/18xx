@@ -810,9 +810,9 @@ module Engine
         @last_processed_action = action.id
 
         self
-      rescue StandardError => e
-        rescue_exception(e, action)
-        self
+        # rescue StandardError => e
+        #  rescue_exception(e, action)
+        #  self
       end
 
       def process_single_action(action)
@@ -838,8 +838,8 @@ module Engine
             transition_to_next_round!
           end
         end
-      rescue Engine::GameError => e
-        rescue_exception(e, action)
+        # rescue Engine::GameError => e
+        #  rescue_exception(e, action)
       end
 
       def rescue_exception(e, action)
@@ -984,7 +984,7 @@ module Engine
 
       # Before rusting, check if this train individual should rust.
       def rust?(train, purchased_train)
-        train.rusts_on == purchased_train.sym ||
+        Array(train.rusts_on).include?(purchased_train.sym) ||
           (train.obsolete_on == purchased_train.sym && @depot.discarded.include?(train))
       end
 
@@ -1031,7 +1031,7 @@ module Engine
       def submit_revenue_str(routes, show_subsidy)
         revenue_str = format_revenue_currency(routes_revenue(routes))
         subsidy = routes_subsidy(routes)
-        subsidy_str = show_subsidy || subsidy.positive? ? " + #{format_currency(routes_subsidy(routes))} (subsidy)" : ''
+        subsidy_str = show_subsidy || subsidy.positive? ? " + #{format_currency(routes_subsidy(routes))} (#{subsidy_name})" : ''
         revenue_str + subsidy_str
       end
 
@@ -2361,6 +2361,10 @@ module Engine
         !corporation.operating_history.empty?
       end
 
+      def subsidy_name
+        'subsidy'
+      end
+
       private
 
       def init_graph
@@ -3223,7 +3227,7 @@ module Engine
       end
 
       def ability_blocking_step
-        supported_steps = [Step::Tracker, Step::Token, Step::Route, Step::BuyTrain]
+        supported_steps = [Step::Tracker, Step::Token, Step::Route, Step::Dividend, Step::BuyTrain]
         @round.steps.find do |step|
           supported_steps.any? { |s| step.is_a?(s) } && !step.passed? && step.active? && step.blocks?
         end

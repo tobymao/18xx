@@ -95,7 +95,7 @@ module Engine
             major.spend(to_pay, @game.bank)
           end
 
-          def log_run_payout(entity, kind, revenue, action, payout)
+          def log_run_payout(entity, kind, revenue, _subsidy, action, payout)
             unless Dividend::DIVIDEND_TYPES.include?(kind)
               @log << "#{entity.name} runs for #{@game.format_currency(revenue)} and pays #{action.kind}"
             end

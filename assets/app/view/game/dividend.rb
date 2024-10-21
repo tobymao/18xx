@@ -35,7 +35,7 @@ module View
               @step.respond_to?(:dividend_name) ? @step.dividend_name(type) : type
             end
 
-          corp_income = option[:corporation] + option[:divs_to_corporation]
+          corp_income = option[:corporation] + option[:divs_to_corporation] + @step.total_subsidy
 
           direction =
             if (new_share_price = entity.share_price) && option[:share_direction]
@@ -53,7 +53,7 @@ module View
                   end
                   next if real_moves.zero?
 
-                  "#{real_moves} #{dir}"
+                  "#{real_moves} #{dir.tr('_', ' ')}"
                 end.compact.join(', ')
 
               movement_str.empty? ? 'None' : movement_str
@@ -98,7 +98,7 @@ module View
             textAlign: 'left',
           },
         }
-        share_props = { style: { width: '2.7rem' } }
+        share_props = { style: { width: '3rem' } }
 
         if corporation_interest_penalty?(entity)
           corporation_penalty = "#{entity.name} has " +

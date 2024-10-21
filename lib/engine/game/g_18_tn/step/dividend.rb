@@ -28,7 +28,7 @@ module Engine
             { withhold: { corporation: 0, per_share: 0, divs_to_corporation: 0 } }
           end
 
-          def log_run_payout(entity, kind, revenue, action, payout)
+          def log_run_payout(entity, kind, revenue, subsidy, action, payout)
             return super unless civil_war_effect_with_single_train?(entity)
 
             @log << "#{entity.name}'s run is ignored due to Civil War"
