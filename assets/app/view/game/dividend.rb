@@ -53,7 +53,7 @@ module View
                   end
                   next if real_moves.zero?
 
-                  "#{real_moves} #{dir}"
+                  "#{real_moves} #{dir.tr('_', ' ')}"
                 end.compact.join(', ')
 
               movement_str.empty? ? 'None' : movement_str
@@ -98,7 +98,7 @@ module View
             textAlign: 'left',
           },
         }
-        share_props = { style: { width: '2.7rem' } }
+        share_props = { style: { width: '3rem' } }
 
         if corporation_interest_penalty?(entity)
           corporation_penalty = "#{entity.name} has " +

@@ -119,6 +119,8 @@ module Engine
     end
 
     def other_trains(corporation)
+      return [] unless @game.can_buy_train_from_others?
+
       all_others = @trains.reject do |train|
         !train.buyable(allow_obsolete_buys: @game.class::ALLOW_OBSOLETE_TRAIN_BUY) ||
           [corporation, self, nil].include?(train.owner)

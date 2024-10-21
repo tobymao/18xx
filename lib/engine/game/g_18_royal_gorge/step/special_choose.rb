@@ -7,13 +7,22 @@ module Engine
     module G18RoyalGorge
       module Step
         class SpecialChoose < Engine::Step::SpecialChoose
+          def actions(entity)
+            if @game.indebted.include?(entity) ||
+               (entity.company? && %w[RG-D SF-D].include?(entity.sym))
+              super
+            else
+              []
+            end
+          end
+
           def process_choose_ability(action)
             return unless action.choice == 'pay_debt'
 
             debt_company = action.entity
             corporation = debt_company.owner
 
-            ability = abilities(corporation)
+            ability = Array(abilities(corporation)).find { |a| a.description == 'Pay debt' }
             ability.use!
 
             debtor, = @game.indebted[corporation]

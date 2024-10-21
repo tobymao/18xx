@@ -122,36 +122,36 @@ module Engine
       @movement.left(corporation, coordinates)
     end
 
-    def move_up_left_hex(corporation)
-      move(corporation, up_left_hex(corporation, corporation.share_price.coordinates))
+    def move_diagonally_up_left(corporation)
+      move(corporation, diagonally_up_left(corporation, corporation.share_price.coordinates))
     end
 
-    def up_left_hex(corporation, coordinates)
-      @movement.up_left_hex(corporation, coordinates)
+    def diagonally_up_left(corporation, coordinates)
+      @movement.diagonally_up_left(corporation, coordinates)
     end
 
-    def move_down_left_hex(corporation)
-      move(corporation, down_left_hex(corporation, corporation.share_price.coordinates))
+    def move_diagonally_down_left(corporation)
+      move(corporation, diagonally_down_left(corporation, corporation.share_price.coordinates))
     end
 
-    def down_left_hex(corporation, coordinates)
-      @movement.down_left_hex(corporation, coordinates)
+    def diagonally_down_left(corporation, coordinates)
+      @movement.diagonally_down_left(corporation, coordinates)
     end
 
-    def move_up_right_hex(corporation)
-      move(corporation, up_right_hex(corporation, corporation.share_price.coordinates))
+    def move_diagonally_up_right(corporation)
+      move(corporation, diagonally_up_right(corporation, corporation.share_price.coordinates))
     end
 
-    def up_right_hex(corporation, coordinates)
-      @movement.up_right_hex(corporation, coordinates)
+    def diagonally_up_right(corporation, coordinates)
+      @movement.diagonally_up_right(corporation, coordinates)
     end
 
-    def move_down_right_hex(corporation)
-      move(corporation, down_right_hex(corporation, corporation.share_price.coordinates))
+    def move_diagonally_down_right(corporation)
+      move(corporation, diagonally_down_right(corporation, corporation.share_price.coordinates))
     end
 
-    def down_right_hex(corporation, coordinates)
-      @movement.down_right_hex(corporation, coordinates)
+    def diagonally_down_right(corporation, coordinates)
+      @movement.diagonally_down_right(corporation, coordinates)
     end
 
     def find_share_price(corporation, directions)
@@ -173,6 +173,14 @@ module Engine
           coordinates = down(corporation, coordinates)
         when :up
           coordinates = up(corporation, coordinates)
+        when :diagonally_up_left
+          coordinates = diagonally_up_left(corporation, coordinates)
+        when :diagonally_up_right
+          coordinates = diagonally_up_right(corporation, coordinates)
+        when :diagonally_down_left
+          coordinates = diagonally_down_left(corporation, coordinates)
+        when :diagonally_down_right
+          coordinates = diagonally_down_right(corporation, coordinates)
         end
         price = share_price(coordinates) || price
       end

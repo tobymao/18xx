@@ -124,7 +124,7 @@ module Engine
             name: 'Zarnesti-Kronstadt Railway',
             sym: 'ZKB',
             value: 40,
-            desc: 'Located in J34 with 100K starting capital. Coal companies cannot be sold and can only run ' \
+            desc: 'Located in K33 with 100K starting capital. Coal companies cannot be sold and can only run ' \
                   'G trains. The company can be exchanged for a 10% share of Transylvanian Railway (TR) at the ' \
                   'start of an operating round.',
             color: :black,
@@ -591,6 +591,7 @@ module Engine
           {
             name: 'Pilsen-Priesen Railway',
             sym: 'EPP',
+            type: 'coal',
             logo: '1837/epp',
             tokens: [0],
             coordinates: 'E11',
@@ -599,6 +600,7 @@ module Engine
           {
             name: 'Reichenberg-Gablonz-Tannwalder Railway',
             sym: 'RGTE',
+            type: 'coal',
             logo: '1837/rgte',
             tokens: [0],
             coordinates: 'A13',
@@ -607,6 +609,7 @@ module Engine
           {
             name: 'Oderberg-Dombran Railway',
             sym: 'EOD',
+            type: 'coal',
             logo: '1837/eod',
             tokens: [0],
             coordinates: 'C19',
@@ -615,6 +618,7 @@ module Engine
           {
             name: 'Karwin-Teschen Railway',
             sym: 'EKT',
+            type: 'coal',
             logo: '1837/ekt',
             tokens: [0],
             coordinates: 'C21',
@@ -623,6 +627,7 @@ module Engine
           {
             name: 'Mosty-Lemberg Railway',
             sym: 'MLB',
+            type: 'coal',
             logo: '1837/mlb',
             tokens: [0],
             coordinates: 'B32',
@@ -631,14 +636,16 @@ module Engine
           {
             name: 'Zarnesti-Kronstadt Railway',
             sym: 'ZKB',
+            type: 'coal',
             logo: '1837/zkb',
             tokens: [0],
-            coordinates: 'J34',
+            coordinates: 'K33',
             color: :black,
           },
           {
             name: 'Simeria-Petroseni Railway',
             sym: 'SPB',
+            type: 'coal',
             logo: '1837/spb',
             tokens: [0],
             coordinates: 'K31',
@@ -647,6 +654,7 @@ module Engine
           {
             name: 'Lugoj-Resita Railway',
             sym: 'LRB',
+            type: 'coal',
             logo: '1837/lrb',
             tokens: [0],
             coordinates: 'L30',
@@ -655,6 +663,7 @@ module Engine
           {
             name: 'Bosna-Bahn',
             sym: 'BB',
+            type: 'coal',
             logo: '1837/bb',
             tokens: [0],
             coordinates: 'P20',
@@ -663,6 +672,7 @@ module Engine
           {
             name: 'Hatvan-Salgotarjan Railway',
             sym: 'EHS',
+            type: 'coal',
             logo: '1837/ehs',
             tokens: [0],
             coordinates: 'F26',
@@ -671,6 +681,7 @@ module Engine
           {
             name: 'Vienna-Gloggnitzer Railway',
             sym: 'SD1',
+            type: 'minor',
             logo: '1837/sd1',
             tokens: [0],
             coordinates: 'G17',
@@ -680,6 +691,7 @@ module Engine
           {
             name: 'Kärntner Railway',
             sym: 'SD2',
+            type: 'minor',
             logo: '1837/sd2',
             tokens: [0],
             coordinates: 'J16',
@@ -688,6 +700,7 @@ module Engine
           {
             name: 'North Tyrol Railway',
             sym: 'SD3',
+            type: 'minor',
             logo: '1837/sd3',
             tokens: [0],
             coordinates: 'I7',
@@ -696,6 +709,7 @@ module Engine
           {
             name: 'South Tyrol Railway',
             sym: 'SD4',
+            type: 'minor',
             logo: '1837/sd4',
             tokens: [0],
             coordinates: 'K5',
@@ -704,14 +718,16 @@ module Engine
           {
             name: 'Venice-Lombardy Railway',
             sym: 'SD5',
+            type: 'minor',
             logo: '1837/sd5',
             tokens: [0],
-            coordinates: 'L2',
+            coordinates: %w[L2 L8],
             color: :orange,
           },
           {
             name: 'Kaiser Ferdinand North Railway',
             sym: 'KK1',
+            type: 'minor',
             logo: '1837/kk1',
             tokens: [0],
             coordinates: 'G17',
@@ -721,6 +737,7 @@ module Engine
           {
             name: 'Kaiserin Elisabeth-Railway',
             sym: 'KK2',
+            type: 'minor',
             logo: '1837/kk2',
             tokens: [0],
             coordinates: 'G17',
@@ -730,6 +747,7 @@ module Engine
           {
             name: 'Kaiser Franz Joseph-Railway',
             sym: 'KK3',
+            type: 'minor',
             logo: '1837/kk3',
             tokens: [0],
             coordinates: 'G17',
@@ -739,6 +757,7 @@ module Engine
           {
             name: 'Pest-Waitzen Railway',
             sym: 'UG1',
+            type: 'minor',
             logo: '1837/ug1',
             tokens: [0],
             coordinates: 'H22',
@@ -748,6 +767,7 @@ module Engine
           {
             name: 'Mohacs-Fünfkirchener Railway',
             sym: 'UG2',
+            type: 'minor',
             logo: '1837/ug2',
             tokens: [0],
             coordinates: 'K21',
@@ -756,6 +776,7 @@ module Engine
           {
             name: 'Pest-Czegled Railway',
             sym: 'UG3',
+            type: 'minor',
             logo: '1837/ug3',
             tokens: [0],
             coordinates: 'H22',

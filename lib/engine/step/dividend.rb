@@ -111,7 +111,7 @@ module Engine
         elsif payout[:per_share].zero?
           @log << "#{entity.name} does not run"
         end
-        @log << "#{entity.name} earns subsidy of #{@game.format_currency(subsidy)}" if subsidy.positive?
+        @log << "#{entity.name} earns #{@game.subsidy_name} of #{@game.format_currency(subsidy)}" if subsidy.positive?
       end
 
       def share_price_change(_entity, revenue)
@@ -201,6 +201,14 @@ module Engine
               @game.stock_market.move_up(entity)
             when :down
               @game.stock_market.move_down(entity)
+            when :diagonally_up_left
+              @game.stock_market.move_diagonally_up_left(entity)
+            when :diagonally_up_right
+              @game.stock_market.move_diagonally_up_right(entity)
+            when :diagonally_down_left
+              @game.stock_market.move_diagonally_down_left(entity)
+            when :diagonally_down_right
+              @game.stock_market.move_diagonally_down_right(entity)
             end
           end
         end

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'corporation'
+require_relative 'depot'
 require_relative 'entities'
 require_relative 'map'
 require_relative 'meta'
@@ -15,6 +16,7 @@ module Engine
         include Map
 
         CORPORATION_CLASS = G1837::Corporation
+        DEPOT_CLASS = G1837::Depot
 
         CURRENCY_FORMAT_STR = '%sK'
 
@@ -27,6 +29,9 @@ module Engine
         SELL_MOVEMENT = :down_block
 
         HOME_TOKEN_TIMING = :float
+
+        EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
+        MUST_BUY_TRAIN = :always
 
         MARKET = [
           %w[95 99 104p 114 121 132 145 162 181 205 240 280 350 400 460],
@@ -95,6 +100,7 @@ module Engine
             distance: 3,
             price: 180,
             rusts_on: '5',
+            events: [{ 'type' => 'buy_across' }],
           },
           {
             name: '3+1',
@@ -181,7 +187,57 @@ module Engine
             ],
             price: 960,
           },
+          {
+            name: '1G',
+            num: 10,
+            distance: [
+              { 'nodes' => %w[city offboard], 'pay' => 2, 'visit' => 2 },
+              { 'nodes' => %w[town], 'pay' => 99, 'visit' => 99 },
+            ],
+            available_on: '2',
+            rusts_on: %w[3G 4G],
+            price: 100,
+          },
+          {
+            name: '2G',
+            num: 6,
+            distance: [
+              { 'nodes' => %w[city offboard], 'pay' => 3, 'visit' => 3 },
+              { 'nodes' => %w[town], 'pay' => 99, 'visit' => 99 },
+            ],
+            available_on: '3',
+            rusts_on: '4G',
+            price: 230,
+          },
+          {
+            name: '3G',
+            num: 2,
+            distance: [
+              { 'nodes' => %w[city offboard], 'pay' => 4, 'visit' => 4 },
+              { 'nodes' => %w[town], 'pay' => 99, 'visit' => 99 },
+            ],
+            available_on: '4',
+            price: 590,
+          },
+          {
+            name: '4G',
+            num: 20,
+            distance: [
+              { 'nodes' => %w[city offboard], 'pay' => 5, 'visit' => 5 },
+              { 'nodes' => %w[town], 'pay' => 99, 'visit' => 99 },
+            ],
+            available_on: '5',
+            price: 1000,
+          },
         ].freeze
+
+        EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+          'buy_across' => ['Buy Across', 'Trains can be bought between companies'],
+        ).freeze
+
+        ASSIGNMENT_TOKENS = {
+          'coal' => '/icons/1837/coalcar.svg',
+        }.freeze
 
         def company_header(company)
           return 'COAL COMPANY' if company.color == :black
@@ -211,10 +267,41 @@ module Engine
         def setup
           non_purchasable = @companies.flat_map { |c| c.meta['additional_companies'] }.compact
           @companies.each { |company| company.owner = @bank unless non_purchasable.include?(company.id) }
-          par_nationals
+          setup_mines
+          setup_minors
+          setup_nationals
         end
 
-        def par_nationals
+        def setup_mines
+          self.class::MINE_HEXES.each do |hex_id|
+            hex_by_id(hex_id).assign!(:coal)
+          end
+        end
+
+        def setup_minors
+          @minors.each { |minor| reserve_minor_home(minor) }
+        end
+
+        def reserve_minor_home(minor)
+          Array(minor.coordinates).zip(Array(minor.city)).each do |coords, city|
+            hex_by_id(coords).tile.cities[city || 0].add_reservation!(minor)
+          end
+        end
+
+        def minor_initial_cash(minor)
+          case minor.id
+          when 'SD1', 'SD2', 'SD3', 'SD4', 'SD5', 'KK1', 'KK3', 'UG2'
+            90
+          when 'KK2'
+            140
+          when 'UG1', 'UG3'
+            180
+          else
+            100
+          end
+        end
+
+        def setup_nationals
           market_row = @stock_market.market[3]
           { 'KK' => 120, 'SD' => 142, 'UG' => 175 }.each do |id, par_value|
             corporation = corporation_by_id(id)
@@ -222,6 +309,10 @@ module Engine
             @stock_market.set_par(corporation, share_price)
             corporation.ipoed = true
           end
+        end
+
+        def event_buy_across!
+          @log << "-- Event: #{EVENTS_TEXT['buy_across'][1]} --"
         end
 
         def new_auction_round
@@ -236,20 +327,35 @@ module Engine
           ])
         end
 
+        def operating_round(round_num)
+          Engine::Round::Operating.new(self, [
+            Engine::Step::Bankrupt,
+            Engine::Step::DiscardTrain,
+            G1837::Step::SpecialTrack,
+            Engine::Step::Track,
+            G1837::Step::Token,
+            Engine::Step::Route,
+            G1837::Step::Dividend,
+            G1837::Step::BuyTrain,
+          ], round_num: round_num)
+        end
+
         def corporation_show_individual_reserved_shares?
           false
         end
 
         def unowned_purchasable_companies(_entity)
-          @companies.reject(&:owner).reject(non_purchasable_companies)
+          @companies.select { |c| c.owner == @bank }
         end
 
-        def after_company_assigned(company)
+        def after_company_acquisition(company)
           player = company.owner
 
           case company.meta[:type]
           when :minor, :coal
-            float_minor!(minor_by_id(company.id), player)
+            minor = minor_by_id(company.id)
+            minor.owner = player
+            float_minor!(minor)
           when :minor_share
             # todo
             puts 'todo'
@@ -262,8 +368,21 @@ module Engine
           end
         end
 
-        def float_minor!(minor, owner)
-          minor.owner = owner
+        def float_str(entity)
+          return 'Not floatable' if entity.corporation? && !entity.floatable
+
+          super
+        end
+
+        def float_minor!(minor)
+          cash = minor_initial_cash(minor)
+          @bank.spend(cash, minor)
+          @log << "#{minor.name} receives #{format_currency(cash)}"
+          unless minor.coordinates.is_a?(Array)
+            hex = hex_by_id(minor.coordinates)
+            hex.tile.cities[minor.city || 0].place_token(minor, minor.next_token, free: true)
+            @log << "#{minor.name} places a token on #{hex.name}"
+          end
           minor.float!
         end
 
@@ -271,6 +390,44 @@ module Engine
           @log << "#{corporation.name} floats"
           @bank.spend(corporation.par_price.price * corporation.total_ipo_shares, corporation)
           @log << "#{corporation.name} receives #{format_currency(corporation.cash)}"
+        end
+
+        def must_buy_train?(entity)
+          %i[major national].include?(entity.type) && super
+        end
+
+        def goods_train?(train_name)
+          train_name.end_with?('G')
+        end
+
+        def can_buy_train_from_others?
+          @phase.name.to_i >= 3
+        end
+
+        def revenue_for(route, stops)
+          super - mine_revenue(route, stops)
+        end
+
+        def check_other(route)
+          mine_stops = route.stops.count { |s| s.hex.assigned?(:coal) }
+          if goods_train?(route.train.name)
+            raise GameError, 'Must visit one mine' if mine_stops.zero?
+            raise GameError, 'Cannot visit more than one mine' if mine_stops > 1
+          elsif mine_stops.positive?
+            raise GameError, 'Only goods trains can visit a mine'
+          end
+        end
+
+        def routes_subsidy(routes)
+          routes.sum { |route| mine_revenue(route, route.stops) }
+        end
+
+        def mine_revenue(route, stops)
+          stops.select { |s| s.hex.assigned?(:coal) }.sum { |s| s.route_revenue(route.phase, route.train) }
+        end
+
+        def subsidy_name
+          'mine revenue'
         end
       end
     end
