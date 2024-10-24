@@ -160,8 +160,10 @@ module Engine
         def nationalization_final_export!
           return if number_of_goods_at_harbor.zero?
 
-          @log << "Nationalization: Final Export #{number_of_goods_at_harbor} goods for #{format_currency(50)} each"
-          amount_per_share = 5 * number_of_goods_at_harbor
+          nr_goods = [number_of_goods_at_harbor, @rptla.trains.sum { |train| ship_capacity(train) }].min
+          @log << "Nationalization: Final Export #{nr_goods} good for #{format_currency(50)}" if nr_goods == 1
+          @log << "Nationalization: Final Export #{nr_goods} goods for #{format_currency(50)} each" if nr_goods > 1
+          amount_per_share = 5 * nr_goods
           players.each do |holder|
             amount = holder.num_shares_of(@rptla) * amount_per_share
             next unless amount.positive?

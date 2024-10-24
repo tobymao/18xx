@@ -13,7 +13,7 @@ module Engine
           def process_bankrupt(action)
             corporation = action.entity
             player = corporation.player
-            @game.declare_bankrupt(player, corporation)
+            @game.bankrupt!(player, corporation)
             receivership_buy_train(corporation)
           end
 

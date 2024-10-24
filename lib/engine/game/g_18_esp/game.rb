@@ -359,7 +359,7 @@ module Engine
         end
 
         def madrid_hex
-          @madrid_hex ||= @game.hex_by_id(MADRID_HEX)
+          @madrid_hex ||= hex_by_id(MADRID_HEX)
         end
 
         def setup
@@ -866,20 +866,8 @@ module Engine
         end
 
         def must_buy_train?(entity)
-          return false if depot.depot_trains.empty?
-
-          entity.trains.none? do |train|
-            next false if extra_train?(train)
-
-            case train.track_type
-            when :narrow
-              north_corp?(entity) || (entity.interchange? && entity.type != :minor)
-            when :broad
-              !north_corp?(entity) || entity.interchange?
-            when :all
-              !combined_train_blocked?(entity)
-            end
-          end
+          entity.trains.none? { |t| !extra_train?(t) } &&
+          !depot.depot_trains.empty?
         end
 
         def num_corp_trains(entity)

@@ -208,12 +208,12 @@ module Engine
           bankrupt?(player)
         end
 
-        def declare_bankrupt(player, cash_target = @bank)
+        def bankrupt!(player, cash_target)
           @log << "-- #{player.name} goes bankrupt and sells remaining shares --"
           bankrupt_sell_shares(player)
           bankrupt_sell_companies(player)
           bankrupt_transfer_cash(player, cash_target)
-          super
+          declare_bankrupt(player)
         end
 
         # If a player has gone above 60% holding in a major (by exchanging
