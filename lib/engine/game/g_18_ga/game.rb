@@ -246,7 +246,7 @@ module Engine
         end
 
         def cotton_port?
-          @cotton_port || @optional_rules.include?(:cotton_port)
+          @cotton_port ||= @optional_rules.include?(:cotton_port)
         end
       end
     end
