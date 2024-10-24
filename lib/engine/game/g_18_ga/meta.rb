@@ -39,6 +39,11 @@ module Engine
             short_name: 'Soft rust',
             desc: '4 trains run once more after 8 train is bought',
           },
+          {
+            sym: :cotton_port,
+            short_name: 'Cotton Port',
+            desc: 'Adds a few new hexes and a second home for Georgia Railroad',
+          },
         ].freeze
       end
     end
