@@ -278,6 +278,7 @@ module Engine
         BANKRUPTCY_ENDS_GAME_AFTER = :one
         STATUS_TEXT = {}.freeze
         TILE_UPGRADES_MUST_USE_MAX_EXITS = [].freeze
+        DISCARDED_TRAINS = :remove
 
         def find_map_name
           optional_rules&.find { |r| r.to_s.include?('map_') }&.to_s&.delete_prefix('map_')&.downcase

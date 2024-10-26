@@ -48,6 +48,11 @@ module Engine
           'AF12' => 'P16',
         }.freeze
 
+        GAME_END_REASONS_TIMING_TEXT = {
+          current_or: 'Next end of an OR',
+          full_or: 'Next end of a complete OR set, with one additional OR added on',
+        }.freeze
+
         PRIVATE_MAIL_CONTRACTS = %w[P22 P23].freeze
         PRIVATE_SMALL_MAIL_CONTRACTS = %w[P24 P25].freeze
         PRIVATE_PHASE_REVENUE = %w[P8 P9].freeze

@@ -877,6 +877,7 @@ module Engine
           corp.par_price = nil
           corp.ipoed = false
           corp.unfloat!
+          @corporation_power[corp] = 0
 
           # return shares to IPO with no compensation
           corp.share_holders.keys.each do |share_holder|

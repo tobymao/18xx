@@ -110,6 +110,7 @@ module Engine
             name: 'Zafra - Huelva',
             value: 160,
             revenue: 20,
+            min_price: 1,
             desc: 'It provides a 10% certificate from the Southern company CRB.',
             color: nil,
             abilities: [{ type: 'shares', shares: 'CRB_1' }],
@@ -119,6 +120,7 @@ module Engine
             name: 'Ferrocarril Vasco-Navarro',
             value: 160,
             revenue: 20,
+            min_price: 1,
             desc: 'It provides a 10% certificate from the Southern company CRB.',
             color: nil,
             abilities: [{ type: 'shares', shares: 'random_share' }],
@@ -128,6 +130,7 @@ module Engine
             name: 'Ferrocarril de Carreño',
             value: 170,
             revenue: 30,
+            min_price: 1,
             desc: 'President share of one Northern major company (randomly selected before the game starts).'\
                   'It closes when the major company buys its first train.',
             color: nil,
