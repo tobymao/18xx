@@ -12,6 +12,7 @@ module Engine
           'D4' => 'Atlanta',
           'D10' => 'Augusta',
           'E7' => 'Milledgeville',
+          'E15' => 'Charleston', # only seen in Cotton Port variant
           'F6' => 'Macon',
           'G3' => 'Columbus',
           'H4' => 'Albany',

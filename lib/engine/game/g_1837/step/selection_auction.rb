@@ -36,7 +36,7 @@ module Engine
 
           def win_bid(winner, company)
             super
-            @game.after_company_assigned(company)
+            @game.after_company_acquisition(company)
           end
 
           def post_win_bid(winner, _company)
