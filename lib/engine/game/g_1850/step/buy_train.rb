@@ -34,6 +34,14 @@ module Engine
           def can_buy_train?(entity = nil, _shell = nil)
             super && !buyable_trains(entity).empty?
           end
+
+          def can_sell?(entity, bundle)
+            super && bundle.corporation.holding_ok?(entity, -bundle.percent)
+          end
+
+          def selling_minimum_shares?(bundle)
+            super || !bundle.corporation.holding_ok?(bundle.owner, -bundle.percent + 1)
+          end
         end
       end
     end
