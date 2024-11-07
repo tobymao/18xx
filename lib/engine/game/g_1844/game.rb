@@ -29,6 +29,7 @@ module Engine
         SELL_BUY_ORDER = :sell_buy
         SELL_MOVEMENT = :down_block
         POOL_SHARE_DROP = :left_block
+        MUST_SELL_IN_BLOCKS = true
         NEXT_SR_PLAYER_ORDER = :most_cash
         EBUY_PRES_SWAP = false
         EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
