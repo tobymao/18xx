@@ -20,7 +20,7 @@ module Engine
         GAME_DESIGNER = 'Lucas Boyd'.freeze
         GAME_IMPLEMENTER = 'Christopher Giroir'.freeze
 
-        GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/TheOldPrince'.freeze
+        GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/The-Old-Prince-1871'.freeze
         GAME_LOCATION = 'Prince Edward Island'.freeze
         GAME_PUBLISHER = nil
         GAME_RULES_URL = 'https://s3.amazonaws.com/public.valefor.com/TOP71_RULES_PROTOTYPE.pdf'
