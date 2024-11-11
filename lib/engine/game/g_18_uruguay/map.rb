@@ -53,7 +53,6 @@ module Engine
           '172' => 1,
           '887' => 1,
           '888' => 1,
-          '596' => 1,
           '210' => {
             'count' => 1,
             'color' => 'green',
@@ -96,61 +95,37 @@ module Engine
             'code' => 'city=revenue:50,slots:3;label=XX;'\
                       'path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:5,b:_0',
           },
-          '307' => {
-            'count' => 1,
-            'color' => 'brown',
-            'code' => 'city=revenue:50,slots:3;label=XX;'\
-                      'path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:5,b:_0',
-          },
-          '309' => {
-            'count' => 1,
-            'color' => 'gray',
-            'code' => 'city=revenue:60,slots:3;label=XX;'\
-                      'path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
-          },
           'URUXX' => {
             'count' => 1,
             'color' => 'gray',
-            'code' => 'city=revenue:50,slots:4;label=XX'\
+            'code' => 'city=revenue:70,slots:4;label=XX'\
                       ';path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;path=a:3,b:_0;path=a:5,b:_0',
           },
           'URU01' => {
             'count' => 1,
             'color' => 'green',
-            'code' => 'city=revenue:30;city=revenue:30;label=MV'\
-                      ';city=revenue:30;city=revenue:30'\
+            'code' => 'city=revenue:50;city=revenue:50;label=MV'\
+                      ';city=revenue:50;city=revenue:50'\
                       ';path=a:1,b:_0;path=a:2,b:_1;path=a:3,b:_2;path=a:4,b:_3'\
                       ';path=a:6,b:_0;path=a:6,b:_1;path=a:5,b:_2;path=a:5,b:_3',\
           },
           'URU02' => {
             'count' => 1,
             'color' => 'brown',
-            'code' => 'city=revenue:50,slots:5;label=MV'\
+            'code' => 'city=revenue:70,slots:5;label=MV'\
                       ';path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;path=a:3,b:_0;path=a:5,b:_0',
           },
           'URU03' => {
             'count' => 1,
             'color' => 'gray',
-            'code' => 'city=revenue:70,slots:5;label=MV'\
+            'code' => 'city=revenue:90,slots:5;label=MV'\
                       ';path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;path=a:3,b:_0;path=a:5,b:_0',
           },
           'L125' => {
-            'count' => 1,
+            'count' => 2,
             'color' => 'brown',
             'code' => 'city=revenue:40,slots:2;label=L'\
                       ';path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
-          },
-          'L448' => {
-            'count' => 1,
-            'color' => 'brown',
-            'code' => 'city=revenue:40,slots:2;label=L'\
-                      ';path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0',
-          },
-          'L612' => {
-            'count' => 1,
-            'color' => 'gray',
-            'code' => 'city=revenue:60,slots:2;label=L'\
-                      ';path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0',
           },
         }.freeze
 
@@ -198,14 +173,13 @@ module Engine
 
         HEXES = {
           white: {
-            %w[B4 B6 C9 D6 E3 E13 G11 I9 J12] => 'city=revenue:0',
+            %w[B4 B6 C9 D2 D6 E3 E13 G11 I9 J12] => 'city=revenue:0',
             %w[C3 D4 G13 H2 H6] => 'icon=image:18_uruguay/corn_icon',
             %w[E5 H12 J8] => 'icon=image:18_uruguay/sheep_icon',
             %w[D8 F12 I5] => 'icon=image:18_uruguay/cow_icon',
             %w[F14 H10 I7 I13 J4] => 'town=revenue:0',
             %w[C7 G9 H8 I11] => 'upgrade=cost:40,terrain:mountain',
             ['C5'] => 'town=revenue:0;town=revenue:0',
-            ['D2'] => 'city=revenue:0;future_label=label:L,color:brown',
             ['D10'] => 'upgrade=cost:20,terrain:water;border=edge:5,type:water,cost:40',
             ['E7'] => 'icon=image:18_uruguay/sheep_icon;border=edge:5,type:water,cost:40',
             ['E9'] => 'town=revenue:0;border=edge:0,type:water,cost:40;border=edge:4,type:water,cost:40;'\
