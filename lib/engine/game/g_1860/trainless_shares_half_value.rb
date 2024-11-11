@@ -36,9 +36,9 @@ module Engine
           trainless_shares, train_shares = player.shares.partition { |s| s.corporation.trains.empty? }
           if @optional_rules&.include?(:non_operated_full_value)
             unoperated_corps, operated_corps = trainless_shares.partition { |s| s.corporation.operating_history.empty? }
-            player.cash + player.companies.sum(&:value) + unoperated_corps.sum(&:price) + operated_corps.sum do |s|
-                                                                                            (s.price / 2).to_i
-                                                                                          end
+            player.cash + train_shares.sum(&:price) + unoperated_corps.sum(&:price) + operated_corps.sum do |s|
+                                                                                        (s.price / 2).to_i
+                                                                                      end + player.companies.sum(&:value)
           else
             player.cash + train_shares.sum(&:price) + trainless_shares.sum do |s|
                                                         (s.price / 2).to_i
