@@ -382,10 +382,16 @@ module Engine
           send("map_#{map_name}_half_dividend")
         end
 
-        def share_price_change_as_full_cap_by_map?
-          return game_capitalization == :full unless respond_to?("map_#{map_name}_share_price_change_as_full_cap")
+        def share_price_change_for_dividend_as_full_cap_by_map?
+          return game_capitalization == :full unless respond_to?("map_#{map_name}_share_price_change_for_dividend_as_full_cap")
 
-          send("map_#{map_name}_share_price_change_as_full_cap")
+          send("map_#{map_name}_share_price_change_for_dividend_as_full_cap")
+        end
+
+        def movement_type_at_emr_share_issue_by_map
+          return :left_block unless respond_to?("map_#{map_name}_movement_type_at_emr_share_issue")
+
+          send("map_#{map_name}_movement_type_at_emr_share_issue")
         end
 
         def redef_const(const, value)

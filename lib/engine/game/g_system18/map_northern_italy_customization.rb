@@ -215,8 +215,12 @@ module Engine
           false
         end
 
-        def map_northern_italy_share_price_change_as_full_cap
+        def map_northern_italy_share_price_for_dividend_change_as_full_cap
           true
+        end
+
+        def map_northern_italy_movement_type_at_emr_share_issue
+          :down_share
         end
 
         def map_northern_italy_game_market

@@ -29,12 +29,9 @@ module Engine
 
             @emr_issue = true
 
-            if @game.share_price_change_as_full_cap_by_map?
-              @game.sell_shares_and_change_price(action.bundle, movement: :down_share)
-            else
-              @game.sell_shares_and_change_price(action.bundle, movement: :left_block)
-            end
+            movement_type = @game.movement_type_at_emr_share_issue_by_map
 
+            @game.sell_shares_and_change_price(action.bundle, movement: movement_type)
           end
 
           def process_buy_train(action)
