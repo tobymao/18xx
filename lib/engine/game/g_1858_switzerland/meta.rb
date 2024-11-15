@@ -23,6 +23,15 @@ module Engine
         GAME_ISSUE_LABEL = '1858Switzerland'
 
         PLAYER_RANGE = [2, 4].freeze
+
+        OPTIONAL_RULES = [
+          {
+            sym: :robot,
+            short_name: 'Robot',
+            desc: 'Adds a robot player and the SBB national company.',
+            players: [2],
+          },
+        ].freeze
       end
     end
   end
