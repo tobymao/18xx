@@ -576,7 +576,7 @@ module Engine
           @players.each do |payee|
             num_shares = payee.num_shares_of(entity)
 
-            if payee == gold_miner&.owner
+            if payee == gold_miner&.owner && entity == @gold_corp
               entity.cash += per_share * 2
               num_shares += 2
             end
