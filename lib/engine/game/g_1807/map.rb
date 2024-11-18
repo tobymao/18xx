@@ -85,11 +85,11 @@ module Engine
         HEXES = {
           white: {
             # Plain hexes.
-            %w[B8 E7 E9 F8 F16 G3 G15 H4 H6 I13 I21 J10 J12 J16 J18 J20 J22 K11 K17
+            %w[B8 E3 E7 E9 F8 F16 G3 G15 H4 H6 I13 I21 J10 J12 J16 J18 J20 J22 K11 K17
                K21 K23 L10 L18 M23 N8 N14 N18 N20 N22 N24 O5 O21 O23 O27 O29
                P4 P6 P16 P20 P22 P24 P26 P30 Q7 Q13 Q19 Q21 Q25 Q27 Q29 R6 R16
-               R18 R22 R26 R30 S5 S13 S15 S17 S19 S21 S23 S25 T6 T16 T18 T20
-               T26 T28 U15 V16 V18 V20 W9 W11 W13 W15 W17 W19 W21 W23 W25 W27 W29
+               R18 R22 R26 R30 S5 S13 S15 S17 S19 S21 S23 S25 T4 T6 T16 T18 T20
+               T26 T28 U5 U15 V16 V18 V20 W9 W11 W13 W15 W17 W19 W21 W23 W25 W27 W29
                X10 X12 X14 X22 X26] => '',
             %w[A5 A7 B4 B6 E11 F6 F10 G5 G7 H14 I15 J14 K13 K15 N16 P8 R8 S7 T8] => 'upgrade=cost:40,terrain:mountain',
             %w[I11 O7] => 'upgrade=cost:80,terrain:mountain',
@@ -97,7 +97,6 @@ module Engine
             %w[C9] => 'border=edge:0,type:water,cost:80;border=edge:5,type:water,cost:80',
             %w[D12] => 'border=edge:2,type:impassable',
             %w[D14] => 'border=edge:5,type:province',
-            %w[E3] => 'border=edge:5,type:impassable',
             %w[E5] => 'stub=edge:3',
             %w[E13 F12] => 'upgrade=cost:40,terrain:mountain;' \
                            'border=edge:4,type:province;border=edge:5,type:province',
@@ -121,12 +120,10 @@ module Engine
                            'border=edge:4,type:province;border=edge:5,type:province',
             %w[P12 R12] => 'border=edge:1,type:province',
             %w[Q9] => 'border=edge:4,type:province',
-            %w[T4] => 'border=edge:5,type:impassable',
             %w[T12] => 'border=edge:0,type:province;border=edge:1,type:province;' \
                        'border=edge:5,type:water,cost:80',
             %w[T22] => 'stub=edge:5',
             %w[T24] => 'stub=edge:0',
-            %w[U5] => 'border=edge:2,type:impassable',
             %w[U21] => 'upgrade=cost:20,terrain:water;stub=edge:4',
             %w[U25] => 'border=edge:0,type:water,cost:80;' \
                        'stub=edge:1;' \
@@ -135,12 +132,11 @@ module Engine
                        'border=edge:3,type:water,cost:80',
 
             # Town hexes.
-            %w[C7 H16 I17 M13 M19 O13 O15 P18 Q17 Q23 R20 R24 S27 U17 U19 X16] => 'town=revenue:0',
+            %w[C7 F4 H16 I17 M13 M19 O13 O15 P18 Q17 Q23 R20 R24 S27 U17 U19 X16] => 'town=revenue:0',
             %w[A11] => 'town=revenue:0;border=edge:0,type:water,cost:80',
             %w[C5] => 'town=revenue:0;border=edge:0,type:water,cost:80;stub=edge:5',
             %w[D8] => 'town=revenue:0;border=edge:3,type:water,cost:80',
             %w[E15] => 'town=revenue:0;border=edge:1,type:province;border=edge:2,type:province',
-            %w[F4] => 'town=revenue:0;border=edge:2,type:impassable',
             %w[H12] => 'town=revenue:0;border=edge:2,type:province',
             %w[L14] => 'town=revenue:0;stub=edge:5',
             %w[R14] => 'town=revenue:0;stub=edge:3',
@@ -196,16 +192,16 @@ module Engine
             %w[S29] => 'offboard=revenue:yellow_10|green_20|brown_30|gray_40;' \
                        'path=a:1,b:_0;path=a:2,b:_0',
             %w[V30] => 'offboard=revenue:yellow_20|green_30|brown_40|gray_50;' \
-                       'path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0',
+                       'path=a:0,b:_0;path=a:1,b:_0;',
             %w[X8] => 'offboard=revenue:yellow_20|green_30|brown_40|gray_40;' \
                       'path=a:3,b:_0;path=a:4,b:_0',
           },
           blue: {
             %w[B12] => 'path=a:0,b:1;path=a:2,b:5,terminal:2,ignore:1',
             %w[C13] => 'path=a:1,b:4,terminal:2,ignore:1',
+            %w[U29] => 'path=a:0,b:5,terminal:2,ignore:1;',
           },
           gray: {
-            %w[U29] => 'path=a:0,b:5',
             %w[V10] => 'path=a:2,b:3',
 
             # Supersized London hex.
