@@ -8,6 +8,9 @@ module Engine
       module Step
         class BuyTrain < Engine::Step::BuyTrain
           def actions(entity)
+            if entity == current_entity.owner
+              return can_issue?(current_entity) ? [] : %w[sell_shares]
+            end
             return [] unless entity.corporation?
 
             actions_ = []
@@ -66,6 +69,10 @@ module Engine
 
             @game.bank.spend(10, company.owner)
             @game.log << "#{company.owner.name} receives #{@game.format_currency(10)} for building a ship"
+          end
+
+          def spend_minmax(entity, _train)
+            [1, entity.cash]
           end
 
           def process_buy_train(action)

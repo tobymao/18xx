@@ -56,12 +56,30 @@ module Engine
           },
           {
             sym: 'P4',
+            name: 'Alar del Rey - Santander',
+            value: 100,
+            revenue: 20,
+            min_price: 1,
+            desc: 'The major owning company (both North and '\
+                  'South) can build the mountain pass of Alar del '\
+                  'Rey for free, or any other mountain pass with '\
+                  'a discount of pts40. This action closes this company.',
+            abilities: [{
+              type: 'choose_ability',
+              owner_type: 'corporation',
+              when: 'track',
+              choices: { close: 'Close P5' },
+            }],
+
+          },
+          {
+            sym: 'P5',
             name: 'La Maquinista',
             value: 130,
             revenue: 10,
             min_price: 1,
-            desc: "Provides five tender cards. The owner of this company (only player) can \
-            sell up to four of these five tenders (to any company). Each tender costs pts80 \
+            desc: "Provides six tender cards. The owner of this company (only player) can \
+            sell up to five of these six tenders (to any company). Each tender costs pts80 \
             (20 goes to the owner and 60 to the bank). The fifth tender remains with the company\
              until it is bought by a major or minor company. Then the fifth tender belongs to the\
               company that bought this private. The director of the company that buys this private\
@@ -88,28 +106,11 @@ module Engine
             color: nil,
           },
           {
-            sym: 'P5',
-            name: 'Alar del Rey - Santander',
-            value: 100,
-            revenue: 20,
-            min_price: 1,
-            desc: 'The major owning company (both North and '\
-                  'South) can build the mountain pass of Alar del '\
-                  'Rey for free, or any other mountain pass with '\
-                  'a discount of pts40. This action closes this company.',
-            abilities: [{
-              type: 'choose_ability',
-              owner_type: 'corporation',
-              when: 'track',
-              choices: { close: 'Close P5' },
-            }],
-
-          },
-          {
             sym: 'P6',
             name: 'Zafra - Huelva',
             value: 160,
             revenue: 20,
+            min_price: 1,
             desc: 'It provides a 10% certificate from the Southern company CRB.',
             color: nil,
             abilities: [{ type: 'shares', shares: 'CRB_1' }],
@@ -119,6 +120,7 @@ module Engine
             name: 'Ferrocarril Vasco-Navarro',
             value: 160,
             revenue: 20,
+            min_price: 1,
             desc: 'It provides a 10% certificate from the Southern company CRB.',
             color: nil,
             abilities: [{ type: 'shares', shares: 'random_share' }],
@@ -126,8 +128,9 @@ module Engine
           {
             sym: 'P7',
             name: 'Ferrocarril de Carreño',
-            value: 190,
+            value: 170,
             revenue: 30,
+            min_price: 1,
             desc: 'President share of one Northern major company (randomly selected before the game starts).'\
                   'It closes when the major company buys its first train.',
             color: nil,
@@ -144,7 +147,7 @@ module Engine
             coordinates: 'F24',
             city: 1,
             max_ownership_percent: 60,
-            tokens: [0, 50, 50, 50, 50, 50],
+            tokens: [0, 50, 50, 50, 50],
             color: '#C29137',
             type: 'major',
             destination: 'E21',
@@ -157,7 +160,7 @@ module Engine
             coordinates: 'F24',
             city: 2,
             max_ownership_percent: 60,
-            tokens: [0, 50, 50, 50, 50, 50],
+            tokens: [0, 50, 50, 50, 50],
             color: '#FFD526',
             type: 'major',
             destination: 'J28',
@@ -169,7 +172,7 @@ module Engine
             logo: '18_esp/A',
             coordinates: 'E33',
             max_ownership_percent: 60,
-            tokens: [0, 50, 50, 50, 50, 50],
+            tokens: [0, 50, 50, 50, 50],
             color: '#B75835',
             type: 'major',
             destination: 'C31',
@@ -181,7 +184,7 @@ module Engine
             logo: '18_esp/CRB',
             coordinates: 'B26',
             max_ownership_percent: 60,
-            tokens: [0, 50, 50, 50, 50, 50],
+            tokens: [0, 50, 50, 50, 50],
             color: '#E96B28',
             type: 'major',
             destination: 'F28',
@@ -194,7 +197,7 @@ module Engine
             coordinates: 'F24',
             city: 0,
             max_ownership_percent: 60,
-            tokens: [0, 50, 50, 50, 50, 50],
+            tokens: [0, 50, 50, 50, 50],
             color: '#009AD5',
             type: 'major',
             destination: 'C25',
@@ -209,7 +212,7 @@ module Engine
             coordinates: 'M21',
             city: 1,
             max_ownership_percent: 60,
-            tokens: [0, 50, 50, 50, 50, 50],
+            tokens: [0, 50, 50, 50, 50],
             color: '#DA0A26',
             type: 'major',
             destination: 'J20',
@@ -383,7 +386,7 @@ module Engine
           coordinates: 'I29',
           city: 0,
           max_ownership_percent: 60,
-          tokens: [0, 50, 50, 50, 50, 50],
+          tokens: [0, 50, 50, 50, 50],
           color: '#6D1D7D',
           type: 'major',
           destination: 'F32',
@@ -396,7 +399,7 @@ module Engine
           coordinates: 'K25',
           city: 0,
           max_ownership_percent: 60,
-          tokens: [0, 50, 50, 50, 50, 50],
+          tokens: [0, 50, 50, 50, 50],
           color: '#000000',
           type: 'major',
           destination: 'L22',
@@ -409,7 +412,7 @@ module Engine
           coordinates: 'L22',
           city: 0,
           max_ownership_percent: 60,
-          tokens: [0, 50, 50, 50, 50, 50],
+          tokens: [0, 50, 50, 50, 50],
           color: '#338242',
           type: 'major',
           destination: 'N18',

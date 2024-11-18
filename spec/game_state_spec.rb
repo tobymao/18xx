@@ -355,7 +355,7 @@ module Engine
             },
           }
           expect(game.exception).to be_nil
-          expect(game.process_action(action).exception).to be_a(GameError)
+          expect { game.process_action(action) }.to raise_error(GameError)
         end
       end
 
@@ -391,7 +391,7 @@ module Engine
             'tokener' => 'BB',
           }
           expect(game.exception).to be_nil
-          expect(game.process_action(action).exception).to be_a(GameError)
+          expect { game.process_action(action) }.to raise_error(GameError)
         end
       end
     end
@@ -868,6 +868,20 @@ module Engine
           toronto = game.hex_by_id('AC21').tile.cities[0]
           expect(toronto.normal_slots).to eq(2)
           expect(toronto.slots).to eq(3)
+        end
+      end
+    end
+
+    describe '1822PNW' do
+      describe 165_580 do
+        it 'does not include associated minors for majors that were started '\
+           'directly as valid choices for P20' do
+          game = game_at_action(game_file, 926)
+
+          actual = game.active_step.p20_targets
+          expected = [game.corporation_by_id('1')]
+
+          expect(actual).to eq(expected)
         end
       end
     end

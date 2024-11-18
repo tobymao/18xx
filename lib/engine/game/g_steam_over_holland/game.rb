@@ -29,6 +29,7 @@ module Engine
         MUST_SELL_IN_BLOCKS = true
         SELL_MOVEMENT = :left_share
         MUST_EMERGENCY_ISSUE_BEFORE_EBUY = true
+        BANKRUPTCY_ALLOWED = false
 
         BANK_CASH = 99_999
 
@@ -193,6 +194,10 @@ module Engine
           @or = 0
         end
 
+        def next_sr_player_order
+          @round.auction? ? :most_cash_keep_order : :next_clockwise
+        end
+
         def timeline
           @timeline ||= [
             'Game ends after OR 5.2!',
@@ -228,7 +233,7 @@ module Engine
 
         def new_auction_round
           Engine::Round::Auction.new(self, [
-            Engine::Step::SelectionAuction,
+            GSteamOverHolland::Step::SelectionAuction,
           ])
         end
 
@@ -242,7 +247,7 @@ module Engine
         end
 
         def operating_round(round_num)
-          Engine::Round::Operating.new(self, [
+          GSteamOverHolland::Round::Operating.new(self, [
             Engine::Step::Bankrupt,
             Engine::Step::Assign,
             Engine::Step::SpecialToken,
@@ -255,7 +260,7 @@ module Engine
             Engine::Step::Route,
             GSteamOverHolland::Step::Dividend,
             Engine::Step::DiscardTrain,
-            Engine::Step::BuyTrain,
+            GSteamOverHolland::Step::BuyTrain,
             [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
@@ -356,44 +361,47 @@ module Engine
         end
 
         def check_distance(route, visits, train = nil)
-          super
-
           raise GameError, 'Route cannot begin/end in a town' if visits.first.town? || visits.last.town?
+
+          super
         end
 
         def revenue_for(route, stops)
-          super
+          revenue = super
 
-          raise GameError, 'Route visits same hex twice' if route.hexes.size != route.hexes.uniq.size
+          Array(abilities(route.corporation, :hex_bonus)).each do |ability|
+            revenue += ability.amount * stops.count { |s| ability.hexes.include?(s.hex.id) }
+          end
+
+          revenue
         end
 
         def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil, movement: nil)
           price_drop = bundle.num_shares
           corporation = bundle.corporation
           old_price = corporation.share_price
-          @share_pool.sell_shares(bundle, allow_president_change: allow_president_change, swap: swap)
 
-          if bundle.owner == corporation.owner
-            super
-          else
-            # This section allows for the ledges that prevent price drops unless the president is selling
+          # This section below allows for the ledges that prevent price drops unless the president is selling
+          unless corporation.president?(bundle.owner)
             case corporation.share_price.type
             when :ignore_sale_unless_president
               price_drop = 0
             when :max_one_drop_unless_president
               price_drop = 1
             when :max_two_drops_unless_president
-              price_drop = 2 unless bundle.num_shares == 1
+              price_drop = 2 unless price_drop == 1
             end
-            price_drop.times { @stock_market.move_left(corporation) }
-            log_share_price(corporation, old_price) if sell_movement(corporation) != :none
           end
+
+          @share_pool.sell_shares(bundle)
+          price_drop.times { @stock_market.move_left(corporation) }
+          log_share_price(corporation, old_price) if sell_movement(corporation) != :none
         end
 
         def issuable_shares(entity)
-          return [] unless round.steps.find { |step| step.instance_of?(GSteamOverHolland::Step::IssueShares) }.active?
+          return [] if @round.issued_shares[entity]
 
-          num_shares = entity.num_player_shares - entity.num_market_shares
+          num_shares = [entity.num_player_shares, 5 - entity.num_market_shares].min
           bundles = bundles_for_corporation(entity, entity)
           share_price = stock_market.find_share_price(entity, :current).price
 
@@ -403,13 +411,45 @@ module Engine
         end
 
         def redeemable_shares(entity)
-          return [] unless round.steps.find { |step| step.instance_of?(GSteamOverHolland::Step::IssueShares) }.active?
+          return [] if @round.issued_shares[entity]
 
           share_price = stock_market.find_share_price(entity, :current).price
 
           bundles_for_corporation(share_pool, entity)
             .each { |bundle| bundle.share_price = share_price }
             .reject { |bundle| entity.cash < bundle.price }
+        end
+
+        def emergency_issuable_bundles(entity)
+          return [] if @round.issued_shares[entity] || entity.cash >= @depot.min_depot_price
+
+          num_shares = [entity.num_player_shares, 5 - entity.num_market_shares].min
+
+          bundles_for_corporation(entity, entity).reject { |bundle| bundle.num_shares > num_shares }
+        end
+
+        def upgrades_to_correct_city_town?(from, to)
+          return true if from.towns.size == 1 && to.towns.size == 2
+
+          super
+        end
+
+        def upgrade_cost(tile, _hex, entity, spender)
+          terrain_cost = tile.upgrades.sum(&:cost)
+          discounts = 0
+
+          # Tile discounts must be activated
+          if entity.company? && (ability = entity.all_abilities.find { |a| a.type == :tile_discount })
+            discounts = tile.upgrades.sum do |upgrade|
+              next unless upgrade.terrains.include?(ability.terrain)
+
+              discount = [upgrade.cost, ability.discount].min
+              log_cost_discount(spender, ability, discount) if discount.positive?
+              discount
+            end
+          end
+
+          terrain_cost - discounts
         end
       end
     end

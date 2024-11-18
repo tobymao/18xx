@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'json'
 require 'opal'
 require 'snabberb'
 require 'tempfile'
@@ -12,7 +13,40 @@ class Assets
   OUTPUT_BASE = 'public'
   PIN_DIR = '/pinned/'
 
-  def initialize(compress: false, gzip: false, cache: true, precompiled: false)
+  class SourceMap
+    def initialize
+      @source_map = {
+        'version' => 3,
+        'sections' => [],
+      }
+      @current_line = 0
+    end
+
+    def append(file_contents, source_map_file)
+      @source_map['sections'].append({
+                                       'offset' => { 'line' => @current_line, 'column' => 0 },
+                                       'map' => JSON.parse(File.read(source_map_file)),
+                                     })
+      @current_line += file_contents.lines.count + 1
+    end
+
+    def extend(file_contents, source_map_file)
+      file_source_map = JSON.parse(File.read(source_map_file))
+      file_source_map['sections'].each do |section|
+        @source_map['sections'].append({
+                                         'offset' => { 'line' => @current_line + section['offset']['line'], 'column' => 0 },
+                                         'map' => section['map'],
+                                       })
+      end
+      @current_line += file_contents.lines.count + 1
+    end
+
+    def to_json(*args)
+      @source_map.to_json(*args)
+    end
+  end
+
+  def initialize(compress: false, gzip: false, cache: true, precompiled: false, source_maps: false)
     @build_path = 'build'
     @out_path = OUTPUT_BASE + '/assets'
     @root_path = '/assets'
@@ -25,6 +59,7 @@ class Assets
     @compress = compress
     @gzip = gzip
     @precompiled = precompiled
+    @source_maps = source_maps
   end
 
   def context(titles)
@@ -97,8 +132,8 @@ class Assets
         **game_builds(:all),
       }
     else
-      @_opal ||= compile_lib('opal')
-      @_deps ||= compile_lib('deps', 'assets')
+      @_opal ||= compile_lib('opal', 'opal')
+      @_deps ||= compile_lib('deps_only', 'deps', 'assets')
       @_engine ||= compile('engine', 'lib', 'engine')
       @_app ||= compile('app', 'assets/app', '')
 
@@ -163,9 +198,17 @@ class Assets
 
       @_combined.include?(key) ? next : @_combined.add(key)
 
-      source = build['files'].map { |file| File.read(file).to_s }.join("\n")
+      source_map = SourceMap.new
+      source = build['files'].map do |filepath|
+        file = File.read(filepath).to_s
+        source_map.extend(file, filepath + '.map') if @source_maps
+        file
+      end.join("\n")
+      source += "\n//# sourceMappingURL=#{build['path'].delete_prefix('public')}.map\n" if @source_maps
+
       source = compress(key, source) if @compress
       File.write(build['path'], source)
+      File.write(build['path'] + '.map', source_map.to_json) if @source_maps
 
       next if !@gzip || build['path'] == @server_path
 
@@ -182,13 +225,14 @@ class Assets
     [@deps_path, @main_path, *game_paths]
   end
 
-  def compile_lib(name, *append_paths)
+  def compile_lib(output_name, name, *append_paths)
     builder = Opal::Builder.new
     append_paths.each { |ap| builder.append_paths(ap) }
-    path = "#{@out_path}/#{name}.js"
-    if !@cache || !File.exist?(path) || path == @deps_path
+    path = "#{@out_path}/#{output_name}.js"
+    if !@cache || !File.exist?(path)
       time = Time.now
       File.write(path, builder.build(name))
+      File.write("#{path}.map", builder.source_map.map.to_json) if @source_maps
       puts "Compiling #{name} - #{Time.now - time}"
     end
     path
@@ -214,17 +258,22 @@ class Assets
 
       time = Time.now
       File.write(opts[:js_path], compiler.compile)
+      File.write(opts[:js_path] + '.map', compiler.source_map.map.to_json) if @source_maps
       puts "Compiling #{file} - #{Time.now - time}"
     end
 
+    source_map = SourceMap.new
     source = metadata.map do |_file, opts|
-      File.read(opts[:js_path]).to_s
+      file = File.read(opts[:js_path])
+      source_map.append(file, opts[:js_path] + '.map') if @source_maps
+      file
     end.join("\n")
 
     opal_load = game ? "engine/game/#{game}" : name
     source += "\nOpal.load('#{opal_load}')"
 
     File.write(output, source)
+    File.write(output + '.map', source_map.to_json) if @source_maps
     output
   end
 

@@ -10,6 +10,8 @@ module Engine
         include Game::Meta
         include G1822PNW::Meta
 
+        DEV_STAGE = :alpha
+
         DEPENDS_ON = '1822PNW'
         GAME_IS_VARIANT_OF = G1822PNW::Meta
 

@@ -33,12 +33,16 @@ module Engine
         HOME_TOKEN_TIMING = :float
         CURRENCY_FORMAT_STR = 'F%s'
         BANKRUPTCY_ENDS_GAME_AFTER = :all_but_one
+        CAPITALIZATION = :incremental
+        MUST_BUY_TRAIN = :always
 
         BANK_CASH = 12_000
 
         CERT_LIMIT = { 2 => 28, 3 => 20, 4 => 16, 5 => 13, 6 => 11 }.freeze
 
         STARTING_CASH = { 2 => 900, 3 => 600, 4 => 450, 5 => 360, 6 => 300 }.freeze
+
+        MERGER_CORPS = %w[Etat SNCF].freeze
 
         MARKET = [
           %w[82 90 100 110p 122 135 150 165 180 200 220 245 270 300 330 360 400],
@@ -64,7 +68,6 @@ module Engine
                     train_limit: { five_share: 1, ten_share: 3 },
                     tiles: %i[yellow green],
                     operating_rounds: 2,
-                    status: ['can_buy_trains'],
                   },
                   {
                     name: '10H',
@@ -72,7 +75,6 @@ module Engine
                     train_limit: 2,
                     tiles: %i[yellow green brown],
                     operating_rounds: 3,
-                    status: ['can_buy_trains'],
                   },
                   {
                     name: 'E',
@@ -80,7 +82,6 @@ module Engine
                     train_limit: 2,
                     tiles: %i[yellow green brown blue],
                     operating_rounds: 3,
-                    status: ['can_buy_trains'],
                   },
                   {
                     name: 'TVG',
@@ -88,7 +89,6 @@ module Engine
                     train_limit: 2,
                     tiles: %i[yellow green brown blue gray],
                     operating_rounds: 3,
-                    status: ['can_buy_trains'],
                   }].freeze
 
         TRAINS = [
@@ -107,6 +107,7 @@ module Engine
                       distance: 10,
                       price: 600,
                       num: 5,
+                      events: [{ 'type' => 'close_companies' }],
                     },
                     {
                       name: 'E',
@@ -161,6 +162,25 @@ module Engine
           ], round_num: round_num)
         end
 
+        def setup
+          @can_buy_trains = false
+          @recently_floated = []
+        end
+
+        def or_round_finished
+          @recently_floated = []
+        end
+
+        def float_corporation(corporation)
+          @recently_floated << corporation unless merger_corp?(corporation)
+
+          super
+        end
+
+        def merger_corp(corporation)
+          MERGER_CORPS.include?(corporation.id)
+        end
+
         def regie
           @regie ||= company_by_id('P2')
         end
@@ -202,6 +222,11 @@ module Engine
             corp = removal[:corporation]
             @log << "-- Event: #{corp}'s #{company_by_id(company).name} ability is removed --"
           end
+        end
+
+        def event_can_buy_trains!
+          @can_buy_trains = true
+          @log << 'Corporations can buy trains from other corporations'
         end
       end
     end

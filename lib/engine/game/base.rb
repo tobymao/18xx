@@ -221,6 +221,10 @@ module Engine
 
       # :after_last_to_act -- player after the last to act goes first. Order remains the same.
       # :first_to_pass -- players ordered by when they first started passing.
+      # :most_cash -- players ordered from most cash on hand to least.
+      # :least_cash -- players ordered from least cash on hand to most.
+      # :next_clockwise -- priority passes from the player who started this SR to the next player in player order.
+      # :most_cash_keep_order -- player with most cash gets priority, absolutre turn order remains unchanged.
       NEXT_SR_PLAYER_ORDER = :after_last_to_act
 
       # do tile reservations completely block other companies?
@@ -806,9 +810,9 @@ module Engine
         @last_processed_action = action.id
 
         self
-      rescue StandardError => e
-        rescue_exception(e, action)
-        self
+        # rescue StandardError => e
+        #  rescue_exception(e, action)
+        #  self
       end
 
       def process_single_action(action)
@@ -834,8 +838,8 @@ module Engine
             transition_to_next_round!
           end
         end
-      rescue Engine::GameError => e
-        rescue_exception(e, action)
+        # rescue Engine::GameError => e
+        #  rescue_exception(e, action)
       end
 
       def rescue_exception(e, action)
@@ -980,7 +984,7 @@ module Engine
 
       # Before rusting, check if this train individual should rust.
       def rust?(train, purchased_train)
-        train.rusts_on == purchased_train.sym ||
+        Array(train.rusts_on).include?(purchased_train.sym) ||
           (train.obsolete_on == purchased_train.sym && @depot.discarded.include?(train))
       end
 
@@ -1027,7 +1031,7 @@ module Engine
       def submit_revenue_str(routes, show_subsidy)
         revenue_str = format_revenue_currency(routes_revenue(routes))
         subsidy = routes_subsidy(routes)
-        subsidy_str = show_subsidy || subsidy.positive? ? " + #{format_currency(routes_subsidy(routes))} (subsidy)" : ''
+        subsidy_str = show_subsidy || subsidy.positive? ? " + #{format_currency(routes_subsidy(routes))} (#{subsidy_name})" : ''
         revenue_str + subsidy_str
       end
 
@@ -1071,7 +1075,7 @@ module Engine
 
         value = player.cash
         if emergency
-          return liquidity(player) unless @round
+          return liquidity(player, emergency: false) unless @round
 
           value += player.shares_by_corporation.sum do |corporation, shares|
             next 0 if shares.empty?
@@ -2353,6 +2357,14 @@ module Engine
         true
       end
 
+      def render_revenue_history?(corporation)
+        !corporation.operating_history.empty?
+      end
+
+      def subsidy_name
+        'subsidy'
+      end
+
       private
 
       def init_graph
@@ -2891,6 +2903,10 @@ module Engine
                            @players.sort_by { |p| [p.cash, @players.index(p)] }.reverse
                          when :least_cash
                            @players.sort_by { |p| [p.cash, @players.index(p)] }
+                         when :next_clockwise
+                           @players.rotate
+                         when :most_cash_keep_order
+                           @players.rotate(@players.index(@players.max_by(&:cash)))
                          else
                            []
                          end
@@ -2918,6 +2934,11 @@ module Engine
         when :least_cash
           current_order = @players.dup
           @players.sort_by! { |p| [p.cash, current_order.index(p)] }
+        when :next_clockwise
+          @players.rotate!
+        when :most_cash_keep_order
+          player_with_most_cash = @players.max_by(&:cash)
+          @players.rotate!(@players.index(player_with_most_cash))
         end
         return if silent
 
@@ -3206,7 +3227,7 @@ module Engine
       end
 
       def ability_blocking_step
-        supported_steps = [Step::Tracker, Step::Token, Step::Route, Step::BuyTrain]
+        supported_steps = [Step::Tracker, Step::Token, Step::Route, Step::Dividend, Step::BuyTrain]
         @round.steps.find do |step|
           supported_steps.any? { |s| step.is_a?(s) } && !step.passed? && step.active? && step.blocks?
         end
@@ -3226,6 +3247,8 @@ module Engine
           return true unless corporation
 
           return false unless token_ability_from_owner_usable?(ability, corporation)
+
+          return true if ability.same_hex_allowed
 
           tokened_hexes = []
 
@@ -3368,6 +3391,10 @@ module Engine
       end
 
       def second_icon(corporation); end
+
+      def corp_loans_text
+        'Loans'
+      end
     end
   end
 end

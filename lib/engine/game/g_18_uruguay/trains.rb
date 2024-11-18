@@ -101,6 +101,7 @@ module Engine
             distance: 999,
             price: 950,
             num: 20,
+            discount: { '4' => 200, '5' => 200, '6' => 200, '7' => 200 },
             variants: [
               {
                 name: '4D',
@@ -112,7 +113,7 @@ module Engine
                   },
                   {
                     'nodes' => ['town'],
-                    'pay' => 999,
+                    'pay' => 0,
                     'visit' => 999,
                   },
                 ],

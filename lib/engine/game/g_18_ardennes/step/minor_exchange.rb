@@ -41,6 +41,10 @@ module Engine
             # If there are tokens that may optionally be rejected the minor
             # needs to be left open for the DeclineTokens step.
             @game.close_corporation(minor) unless @round.corporations_removing_tokens
+
+            # The game graph might be invalid after station tokens have been
+            # exchanged or removed.
+            @game.clear_graph_for_entity(major)
           end
 
           # Discards a minor company's assets.

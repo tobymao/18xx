@@ -40,6 +40,16 @@ module Engine
 
         GAME_END_CHECK = { bankrupt: :immediate, stock_market: :current_or, bank: :current_or }.freeze
 
+        COTTON_REMOVE_HEXES = ['G13'].freeze
+        COTTON_ADD_HEXES = {
+          gray: { ['G13'] => 'city=revenue:yellow_30|brown_60,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;' },
+          red: { ['E15'] => 'city=revenue:yellow_30|brown_60;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1' },
+          white: {
+            ['E13'] => '',
+            ['F14'] => 'upgrade=cost:20,terrain:water',
+          },
+        }.freeze
+
         STATUS_TEXT = Base::STATUS_TEXT.merge(
           'can_buy_companies_from_other_players' => ['Interplayer Company Buy',
                                                      'Companies can be bought between players']
@@ -65,7 +75,7 @@ module Engine
           setup_company_price_50_to_150_percent
 
           @recently_floated = []
-          make_train_soft_rust if @optional_rules&.include?(:soft_rust_4t)
+          make_train_soft_rust if @optional_rules.include?(:soft_rust_4t)
 
           # Place neutral tokens in the off board cities
           neutral = Corporation.new(
@@ -79,7 +89,7 @@ module Engine
 
           neutral.tokens.each { |token| token.type = :neutral }
 
-          corporation_by_id('CoG').tokens.pop if @optional_rules&.include?(:remove_cog_token)
+          corporation_by_id('CoG').tokens.pop if @optional_rules.include?(:remove_cog_token)
 
           city_by_id('E1-0-0').place_token(neutral, neutral.next_token)
           city_by_id('J4-0-0').place_token(neutral, neutral.next_token)
@@ -98,7 +108,7 @@ module Engine
         end
 
         def tile_lays(entity)
-          return super if !@optional_rules&.include?(:double_yellow_first_or) ||
+          return super if !@optional_rules.include?(:double_yellow_first_or) ||
             !@recently_floated&.include?(entity)
 
           [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }]
@@ -192,6 +202,51 @@ module Engine
 
         def remove_icon_from_waycross
           waycross_hex.tile.icons = []
+        end
+
+        def georgia_railroad
+          @georgia_railroad ||= corporation_by_id('GA')
+        end
+
+        def savannah
+          @savannah ||= hex_by_id('G13')
+        end
+
+        def charleston
+          @charleston ||= hex_by_id('E15')
+        end
+
+        def optional_hexes
+          return self.class::HEXES unless cotton_port?
+
+          new_hexes = {}
+          HEXES.each_key do |color|
+            new_map = self.class::HEXES[color].transform_keys do |coords|
+              coords - COTTON_REMOVE_HEXES
+            end
+            COTTON_ADD_HEXES[color]&.each { |coords, tile_str| new_map[coords] = tile_str }
+            new_hexes[color] = new_map
+          end
+
+          new_hexes
+        end
+
+        def place_home_token(corporation)
+          return if corporation.tokens.first.used
+
+          return super unless cotton_port?
+          return super unless corporation == georgia_railroad
+
+          georgia_railroad.coordinates.each do |coordinate|
+            hex = hex_by_id(coordinate)
+            tile = hex&.tile
+            tile.cities.first.place_token(georgia_railroad, georgia_railroad.next_token)
+          end
+          georgia_railroad.coordinates = [georgia_railroad.coordinates.first]
+        end
+
+        def cotton_port?
+          @cotton_port ||= @optional_rules.include?(:cotton_port)
         end
       end
     end

@@ -566,7 +566,7 @@ module Engine
           @gold_shipped = 0
           update_gold_corp_cash!
 
-          depot.export!
+          depot.export! unless @depot.upcoming.empty?
         end
 
         def handle_metal_payout(entity)
@@ -576,7 +576,7 @@ module Engine
           @players.each do |payee|
             num_shares = payee.num_shares_of(entity)
 
-            if payee == gold_miner&.owner
+            if payee == gold_miner&.owner && entity == @gold_corp
               entity.cash += per_share * 2
               num_shares += 2
             end

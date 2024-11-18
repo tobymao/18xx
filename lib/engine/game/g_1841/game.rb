@@ -59,6 +59,7 @@ module Engine
         CAPITALIZATION = :incremental
         MUST_SELL_IN_BLOCKS = false
         SELL_MOVEMENT = :down_share
+        SELL_AFTER = :operate
         SOLD_OUT_INCREASE = true
         POOL_SHARE_DROP = :down_block
         TRACK_RESTRICTION = :semi_restrictive
@@ -2857,22 +2858,33 @@ module Engine
 
         def liquidity(player, emergency: false)
           return player.cash unless sellable_turn?
-          return super unless emergency
-          return liquidity(player) unless @round
 
-          value = player.cash
-          value += player.shares_by_corporation.sum do |corporation, shares|
-            next 0 if shares.empty?
+          sellable_value =
+            if emergency && @round
+              lambda do |player_, corporation|
+                (value_for_sellable(player_, corporation) / 2.0).to_i
+              end
+            else
+              lambda do |player_, corporation|
+                value_for_dumpable(player_, corporation)
+              end
+            end
 
-            (value_for_sellable(player, corporation) / 2.0).to_i
+          player.cash + player.shares_by_corporation.sum do |corporation, shares|
+            next 0 if shares.empty? || !operated?(corporation)
+
+            sellable_value.call(player, corporation)
           end
-          value
         end
 
         def priority_deal_player
           return @players.reject(&:bankrupt)[0] if @round.is_a?(Round::Operating)
 
           super
+        end
+
+        def render_revenue_history?(corporation)
+          operated?(corporation) && super
         end
       end
     end

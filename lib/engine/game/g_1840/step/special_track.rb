@@ -81,7 +81,10 @@ module Engine
           end
 
           def process_lay_tile(action)
-            lay_tile(action)
+            entity = action.entity
+            spender = @game.owning_major_corporation(entity)
+
+            lay_tile(action, spender: spender)
             @round.laid_hexes << action.hex
             @round.pending_tile_lays.shift
           end

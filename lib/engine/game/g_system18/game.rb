@@ -12,6 +12,7 @@ require_relative 'map_twisting_tracks_customization'
 require_relative 'map_uk_limited_customization'
 require_relative 'map_china_rapid_development_customization'
 require_relative 'map_poland_customization'
+require_relative 'map_britain_customization'
 
 module Engine
   module Game
@@ -28,6 +29,7 @@ module Engine
         include MapUKLimitedCustomization
         include MapChinaRapidDevelopmentCustomization
         include MapPolandCustomization
+        include MapBritainCustomization
 
         register_colors(red: '#d1232a',
                         orange: '#f58121',
@@ -275,6 +277,8 @@ module Engine
         MUST_EMERGENCY_ISSUE_BEFORE_EBUY = false
         BANKRUPTCY_ENDS_GAME_AFTER = :one
         STATUS_TEXT = {}.freeze
+        TILE_UPGRADES_MUST_USE_MAX_EXITS = [].freeze
+        DISCARDED_TRAINS = :remove
 
         def find_map_name
           optional_rules&.find { |r| r.to_s.include?('map_') }&.to_s&.delete_prefix('map_')&.downcase
@@ -359,9 +363,13 @@ module Engine
           proto = send("map_#{map_name}_game_phases")
           proto.each { |pp| phases << pp.dup }
 
-          # change last phase based on train roster
-          phases[-1][:name] = game_trains.last[:name]
-          phases[-1][:on] = game_trains.last[:name]
+          if respond_to?("map_#{map_name}_post_game_phases")
+            phases = send("map_#{map_name}_post_game_phases", phases)
+          else
+            # change last phase based on train roster
+            phases.last[:name] = game_trains.last[:name]
+            phases.last[:on] = game_trains.last[:name]
+          end
 
           phases
         end
@@ -521,10 +529,22 @@ module Engine
           COLOR_SEQUENCE.index(to.color) == (COLOR_SEQUENCE.index(from.color) + 1)
         end
 
+        def upgrade_ignore_num_cities(from)
+          return false unless respond_to?("map_#{map_name}_upgrade_ignore_num_cities")
+
+          send("map_#{map_name}_upgrade_ignore_num_cities", from)
+        end
+
         def or_round_finished
           return unless respond_to?("map_#{map_name}_or_round_finished")
 
           send("map_#{map_name}_or_round_finished")
+        end
+
+        def rust_trains!(train, entity)
+          return super unless respond_to?("map#{map_name}_rust_trains!")
+
+          send("map_#{map_name}_rust_trains!", train, entity)
         end
 
         def close_corporation(corporation, quiet: false)
@@ -602,6 +622,76 @@ module Engine
           return revenue_str unless respond_to?("map_#{map_name}_extra_revenue_str")
 
           revenue_str + send("map_#{map_name}_extra_revenue_str", route)
+        end
+
+        def extra_revenue(entity, routes)
+          return super unless respond_to?("map_#{map_name}_extra_revenue")
+
+          send("map_#{map_name}_extra_revenue", entity, routes)
+        end
+
+        def submit_revenue_str(routes, show_subsidy)
+          return super unless respond_to?("map_#{map_name}_submit_revenue_str")
+
+          send("map_#{map_name}_submit_revenue_str", routes, show_subsidy)
+        end
+
+        def timeline
+          return super unless respond_to?("map_#{map_name}_timeline")
+
+          send("map_#{map_name}_timeline")
+        end
+
+        def ipo_name(_corp)
+          game_capitalization == :incremental ? 'Treasury' : 'IPO'
+        end
+
+        def can_remove_icon?(entity)
+          return false unless respond_to?("map_#{map_name}_can_remove_icon?")
+
+          send("map_#{map_name}_can_remove_icon?", entity)
+        end
+
+        def icon_hexes(entity)
+          return [] unless respond_to?("map_#{map_name}_icon_hexes")
+
+          send("map_#{map_name}_icon_hexes", entity)
+        end
+
+        def remove_icon(entity, hex_id)
+          return unless respond_to?("map_#{map_name}_remove_icon")
+
+          send("map_#{map_name}_remove_icon", entity, hex_id)
+        end
+
+        def removable_icon_action_str
+          return unless respond_to?("map_#{map_name}_removable_icon_action_str")
+
+          send("map_#{map_name}_removable_icon_action_str")
+        end
+
+        def status_str(corporation)
+          return super unless respond_to?("map_#{map_name}_status_str")
+
+          send("map_#{map_name}_status_str", corporation)
+        end
+
+        def modify_tile_lay(entity, action)
+          return action unless respond_to?("map_#{map_name}_modify_tile_lay")
+
+          send("map_#{map_name}_modify_tile_lay", entity, action)
+        end
+
+        def pre_lay_tile_action(action, entity, tile_lay)
+          return unless respond_to?("map_#{map_name}_pre_lay_tile_action")
+
+          send("map_#{map_name}_pre_lay_tile_action", action, entity, tile_lay)
+        end
+
+        def place_home_token(corporation)
+          return super unless respond_to?("map_#{map_name}_place_home_token")
+
+          send("map_#{map_name}_place_home_token", corporation)
         end
       end
     end

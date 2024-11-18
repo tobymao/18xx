@@ -8,30 +8,38 @@ module Engine
           ACTIONS = %w[destination_connection pass].freeze
 
           def description
-            'Place the Destination Bonus'
+            'Destination Bonus'
           end
 
-          def pass_description
-            'Skip (Destination Bonus)'
+          def log_skip(entity)
+            return unless entity.corporation?
+            return if entity == @game.rptla
+            return unless destination_node_check?(entity)
+
+            super
           end
 
-          def actions(_entity)
+          def actions(entity)
+            return [] if entity.minor?
+            return [] if entity == @game.rptla
+            return [] if @game.abilities(entity, :destination_bonus).nil?
+
             self.class::ACTIONS
           end
 
           def auto_actions(entity)
-            corporations = @round.entities.select { |c| destination_node_check?(c) }
-            return [Engine::Action::Pass.new(entity)] if corporations.empty?
+            return [] unless entity.corporation?
+            return [Engine::Action::Pass.new(entity)] unless destination_node_check?(entity)
 
-            [Engine::Action::DestinationConnection.new(entity, corporations: corporations)]
+            [Engine::Action::DestinationConnection.new(entity, corporations: [entity])]
           end
 
           def destination_node_check?(corporation)
-            return if corporation.closed?
-            return if corporation.destination_coordinates.nil?
+            return false if corporation.closed?
+            return false if corporation.destination_coordinates.nil?
 
             ability = @game.abilities(corporation, :destination_bonus)
-            return if ability.nil?
+            return false if ability.nil?
 
             destination_hex = @game.hex_by_id(corporation.destination_coordinates)
             home_node = corporation.tokens.first.city

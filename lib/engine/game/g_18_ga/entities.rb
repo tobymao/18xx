@@ -40,7 +40,7 @@ module Engine
             value: 70,
             revenue: 15,
             desc: 'A corporation that owns the Waycross & Southern may place a station token in '\
-                  'Waycross at no cost, if there is room. The corporation need not connect to Waycross '\
+                  'Waycross (I9) at no cost, if there is room. The corporation need not connect to Waycross '\
                   'to use this special ability. However, it can only be done during the token-placement '\
                   'step of the corporation\'s turn, and only if the corporation has a token left, and it '\
                   'counts as the corporation\'s one station placement allowed per turn (excluding the home '\
@@ -122,7 +122,7 @@ module Engine
               logo: '18_ga/GF',
               simple_logo: '18_ga/GF.alt',
               tokens: [0, 40],
-              coordinates: @optional_rules&.include?(:new_georgia_florida_home) ? 'G3' : 'H4',
+              coordinates: @optional_rules.include?(:new_georgia_florida_home) ? 'G3' : 'H4',
               color: 'deepskyblue',
               text_color: 'black',
             },
@@ -132,8 +132,8 @@ module Engine
               name: 'Georgia Railroad',
               logo: '18_ga/GA',
               simple_logo: '18_ga/GA.alt',
-              tokens: [0, 40, 100, 100],
-              coordinates: 'D10',
+              tokens: cotton_port? ? [0, 0, 40, 100] : [0, 40, 100, 100],
+              coordinates: cotton_port? ? %w[D10 E15] : 'D10',
               city: 0,
               color: 'green',
             },

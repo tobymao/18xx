@@ -7,6 +7,15 @@ module Engine
     module G18Ardennes
       module Step
         class Dividend < Engine::Step::Dividend
+          # Public companies cannot enter the left-handmost space on the market.
+          MAJOR_MIN_PRICE = 50
+
+          def auto_actions(entity)
+            return super unless entity.receivership?
+
+            [Action::Dividend.new(entity, kind: 'payout')]
+          end
+
           def payout(entity, revenue)
             return half(entity, revenue) if entity.type == :minor
 
@@ -22,7 +31,7 @@ module Engine
             price = entity.share_price.price
             revenue *= 2 if entity.type == :minor
 
-            if revenue.zero?
+            if revenue.zero? && (price > MAJOR_MIN_PRICE || entity.type == :minor)
               { share_direction: :left, share_times: 1 }
             elsif (revenue >= price * 2) &&
                   (entity.type != :'10-share') &&
@@ -33,6 +42,12 @@ module Engine
             else
               {}
             end
+          end
+
+          def holder_for_corporation(entity)
+            # This is needed to stop minor companies in receivership being
+            # paid for their president's certificate in the share pool.
+            entity
           end
         end
       end

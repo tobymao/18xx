@@ -67,6 +67,7 @@ module Engine
       def process_dividend(action)
         entity = action.entity
         revenue = total_revenue
+        subsidy = total_subsidy
         kind = action.kind.to_sym
         payout = dividend_options(entity)[kind]
 
@@ -85,9 +86,9 @@ module Engine
         @round.routes = []
         @round.extra_revenue = 0
 
-        log_run_payout(entity, kind, revenue, action, payout)
+        log_run_payout(entity, kind, revenue, subsidy, action, payout)
 
-        payout_corporation(payout[:corporation], entity)
+        payout_corporation(payout[:corporation] + subsidy, entity)
 
         payout_shares(entity, revenue - payout[:corporation]) if payout[:per_share].positive?
 
@@ -100,7 +101,7 @@ module Engine
         @game.bank.spend(amount, entity) if amount.positive?
       end
 
-      def log_run_payout(entity, kind, revenue, action, payout)
+      def log_run_payout(entity, kind, revenue, subsidy, action, payout)
         unless Dividend::DIVIDEND_TYPES.include?(kind)
           @log << "#{entity.name} runs for #{@game.format_currency(revenue)} and pays #{action.kind}"
         end
@@ -110,6 +111,7 @@ module Engine
         elsif payout[:per_share].zero?
           @log << "#{entity.name} does not run"
         end
+        @log << "#{entity.name} earns #{@game.subsidy_name} of #{@game.format_currency(subsidy)}" if subsidy.positive?
       end
 
       def share_price_change(_entity, revenue)
@@ -199,6 +201,14 @@ module Engine
               @game.stock_market.move_up(entity)
             when :down
               @game.stock_market.move_down(entity)
+            when :diagonally_up_left
+              @game.stock_market.move_diagonally_up_left(entity)
+            when :diagonally_up_right
+              @game.stock_market.move_diagonally_up_right(entity)
+            when :diagonally_down_left
+              @game.stock_market.move_diagonally_down_left(entity)
+            when :diagonally_down_right
+              @game.stock_market.move_diagonally_down_right(entity)
             end
           end
         end
@@ -215,6 +225,10 @@ module Engine
 
       def total_revenue
         @game.routes_revenue(routes) + extra_revenue
+      end
+
+      def total_subsidy
+        @game.routes_subsidy(routes)
       end
 
       def rust_obsolete_trains!(entity, log: true)

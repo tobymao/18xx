@@ -7,12 +7,12 @@ module Engine
     class Token < Base
       attr_reader :hexes, :teleport_price, :extra_action, :from_owner, :discount, :city,
                   :neutral, :cheater, :special_only, :extra_slot, :check_tokenable,
-                  :closed_when_used_up, :connected
+                  :closed_when_used_up, :connected, :same_hex_allowed
 
       def setup(hexes:, price: nil, teleport_price: nil, extra_action: nil,
                 from_owner: nil, discount: nil, city: nil, neutral: nil,
                 cheater: nil, extra_slot: nil, special_only: nil, check_tokenable: nil,
-                closed_when_used_up: nil, connected: nil)
+                closed_when_used_up: nil, connected: nil, same_hex_allowed: nil)
         @hexes = hexes
         @price = price
         @teleport_price = teleport_price
@@ -27,6 +27,7 @@ module Engine
         @check_tokenable = check_tokenable.nil? ? true : check_tokenable
         @closed_when_used_up = closed_when_used_up || false
         @connected = connected || false
+        @same_hex_allowed = same_hex_allowed || false
       end
 
       def price(token = nil)

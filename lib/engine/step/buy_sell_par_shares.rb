@@ -410,7 +410,7 @@ module Engine
             # in the brown and made decisions appropriately.
             bigger_share = @game.shares_for_corporation(corporation).select do |s|
               s.percent > share_to_buy.percent && (s.owner != entity || s.owner != corporation.owner)
-            end.max(&:percent)
+            end.max_by(&:percent)
 
             if bigger_share
               other_percent = action.entity.percent_of(corporation) + bigger_share.percent

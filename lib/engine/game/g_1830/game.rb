@@ -109,14 +109,20 @@ module Engine
           ['', '', '', '10b', '20b', '30b', '40o'],
         ].freeze
 
-        PHASES = [{ name: '2', train_limit: 4, tiles: [:yellow], operating_rounds: 1 },
+        PHASES = [{
+          name: '2',
+          train_limit: 4,
+          tiles: [:yellow],
+          operating_rounds: 1,
+          status: ['can_buy_companies_from_other_players'],
+        },
                   {
                     name: '3',
                     on: '3',
                     train_limit: 4,
                     tiles: %i[yellow green],
                     operating_rounds: 2,
-                    status: ['can_buy_companies'],
+                    status: %w[can_buy_companies can_buy_companies_from_other_players],
                   },
                   {
                     name: '4',
@@ -124,7 +130,7 @@ module Engine
                     train_limit: 3,
                     tiles: %i[yellow green],
                     operating_rounds: 2,
-                    status: ['can_buy_companies'],
+                    status: %w[can_buy_companies can_buy_companies_from_other_players],
                   },
                   {
                     name: '5',
@@ -185,6 +191,20 @@ module Engine
             [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
+
+        def stock_round
+          Round::Stock.new(self, [
+            Engine::Step::DiscardTrain,
+            Engine::Step::Exchange,
+            Engine::Step::SpecialTrack,
+            G1830::Step::BuySellParShares,
+          ])
+        end
+
+        STATUS_TEXT = Base::STATUS_TEXT.merge(
+         'can_buy_companies_from_other_players' => ['Interplayer Company Buy',
+                                                    'Companies can be bought between players after first stock round'],
+       ).freeze
 
         def multiple_buy_only_from_market?
           !optional_rules&.include?(:multiple_brown_from_ipo)
