@@ -16,7 +16,7 @@ module Engine
         GAME_TITLE = '1894'
         GAME_LOCATION = 'France and Belgium'
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1894'
-        GAME_RULES_URL = 'https://galatolol.com/1894/1894_rules.pdf'
+        GAME_RULES_URL = 'https://github.com/Galatolol/1894/blob/master/1894_rules.pdf'
 
         PLAYER_RANGE = [3, 4].freeze
       end
