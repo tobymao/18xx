@@ -287,7 +287,7 @@ module Engine
             abilities: [{
               type: 'exchange',
               owner_type: 'player',
-              corporations: 'any',
+              corporations: 'ipoed',
               from: 'ipo',
             },
                         { type: 'no_buy' }],
