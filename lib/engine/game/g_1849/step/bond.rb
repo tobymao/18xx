@@ -7,8 +7,6 @@ module Engine
     module G1849
       module Step
         class Bond < Engine::Step::Base
-          attr_reader :issued_bond, :redeemed_bond
-
           def actions(entity)
             return [] if !entity.corporation? || entity != current_entity
 
@@ -21,8 +19,10 @@ module Engine
           end
 
           def round_state
-            @issued_bond = {}
-            @redeemed_bond = {}
+            {
+              issued_bond: false,
+              redeemed_bond: false,
+            }
           end
 
           def description
@@ -47,7 +47,7 @@ module Engine
             @log << "#{entity.name} issues its bond and receives #{@game.format_currency(@game.loan_value)}"
             @game.bank.spend(@game.loan_value, entity)
             entity.loans << loan
-            @issued_bond[entity] = true
+            @round.issued_bond = true
 
             initial_sp = entity.share_price.price
             @game.stock_market.move_left(entity)
@@ -59,12 +59,12 @@ module Engine
             @game.bonds? &&
              @game.issue_bonds_enabled &&
              entity.corporation? &&
-             !@redeemed_bond[entity] &&
+             !@round.redeemed_bond &&
              entity.loans.size < @game.maximum_loans(entity)
           end
 
           def can_payoff_loan?(entity)
-            !@issued_bond[entity] &&
+            !@round.issued_bond &&
               !entity.loans.empty? &&
               entity.cash >= entity.loans.first.amount
           end
@@ -86,7 +86,7 @@ module Engine
 
             entity.loans.delete(loan)
 
-            @redeemed_bond[entity] = true
+            @round.redeemed_bond = true
 
             initial_sp = entity.share_price.price
             @game.stock_market.move_right(entity)
