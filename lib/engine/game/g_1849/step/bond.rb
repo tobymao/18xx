@@ -20,8 +20,8 @@ module Engine
 
           def round_state
             {
-              issued_bond: nil,
-              redeemed_bond: nil,
+              issued_bond: false,
+              redeemed_bond: false,
             }
           end
 
