@@ -13,21 +13,12 @@ module Engine
 
           def can_exchange_any?(entity)
             return false unless entity.player?
-
-            entity.companies.each do |company|
-              next unless company.id == 'P4'
-
-              # Only true if there are shares available from an ipoed corp that has not yet operated
-              corps = @game.corporations.select(&:ipoed).reject do |c|
-                c.operating_history.size.positive?
-              end
-
-              corps.each do |c|
-                return true unless c.num_ipo_shares.empty
-              end
+            return false if entity.companies.none? { |company| company.id == 'P4' }
+            
+            # Can only exchange if there are shares available from an ipoed corp that has not yet operated
+            @game.corporations.any? do |corp|
+              corp.ipoed && !corp.operating_history.empty? && corp.num_ipo_shares.positive?
             end
-
-            false
           end
         end
       end
