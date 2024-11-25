@@ -15,7 +15,7 @@ module Engine
         include Entities
         include Map
 
-        CURRENCY_FORMAT_STR = '%s F'
+        CURRENCY_FORMAT_STR = '%sF'
 
         BANK_CASH = 6000
 

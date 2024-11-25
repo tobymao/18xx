@@ -310,9 +310,9 @@ module Engine
                                   ' Presidents may contribute personal cash but may not sell shares.' \
                                   ' CGR does not form if all corporations pay back their loans'],
             'remove_tokens' => ['Remove Port Token'],
-            'no_more_escrow_corps' => ['New Corporations are Incremental Cap ',
+            'no_more_escrow_corps' => ['New Corporations are Incremental Cap',
                                        'Does not affect corporations which have already been parred'],
-            'no_more_incremental_corps' => ['New Corporations are Full Cap ',
+            'no_more_incremental_corps' => ['New Corporations are Full Cap',
                                             'Does not affect corporations which have already been parred'],
           }
         ).freeze
