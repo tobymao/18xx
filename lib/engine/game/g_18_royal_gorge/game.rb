@@ -1046,7 +1046,7 @@ module Engine
         end
 
         def game_end_check
-          # save the result so that the apparent endgame tirgger doesn't change,
+          # save the result so that the apparent endgame trigger doesn't change,
           # but keep checking for bankruptcy
           reason, after = super
           @game_end_reason = reason if !@game_end_reason || (reason == :bankrupt)
