@@ -105,6 +105,20 @@ module Engine
 
             super
           end
+
+          def can_buy_any?(entity)
+            super || can_buy_company_discounted_bundles?(entity)
+          end
+
+          def can_buy_company_discounted_bundles?(entity)
+            return false if bought?
+
+            cash = available_cash(entity)
+            bundles = company_discounted_bundles(@game.gold_corp) + company_discounted_bundles(@game.steel_corp)
+            bundles.any? do |_, bundle|
+              cash >= modify_purchase_price(bundle)
+            end
+          end
         end
       end
     end
