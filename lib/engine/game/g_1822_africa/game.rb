@@ -393,6 +393,10 @@ module Engine
           },
         ].freeze
 
+        TRAIN_AUTOROUTE_GROUPS = [
+          %w[E/5 E/6],
+        ].freeze
+
         UPGRADE_COST_L_TO_2 = 70
 
         @bidbox_cache = []
