@@ -64,16 +64,12 @@ module Engine
       @next_hexside_bit = 0
 
       nodes.each do |node|
-        if Time.now - now > path_timeout
-          LOGGER.debug('Path timeout reached')
-          path_walk_timed_out = true
-          break
-        else
-          LOGGER.debug { "Path search: #{nodes.index(node)} / #{nodes.size} - paths starting from #{node.hex.name}" }
-        end
+        LOGGER.debug { "Path search: #{nodes.index(node)} / #{nodes.size} - paths starting from #{node.hex.name}" }
 
         walk_corporation = graph.no_blocking? ? nil : corporation
         node.walk(corporation: walk_corporation, skip_paths: skip_paths) do |_, vp|
+          raise PathTimeout if Time.now - now > path_timeout
+
           paths = vp.keys
           chains = []
           chain = []
@@ -163,6 +159,10 @@ module Engine
 
           next :abort if path_abort.empty?
         end
+      rescue PathTimeout
+        LOGGER.debug('Path timeout reached')
+        path_walk_timed_out = true
+        break
       end
 
       # Check that there are no duplicate hexside bits (algorithm error)
