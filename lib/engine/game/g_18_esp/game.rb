@@ -904,6 +904,7 @@ module Engine
         end
 
         def transfer_luxury_ability(company, entity)
+          transfer_tenders_to_bank
           luxury_ability = company.all_abilities.first
           if luxury_ability(entity)
             # entity already has tender. Do not add, but increase carriage count
@@ -915,6 +916,16 @@ module Engine
           end
           company.remove_ability(luxury_ability)
           company.close!
+        end
+
+        def transfer_tenders_to_bank
+          @luxury_carriages.dup.each do |owner, amount|
+            next if owner == 'bank'
+
+            transfer_amount = amount - 1
+            @luxury_carriages['bank'] += transfer_amount
+            @luxury_carriages[owner] = 1
+          end
         end
 
         def luxury_ability(entity)

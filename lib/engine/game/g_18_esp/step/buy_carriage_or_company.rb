@@ -34,6 +34,7 @@ module Engine
             items = []
             @game.luxury_carriages.each do |owner, amount|
               next unless amount.positive?
+              next if owner != 'bank' && @game.company_by_id(owner).closed?
 
               owner_str = owner == 'bank' ? owner : @game.company_by_id(owner).owner.name
               items << Item.new(description: "Tender from #{owner_str}", cost: @game.class::CARRIAGE_COST)
