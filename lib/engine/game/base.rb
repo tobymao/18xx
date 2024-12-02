@@ -2365,6 +2365,10 @@ module Engine
         'subsidy'
       end
 
+      def company_value(company)
+        company.value
+      end
+
       private
 
       def init_graph

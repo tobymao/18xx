@@ -164,7 +164,8 @@ module View
             h(:div, company_name_str),
             h(:div, { style: description_style }, @company.desc),
           ]
-          children << h(:div, { style: value_style }, "Value: #{@game.format_currency(@company.value)}") if @company.value
+          company_value = @game.company_value(@company)
+          children << h(:div, { style: value_style }, "Value: #{@game.format_currency(company_value)}") if company_value
           children << h(:div, { style: revenue_style }, "Revenue: #{revenue_str}") if @company.revenue
           unless @company.discount.zero?
             children << h(:div, { style: { float: 'center' } }, "Price: #{@game.format_currency(@company.min_bid)}")
@@ -251,7 +252,7 @@ module View
                       end
 
         [h(:div, name_props, [h('span.nowrap', company_name_str), h(:span, extra)]),
-         @game.show_value_of_companies?(company.owner) ? h('div.right', @game.format_currency(company.value)) : '',
+         @game.show_value_of_companies?(company.owner) ? h('div.right', @game.format_currency(@game.company_value(company))) : '',
          h('div.padded_number', revenue_str),
          @hidden_divs[company.sym]]
       end

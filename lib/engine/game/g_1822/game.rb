@@ -690,10 +690,9 @@ module Engine
           end
 
           if company.id == self.class::COMPANY_OSTH && company.owner&.player? && @tax_haven.value.positive?
-            company.value = @tax_haven.value
             cash = format_currency(@tax_haven.cash)
             shares = @tax_haven.shares.map { |s| s.corporation.name }.join(',')
-            return "(#{cash}; #{shares})"
+            return "(#{cash},#{shares})"
           end
 
           nil
@@ -736,6 +735,10 @@ module Engine
           return 0 unless @tax_haven.value.positive?
 
           @tax_haven.value
+        end
+
+        def company_value(company)
+          company.id == self.class::COMPANY_OSTH ? @tax_haven.value : company.value
         end
 
         def entity_can_use_company?(entity, company)
@@ -1038,13 +1041,7 @@ module Engine
         end
 
         def player_value(player)
-          # tax_haven_company.value can sometimes be zero and sometimes the same
-          # as tax_haven_value() (issues #5200 and #11007) because it is only
-          # set in company_status_str, which is only called by some views, so
-          # substract that value and include only the correct calculation
-          tax_haven_val = tax_haven_value(player) - (tax_haven_company&.value || 0)
-
-          player.value - @player_debts[player] + tax_haven_val
+          player.value - @player_debts[player] + tax_haven_value(player)
         end
 
         def purchasable_companies(entity = nil)
