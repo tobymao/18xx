@@ -505,6 +505,8 @@ module Engine
           return unless (sawmill_stop = route.visited_stops.find { |s| s.hex == @sawmill_hex })
 
           entity = route.train.owner
+          return if train_type(route.train) == :etrain && !sawmill_stop.tokened_by?(entity)
+
           sawmill_dest = sawmill_stop.city? &&
                          sawmill_stop.tokens.find { |t| t && t.type == :destination && t.corporation == entity } &&
                          (dest = destination_bonus(route.routes)) &&
