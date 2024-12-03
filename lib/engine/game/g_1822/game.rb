@@ -879,12 +879,15 @@ module Engine
                     'the value of its destination station. This only applies to one train per operating turn.'
           end
 
-          if mail_contracts
-            help << 'Mail contract(s) gives a subsidy equal to one half of the base value of the start and end '\
-                    'stations from one of the trains operated. Doubled values (for E trains or destination tokens) '\
-                    'do not count.'
-          end
+          help << train_help_mail_contracts if mail_contracts
+
           help
+        end
+
+        def train_help_mail_contracts
+          'Mail contract(s) gives a subsidy equal to one half of the base value of the start and end '\
+            'stations from one of the trains operated. Doubled values (for E trains or destination tokens) '\
+            'do not count. L-trains cannot use mail contracts.'
         end
 
         def init_companies(players)
@@ -1744,13 +1747,21 @@ module Engine
           mail_bonuses = routes.map do |r|
             stops = r.visited_stops
             next if stops.size.zero?
-            next if stops.size < 2 && !self.class::LOCAL_TRAIN_CAN_CARRY_MAIL
 
-            first = stops.first.route_base_revenue(r.phase, r.train) / 2
-            last = stops.size < 2 ? 0 : stops.last.route_base_revenue(r.phase, r.train) / 2
-            { route: r, subsidy: first + last }
+            # LP does not work with Mail Contract, even if it stops at a
+            # town. An exception for 1822PNW is made via
+            # `LOCAL_TRAIN_CAN_CARRY_MAIL`
+            #
+            # https://boardgamegeek.com/thread/2640241/article/40423428#40423428
+            # https://boardgamegeek.com/thread/2640241/article/43680986#43680986
+            # https://docs.google.com/document/d/1puHQJV4eLeunOtu_RyqAT-_mBCI93u8dqSBNwWMsAiE/
+            next if !self.class::LOCAL_TRAIN_CAN_CARRY_MAIL && (r.train.name[0] == 'L' || stops.size < 2)
+
+            first = stops.first.route_base_revenue(r.phase, r.train)
+            last = stops.size < 2 ? 0 : stops.last.route_base_revenue(r.phase, r.train)
+            { route: r, subsidy: (first + last) / 2 }
           end.compact
-          mail_bonuses.sort_by { |v| v[:subsidy] }.reverse.take(mail_contracts)
+          mail_bonuses.sort_by { |v| -v[:subsidy] }.take(mail_contracts)
         end
 
         def move_exchange_token(entity)
