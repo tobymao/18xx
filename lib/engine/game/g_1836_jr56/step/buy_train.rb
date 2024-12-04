@@ -1,12 +1,15 @@
 # frozen_string_literal: true
 
 require_relative '../../g_1856/step/buy_train'
+require_relative 'train'
 
 module Engine
   module Game
     module G1836Jr56
       module Step
         class BuyTrain < G1856::Step::BuyTrain
+          include Engine::Game::G1836Jr56::Train
+
           def buyable_trains(entity)
             super.reject { |x| x.from_depot? && @depot_trains_bought.include?(x.sym[0]) }
           end

@@ -1,12 +1,15 @@
 # frozen_string_literal: true
 
 require_relative '../../../step/buy_train'
+require_relative 'train'
 
 module Engine
   module Game
     module G1856
       module Step
         class BuyTrain < Engine::Step::BuyTrain
+          include Engine::Game::G1856::Train
+
           def must_buy_train?(entity)
             return super if entity != @game.national || @game.national_ever_owned_permanent
 
