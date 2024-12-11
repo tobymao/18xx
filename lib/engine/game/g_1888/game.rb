@@ -205,6 +205,10 @@ module Engine
           !@optional_rules || @optional_rules&.empty?
         end
 
+        def north?
+          @north ||= @optional_rules&.include?(:north)
+        end
+
         def log_optional_rules
           if @optional_rules.empty?
             @log << ' * Playing with prototype (not final) rules, North map'
@@ -224,7 +228,7 @@ module Engine
         def game_tiles
           # When using the 1888-N variant, adjust the tile
           # counts to the alternate values specified.
-          return TILES.merge(NORTH_VARIANT_TILES) if @optional_rules.include?(:north)
+          return TILES.merge(NORTH_VARIANT_TILES) if north?
 
           TILES
         end
@@ -279,6 +283,15 @@ module Engine
             Engine::Step::BuyTrain,
             [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
+        end
+
+        def stock_round
+          Engine::Round::Stock.new(self, [
+            Engine::Step::DiscardTrain,
+            G1888::Step::Exchange,
+            Engine::Step::SpecialTrack,
+            Engine::Step::BuySellParShares,
+          ])
         end
 
         def or_set_finished
@@ -352,6 +365,12 @@ module Engine
 
         def game_companies
           return self.class::COMPANIES_EAST if @optional_rules.include?(:east)
+
+          if north?
+            companies_north = self.class::COMPANIES_NORTH.reject { |company| company[:sym] == 'FC' }
+            companies_north << self.class::COMPANIES_NORTH_PUBLISHED.find { |company| company[:sym] == 'FC' }
+            return companies_north
+          end
 
           self.class::COMPANIES_NORTH
         end
