@@ -47,7 +47,7 @@ module Engine
 
         CAPITALIZATION = :full
 
-        MUST_SELL_IN_BLOCKS = false
+        MUST_SELL_IN_BLOCKS = true
 
         MARKET = [
           %w[70
