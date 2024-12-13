@@ -13,7 +13,7 @@ module Engine
         super
         @slots = (opts[:slots] || 1).to_i
         @tokens = Array.new(@slots)
-        # Bull tokens are tokens in a city that don't go in a city slot
+        # Extra tokens are tokens in a city that don't go in a city slot
         @extra_tokens = []
         @reservations = []
         @boom = opts[:boom]
