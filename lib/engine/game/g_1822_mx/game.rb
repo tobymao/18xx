@@ -59,8 +59,6 @@ module Engine
         PRIVATE_PHASE_REVENUE = %w[].freeze # Stub for 1822 specific code
         P7_REVENUE = [0, 0, 0, 20, 20, 40, 40, 60].freeze
 
-        LOCAL_TRAIN_CAN_CARRY_MAIL = true
-
         # Don't run 1822 specific code for certain private companies
         COMPANY_LCDR = nil
         COMPANY_OSTH = nil
