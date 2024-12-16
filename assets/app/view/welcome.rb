@@ -16,8 +16,6 @@ module View
 
     def render_notification
       message = <<~MESSAGE
-        <p><a href='https://www.kickstarter.com/projects/18wood/18royalgorge/'>18RoyalGorge is now on Kickstarter</a>.</p>
-
         <p><a href="https://github.com/tobymao/18xx/wiki/18RoyalGorge">18RoyalGorge</a> is now in beta.</p>
 
         <p><a href="https://github.com/tobymao/18xx/wiki/1858%20Switzerland">1858 Switzerland</a> is in alpha.</p>
