@@ -59,8 +59,13 @@ module Engine
             return false unless sellable_bundle?(bundle)
             return false if @game.class::MUST_SELL_IN_BLOCKS && @corporations_sold.include?(bundle.corporation)
 
-            # Corporations can sell all of their treasury shares during EMR, players may not sell more than 30% of a corporation
-            return false if bundle.corporation != bundle.owner && (bundle.percent > @game.class::TURN_SELL_LIMIT)
+            # This is our new clause for 1871, if this is the corporation
+            # selling, we can sell all of them
+            return true if bundle.corporation == bundle.owner
+
+            # Corporations can sell all of their treasury shares during EMR,
+            # players may never sell more than 30% of a corporation at once, even during EMR
+            return false if bundle.percent > @game.class::TURN_SELL_LIMIT
 
             selling_minimum_shares?(bundle)
           end
