@@ -20,9 +20,8 @@ module Engine
 
           def buyable_trains(entity)
             super.reject do |train|
-              entity.id == 'PEIR' &&
-              train.from_depot? &&
-                @round.bought_trains.include?(entity)
+              (entity.id == 'PEIR' && train.from_depot? && @round.bought_trains.include?(entity)) ||
+              (@last_share_issued_price && !train.from_depot?)
             end
           end
 
@@ -64,6 +63,12 @@ module Engine
             return true if bundle.corporation == bundle.owner
 
             selling_minimum_shares?(bundle)
+          end
+
+          def process_sell_shares(action)
+            super
+
+            @last_share_issued_price = action.bundle.price_per_share if action.bundle.corporation == current_entity
           end
         end
       end
