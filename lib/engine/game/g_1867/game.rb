@@ -654,6 +654,14 @@ module Engine
           end
         end
 
+        def reset_corporation(corporation)
+          corp = super
+          # When a major is restarted it defaults to a 60% ownership limit.
+          # This is wrong for the two-player variants.
+          corp.max_ownership_percent = 70 if @players.size == 2
+          corp
+        end
+
         def place_639_token(tile)
           return unless @national_reservations.any?
           return if tile.cities.any? { |c| c.tokened_by?(@national) }

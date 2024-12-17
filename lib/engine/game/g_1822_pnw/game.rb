@@ -1244,6 +1244,12 @@ module Engine
             [:bank, @round.is_a?(Engine::Round::Operating) ? :full_or : :current_or]
           end
         end
+
+        def train_help_mail_contracts
+          'Mail contract(s) gives a subsidy equal to one half of the base value of the start and end '\
+            'stations from one of the trains operated. Doubled values (for E trains or destination tokens) '\
+            'do not count. L-trains can use mail contracts, even if they visit one city and no towns.'
+        end
       end
     end
   end

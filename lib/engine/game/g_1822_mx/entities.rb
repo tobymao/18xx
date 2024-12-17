@@ -273,12 +273,11 @@ module Engine
             desc: 'MAJOR, Phase 3. Mail Contract. After running trains, the owning company receives income '\
                   'into its treasury equal to one half of the base value of the start and end '\
                   'stations from one of the trains operated. Modifications to values (for '\
-                  'E-trains, a 3/2-train, or destination tokens) do not apply. An L-train may '\
-                  'deliver mail within a single city. The company is not required to maximize '\
-                  'the dividend from its run if it wishes to maximize its revenue from the mail '\
+                  'E-trains, a 3/2-train, or destination tokens) do not apply. The company is not required to '\
+                  'maximize the dividend from its run if it wishes to maximize its revenue from the mail '\
                   'contract by stopping at a large city and not running beyond it to include '\
                   'towns. A company that owns more than one Mail Contract may not use '\
-                  'more than one on any train.',
+                  'more than one on any train. Cannot be used with an L-train.',
             abilities: [],
           },
           {
@@ -289,12 +288,11 @@ module Engine
             desc: 'MAJOR, Phase 3. Mail Contract. After running trains, the owning company receives income '\
                   'into its treasury equal to one half of the base value of the start and end '\
                   'stations from one of the trains operated. Modifications to values (for '\
-                  'E-trains, a 3/2-train, or destination tokens) do not apply. An L-train may '\
-                  'deliver mail within a single city. The company is not required to maximize '\
-                  'the dividend from its run if it wishes to maximize its revenue from the mail '\
+                  'E-trains, a 3/2-train, or destination tokens) do not apply. The company is not required to '\
+                  'maximize the dividend from its run if it wishes to maximize its revenue from the mail '\
                   'contract by stopping at a large city and not running beyond it to include '\
                   'towns. A company that owns more than one Mail Contract may not use '\
-                  'more than one on any train.',
+                  'more than one on any train. Cannot be used with an L-train.',
             abilities: [],
           },
           {
