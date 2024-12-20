@@ -15,7 +15,12 @@ module Engine
             super
           end
 
-          def legal_tile_rotation?(_entity, hex, tile)
+          def legal_tile_rotation?(entity, hex, tile)
+            if @game.class::GREEN_CITY_TILES.include?(hex.tile.name)
+              entity_reaches_a_new_exit = !(tile.exits & hex_neighbors(entity, hex)).empty?
+              return false unless entity_reaches_a_new_exit
+            end
+
             return super if hex.id != @game.class::PARIS_HEX || hex.tile.color != :green
 
             plm_in_city_0 = true if hex.tile.cities[0].reserved_by?(@game.plm) || hex.tile.cities[0].tokened_by?(@game.plm)
