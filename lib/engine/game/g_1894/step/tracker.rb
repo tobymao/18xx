@@ -10,18 +10,7 @@ module Engine
 
         def check_track_restrictions!(entity, old_tile, new_tile)
           return if @game.loading || !entity.operator?
-
-          if @game.class::GREEN_CITY_TILES.include?(old_tile.name)
-            graph = @game.graph_for_entity(entity)
-            graph.clear
-            new_tile.paths.each do |path|
-              next unless graph.connected_paths(entity)[path]
-
-              return true
-            end
-
-            raise GameError, 'Corporation cannot upgrade a green city it doesn\'t have access to'
-          end
+          return if @game.class::BROWN_CITY_TILES.include?(new_tile.name)
 
           super
         end
