@@ -104,6 +104,24 @@ module Engine
           },
         ].freeze
 
+        COMPANIES_NORTH_PUBLISHED = [
+          {
+            name: 'Forbidden City',
+            value: 150,
+            revenue: 30,
+            desc: "During a stock round, a player owning this private company may close it to take one share in the IPO or the bank pool of a share company with a token in Beijing (at that time). This counts as a buy action and the player cannot sell anything the turn they're doing it. If the private is sold to a share company, this ability is lost.",
+            sym: 'FC',
+            abilities: [{
+              type: 'exchange',
+              owner_type: 'player',
+              corporations: 'any',
+              when: 'owning_player_sr_turn',
+              from: %w[ipo market],
+            }],
+            color: nil,
+          },
+        ].freeze
+
         COMPANIES_EAST = [
           {
             name: 'Kaiping Tramway',
