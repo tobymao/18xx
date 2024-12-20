@@ -67,6 +67,7 @@ module Engine
               {
                 type: 'token',
                 owner_type: 'corporation',
+                when: 'token',
                 hexes: [],
                 discount: 0.5,
                 count: 1,
