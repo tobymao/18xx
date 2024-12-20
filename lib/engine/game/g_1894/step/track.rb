@@ -16,10 +16,8 @@ module Engine
           end
 
           def legal_tile_rotation?(entity, hex, tile)
-            if @game.class::GREEN_CITY_TILES.include?(hex.tile.name)
-              entity_reaches_a_new_exit = !(tile.exits & hex_neighbors(entity, hex)).empty?
-              return false unless entity_reaches_a_new_exit
-            end
+            return false if @game.class::GREEN_CITY_TILES.include?(hex.tile.name) &&
+              !tile.exits.intersect?(hex_neighbors(entity, hex))
 
             return super if hex.id != @game.class::PARIS_HEX || hex.tile.color != :green
 
