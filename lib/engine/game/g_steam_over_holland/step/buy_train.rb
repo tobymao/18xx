@@ -10,9 +10,9 @@ module Engine
           def actions(entity)
             return [] if entity != current_entity
 
-            return ['sell_shares'] if entity == current_entity&.owner && can_ebuy_sell_shares?(current_entity)
-            return %w[sell_shares buy_train pass] if president_may_contribute?(entity)
-            return %w[buy_train pass] if can_buy_train?(entity)
+            return %w[sell_shares buy_train] if must_sell_shares?(entity)
+            return ['buy_train'] if can_afford_needed_train?(entity)
+            return %w[buy_train pass] if can_close_corp?(entity) || can_buy_train?(entity)
 
             []
           end
@@ -54,14 +54,15 @@ module Engine
           def must_sell_shares?(corporation)
             return false if corporation.cash >= @game.depot.min_depot_price || !corporation.trains.empty?
 
-            can_issue?(corporation)
+            can_issue?(corporation) &&
+              corporation.trains.empty?
           end
 
           def can_issue?(corporation)
             return false unless corporation.corporation?
             return false if @round.issued_shares[corporation]
 
-            !@game.issuable_shares(corporation).empty?
+            !@game.emergency_issuable_bundles(corporation).empty?
           end
 
           def should_buy_train?(entity)
