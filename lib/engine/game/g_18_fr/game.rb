@@ -13,13 +13,15 @@ module Engine
         include G18FR::Entities
         include G18FR::Map
 
+        attr_accessor :player_sr_with_short_count
+
         CURRENCY_FORMAT_STR = '%s F'
 
         BANK_CASH = 99_999
 
         CERT_LIMIT = { 3 => 16, 4 => 12, 5 => 10, 6 => 8 }.freeze
 
-        STARTING_CASH = { 3 => 380, 4 => 290, 5 => 220, 6 => 190 }.freeze
+        STARTING_CASH = { 3 => 38000, 4 => 290, 5 => 220, 6 => 190 }.freeze
 
         NEXT_SR_PLAYER_ORDER = :first_to_pass
 
@@ -156,6 +158,7 @@ module Engine
 
         def setup
           @extra_tile_lay = false
+          @player_sr_with_short_count = Hash.new { |h, k| h[k] = 0 }
         end
 
         def init_round
@@ -169,7 +172,7 @@ module Engine
           close_bank_shorts
           @interest_fixed = nil
 
-          G1817::Round::Stock.new(self, [
+          G18FR::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
             Engine::Step::HomeToken,
             G18FR::Step::BuySellParShares,
@@ -188,6 +191,8 @@ module Engine
             end
           end
 
+          puts 'in operating_round'
+
           G1817::Round::Operating.new(self, [
             G1817::Step::Bankrupt,
             G1817::Step::CashCrisis,
@@ -203,9 +208,84 @@ module Engine
           ], round_num: round_num)
         end
 
+        def next_round!
+          clear_interest_paid
+          @round =
+            case @round
+            when G18FR::Round::Stock
+              reorder_players
+              @log << "-- Share Redemption Round #{@turn} -- "
+              G18FR::Round::ShareRedemption.new(self, [
+                G18FR::Step::RedeemShares
+              ])
+            when G18FR::Round::ShareRedemption
+              @operating_rounds = @final_operating_rounds || @phase.operating_rounds
+              new_operating_round
+            when Engine::Round::Operating
+              or_round_finished
+              # Store the share price of each corp to determine if they can be acted upon in the AR
+              @stock_prices_start_merger = @corporations.to_h { |corp| [corp, corp.share_price] }
+              @log << "-- #{round_description('Merger and Conversion', @round.round_num)} --"
+              G1817::Round::Merger.new(self, [
+                G1817::Step::ReduceTokens,
+                Engine::Step::DiscardTrain,
+                G1817::Step::PostConversion,
+                G1817::Step::PostConversionLoans,
+                G1817::Step::Conversion,
+              ], round_num: @round.round_num)
+            when G1817::Round::Merger
+              @log << "-- #{round_description('Acquisition', @round.round_num)} --"
+              G1817::Round::Acquisition.new(self, [
+                G1817::Step::ReduceTokens,
+                G1817::Step::Bankrupt,
+                G1817::Step::CashCrisis,
+                Engine::Step::DiscardTrain,
+                G1817::Step::Acquire,
+              ], round_num: @round.round_num)
+            when G1817::Round::Acquisition
+              if @round.round_num < @operating_rounds
+                new_operating_round(@round.round_num + 1)
+              else
+                @turn += 1
+                or_set_finished
+                new_stock_round
+              end
+            when init_round.class
+              reorder_players
+              new_stock_round
+            end
+        end
+
+        def loan_amount
+          100
+        end
+
+        def cert_limit(player = nil)
+          if player
+            # +1 cert limit for every SR with short
+            @cert_limit + @player_sr_with_short_count[player]
+          else
+            @cert_limit
+          end
+        end
+
+        def redeemable_shares(entity)
+          puts 'a'
+          return [] unless entity.corporation?
+          puts 'b'
+          return [] if entity.share_price.acquisition? || entity.share_price.liquidation?
+          puts 'c'
+          bundles_for_corporation(share_pool, entity)
+            .reject { |bundle| entity.cash < bundle.price }
+        end
+
         def event_two_tile_lays!
           @log << '-- From now on, corporations may lay two for 20 F. Only one may be upgrade --'
           @extra_tile_lay = true
+        end
+
+        def event_free_ports!
+          @log << '-- From now on, ports don\'t count towards train length --'
         end
 
         def tile_lays(_entity)
