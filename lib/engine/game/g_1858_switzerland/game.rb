@@ -65,12 +65,14 @@ module Engine
         ROBOT_MAJOR_TILE_LAYS = [{ lay: true, upgrade: true }].freeze
 
         def game_phases
-          phases = super
-          _phase2, _phase3, phase4, phase5, phase6 = phases
-          phase4[:status] = %w[all_privates narrow_gauge]
-          phase5[:status] = %w[blue_privates public_companies dual_gauge]
-          phase6[:tiles] = %i[yellow green brown gray]
-          phases
+          unless @game_phases
+            @game_phases = super.map(&:dup)
+            _phase2, _phase3, phase4, phase5, phase6 = @game_phases
+            phase4[:status] = %w[all_privates narrow_gauge]
+            phase5[:status] = %w[blue_privates public_companies dual_gauge]
+            phase6[:tiles] = %i[yellow green brown gray]
+          end
+          @game_phases
         end
 
         def timeline
@@ -118,16 +120,25 @@ module Engine
         GREY_TRAINS = %w[6E 5M 5D].freeze
 
         def game_trains
-          trains = super
-          train_2h, _train_4h, train_6h, _train_5e, train_6e, train_5d = trains
-          train_2h[:events] = [{ 'type' => 'sbb_starts' }] if robot?
-          train_6h.delete(:obsolete_on) # Wounded on second grey train, handled in code
-          train_6h[:events] = [{ 'type' => 'blue_privates_available' }]
-          train_6e[:events] = [{ 'type' => 'privates_close2' }]
-          train_6e[:price] = 700
-          train_6e[:variants][0][:price] = 600
-          train_5d[:available_on] = '6'
-          trains
+          unless @game_trains
+            # Need to make a deep copy of 1858's train definitions.
+            # https://github.com/tobymao/18xx/issues/11372 was caused by
+            # modifying the definitions without a deep copy. If a game of 1858
+            # is loaded on the server after a game of 1858 Switzerland then it
+            # is was seeing the version of the definitions after these
+            # modifications, causing errors as 1858 does not have a method for
+            # handling the `blue_privates_available` event.
+            @game_trains = super.map(&:dup)
+            train_2h, _train_4h, train_6h, _train_5e, train_6e, train_5d = @game_trains
+            train_2h[:events] = [{ 'type' => 'sbb_starts' }] if robot?
+            train_6h.delete(:obsolete_on) # Wounded on second grey train, handled in code
+            train_6h[:events] = [{ 'type' => 'blue_privates_available' }]
+            train_6e[:events] = [{ 'type' => 'privates_close2' }]
+            train_6e[:price] = 700
+            train_6e[:variants][0][:price] = 600
+            train_5d[:available_on] = '6'
+          end
+          @game_trains
         end
 
         def num_trains(train)
