@@ -90,6 +90,7 @@ module Engine
             tiles: %i[yellow green],
             operating_rounds: 2,
             corporation_sizes: [2, 5],
+            status: ['two_tile_lays'],
           },
           {
             name: 'Blue',
@@ -98,6 +99,7 @@ module Engine
             tiles: %i[yellow green],
             operating_rounds: 2,
             corporation_sizes: [2, 5],
+            status: ['free_ports'],
           },
           {
             name: 'Brown',
@@ -117,31 +119,19 @@ module Engine
           },
         ].freeze
 
-        TRAINS = [{ name: '2', distance: 2, price: 100, rusts_on: '3P', num: 40 },
-                  { name: '2+', distance: 2, price: 100, obsolete_on: '3P', num: 4 },
-                  {
-                    name: '3+',
-                    distance: 3,
-                    price: 300,
-                    obsolete_on: '6*D',
-                    num: 12,
-                    events: [{ 'type' => 'two_tile_lays' }],
-                  },
-                  {
-                    name: '3P',
-                    distance: 3,
-                    price: 400,
-                    num: 1,
-                    events: [{ 'type' => 'free_ports' }],
-                  },
+        TRAINS = [{ name: '2', distance: 2, price: 100, rusts_on: '3P', num: 1 },
+                  { name: '2+', distance: 2, price: 100, obsolete_on: '3P', num: 1 },
+                  { name: '3+', distance: 3, price: 300, obsolete_on: 'G*D', num: 12 },
+                  { name: '3P', distance: 3, price: 400, num: 1 },
                   { name: '2P', distance: 2, price: 300, num: 5 },
                   { name: '5', distance: 5, price: 600, num: 6 },
                   { name: '6*D', distance: 6, price: 800, num: 30 },
                   { name: '2P*', distance: 2, price: 200, num: 1 }].freeze
 
-        EVENTS_TEXT = Base::EVENTS_TEXT.merge(
-          'two_tile_lays' => ['Corporations may lay two tiles for 20 F. One may be upgrade'],
-          'free_ports' => ['Ports no longer count towards train length']
+        STATUS_TEXT = Base::STATUS_TEXT.merge(
+          'two_tile_lays' => ['Two tiles', 'Corporations may lay two tiles for 20 F. One may be upgrade.'\
+                                           'Can\'t upgrade the tile just laid'],
+          'free_ports' => ['Free ports', 'Ports no longer count towards train length']
         ).freeze
 
         ONE_YELLOW_TILE_LAY = [{ lay: true, upgrade: false }].freeze
@@ -150,12 +140,13 @@ module Engine
           { lay: true, upgrade: :not_if_upgraded, cost: 20, cannot_reuse_same_hex: true },
         ].freeze
 
-        B_HEX_NAMES = %w[F3].freeze
+        B_HEX_NAMES = %w[E8 H3].freeze
         YELLOW_B_TILE_NAME = 'FRBY'
         GREEN_B_TILE_NAME = 'FRBG'
 
         def setup
           @extra_tile_lay = false
+          @free_ports = false
         end
 
         def init_round
@@ -177,16 +168,7 @@ module Engine
         end
 
         def operating_round(round_num)
-          @interest_fixed = nil
           @interest_fixed = interest_rate
-          # Revaluate if private companies are owned by corps with trains
-          @companies.each do |company|
-            next unless company.owner
-
-            abilities(company, :revenue_change, time: 'has_train') do |ability|
-              company.revenue = company.owner.trains.any? ? ability.revenue : 0
-            end
-          end
 
           G1817::Round::Operating.new(self, [
             G1817::Step::Bankrupt,
@@ -203,9 +185,15 @@ module Engine
           ], round_num: round_num)
         end
 
-        def event_two_tile_lays!
-          @log << '-- From now on, corporations may lay two for 20 F. Only one may be upgrade --'
-          @extra_tile_lay = true
+        def after_phase_change(name)
+          case name
+          when 'Green'
+            @log << '-- From now on, corporations may lay two for 20 F. Only one may be upgrade --'
+            @extra_tile_lay = true
+          when 'Blue'
+            @log << '-- From now on, corporations may lay two for 20 F. Only one may be upgrade --'
+            @free_ports = true
+          end
         end
 
         def tile_lays(_entity)
