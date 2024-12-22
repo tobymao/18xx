@@ -21,6 +21,8 @@ module Engine
 
         STARTING_CASH = { 3 => 380, 4 => 290, 5 => 220, 6 => 190 }.freeze
 
+        NEXT_SR_PLAYER_ORDER = :first_to_pass
+
         CAPITALIZATION = :incremental
 
         MUST_SELL_IN_BLOCKS = false
@@ -116,7 +118,7 @@ module Engine
         ].freeze
 
         TRAINS = [{ name: '2', distance: 2, price: 100, rusts_on: '3P', num: 40 },
-                  { name: '2+', distance: 2, price: 100, obsolete_on: '3P', num: 1 },
+                  { name: '2+', distance: 2, price: 100, obsolete_on: '3P', num: 4 },
                   {
                     name: '3+',
                     distance: 3,
