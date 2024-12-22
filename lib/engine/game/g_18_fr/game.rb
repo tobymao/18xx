@@ -119,8 +119,8 @@ module Engine
           },
         ].freeze
 
-        TRAINS = [{ name: '2', distance: 2, price: 100, rusts_on: '3P', num: 1 },
-                  { name: '2+', distance: 2, price: 100, obsolete_on: '3P', num: 1 },
+        TRAINS = [{ name: '2', distance: 2, price: 100, rusts_on: '3P', num: 40 },
+                  { name: '2+', distance: 2, price: 100, obsolete_on: '3P', num: 4 },
                   { name: '3+', distance: 3, price: 300, obsolete_on: 'G*D', num: 12 },
                   { name: '3P', distance: 3, price: 400, num: 1 },
                   { name: '2P', distance: 2, price: 300, num: 5 },
