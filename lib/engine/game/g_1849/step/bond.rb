@@ -8,7 +8,7 @@ module Engine
       module Step
         class Bond < Engine::Step::Base
           def actions(entity)
-            return [] if @game.bonds? || !entity.corporation? || entity != current_entity
+            return [] if !@game.bonds? || !entity.corporation? || entity != current_entity
 
             actions = []
             actions << 'payoff_loan' if can_payoff_loan?(entity)
@@ -30,6 +30,7 @@ module Engine
           end
 
           def log_skip(entity)
+            print "hi #{can_take_loan?(entity)}"
             super if @game.bonds?
           end
 
