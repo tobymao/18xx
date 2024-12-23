@@ -188,17 +188,6 @@ module Engine
           ], round_num: round_num)
         end
 
-        def after_phase_change(name)
-          case name
-          when 'Green'
-            @log << '-- From now on, corporations may lay two for 20 F. Only one may be upgrade --'
-            @extra_tile_lay = true
-          when 'Blue'
-            @log << '-- From now on, corporations may lay two for 20 F. Only one may be upgrade --'
-            @free_ports = true
-          end
-        end
-
         def next_round!
           clear_interest_paid
           @round =
@@ -247,8 +236,20 @@ module Engine
             end
         end
 
+        def after_phase_change(name)
+          case name
+          when 'Green'
+            @log << '-- From now on, corporations may lay two for 20 F. Only one may be upgrade --'
+            @extra_tile_lay = true
+          when 'Blue'
+            @log << '-- From now on, corporations may lay two for 20 F. Only one may be upgrade --'
+            @free_ports = true
+          end
+        end
+
         def loan_amount
-          100
+          # needed for render_take_loan in Share Redemption Round
+          @loan_value
         end
 
         def cert_limit(player = nil)
@@ -258,25 +259,6 @@ module Engine
           else
             @cert_limit
           end
-        end
-
-        def redeemable_shares(entity)
-          puts 'a'
-          return [] unless entity.corporation?
-          puts 'b'
-          return [] if entity.share_price.acquisition? || entity.share_price.liquidation?
-          puts 'c'
-          bundles_for_corporation(share_pool, entity)
-            .reject { |bundle| entity.cash < bundle.price }
-        end
-
-        def event_two_tile_lays!
-          @log << '-- From now on, corporations may lay two for 20 F. Only one may be upgrade --'
-          @extra_tile_lay = true
-        end
-
-        def event_free_ports!
-          @log << '-- From now on, ports don\'t count towards train length --'
         end
 
         def tile_lays(_entity)
