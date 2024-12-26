@@ -880,10 +880,10 @@ module Engine
             token = corporation.tokens.first
             hex = hex_by_id(corporation.coordinates)
             city = if corporation_by_id('MZ')&.ipoed
-                     # mza special case if mz already exists on the map
+                     # MZA special case if MZ already exists on the map
                      hex.tile.cities.size > 1 ? city_by_id("#{hex.tile.id}-#{corporation.city}") : hex.tile.cities.first
                    else
-                     # mza exists, but no mz. Place on original location
+                     # MZA exists, but no MZ. Place on original location
                      city_by_id("#{hex.tile.id}-#{corporation.city}")
                    end
             @log << "#{corporation.name} places a token on #{hex.id}"
@@ -1232,7 +1232,7 @@ module Engine
           if !yellow_green
             delete_slot = city.slots > 4 ? city.slots : false
             city.delete_token!(token, remove_slot: delete_slot)
-            # add mza reservation if mza not tokened in madrid yet
+            # add MZA reservation if MZA not tokened in madrid yet
             mza_token = city.tokens.compact.find { |t| t.corporation == mza }
             city.add_reservation!(mza) unless mza_token
             token.destroy!
