@@ -6,6 +6,15 @@ module Engine
       module Entities
         COMPANIES = [
           {
+            name: 'Block Bosnia-Herzegovina hexes',
+            sym: '3',
+            value: 0,
+            meta: { hidden: true },
+            abilities: [
+              { type: 'blocks_hexes', remove: '3', hexes: %w[L16 L18 L20 M17 M19 M21 N18 N20] },
+            ],
+          },
+          {
             name: 'Pilsen-Priesen Railway',
             sym: 'EPP',
             value: 40,

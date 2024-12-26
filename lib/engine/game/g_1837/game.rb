@@ -265,7 +265,9 @@ module Engine
         end
 
         def setup
-          non_purchasable = @companies.flat_map { |c| c.meta['additional_companies'] }.compact
+          non_purchasable = @companies.flat_map do |c|
+            Array(c.meta['additional_companies']) + [c.meta['hidden'] ? c.id : nil]
+          end.compact
           @companies.each { |company| company.owner = @bank unless non_purchasable.include?(company.id) }
           setup_mines
           setup_minors
