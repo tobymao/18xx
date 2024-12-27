@@ -886,6 +886,7 @@ module Engine
             reserved_shares: [10, 10, 10, 10, 10],
             type: 'national',
             floatable: false,
+            coordinates: 'G17',
             color: :orange,
           },
           {
@@ -898,6 +899,7 @@ module Engine
             reserved_shares: [10, 10, 10],
             type: 'national',
             floatable: false,
+            coordinates: 'G17',
             color: :brown,
           },
           {
@@ -910,6 +912,7 @@ module Engine
             reserved_shares: [10, 10, 10, 10, 10],
             type: 'national',
             floatable: false,
+            coordinates: 'H22',
             color: :pink,
           },
         ].freeze
