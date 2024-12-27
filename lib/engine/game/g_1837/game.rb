@@ -117,6 +117,7 @@ module Engine
             num: 4,
             distance: 4,
             price: 470,
+            events: [{ 'type' => 'sd_formation' }],
           },
           {
             name: '4E',
@@ -135,6 +136,7 @@ module Engine
               { 'nodes' => %w[town], 'pay' => 1, 'visit' => 1 },
             ],
             price: 530,
+            events: [{ 'type' => 'kk_formation' }],
           },
           {
             name: '4+2',
@@ -150,6 +152,7 @@ module Engine
             num: 2,
             distance: 5,
             price: 800,
+            events: [{ 'type' => 'ug_formation' }],
           },
           {
             name: '5E',
@@ -233,6 +236,9 @@ module Engine
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
           'buy_across' => ['Buy Across', 'Trains can be bought between companies'],
+          'sd_formation' => ['SD Formation', 'SD forms immediately'],
+          'kk_formation' => ['KK Formation', 'KK forms immediately'],
+          'ug_formation' => ['UG Formation', 'UG forms immediately'],
         ).freeze
 
         ASSIGNMENT_TOKENS = {
@@ -317,6 +323,110 @@ module Engine
           @log << "-- Event: #{EVENTS_TEXT['buy_across'][1]} --"
         end
 
+        def event_sd_formation!
+          @log << "-- Event: #{EVENTS_TEXT['sd_formation'][1]} --"
+          national = corporation_by_id('SD')
+          minors = %w[SD1 SD2 SD3 SD4 SD5].map { |id| minor_by_id(id) }
+          form_national_railway!(national, minors)
+        end
+
+        def event_kk_formation!
+          open_minors = %w[KK1 KK2 KK3].map { |id| minor_by_id(id) }.reject(&:closed?)
+          return if open_minors.empty?
+
+          @log << "-- Event: #{EVENTS_TEXT['kk_formation'][1]} --"
+          national = corporation_by_id('KK')
+          if open_minors.find { |m| m.name == 'KK1' }
+            form_national_railway!(national, open_minors)
+          else
+            @log << "#{national.name} already formed. Remaining minors must fold in."
+            open_minors.each { |m| merge_minor!(m, national) }
+            set_national_president!(national)
+          end
+        end
+
+        def event_ug_formation!
+          open_minors = %w[UG1 UG2 UG3].map { |id| minor_by_id(id) }.reject(&:closed?)
+          return if open_minors.empty?
+
+          national = corporation_by_id('UG')
+          @log << "-- Event: #{EVENTS_TEXT['ug_formation'][1]} --"
+          if open_minors.find { |m| m.name == 'UG1' }
+            form_national_railway!(national, open_minors)
+          else
+            @log << "#{national.name} already formed. Remaining minors must fold in."
+            open_minors.each { |m| merge_minor!(m, national) }
+            set_national_president!(national)
+          end
+        end
+
+        def form_national_railway!(national, merging_minors)
+          national.floatable = true
+          national.floated = true
+          ipo_cash = (10 - national.num_ipo_reserved_shares) * national.par_price.price
+          @bank.spend(ipo_cash, national)
+          @log << "#{national.name} receives #{format_currency(ipo_cash)}"
+
+          tie_breaker_order = []
+          merging_minors.sort_by(&:name).each do |minor|
+            tie_breaker_order << minor.owner
+            merge_minor!(minor, national)
+          end
+          set_national_president!(national, tie_breaker_order.uniq)
+          graph.clear_graph_for(national)
+        end
+
+        def merge_minor!(minor, national)
+          @log << "#{minor.name} folds into #{national.name}"
+
+          @log << "#{minor.owner.name} receives 1 share of #{national.name}"
+          share = national.reserved_shares[0]
+          share.buyable = true
+          @share_pool.transfer_shares(ShareBundle.new(share), minor.owner, allow_president_change: false)
+
+          if minor.cash.positive?
+            minor.spend(minor.cash, national)
+            @log << "#{national.name} receives #{format_currency(minor.cash)}"
+          end
+
+          unless minor.trains.empty?
+            @log << "#{national.name} receives #{minor.trains.map(&:name).join(', ')} train#{minor.trains.size > 1 ? 's' : ''}"
+            minor.trains.dup.each { |t| buy_train(national, t, :free) }
+          end
+
+          token = minor.tokens.first
+          num_unused = national.tokens.count { |t| !t.used }
+          new_token = Token.new(national, price: num_unused.zero? ? 20 : 40)
+          national.tokens << new_token
+          if !%w[L2 L8].include?(token.hex.id) && token.city.tokenable?(national, free: true, cheater: true)
+            token.swap!(new_token, check_tokenable: false)
+          end
+          @log << "#{national.name} receives token (#{new_token.used ? new_token.city.hex.id : 'charter'})"
+
+          close_minor!(minor)
+        end
+
+        def close_minor!(minor)
+          minor.tokens.each(&:remove!)
+          minor.close!
+        end
+
+        def set_national_president!(national, tie_breaker = [])
+          tie_breaker = tie_breaker.reverse
+          current_president = national.presidents_share.owner
+
+          # president determined by most shares, then tie breaker, then current president
+          president_factors = national.player_share_holders.to_h do |player, shares|
+            [[shares.size, tie_breaker.index(player) || -1, player == current_president ? 1 : 0], player]
+          end
+          president = president_factors[president_factors.keys.max]
+          return unless current_president != president
+
+          @log << "#{president.name} becomes the president of #{national.name}"
+          @share_pool.change_president(national.presidents_share, current_president, president)
+          national.owner = president
+        end
+
         def new_auction_round
           Engine::Round::Auction.new(self, [
             G1837::Step::SelectionAuction,
@@ -330,8 +440,9 @@ module Engine
         end
 
         def operating_round(round_num)
-          Engine::Round::Operating.new(self, [
+          G1837::Round::Operating.new(self, [
             Engine::Step::Bankrupt,
+            G1837::Step::HomeToken,
             Engine::Step::DiscardTrain,
             G1837::Step::SpecialTrack,
             Engine::Step::Track,
@@ -380,11 +491,12 @@ module Engine
           cash = minor_initial_cash(minor)
           @bank.spend(cash, minor)
           @log << "#{minor.name} receives #{format_currency(cash)}"
-          unless minor.coordinates.is_a?(Array)
-            hex = hex_by_id(minor.coordinates)
-            hex.tile.cities[minor.city || 0].place_token(minor, minor.next_token, free: true)
-            @log << "#{minor.name} places a token on #{hex.name}"
+          if !@round.is_a?(Engine::Round::Auction) && minor.name == 'SD5'
+            coordinates = minor.coordinates
+            minor.coordinates = coordinates.shift
+            remove_reservations!(minor, coordinates)
           end
+          place_home_token(minor) unless minor.coordinates.is_a?(Array)
           minor.float!
         end
 
@@ -392,6 +504,14 @@ module Engine
           @log << "#{corporation.name} floats"
           @bank.spend(corporation.par_price.price * corporation.total_ipo_shares, corporation)
           @log << "#{corporation.name} receives #{format_currency(corporation.cash)}"
+        end
+
+        def home_token_locations(corporation)
+          Array(corporation.coordinates).map { |coord| hex_by_id(coord) }
+        end
+
+        def remove_reservations!(entity, coordinates)
+          coordinates.each { |coord| hex_by_id(coord).tile.remove_reservation!(entity) }
         end
 
         def must_buy_train?(entity)
