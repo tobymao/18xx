@@ -117,7 +117,7 @@ module Engine
             num: 4,
             distance: 4,
             price: 470,
-            events: [{ 'type' => 'sd_formation' }],
+            events: [{ 'type' => 'sd_formation' }, { 'type' => 'remove_italy' }],
           },
           {
             name: '4E',
@@ -237,6 +237,7 @@ module Engine
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
           'buy_across' => ['Buy Across', 'Trains can be bought between companies'],
           'sd_formation' => ['SD Formation', 'SD forms immediately'],
+          'remove_italy' => ['Remove Italy', 'Remove tiles in Italy. Italy no longer in play.'],
           'kk_formation' => ['KK Formation', 'KK forms immediately'],
           'ug_formation' => ['UG Formation', 'UG forms immediately'],
         ).freeze
@@ -328,6 +329,19 @@ module Engine
           national = corporation_by_id('SD')
           minors = %w[SD1 SD2 SD3 SD4 SD5].map { |id| minor_by_id(id) }
           form_national_railway!(national, minors)
+        end
+
+        def event_remove_italy!
+          @log << "-- Event: #{EVENTS_TEXT['remove_italy'][1]} --"
+          ITALY_HEXES.each do |id|
+            hex = hex_by_id(id)
+            hex.law_downgrade(hex.original_tile) if hex.tile != hex.original_tile
+            hex.tile.modify_borders(type: :impassible)
+          end
+
+          # Lay Bo tile on Bozen
+          hex_by_id('K5').lay(tile_by_id('426-0').rotate!(2))
+          @graph.clear_graph_for_all
         end
 
         def event_kk_formation!
