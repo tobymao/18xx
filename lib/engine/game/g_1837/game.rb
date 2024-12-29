@@ -152,7 +152,8 @@ module Engine
             num: 2,
             distance: 5,
             price: 800,
-            events: [{ 'type' => 'ug_formation' }, { 'type' => 'close_mountain_railways' }],
+            events: [{ 'type' => 'ug_formation' }, { 'type' => 'exchange_coal_companies' },
+                     { 'type' => 'close_mountain_railways' }],
           },
           {
             name: '5E',
@@ -240,6 +241,7 @@ module Engine
           'remove_italy' => ['Remove Italy', 'Remove tiles in Italy. Italy no longer in play.'],
           'kk_formation' => ['KK Formation', 'KK forms immediately'],
           'ug_formation' => ['UG Formation', 'UG forms immediately'],
+          'exchange_coal_companies' => ['Exchange Coal Companies', 'All remaining coal companies are exchanged'],
           'close_mountain_railways' => ['Mountain Railways Close', 'All Mountain Railways close'],
         ).freeze
 
@@ -375,6 +377,34 @@ module Engine
           end
         end
 
+        def event_exchange_coal_companies!
+          @log << "-- Event: #{EVENTS_TEXT['exchange_coal_companies'][1]} --"
+          coal_company_exchange_order.each { |c| exchange_coal_company(c) }
+        end
+
+        def coal_company_exchange_order
+          exchangeable_companies = Hash.new { |h, k| h[k] = [] }
+          @companies.each do |c|
+            next if c.closed? || !c.owner&.player?
+            next unless (ability = abilities(c, :exchange, time: 'any'))
+
+            exchangeable_companies[ability.corporations.first] << c
+          end
+
+          major_order = (operating_order + @corporations.sort).uniq.select { |e| e.corporation? && e.type == :major }
+          major_order.flat_map do |major|
+            player_order = major.owner&.player? ? @players.rotate!(@players.index(major.owner)) : @players
+            exchangeable_companies[major.id].sort_by { |c| player_order.index(c.owner) }
+          end.compact
+        end
+
+        def exchange_coal_company(company)
+          major = corporation_by_id(abilities(company, :exchange, time: 'any').corporations.first)
+          minor = minor_by_id(company.sym)
+          merge_minor!(minor, major)
+          company.close!
+        end
+
         def event_close_mountain_railways!
           @log << "-- Event: #{EVENTS_TEXT['close_mountain_railways'][1]} --"
           @companies.select { |c| c.meta[:type] == :mountain_railway }.each(&:close!)
@@ -396,32 +426,39 @@ module Engine
           graph.clear_graph_for(national)
         end
 
-        def merge_minor!(minor, national)
-          @log << "#{minor.name} folds into #{national.name}"
+        def merge_minor!(minor, corporation)
+          coal_company_exchange = minor.type == :coal
+          @log << "#{minor.name} merges into #{corporation.name}"
 
-          @log << "#{minor.owner.name} receives 1 share of #{national.name}"
-          share = national.reserved_shares[0]
+          @log << "#{minor.owner.name} receives 1 share of #{corporation.name}"
+          share = corporation.reserved_shares[0]
           share.buyable = true
-          @share_pool.transfer_shares(ShareBundle.new(share), minor.owner, allow_president_change: false)
+          @share_pool.transfer_shares(ShareBundle.new(share), minor.owner, allow_president_change: coal_company_exchange)
+          # TODO: cannot receive dividends if minor already operated this OR
 
           if minor.cash.positive?
-            minor.spend(minor.cash, national)
-            @log << "#{national.name} receives #{format_currency(minor.cash)}"
+            @log << "#{corporation.name} receives #{format_currency(minor.cash)}"
+            minor.spend(minor.cash, corporation)
           end
 
           unless minor.trains.empty?
-            @log << "#{national.name} receives #{minor.trains.map(&:name).join(', ')} train#{minor.trains.size > 1 ? 's' : ''}"
-            minor.trains.dup.each { |t| buy_train(national, t, :free) }
+            @log << "#{corporation.name} receives #{minor.trains.map(&:name).join(', ')} train#{minor.trains.size > 1 ? 's' : ''}"
+            @round.merged_trains[corporation].extend(minor.trains)
+            minor.trains.dup.each { |t| buy_train(corporation, t, :free) }
           end
 
-          token = minor.tokens.first
-          num_unused = national.tokens.count { |t| !t.used }
-          new_token = Token.new(national, price: num_unused.zero? ? 20 : 40)
-          national.tokens << new_token
-          if !%w[L2 L8].include?(token.hex.id) && token.city.tokenable?(national, free: true, cheater: true)
-            token.swap!(new_token, check_tokenable: false)
+          if coal_company_exchange
+            minor.tokens.first.swap!(blocking_token, check_tokenable: false)
+          else
+            token = minor.tokens.first
+            num_unused = corporation.tokens.count { |t| !t.used }
+            new_token = Token.new(corporation, price: num_unused.zero? ? 20 : 40)
+            corporation.tokens << new_token
+            if !%w[L2 L8].include?(token.hex.id) && token.city.tokenable?(corporation, free: true, cheater: true)
+              token.swap!(new_token, check_tokenable: false)
+            end
+            @log << "#{corporation.name} receives token (#{new_token.used ? new_token.city.hex.id : 'charter'})"
           end
-          @log << "#{national.name} receives token (#{new_token.used ? new_token.city.hex.id : 'charter'})"
 
           close_minor!(minor)
         end
@@ -455,6 +492,7 @@ module Engine
 
         def stock_round
           G1837::Round::Stock.new(self, [
+            G1837::Step::DiscardTrain,
             G1837::Step::BuySellParShares,
           ])
         end
@@ -463,7 +501,7 @@ module Engine
           G1837::Round::Operating.new(self, [
             Engine::Step::Bankrupt,
             G1837::Step::HomeToken,
-            Engine::Step::DiscardTrain,
+            G1837::Step::DiscardTrain,
             G1837::Step::SpecialTrack,
             Engine::Step::Track,
             G1837::Step::Token,
@@ -570,6 +608,11 @@ module Engine
 
         def subsidy_name
           'mine revenue'
+        end
+
+        def blocking_token
+          @blocker ||= Corporation.new(sym: 'B', name: '', logo: '1837/blocking', tokens: [])
+          Token.new(@blocker)
         end
       end
     end
