@@ -28,8 +28,7 @@ module Engine
             entity_shares = affected_shares(holder, @merge_data[:corps])
 
             total_percent = entity_shares.sum(&:percent)
-            num_shares = (total_percent / 20).to_i
-            odd_share = num_shares * 20 != total_percent
+            num_shares, odd_shares = (total_percent / 10).divmod(2)
             from_secondary = @merge_data[:secondary_corps].reduce(0) do |sum, secondary_corps|
               sum + (secondary_corps.president?(holder) ? 1 : 0)
             end
