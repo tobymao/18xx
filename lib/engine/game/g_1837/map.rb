@@ -259,6 +259,8 @@ module Engine
 
         MINE_HEXES = %w[A13 B32 C19 C21 E11 F26 K31 K33 L30 P20].freeze
 
+        ITALY_HEXES = %w[K1 K3 K7 K9 L2 L4 L6 L8 M3 M5 M7].freeze
+
         HEXES = {
           gray: {
             ['A11'] => 'town=revenue:10;path=a:0,b:_0;path=a:5,b:_0',
