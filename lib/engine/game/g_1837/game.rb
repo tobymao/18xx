@@ -152,7 +152,7 @@ module Engine
             num: 2,
             distance: 5,
             price: 800,
-            events: [{ 'type' => 'ug_formation' }],
+            events: [{ 'type' => 'ug_formation' }, { 'type' => 'close_mountain_railways' }],
           },
           {
             name: '5E',
@@ -240,6 +240,7 @@ module Engine
           'remove_italy' => ['Remove Italy', 'Remove tiles in Italy. Italy no longer in play.'],
           'kk_formation' => ['KK Formation', 'KK forms immediately'],
           'ug_formation' => ['UG Formation', 'UG forms immediately'],
+          'close_mountain_railways' => ['Mountain Railways Close', 'All Mountain Railways close'],
         ).freeze
 
         ASSIGNMENT_TOKENS = {
@@ -372,6 +373,11 @@ module Engine
             open_minors.each { |m| merge_minor!(m, national) }
             set_national_president!(national)
           end
+        end
+
+        def event_close_mountain_railways!
+          @log << "-- Event: #{EVENTS_TEXT['close_mountain_railways'][1]} --"
+          @companies.select { |c| c.meta[:type] == :mountain_railway }.each(&:close!)
         end
 
         def form_national_railway!(national, merging_minors)
