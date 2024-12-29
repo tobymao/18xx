@@ -34,8 +34,12 @@ module Engine
               sum + (secondary_corps.president?(holder) ? 1 : 0)
             end
             num_shares += from_secondary
-            bundle = Engine::ShareBundle.new(@fce.shares.take(9)) if num_shares == 10
-            bundle = Engine::ShareBundle.new(@fce.shares.reject(&:president).take(num_shares)) unless num_shares == 10
+            bundle = 
+              if num_shares == 10
+                Engine::ShareBundle.new(@fce.shares.take(9))
+              else
+                Engine::ShareBundle.new(@fce.shares.reject(&:president).take(num_shares))
+              end
             @share_pool.transfer_shares(bundle, holder, allow_president_change: true)
             @log << "#{holder.name} receives  #{num_shares * 10}% in FCE in exchange to the nationalized shares"
 
