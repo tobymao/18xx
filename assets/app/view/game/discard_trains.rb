@@ -39,8 +39,9 @@ module View
             &.include?('scrap_train')
         overflow << h(Map, game: @game) if @game.round.is_a?(Engine::Round::Operating)
 
+        discard_description = step.description
         h(:div, [
-          h(:h3, 'Discard Trains'),
+          h(:h3, discard_description),
           *overflow,
         ])
       end

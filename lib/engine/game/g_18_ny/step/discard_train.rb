@@ -10,6 +10,10 @@ module Engine
           def process_discard_train(action)
             @game.salvage_train(action.train)
           end
+
+          def description
+            'Salvage Excess Trains'
+          end
         end
       end
     end
