@@ -29,9 +29,7 @@ module Engine
 
             total_percent = entity_shares.sum(&:percent)
             num_shares, odd_shares = (total_percent / 10).divmod(2)
-            from_secondary = @merge_data[:secondary_corps].reduce(0) do |sum, secondary_corps|
-              sum + (secondary_corps.president?(holder) ? 1 : 0)
-            end
+            from_secondary = @merge_data[:secondary_corps].count { |corp| corp.president?(holder) }
             num_shares += from_secondary
             bundle = 
               if num_shares == 10
