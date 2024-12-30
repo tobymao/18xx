@@ -338,8 +338,8 @@ module Engine
           @log << "-- Event: #{EVENTS_TEXT['remove_italy'][1]} --"
           ITALY_HEXES.each do |id|
             hex = hex_by_id(id)
-            hex.law_downgrade(hex.original_tile) if hex.tile != hex.original_tile
-            hex.tile.modify_borders(type: :impassible)
+            hex.lay_downgrade(hex.original_tile) if hex.tile != hex.original_tile
+            hex.tile.modify_borders(type: :impassable)
           end
 
           # Lay Bo tile on Bozen
@@ -443,7 +443,7 @@ module Engine
 
           unless minor.trains.empty?
             @log << "#{corporation.name} receives #{minor.trains.map(&:name).join(', ')} train#{minor.trains.size > 1 ? 's' : ''}"
-            @round.merged_trains[corporation].extend(minor.trains)
+            @round.merged_trains[corporation].concat(minor.trains)
             minor.trains.dup.each { |t| buy_train(corporation, t, :free) }
           end
 

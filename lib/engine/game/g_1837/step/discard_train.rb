@@ -15,7 +15,9 @@ module Engine
           end
 
           def trains(corporation)
-            @round.merged_trains[corporation] || corporation.trains
+            trains = @round.merged_trains[corporation]
+            trains = corporation.trains if trains.empty?
+            trains
           end
 
           def round_state
