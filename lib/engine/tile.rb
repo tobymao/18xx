@@ -589,11 +589,20 @@ module Engine
 
         @borders.delete(border)
         @borders << modified_border
+
+        if border.type != modified_border.type
+          if border.type == :impassable
+            @hex.neighbors[edge] = @hex.all_neighbors[edge]
+          elsif modified_border.type == :impassable && @hex.all_neighbors[edge]
+            @hex.neighbors.delete(edge)
+          end
+        end
+
         edge
       end
 
       modified.each do |edge|
-        neighbor = @hex.neighbors[edge]&.tile
+        neighbor = @hex.all_neighbors[edge]&.tile
         neighbor&.modify_borders([Hex.invert(edge)], type: type, cost: cost, color: color)
       end
     end
