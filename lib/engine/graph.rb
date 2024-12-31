@@ -23,6 +23,7 @@ module Engine
       @skip_track = opts[:skip_track]
       @check_tokens = opts[:check_tokens]
       @check_regions = opts[:check_regions]
+      @backtracking = opts[:backtracking] || false
     end
 
     def clear
@@ -259,7 +260,8 @@ module Engine
         local_nodes = {}
 
         node.walk(visited: visited, corporation: walk_corporation, skip_track: @skip_track,
-                  skip_paths: skip_paths, converging_path: false, walk_calls: @walk_calls[corporation]) do |path, _, _|
+                  skip_paths: skip_paths, converging_path: false, walk_calls: @walk_calls[corporation],
+                  backtracking: @backtracking) do |path, _, _|
           next if paths[path]
 
           paths[path] = true

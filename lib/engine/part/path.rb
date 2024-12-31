@@ -128,6 +128,8 @@ module Engine
       # counter: a hash tracking edges and junctions to avoid reuse
       # skip_track: If passed, don't walk on track of that type (ie: :broad track for 1873)
       # converging: When true, some predecessor path was part of a converging switch
+      # walk_calls: A hash tracking the number of calls to walk
+      # backtracking: If true, allow walks to backtrack along the same edge
       def walk(
         skip: nil,
         jskip: nil,
@@ -137,6 +139,7 @@ module Engine
         skip_track: nil,
         converging: true,
         walk_calls: Hash.new(0),
+        backtracking: false,
         &block
       )
         walk_calls[:all] += 1
@@ -163,6 +166,7 @@ module Engine
               counter: counter,
               converging: converging,
               walk_calls: walk_calls,
+              backtracking: backtracking,
               &block
             )
           end
@@ -172,6 +176,17 @@ module Engine
           edge_id = edge.id
           edge = edge.num
           next if edge == skip
+
+          if backtracking
+            hex.paths[edge].reject { |p| visited[p] || skip_paths&.key?(p) }.each do |p|
+              next unless lane_match?(@exit_lanes[edge], p.exit_lanes[edge])
+
+              p.walk(skip: edge, visited: visited, skip_paths: skip_paths, counter: counter, skip_track: skip_track,
+                     converging: converging || @tile.converging_exit?(edge), walk_calls: walk_calls,
+                     backtracking: backtracking, &block)
+            end
+          end
+
           next unless (neighbor = hex.neighbors[edge])
 
           counter[edge_id] += 1
@@ -182,7 +197,8 @@ module Engine
             next if !@ignore_gauge_walk && !tracks_match?(np, dual_ok: true)
 
             np.walk(skip: np_edge, visited: visited, skip_paths: skip_paths, counter: counter, skip_track: skip_track,
-                    converging: converging || @tile.converging_exit?(edge), walk_calls: walk_calls, &block)
+                    converging: converging || @tile.converging_exit?(edge), walk_calls: walk_calls,
+                    backtracking: backtracking, &block)
           end
 
           counter[edge_id] -= 1

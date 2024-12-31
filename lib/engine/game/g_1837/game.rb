@@ -614,6 +614,10 @@ module Engine
           @blocker ||= Corporation.new(sym: 'B', name: '', logo: '1837/blocking', tokens: [])
           Token.new(@blocker)
         end
+
+        def token_graph_for_entity
+          @token_graph ||= Graph.new(self, backtracking: true)
+        end
       end
     end
   end
