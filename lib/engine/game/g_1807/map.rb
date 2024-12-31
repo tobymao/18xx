@@ -90,153 +90,235 @@ module Engine
                P4 P6 P16 P20 P22 P24 P26 P30 Q7 Q13 Q19 Q21 Q25 Q27 Q29 R6 R16
                R18 R22 R26 R30 S5 S13 S15 S17 S19 S21 S23 S25 T4 T6 T16 T18 T20
                T26 T28 U5 U15 V16 V18 V20 W9 W11 W13 W15 W17 W19 W21 W23 W25 W27 W29
-               X10 X12 X14 X22 X26] => '',
-            %w[A5 A7 B4 B6 E11 F6 F10 G5 G7 H14 I15 J14 K13 K15 N16 P8 R8 S7 T8] => 'upgrade=cost:40,terrain:mountain;',
-            %w[I11 O7] => 'upgrade=cost:80,terrain:mountain;',
-            %w[B10] => 'border=edge:3,type:water,cost:80;',
-            %w[C9] => 'border=edge:0,type:water,cost:80;border=edge:5,type:water,cost:80;',
-            %w[D12] => 'border=edge:2,type:impassable;',
-            %w[D14] => 'border=edge:5,type:province;',
-            %w[E5] => 'stub=edge:3;',
-            %w[E13 F12] => 'upgrade=cost:40,terrain:mountain;' \
-                           'border=edge:4,type:province;border=edge:5,type:province;',
-            %w[G9] => 'border=edge:5,type:water,cost:80;',
-            %w[F14 G13] => 'border=edge:1,type:province;border=edge:2,type:province;',
-            %w[G11] => 'border=edge:0,type:water,cost:80;' \
-                       'border=edge:4,type:province;border=edge:5,type:province;',
-            %w[H8] => 'border=edge:4,type:impassable;border=edge:5,type:impassable;',
-            %w[H10] => 'border=edge:1,type:impassable;' \
-                       'border=edge:2,type:water,cost:80;' \
-                       'border=edge:3,type:water,cost:80;',
-            %w[I9 V12] => 'border=edge:2,type:impassable;',
-            %w[L20 M21] => 'upgrade=cost:20,terrain:water;',
-            %w[N6] => 'upgrade=cost:40,terrain:water;',
-            %w[N10] => 'border=edge:4,type:impassable;border=edge:5,type:province;',
-            %w[N12] => 'upgrade=cost:20,terrain:water;border=edge:1,type:impassable;',
-            %w[O9 S9] => 'upgrade=cost:40,terrain:mountain;border=edge:4,type:province;',
-            %w[O11 Q11 S11] => 'border=edge:0,type:province;border=edge:1,type:province;' \
-                               'border=edge:2,type:province;',
-            %w[P10 R10] => 'upgrade=cost:40,terrain:mountain;border=edge:3,type:province;' \
-                           'border=edge:4,type:province;border=edge:5,type:province;',
-            %w[P12 R12] => 'border=edge:1,type:province;',
-            %w[Q9] => 'border=edge:4,type:province;',
-            %w[T12] => 'border=edge:0,type:province;border=edge:1,type:province;' \
-                       'border=edge:5,type:water,cost:80;',
-            %w[T22] => 'stub=edge:5;',
-            %w[T24] => 'stub=edge:0;',
-            %w[U21] => 'upgrade=cost:20,terrain:water;stub=edge:4;',
-            %w[U25] => 'border=edge:0,type:water,cost:80;' \
-                       'stub=edge:1;' \
-                       'border=edge:5,type:water,cost:80;',
-            %w[V24] => 'stub=edge:2;' \
-                       'border=edge:3,type:water,cost:80;',
+               X10 X12 X14 X22 X26] =>
+                    '',
+            %w[A5 A7 B4 B6 E11 F6 F10 G5 G7 H14 I15 J14 K13 K15 N16 P8 R8 S7 T8] =>
+                    'upgrade=cost:40,terrain:mountain;',
+            %w[I11 O7] =>
+                    'upgrade=cost:80,terrain:mountain;',
+            %w[B10] =>
+                    'border=edge:3,type:water,cost:80;',
+            %w[C9] =>
+                    'border=edge:0,type:water,cost:80;border=edge:5,type:water,cost:80;',
+            %w[D12] =>
+                    'border=edge:2,type:impassable;',
+            %w[D14] =>
+                    'border=edge:5,type:province;',
+            %w[E5] =>
+                    'stub=edge:3;',
+            %w[E13 F12] =>
+                    'upgrade=cost:40,terrain:mountain;' \
+                    'border=edge:4,type:province;border=edge:5,type:province;',
+            %w[G9] =>
+                    'border=edge:5,type:water,cost:80;',
+            %w[F14 G13] =>
+                    'border=edge:1,type:province;border=edge:2,type:province;',
+            %w[G11] =>
+                    'border=edge:0,type:water,cost:80;' \
+                    'border=edge:4,type:province;border=edge:5,type:province;',
+            %w[H8] =>
+                    'border=edge:4,type:impassable;border=edge:5,type:impassable;',
+            %w[H10] =>
+                    'border=edge:1,type:impassable;' \
+                    'border=edge:2,type:water,cost:80;' \
+                    'border=edge:3,type:water,cost:80;',
+            %w[I9 V12] =>
+                    'border=edge:2,type:impassable;',
+            %w[L20 M21] =>
+                    'upgrade=cost:20,terrain:water;',
+            %w[N6] =>
+                    'upgrade=cost:40,terrain:water;',
+            %w[N10] =>
+                    'border=edge:4,type:impassable;border=edge:5,type:province;',
+            %w[N12] =>
+                    'upgrade=cost:20,terrain:water;border=edge:1,type:impassable;',
+            %w[O9 S9] =>
+                    'upgrade=cost:40,terrain:mountain;border=edge:4,type:province;',
+            %w[O11 Q11 S11] =>
+                    'border=edge:0,type:province;border=edge:1,type:province;' \
+                    'border=edge:2,type:province;',
+            %w[P10 R10] =>
+                    'upgrade=cost:40,terrain:mountain;border=edge:3,type:province;' \
+                    'border=edge:4,type:province;border=edge:5,type:province;',
+            %w[P12 R12] =>
+                    'border=edge:1,type:province;',
+            %w[Q9] =>
+                    'border=edge:4,type:province;',
+            %w[T12] =>
+                    'border=edge:0,type:province;border=edge:1,type:province;' \
+                    'border=edge:5,type:water,cost:80;',
+            %w[T22] =>
+                    'stub=edge:5;',
+            %w[T24] =>
+                    'stub=edge:0;',
+            %w[U21] =>
+                    'upgrade=cost:20,terrain:water;stub=edge:4;',
+            %w[U25] =>
+                    'border=edge:0,type:water,cost:80;' \
+                    'stub=edge:1;' \
+                    'border=edge:5,type:water,cost:80;',
+            %w[V24] =>
+                    'stub=edge:2;' \
+                    'border=edge:3,type:water,cost:80;',
 
             # Town hexes.
-            %w[C7 F4 H16 I17 M13 M19 O13 O15 P18 Q17 Q23 R20 R24 S27 U17 U19 X16] => 'town=revenue:0;',
-            %w[A11] => 'town=revenue:0;border=edge:0,type:water,cost:80;',
-            %w[C5] => 'town=revenue:0;border=edge:0,type:water,cost:80;stub=edge:5;',
-            %w[D8] => 'town=revenue:0;border=edge:3,type:water,cost:80;',
-            %w[E15] => 'town=revenue:0;border=edge:1,type:province;border=edge:2,type:province;',
-            %w[H12] => 'town=revenue:0;border=edge:2,type:province;',
-            %w[L14] => 'town=revenue:0;stub=edge:5;',
-            %w[R14] => 'town=revenue:0;stub=edge:3;',
-            %w[T10] => 'town=revenue:0;upgrade=cost:40,terrain:mountain;' \
-                       'border=edge:3,type:province;border=edge:4,type:province;',
-            %w[T14] => 'town=revenue:0;upgrade=cost:20,terrain:water;',
-            %w[U27] => 'town=revenue:0;border=edge:0,type:impassable;border=edge:5,type:impassable;',
-            %w[V22] => 'town=revenue:0;stub=edge:3;',
-            %w[V28] => 'town=revenue:0;border=edge:2,type:impassable;',
+            %w[C7 F4 H16 I17 M13 M19 O13 O15 P18 Q17 Q23 R20 R24 S27 U17 U19 X16] =>
+                    'town=revenue:0;',
+            %w[A11] =>
+                    'town=revenue:0;border=edge:0,type:water,cost:80;',
+            %w[C5] =>
+                    'town=revenue:0;border=edge:0,type:water,cost:80;stub=edge:5;',
+            %w[D8] =>
+                    'town=revenue:0;border=edge:3,type:water,cost:80;',
+            %w[E15] =>
+                    'town=revenue:0;border=edge:1,type:province;border=edge:2,type:province;',
+            %w[H12] =>
+                    'town=revenue:0;border=edge:2,type:province;',
+            %w[L14] =>
+                    'town=revenue:0;stub=edge:5;',
+            %w[R14] =>
+                    'town=revenue:0;stub=edge:3;',
+            %w[T10] =>
+                    'town=revenue:0;upgrade=cost:40,terrain:mountain;' \
+                    'border=edge:3,type:province;border=edge:4,type:province;',
+            %w[T14] =>
+                    'town=revenue:0;upgrade=cost:20,terrain:water;',
+            %w[U27] =>
+                    'town=revenue:0;border=edge:0,type:impassable;border=edge:5,type:impassable;',
+            %w[V22] =>
+                    'town=revenue:0;stub=edge:3;',
+            %w[V28] =>
+                    'town=revenue:0;border=edge:2,type:impassable;',
 
             # City hexes.
-            %w[A9 K19 L12 O17 P28 R28 U7 V14 X20 X24] => 'city=revenue:0;',
-            %w[D4] => 'city=revenue:0;border=edge:3,type:water,cost:80;',
-            %w[H18] => 'city=revenue:0;border=edge:5,type:water,cost:80;',
-            %w[I19] => 'city=revenue:0;border=edge:2,type:water,cost:80;',
-            %w[U11] => 'city=revenue:0;border=edge:3,type:province;' \
-                       'border=edge:4,type:water,cost:80;' \
-                       'border=edge:5,type:impassable;',
-            %w[V26] => 'city=revenue:0;border=edge:2,type:water,cost:80;border=edge:3,type:impassable;',
+            %w[A9 K19 L12 O17 P28 R28 U7 V14 X20 X24] =>
+                    'city=revenue:0;',
+            %w[D4] =>
+                    'city=revenue:0;border=edge:3,type:water,cost:80;',
+            %w[H18] =>
+                    'city=revenue:0;border=edge:5,type:water,cost:80;',
+            %w[I19] =>
+                    'city=revenue:0;border=edge:2,type:water,cost:80;',
+            %w[U11] =>
+                    'city=revenue:0;border=edge:3,type:province;' \
+                    'border=edge:4,type:water,cost:80;' \
+                    'border=edge:5,type:impassable;',
+            %w[V26] =>
+                    'city=revenue:0;border=edge:2,type:water,cost:80;border=edge:3,type:impassable;',
 
             # Y city hexes.
-            %w[G17 O19 P14 U9 X18] => 'city=revenue:0;label=Y;',
-            %w[D10] => 'city=revenue:0;label=Y;border=edge:2,type:water,cost:80;border=edge:3,type:impassable;',
-            %w[C11] => 'city=revenue:0;label=Y;border=edge:0,type:impassable;border=edge:5,type:impassable;',
-            %w[M17] => 'city=revenue:0;label=Y;border=edge:1,type:mountain,cost:40;',
-            %w[U13] => 'city=revenue:0;label=Y;' \
-                       'border=edge:1,type:water,cost:80;border=edge:2,type:water,cost:80;',
+            %w[G17 O19 P14 U9 X18] =>
+                    'city=revenue:0;label=Y;',
+            %w[D10] =>
+                    'city=revenue:0;label=Y;border=edge:2,type:water,cost:80;border=edge:3,type:impassable;',
+            %w[C11] =>
+                    'city=revenue:0;label=Y;border=edge:0,type:impassable;border=edge:5,type:impassable;',
+            %w[M17] =>
+                    'city=revenue:0;label=Y;border=edge:1,type:mountain,cost:40;',
+            %w[U13] =>
+                    'city=revenue:0;label=Y;' \
+                    'border=edge:1,type:water,cost:80;border=edge:2,type:water,cost:80;',
           },
           yellow: {
-            %w[D6 Q15] => 'city=revenue:30;city=revenue:30;city=revenue:30;label=BGM;' \
-                          'path=a:0,b:_0;path=a:2,b:_1;path=a:4,b:_2;',
-            %w[L16] => 'city=revenue:30;city=revenue:30;city=revenue:30;label=BGM;' \
-                       'path=a:1,b:_0;path=a:3,b:_1;path=a:5,b:_2;' \
-                       'border=edge:0,type:mountain,cost:40;',
-            %w[M15] => 'city=revenue:30;city=revenue:30;city=revenue:30;label=BGM;' \
-                       'path=a:0,b:_0;path=a:2,b:_1;path=a:4,b:_2;' \
-                       'border=edge:3,type:mountain,cost:40;' \
-                       'border=edge:4,type:mountain,cost:40;',
-            %w[M11] => 'city=revenue:30;city=revenue:30;label=L;path=a:3,b:_0;path=a:5,b:_1;',
-            %w[U23] => 'offboard=revenue:40;' \
-                       'path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;' \
-                       'path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;',
+            %w[D6 Q15] =>
+                    'city=revenue:30;city=revenue:30;city=revenue:30;label=BGM;' \
+                    'path=a:0,b:_0;path=a:2,b:_1;path=a:4,b:_2;',
+            %w[L16] =>
+                    'city=revenue:30;city=revenue:30;city=revenue:30;label=BGM;' \
+                    'path=a:1,b:_0;path=a:3,b:_1;path=a:5,b:_2;' \
+                    'border=edge:0,type:mountain,cost:40;',
+            %w[M15] =>
+                    'city=revenue:30;city=revenue:30;city=revenue:30;label=BGM;' \
+                    'path=a:0,b:_0;path=a:2,b:_1;path=a:4,b:_2;' \
+                    'border=edge:3,type:mountain,cost:40;' \
+                    'border=edge:4,type:mountain,cost:40;',
+            %w[M11] =>
+                    'city=revenue:30;city=revenue:30;label=L;path=a:3,b:_0;path=a:5,b:_1;',
+            %w[U23] =>
+                    'offboard=revenue:40;' \
+                    'path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;' \
+                    'path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;',
           },
           red: {
-            %w[A13] => 'offboard=revenue:yellow_20|green_30|brown_40|gray_50;path=a:1,b:_0;',
-            %w[H2] => 'offboard=revenue:yellow_20|green_20|brown_30|gray_40;' \
-                      'path=a:3,b:_0;path=a:4,b:_0;',
-            %w[L22] => 'offboard=revenue:yellow_20|green_30|brown_40|gray_40;' \
-                       'path=a:1,b:_0;path=a:2,b:_0;',
-            %w[N4] => 'offboard=revenue:yellow_20|green_20|brown_30|gray_40;path=a:4,b:_0;',
-            %w[S3] => 'offboard=revenue:yellow_20|green_20|brown_30|gray_40;' \
-                      'path=a:4,b:_0;path=a:5,b:_0;',
-            %w[S29] => 'offboard=revenue:yellow_10|green_20|brown_30|gray_40;' \
-                       'path=a:1,b:_0;path=a:2,b:_0;',
-            %w[V30] => 'offboard=revenue:yellow_20|green_30|brown_40|gray_50;' \
-                       'path=a:0,b:_0;path=a:1,b:_0;',
-            %w[X8] => 'offboard=revenue:yellow_20|green_30|brown_40|gray_40;' \
-                      'path=a:3,b:_0;path=a:4,b:_0;',
+            %w[A13] =>
+                    'offboard=revenue:yellow_20|green_30|brown_40|gray_50;path=a:1,b:_0;',
+            %w[H2] =>
+                    'offboard=revenue:yellow_20|green_20|brown_30|gray_40;' \
+                    'path=a:3,b:_0;path=a:4,b:_0;',
+            %w[L22] =>
+                    'offboard=revenue:yellow_20|green_30|brown_40|gray_40;' \
+                    'path=a:1,b:_0;path=a:2,b:_0;',
+            %w[N4] =>
+                    'offboard=revenue:yellow_20|green_20|brown_30|gray_40;path=a:4,b:_0;',
+            %w[S3] =>
+                    'offboard=revenue:yellow_20|green_20|brown_30|gray_40;' \
+                    'path=a:4,b:_0;path=a:5,b:_0;',
+            %w[S29] =>
+                    'offboard=revenue:yellow_10|green_20|brown_30|gray_40;' \
+                    'path=a:1,b:_0;path=a:2,b:_0;',
+            %w[V30] =>
+                    'offboard=revenue:yellow_20|green_30|brown_40|gray_50;' \
+                    'path=a:0,b:_0;path=a:1,b:_0;',
+            %w[X8] =>
+                    'offboard=revenue:yellow_20|green_30|brown_40|gray_40;' \
+                    'path=a:3,b:_0;path=a:4,b:_0;',
           },
           blue: {
-            %w[B12] => 'path=a:0,b:1;path=a:2,b:5,terminal:2,ignore:1;',
-            %w[C13] => 'path=a:1,b:4,terminal:2,ignore:1;',
-            %w[U29] => 'path=a:0,b:5,terminal:2,ignore:1;',
+            %w[B12] =>
+                    'path=a:0,b:1;path=a:2,b:5,terminal:2,ignore:1;',
+            %w[C13] =>
+                    'path=a:1,b:4,terminal:2,ignore:1;',
+            %w[U29] =>
+                    'path=a:0,b:5,terminal:2,ignore:1;',
           },
           gray: {
-            %w[V10] => 'path=a:2,b:3;',
+            %w[V10] =>
+                    'path=a:2,b:3;',
 
             # Supersized London hex.
-            %w[L28] => 'offboard=revenue:0;border=edge:0;border=edge:1;' \
-                       'border=edge:2;border=edge:3;border=edge:4;border=edge:5;',
-            %w[K27] => 'city=revenue:40,groups:London,hide:1,loc:0;' \
-                       'city=revenue:40,groups:London,hide:1,loc:4;' \
-                       'path=a:2,b:_0;path=a:2,b:_1;' \
-                       'border=edge:0;border=edge:4;border=edge:5;',
-            %w[K29] => 'city=revenue:40,groups:London,hide:1,loc:1;' \
-                       'city=revenue:40,groups:London,hide:1,loc:5;' \
-                       'path=a:3,b:_0;path=a:3,b:_1;' \
-                       'border=edge:0;border=edge:1;border=edge:5;',
-            %w[L26] => 'city=revenue:40,groups:London,hide:1,loc:3;' \
-                       'city=revenue:40,groups:London,hide:1,loc:5;' \
-                       'path=a:1,b:_0;path=a:1,b:_1;' \
-                       'border=edge:3;border=edge:4;border=edge:5;',
-            %w[L30] => 'city=revenue:40,groups:London,hide:1,loc:0;' \
-                       'city=revenue:40,groups:London,hide:1,loc:2;' \
-                       'path=a:4,b:_0;path=a:4,b:_1;' \
-                       'border=edge:0;border=edge:1;border=edge:2;',
-            %w[M27] => 'city=revenue:40,groups:London,hide:1,loc:2;' \
-                       'city=revenue:40,groups:London,hide:1,loc:4;' \
-                       'path=a:0,b:_0;path=a:0,b:_1;' \
-                       'border=edge:2;border=edge:3;border=edge:4;',
-            %w[M29] => 'city=revenue:40,groups:London,hide:1,loc:1;' \
-                       'city=revenue:40,groups:London,hide:1,loc:3;' \
-                       'path=a:5,b:_0;path=a:5,b:_1;' \
-                       'border=edge:1;border=edge:2;border=edge:3;',
+            %w[L28] =>
+                    'offboard=revenue:0;border=edge:0;border=edge:1;' \
+                    'border=edge:2;border=edge:3;border=edge:4;border=edge:5;',
+            %w[K27] =>
+                    'city=revenue:40,groups:London,hide:1,loc:0;' \
+                    'city=revenue:40,groups:London,hide:1,loc:4;' \
+                    'path=a:2,b:_0;path=a:2,b:_1;' \
+                    'border=edge:0;border=edge:4;border=edge:5;',
+            %w[K29] =>
+                    'city=revenue:40,groups:London,hide:1,loc:1;' \
+                    'city=revenue:40,groups:London,hide:1,loc:5;' \
+                    'path=a:3,b:_0;path=a:3,b:_1;' \
+                    'border=edge:0;border=edge:1;border=edge:5;',
+            %w[L26] =>
+                    'city=revenue:40,groups:London,hide:1,loc:3;' \
+                    'city=revenue:40,groups:London,hide:1,loc:5;' \
+                    'path=a:1,b:_0;path=a:1,b:_1;' \
+                    'border=edge:3;border=edge:4;border=edge:5;',
+            %w[L30] =>
+                    'city=revenue:40,groups:London,hide:1,loc:0;' \
+                    'city=revenue:40,groups:London,hide:1,loc:2;' \
+                    'path=a:4,b:_0;path=a:4,b:_1;' \
+                    'border=edge:0;border=edge:1;border=edge:2;',
+            %w[M27] =>
+                    'city=revenue:40,groups:London,hide:1,loc:2;' \
+                    'city=revenue:40,groups:London,hide:1,loc:4;' \
+                    'path=a:0,b:_0;path=a:0,b:_1;' \
+                    'border=edge:2;border=edge:3;border=edge:4;',
+            %w[M29] =>
+                    'city=revenue:40,groups:London,hide:1,loc:1;' \
+                    'city=revenue:40,groups:London,hide:1,loc:3;' \
+                    'path=a:5,b:_0;path=a:5,b:_1;' \
+                    'border=edge:1;border=edge:2;border=edge:3;',
 
             # Legends showing bonuses.
-            %w[J6] => 'offboard=revenue:yellow_10|green_20|brown_30|gray_40;',
-            %w[L6] => 'offboard=revenue:yellow_10|green_20|brown_20|gray_30;',
-            %w[G28] => 'offboard=revenue:yellow_0|green_0|brown_50|gray_60;',
-            %w[I28] => 'offboard=revenue:yellow_20|green_20|brown_30|gray_30;',
+            %w[J6] =>
+                    'offboard=revenue:yellow_10|green_20|brown_30|gray_40;',
+            %w[L6] =>
+                    'offboard=revenue:yellow_10|green_20|brown_20|gray_30;',
+            %w[G28] =>
+                    'offboard=revenue:yellow_0|green_0|brown_50|gray_60;',
+            %w[I28] =>
+                    'offboard=revenue:yellow_20|green_20|brown_30|gray_30;',
           },
         }.freeze
 
