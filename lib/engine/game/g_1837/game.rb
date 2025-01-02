@@ -635,6 +635,14 @@ module Engine
 
           super
         end
+
+        def sold_out_stock_movement(corp)
+          if corp.owner.percent_of(corp) <= 40
+            @stock_market.move_up(corp)
+          else
+            @stock_market.move_diagonally_up_left(corp)
+          end
+        end
       end
     end
   end
