@@ -19,6 +19,10 @@ module Engine
             UNBOUGHT_COMPANIES_ACTIONS
           end
 
+          def visible_corporations
+            @game.corporations.reject { |c| c.type == :minor }
+          end
+
           def hide_corporations?
             unbought_companies?
           end
@@ -32,11 +36,6 @@ module Engine
             return false if bought?
 
             entity.cash >= @game.buyable_bank_owned_companies.min_by(&:value).value
-          end
-
-          def process_buy_company(entity)
-            super
-            @game.after_company_acquisition(entity.company)
           end
 
           def process_par(action)
