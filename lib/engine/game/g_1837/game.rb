@@ -34,6 +34,9 @@ module Engine
         EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
         MUST_BUY_TRAIN = :always
 
+        BANKRUPTCY_ENDS_GAME_AFTER = :all_but_one
+        GAME_END_CHECK = { bankrupt: :immediate, bank: :current_or }.freeze
+
         MARKET = [
           %w[95 99 104p 114 121 132 145 162 181 205 240 280 350 400 460],
           %w[89 93 97p 102 111 118 128 140 154 173 195 225 260 300 360],
