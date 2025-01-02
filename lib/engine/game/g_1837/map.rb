@@ -167,8 +167,9 @@ module Engine
           '427' => {
             'count' => 1,
             'color' => 'green',
-            'code' => 'city=revenue:60;path=a:0,b:_0;city=revenue:60;path=a:1,b:_1;city=revenue:60;path=a:2,b:_2;' \
-                      'city=revenue:60;path=a:3,b:_3;city=revenue:60;path=a:4,b:_4;city=revenue:60;path=a:5,b:_5;' \
+            'code' => 'city=revenue:60,groups:Vienna;path=a:0,b:_0;city=revenue:60,groups:Vienna;path=a:1,b:_1;' \
+                      'city=revenue:60,groups:Vienna;path=a:2,b:_2;city=revenue:60,groups:Vienna;path=a:3,b:_3;' \
+                      'city=revenue:60,groups:Vienna;path=a:4,b:_4;city=revenue:60,groups:Vienna;path=a:5,b:_5;' \
                       'label=W',
           },
           '429' => {
@@ -220,8 +221,9 @@ module Engine
           '436' => {
             'count' => 1,
             'color' => 'brown',
-            'code' => 'city=revenue:80;path=a:0,b:_0;city=revenue:80;path=a:1,b:_1;city=revenue:80;path=a:2,b:_2;' \
-                      'path=a:3,b:_2;path=a:4,b:_2;city=revenue:80;path=a:5,b:_3;label=W',
+            'code' => 'city=revenue:80,groups:Vienna;path=a:0,b:_0;city=revenue:80,groups:Vienna;path=a:1,b:_1;' \
+                      'city=revenue:80,groups:Vienna;path=a:2,b:_2;path=a:3,b:_2;path=a:4,b:_2;' \
+                      'city=revenue:80,groups:Vienna;path=a:5,b:_3;label=W',
           },
         }.freeze
 
@@ -330,8 +332,8 @@ module Engine
           yellow: {
             ['C11'] => 'city=revenue:20;path=a:2,b:_0;path=a:4,b:_0;label=X',
             ['F18'] => 'town=revenue:10;path=a:0,b:_0;path=a:2,b:_0;town=revenue:10;path=a:1,b:_1;path=a:5,b:_1',
-            ['G17'] => 'city=revenue:40;city=revenue:40;city=revenue:40;city=revenue:40;' \
-                       'path=a:0,b:_0;path=a:1,b:_1;path=a:2,b:_2;path=a:3,b:_3;label=W',
+            ['G17'] => 'city=revenue:40,groups:Vienna;city=revenue:40,groups:Vienna;city=revenue:40,groups:Vienna;' \
+                       'city=revenue:40,groups:Vienna;path=a:0,b:_0;path=a:1,b:_1;path=a:2,b:_2;path=a:3,b:_3;label=W',
             ['G27'] => 'town=revenue:10;path=a:2,b:_0;path=a:3,b:_0',
             ['H22'] => 'city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:5,b:_0;' \
                        'path=a:1,b:_1;path=a:3,b:_1;label=Bu',
