@@ -34,6 +34,9 @@ module Engine
         EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
         MUST_BUY_TRAIN = :always
 
+        BANKRUPTCY_ENDS_GAME_AFTER = :all_but_one
+        GAME_END_CHECK = { bankrupt: :immediate, bank: :current_or }.freeze
+
         MARKET = [
           %w[95 99 104p 114 121 132 145 162 181 205 240 280 350 400 460],
           %w[89 93 97p 102 111 118 128 140 154 173 195 225 260 300 360],
@@ -527,10 +530,19 @@ module Engine
         end
 
         def after_buy_company(player, company, _price)
+          close_company = false
+
           abilities(company, :shares) do |ability|
             share = ability.shares.first
             @share_pool.buy_shares(player, share, exchange: :free)
             float_minor!(share.corporation) if share.president
+            close_company = true
+          end
+
+          if company.meta[:type] == :coal
+            minor = minor_by_id(company.id)
+            minor.owner = player
+            float_minor!(minor)
           end
 
           abilities(company, :acquire_company) do |ability|
@@ -540,14 +552,9 @@ module Engine
             @log << "#{player.name} receives #{acquired_company.name}"
             after_buy_company(player, acquired_company, 0)
           end
+          return unless close_company
 
-          if company.meta[:type] == :coal
-            minor = minor_by_id(company.id)
-            minor.owner = player
-            float_minor!(minor)
-          else
-            company.close!
-          end
+          company.close!
         end
 
         def float_str(entity)
@@ -595,6 +602,10 @@ module Engine
           train_name.end_with?('G')
         end
 
+        def express_train?(train_name)
+          train_name.end_with?('E')
+        end
+
         def can_buy_train_from_others?
           @phase.name.to_i >= 3
         end
@@ -604,6 +615,10 @@ module Engine
         end
 
         def check_other(route)
+          if express_train?(route.train.name) && (route.stops.count { |s| s.type == :city } < 2)
+            raise GameError, 'Must include at least two cities'
+          end
+
           mine_stops = route.stops.count { |s| s.hex.assigned?(:coal) }
           if goods_train?(route.train.name)
             raise GameError, 'Must visit one mine' if mine_stops.zero?
@@ -611,6 +626,12 @@ module Engine
           elsif mine_stops.positive?
             raise GameError, 'Only goods trains can visit a mine'
           end
+        end
+
+        def route_distance(route)
+          return route.stops.count { |s| s.type == :city } if express_train?(route.train.name)
+
+          super
         end
 
         def routes_subsidy(routes)
@@ -634,6 +655,14 @@ module Engine
           return tile.rotation == 5 if tile.name == '436'
 
           super
+        end
+
+        def sold_out_stock_movement(corp)
+          if corp.owner.percent_of(corp) <= 40
+            @stock_market.move_up(corp)
+          else
+            @stock_market.move_diagonally_up_left(corp)
+          end
         end
       end
     end
