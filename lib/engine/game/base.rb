@@ -1269,6 +1269,10 @@ module Engine
         self.class::SOLD_OUT_INCREASE
       end
 
+      def sold_out_stock_movement(corp)
+        @stock_market.move_up(corp)
+      end
+
       def log_share_price(entity, from, steps = nil, log_steps: false)
         from_price = from.price
         to = entity.share_price
