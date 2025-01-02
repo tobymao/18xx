@@ -595,6 +595,10 @@ module Engine
           train_name.end_with?('G')
         end
 
+        def express_train?(train_name)
+          train_name.end_with?('E')
+        end
+
         def can_buy_train_from_others?
           @phase.name.to_i >= 3
         end
@@ -604,6 +608,10 @@ module Engine
         end
 
         def check_other(route)
+          if express_train?(route.train.name) && (route.stops.count { |s| s.type == :city } < 2)
+            raise GameError, 'Must include at least two cities'
+          end
+
           mine_stops = route.stops.count { |s| s.hex.assigned?(:coal) }
           if goods_train?(route.train.name)
             raise GameError, 'Must visit one mine' if mine_stops.zero?
@@ -611,6 +619,12 @@ module Engine
           elsif mine_stops.positive?
             raise GameError, 'Only goods trains can visit a mine'
           end
+        end
+
+        def route_distance(route)
+          return route.stops.count { |s| s.type == :city } if express_train?(route.train.name)
+
+          super
         end
 
         def routes_subsidy(routes)
