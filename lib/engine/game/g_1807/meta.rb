@@ -4,7 +4,7 @@ require_relative '../meta'
 
 module Engine
   module Game
-    module G18BF
+    module G1807
       module Meta
         include Game::Meta
 
@@ -15,6 +15,7 @@ module Engine
         GAME_SUBTITLE = 'The Big Four'
         GAME_DESIGNER = 'Ian D Wilson'
         GAME_LOCATION = 'Great Britain'
+        GAME_ALIASES = ['18BF'].freeze
 
         PLAYER_RANGE = [3, 5].freeze
       end

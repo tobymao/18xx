@@ -2,7 +2,7 @@
 
 module Engine
   module Game
-    module G18BF
+    module G1807
       module Tiles
         TILES = {
           # Yellow tiles.
