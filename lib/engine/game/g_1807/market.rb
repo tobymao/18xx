@@ -2,7 +2,7 @@
 
 module Engine
   module Game
-    module G18BF
+    module G1807
       module Market
         CURRENCY_FORMAT_STR = '£%d'
         BANK_CASH = 20_000

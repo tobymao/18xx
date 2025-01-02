@@ -2,7 +2,7 @@
 
 module Engine
   module Game
-    module G18BF
+    module G1807
       module Trains
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
           'minors_batch3' => ['3rd batch of minors',
