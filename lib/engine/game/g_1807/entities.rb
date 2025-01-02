@@ -746,7 +746,7 @@ module Engine
             float_percent: 20,
             always_market_price: true,
             tokens: [0, 20, 20, 20],
-            type: 'major',
+            type: 'public',
             shares: [20, 10, 10, 10, 10, 10, 10, 10, 10],
             color: '#3c7b5c',
           },
@@ -757,7 +757,7 @@ module Engine
             float_percent: 20,
             always_market_price: true,
             tokens: [0, 20, 20, 20],
-            type: 'major',
+            type: 'public',
             shares: [20, 10, 10, 10, 10, 10, 10, 10, 10],
             color: '#3c7b5c',
           },
@@ -768,7 +768,7 @@ module Engine
             float_percent: 20,
             always_market_price: true,
             tokens: [0, 20, 20, 20],
-            type: 'major',
+            type: 'public',
             shares: [20, 10, 10, 10, 10, 10, 10, 10, 10],
             color: '#3c7b5c',
           },
@@ -779,7 +779,7 @@ module Engine
             float_percent: 20,
             always_market_price: true,
             tokens: [0, 20, 20, 20],
-            type: 'major',
+            type: 'public',
             shares: [20, 10, 10, 10, 10, 10, 10, 10, 10],
             color: '#3c7b5c',
           },
@@ -790,7 +790,7 @@ module Engine
             float_percent: 20,
             always_market_price: true,
             tokens: [0, 20, 20, 20],
-            type: 'major',
+            type: 'public',
             shares: [20, 10, 10, 10, 10, 10, 10, 10, 10],
             color: '#3c7b5c',
           },
@@ -801,7 +801,7 @@ module Engine
             float_percent: 20,
             always_market_price: true,
             tokens: [0, 20, 20, 20],
-            type: 'major',
+            type: 'public',
             shares: [20, 10, 10, 10, 10, 10, 10, 10, 10],
             color: '#3c7b5c',
           },
@@ -812,7 +812,7 @@ module Engine
             float_percent: 20,
             always_market_price: true,
             tokens: [0, 20, 20, 20],
-            type: 'major',
+            type: 'public',
             shares: [20, 10, 10, 10, 10, 10, 10, 10, 10],
             color: '#3c7b5c',
           },
@@ -823,7 +823,7 @@ module Engine
             float_percent: 20,
             always_market_price: true,
             tokens: [0, 20, 20, 20],
-            type: 'major',
+            type: 'public',
             shares: [20, 10, 10, 10, 10, 10, 10, 10, 10],
             color: '#3c7b5c',
           },
@@ -834,7 +834,7 @@ module Engine
             float_percent: 20,
             always_market_price: true,
             tokens: [0, 20, 20, 20],
-            type: 'major',
+            type: 'public',
             shares: [20, 10, 10, 10, 10, 10, 10, 10, 10],
             color: '#3c7b5c',
           },
@@ -845,7 +845,7 @@ module Engine
             float_percent: 20,
             always_market_price: true,
             tokens: [0, 20, 20, 20],
-            type: 'major',
+            type: 'public',
             shares: [20, 10, 10, 10, 10, 10, 10, 10, 10],
             color: '#3c7b5c',
           },
@@ -856,7 +856,7 @@ module Engine
             float_percent: 20,
             always_market_price: true,
             tokens: [0, 20, 20, 20],
-            type: 'major',
+            type: 'public',
             shares: [20, 10, 10, 10, 10, 10, 10, 10, 10],
             color: '#3c7b5c',
           },
@@ -934,10 +934,10 @@ module Engine
         def unstarted_corporation_summary
           unipoed = (@corporations + @future_corporations).reject(&:ipoed)
           minor = unipoed.select { |c| c.type == :minor }
-          major = unipoed.select { |c| c.type == :major }
+          major = unipoed.select { |c| c.type == :public }
           system = unipoed.select { |c| c.type == :system }
           summary = "#{minor.size} #{minor.one? ? 'minor' : 'minors'}, " \
-                    "#{major.size} #{major.one? ? 'major' : 'majors'}, " \
+                    "#{major.size} public, " \
                     "#{system.size} #{system.one? ? 'system' : 'systems'}"
           [summary, unipoed]
         end
@@ -946,7 +946,7 @@ module Engine
           case entity.type
           when :minor
             2
-          when :major
+          when :public
             5
           when :system
             10

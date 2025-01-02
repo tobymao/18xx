@@ -24,7 +24,7 @@ module Engine
           'minors_convert' => ['Minors convert',
                                'Minor companies may merge, convert or be taken over.'],
           'systems_form' => ['Systems form',
-                             'Systems may form by merging major companies.'],
+                             'Systems may form by merging public companies.'],
           'double_jump' => ['Double jumps',
                             'Systems may double-jump.'],
           'train_export' => ['Train exported',
@@ -41,7 +41,7 @@ module Engine
           },
           {
             name: '3',
-            train_limit: { minor: 2, major: 4 },
+            train_limit: { minor: 2, public: 4 },
             tiles: %i[yellow green],
             status: %w[minors_start can_buy_companies minors_convert],
             on: '3',
@@ -49,7 +49,7 @@ module Engine
           },
           {
             name: '4',
-            train_limit: { minor: 1, major: 3 },
+            train_limit: { minor: 1, public: 3 },
             tiles: %i[yellow green],
             status: %w[minors_start can_buy_companies minors_convert train_export],
             on: '4',
@@ -57,7 +57,7 @@ module Engine
           },
           {
             name: '5',
-            train_limit: { minor: 1, major: 3 },
+            train_limit: { minor: 1, public: 3 },
             tiles: %i[yellow green brown],
             status: %w[can_buy_companies minors_convert train_export],
             on: %w[5 3G],
@@ -65,7 +65,7 @@ module Engine
           },
           {
             name: '6',
-            train_limit: { minor: 1, major: 2, system: 4 },
+            train_limit: { minor: 1, public: 2, system: 4 },
             tiles: %i[yellow green brown],
             status: %w[can_buy_companies minors_convert systems_form train_export],
             on: %w[6 4G],
@@ -73,7 +73,7 @@ module Engine
           },
           {
             name: '7',
-            train_limit: { minor: 1, major: 2, system: 4 },
+            train_limit: { minor: 1, public: 2, system: 4 },
             tiles: %i[yellow green brown gray],
             status: %w[can_buy_companies minors_convert systems_form train_export],
             on: %w[3+3 5G],
@@ -81,7 +81,7 @@ module Engine
           },
           {
             name: '8',
-            train_limit: { minor: 0, major: 2, system: 4 },
+            train_limit: { minor: 0, public: 2, system: 4 },
             tiles: %i[yellow green brown gray],
             status: %w[can_buy_companies minors_convert systems_form double_jump],
             on: %w[4+4 6G],
@@ -269,8 +269,8 @@ module Engine
             'Twelve minor companies are available from the first stock round.',
             'Another six minor companies become available for purchase in stock round 2.',
             'The last six minor companes are available once the first 3-train is bought.',
-            'Minors can be merged or converted into major companies from phase 3.',
-            'Majors can be merged to form systems from phase 6.',
+            'Minor companies can be merged or converted into public companies from phase 3.',
+            'Public companies can be merged to form systems from phase 6.',
             '2+2 and 5+5E trains are available after a 4+4 or 6G train has been purchased.',
           ]
         end
