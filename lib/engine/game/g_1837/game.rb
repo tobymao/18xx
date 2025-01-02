@@ -27,6 +27,7 @@ module Engine
 
         SELL_AFTER = :operate
         SELL_MOVEMENT = :down_block
+        MUST_SELL_IN_BLOCKS = true
 
         HOME_TOKEN_TIMING = :float
 

@@ -96,7 +96,7 @@ module Engine
       end
 
       def sold_out_stock_movement(corp)
-        @game.stock_market.move_up(corp)
+        @game.sold_out_stock_movement(corp)
       end
 
       def sold_out?(corporation)
