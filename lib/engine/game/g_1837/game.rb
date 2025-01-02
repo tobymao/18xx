@@ -527,10 +527,19 @@ module Engine
         end
 
         def after_buy_company(player, company, _price)
+          close_company = false
+
           abilities(company, :shares) do |ability|
             share = ability.shares.first
             @share_pool.buy_shares(player, share, exchange: :free)
             float_minor!(share.corporation) if share.president
+            close_company = true
+          end
+
+          if company.meta[:type] == :coal
+            minor = minor_by_id(company.id)
+            minor.owner = player
+            float_minor!(minor)
           end
 
           abilities(company, :acquire_company) do |ability|
@@ -540,14 +549,9 @@ module Engine
             @log << "#{player.name} receives #{acquired_company.name}"
             after_buy_company(player, acquired_company, 0)
           end
+          return unless close_company
 
-          if company.meta[:type] == :coal
-            minor = minor_by_id(company.id)
-            minor.owner = player
-            float_minor!(minor)
-          else
-            company.close!
-          end
+          company.close!
         end
 
         def float_str(entity)
