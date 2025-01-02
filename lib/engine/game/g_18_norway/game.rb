@@ -453,20 +453,19 @@ module Engine
           harbor_token?(city, entity)
         end
 
-        def connected?(a, b, corporation)
+        def connected?(a, b, corporation, train)
           return true if a.connects_to?(b, corporation)
 
           [a.a, a.b].each do |part|
             next unless b.nodes.include?(part)
             next unless part.city?
-
-            return harbor_token?(part, corporation)
+            return harbor_token?(part, corporation) if ship?(train)
           end
           false
         end
 
         def check_connected(route, corporation)
-          return if route.ordered_paths.each_cons(2).all? { |a, b| connected?(a, b, corporation) }
+          return if route.ordered_paths.each_cons(2).all? { |a, b| connected?(a, b, corporation, route.train) }
 
           return super unless @round.train_upgrade_assignments[route.train]
 
