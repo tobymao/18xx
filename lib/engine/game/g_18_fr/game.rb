@@ -99,7 +99,7 @@ module Engine
             tiles: %i[yellow green],
             operating_rounds: 2,
             corporation_sizes: [2, 5],
-            status: ['free_ports'],
+            status: %w[two_tile_lays free_ports],
           },
           {
             name: 'Brown',
@@ -108,6 +108,7 @@ module Engine
             tiles: %i[yellow green brown],
             operating_rounds: 2,
             corporation_sizes: [2, 5],
+            status: %w[two_tile_lays free_ports],
           },
           {
             name: 'Gray',
@@ -116,6 +117,7 @@ module Engine
             tiles: %i[yellow green brown],
             operating_rounds: 2,
             corporation_sizes: [2, 5],
+            status: %w[two_tile_lays free_ports],
           },
         ].freeze
 
@@ -143,11 +145,6 @@ module Engine
         B_HEX_NAMES = %w[E8 H3].freeze
         YELLOW_B_TILE_NAME = 'FRBY'
         GREEN_B_TILE_NAME = 'FRBG'
-
-        def setup
-          @extra_tile_lay = false
-          @free_ports = false
-        end
 
         def init_round
           # skipping the initial auction for now
@@ -185,19 +182,8 @@ module Engine
           ], round_num: round_num)
         end
 
-        def after_phase_change(name)
-          case name
-          when 'Green'
-            @log << '-- From now on, corporations may lay two for 20 F. Only one may be upgrade --'
-            @extra_tile_lay = true
-          when 'Blue'
-            @log << '-- From now on, corporations may lay two for 20 F. Only one may be upgrade --'
-            @free_ports = true
-          end
-        end
-
         def tile_lays(_entity)
-          @extra_tile_lay ? TWO_TILE_LAYS : ONE_YELLOW_TILE_LAY
+          @phase.status.include?('two_tile_lays') ? TWO_TILE_LAYS : ONE_YELLOW_TILE_LAY
         end
 
         def upgrades_to?(from, to, _special = false, selected_company: nil)
