@@ -156,6 +156,7 @@ module Engine
         def setup
           MOUNTAIN_BIG_HEXES.each { |hex| hex_by_id(hex).assign!('MOUNTAIN_BIG') }
           MOUNTAIN_SMALL_HEXES.each { |hex| hex_by_id(hex).assign!('MOUNTAIN_SMALL') }
+          @nationalization_candidates = []
           corporation_by_id('H').add_ability(Engine::Ability::Base.new(
             type: 'corrupt',
             description: 'May nationalize using 0, 1 or 2 shares',
@@ -304,6 +305,8 @@ module Engine
             Engine::Step::DiscardTrain,
             G18Norway::Step::BuyTrain,
             [Engine::Step::BuyCompany, { blocks: true }],
+            G18Norway::Step::TriggerNationalization,
+            G18Norway::Step::NationalizeCorporation,
           ], round_num: round_num)
         end
 
@@ -319,47 +322,6 @@ module Engine
 
         def can_go_bankrupt?(player, corporation)
           total_emr_buying_power(player, corporation) < cheapest_train_price
-        end
-
-        def new_nationalization_round(round_num)
-          G18Norway::Round::Nationalization.new(self, [
-              G18Norway::Step::NationalizeCorporation,
-              ], round_num: round_num)
-        end
-
-        def next_round!
-          @round =
-            case @round
-            when G18Norway::Round::Nationalization
-              if @round.round_num < @operating_rounds
-                new_operating_round(@round.round_num + 1)
-              else
-                or_set_finished
-                new_stock_round
-              end
-            when Engine::Round::Stock
-              @operating_rounds = @phase.operating_rounds
-              reorder_players
-              new_operating_round
-            when Engine::Round::Operating
-              if @round.round_num < @operating_rounds
-                or_round_finished
-                new_nationalization_round(@round.round_num)
-              else
-                @turn += 1
-                or_round_finished
-                if @phase.tiles.include?(:green)
-                  new_nationalization_round(@round.round_num)
-                else
-                  or_set_finished
-                  new_stock_round
-                end
-              end
-            when init_round.class
-              init_round_finished
-              reorder_players
-              new_stock_round
-            end
         end
 
         def add_new_share(share)
@@ -640,6 +602,20 @@ module Engine
           return false if @turn <= 1 && !@round.operating?
 
           super(entity, bundle)
+        end
+
+        def reset_nationalization_candidates
+          @nationalization_candidates = nil
+        end
+
+        def nationalization_candidates
+          @nationalization_candidates ||= operating_order.reverse.reject do |c|
+            nationalized?(c)
+          end
+        end
+
+        def skip_nationalization(corp)
+          @nationalization_candidates.delete(corp)
         end
       end
     end
