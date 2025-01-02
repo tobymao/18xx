@@ -330,7 +330,7 @@ module Engine
         def event_sd_formation!
           @log << "-- Event: #{EVENTS_TEXT['sd_formation'][1]} --"
           national = corporation_by_id('SD')
-          minors = %w[SD1 SD2 SD3 SD4 SD5].map { |id| minor_by_id(id) }
+          minors = %w[SD1 SD2 SD3 SD4 SD5].map { |id| corporation_by_id(id) }
           form_national_railway!(national, minors)
         end
 
@@ -348,7 +348,7 @@ module Engine
         end
 
         def event_kk_formation!
-          open_minors = %w[KK1 KK2 KK3].map { |id| minor_by_id(id) }.reject(&:closed?)
+          open_minors = %w[KK1 KK2 KK3].map { |id| corporation_by_id(id) }.reject(&:closed?)
           return if open_minors.empty?
 
           @log << "-- Event: #{EVENTS_TEXT['kk_formation'][1]} --"
@@ -363,7 +363,7 @@ module Engine
         end
 
         def event_ug_formation!
-          open_minors = %w[UG1 UG2 UG3].map { |id| minor_by_id(id) }.reject(&:closed?)
+          open_minors = %w[UG1 UG2 UG3].map { |id| corporation_by_id(id) }.reject(&:closed?)
           return if open_minors.empty?
 
           national = corporation_by_id('UG')
@@ -456,10 +456,11 @@ module Engine
             minor.tokens.first.swap!(blocking_token, check_tokenable: false)
           else
             token = minor.tokens.first
-            num_unused = corporation.tokens.count { |t| !t.used }
-            new_token = Token.new(corporation, price: num_unused.zero? ? 20 : 40)
+            new_token = Token.new(corporation)
             corporation.tokens << new_token
-            if !%w[L2 L8].include?(token.hex.id) && token.city.tokenable?(corporation, free: true, cheater: true)
+            if %w[L2 L8].include?(token.hex.id)
+              token.price = 20
+            else
               token.swap!(new_token, check_tokenable: false)
             end
             @log << "#{corporation.name} receives token (#{new_token.used ? new_token.city.hex.id : 'charter'})"
@@ -508,7 +509,7 @@ module Engine
             G1837::Step::HomeToken,
             G1837::Step::DiscardTrain,
             G1837::Step::SpecialTrack,
-            Engine::Step::Track,
+            G1837::Step::Track,
             G1837::Step::Token,
             Engine::Step::Route,
             G1837::Step::Dividend,
@@ -626,6 +627,12 @@ module Engine
         def blocking_token
           @blocker ||= Corporation.new(sym: 'B', name: '', logo: '1837/blocking', tokens: [])
           Token.new(@blocker)
+        end
+
+        def legal_tile_rotation?(entity, hex, tile)
+          return tile.rotation == 5 if tile.name == '436'
+
+          super
         end
       end
     end
