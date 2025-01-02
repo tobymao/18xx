@@ -151,6 +151,8 @@ module Engine
 
         GAME_END_CHECK = { bankrupt: :immediate, custom: :one_more_full_or_set }.freeze
 
+        OR_COUNT_IN_LAST_SET = 4
+
         ONE_YELLOW_TILE_LAY = [{ lay: true, upgrade: false }].freeze
         TWO_TILE_LAYS = [
           { lay: true, upgrade: true },
@@ -317,6 +319,7 @@ module Engine
           else
             if train_to_export.name == @depot.upcoming[1].name
               if train_to_export.price == train_to_export.final_price
+                return if train_to_export.name == '6*D'
                 @depot.export_all!(train_to_export.name, silent: true)
                 @log << "-- #{train_to_export.name} trains can no longer be discounted. All remaining  #{train_to_export.name} trains are exported --"
               else
@@ -325,6 +328,11 @@ module Engine
                 trains_to_discount = @depot.trains.select { |t| t.name == train_to_export.name }
                 trains_to_discount.each { |t| t.new_price(t.price - 0.1 * t.base_price) }
                 @log << "-- All remaining #{train_to_export.name} trains are discounted to #{format_currency(@depot.upcoming.first.price)} --"
+                if train_to_export.name == '6*D'
+                  @end_game_triggered = true
+                  game_end_check
+                  @log << "Final train discount. The game will end at the end of OR #{@turn + 1}.#{OR_COUNT_IN_LAST_SET}"
+                end
               end
             else
               depot.export!
