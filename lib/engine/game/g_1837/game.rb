@@ -382,6 +382,11 @@ module Engine
           coal_company_exchange_order.each { |c| exchange_coal_company(c) }
         end
 
+        def operating_order
+          minors, majors = @corporations.select(&:floated?).partition { |c| c.type == :minor }
+          @minors.select(&:floated?) + minors + majors.sort
+        end
+
         def coal_company_exchange_order
           exchangeable_companies = Hash.new { |h, k| h[k] = [] }
           @companies.each do |c|
@@ -519,23 +524,27 @@ module Engine
           @companies.select { |c| c.owner == @bank }
         end
 
-        def after_company_acquisition(company)
-          player = company.owner
+        def after_buy_company(player, company, _price)
+          abilities(company, :shares) do |ability|
+            share = ability.shares.first
+            @share_pool.buy_shares(player, share, exchange: :free)
+            float_minor!(share.corporation) if share.president
+          end
 
-          case company.meta[:type]
-          when :minor, :coal
+          abilities(company, :acquire_company) do |ability|
+            acquired_company = company_by_id(ability.company)
+            acquired_company.owner = player
+            player.companies << acquired_company
+            @log << "#{player.name} receives #{acquired_company.name}"
+            after_buy_company(player, acquired_company, 0)
+          end
+
+          if company.meta[:type] == :coal
             minor = minor_by_id(company.id)
             minor.owner = player
             float_minor!(minor)
-          when :minor_share
-            # todo
-            puts 'todo'
-          end
-
-          Array(company.meta[:additional_companies]).each do |c_id|
-            additional_company = company_by_id(c_id)
-            additional_company.owner = player
-            player.companies << additional_company
+          else
+            company.close!
           end
         end
 
@@ -555,7 +564,11 @@ module Engine
             remove_reservations!(minor, coordinates)
           end
           place_home_token(minor) unless minor.coordinates.is_a?(Array)
-          minor.float!
+          if minor.corporation?
+            minor.floated = true
+          else
+            minor.float!
+          end
         end
 
         def float_corporation(corporation)
