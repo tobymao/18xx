@@ -137,6 +137,7 @@ module Engine
              80p
              90p
              100p
+             110p
              120p
              135p
              150p
@@ -408,7 +409,7 @@ module Engine
             redef_const(:SELL_BUY_ORDER, :sell_buy)
             redef_const(:SELL_AFTER, :after_sr_floated)
             redef_const(:SELL_MOVEMENT, :left_block_pres)
-            redef_const(:SOLD_OUT_INCREASE, false)
+            redef_const(:SOLD_OUT_INCREASE, true)
             redef_const(:MUST_EMERGENCY_ISSUE_BEFORE_EBUY, true)
             redef_const(:BANKRUPTCY_ENDS_GAME_AFTER, :all_but_one)
           else
