@@ -30,7 +30,6 @@ module Engine
           end
 
           def log_skip(entity)
-            print "hi #{can_take_loan?(entity)}"
             super if @game.bonds?
           end
 
