@@ -577,6 +577,36 @@ module Engine
       @labels.last
     end
 
+    def modify_borders(edges = nil, type: nil, cost: nil, color: nil)
+      edges ||= ALL_EDGES
+
+      modified = edges.map do |edge|
+        border = @borders.find { |e| e.edge == edge }
+        next unless border
+
+        modified_border = Part::Border.new(edge, type || border.type, cost || border.cost, color || border.color)
+        next if border == modified_border
+
+        @borders.delete(border)
+        @borders << modified_border
+
+        if border.type != modified_border.type
+          if border.type == :impassable
+            @hex.neighbors[edge] = @hex.all_neighbors[edge]
+          elsif modified_border.type == :impassable && @hex.all_neighbors[edge]
+            @hex.neighbors.delete(edge)
+          end
+        end
+
+        edge
+      end
+
+      modified.each do |edge|
+        neighbor = @hex.all_neighbors[edge]&.tile
+        neighbor&.modify_borders([Hex.invert(edge)], type: type, cost: cost, color: color)
+      end
+    end
+
     def restore_borders(edges = nil)
       edges ||= ALL_EDGES
 

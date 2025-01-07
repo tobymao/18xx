@@ -144,12 +144,11 @@ module Engine
         price = winner.price
         assign_company(company, player)
 
-        player.spend(price, @game.bank) if price.positive?
-        @game.after_buy_company(player, company, price)
-
-        @companies.delete(company)
         @log << "#{player.name} wins the auction for #{company.name} "\
                 "with a bid of #{@game.format_currency(price)}"
+        player.spend(price, @game.bank) if price.positive?
+        @game.after_buy_company(player, company, price)
+        @companies.delete(company)
       end
 
       def forced_win(player, company)
