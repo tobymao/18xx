@@ -525,7 +525,7 @@ module Engine
             G1849::Step::BondInterestPayment,
             G1849::Step::Bond,
             [Engine::Step::BuyCompany, { blocks: true }],
-        ].compact, round_num: round_num)
+        ], round_num: round_num)
         end
 
         def next_round!
