@@ -31,7 +31,7 @@ module Engine
             num_shares, odd_shares = (total_percent / 10).divmod(2)
             from_secondary = @merge_data[:secondary_corps].count { |corp| corp.president?(holder) }
             num_shares += from_secondary
-            bundle = 
+            bundle =
               if num_shares == 10
                 Engine::ShareBundle.new(@fce.shares.take(9))
               else
@@ -40,7 +40,7 @@ module Engine
             @share_pool.transfer_shares(bundle, holder, allow_president_change: true)
             @log << "#{holder.name} receives  #{num_shares * 10}% in FCE in exchange to the nationalized shares"
 
-            next unless odd_share
+            next unless odd_shares
 
             price = @fce.share_price.price / 2
             @bank.spend(price, holder)
