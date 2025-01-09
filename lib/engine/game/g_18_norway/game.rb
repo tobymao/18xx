@@ -154,7 +154,7 @@ module Engine
         EXTRA_TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }].freeze
 
         def setup
-          setup_company_price_up_to_face
+          setup_company_price_up_to_one_and_half_face
           MOUNTAIN_BIG_HEXES.each { |hex| hex_by_id(hex).assign!('MOUNTAIN_BIG') }
           MOUNTAIN_SMALL_HEXES.each { |hex| hex_by_id(hex).assign!('MOUNTAIN_SMALL') }
           corporation_by_id('H').add_ability(Engine::Ability::Base.new(
@@ -637,7 +637,7 @@ module Engine
           self.class::SELL_MOVEMENT
         end
 
-        def setup_company_price_up_to_face
+        def setup_company_price_up_to_one_and_half_face
           @companies.each do |company|
             company.min_price = 1
             company.max_price = (company.value * 1.5)
