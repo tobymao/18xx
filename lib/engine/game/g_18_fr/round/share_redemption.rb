@@ -23,10 +23,12 @@ module Engine
           end
 
           def select_entities
-            corporations = @game.corporations.select { |c| c.floated? && !c.share_price.acquisition? && !@game.share_pool.shares_of(c).empty? }
+            corporations = @game.corporations.select do |corp|
+              corp.floated? && !corp.share_price.acquisition? && !@game.share_pool.shares_of(corp).empty?
+            end
 
             if corporations.empty?
-              @log << "No corporation can redeem shares"
+              @log << 'No corporation can redeem shares'
               finish_round
             end
 
@@ -34,13 +36,11 @@ module Engine
           end
 
           def next_entity!
-            if @loan_taken && !@share_redeemed
-              raise GameError, 'Must redeem share if loan taken'
-            end
+            raise GameError, 'Must redeem share if loan taken' if @loan_taken && !@share_redeemed
 
             @entities[@entity_index].pass!
 
-            next_entity_index! if !@entities.empty?
+            next_entity_index! unless @entities.empty?
 
             @steps.each(&:unpass!)
             @steps.each(&:setup)

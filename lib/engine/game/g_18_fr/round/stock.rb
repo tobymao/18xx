@@ -8,7 +8,7 @@ module Engine
       module Round
         class Stock < G1817::Round::Stock
           def finish_round
-            super
+            # Do not move stock prices after Stock Round, they'll move after Share Redemption Round
 
             @game.players.each do |player|
               if player.shares.any? { |s| s.percent.negative? }
@@ -16,10 +16,6 @@ module Engine
                 @log << "#{player.name} has their certificate limit permanently increased by 1 for owning a short share"
               end
             end
-          end
-
-          def finish_round
-            # Do not move stock prices after Stock Round, they'll move after Share Redemption Round
           end
         end
       end

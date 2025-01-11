@@ -21,7 +21,7 @@ module Engine
 
         CERT_LIMIT = { 3 => 16, 4 => 12, 5 => 10, 6 => 8 }.freeze
 
-        STARTING_CASH = { 3 => 38000, 4 => 290, 5 => 220, 6 => 190 }.freeze
+        STARTING_CASH = { 3 => 380, 4 => 290, 5 => 220, 6 => 190 }.freeze
 
         NEXT_SR_PLAYER_ORDER = :first_to_pass
 
@@ -149,8 +149,6 @@ module Engine
         GREEN_B_TILE_NAME = 'FRBG'
 
         def setup
-          @extra_tile_lay = false
-          @free_ports = false
           @player_sr_with_short_count = Hash.new { |h, k| h[k] = 0 }
         end
 
@@ -198,7 +196,7 @@ module Engine
               reorder_players
               @log << "-- Share Redemption Round #{@turn} -- "
               G18FR::Round::ShareRedemption.new(self, [
-                G18FR::Step::RedeemShares
+                G18FR::Step::RedeemShares,
               ])
             when G18FR::Round::ShareRedemption
               @operating_rounds = @final_operating_rounds || @phase.operating_rounds
@@ -236,17 +234,6 @@ module Engine
               reorder_players
               new_stock_round
             end
-        end
-
-        def after_phase_change(name)
-          case name
-          when 'Green'
-            @log << '-- From now on, corporations may lay two for 20 F. Only one may be upgrade --'
-            @extra_tile_lay = true
-          when 'Blue'
-            @log << '-- From now on, corporations may lay two for 20 F. Only one may be upgrade --'
-            @free_ports = true
-          end
         end
 
         def loan_amount

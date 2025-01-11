@@ -11,7 +11,7 @@ module Engine
             available_actions = []
             available_actions << 'take_loan' if @game.can_take_loan?(entity) && !@corporate_action.is_a?(Action::BuyShares)
             available_actions << 'buy_shares' unless @game.redeemable_shares(entity).empty?
-            available_actions << 'pass' if !available_actions.empty?
+            available_actions << 'pass' unless available_actions.empty?
 
             available_actions
           end
@@ -24,7 +24,7 @@ module Engine
             'Pass'
           end
 
-          def sellable_bundles(player, corporation)
+          def sellable_bundles(_player, _corporation)
             # Don't show sell share buttons
             []
           end
