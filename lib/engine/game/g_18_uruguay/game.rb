@@ -60,6 +60,7 @@ module Engine
         SELL_AFTER = :p_any_operate
         TILE_RESERVATION_BLOCKS_OTHERS = true
         CURRENCY_FORMAT_STR = '$U%d'
+        HOME_TOKEN_TIMING = :float
 
         MUST_BUY_TRAIN = :always
 
