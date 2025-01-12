@@ -492,7 +492,9 @@ module Engine
           share = corporation.reserved_shares[0]
           share.buyable = true
           @share_pool.transfer_shares(ShareBundle.new(share), minor.owner, allow_president_change: allow_president_change)
-          # TODO: cannot receive dividends if minor already operated this OR
+          if @round.respond_to?(:non_paying_shares) && operated_this_round?(minor)
+            @round.non_paying_shares[minor.owner][corporation] += 1
+          end
 
           if minor.cash.positive?
             @log << "#{corporation.name} receives #{format_currency(minor.cash)}"
@@ -759,6 +761,10 @@ module Engine
           else
             @stock_market.move_diagonally_up_left(corp)
           end
+        end
+
+        def operated_this_round?(entity)
+          entity.operating_history.include?([@turn, @round.round_num])
         end
       end
     end

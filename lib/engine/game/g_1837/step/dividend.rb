@@ -33,7 +33,7 @@ module Engine
           end
 
           def dividends_for_entity(entity, holder, per_share)
-            (holder.num_shares_of(entity, ceil: false) * per_share).floor
+            (num_paying_shares(entity, holder) * per_share).floor
           end
 
           def share_price_change(_entity, revenue)
@@ -44,6 +44,20 @@ module Engine
             else
               { share_direction: :diagonally_down_right, share_times: 1 }
             end
+          end
+
+          def round_state
+            super.merge(
+              {
+                non_paying_shares: Hash.new { |h, k| h[k] = Hash.new(0) },
+              }
+            )
+          end
+
+          private
+
+          def num_paying_shares(entity, holder)
+            holder.num_shares_of(entity) - @round.non_paying_shares[holder][entity]
           end
         end
       end
