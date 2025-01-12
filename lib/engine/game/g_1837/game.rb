@@ -548,12 +548,12 @@ module Engine
         def next_round!
           @round =
             case @round
-            when Round::Stock
+            when Engine::Round::Stock
               @operating_rounds = @phase.operating_rounds
               reorder_players
               new_exchange_round(Round::Operating)
             when Round::Exchange
-              if @round_after_exchange == Round::Stock
+              if @round_after_exchange == Engine::Round::Stock
                 new_stock_round
               else
                 new_operating_round(@round.round_num)
@@ -566,7 +566,7 @@ module Engine
                 @turn += 1
                 or_round_finished
                 or_set_finished
-                new_exchange_round(Round::Stock)
+                new_exchange_round(Engine::Round::Stock)
               end
             when init_round.class
               init_round_finished
@@ -582,7 +582,7 @@ module Engine
         end
 
         def stock_round
-          G1837::Round::Stock.new(self, [
+          Engine::Round::Stock.new(self, [
             G1837::Step::DiscardTrain,
             G1837::Step::BuySellParShares,
           ])
@@ -755,9 +755,13 @@ module Engine
           super
         end
 
-        def sold_out_stock_movement(corp)
-          if corp.owner.percent_of(corp) <= 40
-            @stock_market.move_up(corp)
+        def sold_out?(corporation)
+          corporation.percent_ipo_buyable.zero? && corporation.num_market_shares.zero?
+        end
+
+        def sold_out_stock_movement(corporation)
+          if corp.owner.percent_of(corporation) <= 40
+            @stock_market.move_up(corporation)
           else
             @stock_market.move_diagonally_up_left(corp)
           end
