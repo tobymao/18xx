@@ -115,6 +115,14 @@ module Engine
       @market.diagonally_up_right(corporation, coordinates)
     end
 
+    def up(corporation, coordinates)
+      diagonally_up_right(corporation, coordinates)
+    end
+
+    def down(corporation, coordinates)
+      diagonally_down_left(corporation, coordinates)
+    end
+
     def diagonally_down_left(_corporation, coordinates)
       r, c = coordinates
       new_coords = [r + 1, c]
