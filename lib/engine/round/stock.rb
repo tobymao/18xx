@@ -100,7 +100,7 @@ module Engine
       end
 
       def sold_out?(corporation)
-        corporation.player_share_holders.values.sum == 100
+        @game.sold_out?(corporation)
       end
 
       def inspect
