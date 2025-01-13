@@ -39,7 +39,7 @@ module Engine
       raise NotImplementedError
     end
 
-    def diagnonally_up_right(_corporation, coordinates)
+    def diagonally_up_right(_corporation, coordinates)
       raise NotImplementedError
     end
   end
@@ -148,7 +148,7 @@ module Engine
       coordinates
     end
 
-    def diagnonally_up_right(_corporation, coordinates)
+    def diagonally_up_right(_corporation, coordinates)
       r, c = coordinates
       new_coords = [r - 1, c]
       return new_coords if share_price(new_coords)
