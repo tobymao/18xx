@@ -531,11 +531,11 @@ module Engine
 
         def set_national_president!(national, tie_breaker = [])
           tie_breaker = tie_breaker.reverse
-          current_president = national.presidents_share.owner
+          current_president = national.owner
 
           # president determined by most shares, then tie breaker, then current president
-          president_factors = national.player_share_holders.to_h do |player, shares|
-            [[shares.size, tie_breaker.index(player) || -1, player == current_president ? 1 : 0], player]
+          president_factors = national.player_share_holders.to_h do |player, percent|
+            [[percent, tie_breaker.index(player) || -1, player == current_president ? 1 : 0], player]
           end
           president = president_factors[president_factors.keys.max]
           return unless current_president != president
@@ -760,10 +760,10 @@ module Engine
         end
 
         def sold_out_stock_movement(corporation)
-          if corp.owner.percent_of(corporation) <= 40
+          if corporation.owner.percent_of(corporation) <= 40
             @stock_market.move_up(corporation)
           else
-            @stock_market.move_diagonally_up_left(corp)
+            @stock_market.move_diagonally_up_left(corporation)
           end
         end
 

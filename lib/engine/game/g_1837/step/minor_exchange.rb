@@ -87,7 +87,7 @@ module Engine
               if target_forming?(target)
                 @round.forming_minors[target] << entity
               else
-                @game.merge_minor!(target, entity)
+                @game.merge_minor!(entity, target)
               end
             else
               @log << if forming_choice_minors.include?(current_entity)
