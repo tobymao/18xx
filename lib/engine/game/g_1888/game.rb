@@ -199,7 +199,7 @@ module Engine
         ONLY_HIGHEST_BID_COMMITTED = false
         TRACK_RESTRICTION = :permissive
         SELL_BUY_ORDER = :sell_buy
-        EBUY_OTHER_VALUE = false
+        EBUY_FROM_OTHERS = :never
 
         def prototype?
           !@optional_rules || @optional_rules&.empty?

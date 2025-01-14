@@ -268,7 +268,7 @@ module Engine
         GAME_END_CHECK = { bankrupt: :immediate, final_phase: :one_more_full_or_set }.freeze
         LAYOUT = :pointy
         TILE_LAYS = [{ lay: true, upgrade: true, cost: 0 }].freeze
-        EBUY_OTHER_VALUE = false
+        EBUY_FROM_OTHERS = :never
         COLOR_SEQUENCE = %i[white yellow green brown gray].freeze
         SELL_BUY_ORDER = :sell_buy_sell
         SELL_AFTER = :first

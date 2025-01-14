@@ -44,7 +44,7 @@ module Engine
         COMPANIES = [].freeze
 
         EBUY_PRES_SWAP = false # allow presidential swaps of other corps when ebuying
-        EBUY_OTHER_VALUE = false # allow ebuying other corp trains for up to face
+        EBUY_FROM_OTHERS = :never # allow ebuying other corp trains for up to face
         HOME_TOKEN_TIMING = :float
         SELL_AFTER = :first
         SELL_BUY_ORDER = :sell_buy

@@ -120,7 +120,7 @@ module Engine
             raise GameError, "Cannot purchase #{train.name} train: cheaper train available (#{cheapest_names.first})" if
               !cheapest_names.include?(train.name) &&
               @game.class::EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST &&
-              (!@game.class::EBUY_OTHER_VALUE || train.from_depot?)
+              (@game.class::EBUY_FROM_OTHERS == :never || train.from_depot?)
           end
 
           def buyable_ships(_entity)

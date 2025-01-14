@@ -64,7 +64,7 @@ module Engine
 
         TRACK_RESTRICTION = :restrictive
 
-        EBUY_OTHER_VALUE = false
+        EBUY_FROM_OTHERS = :never
 
         HOME_TOKEN_TIMING = :start
 
