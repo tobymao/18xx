@@ -405,7 +405,7 @@ module Engine
 
         def event_exchange_coal_companies!
           @log << "-- Event: #{EVENTS_TEXT['exchange_coal_companies'][1]} --"
-          coal_company_exchange_order.each { |c| exchange_coal_company(c) }
+          coal_company_exchange_order(mandatory: true).each { |c| exchange_coal_company(c) }
         end
 
         def operating_order
@@ -431,7 +431,7 @@ module Engine
           end
         end
 
-        def coal_company_exchange_order(mandatory = false)
+        def coal_company_exchange_order(mandatory: false)
           exchangeable_companies = Hash.new { |h, k| h[k] = [] }
           @companies.each do |c|
             next if c.closed? || !c.owner&.player?
@@ -481,7 +481,6 @@ module Engine
             merge_minor!(minor, national, allow_president_change: false)
           end
           set_national_president!(national, tie_breaker_order.uniq)
-          graph.clear_graph_for(national)
         end
 
         def merge_minor!(minor, corporation, allow_president_change: true)
@@ -522,6 +521,7 @@ module Engine
           end
 
           close_minor!(minor)
+          graph.clear_graph_for(corporation)
         end
 
         def close_minor!(minor)
@@ -531,7 +531,7 @@ module Engine
 
         def set_national_president!(national, tie_breaker = [])
           tie_breaker = tie_breaker.reverse
-          current_president = national.owner
+          current_president = national.owner || national
 
           # president determined by most shares, then tie breaker, then current president
           president_factors = national.player_share_holders.to_h do |player, percent|
