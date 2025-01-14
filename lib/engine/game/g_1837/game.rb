@@ -651,6 +651,10 @@ module Engine
           Token.new(@blocker)
         end
 
+        def token_graph_for_entity
+          @token_graph ||= Graph.new(self, backtracking: true)
+        end
+
         def legal_tile_rotation?(entity, hex, tile)
           return tile.rotation == 5 if tile.name == '436'
 
