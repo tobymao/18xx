@@ -32,6 +32,9 @@ module Engine
         HOME_TOKEN_TIMING = :float
 
         EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
+        EBUY_FROM_OTHERS = :always
+        EBUY_SELL_MORE_THAN_NEEDED = true
+        EBUY_SELL_MORE_THAN_NEEDED_SETS_PURCHASE_MIN = true
         MUST_BUY_TRAIN = :always
 
         BANKRUPTCY_ENDS_GAME_AFTER = :all_but_one

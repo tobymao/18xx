@@ -8,10 +8,8 @@ module Engine
       module Step
         class BuyTrain < Engine::Step::BuyTrain
           def actions(entity)
-            return [] if entity != current_entity
-
             actions = super.clone
-            unless scrappable_trains(entity).empty?
+            if entity.operator? && !scrappable_trains(entity).empty?
               actions << 'pass' if actions.empty?
               actions << 'scrap_train'
             end
