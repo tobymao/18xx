@@ -24,7 +24,6 @@ module Engine
           'E12' => 'Delhi',
           'E14' => 'Bareilly',
           'E20' => 'Kathmandu',
-          'E24' => 'Lhasa',
           'F7' => 'Jodhpur',
           'F9' => 'Jaipur',
           'F11' => 'Agra & Gwalior',
@@ -295,6 +294,7 @@ module Engine
             %w[G2] =>
                     'city=revenue:0;' \
                     'label=Y;' \
+                    'future_label=label:K,color:brown;' \
                     'upgrade=cost:40,terrain:river;' \
                     'border=type:province,edge:5;',
             %w[G4] =>
@@ -478,7 +478,8 @@ module Engine
                     'upgrade=cost:40,terrain:river;',
             %w[K6] =>
                     'city=revenue:0;' \
-                    'label=Y;',
+                    'label=Y;' \
+                    'future_label=label:B,color:brown;',
             %w[K8] =>
                     'town=revenue:0;' \
                     'upgrade=cost:40,terrain:mountain;' \
@@ -593,6 +594,7 @@ module Engine
             %w[O14] =>
                     'city=revenue:0;' \
                     'label=Y;' \
+                    'future_label=label:M,color:brown;' \
                     'border=type:province,edge:1;',
             %w[P9] =>
                     'border=type:province,edge:3;',
@@ -613,6 +615,7 @@ module Engine
                     'city=revenue:30,groups:Delhi;' \
                     'city=revenue:30,groups:Delhi;' \
                     'city=revenue:30,groups:Delhi;' \
+                    'label=D;' \
                     'path=a:0,b:_0;' \
                     'path=a:2,b:_1;' \
                     'path=a:4,b:_2;' \
@@ -621,9 +624,10 @@ module Engine
                     'border=type:province,edge:4;' \
                     'border=type:province,edge:5;',
             %w[I22] =>
-                    'city=revenue:30,groups:Calcutta;' \
-                    'city=revenue:30,groups:Calcutta;' \
-                    'city=revenue:30,groups:Calcutta;' \
+                    'city=revenue:40,groups:Calcutta;' \
+                    'city=revenue:40,groups:Calcutta;' \
+                    'city=revenue:40,groups:Calcutta;' \
+                    'label=C;' \
                     'path=a:0,b:_0;' \
                     'path=a:2,b:_1;' \
                     'path=a:4,b:_2;' \
@@ -640,9 +644,6 @@ module Engine
                     'path=track:dual,a:0,b:_0;' \
                     'border=type:province,edge:0;' \
                     'border=type:province,edge:5;',
-            %w[E24] =>
-                    'offboard=revenue:yellow_20|green_30|brown_40|gray_40;' \
-                    'path=track:dual,a:0,b:_0;',
           },
 
           gray: {
