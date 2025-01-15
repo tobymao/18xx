@@ -11,22 +11,6 @@ module Engine
           DIVIDEND_TYPES = %i[payout half withhold].freeze
           include G1837::Step::MinorHalfPay
 
-          def actions(entity)
-            return super if !entity.corporation? || entity.type != :minor
-
-            []
-          end
-
-          def skip!
-            return super if !current_entity.corporation? || current_entity.type != :minor
-
-            revenue = @game.routes_revenue(routes)
-            process_dividend(Action::Dividend.new(
-              current_entity,
-              kind: revenue.positive? ? 'half' : 'withhold',
-            ))
-          end
-
           def half(entity, revenue)
             amount = revenue / 2
             { corporation: amount, per_share: payout_per_share(entity, amount) }
