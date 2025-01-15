@@ -211,6 +211,7 @@ module Engine
 
           goods_setup
           @rptla = @corporations.find { |c| c.id == 'RPTLA' }
+          place_home_token(@rptla)
           @fce = @corporations.find { |c| c.id == 'FCE' }
 
           @rptla.add_ability(Engine::G18Uruguay::Ability::Ship.new(
