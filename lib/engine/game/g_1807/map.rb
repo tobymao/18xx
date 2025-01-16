@@ -442,14 +442,14 @@ module Engine
         def setup_london_hexes
           # Join the hexes adjacent to London to the expanded hexes.
           LONDON_HEX_NEIGHBOURS.each do |item|
-            hex1 = @hexes.find { |hex| hex.coordinates == item[:coord1] }
-            hex2 = @hexes.find { |hex| hex.coordinates == item[:coord2] }
+            hex1 = hex_by_id(item[:coord1])
+            hex2 = hex_by_id(item[:coord2])
             hex1.neighbors[item[:edge1]] = hex2
             hex2.neighbors[item[:edge2]] = hex1
           end
 
           # Sever all connections from the London hex on the main map.
-          london = @hexes.find { |hex| hex.coordinates == LONDON_HEX_CENTRE }
+          london = hex_by_id(LONDON_HEX_CENTRE)
           london.neighbors.clear
         end
 
@@ -468,12 +468,16 @@ module Engine
         SCOTTISH_REVENUE_CENTRES = %w[A9 A11 A13 C5 C7 C11 D4 D6 D8 D10 F4 H2].freeze
         WELSH_REVENUE_CENTRES = %w[N4 S3 T10 U7 U9 U11].freeze
 
+        def hexes_by_id(coordinates)
+          coordinates.map { |coord| hex_by_id(coord) }
+        end
+
         def setup_bonuses
           @bonuses = BONUS_REVENUE_HEXES.transform_values do |coordinates|
-            @hexes.find { |hex| hex.coordinates == coordinates }.tile.offboards.first
+            hex_by_id(coordinates).tile.offboards.first
           end
-          @scotland = @hexes.select { |hex| SCOTTISH_REVENUE_CENTRES.include?(hex.coordinates) }
-          @wales = @hexes.select { |hex| WELSH_REVENUE_CENTRES.include?(hex.coordinates) }
+          @scotland = hexes_by_id(SCOTTISH_REVENUE_CENTRES)
+          @wales = hexes_by_id(WELSH_REVENUE_CENTRES)
         end
 
         def revenue_bonus(bonus, train)
