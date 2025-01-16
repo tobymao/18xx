@@ -164,7 +164,7 @@ module Engine
 
         CLOSED_CORP_RESERVATIONS_REMOVED = false
 
-        EBUY_OTHER_VALUE = false
+        EBUY_FROM_OTHERS = :never
         HOME_TOKEN_TIMING = :float
         SELL_AFTER = :operate
         SELL_BUY_ORDER = :sell_buy

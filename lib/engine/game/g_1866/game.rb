@@ -40,7 +40,7 @@ module Engine
         CAPITALIZATION = :incremental
 
         EBUY_CAN_SELL_SHARES = false
-        EBUY_OTHER_VALUE = false
+        EBUY_FROM_OTHERS = :never
 
         TILE_TYPE = :lawson
         LAYOUT = :pointy

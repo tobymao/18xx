@@ -35,10 +35,10 @@ module Engine
 
         MUST_BUY_TRAIN = :never
         EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
-        EBUY_OTHER_VALUE = false
+        EBUY_FROM_OTHERS = :never
         MUST_EMERGENCY_ISSUE_BEFORE_EBUY = false
         EBUY_SELL_MORE_THAN_NEEDED = false
-        EBUY_SELL_MORE_THAN_NEEDED_LIMITS_DEPOT_TRAIN = true
+        EBUY_SELL_MORE_THAN_NEEDED_SETS_PURCHASE_MIN = true
         EBUY_OWNER_MUST_HELP = true
         EBUY_CAN_SELL_SHARES = false
 

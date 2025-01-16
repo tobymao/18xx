@@ -20,7 +20,7 @@ module Engine
         COMPANY_CLASS = G1850::Company
         CORPORATE_BUY_SHARE_ALLOW_BUY_FROM_PRESIDENT = true
         MULTIPLE_BUY_ONLY_FROM_MARKET = true
-        EBUY_OTHER_VALUE = false
+        EBUY_FROM_OTHERS = :never
 
         CERT_LIMIT = {
           2 => { 9 => 24, 8 => 21 },

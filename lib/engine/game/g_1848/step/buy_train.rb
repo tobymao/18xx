@@ -89,7 +89,7 @@ module Engine
           end
 
           def spend_minmax(entity, train)
-            return [1, buying_power(entity)] if train.owner.owner == entity.owner
+            return [1, buying_power(entity)] if ![entity, train.owner].include?(@game.depot) && train.owner.owner == entity.owner
 
             [train.price, train.price]
           end

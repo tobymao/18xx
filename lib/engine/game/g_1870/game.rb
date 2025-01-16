@@ -265,7 +265,7 @@ module Engine
           },
         ].freeze
 
-        EBUY_OTHER_VALUE = false
+        EBUY_FROM_OTHERS = :never
 
         CLOSED_CORP_TRAINS_REMOVED = false
 

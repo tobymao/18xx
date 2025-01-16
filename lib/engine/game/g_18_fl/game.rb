@@ -167,7 +167,7 @@ module Engine
         SELL_BUY_ORDER = :sell_buy
         SELL_MOVEMENT = :left_block
         SELL_AFTER = :operate
-        EBUY_OTHER_VALUE = true
+        EBUY_FROM_OTHERS = :value
         EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
         TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }].freeze
         STEAMBOAT_HEXES = %w[B5 B23 G20 K28].freeze

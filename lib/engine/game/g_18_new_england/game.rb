@@ -203,7 +203,7 @@ module Engine
         BANKRUPTCY_ENDS_GAME_AFTER = :all_but_one
         LIMIT_TOKENS_AFTER_MERGER = 999
         SOLD_OUT_INCREASE = false
-        EBUY_OTHER_VALUE = false
+        EBUY_FROM_OTHERS = :never
 
         YELLOW_PRICES = [50, 55, 60, 65, 70].freeze
         GREEN_PRICES = [80, 90, 100].freeze
