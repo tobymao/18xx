@@ -164,9 +164,9 @@ module Engine
           {
             sym: 'HH',
             name: 'Howrah-Howgly',
-            desc: 'P2. Revenue 25/38, face value 1250. Home hexes are I22 and H21. ' \
+            desc: 'P2. Revenue 25/38, face value 125. Home hexes are I22 and H21. ' \
                   'Can be used to start a public company in Calcutta.',
-            value: 1250,
+            value: 125,
             discount: 25,
             revenue: 25,
             color: :yellow,
@@ -233,7 +233,7 @@ module Engine
           },
           {
             sym: 'AC',
-            name: 'Allahabad-Cawnppore',
+            name: 'Allahabad-Cawnpore',
             desc: 'P5. Revenue 20/30, face value 100. Home hexes are G16, G14 and F13. ' \
                   'Can be used to start a public company in Allahabad or Cawnpore.',
             value: 100,
@@ -651,7 +651,6 @@ module Engine
             desc: 'P23. Revenue 33, face value 110. Home hex is O10. ' \
                   'Can be used to start a public company in Mysore.',
             value: 110,
-            discount: 110,
             revenue: 33,
             color: :green,
             text_color: :black,
@@ -673,7 +672,6 @@ module Engine
             desc: 'P24. Revenue 27, face value 90. Home hexes are F9 and E10. ' \
                   'Can be used to start a public company in Jaipur.',
             value: 90,
-            discount: 90,
             revenue: 27,
             color: :green,
             text_color: :black,
@@ -695,7 +693,6 @@ module Engine
             desc: 'P25. Revenue 36, face value 120. Home hexes are H25 and I26. ' \
                   'Can be used to start a public company in Dacca.',
             value: 120,
-            discount: 120,
             revenue: 36,
             color: :green,
             text_color: :black,
@@ -717,7 +714,6 @@ module Engine
             desc: 'P26. Revenue 40, face value 135. Home hexes are I22 and I24. ' \
                   'Can be used to start a public company in Calcutta.',
             value: 135,
-            discount: 135,
             revenue: 40,
             color: :green,
             text_color: :black,
@@ -739,7 +735,6 @@ module Engine
             desc: 'P27. Revenue 18, face value 60. Home hex is F17. ' \
                   'Cannot be used to start a public company.',
             value: 60,
-            discount: 60,
             revenue: 18,
             color: :green,
             text_color: :black,
@@ -760,7 +755,6 @@ module Engine
             desc: 'P28. Revenue 21, face value 70. Home hexes are H11 and I10. ' \
                   'Cannot be used to start a public company.',
             value: 70,
-            discount: 70,
             revenue: 21,
             color: :green,
             text_color: :black,
@@ -781,7 +775,6 @@ module Engine
             desc: 'P29. Revenue 24, face value 80. Home hexes are F7 and E8. ' \
                   'Cannot be used to start a public company.',
             value: 80,
-            discount: 80,
             revenue: 24,
             color: :green,
             text_color: :black,
@@ -802,7 +795,6 @@ module Engine
             desc: 'P30. Revenue 30, face value 100. Home hexes are L13 and M14. ' \
                   'Can be used to start a public company in Hyderabad.',
             value: 100,
-            discount: 100,
             revenue: 30,
             color: :green,
             text_color: :black,
@@ -900,7 +892,7 @@ module Engine
           },
           {
             sym: 'AC',
-            name: 'Allahabad-Cawnppore',
+            name: 'Allahabad-Cawnpore',
             tokens: [],
             color: :yellow,
             text_color: :black,
