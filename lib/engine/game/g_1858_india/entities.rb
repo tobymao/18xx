@@ -151,7 +151,7 @@ module Engine
             abilities: [
               { type: 'no_buy' },
               { type: 'revenue_change', revenue: 36, on_phase: '3' },
-              { type: 'reservation', hex: 'K6' },
+              { type: 'reservation', hex: 'K6', icon: '1858_india/BS+BT' },
               {
                 type: 'exchange',
                 owner_type: 'player',
@@ -198,6 +198,7 @@ module Engine
               { type: 'no_buy' },
               { type: 'revenue_change', revenue: 36, on_phase: '3' },
               { type: 'reservation', hex: 'O12' },
+              { type: 'reservation', hex: 'O14' },
               {
                 type: 'exchange',
                 owner_type: 'player',
@@ -220,7 +221,7 @@ module Engine
             abilities: [
               { type: 'no_buy' },
               { type: 'revenue_change', revenue: 35, on_phase: '3' },
-              { type: 'reservation', hex: 'K6' },
+              { type: 'reservation', hex: 'K6', icon: '1858_india/BS+BT' },
               {
                 type: 'exchange',
                 owner_type: 'player',
@@ -243,7 +244,7 @@ module Engine
             abilities: [
               { type: 'no_buy' },
               { type: 'revenue_change', revenue: 30, on_phase: '3' },
-              { type: 'reservation', hex: 'F13' },
+              { type: 'reservation', hex: 'F13', icon: '1858_india/AC+LC' },
               { type: 'reservation', hex: 'G16' },
               {
                 type: 'exchange',
@@ -290,8 +291,8 @@ module Engine
             abilities: [
               { type: 'no_buy' },
               { type: 'revenue_change', revenue: 33, on_phase: '3' },
-              { type: 'reservation', hex: 'C8' },
-              { type: 'reservation', hex: 'D5' },
+              { type: 'reservation', hex: 'C8', icon: '1858_india/LA+ML' },
+              { type: 'reservation', hex: 'D5', icon: '1858_india/MK+ML' },
               {
                 type: 'exchange',
                 owner_type: 'player',
@@ -314,7 +315,7 @@ module Engine
             abilities: [
               { type: 'no_buy' },
               { type: 'revenue_change', revenue: 27, on_phase: '3' },
-              { type: 'reservation', hex: 'C8' },
+              { type: 'reservation', hex: 'C8', icon: '1858_india/LA+ML' },
               {
                 type: 'exchange',
                 owner_type: 'player',
@@ -429,7 +430,7 @@ module Engine
             abilities: [
               { type: 'no_buy' },
               { type: 'revenue_change', revenue: 24, on_phase: '3' },
-              { type: 'reservation', hex: 'F13' },
+              { type: 'reservation', hex: 'F13', icon: '1858_india/AC+LC' },
               { type: 'reservation', hex: 'F15' },
               {
                 type: 'exchange',
@@ -612,7 +613,7 @@ module Engine
             abilities: [
               { type: 'no_buy' },
               { type: 'revenue_change', revenue: 23, on_phase: '3' },
-              { type: 'reservation', hex: 'D5' },
+              { type: 'reservation', hex: 'D5', icon: '1858_india/MK+ML' },
               {
                 type: 'exchange',
                 owner_type: 'player',
