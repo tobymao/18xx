@@ -3,6 +3,7 @@
 require_relative 'entities'
 require_relative 'map'
 require_relative 'meta'
+require_relative 'tiles'
 require_relative '../g_1858/game'
 
 module Engine
@@ -12,6 +13,7 @@ module Engine
         include_meta(G1858India::Meta)
         include Entities
         include Map
+        include Tiles
 
         CURRENCY_FORMAT_STR = '£%s'
         BANK_CASH = 16_000

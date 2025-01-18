@@ -564,7 +564,7 @@ module Engine
             %w[K6] =>
                     'city=revenue:0;' \
                     'label=Y;' \
-                    'future_label=label:B,color:brown;' \
+                    'future_label=label:B,color:gray;' \
                     'path=track:future,a:3,b:_0;' \
                     'path=track:future,a:4,b:_0;' \
                     'icon=image:1858_india/BT,sticky:1;' \
@@ -692,7 +692,7 @@ module Engine
             %w[O14] =>
                     'city=revenue:0;' \
                     'label=Y;' \
-                    'future_label=label:M,color:brown;' \
+                    'future_label=label:M,color:gray;' \
                     'path=track:future,a:1,b:_0;' \
                     'border=type:province,edge:1;' \
                     'icon=image:1858_india/MA,sticky:1;',
