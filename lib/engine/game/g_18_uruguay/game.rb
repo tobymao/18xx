@@ -403,16 +403,12 @@ module Engine
           str
         end
 
-        def rptla_revenue(corporation)
-          return 0 if @rptla != corporation
-
-          (corporation.loans.size.to_f / 2).floor * 10
+        def rptla_revenue
+          (@rptla.loans.size.to_f / 2).floor * 10
         end
 
-        def rptla_subsidy(corporation)
-          return 0 if @rptla != corporation
-
-          (corporation.loans.size.to_f / 2).ceil * 10
+        def rptla_subsidy
+          (@rptla.loans.size.to_f / 2).ceil * 10
         end
 
         def revenue_for(route, stops)
