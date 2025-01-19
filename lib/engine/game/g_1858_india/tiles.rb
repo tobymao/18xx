@@ -253,6 +253,19 @@ module Engine
           },
           'X34' =>
           {
+            'count' => 2,
+            'color' => 'gray',
+            'code' =>
+              'city=revenue:50,slots:2;' \
+              'path=a:0,b:_0,track:dual;' \
+              'path=a:1,b:_0,track:dual;' \
+              'path=a:2,b:_0,track:dual;' \
+              'path=a:3,b:_0,track:dual;' \
+              'path=a:4,b:_0,track:dual;' \
+              'path=a:5,b:_0,track:dual;',
+          },
+          'X35' =>
+          {
             'count' => 1,
             'color' => 'gray',
             'code' =>
@@ -264,7 +277,7 @@ module Engine
               'path=a:4,b:_0,track:dual;' \
               'path=a:5,b:_0,track:dual;',
           },
-          'X35' =>
+          'X36' =>
           {
             'count' => 1,
             'color' => 'gray',
@@ -277,7 +290,7 @@ module Engine
               'path=a:3,b:_0,track:dual;' \
               'path=a:5,b:_0,track:dual;',
           },
-          'X36' =>
+          'X37' =>
           {
             'count' => 1,
             'color' => 'gray',
@@ -291,7 +304,7 @@ module Engine
               'path=a:4,b:_0,track:dual;' \
               'path=a:5,b:_0,track:dual;',
           },
-          'X37' =>
+          'X38' =>
           {
             'count' => 1,
             'color' => 'gray',
