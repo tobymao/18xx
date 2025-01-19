@@ -34,11 +34,6 @@ module Engine
             entities.each(&:unpass!)
           end
 
-          def win_bid(winner, company)
-            super
-            @game.after_company_acquisition(company)
-          end
-
           def post_win_bid(winner, _company)
             entities.each(&:unpass!)
             @round.goto_entity!(winner.entity)

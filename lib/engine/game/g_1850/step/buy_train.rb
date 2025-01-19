@@ -6,7 +6,7 @@ module Engine
   module Game
     module G1850
       module Step
-        class BuyTrain < Engine::Step::BuyTrain
+        class BuyTrain < G1870::Step::BuyTrain
           def round_state
             super.merge(
             {

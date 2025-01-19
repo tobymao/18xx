@@ -54,7 +54,7 @@ module Engine
           def spend_minmax(entity, train)
             # @todo: I think the lack of the from_depot check is a bug in many games
             # but needs more detailed analysis
-            if (train.from_depot? || @game.class::EBUY_OTHER_VALUE) && (buying_power(entity) < train.price)
+            if (train.from_depot? || @game.class::EBUY_FROM_OTHERS != :none) && (buying_power(entity) < train.price)
               min = if @last_share_sold_price
                       (buying_power(entity) + entity.owner.cash) - @last_share_sold_price + 1
                     else

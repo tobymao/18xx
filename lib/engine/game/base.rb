@@ -254,7 +254,12 @@ module Engine
 
       # ebuy = presidential cash is contributed
       EBUY_PRES_SWAP = true # allow presidential swaps of other corps when ebuying
-      EBUY_OTHER_VALUE = true # allow ebuying other corp trains for up to face
+
+      # allow ebuying other corp trains
+      # :never - never
+      # :value - for up to face value
+      # :always - for any value
+      EBUY_FROM_OTHERS = :value
       EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = true # if ebuying from depot, must buy cheapest train
       MUST_EMERGENCY_ISSUE_BEFORE_EBUY = false # corporation must issue shares before ebuy (if possible)
       EBUY_SELL_MORE_THAN_NEEDED = false # true if corporation may continue to sell shares even though enough funds
@@ -262,7 +267,7 @@ module Engine
       EBUY_OWNER_MUST_HELP = false # owner of ebuying entity is on the hook
 
       # if sold more than needed then cannot then buy a cheaper train in the depot.
-      EBUY_SELL_MORE_THAN_NEEDED_LIMITS_DEPOT_TRAIN = false
+      EBUY_SELL_MORE_THAN_NEEDED_SETS_PURCHASE_MIN = false
 
       # loans taken during ebuy can lead to receviership
       EBUY_CORP_LOANS_RECEIVERSHIP = false
@@ -1267,6 +1272,10 @@ module Engine
 
       def sold_out_increase?(_corporation)
         self.class::SOLD_OUT_INCREASE
+      end
+
+      def sold_out_stock_movement(corp)
+        @stock_market.move_up(corp)
       end
 
       def log_share_price(entity, from, steps = nil, log_steps: false)

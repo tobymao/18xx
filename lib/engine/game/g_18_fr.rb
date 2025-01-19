@@ -2,7 +2,7 @@
 
 module Engine
   module Game
-    module G18BF
+    module G18FR
     end
   end
 end

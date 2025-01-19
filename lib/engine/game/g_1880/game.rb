@@ -27,7 +27,7 @@ module Engine
         SELL_BUY_ORDER = :sell_buy
         SELL_MOVEMENT = :down_per_10
         EBUY_PRES_SWAP = false
-        EBUY_OTHER_VALUE = false
+        EBUY_FROM_OTHERS = :never
         CURRENCY_FORMAT_STR = '¥%s'
         SOLD_SHARES_DESTINATION = :corporation
         MINORS_CAN_OWN_SHARES = true

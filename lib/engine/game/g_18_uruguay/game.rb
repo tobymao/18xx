@@ -60,6 +60,7 @@ module Engine
         SELL_AFTER = :p_any_operate
         TILE_RESERVATION_BLOCKS_OTHERS = true
         CURRENCY_FORMAT_STR = '$U%d'
+        HOME_TOKEN_TIMING = :float
 
         MUST_BUY_TRAIN = :always
 
@@ -210,6 +211,7 @@ module Engine
 
           goods_setup
           @rptla = @corporations.find { |c| c.id == 'RPTLA' }
+          place_home_token(@rptla)
           @fce = @corporations.find { |c| c.id == 'FCE' }
 
           @rptla.add_ability(Engine::G18Uruguay::Ability::Ship.new(
@@ -454,6 +456,7 @@ module Engine
               when 1
                 start_merge(current_entity.owner)
               when 2
+                acquire_shares
                 decrease_stock_value
                 retreive_home_tokens
                 close_companies
