@@ -65,12 +65,23 @@ module Engine
           end
         end
 
-        def take_loan_if_needed_for_interest!(entity)
+        def pay_interest!(entity)
           owed = interest_owed(entity)
-          return if owed.zero?
+          interest_paid[entity] = owed
 
-          remaining = owed - entity.cash
-          perform_ebuy_loans(entity, remaining + 10) if remaining.positive?
+          while owed > entity.cash &&
+              (loan = loans[0])
+            take_loan(entity, loan, ebuy: true)
+          end
+
+          if owed <= entity.cash
+            if owed.positive?
+              log_interest_payment(entity, owed)
+              entity.spend(owed, bank)
+            end
+            return
+          end
+          owed
         end
 
         def corps_pay_interest
@@ -78,7 +89,6 @@ module Engine
           corps.each do |corp|
             next if corp.closed?
 
-            take_loan_if_needed_for_interest!(corp)
             pay_interest!(corp)
           end
         end
