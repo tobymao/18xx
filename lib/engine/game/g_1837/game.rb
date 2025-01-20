@@ -748,7 +748,7 @@ module Engine
           Token.new(@blocker)
         end
 
-        def token_graph_for_entity
+        def token_graph_for_entity(_entity)
           @token_graph ||= Graph.new(self, backtracking: true)
         end
 
