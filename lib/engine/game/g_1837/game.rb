@@ -773,6 +773,14 @@ module Engine
         def operated_this_round?(entity)
           entity.operating_history.include?([@turn, @round.round_num])
         end
+
+        def acting_for_entity(entity)
+          if entity.corporation? && entity.type != :minor && entity.receivership?
+            return @players.find { |p| p.num_shares_of(entity).positive? } || @players.first
+          end
+
+          super
+        end
       end
     end
   end

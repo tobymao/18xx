@@ -68,7 +68,7 @@ module Engine
           def can_finance?(entity)
             entity.trains.empty? &&
               needed_cash(entity) > buying_power(entity) &&
-              (entity.owner == @game.share_pool || @round.bankrupting_corporations.include?(entity))
+              (entity.receivership? || @round.bankrupting_corporations.include?(entity))
           end
 
           def process_scrap_train(action)
