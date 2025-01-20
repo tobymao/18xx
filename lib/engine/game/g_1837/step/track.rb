@@ -7,6 +7,8 @@ module Engine
     module G1837
       module Step
         class Track < Engine::Step::Track
+          include SkipReceivership
+
           def lay_tile(action, extra_cost: 0, entity: nil, spender: nil)
             tile = action.tile
             case tile.name

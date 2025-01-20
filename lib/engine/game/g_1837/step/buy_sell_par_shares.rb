@@ -20,7 +20,7 @@ module Engine
           end
 
           def visible_corporations
-            @game.corporations.reject { |c| c.type == :minor }
+            @game.sorted_corporations.reject { |c| c.type == :minor }
           end
 
           def hide_corporations?

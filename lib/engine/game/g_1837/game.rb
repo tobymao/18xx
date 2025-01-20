@@ -32,6 +32,9 @@ module Engine
         HOME_TOKEN_TIMING = :float
 
         EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
+        EBUY_FROM_OTHERS = :always
+        EBUY_SELL_MORE_THAN_NEEDED = true
+        EBUY_SELL_MORE_THAN_NEEDED_SETS_PURCHASE_MIN = true
         MUST_BUY_TRAIN = :always
 
         BANKRUPTCY_ENDS_GAME_AFTER = :all_but_one
@@ -121,7 +124,7 @@ module Engine
             num: 4,
             distance: 4,
             price: 470,
-            events: [{ 'type' => 'sd_formation' }, { 'type' => 'remove_italy' }],
+            events: [{ 'type' => 'sd_formation' }, { 'type' => 'kk_can_form' }, { 'type' => 'remove_italy' }],
           },
           {
             name: '4E',
@@ -131,6 +134,7 @@ module Engine
               { 'nodes' => %w[town], 'pay' => 0, 'visit' => 99 },
             ],
             price: 500,
+            events: [{ 'type' => 'ug_can_form' }],
           },
           {
             name: '4+1',
@@ -243,7 +247,9 @@ module Engine
           'buy_across' => ['Buy Across', 'Trains can be bought between companies'],
           'sd_formation' => ['SD Formation', 'SD forms immediately'],
           'remove_italy' => ['Remove Italy', 'Remove tiles in Italy. Italy no longer in play.'],
+          'kk_can_form' => ['Optional KK Formation', 'KK can choose to form at beginning of SR/OR'],
           'kk_formation' => ['KK Formation', 'KK forms immediately'],
+          'ug_can_form' => ['Optional UG Formation', 'UG can choose to form at beginning of SR/OR'],
           'ug_formation' => ['UG Formation', 'UG forms immediately'],
           'exchange_coal_companies' => ['Exchange Coal Companies', 'All remaining coal companies are exchanged'],
           'close_mountain_railways' => ['Mountain Railways Close', 'All Mountain Railways close'],
@@ -327,6 +333,18 @@ module Engine
           end
         end
 
+        def sd_minors
+          @sd_minors ||= %w[SD1 SD2 SD3 SD4 SD5].map { |id| corporation_by_id(id) }
+        end
+
+        def kk_minors
+          @kk_minors ||= %w[KK1 KK2 KK3].map { |id| corporation_by_id(id) }
+        end
+
+        def ug_minors
+          @ug_minors ||= %w[UG1 UG2 UG3].map { |id| corporation_by_id(id) }
+        end
+
         def event_buy_across!
           @log << "-- Event: #{EVENTS_TEXT['buy_across'][1]} --"
         end
@@ -334,8 +352,7 @@ module Engine
         def event_sd_formation!
           @log << "-- Event: #{EVENTS_TEXT['sd_formation'][1]} --"
           national = corporation_by_id('SD')
-          minors = %w[SD1 SD2 SD3 SD4 SD5].map { |id| corporation_by_id(id) }
-          form_national_railway!(national, minors)
+          form_national_railway!(national, sd_minors)
         end
 
         def event_remove_italy!
@@ -351,8 +368,13 @@ module Engine
           @graph.clear_graph_for_all
         end
 
+        def event_kk_can_form!
+          @log << "-- Event: #{EVENTS_TEXT['kk_can_form'][1]} --"
+          @kk_can_form = true
+        end
+
         def event_kk_formation!
-          open_minors = %w[KK1 KK2 KK3].map { |id| corporation_by_id(id) }.reject(&:closed?)
+          open_minors = kk_minors.reject(&:closed?)
           return if open_minors.empty?
 
           @log << "-- Event: #{EVENTS_TEXT['kk_formation'][1]} --"
@@ -362,12 +384,16 @@ module Engine
           else
             @log << "#{national.name} already formed. Remaining minors must fold in."
             open_minors.each { |m| merge_minor!(m, national) }
-            set_national_president!(national)
           end
         end
 
+        def event_ug_can_form!
+          @log << "-- Event: #{EVENTS_TEXT['ug_can_form'][1]} --"
+          @ug_can_form = true
+        end
+
         def event_ug_formation!
-          open_minors = %w[UG1 UG2 UG3].map { |id| corporation_by_id(id) }.reject(&:closed?)
+          open_minors = ug_minors.reject(&:closed?)
           return if open_minors.empty?
 
           national = corporation_by_id('UG')
@@ -377,13 +403,12 @@ module Engine
           else
             @log << "#{national.name} already formed. Remaining minors must fold in."
             open_minors.each { |m| merge_minor!(m, national) }
-            set_national_president!(national)
           end
         end
 
         def event_exchange_coal_companies!
           @log << "-- Event: #{EVENTS_TEXT['exchange_coal_companies'][1]} --"
-          coal_company_exchange_order.each { |c| exchange_coal_company(c) }
+          coal_company_exchange_order(mandatory: true).each { |c| exchange_coal_company(c) }
         end
 
         def operating_order
@@ -391,23 +416,49 @@ module Engine
           @minors.select(&:floated?) + minors + majors.sort
         end
 
-        def coal_company_exchange_order
+        def exchange_order
+          order = coal_company_exchange_order
+          order.concat(kk_minors.reject(&:closed?)) if @kk_can_form
+          order.concat(ug_minors.reject(&:closed?)) if @ug_can_form
+          order
+        end
+
+        def exchange_target(entity)
+          if entity.company?
+            target_id = abilities(entity, :exchange, time: 'any')&.corporations&.first
+            corporation_by_id(target_id)
+          elsif kk_minors.include?(entity)
+            corporation_by_id('KK')
+          elsif ug_minors.include?(entity)
+            corporation_by_id('UG')
+          end
+        end
+
+        def coal_company_exchange_order(mandatory: false)
           exchangeable_companies = Hash.new { |h, k| h[k] = [] }
           @companies.each do |c|
             next if c.closed? || !c.owner&.player?
-            next unless (ability = abilities(c, :exchange, time: 'any'))
+            next unless (target = exchange_target(c))
 
-            exchangeable_companies[ability.corporations.first] << c
+            exchangeable_companies[target] << c
           end
 
-          major_order = (operating_order + @corporations.sort).uniq.select { |e| e.corporation? && e.type == :major }
-          major_order.flat_map do |major|
-            player_order = major.owner&.player? ? @players.rotate!(@players.index(major.owner)) : @players
-            exchangeable_companies[major.id].sort_by { |c| player_order.index(c.owner) }
+          order = operating_order
+          order = order.concat(@corporations).uniq if mandatory
+          order.select { |c| c.corporation? && c.type == :major }.flat_map do |major|
+            player_order = major.owner&.player? ? @players.rotate(@players.index(major.owner)) : @players
+            exchangeable_companies[major].sort_by { |c| player_order.index(c.owner) }
           end.compact
         end
 
+        def mandatory_coal_company_exchange?(entity)
+          return false if !entity.company? || entity.closed? || !entity.owner&.player?
+
+          exchange_target(entity).percent_ipo_buyable.zero?
+        end
+
         def exchange_coal_company(company)
+          @log << "#{company.sym} exchanged for a share of #{exchange_target(company).id}"
           major = corporation_by_id(abilities(company, :exchange, time: 'any').corporations.first)
           minor = minor_by_id(company.sym)
           merge_minor!(minor, major)
@@ -420,6 +471,7 @@ module Engine
         end
 
         def form_national_railway!(national, merging_minors)
+          @log << "#{national.id} forms"
           national.floatable = true
           national.floated = true
           ipo_cash = (10 - national.num_ipo_reserved_shares) * national.par_price.price
@@ -429,21 +481,22 @@ module Engine
           tie_breaker_order = []
           merging_minors.sort_by(&:name).each do |minor|
             tie_breaker_order << minor.owner
-            merge_minor!(minor, national)
+            merge_minor!(minor, national, allow_president_change: false)
           end
           set_national_president!(national, tie_breaker_order.uniq)
-          graph.clear_graph_for(national)
         end
 
-        def merge_minor!(minor, corporation)
+        def merge_minor!(minor, corporation, allow_president_change: true)
           coal_company_exchange = minor.type == :coal
           @log << "#{minor.name} merges into #{corporation.name}"
 
           @log << "#{minor.owner.name} receives 1 share of #{corporation.name}"
           share = corporation.reserved_shares[0]
           share.buyable = true
-          @share_pool.transfer_shares(ShareBundle.new(share), minor.owner, allow_president_change: coal_company_exchange)
-          # TODO: cannot receive dividends if minor already operated this OR
+          @share_pool.transfer_shares(ShareBundle.new(share), minor.owner, allow_president_change: allow_president_change)
+          if @round.respond_to?(:non_paying_shares) && operated_this_round?(minor)
+            @round.non_paying_shares[minor.owner][corporation] += 1
+          end
 
           if minor.cash.positive?
             @log << "#{corporation.name} receives #{format_currency(minor.cash)}"
@@ -463,7 +516,7 @@ module Engine
             new_token = Token.new(corporation)
             corporation.tokens << new_token
             if %w[L2 L8].include?(token.hex.id)
-              token.price = 20
+              new_token.price = 20
             else
               token.swap!(new_token, check_tokenable: false)
             end
@@ -471,6 +524,7 @@ module Engine
           end
 
           close_minor!(minor)
+          graph.clear_graph_for(corporation)
         end
 
         def close_minor!(minor)
@@ -480,11 +534,11 @@ module Engine
 
         def set_national_president!(national, tie_breaker = [])
           tie_breaker = tie_breaker.reverse
-          current_president = national.presidents_share.owner
+          current_president = national.owner || national
 
           # president determined by most shares, then tie breaker, then current president
-          president_factors = national.player_share_holders.to_h do |player, shares|
-            [[shares.size, tie_breaker.index(player) || -1, player == current_president ? 1 : 0], player]
+          president_factors = national.player_share_holders.to_h do |player, percent|
+            [[percent, tie_breaker.index(player) || -1, player == current_president ? 1 : 0], player]
           end
           president = president_factors[president_factors.keys.max]
           return unless current_president != president
@@ -494,6 +548,36 @@ module Engine
           national.owner = president
         end
 
+        def next_round!
+          @round =
+            case @round
+            when Engine::Round::Stock
+              @operating_rounds = @phase.operating_rounds
+              reorder_players
+              new_exchange_round(Round::Operating)
+            when Round::Exchange
+              if @round_after_exchange == Engine::Round::Stock
+                new_stock_round
+              else
+                new_operating_round(@round.round_num)
+              end
+            when Round::Operating
+              if @round.round_num < @operating_rounds
+                or_round_finished
+                new_exchange_round(Round::Operating, @round.round_num + 1)
+              else
+                @turn += 1
+                or_round_finished
+                or_set_finished
+                new_exchange_round(Engine::Round::Stock)
+              end
+            when init_round.class
+              init_round_finished
+              reorder_players
+              new_stock_round
+            end
+        end
+
         def new_auction_round
           Engine::Round::Auction.new(self, [
             G1837::Step::SelectionAuction,
@@ -501,7 +585,7 @@ module Engine
         end
 
         def stock_round
-          G1837::Round::Stock.new(self, [
+          Engine::Round::Stock.new(self, [
             G1837::Step::DiscardTrain,
             G1837::Step::BuySellParShares,
           ])
@@ -509,7 +593,7 @@ module Engine
 
         def operating_round(round_num)
           G1837::Round::Operating.new(self, [
-            Engine::Step::Bankrupt,
+            G1837::Step::Bankrupt,
             G1837::Step::HomeToken,
             G1837::Step::DiscardTrain,
             G1837::Step::SpecialTrack,
@@ -518,6 +602,19 @@ module Engine
             Engine::Step::Route,
             G1837::Step::Dividend,
             G1837::Step::BuyTrain,
+          ], round_num: round_num)
+        end
+
+        def new_exchange_round(next_round, round_num = 1)
+          @round_after_exchange = next_round
+          exchange_round(round_num)
+        end
+
+        def exchange_round(round_num)
+          G1837::Round::Exchange.new(self, [
+            G1837::Step::DiscardTrain,
+            G1837::Step::CoalExchange,
+            G1837::Step::MinorExchange,
           ], round_num: round_num)
         end
 
@@ -651,7 +748,7 @@ module Engine
           Token.new(@blocker)
         end
 
-        def token_graph_for_entity
+        def token_graph_for_entity(_entity)
           @token_graph ||= Graph.new(self, backtracking: true)
         end
 
@@ -661,12 +758,28 @@ module Engine
           super
         end
 
-        def sold_out_stock_movement(corp)
-          if corp.owner.percent_of(corp) <= 40
-            @stock_market.move_up(corp)
+        def sold_out?(corporation)
+          corporation.percent_ipo_buyable.zero? && corporation.num_market_shares.zero?
+        end
+
+        def sold_out_stock_movement(corporation)
+          if corporation.owner.percent_of(corporation) <= 40
+            @stock_market.move_up(corporation)
           else
-            @stock_market.move_diagonally_up_left(corp)
+            @stock_market.move_diagonally_up_left(corporation)
           end
+        end
+
+        def operated_this_round?(entity)
+          entity.operating_history.include?([@turn, @round.round_num])
+        end
+
+        def acting_for_entity(entity)
+          if entity.corporation? && entity.type != :minor && entity.receivership?
+            return @players.find { |p| p.num_shares_of(entity).positive? } || @players.first
+          end
+
+          super
         end
       end
     end
