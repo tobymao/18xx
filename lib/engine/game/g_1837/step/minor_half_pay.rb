@@ -17,12 +17,12 @@ module Engine
 
             revenue = @game.routes_revenue(routes)
             kind = if revenue.zero?
-                      'withhold'
-                    elsif current_entity.minor?
-                      'payout'
-                    else
-                      'half'
-                    end
+                     'withhold'
+                   elsif current_entity.minor?
+                     'payout'
+                   else
+                     'half'
+                   end
             process_dividend(Action::Dividend.new(current_entity, kind: kind))
           end
 

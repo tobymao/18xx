@@ -65,6 +65,13 @@ module Engine
         raise GameError, 'An entity cannot buy a train from itself' if train.owner == entity
 
         remaining = price - buying_power(entity)
+        if remaining.positive? && can_finance?(entity)
+          financed_cash = remaining
+          entity.cash += financed_cash
+          @log << "#{@game.bank.name} finances #{@game.format_currency(financed_cash)}"
+          remaining = 0
+        end
+
         if remaining.positive? && president_may_contribute?(entity, action.shell)
           check_for_cheapest_train(train)
 
@@ -105,6 +112,8 @@ module Engine
 
         @game.buy_train(entity, train, price)
         @game.phase.buying_train!(entity, train, source)
+
+        action.entity.cash -= financed_cash if financed_cash
         pass! if !can_buy_train?(entity) && pass_if_cannot_buy_train?(entity)
       end
 
@@ -245,6 +254,10 @@ module Engine
         else
           [1, buying_power(entity)]
         end
+      end
+
+      def can_finance?(_entity)
+        false
       end
 
       private

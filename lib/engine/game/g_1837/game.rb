@@ -593,7 +593,7 @@ module Engine
 
         def operating_round(round_num)
           G1837::Round::Operating.new(self, [
-            Engine::Step::Bankrupt,
+            G1837::Step::Bankrupt,
             G1837::Step::HomeToken,
             G1837::Step::DiscardTrain,
             G1837::Step::SpecialTrack,

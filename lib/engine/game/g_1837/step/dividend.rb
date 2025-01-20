@@ -11,6 +11,12 @@ module Engine
           DIVIDEND_TYPES = %i[payout half withhold].freeze
           include G1837::Step::MinorHalfPay
 
+          def auto_actions(entity)
+            return if !entity.corporation? || !entity.cash.negative?
+
+            [Action::Dividend.new(entity, kind: 'withhold')]
+          end
+
           def half(entity, revenue)
             amount = revenue / 2
             { corporation: amount, per_share: payout_per_share(entity, amount) }

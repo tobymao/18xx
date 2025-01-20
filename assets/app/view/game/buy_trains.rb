@@ -300,6 +300,11 @@ module View
           children << h(:div, issue_str)
         end
 
+        if @step.can_finance?(@corporation)
+          text = "#{@game.bank.name} will provide financing for the amount the corporation cannot pay."
+          children << h(:div, text)
+        end
+
         if (@must_buy_train && @step.ebuy_president_can_contribute?(@corporation)) ||
            @step.president_may_contribute?(@corporation, @active_shell)
           children.concat(render_president_contributions)
