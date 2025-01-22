@@ -840,7 +840,6 @@ module Engine
             text_color: :black,
             logo: '1858_india/HH',
             coordinates: %w[I22 H21],
-            city: 1,
             abilities: [
               { type: 'blocks_hexes', hexes: %w[H21], hidden: true },
               {
@@ -974,7 +973,6 @@ module Engine
             text_color: :black,
             logo: '1858_india/CPC',
             coordinates: %w[I22 J21],
-            city: 0,
             abilities: [
               { type: 'blocks_hexes', hexes: %w[J21], hidden: true },
               {
@@ -1070,7 +1068,6 @@ module Engine
             text_color: :black,
             logo: '1858_india/AD',
             coordinates: %w[E12 D11],
-            city: 1,
             abilities: [
               { type: 'blocks_hexes', hexes: %w[D11], hidden: true },
               {
@@ -1147,7 +1144,6 @@ module Engine
             text_color: :black,
             logo: '1858_india/DA',
             coordinates: %w[E12 F11],
-            city: 0,
             abilities: [
               { type: 'blocks_hexes', hexes: %w[F11], hidden: true },
               {
@@ -1300,7 +1296,6 @@ module Engine
             text_color: :black,
             logo: '1858_india/CK',
             coordinates: %w[I22 I24],
-            city: 2,
             abilities: [
               { type: 'blocks_hexes', hexes: %w[I24], hidden: true },
               {
