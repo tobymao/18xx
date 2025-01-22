@@ -270,7 +270,7 @@ module Engine
             'color' => 'gray',
             'code' =>
               'label=B;' \
-              'city=revenue:70,slots:3;' \
+              'city=revenue:70,slots:2;' \
               'path=a:1,b:_0,track:dual;' \
               'path=a:2,b:_0,track:dual;' \
               'path=a:3,b:_0,track:dual;' \
@@ -283,7 +283,7 @@ module Engine
             'color' => 'gray',
             'code' =>
               'label=M;' \
-              'city=revenue:70,slots:3;' \
+              'city=revenue:70,slots:2;' \
               'path=a:0,b:_0,track:dual;' \
               'path=a:1,b:_0,track:dual;' \
               'path=a:2,b:_0,track:dual;' \
