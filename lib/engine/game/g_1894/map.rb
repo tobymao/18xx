@@ -205,6 +205,7 @@ module Engine
           'F1' => 'Dreux',
           'F7' => 'Beauvais & Compiègne',
           'F15' => 'Bruxelles',
+          'G2' => 'Houdan',
           'G4' => 'Versailles',
           'G6' => 'Paris',
           'G10' => 'Saint-Quentin',
@@ -224,7 +225,7 @@ module Engine
 
         HEXES = {
           white: {
-            %w[C4 C8 C10 D5 E18 F3 F9 F17 G2 H5 H7 I6 I8 I12] => '',
+            %w[C4 C8 C10 D5 E18 F3 F9 F17 H5 H7 I6 I8 I12] => '',
             %w[B1 C2 E4 E8 F5 H11] => 'upgrade=cost:40,terrain:water',
             %w[B7 G8 I4] => 'upgrade=cost:60,terrain:water',
             %w[B3 B9 D3 D9 D15 D17 E2 E6 E10 E16 G10 H9 H17] => 'city=revenue:0',
@@ -263,6 +264,7 @@ module Engine
             ['C16'] => 'path=a:0,b:1;path=a:4,b:5;path=a:5,b:0',
             ['D1'] => 'town=revenue:20;path=a:4,b:_0;path=a:5,b:_0',
             ['F1'] => 'town=revenue:20;path=a:3,b:_0;path=a:5,b:_0;path=a:3,b:4;path=a:4,b:5',
+            ['G2'] => 'town=revenue:20;path=a:2,b:_0;path=a:3,b:_0',
             ['G18'] => 'city=revenue:yellow_20|brown_30;path=a:0,b:1;path=a:1,b:2;path=a:0,b:_0;path=a:2,b:_0',
             ['H1'] => 'town=revenue:20;path=a:4,b:_0;path=a:5,b:_0',
             ['H3'] => 'city=revenue:yellow_20|brown_30;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0',
