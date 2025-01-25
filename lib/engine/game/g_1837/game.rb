@@ -641,6 +641,7 @@ module Engine
             minor = minor_by_id(company.id)
             minor.owner = player
             float_minor!(minor)
+            company.value = 0
           end
 
           abilities(company, :acquire_company) do |ability|
