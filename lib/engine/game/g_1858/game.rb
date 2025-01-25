@@ -53,9 +53,6 @@ module Engine
 
         GRAPH_CLASS = G1858::Graph
 
-        # These are the train types that determine the rusting timing of phase 4 trains.
-        GREY_TRAINS = %w[7E 6M 5D].freeze
-
         def corporation_opts
           two_player? ? { max_ownership_percent: 70 } : {}
         end
@@ -100,7 +97,6 @@ module Engine
           # The rusting event for 6H/4M trains is triggered by the number of
           # grey trains purchased, so track the number of these sold.
           @grey_trains_bought = 0
-          @phase4_train_trigger = two_player? ? 3 : 5
 
           @unbuyable_companies = []
           setup_unbuyable_privates
@@ -481,18 +477,18 @@ module Engine
         def buy_train(operator, train, price = nil)
           bought_from_depot = (train.owner == @depot)
           super
-          return if @grey_trains_bought >= @phase4_train_trigger
+          return if @grey_trains_bought >= phase4_train_trigger
           return unless bought_from_depot
           return unless self.class::GREY_TRAINS.include?(train.name)
 
           @grey_trains_bought += 1
-          ordinal = %w[First Second Third Fourth Fifth][@grey_trains_bought - 1]
+          ordinal = %w[First Second Third Fourth Fifth Sixth Seventh][@grey_trains_bought - 1]
           @log << "#{ordinal} grey train has been bought"
           maybe_rust_wounded_trains!(@grey_trains_bought, train)
         end
 
         def maybe_rust_wounded_trains!(grey_trains_bought, purchased_train)
-          rust_wounded_trains!(%w[6H 3M], purchased_train) if grey_trains_bought == @phase4_train_trigger
+          rust_wounded_trains!(%w[6H 3M], purchased_train) if grey_trains_bought == phase4_train_trigger
         end
 
         def rust_wounded_trains!(train_names, purchased_train)

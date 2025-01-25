@@ -179,6 +179,11 @@ module Engine
           },
         ].freeze
 
+        # These are the train types that determine the rusting timing of phase 4 trains.
+        GREY_TRAINS = %w[7E 6M 5D].freeze
+        # The number of trains that need to be bought depends on the number of players.
+        PHASE4_TRAINS_RUST = { 2 => 3, 3 => 5, 4 => 5, 5 => 5, 6 => 5 }.freeze
+
         TRAIN_COUNTS_NORMAL = {
           '2H' => 6,
           '4H' => 5,
@@ -203,8 +208,17 @@ module Engine
           two_player? ? TRAIN_COUNTS_2P[train[:name]] : TRAIN_COUNTS_NORMAL[train[:name]]
         end
 
+        def phase4_train_trigger
+          @phase4_train_trigger ||=
+            if self.class::PHASE4_TRAINS_RUST.is_a?(Hash)
+              self.class::PHASE4_TRAINS_RUST[@players.size]
+            else
+              self.class::PHASE4_TRAINS_RUST
+            end
+        end
+
         def timeline
-          ordinal = two_player? ? 'third' : 'fifth'
+          ordinal = %w[first second third fourth fifth sixth seventh][phase4_train_trigger - 1]
           @timeline = ['5D trains are available after the first 7E/6M train has been bought',
                        "6H/3M trains rust when the #{ordinal} 7E/6M/5D train is bought"]
         end
