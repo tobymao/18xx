@@ -323,7 +323,7 @@ module Engine
             sym: 'SD2',
             value: 120,
             desc: "Director's certificate of the minor company Kärntner Railway (SD2). The company " \
-                  "starts in Marburg (J16) with 90K starting capital.\n\n =Comes with the Mountain Railway " \
+                  "starts in Marburg (J16) with 90K starting capital.\n\nComes with the Mountain Railway " \
                   'Karawanken Railway (J12) that has a value of 120K and a revenue of 25K.',
             color: :orange,
             meta: { start_packet: true },

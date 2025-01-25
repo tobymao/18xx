@@ -286,7 +286,7 @@ module Engine
 
         def setup
           non_purchasable = @companies.flat_map do |c|
-            Array(c.meta['additional_companies']) + [c.meta['hidden'] ? c.id : nil]
+            [abilities(c, :acquire_company, time: 'any')&.company, c.meta['hidden'] ? c.id : nil]
           end.compact
           @companies.each { |company| company.owner = @bank unless non_purchasable.include?(company.id) }
           setup_mines
@@ -623,6 +623,7 @@ module Engine
         end
 
         def unowned_purchasable_companies(_entity)
+          @companies.select { |company| company.meta[:start_packet] }
           @companies.select { |c| c.owner == @bank }
         end
 
@@ -640,6 +641,7 @@ module Engine
             minor = minor_by_id(company.id)
             minor.owner = player
             float_minor!(minor)
+            company.value = 0
           end
 
           abilities(company, :acquire_company) do |ability|
