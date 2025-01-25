@@ -25,7 +25,7 @@ module View
               rust_schedule[rusts_on].append(name) unless rust_schedule[rusts_on].include?(name)
             end
             Array(train_variant[:obsolete_on]).each do |obsolete_on|
-              rust_schedule[obsolete_on].append(name) unless rust_schedule[obsolete_on].include?(name)
+              obsolete_schedule[obsolete_on].append(name) unless obsolete_schedule[obsolete_on].include?(name)
             end
           end
         end
@@ -55,8 +55,8 @@ module View
               else
                 @game.depot.upcoming.reject(&:reserved).group_by(&:name).map do |name, trains|
                   events = []
-                  events << h('div.left', "rusts #{rust_schedule[name].join(', ')}") if rust_schedule[name]
-                  events << h('div.left', "obsoletes #{obsolete_schedule[name].join(', ')}") if obsolete_schedule[name]
+                  events << h('div.left', "obsoletes #{obsolete_schedule[name].join(', ')}") unless obsolete_schedule[name].empty?
+                  events << h('div.left', "rusts #{rust_schedule[name].join(', ')}") unless rust_schedule[name].empty?
                   tds = [h(:td, @game.info_train_name(trains.first)),
                          h("td#{price_str_class}", @game.info_train_price(trains.first)),
                          h('td.right', "×#{trains.size}")]
