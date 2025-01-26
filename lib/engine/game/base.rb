@@ -1667,9 +1667,6 @@ module Engine
 
       def clear_graph_for_entity(entity)
         graph_for_entity(entity).clear
-      end
-
-      def clear_token_graph_for_entity(entity)
         token_graph_for_entity(entity).clear
       end
 
