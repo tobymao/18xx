@@ -754,8 +754,26 @@ module Engine
           @token_graph ||= Graph.new(self, backtracking: true)
         end
 
+        def upgrades_to?(from, to, special = false, selected_company: nil)
+          return yellow_town_tile_upgrades_to?(from, to) if from.color == :yellow && !from.towns.empty?
+
+          super
+        end
+
+        def yellow_town_tile_upgrades_to?(from, to)
+          # honors pre-existing track?
+          return false unless from.paths_are_subset_of?(to.paths)
+
+          if from.towns.one?
+            self.class::YELLOW_SINGLE_TOWN_UPGRADES.include?(to.name)
+          else
+            self.class::YELLOW_DOUBLE_TOWN_UPGRADES.include?(to.name)
+          end
+        end
+
         def legal_tile_rotation?(entity, hex, tile)
           return tile.rotation == 5 if tile.name == '436'
+          return false if !hex.tile.towns.empty? && !(hex.tile.exits - tile.towns.first.exits).empty?
 
           super
         end

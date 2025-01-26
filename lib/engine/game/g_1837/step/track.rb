@@ -26,6 +26,12 @@ module Engine
             end
             super
           end
+
+          def check_track_restrictions!(entity, old_tile, new_tile)
+            return if @game.class::YELLOW_DOUBLE_TOWN_UPGRADES.include?(new_tile.name)
+
+            super
+          end
         end
       end
     end
