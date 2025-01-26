@@ -227,6 +227,9 @@ module Engine
           },
         }.freeze
 
+        YELLOW_SINGLE_TOWN_UPGRADES = %w[410 411 412 413 414 415 416 417 418 419 420 421 422 423 424].freeze
+        YELLOW_DOUBLE_TOWN_UPGRADES = %w[87 88 204].freeze
+
         LOCATION_NAMES = {
           'C11' => 'Prague',
           'C23' => 'Krakow',
