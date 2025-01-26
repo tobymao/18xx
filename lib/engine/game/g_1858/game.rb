@@ -165,10 +165,6 @@ module Engine
           @graph_metre.clear
         end
 
-        def clear_token_graph_for_entity(entity)
-          clear_graph_for_entity(entity)
-        end
-
         def init_round
           if option_quick_start?
             quick_start

@@ -70,12 +70,12 @@ module Engine
             log_message += "#{@game.mesabi_token_counter} Mesabi tokens left in the game"
             @log << log_message
             corporation.mesabi_token = true
-            @game.clear_token_graph_for_entity(corporation)
+            @game.clear_graph_for_entity(corporation)
           end
 
           def hex_neighbors(entity, hex)
             connected = super
-            @game.clear_token_graph_for_entity(entity) if entity.tokens.none?(&:city)
+            @game.clear_graph_for_entity(entity) if entity.tokens.none?(&:city)
             connected
           end
 
