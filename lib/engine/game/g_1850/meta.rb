@@ -8,7 +8,7 @@ module Engine
       module Meta
         include Game::Meta
 
-        DEV_STAGE = :alpha
+        DEV_STAGE = :beta
         DEPENDS_ON = '1870'
         GAME_TITLE = '1850'
         GAME_SUBTITLE = 'The MidWest'
