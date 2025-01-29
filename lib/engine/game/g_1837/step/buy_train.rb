@@ -17,12 +17,18 @@ module Engine
             actions
           end
 
+          def help
+            return 'A train may only be surrendered in order to buy a new train' unless scrappable_trains(current_entity).empty?
+
+            super
+          end
+
           def ebuy_president_can_contribute?(corporation)
             super && president_may_contribute?(corporation)
           end
 
           def president_may_contribute?(entity)
-            !can_finance?(entity) && super
+            !@must_buy_replacement && !can_finance?(entity) && super
           end
 
           def buyable_train_variants(train, entity)
@@ -43,10 +49,15 @@ module Engine
             true
           end
 
+          def must_buy_train?(entity)
+            @must_buy_replacement || super
+          end
+
           def scrappable_trains(entity)
             return [] if @game.num_corp_trains(entity) < @game.train_limit(entity)
 
-            entity.trains.select { |t| surrender_cost(t) <= entity.cash }
+            min_train_purchase_price = @game.can_buy_train_from_others? ? 1 : @depot.min_depot_price
+            entity.trains.select { |t| min_train_purchase_price + surrender_cost(t) <= entity.cash }
           end
 
           def surrender_cost(train)
@@ -80,11 +91,22 @@ module Engine
                     " a #{train.name} train to the bank"
             entity.spend(surrender_cost(train), @game.bank)
             @game.depot.reclaim_train(train)
+            @must_buy_replacement = true
           end
 
           def process_buy_train(action)
+            @must_buy_replacement = false
             super
             action.train.operated = true
+          end
+
+          def pass_if_cannot_buy_train?(entity)
+            super && scrappable_trains(entity).empty?
+          end
+
+          def setup
+            super
+            @must_buy_replacement = false
           end
         end
       end
