@@ -341,7 +341,7 @@ module Engine
             ['H22'] => 'city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:5,b:_0;' \
                        'path=a:1,b:_1;path=a:3,b:_1;label=Bu',
             ['H26'] => 'path=a:1,b:4',
-            ['J16'] => 'city=revenue:20;path=a:1,b:_0;label=X',
+            ['J16'] => 'city=revenue:30;path=a:1,b:_0;label=X',
             ['L22'] => 'town=revenue:10;path=a:2,b:_0;path=a:4,b:_0',
 
           },
