@@ -523,7 +523,7 @@ module Engine
             @log << "#{corporation.name} receives token (#{new_token.used ? new_token.city.hex.id : 'charter'})"
           end
 
-          close_minor!(minor)
+          coal_company_exchange ? close_minor!(minor) : close_corporation(minor, quiet: true)
           graph.clear_graph_for(corporation)
         end
 
