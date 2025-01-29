@@ -523,7 +523,7 @@ module Engine
             @log << "#{corporation.name} receives token (#{new_token.used ? new_token.city.hex.id : 'charter'})"
           end
 
-          close_minor!(minor)
+          coal_company_exchange ? close_minor!(minor) : close_corporation(minor, quiet: true)
           graph.clear_graph_for(corporation)
         end
 
@@ -691,6 +691,12 @@ module Engine
 
         def remove_reservations!(entity, coordinates)
           coordinates.each { |coord| hex_by_id(coord).tile.remove_reservation!(entity) }
+        end
+
+        def train_limit(entity)
+          return 2 if ug_minors.include?(entity)
+
+          super
         end
 
         def must_buy_train?(entity)
