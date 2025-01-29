@@ -693,6 +693,12 @@ module Engine
           coordinates.each { |coord| hex_by_id(coord).tile.remove_reservation!(entity) }
         end
 
+        def train_limit(entity)
+          return 2 if ug_minors.include?(entity)
+
+          super
+        end
+
         def must_buy_train?(entity)
           %i[major national].include?(entity.type) && super
         end
