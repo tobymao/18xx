@@ -42,6 +42,12 @@ module Engine
             super
             @game.set_par(action.corporation, action.share_price, action.slot)
           end
+
+          def can_sell?(entity, bundle)
+            return false if bundle.corporation.type == :minor
+
+            super
+          end
         end
       end
     end
