@@ -8,6 +8,8 @@ module Engine
 
     def share_price(coordinates)
       row, column = coordinates
+      return if row.negative? || column.negative?
+
       @market.market[row]&.[](column)
     end
 
