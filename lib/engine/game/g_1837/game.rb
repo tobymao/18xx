@@ -25,6 +25,7 @@ module Engine
 
         CERT_LIMIT = { 3 => 28, 4 => 21, 5 => 17, 6 => 14, 7 => 12 }.freeze
 
+        SELL_BUY_ORDER = :sell_buy
         SELL_AFTER = :operate
         SELL_MOVEMENT = :down_block
         MUST_SELL_IN_BLOCKS = true
