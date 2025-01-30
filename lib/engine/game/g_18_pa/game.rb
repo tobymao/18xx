@@ -31,7 +31,7 @@ module Engine
         SELL_AFTER = :operate
         SOLD_SHARES_DESTINATION = :corporation
         MARKET_SHARE_LIMIT = 80 # percent
-        EBUY_OTHER_VALUE = false
+        EBUY_FROM_OTHERS = :never
         TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }].freeze
 
         BANK_CASH = 8_000

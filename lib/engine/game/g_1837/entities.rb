@@ -251,8 +251,8 @@ module Engine
             desc: "Director's certificate of the minor company Kaiser Ferdinand North Railway (KK1). The company " \
                   'starts in Vienna (G17) with 90K starting capital.',
             color: :brown,
-            meta: { start_packet: true, type: :minor },
-            abilities: [{ type: 'no_buy' }],
+            meta: { start_packet: true },
+            abilities: [{ type: 'shares', shares: 'KK1_0' }],
           },
           {
             name: 'Kaiserin Elisabeth-Railway (KK2)',
@@ -261,8 +261,8 @@ module Engine
             desc: "Director's certificate of the minor company Kaiserin Elisabeth-Railway (KK2). The company " \
                   'starts in Vienna (G17) with 140K starting capital.',
             color: :brown,
-            meta: { start_packet: true, type: :minor },
-            abilities: [{ type: 'no_buy' }],
+            meta: { start_packet: true },
+            abilities: [{ type: 'shares', shares: 'KK2_0' }],
           },
           {
             name: 'Kaiser Franz Joseph-Railway (KK3)',
@@ -271,8 +271,8 @@ module Engine
             desc: "Director's certificate of the minor company Kaiser Franz Joseph-Railway (KK3). The company " \
                   'starts in Vienna (G17) with 90K starting capital.',
             color: :brown,
-            meta: { start_packet: true, type: :minor },
-            abilities: [{ type: 'no_buy' }],
+            meta: { start_packet: true },
+            abilities: [{ type: 'shares', shares: 'KK3_0' }],
           },
           {
             name: 'Pest-Waitzen Railway (UG1)',
@@ -281,8 +281,8 @@ module Engine
             desc: "Director's certificate of the minor company Pest-Waitzen Railway (UG1) " \
                   'starts in Budapest (H22) with 180K starting capital.',
             color: :pink,
-            meta: { start_packet: true, type: :minor },
-            abilities: [{ type: 'no_buy' }],
+            meta: { start_packet: true },
+            abilities: [{ type: 'shares', shares: 'UG1_0' }],
           },
           {
             name: 'Mohacs-Fünfkirchener Railway (UG2)',
@@ -291,8 +291,8 @@ module Engine
             desc: "Director's certificate of the minor company Mohacs-Fünfkirchener Railway (UG2). The company " \
                   'starts in Fün%irchen (K21) with 90K starting capital.',
             color: :pink,
-            meta: { start_packet: true, type: :minor },
-            abilities: [{ type: 'no_buy' }],
+            meta: { start_packet: true },
+            abilities: [{ type: 'shares', shares: 'UG2_0' }],
           },
           {
             name: 'Pest-Czegled Railway (UG3)',
@@ -301,8 +301,8 @@ module Engine
             desc: "Director's certificate of the minor company Pest-Czegled Railway (UG3). The company " \
                   'starts in Budapest (H22) with 180K starting capital.',
             color: :pink,
-            meta: { start_packet: true, type: :minor },
-            abilities: [{ type: 'no_buy' }],
+            meta: { start_packet: true },
+            abilities: [{ type: 'shares', shares: 'UG3_0' }],
           },
           {
             name: 'Vienna-Gloggnitzer Railway (SD1)',
@@ -312,19 +312,25 @@ module Engine
                   "starts in Vienna (G17) with 90K starting capital.\n\nComes with the Mountain Railway " \
                   'Semmering Railway (H16) that has a value of 100K and a revenue of 5K.',
             color: :orange,
-            meta: { start_packet: true, type: :minor, additional_companies: ['Semmering'] },
-            abilities: [{ type: 'no_buy' }],
+            meta: { start_packet: true },
+            abilities: [
+              { type: 'shares', shares: 'SD1_0' },
+              { type: 'acquire_company', company: 'Semmering' },
+            ],
           },
           {
             name: 'Kärntner Railway (SD2)',
             sym: 'SD2',
             value: 120,
             desc: "Director's certificate of the minor company Kärntner Railway (SD2). The company " \
-                  "starts in Marburg (J16) with 90K starting capital.\n\n =Comes with the Mountain Railway " \
+                  "starts in Marburg (J16) with 90K starting capital.\n\nComes with the Mountain Railway " \
                   'Karawanken Railway (J12) that has a value of 120K and a revenue of 25K.',
             color: :orange,
-            meta: { start_packet: true, type: :minor, additional_companies: ['Karawanken'] },
-            abilities: [{ type: 'no_buy' }],
+            meta: { start_packet: true },
+            abilities: [
+              { type: 'shares', shares: 'SD2_0' },
+              { type: 'acquire_company', company: 'Karawanken' },
+            ],
           },
           {
             name: 'North Tyrol Railway (SD3)',
@@ -334,8 +340,11 @@ module Engine
                   "starts in Innsbruck (I7) with 90K starting capital.\n\nComes with the Mountain Railway " \
                   'Arlberg Railway (I5) that has a value of 135K and a revenue of 20K.',
             color: :orange,
-            meta: { start_packet: true, type: :minor, additional_companies: ['Arlberg'] },
-            abilities: [{ type: 'no_buy' }],
+            meta: { start_packet: true },
+            abilities: [
+              { type: 'shares', shares: 'SD3_0' },
+              { type: 'acquire_company', company: 'Arlberg' },
+            ],
           },
           {
             name: 'South Tyrol Railway (SD4)',
@@ -345,8 +354,11 @@ module Engine
                   "starts in Bozen (K5) with 90K starting capital.\n\nComes with the Mountain Railway " \
                   'Brenner Railway (J6) that has a value of 90K and a revenue of 15K.',
             color: :orange,
-            meta: { start_packet: true, type: :minor, additional_companies: ['Brenner'] },
-            abilities: [{ type: 'no_buy' }],
+            meta: { start_packet: true },
+            abilities: [
+              { type: 'shares', shares: 'SD4_0' },
+              { type: 'acquire_company', company: 'Brenner' },
+            ],
           },
           {
             name: 'Venice-Lombardy Railway (SD5)',
@@ -356,8 +368,11 @@ module Engine
                   "starts in Milan (L2) or Venice (L8), the director chooses, with 90K starting capital.\n\n" \
                   'Comes with the Mountain Railway Karst Railway (K13) that has a value of 70K and a revenue of 10K.',
             color: :orange,
-            meta: { start_packet: true, type: :minor, additional_companies: ['Karst'] },
-            abilities: [{ type: 'no_buy' }],
+            meta: { start_packet: true },
+            abilities: [
+              { type: 'shares', shares: 'SD5_0' },
+              { type: 'acquire_company', company: 'Karst' },
+            ],
           },
           {
             name: 'Pest-Waitzen Railway (UG1) share',
@@ -366,7 +381,7 @@ module Engine
             desc: 'A share of the minor company Pest-Waitzen Railway (UG1).',
             color: :pink,
             meta: { type: :share },
-            abilities: [{ type: 'no_buy' }],
+            abilities: [{ type: 'shares', shares: 'UG1_1' }],
           },
           {
             name: 'Pest-Czegled Railway (UG3) share',
@@ -375,7 +390,7 @@ module Engine
             desc: 'A share of the minor company Pest-Czegled Railway (UG3).',
             color: :pink,
             meta: { type: :share },
-            abilities: [{ type: 'no_buy' }],
+            abilities: [{ type: 'shares', shares: 'UG3_1' }],
           },
           {
             name: 'Semmering Railway',
@@ -687,12 +702,18 @@ module Engine
             coordinates: 'F26',
             color: :black,
           },
+        ].freeze
+
+        CORPORATIONS = [
           {
             name: 'Vienna-Gloggnitzer Railway',
             sym: 'SD1',
-            type: 'minor',
             logo: '1837/sd1',
             tokens: [0],
+            reserved_shares: [100],
+            float_percent: 50,
+            max_ownership_percent: 100,
+            type: 'minor',
             coordinates: 'G17',
             city: 0,
             color: :orange,
@@ -700,45 +721,60 @@ module Engine
           {
             name: 'Kärntner Railway',
             sym: 'SD2',
-            type: 'minor',
             logo: '1837/sd2',
             tokens: [0],
+            reserved_shares: [100],
+            float_percent: 50,
+            max_ownership_percent: 100,
+            type: 'minor',
             coordinates: 'J16',
             color: :orange,
           },
           {
             name: 'North Tyrol Railway',
             sym: 'SD3',
-            type: 'minor',
             logo: '1837/sd3',
             tokens: [0],
+            reserved_shares: [100],
+            float_percent: 50,
+            max_ownership_percent: 100,
+            type: 'minor',
             coordinates: 'I7',
             color: :orange,
           },
           {
             name: 'South Tyrol Railway',
             sym: 'SD4',
-            type: 'minor',
             logo: '1837/sd4',
             tokens: [0],
+            reserved_shares: [100],
+            float_percent: 50,
+            max_ownership_percent: 100,
+            type: 'minor',
             coordinates: 'K5',
             color: :orange,
           },
           {
             name: 'Venice-Lombardy Railway',
             sym: 'SD5',
-            type: 'minor',
             logo: '1837/sd5',
             tokens: [0],
+            reserved_shares: [100],
+            float_percent: 50,
+            max_ownership_percent: 100,
+            type: 'minor',
             coordinates: %w[L2 L8],
             color: :orange,
           },
           {
             name: 'Kaiser Ferdinand North Railway',
             sym: 'KK1',
-            type: 'minor',
             logo: '1837/kk1',
             tokens: [0],
+            reserved_shares: [100],
+            float_percent: 50,
+            max_ownership_percent: 100,
+            type: 'minor',
             coordinates: 'G17',
             city: 3,
             color: :brown,
@@ -746,9 +782,12 @@ module Engine
           {
             name: 'Kaiserin Elisabeth-Railway',
             sym: 'KK2',
-            type: 'minor',
             logo: '1837/kk2',
             tokens: [0],
+            reserved_shares: [100],
+            float_percent: 50,
+            max_ownership_percent: 100,
+            type: 'minor',
             coordinates: 'G17',
             city: 1,
             color: :brown,
@@ -756,9 +795,12 @@ module Engine
           {
             name: 'Kaiser Franz Joseph-Railway',
             sym: 'KK3',
-            type: 'minor',
             logo: '1837/kk3',
             tokens: [0],
+            reserved_shares: [100],
+            float_percent: 50,
+            max_ownership_percent: 100,
+            type: 'minor',
             coordinates: 'G17',
             city: 2,
             color: :brown,
@@ -766,9 +808,13 @@ module Engine
           {
             name: 'Pest-Waitzen Railway',
             sym: 'UG1',
-            type: 'minor',
             logo: '1837/ug1',
             tokens: [0],
+            reserved_shares: [50, 50],
+            treasury_as_holding: true,
+            float_percent: 50,
+            max_ownership_percent: 100,
+            type: 'minor',
             coordinates: 'H22',
             city: 1,
             color: :pink,
@@ -776,25 +822,28 @@ module Engine
           {
             name: 'Mohacs-Fünfkirchener Railway',
             sym: 'UG2',
-            type: 'minor',
             logo: '1837/ug2',
             tokens: [0],
+            reserved_shares: [100],
+            float_percent: 50,
+            max_ownership_percent: 100,
+            type: 'minor',
             coordinates: 'K21',
             color: :pink,
           },
           {
             name: 'Pest-Czegled Railway',
             sym: 'UG3',
-            type: 'minor',
             logo: '1837/ug3',
             tokens: [0],
+            reserved_shares: [50, 50],
+            float_percent: 50,
+            max_ownership_percent: 100,
+            type: 'minor',
             coordinates: 'H22',
             city: 0,
             color: :pink,
           },
-        ].freeze
-
-        CORPORATIONS = [
           {
             name: 'Bohemian Commercial Railway',
             sym: 'BK',

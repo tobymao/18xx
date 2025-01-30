@@ -138,7 +138,7 @@ module Engine
         SELL_AFTER = :p_any_operate
         SELL_BUY_ORDER = :sell_buy
         SELL_MOVEMENT = :left_block_pres
-        EBUY_OTHER_VALUE = false
+        EBUY_FROM_OTHERS = :never
         EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
         MUST_EMERGENCY_ISSUE_BEFORE_EBUY = true
         HOME_TOKEN_TIMING = :float

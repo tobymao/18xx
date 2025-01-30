@@ -10,7 +10,7 @@ require_relative 'trains'
 
 module Engine
   module Game
-    module G18BF
+    module G1807
       class Game < G1867::Game
         include Entities
         include Map
@@ -18,7 +18,7 @@ module Engine
         include Tiles
         include Trains
 
-        include_meta(G18BF::Meta)
+        include_meta(G1807::Meta)
 
         GAME_END_REASONS_TEXT = Base::GAME_END_REASONS_TEXT.merge(
           custom: 'The first 4+4 or 6G train is purchased.',
@@ -50,7 +50,7 @@ module Engine
         end
 
         def add_neutral_tokens(_hexes)
-          # No green placeholder tokens in 18BF.
+          # No green placeholder tokens in 1807.
           @green_tokens = []
         end
 
@@ -83,7 +83,7 @@ module Engine
             G1867::Step::MajorTrainless,
             Engine::Step::BuyCompany,
             G1867::Step::RedeemShares,
-            G18BF::Step::SpecialTrack,
+            G1807::Step::SpecialTrack,
             G1867::Step::Track,
             G1867::Step::Token,
             Engine::Step::Route,
@@ -105,12 +105,14 @@ module Engine
         end
 
         def event_u1_available!
-          u1 = @future_companies.delete { |company| company.sym == 'U1' }
+          u1 = @future_companies.find { |company| company.sym == 'U1' }
+          @future_companies.delete(u1)
           @companies << u1
         end
 
         def event_u2_available!
-          u2 = @future_companies.delete { |company| company.sym == 'U2' }
+          u2 = @future_companies.find { |company| company.sym == 'U2' }
+          @future_companies.delete(u2)
           @companies << u2
         end
 

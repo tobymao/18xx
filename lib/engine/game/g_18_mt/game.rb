@@ -59,7 +59,7 @@ module Engine
         MUST_BUY_TRAIN = :always
         MUST_EMERGENCY_ISSUE_BEFORE_EBUY = true
         EBUY_SELL_MORE_THAN_NEEDED = false
-        EBUY_OTHER_VALUE = false
+        EBUY_FROM_OTHERS = :never
 
         CORPORATE_BUY_SHARE_SINGLE_CORP_ONLY = true
         CORPORATE_BUY_SHARE_ALLOW_BUY_FROM_PRESIDENT = true

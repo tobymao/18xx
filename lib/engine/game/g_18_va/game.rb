@@ -218,7 +218,7 @@ module Engine
         MUST_BUY_TRAIN = :always
         SELL_BUY_ORDER = :sell_buy
         SELL_AFTER = :operate
-        EBUY_OTHER_VALUE = true
+        EBUY_FROM_OTHERS = :value
         EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = true
         CLOSED_CORP_TRAINS_REMOVED = false
         ONLY_HIGHEST_BID_COMMITTED = true

@@ -95,7 +95,7 @@ module Engine
         SELL_BUY_ORDER = :sell_buy
         GAME_END_CHECK = { custom: :immediate }.freeze
         SOLD_OUT_INCREASE = false
-        EBUY_OTHER_VALUE = false
+        EBUY_FROM_OTHERS = :never
         PRESIDENT_SALES_TO_MARKET = false
         CAPITALIZATION = :incremental
 

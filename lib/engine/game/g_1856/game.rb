@@ -299,7 +299,7 @@ module Engine
         HOME_TOKEN_TIMING = :operate
         ALLOW_REMOVING_TOWNS = true
 
-        EBUY_OTHER_VALUE = false
+        EBUY_FROM_OTHERS = :never
 
         RIGHT_COST = 50
 

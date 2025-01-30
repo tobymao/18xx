@@ -44,8 +44,6 @@ module Engine
     end
 
     def init_variants(variants)
-      variants ||= []
-
       @variant = {
         name: @name,
         distance: @distance,
@@ -60,8 +58,9 @@ module Engine
       }
 
       # Primary variant should be at the head of the list.
-      variants.unshift(@variant)
-      @variants = variants.group_by { |h| h[:name] }.transform_values(&:first)
+      @variants = Array([@variant, *variants])
+                       .group_by { |v| v[:name] }
+                       .transform_values(&:first)
     end
 
     def variant=(new_variant)

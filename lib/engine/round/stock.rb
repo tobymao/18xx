@@ -96,11 +96,11 @@ module Engine
       end
 
       def sold_out_stock_movement(corp)
-        @game.stock_market.move_up(corp)
+        @game.sold_out_stock_movement(corp)
       end
 
       def sold_out?(corporation)
-        corporation.player_share_holders.values.sum == 100
+        @game.sold_out?(corporation)
       end
 
       def inspect

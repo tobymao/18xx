@@ -8,14 +8,27 @@ module Engine
       module Step
         class BuyTrain < Engine::Step::BuyTrain
           def actions(entity)
-            return [] if entity != current_entity
-
             actions = super.clone
-            unless scrappable_trains(entity).empty?
+            if entity.operator? && !scrappable_trains(entity).empty?
               actions << 'pass' if actions.empty?
               actions << 'scrap_train'
             end
+            actions.delete('pass') if must_buy_train?(entity)
             actions
+          end
+
+          def help
+            return 'A train may only be surrendered in order to buy a new train' unless scrappable_trains(current_entity).empty?
+
+            super
+          end
+
+          def ebuy_president_can_contribute?(corporation)
+            super && president_may_contribute?(corporation)
+          end
+
+          def president_may_contribute?(entity)
+            !@must_buy_replacement && !can_finance?(entity) && super
           end
 
           def buyable_train_variants(train, entity)
@@ -25,7 +38,9 @@ module Engine
           end
 
           def other_trains(entity)
-            trains = super
+            return [] if can_finance?(entity)
+
+            trains = super.reject { |t| t.owner.cash.negative? }
             trains.select! { |t| @game.goods_train?(t.name) } if entity.type == :coal
             trains
           end
@@ -34,10 +49,15 @@ module Engine
             true
           end
 
+          def must_buy_train?(entity)
+            @must_buy_replacement || super
+          end
+
           def scrappable_trains(entity)
             return [] if @game.num_corp_trains(entity) < @game.train_limit(entity)
 
-            entity.trains.select { |t| surrender_cost(t) <= entity.cash }
+            min_train_purchase_price = @game.can_buy_train_from_others? ? 1 : @depot.min_depot_price
+            entity.trains.select { |t| min_train_purchase_price + surrender_cost(t) <= entity.cash }
           end
 
           def surrender_cost(train)
@@ -56,6 +76,12 @@ module Engine
             'Trains to Surrender'
           end
 
+          def can_finance?(entity)
+            entity.trains.empty? &&
+              needed_cash(entity) > buying_power(entity) &&
+              (entity.receivership? || @round.bankrupting_corporations.include?(entity))
+          end
+
           def process_scrap_train(action)
             entity = action.entity
             train = action.train
@@ -65,6 +91,22 @@ module Engine
                     " a #{train.name} train to the bank"
             entity.spend(surrender_cost(train), @game.bank)
             @game.depot.reclaim_train(train)
+            @must_buy_replacement = true
+          end
+
+          def process_buy_train(action)
+            @must_buy_replacement = false
+            super
+            action.train.operated = true
+          end
+
+          def pass_if_cannot_buy_train?(entity)
+            super && scrappable_trains(entity).empty?
+          end
+
+          def setup
+            super
+            @must_buy_replacement = false
           end
         end
       end

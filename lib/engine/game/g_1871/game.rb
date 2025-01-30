@@ -42,7 +42,7 @@ module Engine
         CERT_LIMIT = { 3 => 20, 4 => 16 }.freeze
         CURRENCY_FORMAT_STR = '$%s'
         DISCARDED_TRAINS = :remove
-        EBUY_OTHER_VALUE = false
+        EBUY_FROM_OTHERS = :never
         EBUY_PRES_SWAP = true
         EBUY_OWNER_MUST_HELP = true
         GAME_END_CHECK = { bankrupt: :immediate, final_phase: :one_more_full_or_set }.freeze

@@ -333,7 +333,7 @@ module Engine
 
           tile.cities.first.place_token(entity, tc, check_tokenable: false)
           @log << "#{entity.name} places a Ticket Counter on tile"
-          clear_token_graph_for_entity(entity)
+          clear_graph_for_entity(entity)
         end
 
         # allow 2nd token on hex if it's a different type
