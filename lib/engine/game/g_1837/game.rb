@@ -490,12 +490,20 @@ module Engine
           coal_company_exchange = minor.type == :coal
           @log << "#{minor.name} merges into #{corporation.name}"
 
-          @log << "#{minor.owner.name} receives 1 share of #{corporation.name}"
-          share = corporation.reserved_shares[0]
-          share.buyable = true
-          @share_pool.transfer_shares(ShareBundle.new(share), minor.owner, allow_president_change: allow_president_change)
-          if @round.respond_to?(:non_paying_shares) && operated_this_round?(minor)
-            @round.non_paying_shares[minor.owner][corporation] += 1
+          if coal_company_exchange
+            { minor.owner => 1 }
+          else
+            minor.share_holders.to_h { |sh, _| [sh, sh.shares_of(minor).size] }
+          end.each do |sh, num_shares|
+            next if num_shares.zero?
+
+            @log << "#{sh.name} receives #{num_shares} share#{num_shares > 1 ? 's' : ''} of #{corporation.name}"
+            shares = corporation.reserved_shares.take(num_shares)
+            shares.each { |s| s.buyable = true }
+            @share_pool.transfer_shares(ShareBundle.new(shares), sh, allow_president_change: allow_president_change)
+            if @round.respond_to?(:non_paying_shares) && operated_this_round?(minor)
+              @round.non_paying_shares[sh][corporation] += num_shares
+            end
           end
 
           if minor.cash.positive?
