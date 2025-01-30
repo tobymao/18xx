@@ -113,7 +113,7 @@ module Engine
             name: '3+1',
             num: 2,
             distance: [
-              { 'nodes' => %w[city offboard], 'pay' => 3, 'visit' => 3 },
+              { 'nodes' => %w[town city offboard], 'pay' => 3, 'visit' => 3 },
               { 'nodes' => %w[town], 'pay' => 1, 'visit' => 1 },
             ],
             price: 280,
@@ -140,7 +140,7 @@ module Engine
             name: '4+1',
             num: 1,
             distance: [
-              { 'nodes' => %w[city offboard], 'pay' => 4, 'visit' => 4 },
+              { 'nodes' => %w[town city offboard], 'pay' => 4, 'visit' => 4 },
               { 'nodes' => %w[town], 'pay' => 1, 'visit' => 1 },
             ],
             price: 530,
@@ -150,7 +150,7 @@ module Engine
             name: '4+2',
             num: 1,
             distance: [
-              { 'nodes' => %w[city offboard], 'pay' => 4, 'visit' => 4 },
+              { 'nodes' => %w[town city offboard], 'pay' => 4, 'visit' => 4 },
               { 'nodes' => %w[town], 'pay' => 2, 'visit' => 2 },
             ],
             price: 560,
@@ -176,7 +176,7 @@ module Engine
             name: '5+2',
             num: 1,
             distance: [
-              { 'nodes' => %w[city offboard], 'pay' => 5, 'visit' => 5 },
+              { 'nodes' => %w[town city offboard], 'pay' => 5, 'visit' => 5 },
               { 'nodes' => %w[town], 'pay' => 2, 'visit' => 2 },
             ],
             price: 860,
@@ -185,7 +185,7 @@ module Engine
             name: '5+3',
             num: 1,
             distance: [
-              { 'nodes' => %w[city offboard], 'pay' => 5, 'visit' => 5 },
+              { 'nodes' => %w[town city offboard], 'pay' => 5, 'visit' => 5 },
               { 'nodes' => %w[town], 'pay' => 3, 'visit' => 3 },
             ],
             price: 900,
@@ -194,7 +194,7 @@ module Engine
             name: '5+4',
             num: 20,
             distance: [
-              { 'nodes' => %w[city offboard], 'pay' => 5, 'visit' => 5 },
+              { 'nodes' => %w[town city offboard], 'pay' => 5, 'visit' => 5 },
               { 'nodes' => %w[town], 'pay' => 4, 'visit' => 4 },
             ],
             price: 960,
