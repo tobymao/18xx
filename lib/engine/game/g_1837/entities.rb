@@ -20,7 +20,7 @@ module Engine
             value: 40,
             desc: 'Located in E11 with 100K starting capital. Coal companies cannot be sold and can only run ' \
                   'G trains. The company can be exchanged for a 10% share of Bohemian Commercial Railway (BK) at ' \
-                  'the start of an operating round.',
+                  'the start of a stock or operating round.',
             color: :black,
             text_color: :white,
             meta: { start_packet: true, type: :coal },
@@ -34,7 +34,7 @@ module Engine
             value: 40,
             desc: 'Located in A13 with 100K starting capital. Coal companies cannot be sold and can only run ' \
                   'G trains. The company can be exchanged for a 10% share of Bohemian Commercial Railway (BK) at ' \
-                  'the start of an operating round.',
+                  'the start of a stock or operating round.',
             color: :black,
             text_color: :white,
             meta: { start_packet: true, type: :coal },
@@ -47,8 +47,8 @@ module Engine
             sym: 'EOD',
             value: 40,
             desc: 'Located in C19 with 100K starting capital. Coal companies cannot be sold and can only run ' \
-                  'G trains. The company can be exchanged for a 10% share of Moravian-Silesian Railway (MS) at the ' \
-                  'start of an operating round.',
+                  'G trains. The company can be exchanged for a 10% share of Moravian-Silesian Railway (MS) at ' \
+                  'the start of a stock or operating round.',
             color: :black,
             text_color: :white,
             meta: { start_packet: true, type: :coal },
@@ -61,8 +61,8 @@ module Engine
             sym: 'EKT',
             value: 40,
             desc: 'Located in C21 with 100K starting capital. Coal companies cannot be sold and can only run ' \
-                  'G trains. The company can be exchanged for a 10% share of Moravian-Silesian Railway (MS) at the ' \
-                  'start of an operating round.',
+                  'G trains. The company can be exchanged for a 10% share of Moravian-Silesian Railway (MS) at ' \
+                  'the start of a stock or operating round.',
             color: :black,
             text_color: :white,
             meta: { start_packet: true, type: :coal },
@@ -75,8 +75,8 @@ module Engine
             sym: 'MLB',
             value: 40,
             desc: 'Located in B32 with 100K starting capital. Coal companies cannot be sold and can only run ' \
-                  'G trains. The company can be exchanged for a 10% share of Carl Ludwig’s Railway (CL) at the ' \
-                  'start of an operating round.',
+                  'G trains. The company can be exchanged for a 10% share of Carl Ludwig’s Railway (CL) at ' \
+                  'the start of a stock or operating round.',
             color: :black,
             text_color: :white,
             meta: { start_packet: true, type: :coal },
@@ -89,8 +89,8 @@ module Engine
             sym: 'ZKB',
             value: 40,
             desc: 'Located in K33 with 100K starting capital. Coal companies cannot be sold and can only run ' \
-                  'G trains. The company can be exchanged for a 10% share of Transylvanian Railway (TR) at the ' \
-                  'start of an operating round.',
+                  'G trains. The company can be exchanged for a 10% share of Transylvanian Railway (TR) at ' \
+                  'the start of a stock or operating round.',
             color: :black,
             text_color: :white,
             meta: { start_packet: true, type: :coal },
@@ -103,8 +103,8 @@ module Engine
             sym: 'SPB',
             value: 40,
             desc: 'Located in K31 with 100K starting capital. Coal companies cannot be sold and can only run ' \
-                  'G trains. The company can be exchanged for a 10% share of Transylvanian Railway (TR) at the ' \
-                  'start of an operating round.',
+                  'G trains. The company can be exchanged for a 10% share of Transylvanian Railway (TR) at ' \
+                  'the start of a stock or operating round.',
             color: :black,
             text_color: :white,
             meta: { start_packet: true, type: :coal },
@@ -117,8 +117,8 @@ module Engine
             sym: 'LRB',
             value: 40,
             desc: 'Located in L30 with 100K starting capital. Coal companies cannot be sold and can only run ' \
-                  'G trains. The company can be exchanged for a 10% share of Tisza Railway (TI) at the start of ' \
-                  'an operating round.',
+                  'G trains. The company can be exchanged for a 10% share of Tisza Railway (TI) at ' \
+                  'the start of a stock or operating round.',
             color: :black,
             text_color: :white,
             meta: { start_packet: true, type: :coal },
@@ -132,7 +132,7 @@ module Engine
             value: 40,
             desc: 'Located in P20 with 100K starting capital. Coal companies cannot be sold and can only run ' \
                   'G trains. The company can be exchanged for a 10% share of Bosnia-Herzegovina Railway (BH) ' \
-                  'at the start of an operating round.',
+                  'at the start of a stock or operating round.',
             color: :black,
             text_color: :white,
             meta: { start_packet: true, type: :coal },
@@ -145,8 +145,8 @@ module Engine
             sym: 'EHS',
             value: 40,
             desc: 'Located in F26 with 100K starting capital. Coal companies cannot be sold and can only run ' \
-                  'G trains. The company can be exchanged for a 10% share of Tisza Railway (TI) at the start of ' \
-                  'an operating round.',
+                  'G trains. The company can be exchanged for a 10% share of Tisza Railway (TI) at ' \
+                  'the start of a stock or operating round.',
             color: :black,
             text_color: :white,
             meta: { start_packet: true, type: :coal },
