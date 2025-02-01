@@ -35,6 +35,14 @@ module Engine
         pending_token[:entity]
       end
 
+      def active_entities
+        [pending_entity]
+      end
+
+      def override_entities
+        active_entities
+      end
+
       def token
         pending_token[:token]
       end
