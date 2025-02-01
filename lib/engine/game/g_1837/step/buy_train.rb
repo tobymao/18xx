@@ -28,7 +28,10 @@ module Engine
           end
 
           def president_may_contribute?(entity)
-            !@must_buy_replacement && !can_finance?(entity) && super
+            !@must_buy_replacement &&
+              !can_finance?(entity) &&
+              (@game.can_buy_train_from_others? || @depot.depot_trains.map(&:price).max > entity.cash) &&
+              super
           end
 
           def buyable_train_variants(train, entity)
