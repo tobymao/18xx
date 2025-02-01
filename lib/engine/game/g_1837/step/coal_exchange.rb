@@ -18,7 +18,7 @@ module Engine
           end
 
           def auto_actions(entity)
-            return [] unless @game.mandatory_coal_company_exchange?(entity)
+            return [] unless @game.mandatory_coal_minor_exchange?(entity)
 
             [Action::Choose.new(entity, choice: CHOICES[:exchange])]
           end
@@ -28,7 +28,7 @@ module Engine
           end
 
           def can_exchange?(entity)
-            entity.company? && !entity.closed?
+            !entity.closed? && @game.coal_minor?(entity)
           end
 
           def choice_name
@@ -46,16 +46,16 @@ module Engine
           def process_choose(action)
             entity = action.entity
             if action.choice == CHOICES[:exchange]
-              @log << "#{entity.sym} must be exchanged" if @game.mandatory_coal_company_exchange?(entity)
-              @game.exchange_coal_company(entity)
+              @log << "#{entity.id} must be exchanged" if @game.mandatory_coal_minor_exchange?(entity)
+              @game.exchange_coal_minor(entity)
             else
-              @log << "#{entity.sym} declines exchange"
+              @log << "#{entity.id} declines exchange"
+              pass!
             end
-            pass!
           end
 
           def log_skip(entity)
-            @log << "#{entity.sym} cannot exchange" if entity.company?
+            @log << "#{entity.id} cannot exchange" if @game.coal_minor?(entity)
           end
         end
       end

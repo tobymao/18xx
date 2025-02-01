@@ -41,6 +41,12 @@ module Engine
             skip_steps
             next_entity! if finished?
           end
+
+          def force_next_entity!
+            @steps.each(&:pass!)
+            next_entity!
+            clear_cache!
+          end
         end
       end
     end

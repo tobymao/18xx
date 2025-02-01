@@ -26,7 +26,7 @@ module Engine
           end
 
           def can_exchange?(entity)
-            return false if entity.closed? || !entity.corporation? || entity.type != :minor
+            return false if entity.closed? || @game.coal_minor?(entity)
             return true if forming_choice_minors.include?(entity)
 
             target = exchange_target(entity)
@@ -104,7 +104,7 @@ module Engine
           end
 
           def log_skip(entity)
-            @log << "#{entity.id} has no action" if entity.corporation? && entity.type == :minor
+            @log << "#{entity.id} has no action" unless @game.coal_minor?(entity)
           end
 
           def round_state

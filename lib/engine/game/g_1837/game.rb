@@ -346,6 +346,14 @@ module Engine
           @ug_minors ||= %w[UG1 UG2 UG3].map { |id| corporation_by_id(id) }
         end
 
+        def coal_minors
+          @coal_minors ||= %w[EPP RGTE EOD EKT MLB ZKB SPB LRB BB EHS].map { |id| corporation_by_id(id) }
+        end
+
+        def coal_minor?(entity)
+          coal_minors.include?(entity)
+        end
+
         def event_buy_across!
           @log << "-- Event: #{EVENTS_TEXT['buy_across'][1]} --"
         end
@@ -409,7 +417,7 @@ module Engine
 
         def event_exchange_coal_companies!
           @log << "-- Event: #{EVENTS_TEXT['exchange_coal_companies'][1]} --"
-          coal_company_exchange_order(mandatory: true).each { |c| exchange_coal_company(c) }
+          coal_minor_exchange_order(mandatory: true).each { |c| exchange_coal_minor(c) }
         end
 
         def operating_order
@@ -418,14 +426,14 @@ module Engine
         end
 
         def exchange_order
-          order = coal_company_exchange_order
+          order = coal_minor_exchange_order
           order.concat(kk_minors.reject(&:closed?)) if @kk_can_form
           order.concat(ug_minors.reject(&:closed?)) if @ug_can_form
           order
         end
 
         def exchange_target(entity)
-          if entity.company?
+          if coal_minor?(entity)
             target_id = abilities(entity, :exchange, time: 'any')&.corporations&.first
             corporation_by_id(target_id)
           elsif kk_minors.include?(entity)
@@ -435,35 +443,33 @@ module Engine
           end
         end
 
-        def coal_company_exchange_order(mandatory: false)
-          exchangeable_companies = Hash.new { |h, k| h[k] = [] }
-          @companies.each do |c|
+        def coal_minor_exchange_order(mandatory: false)
+          exchangeable_coal_minors = Hash.new { |h, k| h[k] = [] }
+          coal_minors.each do |c|
             next if c.closed? || !c.owner&.player?
             next unless (target = exchange_target(c))
 
-            exchangeable_companies[target] << c
+            exchangeable_coal_minors[target] << c
           end
 
           order = operating_order
           order = order.concat(@corporations).uniq if mandatory
           order.select { |c| c.corporation? && c.type == :major }.flat_map do |major|
             player_order = major.owner&.player? ? @players.rotate(@players.index(major.owner)) : @players
-            exchangeable_companies[major].sort_by { |c| player_order.index(c.owner) }
+            exchangeable_coal_minors[major].sort_by { |c| player_order.index(c.owner) }
           end.compact
         end
 
-        def mandatory_coal_company_exchange?(entity)
-          return false if !entity.company? || entity.closed? || !entity.owner&.player?
+        def mandatory_coal_minor_exchange?(minor)
+          return false if minor.closed? || !minor.owner&.player?
 
-          exchange_target(entity).percent_ipo_buyable.zero?
+          exchange_target(minor).percent_ipo_buyable.zero?
         end
 
-        def exchange_coal_company(company)
-          @log << "#{company.sym} exchanged for a share of #{exchange_target(company).id}"
-          major = corporation_by_id(abilities(company, :exchange, time: 'any').corporations.first)
-          minor = minor_by_id(company.sym)
-          merge_minor!(minor, major)
-          company.close!
+        def exchange_coal_minor(minor)
+          target = exchange_target(minor)
+          @log << "#{minor.id} exchanged for a share of #{target.id}"
+          merge_minor!(minor, target)
         end
 
         def event_close_mountain_railways!
@@ -488,14 +494,10 @@ module Engine
         end
 
         def merge_minor!(minor, corporation, allow_president_change: true)
-          coal_company_exchange = minor.type == :coal
           @log << "#{minor.name} merges into #{corporation.name}"
 
-          if coal_company_exchange
-            { minor.owner => 1 }
-          else
-            minor.share_holders.to_h { |sh, _| [sh, sh.shares_of(minor).size] }
-          end.each do |sh, num_shares|
+          minor.share_holders.each do |sh, _|
+            num_shares = sh.shares_of(minor).size
             next if num_shares.zero?
 
             @log << "#{sh.name} receives #{num_shares} share#{num_shares > 1 ? 's' : ''} of #{corporation.name}"
@@ -518,7 +520,7 @@ module Engine
             minor.trains.dup.each { |t| buy_train(corporation, t, :free) }
           end
 
-          if coal_company_exchange
+          if coal_minor?(minor)
             minor.tokens.first.swap!(blocking_token, check_tokenable: false)
           else
             token = minor.tokens.first
@@ -532,7 +534,7 @@ module Engine
             @log << "#{corporation.name} receives token (#{new_token.used ? new_token.city.hex.id : 'charter'})"
           end
 
-          coal_company_exchange ? close_minor!(minor) : close_corporation(minor, quiet: true)
+          close_corporation(minor, quiet: true)
           graph.clear_graph_for(corporation)
         end
 
@@ -637,20 +639,10 @@ module Engine
         end
 
         def after_buy_company(player, company, _price)
-          close_company = false
-
           abilities(company, :shares) do |ability|
             share = ability.shares.first
             @share_pool.buy_shares(player, share, exchange: :free)
             float_minor!(share.corporation) if share.president
-            close_company = true
-          end
-
-          if company.meta[:type] == :coal
-            minor = minor_by_id(company.id)
-            minor.owner = player
-            float_minor!(minor)
-            company.value = 0
           end
 
           abilities(company, :acquire_company) do |ability|
@@ -660,9 +652,8 @@ module Engine
             @log << "#{player.name} receives #{acquired_company.name}"
             after_buy_company(player, acquired_company, 0)
           end
-          return unless close_company
 
-          company.close!
+          company.close! unless company.meta[:type] == :mountain_railway
         end
 
         def float_str(entity)
