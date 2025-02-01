@@ -26,8 +26,6 @@ module Engine
         actions << 'sell_shares' if can_sell_any?(entity)
 
         actions << 'pass' unless actions.empty?
-        puts entity.name
-        puts actions.inspect
         actions
       end
 

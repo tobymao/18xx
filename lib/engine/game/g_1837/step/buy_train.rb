@@ -28,12 +28,15 @@ module Engine
           end
 
           def president_may_contribute?(entity)
-            !@must_buy_replacement && !can_finance?(entity) && super
+            !@must_buy_replacement &&
+              !can_finance?(entity) &&
+              (@game.can_buy_train_from_others? || @depot.depot_trains.map(&:price).max > entity.cash) &&
+              super
           end
 
           def buyable_train_variants(train, entity)
             variants = super
-            variants.select! { |t| @game.goods_train?(t[:name]) } if entity.type == :coal
+            variants.select! { |t| @game.goods_train?(t[:name]) } if @game.coal_minor?(entity)
             variants
           end
 
@@ -41,7 +44,7 @@ module Engine
             return [] if can_finance?(entity)
 
             trains = super.reject { |t| t.owner.cash.negative? }
-            trains.select! { |t| @game.goods_train?(t.name) } if entity.type == :coal
+            trains.select! { |t| @game.goods_train?(t.name) } if @game.coal_minor?(entity)
             trains
           end
 
