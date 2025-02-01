@@ -13,6 +13,7 @@ require_relative 'map_uk_limited_customization'
 require_relative 'map_china_rapid_development_customization'
 require_relative 'map_poland_customization'
 require_relative 'map_britain_customization'
+require_relative 'map_northern_italy_customization'
 
 module Engine
   module Game
@@ -30,6 +31,7 @@ module Engine
         include MapChinaRapidDevelopmentCustomization
         include MapPolandCustomization
         include MapBritainCustomization
+        include MapNorthernItalyCustomization
 
         register_colors(red: '#d1232a',
                         orange: '#f58121',
@@ -376,7 +378,21 @@ module Engine
         end
 
         def half_dividend_by_map?
-          game_capitalization == :incremental
+          return game_capitalization == :incremental unless respond_to?("map_#{map_name}_half_dividend")
+
+          send("map_#{map_name}_half_dividend")
+        end
+
+        def share_price_change_for_dividend_as_full_cap_by_map?
+          return game_capitalization == :full unless respond_to?("map_#{map_name}_share_price_change_for_dividend_as_full_cap")
+
+          send("map_#{map_name}_share_price_change_for_dividend_as_full_cap")
+        end
+
+        def movement_type_at_emr_share_issue_by_map
+          return :left_block unless respond_to?("map_#{map_name}_movement_type_at_emr_share_issue")
+
+          send("map_#{map_name}_movement_type_at_emr_share_issue")
         end
 
         def redef_const(const, value)
@@ -645,6 +661,14 @@ module Engine
 
         def ipo_name(_corp)
           game_capitalization == :incremental ? 'Treasury' : 'IPO'
+        end
+
+        def issuable_shares(entity)
+          return [] unless entity.operating_history.size > 1
+          return [] unless entity.corporation?
+
+          bundles_for_corporation(entity, entity)
+            .select { |bundle| @share_pool.fit_in_bank?(bundle) }
         end
 
         def can_remove_icon?(entity)

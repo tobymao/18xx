@@ -62,10 +62,17 @@ module Engine
             players: [3, 4, 5],
             designer: 'Ian Wilson',
           },
+          {
+            sym: :map_Northern_Italy,
+            short_name: 'Map: Northern Italy',
+            players: [2, 3, 4],
+            designer: 'Ian Wilson',
+          },
         ].freeze
 
         MUTEX_RULES = [
-          %i[map_NEUS map_France map_Twisting_Tracks map_UK_Limited map_China_Rapid_Development map_Poland map_Britain],
+          %i[map_NEUS map_France map_Twisting_Tracks map_UK_Limited map_China_Rapid_Development map_Poland map_Britain
+             map_Northern_Italy],
         ].freeze
       end
     end
