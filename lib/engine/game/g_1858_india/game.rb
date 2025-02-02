@@ -32,6 +32,19 @@ module Engine
 
         PHASE4_TRAINS_RUST = 7 # 6H/3M trains rust after the seventh grey train is bought.
 
+        def operating_round(round_num = 1)
+          @round_num = round_num
+          Engine::Round::Operating.new(self, [
+            G1858India::Step::Track,
+            G1858::Step::Token,
+            G1858::Step::Route,
+            G1858::Step::Dividend,
+            G1858::Step::DiscardTrain,
+            G1858::Step::BuyTrain,
+            G1858::Step::IssueShares,
+          ], round_num: round_num)
+        end
+
         def game_trains
           unless @game_trains
             @game_trains = super.map(&:dup)
@@ -60,6 +73,39 @@ module Engine
             @game_phases.first[:status] = %w[yellow_privates narrow_gauge]
           end
           @game_phases
+        end
+
+        def upgrades_to?(from, to, special = false, selected_company: nil)
+          super || gauge_conversion?(from, to)
+        end
+
+        # Checks whether a tile can replace another as a gauge conversion.
+        # To do this it must:
+        #   - Be the same colour as the previous one (yellow or green).
+        #   - Have the same cities and towns as the previous one.
+        #   - Have the same number of exits as the previous one.
+        #   - Have the same arrangement of track as the previous one.
+        #   - Have either:
+        #     - one section of track connecting two edges changed from broad
+        #       gauge to narrow gauge or vice versa, or
+        #     - two sections of track connecting a town or city to edges changed
+        #       from broad gauge to narrow gauge.
+        # The check for the number of track sections changes is done in
+        # G1858India::Step::Track.old_paths_maintained?
+        def gauge_conversion?(from, to)
+          return false unless from.color == to.color
+          return false unless from.cities.size == to.cities.size
+          return false unless from.towns.size == to.towns.size
+          return false unless from.paths.size == to.paths.size
+
+          Engine::Tile::ALL_EDGES.any? do |ticks|
+            from.paths.all? do |p|
+              path = p.rotate(ticks)
+              to.paths.any? do |other|
+                path.ends.all? { |pe| other.ends.any? { |oe| pe <= oe } }
+              end
+            end
+          end
         end
       end
     end
