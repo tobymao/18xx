@@ -287,7 +287,7 @@ module Engine
 
         def setup
           non_purchasable = @companies.flat_map do |c|
-            [abilities(c, :acquire_company, time: 'any')&.company, c.meta['hidden'] ? c.id : nil]
+            [abilities(c, :acquire_company, time: 'any')&.company, c.meta[:hidden] ? c.id : nil]
           end.compact
           @companies.each { |company| company.owner = @bank unless non_purchasable.include?(company.id) }
           setup_mines
