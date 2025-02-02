@@ -30,6 +30,8 @@ module Engine
           '5D' => 10,
         }.freeze
 
+        PHASE4_TRAINS_RUST = 7 # 6H/3M trains rust after the seventh grey train is bought.
+
         def game_trains
           unless @game_trains
             @game_trains = super.map(&:dup)
