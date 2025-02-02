@@ -597,6 +597,7 @@ module Engine
 
         def stock_round
           Engine::Round::Stock.new(self, [
+            G1837::Step::HomeToken,
             G1837::Step::DiscardTrain,
             G1837::Step::BuySellParShares,
           ])
@@ -666,7 +667,7 @@ module Engine
           cash = minor_initial_cash(minor)
           @bank.spend(cash, minor)
           @log << "#{minor.name} receives #{format_currency(cash)}"
-          if !@round.is_a?(Engine::Round::Auction) && minor.name == 'SD5'
+          if !@round.is_a?(Engine::Round::Auction) && minor.id == 'SD5'
             coordinates = minor.coordinates
             minor.coordinates = coordinates.shift
             remove_reservations!(minor, coordinates)
