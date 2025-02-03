@@ -141,6 +141,7 @@ module Engine
           {
             sym: 'BT',
             name: 'Bombay-Thana',
+            type: 'private_batch1',
             desc: 'P1. Revenue 24/36, face value 120. Home hexes are K6 and K8. ' \
                   'Can be used to start a public company in Bombay.',
             value: 120,
@@ -164,6 +165,7 @@ module Engine
           {
             sym: 'HH',
             name: 'Howrah-Howgly',
+            type: 'private_batch1',
             desc: 'P2. Revenue 25/38, face value 125. Home hexes are I22 and H21. ' \
                   'Can be used to start a public company in Calcutta.',
             value: 125,
@@ -187,6 +189,7 @@ module Engine
           {
             sym: 'MA',
             name: 'Madras-Arcot',
+            type: 'private_batch1',
             desc: 'P3. Revenue 24/36, face value 120. Home hexes are O14 and O12. ' \
                   'Can be used to start a public company in Bangalore.',
             value: 120,
@@ -211,6 +214,7 @@ module Engine
           {
             sym: 'BS',
             name: 'Bombay-Surat',
+            type: 'private_batch1',
             desc: 'P4. Revenue 23/35, face value 115. Home hexes are K6 and J7. ' \
                   'Can be used to start a public company in Bombay.',
             value: 115,
@@ -234,6 +238,7 @@ module Engine
           {
             sym: 'AC',
             name: 'Allahabad-Cawnpore',
+            type: 'private_batch1',
             desc: 'P5. Revenue 20/30, face value 100. Home hexes are G16, G14 and F13. ' \
                   'Can be used to start a public company in Allahabad or Cawnpore.',
             value: 100,
@@ -258,6 +263,7 @@ module Engine
           {
             sym: 'KK',
             name: 'Karachi-Kotri',
+            type: 'private_batch1',
             desc: 'P6. Revenue 22/33, face value 110. Home hexes are G2 and F3. ' \
                   'Can be used to start a public company in Karachi.',
             value: 110,
@@ -281,6 +287,7 @@ module Engine
           {
             sym: 'ML',
             name: 'Multan-Lahore',
+            type: 'private_batch1',
             desc: 'P7. Revenue 22/33, face value 110. Home hexes are D5, D7 and C8. ' \
                   'Can be used to start a public company in Multan or Lahore.',
             value: 110,
@@ -305,6 +312,7 @@ module Engine
           {
             sym: 'LA',
             name: 'Lahore-Amritsar',
+            type: 'private_batch1',
             desc: 'P8. Revenue 18/27, face value 90. Home hexes are C8 and C10. ' \
                   'Can be used to start a public company in Lahore.',
             value: 90,
@@ -328,6 +336,7 @@ module Engine
           {
             sym: 'CPC',
             name: 'Calcutta-Port Canning',
+            type: 'private_batch1',
             desc: 'P9. Revenue 19/29, face value 95. Home hexes are I22 and J21. ' \
                   'Can be used to start a public company in Calcutta.',
             value: 95,
@@ -351,6 +360,7 @@ module Engine
           {
             sym: 'TN',
             name: 'Trichinopoly-Nagapatnam',
+            type: 'private_batch1',
             desc: 'P10. Revenue 21/32, face value 105. Home hex is P13. ' \
                   'Can be used to start a public company in Trichinopoly.',
             value: 105,
@@ -374,6 +384,7 @@ module Engine
           {
             sym: 'AB',
             name: 'Ahmadabad-Baroda',
+            type: 'private_batch1',
             desc: 'P11. Revenue 18/27, face value 90. Home hexes are H7 and I6. ' \
                   'Can be used to start a public company in Ahmadabad.',
             value: 90,
@@ -397,6 +408,7 @@ module Engine
           {
             sym: 'NA',
             name: 'Nagpur-Amraoti',
+            type: 'private_batch1',
             desc: 'P12. Revenue 14/21, face value 70. Home hexes are J13 and J11. ' \
                   'Can be used to start a public company in Nagpur.',
             value: 70,
@@ -420,6 +432,7 @@ module Engine
           {
             sym: 'LC',
             name: 'Lucknow-Cawnpore',
+            type: 'private_batch1',
             desc: 'P13. Revenue 16/24, face value 80. Home hexes are F15 and F13. ' \
                   'Can be used to start a public company in Cawnpore or Lucknow.',
             value: 80,
@@ -444,6 +457,7 @@ module Engine
           {
             sym: 'AD',
             name: 'Ambala-Delhi',
+            type: 'private_batch1',
             desc: 'P14. Revenue 20/30, face value 100. Home hexes are E12 and D11. ' \
                   'Can be used to start a public company in Delhi.',
             value: 100,
@@ -467,6 +481,7 @@ module Engine
           {
             sym: 'AJ',
             name: 'Allahabad-Jubbalpore',
+            type: 'private_batch1',
             desc: 'P15. Revenue 11/17, face value 55. Home hexes are H13 and H15. ' \
                   'Cannot be used to start a public company.',
             value: 55,
@@ -489,6 +504,7 @@ module Engine
           {
             sym: 'PB',
             name: 'Patna-Benares',
+            type: 'private_batch1',
             desc: 'P16. Revenue 17/26, face value 85. Home hexes are G20 and G18. ' \
                   'Can be used to start a public company in Patna.',
             value: 85,
@@ -512,6 +528,7 @@ module Engine
           {
             sym: 'C',
             name: 'Coimbatore',
+            type: 'private_batch1',
             desc: 'P17. Revenue 12/18, face value 60. Home hex is P11. ' \
                   'Cannot be used to start a public company.',
             value: 60,
@@ -534,6 +551,7 @@ module Engine
           {
             sym: 'DA',
             name: 'Delhi-Agra',
+            type: 'private_batch1',
             desc: 'P18. Revenue 20/30, face value 100. Home hexes are E12 and F11. ' \
                   'Can be used to start a public company in Delhi.',
             value: 100,
@@ -557,6 +575,7 @@ module Engine
           {
             sym: 'MB',
             name: 'Moradabad-Bareilly',
+            type: 'private_batch1',
             desc: 'P19. Revenue 13/20, face value 65. Home hexes are D13 and E14. ' \
                   'Cannot be used to start a public company.',
             value: 65,
@@ -579,6 +598,7 @@ module Engine
           {
             sym: 'LP',
             name: 'Lahore-Peshawar',
+            type: 'private_batch1',
             desc: 'P20. Revenue 16/24, face value 80. Home hexes are A6 and B7. ' \
                   'Can be used to start a public company in Peshawar or Rawalpindi.',
             value: 80,
@@ -603,6 +623,7 @@ module Engine
           {
             sym: 'MK',
             name: 'Multan-Kotri',
+            type: 'private_batch1',
             desc: 'P21. Revenue 15/23, face value 75. Home hexes are D5 and E4. ' \
                   'Can be used to start a public company in Multan.',
             value: 75,
@@ -626,6 +647,7 @@ module Engine
           {
             sym: 'DS',
             name: 'Darjeeling-Siliguri',
+            type: 'private_batch1',
             desc: 'P22. Revenue 12/18, face value 60. Home hex is F23. ' \
                   'Cannot be used to start a public company.',
             value: 60,
@@ -648,6 +670,7 @@ module Engine
           {
             sym: 'M',
             name: 'Mysore',
+            type: 'private_batch2',
             desc: 'P23. Revenue 33, face value 110. Home hex is O10. ' \
                   'Can be used to start a public company in Mysore.',
             value: 110,
@@ -669,6 +692,7 @@ module Engine
           {
             sym: 'DJ',
             name: 'Delhi-Jaipur',
+            type: 'private_batch2',
             desc: 'P24. Revenue 27, face value 90. Home hexes are F9 and E10. ' \
                   'Can be used to start a public company in Jaipur.',
             value: 90,
@@ -690,6 +714,7 @@ module Engine
           {
             sym: 'DC',
             name: 'Dacca-Chittagong',
+            type: 'private_batch2',
             desc: 'P25. Revenue 36, face value 120. Home hexes are H25 and I26. ' \
                   'Can be used to start a public company in Dacca.',
             value: 120,
@@ -711,6 +736,7 @@ module Engine
           {
             sym: 'CK',
             name: 'Calcutta-Khulna',
+            type: 'private_batch2',
             desc: 'P26. Revenue 40, face value 135. Home hexes are I22 and I24. ' \
                   'Can be used to start a public company in Calcutta.',
             value: 135,
@@ -732,6 +758,7 @@ module Engine
           {
             sym: 'G',
             name: 'Gorakhpur',
+            type: 'private_batch2',
             desc: 'P27. Revenue 18, face value 60. Home hex is F17. ' \
                   'Cannot be used to start a public company.',
             value: 60,
@@ -752,6 +779,7 @@ module Engine
           {
             sym: 'BI',
             name: 'Bhopal-Indore',
+            type: 'private_batch2',
             desc: 'P28. Revenue 21, face value 70. Home hexes are H11 and I10. ' \
                   'Cannot be used to start a public company.',
             value: 70,
@@ -772,6 +800,7 @@ module Engine
           {
             sym: 'JB',
             name: 'Jodhpur-Bikaner',
+            type: 'private_batch2',
             desc: 'P29. Revenue 24, face value 80. Home hexes are F7 and E8. ' \
                   'Cannot be used to start a public company.',
             value: 80,
@@ -792,6 +821,7 @@ module Engine
           {
             sym: 'HB',
             name: 'Hyderabad-Bezawada',
+            type: 'private_batch2',
             desc: 'P30. Revenue 30, face value 100. Home hexes are L13 and M14. ' \
                   'Can be used to start a public company in Hyderabad.',
             value: 100,
