@@ -523,17 +523,17 @@ module Engine
           @_shares[share.id] = share
         end
 
-        def private_colors_available(phase)
-          colors = [:yellow]
-          colors << :green if phase.status.include?('green_privates')
-          colors
+        def private_batches_available(phase)
+          batches = [:private_batch1]
+          batches << :private_batch2 if phase.status.include?('green_privates')
+          batches
         end
 
         def buyable_bank_owned_companies
-          available_colors = private_colors_available(@phase)
+          available_batches = private_batches_available(@phase)
           @companies.select do |company|
             !company.closed? && (company.owner == @bank) &&
-              available_colors.include?(company.color) &&
+              available_batches.include?(company.type) &&
               !@unbuyable_companies.include?(company)
           end
         end
