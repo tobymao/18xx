@@ -268,6 +268,7 @@ module Engine
                     'upgrade=cost:40,terrain:river;' \
                     'icon=image:1858_india/KK,sticky:1;',
             %w[F5] =>
+                    'upgrade=cost:20,terrain:desert;' \
                     'border=type:province,edge:3;' \
                     'border=type:province,edge:4;' \
                     'border=type:province,edge:5;',
@@ -347,6 +348,7 @@ module Engine
                     'border=type:province,edge:5;' \
                     'icon=image:1858_india/KK,sticky:1;',
             %w[G4] =>
+                    'upgrade=cost:20,terrain:desert;' \
                     'border=type:province,edge:0;' \
                     'border=type:province,edge:4;' \
                     'border=type:province,edge:5;',
@@ -411,12 +413,12 @@ module Engine
             %w[G26] =>
                     'upgrade=cost:40,terrain:mountain;',
             %w[H3] =>
-                    'upgrade=cost:40,terrain:river;' \
+                    'upgrade=cost:40,terrain:swamp;' \
                     'border=type:province,edge:2;' \
                     'border=type:province,edge:3;' \
                     'border=type:impassible,edge:5;',
             %w[H5] =>
-                    'upgrade=cost:40,terrain:river;' \
+                    'upgrade=cost:40,terrain:swamp;' \
                     'border=type:province,edge:2;' \
                     'border=type:province,edge:3;',
             %w[H7] =>
@@ -746,11 +748,8 @@ module Engine
                     'path=track:dual,a:0,b:_0;' \
                     'border=type:province,edge:0;' \
                     'border=type:province,edge:5;',
-          },
-
-          gray: {
             %w[I26] =>
-                    'town=revenue:20;' \
+                    'offboard=revenue:yellow_20|green_30|brown_40|gray_40;' \
                     'path=a:2,b:_0;' \
                     'icon=image:1858_india/DC,sticky:1;',
           },
