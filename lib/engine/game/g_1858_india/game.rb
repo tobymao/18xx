@@ -94,6 +94,7 @@ module Engine
         # G1858India::Step::Track.old_paths_maintained?
         def gauge_conversion?(from, to)
           return false unless from.color == to.color
+          return false unless upgrades_to_correct_label?(from, to)
           return false unless from.cities.size == to.cities.size
           return false unless from.towns.size == to.towns.size
           return false unless from.paths.size == to.paths.size
