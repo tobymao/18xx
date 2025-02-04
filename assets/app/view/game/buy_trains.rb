@@ -300,7 +300,7 @@ module View
           children << h(:div, issue_str)
         end
 
-        if @step.can_finance?(@corporation)
+        if @step.respond_to?(:can_finance?) && @step.can_finance?(@corporation)
           text = "#{@game.bank.name} will provide financing for the amount the corporation cannot pay."
           children << h(:div, text)
         end
