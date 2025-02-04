@@ -339,11 +339,11 @@ module Engine
         end
 
         def hex_train?(train)
-          train.name[-1] == 'H'
+          train.distance.is_a?(Integer)
         end
 
         def metre_gauge_train?(train)
-          train.name[-1] == 'M'
+          train.track_type == :narrow
         end
 
         def hex_edge_cost(conn)

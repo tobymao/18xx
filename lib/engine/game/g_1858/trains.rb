@@ -90,6 +90,7 @@ module Engine
             obsolete_on: '6H',
             rusts_on: '6E',
             distance: 2,
+            track_type: :broad,
             price: 100,
           },
           {
@@ -97,6 +98,7 @@ module Engine
             obsolete_on: '6E',
             rusts_on: '7E',
             distance: 4,
+            track_type: :broad,
             price: 200,
             events: [{ 'type' => 'green_privates_available' }],
             variants: [
@@ -104,6 +106,7 @@ module Engine
                 name: '2M',
                 distance: [{ 'nodes' => %w[city offboard], 'pay' => 2, 'visit' => 2 },
                            { 'nodes' => %w[town], 'pay' => 99, 'visit' => 99 }],
+                track_type: :narrow,
                 price: 100,
               },
             ],
@@ -115,12 +118,14 @@ module Engine
             # defined. They rust on the purchase of the fifth phase 7 train, so
             # the rusting is handled in the game code.
             distance: 6,
+            track_type: :broad,
             price: 300,
             variants: [
               {
                 name: '3M',
                 distance: [{ 'nodes' => %w[city offboard], 'pay' => 3, 'visit' => 3 },
                            { 'nodes' => %w[town], 'pay' => 99, 'visit' => 99 }],
+                track_type: :narrow,
                 price: 200,
               },
             ],
@@ -130,6 +135,7 @@ module Engine
             distance: [{ 'nodes' => %w[city offboard], 'pay' => 5, 'visit' => 5 },
                        { 'nodes' => %w[town], 'pay' => 0, 'visit' => 99 }],
             price: 500,
+            track_type: :broad,
             events: [{ 'type' => 'corporations_convert' },
                      { 'type' => 'privates_close' }],
             variants: [
@@ -137,6 +143,7 @@ module Engine
                 name: '4M',
                 distance: [{ 'nodes' => %w[city offboard], 'pay' => 4, 'visit' => 4 },
                            { 'nodes' => %w[town], 'pay' => 99, 'visit' => 99 }],
+                track_type: :narrow,
                 price: 400,
               },
             ],
@@ -145,12 +152,14 @@ module Engine
             name: '6E',
             distance: [{ 'nodes' => %w[city offboard], 'pay' => 6, 'visit' => 6 },
                        { 'nodes' => %w[town], 'pay' => 0, 'visit' => 99 }],
+            track_type: :broad,
             price: 650,
             variants: [
               {
                 name: '5M',
                 distance: [{ 'nodes' => %w[city offboard], 'pay' => 5, 'visit' => 5 },
                            { 'nodes' => %w[town], 'pay' => 99, 'visit' => 99 }],
+                track_type: :narrow,
                 price: 550,
               },
             ],
@@ -159,12 +168,14 @@ module Engine
             name: '7E',
             distance: [{ 'nodes' => %w[city offboard], 'pay' => 7, 'visit' => 7 },
                        { 'nodes' => %w[town], 'pay' => 0, 'visit' => 99 }],
+            track_type: :broad,
             price: 800,
             variants: [
               {
                 name: '6M',
                 distance: [{ 'nodes' => %w[city offboard], 'pay' => 6, 'visit' => 6 },
                            { 'nodes' => %w[town], 'pay' => 99, 'visit' => 99 }],
+                track_type: :narrow,
                 price: 700,
               },
             ],
@@ -173,6 +184,7 @@ module Engine
             name: '5D',
             distance: [{ 'nodes' => %w[city offboard], 'pay' => 5, 'visit' => 5 },
                        { 'nodes' => %w[town], 'pay' => 0, 'visit' => 99 }],
+            track_type: :broad,
             price: 1_100,
             multiplier: 2,
             available_on: '7',
