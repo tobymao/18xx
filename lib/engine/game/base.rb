@@ -816,8 +816,8 @@ module Engine
 
         self
       rescue StandardError => e
-       rescue_exception(e, action)
-       self
+        rescue_exception(e, action)
+        self
       end
 
       def process_single_action(action)
