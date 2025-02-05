@@ -815,9 +815,9 @@ module Engine
         @last_processed_action = action.id
 
         self
-        # rescue StandardError => e
-        #  rescue_exception(e, action)
-        #  self
+      rescue StandardError => e
+       rescue_exception(e, action)
+       self
       end
 
       def process_single_action(action)
@@ -843,8 +843,8 @@ module Engine
             transition_to_next_round!
           end
         end
-        # rescue Engine::GameError => e
-        #  rescue_exception(e, action)
+      rescue Engine::GameError => e
+        rescue_exception(e, action)
       end
 
       def rescue_exception(e, action)
