@@ -355,7 +355,7 @@ module Engine
             },
           }
           expect(game.exception).to be_nil
-          expect { game.process_action(action) }.to raise_error(GameError)
+          expect(game.process_action(action).exception).to be_a(GameError)
         end
       end
 
@@ -391,7 +391,7 @@ module Engine
             'tokener' => 'BB',
           }
           expect(game.exception).to be_nil
-          expect { game.process_action(action) }.to raise_error(GameError)
+          expect(game.process_action(action).exception).to be_a(GameError)
         end
       end
     end
