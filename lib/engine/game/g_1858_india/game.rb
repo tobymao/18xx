@@ -43,6 +43,7 @@ module Engine
                   no_local: true,
                   distance: [{ 'nodes' => %w[city offboard], 'pay' => 1, 'visit' => 1 },
                              { 'nodes' => %w[town], 'pay' => 99, 'visit' => 99 }],
+                  track_type: :narrow,
                   price: 70,
                 },
               ]
