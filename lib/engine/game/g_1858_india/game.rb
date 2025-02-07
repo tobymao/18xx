@@ -41,7 +41,7 @@ module Engine
             G1858India::Step::Route,
             G1858::Step::Dividend,
             G1858::Step::DiscardTrain,
-            G1858::Step::BuyTrain,
+            G1858India::Step::BuyTrain,
             G1858::Step::IssueShares,
           ], round_num: round_num)
         end
@@ -80,6 +80,15 @@ module Engine
 
         def mail_train?(train)
           train.name == 'Mail'
+        end
+
+        def owns_mail_train?(corporation)
+          corporation.trains.any? { |train| mail_train?(train) }
+        end
+
+        def num_corp_trains(corporation)
+          # Mail trains don't count towards train limit.
+          corporation.trains.count { |train| !mail_train?(train) }
         end
 
         def route_trains(entity)

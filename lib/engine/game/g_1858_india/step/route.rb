@@ -40,11 +40,7 @@ module Engine
           private
 
           def choosing?(corporation)
-            owns_mail_train?(corporation) && !mail_train_attached?(corporation)
-          end
-
-          def owns_mail_train?(corporation)
-            corporation.trains.any? { |train| @game.mail_train?(train) }
+            @game.owns_mail_train?(corporation) && !mail_train_attached?(corporation)
           end
 
           # The trains that a mail train can be attached to.
