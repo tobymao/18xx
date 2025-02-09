@@ -262,7 +262,12 @@ module Engine
             cities.size > 1 &&
             !(tokens = cities.flat_map(&:tokens).compact).empty?
           tokens.each do |token|
-            actor = entity.company? ? entity.owner : entity
+            actor = case @game.class::TOKEN_PLACEMENT_ON_TILE_LAY_ENTITY
+                    when :current_operator
+                      entity.company? ? entity.owner : entity
+                    when :owner
+                      token.corporation
+                    end
             @round.pending_tokens << {
               entity: actor,
               hexes: [action.hex],
