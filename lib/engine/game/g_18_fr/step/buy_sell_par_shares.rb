@@ -16,7 +16,7 @@ module Engine
             return [] if @corporate_action && @corporate_action.entity != entity
 
             actions = []
-            actions << 'take_loan' if @round.current_actions.none? && @game.can_take_loan?(entity)
+            actions << 'take_loan' if @round.current_actions.empty? && @game.can_take_loan?(entity)
 
             actions
           end
