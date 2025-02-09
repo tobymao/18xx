@@ -55,6 +55,10 @@ module Engine
             false
           end
 
+          def can_finance?(_entity)
+            false
+          end
+
           def win_bid(winner, _company)
             @winning_bid = winner
             entity = @winning_bid.entity
