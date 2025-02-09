@@ -27,7 +27,7 @@ module Engine
             super && president_may_contribute?(corporation)
           end
 
-          def president_may_contribute?(entity)
+          def president_may_contribute?(entity, _shell = nil)
             !@must_buy_replacement &&
               !can_finance?(entity) &&
               (@game.can_buy_train_from_others? || @depot.depot_trains.map(&:price).max > entity.cash) &&
@@ -53,6 +53,8 @@ module Engine
           end
 
           def must_buy_train?(entity)
+            return false unless entity.operator?
+
             @must_buy_replacement || super
           end
 
