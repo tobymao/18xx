@@ -178,7 +178,9 @@ module Engine
 
         other_trains = [] if entity.cash.zero? && @game.class::EBUY_FROM_OTHERS == :never
 
-        other_trains.reject! { |t| entity.cash < t.price && must_buy_at_face_value?(t, entity) }
+        unless president_may_contribute?(entity)
+          other_trains.reject! { |t| entity.cash < t.price && must_buy_at_face_value?(t, entity) }
+        end
 
         depot_trains + other_trains
       end
