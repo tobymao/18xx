@@ -205,7 +205,7 @@ module Engine
             'count' => 4,
             'color' => 'brown',
             'code' => 'city=revenue:40,slots:2;city=revenue:40,slots:2,loc:2;path=a:0,b:_0;path=a:4,b:_0;' \
-                      'path=a:5,b:_0;path=a:1,b:_1;path=a:2,b:_1;path=a:3,b:_1',
+                      'path=a:5,b:_0;path=a:1,b:_1;path=a:2,b:_1;path=a:3,b:_1;path=a:_0,b:_1',
           },
           '434' => {
             'count' => 2,
@@ -226,6 +226,9 @@ module Engine
                       'city=revenue:80,groups:Vienna;path=a:5,b:_3;label=W',
           },
         }.freeze
+
+        YELLOW_SINGLE_TOWN_UPGRADES = %w[410 411 412 413 414 415 416 417 418 419 420 421 422 423 424].freeze
+        YELLOW_DOUBLE_TOWN_UPGRADES = %w[87 88 204].freeze
 
         LOCATION_NAMES = {
           'C11' => 'Prague',
@@ -338,7 +341,7 @@ module Engine
             ['H22'] => 'city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:5,b:_0;' \
                        'path=a:1,b:_1;path=a:3,b:_1;label=Bu',
             ['H26'] => 'path=a:1,b:4',
-            ['J16'] => 'city=revenue:20;path=a:1,b:_0;label=X',
+            ['J16'] => 'city=revenue:30;path=a:1,b:_0;label=X',
             ['L22'] => 'town=revenue:10;path=a:2,b:_0;path=a:4,b:_0',
 
           },

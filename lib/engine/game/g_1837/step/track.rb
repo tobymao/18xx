@@ -7,6 +7,8 @@ module Engine
     module G1837
       module Step
         class Track < Engine::Step::Track
+          include SkipReceivership
+
           def lay_tile(action, extra_cost: 0, entity: nil, spender: nil)
             tile = action.tile
             case tile.name
@@ -22,6 +24,12 @@ module Engine
                 token.price = i.zero? ? 20 : 40
               end
             end
+            super
+          end
+
+          def check_track_restrictions!(entity, old_tile, new_tile)
+            return if @game.class::YELLOW_DOUBLE_TOWN_UPGRADES.include?(new_tile.name)
+
             super
           end
         end

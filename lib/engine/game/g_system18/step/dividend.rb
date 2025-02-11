@@ -12,7 +12,7 @@ module Engine
           include Engine::Step::HalfPay
 
           def share_price_change(entity, revenue = 0)
-            return super unless @game.game_capitalization == :incremental
+            return super if @game.share_price_change_for_dividend_as_full_cap_by_map?
 
             price = entity.share_price.price
             LOGGER.debug { "price: #{price}, revenue: #{revenue}" }

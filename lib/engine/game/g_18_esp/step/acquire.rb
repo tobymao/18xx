@@ -90,10 +90,14 @@ module Engine
           end
 
           def can_swap?
-            return true unless mz?(@merging.last)
+            return merged_token_in_shared_city? unless mz?(@merging.last)
 
             @merging.last.tokens.first&.used &&
             !mz?(@merging.last) &&
+            merged_token_in_shared_city?
+          end
+
+          def merged_token_in_shared_city?
             @merging.first.tokens.none? { |token| token.hex == @merging.last.tokens.first.hex }
           end
 

@@ -8,7 +8,7 @@ module Engine
       module Meta
         include Game::Meta
 
-        DEV_STAGE = :beta
+        DEV_STAGE = :production
 
         GAME_SUBTITLE = nil
         GAME_DESIGNER = 'Federico Vallani and Manlio Manzini'

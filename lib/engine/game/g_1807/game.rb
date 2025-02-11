@@ -105,12 +105,14 @@ module Engine
         end
 
         def event_u1_available!
-          u1 = @future_companies.delete { |company| company.sym == 'U1' }
+          u1 = @future_companies.find { |company| company.sym == 'U1' }
+          @future_companies.delete(u1)
           @companies << u1
         end
 
         def event_u2_available!
-          u2 = @future_companies.delete { |company| company.sym == 'U2' }
+          u2 = @future_companies.find { |company| company.sym == 'U2' }
+          @future_companies.delete(u2)
           @companies << u2
         end
 

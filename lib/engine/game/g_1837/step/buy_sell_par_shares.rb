@@ -20,7 +20,7 @@ module Engine
           end
 
           def visible_corporations
-            @game.corporations.reject { |c| c.type == :minor }
+            @game.sorted_corporations.reject { |c| c.type == :minor }
           end
 
           def hide_corporations?
@@ -41,6 +41,12 @@ module Engine
           def process_par(action)
             super
             @game.set_par(action.corporation, action.share_price, action.slot)
+          end
+
+          def can_sell?(entity, bundle)
+            return false if bundle.corporation.type == :minor
+
+            super
           end
         end
       end

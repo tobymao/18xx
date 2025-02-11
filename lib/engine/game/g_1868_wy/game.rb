@@ -71,7 +71,7 @@ module Engine
         MUST_EMERGENCY_ISSUE_BEFORE_EBUY = true
         MUST_BUY_TRAIN = :always
         EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
-        EBUY_OTHER_VALUE = true
+        EBUY_FROM_OTHERS = :value
         GAME_END_CHECK = { bankrupt: :immediate, custom: :one_more_full_or_set }.freeze
         GAME_END_REASONS_TEXT = {
           bankrupt: 'player is bankrupt',

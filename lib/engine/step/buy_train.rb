@@ -38,12 +38,15 @@ module Engine
       end
 
       def check_spend(action)
-        return unless action.train.owned_by_corporation?
-
         min, max = spend_minmax(action.entity, action.train)
         return if (min..max).cover?(action.price)
 
-        if max.zero? && !@game.class::EBUY_OTHER_VALUE
+        if @game.class::EBUY_SELL_MORE_THAN_NEEDED_SETS_PURCHASE_MIN && action.price < min
+          raise GameError, 'Cannot sell shares in excess of what is needed to buy this train'
+        end
+        return unless action.train.owned_by_corporation?
+
+        if max.zero? && @game.class::EBUY_FROM_OTHERS == :never
           raise GameError, "#{action.entity.name} may not buy a train from "\
                            'another corporation.'
         else

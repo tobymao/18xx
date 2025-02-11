@@ -20,7 +20,7 @@ module Engine
 
         attr_accessor :corporations_operated, :minor_exchange, :minor_exchange_priority
 
-        EBUY_OTHER_VALUE = true # allow ebuying other corp trains for up to face
+        EBUY_FROM_OTHERS = :value # allow ebuying other corp trains for up to face
         EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = true # if ebuying from depot, must buy cheapest train
         EBUY_CAN_SELL_SHARES = true # true if a player can sell shares for ebuy
 

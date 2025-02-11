@@ -8,6 +8,8 @@ module Engine
     module G1837
       module Step
         class Token < Engine::Step::Token
+          include SkipReceivership
+
           def actions(entity)
             return [] unless entity == current_entity
             return [] unless multiple_tokens?(entity)

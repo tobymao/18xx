@@ -11,7 +11,7 @@ module Engine
           MIN_PRICE = 1
 
           def actions(entity)
-            return [] if entity != current_entity
+            return [] if !@game.acquiring_station_tokens? || !entity.corporation? || entity != current_entity
 
             ACTIONS
           end
@@ -48,6 +48,14 @@ module Engine
               end
             end
             false
+          end
+
+          def log_skip(entity)
+            super if @game.acquiring_station_tokens?
+          end
+
+          def log_pass(entity)
+            super if @game.acquiring_station_tokens?
           end
 
           def auto_actions(entity)

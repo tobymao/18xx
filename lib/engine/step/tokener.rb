@@ -97,7 +97,7 @@ module Engine
         end
 
         @round.tokened = true unless extra_action
-        @game.clear_token_graph_for_entity(entity)
+        @game.clear_graph_for_entity(entity)
       end
 
       def pay_token_cost(entity, cost, _city)

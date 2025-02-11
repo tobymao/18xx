@@ -24,7 +24,7 @@ module Engine
         SELL_BUY_ORDER = :sell_buy
         SELL_AFTER = :operate
         TREASURY_SHARE_LIMIT = 50
-        EBUY_OTHER_VALUE = false
+        EBUY_FROM_OTHERS = :never
         DISCARDED_TRAINS = :remove
 
         TOKEN_FEE = {
