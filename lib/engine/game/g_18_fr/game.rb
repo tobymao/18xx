@@ -13,7 +13,7 @@ module Engine
         include G18FR::Entities
         include G18FR::Map
 
-        attr_accessor :player_sr_with_short_count
+        attr_accessor :extra_cert_limit
 
         CURRENCY_FORMAT_STR = '%s F'
 
@@ -149,7 +149,7 @@ module Engine
         GREEN_B_TILE_NAME = 'FRBG'
 
         def setup
-          @player_sr_with_short_count = Hash.new { |h, k| h[k] = 0 }
+          @extra_cert_limit = Hash.new { |h, k| h[k] = 0 }
         end
 
         def init_round
@@ -244,7 +244,7 @@ module Engine
         def cert_limit(player = nil)
           if player
             # +1 cert limit for every SR with short
-            @cert_limit + @player_sr_with_short_count[player]
+            @cert_limit + @extra_cert_limit[player]
           else
             @cert_limit
           end

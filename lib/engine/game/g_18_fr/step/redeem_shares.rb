@@ -25,7 +25,12 @@ module Engine
           end
 
           def sellable_bundles(_player, _corporation)
-            # Don't show sell share buttons
+            # Don't show Sell Shares buttons
+            []
+          end
+
+          def pool_shares(corporation)
+            # Don't show Buy Share buttons (there are Redeem Share buttons)
             []
           end
 

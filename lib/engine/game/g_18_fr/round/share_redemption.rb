@@ -40,6 +40,9 @@ module Engine
 
             @entities[@entity_index].pass!
 
+            @loan_taken = false
+            @share_redeemed = false
+
             next_entity_index! unless @entities.empty?
 
             @steps.each(&:unpass!)
