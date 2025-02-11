@@ -29,7 +29,7 @@ module Engine
             []
           end
 
-          def pool_shares(corporation)
+          def pool_shares(_corporation)
             # Don't show Buy Share buttons (there are Redeem Share buttons)
             []
           end
