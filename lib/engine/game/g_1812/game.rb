@@ -66,7 +66,7 @@ module Engine
           {
             name: '4',
             on: '4',
-            train_limit: { minor: 2, major: 3 },
+            train_limit: { minor: 1, major: 3 },
             tiles: %i[yellow green brown],
             operating_rounds: 2,
             status: %w[car_par can_buy_companies minors_can_merge cannot_open_minors],
@@ -74,7 +74,7 @@ module Engine
           {
             name: '5',
             on: '5',
-            train_limit: { minor: 2, major: 2 },
+            train_limit: { minor: 0, major: 2 },
             tiles: %i[yellow green brown gray],
             operating_rounds: 2,
             status: %w[can_par minors_can_merge cannot_open_minors tradeins_allowed],
@@ -82,7 +82,7 @@ module Engine
           {
             name: '6',
             on: '3D',
-            train_limit: { minor: 2, major: 2 },
+            train_limit: { minor: 0, major: 2 },
             tiles: %i[yellow green brown gray],
             operating_rounds: 2,
             status: %w[can_par minors_can_merge cannot_open_minors tradeins_allowed],
