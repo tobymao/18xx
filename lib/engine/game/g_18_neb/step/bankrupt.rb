@@ -42,8 +42,6 @@ module Engine
 
             @game.declare_bankrupt(player)
             player.cash = 0
-
-            @game.round.force_next_entity! if entity.corporation? && @round.skip_entity?(entity)
           end
         end
       end

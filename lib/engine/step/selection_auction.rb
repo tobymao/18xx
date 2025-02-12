@@ -127,6 +127,14 @@ module Engine
         @companies.first
       end
 
+      def resolve_bids
+        if @auctioning && @active_bidders.none? && @bids[auctioning].empty?
+          all_passed!
+        else
+          super
+        end
+      end
+
       private
 
       def add_bid(bid)

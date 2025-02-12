@@ -750,6 +750,7 @@ module Engine
             update_tile_lists(tile, hex.tile)
             hex.lay(tile)
           end
+          clear_graph
 
           @log << "#{company.name} closes"
           company.close!

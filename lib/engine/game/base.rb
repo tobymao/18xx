@@ -284,6 +284,11 @@ module Engine
       # operate (corporation's first OR turn)
       HOME_TOKEN_TIMING = :operate
 
+      # Entity for token placement decided on tile lay
+      # :current_operator
+      # :owner
+      TOKEN_PLACEMENT_ON_TILE_LAY_ENTITY = :current_operator
+
       DISCARDED_TRAINS = :discard # discard or remove
       DISCARDED_TRAIN_DISCOUNT = 0 # percent
       CLOSED_CORP_TRAINS_REMOVED = true
@@ -1605,7 +1610,7 @@ module Engine
         hex = hex_by_id(corporation.coordinates)
 
         tile = hex&.tile
-        if !tile || (tile.reserved_by?(corporation) && tile.paths.any?)
+        if !tile || (tile.reserved_by?(corporation) && !tile.paths.empty?)
 
           if @round.pending_tokens.any? { |p| p[:entity] == corporation }
             # 1867: Avoid adding the same token twice
