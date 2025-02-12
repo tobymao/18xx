@@ -215,7 +215,7 @@ module Engine
         def or_set_finished
           return unless @phase.name.to_i == 2
 
-          depot.export_all!('2') unless @depot.upcoming.first == train_by_id('2-0')
+          depot.export_all!('2') if @depot.upcoming.first != train_by_id('2-0') || train_by_id('3-0')
         end
 
         def corporation_size_name(entity); end
