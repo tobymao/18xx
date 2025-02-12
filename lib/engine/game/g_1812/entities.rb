@@ -198,10 +198,7 @@ module Engine
                 hexes: ['G16'],
                 amount: 20,
               },
-              {
-                type: 'close',
-                when: 'never',
-              },
+              { type: 'close', on_phase: 'never' },
             ],
           },
           {
@@ -222,10 +219,7 @@ module Engine
                 tiles: [],
                 cost: 0,
               },
-              {
-                type: 'close',
-                when: 'never',
-              },
+              { type: 'close', on_phase: 'never' },
               # G-train bonus is defined in game.rb revenue_for method
             ],
           },

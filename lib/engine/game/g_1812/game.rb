@@ -96,6 +96,7 @@ module Engine
                        { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
             price: 100,
             rusts_on: '4',
+            num: 8,
             variants: [
               {
                 name: '1G',
@@ -155,6 +156,7 @@ module Engine
             distance: [{ 'nodes' => %w[city offboard town], 'pay' => 5, 'visit' => 5 },
                        { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
             price: 500,
+            num: 10,
             variants: [
               {
                 name: '4+2G',
@@ -170,6 +172,8 @@ module Engine
             distance: [{ 'nodes' => %w[city offboard], 'pay' => 3, 'visit' => 3, 'multiplier' => 2 },
                        { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
             price: 750,
+            num: 10,
+            available_on: '5',
             variants: [
               {
                 name: '2+2GD',
@@ -334,8 +338,6 @@ module Engine
             5
           when '4'
             num_players
-          else
-            99
           end
         end
 
