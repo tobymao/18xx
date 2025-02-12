@@ -69,7 +69,7 @@ module Engine
             train_limit: { minor: 2, major: 3 },
             tiles: %i[yellow green brown],
             operating_rounds: 2,
-            status: %w[can_buy_companies minors_can_merge cannot_open_minors],
+            status: %w[car_par can_buy_companies minors_can_merge cannot_open_minors],
           },
           {
             name: '5',
