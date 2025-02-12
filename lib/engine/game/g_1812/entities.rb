@@ -6,7 +6,7 @@ module Engine
       module Entities
         COMPANIES = [
           {
-            name: 'Tanfield Railway',
+            name: '1. Tanfield Railway',
             sym: 'P1',
             value: 15,
             min_price: 5,
@@ -15,7 +15,7 @@ module Engine
             abilities: [],
           },
           {
-            name: 'Middleton Railway',
+            name: '2. Middleton Railway',
             sym: 'P2',
             value: 20,
             min_price: 15,
@@ -29,7 +29,7 @@ module Engine
             }],
           },
           {
-            name: 'Wylam Railway',
+            name: '3. Wylam Railway',
             sym: 'P3',
             value: 20,
             min_price: 15,
@@ -38,7 +38,7 @@ module Engine
             abilities: [], # G-train bonus is defined in game.rb revenue_for method
           },
           {
-            name: 'Sheffeild & Rotherham Railway',
+            name: '4. Sheffeild & Rotherham Railway',
             sym: 'P4',
             value: 20,
             min_price: 15,
@@ -52,7 +52,7 @@ module Engine
             }],
           },
           {
-            name: 'Leeds & Selby Railway',
+            name: '5. Leeds & Selby Railway',
             sym: 'P5',
             value: 40,
             min_price: 30,
@@ -78,7 +78,7 @@ module Engine
             ],
           },
           {
-            name: 'Stephenson’s Engine Works',
+            name: '6. Stephenson’s Engine Works',
             sym: 'P6',
             value: 40,
             min_price: 30,
@@ -95,7 +95,7 @@ module Engine
             }],
           },
           {
-            name: 'Stockton & Darlington Railway',
+            name: '7. Stockton & Darlington Railway',
             sym: 'P7',
             value: 40,
             min_price: 30,
@@ -121,7 +121,7 @@ module Engine
             ],
           },
           {
-            name: 'Stanhope & Tyne Railway',
+            name: '8. Stanhope & Tyne Railway',
             sym: 'P8',
             value: 40,
             min_price: 30,
@@ -140,7 +140,7 @@ module Engine
             # G-train bonus is defined in game.rb revenue_for method
           },
           {
-            name: 'Whitby & Pickering Railway',
+            name: '9. Whitby & Pickering Railway',
             sym: 'P9',
             value: 40,
             min_price: 30,
@@ -159,7 +159,7 @@ module Engine
             # G-train bonus is defined in game.rb revenue_for method
           },
           {
-            name: 'Newcastle & Carlisle Railway',
+            name: '10. Newcastle & Carlisle Railway',
             sym: 'P10',
             value: 40,
             min_price: 30,
@@ -185,7 +185,7 @@ module Engine
             ],
           },
           {
-            name: 'Hull Docks Company',
+            name: '11. Hull Docks Company',
             sym: 'P11',
             value: 40,
             min_price: 30,
@@ -205,7 +205,7 @@ module Engine
             ],
           },
           {
-            name: 'Hartlepool Docks Company',
+            name: '12. Hartlepool Docks Company',
             sym: 'P12',
             value: 40,
             min_price: 30,
@@ -239,7 +239,7 @@ module Engine
             float_percent: 20,
             always_market_price: true,
             tokens: [0, 40, 100, 100],
-            type: 'public',
+            type: 'major',
             color: '#025aaa',
           },
           {
@@ -249,7 +249,7 @@ module Engine
             float_percent: 20,
             always_market_price: true,
             tokens: [0, 40, 100, 100],
-            type: 'public',
+            type: 'major',
             color: '#32763f',
           }, {
             sym: 'LYR',
@@ -258,7 +258,7 @@ module Engine
             float_percent: 20,
             always_market_price: true,
             tokens: [0, 40, 100, 100],
-            type: 'public',
+            type: 'major',
             color: '#FFFFFFF',
           },
           {
@@ -268,7 +268,7 @@ module Engine
             float_percent: 20,
             always_market_price: true,
             tokens: [0, 40, 100, 100],
-            type: 'public',
+            type: 'major',
             color: '#d1232a',
           },
           {
@@ -278,16 +278,15 @@ module Engine
             float_percent: 20,
             always_market_price: true,
             tokens: [0, 40, 100, 100],
+            type: 'major',
             color: :'#FFF500',
             text_color: 'black',
-          }
-        ].freeze
-
-        MINORS = [
+          },
           {
             sym: '1',
             name: 'Doncaster & Peterborough Railway',
             logo: '1812/1',
+            float_percent: 100,
             tokens: [0],
             shares: [100],
             max_ownership_percent: 100,
@@ -299,6 +298,7 @@ module Engine
             sym: '2',
             name: 'Hull & Selby Railway',
             logo: '1812/2',
+            float_percent: 100,
             tokens: [0],
             shares: [100],
             max_ownership_percent: 100,
@@ -310,6 +310,7 @@ module Engine
             sym: '3',
             name: 'Leeds Northern Railway',
             logo: '1812/3',
+            float_percent: 100,
             tokens: [0],
             shares: [100],
             max_ownership_percent: 100,
@@ -322,6 +323,7 @@ module Engine
             sym: '4',
             name: 'Manchester & Leeds Railway',
             logo: '1812/4',
+            float_percent: 100,
             tokens: [0],
             shares: [100],
             max_ownership_percent: 100,
@@ -334,6 +336,7 @@ module Engine
             sym: '5',
             name: 'Newcastle & Berwick Railway',
             logo: '1812/5',
+            float_percent: 100,
             tokens: [0],
             shares: [100],
             max_ownership_percent: 100,
@@ -346,6 +349,7 @@ module Engine
             sym: '6',
             name: 'Newcastle & Darlington Railway',
             logo: '1812/6',
+            float_percent: 100,
             tokens: [0],
             shares: [100],
             max_ownership_percent: 100,
@@ -358,6 +362,7 @@ module Engine
             sym: '7',
             name: '	North Midland Railway',
             logo: '1812/7',
+            float_percent: 100,
             tokens: [0],
             shares: [100],
             max_ownership_percent: 100,
@@ -370,6 +375,7 @@ module Engine
             sym: '8',
             name: 'Sheffield, Ashton & Manchester Railway',
             logo: '1812/8',
+            float_percent: 100,
             tokens: [0],
             shares: [100],
             max_ownership_percent: 100,
@@ -381,6 +387,7 @@ module Engine
             sym: '9',
             name: 'York & Darlington Railway',
             logo: '1812/9',
+            float_percent: 100,
             tokens: [0],
             shares: [100],
             max_ownership_percent: 100,
@@ -392,6 +399,7 @@ module Engine
             sym: '10',
             name: 'York & North Midland Railway	',
             logo: '1812/10',
+            float_percent: 100,
             tokens: [0],
             shares: [100],
             max_ownership_percent: 100,
@@ -399,7 +407,7 @@ module Engine
             coordinates: 'E14',
             city: 0,
             color: '#777777',
-          },
+          }
         ].freeze
       end
     end
