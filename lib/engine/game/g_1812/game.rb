@@ -120,6 +120,7 @@ module Engine
                 price: 180,
               },
             ],
+            events: [{ 'type' => 'three_trains_will_convert' }],
           },
           {
             name: '3+1',
@@ -127,6 +128,7 @@ module Engine
                        { 'nodes' => ['town'], 'pay' => 1, 'visit' => 99 }],
             price: 220,
             rusts_on: '3D',
+            num: 5,
             variants: [
               {
                 name: '2+1G',
@@ -217,11 +219,11 @@ module Engine
           ], round_num: round_num)
         end
 
-        def or_set_finished
-          return unless @phase.name.to_i == 2
-
-          depot.export_all!('2') if @depot.upcoming.first != train_by_id('2-0') || train_by_id('3-0')
-        end
+        EVENTS_TEXT = G1867::Game::EVENTS_TEXT.merge('three_trains_will_convert' => ['Unsold 3/2G will convert to 3+1/2G+1',
+                                                                                     'At the end of the OR set when the first '\
+                                                                                     '3/2G train is purchased, all remaining '\
+                                                                                     'trains of that rank are converted to '\
+                                                                                     '3+1/2G+1 trains']).freeze
 
         def corporation_size_name(entity); end
 
@@ -229,7 +231,6 @@ module Engine
           if @round.round_num < @operating_rounds
             new_operating_round(@round.round_num + 1)
           else
-
             @turn += 1
             or_set_finished
             new_stock_round
@@ -264,10 +265,57 @@ module Engine
             end
         end
 
+        def or_set_finished
+          depot.export_all!('2') if @phase.name.to_i == 2 &&
+                                    (@depot.upcoming.first != train_by_id('2-0') &&
+                                     @depot.upcoming.first != train_by_id('3-0'))
+
+          return unless @convert_3s == true
+
+          # Count the remaining '3' trains
+          remaining_trains_count = depot.upcoming.count { |t| t.name == '3' }
+          return unless remaining_trains_count
+
+          # Forget all remaining '3' trains
+          trains = depot.upcoming.select { |t| t.name == '3' }
+          trains.each { |t| depot.forget_train(t) }
+
+          # Increase the num value of the '3+1' trains by the stored count
+          replace_three_with_three_plus_one(remaining_trains_count)
+          @convert_3s = false
+        end
+
+        def replace_three_with_three_plus_one(remaining_trains_count)
+          @log << '--All remaining 3/2G trains in the supply replaced with with 3+1/2G+1 trains--'
+
+          remaining_trains_count.times do
+            train = @three_plus_one.shift
+            train.reserved = false
+            @depot.unshift_train(train)
+          end
+        end
+
+        def init_train_handler
+          depot = super
+
+          # store the 3+1 trains in reserve for now
+
+          @three_plus_one = []
+          5.times do
+            train = depot.upcoming.find { |t| t.name == '3+1' }
+            @three_plus_one << train
+            depot.remove_train(train)
+            train.reserved = true
+          end
+
+          depot
+        end
+
         def setup
           @interest = {}
           setup_company_price_up_to_face
           @show_majors = false
+          @convert_3s = false
 
           @north_south_bonus = hex_by_id(NORTH_SOUTH_BONUS_HEX).tile.offboards.first
           @port_mine_bonus = hex_by_id(PORT_MINE_BONUS_HEX).tile.offboards.first
@@ -335,8 +383,6 @@ module Engine
           case train[:name]
           when '3'
             num_players == 2 ? 3 : num_players + 2
-          when '3+1'
-            5
           when '4'
             num_players
           end
@@ -346,6 +392,11 @@ module Engine
           @phase.status.include?('can_par')
 
           super
+        end
+
+        def event_three_trains_will_convert!
+          @convert_3s = true
+          @log << '--All remaining 3/2G trains in the supply will be replaced with 3+1/2G+1 trains at the end of the OR set--'
         end
 
         G_TRAINS = %w[1G 2G 2+1G 3+2G 4+2G 2+2GD].freeze
@@ -362,7 +413,7 @@ module Engine
         end
 
         def check_other(route)
-          return if g_train(route.train)
+          return if g_train?(route.train)
           return unless (route.stops.map(&:hex).map(&:id) & PORT_HEXES).any?
 
           raise GameError, 'Only G trains can run to ports'
