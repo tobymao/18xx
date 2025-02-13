@@ -45,7 +45,7 @@ module Engine
         GAME_END_CHECK = { bank: :current_or }.freeze
 
         COLUMN_MARKET = [
-          %w[40 45 50p 55p 60p 65p 70p 80p 90p 100p 110p 120p 135p 150 165 180 200 220 245 270 300 330 360 400],
+          %w[40 45 50x 55x 60x 65p 70p 80p 90p 100pC 110zC 120zC 135zC 150m 165 180 200 220 245 270 300 330 360 400],
         ].freeze
 
         PHASES = [
@@ -149,7 +149,8 @@ module Engine
                 price: 360,
               },
             ],
-            events: [{ 'type' => 'majors_can_ipo' }],
+            events: [{ 'type' => 'majors_can_ipo' },
+                     { 'type' => 'minors_cannot_start' }],
           },
           {
             name: '5',
@@ -313,7 +314,7 @@ module Engine
           removed = @corporations.shift unless @players.size == 4
           return unless removed
 
-          @log << "#{removed.name} public company is removed because there are fewer than 4 players."
+          @log << "#{removed.name} corporation is removed because there are fewer than 4 players."
         end
 
         def unstarted_corporation_summary
