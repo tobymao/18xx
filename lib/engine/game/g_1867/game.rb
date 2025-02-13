@@ -709,7 +709,7 @@ module Engine
         end
 
         def corporation_size(entity)
-          # For display purposes is a corporation small, medium or large
+          # For displaying if a corporation is a minor or major corporation
           CORPORATION_SIZES[entity.total_shares]
         end
 
