@@ -14,13 +14,7 @@ module Engine
 
             owed = @game.pay_interest!(entity)
             if owed
-              current_cash = entity.cash
-              @log << "#{entity.name} owes #{@game.format_currency(owed)} in loan "\
-                      "interest but only has #{@game.format_currency(entity.cash)}"
-              @log << "#{entity.name} will pay all remaining treasury cash (#{@game.format_currency(current_cash)}) to the "\
-                      'bank and its stock price will drop one space'
-              entity.spend(current_cash, bank)
-              @game.stock_market.move_left(entity)
+              @game.unpaid_loan(entity, owed)
               return
             end
 

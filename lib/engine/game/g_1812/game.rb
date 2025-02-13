@@ -77,7 +77,7 @@ module Engine
             train_limit: { minor: 0, major: 2 },
             tiles: %i[yellow green brown gray],
             operating_rounds: 2,
-            status: %w[can_par minors_can_merge cannot_open_minors tradeins_allowed],
+            status: %w[can_par minors_can_merge cannot_open_minors],
           },
           {
             name: '6',
@@ -85,7 +85,7 @@ module Engine
             train_limit: { minor: 0, major: 2 },
             tiles: %i[yellow green brown gray],
             operating_rounds: 2,
-            status: %w[can_par minors_can_merge cannot_open_minors tradeins_allowed],
+            status: %w[can_par minors_can_merge cannot_open_minors],
           },
         ].freeze
 
@@ -214,7 +214,7 @@ module Engine
             [G1867::Step::BuyCompanyPreloan, { blocks: true }],
             G1812::Step::LoanOperations,
             Engine::Step::DiscardTrain,
-            G1867::Step::BuyTrain,
+            G1812::Step::BuyTrain,
             [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
@@ -226,6 +226,8 @@ module Engine
                                                                                      '3+1/2G+1 trains']).freeze
 
         def corporation_size_name(entity); end
+
+        def post_train_buy; end
 
         def new_or!
           if @round.round_num < @operating_rounds
@@ -362,7 +364,7 @@ module Engine
           removed = @corporations.shift unless @players.size == 4
           return unless removed
 
-          @log << "#{removed.name} corporation is removed because there are fewer than 4 players."
+          @log << "#{removed.name} corporation is removed because there are fewer than 4 players"
         end
 
         def unstarted_corporation_summary
@@ -397,6 +399,26 @@ module Engine
         def event_three_trains_will_convert!
           @convert_3s = true
           @log << '--All remaining 3/2G trains in the supply will be replaced with 3+1/2G+1 trains at the end of the OR set--'
+        end
+
+        def unpaid_loan(entity, owed)
+          current_cash = entity.cash
+          old_price = entity.share_price
+
+          @log << "#{entity.name} owes #{format_currency(owed)} in loan interest but has #{format_currency(entity.cash)}"
+          @log << "#{entity.name} will pay all remaining treasury cash (#{format_currency(current_cash)}) to the "\
+                  'bank and its stock price will drop one space'
+          entity.spend(current_cash, bank) if current_cash.positive?
+          @stock_market.move_left(entity)
+          log_share_price(entity, old_price)
+        end
+
+        def trainless_penalty(entity)
+          old_price = entity.share_price
+
+          @log << "#{entity.name} was unable to buy a train and is trainless. Its stock price will drop one space"
+          @stock_market.move_left(entity)
+          log_share_price(entity, old_price)
         end
 
         G_TRAINS = %w[1G 2G 2+1G 3+2G 4+2G 2+2GD].freeze
