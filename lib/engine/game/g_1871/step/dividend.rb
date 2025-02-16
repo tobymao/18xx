@@ -31,17 +31,10 @@ module Engine
           end
 
           def payout_per_share(entity, revenue)
-            share_count =
-              if entity == @game.peir
-                # entity.total_shares doesn't always work correctly for PEIR.
-                # If there are three shares then each is a 33% share, and
-                # total_shares returns 3.030303...
-                @game.peir_shares.size
-              else
-                entity.total_shares
-              end
+            return super unless entity == @game.peir
+
             # PEIR rounds up
-            (revenue.to_f / share_count).ceil
+            (revenue.to_f / @game.peir_shares.size).ceil
           end
 
           def half_pay_withhold_amount(_entity, revenue)
