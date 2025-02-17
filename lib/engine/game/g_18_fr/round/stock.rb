@@ -12,7 +12,7 @@ module Engine
 
             @game.players.each do |player|
               if player.shares.any? { |s| s.percent.negative? }
-                @game.player_sr_with_short_count[player] += 1
+                @game.extra_cert_limit[player] += 1
                 @log << "#{player.name} has their certificate limit permanently increased by 1 for owning a short share"
               end
             end
