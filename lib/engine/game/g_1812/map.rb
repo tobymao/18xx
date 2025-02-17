@@ -85,7 +85,7 @@ module Engine
           'A16' => 'Manchester',
           'C12' => 'Harrogate',
           'C14' => 'Leeds',
-          'C16' => 'Barnlsey',
+          'C16' => 'Barnsley',
           'C18' => 'Sheffield',
           'C20' => 'Derby',
           'D9' => 'Darlington',
