@@ -348,7 +348,7 @@ module Engine
             shares: [100],
             max_ownership_percent: 100,
             type: 'minor',
-            coordinates: 'C14',
+            coordinates: 'E4',
             city: 0,
             color: '#777777',
           },
@@ -387,6 +387,7 @@ module Engine
             max_ownership_percent: 100,
             type: 'minor',
             coordinates: 'E14',
+            city: 1,
             color: '#777777',
           },
           {
