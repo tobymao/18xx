@@ -38,12 +38,12 @@ module Engine
             abilities: [], # G-train bonus is defined in game.rb revenue_for method
           },
           {
-            name: '4. Sheffeild & Rotherham Railway',
+            name: '4. Sheffield & Rotherham Railway',
             sym: 'P4',
             value: 20,
             min_price: 15,
             revenue: 5,
-            desc: 'A corporation owning the Sheffeild & Rotherham Railway gains a +£10 bonus for all runs to Sheffield (C18).',
+            desc: 'A corporation owning the Sheffield & Rotherham Railway gains a +£10 bonus for all runs to Sheffield (C18).',
             abilities: [{
               type: 'hex_bonus',
               owner_type: 'corporation',
