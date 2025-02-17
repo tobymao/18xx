@@ -116,7 +116,7 @@ module Engine
             ['A16'] => 'offboard=revenue:yellow_40|green_50|brown_60|gray_70;path=a:4,b:_0;path=a:5,b:_0',
             ['C20'] => 'city=revenue:yellow_30|green_40|brown_50|gray_50;path=a:3,b:_0;path=a:4,b:_0;icon=image:18_gb/south',
             ['E20'] => 'city=revenue:yellow_20|green_30|brown_40|gray_50;path=a:2,b:_0;path=a:3,b:_0;icon=image:18_gb/south',
-            ['F1'] => 'offboard=revenue:yellow_10|green_20|brown_30|gray_40;path=a:1,b:_0;icon=image:1812/north',
+            ['F1'] => 'offboard=revenue:yellow_10|green_30|brown_40|gray_40;path=a:1,b:_0;icon=image:1812/north',
             ['F19'] => 'offboard=revenue:yellow_20|green_30|brown_40|gray_40;path=a:2,b:_0;path=a:3,b:_0;icon=image:18_gb/south',
             ['I1'] => 'offboard=revenue:yellow_40|green_50|brown_60|gray_70;icon=image:18_gb/south;icon=image:1812/north',
           },
