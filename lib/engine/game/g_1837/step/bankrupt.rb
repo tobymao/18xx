@@ -9,7 +9,7 @@ module Engine
         class Bankrupt < Engine::Step::Bankrupt
           def process_bankrupt(action)
             entity = action.entity
-            player = entity.corporation? ? entity.owner : entity
+            player = entity.owner
 
             @log << "-- #{player.name} goes bankrupt and remaining shares placed in the bank pool --"
 
@@ -26,8 +26,8 @@ module Engine
               @game.sell_shares_and_change_price(bundle)
             end
 
-            # Remaining shares are placed in the bank pool. Minors merge immediately, unless
-            # the presidency is transferred (UG1 and UG3).
+            # Remaining shares are placed in the bank pool. Coal companies and minors merge immediately,
+            # unless the presidency is transferred (UG1 and UG3).
             player.shares_by_corporation(sorted: true).each do |corporation, shares|
               next if shares.empty?
 
@@ -44,13 +44,6 @@ module Engine
               end
             end
 
-            # Coal companies merge immediately
-            @game.minors.select { |m| m.owner == player }.each do |minor|
-              minor.owner = @game.share_pool
-              @log << "#{minor.name} is forced to merge immediately"
-              @game.merge_minor!(minor, @game.exchange_target(minor))
-            end
-
             if entity.corporation? && player.cash.positive?
               @log << "#{player.name}'s remaining cash (#{@game.format_currency(player.cash)}) is "\
                       "transferred to #{entity.name}"
@@ -60,7 +53,7 @@ module Engine
             @game.declare_bankrupt(player)
             player.cash = 0
 
-            @round.bankrupting_corporations << entity if entity.corporation?
+            @round.bankrupting_corporations << entity
           end
 
           def round_state
