@@ -672,7 +672,7 @@ module Engine
           if !@round.is_a?(Engine::Round::Auction) && minor.id == 'SD5'
             coordinates = minor.coordinates.dup
             minor.coordinates = coordinates[0]
-            remove_reservations!(minor, coordinates[1])
+            remove_reservation!(minor, coordinates[1])
           end
           place_home_token(minor) unless minor.coordinates.is_a?(Array)
           if minor.corporation?
@@ -692,8 +692,8 @@ module Engine
           Array(corporation.coordinates).map { |coord| hex_by_id(coord) }
         end
 
-        def remove_reservations!(entity, coordinates)
-          coordinates.each { |coord| hex_by_id(coord).tile.remove_reservation!(entity) }
+        def remove_reservation!(entity, coordinates)
+          hex_by_id(coordinates).tile.remove_reservation!(entity)
         end
 
         def train_limit(entity)
