@@ -670,9 +670,9 @@ module Engine
           @bank.spend(cash, minor)
           @log << "#{minor.name} receives #{format_currency(cash)}"
           if !@round.is_a?(Engine::Round::Auction) && minor.id == 'SD5'
-            coordinates = minor.coordinates
-            minor.coordinates = coordinates.shift
-            remove_reservations!(minor, coordinates)
+            coordinates = minor.coordinates.dup
+            minor.coordinates = coordinates[0]
+            remove_reservations!(minor, coordinates[1])
           end
           place_home_token(minor) unless minor.coordinates.is_a?(Array)
           if minor.corporation?
