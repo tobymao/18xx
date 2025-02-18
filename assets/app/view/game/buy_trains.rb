@@ -176,7 +176,7 @@ module View
 
             children.concat(render_emergency_money_raising(owner)) if share_funds_allowed.positive?
           end
-        elsif share_funds_allowed.positive? && @step.can_ebuy_sell_shares?(@corporation)
+        elsif @step.can_ebuy_sell_shares?(@corporation)
           children.concat(render_emergency_money_raising(player))
         end
 
