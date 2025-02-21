@@ -274,27 +274,20 @@ module Engine
 
           return unless @convert_3s == true
 
-          # Count the remaining '3' trains
-          remaining_trains_count = depot.upcoming.count { |t| t.name == '3' }
-          return unless remaining_trains_count
-
-          # Forget all remaining '3' trains
-          trains = depot.upcoming.select { |t| t.name == '3' }
-          trains.each { |t| depot.forget_train(t) }
-
-          # Increase the num value of the '3+1' trains by the stored count
-          replace_three_with_three_plus_one(remaining_trains_count)
-          @convert_3s = false
+          replace_three_with_three_plus_one
         end
 
-        def replace_three_with_three_plus_one(remaining_trains_count)
-          @log << '--All remaining 3/2G trains in the supply replaced with with 3+1/2G+1 trains--'
+        def replace_three_with_three_plus_one
+          trains_3t = depot.upcoming.select { |t| t.name == '3' }
+          return unless trains_3t
 
-          remaining_trains_count.times do
-            train = @three_plus_one.shift
-            train.reserved = false
-            @depot.unshift_train(train)
+          @log << '--All remaining 3/2G trains in the supply replaced with 3+1/2G+1 trains--'
+          trains_3t.zip(@three_plus_one) do |t3, t3plus|
+            depot.forget_train(t3)
+            t3plus.reserved = false
+            @depot.unshift_train(t3plus)
           end
+          @convert_3s = false
         end
 
         def init_train_handler
