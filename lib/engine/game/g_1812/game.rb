@@ -14,8 +14,8 @@ module Engine
     module G1812
       class Game < G1867::Game
         include_meta(G1812::Meta)
-        include G1812::Entities
-        include G1812::Map
+        include Entities
+        include Map
         include CompanyPriceUpToFace
         include InterestOnLoans
 
@@ -302,10 +302,8 @@ module Engine
 
           # store the 3+1 trains in reserve for now
 
-          @three_plus_one = []
-          5.times do
-            train = depot.upcoming.find { |t| t.name == '3+1' }
-            @three_plus_one << train
+          @three_plus_one = depot.upcoming.select { |t| t.name == '3+1' }
+          @three_plus_one.each do |train|
             depot.remove_train(train)
             train.reserved = true
           end
@@ -351,7 +349,7 @@ module Engine
           end
 
           rejected.sort_by { |c| @corporations.index(c) }.each do |corp|
-            hex = @hexes.find { |h| h.id == corp.coordinates }
+            hex = hex_by_id(corp.coordinates)
             hex.tile.cities[corp.city || 0].remove_tokens!
             hex.tile.cities[corp.city || 0].remove_reservation!(corp)
             msg += "#{corp.name}, "
@@ -434,9 +432,13 @@ module Engine
           self.class::G_TRAINS.include?(train.name)
         end
 
+        def port_hexes
+          @port_hexes ||= PORT_HEXES.map { |coord| hex_by_id(coord) }
+        end
+
         def check_other(route)
           return if g_train?(route.train)
-          return unless (route.stops.map(&:hex).map(&:id) & PORT_HEXES).any?
+          return unless route.stops.map(&:hex).intersect?(port_hexes)
 
           raise GameError, 'Only G trains can run to ports'
         end
@@ -446,12 +448,13 @@ module Engine
           train = route.train
           corp = route.corporation
 
-          revenue += 10 if corp.assigned?(p4_company) && stops.find { |s| C18_HEX.include?(s.hex.id) }
+          revenue += 10 if corp.assigned?(p4_company) && stops.any? { |s| s.hex.id == C18_HEX }
 
-          revenue += 10 if g_train?(train) && corp.assigned?(p3_company) && stops.any? { |s| F3_PORT.include?(s.hex.id) }
-          revenue += 10 if g_train?(train) && corp.assigned?(p8_company) && stops.any? { |s| F3_PORT.include?(s.hex.id) }
-          revenue += 10 if g_train?(train) && corp.assigned?(p9_company) && stops.any? { |s| H9_PORT.include?(s.hex.id) }
-          revenue += 20 if g_train?(train) && corp.assigned?(p12_company) && stops.any? { |s| G6_PORT.include?(s.hex.id) }
+          { p3_company => F3_PORT, p8_company => F3_PORT, p9_company => H9_PORT, p12_company => G6_PORT }.each do |company, port|
+            revenue += (company == p12_company ? 20 : 10) if g_train?(train) && corp.assigned?(company) && stops.any? do |s|
+                                                               s.hex.id == port
+                                                             end
+          end
 
           revenue += north_south_bonus(stops)[:revenue]
           revenue += port_mine_bonus(stops)[:revenue]
@@ -462,8 +465,8 @@ module Engine
         def north_south_bonus(stops)
           bonus = { revenue: 0 }
 
-          north = stops.find { |stop| stop.tile.label&.to_s == 'N' }
-          south = stops.find { |stop| stop.tile.label&.to_s == 'S' }
+          north = stops.any? { |stop| stop.tile.label&.to_s == 'N' }
+          south = stops.any? { |stop| stop.tile.label&.to_s == 'S' }
 
           if north && south
             bonus[:revenue] += @north_south_bonus.route_revenue(@phase, train)
@@ -476,8 +479,9 @@ module Engine
         def port_mine_bonus(stops)
           bonus = { revenue: 0 }
 
-          port = stops.find { |stop| stop.tile.icons.any? { |i| i.name == 'port' } }
-          mine = stops.find { |stop| stop.tile.icons.any? { |i| i.name == 'mine' } }
+          port = stops.map(&:tile).map(&:icons).any? { |i| i.name == 'port' }
+          mine = stops.map(&:tile).map(&:icons).any? { |i| i.name == 'mine' }
+
           if port && mine
             bonus[:revenue] += @port_mine_bonus.route_revenue(@phase, train)
             bonus[:description] = 'Port-Mine'
