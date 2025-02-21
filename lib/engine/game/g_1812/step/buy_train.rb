@@ -8,23 +8,12 @@ module Engine
   module Game
     module G1812
       module Step
-        class BuyTrain < Engine::Step::BuyTrain
+        class BuyTrain < G1867::Step::BuyTrain
           include Engine::Step::AutomaticLoan
 
-          def actions(entity)
-            return [] if entity != current_entity
-            return %w[buy_train] if must_buy_train?(entity)
-            return %w[buy_train pass] if can_buy_train?(entity)
-
-            []
-          end
-
-          def available_cash(_player)
-            current_entity.buying_power
-          end
-
           def pass!
-            super
+            Engine::Step::BuyTrain.instance_method(:pass!).bind_call(self)
+
             @game.trainless_penalty(current_entity) if current_entity.trains.empty?
           end
 
@@ -32,53 +21,10 @@ module Engine
             @game.phase.name.to_i >= 5
           end
 
-          def can_sell?(_entity, _bundle)
-            false
-          end
-
-          def must_buy_train?(entity)
-            super && @game.buying_power(entity, full: true) >= needed_cash(entity)
-          end
-
-          def president_may_contribute?(_entity, _shell = nil)
-            false
-          end
-
-          def ebuy_president_can_contribute?(_corporation)
-            false
-          end
-
-          def buy_train_action(action, entity = nil)
+          def buy_train_action(action, _entity = nil)
             @depot_train = action.train.from_depot?
-            super
-          end
 
-          def buying_power(entity)
-            if must_buy_train?(entity)
-              @game.buying_power(entity, full: true)
-            else
-              @game.buying_power(entity)
-            end
-          end
-
-          def needed_cash(_entity)
-            @depot.min_depot_price
-          end
-
-          def try_take_loan(entity, cost)
-            if must_buy_train?(entity) && @depot_train
-              super
-            elsif cost > entity.cash
-              reason =
-                if must_buy_train?(entity)
-                  'as train is not from depot'
-                elsif @game.buying_power(entity, full: true) <= needed_cash(entity)
-                  'cannot take enough loans to purchase'
-                else
-                  'as do not need to buy'
-                end
-              raise GameError, "Not able to take loan to purchase at #{@game.format_currency(cost)}, " + reason
-            end
+            Engine::Step::BuyTrain.instance_method(:buy_train_action).bind_call(self)
           end
         end
       end
