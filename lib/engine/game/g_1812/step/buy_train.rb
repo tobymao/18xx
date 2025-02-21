@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require_relative '../../../step/base'
-require_relative '../../../step/buy_train'
+require_relative '../../g_1867/step/buy_train'
 require_relative '../../../step/automatic_loan'
 
 module Engine
