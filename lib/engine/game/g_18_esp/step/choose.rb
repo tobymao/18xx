@@ -18,6 +18,12 @@ module Engine
             actions
           end
 
+          def auto_actions(entity)
+            return [Engine::Action::Choose.new(entity, choice: '2')] if entity.type == :minor
+
+            []
+          end
+
           def log_skip(_entity); end
 
           def choice_name

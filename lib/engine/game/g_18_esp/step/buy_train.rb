@@ -16,6 +16,12 @@ module Engine
             trains
           end
 
+          def buyable_train_variants(train, entity)
+            variants = super
+            variants.reject! { |t| t[:track_type] == :narrow } if entity.type == :minor
+            variants
+          end
+
           def try_take_player_loan(entity, cost)
             return unless cost.positive?
             return unless cost > entity.cash

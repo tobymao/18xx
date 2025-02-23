@@ -92,7 +92,7 @@ module Engine
           def can_swap?
             return merged_token_in_shared_city? unless mz?(@merging.last)
 
-            @merging.last.tokens.first&.used &&
+            @merging.first.next_token &&
             !mz?(@merging.last) &&
             merged_token_in_shared_city?
           end
