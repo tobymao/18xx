@@ -830,7 +830,7 @@ module Engine
           G1867::Round::Stock.new(self, [
             G1867::Step::MajorTrainless,
             Engine::Step::DiscardTrain,
-            Engine::Step::HomeToken,
+            G1867::Step::HomeToken,
             G1867::Step::BuySellParShares,
           ])
         end
