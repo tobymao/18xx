@@ -225,8 +225,14 @@ module Engine
                                                                                      'trains of that rank are converted to '\
                                                                                      '3+1/2G+1 trains']).freeze
 
+        # this is used in 1867 to label the National railway, which isn't present in 1812
         def corporation_size_name(entity); end
 
+        # 1812 doesn't have 1867's nationalization mechanic
+        def nationalize!(corporation); end
+
+        # this method is called in the buy_train_action method of the buy_train step imported from 1867.
+        # it isn't used in 1812, so it's defined here to do nothing
         def post_train_buy; end
 
         def new_or!
