@@ -420,6 +420,9 @@ module Engine
 
         G_TRAINS = %w[1G 2G 2+1G 3+2G 4+2G 2+2GD].freeze
         PORT_HEXES = %w[F3 G4 G6 G8 H9 H17 H19].freeze
+        MINE_HEXES = %w[B15 D7 D17 E2 E6].freeze
+        NORTH_HEXES = %w[A4 A8 F1].freeze
+        SOUTH_HEXES = %w[C20 E20 F19].freeze
         NORTH_SOUTH_BONUS_HEX = 'I1'
         PORT_MINE_BONUS_HEX = 'I3'
         C18_HEX = 'C18'
@@ -427,19 +430,43 @@ module Engine
         G6_PORT = 'G6'
         H9_PORT = 'H9'
 
+        PORT_COMPANIES_AND_BONUS_HEXES = {
+          p3_company: F3_PORT,
+          p8_company: F3_PORT,
+          p9_company: H9_PORT,
+          p12_company: G6_PORT,
+        }.freeze
+
         def g_train?(train)
           self.class::G_TRAINS.include?(train.name)
         end
 
-        def port_hexes
+        def port_hexes?(route)
           @port_hexes ||= PORT_HEXES.map { |coord| hex_by_id(coord) }
+          route.stops.map(&:hex).intersect?(@port_hexes)
+        end
+
+        def mine_hexes?(route)
+          @mine_hexes ||= MINE_HEXES.map { |coord| hex_by_id(coord) }
+          route.stops.map(&:hex).intersect?(@mine_hexes)
+        end
+
+        def north_hexes?(route)
+          @north_hexes ||= NORTH_HEXES.map { |coord| hex_by_id(coord) }
+          route.stops.map(&:hex).intersect?(@north_hexes)
+        end
+
+        def south_hexes?(route)
+          @south_hexes ||= MINE_HEXES.map { |coord| hex_by_id(coord) }
+          route.stops.map(&:hex).intersect?(@south_hexes)
         end
 
         def check_other(route)
-          return if g_train?(route.train)
-          return unless route.stops.map(&:hex).intersect?(port_hexes)
+          raise GameError, 'All Goods Train routes must include a port and a mine' if g_train?(route.train) &&
+                                                                                      (!port_hexes?(route) ||
+                                                                                      !mine_hexes?(route))
 
-          raise GameError, 'Only G trains can run to ports'
+          raise GameError, 'Only Goods Trains can run to ports' if !g_train?(route.train) && port_hexes?(route)
         end
 
         def revenue_for(route, stops)
@@ -447,27 +474,37 @@ module Engine
           train = route.train
           corp = route.corporation
 
-          revenue += 10 if corp.assigned?(p4_company) && stops.any? { |s| s.hex.id == C18_HEX }
+          revenue += north_south_bonus_check(route, train)[:revenue]
+          revenue += bonus_for_p4_company(corp, stops)
 
-          { p3_company => F3_PORT, p8_company => F3_PORT, p9_company => H9_PORT, p12_company => G6_PORT }.each do |company, port|
-            revenue += (company == p12_company ? 20 : 10) if g_train?(train) && corp.assigned?(company) && stops.any? do |s|
-                                                               s.hex.id == port
-                                                             end
+          if g_train?(train)
+            revenue += port_mine_bonus_check(route, train)[:revenue]
+            revenue += bonus_for_port_companies(corp, stops)
           end
-
-          revenue += north_south_bonus(stops)[:revenue]
-          revenue += port_mine_bonus(stops)[:revenue]
 
           revenue
         end
 
-        def north_south_bonus(stops)
+        def bonus_for_p4_company(corp, stops)
+          return 10 if corp.assigned?(p4_company) && stops.any? { |s| s.hex.id == C18_HEX }
+
+          0
+        end
+
+        def bonus_for_port_companies(corp, stops)
+          PORT_COMPANIES_AND_BONUS_HEXES.sum do |company, port|
+            if corp.assigned?(company) && stops.any? { |s| s.hex.id == port }
+              company == p12_company ? 20 : 10
+            else
+              0
+            end
+          end
+        end
+
+        def north_south_bonus_check(route, train)
           bonus = { revenue: 0 }
 
-          north = stops.any? { |stop| stop.tile.label&.to_s == 'N' }
-          south = stops.any? { |stop| stop.tile.label&.to_s == 'S' }
-
-          if north && south
+          if north_hexes?(route) && south_hexes?(route)
             bonus[:revenue] += @north_south_bonus.route_revenue(@phase, train)
             bonus[:description] = 'North-South'
           end
@@ -475,13 +512,10 @@ module Engine
           bonus
         end
 
-        def port_mine_bonus(stops)
+        def port_mine_bonus_check(route, train)
           bonus = { revenue: 0 }
 
-          port = stops.map(&:tile).map(&:icons).any? { |i| i.name == 'port' }
-          mine = stops.map(&:tile).map(&:icons).any? { |i| i.name == 'mine' }
-
-          if port && mine
+          if port_hexes?(route) && mine_hexes?(route)
             bonus[:revenue] += @port_mine_bonus.route_revenue(@phase, train)
             bonus[:description] = 'Port-Mine'
           end
