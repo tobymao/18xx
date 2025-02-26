@@ -563,14 +563,6 @@ module Engine
                     'path=track:future,a:3,b:_0;' \
                     'upgrade=cost:40,terrain:river;' \
                     'icon=image:1858_india/CPC,sticky:1;',
-            %w[K6] =>
-                    'city=revenue:0;' \
-                    'label=Y;' \
-                    'future_label=label:B,color:gray;' \
-                    'path=track:future,a:3,b:_0;' \
-                    'path=track:future,a:4,b:_0;' \
-                    'icon=image:1858_india/BT,sticky:1;' \
-                    'icon=image:1858_india/BS,sticky:1;',
             %w[K8] =>
                     'town=revenue:0;' \
                     'path=track:future,a:1,b:_0;' \
@@ -737,6 +729,12 @@ module Engine
                     'path=a:4,b:_2;' \
                     'border=type:province,edge:3;' \
                     'border=type:province,edge:4;',
+            %w[K6] =>
+                    'city=revenue:30,slots:2;' \
+                    'label=Y;' \
+                    'future_label=label:B,color:gray;' \
+                    'path=a:3,b:_0;' \
+                    'path=a:4,b:_0;' \
           },
 
           red: {

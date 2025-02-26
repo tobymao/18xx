@@ -151,7 +151,7 @@ module Engine
             abilities: [
               { type: 'no_buy' },
               { type: 'revenue_change', revenue: 36, on_phase: '3' },
-              { type: 'reservation', hex: 'K6', icon: '1858_india/BS+BT' },
+              { type: 'reservation', hex: 'K6' },
               {
                 type: 'exchange',
                 owner_type: 'player',
@@ -221,7 +221,7 @@ module Engine
             abilities: [
               { type: 'no_buy' },
               { type: 'revenue_change', revenue: 35, on_phase: '3' },
-              { type: 'reservation', hex: 'K6', icon: '1858_india/BS+BT' },
+              { type: 'reservation', hex: 'K6' },
               {
                 type: 'exchange',
                 owner_type: 'player',
