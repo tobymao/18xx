@@ -734,7 +734,7 @@ module Engine
                     'label=Y;' \
                     'future_label=label:B,color:gray;' \
                     'path=a:3,b:_0;' \
-                    'path=a:4,b:_0;' \
+                    'path=a:4,b:_0;',
           },
 
           red: {
