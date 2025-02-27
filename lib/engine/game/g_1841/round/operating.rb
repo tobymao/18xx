@@ -11,6 +11,7 @@ module Engine
             @current_operator = nil
             @home_token_timing = @game.class::HOME_TOKEN_TIMING
             @entities.each { |c| @game.place_home_token(c) } if @home_token_timing == :operating_round
+            @entities.each { |e| e.trains.each { |t| t.operated = false } }
             (@game.corporations + @game.minors + @game.companies).each(&:reset_ability_count_this_or!)
             @game.done_this_round.clear
             after_setup
