@@ -132,15 +132,15 @@ module Engine
           'Treasury'
         end
 
-        MOUNTAIN_BIG_HEXES = %w[E21 G21 H22 F26 E27 E29 D30].freeze
-        MOUNTAIN_SMALL_HEXES = %w[G19 E23 D26 D28 F28 G27 H28].freeze
-        HARBOR_HEXES = %w[G15 A25 C17 A31 B36].freeze
+        MOUNTAIN_BIG_HEXES = %w[F21 H21 I22 G26 F27 F29 E30].freeze
+        MOUNTAIN_SMALL_HEXES = %w[H19 F23 E26 E28 G28 H27 I28].freeze
+        HARBOR_HEXES = %w[H13 A26 D15 A32 E36].freeze
         CITY_HARBOR_MAP = {
-          'G17' => 'G15',
-          'B26' => 'A25',
-          'D18' => 'C17',
-          'B32' => 'A31',
-          'C35' => 'B36',
+          'H17' => 'H13',
+          'C26' => 'A26',
+          'E18' => 'D15',
+          'C32' => 'A32',
+          'D35' => 'E36',
         }.freeze
 
         def switcher
@@ -211,10 +211,10 @@ module Engine
           update_cert_limit
 
           # Allow to build against Mjosa
-          hex_by_id('H26').neighbors[1] = hex_by_id('G27')
-          hex_by_id('H26').neighbors[5] = hex_by_id('I27')
-          hex_by_id('G27').neighbors[4] = hex_by_id('H26')
-          hex_by_id('I27').neighbors[2] = hex_by_id('H26')
+          hex_by_id('I26').neighbors[1] = hex_by_id('H27')
+          hex_by_id('I26').neighbors[5] = hex_by_id('J27')
+          hex_by_id('H27').neighbors[4] = hex_by_id('I26')
+          hex_by_id('J27').neighbors[2] = hex_by_id('I26')
         end
 
         def p4
@@ -242,7 +242,7 @@ module Engine
         end
 
         def mjosa
-          @mjosa ||= hex_by_id('H26')
+          @mjosa ||= hex_by_id('I26')
         end
 
         def route_cost(route)
