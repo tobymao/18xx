@@ -30,6 +30,10 @@ module Engine
       nil
     end
 
+    def cash
+      0
+    end
+
     def buy_shares(entity, shares, exchange: nil, exchange_price: nil, swap: nil,
                    allow_president_change: true, silent: nil, borrow_from: nil,
                    discounter: nil)
