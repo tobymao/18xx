@@ -335,6 +335,7 @@ module Engine
               if @round.round_num < @operating_rounds
                 new_operating_round(@round.round_num + 1)
               else
+                @turn += 1
                 or_set_finished
                 new_stock_round
               end
@@ -343,18 +344,14 @@ module Engine
               reorder_players
               new_operating_round
             when Engine::Round::Operating
-              if @round.round_num < @operating_rounds
+              if @round.round_num < @operating_rounds || @phase.tiles.include?(:green)
                 or_round_finished
                 new_nationalization_round(@round.round_num)
               else
                 @turn += 1
                 or_round_finished
-                if @phase.tiles.include?(:green)
-                  new_nationalization_round(@round.round_num)
-                else
-                  or_set_finished
-                  new_stock_round
-                end
+                or_set_finished
+                new_stock_round
               end
             when init_round.class
               init_round_finished
