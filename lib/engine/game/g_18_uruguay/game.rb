@@ -465,8 +465,8 @@ module Engine
               if @round.round_num < 3
                 new_nationalization_round(@round.round_num + 1)
               elsif @saved_or_round
-                # reorder_players
                 @log << '--Return to Operating Round--'
+                @saved_or_round.force_next_entity! if @saved_or_round.current_entity.closed?
                 @saved_or_round
               else
                 new_operating_round
