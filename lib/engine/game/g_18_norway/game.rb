@@ -328,6 +328,16 @@ module Engine
               ], round_num: round_num)
         end
 
+        def nationalize_corporation(entity, number_of_shares)
+          value = convert(entity, number_of_shares)
+          @log << "#{entity.name} nationalized and receives #{format_currency(value)}"
+          update_cert_limit
+        end
+
+        def float_corporation(corporation)
+          nationalize_corporation(corporation, 1) if custom_end_game_reached?
+        end
+
         def next_round!
           @round =
             case @round
