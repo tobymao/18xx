@@ -638,7 +638,7 @@ module Engine
 
         def setup_company_price_up_to_one_and_half_face
           @companies.each do |company|
-            company.min_price = 1
+            company.min_price = (company.value * 0.5)
             company.max_price = (company.value * 1.5)
           end
         end
