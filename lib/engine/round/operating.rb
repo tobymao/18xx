@@ -25,9 +25,7 @@ module Engine
         @game.payout_companies
         @entities.each { |c| @game.place_home_token(c) } if @home_token_timing == :operating_round
         @entities.each do |entity|
-          next unless entity.respond_to?(:trains)
-
-          entity.trains.each { |train| train.operated = false }
+          entity.trains.each { |train| train.operated = false } if entity.operator?
         end
         (@game.corporations + @game.minors + @game.companies).each(&:reset_ability_count_this_or!)
         after_setup
