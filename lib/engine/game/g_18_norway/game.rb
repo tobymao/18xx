@@ -53,6 +53,8 @@ module Engine
 
         GAME_END_CHECK = { bankrupt: :immediate, custom: :one_more_full_or_set }.freeze
 
+        DEPOT_CLASS = G18Norway::Depot
+
         CERT_LIMIT = {
           3 => { 0 => 12, 1 => 12, 2 => 12, 3 => 15, 4 => 15, 5 => 17, 6 => 17, 7 => 19, 8 => 19 },
           4 => { 0 => 9, 1 => 9, 2 => 9, 3 => 11, 4 => 11, 5 => 13, 6 => 13, 7 => 15, 8 => 15 },
@@ -215,16 +217,6 @@ module Engine
           hex_by_id('H26').neighbors[5] = hex_by_id('I27')
           hex_by_id('G27').neighbors[4] = hex_by_id('H26')
           hex_by_id('I27').neighbors[2] = hex_by_id('H26')
-        end
-
-        def init_train_handler
-          trains = game_trains.flat_map do |train|
-            Array.new((train[:num] || num_trains(train))) do |index|
-              Train.new(**train, index: index)
-            end
-          end
-
-          G18Norway::Depot.new(trains, self)
         end
 
         def p4
