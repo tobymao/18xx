@@ -34,15 +34,15 @@ module Engine
         SELL_BUY_ORDER = :sell_buy
         TILE_RESERVATION_BLOCKS_OTHERS = :always
         CURRENCY_FORMAT_STR = '%skr'
-        EBUY_SELL_MORE_THAN_NEEDED = true
+        EBUY_SELL_MORE_THAN_NEEDED = false
         CAPITALIZATION = :incremental
         MUST_BUY_TRAIN = :always
         POOL_SHARE_DROP = :none
         SELL_AFTER = :p_any_operate
         SELL_MOVEMENT = :left_block
         HOME_TOKEN_TIMING = :float
-
-        EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
+        EBUY_PRES_SWAP = false
+        EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = true
         MUST_EMERGENCY_ISSUE_BEFORE_EBUY = true
 
         BANKRUPTCY_ENDS_GAME_AFTER = :one
@@ -217,6 +217,16 @@ module Engine
           hex_by_id('I27').neighbors[2] = hex_by_id('H26')
         end
 
+        def init_train_handler
+          trains = game_trains.flat_map do |train|
+            Array.new((train[:num] || num_trains(train))) do |index|
+              Train.new(**train, index: index)
+            end
+          end
+
+          G18Norway::Depot.new(trains, self)
+        end
+
         def p4
           @p4 ||= company_by_id('P4')
         end
@@ -312,10 +322,13 @@ module Engine
           train.track_type == :narrow
         end
 
-        def cheapest_train_price
+        def cheapest_train
           depot_trains = depot.depot_trains.reject { |train| ship?(train) }
-          train = depot_trains.min_by(&:price)
-          train.price
+          depot_trains.min_by(&:price)
+        end
+
+        def cheapest_train_price
+          cheapest_train.price
         end
 
         def can_go_bankrupt?(player, corporation)

@@ -48,6 +48,15 @@ module Engine
             end
           end
 
+          def process_sell_shares(action)
+            raise GameError, "Cannot sell shares of #{action.bundle.corporation.name}" unless can_sell?(action.entity,
+                                                                                                        action.bundle)
+
+            @game.sell_shares_and_change_price(action.bundle, movement: :left_share)
+
+            @round.recalculate_order if @round.respond_to?(:recalculate_order)
+          end
+
           def free_ship(corporation)
             ability = @game.abilities(corporation, :free_ship)
             return unless ability
@@ -73,6 +82,19 @@ module Engine
 
           def spend_minmax(entity, _train)
             [1, entity.cash]
+          end
+
+          def check_for_cheapest_train(train)
+            cheapest = @game.cheapest_train
+            cheapest_names = names_of_cheapest_variants(cheapest)
+            raise GameError, "Cannot purchase #{train.name} train: cheaper train available (#{cheapest_names.first})" if
+              !cheapest_names.include?(train.name) &&
+              @game.class::EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST &&
+              (@game.class::EBUY_FROM_OTHERS == :never || train.from_depot?)
+          end
+
+          def needed_cash(entity)
+            cheapest_train_price(entity)
           end
 
           def process_buy_train(action)
