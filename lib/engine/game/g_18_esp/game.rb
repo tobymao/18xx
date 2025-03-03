@@ -61,7 +61,7 @@ module Engine
 
         NORTH_SOUTH_DIVIDE = 13
 
-        P2_TRAIN_ID = '2-0'
+        P2_TRAIN_ID = '2P-0'
 
         ARANJUEZ_HEX = 'F26'
 
@@ -887,6 +887,7 @@ module Engine
                      city_by_id("#{hex.tile.id}-#{corporation.city}")
                    end
             @log << "#{corporation.name} places a token on #{hex.id}"
+            cheater = !city.tokenable?(corporation)
             city.place_token(corporation, token, cheater: true, check_tokenable: false)
           else
             super
