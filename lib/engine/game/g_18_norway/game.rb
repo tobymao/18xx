@@ -354,7 +354,14 @@ module Engine
               reorder_players
               new_operating_round
             when Engine::Round::Operating
-              if @round.round_num < @operating_rounds || @phase.tiles.include?(:green)
+              if @round.round_num < @operating_rounds
+                or_round_finished
+                if !custom_end_game_reached?
+                  new_nationalization_round(@round.round_num)
+                else
+                  new_operating_round(@round.round_num + 1)
+                end
+              elsif !custom_end_game_reached? && @phase.tiles.include?(:green)
                 or_round_finished
                 new_nationalization_round(@round.round_num)
               else
