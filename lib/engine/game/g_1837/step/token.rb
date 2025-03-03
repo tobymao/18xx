@@ -27,7 +27,7 @@ module Engine
             # Cheaper to do the graph first, then check affordability
             current_entity == entity &&
               !(token = entity.next_token).nil? &&
-              @game.graph.can_token?(entity) &&
+              token_graph.can_token?(entity) &&
               can_afford_token?(token, buying_power(entity))
           end
 
@@ -40,7 +40,7 @@ module Engine
           end
 
           def can_afford_token?(token, cash)
-            @game.graph.tokenable_cities(token.corporation).any? do |city|
+            token_graph.tokenable_cities(token.corporation).any? do |city|
               token_price(token, city.tile.hex) <= cash
             end
           end
@@ -53,6 +53,12 @@ module Engine
           def adjust_token_price_ability!(_entity, token, hex, _city, special_ability: nil)
             token.price = token_price(token, hex)
             [token, nil]
+          end
+
+          private
+
+          def token_graph
+            @game.token_graph_for_entity
           end
         end
       end
