@@ -397,7 +397,7 @@ module Engine
             next unless corp.destination_coordinates
 
             hex_by_id(corp.destination_coordinates).remove_assignment!(corp)
-            corp.remove_ability(corp.abilities.find { |a| a.description.start_with?('Destination') })
+            corp.remove_ability(corp.abilities.find { |a| a.description&.start_with?('Destination') })
           end
         end
 
