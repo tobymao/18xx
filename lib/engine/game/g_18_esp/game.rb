@@ -888,7 +888,7 @@ module Engine
                    end
             @log << "#{corporation.name} places a token on #{hex.id}"
             cheater = !city.tokenable?(corporation)
-            city.place_token(corporation, token, cheater: true, check_tokenable: false)
+            city.place_token(corporation, token, cheater: cheater, check_tokenable: false)
           else
             super
           end
