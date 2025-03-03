@@ -1128,7 +1128,7 @@ module Engine
           move_assets(corporation, minor)
 
           # handle token
-          keep_token ? swap_token(corporation, minor) : gain_token(corporation, minor)
+          swap_token(corporation, minor) if keep_token
 
           # get share
           get_reserved_share(minor.owner, corporation) if minor.ipoed
@@ -1203,12 +1203,6 @@ module Engine
           @log << "#{owner.name} gets a share of #{corporation.name}"
         end
 
-        def gain_token(corporation, minor)
-          blocked_token = corporation.tokens.find { |token| token.used == true && !token.hex && token.price == 50 }
-          blocked_token&.used = false
-          delete_token_mz(minor) if minor&.name == 'MZ'
-        end
-
         def gain_luxury_carriage_ability_from_minor(corporation, minor)
           minor_luxury_ability = luxury_ability(minor)
           return unless minor_luxury_ability
@@ -1248,14 +1242,13 @@ module Engine
         end
 
         def swap_token(survivor, nonsurvivor)
-          new_token = survivor.tokens.last
+          new_token = survivor.next_token
           old_token = nonsurvivor.tokens.first
           city = old_token.city
           if city.nil?
             city = hex_by_id(nonsurvivor.coordinates).tile.cities.find { |c| c.reserved_by?(nonsurvivor) }
             city.remove_reservation!(nonsurvivor)
           end
-          return gain_token(survivor) unless city
 
           @log << "Replaced #{nonsurvivor.name} token in #{city.hex.id} with #{survivor.name}"\
                   ' token'
