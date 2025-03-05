@@ -7,20 +7,20 @@ module Engine
         MINE_HEXES = %w[C5 C9 E9 E19 G9 H6 I7 C23 G17 G21 D18 D32 E31 H30 I23 D8 E7 B30 F30 I21 J24].freeze
         LAYOUT = :flat
         TILES = {
-          '3' => 5,
-          '72' => 5,
+          '3' => 3,
+          '72' => 3,
           '4' => 6,
           '74' => 6,
           '5' => 5,
           '75' => 5,
           '6' => 5,
           '76' => 5,
-          '7' => 5,
-          '77' => 5,
-          '8' => 15,
-          '78' => 15,
-          '9' => 15,
-          '79' => 15,
+          '7' => 3,
+          '77' => 3,
+          '8' => 12,
+          '78' => 12,
+          '9' => 12,
+          '79' => 12,
           '57' => 5,
           '956' => 5,
           '58' => 6,
@@ -113,26 +113,26 @@ module Engine
           },
           'L90' =>
           {
-            'count' => 5,
+            'count' => 4,
             'color' => 'yellow',
             'code' => 'halt=symbol:⚒,route:mandatory,loc:center,revenue:20;path=a:0,b:_0;path=a:4,b:_0',
           },
           'L93' =>
           {
-            'count' => 5,
+            'count' => 4,
             'color' => 'yellow',
             'code' => 'halt=symbol:⚒,route:mandatory,loc:center,revenue:20;path=a:0,b:_0,track:narrow;'\
                       'path=a:4,b:_0,track:narrow',
           },
           'L91' =>
           {
-            'count' => 5,
+            'count' => 4,
             'color' => 'yellow',
             'code' => 'halt=symbol:⚒,route:mandatory,revenue:20;path=a:0,b:_0;path=a:3,b:_0',
           },
           'L94' =>
           {
-            'count' => 5,
+            'count' => 4,
             'color' => 'yellow',
             'code' => 'halt=symbol:⚒,route:mandatory,revenue:20;path=a:0,b:_0,track:narrow;'\
                       'path=a:3,b:_0,track:narrow',
@@ -155,14 +155,14 @@ module Engine
           },
           'L96' =>
           {
-            'count' => 5,
+            'count' => 3,
             'color' => 'yellow',
             'code' => 'halt=symbol:⚒,route:mandatory,loc:5,revenue:20;town=revenue:10,loc:1;'\
                       'path=a:0,b:_0;path=a:4,b:_0;path=a:0,b:_1;path=a:4,b:_1',
           },
           'L99' =>
           {
-            'count' => 5,
+            'count' => 3,
             'color' => 'yellow',
             'code' => 'halt=symbol:⚒,route:mandatory,loc:5,revenue:20;town=revenue:10,loc:1;'\
                       'path=a:0,b:_0,track:narrow;path=a:4,b:_0,track:narrow;'\
@@ -170,14 +170,14 @@ module Engine
           },
           'L97' =>
           {
-            'count' => 5,
+            'count' => 3,
             'color' => 'yellow',
             'code' => 'halt=symbol:20 ⚒,loc:2,revenue:20;town=revenue:10;'\
                       'path=a:0,b:_0;path=a:3,b:_0;path=a:0,b:_1;path=a:3,b:_1',
           },
           'L100' =>
           {
-            'count' => 5,
+            'count' => 3,
             'color' => 'yellow',
             'code' => 'halt=symbol:20 ⚒,loc:2,revenue:20;town=revenue:10;'\
                       'path=a:0,b:_0,track:narrow;path=a:3,b:_0,track:narrow;'\
@@ -396,9 +396,9 @@ module Engine
             ';path=a:2,b:_0,track:narrow;path=a:3,b:_0,track:narrow;path=a:4,b:_0,track:narrow;label=Y',
 
           },
-          '611' => 10,
+          '611' => 8,
           'L125' => {
-            'count' => 10,
+            'count' => 8,
             'color' => 'brown',
             'code' =>
             'city=revenue:40,slots:2;path=a:0,b:_0,track:narrow;path=a:1,b:_0,track:narrow'\

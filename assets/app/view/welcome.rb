@@ -18,7 +18,7 @@ module View
       message = <<~MESSAGE
         <p><a href='https://www.kickstarter.com/projects/1840vienna/1807-the-big-four'><em>1807: The Big Four</em> is now on Kickstarter</a>.</p>
 
-        <p><a href="https://github.com/tobymao/18xx/wiki/1837">1837</a> is now in alpha.</p>
+        <p><a href="https://github.com/tobymao/18xx/wiki/18ESP">18ESP</a> is now in beta.</p>
 
         <p><a href="https://github.com/tobymao/18xx/wiki/18Ardennes">18Ardennes</a> is now in beta.</p>
 
