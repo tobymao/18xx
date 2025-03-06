@@ -15,8 +15,6 @@ module Engine
         include Entities
         include Map
 
-        attr_reader :token_graph
-
         CORPORATION_CLASS = G1837::Corporation
         DEPOT_CLASS = G1837::Depot
 
