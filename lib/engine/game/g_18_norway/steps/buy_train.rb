@@ -41,11 +41,13 @@ module Engine
           end
 
           def buyable_trains(entity)
-            super.reject do |train|
-              next false unless @game.ship?(train)
-
-              must_buy_train?(entity) || entity.trains.any? { |ship| ship.name == train.name }
-            end
+            # We need to add the ships in the case that the company have a train but have less money then the next available train
+            ships = (must_buy_train?(entity) || entity.cash >= @depot.min_depot_price) ? [] : 
+              @depot.depot_trains.reject do |train|
+                true unless @game.ship?(train)
+                true if train.price > entity.cash
+              end
+              super + ships
           end
 
           def process_sell_shares(action)
@@ -82,15 +84,6 @@ module Engine
 
           def spend_minmax(entity, _train)
             [1, entity.cash]
-          end
-
-          def check_for_cheapest_train(train)
-            cheapest = @game.cheapest_train
-            cheapest_names = names_of_cheapest_variants(cheapest)
-            raise GameError, "Cannot purchase #{train.name} train: cheaper train available (#{cheapest_names.first})" if
-              !cheapest_names.include?(train.name) &&
-              @game.class::EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST &&
-              (@game.class::EBUY_FROM_OTHERS == :never || train.from_depot?)
           end
 
           def needed_cash(entity)
