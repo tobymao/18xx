@@ -42,12 +42,15 @@ module Engine
 
           def buyable_trains(entity)
             # We need to add the ships in the case that the company have a train but have less money then the next available train
-            ships = (must_buy_train?(entity) || entity.cash >= @depot.min_depot_price) ? [] : 
-              @depot.depot_trains.reject do |train|
-                true unless @game.ship?(train)
-                true if train.price > entity.cash
-              end
-              super + ships
+            ships = if must_buy_train?(entity) || entity.cash >= @depot.min_depot_price
+                      []
+                    else
+                      @depot.depot_trains.reject do |train|
+                        true unless @game.ship?(train)
+                        true if train.price > entity.cash
+                      end
+                    end
+            super + ships
           end
 
           def process_sell_shares(action)
