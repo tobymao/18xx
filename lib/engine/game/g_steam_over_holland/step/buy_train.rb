@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require_relative '../../../step/buy_train'
-require_relative '../../../step/train'
 
 module Engine
   module Game
@@ -33,7 +32,7 @@ module Engine
                     'Corporation can afford train, a train must be purchased.'
             end
 
-            if !@game.loading && !@corporations_sold.empty?
+            unless @corporations_sold.empty?
               raise GameError,
                     'Player sold shares, a train must be purchased.'
             end
@@ -41,26 +40,6 @@ module Engine
             return super unless can_close_corp?(entity)
 
             @game.close_corporation(entity)
-          end
-
-          def process_sell_shares(action)
-            bundle = action.bundle
-            corporation = bundle.corporation
-            old_price = corporation.share_price
-
-            if action.entity == corporation
-              @game.share_pool.sell_shares(bundle)
-
-              (bundle.num_shares - 1).times do
-                @game.stock_market.move_left(corporation)
-              end
-
-              @game.log_share_price(corporation, old_price)
-              @round.issued_shares[corporation] = true
-            else
-              @game.sell_shares_and_change_price(bundle)
-              @corporations_sold << corporation
-            end
           end
 
           def can_sell?(entity, bundle)
