@@ -61,7 +61,9 @@ module Engine
 
         NORTH_SOUTH_DIVIDE = 13
 
-        P2_TRAIN_ID = '2P-0'
+        P2_TRAIN_ID = '2-0'
+
+        P3_TRAIN_ID = '2P-0'
 
         ARANJUEZ_HEX = 'F26'
 
@@ -370,7 +372,7 @@ module Engine
 
           @company_trains = {}
           @company_trains['P2'] = find_and_remove_train_for_minor(P2_TRAIN_ID, buyable: false)
-          @company_trains['P3'] = find_and_remove_train_for_minor('2P-0', buyable: false)
+          @company_trains['P3'] = find_and_remove_train_for_minor(P3_TRAIN_ID, buyable: false)
           @perm2_ran_aranjuez = false
 
           setup_company_price(1)

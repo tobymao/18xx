@@ -8,8 +8,8 @@ module Engine
       module Step
         class DiscardTrain < Engine::Step::DiscardTrain
           def trains(corporation)
-            # 2 train from P2 can not be discarded
-            corporation.trains.reject { |t| t.id == @game.class::P2_TRAIN_ID }
+            # 2 train from P3 can not be discarded
+            corporation.trains.reject { |t| t.id == @game.class::P3_TRAIN_ID }
           end
         end
       end
