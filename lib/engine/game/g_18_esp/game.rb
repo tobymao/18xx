@@ -472,8 +472,10 @@ module Engine
 
         def init_company_abilities
           northern_corps = @corporations.select { |c| north_corp?(c) }
-          random_corporation = northern_corps[rand % northern_corps.size]
-          another_random_corporation = northern_corps[rand % northern_corps.size]
+          #  the PRNG doesn't work well when doing mod even numbers, as
+          # the lower digits aren't truly random. Right shifting by 12 fixes the issue.
+          random_corporation = northern_corps[(rand >> 12) % northern_corps.size]
+          another_random_corporation = northern_corps[(rand >> 12) % northern_corps.size]
           @companies.each do |company|
             next unless (ability = abilities(company, :shares))
 
