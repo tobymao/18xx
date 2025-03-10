@@ -49,7 +49,7 @@ GEM
       pry (>= 0.13, < 0.15)
     raabro (1.4.0)
     racc (1.7.3)
-    rack (3.0.9.1)
+    rack (3.0.14)
     rainbow (3.1.1)
     raindrops (0.20.0)
     rake (13.0.6)
