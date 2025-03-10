@@ -33,7 +33,7 @@ module Engine
               @game.abilities(entity, :token) do |ability|
                 place_token(entity, action.city, action.token, connected: false, special_ability: ability)
                 entity.add_ability(Ability::Token.new(type: 'token', hexes: Engine::Game::G18Norway::Game::HARBOR_HEXES,
-                                                      from_owner: true, discount: 0, connected: true))
+                                                      from_owner: true, discount: 0, connected: true, extra_slot: true))
               end
             else
               raise GameError, "Cannot place token on #{city.hex.name} city is not connected"
