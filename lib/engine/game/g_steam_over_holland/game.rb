@@ -381,6 +381,10 @@ module Engine
           corporation = bundle.corporation
           old_price = corporation.share_price
 
+          # when issuing shares, price drops one space fewer than the number of shares issued
+          price_drop -= 1 if corporation == bundle.owner
+          @round.issued_shares[bundle.corporation] = true if corporation == bundle.owner
+
           # This section below allows for the ledges that prevent price drops unless the president is selling
           unless corporation.president?(bundle.owner)
             case corporation.share_price.type
