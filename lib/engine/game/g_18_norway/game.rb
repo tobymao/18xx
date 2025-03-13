@@ -319,7 +319,7 @@ module Engine
           depot_trains.min_by(&:price)
         end
 
-        def cheapest_train_price
+        def cheapest_train_price(_corporation)
           cheapest_train.price
         end
 
