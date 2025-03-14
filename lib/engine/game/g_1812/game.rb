@@ -398,13 +398,10 @@ module Engine
           @log << '--All remaining 3/2G trains in the supply will be replaced with 3+1/2G+1 trains at the end of the OR set--'
         end
 
-        def unpaid_loan(entity, owed)
+        def unpaid_loan(entity, _owed)
           current_cash = entity.cash
           old_price = entity.share_price
 
-          @log << "#{entity.name} owes #{format_currency(owed)} in loan interest but has #{format_currency(entity.cash)}"
-          @log << "#{entity.name} will pay all remaining treasury cash (#{format_currency(current_cash)}) to the "\
-                  'bank and its stock price will drop one space'
           entity.spend(current_cash, bank) if current_cash.positive?
           @stock_market.move_left(entity)
           log_share_price(entity, old_price)
