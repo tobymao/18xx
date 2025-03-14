@@ -178,6 +178,11 @@ module Engine
             player.cash
           end
 
+          def add_bid(action)
+            action.entity.unpass!
+            super
+          end
+
           def win_bid(winner, _company)
             player = winner.entity
             company = winner.company
