@@ -42,7 +42,7 @@ module Engine
           end
 
           def payoff_loans(entity)
-            loans_to_pay_off = [(entity.cash / 100).floor, entity&.loans&.size].min
+            loans_to_pay_off = [(entity.cash / 100).floor, entity.loans.size].min
             @game.payoff_loan(entity, loans_to_pay_off, entity) if loans_to_pay_off.positive?
           end
 
