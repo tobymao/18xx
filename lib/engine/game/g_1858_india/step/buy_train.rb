@@ -18,7 +18,7 @@ module Engine
           private
 
           def can_buy_mail_train?(entity)
-            !@game.owns_mail_train?(entity) && !@game.must_buy_train?(entity)
+            !@game.owns_mail_train?(entity)
           end
 
           def room?(entity, _shell = nil)
