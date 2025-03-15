@@ -86,6 +86,11 @@ module Engine
           corporation.trains.any? { |train| mail_train?(train) }
         end
 
+        def must_buy_train?(corporation)
+          # A mail train doesn't fulfil the requirement to own a train.
+          corporation.trains.none? { |train| !mail_train?(train) }
+        end
+
         def num_corp_trains(corporation)
           # Mail trains don't count towards train limit.
           corporation.trains.count { |train| !mail_train?(train) }
