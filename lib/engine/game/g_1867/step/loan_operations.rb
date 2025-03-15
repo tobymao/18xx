@@ -23,13 +23,13 @@ module Engine
             entity = current_entity
 
             owed = @game.pay_interest!(entity)
-            return unpaid_interest(entity, owed) if owed
+            return interest_unpaid!(entity, owed) if owed
 
             @game.repay_loan(entity, entity.loans.first) while can_payoff?(entity)
             @game.calculate_corporation_interest(entity)
           end
 
-          def unpaid_interest(entity, owed)
+          def interest_unpaid!(entity, owed)
             @log << "#{entity.name} owes #{@game.format_currency(owed)} in loan "\
                     "interest but only has #{@game.format_currency(entity.cash)}"
             @game.nationalize!(entity)

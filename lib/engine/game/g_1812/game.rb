@@ -398,7 +398,7 @@ module Engine
           @log << '--All remaining 3/2G trains in the supply will be replaced with 3+1/2G+1 trains at the end of the OR set--'
         end
 
-        def unpaid_loan(entity, _owed)
+        def interest_unpaid!(entity, _owed)
           current_cash = entity.cash
           old_price = entity.share_price
 
