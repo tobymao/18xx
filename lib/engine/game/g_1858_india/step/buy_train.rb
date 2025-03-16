@@ -10,7 +10,7 @@ module Engine
           def actions(entity)
             return super unless can_buy_company?(entity)
 
-            super + ['buy_company']
+            super | %w[buy_company pass]
           end
 
           def buyable_trains(entity)
