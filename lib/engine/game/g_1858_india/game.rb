@@ -178,6 +178,12 @@ module Engine
           company.type == :locoworks && super
         end
 
+        def unowned_purchasable_companies(_entity)
+          @companies.select do |company|
+            !company.closed? && (!company.owner || company.owner == @bank)
+          end
+        end
+
         private
 
         def mail_bonus(route, stops)
