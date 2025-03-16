@@ -840,6 +840,46 @@ module Engine
               },
             ],
           },
+          {
+            sym: 'LW1',
+            name: 'Locomotive works',
+            type: 'locoworks',
+            desc: 'Gives a £10 income each operating round and a 10% ' \
+                  'discount on train purchases.',
+            value: 100,
+            min_price: 100,
+            max_price: 100,
+            revenue: 10,
+            color: :black,
+            text_color: :white,
+            abilities: [
+              {
+                type: 'train_discount',
+                discount: 0.1,
+                trains: %w[4M 5E 5M 6E 6M 7E 5D],
+              },
+            ],
+          },
+          {
+            sym: 'LW2',
+            name: 'Locomotive works',
+            type: 'locoworks',
+            desc: 'Gives a £10 income each operating round and a 10% ' \
+                  'discount on train purchases.',
+            value: 100,
+            min_price: 100,
+            max_price: 100,
+            revenue: 10,
+            color: :black,
+            text_color: :white,
+            abilities: [
+              {
+                type: 'train_discount',
+                discount: 0.1,
+                trains: %w[4M 5E 5M 6E 6M 7E 5D],
+              },
+            ],
+          },
         ].freeze
 
         MINORS = [
