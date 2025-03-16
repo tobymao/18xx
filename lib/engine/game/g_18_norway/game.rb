@@ -34,15 +34,15 @@ module Engine
         SELL_BUY_ORDER = :sell_buy
         TILE_RESERVATION_BLOCKS_OTHERS = :always
         CURRENCY_FORMAT_STR = '%skr'
-        EBUY_SELL_MORE_THAN_NEEDED = true
+        EBUY_SELL_MORE_THAN_NEEDED = false
         CAPITALIZATION = :incremental
         MUST_BUY_TRAIN = :always
         POOL_SHARE_DROP = :none
         SELL_AFTER = :p_any_operate
         SELL_MOVEMENT = :left_block
         HOME_TOKEN_TIMING = :float
-
-        EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
+        EBUY_PRES_SWAP = false
+        EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = true
         MUST_EMERGENCY_ISSUE_BEFORE_EBUY = true
 
         BANKRUPTCY_ENDS_GAME_AFTER = :one
@@ -52,6 +52,8 @@ module Engine
         CLOSED_CORP_RESERVATIONS_REMOVED = false
 
         GAME_END_CHECK = { bankrupt: :immediate, custom: :one_more_full_or_set }.freeze
+
+        DEPOT_CLASS = G18Norway::Depot
 
         CERT_LIMIT = {
           3 => { 0 => 12, 1 => 12, 2 => 12, 3 => 15, 4 => 15, 5 => 17, 6 => 17, 7 => 19, 8 => 19 },
@@ -312,10 +314,13 @@ module Engine
           train.track_type == :narrow
         end
 
-        def cheapest_train_price
+        def cheapest_train
           depot_trains = depot.depot_trains.reject { |train| ship?(train) }
-          train = depot_trains.min_by(&:price)
-          train.price
+          depot_trains.min_by(&:price)
+        end
+
+        def cheapest_train_price(_corporation)
+          cheapest_train.price
         end
 
         def can_go_bankrupt?(player, corporation)
