@@ -6,7 +6,7 @@ module Engine
       module Entities
         COMPANIES = [
           {
-            name: 'Tanfield Railway',
+            name: '1. Tanfield Railway',
             sym: 'P1',
             value: 15,
             min_price: 5,
@@ -15,7 +15,7 @@ module Engine
             abilities: [],
           },
           {
-            name: 'Middleton Railway',
+            name: '2. Middleton Railway',
             sym: 'P2',
             value: 20,
             min_price: 15,
@@ -29,21 +29,26 @@ module Engine
             }],
           },
           {
-            name: 'Wylam Railway',
+            name: '3. Wylam Railway',
             sym: 'P3',
             value: 20,
             min_price: 15,
             revenue: 5,
             desc: 'A corporation owning the Wylam Railway gains a +£10 bonus for all G-train runs to Newcastle Port (F3).',
-            abilities: [], # G-train bonus is defined in game.rb revenue_for method
+            abilities: [{
+              type: 'hex_bonus',
+              owner_type: 'corporation',
+              hexes: ['F3'],
+              amount: 10,
+            }],
           },
           {
-            name: 'Sheffeild & Rotherham Railway',
+            name: '4. Sheffield & Rotherham Railway',
             sym: 'P4',
             value: 20,
             min_price: 15,
             revenue: 5,
-            desc: 'A corporation owning the Sheffeild & Rotherham Railway gains a +£10 bonus for all runs to Sheffield (C18).',
+            desc: 'A corporation owning the Sheffield & Rotherham Railway gains a +£10 bonus for all runs to Sheffield (C18).',
             abilities: [{
               type: 'hex_bonus',
               owner_type: 'corporation',
@@ -52,7 +57,7 @@ module Engine
             }],
           },
           {
-            name: 'Leeds & Selby Railway',
+            name: '5. Leeds & Selby Railway',
             sym: 'P5',
             value: 40,
             min_price: 30,
@@ -78,7 +83,7 @@ module Engine
             ],
           },
           {
-            name: 'Stephenson’s Engine Works',
+            name: '6. Stephenson’s Engine Works',
             sym: 'P6',
             value: 40,
             min_price: 30,
@@ -95,7 +100,7 @@ module Engine
             }],
           },
           {
-            name: 'Stockton & Darlington Railway',
+            name: '7. Stockton & Darlington Railway',
             sym: 'P7',
             value: 40,
             min_price: 30,
@@ -121,45 +126,59 @@ module Engine
             ],
           },
           {
-            name: 'Stanhope & Tyne Railway',
+            name: '8. Stanhope & Tyne Railway',
             sym: 'P8',
             value: 40,
             min_price: 30,
             revenue: 10,
             desc: 'A corporation owning the Stanhope & Tyne Railway gains a +£10 bonus for all G-train runs to Newcastle '\
                   'Port (F3). Additionally, the owning corporation may lay 2 extra yellow tiles, in hexes C6 and D7.',
-            abilities: [{
-              type: 'tile_lay',
-              owner_type: 'corporation',
-              hexes: %w[C6 D7],
-              special: false,
-              when: 'track',
-              tiles: [],
-              cost: 0,
-            }],
-            # G-train bonus is defined in game.rb revenue_for method
+            abilities: [
+              {
+                type: 'tile_lay',
+                owner_type: 'corporation',
+                hexes: %w[C6 D7],
+                special: false,
+                when: 'track',
+                tiles: [],
+                cost: 0,
+              },
+              {
+                type: 'hex_bonus',
+                owner_type: 'corporation',
+                hexes: ['F3'],
+                amount: 10,
+              },
+            ],
           },
           {
-            name: 'Whitby & Pickering Railway',
+            name: '9. Whitby & Pickering Railway',
             sym: 'P9',
             value: 40,
             min_price: 30,
             revenue: 10,
             desc: 'A corporation owning the Whitby & Pickering Railway gains a +£10 bonus for all G-train runs to Whitby '\
                   'Port (H9). Additionally, the owning corporation may lay 3 extra yellow tiles, in hexes F13, G12, and G10.',
-            abilities: [{
-              type: 'tile_lay',
-              owner_type: 'corporation',
-              hexes: %w[F13 G10 G12],
-              special: false,
-              when: 'track',
-              tiles: [],
-              cost: 0,
-            }],
-            # G-train bonus is defined in game.rb revenue_for method
+            abilities: [
+              {
+                type: 'tile_lay',
+                owner_type: 'corporation',
+                hexes: %w[F13 G10 G12],
+                special: false,
+                when: 'track',
+                tiles: [],
+                cost: 0,
+              },
+              {
+                type: 'hex_bonus',
+                owner_type: 'corporation',
+                hexes: ['H9'],
+                amount: 10,
+              },
+            ],
           },
           {
-            name: 'Newcastle & Carlisle Railway',
+            name: '10. Newcastle & Carlisle Railway',
             sym: 'P10',
             value: 40,
             min_price: 30,
@@ -185,7 +204,7 @@ module Engine
             ],
           },
           {
-            name: 'Hull Docks Company',
+            name: '11. Hull Docks Company',
             sym: 'P11',
             value: 40,
             min_price: 30,
@@ -198,14 +217,11 @@ module Engine
                 hexes: ['G16'],
                 amount: 20,
               },
-              {
-                type: 'close',
-                when: 'never',
-              },
+              { type: 'close', on_phase: 'never' },
             ],
           },
           {
-            name: 'Hartlepool Docks Company',
+            name: '12. Hartlepool Docks Company',
             sym: 'P12',
             value: 40,
             min_price: 30,
@@ -223,10 +239,12 @@ module Engine
                 cost: 0,
               },
               {
-                type: 'close',
-                when: 'never',
+                type: 'hex_bonus',
+                owner_type: 'corporation',
+                hexes: ['G6'],
+                amount: 10,
               },
-              # G-train bonus is defined in game.rb revenue_for method
+              { type: 'close', on_phase: 'never' },
             ],
           },
         ].freeze
@@ -239,7 +257,7 @@ module Engine
             float_percent: 20,
             always_market_price: true,
             tokens: [0, 40, 100, 100],
-            type: 'public',
+            type: 'major',
             color: '#025aaa',
           },
           {
@@ -249,7 +267,7 @@ module Engine
             float_percent: 20,
             always_market_price: true,
             tokens: [0, 40, 100, 100],
-            type: 'public',
+            type: 'major',
             color: '#32763f',
           }, {
             sym: 'LYR',
@@ -258,7 +276,7 @@ module Engine
             float_percent: 20,
             always_market_price: true,
             tokens: [0, 40, 100, 100],
-            type: 'public',
+            type: 'major',
             color: '#FFFFFFF',
           },
           {
@@ -268,7 +286,7 @@ module Engine
             float_percent: 20,
             always_market_price: true,
             tokens: [0, 40, 100, 100],
-            type: 'public',
+            type: 'major',
             color: '#d1232a',
           },
           {
@@ -278,16 +296,15 @@ module Engine
             float_percent: 20,
             always_market_price: true,
             tokens: [0, 40, 100, 100],
+            type: 'major',
             color: :'#FFF500',
             text_color: 'black',
-          }
-        ].freeze
-
-        MINORS = [
+          },
           {
             sym: '1',
             name: 'Doncaster & Peterborough Railway',
             logo: '1812/1',
+            float_percent: 100,
             tokens: [0],
             shares: [100],
             max_ownership_percent: 100,
@@ -299,6 +316,7 @@ module Engine
             sym: '2',
             name: 'Hull & Selby Railway',
             logo: '1812/2',
+            float_percent: 100,
             tokens: [0],
             shares: [100],
             max_ownership_percent: 100,
@@ -310,6 +328,7 @@ module Engine
             sym: '3',
             name: 'Leeds Northern Railway',
             logo: '1812/3',
+            float_percent: 100,
             tokens: [0],
             shares: [100],
             max_ownership_percent: 100,
@@ -322,6 +341,7 @@ module Engine
             sym: '4',
             name: 'Manchester & Leeds Railway',
             logo: '1812/4',
+            float_percent: 100,
             tokens: [0],
             shares: [100],
             max_ownership_percent: 100,
@@ -334,6 +354,7 @@ module Engine
             sym: '5',
             name: 'Newcastle & Berwick Railway',
             logo: '1812/5',
+            float_percent: 100,
             tokens: [0],
             shares: [100],
             max_ownership_percent: 100,
@@ -346,11 +367,12 @@ module Engine
             sym: '6',
             name: 'Newcastle & Darlington Railway',
             logo: '1812/6',
+            float_percent: 100,
             tokens: [0],
             shares: [100],
             max_ownership_percent: 100,
             type: 'minor',
-            coordinates: 'C14',
+            coordinates: 'E4',
             city: 0,
             color: '#777777',
           },
@@ -358,6 +380,7 @@ module Engine
             sym: '7',
             name: '	North Midland Railway',
             logo: '1812/7',
+            float_percent: 100,
             tokens: [0],
             shares: [100],
             max_ownership_percent: 100,
@@ -370,6 +393,7 @@ module Engine
             sym: '8',
             name: 'Sheffield, Ashton & Manchester Railway',
             logo: '1812/8',
+            float_percent: 100,
             tokens: [0],
             shares: [100],
             max_ownership_percent: 100,
@@ -381,17 +405,20 @@ module Engine
             sym: '9',
             name: 'York & Darlington Railway',
             logo: '1812/9',
+            float_percent: 100,
             tokens: [0],
             shares: [100],
             max_ownership_percent: 100,
             type: 'minor',
             coordinates: 'E14',
+            city: 1,
             color: '#777777',
           },
           {
             sym: '10',
             name: 'York & North Midland Railway	',
             logo: '1812/10',
+            float_percent: 100,
             tokens: [0],
             shares: [100],
             max_ownership_percent: 100,
@@ -399,7 +426,7 @@ module Engine
             coordinates: 'E14',
             city: 0,
             color: '#777777',
-          },
+          }
         ].freeze
       end
     end
