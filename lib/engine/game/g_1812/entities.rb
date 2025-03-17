@@ -241,7 +241,7 @@ module Engine
               {
                 type: 'hex_bonus',
                 owner_type: 'corporation',
-                hexes: ['F18'],
+                hexes: ['G6'],
                 amount: 10,
               },
               { type: 'close', on_phase: 'never' },
