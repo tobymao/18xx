@@ -422,17 +422,6 @@ module Engine
         SOUTH_HEXES = %w[C20 E20 F19].freeze
         NORTH_SOUTH_BONUS_HEX = 'I1'
         PORT_MINE_BONUS_HEX = 'I3'
-        C18_HEX = 'C18'
-        F3_PORT = 'F3'
-        G6_PORT = 'G6'
-        H9_PORT = 'H9'
-
-        PORT_COMPANIES_AND_BONUS_HEXES = {
-          p3_company: F3_PORT,
-          p8_company: F3_PORT,
-          p9_company: H9_PORT,
-          p12_company: G6_PORT,
-        }.freeze
 
         def g_train?(train)
           self.class::G_TRAINS.include?(train.name)
@@ -469,33 +458,17 @@ module Engine
         def revenue_for(route, stops)
           revenue = super
           train = route.train
-          corp = route.corporation
 
-          revenue += north_south_bonus_check(route, train)[:revenue]
-          revenue += bonus_for_p4_company(corp, stops)
-
-          if g_train?(train)
-            revenue += port_mine_bonus_check(route, train)[:revenue]
-            revenue += bonus_for_port_companies(corp, stops)
-          end
-
-          revenue
-        end
-
-        def bonus_for_p4_company(corp, stops)
-          return 10 if corp.assigned?(p4_company) && stops.any? { |s| s.hex.id == C18_HEX }
-
-          0
-        end
-
-        def bonus_for_port_companies(corp, stops)
-          PORT_COMPANIES_AND_BONUS_HEXES.sum do |company, port|
-            if corp.assigned?(company) && stops.any? { |s| s.hex.id == port }
-              company == p12_company ? 20 : 10
-            else
-              0
+          route.corporation.companies.each do |company|
+            abilities(company, :hex_bonus) do |ability|
+              revenue += ability.amount if ability.hexes.intersect?(stops.map(&:hex).map(&:id))
             end
           end
+
+          revenue += north_south_bonus_check(route, train)[:revenue]
+          revenue += port_mine_bonus_check(route, train)[:revenue]
+
+          revenue
         end
 
         def north_south_bonus_check(route, train)
@@ -518,26 +491,6 @@ module Engine
           end
 
           bonus
-        end
-
-        def p3_company
-          @p3 ||= company_by_id('P3')
-        end
-
-        def p4_company
-          @p4 ||= company_by_id('P4')
-        end
-
-        def p8_company
-          @p8 ||= company_by_id('P8')
-        end
-
-        def p9_company
-          @p9 ||= company_by_id('P9')
-        end
-
-        def p12_company
-          @p12 ||= company_by_id('P12')
         end
 
         def remove_some_minors?
