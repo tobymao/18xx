@@ -319,10 +319,10 @@ module Engine
                 trains_to_discount = @depot.trains.select { |t| t.name == train_to_export.name }
                 trains_to_discount.each { |t| t.new_price(t.price - 0.1 * t.base_price) }
                 @log << "-- All remaining #{train_to_export.name} trains are discounted to #{format_currency(@depot.upcoming.first.price)} --"
-                if train_to_export.name == '6*D'
+                if train_to_export.name == '6*D' && train_to_export.price == FINAL_6D_PRICE
                   @end_game_triggered = true
                   game_end_check
-                  @log << "Final train discount. The game will end at the end of OR #{@turn + 1}.#{OR_COUNT_IN_LAST_SET}"
+                  @log << "-- Final train discount. The game will end at the end of OR #{@turn + 1}.#{OR_COUNT_IN_LAST_SET} --"
                 end
               end
             else
