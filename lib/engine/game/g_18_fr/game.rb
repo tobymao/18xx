@@ -29,6 +29,8 @@ module Engine
         CAPITALIZATION = :incremental
 
         MUST_SELL_IN_BLOCKS = false
+        BANKRUPTCY_ENDS_GAME_AFTER = :all_but_one
+        ALLOW_TRAIN_BUY_FROM_OTHER_PLAYERS = false
 
         MARKET = [
           %w[0l
@@ -124,7 +126,6 @@ module Engine
           },
         ].freeze
 
-        ALLOW_TRAIN_BUY_FROM_OTHER_PLAYERS = false
 
         FINAL_2PLUS_PRICE = 90
         FINAL_3PLUS_PRICE = 180
@@ -309,6 +310,7 @@ module Engine
             if train_to_export.name == @depot.upcoming[1].name
               if train_to_export.price == train_to_export.final_price
                 return if train_to_export.name == '6*D'
+
                 @depot.export_all!(train_to_export.name, silent: true)
                 @log << "-- #{train_to_export.name} trains can no longer be discounted. All remaining  #{train_to_export.name} trains are exported --"
               else
