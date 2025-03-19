@@ -379,7 +379,7 @@ module Engine
                                               convert_range: 'Price range to convert minor to major',
                                               max_price: 'Maximum price for a minor').freeze
         STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(par_1: :orange, par_2: :green, convert_range: :blue).freeze
-        CORPORATION_SIZES = { 2 => :small, 5 => :medium, 10 => :large }.freeze
+        CORPORATION_SIZES = { 2 => :small, 10 => :large }.freeze
         # A token is reserved for Montreal is reserved for nationalization
         NATIONAL_RESERVATIONS = ['L12'].freeze
         GREEN_CORPORATIONS = %w[BBG LPS QLS SLA TGB THB].freeze
@@ -709,7 +709,7 @@ module Engine
         end
 
         def corporation_size(entity)
-          # For display purposes is a corporation small, medium or large
+          # For displaying if a corporation is a minor or major corporation
           CORPORATION_SIZES[entity.total_shares]
         end
 
@@ -830,7 +830,7 @@ module Engine
           G1867::Round::Stock.new(self, [
             G1867::Step::MajorTrainless,
             Engine::Step::DiscardTrain,
-            Engine::Step::HomeToken,
+            G1867::Step::HomeToken,
             G1867::Step::BuySellParShares,
           ])
         end

@@ -41,6 +41,12 @@ module Engine
             @train_exported = true if @game.robot_owner?(action.entity)
             super
           end
+
+          def spend_minmax(entity, train)
+            return super unless @game.robot_owner?(entity)
+
+            [0, 0]
+          end
         end
       end
     end

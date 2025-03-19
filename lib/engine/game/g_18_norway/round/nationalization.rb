@@ -14,6 +14,10 @@ module Engine
           def select_entities
             @game.operating_order.reverse
           end
+
+          def show_in_history?
+            false
+          end
         end
       end
     end

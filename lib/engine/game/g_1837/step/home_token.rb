@@ -10,7 +10,7 @@ module Engine
           def process_place_token(action)
             corporation = token.corporation
             super
-            @game.remove_reservations!(corporation, corporation.coordinates)
+            Array(corporation.coordinates).each { |coords| @game.remove_reservation!(corporation, coords) }
           end
         end
       end

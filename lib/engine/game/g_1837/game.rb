@@ -60,21 +60,21 @@ module Engine
         PHASES = [
           {
             name: '2',
-            train_limit: { coal: 2, minor: 2, major: 4 },
+            train_limit: { coal: 2, minor: 2, major: 4, national: 4 },
             tiles: [:yellow],
             operating_rounds: 1,
           },
           {
             name: '3',
             on: '3',
-            train_limit: { coal: 2, minor: 2, major: 3 },
+            train_limit: { coal: 2, minor: 2, major: 3, national: 4 },
             tiles: %i[yellow green],
             operating_rounds: 2,
           },
           {
             name: '3+1',
             on: '3+1',
-            train_limit: { coal: 1, minor: 1, major: 3 },
+            train_limit: { coal: 1, minor: 1, major: 3, national: 4 },
             tiles: %i[yellow green],
             operating_rounds: 2,
           },
@@ -114,8 +114,8 @@ module Engine
             name: '3+1',
             num: 2,
             distance: [
-              { 'nodes' => %w[town city offboard], 'pay' => 3, 'visit' => 3 },
               { 'nodes' => %w[town], 'pay' => 1, 'visit' => 1 },
+              { 'nodes' => %w[town city offboard], 'pay' => 3, 'visit' => 3 },
             ],
             price: 280,
             rusts_on: '5+2',
@@ -131,8 +131,8 @@ module Engine
             name: '4E',
             num: 1,
             distance: [
-              { 'nodes' => %w[city offboard], 'pay' => 4, 'visit' => 4 },
               { 'nodes' => %w[town], 'pay' => 0, 'visit' => 99 },
+              { 'nodes' => %w[city offboard], 'pay' => 4, 'visit' => 4 },
             ],
             price: 500,
             events: [{ 'type' => 'ug_can_form' }],
@@ -141,8 +141,8 @@ module Engine
             name: '4+1',
             num: 1,
             distance: [
-              { 'nodes' => %w[town city offboard], 'pay' => 4, 'visit' => 4 },
               { 'nodes' => %w[town], 'pay' => 1, 'visit' => 1 },
+              { 'nodes' => %w[town city offboard], 'pay' => 4, 'visit' => 4 },
             ],
             price: 530,
             events: [{ 'type' => 'kk_formation' }],
@@ -151,8 +151,8 @@ module Engine
             name: '4+2',
             num: 1,
             distance: [
-              { 'nodes' => %w[town city offboard], 'pay' => 4, 'visit' => 4 },
               { 'nodes' => %w[town], 'pay' => 2, 'visit' => 2 },
+              { 'nodes' => %w[town city offboard], 'pay' => 4, 'visit' => 4 },
             ],
             price: 560,
           },
@@ -168,8 +168,8 @@ module Engine
             name: '5E',
             num: 1,
             distance: [
-              { 'nodes' => %w[city offboard], 'pay' => 5, 'visit' => 5 },
               { 'nodes' => %w[town], 'pay' => 0, 'visit' => 99 },
+              { 'nodes' => %w[city offboard], 'pay' => 5, 'visit' => 5 },
             ],
             price: 830,
           },
@@ -177,8 +177,8 @@ module Engine
             name: '5+2',
             num: 1,
             distance: [
-              { 'nodes' => %w[town city offboard], 'pay' => 5, 'visit' => 5 },
               { 'nodes' => %w[town], 'pay' => 2, 'visit' => 2 },
+              { 'nodes' => %w[town city offboard], 'pay' => 5, 'visit' => 5 },
             ],
             price: 860,
           },
@@ -186,8 +186,8 @@ module Engine
             name: '5+3',
             num: 1,
             distance: [
-              { 'nodes' => %w[town city offboard], 'pay' => 5, 'visit' => 5 },
               { 'nodes' => %w[town], 'pay' => 3, 'visit' => 3 },
+              { 'nodes' => %w[town city offboard], 'pay' => 5, 'visit' => 5 },
             ],
             price: 900,
           },
@@ -195,8 +195,8 @@ module Engine
             name: '5+4',
             num: 20,
             distance: [
-              { 'nodes' => %w[town city offboard], 'pay' => 5, 'visit' => 5 },
               { 'nodes' => %w[town], 'pay' => 4, 'visit' => 4 },
+              { 'nodes' => %w[town city offboard], 'pay' => 5, 'visit' => 5 },
             ],
             price: 960,
           },
@@ -204,8 +204,8 @@ module Engine
             name: '1G',
             num: 10,
             distance: [
-              { 'nodes' => %w[city offboard], 'pay' => 2, 'visit' => 2 },
               { 'nodes' => %w[town], 'pay' => 99, 'visit' => 99 },
+              { 'nodes' => %w[city offboard], 'pay' => 2, 'visit' => 2 },
             ],
             available_on: '2',
             rusts_on: %w[3G 4G],
@@ -215,8 +215,8 @@ module Engine
             name: '2G',
             num: 6,
             distance: [
-              { 'nodes' => %w[city offboard], 'pay' => 3, 'visit' => 3 },
               { 'nodes' => %w[town], 'pay' => 99, 'visit' => 99 },
+              { 'nodes' => %w[city offboard], 'pay' => 3, 'visit' => 3 },
             ],
             available_on: '3',
             rusts_on: '4G',
@@ -226,8 +226,8 @@ module Engine
             name: '3G',
             num: 2,
             distance: [
-              { 'nodes' => %w[city offboard], 'pay' => 4, 'visit' => 4 },
               { 'nodes' => %w[town], 'pay' => 99, 'visit' => 99 },
+              { 'nodes' => %w[city offboard], 'pay' => 4, 'visit' => 4 },
             ],
             available_on: '4',
             price: 590,
@@ -236,8 +236,8 @@ module Engine
             name: '4G',
             num: 20,
             distance: [
-              { 'nodes' => %w[city offboard], 'pay' => 5, 'visit' => 5 },
               { 'nodes' => %w[town], 'pay' => 99, 'visit' => 99 },
+              { 'nodes' => %w[city offboard], 'pay' => 5, 'visit' => 5 },
             ],
             available_on: '5',
             price: 1000,
@@ -436,6 +436,8 @@ module Engine
           if coal_minor?(entity)
             target_id = abilities(entity, :exchange, time: 'any')&.corporations&.first
             corporation_by_id(target_id)
+          elsif sd_minors.include?(entity)
+            corporation_by_id('SD')
           elsif kk_minors.include?(entity)
             corporation_by_id('KK')
           elsif ug_minors.include?(entity)
@@ -668,9 +670,9 @@ module Engine
           @bank.spend(cash, minor)
           @log << "#{minor.name} receives #{format_currency(cash)}"
           if !@round.is_a?(Engine::Round::Auction) && minor.id == 'SD5'
-            coordinates = minor.coordinates
-            minor.coordinates = coordinates.shift
-            remove_reservations!(minor, coordinates)
+            coordinates = minor.coordinates.dup
+            minor.coordinates = coordinates[0]
+            remove_reservation!(minor, coordinates[1])
           end
           place_home_token(minor) unless minor.coordinates.is_a?(Array)
           if minor.corporation?
@@ -690,8 +692,8 @@ module Engine
           Array(corporation.coordinates).map { |coord| hex_by_id(coord) }
         end
 
-        def remove_reservations!(entity, coordinates)
-          coordinates.each { |coord| hex_by_id(coord).tile.remove_reservation!(entity) }
+        def remove_reservation!(entity, coordinates)
+          hex_by_id(coordinates).tile.remove_reservation!(entity)
         end
 
         def train_limit(entity)
@@ -805,6 +807,12 @@ module Engine
           if entity.corporation? && entity.type != :minor && entity.receivership?
             return @players.find { |p| p.num_shares_of(entity).positive? } || @players.first
           end
+
+          super
+        end
+
+        def sellable_bundles(player, corporation)
+          return [] unless corporation.share_price
 
           super
         end

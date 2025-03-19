@@ -42,9 +42,7 @@ module Engine
               return
             end
 
-            value = @game.convert(action.entity, action.choice.to_i)
-            @log << "#{action.entity.name} nationalized and receives #{@game.format_currency(value)}"
-            @game.update_cert_limit
+            @game.nationalize_corporation(action.entity, action.choice.to_i)
             @game.next_round!
           end
         end

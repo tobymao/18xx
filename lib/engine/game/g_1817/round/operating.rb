@@ -14,6 +14,7 @@ module Engine
           def setup
             @paid_loans = {}
             @game.payout_companies
+            @entities.each { |e| e.trains.each { |t| t.operated = false } }
             (@game.corporations + @game.minors + @game.companies).each(&:reset_ability_count_this_or!)
             after_setup
           end
