@@ -40,16 +40,6 @@ module Engine
           ],
         ).freeze
 
-        def setup_preround
-          # Private railway companies need to be owned by the bank to be
-          # available for auction.
-          @companies.each do |company|
-            next if company.type == :locoworks
-
-            company.owner = @bank
-          end
-        end
-
         def operating_round(round_num = 1)
           @round_num = round_num
           Engine::Round::Operating.new(self, [
@@ -168,14 +158,18 @@ module Engine
           end
         end
 
+        def private_railway?(company)
+          company.type != :locoworks
+        end
+
         def purchasable_companies(_entity)
           @companies.select do |company|
-            company.type == :locoworks && !company.owner
+            !private_railway?(company) && !company.owner
           end
         end
 
         def company_sellable(company)
-          company.type == :locoworks && super
+          !private_railway?(company) && super
         end
 
         def unowned_purchasable_companies(_entity)

@@ -63,7 +63,7 @@ module Engine
           end
 
           def owns_loco_works?(corporation)
-            corporation.companies.any? { |company| company.type == :locoworks }
+            corporation.companies.any? { |company| !private_railway?(company) }
           end
         end
       end
