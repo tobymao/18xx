@@ -15,6 +15,8 @@ module Engine
         include Map
         include Tiles
 
+        attr_accessor :mine_corp, :port_corp
+
         CURRENCY_FORMAT_STR = '£%s'
         BANK_CASH = 16_000
         STARTING_CASH = { 3 => 665, 4 => 500, 5 => 400, 6 => 335 }.freeze
@@ -38,12 +40,22 @@ module Engine
             'Loco works available',
             'The locomotive works private companies are available for purchase',
           ],
+          'port_tokens' => [
+            'Port tokens',
+            'Port tokens can be collected',
+          ]
         ).freeze
+
+        def setup
+          super
+          setup_hex_tokens
+        end
 
         def operating_round(round_num = 1)
           @round_num = round_num
           Engine::Round::Operating.new(self, [
             G1858India::Step::Track,
+            G1858India::Step::CollectTokens,
             G1858::Step::Token,
             G1858India::Step::Route,
             G1858::Step::Dividend,
@@ -120,6 +132,7 @@ module Engine
             @game_phases[3][:status] << 'loco_works'
             @game_phases[4][:status] << 'loco_works'
             @game_phases[5][:status] << 'loco_works'
+            @game_phases[5][:status] << 'port_tokens'
           end
           @game_phases
         end
@@ -178,7 +191,47 @@ module Engine
           end
         end
 
+        def mine_hexes
+          @mine_hexes ||= MINE_HEXES.map { |coord| hex_by_id(coord) }
+        end
+
+        def port_hexes
+          @port_hexes ||= PORT_HEXES.map { |coord| hex_by_id(coord) }
+        end
+
+        def extra_revenue(_entity, routes)
+          mines_ports_bonus(routes)
+        end
+
+        def submit_revenue_str(routes, _show_subsidy)
+          bonus_revenue = extra_revenue(current_entity, routes)
+          return super if bonus_revenue.zero?
+
+          train_revenue = routes_revenue(routes)
+          "#{format_revenue_currency(train_revenue)} + " \
+            "#{format_revenue_currency(bonus_revenue)} mine/port bonus"
+        end
+
         private
+
+        def setup_hex_tokens
+          @mine_corp = dummy_corp('mine', '1858_india/mine', mine_hexes)
+          @port_corp = dummy_corp('port', '1858_india/port', port_hexes)
+        end
+
+        def dummy_corp(sym, logo, hexes)
+          corp = Corporation.new(
+            sym: sym,
+            name: sym,
+            logo: logo,
+            simple_logo: logo,
+            tokens: Array.new(hexes.size, 0),
+            type: :dummy
+          )
+          corp.owner = @bank
+          hexes.each { |hex| hex.place_token(corp.next_token) }
+          corp
+        end
 
         def mail_bonus(route, stops)
           train = route.train
@@ -186,6 +239,22 @@ module Engine
 
           stop_bonus = (train.multiplier || 1) * (train.obsolete ? 5 : 10)
           stop_bonus * stops.count { |stop| stop.city? || stop.offboard? }
+        end
+
+        def mines_ports_bonus(routes)
+          return 0 if routes.empty?
+
+          train = routes.first.train
+          corp = train.owner
+          mines = corp.tokens.count { |t| MINE_HEXES.include?(t.hex&.id) }
+          ports = corp.tokens.count { |t| PORT_HEXES.include?(t.hex&.id) }
+          return 0 if mines.zero? && ports.zero?
+
+          @mine_bonus ||= hex_by_id(MINE_BONUS_HEX).tile.offboards.first
+          @port_bonus ||= hex_by_id(PORT_BONUS_HEX).tile.offboards.first
+
+          (mines * @mine_bonus.route_revenue(@phase, train)) +
+            (ports * @port_bonus.route_revenue(@phase, train))
         end
       end
     end
