@@ -128,7 +128,7 @@ module View
             float: 'left',
           }
 
-          lowest_bid_price_style = {
+          lowest_bid_style = {
             float: 'right',
           }
 
@@ -177,7 +177,7 @@ module View
           ]
           company_value = @game.company_value(@company)
           children << h(:div, { style: current_price_style }, "Current Price: #{current_price_str}") if @company.lowest_bid_price
-          children << h(:div, { style: lowest_bid_price_style }, "Lowest Price: #{lowest_bid_price_str}") if @company.lowest_bid_price
+          children << h(:div, { style: lowest_bid_style }, "Lowest Price: #{lowest_bid_price_str}") if @company.lowest_bid_price
           children << h(:div, { style: value_style }, "Value: #{@game.format_currency(company_value)}") if company_value
           children << h(:div, { style: revenue_style }, "Revenue: #{revenue_str}") if @company.revenue
           if !@company.discount.zero? && !@company.lowest_bid_price
