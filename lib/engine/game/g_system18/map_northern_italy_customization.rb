@@ -215,7 +215,7 @@ module Engine
           false
         end
 
-        def map_northern_italy_share_price_for_dividend_change_as_full_cap
+        def map_northern_italy_share_price_change_for_dividend_as_full_cap
           true
         end
 
