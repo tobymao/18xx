@@ -416,7 +416,7 @@ module Engine
                     'upgrade=cost:40,terrain:swamp;' \
                     'border=type:province,edge:2;' \
                     'border=type:province,edge:3;' \
-                    'border=type:impassible,edge:5;',
+                    'border=type:impassable,edge:5;',
             %w[H5] =>
                     'upgrade=cost:40,terrain:swamp;' \
                     'border=type:province,edge:2;' \
@@ -480,7 +480,7 @@ module Engine
                     'icon=image:1858_india/DC,sticky:1;',
             %w[I4] =>
                     'town=revenue:0;' \
-                    'border=type:impassible,edge:2;',
+                    'border=type:impassable,edge:2;',
             %w[I6] =>
                     'town=revenue:0;' \
                     'path=track:future,a:3,b:_0;' \
@@ -647,7 +647,7 @@ module Engine
                     'border=type:province,edge:3;',
             %w[N7] =>
                     'border=type:province,edge:4;' \
-                    'border=type:impassible,edge:5;',
+                    'border=type:impassable,edge:5;',
             %w[N9] =>
                     'upgrade=cost:40,terrain:mountain;' \
                     'border=type:province,edge:0;' \
@@ -665,7 +665,7 @@ module Engine
                     'border=type:province,edge:3;',
             %w[O8] =>
                     'town=revenue:0;' \
-                    'border=type:impassible,edge:2;' \
+                    'border=type:impassable,edge:2;' \
                     'border=type:province,edge:3;' \
                     'border=type:province,edge:4;',
             %w[O10] =>
