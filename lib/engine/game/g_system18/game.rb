@@ -427,6 +427,7 @@ module Engine
             redef_const(:SELL_MOVEMENT, :left_block_pres)
             redef_const(:SOLD_OUT_INCREASE, true)
             redef_const(:MUST_EMERGENCY_ISSUE_BEFORE_EBUY, true)
+            redef_const(:MUST_SELL_IN_BLOCKS, true)
             redef_const(:BANKRUPTCY_ENDS_GAME_AFTER, :all_but_one)
           else
             ######################################################
@@ -524,22 +525,28 @@ module Engine
           return [] if game_capitalization != :incremental
           return [] if entity.trains.any?
           return [] unless @depot.min_depot_train
+          return [] if @round.emergency_issued
 
           min_train_price = @depot.min_depot_price
           return [] if entity.cash >= min_train_price
 
-          @corporations.flat_map do |corp|
+          issuable_bundles = @corporations.flat_map do |corp|
             bundles = bundles_for_corporation(entity, corp)
             bundles.select! { |b| @share_pool.fit_in_bank?(b) }
-
-            # Cannot issue more shares than needed to buy the train from the bank
-            train_buying_bundles = bundles.select { |b| (entity.cash + b.price) >= min_train_price }
-            if train_buying_bundles.size > 1
-              excess_bundles = train_buying_bundles[1..-1]
-              bundles -= excess_bundles
-            end
             bundles
           end.compact
+
+          # Sort bundles by price in ascending order
+          issuable_bundles.sort_by!(&:price)
+
+          # Find the smallest bundle that raises enough cash to buy the train
+          issuable_bundles.each do |bundle|
+            total_cash = bundle.price + entity.cash
+            return [bundle] if total_cash >= min_train_price
+          end
+
+          # If no single bundle is enough, return the largest bundle
+          [issuable_bundles.last]
         end
 
         def upgrades_to_correct_color?(from, to, selected_company: nil)
