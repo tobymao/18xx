@@ -63,7 +63,7 @@ module Engine
           end
 
           def owns_loco_works?(corporation)
-            corporation.companies.any? { |company| !private_railway?(company) }
+            corporation.companies.any? { |company| !@game.private_railway?(company) }
           end
         end
       end
