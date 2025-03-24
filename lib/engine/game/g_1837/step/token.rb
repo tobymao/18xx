@@ -40,7 +40,8 @@ module Engine
           end
 
           def can_afford_token?(token, cash)
-            @game.token_graph_for_entity(entity).tokenable_cities(token.corporation).any? do |city|
+            corp = token.corporation
+            @game.token_graph_for_entity(corp).tokenable_cities(corp).any? do |city|
               token_price(token, city.tile.hex) <= cash
             end
           end
