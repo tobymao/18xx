@@ -6,6 +6,7 @@ require_relative 'meta'
 require_relative 'player'
 require_relative 'stock_market'
 require_relative '../base'
+require_relative '../company_price_one_to_double'
 
 module Engine
   module Game
@@ -14,6 +15,7 @@ module Engine
         include_meta(G1844::Meta)
         include Entities
         include Map
+        include CompanyPriceOneToDouble
 
         PLAYER_CLASS = G1844::Player
 
@@ -305,6 +307,7 @@ module Engine
         def setup
           setup_destinations
           setup_offboard_bonuses
+          setup_company_price_one_to_double
           mountain_railways.each { |mr| mr.owner = @bank }
           tunnel_companies.each { |tc| tc.owner = @bank }
 
@@ -323,6 +326,8 @@ module Engine
           @_tiles.values.each { |t| t.ignore_gauge_walk = true }
           @hexes.each { |h| h.tile.ignore_gauge_walk = true }
           @graph.clear_graph_for_all
+
+          setup_company_price_one_to_double
         end
 
         def setup_destinations
