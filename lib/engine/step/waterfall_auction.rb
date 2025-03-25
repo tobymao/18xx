@@ -121,6 +121,7 @@ module Engine
           @log << "#{@auctioning.name} goes up for auction" if is_new_auction
         end
 
+        @game.next_turn!
         resolved
       end
 
