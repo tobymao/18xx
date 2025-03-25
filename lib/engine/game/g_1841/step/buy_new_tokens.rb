@@ -12,6 +12,7 @@ module Engine
 
           def actions(entity)
             return [] unless entity == pending_entity
+            return [] unless entity.corporation?
 
             %w[choose]
           end
