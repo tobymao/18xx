@@ -10,6 +10,7 @@ module Engine
             name: "Melbourne & Hobson's Bay Railway Company",
             value: 30,
             min_price: 1,
+            lowest_bid_price: 0,
             max_price: 40,
             revenue: 5,
             desc: 'No special abilities. Can be bought for £1-£40',
@@ -19,6 +20,7 @@ module Engine
             name: 'Oodnadatta Railway',
             value: 70,
             min_price: 1,
+            lowest_bid_price: 40,
             max_price: 80,
             revenue: 10,
             desc: 'Owning Public Company or its Director may build one (1) free tile on a desert hex (marked by'\
@@ -53,6 +55,7 @@ module Engine
             name: 'Tasmanian Railways',
             value: 110,
             min_price: 1,
+            lowest_bid_price: 80,
             max_price: 140,
             revenue: 15,
             desc: 'The Tasmania tile can be placed by a Public Company on one of the two blue hexes (I8, I10). This is in'\
@@ -77,6 +80,7 @@ module Engine
             value: 170,
             discount: 0,
             min_price: 1,
+            lowest_bid_price: 140,
             max_price: 220,
             revenue: 20,
             desc: 'Owning Public Company or its Director may receive a one-time discount of £100 on the purchase'\
@@ -105,6 +109,7 @@ module Engine
             sym: 'P5',
             name: 'Trans-Australian Railway',
             value: 170,
+            lowest_bid_price: 140,
             revenue: 25,
             desc: 'The owner receives a 10% share in the QR. Cannot be bought by a corporation',
             abilities: [{ type: 'shares', shares: 'QR_1' },
@@ -114,6 +119,7 @@ module Engine
             sym: 'P6',
             name: 'North Australian Railway',
             value: 230,
+            lowest_bid_price: 220,
             revenue: 30,
             desc: "The owner receives a Director's Share share in the CAR, which must start at a par value of £100."\
                   ' Cannot be bought by a corporation. Closes when CAR purchases its first train.',
