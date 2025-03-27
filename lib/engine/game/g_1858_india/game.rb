@@ -86,8 +86,9 @@ module Engine
           corporation.trains.any? { |train| mail_train?(train) }
         end
 
-        def must_buy_train?(corporation)
-          # A mail train doesn't fulfil the requirement to own a train.
+        def trainless?(corporation)
+          # For emergency money raising, a mail train on its own doesn't stop
+          # a public company from issuing shares.
           corporation.trains.none? { |train| !mail_train?(train) }
         end
 
