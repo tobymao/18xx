@@ -154,7 +154,8 @@ module Engine
           train = route.train
           return 0 unless @round.mail_trains[train.owner] == train
 
-          10 * stops.count { |stop| stop.city? || stop.offboard? }
+          stop_bonus = (train.multiplier || 1) * (train.obsolete ? 5 : 10)
+          stop_bonus * stops.count { |stop| stop.city? || stop.offboard? }
         end
       end
     end
