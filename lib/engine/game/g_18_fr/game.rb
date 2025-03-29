@@ -126,7 +126,6 @@ module Engine
           },
         ].freeze
 
-
         FINAL_2PLUS_PRICE = 90
         FINAL_3PLUS_PRICE = 180
         FINAL_2P_PRICE = 270
@@ -180,7 +179,8 @@ module Engine
             the type are exported.',
             "2 #{format_currency(100)}",
             "2+ #{format_currency(100)}, #{format_currency(FINAL_2PLUS_PRICE)}",
-            "3+ #{format_currency(300)}, #{format_currency(270)}, #{format_currency(240)}, #{format_currency(210)}, #{format_currency(FINAL_3PLUS_PRICE)}",
+            "3+ #{format_currency(300)}, #{format_currency(270)}, #{format_currency(240)}, "\
+            "#{format_currency(210)}, #{format_currency(FINAL_3PLUS_PRICE)}",
             "3P #{format_currency(400)}",
             "2P #{format_currency(300)}, #{format_currency(FINAL_2P_PRICE)}",
             "5 #{format_currency(600)}, #{format_currency(540)}, #{format_currency(FINAL_5_PRICE)}",
@@ -304,30 +304,31 @@ module Engine
           return if @end_game_triggered || @depot.upcoming.empty?
 
           train_to_export = @depot.upcoming.first
-          if train_to_export.name == '2'
+          case train_to_export.name
+          when '2'
             depot.export_all!('2')
-          else
-            if train_to_export.name == @depot.upcoming[1].name
-              if train_to_export.price == train_to_export.final_price
-                return if train_to_export.name == '6*D'
+          when @depot.upcoming[1].name
+            if train_to_export.price == train_to_export.final_price
+              return if train_to_export.name == '6*D'
 
-                @depot.export_all!(train_to_export.name, silent: true)
-                @log << "-- #{train_to_export.name} trains can no longer be discounted. All remaining  #{train_to_export.name} trains are exported --"
-              else
-                depot.export!
-                # Discount all trains of the given type, so Info Train shows the correct price
-                trains_to_discount = @depot.trains.select { |t| t.name == train_to_export.name }
-                trains_to_discount.each { |t| t.new_price(t.price - 0.1 * t.base_price) }
-                @log << "-- All remaining #{train_to_export.name} trains are discounted to #{format_currency(@depot.upcoming.first.price)} --"
-                if train_to_export.name == '6*D' && train_to_export.price == FINAL_6D_PRICE
-                  @end_game_triggered = true
-                  game_end_check
-                  @log << "-- Final train discount. The game will end at the end of OR #{@turn + 1}.#{OR_COUNT_IN_LAST_SET} --"
-                end
-              end
+              @depot.export_all!(train_to_export.name, silent: true)
+              @log << "-- #{train_to_export.name} trains can no longer be discounted. "\
+                      "All remaining  #{train_to_export.name} trains are exported --"
             else
               depot.export!
+              # Discount all trains of the given type, so Info Train shows the correct price
+              trains_to_discount = @depot.trains.select { |t| t.name == train_to_export.name }
+              trains_to_discount.each { |t| t.new_price(t.price - (0.1 * t.base_price)) }
+              @log << "-- All remaining #{train_to_export.name} trains are discounted to "\
+                      "#{format_currency(@depot.upcoming.first.price)} --"
+              if train_to_export.name == '6*D' && train_to_export.price == FINAL_6D_PRICE
+                @end_game_triggered = true
+                game_end_check
+                @log << "-- Final train discount. The game will end at the end of OR #{@turn + 1}.#{OR_COUNT_IN_LAST_SET} --"
+              end
             end
+          else
+            depot.export!
           end
         end
 
