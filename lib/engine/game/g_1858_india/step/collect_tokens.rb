@@ -18,6 +18,19 @@ module Engine
             ACTIONS
           end
 
+          def auto_actions(entity)
+            # Checking whether a corporation has a route to an available token
+            # involves recalculating the game graphs, which is expensive, so
+            # `actions` only checks if there is an available token somewhere on
+            # the board.
+            # To avoid asking the player to choose tokens when none are really
+            # available, insert an auto-action pass.
+            return unless entity.corporation?
+            return if can_collect_token?(entity, true)
+
+            [Engine::Action::Pass.new(entity)]
+          end
+
           def description
             'Collect mine and port tokens'
           end
