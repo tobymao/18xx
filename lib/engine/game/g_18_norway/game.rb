@@ -429,7 +429,7 @@ module Engine
         end
 
         def oslo
-          @oslo ||= hex_by_id('G29')
+          @oslo ||= hex_by_id('H29')
         end
 
         def init_graph
