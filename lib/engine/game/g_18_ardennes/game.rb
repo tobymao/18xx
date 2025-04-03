@@ -162,6 +162,20 @@ module Engine
           major_corporations.select(&:ipoed).sort
         end
 
+        # The base class version of #priority_deal_player can't cope with
+        # players going bankrupt in stock rounds. It errors if
+        # `@round.last_to_act` goes bankrupt.
+        def priority_deal_player
+          # In operating rounds the array of players will be in priority order.
+          return @players.first unless @round.current_entity&.player?
+
+          # In stock and auction rounds the first non-bankrupt player after the
+          # one who last acted has priority.
+          last_to_act = @round.last_to_act
+          idx = last_to_act ? (@players.index(last_to_act) + 1) : 0
+          @players.rotate(idx).find { |player| !player.bankrupt }
+        end
+
         def acting_for_entity(entity)
           return super unless entity == current_entity
           return super unless entity.corporation?
