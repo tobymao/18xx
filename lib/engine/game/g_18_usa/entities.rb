@@ -68,7 +68,7 @@ module Engine
             revenue: 0,
             desc: 'Comes with one oil marker. When placing a yellow '\
                   'tile in an oilfield hex pointing to a revenue location, can place '\
-                  'token. Marked yellow hexes *can* be '\
+                  'token. Marked yellow hexes can be '\
                   'upgraded. Hexes pay $10 extra revenue and do not count as a '\
                   'stop. Hexes revenue bonus is upgraded automatically to $20 in phase 5. '\
                   'May not start or end a route at an oilfield.',
