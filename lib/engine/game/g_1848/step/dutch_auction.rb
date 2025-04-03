@@ -21,15 +21,6 @@ module Engine
           ACTIONS = %w[bid assign].freeze
           ACTIONS_WITH_PASS = %w[bid assign pass].freeze
 
-          MIN_PRICES = {
-            'P1' => 0,
-            'P2' => 40,
-            'P3' => 80,
-            'P4' => 140,
-            'P5' => 140,
-            'P6' => 200,
-          }.freeze
-
           def description
             "Buy a Company or Reduce its Price by #{@game.format_currency(5)}"
           end
@@ -79,7 +70,7 @@ module Engine
 
           def may_reduce?(company)
             # Each private can be discounted a maximum of 6 times
-            company.min_bid > MIN_PRICES[company.sym]
+            company.min_bid > company.lowest_bid_price
           end
 
           def actions(entity)
