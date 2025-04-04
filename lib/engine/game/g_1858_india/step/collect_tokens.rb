@@ -8,7 +8,7 @@ module Engine
       module Step
         class CollectTokens < Engine::Step::Base
           ACTIONS = %w[remove_hex_token pass].freeze
-          TOKEN_COST = { 'mine' => 0, 'port' => 200 }.freeze
+          TOKEN_COST = { 'mine' => 50, 'port' => 200 }.freeze
 
           def actions(entity)
             return [] unless current_entity == entity
@@ -36,7 +36,9 @@ module Engine
           end
 
           def help
-            'Collect mine tokens (free) and port tokens ' \
+            'Collect mine tokens ' \
+              "(#{@game.format_currency(TOKEN_COST['mine'])} each) " \
+              'and port tokens ' \
               "(#{@game.format_currency(TOKEN_COST['port'])} each)."
           end
 
@@ -79,11 +81,10 @@ module Engine
           # For port tokens the corporation must be able to afford the token
           # and the current phase must allow them to be taken.
           def available_tokens(corporation)
-            if corporation.cash < TOKEN_COST['port']
-              mines
-            else
-              mines + ports
-            end
+            tokens = []
+            tokens += mines if corporation.cash >= TOKEN_COST['mine']
+            tokens += ports if corporation.cash >= TOKEN_COST['port']
+            tokens
           end
 
           # Returns all mine and port tokens where the corporation has a route
