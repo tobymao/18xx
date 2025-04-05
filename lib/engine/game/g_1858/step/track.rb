@@ -65,7 +65,7 @@ module Engine
 
           def potential_tiles(entity, hex)
             tiles = super
-            return tiles unless @game.phase.name == '2'
+            return tiles unless @game.phase.status.include?('broad_gauge')
 
             # Metre gauge track is not available until phase 3.
             tiles.reject { |tile| tile.paths.map(&:track).include?(:narrow) }

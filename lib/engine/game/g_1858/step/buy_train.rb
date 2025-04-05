@@ -39,7 +39,7 @@ module Engine
           end
 
           def president_may_contribute?(entity, _shell = nil)
-            entity.trains.empty?
+            @game.trainless?(entity)
           end
 
           def ebuy_president_can_contribute?(corporation)
@@ -90,14 +90,14 @@ module Engine
             # market.
             closing = current_entity.share_price&.price&.zero?
 
-            if @last_share_issued_price && current_entity.trains.empty? && !closing
+            if @last_share_issued_price && @game.trainless?(current_entity) && !closing
               raise GameError, 'Must buy a train from the train depot after issuing shares'
             end
 
             super
             return if current_entity.minor?
             return if closing
-            return unless current_entity.trains.empty?
+            return unless @game.trainless?(current_entity)
 
             @log << "#{current_entity.name} does not own a train"
             old_price = current_entity.share_price

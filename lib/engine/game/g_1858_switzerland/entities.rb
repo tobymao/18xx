@@ -89,6 +89,7 @@ module Engine
           {
             sym: 'NB',
             name: 'Nordbahn',
+            type: 'private_batch1',
             desc: 'P1. Revenue 14/21, face value 70. Home hexes are G4 and H5. ' \
                   'Can be used to start a public company in Zürich.',
             value: 70,
@@ -113,6 +114,7 @@ module Engine
           {
             sym: 'NOB',
             name: 'Nordostbahn',
+            type: 'private_batch1',
             desc: 'P2. Revenue 24/36, face value 120. Home hexes are H3 and H5. ' \
                   'Can be used to start a public company in Zürich.',
             value: 120,
@@ -137,6 +139,7 @@ module Engine
           {
             sym: 'SCB',
             name: 'Centralbahn',
+            type: 'private_batch1',
             desc: 'P3. Revenue 23/35, face value 115. Home hexes are E4, F5 and G6. ' \
                   'Can be used to start a public company in Basel.',
             value: 115,
@@ -160,6 +163,7 @@ module Engine
           {
             sym: 'VSB',
             name: 'Vereingtebahn',
+            type: 'private_batch1',
             desc: 'P4. Revenue 21/32, face value 105. Home hexes are J5 and K4. ' \
                   'Can be used to start a public company in St Gallen.',
             value: 105,
@@ -183,6 +187,7 @@ module Engine
           {
             sym: 'LFB',
             name: 'Lausanne-Fribourg-Berne',
+            type: 'private_batch1',
             desc: 'P5. Revenue 22/33, face value 110. Home hexes are C10 and D9. ' \
                   'Can be used to start a public company in Lausanne.',
             value: 110,
@@ -206,6 +211,7 @@ module Engine
           {
             sym: 'OS',
             name: 'Ouest Suisse',
+            type: 'private_batch1',
             desc: 'P6. Revenue 16/24, face value 80. Home hexes are A12 and B11. ' \
                   'Can be used to start a public company in Genève.',
             value: 80,
@@ -229,6 +235,7 @@ module Engine
           {
             sym: 'BSB',
             name: 'Bernische Staatsbahn',
+            type: 'private_batch1',
             desc: 'P7. Revenue 20/30, face value 100. Home hex is E8. ' \
                   'Can be used to start a public company in Bern.',
             value: 100,
@@ -252,6 +259,7 @@ module Engine
           {
             sym: 'BB',
             name: 'Bodelibahn',
+            type: 'private_batch1',
             desc: 'P8. Revenue 12/18, face value 60. Home hex is F9. ' \
                   'Cannot be used to start a public company.',
             value: 60,
@@ -267,6 +275,7 @@ module Engine
           {
             sym: 'GB',
             name: 'Gotthardbahn',
+            type: 'private_batch1',
             desc: 'P9. Revenue 13/20, face value 65. Home hexes are H9 and H11. ' \
                   'Cannot be used to start a public company.',
             value: 65,
@@ -282,6 +291,7 @@ module Engine
           {
             sym: 'BLB',
             name: 'Bern-Luzern-Bahn',
+            type: 'private_batch1',
             desc: 'P10. Revenue 18/27, face value 90. Home hex is H7. ' \
                   'Can be used to start a public company in Luzern.',
             value: 90,
@@ -305,6 +315,7 @@ module Engine
           {
             sym: 'EB',
             name: 'Emmentalbahn',
+            type: 'private_batch1',
             desc: 'P11. Revenue 11/17, face value 55. Home hex is E6. ' \
                   'Cannot be used to start a public company.',
             value: 55,
@@ -320,6 +331,7 @@ module Engine
           {
             sym: 'AFAI',
             name: 'Alta Italia',
+            type: 'private_batch2',
             desc: 'P12. Revenue 40, face value 135. Home hex is I14. ' \
                   'Can be used to start a public company in Lugano.',
             value: 135,
@@ -342,6 +354,7 @@ module Engine
           {
             sym: 'JN',
             name: 'Jura neuchatelois',
+            type: 'private_batch2',
             desc: 'P13. Revenue 25, face value 85. Home hex is D7. ' \
                   'Cannot be used to start a public company.',
             value: 85,
@@ -354,6 +367,7 @@ module Engine
           {
             sym: 'VZ',
             name: 'Visp-Zermatt',
+            type: 'private_batch2',
             desc: 'P14. Revenue 22, face value 75. Home hexes are D13 and E12. ' \
                   'Cannot be used to start a public company.',
             value: 75,
@@ -366,6 +380,7 @@ module Engine
           {
             sym: 'S',
             name: 'Simplon',
+            type: 'private_batch3',
             desc: 'P15. Revenue 22, face value 55. Home hex is G14. ' \
                   'Cannot be used to start a public company.',
             value: 55,
@@ -378,6 +393,7 @@ module Engine
           {
             sym: 'L',
             name: 'Lötschberg',
+            type: 'private_batch3',
             desc: 'P16. Revenue 26, face value 65. Home hex is F11. ' \
                   'Cannot be used to start a public company.',
             value: 65,
@@ -390,6 +406,7 @@ module Engine
           {
             sym: 'ChA',
             name: 'Chur-Arosa',
+            type: 'private_batch3',
             desc: 'P17. Revenue 24, face value 60. Home hex is K8. ' \
                   'Cannot be used to start a public company.',
             value: 60,
@@ -402,6 +419,7 @@ module Engine
           {
             sym: 'FOB',
             name: 'Furka Oberalpbahn',
+            type: 'private_batch3',
             desc: 'P18. Revenue 28, face value 70. Home hexes are G12, H11 and I10. ' \
                   'Cannot be used to start a public company.',
             value: 70,

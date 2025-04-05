@@ -53,9 +53,6 @@ module Engine
 
         GRAPH_CLASS = G1858::Graph
 
-        # These are the train types that determine the rusting timing of phase 4 trains.
-        GREY_TRAINS = %w[7E 6M 5D].freeze
-
         def corporation_opts
           two_player? ? { max_ownership_percent: 70 } : {}
         end
@@ -83,8 +80,11 @@ module Engine
         end
 
         def setup_preround
-          # Companies need to be owned by the bank to be available for auction
-          @companies.each { |company| company.owner = @bank }
+          # Private railway companies need to be owned by the bank to be
+          # available for auction.
+          @companies.each do |company|
+            company.owner = @bank if private_railway?(company)
+          end
         end
 
         def setup
@@ -100,7 +100,6 @@ module Engine
           # The rusting event for 6H/4M trains is triggered by the number of
           # grey trains purchased, so track the number of these sold.
           @grey_trains_bought = 0
-          @phase4_train_trigger = two_player? ? 3 : 5
 
           @unbuyable_companies = []
           setup_unbuyable_privates
@@ -241,6 +240,13 @@ module Engine
             end
         end
 
+        # Returns true if the company object represents a private railway
+        # company and false if not. Needed for 1858 India which has 'normal'
+        # privates as well as the private railways.
+        def private_railway?(_company)
+          true
+        end
+
         # Returns the company object for a private railway given its associated
         # minor object. If passed a company then returns that company.
         def private_company(entity)
@@ -343,11 +349,11 @@ module Engine
         end
 
         def hex_train?(train)
-          train.name[-1] == 'H'
+          train.distance.is_a?(Integer)
         end
 
         def metre_gauge_train?(train)
-          train.name[-1] == 'M'
+          train.track_type == :narrow
         end
 
         def hex_edge_cost(conn)
@@ -389,7 +395,9 @@ module Engine
         end
 
         def routes_revenue(routes)
-          super + @round.current_operator.companies.sum(&:revenue)
+          super + @round.current_operator
+                        .companies.select { |c| private_railway?(c) }
+                        .sum(&:revenue)
         end
 
         def revenue_for(route, stops)
@@ -453,10 +461,11 @@ module Engine
 
         def submit_revenue_str(routes, _show_subsidy)
           corporation = current_entity
-          return super if corporation.companies.empty?
+          companies = corporation.companies.select { |c| private_railway?(c) }
+          return super if companies.empty?
 
           total_revenue = routes_revenue(routes)
-          private_revenue = corporation.companies.sum(&:revenue)
+          private_revenue = companies.sum(&:revenue)
           train_revenue = total_revenue - private_revenue
           "#{format_revenue_currency(train_revenue)} train + " \
             "#{format_revenue_currency(private_revenue)} private revenue"
@@ -481,18 +490,18 @@ module Engine
         def buy_train(operator, train, price = nil)
           bought_from_depot = (train.owner == @depot)
           super
-          return if @grey_trains_bought >= @phase4_train_trigger
+          return if @grey_trains_bought >= phase4_train_trigger
           return unless bought_from_depot
           return unless self.class::GREY_TRAINS.include?(train.name)
 
           @grey_trains_bought += 1
-          ordinal = %w[First Second Third Fourth Fifth][@grey_trains_bought - 1]
+          ordinal = %w[First Second Third Fourth Fifth Sixth Seventh][@grey_trains_bought - 1]
           @log << "#{ordinal} grey train has been bought"
           maybe_rust_wounded_trains!(@grey_trains_bought, train)
         end
 
         def maybe_rust_wounded_trains!(grey_trains_bought, purchased_train)
-          rust_wounded_trains!(%w[6H 3M], purchased_train) if grey_trains_bought == @phase4_train_trigger
+          rust_wounded_trains!(%w[6H 3M], purchased_train) if grey_trains_bought == phase4_train_trigger
         end
 
         def rust_wounded_trains!(train_names, purchased_train)
@@ -527,17 +536,17 @@ module Engine
           @_shares[share.id] = share
         end
 
-        def private_colors_available(phase)
-          colors = [:yellow]
-          colors << :green if phase.status.include?('green_privates')
-          colors
+        def private_batches_available(phase)
+          batches = [:private_batch1]
+          batches << :private_batch2 if phase.status.include?('green_privates')
+          batches
         end
 
         def buyable_bank_owned_companies
-          available_colors = private_colors_available(@phase)
+          available_batches = private_batches_available(@phase)
           @companies.select do |company|
             !company.closed? && (company.owner == @bank) &&
-              available_colors.include?(company.color) &&
+              available_batches.include?(company.type) &&
               !@unbuyable_companies.include?(company)
           end
         end
@@ -624,7 +633,9 @@ module Engine
           return if private_closure_round == :in_progress
 
           # Private railways owned by public companies don't pay out.
-          exchanged_companies = @companies.select { |company| company.owner&.corporation? }
+          exchanged_companies = @companies.select do |company|
+            private_railway?(company) && company.owner&.corporation?
+          end
           super(ignore: exchanged_companies.map(&:id))
         end
 
@@ -690,6 +701,8 @@ module Engine
         end
 
         def close_company(company)
+          return unless private_railway?(company)
+
           owner = company.owner
           message = "#{company.id} closes."
           unless owner == @bank
