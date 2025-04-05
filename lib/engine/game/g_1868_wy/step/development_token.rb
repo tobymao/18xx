@@ -80,6 +80,10 @@ module Engine
             false
           end
 
+          def can_remove_hex_token?(entity, hex)
+            hex.tokens.any? { |token| token.corporation == entity }
+          end
+
           def available_tokens(entity)
             return [] unless entity.minor?
 
