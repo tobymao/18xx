@@ -253,8 +253,10 @@ module Engine
           @mine_bonus ||= hex_by_id(MINE_BONUS_HEX).tile.offboards.first
           @port_bonus ||= hex_by_id(PORT_BONUS_HEX).tile.offboards.first
 
-          (mines * @mine_bonus.route_revenue(@phase, train)) +
-            (ports * @port_bonus.route_revenue(@phase, train))
+          # Use #route_base_revenue here instead of #route_revenue as we
+          # don't want the bonus doubled for 5D trains.
+          (mines * @mine_bonus.route_base_revenue(@phase, train)) +
+            (ports * @port_bonus.route_base_revenue(@phase, train))
         end
       end
     end
