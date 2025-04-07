@@ -104,6 +104,12 @@ module View
             h('td.right', @game.unstarted_corporation_summary.first),
           ])
         end
+        if @game.respond_to?(:other_bank_info) && @game.other_bank_info
+          trs << h(:tr, [
+            h(:td, @game.other_bank_info.first),
+            h('td.right', @game.other_bank_info.last),
+          ])
+        end
 
         return '' if trs.empty?
 
