@@ -1506,17 +1506,8 @@ module Engine
         end
 
         # Can reuse track between routes, but not within a route, so this method
-        # doesn't check track reuse, but instead checks:
-        # - home token requirement
-        # - route intersection requirement
-        # - freight track end-to-end requirements
-        def check_overlap(routes)
-          return if routes.empty?
-
-          check_home_token(current_entity, routes)
-          check_intersection(routes)
-          check_freight_intersections(routes)
-        end
+        # doesn't check track reuse
+        def check_overlap(routes); end
 
         # This checks track reuse within a route
         def check_overlap_single(route)
@@ -1590,8 +1581,17 @@ module Engine
           raise GameError, "#{distance} is too many hexes for a #{route.train.name} train"
         end
 
+        # check for:
+        # - home token requirement
+        # - route intersection requirement
+        # - freight track end-to-end requirements
         def check_other(route)
           check_overlap_single(route)
+          return if route.routes.empty?
+
+          check_home_token(current_entity, route.routes)
+          check_intersection(route.routes)
+          check_freight_intersections(route.routes)
         end
 
         def stop_on_other_route?(this_route, stop)
