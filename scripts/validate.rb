@@ -61,7 +61,12 @@ $total_time = 0
 
 def run_game(game, actions = nil, strict: false, silent: false)
   actions ||= game.actions.map(&:to_h)
-  data={'id':game.id, 'title': game.title, 'status':game.status}
+  data = {
+    'id' => game.id,
+    'title' => game.title,
+    'optional_rules' => game.settings['optional_rules'],
+    'status' => game.status
+  }
 
   puts "running game #{game.id}" unless silent
 
