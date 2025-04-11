@@ -34,28 +34,7 @@ module Engine
             short_name: 'Buy tokens',
             desc: 'Corporations can buy station tokens from other corporations',
           },
-          {
-            sym: :bonds,
-            short_name: 'Bonds',
-            desc: 'Corporations have a single L.500 bond they can issue',
-          },
-          {
-            sym: :electric_dreams,
-            short_name: 'Electric Dreams',
-            desc: 'Adds E-trains that run infinite distance on broad track and double select cities',
-          },
         ].freeze
-
-        def self.check_options(options, _min_players, _max_players)
-          optional_rules = (options || []).map(&:to_sym)
-
-          return if optional_rules.empty?
-
-          if optional_rules.include?(:electric_dreams) &&
-            (!optional_rules.include?(:bonds) || !optional_rules.include?(:acquiring_station_tokens))
-            { error: 'Electric Dreams variant requires the Bonds and Buy Tokens variants as well.' }
-          end
-        end
       end
     end
   end
