@@ -40,6 +40,10 @@ module Engine
             'Loco works available',
             'The locomotive works private companies are available for purchase',
           ],
+          'oil_tokens' => [
+            'Oil tokens',
+            'Oil tokens can be collected',
+          ],
           'port_tokens' => [
             'Port tokens',
             'Port tokens can be collected',
@@ -130,8 +134,11 @@ module Engine
             @game_phases = super.map(&:dup)
             @game_phases.first[:status] = %w[yellow_privates narrow_gauge]
             @game_phases[3][:status] << 'loco_works'
+            @game_phases[3][:status] << 'oil_tokens'
             @game_phases[4][:status] << 'loco_works'
+            @game_phases[4][:status] << 'oil_tokens'
             @game_phases[5][:status] << 'loco_works'
+            @game_phases[5][:status] << 'oil_tokens'
             @game_phases[5][:status] << 'port_tokens'
           end
           @game_phases
@@ -195,6 +202,10 @@ module Engine
           @mine_hexes ||= MINE_HEXES.map { |coord| hex_by_id(coord) }
         end
 
+        def oil_hexes
+          @oil_hexes ||= OIL_HEXES.map { |coord| hex_by_id(coord) }
+        end
+
         def port_hexes
           @port_hexes ||= PORT_HEXES.map { |coord| hex_by_id(coord) }
         end
@@ -216,6 +227,7 @@ module Engine
 
         def setup_hex_tokens
           @mine_corp = dummy_corp('mine', '1858_india/mine', mine_hexes)
+          @oil_corp = dummy_corp('oil', '1858_india/oil', oil_hexes)
           @port_corp = dummy_corp('port', '1858_india/port', port_hexes)
         end
 
@@ -247,15 +259,18 @@ module Engine
           train = routes.first.train
           corp = train.owner
           mines = corp.tokens.count { |t| MINE_HEXES.include?(t.hex&.id) }
+          oil = corp.tokens.count { |t| OIL_HEXES.include?(t.hex&.id) }
           ports = corp.tokens.count { |t| PORT_HEXES.include?(t.hex&.id) }
           return 0 if mines.zero? && ports.zero?
 
           @mine_bonus ||= hex_by_id(MINE_BONUS_HEX).tile.offboards.first
+          @oil_bonus ||= hex_by_id(OIL_BONUS_HEX).tile.offboards.first
           @port_bonus ||= hex_by_id(PORT_BONUS_HEX).tile.offboards.first
 
           # Use #route_base_revenue here instead of #route_revenue as we
           # don't want the bonus doubled for 5D trains.
           (mines * @mine_bonus.route_base_revenue(@phase, train)) +
+            (oil * @oil_bonus.route_base_revenue(@phase, train)) +
             (ports * @port_bonus.route_base_revenue(@phase, train))
         end
       end

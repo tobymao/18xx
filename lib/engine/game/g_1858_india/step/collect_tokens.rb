@@ -8,7 +8,7 @@ module Engine
       module Step
         class CollectTokens < Engine::Step::Base
           ACTIONS = %w[remove_hex_token pass].freeze
-          TOKEN_COST = { 'mine' => 50, 'port' => 200 }.freeze
+          TOKEN_COST = { 'mine' => 50,  'oil' => 100, 'port' => 200 }.freeze
 
           def actions(entity)
             return [] unless current_entity == entity
@@ -32,12 +32,14 @@ module Engine
           end
 
           def description
-            'Collect mine and port tokens'
+            'Collect mine, oil and port tokens'
           end
 
           def help
             'Collect mine tokens ' \
-              "(#{@game.format_currency(TOKEN_COST['mine'])} each) " \
+              "(#{@game.format_currency(TOKEN_COST['mine'])} each), " \
+              'oil tokens ' \
+              "(#{@game.format_currency(TOKEN_COST['oil'])} each) " \
               'and port tokens ' \
               "(#{@game.format_currency(TOKEN_COST['port'])} each)."
           end
@@ -76,21 +78,21 @@ module Engine
             end
           end
 
-          # Returns all mine and port tokens on the map which have not yet
+          # Returns all mine/oil/port tokens on the map which have not yet
           # been collected, where there has been track laid in the hex.
           # For port tokens the corporation must be able to afford the token
           # and the current phase must allow them to be taken.
           def available_tokens(corporation)
             tokens = []
             tokens += mines if corporation.cash >= TOKEN_COST['mine']
+            tokens += oil if corporation.cash >= TOKEN_COST['oil']
             tokens += ports if corporation.cash >= TOKEN_COST['port']
             tokens
           end
 
-          # Returns all mine and port tokens where the corporation has a route
-          # to the hex.
-          # For port tokens the corporation must be able to afford the token
-          # and the current phase must allow them to be taken.
+          # Returns all mine/oil/port tokens where the corporation has a route
+          # to the hex, where the corporation can afford to take the token and
+          # the current phase must allow it to be taken.
           # Calling this method might cause the game graphs to be recalculated.
           def connected_tokens(corporation)
             available_tokens(corporation).select do |token|
@@ -113,6 +115,12 @@ module Engine
 
           def mines
             hex_tokens(@game.mine_hexes)
+          end
+
+          def oil
+            return [] unless @game.phase.status.include?('oil_tokens')
+
+            hex_tokens(@game.oil_hexes)
           end
 
           def ports
