@@ -132,14 +132,10 @@ module Engine
         def game_phases
           unless @game_phases
             @game_phases = super.map(&:dup)
-            @game_phases.first[:status] = %w[yellow_privates narrow_gauge]
-            @game_phases[3][:status] << 'loco_works'
-            @game_phases[3][:status] << 'oil_tokens'
-            @game_phases[4][:status] << 'loco_works'
-            @game_phases[4][:status] << 'oil_tokens'
-            @game_phases[5][:status] << 'loco_works'
-            @game_phases[5][:status] << 'oil_tokens'
-            @game_phases[5][:status] << 'port_tokens'
+            @game_phases[0][:status] = %w[yellow_privates narrow_gauge]
+            @game_phases[3][:status] += %w[loco_works oil_tokens]
+            @game_phases[4][:status] += %w[loco_works oil_tokens]
+            @game_phases[5][:status] += %w[loco_works oil_tokens port_tokens]
           end
           @game_phases
         end
