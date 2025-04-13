@@ -46,8 +46,20 @@ module Engine
           def legal_tile_rotation?(entity, hex, tile)
             return super unless @game.tunnel_companies.include?(entity)
 
-            tunnel_track_exits = tile.paths.flat_map { |p| p.track == :narrow ? p.exits : [] }
-            super && tunnel_track_exits.none? { |edge| hex.neighbors[edge]&.tile&.color == :purple }
+            tunnel_track_path = tile.paths.find { |p| p.track == :narrow }
+            super &&
+              tunnel_track_path.exits.none? { |edge| hex.neighbors[edge]&.tile&.color == :purple } &&
+              (hex.tile.paths.flat_map(&:exits) & tunnel_track_path.exits).empty?
+          end
+
+          def check_track_restrictions!(entity, old_tile, new_tile)
+            super
+            return if @game.loading || !@game.tunnel_companies.include?(entity)
+
+            tunnel_track_path = new_tile.paths.find { |p| p.track == :narrow }
+            return if @game.graph.connected_paths(@round.current_operator)[tunnel_track_path]
+
+            raise GameError, 'Tunnel track must be connected'
           end
         end
       end

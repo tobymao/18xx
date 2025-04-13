@@ -63,6 +63,8 @@ module Engine
 
         P2_TRAIN_ID = '2-0'
 
+        P3_TRAIN_ID = '2P-0'
+
         ARANJUEZ_HEX = 'F26'
 
         MADRID_HEX = 'F24'
@@ -370,7 +372,7 @@ module Engine
 
           @company_trains = {}
           @company_trains['P2'] = find_and_remove_train_for_minor(P2_TRAIN_ID, buyable: false)
-          @company_trains['P3'] = find_and_remove_train_for_minor('2P-0', buyable: false)
+          @company_trains['P3'] = find_and_remove_train_for_minor(P3_TRAIN_ID, buyable: false)
           @perm2_ran_aranjuez = false
 
           setup_company_price(1)
@@ -472,8 +474,10 @@ module Engine
 
         def init_company_abilities
           northern_corps = @corporations.select { |c| north_corp?(c) }
-          random_corporation = northern_corps[rand % northern_corps.size]
-          another_random_corporation = northern_corps[rand % northern_corps.size]
+          #  the PRNG doesn't work well when doing mod even numbers, as
+          # the lower digits aren't truly random. Right shifting by 12 fixes the issue.
+          random_corporation = northern_corps[(rand >> 12) % northern_corps.size]
+          another_random_corporation = northern_corps[(rand >> 12) % northern_corps.size]
           @companies.each do |company|
             next unless (ability = abilities(company, :shares))
 
@@ -887,7 +891,8 @@ module Engine
                      city_by_id("#{hex.tile.id}-#{corporation.city}")
                    end
             @log << "#{corporation.name} places a token on #{hex.id}"
-            city.place_token(corporation, token, cheater: true, check_tokenable: false)
+            cheater = !city.tokenable?(corporation)
+            city.place_token(corporation, token, cheater: cheater, check_tokenable: false)
           else
             super
           end
@@ -1128,7 +1133,7 @@ module Engine
           move_assets(corporation, minor)
 
           # handle token
-          keep_token ? swap_token(corporation, minor) : gain_token(corporation, minor)
+          swap_token(corporation, minor) if keep_token
 
           # get share
           get_reserved_share(minor.owner, corporation) if minor.ipoed
@@ -1203,12 +1208,6 @@ module Engine
           @log << "#{owner.name} gets a share of #{corporation.name}"
         end
 
-        def gain_token(corporation, minor)
-          blocked_token = corporation.tokens.find { |token| token.used == true && !token.hex && token.price == 50 }
-          blocked_token&.used = false
-          delete_token_mz(minor) if minor&.name == 'MZ'
-        end
-
         def gain_luxury_carriage_ability_from_minor(corporation, minor)
           minor_luxury_ability = luxury_ability(minor)
           return unless minor_luxury_ability
@@ -1248,14 +1247,13 @@ module Engine
         end
 
         def swap_token(survivor, nonsurvivor)
-          new_token = survivor.tokens.last
+          new_token = survivor.next_token
           old_token = nonsurvivor.tokens.first
           city = old_token.city
           if city.nil?
             city = hex_by_id(nonsurvivor.coordinates).tile.cities.find { |c| c.reserved_by?(nonsurvivor) }
             city.remove_reservation!(nonsurvivor)
           end
-          return gain_token(survivor) unless city
 
           @log << "Replaced #{nonsurvivor.name} token in #{city.hex.id} with #{survivor.name}"\
                   ' token'

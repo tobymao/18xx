@@ -32,14 +32,20 @@ module Engine
           end
 
           def next_entity!
-            next_entity_index! unless @entities.empty?
-            return if @entity_index.zero?
+            return if @entities.empty? || (@entity_index == @entities.size - 1)
 
+            next_entity_index!
             @steps.each(&:unpass!)
             @steps.each(&:setup)
 
             skip_steps
             next_entity! if finished?
+          end
+
+          def force_next_entity!
+            @steps.each(&:pass!)
+            next_entity!
+            clear_cache!
           end
         end
       end

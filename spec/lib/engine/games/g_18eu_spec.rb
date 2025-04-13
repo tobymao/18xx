@@ -75,7 +75,7 @@ module Engine
         expect(game.current_entity.shares.length).to be 6
 
         # Prevent player from attempting to purchase > 60% through normal stock buy.
-        expect { game.process_action(action) }.to raise_error(GameError)
+        expect(game.process_action(action).exception).to be_a(GameError)
         expect(game.current_entity.shares.length).to be 6
       end
     end

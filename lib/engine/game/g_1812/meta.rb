@@ -9,6 +9,7 @@ module Engine
         include Game::Meta
 
         DEV_STAGE = :prealpha
+        DEPENDS_ON = '1867'
 
         GAME_SUBTITLE = 'The Cradle Of Steam Railways'
         GAME_DESIGNER = 'Ian D. Wilson'

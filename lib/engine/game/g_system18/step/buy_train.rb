@@ -28,7 +28,10 @@ module Engine
                                                                                                         action.bundle)
 
             @emr_issue = true
-            @game.sell_shares_and_change_price(action.bundle, movement: :left_block)
+
+            movement_type = @game.movement_type_at_emr_share_issue_by_map
+
+            @game.sell_shares_and_change_price(action.bundle, movement: movement_type)
           end
 
           def process_buy_train(action)

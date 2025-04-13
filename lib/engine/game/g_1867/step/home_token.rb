@@ -4,11 +4,15 @@ require_relative '../../../step/home_token'
 
 module Engine
   module Game
-    module G1880
+    module G1867
       module Step
         class HomeToken < Engine::Step::HomeToken
+          def override_entities
+            @round.entities
+          end
+
           def active_entities
-            @round.pending_tokens&.map { |token| token[:entity] }
+            [entities[entity_index]]
           end
         end
       end

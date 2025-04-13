@@ -26,8 +26,6 @@ module Engine
         actions << 'sell_shares' if can_sell_any?(entity)
 
         actions << 'pass' unless actions.empty?
-        puts entity.name
-        puts actions.inspect
         actions
       end
 
@@ -472,7 +470,7 @@ module Engine
         corporation = program.corporation
         # check if end condition met
         finished_reason = if program.until_condition == 'float'
-                            "#{corporation.name} is floated" if corporation.floated?
+                            "#{corporation.name} is floated" if corporation.floated? || corporation.percent_to_float.zero?
                           elsif entity.num_shares_of(corporation, ceil: false) >= program.until_condition
                             "#{program.until_condition} share(s) bought in #{corporation.name}, end condition met"
                           end

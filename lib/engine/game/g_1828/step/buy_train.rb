@@ -48,6 +48,23 @@ module Engine
             (super || shell_empty) && ebuy_president_can_contribute?(entity)
           end
 
+          def spend_minmax(entity, train)
+            entity_buying_power = buying_power(entity)
+            max_possible = entity_buying_power + entity.owner.cash
+            if @last_share_sold_price
+              min = max_possible - @last_share_sold_price + 1
+              max = [train.price, max_possible].min
+            else
+              min = 1
+              max = if entity_buying_power > train.price
+                      entity_buying_power
+                    else
+                      [train.price, max_possible].min
+                    end
+            end
+            [min, max]
+          end
+
           private
 
           def shells_with_room(entity)

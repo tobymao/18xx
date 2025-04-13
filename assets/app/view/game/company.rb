@@ -123,6 +123,15 @@ module View
             float: 'right',
           }
 
+          current_price_style = {
+            clear: 'both',
+            float: 'left',
+          }
+
+          lowest_bid_style = {
+            float: 'right',
+          }
+
           bidders_style = {
             marginTop: '0.5rem',
             display: 'inline-block',
@@ -158,6 +167,8 @@ module View
 
           company_name_str = @game.respond_to?(:company_size) ? "[#{@game.company_size(@company)}] " : ''
           company_name_str += @company.name
+          lowest_bid_price_str = @game.format_currency(@company.lowest_bid_price) if @company.lowest_bid_price
+          current_price_str = @game.format_currency(@company.min_bid)
 
           children = [
             h(:div, { style: header_style }, @game.company_header(@company)),
@@ -165,10 +176,12 @@ module View
             h(:div, { style: description_style }, @company.desc),
           ]
           company_value = @game.company_value(@company)
+          children << h(:div, { style: current_price_style }, "Current Price: #{current_price_str}") if @company.lowest_bid_price
+          children << h(:div, { style: lowest_bid_style }, "Lowest Price: #{lowest_bid_price_str}") if @company.lowest_bid_price
           children << h(:div, { style: value_style }, "Value: #{@game.format_currency(company_value)}") if company_value
           children << h(:div, { style: revenue_style }, "Revenue: #{revenue_str}") if @company.revenue
-          unless @company.discount.zero?
-            children << h(:div, { style: { float: 'center' } }, "Price: #{@game.format_currency(@company.min_bid)}")
+          if !@company.discount.zero? && !@company.lowest_bid_price
+            children << h(:div, { style: { float: 'center' } }, "Price: #{current_price_str}")
           end
           children << render_bidders if @bids && !@bids.empty?
 

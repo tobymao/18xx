@@ -397,7 +397,7 @@ module Engine
             next unless corp.destination_coordinates
 
             hex_by_id(corp.destination_coordinates).remove_assignment!(corp)
-            corp.remove_ability(corp.abilities.find { |a| a.description.start_with?('Destination') })
+            corp.remove_ability(corp.abilities.find { |a| a.description&.start_with?('Destination') })
           end
         end
 
@@ -750,6 +750,7 @@ module Engine
             update_tile_lists(tile, hex.tile)
             hex.lay(tile)
           end
+          clear_graph
 
           @log << "#{company.name} closes"
           company.close!
@@ -771,7 +772,9 @@ module Engine
         end
 
         def destinated?(entity)
-          home_node = entity.tokens.first&.city
+          return false unless entity.coordinates
+
+          home_node = hex_by_id(entity.coordinates).tile.cities.find { |c| c.tokened_by?(entity) || c.reserved_by?(entity) }
           destination_hex = hex_by_id(entity.destination_coordinates)
           return false if !home_node || !destination_hex
           return false unless destination_hex.assigned?(entity)

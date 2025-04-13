@@ -129,7 +129,7 @@ module Engine
             false
           end
 
-          def president_may_contribute?
+          def president_may_contribute?(_entity, _shell = nil)
             false
           end
 

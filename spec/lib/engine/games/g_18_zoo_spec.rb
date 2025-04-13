@@ -457,7 +457,7 @@ module Engine
               'slot' => 1,
             }
             expect(game.exception).to be_nil
-            expect { game.process_action(action) }.to raise_error(GameError)
+            expect(game.process_action(action).exception).to be_a(GameError)
           end
         end
 
@@ -474,7 +474,7 @@ module Engine
               'slot' => 0,
             }
             expect(game.exception).to be_nil
-            expect { game.process_action(action) }.to raise_error(GameError)
+            expect(game.process_action(action).exception).to be_a(GameError)
           end
         end
 
@@ -491,7 +491,7 @@ module Engine
               'slot' => 0,
             }
             expect(game.exception).to be_nil
-            expect { game.process_action(action) }.to raise_error(GameError)
+            expect(game.process_action(action).exception).to be_a(GameError)
           end
         end
 
@@ -508,7 +508,7 @@ module Engine
               'slot' => 0,
             }
             expect(game.exception).to be_nil
-            expect { game.process_action(action) }.to raise_error(GameError)
+            expect(game.process_action(action).exception).to be_a(GameError)
           end
         end
 
@@ -525,7 +525,7 @@ module Engine
               'target_type' => 'hex',
             }
             expect(game.exception).to be_nil
-            expect { game.process_action(action) }.to raise_error(GameError)
+            expect(game.process_action(action).exception).to be_a(GameError)
           end
         end
 
@@ -543,7 +543,7 @@ module Engine
               'tokener' => 'PB',
             }
             expect(game.exception).to be_nil
-            expect { game.process_action(action) }.to raise_error(GameError)
+            expect(game.process_action(action).exception).to be_a(GameError)
           end
         end
       end

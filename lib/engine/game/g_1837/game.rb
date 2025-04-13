@@ -60,21 +60,21 @@ module Engine
         PHASES = [
           {
             name: '2',
-            train_limit: { coal: 2, minor: 2, major: 4 },
+            train_limit: { coal: 2, minor: 2, major: 4, national: 4 },
             tiles: [:yellow],
             operating_rounds: 1,
           },
           {
             name: '3',
             on: '3',
-            train_limit: { coal: 2, minor: 2, major: 3 },
+            train_limit: { coal: 2, minor: 2, major: 3, national: 4 },
             tiles: %i[yellow green],
             operating_rounds: 2,
           },
           {
             name: '3+1',
             on: '3+1',
-            train_limit: { coal: 1, minor: 1, major: 3 },
+            train_limit: { coal: 1, minor: 1, major: 3, national: 4 },
             tiles: %i[yellow green],
             operating_rounds: 2,
           },
@@ -114,8 +114,8 @@ module Engine
             name: '3+1',
             num: 2,
             distance: [
-              { 'nodes' => %w[town city offboard], 'pay' => 3, 'visit' => 3 },
               { 'nodes' => %w[town], 'pay' => 1, 'visit' => 1 },
+              { 'nodes' => %w[town city offboard], 'pay' => 3, 'visit' => 3 },
             ],
             price: 280,
             rusts_on: '5+2',
@@ -131,8 +131,8 @@ module Engine
             name: '4E',
             num: 1,
             distance: [
-              { 'nodes' => %w[city offboard], 'pay' => 4, 'visit' => 4 },
               { 'nodes' => %w[town], 'pay' => 0, 'visit' => 99 },
+              { 'nodes' => %w[city offboard], 'pay' => 4, 'visit' => 4 },
             ],
             price: 500,
             events: [{ 'type' => 'ug_can_form' }],
@@ -141,8 +141,8 @@ module Engine
             name: '4+1',
             num: 1,
             distance: [
-              { 'nodes' => %w[town city offboard], 'pay' => 4, 'visit' => 4 },
               { 'nodes' => %w[town], 'pay' => 1, 'visit' => 1 },
+              { 'nodes' => %w[town city offboard], 'pay' => 4, 'visit' => 4 },
             ],
             price: 530,
             events: [{ 'type' => 'kk_formation' }],
@@ -151,8 +151,8 @@ module Engine
             name: '4+2',
             num: 1,
             distance: [
-              { 'nodes' => %w[town city offboard], 'pay' => 4, 'visit' => 4 },
               { 'nodes' => %w[town], 'pay' => 2, 'visit' => 2 },
+              { 'nodes' => %w[town city offboard], 'pay' => 4, 'visit' => 4 },
             ],
             price: 560,
           },
@@ -168,8 +168,8 @@ module Engine
             name: '5E',
             num: 1,
             distance: [
-              { 'nodes' => %w[city offboard], 'pay' => 5, 'visit' => 5 },
               { 'nodes' => %w[town], 'pay' => 0, 'visit' => 99 },
+              { 'nodes' => %w[city offboard], 'pay' => 5, 'visit' => 5 },
             ],
             price: 830,
           },
@@ -177,8 +177,8 @@ module Engine
             name: '5+2',
             num: 1,
             distance: [
-              { 'nodes' => %w[town city offboard], 'pay' => 5, 'visit' => 5 },
               { 'nodes' => %w[town], 'pay' => 2, 'visit' => 2 },
+              { 'nodes' => %w[town city offboard], 'pay' => 5, 'visit' => 5 },
             ],
             price: 860,
           },
@@ -186,8 +186,8 @@ module Engine
             name: '5+3',
             num: 1,
             distance: [
-              { 'nodes' => %w[town city offboard], 'pay' => 5, 'visit' => 5 },
               { 'nodes' => %w[town], 'pay' => 3, 'visit' => 3 },
+              { 'nodes' => %w[town city offboard], 'pay' => 5, 'visit' => 5 },
             ],
             price: 900,
           },
@@ -195,8 +195,8 @@ module Engine
             name: '5+4',
             num: 20,
             distance: [
-              { 'nodes' => %w[town city offboard], 'pay' => 5, 'visit' => 5 },
               { 'nodes' => %w[town], 'pay' => 4, 'visit' => 4 },
+              { 'nodes' => %w[town city offboard], 'pay' => 5, 'visit' => 5 },
             ],
             price: 960,
           },
@@ -204,8 +204,8 @@ module Engine
             name: '1G',
             num: 10,
             distance: [
-              { 'nodes' => %w[city offboard], 'pay' => 2, 'visit' => 2 },
               { 'nodes' => %w[town], 'pay' => 99, 'visit' => 99 },
+              { 'nodes' => %w[city offboard], 'pay' => 2, 'visit' => 2 },
             ],
             available_on: '2',
             rusts_on: %w[3G 4G],
@@ -215,8 +215,8 @@ module Engine
             name: '2G',
             num: 6,
             distance: [
-              { 'nodes' => %w[city offboard], 'pay' => 3, 'visit' => 3 },
               { 'nodes' => %w[town], 'pay' => 99, 'visit' => 99 },
+              { 'nodes' => %w[city offboard], 'pay' => 3, 'visit' => 3 },
             ],
             available_on: '3',
             rusts_on: '4G',
@@ -226,8 +226,8 @@ module Engine
             name: '3G',
             num: 2,
             distance: [
-              { 'nodes' => %w[city offboard], 'pay' => 4, 'visit' => 4 },
               { 'nodes' => %w[town], 'pay' => 99, 'visit' => 99 },
+              { 'nodes' => %w[city offboard], 'pay' => 4, 'visit' => 4 },
             ],
             available_on: '4',
             price: 590,
@@ -236,8 +236,8 @@ module Engine
             name: '4G',
             num: 20,
             distance: [
-              { 'nodes' => %w[city offboard], 'pay' => 5, 'visit' => 5 },
               { 'nodes' => %w[town], 'pay' => 99, 'visit' => 99 },
+              { 'nodes' => %w[city offboard], 'pay' => 5, 'visit' => 5 },
             ],
             available_on: '5',
             price: 1000,
@@ -287,7 +287,7 @@ module Engine
 
         def setup
           non_purchasable = @companies.flat_map do |c|
-            [abilities(c, :acquire_company, time: 'any')&.company, c.meta['hidden'] ? c.id : nil]
+            [abilities(c, :acquire_company, time: 'any')&.company, c.meta[:hidden] ? c.id : nil]
           end.compact
           @companies.each { |company| company.owner = @bank unless non_purchasable.include?(company.id) }
           setup_mines
@@ -344,6 +344,14 @@ module Engine
 
         def ug_minors
           @ug_minors ||= %w[UG1 UG2 UG3].map { |id| corporation_by_id(id) }
+        end
+
+        def coal_minors
+          @coal_minors ||= %w[EPP RGTE EOD EKT MLB ZKB SPB LRB BB EHS].map { |id| corporation_by_id(id) }
+        end
+
+        def coal_minor?(entity)
+          coal_minors.include?(entity)
         end
 
         def event_buy_across!
@@ -409,7 +417,7 @@ module Engine
 
         def event_exchange_coal_companies!
           @log << "-- Event: #{EVENTS_TEXT['exchange_coal_companies'][1]} --"
-          coal_company_exchange_order(mandatory: true).each { |c| exchange_coal_company(c) }
+          coal_minor_exchange_order(mandatory: true).each { |c| exchange_coal_minor(c) }
         end
 
         def operating_order
@@ -418,16 +426,18 @@ module Engine
         end
 
         def exchange_order
-          order = coal_company_exchange_order
+          order = coal_minor_exchange_order
           order.concat(kk_minors.reject(&:closed?)) if @kk_can_form
           order.concat(ug_minors.reject(&:closed?)) if @ug_can_form
           order
         end
 
         def exchange_target(entity)
-          if entity.company?
+          if coal_minor?(entity)
             target_id = abilities(entity, :exchange, time: 'any')&.corporations&.first
             corporation_by_id(target_id)
+          elsif sd_minors.include?(entity)
+            corporation_by_id('SD')
           elsif kk_minors.include?(entity)
             corporation_by_id('KK')
           elsif ug_minors.include?(entity)
@@ -435,35 +445,33 @@ module Engine
           end
         end
 
-        def coal_company_exchange_order(mandatory: false)
-          exchangeable_companies = Hash.new { |h, k| h[k] = [] }
-          @companies.each do |c|
+        def coal_minor_exchange_order(mandatory: false)
+          exchangeable_coal_minors = Hash.new { |h, k| h[k] = [] }
+          coal_minors.each do |c|
             next if c.closed? || !c.owner&.player?
             next unless (target = exchange_target(c))
 
-            exchangeable_companies[target] << c
+            exchangeable_coal_minors[target] << c
           end
 
           order = operating_order
           order = order.concat(@corporations).uniq if mandatory
           order.select { |c| c.corporation? && c.type == :major }.flat_map do |major|
             player_order = major.owner&.player? ? @players.rotate(@players.index(major.owner)) : @players
-            exchangeable_companies[major].sort_by { |c| player_order.index(c.owner) }
+            exchangeable_coal_minors[major].sort_by { |c| player_order.index(c.owner) }
           end.compact
         end
 
-        def mandatory_coal_company_exchange?(entity)
-          return false if !entity.company? || entity.closed? || !entity.owner&.player?
+        def mandatory_coal_minor_exchange?(minor)
+          return false if minor.closed? || !minor.owner&.player?
 
-          exchange_target(entity).percent_ipo_buyable.zero?
+          exchange_target(minor).percent_ipo_buyable.zero?
         end
 
-        def exchange_coal_company(company)
-          @log << "#{company.sym} exchanged for a share of #{exchange_target(company).id}"
-          major = corporation_by_id(abilities(company, :exchange, time: 'any').corporations.first)
-          minor = minor_by_id(company.sym)
-          merge_minor!(minor, major)
-          company.close!
+        def exchange_coal_minor(minor)
+          target = exchange_target(minor)
+          @log << "#{minor.id} exchanged for a share of #{target.id}"
+          merge_minor!(minor, target)
         end
 
         def event_close_mountain_railways!
@@ -488,14 +496,10 @@ module Engine
         end
 
         def merge_minor!(minor, corporation, allow_president_change: true)
-          coal_company_exchange = minor.type == :coal
           @log << "#{minor.name} merges into #{corporation.name}"
 
-          if coal_company_exchange
-            { minor.owner => 1 }
-          else
-            minor.share_holders.to_h { |sh, _| [sh, sh.shares_of(minor).size] }
-          end.each do |sh, num_shares|
+          minor.share_holders.each do |sh, _|
+            num_shares = sh.shares_of(minor).size
             next if num_shares.zero?
 
             @log << "#{sh.name} receives #{num_shares} share#{num_shares > 1 ? 's' : ''} of #{corporation.name}"
@@ -518,7 +522,7 @@ module Engine
             minor.trains.dup.each { |t| buy_train(corporation, t, :free) }
           end
 
-          if coal_company_exchange
+          if coal_minor?(minor)
             minor.tokens.first.swap!(blocking_token, check_tokenable: false)
           else
             token = minor.tokens.first
@@ -532,7 +536,7 @@ module Engine
             @log << "#{corporation.name} receives token (#{new_token.used ? new_token.city.hex.id : 'charter'})"
           end
 
-          coal_company_exchange ? close_minor!(minor) : close_corporation(minor, quiet: true)
+          close_corporation(minor, quiet: true)
           graph.clear_graph_for(corporation)
         end
 
@@ -595,6 +599,7 @@ module Engine
 
         def stock_round
           Engine::Round::Stock.new(self, [
+            G1837::Step::HomeToken,
             G1837::Step::DiscardTrain,
             G1837::Step::BuySellParShares,
           ])
@@ -637,20 +642,10 @@ module Engine
         end
 
         def after_buy_company(player, company, _price)
-          close_company = false
-
           abilities(company, :shares) do |ability|
             share = ability.shares.first
             @share_pool.buy_shares(player, share, exchange: :free)
             float_minor!(share.corporation) if share.president
-            close_company = true
-          end
-
-          if company.meta[:type] == :coal
-            minor = minor_by_id(company.id)
-            minor.owner = player
-            float_minor!(minor)
-            company.value = 0
           end
 
           abilities(company, :acquire_company) do |ability|
@@ -660,9 +655,8 @@ module Engine
             @log << "#{player.name} receives #{acquired_company.name}"
             after_buy_company(player, acquired_company, 0)
           end
-          return unless close_company
 
-          company.close!
+          company.close! unless company.meta[:type] == :mountain_railway
         end
 
         def float_str(entity)
@@ -675,10 +669,10 @@ module Engine
           cash = minor_initial_cash(minor)
           @bank.spend(cash, minor)
           @log << "#{minor.name} receives #{format_currency(cash)}"
-          if !@round.is_a?(Engine::Round::Auction) && minor.name == 'SD5'
-            coordinates = minor.coordinates
-            minor.coordinates = coordinates.shift
-            remove_reservations!(minor, coordinates)
+          if !@round.is_a?(Engine::Round::Auction) && minor.id == 'SD5'
+            coordinates = minor.coordinates.dup
+            minor.coordinates = coordinates[0]
+            remove_reservation!(minor, coordinates[1])
           end
           place_home_token(minor) unless minor.coordinates.is_a?(Array)
           if minor.corporation?
@@ -698,8 +692,8 @@ module Engine
           Array(corporation.coordinates).map { |coord| hex_by_id(coord) }
         end
 
-        def remove_reservations!(entity, coordinates)
-          coordinates.each { |coord| hex_by_id(coord).tile.remove_reservation!(entity) }
+        def remove_reservation!(entity, coordinates)
+          hex_by_id(coordinates).tile.remove_reservation!(entity)
         end
 
         def train_limit(entity)
@@ -813,6 +807,12 @@ module Engine
           if entity.corporation? && entity.type != :minor && entity.receivership?
             return @players.find { |p| p.num_shares_of(entity).positive? } || @players.first
           end
+
+          super
+        end
+
+        def sellable_bundles(player, corporation)
+          return [] unless corporation.share_price
 
           super
         end
