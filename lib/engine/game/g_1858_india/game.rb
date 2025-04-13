@@ -214,9 +214,7 @@ module Engine
           bonus_revenue = extra_revenue(current_entity, routes)
           return super if bonus_revenue.zero?
 
-          train_revenue = routes_revenue(routes)
-          "#{format_revenue_currency(train_revenue)} + " \
-            "#{format_revenue_currency(bonus_revenue)} mine/port bonus"
+          "#{super} + #{format_revenue_currency(bonus_revenue)} mine/oil/port bonus"
         end
 
         private
