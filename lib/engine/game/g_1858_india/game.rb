@@ -257,7 +257,7 @@ module Engine
           mines = corp.tokens.count { |t| MINE_HEXES.include?(t.hex&.id) }
           oil = corp.tokens.count { |t| OIL_HEXES.include?(t.hex&.id) }
           ports = corp.tokens.count { |t| PORT_HEXES.include?(t.hex&.id) }
-          return 0 if mines.zero? && ports.zero?
+          return 0 if mines.zero? && oil.zero? && ports.zero?
 
           @mine_bonus ||= hex_by_id(MINE_BONUS_HEX).tile.offboards.first
           @oil_bonus ||= hex_by_id(OIL_BONUS_HEX).tile.offboards.first
