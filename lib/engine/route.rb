@@ -311,7 +311,11 @@ module Engine
       @game.check_other(self)
     end
 
-    def revenue(suppress_check_other: false, supress_route_token_check: false)
+    def check_route_combination!
+      @game.check_route_combination(@routes)
+    end
+
+    def revenue(suppress_check_other: false, supress_route_token_check: false, suppress_check_route_combination: false)
       @revenue ||=
         begin
           visited = visited_stops
@@ -326,6 +330,7 @@ module Engine
 
           check_terminals!
           check_other! unless suppress_check_other
+          check_route_combination! unless suppress_check_route_combination
           check_cycles!
           check_distance!(visited)
           check_overlap!

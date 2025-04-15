@@ -151,7 +151,9 @@ module Engine
               bitfield: bitfield_from_connection(connection, hexside_bits),
             )
             route.routes = [route]
-            route.revenue(suppress_check_other: true) # defer route-collection checks til later
+
+            # defer route combination checks til later
+            route.revenue(suppress_check_other: true, suppress_check_route_combination: true)
             train_routes[train] << route
           rescue RouteTooLong
             # ignore for this train, and abort walking this path if ignored for all trains
@@ -431,6 +433,7 @@ module Engine
         try {
           for (let rt of cb.routes) {
             rt.route['$check_other!']() // throws if bad combo
+            rt.route['$check_route_combination!']() // throws if bad combo
           }
           return true
         }
