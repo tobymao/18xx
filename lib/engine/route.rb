@@ -315,7 +315,7 @@ module Engine
       @game.check_route_combination(@routes)
     end
 
-    def revenue(suppress_check_other: false, supress_route_token_check: false, suppress_check_route_combination: false)
+    def revenue(supress_route_token_check: false, suppress_check_route_combination: false)
       @revenue ||=
         begin
           visited = visited_stops
@@ -329,7 +329,7 @@ module Engine
           end
 
           check_terminals!
-          check_other! unless suppress_check_other
+          check_other!
           check_route_combination! unless suppress_check_route_combination
           check_cycles!
           check_distance!(visited)
