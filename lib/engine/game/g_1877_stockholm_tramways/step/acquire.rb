@@ -95,6 +95,7 @@ module Engine
             else
               @merge_finished = true
             end
+            @game.graph.clear_graph_for(action.corporation)
           end
 
           def can_buy?(entity, bundle)
