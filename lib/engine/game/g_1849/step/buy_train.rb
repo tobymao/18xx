@@ -38,7 +38,7 @@ module Engine
 
           def buyable_trains(entity)
             # Cannot buy E-train without E-token
-            trains_to_buy = super.dup
+            trains_to_buy = super
 
             trains_to_buy = trains_to_buy.reject { |t| t.name == 'E' } unless @game.e_token?(entity)
 
