@@ -273,8 +273,7 @@ module Engine
                        'border=edge:3,type:impassable',
             ['D19'] => 'label=Å;town=revenue:10;path=a:5,b:_0;path=a:1,b:_0,track:narrow;path=a:3,b:_0,track:narrow;'\
                        'border=edge:4,type:impassable',
-            ['D35'] => 'label=K;city=revenue:20;path=a:0,b:_0,track:narrow;path=a:1,b:_0,track:narrow;path=a:4,b:_0;'\
-                       'path=a:5,b:_0,track:thin',
+            ['D35'] => 'label=K;city=revenue:20;path=a:0,b:_0,track:narrow;path=a:1,b:_0,track:narrow;path=a:4,b:_0',
             ['E18'] => 'label=M;city=revenue:20;path=a:5,b:_0;path=a:2,b:_0,track:narrow;path=a:3,b:_0,track:narrow;'\
                        'border=edge:1,type:impassable',
             ['H17'] => 'label=T;city=revenue:20;path=a:0,b:_0;path=a:3,b:_0,track:narrow',
