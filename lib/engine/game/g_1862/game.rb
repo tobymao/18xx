@@ -418,7 +418,7 @@ module Engine
         end
 
         EBUY_PRES_SWAP = false # allow presidential swaps of other corps when ebuying
-        EBUY_OTHER_VALUE = false # allow ebuying other corp trains for up to face
+        EBUY_FROM_OTHERS = :never # allow ebuying other corp trains for up to face
         HOME_TOKEN_TIMING = :operate
         SELL_AFTER = :round
         SELL_BUY_ORDER = :sell_buy

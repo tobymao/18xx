@@ -57,7 +57,13 @@ module Engine
       def next_entity!
         @round.next_entity_index!
         entity = entities[entity_index]
-        entity.pass! if @auctioning && max_bid(entity, @auctioning) < min_bid(@auctioning)
+        if @auctioning
+          entity.pass! if max_bid(entity, @auctioning) < min_bid(@auctioning)
+        elsif @companies.none? { |c| max_bid(entity, c) >= min_bid(c) }
+          @log << "#{entity.name} has no valid actions and passes"
+          entity.pass!
+          entity = nil if entities.all?(&:passed?)
+        end
         next_entity! if entity&.passed?
       end
 
@@ -127,6 +133,14 @@ module Engine
         @companies.first
       end
 
+      def resolve_bids
+        if @auctioning && @active_bidders.none? && @bids[auctioning].empty?
+          all_passed!
+        else
+          super
+        end
+      end
+
       private
 
       def add_bid(bid)
@@ -144,12 +158,11 @@ module Engine
         price = winner.price
         assign_company(company, player)
 
-        player.spend(price, @game.bank) if price.positive?
-        @game.after_buy_company(player, company, price)
-
-        @companies.delete(company)
         @log << "#{player.name} wins the auction for #{company.name} "\
                 "with a bid of #{@game.format_currency(price)}"
+        player.spend(price, @game.bank) if price.positive?
+        @game.after_buy_company(player, company, price)
+        @companies.delete(company)
       end
 
       def forced_win(player, company)

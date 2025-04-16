@@ -33,13 +33,15 @@ module View
                                  discounted_train(@depot.min_depot_train, @depot.min_depot_price).first
                                end
         cash = available_cash(@corporation) + player.cash
+        share_funds_possible = @game.liquidity(player, emergency: true) - player.cash
         share_funds_required = cheapest_train_price - cash
         share_funds_allowed = if @game.class::EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST
                                 share_funds_required
+                              elsif @game.class::EBUY_FROM_OTHERS == :always
+                                share_funds_possible
                               else
                                 @depot.max_depot_price - cash
                               end
-        share_funds_possible = @game.liquidity(player, emergency: true) - player.cash
 
         if cheapest_train_price > @corporation.cash
           children << h(:div, "#{player.name} #{verb} contribute "\
@@ -77,7 +79,7 @@ module View
                                 "#{@game.format_currency(share_funds_allowed)}.")
           end
 
-          if @game.class::EBUY_SELL_MORE_THAN_NEEDED_LIMITS_DEPOT_TRAIN
+          if @game.class::EBUY_SELL_MORE_THAN_NEEDED_SETS_PURCHASE_MIN
             children << h(:div, "#{player.name} may not sell more shares than is necessary "\
                                 'to buy the train that is purchased.')
           end
@@ -159,7 +161,7 @@ module View
                                   "#{@game.format_currency(share_funds_allowed)}.")
             end
 
-            if @game.class::EBUY_SELL_MORE_THAN_NEEDED_LIMITS_DEPOT_TRAIN
+            if @game.class::EBUY_SELL_MORE_THAN_NEEDED_SETS_PURCHASE_MIN
               children << h(:div, "#{owner.name} may not sell more shares than is necessary "\
                                   'to buy the train that is purchased.')
             end
@@ -174,7 +176,7 @@ module View
 
             children.concat(render_emergency_money_raising(owner)) if share_funds_allowed.positive?
           end
-        elsif share_funds_allowed.positive? && @step.can_ebuy_sell_shares?(@corporation)
+        elsif @step.can_ebuy_sell_shares?(@corporation)
           children.concat(render_emergency_money_raising(player))
         end
 
@@ -296,6 +298,11 @@ module View
           end
           issue_str += '.'
           children << h(:div, issue_str)
+        end
+
+        if @step.can_finance?(@corporation)
+          text = "#{@game.bank.name} will provide financing for the amount the corporation cannot pay."
+          children << h(:div, text)
         end
 
         if (@must_buy_train && @step.ebuy_president_can_contribute?(@corporation)) ||

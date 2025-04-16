@@ -71,6 +71,10 @@ module Engine
         name: 'TraXX',
         url: 'https://traxx-denver.com/games/',
       },
+      wood_18: {
+        name: '18Wood',
+        url: 'https://www.etsy.com/shop/18WOOD',
+      },
       zman_games: {
         name: 'Z-MAN Games',
         url: 'https://zmangames.com/',

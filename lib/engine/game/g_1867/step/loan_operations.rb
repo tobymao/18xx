@@ -23,16 +23,16 @@ module Engine
             entity = current_entity
 
             owed = @game.pay_interest!(entity)
-            if owed
-              @log << "#{entity.name} owes #{@game.format_currency(owed)} in loan "\
-                      "interest but only has #{@game.format_currency(entity.cash)}"
-              @game.nationalize!(entity)
-              # @todo: will this skip the rest of the entities turn?
-              return
-            end
+            return interest_unpaid!(entity, owed) if owed
 
             @game.repay_loan(entity, entity.loans.first) while can_payoff?(entity)
             @game.calculate_corporation_interest(entity)
+          end
+
+          def interest_unpaid!(entity, owed)
+            @log << "#{entity.name} owes #{@game.format_currency(owed)} in loan "\
+                    "interest but only has #{@game.format_currency(entity.cash)}"
+            @game.nationalize!(entity)
           end
         end
       end

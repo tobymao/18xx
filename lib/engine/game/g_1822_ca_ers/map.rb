@@ -17,7 +17,7 @@ module Engine
             %w[T12] => 'city=revenue:yellow_30|green_40|brown_50|gray_60,slots:2;'\
                        'path=a:4,b:_0,terminal:1;path=a:5,b:_0,terminal:1',
             %w[T14] => 'city=revenue:yellow_30|green_40|brown_50|gray_60,slots:3;'\
-                       'path=a:4,b:_0,terminal:1;path=a:5,b:_0,terminal:1',
+                       'path=a:4,b:_0;path=a:5,b:_0',
             ['Y29'] => 'city=revenue:yellow_30|green_40|brown_50|gray_60,slots:2;path=a:4,b:_0,lanes:2',
           },
         }.freeze

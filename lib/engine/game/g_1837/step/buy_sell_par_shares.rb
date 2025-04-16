@@ -19,6 +19,10 @@ module Engine
             UNBOUGHT_COMPANIES_ACTIONS
           end
 
+          def visible_corporations
+            @game.sorted_corporations.reject { |c| c.type == :minor }
+          end
+
           def hide_corporations?
             unbought_companies?
           end
@@ -34,14 +38,15 @@ module Engine
             entity.cash >= @game.buyable_bank_owned_companies.min_by(&:value).value
           end
 
-          def process_buy_company(entity)
-            super
-            @game.after_company_acquisition(entity.company)
-          end
-
           def process_par(action)
             super
             @game.set_par(action.corporation, action.share_price, action.slot)
+          end
+
+          def can_sell?(entity, bundle)
+            return false if bundle.corporation.type == :minor
+
+            super
           end
         end
       end

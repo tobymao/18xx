@@ -8,7 +8,7 @@ module Engine
       module Step
         class BuyEToken < Engine::Step::Base
           def actions(entity)
-            return [] if !entity.corporation? || entity != current_entity
+            return [] if !@game.electric_dreams? || !entity.corporation? || entity != current_entity
 
             actions = []
             actions += %w[choose pass] if can_buy_e_token?(entity)
@@ -34,7 +34,11 @@ module Engine
           end
 
           def log_skip(entity)
-            super if @game.electric_dreams? && @game.e_tokens_enabled
+            super if @game.electric_dreams?
+          end
+
+          def log_pass(entity)
+            super if @game.electric_dreams?
           end
 
           def e_token_cost

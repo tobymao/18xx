@@ -8,6 +8,8 @@ module Engine
 
     def share_price(coordinates)
       row, column = coordinates
+      return if row.negative? || column.negative?
+
       @market.market[row]&.[](column)
     end
 
@@ -39,7 +41,7 @@ module Engine
       raise NotImplementedError
     end
 
-    def diagnonally_up_right(_corporation, coordinates)
+    def diagonally_up_right(_corporation, coordinates)
       raise NotImplementedError
     end
   end
@@ -115,6 +117,14 @@ module Engine
       @market.diagonally_up_right(corporation, coordinates)
     end
 
+    def up(corporation, coordinates)
+      diagonally_up_right(corporation, coordinates)
+    end
+
+    def down(corporation, coordinates)
+      diagonally_down_left(corporation, coordinates)
+    end
+
     def diagonally_down_left(_corporation, coordinates)
       r, c = coordinates
       new_coords = [r + 1, c]
@@ -140,7 +150,7 @@ module Engine
       coordinates
     end
 
-    def diagnonally_up_right(_corporation, coordinates)
+    def diagonally_up_right(_corporation, coordinates)
       r, c = coordinates
       new_coords = [r - 1, c]
       return new_coords if share_price(new_coords)

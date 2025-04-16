@@ -17,6 +17,7 @@ module Engine
             return [] if @game.merge_data[:corps].include?(entity)
             return [] unless entity.loans.size.positive?
             return [] if @game.maximum_loans(entity) < entity.loans.size
+            return [] if @game.merge_data[:corp_share_sum] + (10 * @game.merge_data[:secondary_corps].size) >= 100
 
             actions = []
             actions << 'choose'

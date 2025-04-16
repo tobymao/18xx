@@ -169,7 +169,7 @@ module View
               rust_schedule[rusts_on].append(name) unless rust_schedule[rusts_on].include?(name)
             end
             Array(train_variant[:obsolete_on]).each do |obsolete_on|
-              rust_schedule[obsolete_on].append(name) unless rust_schedule[obsolete_on].include?(name)
+              obsolete_schedule[obsolete_on].append(name) unless obsolete_schedule[obsolete_on].include?(name)
             end
           end
         end
@@ -254,7 +254,7 @@ module View
 
           train_content << h(:td, obsolete_schedule[train.name]&.join(', ') || '') if show_obsolete_schedule
           train_content << if show_rusts_inline
-                             h(:td, rusts&.join(', ') || '')
+                             h(:td, rusts&.reject(&:empty?)&.join(', ') || '')
                            else
                              h(:td, rusts&.map { |value| h(:div, value) } || '')
                            end

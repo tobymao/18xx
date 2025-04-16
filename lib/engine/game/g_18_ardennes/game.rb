@@ -146,6 +146,7 @@ module Engine
             G18Ardennes::Step::DeclineTrains,
             G18Ardennes::Step::DeclineForts,
             G18Ardennes::Step::PostConversionShares,
+            G18Ardennes::Step::IssueShares,
             G18Ardennes::Step::Track,
             G18Ardennes::Step::Token,
             G18Ardennes::Step::CollectForts,
@@ -159,6 +160,20 @@ module Engine
         def operating_order
           minor_corporations.select(&:ipoed).sort +
           major_corporations.select(&:ipoed).sort
+        end
+
+        # The base class version of #priority_deal_player can't cope with
+        # players going bankrupt in stock rounds. It errors if
+        # `@round.last_to_act` goes bankrupt.
+        def priority_deal_player
+          # In operating rounds the array of players will be in priority order.
+          return @players.first unless @round.current_entity&.player?
+
+          # In stock and auction rounds the first non-bankrupt player after the
+          # one who last acted has priority.
+          last_to_act = @round.last_to_act
+          idx = last_to_act ? (@players.index(last_to_act) + 1) : 0
+          @players.rotate(idx).find { |player| !player.bankrupt }
         end
 
         def acting_for_entity(entity)
@@ -250,6 +265,18 @@ module Engine
           return if old_limit == new_limit
 
           @log << "Certificate limit increases to #{new_limit}."
+        end
+
+        # Shares that can be issued as part of a public company's operating
+        # turn. This is not allowed on a public company's first turn.
+        def issuable_shares(corporation)
+          return [] unless corporation.corporation?
+          return [] if corporation.type == :minor
+          return [] if corporation.operating_history.empty?
+
+          bundles_for_corporation(corporation, corporation).select do |bundle|
+            @share_pool.fit_in_bank?(bundle)
+          end
         end
 
         private

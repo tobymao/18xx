@@ -164,7 +164,7 @@ module Engine
 
         CLOSED_CORP_RESERVATIONS_REMOVED = false
 
-        EBUY_OTHER_VALUE = false
+        EBUY_FROM_OTHERS = :never
         HOME_TOKEN_TIMING = :float
         SELL_AFTER = :operate
         SELL_BUY_ORDER = :sell_buy
@@ -517,15 +517,15 @@ module Engine
             G1849::Step::Token,
             Engine::Step::Route,
             G1849::Step::Dividend,
-            acquiring_station_tokens? ? G1849::Step::BuyToken : nil,
-            electric_dreams? ? G1849::Step::BuyEToken : nil,
+            G1849::Step::BuyToken,
+            G1849::Step::BuyEToken,
             Engine::Step::DiscardTrain,
             G1849::Step::BuyTrain,
             G1849::Step::IssueShares,
-            bonds? ? G1849::Step::BondInterestPayment : nil,
-            bonds? ? G1849::Step::Bond : nil,
+            G1849::Step::BondInterestPayment,
+            G1849::Step::Bond,
             [Engine::Step::BuyCompany, { blocks: true }],
-        ].compact, round_num: round_num)
+        ], round_num: round_num)
         end
 
         def next_round!

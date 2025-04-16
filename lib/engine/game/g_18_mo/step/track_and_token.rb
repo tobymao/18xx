@@ -11,6 +11,13 @@ module Engine
             super
             @game.remove_teleport_destination(action.entity, action.city)
           end
+
+          def tokener_available_hex(entity, hex)
+            entity.all_abilities.each do |ability|
+              return true if ability.type == :token && ability.hexes.include?(hex.id)
+            end
+            super
+          end
         end
       end
     end

@@ -6,210 +6,138 @@ module Engine
       module Entities
         COMPANIES = [
           {
-            name: 'Pilsen-Priesen Railway',
+            name: 'Block Bosnia-Herzegovina hexes',
+            sym: '3',
+            value: 0,
+            meta: { hidden: true },
+            abilities: [
+              { type: 'blocks_hexes', remove: '3', hexes: %w[L16 L18 L20 M17 M19 M21 N18 N20] },
+            ],
+          },
+          {
+            name: 'Pilsen-Priesen Railway (EPP)',
             sym: 'EPP',
             value: 40,
             desc: 'Located in E11 with 100K starting capital. Coal companies cannot be sold and can only run ' \
                   'G trains. The company can be exchanged for a 10% share of Bohemian Commercial Railway (BK) at ' \
-                  'the start of an operating round.',
+                  'the start of a stock or operating round.',
             color: :black,
             text_color: :white,
             meta: { start_packet: true, type: :coal },
             abilities: [
-              {
-                type: 'exchange',
-                corporations: ['BK'],
-                owner_type: 'player',
-                when: 'exchange',
-                from: 'reserved',
-              },
-              {
-                type: 'no_buy',
-              },
+              { type: 'shares', shares: 'EPP_0' },
             ],
           },
           {
-            name: 'Reichenberg-Gablonz-Tannwalder Railway',
+            name: 'Reichenberg-Gablonz-Tannwalder Railway (RGTE)',
             sym: 'RGTE',
             value: 40,
             desc: 'Located in A13 with 100K starting capital. Coal companies cannot be sold and can only run ' \
                   'G trains. The company can be exchanged for a 10% share of Bohemian Commercial Railway (BK) at ' \
-                  'the start of an operating round.',
+                  'the start of a stock or operating round.',
             color: :black,
             text_color: :white,
             meta: { start_packet: true, type: :coal },
             abilities: [
-              {
-                type: 'exchange',
-                corporations: ['BK'],
-                owner_type: 'player',
-                when: 'exchange',
-                from: 'reserved',
-              },
-              {
-                type: 'no_buy',
-              },
+              { type: 'shares', shares: 'RGTE_0' },
             ],
           },
           {
-            name: 'Oderberg-Dombran Railway',
+            name: 'Oderberg-Dombran Railway (EOD)',
             sym: 'EOD',
             value: 40,
             desc: 'Located in C19 with 100K starting capital. Coal companies cannot be sold and can only run ' \
-                  'G trains. The company can be exchanged for a 10% share of Moravian-Silesian Railway (MS) at the ' \
-                  'start of an operating round.',
+                  'G trains. The company can be exchanged for a 10% share of Moravian-Silesian Railway (MS) at ' \
+                  'the start of a stock or operating round.',
             color: :black,
             text_color: :white,
             meta: { start_packet: true, type: :coal },
             abilities: [
-              {
-                type: 'exchange',
-                corporations: ['MS'],
-                owner_type: 'player',
-                when: 'exchange',
-                from: 'reserved',
-              },
-              {
-                type: 'no_buy',
-              },
+              { type: 'shares', shares: 'EOD_0' },
             ],
           },
           {
-            name: 'Karwin-Teschen Railway',
+            name: 'Karwin-Teschen Railway (EKT)',
             sym: 'EKT',
             value: 40,
             desc: 'Located in C21 with 100K starting capital. Coal companies cannot be sold and can only run ' \
-                  'G trains. The company can be exchanged for a 10% share of Moravian-Silesian Railway (MS) at the ' \
-                  'start of an operating round.',
+                  'G trains. The company can be exchanged for a 10% share of Moravian-Silesian Railway (MS) at ' \
+                  'the start of a stock or operating round.',
             color: :black,
             text_color: :white,
             meta: { start_packet: true, type: :coal },
             abilities: [
-              {
-                type: 'exchange',
-                corporations: ['MS'],
-                owner_type: 'player',
-                when: 'exchange',
-                from: 'reserved',
-              },
-              {
-                type: 'no_buy',
-              },
+              { type: 'shares', shares: 'EKT_0' },
             ],
           },
           {
-            name: 'Mosty-Lemberg Railway',
+            name: 'Mosty-Lemberg Railway (MLB)',
             sym: 'MLB',
             value: 40,
             desc: 'Located in B32 with 100K starting capital. Coal companies cannot be sold and can only run ' \
-                  'G trains. The company can be exchanged for a 10% share of Carl Ludwig’s Railway (CL) at the ' \
-                  'start of an operating round.',
+                  'G trains. The company can be exchanged for a 10% share of Carl Ludwig’s Railway (CL) at ' \
+                  'the start of a stock or operating round.',
             color: :black,
             text_color: :white,
             meta: { start_packet: true, type: :coal },
             abilities: [
-              {
-                type: 'exchange',
-                corporations: ['CL'],
-                owner_type: 'player',
-                when: 'exchange',
-                from: 'reserved',
-              },
-              {
-                type: 'no_buy',
-              },
+              { type: 'shares', shares: 'MLB_0' },
             ],
           },
           {
-            name: 'Zarnesti-Kronstadt Railway',
+            name: 'Zarnesti-Kronstadt Railway (ZKB)',
             sym: 'ZKB',
             value: 40,
             desc: 'Located in K33 with 100K starting capital. Coal companies cannot be sold and can only run ' \
-                  'G trains. The company can be exchanged for a 10% share of Transylvanian Railway (TR) at the ' \
-                  'start of an operating round.',
+                  'G trains. The company can be exchanged for a 10% share of Transylvanian Railway (TR) at ' \
+                  'the start of a stock or operating round.',
             color: :black,
             text_color: :white,
             meta: { start_packet: true, type: :coal },
             abilities: [
-              {
-                type: 'exchange',
-                corporations: ['TR'],
-                owner_type: 'player',
-                when: 'exchange',
-                from: 'reserved',
-              },
-              {
-                type: 'no_buy',
-              },
+              { type: 'shares', shares: 'ZKB_0' },
             ],
           },
           {
-            name: 'Simeria-Petroseni Railway',
+            name: 'Simeria-Petroseni Railway (SPB)',
             sym: 'SPB',
             value: 40,
             desc: 'Located in K31 with 100K starting capital. Coal companies cannot be sold and can only run ' \
-                  'G trains. The company can be exchanged for a 10% share of Transylvanian Railway (TR) at the ' \
-                  'start of an operating round.',
+                  'G trains. The company can be exchanged for a 10% share of Transylvanian Railway (TR) at ' \
+                  'the start of a stock or operating round.',
             color: :black,
             text_color: :white,
             meta: { start_packet: true, type: :coal },
             abilities: [
-              {
-                type: 'exchange',
-                corporations: ['TR'],
-                owner_type: 'player',
-                when: 'exchange',
-                from: 'reserved',
-              },
-              {
-                type: 'no_buy',
-              },
+              { type: 'shares', shares: 'SPB_0' },
             ],
           },
           {
-            name: 'Lugoj-Resita Railway',
+            name: 'Lugoj-Resita Railway (LRB)',
             sym: 'LRB',
             value: 40,
             desc: 'Located in L30 with 100K starting capital. Coal companies cannot be sold and can only run ' \
-                  'G trains. The company can be exchanged for a 10% share of Tisza Railway (TI) at the start of ' \
-                  'an operating round.',
+                  'G trains. The company can be exchanged for a 10% share of Tisza Railway (TI) at ' \
+                  'the start of a stock or operating round.',
             color: :black,
             text_color: :white,
             meta: { start_packet: true, type: :coal },
             abilities: [
-              {
-                type: 'exchange',
-                corporations: ['TI'],
-                owner_type: 'player',
-                when: 'exchange',
-                from: 'reserved',
-              },
-              {
-                type: 'no_buy',
-              },
+              { type: 'shares', shares: 'LRB_0' },
             ],
           },
           {
-            name: 'Bosna-Bahn',
+            name: 'Bosna-Bahn (BB)',
             sym: 'BB',
             value: 40,
             desc: 'Located in P20 with 100K starting capital. Coal companies cannot be sold and can only run ' \
                   'G trains. The company can be exchanged for a 10% share of Bosnia-Herzegovina Railway (BH) ' \
-                  'at the start of an operating round.',
+                  'at the start of a stock or operating round.',
             color: :black,
             text_color: :white,
             meta: { start_packet: true, type: :coal },
             abilities: [
-              {
-                type: 'exchange',
-                corporations: ['BH'],
-                owner_type: 'player',
-                when: 'exchange',
-                from: 'reserved',
-              },
-              {
-                type: 'no_buy',
-              },
+              { type: 'shares', shares: 'BB_0' },
             ],
           },
           {
@@ -217,22 +145,13 @@ module Engine
             sym: 'EHS',
             value: 40,
             desc: 'Located in F26 with 100K starting capital. Coal companies cannot be sold and can only run ' \
-                  'G trains. The company can be exchanged for a 10% share of Tisza Railway (TI) at the start of ' \
-                  'an operating round.',
+                  'G trains. The company can be exchanged for a 10% share of Tisza Railway (TI) at ' \
+                  'the start of a stock or operating round.',
             color: :black,
             text_color: :white,
             meta: { start_packet: true, type: :coal },
             abilities: [
-              {
-                type: 'exchange',
-                corporations: ['TI'],
-                owner_type: 'player',
-                when: 'exchange',
-                from: 'reserved',
-              },
-              {
-                type: 'no_buy',
-              },
+              { type: 'shares', shares: 'EHS_0' },
             ],
           },
           {
@@ -242,8 +161,8 @@ module Engine
             desc: "Director's certificate of the minor company Kaiser Ferdinand North Railway (KK1). The company " \
                   'starts in Vienna (G17) with 90K starting capital.',
             color: :brown,
-            meta: { start_packet: true, type: :minor },
-            abilities: [{ type: 'no_buy' }],
+            meta: { start_packet: true },
+            abilities: [{ type: 'shares', shares: 'KK1_0' }],
           },
           {
             name: 'Kaiserin Elisabeth-Railway (KK2)',
@@ -252,8 +171,8 @@ module Engine
             desc: "Director's certificate of the minor company Kaiserin Elisabeth-Railway (KK2). The company " \
                   'starts in Vienna (G17) with 140K starting capital.',
             color: :brown,
-            meta: { start_packet: true, type: :minor },
-            abilities: [{ type: 'no_buy' }],
+            meta: { start_packet: true },
+            abilities: [{ type: 'shares', shares: 'KK2_0' }],
           },
           {
             name: 'Kaiser Franz Joseph-Railway (KK3)',
@@ -262,8 +181,8 @@ module Engine
             desc: "Director's certificate of the minor company Kaiser Franz Joseph-Railway (KK3). The company " \
                   'starts in Vienna (G17) with 90K starting capital.',
             color: :brown,
-            meta: { start_packet: true, type: :minor },
-            abilities: [{ type: 'no_buy' }],
+            meta: { start_packet: true },
+            abilities: [{ type: 'shares', shares: 'KK3_0' }],
           },
           {
             name: 'Pest-Waitzen Railway (UG1)',
@@ -272,8 +191,8 @@ module Engine
             desc: "Director's certificate of the minor company Pest-Waitzen Railway (UG1) " \
                   'starts in Budapest (H22) with 180K starting capital.',
             color: :pink,
-            meta: { start_packet: true, type: :minor },
-            abilities: [{ type: 'no_buy' }],
+            meta: { start_packet: true },
+            abilities: [{ type: 'shares', shares: 'UG1_0' }],
           },
           {
             name: 'Mohacs-Fünfkirchener Railway (UG2)',
@@ -282,8 +201,8 @@ module Engine
             desc: "Director's certificate of the minor company Mohacs-Fünfkirchener Railway (UG2). The company " \
                   'starts in Fün%irchen (K21) with 90K starting capital.',
             color: :pink,
-            meta: { start_packet: true, type: :minor },
-            abilities: [{ type: 'no_buy' }],
+            meta: { start_packet: true },
+            abilities: [{ type: 'shares', shares: 'UG2_0' }],
           },
           {
             name: 'Pest-Czegled Railway (UG3)',
@@ -292,8 +211,8 @@ module Engine
             desc: "Director's certificate of the minor company Pest-Czegled Railway (UG3). The company " \
                   'starts in Budapest (H22) with 180K starting capital.',
             color: :pink,
-            meta: { start_packet: true, type: :minor },
-            abilities: [{ type: 'no_buy' }],
+            meta: { start_packet: true },
+            abilities: [{ type: 'shares', shares: 'UG3_0' }],
           },
           {
             name: 'Vienna-Gloggnitzer Railway (SD1)',
@@ -303,19 +222,25 @@ module Engine
                   "starts in Vienna (G17) with 90K starting capital.\n\nComes with the Mountain Railway " \
                   'Semmering Railway (H16) that has a value of 100K and a revenue of 5K.',
             color: :orange,
-            meta: { start_packet: true, type: :minor, additional_companies: ['Semmering'] },
-            abilities: [{ type: 'no_buy' }],
+            meta: { start_packet: true },
+            abilities: [
+              { type: 'shares', shares: 'SD1_0' },
+              { type: 'acquire_company', company: 'Semmering' },
+            ],
           },
           {
             name: 'Kärntner Railway (SD2)',
             sym: 'SD2',
             value: 120,
             desc: "Director's certificate of the minor company Kärntner Railway (SD2). The company " \
-                  "starts in Marburg (J16) with 90K starting capital.\n\n =Comes with the Mountain Railway " \
+                  "starts in Marburg (J16) with 90K starting capital.\n\nComes with the Mountain Railway " \
                   'Karawanken Railway (J12) that has a value of 120K and a revenue of 25K.',
             color: :orange,
-            meta: { start_packet: true, type: :minor, additional_companies: ['Karawanken'] },
-            abilities: [{ type: 'no_buy' }],
+            meta: { start_packet: true },
+            abilities: [
+              { type: 'shares', shares: 'SD2_0' },
+              { type: 'acquire_company', company: 'Karawanken' },
+            ],
           },
           {
             name: 'North Tyrol Railway (SD3)',
@@ -325,8 +250,11 @@ module Engine
                   "starts in Innsbruck (I7) with 90K starting capital.\n\nComes with the Mountain Railway " \
                   'Arlberg Railway (I5) that has a value of 135K and a revenue of 20K.',
             color: :orange,
-            meta: { start_packet: true, type: :minor, additional_companies: ['Arlberg'] },
-            abilities: [{ type: 'no_buy' }],
+            meta: { start_packet: true },
+            abilities: [
+              { type: 'shares', shares: 'SD3_0' },
+              { type: 'acquire_company', company: 'Arlberg' },
+            ],
           },
           {
             name: 'South Tyrol Railway (SD4)',
@@ -336,8 +264,11 @@ module Engine
                   "starts in Bozen (K5) with 90K starting capital.\n\nComes with the Mountain Railway " \
                   'Brenner Railway (J6) that has a value of 90K and a revenue of 15K.',
             color: :orange,
-            meta: { start_packet: true, type: :minor, additional_companies: ['Brenner'] },
-            abilities: [{ type: 'no_buy' }],
+            meta: { start_packet: true },
+            abilities: [
+              { type: 'shares', shares: 'SD4_0' },
+              { type: 'acquire_company', company: 'Brenner' },
+            ],
           },
           {
             name: 'Venice-Lombardy Railway (SD5)',
@@ -347,8 +278,11 @@ module Engine
                   "starts in Milan (L2) or Venice (L8), the director chooses, with 90K starting capital.\n\n" \
                   'Comes with the Mountain Railway Karst Railway (K13) that has a value of 70K and a revenue of 10K.',
             color: :orange,
-            meta: { start_packet: true, type: :minor, additional_companies: ['Karst'] },
-            abilities: [{ type: 'no_buy' }],
+            meta: { start_packet: true },
+            abilities: [
+              { type: 'shares', shares: 'SD5_0' },
+              { type: 'acquire_company', company: 'Karst' },
+            ],
           },
           {
             name: 'Pest-Waitzen Railway (UG1) share',
@@ -357,7 +291,7 @@ module Engine
             desc: 'A share of the minor company Pest-Waitzen Railway (UG1).',
             color: :pink,
             meta: { type: :share },
-            abilities: [{ type: 'no_buy' }],
+            abilities: [{ type: 'shares', shares: 'UG1_1' }],
           },
           {
             name: 'Pest-Czegled Railway (UG3) share',
@@ -366,7 +300,7 @@ module Engine
             desc: 'A share of the minor company Pest-Czegled Railway (UG3).',
             color: :pink,
             meta: { type: :share },
-            abilities: [{ type: 'no_buy' }],
+            abilities: [{ type: 'shares', shares: 'UG3_1' }],
           },
           {
             name: 'Semmering Railway',
@@ -587,103 +521,226 @@ module Engine
           },
         ].freeze
 
-        MINORS = [
+        CORPORATIONS = [
           {
             name: 'Pilsen-Priesen Railway',
             sym: 'EPP',
-            type: 'coal',
             logo: '1837/epp',
             tokens: [0],
+            reserved_shares: [100],
+            float_percent: 100,
+            max_ownership_percent: 100,
+            type: 'minor',
             coordinates: 'E11',
             color: :black,
+            abilities: [
+              {
+                type: 'exchange',
+                description: 'Exchange for BK share',
+                corporations: ['BK'],
+                when: 'exchange',
+                from: 'reserved',
+              },
+            ],
           },
           {
             name: 'Reichenberg-Gablonz-Tannwalder Railway',
             sym: 'RGTE',
-            type: 'coal',
             logo: '1837/rgte',
             tokens: [0],
+            reserved_shares: [100],
+            float_percent: 100,
+            max_ownership_percent: 100,
+            type: 'minor',
             coordinates: 'A13',
             color: :black,
+            abilities: [
+              {
+                type: 'exchange',
+                description: 'Exchange for BK share',
+                corporations: ['BK'],
+                when: 'exchange',
+                from: 'reserved',
+              },
+            ],
           },
           {
             name: 'Oderberg-Dombran Railway',
             sym: 'EOD',
-            type: 'coal',
             logo: '1837/eod',
             tokens: [0],
+            reserved_shares: [100],
+            float_percent: 100,
+            max_ownership_percent: 100,
+            type: 'minor',
             coordinates: 'C19',
             color: :black,
+            abilities: [
+              {
+                type: 'exchange',
+                description: 'Exchange for MS share',
+                corporations: ['MS'],
+                when: 'exchange',
+                from: 'reserved',
+              },
+            ],
           },
           {
             name: 'Karwin-Teschen Railway',
             sym: 'EKT',
-            type: 'coal',
             logo: '1837/ekt',
             tokens: [0],
+            reserved_shares: [100],
+            float_percent: 100,
+            max_ownership_percent: 100,
+            type: 'minor',
             coordinates: 'C21',
             color: :black,
+            abilities: [
+              {
+                type: 'exchange',
+                description: 'Exchange for MS share',
+                corporations: ['MS'],
+                when: 'exchange',
+                from: 'reserved',
+              },
+            ],
           },
           {
             name: 'Mosty-Lemberg Railway',
             sym: 'MLB',
-            type: 'coal',
             logo: '1837/mlb',
             tokens: [0],
+            reserved_shares: [100],
+            float_percent: 100,
+            max_ownership_percent: 100,
+            type: 'minor',
             coordinates: 'B32',
             color: :black,
+            abilities: [
+              {
+                type: 'exchange',
+                description: 'Exchange for CL share',
+                corporations: ['CL'],
+                when: 'exchange',
+                from: 'reserved',
+              },
+            ],
           },
           {
             name: 'Zarnesti-Kronstadt Railway',
             sym: 'ZKB',
-            type: 'coal',
             logo: '1837/zkb',
             tokens: [0],
+            reserved_shares: [100],
+            float_percent: 100,
+            max_ownership_percent: 100,
+            type: 'minor',
             coordinates: 'K33',
             color: :black,
+            abilities: [
+              {
+                type: 'exchange',
+                description: 'Exchange for TR share',
+                corporations: ['TR'],
+                when: 'exchange',
+                from: 'reserved',
+              },
+            ],
           },
           {
             name: 'Simeria-Petroseni Railway',
             sym: 'SPB',
-            type: 'coal',
             logo: '1837/spb',
             tokens: [0],
+            reserved_shares: [100],
+            float_percent: 100,
+            max_ownership_percent: 100,
+            type: 'minor',
             coordinates: 'K31',
             color: :black,
+            abilities: [
+              {
+                type: 'exchange',
+                description: 'Exchange for TR share',
+                corporations: ['TR'],
+                when: 'exchange',
+                from: 'reserved',
+              },
+            ],
           },
           {
             name: 'Lugoj-Resita Railway',
             sym: 'LRB',
-            type: 'coal',
             logo: '1837/lrb',
             tokens: [0],
+            reserved_shares: [100],
+            float_percent: 100,
+            max_ownership_percent: 100,
+            type: 'minor',
             coordinates: 'L30',
             color: :black,
+            abilities: [
+              {
+                type: 'exchange',
+                description: 'Exchange for TI share',
+                corporations: ['TI'],
+                when: 'exchange',
+                from: 'reserved',
+              },
+            ],
           },
           {
             name: 'Bosna-Bahn',
             sym: 'BB',
-            type: 'coal',
             logo: '1837/bb',
             tokens: [0],
+            reserved_shares: [100],
+            float_percent: 100,
+            max_ownership_percent: 100,
+            type: 'minor',
             coordinates: 'P20',
             color: :black,
+            abilities: [
+              {
+                type: 'exchange',
+                description: 'Exchange for BH share',
+                corporations: ['BH'],
+                when: 'exchange',
+                from: 'reserved',
+              },
+            ],
           },
           {
             name: 'Hatvan-Salgotarjan Railway',
             sym: 'EHS',
-            type: 'coal',
             logo: '1837/ehs',
             tokens: [0],
+            reserved_shares: [100],
+            float_percent: 100,
+            max_ownership_percent: 100,
+            type: 'minor',
             coordinates: 'F26',
             color: :black,
+            abilities: [
+              {
+                type: 'exchange',
+                description: 'Exchange for TI share',
+                corporations: ['TI'],
+                when: 'exchange',
+                from: 'reserved',
+              },
+            ],
           },
           {
             name: 'Vienna-Gloggnitzer Railway',
             sym: 'SD1',
-            type: 'minor',
             logo: '1837/sd1',
             tokens: [0],
+            reserved_shares: [100],
+            float_percent: 100,
+            max_ownership_percent: 100,
+            type: 'minor',
             coordinates: 'G17',
             city: 0,
             color: :orange,
@@ -691,45 +748,60 @@ module Engine
           {
             name: 'Kärntner Railway',
             sym: 'SD2',
-            type: 'minor',
             logo: '1837/sd2',
             tokens: [0],
+            reserved_shares: [100],
+            float_percent: 100,
+            max_ownership_percent: 100,
+            type: 'minor',
             coordinates: 'J16',
             color: :orange,
           },
           {
             name: 'North Tyrol Railway',
             sym: 'SD3',
-            type: 'minor',
             logo: '1837/sd3',
             tokens: [0],
+            reserved_shares: [100],
+            float_percent: 100,
+            max_ownership_percent: 100,
+            type: 'minor',
             coordinates: 'I7',
             color: :orange,
           },
           {
             name: 'South Tyrol Railway',
             sym: 'SD4',
-            type: 'minor',
             logo: '1837/sd4',
             tokens: [0],
+            reserved_shares: [100],
+            float_percent: 100,
+            max_ownership_percent: 100,
+            type: 'minor',
             coordinates: 'K5',
             color: :orange,
           },
           {
             name: 'Venice-Lombardy Railway',
             sym: 'SD5',
-            type: 'minor',
             logo: '1837/sd5',
             tokens: [0],
+            reserved_shares: [100],
+            float_percent: 100,
+            max_ownership_percent: 100,
+            type: 'minor',
             coordinates: %w[L2 L8],
             color: :orange,
           },
           {
             name: 'Kaiser Ferdinand North Railway',
             sym: 'KK1',
-            type: 'minor',
             logo: '1837/kk1',
             tokens: [0],
+            reserved_shares: [100],
+            float_percent: 100,
+            max_ownership_percent: 100,
+            type: 'minor',
             coordinates: 'G17',
             city: 3,
             color: :brown,
@@ -737,9 +809,12 @@ module Engine
           {
             name: 'Kaiserin Elisabeth-Railway',
             sym: 'KK2',
-            type: 'minor',
             logo: '1837/kk2',
             tokens: [0],
+            reserved_shares: [100],
+            float_percent: 100,
+            max_ownership_percent: 100,
+            type: 'minor',
             coordinates: 'G17',
             city: 1,
             color: :brown,
@@ -747,9 +822,12 @@ module Engine
           {
             name: 'Kaiser Franz Joseph-Railway',
             sym: 'KK3',
-            type: 'minor',
             logo: '1837/kk3',
             tokens: [0],
+            reserved_shares: [100],
+            float_percent: 50,
+            max_ownership_percent: 100,
+            type: 'minor',
             coordinates: 'G17',
             city: 2,
             color: :brown,
@@ -757,9 +835,13 @@ module Engine
           {
             name: 'Pest-Waitzen Railway',
             sym: 'UG1',
-            type: 'minor',
             logo: '1837/ug1',
             tokens: [0],
+            reserved_shares: [50, 50],
+            treasury_as_holding: true,
+            float_percent: 50,
+            max_ownership_percent: 100,
+            type: 'minor',
             coordinates: 'H22',
             city: 1,
             color: :pink,
@@ -767,25 +849,28 @@ module Engine
           {
             name: 'Mohacs-Fünfkirchener Railway',
             sym: 'UG2',
-            type: 'minor',
             logo: '1837/ug2',
             tokens: [0],
+            reserved_shares: [100],
+            float_percent: 100,
+            max_ownership_percent: 100,
+            type: 'minor',
             coordinates: 'K21',
             color: :pink,
           },
           {
             name: 'Pest-Czegled Railway',
             sym: 'UG3',
-            type: 'minor',
             logo: '1837/ug3',
             tokens: [0],
+            reserved_shares: [50, 50],
+            float_percent: 50,
+            max_ownership_percent: 100,
+            type: 'minor',
             coordinates: 'H22',
             city: 0,
             color: :pink,
           },
-        ].freeze
-
-        CORPORATIONS = [
           {
             name: 'Bohemian Commercial Railway',
             sym: 'BK',
@@ -886,6 +971,7 @@ module Engine
             reserved_shares: [10, 10, 10, 10, 10],
             type: 'national',
             floatable: false,
+            coordinates: 'G17',
             color: :orange,
           },
           {
@@ -898,6 +984,7 @@ module Engine
             reserved_shares: [10, 10, 10],
             type: 'national',
             floatable: false,
+            coordinates: 'G17',
             color: :brown,
           },
           {
@@ -910,6 +997,7 @@ module Engine
             reserved_shares: [10, 10, 10, 10, 10],
             type: 'national',
             floatable: false,
+            coordinates: 'H22',
             color: :pink,
           },
         ].freeze

@@ -26,7 +26,7 @@ module Engine
         CORPORATE_BUY_SHARE_ALLOW_BUY_FROM_PRESIDENT = true
         MULTIPLE_BUY_ONLY_FROM_MARKET = true
         MUST_SELL_IN_BLOCKS = true
-        EBUY_OTHER_VALUE = false
+        EBUY_FROM_OTHERS = :never
 
         CLOSED_CORP_TRAINS_REMOVED = false
 

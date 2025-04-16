@@ -15,7 +15,7 @@ module Engine
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1860'
         GAME_LOCATION = 'Isle of Wight'
         GAME_PUBLISHER = :all_aboard_games
-        GAME_RULES_URL = 'https://www.dropbox.com/s/usfbqtdjzx6ug8f/1860-rules.pdf'
+        GAME_RULES_URL = 'https://boardgamegeek.com/filepage/238952/third-edition-rules'
 
         PLAYER_RANGE = [2, 4].freeze
         OPTIONAL_RULES = [

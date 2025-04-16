@@ -415,7 +415,7 @@ module Engine
           end
           non_scotland_city = stops.find { |stop| !BRITAIN_REGION_HEXES['Scotland'].include?(stop.hex.id) && stop.city? }
           if scotland_city && non_scotland_city
-            bonus[:revenue] += @scotland_bonus_val.route_revenue(@phase, train) * (train.name == '4D' ? 2 : 1)
+            bonus[:revenue] += @scotland_bonus_val.route_revenue(@phase, train)
             desc << 'Scotland'
           end
 
@@ -423,7 +423,7 @@ module Engine
           wales_city = stops.find { |stop| BRITAIN_REGION_HEXES['Wales'].include?(stop.hex.id) && (stop.city? || stop.offboard?) }
           non_wales_city = stops.find { |stop| !BRITAIN_REGION_HEXES['Wales'].include?(stop.hex.id) && stop.city? }
           if wales_city && non_wales_city
-            bonus[:revenue] += @wales_bonus_val.route_revenue(@phase, train) * (train.name == '4D' ? 2 : 1)
+            bonus[:revenue] += @wales_bonus_val.route_revenue(@phase, train)
             desc << 'Wales'
           end
 
@@ -431,7 +431,7 @@ module Engine
           london = stops.find { |stop| stop.hex.id == BRITAIN_LONDON_HEX }
           port = stops.find { |stop| stop.tile.icons.any? { |i| i.name == 'port' } }
           if london && port
-            bonus[:revenue] += @london_bonus_val.route_revenue(@phase, train) * (train.name == '4D' ? 2 : 1)
+            bonus[:revenue] += @london_bonus_val.route_revenue(@phase, train)
             desc << 'London-Port'
           end
 
@@ -443,7 +443,10 @@ module Engine
           valid_route = routes.find { |r| !r.stops.empty? }
           train = valid_route&.train
           if train && @britain_corps_with_mines[train.owner.name]
-            @mine_bonus_val.route_revenue(@phase, train)
+            rev = @mine_bonus_val.route_revenue(@phase, train)
+            # undo automatic doubling of revenue with a diesel
+            rev /= 2 if train.name == '4D'
+            rev
           else
             0
           end

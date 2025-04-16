@@ -69,7 +69,7 @@ module Engine
           },
 
           # Ferry yellow / gray tiles
-          'IF1' => { 'count' => 1, 'color' => 'yellow', 'code' => 'path=a:2,b:4;label=FERRY' },
+          'IF1' => { 'count' => 1, 'color' => 'yellow', 'code' => 'path=a:0,b:3;label=FERRY' },
           'IF2' => { 'count' => 1, 'color' => 'yellow', 'code' => 'path=a:0,b:2;label=FERRY' },
 
           # triple town tiles

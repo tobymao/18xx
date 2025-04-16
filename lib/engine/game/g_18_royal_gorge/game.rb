@@ -566,7 +566,11 @@ module Engine
           @gold_shipped = 0
           update_gold_corp_cash!
 
-          depot.export! unless @depot.upcoming.empty?
+          if @depot.upcoming.first&.name == '2+'
+            depot.export_all!('2+')
+          elsif !@depot.upcoming.empty?
+            depot.export!
+          end
         end
 
         def handle_metal_payout(entity)
@@ -576,7 +580,7 @@ module Engine
           @players.each do |payee|
             num_shares = payee.num_shares_of(entity)
 
-            if payee == gold_miner&.owner
+            if payee == gold_miner&.owner && entity == @gold_corp
               entity.cash += per_share * 2
               num_shares += 2
             end
@@ -1046,7 +1050,7 @@ module Engine
         end
 
         def game_end_check
-          # save the result so that the apparent endgame tirgger doesn't change,
+          # save the result so that the apparent endgame trigger doesn't change,
           # but keep checking for bankruptcy
           reason, after = super
           @game_end_reason = reason if !@game_end_reason || (reason == :bankrupt)

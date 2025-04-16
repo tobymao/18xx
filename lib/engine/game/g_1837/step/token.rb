@@ -8,6 +8,8 @@ module Engine
     module G1837
       module Step
         class Token < Engine::Step::Token
+          include SkipReceivership
+
           def actions(entity)
             return [] unless entity == current_entity
             return [] unless multiple_tokens?(entity)
@@ -25,7 +27,7 @@ module Engine
             # Cheaper to do the graph first, then check affordability
             current_entity == entity &&
               !(token = entity.next_token).nil? &&
-              @game.graph.can_token?(entity) &&
+              @game.token_graph_for_entity(entity).can_token?(entity) &&
               can_afford_token?(token, buying_power(entity))
           end
 
@@ -38,7 +40,8 @@ module Engine
           end
 
           def can_afford_token?(token, cash)
-            @game.graph.tokenable_cities(token.corporation).any? do |city|
+            corp = token.corporation
+            @game.token_graph_for_entity(corp).tokenable_cities(corp).any? do |city|
               token_price(token, city.tile.hex) <= cash
             end
           end

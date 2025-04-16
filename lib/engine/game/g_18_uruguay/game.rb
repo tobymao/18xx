@@ -60,6 +60,7 @@ module Engine
         SELL_AFTER = :p_any_operate
         TILE_RESERVATION_BLOCKS_OTHERS = true
         CURRENCY_FORMAT_STR = '$U%d'
+        HOME_TOKEN_TIMING = :float
 
         MUST_BUY_TRAIN = :always
 
@@ -210,6 +211,7 @@ module Engine
 
           goods_setup
           @rptla = @corporations.find { |c| c.id == 'RPTLA' }
+          place_home_token(@rptla)
           @fce = @corporations.find { |c| c.id == 'FCE' }
 
           @rptla.add_ability(Engine::G18Uruguay::Ability::Ship.new(
@@ -401,16 +403,12 @@ module Engine
           str
         end
 
-        def rptla_revenue(corporation)
-          return 0 if @rptla != corporation
-
-          (corporation.loans.size.to_f / 2).floor * 10
+        def rptla_revenue
+          (@rptla.loans.size.to_f / 2).floor * 10
         end
 
-        def rptla_subsidy(corporation)
-          return 0 if @rptla != corporation
-
-          (corporation.loans.size.to_f / 2).ceil * 10
+        def rptla_subsidy
+          (@rptla.loans.size.to_f / 2).ceil * 10
         end
 
         def revenue_for(route, stops)
@@ -454,6 +452,7 @@ module Engine
               when 1
                 start_merge(current_entity.owner)
               when 2
+                acquire_shares
                 decrease_stock_value
                 retreive_home_tokens
                 close_companies
@@ -466,8 +465,8 @@ module Engine
               if @round.round_num < 3
                 new_nationalization_round(@round.round_num + 1)
               elsif @saved_or_round
-                # reorder_players
                 @log << '--Return to Operating Round--'
+                @saved_or_round.force_next_entity! if @saved_or_round.current_entity&.closed?
                 @saved_or_round
               else
                 new_operating_round

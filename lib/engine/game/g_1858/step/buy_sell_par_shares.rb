@@ -178,6 +178,36 @@ module Engine
             player.cash
           end
 
+          def add_bid(action)
+            action.entity.unpass!
+            super
+          end
+
+          def process_bid(action)
+            # Players will sometimes click the autopass button to pass during an
+            # auction, then get confused when they are not allowed to bid on
+            # future auctions in the stock round. Clear these programmed passes,
+            # unless the player can't afford to bid on any available private
+            # railway companies (this check is for later stock rounds where
+            # there are green privates available, but a player has spent all
+            # their money and doesn't want to be prompted to sell shares).
+            min_price = @game.buyable_bank_owned_companies.map(&:min_bid).min
+            @game.programmed_actions.each do |player, actions|
+              next if player.cash < min_price
+
+              actions.reject! do |act|
+                next false unless act.is_a?(Action::ProgramSharePass)
+                next false if act.unconditional
+
+                @game.player_log(player,
+                                 "Programmed action #{act} removed: private
+                                  railway company auction taking place.")
+                true
+              end
+            end
+            super
+          end
+
           def win_bid(winner, _company)
             player = winner.entity
             company = winner.company

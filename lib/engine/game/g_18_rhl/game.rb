@@ -43,7 +43,7 @@ module Engine
         TRACK_RESTRICTION = :semi_restrictive
 
         # Cannot buy other corp trains during emergency buy (rule 13.2)
-        EBUY_OTHER_VALUE = false
+        EBUY_FROM_OTHERS = :never
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
           'remove_tile_block' => ['Remove tile block', 'Hex E12 can now be upgraded to yellow'],

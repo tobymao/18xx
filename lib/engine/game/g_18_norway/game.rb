@@ -34,15 +34,15 @@ module Engine
         SELL_BUY_ORDER = :sell_buy
         TILE_RESERVATION_BLOCKS_OTHERS = :always
         CURRENCY_FORMAT_STR = '%skr'
-        EBUY_SELL_MORE_THAN_NEEDED = true
+        EBUY_SELL_MORE_THAN_NEEDED = false
         CAPITALIZATION = :incremental
         MUST_BUY_TRAIN = :always
         POOL_SHARE_DROP = :none
         SELL_AFTER = :p_any_operate
         SELL_MOVEMENT = :left_block
         HOME_TOKEN_TIMING = :float
-
-        EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
+        EBUY_PRES_SWAP = false
+        EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = true
         MUST_EMERGENCY_ISSUE_BEFORE_EBUY = true
 
         BANKRUPTCY_ENDS_GAME_AFTER = :one
@@ -52,6 +52,8 @@ module Engine
         CLOSED_CORP_RESERVATIONS_REMOVED = false
 
         GAME_END_CHECK = { bankrupt: :immediate, custom: :one_more_full_or_set }.freeze
+
+        DEPOT_CLASS = G18Norway::Depot
 
         CERT_LIMIT = {
           3 => { 0 => 12, 1 => 12, 2 => 12, 3 => 15, 4 => 15, 5 => 17, 6 => 17, 7 => 19, 8 => 19 },
@@ -132,15 +134,15 @@ module Engine
           'Treasury'
         end
 
-        MOUNTAIN_BIG_HEXES = %w[E21 G21 H22 F26 E27 E29 D30].freeze
-        MOUNTAIN_SMALL_HEXES = %w[G19 E23 D26 D28 F28 G27 H28].freeze
-        HARBOR_HEXES = %w[G15 A25 C17 A31 B36].freeze
+        MOUNTAIN_BIG_HEXES = %w[F21 H21 I22 G26 F27 F29 E30].freeze
+        MOUNTAIN_SMALL_HEXES = %w[H19 F23 E26 E28 G28 H27 I28].freeze
+        HARBOR_HEXES = %w[H13 A26 D15 A32 E36].freeze
         CITY_HARBOR_MAP = {
-          'G17' => 'G15',
-          'B26' => 'A25',
-          'D18' => 'C17',
-          'B32' => 'A31',
-          'C35' => 'B36',
+          'H17' => 'H13',
+          'C26' => 'A26',
+          'E18' => 'D15',
+          'C32' => 'A32',
+          'D35' => 'E36',
         }.freeze
 
         def switcher
@@ -154,6 +156,7 @@ module Engine
         EXTRA_TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }].freeze
 
         def setup
+          setup_company_price_up_to_one_and_half_face
           MOUNTAIN_BIG_HEXES.each { |hex| hex_by_id(hex).assign!('MOUNTAIN_BIG') }
           MOUNTAIN_SMALL_HEXES.each { |hex| hex_by_id(hex).assign!('MOUNTAIN_SMALL') }
           corporation_by_id('H').add_ability(Engine::Ability::Base.new(
@@ -210,10 +213,10 @@ module Engine
           update_cert_limit
 
           # Allow to build against Mjosa
-          hex_by_id('H26').neighbors[1] = hex_by_id('G27')
-          hex_by_id('H26').neighbors[5] = hex_by_id('I27')
-          hex_by_id('G27').neighbors[4] = hex_by_id('H26')
-          hex_by_id('I27').neighbors[2] = hex_by_id('H26')
+          hex_by_id('I26').neighbors[1] = hex_by_id('H27')
+          hex_by_id('I26').neighbors[5] = hex_by_id('J27')
+          hex_by_id('H27').neighbors[4] = hex_by_id('I26')
+          hex_by_id('J27').neighbors[2] = hex_by_id('I26')
         end
 
         def p4
@@ -241,7 +244,7 @@ module Engine
         end
 
         def mjosa
-          @mjosa ||= hex_by_id('H26')
+          @mjosa ||= hex_by_id('I26')
         end
 
         def route_cost(route)
@@ -311,10 +314,13 @@ module Engine
           train.track_type == :narrow
         end
 
-        def cheapest_train_price
+        def cheapest_train
           depot_trains = depot.depot_trains.reject { |train| ship?(train) }
-          train = depot_trains.min_by(&:price)
-          train.price
+          depot_trains.min_by(&:price)
+        end
+
+        def cheapest_train_price(_corporation)
+          cheapest_train.price
         end
 
         def can_go_bankrupt?(player, corporation)
@@ -327,6 +333,16 @@ module Engine
               ], round_num: round_num)
         end
 
+        def nationalize_corporation(entity, number_of_shares)
+          value = convert(entity, number_of_shares)
+          @log << "#{entity.name} nationalized and receives #{format_currency(value)}"
+          update_cert_limit
+        end
+
+        def float_corporation(corporation)
+          nationalize_corporation(corporation, 1) if custom_end_game_reached?
+        end
+
         def next_round!
           @round =
             case @round
@@ -334,6 +350,7 @@ module Engine
               if @round.round_num < @operating_rounds
                 new_operating_round(@round.round_num + 1)
               else
+                @turn += 1
                 or_set_finished
                 new_stock_round
               end
@@ -344,16 +361,19 @@ module Engine
             when Engine::Round::Operating
               if @round.round_num < @operating_rounds
                 or_round_finished
+                if !custom_end_game_reached?
+                  new_nationalization_round(@round.round_num)
+                else
+                  new_operating_round(@round.round_num + 1)
+                end
+              elsif !custom_end_game_reached? && @phase.tiles.include?(:green)
+                or_round_finished
                 new_nationalization_round(@round.round_num)
               else
                 @turn += 1
                 or_round_finished
-                if @phase.tiles.include?(:green)
-                  new_nationalization_round(@round.round_num)
-                else
-                  or_set_finished
-                  new_stock_round
-                end
+                or_set_finished
+                new_stock_round
               end
             when init_round.class
               init_round_finished
@@ -409,7 +429,7 @@ module Engine
         end
 
         def oslo
-          @oslo ||= hex_by_id('G29')
+          @oslo ||= hex_by_id('H29')
         end
 
         def init_graph
@@ -453,20 +473,19 @@ module Engine
           harbor_token?(city, entity)
         end
 
-        def connected?(a, b, corporation)
+        def connected?(a, b, corporation, train)
           return true if a.connects_to?(b, corporation)
 
           [a.a, a.b].each do |part|
             next unless b.nodes.include?(part)
             next unless part.city?
-
-            return harbor_token?(part, corporation)
+            return harbor_token?(part, corporation) if ship?(train)
           end
           false
         end
 
         def check_connected(route, corporation)
-          return if route.ordered_paths.each_cons(2).all? { |a, b| connected?(a, b, corporation) }
+          return if route.ordered_paths.each_cons(2).all? { |a, b| connected?(a, b, corporation, route.train) }
 
           return super unless @round.train_upgrade_assignments[route.train]
 
@@ -634,6 +653,13 @@ module Engine
           return :left_block_pres if corporation.second_share.price <= 40
 
           self.class::SELL_MOVEMENT
+        end
+
+        def setup_company_price_up_to_one_and_half_face
+          @companies.each do |company|
+            company.min_price = (company.value * 0.5)
+            company.max_price = (company.value * 1.5)
+          end
         end
 
         def check_sale_timing(entity, bundle)

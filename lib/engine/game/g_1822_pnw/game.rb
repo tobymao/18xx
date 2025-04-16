@@ -37,6 +37,13 @@ module Engine
           'NP' => 3,
         }.freeze
 
+        STATUS_TEXT = G1822PNW::Game::STATUS_TEXT.merge(
+          'can_acquire_minor_bidbox' => ['Acquire a minor from bidbox',
+                                         'Can acquire a minor from bidbox for $200, must have connection '\
+                                         'to start location'],
+          'minor_float_phase1' => ['Minors receive $100 in capital', 'Minors receive $100 capital with 50 stock value'],
+        ).freeze
+
         STARTING_COMPANIES = %w[P1 P2 P3 P4 P5 P6 P7 P8 P9 P10 P11 P12 P13 P14 P15 P16 P17 P18 P19 P20 P21
                                 M1 M2 M3 M4 M5 M6 M7 M8 M9 M10 M11 M12 M13 M14 M15 M16 M17 M18 M19 M20 M21 MA MB MC].freeze
 
@@ -1236,6 +1243,12 @@ module Engine
           elsif @bank.broken?
             [:bank, @round.is_a?(Engine::Round::Operating) ? :full_or : :current_or]
           end
+        end
+
+        def train_help_mail_contracts
+          'Mail contract(s) gives a subsidy equal to one half of the base value of the start and end '\
+            'stations from one of the trains operated. Doubled values (for E trains or destination tokens) '\
+            'do not count. L-trains can use mail contracts, even if they visit one city and no towns.'
         end
       end
     end
