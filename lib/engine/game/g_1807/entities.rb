@@ -919,6 +919,9 @@ module Engine
 
         MINORS_GROUP_A = %w[EG EPD GA GC ML ND NU YNM].freeze
         MINORS_GROUP_B = %w[BE BG GJ NM MC SAM TV VN EC EK LB LH LR LS LY SE].freeze
+        MINORS_COLOR_BATCH1 = :yellow # minors available from the start of the game
+        MINORS_COLOR_BATCH2 = :palegreen # minors available from the second stock round
+        MINORS_COLOR_BATCH3 = :green # minors available phase 3
 
         def company_header(company)
           case company.type
@@ -975,9 +978,9 @@ module Engine
           minors_sr2 = group_a.pop(2) + group_b.pop(4)
           minors_phase3 = group_a + group_b
 
-          minors_start.each { |minor| minor.reservation_color = :yellow }
-          minors_sr2.each { |minor| minor.reservation_color = :palegreen }
-          minors_phase3.each { |minor| minor.reservation_color = :green }
+          minors_start.each { |minor| minor.reservation_color = MINORS_COLOR_BATCH1 }
+          minors_sr2.each { |minor| minor.reservation_color = MINORS_COLOR_BATCH2 }
+          minors_phase3.each { |minor| minor.reservation_color = MINORS_COLOR_BATCH3 }
 
           @log << 'The minor companies available from the start of the game are: ' \
                   "#{minors_start.map(&:id).sort.join(', ')}."

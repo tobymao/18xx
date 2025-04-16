@@ -45,7 +45,7 @@ module Engine
             company.type == :railway
           end
           @corporations, @future_corporations = @corporations.partition do |corporation|
-            corporation.type == :minor && corporation.reservation_color == :yellow
+            corporation.type == :minor && corporation.reservation_color == MINORS_COLOR_BATCH1
           end
         end
 
@@ -68,7 +68,7 @@ module Engine
           when 2
             # Second batch of private companies are available.
             new_minors_available! do |corporation|
-              corporation.type == :minor && corporation.reservation_color == :palegreen
+              corporation.type == :minor && corporation.reservation_color == MINORS_COLOR_BATCH2
             end
           end
 
@@ -97,7 +97,7 @@ module Engine
 
         def event_minors_batch3!
           new_minors_available! do |corporation|
-            corporation.type == :minor && corporation.reservation_color == :green
+            corporation.type == :minor && corporation.reservation_color == MINORS_COLOR_BATCH3
           end
         end
 
