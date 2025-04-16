@@ -12,7 +12,7 @@ module Engine
           end
 
           def description
-            'Salvage Excess Trains'
+            'Discard Excess Trains for Salvage Value'
           end
         end
       end
