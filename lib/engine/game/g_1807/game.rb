@@ -146,12 +146,16 @@ module Engine
 
         def new_companies_available!(&block)
           available, @future_companies = @future_companies.partition(&block)
+          @log << "New private companies available for auction: " \
+                  "#{available.map(&:id).join(', ')}."
           @companies += available
           update_cache(:companies)
         end
 
         def new_minors_available!(&block)
           available, @future_corporations = @future_corporations.partition(&block)
+          @log << "New minor companies available for auction: " \
+                  "#{available.map(&:id).join(', ')}."
           @corporations += available
           update_cache(:corporations)
         end
