@@ -51,6 +51,11 @@ module Engine
             player.spend(price, @game.bank)
             company.owner = player
             player.companies << company
+            @auctioning = nil
+
+            # Player to the right of the winner is the new player
+            @round.goto_entity!(player)
+            @round.next_entity!
           end
 
           private
