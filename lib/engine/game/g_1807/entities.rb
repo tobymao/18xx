@@ -402,8 +402,8 @@ module Engine
             coordinates: 'U13',
             shares: [100],
             max_ownership_percent: 100,
-            color: '#7c7b8c',
-            reservation_color: 'yellow',
+            color: '#ffed00',
+            text_color: 'black',
           },
           {
             sym: 'BG',
@@ -417,8 +417,8 @@ module Engine
             city: 0,
             shares: [100],
             max_ownership_percent: 100,
-            color: '#7c7b8c',
-            reservation_color: 'yellow',
+            color: '#ffed00',
+            text_color: 'black',
           },
           {
             sym: 'EC',
@@ -432,8 +432,8 @@ module Engine
             city: 1,
             shares: [100],
             max_ownership_percent: 100,
-            color: '#7c7b8c',
-            reservation_color: 'yellow',
+            color: '#ffed00',
+            text_color: 'black',
           },
           {
             sym: 'EG',
@@ -446,8 +446,8 @@ module Engine
             coordinates: 'D10',
             shares: [100],
             max_ownership_percent: 100,
-            color: '#7c7b8c',
-            reservation_color: 'yellow',
+            color: '#1a1a18',
+            text_color: 'white',
           },
           {
             sym: 'EK',
@@ -461,8 +461,8 @@ module Engine
             city: 1,
             shares: [100],
             max_ownership_percent: 100,
-            color: '#7c7b8c',
-            reservation_color: 'yellow',
+            color: '#ffed00',
+            text_color: 'black',
           },
           {
             sym: 'EPD',
@@ -475,8 +475,8 @@ module Engine
             coordinates: 'C11',
             shares: [100],
             max_ownership_percent: 100,
-            color: '#7c7b8c',
-            reservation_color: 'yellow',
+            color: '#ef7c00',
+            text_color: 'black',
           },
           {
             sym: 'GA',
@@ -490,8 +490,8 @@ module Engine
             city: 0,
             shares: [100],
             max_ownership_percent: 100,
-            color: '#7c7b8c',
-            reservation_color: 'yellow',
+            color: '#e3000f',
+            text_color: 'white',
           },
           {
             sym: 'GC',
@@ -505,8 +505,8 @@ module Engine
             city: 1,
             shares: [100],
             max_ownership_percent: 100,
-            color: '#7c7b8c',
-            reservation_color: 'yellow',
+            color: '#afca05',
+            text_color: 'black',
           },
           {
             sym: 'GJ',
@@ -519,8 +519,8 @@ module Engine
             coordinates: 'P14',
             shares: [100],
             max_ownership_percent: 100,
-            color: '#7c7b8c',
-            reservation_color: 'yellow',
+            color: '#007ab5',
+            text_color: 'white',
           },
           {
             sym: 'LB',
@@ -534,8 +534,8 @@ module Engine
             city: 1,
             shares: [100],
             max_ownership_percent: 100,
-            color: '#7c7b8c',
-            reservation_color: 'yellow',
+            color: '#007ab5',
+            text_color: 'white',
           },
           {
             sym: 'LH',
@@ -549,8 +549,8 @@ module Engine
             city: 0,
             shares: [100],
             max_ownership_percent: 100,
-            color: '#7c7b8c',
-            reservation_color: 'yellow',
+            color: '#1a1a18',
+            text_color: 'white',
           },
           {
             sym: 'LR',
@@ -564,8 +564,8 @@ module Engine
             city: 1,
             shares: [100],
             max_ownership_percent: 100,
-            color: '#7c7b8c',
-            reservation_color: 'yellow',
+            color: '#afca05',
+            text_color: 'black',
           },
           {
             sym: 'LS',
@@ -579,8 +579,8 @@ module Engine
             city: 0,
             shares: [100],
             max_ownership_percent: 100,
-            color: '#7c7b8c',
-            reservation_color: 'yellow',
+            color: '#afca05',
+            text_color: 'black',
           },
           {
             sym: 'LY',
@@ -594,8 +594,8 @@ module Engine
             city: 0,
             shares: [100],
             max_ownership_percent: 100,
-            color: '#7c7b8c',
-            reservation_color: 'yellow',
+            color: '#ad4482',
+            text_color: 'white',
           },
           {
             sym: 'MC',
@@ -608,8 +608,8 @@ module Engine
             coordinates: 'O19',
             shares: [100],
             max_ownership_percent: 100,
-            color: '#7c7b8c',
-            reservation_color: 'yellow',
+            color: '#00963f',
+            text_color: 'white',
           },
           {
             sym: 'ML',
@@ -623,8 +623,8 @@ module Engine
             city: 1,
             shares: [100],
             max_ownership_percent: 100,
-            color: '#7c7b8c',
-            reservation_color: 'yellow',
+            color: '#ffffff',
+            text_color: 'black',
           },
           {
             sym: 'ND',
@@ -637,8 +637,8 @@ module Engine
             coordinates: 'G17',
             shares: [100],
             max_ownership_percent: 100,
-            color: '#7c7b8c',
-            reservation_color: 'yellow',
+            color: '#007ab5',
+            text_color: 'white',
           },
           {
             sym: 'NM',
@@ -651,8 +651,8 @@ module Engine
             coordinates: 'O17',
             shares: [100],
             max_ownership_percent: 100,
-            color: '#7c7b8c',
-            reservation_color: 'yellow',
+            color: '#ffed00',
+            text_color: 'black',
           },
           {
             sym: 'NU',
@@ -665,8 +665,8 @@ module Engine
             coordinates: 'L12',
             shares: [100],
             max_ownership_percent: 100,
-            color: '#7c7b8c',
-            reservation_color: 'yellow',
+            color: '#9c9c9c',
+            text_color: 'white',
           },
           {
             sym: 'SAM',
@@ -679,8 +679,8 @@ module Engine
             coordinates: 'M17',
             shares: [100],
             max_ownership_percent: 100,
-            color: '#7c7b8c',
-            reservation_color: 'yellow',
+            color: '#ffed00',
+            text_color: 'black',
           },
           {
             sym: 'SE',
@@ -694,8 +694,8 @@ module Engine
             city: 0,
             shares: [100],
             max_ownership_percent: 100,
-            color: '#7c7b8c',
-            reservation_color: 'yellow',
+            color: '#00963f',
+            text_color: 'white',
           },
           {
             sym: 'TV',
@@ -708,8 +708,8 @@ module Engine
             coordinates: 'U11',
             shares: [100],
             max_ownership_percent: 100,
-            color: '#7c7b8c',
-            reservation_color: 'yellow',
+            color: '#e3000f',
+            text_color: 'white',
           },
           {
             sym: 'VN',
@@ -722,8 +722,8 @@ module Engine
             coordinates: 'U7',
             shares: [100],
             max_ownership_percent: 100,
-            color: '#7c7b8c',
-            reservation_color: 'yellow',
+            color: '#1a1a18',
+            text_color: 'white',
           },
           {
             sym: 'YNM',
@@ -736,8 +736,8 @@ module Engine
             coordinates: 'K19',
             shares: [100],
             max_ownership_percent: 100,
-            color: '#7c7b8c',
-            reservation_color: 'yellow',
+            color: '#ffed00',
+            text_color: 'black',
           },
           {
             sym: 'CR',
@@ -748,7 +748,8 @@ module Engine
             tokens: [0, 20, 20, 20],
             type: 'public',
             shares: [20, 10, 10, 10, 10, 10, 10, 10, 10],
-            color: '#3c7b5c',
+            color: '#008bd2',
+            text_color: 'white',
           },
           {
             sym: 'GER',
@@ -759,7 +760,8 @@ module Engine
             tokens: [0, 20, 20, 20],
             type: 'public',
             shares: [20, 10, 10, 10, 10, 10, 10, 10, 10],
-            color: '#3c7b5c',
+            color: '#c2e6fb',
+            text_color: 'black',
           },
           {
             sym: 'GNR',
@@ -770,7 +772,8 @@ module Engine
             tokens: [0, 20, 20, 20],
             type: 'public',
             shares: [20, 10, 10, 10, 10, 10, 10, 10, 10],
-            color: '#3c7b5c',
+            color: '#a7d3ae',
+            text_color: 'black',
           },
           {
             sym: 'LBSC',
@@ -781,7 +784,8 @@ module Engine
             tokens: [0, 20, 20, 20],
             type: 'public',
             shares: [20, 10, 10, 10, 10, 10, 10, 10, 10],
-            color: '#3c7b5c',
+            color: '#ffcc00',
+            text_color: 'black',
           },
           {
             sym: 'LNW',
@@ -792,7 +796,8 @@ module Engine
             tokens: [0, 20, 20, 20],
             type: 'public',
             shares: [20, 10, 10, 10, 10, 10, 10, 10, 10],
-            color: '#3c7b5c',
+            color: '#878786',
+            text_color: 'white',
           },
           {
             sym: 'LSW',
@@ -803,7 +808,8 @@ module Engine
             tokens: [0, 20, 20, 20],
             type: 'public',
             shares: [20, 10, 10, 10, 10, 10, 10, 10, 10],
-            color: '#3c7b5c',
+            color: '#f2f1ed',
+            text_color: 'black',
           },
           {
             sym: 'LYR',
@@ -814,7 +820,8 @@ module Engine
             tokens: [0, 20, 20, 20],
             type: 'public',
             shares: [20, 10, 10, 10, 10, 10, 10, 10, 10],
-            color: '#3c7b5c',
+            color: '#d1999c',
+            text_color: 'black',
           },
           {
             sym: 'MR',
@@ -825,7 +832,8 @@ module Engine
             tokens: [0, 20, 20, 20],
             type: 'public',
             shares: [20, 10, 10, 10, 10, 10, 10, 10, 10],
-            color: '#3c7b5c',
+            color: '#fdaf94',
+            text_color: 'black',
           },
           {
             sym: 'NBR',
@@ -836,7 +844,8 @@ module Engine
             tokens: [0, 20, 20, 20],
             type: 'public',
             shares: [20, 10, 10, 10, 10, 10, 10, 10, 10],
-            color: '#3c7b5c',
+            color: '#ae9675',
+            text_color: 'white',
           },
           {
             sym: 'NER',
@@ -847,7 +856,8 @@ module Engine
             tokens: [0, 20, 20, 20],
             type: 'public',
             shares: [20, 10, 10, 10, 10, 10, 10, 10, 10],
-            color: '#3c7b5c',
+            color: '#dbe283',
+            text_color: 'black',
           },
           {
             sym: 'SEC',
@@ -858,7 +868,8 @@ module Engine
             tokens: [0, 20, 20, 20],
             type: 'public',
             shares: [20, 10, 10, 10, 10, 10, 10, 10, 10],
-            color: '#3c7b5c',
+            color: '#fff7b2',
+            text_color: 'black',
           },
           {
             sym: 'GCR',
@@ -869,7 +880,8 @@ module Engine
             tokens: [0, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20],
             type: 'system',
             shares: [20, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5],
-            color: '#3c7b5c',
+            color: '#fdf39a',
+            text_color: 'black',
           },
           {
             sym: 'GWR',
@@ -880,7 +892,8 @@ module Engine
             tokens: [0, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20],
             type: 'system',
             shares: [20, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5],
-            color: '#3c7b5c',
+            color: '#9c9c9c',
+            text_color: 'white',
           },
           {
             sym: 'LMS',
@@ -891,7 +904,8 @@ module Engine
             tokens: [0, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20],
             type: 'system',
             shares: [20, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5],
-            color: '#3c7b5c',
+            color: '#965256',
+            text_color: 'white',
           },
           {
             sym: 'LNE',
@@ -902,7 +916,8 @@ module Engine
             tokens: [0, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20],
             type: 'system',
             shares: [20, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5],
-            color: '#3c7b5c',
+            color: '#999bb3',
+            text_color: 'white',
           },
           {
             sym: 'SR',
@@ -913,15 +928,17 @@ module Engine
             tokens: [0, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20],
             type: 'system',
             shares: [20, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5],
-            color: '#3c7b5c',
+            color: '#948f63',
+            text_color: 'white',
           },
         ].freeze
 
+        CORPORATION_SIZES = { 2 => :small, 10 => :medium, 20 => :large }.freeze
         MINORS_GROUP_A = %w[EG EPD GA GC ML ND NU YNM].freeze
         MINORS_GROUP_B = %w[BE BG GJ NM MC SAM TV VN EC EK LB LH LR LS LY SE].freeze
-        MINORS_COLOR_BATCH1 = :yellow # minors available from the start of the game
-        MINORS_COLOR_BATCH2 = :palegreen # minors available from the second stock round
-        MINORS_COLOR_BATCH3 = :green # minors available phase 3
+        MINORS_COLOR_BATCH1 = '#f5b4d2' # minors available from the start of the game
+        MINORS_COLOR_BATCH2 = '#d7ead8' # minors available from the second stock round
+        MINORS_COLOR_BATCH3 = '#fff381' # minors available phase 3
 
         def company_header(company)
           case company.type
