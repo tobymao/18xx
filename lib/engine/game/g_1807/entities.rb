@@ -860,9 +860,9 @@ module Engine
             text_color: 'black',
           },
           {
-            sym: 'SEC',
-            name: 'South Eastern Railway',
-            logo: '1807/SEC',
+            sym: 'SECR',
+            name: 'South Eastern and Chatham Railway',
+            logo: '1807/SECR',
             float_percent: 20,
             always_market_price: true,
             tokens: [0, 20, 20, 20],
