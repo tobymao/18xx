@@ -28,7 +28,6 @@ module Engine
         def setup
           # TODO: check which bits of this are needed, just cut-n-pasted from 1867.
           @interest = {}
-          setup_company_price_up_to_face
 
           @show_majors = false
           setup_london_hexes
