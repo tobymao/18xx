@@ -133,11 +133,6 @@ module Engine
           @companies.select { |company| !company.closed? && !company.owner }
         end
 
-        def purchasable_companies(_entity)
-          # Private companies cannot be bought, they must be auctioned.
-          []
-        end
-
         def unowned_purchasable_companies(_entity)
           (@companies + @future_companies).select do |company|
             !company.closed? && !company.owner
