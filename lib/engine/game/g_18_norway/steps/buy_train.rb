@@ -44,7 +44,7 @@ module Engine
             trains = super
 
             # Remove any ships that we already have
-            trains = trains.reject do |train|
+            trains.reject do |train|
               next unless @game.ship?(train)                            # We want to keep all trains
               next true if must_buy_train?(entity)                      # Remove all ships if we must buy a train
 
