@@ -139,7 +139,8 @@ module Engine
 
         def revenue_for(route, stops)
           train = route.train
-          bonuses =
+          revenue = stops.sum { |stop| stop.route_revenue(route.phase, train) }
+          bonuses = bonus_privates(train, stops, route.routes) +
             if goods_train?(train)
               bonus_mine(train, stops)
             else
@@ -147,7 +148,7 @@ module Engine
               bonus_welsh_border(train, stops) +
               bonus_london_offboard(train, stops)
             end
-          super + bonuses
+          revenue + bonuses
         end
 
         private

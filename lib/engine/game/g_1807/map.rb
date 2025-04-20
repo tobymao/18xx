@@ -468,6 +468,9 @@ module Engine
         SCOTTISH_REVENUE_CENTRES = %w[A9 A11 A13 C5 C7 C11 D4 D6 D8 D10 F4 H2].freeze
         WELSH_REVENUE_CENTRES = %w[N4 S3 T10 U7 U9 U11].freeze
 
+        # Ireland off-board areas, for the ferry bonuses.
+        IRELAND_OFFBOARDS = %w[H2 N4 S3].freeze
+
         def hexes_by_id(coordinates)
           coordinates.map { |coord| hex_by_id(coord) }
         end
@@ -478,10 +481,41 @@ module Engine
           end
           @scotland = hexes_by_id(SCOTTISH_REVENUE_CENTRES)
           @wales = hexes_by_id(WELSH_REVENUE_CENTRES)
+          @ireland = IRELAND_OFFBOARDS.map { |coord| hex_by_id(coord).tile.offboards.first }
         end
 
         def revenue_bonus(bonus, train)
           @bonuses[bonus].route_revenue(@phase, train)
+        end
+
+        def bonus_privates(train, stops, all_routes)
+          corp = train.owner
+          # The bonuses for the Irish ferries need to be treated differently.
+          # There are three privates that give bonuses for these, each can be
+          # used for any of the Irish off-board areas, but only one on a turn
+          # and, if a corporation owns multiple Irish ferries, each must be
+          # used for a different off-board area.
+          abilities = corp.companies.flat_map { |c| abilities(c, :hex_bonus) }
+          irish_ferries, others = abilities.partition do |ability|
+            irish_ferry?(ability.owner)
+          end
+
+          bonus = others.sum do |ability|
+            stops.map(&:hex).map(&:coordinates).intersect?(ability.hexes) ? ability.amount : 0
+          end
+          return bonus if irish_ferries.empty?
+
+          # Rank the Irish offboard areas in the order of how much bonus
+          # revenue they would generate. This involves looking at all routes,
+          # not just the one that we are currently calculating the bonus for.
+          irish_offboards = @ireland.sort_by do |offboard|
+            -1 * all_routes.sum do |route|
+              route.stops.include?(offboard) ? (route.train.multiplier || 1) : 0
+            end
+          end
+          bonus + irish_ferries.zip(irish_offboards).sum do |ability, offboard|
+            stops.include?(offboard) ? ability.amount : 0
+          end
         end
 
         def bonus_london_offboard(train, stops)
