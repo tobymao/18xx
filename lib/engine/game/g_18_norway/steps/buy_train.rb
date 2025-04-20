@@ -42,17 +42,6 @@ module Engine
 
           def buyable_trains(entity)
             trains = super
-            # Due to that the min_depot only looks at trains we need to add a ship in the case where
-            # we already have a train, can afford the next ship but not the next train
-            if entity.cash < cheapest_train_price(entity)
-              trains += @depot.depot_trains.select do |train|
-                next unless @game.ship?(train)                                # Must be a ship
-                next if entity.trains.any? { |ship| ship.name == train.name } # Must not already own the ship
-                next if trains.any? { |ship| ship.name == train.name }        # Must not already be in the list
-
-                entity.cash >= train.price                                    # Can we afford it?
-              end
-            end
 
             # Remove any ships that we already have
             trains = trains.reject do |train|
