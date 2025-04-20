@@ -191,7 +191,7 @@ module Engine
             name: 'Madras-Arcot',
             type: 'private_batch1',
             desc: 'P3. Revenue 24/36, face value 120. Home hexes are O14 and O12. ' \
-                  'Can be used to start a public company in Bangalore.',
+                  'Can be used to start a public company in Bangalore or Madras.',
             value: 120,
             discount: 25,
             revenue: 24,
