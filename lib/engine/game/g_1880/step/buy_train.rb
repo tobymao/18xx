@@ -33,8 +33,21 @@ module Engine
 
           def log_skip(entity)
             return if entity.minor?
+
             return @log << "#{entity.name} is at train limit and cannot buy a train" unless room?(entity)
             return @log << "#{entity.name} cannot afford a train" unless can_buy_train?(entity)
+
+            super
+          end
+
+          def log_pass(entity)
+            # this captures the ID of the current train available for purchase from the depot
+            train_id = @game.depot.depot_trains.first.id
+
+            # these log messages are returned when a corp comes out of the stock round unable to buy a train after having bought
+            # the last train of the previous rank
+            return @log << "#{entity.name} is at train limit and cannot buy a train" if !room?(entity) && train_id.end_with?('-0')
+            return @log << "#{entity.name} cannot afford a train" if !can_buy_train?(entity) && train_id.end_with?('-0')
 
             super
           end
