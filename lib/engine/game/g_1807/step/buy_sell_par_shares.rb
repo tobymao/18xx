@@ -26,7 +26,7 @@ module Engine
             false
           end
 
-          def max_bid(player, _entity)
+          def max_bid(player, _entity = nil)
             return 0 unless @game.num_certs(player) < @game.cert_limit
 
             player.cash
