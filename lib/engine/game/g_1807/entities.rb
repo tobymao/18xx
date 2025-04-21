@@ -13,7 +13,7 @@ module Engine
             revenue: 10,
             discount: 10,
             desc: 'P1. No special abilities.',
-            color: 'yellow',
+            color: 'white',
           },
           {
             name: 'Stockton and Darlington',
@@ -23,7 +23,7 @@ module Engine
             revenue: 15,
             discount: 15,
             desc: 'P2. Gives an extra, free, track lay in Darlington (I17) when owned by a player.',
-            color: 'yellow',
+            color: 'white',
             abilities: [
               {
                 type: 'tile_lay',
@@ -42,7 +42,7 @@ module Engine
             revenue: 15,
             discount: 15,
             desc: 'P3. Gives an extra, free, track lay in Falkirk (D8) when owned by a player.',
-            color: 'yellow',
+            color: 'white',
             abilities: [
               {
                 type: 'tile_lay',
@@ -61,7 +61,7 @@ module Engine
             revenue: 15,
             discount: 15,
             desc: 'P4. Gives an extra, free, track lay in Canterbury (V28) when owned by a player.',
-            color: 'yellow',
+            color: 'white',
             abilities: [
               {
                 type: 'tile_lay',
@@ -80,7 +80,7 @@ module Engine
             revenue: 20,
             discount: 20,
             desc: 'P5. Gives an extra, free, track lay in Leicester (P18) when owned by a player.',
-            color: 'yellow',
+            color: 'white',
             abilities: [
               {
                 type: 'tile_lay',
@@ -99,7 +99,7 @@ module Engine
             revenue: 20,
             discount: 20,
             desc: 'P6. Gives a £10 revenue bonus for Newcastle (G17) when owned by a public company or a system.',
-            color: 'yellow',
+            color: 'white',
             abilities: [
               {
                 type: 'hex_bonus',
@@ -117,7 +117,7 @@ module Engine
             revenue: 25,
             discount: 25,
             desc: 'P7. Gives a £10 revenue bonus for London when owned by a public company or a system.',
-            color: 'yellow',
+            color: 'white',
             abilities: [
               {
                 type: 'hex_bonus',
@@ -135,7 +135,7 @@ module Engine
             revenue: 25,
             discount: 25,
             desc: 'P8. Gives a £10 revenue bonus for London when owned by a public company or a system.',
-            color: 'yellow',
+            color: 'white',
             abilities: [
               {
                 type: 'hex_bonus',
@@ -154,7 +154,7 @@ module Engine
             revenue: 25,
             discount: 25,
             desc: 'P9. Gives a £10 revenue bonus for London when owned by a public company or a system.',
-            color: 'yellow',
+            color: 'white',
             abilities: [
               {
                 type: 'hex_bonus',
@@ -173,7 +173,7 @@ module Engine
             discount: 30,
             desc: 'P10. Gives a £10 revenue bonus for Liverpool (M11) ' \
                   'when owned by a public company or a system.',
-            color: 'yellow',
+            color: 'white',
             abilities: [
               {
                 type: 'hex_bonus',
@@ -191,7 +191,7 @@ module Engine
             revenue: 10,
             desc: 'F1. Gives a £10 revenue bonus for one of the Ireland off-board areas ' \
                   'when owned by a public company or a system.',
-            color: 'aqua',
+            color: '#9fd9f7',
             abilities: [
               { type: 'revenue_change', revenue: 15, on_phase: '3' },
               { type: 'revenue_change', revenue: 20, on_phase: '5' },
@@ -212,7 +212,7 @@ module Engine
             revenue: 10,
             desc: 'F2. Gives a £10 revenue bonus for one of the Ireland off-board areas ' \
                   'when owned by a public company or a system.',
-            color: 'aqua',
+            color: '#9fd9f7',
             abilities: [
               { type: 'revenue_change', revenue: 15, on_phase: '3' },
               { type: 'revenue_change', revenue: 20, on_phase: '5' },
@@ -233,7 +233,7 @@ module Engine
             revenue: 10,
             desc: 'F3. Gives a £10 revenue bonus for one of the Ireland off-board areas ' \
                   'when owned by a public company or a system.',
-            color: 'aqua',
+            color: '#9fd9f7',
             abilities: [
               { type: 'revenue_change', revenue: 15, on_phase: '3' },
               { type: 'revenue_change', revenue: 20, on_phase: '5' },
@@ -254,7 +254,7 @@ module Engine
             revenue: 20,
             desc: 'F4. Gives a £10 revenue bonus for the Hull off-board area (L22) ' \
                   'when owned by a public company or a system.',
-            color: 'aqua',
+            color: '#9fd9f7',
             abilities: [
               { type: 'revenue_change', revenue: 30, on_phase: '3' },
               { type: 'revenue_change', revenue: 40, on_phase: '5' },
@@ -275,7 +275,7 @@ module Engine
             revenue: 20,
             desc: 'F5. Gives a £10 revenue bonus for the Harwich off-board area (S29) ' \
                   'when owned by a public company or a system.',
-            color: 'aqua',
+            color: '#9fd9f7',
             abilities: [
               { type: 'revenue_change', revenue: 30, on_phase: '3' },
               { type: 'revenue_change', revenue: 40, on_phase: '5' },
@@ -296,7 +296,7 @@ module Engine
             revenue: 20,
             desc: 'F6. Gives a £10 revenue bonus for the Plymouth off-board area (X8) ' \
                   'when owned by a public company or a system.',
-            color: 'aqua',
+            color: '#9fd9f7',
             abilities: [
               { type: 'revenue_change', revenue: 30, on_phase: '3' },
               { type: 'revenue_change', revenue: 40, on_phase: '5' },
@@ -317,7 +317,7 @@ module Engine
             revenue: 30,
             desc: 'F7. Gives a £10 revenue bonus for the Dover off-board area (V30) ' \
                   'when owned by a public company or a system.',
-            color: 'aqua',
+            color: '#9fd9f7',
             abilities: [
               { type: 'revenue_change', revenue: 45, on_phase: '3' },
               { type: 'revenue_change', revenue: 60, on_phase: '5' },
@@ -338,7 +338,7 @@ module Engine
             revenue: 30,
             desc: 'F8. Gives a £10 revenue bonus for the Aberdeen off-board area (A13) ' \
                   'when owned by a public company or a system.',
-            color: 'aqua',
+            color: '#9fd9f7',
             abilities: [
               { type: 'revenue_change', revenue: 45, on_phase: '3' },
               { type: 'revenue_change', revenue: 60, on_phase: '5' },
@@ -358,8 +358,7 @@ module Engine
             value: 100,
             revenue: 40,
             desc: 'U1. Gives a £10 revenue bonus for London when owned by a public company or a system.',
-            color: '#9b0056',
-            text_color: 'white',
+            color: '#f7b7a8',
             abilities: [
               { type: 'revenue_change', revenue: 50, on_phase: '7' },
               {
@@ -377,8 +376,7 @@ module Engine
             value: 150,
             revenue: 75,
             desc: 'U2. Gives a £10 revenue bonus for London when owned by a public company or a system.',
-            color: 'black',
-            text_color: 'white',
+            color: '#f7b7a8',
             abilities: [
               {
                 type: 'hex_bonus',
