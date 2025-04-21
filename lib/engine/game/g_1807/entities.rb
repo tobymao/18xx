@@ -31,6 +31,7 @@ module Engine
             abilities: [
               {
                 type: 'tile_lay',
+                when: 'owning_player_track',
                 free: true,
                 owner_type: 'player',
                 hexes: %w[I17],
@@ -52,6 +53,7 @@ module Engine
             abilities: [
               {
                 type: 'tile_lay',
+                when: 'owning_player_track',
                 free: true,
                 owner_type: 'player',
                 hexes: %w[D8],
@@ -73,6 +75,7 @@ module Engine
             abilities: [
               {
                 type: 'tile_lay',
+                when: 'owning_player_track',
                 free: true,
                 owner_type: 'player',
                 hexes: %w[V28],
@@ -94,6 +97,7 @@ module Engine
             abilities: [
               {
                 type: 'tile_lay',
+                when: 'owning_player_track',
                 free: true,
                 owner_type: 'player',
                 hexes: %w[P18],
