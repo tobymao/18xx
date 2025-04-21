@@ -883,13 +883,13 @@ module Engine
           if corporation == mza && !corporation.tokens.first.used
             token = corporation.tokens.first
             hex = hex_by_id(corporation.coordinates)
-            city = if hex.tile.cities.size > 1
-                     # MZA special case if MZ already exists on the map place on location, othewise first city
-                     corporation_by_id('MZ')&.ipoed ? city_by_id("#{hex.tile.id}-#{corporation.city}") : hex.tile.cities.first
-                   else
-                     # tile has merged into one city, place in that city
-                     city_by_id("#{hex.tile.id}-0")
-                   end
+            cities = hex.tile.cities
+            city =
+              if cities.one? || !corporation_by_id('MZ')&.ipoed
+                cities.first
+              else
+                cities[corporation.city]
+              end
             @log << "#{corporation.name} places a token on #{hex.id}"
             cheater = !city.tokenable?(corporation)
             city.place_token(corporation, token, cheater: cheater, check_tokenable: false)
