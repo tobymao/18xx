@@ -20,6 +20,8 @@ module Engine
 
         include_meta(G1807::Meta)
 
+        attr_reader :london_small, :london_zoomed
+
         GAME_END_REASONS_TEXT = Base::GAME_END_REASONS_TEXT.merge(
           train: 'The first 4+4 or 6G train is purchased.',
         )
@@ -90,7 +92,7 @@ module Engine
             Engine::Step::BuyCompany,
             G1867::Step::RedeemShares,
             G1807::Step::SpecialTrack,
-            G1867::Step::Track,
+            G1807::Step::Track,
             G1867::Step::Token,
             Engine::Step::Route,
             G1867::Step::Dividend,

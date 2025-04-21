@@ -307,51 +307,6 @@ module Engine
                     'path=a:3,b:_0;' \
                     'path=a:4,b:_0;' \
                     'path=a:5,b:_0;',
-          },
-          red: {
-            %w[A13] =>
-                    'offboard=revenue:yellow_20|green_30|brown_40|gray_50;' \
-                    'path=a:1,b:_0;',
-            %w[H2] =>
-                    'offboard=revenue:yellow_20|green_20|brown_30|gray_40;' \
-                    'path=a:3,b:_0;' \
-                    'path=a:4,b:_0;',
-            %w[L22] =>
-                    'offboard=revenue:yellow_20|green_30|brown_40|gray_40;' \
-                    'path=a:1,b:_0;' \
-                    'path=a:2,b:_0;',
-            %w[N4] =>
-                    'offboard=revenue:yellow_20|green_20|brown_30|gray_40;' \
-                    'path=a:4,b:_0;',
-            %w[S3] =>
-                    'offboard=revenue:yellow_20|green_20|brown_30|gray_40;' \
-                    'path=a:4,b:_0;' \
-                    'path=a:5,b:_0;',
-            %w[S29] =>
-                    'offboard=revenue:yellow_10|green_20|brown_30|gray_40;' \
-                    'path=a:1,b:_0;' \
-                    'path=a:2,b:_0;',
-            %w[V30] =>
-                    'offboard=revenue:yellow_20|green_30|brown_40|gray_50;' \
-                    'path=a:0,b:_0;' \
-                    'path=a:1,b:_0;',
-            %w[X8] =>
-                    'offboard=revenue:yellow_20|green_30|brown_40|gray_40;' \
-                    'path=a:3,b:_0;' \
-                    'path=a:4,b:_0;',
-          },
-          blue: {
-            %w[B12] =>
-                    'path=a:0,b:1;' \
-                    'path=a:2,b:5,terminal:2,ignore:1;',
-            %w[C13] =>
-                    'path=a:1,b:4,terminal:2,ignore:1;',
-            %w[U29] =>
-                    'path=a:0,b:5,terminal:2,ignore:1;',
-          },
-          gray: {
-            %w[V10] =>
-                    'path=a:2,b:3;',
 
             # Supersized London hex.
             %w[L28] =>
@@ -410,6 +365,51 @@ module Engine
                     'border=edge:1;' \
                     'border=edge:2;' \
                     'border=edge:3;',
+          },
+          red: {
+            %w[A13] =>
+                    'offboard=revenue:yellow_20|green_30|brown_40|gray_50;' \
+                    'path=a:1,b:_0;',
+            %w[H2] =>
+                    'offboard=revenue:yellow_20|green_20|brown_30|gray_40;' \
+                    'path=a:3,b:_0;' \
+                    'path=a:4,b:_0;',
+            %w[L22] =>
+                    'offboard=revenue:yellow_20|green_30|brown_40|gray_40;' \
+                    'path=a:1,b:_0;' \
+                    'path=a:2,b:_0;',
+            %w[N4] =>
+                    'offboard=revenue:yellow_20|green_20|brown_30|gray_40;' \
+                    'path=a:4,b:_0;',
+            %w[S3] =>
+                    'offboard=revenue:yellow_20|green_20|brown_30|gray_40;' \
+                    'path=a:4,b:_0;' \
+                    'path=a:5,b:_0;',
+            %w[S29] =>
+                    'offboard=revenue:yellow_10|green_20|brown_30|gray_40;' \
+                    'path=a:1,b:_0;' \
+                    'path=a:2,b:_0;',
+            %w[V30] =>
+                    'offboard=revenue:yellow_20|green_30|brown_40|gray_50;' \
+                    'path=a:0,b:_0;' \
+                    'path=a:1,b:_0;',
+            %w[X8] =>
+                    'offboard=revenue:yellow_20|green_30|brown_40|gray_40;' \
+                    'path=a:3,b:_0;' \
+                    'path=a:4,b:_0;',
+          },
+          blue: {
+            %w[B12] =>
+                    'path=a:0,b:1;' \
+                    'path=a:2,b:5,terminal:2,ignore:1;',
+            %w[C13] =>
+                    'path=a:1,b:4,terminal:2,ignore:1;',
+            %w[U29] =>
+                    'path=a:0,b:5,terminal:2,ignore:1;',
+          },
+          gray: {
+            %w[V10] =>
+                    'path=a:2,b:3;',
 
             # Legends showing bonuses.
             %w[J6] =>
@@ -438,19 +438,38 @@ module Engine
           { coord1: 'M29', edge1: 5, coord2: 'V24', edge2: 2 },
         ].freeze
         LONDON_HEX_CENTRE = 'L28'
+        LONDON_HEX_ON_MAP = 'U23'
 
         def setup_london_hexes
+          # Keep references to London hexes for tracking upgrades.
+          @london_small = @hexes.find { |hex| hex.coordinates == LONDON_HEX_ON_MAP }
+          @london_zoomed = []
+
           # Join the hexes adjacent to London to the expanded hexes.
           LONDON_HEX_NEIGHBOURS.each do |item|
             hex1 = hex_by_id(item[:coord1])
             hex2 = hex_by_id(item[:coord2])
             hex1.neighbors[item[:edge1]] = hex2
             hex2.neighbors[item[:edge2]] = hex1
+            @london_zoomed << hex1
           end
 
           # Sever all connections from the London hex on the main map.
           london = hex_by_id(LONDON_HEX_CENTRE)
           london.neighbors.clear
+          @london_zoomed << london
+        end
+
+        # Keeps the zoomed London hex colour and city revenue in sync with the
+        # London tile on the map.
+        def london_upgraded!(new_tile)
+          color = new_tile.color
+          revenue = new_tile.offboards.first.revenue[color]
+
+          @london_zoomed.each do |hex|
+            hex.tile.color = color
+            hex.tile.cities.each { |city| city.parse_revenue(revenue.to_s) }
+          end
         end
 
         # Bonus revenues are shown on the map as detached offboard areas.
@@ -470,6 +489,8 @@ module Engine
 
         # Ireland off-board areas, for the ferry bonuses.
         IRELAND_OFFBOARDS = %w[H2 N4 S3].freeze
+
+        private
 
         def hexes_by_id(coordinates)
           coordinates.map { |coord| hex_by_id(coord) }
