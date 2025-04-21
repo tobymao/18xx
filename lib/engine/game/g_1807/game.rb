@@ -46,7 +46,7 @@ module Engine
             company.type == :railway
           end
           @corporations, @future_corporations = @corporations.partition do |corporation|
-            corporation.type == :minor && corporation.reservation_color == MINORS_COLOR_BATCH1
+            corporation.type != :minor || corporation.reservation_color == MINORS_COLOR_BATCH1
           end
         end
 
@@ -87,6 +87,16 @@ module Engine
             Engine::Step::HomeToken,
             G1807::Step::BuySellParShares,
           ])
+        end
+
+        def merger_round
+          G1867::Round::Merger.new(self, [
+            G1867::Step::MajorTrainless,
+            G1867::Step::ReduceTokens,
+            G1867::Step::PostMergerShares,
+            Engine::Step::DiscardTrain,
+            G1807::Step::Merge,
+          ], round_num: @round.round_num)
         end
 
         def operating_round(round_num)
