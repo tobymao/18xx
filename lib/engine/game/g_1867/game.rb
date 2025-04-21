@@ -830,6 +830,24 @@ module Engine
           ])
         end
 
+        def new_merger_round
+          @log << "-- #{round_description('Merger', @round.round_num)} --"
+          merger_round
+        end
+
+        def merger_round
+          # The order of steps in the Grand Trunk Games rules is incorrect
+          # (confirmed by Ian D Wilson https://github.com/tobymao/18xx/issues/9655).
+          # It has buying shares before removing tokens.
+          G1867::Round::Merger.new(self, [
+            G1867::Step::MajorTrainless,
+            G1867::Step::ReduceTokens, # Step E
+            G1867::Step::PostMergerShares, # Step C & D
+            Engine::Step::DiscardTrain, # Step F
+            G1867::Step::Merge,
+          ], round_num: @round.round_num)
+        end
+
         def operating_round(round_num)
           calculate_interest
           G1867::Round::Operating.new(self, [
@@ -878,17 +896,7 @@ module Engine
               if phase.name.to_i < 3 || phase.name.to_i >= 8
                 new_or!
               else
-                @log << "-- #{round_description('Merger', @round.round_num)} --"
-                # The order of steps in the Grand Trunk Games rules is incorrect
-                # (confirmed by Ian D Wilson https://github.com/tobymao/18xx/issues/9655).
-                # It has buying shares before removing tokens.
-                G1867::Round::Merger.new(self, [
-                  G1867::Step::MajorTrainless,
-                  G1867::Step::ReduceTokens, # Step E
-                  G1867::Step::PostMergerShares, # Step C & D
-                  Engine::Step::DiscardTrain, # Step F
-                  G1867::Step::Merge,
-                ], round_num: @round.round_num)
+                new_merger_round
               end
             when G1867::Round::Merger
               new_or!
