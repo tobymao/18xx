@@ -519,7 +519,7 @@ module Engine
           # used for any of the Irish off-board areas, but only one on a turn
           # and, if a corporation owns multiple Irish ferries, each must be
           # used for a different off-board area.
-          abilities = corp.companies.flat_map { |c| abilities(c, :hex_bonus) }
+          abilities = corp.companies.flat_map { |c| abilities(c, :hex_bonus) }.compact
           irish_ferries, others = abilities.partition do |ability|
             irish_ferry?(ability.owner)
           end
