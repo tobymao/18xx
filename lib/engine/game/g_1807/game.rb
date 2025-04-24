@@ -75,6 +75,15 @@ module Engine
           super
         end
 
+        def stock_round
+          G1867::Round::Stock.new(self, [
+            G1867::Step::MajorTrainless,
+            Engine::Step::DiscardTrain,
+            Engine::Step::HomeToken,
+            G1807::Step::BuySellParShares,
+          ])
+        end
+
         def operating_round(round_num)
           calculate_interest
           G1867::Round::Operating.new(self, [
