@@ -925,9 +925,9 @@ module Engine
         CORPORATION_SIZES = { 2 => :small, 10 => :medium, 20 => :large }.freeze
         MINORS_GROUP_A = %w[EG EPD GA GC ML ND NU YNM].freeze
         MINORS_GROUP_B = %w[BE BG GJ NM MC SAM TV VN EC EK LB LH LR LS LY SE].freeze
-        MINORS_COLOR_BATCH1 = '#f5b4d2' # minors available from the start of the game
-        MINORS_COLOR_BATCH2 = '#d7ead8' # minors available from the second stock round
-        MINORS_COLOR_BATCH3 = '#fff381' # minors available phase 3
+        MINORS_COLOR_BATCH1 = '#ffffff' # minors available from the start of the game
+        MINORS_COLOR_BATCH2 = '#fff381' # minors available from the second stock round
+        MINORS_COLOR_BATCH3 = '#d7ead8' # minors available phase 3
 
         def company_header(company)
           case company.type
