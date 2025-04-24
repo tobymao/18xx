@@ -100,7 +100,7 @@ module Engine
             [G1867::Step::BuyCompanyPreloan, { blocks: true }],
             G1867::Step::LoanOperations,
             Engine::Step::DiscardTrain,
-            G1867::Step::BuyTrain,
+            G1807::Step::BuyTrain,
             [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
@@ -122,6 +122,11 @@ module Engine
         def event_privates_close!
           # TODO: implement this.
         end
+
+        # The 1867 code calls this method if a company is trainless at the end
+        # of a company's buy trains step in an operating. 1807 does not have
+        # nationalisation, so do nothing.
+        def nationalize!(_corporation); end
 
         def buyable_bank_owned_companies
           @companies.select { |company| !company.closed? && !company.owner }
