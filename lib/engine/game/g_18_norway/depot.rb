@@ -8,7 +8,7 @@ module Engine
       class Depot < Engine::Depot
         def min_depot_train
           current_entity = @game.round.current_entity
-          return super unless current_entity.trains.empty?
+          return super if current_entity.trains.any? { |train| !@game.ship?(train) }
 
           # Ships doesn't count towards needing a train, should be ignored when checking for min
           depot_trains.reject { |train| @game.ship?(train) }.min_by(&:price)
