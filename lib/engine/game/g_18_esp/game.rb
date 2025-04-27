@@ -883,13 +883,13 @@ module Engine
           if corporation == mza && !corporation.tokens.first.used
             token = corporation.tokens.first
             hex = hex_by_id(corporation.coordinates)
-            city = if corporation_by_id('MZ')&.ipoed
-                     # MZA special case if MZ already exists on the map
-                     hex.tile.cities.size > 1 ? city_by_id("#{hex.tile.id}-#{corporation.city}") : hex.tile.cities.first
-                   else
-                     # MZA exists, but no MZ. Place on original location
-                     city_by_id("#{hex.tile.id}-#{corporation.city}")
-                   end
+            cities = hex.tile.cities
+            city =
+              if cities.one? || !corporation_by_id('MZ')&.ipoed
+                cities.first
+              else
+                cities[corporation.city]
+              end
             @log << "#{corporation.name} places a token on #{hex.id}"
             cheater = !city.tokenable?(corporation)
             city.place_token(corporation, token, cheater: cheater, check_tokenable: false)
@@ -932,7 +932,7 @@ module Engine
           @luxury_carriages.dup.each do |owner, amount|
             next if owner == 'bank'
 
-            transfer_amount = amount - 1
+            transfer_amount = amount
             @luxury_carriages['bank'] += transfer_amount
             @luxury_carriages[owner] = 1
           end
@@ -1370,6 +1370,12 @@ module Engine
               check.call([path.hex, path]) if path.nodes.size > 1
             end
           end
+        end
+
+        def other_bank_info
+          return unless (@luxury_carriages['bank']).positive?
+
+          ['Tenders', (@luxury_carriages['bank']).to_s]
         end
       end
     end
