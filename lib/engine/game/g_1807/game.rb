@@ -177,7 +177,18 @@ module Engine
         end
 
         def check_other(route)
+          check_city_revisited(route)
           check_london(route)
+        end
+
+        def check_city_revisited(route)
+          # Multiple cities on the same hex cannot be visited by the same train.
+          return if route.visited_stops
+                         .select(&:city?)
+                         .group_by(&:tile)
+                         .all? { |_hex, cities| cities.one? }
+
+          raise GameError, 'Route may not visit multiple cities on the same hex.'
         end
 
         def check_london(route)
