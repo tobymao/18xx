@@ -128,6 +128,7 @@ module Engine
                 price: 450,
               },
             ],
+            events: [{ 'type' => 'u1_available' }],
           },
           {
             name: '6',
@@ -183,7 +184,7 @@ module Engine
               '2+2' => 150,
               '5+5E' => 375,
             },
-            events: [{ 'type' => 'u1_available' }],
+            events: [{ 'type' => 'u2_available' }],
           },
           {
             name: '4+4',
@@ -213,7 +214,6 @@ module Engine
               '5+5E' => 375,
             },
             events: [
-              { 'type' => 'u2_available' },
               { 'type' => 'privates_close' },
               { 'type' => 'signal_end_game' },
             ],
