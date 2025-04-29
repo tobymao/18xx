@@ -534,7 +534,7 @@ module Engine
           # not just the one that we are currently calculating the bonus for.
           irish_offboards = @ireland.sort_by do |offboard|
             -1 * all_routes.sum do |route|
-              route.stops.include?(offboard) ? (route.train.multiplier || 1) : 0
+              route.visited_stops.include?(offboard) ? (route.train.multiplier || 1) : 0
             end
           end
           bonus + irish_ferries.zip(irish_offboards).sum do |ability, offboard|
