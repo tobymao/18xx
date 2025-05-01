@@ -423,6 +423,14 @@ module Engine
           end
         end
 
+        def minor?(entity)
+          entity.type == :minor
+        end
+
+        def major?(entity)
+          entity.type == :major
+        end
+
         def available_programmed_actions
           [Action::ProgramMergerPass, Action::ProgramBuyShares, Action::ProgramSharePass]
         end

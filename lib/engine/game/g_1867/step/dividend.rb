@@ -13,13 +13,13 @@ module Engine
           include Engine::Step::HalfPay
 
           def actions(entity)
-            return [] if !entity.corporation? || entity.type == :minor
+            return [] if !entity.corporation? || @game.minor?(entity)
 
             super
           end
 
           def skip!
-            return super if current_entity.type == :major
+            return super unless @game.minor?(current_entity)
 
             revenue = @game.routes_revenue(routes)
             process_dividend(Action::Dividend.new(
@@ -29,32 +29,28 @@ module Engine
           end
 
           def payout(entity, revenue)
-            return super if entity.type == :major
+            return super unless @game.minor?(current_entity)
 
             amount = revenue / 2
             { corporation: amount, per_share: amount }
           end
 
           def payout_shares(entity, revenue)
-            return super if entity.type == :major
+            return super unless @game.minor?(current_entity)
 
             @log << "#{entity.owner.name} receives #{@game.format_currency(revenue)}"
             @game.bank.spend(revenue, entity.owner) if revenue.positive?
           end
 
           def share_price_change(entity, revenue = 0)
-            if entity.type == :minor
-              super
+            return super if @game.minor?(current_entity)
+            return { share_direction: :left, share_times: 1 } unless revenue.positive?
+
+            price = entity.share_price.price
+            if revenue >= price
+              { share_direction: :right, share_times: 1 }
             else
-
-              price = entity.share_price.price
-              return { share_direction: :left, share_times: 1 } unless revenue.positive?
-
-              if revenue >= price
-                { share_direction: :right, share_times: 1 }
-              else
-                {}
-              end
+              {}
             end
           end
         end
