@@ -514,6 +514,7 @@ module Engine
 
         def bonus_privates(train, stops, all_routes)
           corp = train.owner
+          multiplier = train.multiplier || 1
           # The bonuses for the Irish ferries need to be treated differently.
           # There are three privates that give bonuses for these, each can be
           # used for any of the Irish off-board areas, but only one on a turn
@@ -525,7 +526,9 @@ module Engine
           end
 
           bonus = others.sum do |ability|
-            stops.map(&:hex).map(&:coordinates).intersect?(ability.hexes) ? ability.amount : 0
+            next 0 unless stops.map(&:hex).map(&:coordinates).intersect?(ability.hexes)
+
+            ability.amount * multiplier
           end
           return bonus if irish_ferries.empty?
 
@@ -538,7 +541,7 @@ module Engine
             end
           end
           bonus + irish_ferries.zip(irish_offboards).sum do |ability, offboard|
-            stops.include?(offboard) ? ability.amount : 0
+            stops.include?(offboard) ? ability.amount * multiplier : 0
           end
         end
 
