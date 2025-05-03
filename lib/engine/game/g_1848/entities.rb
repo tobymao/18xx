@@ -119,7 +119,7 @@ module Engine
             sym: 'P6',
             name: 'North Australian Railway',
             value: 230,
-            lowest_bid_price: 220,
+            lowest_bid_price: 200,
             revenue: 30,
             desc: "The owner receives a Director's Share share in the CAR, which must start at a par value of £100."\
                   ' Cannot be bought by a corporation. Closes when CAR purchases its first train.',
