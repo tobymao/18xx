@@ -280,7 +280,7 @@ module Engine
             min_price: 1,
             max_price: 100,
             revenue: 20,
-            desc: 'F4. Gives a £10 revenue bonus for the Hull off-board area (L22).',
+            desc: 'F4. Gives a £20 revenue bonus for the Hull off-board area (L22).',
             color: '#9fd9f7',
             abilities: [
               { type: 'revenue_change', revenue: 30, on_phase: '3' },
@@ -289,7 +289,7 @@ module Engine
               {
                 type: 'hex_bonus',
                 owner_type: 'corporation',
-                amount: 10,
+                amount: 20,
                 hexes: %w[L22],
               },
             ],
@@ -302,7 +302,7 @@ module Engine
             min_price: 1,
             max_price: 100,
             revenue: 20,
-            desc: 'F5. Gives a £10 revenue bonus for the Harwich off-board area (S29).',
+            desc: 'F5. Gives a £20 revenue bonus for the Harwich off-board area (S29).',
             color: '#9fd9f7',
             abilities: [
               { type: 'revenue_change', revenue: 30, on_phase: '3' },
@@ -311,7 +311,7 @@ module Engine
               {
                 type: 'hex_bonus',
                 owner_type: 'corporation',
-                amount: 10,
+                amount: 20,
                 hexes: %w[S29],
               },
             ],
@@ -324,7 +324,7 @@ module Engine
             min_price: 1,
             max_price: 100,
             revenue: 20,
-            desc: 'F6. Gives a £10 revenue bonus for the Plymouth off-board area (X8).',
+            desc: 'F6. Gives a £20 revenue bonus for the Plymouth off-board area (X8).',
             color: '#9fd9f7',
             abilities: [
               { type: 'revenue_change', revenue: 30, on_phase: '3' },
@@ -333,7 +333,7 @@ module Engine
               {
                 type: 'hex_bonus',
                 owner_type: 'corporation',
-                amount: 10,
+                amount: 20,
                 hexes: %w[X8],
               },
             ],
@@ -346,7 +346,7 @@ module Engine
             min_price: 1,
             max_price: 150,
             revenue: 30,
-            desc: 'F7. Gives a £10 revenue bonus for the Dover off-board area (V30).',
+            desc: 'F7. Gives a £30 revenue bonus for the Dover off-board area (V30).',
             color: '#9fd9f7',
             abilities: [
               { type: 'revenue_change', revenue: 45, on_phase: '3' },
@@ -355,7 +355,7 @@ module Engine
               {
                 type: 'hex_bonus',
                 owner_type: 'corporation',
-                amount: 10,
+                amount: 30,
                 hexes: %w[V30],
               },
             ],
@@ -368,7 +368,7 @@ module Engine
             min_price: 1,
             max_price: 150,
             revenue: 30,
-            desc: 'F8. Gives a £10 revenue bonus for the Aberdeen off-board area (A13).',
+            desc: 'F8. Gives a £30 revenue bonus for the Aberdeen off-board area (A13).',
             color: '#9fd9f7',
             abilities: [
               { type: 'revenue_change', revenue: 45, on_phase: '3' },
@@ -377,7 +377,7 @@ module Engine
               {
                 type: 'hex_bonus',
                 owner_type: 'corporation',
-                amount: 10,
+                amount: 30,
                 hexes: %w[A13],
               },
             ],
