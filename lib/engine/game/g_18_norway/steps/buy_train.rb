@@ -41,11 +41,14 @@ module Engine
           end
 
           def buyable_trains(entity)
-            return super if must_buy_train?(entity) || entity.cash >= @depot.min_depot_price
+            trains = super
 
-            # We need to add the ships in the case that the company have a train but have less money then the next available train
-            super + @depot.depot_trains.select do |train|
-              @game.ship?(train) && entity.cash >= train.price
+            # Remove any ships that we already have
+            trains.reject do |train|
+              next unless @game.ship?(train)                            # We want to keep all trains
+              next true if must_buy_train?(entity)                      # Remove all ships if we must buy a train
+
+              entity.trains.any? { |ship| ship.name == train.name }
             end
           end
 
