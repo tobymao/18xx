@@ -4,6 +4,7 @@ require_relative '../g_1817/game'
 require_relative 'meta'
 require_relative 'entities'
 require_relative 'map'
+require_relative 'train'
 
 module Engine
   module Game
@@ -28,6 +29,8 @@ module Engine
         CAPITALIZATION = :incremental
 
         MUST_SELL_IN_BLOCKS = false
+        BANKRUPTCY_ENDS_GAME_AFTER = :all_but_one
+        ALLOW_TRAIN_BUY_FROM_OTHER_PLAYERS = false
 
         MARKET = [
           %w[0l
@@ -123,13 +126,19 @@ module Engine
           },
         ].freeze
 
+        FINAL_2PLUS_PRICE = 90
+        FINAL_3PLUS_PRICE = 180
+        FINAL_2P_PRICE = 270
+        FINAL_5_PRICE = 480
+        FINAL_6D_PRICE = 640
+
         TRAINS = [{ name: '2', distance: 2, price: 100, rusts_on: '3P', num: 40 },
-                  { name: '2+', distance: 2, price: 100, obsolete_on: '3P', num: 4 },
-                  { name: '3+', distance: 3, price: 300, obsolete_on: 'G*D', num: 12 },
+                  { name: '2+', distance: 2, price: 100, final_price: FINAL_2PLUS_PRICE, obsolete_on: '3P', num: 4 },
+                  { name: '3+', distance: 3, price: 300, final_price: FINAL_3PLUS_PRICE, obsolete_on: 'G*D', num: 12 },
                   { name: '3P', distance: 3, price: 400, num: 1 },
-                  { name: '2P', distance: 2, price: 300, num: 5 },
-                  { name: '5', distance: 5, price: 600, num: 6 },
-                  { name: '6*D', distance: 6, price: 800, num: 30 },
+                  { name: '2P', distance: 2, price: 300, final_price: FINAL_2P_PRICE, num: 5 },
+                  { name: '5', distance: 5, price: 600, final_price: FINAL_5_PRICE, num: 6 },
+                  { name: '6*D', distance: 6, price: 800, final_price: FINAL_6D_PRICE, num: 30 },
                   { name: '2P*', distance: 2, price: 200, num: 1 }].freeze
 
         STATUS_TEXT = Base::STATUS_TEXT.merge(
@@ -137,6 +146,14 @@ module Engine
                                            'Can\'t upgrade the tile just laid'],
           'free_ports' => ['Free ports', 'Ports no longer count towards train length']
         ).freeze
+
+        GAME_END_REASONS_TEXT = Base::GAME_END_REASONS_TEXT.merge(
+          custom: "6*D discounted to #{FINAL_6D_PRICE} F"
+        )
+
+        GAME_END_CHECK = { bankrupt: :immediate, custom: :one_more_full_or_set }.freeze
+
+        OR_COUNT_IN_LAST_SET = 4
 
         ONE_YELLOW_TILE_LAY = [{ lay: true, upgrade: false }].freeze
         TWO_TILE_LAYS = [
@@ -150,6 +167,25 @@ module Engine
 
         def setup
           @extra_cert_limit = Hash.new { |h, k| h[k] = 0 }
+          @end_game_triggered = false
+        end
+
+        def timeline
+          @timeline = [
+            'At the end of each OR the next available train will be exported
+            (removed, triggering phase change as if purchased). All remaining
+            trains of the same type will be discounted by 10% of the base price.
+            Once the price is lowest possible (see below), all remaining trains of
+            the type are exported.',
+            "2 #{format_currency(100)}",
+            "2+ #{format_currency(100)}, #{format_currency(FINAL_2PLUS_PRICE)}",
+            "3+ #{format_currency(300)}, #{format_currency(270)}, #{format_currency(240)}, "\
+            "#{format_currency(210)}, #{format_currency(FINAL_3PLUS_PRICE)}",
+            "3P #{format_currency(400)}",
+            "2P #{format_currency(300)}, #{format_currency(FINAL_2P_PRICE)}",
+            "5 #{format_currency(600)}, #{format_currency(540)}, #{format_currency(FINAL_5_PRICE)}",
+            "6*D #{format_currency(800)}, #{format_currency(720)}, #{format_currency(FINAL_6D_PRICE)}",
+          ]
         end
 
         def init_round
@@ -157,6 +193,16 @@ module Engine
           @log << "-- #{round_description('Stock', 1)} --"
           @round_counter = 1
           stock_round
+        end
+
+        def init_train_handler
+          trains = game_trains.flat_map do |train|
+            Array.new((train[:num] || num_trains(train))) do |index|
+              G18FR::Train.new(**train, index: index)
+            end
+          end
+
+          Engine::Depot.new(trains, self)
         end
 
         def stock_round
@@ -184,7 +230,7 @@ module Engine
             Engine::Step::Route,
             G1817::Step::Dividend,
             Engine::Step::DiscardTrain,
-            G1817::Step::BuyTrain,
+            G18FR::Step::BuyTrain,
           ], round_num: round_num)
         end
 
@@ -250,6 +296,42 @@ module Engine
           end
         end
 
+        def info_train_price(train)
+          format_currency(train.price)
+        end
+
+        def or_round_finished
+          return if @end_game_triggered || @depot.upcoming.empty?
+
+          train_to_export = @depot.upcoming.first
+          case train_to_export.name
+          when '2'
+            depot.export_all!('2')
+          when @depot.upcoming[1].name
+            if train_to_export.price == train_to_export.final_price
+              return if train_to_export.name == '6*D'
+
+              @depot.export_all!(train_to_export.name, silent: true)
+              @log << "-- #{train_to_export.name} trains can no longer be discounted. "\
+                      "All remaining  #{train_to_export.name} trains are exported --"
+            else
+              depot.export!
+              # Discount all trains of the given type, so Info Train shows the correct price
+              trains_to_discount = @depot.trains.select { |t| t.name == train_to_export.name }
+              trains_to_discount.each { |t| t.new_price(t.price - (0.1 * t.base_price)) }
+              @log << "-- All remaining #{train_to_export.name} trains are discounted to "\
+                      "#{format_currency(@depot.upcoming.first.price)} --"
+              if train_to_export.name == '6*D' && train_to_export.price == FINAL_6D_PRICE
+                @end_game_triggered = true
+                game_end_check
+                @log << "-- Final train discount. The game will end at the end of OR #{@turn + 1}.#{OR_COUNT_IN_LAST_SET} --"
+              end
+            end
+          else
+            depot.export!
+          end
+        end
+
         def tile_lays(_entity)
           @phase.status.include?('two_tile_lays') ? TWO_TILE_LAYS : ONE_YELLOW_TILE_LAY
         end
@@ -260,6 +342,10 @@ module Engine
           return GREEN_B_TILE_NAME == to.name if from.name == YELLOW_B_TILE_NAME && from.color == :yellow
 
           super
+        end
+
+        def custom_end_game_reached?
+          @end_game_triggered
         end
       end
     end
