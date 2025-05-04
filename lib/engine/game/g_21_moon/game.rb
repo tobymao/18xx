@@ -756,19 +756,21 @@ module Engine
           !(route_a.visited_stops & route_b.visited_stops).empty?
         end
 
-        def check_other(route)
-          # this route must visit corresponding base, OR it must
-          # intersect with a route that does
-          this_train = route.train
-          base = @train_base[this_train]
-          return if visited_base?(this_train.owner, base, route)
+        def check_route_combination(routes)
+          routes.each do |route|
+            # this route must visit corresponding base, OR it must
+            # intersect with a route that does
+            this_train = route.train
+            base = @train_base[this_train]
+            next if visited_base?(this_train.owner, base, route)
 
-          other_route = route.routes.find { |r| r.train != this_train && @train_base[r.train] == base }
-          return if other_route && visited_base?(this_train.owner, base, other_route) && intersects?(route, other_route)
+            other_route = routes.find { |r| r.train != this_train && @train_base[r.train] == base }
+            next if other_route && visited_base?(this_train.owner, base, other_route) && intersects?(route, other_route)
 
-          raise GameError, "Must visit #{base.to_s.upcase}" unless other_route
+            raise GameError, "Must visit #{base.to_s.upcase}" unless other_route
 
-          raise GameError, "Must visit #{base.to_s.upcase} or intersect with another #{base.to_s.upcase} route that does"
+            raise GameError, "Must visit #{base.to_s.upcase} or intersect with another #{base.to_s.upcase} route that does"
+          end
         end
 
         def sp_revenue(routes)

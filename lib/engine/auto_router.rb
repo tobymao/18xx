@@ -151,7 +151,8 @@ module Engine
               bitfield: bitfield_from_connection(connection, hexside_bits),
             )
             route.routes = [route]
-            route.revenue(suppress_check_other: true) # defer route-collection checks til later
+            # defer route combination checks until we have the full combination of routes to check
+            route.revenue(suppress_check_route_combination: true)
             train_routes[train] << route
           rescue RouteTooLong
             # ignore for this train, and abort walking this path if ignored for all trains
@@ -417,20 +418,20 @@ module Engine
 
     %x{
       // do final combo validation using game-specific checks driven by
-      // route.check_other! that was skipped when building routes
+      // route.check_route_combination!
       function is_valid_combo(cb) {
-        // temporarily marshall back to opal since we need to call the opal route.check_other!
+        // temporarily marshall back to opal since we need to call the opal route.check_route_combination!
         let rb_rts = []
         for (let rt of cb.routes) {
-          rt.route['$routes='](rb_rts) // allows route.check_other! to process all routes
+          rt.route['$routes='](rb_rts) // allows route.check_route_combination! to process all routes
           rb_rts['$<<'](rt.route)
         }
 
-        // Run route.check_other! for the full combo, to see if game- and action-specific rules are followed.
+        // Run check_route_combination
         // Eg. 1870 destination runs should reject combos that don't have a route from home to destination city
         try {
           for (let rt of cb.routes) {
-            rt.route['$check_other!']() // throws if bad combo
+            rt.route['$check_route_combination!']() // throws if bad combo
           }
           return true
         }

@@ -1769,28 +1769,31 @@ module Engine
         def check_other(route)
           # make sure a single route doesn't visit cities in a given hex twice
           check_hex_reentry(route)
+        end
 
-          return if route.routes.empty?
+        def check_route_combination(routes)
+          routes.each do |route|
+            # make sure routes from same supertrain intersect
+            super_routes = routes.reject do |r|
+              r.chains.empty? ||
+                @supertrains[route.train] != @supertrains[r.train]
+            end
 
-          # make sure routes from same supertrain intersect
-          super_routes = route.routes.reject do |r|
-            r.chains.empty? ||
-              @supertrains[route.train] != @supertrains[r.train]
+            check_intersection(@supertrains[route.train], super_routes)
+
+            check_diesel_nodes(route) if diesel?(route.train)
+
+            # make sure concession route is run by normal trains and also by the diesel if there is one
+            type_routes = routes.group_by { |r| train_type(r.train) }
+            owner = train_owner(route.train)
+
+            if train_type(route.train) == :mining && !concession_route_run?(owner, type_routes[:mining])
+              raise GameError, 'Concession route not run by one non-diesel train'
+            end
+            next if train_type(route.train) == :mining || concession_route_run?(owner, type_routes[:passenger])
+
+            raise GameError, 'Concession route not run by diesel train'
           end
-          check_intersection(@supertrains[route.train], super_routes)
-
-          check_diesel_nodes(route) if diesel?(route.train)
-
-          # make sure concession route is run by normal trains and also by the diesel if there is one
-          type_routes = route.routes.group_by { |r| train_type(r.train) }
-          owner = train_owner(route.train)
-
-          if train_type(route.train) == :mining && !concession_route_run?(owner, type_routes[:mining])
-            raise GameError, 'Concession route not run by one non-diesel train'
-          end
-          return if train_type(route.train) == :mining || concession_route_run?(owner, type_routes[:passenger])
-
-          raise GameError, 'Concession route not run by diesel train'
         end
 
         # all routes from one supertrain must intersect each other (borrowed from 1860)
