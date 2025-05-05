@@ -167,13 +167,21 @@ module Engine
         # `@round.last_to_act` goes bankrupt.
         def priority_deal_player
           # In operating rounds the array of players will be in priority order.
-          return @players.first unless @round.current_entity&.player?
+          return @players.first if @round.operating?
 
           # In stock and auction rounds the first non-bankrupt player after the
           # one who last acted has priority.
           last_to_act = @round.last_to_act
           idx = last_to_act ? (@players.index(last_to_act) + 1) : 0
           @players.rotate(idx).find { |player| !player.bankrupt }
+        end
+
+        # The base class version of #reorder_players also can't cope with
+        # players going bankrupt in a stock round. It can give an error after
+        # an out-of-bounds array access returns nil.
+        def reorder_players(_order = nil, log_player_order: false, silent: false)
+          @players.rotate!(@players.index(priority_deal_player))
+          @log << "#{@players.first.name} has priority deal" unless silent
         end
 
         def acting_for_entity(entity)
