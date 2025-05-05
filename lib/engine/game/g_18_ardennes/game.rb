@@ -179,7 +179,7 @@ module Engine
         # The base class version of #reorder_players also can't cope with
         # players going bankrupt in a stock round. It can give an error after
         # an out-of-bounds array access returns nil.
-        def reorder_players(order = nil, log_player_order: false, silent: false)
+        def reorder_players(_order = nil, log_player_order: false, silent: false)
           @players.rotate!(@players.index(priority_deal_player))
           @log << "#{@players.first.name} has priority deal" unless silent
         end
