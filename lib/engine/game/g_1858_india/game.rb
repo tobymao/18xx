@@ -28,6 +28,7 @@ module Engine
           '6E' => 3,
           '7E' => 20,
           '5D' => 10,
+          'Mail' => 4,
         }.freeze
 
         PHASE4_TRAINS_RUST = 7 # 6H/3M trains rust after the seventh grey train is bought.
@@ -37,10 +38,10 @@ module Engine
           Engine::Round::Operating.new(self, [
             G1858India::Step::Track,
             G1858::Step::Token,
-            G1858::Step::Route,
+            G1858India::Step::Route,
             G1858::Step::Dividend,
             G1858::Step::DiscardTrain,
-            G1858::Step::BuyTrain,
+            G1858India::Step::BuyTrain,
             G1858::Step::IssueShares,
           ], round_num: round_num)
         end
@@ -60,12 +61,49 @@ module Engine
                   price: 70,
                 },
               ]
+            @game_trains <<
+              {
+                name: 'Mail',
+                distance: [{ 'nodes' => %w[city offboard], 'pay' => 7, 'visit' => 7 },
+                           { 'nodes' => %w[town], 'pay' => 0, 'visit' => 99 }],
+                track_type: :broad,
+                price: 100,
+                available_on: '3',
+              }
           end
           @game_trains
         end
 
         def num_trains(train)
           TRAIN_COUNTS[train[:name]]
+        end
+
+        def mail_train?(train)
+          train.name == 'Mail'
+        end
+
+        def owns_mail_train?(corporation)
+          corporation.trains.any? { |train| mail_train?(train) }
+        end
+
+        def trainless?(corporation)
+          # For emergency money raising, a mail train on its own doesn't stop
+          # a public company from issuing shares.
+          corporation.trains.none? { |train| !mail_train?(train) }
+        end
+
+        def num_corp_trains(corporation)
+          # Mail trains don't count towards train limit.
+          corporation.trains.count { |train| !mail_train?(train) }
+        end
+
+        def route_trains(entity)
+          # Don't show mail trains in the route selector.
+          entity.runnable_trains.reject { |train| mail_train?(train) }
+        end
+
+        def revenue_for(route, stops)
+          super + mail_bonus(route, stops)
         end
 
         def game_phases
@@ -108,6 +146,16 @@ module Engine
               end
             end
           end
+        end
+
+        private
+
+        def mail_bonus(route, stops)
+          train = route.train
+          return 0 unless @round.mail_trains[train.owner] == train
+
+          stop_bonus = (train.multiplier || 1) * (train.obsolete ? 5 : 10)
+          stop_bonus * stops.count { |stop| stop.city? || stop.offboard? }
         end
       end
     end
