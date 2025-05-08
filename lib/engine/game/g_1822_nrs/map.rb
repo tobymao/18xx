@@ -266,7 +266,7 @@ module Engine
               'city=revenue:yellow_40|green_60|brown_80|gray_100,slots:1,loc:4,groups:London;path=a:3,b:_1',
           },
           blue: {
-            %w[L11 R31] =>
+            ['L11'] =>
               'junction;path=a:2,b:_0,terminal:1',
             ['F17'] =>
               'junction;path=a:4,b:_0,terminal:1',
