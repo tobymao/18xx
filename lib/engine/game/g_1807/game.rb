@@ -93,7 +93,7 @@ module Engine
             G1867::Step::RedeemShares,
             G1807::Step::SpecialTrack,
             G1807::Step::Track,
-            G1867::Step::Token,
+            G1807::Step::Token,
             Engine::Step::Route,
             G1867::Step::Dividend,
             # The blocking buy company needs to be before loan operations
