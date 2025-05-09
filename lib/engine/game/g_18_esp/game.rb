@@ -1143,6 +1143,20 @@ module Engine
 
           # close corp
           close_corporation(minor)
+
+          # delete mz slot if mz
+          fix_cheater_slot_madrid(minor.city) if minor.id == 'MZ'
+        end
+
+        def fix_cheater_slot_madrid(slot)
+          cities = hex_by_id('F24')&.tile&.cities
+          return unless cities
+
+          city = cities[slot]
+          return unless city
+
+          tokens = city.tokens
+          tokens.compact! if tokens.size > city.normal_slots
         end
 
         def southern_major_corps
