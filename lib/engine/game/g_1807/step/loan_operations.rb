@@ -13,7 +13,7 @@ module Engine
                     "in loan interest but only has #{@game.format_currency(cash)}"
             if cash.positive?
               @log << "#{corporation.name} pays #{@game.format_currency(cash)} " \
-                      "loan interest"
+                      'loan interest'
               corporation.spend(cash, @game.bank)
             end
             share_price = corporation.share_price
