@@ -214,7 +214,6 @@ module Engine
               '5+5E' => 375,
             },
             events: [
-              { 'type' => 'privates_close' },
               { 'type' => 'signal_end_game' },
             ],
           },

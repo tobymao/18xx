@@ -119,10 +119,6 @@ module Engine
           new_companies_available! { |company| company.sym == 'U2' }
         end
 
-        def event_privates_close!
-          # TODO: implement this.
-        end
-
         # The 1867 code calls this method if a company is trainless at the end
         # of a company's buy trains step in an operating. 1807 does not have
         # nationalisation, so do nothing.

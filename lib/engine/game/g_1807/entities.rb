@@ -16,6 +16,9 @@ module Engine
             discount: 10,
             desc: 'P1. No special abilities.',
             color: 'white',
+            abilities: [
+              { type: 'close', on_phase: '8' },
+            ],
           },
           {
             name: 'Stockton and Darlington',
@@ -29,6 +32,7 @@ module Engine
             desc: 'P2. Gives an extra, free, track lay in Darlington (I17) when owned by a player.',
             color: 'white',
             abilities: [
+              { type: 'close', on_phase: '8' },
               {
                 type: 'tile_lay',
                 when: 'owning_player_track',
@@ -51,6 +55,7 @@ module Engine
             desc: 'P3. Gives an extra, free, track lay in Falkirk (D8) when owned by a player.',
             color: 'white',
             abilities: [
+              { type: 'close', on_phase: '8' },
               {
                 type: 'tile_lay',
                 when: 'owning_player_track',
@@ -73,6 +78,7 @@ module Engine
             desc: 'P4. Gives an extra, free, track lay in Canterbury (V28) when owned by a player.',
             color: 'white',
             abilities: [
+              { type: 'close', on_phase: '8' },
               {
                 type: 'tile_lay',
                 when: 'owning_player_track',
@@ -95,6 +101,7 @@ module Engine
             desc: 'P5. Gives an extra, free, track lay in Leicester (P18) when owned by a player.',
             color: 'white',
             abilities: [
+              { type: 'close', on_phase: '8' },
               {
                 type: 'tile_lay',
                 when: 'owning_player_track',
@@ -117,6 +124,7 @@ module Engine
             desc: 'P6. Gives a £10 revenue bonus for Newcastle (G17).',
             color: 'white',
             abilities: [
+              { type: 'close', on_phase: '8' },
               {
                 type: 'hex_bonus',
                 owner_type: 'corporation',
@@ -137,6 +145,7 @@ module Engine
             desc: 'P7. Gives a £10 revenue bonus for London.',
             color: 'white',
             abilities: [
+              { type: 'close', on_phase: '8' },
               {
                 type: 'hex_bonus',
                 owner_type: 'corporation',
@@ -157,6 +166,7 @@ module Engine
             desc: 'P8. Gives a £10 revenue bonus for London.',
             color: 'white',
             abilities: [
+              { type: 'close', on_phase: '8' },
               {
                 type: 'hex_bonus',
                 owner_type:
@@ -178,6 +188,7 @@ module Engine
             desc: 'P9. Gives a £10 revenue bonus for London.',
             color: 'white',
             abilities: [
+              { type: 'close', on_phase: '8' },
               {
                 type: 'hex_bonus',
                 owner_type: 'corporation',
@@ -198,6 +209,7 @@ module Engine
             desc: 'P10. Gives a £10 revenue bonus for Liverpool (M11).',
             color: 'white',
             abilities: [
+              { type: 'close', on_phase: '8' },
               {
                 type: 'hex_bonus',
                 owner_type: 'corporation',
