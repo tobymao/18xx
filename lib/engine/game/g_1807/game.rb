@@ -98,7 +98,7 @@ module Engine
             G1867::Step::Dividend,
             # The blocking buy company needs to be before loan operations
             [G1867::Step::BuyCompanyPreloan, { blocks: true }],
-            G1867::Step::LoanOperations,
+            G1807::Step::LoanOperations,
             Engine::Step::DiscardTrain,
             G1807::Step::BuyTrain,
             [Engine::Step::BuyCompany, { blocks: true }],
