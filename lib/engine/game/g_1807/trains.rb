@@ -13,6 +13,8 @@ module Engine
                              'Underground railway company U1 becomes available for purchase.'],
           'u2_available' => ['U2 available',
                              'Underground railway company U2 becomes available for purchase.'],
+          'cert_limit_reduced' => ['Certificate limit',
+                                   'The certificate limit is reduced.'],
           'signal_end_game' => ['End of game triggered',
                                 'The current set of operating rounds is completed, then there ' \
                                 'is a stock round followed by a set of three operating rounds.'],
@@ -214,6 +216,7 @@ module Engine
               '5+5E' => 375,
             },
             events: [
+              { 'type' => 'cert_limit_reduced' },
               { 'type' => 'signal_end_game' },
             ],
           },

@@ -50,6 +50,10 @@ module Engine
           end
         end
 
+        def game_cert_limit
+          @cert_limit_reduced ? CERT_LIMIT_REDUCED : CERT_LIMIT
+        end
+
         def add_neutral_tokens(_hexes)
           # No green placeholder tokens in 1807.
           @green_tokens = []
@@ -117,6 +121,12 @@ module Engine
 
         def event_u2_available!
           new_companies_available! { |company| company.sym == 'U2' }
+        end
+
+        def event_cert_limit_reduced!
+          @cert_limit_reduced = true
+          @cert_limit = init_cert_limit
+          @log << "Certificate limit is reduced to #{@cert_limit}"
         end
 
         # The 1867 code calls this method if a company is trainless at the end
