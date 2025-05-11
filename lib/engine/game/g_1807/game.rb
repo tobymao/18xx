@@ -20,7 +20,7 @@ module Engine
 
         include_meta(G1807::Meta)
 
-        attr_reader :london_small, :london_zoomed
+        attr_reader :london_small, :london_zoomed, :london_cities
 
         GAME_END_REASONS_TEXT = Base::GAME_END_REASONS_TEXT.merge(
           train: 'The first 4+4 or 6G train is purchased.',
