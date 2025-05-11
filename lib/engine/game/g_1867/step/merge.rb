@@ -295,8 +295,7 @@ module Engine
             available = []
             # Mergeable candidates must be connected by track, minors only have one token which simplifies it
             mergeable.each do |corp|
-              parts = @game.graph.connected_nodes(corp).keys
-              corporations = parts.select(&:city?).flat_map { |c| c.tokens.compact.map(&:corporation) }
+              corporations = connected_cities(corp).flat_map { |c| c.tokens.compact.map(&:corporation) }
               available.concat(corporations - mergeable)
             end
 
@@ -326,6 +325,12 @@ module Engine
               share_dealing_players: [],
               share_dealing_multiple: [],
             }
+          end
+
+          private
+
+          def connected_cities(corporation)
+            @game.graph.connected_nodes(corporation).keys.select(&:city?)
           end
         end
       end
