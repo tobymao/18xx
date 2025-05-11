@@ -192,9 +192,7 @@ module Engine
 
         def merge_corporations
           corps = []
-          if phase.status.include?('minors_convert')
-            corps += @corporations.select { |c| c.floated? && c.type == :minor }
-          end
+          corps += @corporations.select { |c| c.floated? && c.type == :minor } if phase.status.include?('minors_convert')
           # TODO: add public companies if systems can form
           corps
         end
