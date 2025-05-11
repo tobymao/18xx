@@ -33,6 +33,13 @@ module Engine
 
         PHASE4_TRAINS_RUST = 7 # 6H/3M trains rust after the seventh grey train is bought.
 
+        STATUS_TEXT = G1858::Trains::STATUS_TEXT.merge(
+          'loco_works' => [
+            'Loco works available',
+            'The locomotive works private companies are available for purchase',
+          ],
+        ).freeze
+
         def operating_round(round_num = 1)
           @round_num = round_num
           Engine::Round::Operating.new(self, [
@@ -110,6 +117,9 @@ module Engine
           unless @game_phases
             @game_phases = super.map(&:dup)
             @game_phases.first[:status] = %w[yellow_privates narrow_gauge]
+            @game_phases[3][:status] << 'loco_works'
+            @game_phases[4][:status] << 'loco_works'
+            @game_phases[5][:status] << 'loco_works'
           end
           @game_phases
         end
@@ -145,6 +155,26 @@ module Engine
                 path.ends.all? { |pe| other.ends.any? { |oe| pe <= oe } }
               end
             end
+          end
+        end
+
+        def private_railway?(company)
+          company.type != :locoworks
+        end
+
+        def purchasable_companies(_entity)
+          @companies.select do |company|
+            !private_railway?(company) && !company.owner
+          end
+        end
+
+        def company_sellable(company)
+          !private_railway?(company) && super
+        end
+
+        def unowned_purchasable_companies(_entity)
+          @companies.select do |company|
+            !company.closed? && (!company.owner || company.owner == @bank)
           end
         end
 
