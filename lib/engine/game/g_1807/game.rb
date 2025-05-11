@@ -80,6 +80,31 @@ module Engine
           super
         end
 
+        def next_round!
+          clear_interest_paid
+          @round =
+            case @round
+            when Engine::Round::Stock
+              @operating_rounds = @final_operating_rounds || @phase.operating_rounds
+              reorder_players
+              new_operating_round
+            when Engine::Round::Operating
+              or_round_finished
+              or_set_finished if @round.round_num == @operating_rounds
+              new_merger_round
+            when G1867::Round::Merger
+              if @round.round_num < @operating_rounds
+                new_operating_round(@round.round_num + 1)
+              else
+                @turn += 1
+                new_stock_round
+              end
+            when init_round.class
+              reorder_players
+              new_stock_round
+            end
+        end
+
         def stock_round
           G1867::Round::Stock.new(self, [
             G1867::Step::MajorTrainless,
@@ -119,6 +144,17 @@ module Engine
           ], round_num: round_num)
         end
 
+        # Trains are exported after each operating round set, not after each
+        # operating round as in 1867.
+        def or_round_finished; end
+
+        def or_set_finished
+          return unless phase.status.include?('train_export')
+
+          depot.export!
+          post_train_buy
+        end
+
         def event_minors_batch3!
           new_minors_available! do |corporation|
             corporation.type == :minor && corporation.reservation_color == MINORS_COLOR_BATCH3
@@ -152,6 +188,15 @@ module Engine
           (@companies + @future_companies).select do |company|
             !company.closed? && !company.owner
           end
+        end
+
+        def merge_corporations
+          corps = []
+          if phase.status.include?('minors_convert')
+            corps += @corporations.select { |c| c.floated? && c.type == :minor }
+          end
+          # TODO: add public companies if systems can form
+          corps
         end
 
         def calculate_interest
