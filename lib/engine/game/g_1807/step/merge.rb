@@ -17,6 +17,18 @@ module Engine
               mergeable_candidates(corporation)
             end
           end
+
+          private
+
+          def london_token?(corporation)
+            corporation.placed_tokens.map(&:city).intersect?(@game.london_cities)
+          end
+
+          def connected_cities(corporation)
+            return super unless london_token?(corporation)
+
+            super | @game.london_cities
+          end
         end
       end
     end
