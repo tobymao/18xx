@@ -44,6 +44,10 @@ module Engine
               "(#{@game.format_currency(TOKEN_COST['port'])} each)."
           end
 
+          def log_skip(entity)
+            super unless entity.minor?
+          end
+
           def available_hex(entity, hex)
             can_remove_hex_token?(entity, hex)
           end
