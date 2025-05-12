@@ -144,7 +144,7 @@ module Engine
         ].freeze
 
         SCRANTON_HEX = 'G12'
-        SCRANTON_MARKER_ICON = 'coal'
+        SCRANTON_MARKER_ICON = 'mine'
         SCRANTON_MARKER_COST = 40
         DOUBLING_TOKEN_CORPS = %w[B&A ERIE PRR].freeze
         MINOR_UPGRADES = %w[yellow green].freeze
@@ -182,7 +182,7 @@ module Engine
 
           @corporations.each do |corporation|
             tile = hex_by_id(corporation.coordinates)&.tile
-            tile.cities[corporation.city || 0].place_token(corporation, corporation.tokens.first, free: true) unless tile.nil?
+            tile.cities[corporation.city || 0].place_token(corporation, corporation.tokens.first, free: true)
           end
         end
 
@@ -210,7 +210,7 @@ module Engine
           scranton_marker_available? &&
             !scranton_marker?(entity) &&
             buying_power(entity) >= SCRANTON_MARKER_COST &&
-            connected_to_coalfields?(entity)
+            connected_to_scranton?(entity)
         end
 
         def buy_scranton_marker(entity)
