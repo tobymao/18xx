@@ -83,7 +83,7 @@ module Engine
           last_right = nil
 
           complete = lambda do
-            chains << { nodes: [left, right], paths: chain }
+            chains << { nodes: [left, right], paths: chain, hexes: chain.map(&:hex) }
             last_left = left
             last_right = right
             left, right = nil
