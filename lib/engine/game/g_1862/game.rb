@@ -67,6 +67,8 @@ module Engine
 
         CAPITALIZATION = :full
 
+        TRAIN_AUTOROUTE_GROUPS = :each_train_separate
+
         MUST_SELL_IN_BLOCKS = true
 
         MARKET = [
