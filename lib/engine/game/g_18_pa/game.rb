@@ -180,7 +180,10 @@ module Engine
         def setup
           @scranton_marker_ability = Engine::Ability::Description.new(type: 'description', description: 'Scranton Token')
 
+          # place the home station for all corporations and minors except NYC.
           @corporations.each do |corporation|
+            next if corporation.id == 'NYC'
+
             tile = hex_by_id(corporation.coordinates)&.tile
             tile.cities[corporation.city || 0].place_token(corporation, corporation.tokens.first, free: true)
           end
