@@ -20,10 +20,6 @@ module Engine
             super if @game.bonds?
           end
 
-          def blocks?
-            false
-          end
-
           def skip!
             pass!
             entity = current_entity
