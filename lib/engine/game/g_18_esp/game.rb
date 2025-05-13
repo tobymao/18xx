@@ -1145,6 +1145,17 @@ module Engine
           close_corporation(minor)
         end
 
+        def close_corporation(corporation, quiet: false)
+          if corporation.type == :minor
+            corporation.placed_tokens.each do |token|
+              city = token.city
+              remove_slot = city.tokens.size > city.normal_slots
+              city.delete_token!(token, remove_slot: remove_slot)
+            end
+          end
+          super
+        end
+
         def southern_major_corps
           @corporations.select { |c| c.type == :major && !north_corp?(c) }
         end
