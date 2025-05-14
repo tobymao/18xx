@@ -18,7 +18,7 @@ module Engine
           end
 
           def share_price_change(entity, revenue = 0)
-            return {} if entity.minor?
+            return {} if entity.type == :minor
 
             super
           end
