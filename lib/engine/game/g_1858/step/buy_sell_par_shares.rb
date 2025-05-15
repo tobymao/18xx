@@ -193,6 +193,7 @@ module Engine
             # their money and doesn't want to be prompted to sell shares).
             min_price = @game.buyable_bank_owned_companies.map(&:min_bid).min
             @game.programmed_actions.each do |player, actions|
+              next unless player
               next if player.cash < min_price
 
               actions.reject! do |act|
