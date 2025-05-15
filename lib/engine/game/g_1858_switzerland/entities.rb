@@ -162,7 +162,7 @@ module Engine
           },
           {
             sym: 'VSB',
-            name: 'Vereingtebahn',
+            name: 'Vereinigtebahn',
             type: 'private_batch1',
             desc: 'P4. Revenue 21/32, face value 105. Home hexes are J5 and K4. ' \
                   'Can be used to start a public company in St Gallen.',
