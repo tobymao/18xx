@@ -25,7 +25,11 @@ module View
 
           if @step.respond_to?(:mergeable)
             mergeable_entities = @step.mergeable(merge_entity)
-            player_corps = mergeable_entities.select do |target|
+            unless mergeable_entities.is_a?(Hash)
+              heading = @step.respond_to?(:mergeable_type) ? @step.mergeable(merge_entity) : nil
+              mergeable_entities = { heading => mergeable_entities }
+            end
+            player_corps = mergeable_entities.values.flatten.select do |target|
               target.player == merge_entity.player || @step.show_other_players
             end
             @selected_corporation = player_corps.first if player_corps.one? && !@selected_corporation
@@ -35,7 +39,8 @@ module View
 
           children << h(Choose) if actions.include?('choose')
 
-          if (%w[buy_shares sell_shares] & actions).any?
+          if actions.intersect?(%w[buy_shares sell_shares]) &&
+              !(@step.respond_to?(:exchanging?) && @step.exchanging?(entity))
             return h(CashCrisis) if @step.respond_to?(:needed_cash)
 
             corporation = @round.converted
@@ -54,6 +59,7 @@ module View
           buttons << render_offer(entity, auctioning_corporation) if actions.include?('assign')
 
           buttons << render_merge(entity) if actions.include?('merge')
+          buttons << render_exchange(entity) if @step.respond_to?(:exchanging?) && @step.exchanging?(entity)
           buttons << h(ScrapTrains, corporation: entity) if actions.include?('scrap_train')
           children << h(:div, buttons) if buttons.any?
 
@@ -86,17 +92,16 @@ module View
                 margin: '0.5rem 1rem 0 0',
               },
             }
-            if @step.respond_to?(:mergeable_type) && mergeable_entities.any?
-              children << h(:div, props, @step.mergeable_type(merge_entity))
-            end
-
             hidden_corps = false
-            mergeable_entities.each do |target|
-              corp = @selected_corporation if corps_actionable
-              if @step.show_other_players || @show_other_players || target.player == merge_entity.player || !target.player
-                children << h(Corporation, corporation: target, selected_corporation: corp)
-              else
-                hidden_corps = true
+            mergeable_entities.each do |group_heading, mergeable_corporations|
+              children << h(:div, props, group_heading) if group_heading
+              mergeable_corporations.each do |target|
+                corp = @selected_corporation if corps_actionable
+                if @step.show_other_players || @show_other_players || target.player == merge_entity.player || !target.player
+                  children << h(Corporation, corporation: target, selected_corporation: corp)
+                else
+                  hidden_corps = true
+                end
               end
             end
 
@@ -194,6 +199,33 @@ module View
           end
           h(:button, { attrs: { disabled: !@selected_corporation }, on: { click: merge } },
             @step.merge_name(@selected_corporation))
+        end
+
+        def render_exchange(corporation)
+          exchange = lambda do
+            if @selected_corporation
+              exchange_corporation = @selected_corporation
+              do_exchange = lambda do
+                process_action(Engine::Action::BuyShares.new(
+                 corporation,
+                 shares: exchange_corporation.treasury_shares.first,
+               ))
+              end
+
+              if @step.show_other_players ||
+                  !exchange_corporation.player ||
+                  exchange_corporation.player == corporation.player
+                do_exchange.call
+              else
+                check_consent(corporation, exchange_corporation.player, do_exchange)
+              end
+
+            else
+              store(:flash_opts, 'Select a corporation to exchange with')
+            end
+          end
+          h(:button, { attrs: { disabled: !@selected_corporation }, on: { click: exchange } },
+            @step.exchange_name(@selected_corporation))
         end
       end
     end
