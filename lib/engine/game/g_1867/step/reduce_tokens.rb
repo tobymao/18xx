@@ -25,6 +25,8 @@ module Engine
           end
 
           def move_tokens_to_surviving(surviving, others)
+            # Stop zero-cost tokens from being moved from a minor to a major.
+            others.each { |corp| corp.tokens.select!(&:city) }
             super
             # Add the $40 token back if the major only has two tokens
             @game.fix_token_count!(surviving)
