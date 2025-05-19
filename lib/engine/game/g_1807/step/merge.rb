@@ -32,6 +32,10 @@ module Engine
             "Public companies that can take over #{corporation.name}:"
           end
 
+          def round_state
+            super.merge({ corporations_acquiring_minors: nil })
+          end
+
           def actions(entity)
             return [] unless entity == current_entity
             return [] unless entity.corporation?
@@ -79,16 +83,6 @@ module Engine
 
           def london_token?(corporation)
             corporation.placed_tokens.map(&:city).intersect?(@game.london_cities)
-          end
-
-          def token_location(token)
-            hex =
-              if @game.london_cities.include?(token.city)
-                @game.london_small
-              else
-                token.city.hex
-              end
-            "#{hex.location_name} (#{token.hex.coordinates})"
           end
 
           # Cities that a corporation can trace a route to.
@@ -142,17 +136,13 @@ module Engine
 
           def takeover(minor, major)
             remove_duplicate_tokens(minor, [major])
-            received = minor.placed_tokens.map do |token|
-              next unless (new_token = major.next_token)
-
-              location_name = token_location(token)
-              city = token.city
-              token.remove!
-              city.place_token(major, new_token, check_tokenable: false)
-              "a token in #{location_name}"
-            end.compact
-            received += move_assets(minor, major)
-            @game.close_corporation(minor)
+            received = move_assets(minor, major)
+            if !minor.placed_tokens.empty? && !major.unplaced_tokens.empty?
+              @round.corporations_acquiring_minors = { major: major, minor: minor }
+              received << "a token in #{@game.token_location(minor.placed_tokens.first)}"
+            else
+              @game.close_corporation(minor)
+            end
             @log << "#{major.name} takes over #{minor.name} receiving #{received.join(', ')}"
           end
         end

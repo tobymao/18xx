@@ -117,6 +117,7 @@ module Engine
         def merger_round
           G1867::Round::Merger.new(self, [
             G1867::Step::MajorTrainless,
+            G1807::Step::DeclineTokens,
             G1867::Step::ReduceTokens,
             G1867::Step::PostMergerShares,
             Engine::Step::DiscardTrain,
