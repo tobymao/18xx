@@ -777,11 +777,9 @@ module Engine
           hexes = route.hexes.reject { |h| self.class::DOUBLE_HEX.include?(h.name) }
           raise GameError, 'Route visits same hex twice' if hexes.size != hexes.uniq.size
 
-          if route.train.id == '2P-0' && !@perm2_ran_aranjuez && route.hexes.none? do |hex|
-               hex.id == ARANJUEZ_HEX
-             end
+          if route.train.id == '2P-0' && !@perm2_ran_aranjuez && !([ARANJUEZ_HEX, MADRID_HEX] - route.hexes.map(&:id)).empty?
             raise GameError,
-                  '2P first run must include Aranjuez'
+                  '2P first run must include Aranjuez and Madrid'
           end
           wrong_track = skip_route_track_type(route.train)
           raise GameError, 'Routes must use correct gauage' if wrong_track && route.paths.any? { |p| p.track == wrong_track }
@@ -792,11 +790,10 @@ module Engine
         def check_p2_aranjuez(routes)
           return if @perm2_ran_aranjuez
 
-          @perm2_ran_aranjuez = true if routes.any? do |route|
-                                          route.train.id == '2P-0' && route.hexes.any? do |hex|
-                                            hex.id == ARANJUEZ_HEX
-                                          end
-                                        end
+          @perm2_ran_aranjuez = routes.any? do |route|
+            route.train.id == '2P-0' &&
+            ([ARANJUEZ_HEX, MADRID_HEX] - route.hexes.map(&:id)).empty?
+          end
         end
 
         def valid_interchange?(tile, entity)
@@ -1143,6 +1140,17 @@ module Engine
 
           # close corp
           close_corporation(minor)
+        end
+
+        def close_corporation(corporation, quiet: false)
+          if corporation.type == :minor
+            corporation.placed_tokens.each do |token|
+              city = token.city
+              remove_slot = city.tokens.compact.any?(&:cheater)
+              city.delete_token!(token, remove_slot: remove_slot)
+            end
+          end
+          super
         end
 
         def southern_major_corps
