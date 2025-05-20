@@ -32,6 +32,7 @@ module Engine
           all_passed! if entities.all?(&:passed?)
           @round.next_entity_index!
         end
+        @game.next_turn!
       end
 
       def process_bid(action)
@@ -43,6 +44,7 @@ module Engine
           placement_bid(action)
           @round.next_entity_index!
         end
+        @game.next_turn!
       end
 
       def active_entities
