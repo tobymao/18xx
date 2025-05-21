@@ -818,6 +818,14 @@ module Engine
           @game_end_check = super || @game_end_check
         end
 
+        # The merger process can result in the new major having just two
+        # tokens. This gives them their third token if that has happened.
+        def fix_token_count!(corporation)
+          return if corporation.tokens.size == 3
+
+          corporation.tokens << Engine::Token.new(corporation, price: 40)
+        end
+
         private
 
         def new_auction_round
