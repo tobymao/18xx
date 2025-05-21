@@ -73,7 +73,7 @@ module Engine
           unless @game_trains
             @game_trains = super.map(&:dup)
             # Add the 1M variant to the 2H train.
-            @game_trains.first['variants'] =
+            @game_trains.first[:variants] =
               [
                 {
                   name: '1M',
