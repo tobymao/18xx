@@ -17,11 +17,9 @@ module Engine
 
           def process_buy_train(action)
             new_train = @depot.upcoming.include?(action.train)
-            print "new train: #{new_train} "
             super
 
             lfk = @game.lfk
-            print "train bought this round: #{@game.train_bought_this_round} "
             return if @game.train_bought_this_round || !lfk.floated? || !new_train
 
             lfk_owner = lfk.owner
