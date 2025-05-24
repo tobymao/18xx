@@ -238,7 +238,7 @@ module Engine
 
             return finish_merge_to_major(action) if @merge_major
 
-            if !@game.loading && !mergeable(action.entity).include?(action.corporation)
+            if !@game.loading && !mergeable_candidates(action.entity).include?(action.corporation)
               raise GameError, "Cannot merge with #{action.corporation.name}"
             end
 
