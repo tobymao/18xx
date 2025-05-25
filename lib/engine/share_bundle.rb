@@ -7,8 +7,9 @@ module Engine
 
     def initialize(shares, percent = nil)
       @shares = Array(shares).dup
-      raise 'All shares must be from the same corporation' unless @shares.map(&:corporation).uniq.one?
-      raise 'All shares must be owned by the same owner' unless @shares.map(&:owner).uniq.one?
+      raise GameError, 'A share bundle must contain at least one share' if @shares.empty?
+      raise GameError, 'All shares must be from the same corporation' unless @shares.map(&:corporation).uniq.one?
+      raise GameError, 'All shares must be owned by the same owner' unless @shares.map(&:owner).uniq.one?
 
       @percent = percent || @shares.sum(&:percent)
       @share_price = nil
