@@ -167,9 +167,21 @@ module View
           )
         end
 
+        def merge_allowed?(corp1, corp2)
+          return false if !corp1 || !corp2
+
+          !@step.respond_to?(:merge_allowed?) || @step.merge_allowed?(corp1, corp2)
+        end
+
+        def exchange_allowed?(corp1, corp2)
+          return false if !corp1 || !corp2
+
+          @step.exchange_allowed?(corp1, corp2)
+        end
+
         def render_merge(corporation)
           merge = lambda do
-            if @selected_corporation
+            if merge_allowed?(corporation, @selected_corporation)
               merge_corporation = @selected_corporation
               do_merge = lambda do
                 if merge_corporation.corporation?
@@ -197,13 +209,18 @@ module View
               store(:flash_opts, 'Select a corporation to merge with')
             end
           end
-          h(:button, { attrs: { disabled: !@selected_corporation }, on: { click: merge } },
-            @step.merge_name(@selected_corporation))
+          h(:button,
+            {
+              attrs: { disabled: !merge_allowed?(corporation, @selected_corporation) },
+              on: { click: merge }
+            },
+            @step.merge_name(@selected_corporation)
+           )
         end
 
         def render_exchange(corporation)
           exchange = lambda do
-            if @selected_corporation
+            if exchange_allowed?(corporation, @selected_corporation)
               exchange_corporation = @selected_corporation
               do_exchange = lambda do
                 process_action(Engine::Action::BuyShares.new(
@@ -224,8 +241,13 @@ module View
               store(:flash_opts, 'Select a corporation to exchange with')
             end
           end
-          h(:button, { attrs: { disabled: !@selected_corporation }, on: { click: exchange } },
-            @step.exchange_name(@selected_corporation))
+          h(:button,
+            {
+              attrs: { disabled: !exchange_allowed?(corporation, @selected_corporation) },
+              on: { click: exchange }
+            },
+            @step.exchange_name(@selected_corporation)
+           )
         end
       end
     end
