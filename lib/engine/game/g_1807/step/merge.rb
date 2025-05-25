@@ -81,6 +81,23 @@ module Engine
             takeover(minor, major)
           end
 
+          def exchange_allowed?(minor, major)
+            return false unless minor.type == :minor
+            return false unless major.type == :public
+
+            exchange_candidates(minor).include?(major)
+          end
+
+          def merge_allowed?(corp1, corp2)
+            return false unless corp1.type == :minor
+
+            if @merge_major
+              corp2.type == :public
+            else
+              mergeable_candidates(corp1).include?(corp2)
+            end
+          end
+
           private
 
           def london_token?(corporation)
