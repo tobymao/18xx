@@ -26,7 +26,7 @@ module View
           if @step.respond_to?(:mergeable)
             mergeable_entities = @step.mergeable(merge_entity)
             unless mergeable_entities.is_a?(Hash)
-              heading = @step.respond_to?(:mergeable_type) ? @step.mergeable(merge_entity) : nil
+              heading = @step.respond_to?(:mergeable_type) ? @step.mergeable_type(merge_entity) : nil
               mergeable_entities = { heading => mergeable_entities }
             end
             player_corps = mergeable_entities.values.flatten.select do |target|
