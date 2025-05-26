@@ -15,7 +15,7 @@ module Engine
         GAME_LOCATION = 'Various'
         GAME_PUBLISHER = :all_aboard_games
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/System18'
-        GAME_RULES_URL = 'https://www.dropbox.com/scl/fi/or38t89eczc5eki8e21y7/System18_Rules.pdf'
+        GAME_RULES_URL = 'https://www.dropbox.com/scl/fi/or38t89eczc5eki8e21y7/System18_Rules.pdf?rlkey=n9kblkl7kvnz96oobs6hsatk2&dl=0'
 
         PLAYER_RANGE = [2, 5].freeze
         OPTIONAL_RULES = [
