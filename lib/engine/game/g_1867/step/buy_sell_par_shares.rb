@@ -55,7 +55,7 @@ module Engine
           end
 
           def get_all_par_prices(corp)
-            types = corp.type == :major ? %i[par_2 par] : %i[par_1 par]
+            types = @game.major?(corp) ? %i[par_2 par] : %i[par_1 par]
             @game.stock_market.share_prices_with_types(types)
           end
 
