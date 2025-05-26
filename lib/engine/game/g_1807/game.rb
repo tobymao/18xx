@@ -218,6 +218,13 @@ module Engine
           revenue + bonuses
         end
 
+        def fix_token_count!(corporation)
+          # TODO: needs extending to work for systems as well as public companies.
+          (corporation.tokens.size...4).each do |_|
+            corporation.tokens << Engine::Token.new(corporation, price: 20)
+          end
+        end
+
         private
 
         def new_companies_available!(&block)
@@ -258,13 +265,6 @@ module Engine
 
           raise GameError, 'Route may not include London unless running to a ' \
                            "#{current_entity.id} token."
-        end
-
-        def fix_token_count!(corporation)
-          # TODO: needs extending to work for systems as well as public companies.
-          (corporation.tokens.size...4).each do |_|
-            corporation.tokens << Engine::Token.new(corporation, price: 20)
-          end
         end
       end
     end
