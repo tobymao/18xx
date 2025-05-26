@@ -34,7 +34,6 @@ module Engine
           end
 
           def process_lay_tile(action)
-            LOGGER.debug { 'HomeTrack > process_lay_tile' }
             lay_tile(action)
 
             place_token(
@@ -48,10 +47,8 @@ module Engine
           end
 
           def process_place_token(action)
-            LOGGER.debug { 'HomeTrack > process_place_token' }
             super
             tile = action.city.tile
-            LOGGER.debug { "HomeTrack > tile: #{tile.inspect}" }
             replace_oo_reservations(tile) unless tile.reservations.empty? # move hex reservation
           end
 

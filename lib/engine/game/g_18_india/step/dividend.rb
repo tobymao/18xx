@@ -26,17 +26,6 @@ module Engine
             revenue / 10.to_f
           end
 
-          # overloaded for debugging info
-          def process_dividend(action)
-            entity = action.entity
-            revenue = total_revenue
-            kind = action.kind.to_sym
-            payout = dividend_options(entity)[kind]
-            LOGGER.debug 'Step::Dividend >> process_dividend'
-            LOGGER.debug ">  Revenue: #{revenue} payout: #{payout.to_h} Guaranty pay: #{guaranty_pay(entity)}"
-            super
-          end
-
           # Should "Per Share" or "payout" be used as parameter for this method?
           def payout_shares(entity, revenue)
             # if revenue == 0 then use guaranty pay
