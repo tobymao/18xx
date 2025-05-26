@@ -212,10 +212,9 @@ module View
           h(:button,
             {
               attrs: { disabled: !merge_allowed?(corporation, @selected_corporation) },
-              on: { click: merge }
+              on: { click: merge },
             },
-            @step.merge_name(@selected_corporation)
-           )
+            @step.merge_name(@selected_corporation))
         end
 
         def render_exchange(corporation)
@@ -244,10 +243,9 @@ module View
           h(:button,
             {
               attrs: { disabled: !exchange_allowed?(corporation, @selected_corporation) },
-              on: { click: exchange }
+              on: { click: exchange },
             },
-            @step.exchange_name(@selected_corporation)
-           )
+            @step.exchange_name(@selected_corporation))
         end
       end
     end
