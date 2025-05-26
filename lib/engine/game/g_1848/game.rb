@@ -46,7 +46,7 @@ module Engine
 
         CAPITALIZATION = :full
 
-        MUST_SELL_IN_BLOCKS = false
+        MUST_SELL_IN_BLOCKS = true
 
         EBUY_PRES_SWAP = false
 
