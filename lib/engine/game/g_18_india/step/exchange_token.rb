@@ -26,7 +26,6 @@ module Engine
             token.destroy!
             @log << "GIPR replaced #{closing_corp.name} token at #{hex.name} with exchange token."
             @game.use_gipr_exchange_token
-            LOGGER.debug "ExchangeToken::process_remove_token > gipr:#{entity.tokens} closing: #{closing_corp.tokens}"
 
             @round.pending_exchange_tokens.clear if @game.gipr_exchange_tokens.zero?
             @round.pending_exchange_tokens.shift
@@ -96,7 +95,6 @@ module Engine
             @log << "#{pending_entity.name} choose not to exchange with #{closing_corp.name} token at #{hex.name}"
             token.remove!
             @round.pending_exchange_tokens.shift
-            LOGGER.debug "ExchangeToken::process_pass > gipr:#{entity.tokens} closing: #{closing_corp.tokens}"
           end
         end
       end

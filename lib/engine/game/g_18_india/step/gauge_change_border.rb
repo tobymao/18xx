@@ -19,7 +19,6 @@ module Engine
 
             hex = tile.hex
             types = []
-            LOGGER.debug 'GaugeChangeBorder::remove_border_calculate_cost Called >>'
 
             total_cost = tile.borders.dup.sum do |border|
               cost = border.cost || 0
@@ -33,7 +32,6 @@ module Engine
                 remove_border(border, tile, neighbor)
                 # Add a gauge change marker to tile and neighbor unless disabled by phase status
                 unless @game.phase.status.include?(STATUS_TO_DISABLE_CHANGE)
-                  LOGGER.debug ' >> Added Gauge Change Marker'
                   tile.borders << add_gauge_change_border(tile, edge)
                   neighbor.tile.borders << add_gauge_change_border(neighbor.tile, hex.invert(edge))
                   # Add hex pair to track of number of GC markers (Implement if markers are to be removed)
@@ -41,7 +39,6 @@ module Engine
                   @log << "Gauge Change Marker added between #{hex.id} and #{neighbor.id}"
                 end
               elsif cost.positive? # Remove border with a cost from tile and connected neighbor (super)
-                LOGGER.debug ' >> Removed border with a cost'
                 remove_border(border, tile, neighbor)
               end
               cost - border_cost_discount(entity, spender, border, cost, hex)
