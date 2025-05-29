@@ -382,6 +382,12 @@ module Engine
             end
         end
 
+        def payout_companies(ignore: [])
+          return if @round.is_a?(G18Norway::Round::Nationalization)
+
+          super
+        end
+
         def add_new_share(share)
           owner = share.owner
           corporation = share.corporation
