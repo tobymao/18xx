@@ -512,14 +512,20 @@ module Engine
           end
 
           if minor.cash.positive?
-            @log << "#{corporation.name} receives #{format_currency(minor.cash)}"
+            @log << "#{corporation.name} receives #{format_currency(minor.cash)} from #{minor.name}'s treasury"
             minor.spend(minor.cash, corporation)
           end
 
           unless minor.trains.empty?
-            @log << "#{corporation.name} receives #{minor.trains.map(&:name).join(', ')} train#{minor.trains.size > 1 ? 's' : ''}"
-            @round.merged_trains[corporation].concat(minor.trains)
-            minor.trains.dup.each { |t| buy_train(corporation, t, :free) }
+            trains_str = "#{minor.trains.map(&:name).join(', ')} train#{minor.trains.size > 1 ? 's' : ''}"
+            if @round.merged_trains[corporation].empty? && corporation.trains.size >= train_limit(corporation)
+              @log << "Discarding #{minor.name}'s #{trains_str} because #{corporation.name} has reached its train limit"
+              minor.trains.each { |t| @depot.reclaim_train(t) }
+            else
+              @log << "#{corporation.name} receives #{trains_str}"
+              @round.merged_trains[corporation].concat(minor.trains)
+              minor.trains.dup.each { |t| buy_train(corporation, t, :free) }
+            end
           end
 
           if coal_minor?(minor)
