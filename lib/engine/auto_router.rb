@@ -155,7 +155,10 @@ module Engine
               @game,
               @game.phase,
               train,
-              connection_data: connection,
+              # we have to clone to prevent multiple routes having the same connection array.
+              # If we don't clone, then later route.touch_node calls will affect all routes with
+              # the same connection array
+              connection_data: connection.clone,
               bitfield: bitfield_from_connection(connection, hexside_bits),
             )
             route.routes = [route]
