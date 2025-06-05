@@ -667,6 +667,21 @@ module Engine
 
           super(entity, bundle)
         end
+
+        def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil, movement: nil)
+          corporation = bundle.corporation
+
+          # Check if selling would make NSB president
+          if bundle.shares.any?(&:president) &&
+             corporation.share_holders[nsb] >= bundle.presidents_share.percent &&
+             corporation.player_share_holders.reject do |p, _|
+               p == bundle.owner || p == nsb
+             end.values.max.to_i < bundle.presidents_share.percent
+            raise GameError, 'Cannot sell shares as NSB would become president'
+          end
+
+          super
+        end
       end
     end
   end
