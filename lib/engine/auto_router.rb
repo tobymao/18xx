@@ -351,6 +351,12 @@ module Engine
             ([train, routes]) => [...routes, null], // add a null route to the end for the "no route for this train" case
           );
 
+          if (trains_to_routes.length === 0) {
+            this.router.running = false;
+            this.update_callback([]);
+            return;
+          }
+
           for (let i = 0; i < trains_to_routes.length; ++i) {
             // the last route is the null route so skip it
             for (let j = 0; j < trains_to_routes[i].length - 1; ++j) {
