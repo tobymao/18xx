@@ -644,7 +644,6 @@ module Engine
           end
 
           local_cities.group_by(&:itself).each do |k, v|
-            puts "Local train can only use each token on #{k.hex.id} once"
             raise GameError, "Local train can only use each token on #{k.hex.id} once" if v.size > 1
           end
         end
