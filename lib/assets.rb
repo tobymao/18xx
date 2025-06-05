@@ -245,7 +245,9 @@ class Assets
     compilers = metadata.map do |file, opts|
       FileUtils.mkdir_p(opts[:build_path])
       js_path = opts[:js_path]
-      next if @cache && File.exist?(js_path) && File.mtime(js_path) >= opts[:mtime]
+      if @cache && File.exist?(js_path) && File.mtime(js_path) >= opts[:mtime] && (!@source_maps || File.exist?(js_path + '.map'))
+        next
+      end
 
       Opal::Compiler.new(File.read(opts[:path]), file: file, requirable: true)
     end.compact
