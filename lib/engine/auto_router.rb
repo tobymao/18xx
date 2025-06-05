@@ -18,6 +18,7 @@ module Engine
 
     def compute(corporation, **opts)
       @running = true
+      @route_timeout = opts[:route_timeout] || 10
       trains = @game.route_trains(corporation).sort_by(&:price)
       train_routes, path_walk_timed_out = path(trains, corporation, **opts)
       @flash&.call('Auto route path walk failed to complete (PATH TIMEOUT)') if path_walk_timed_out
@@ -460,6 +461,9 @@ module Engine
                 this.router.$real_revenue(this.best_routes)
                 this.update_callback(this.best_routes)
                 this.render = false;
+            }
+            if (performance.now() - this.start_of_all > this.router.route_timeout * 1000) {
+                throw 'ROUTE_TIMEOUT';
             }
             await next_frame();
             if (!this.router.running) {
