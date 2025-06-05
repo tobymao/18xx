@@ -11,6 +11,7 @@ module Engine
 
     def initialize(game, flash = nil)
       @game = game
+      @train_autoroute_group = @game.class::TRAIN_AUTOROUTE_GROUPS
       @next_hexside_bit = 0
       @flash = flash
     end
@@ -364,7 +365,7 @@ module Engine
               : 0;
             r += routes[0].estimate_revenue;
             let train_group = 0;
-            const game_group_rules = this.router.game.$class().TRAIN_AUTOROUTE_GROUPS;
+            const game_group_rules = this.router.train_autoroute_group;
             if (game_group_rules == "each_train_separate") {
               train_group = number_train_groups;
               ++number_train_groups;
