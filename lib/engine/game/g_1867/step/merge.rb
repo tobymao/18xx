@@ -213,10 +213,7 @@ module Engine
               @round.corporations_removing_tokens = [target] + @merging
             else
               # Add the $40 token back
-              if target.tokens.size < 3
-                new_token = Engine::Token.new(target, price: 40)
-                target.tokens << new_token
-              end
+              @game.fix_token_count!(target)
 
               tokens = target.tokens.map { |t| t.city&.hex&.id }
               charter_tokens = tokens.size - tokens.compact.size
