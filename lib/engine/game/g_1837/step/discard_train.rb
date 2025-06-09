@@ -9,6 +9,7 @@ module Engine
         class DiscardTrain < Engine::Step::DiscardTrain
           def process_discard_train(action)
             super
+            @round.merged_trains[action.entity].delete(action.train)
             return if crowded_corps.include?(action.entity)
 
             @round.merged_trains[action.entity].clear
