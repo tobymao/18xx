@@ -35,6 +35,10 @@ module Engine
             @game.player_debt(entity).zero? && super
           end
 
+          def visible_corporations
+            @game.sorted_corporations
+          end
+
           def get_par_prices(_entity, corp)
             super.reject do |p|
               p.price == 100 || p.price == 95 if !@game.phase.status.include?('higher_par_prices') && @game.north_corp?(corp)
