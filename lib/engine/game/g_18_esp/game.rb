@@ -365,8 +365,8 @@ module Engine
         end
 
         def setup
-          @corporations, @future_corporations = @corporations.partition do |corporation|
-            corporation.type == :minor || north_corp?(corporation)
+          @future_corporations = @corporations.select do |corporation|
+            corporation.type != :minor && !north_corp?(corporation)
           end
           @corporations.each { |c| c.shares.first.double_cert = true if c.type == :minor }
 
@@ -540,7 +540,7 @@ module Engine
         end
 
         def event_south_majors_available!
-          @corporations.concat(@future_corporations)
+          @future_corporations = []
           @can_acquire_minors = true
           @log << '-- Major corporations in the south now available --'
         end
@@ -571,7 +571,20 @@ module Engine
           remaining = @depot.upcoming.size
           total = @depot.trains.count { |t| t.sym == train_sym }
 
-          total - remaining > 1
+          end_game_trigger = total - remaining > 1
+
+          if end_game_trigger && !@game_ending
+            @log << '-- Event: Endgame triggered --'
+            @log << "Finish this OR; Game ends at the end of #{@turn + 1}.#{@operating_rounds}"
+            @game_ending = true
+          end
+          end_game_trigger
+        end
+
+        def total_rounds(name)
+          return super if !@game_ending || (@turn == @final_turn)
+
+          @round.round_num if name == self.class::OPERATING_ROUND_NAME
         end
 
         def event_close_companies!
@@ -632,6 +645,8 @@ module Engine
         def status_array(corporation)
           return if corporation.type == :minor
 
+          return availability_status_array if @future_corporations.include?(corporation)
+
           goal_status = ['Goals Left:']
 
           goal_status << ["Destination #{corporation.destination}"] unless corporation.destination_connected?
@@ -649,6 +664,10 @@ module Engine
           status = goal_status + train_status
           status = nil if status.length.zero?
           status
+        end
+
+        def availability_status_array
+          ['Available on Phase 3']
         end
 
         def company_status_str(company)
@@ -1078,6 +1097,18 @@ module Engine
             trains = c.trains.count { |t| !extra_train?(t) }
             trains > train_limit(c)
           end
+        end
+
+        def corporation_available?(corp)
+          @future_corporations.none?(corp)
+        end
+
+        def sorted_corporations
+          # Corporations sorted by some potential game rules
+          ipoed, others = corporations.partition(&:ipoed)
+          corps = others - @future_corporations
+
+          ipoed.sort + corps + @future_corporations
         end
 
         def skip_route_track_type(train)
