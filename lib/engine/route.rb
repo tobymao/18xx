@@ -128,8 +128,7 @@ module Engine
               }
             end
           end
-
-          new_chains
+          new_chains.sort_by { |chain| chain[:paths].size }
         end
     end
 
