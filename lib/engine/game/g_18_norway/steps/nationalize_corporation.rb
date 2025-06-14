@@ -12,7 +12,7 @@ module Engine
           def actions(entity)
             return [] if !entity.corporation? || entity != current_entity
             return [] if @game.nationalized?(entity.corporation)
-            return [] if @game.round.is_a?(G18Norway::Round::Nationalization) && @game.round.nationalization_complete
+            return [] if @round.nationalization_complete
 
             ['choose']
           end
