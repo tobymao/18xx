@@ -82,7 +82,6 @@ module Engine
           'nr_each_or' => ['NR after each OR', 'Nationalization Round after each Operating Round'],
         ).freeze
 
-
         ASSIGNMENT_TOKENS = {
           'MOUNTAIN_SMALL' => '/icons/hill.svg',
           'MOUNTAIN_BIG' => '/icons/mountain.svg',

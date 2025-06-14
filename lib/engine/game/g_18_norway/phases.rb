@@ -12,7 +12,7 @@ module Engine
             operating_rounds: 2,
             status: ['nr_one_or'],
           },
-          { 
+          {
             name: '3',
             on: '3',
             train_limit: 4,
