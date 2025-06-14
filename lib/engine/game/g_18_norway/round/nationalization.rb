@@ -12,12 +12,7 @@ module Engine
             @nationalization_complete = false
           end
 
-          def process_action(action)
-            super
-            @nationalization_complete = true if action.is_a?(Engine::Action::Choose) && action.choice != 'decline'
-          end
-
-          attr_reader :nationalization_complete
+          attr_accessor :nationalization_complete
 
           def name
             'Nationalization round'

@@ -42,7 +42,7 @@ module Engine
               pass!
               return
             end
-
+            @game.round.nationalization_complete = true
             @game.nationalize_corporation(action.entity, action.choice.to_i)
           end
         end
