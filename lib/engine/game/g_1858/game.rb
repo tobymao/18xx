@@ -394,6 +394,10 @@ module Engine
           end
         end
 
+        def skip_route_track_type(train)
+          metre_gauge_train?(train) ? :broad : :narrow
+        end
+
         def routes_revenue(routes)
           super + @round.current_operator
                         .companies.select { |c| private_railway?(c) }
