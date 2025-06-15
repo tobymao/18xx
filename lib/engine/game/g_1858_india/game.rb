@@ -133,9 +133,9 @@ module Engine
           unless @game_phases
             @game_phases = super.map(&:dup)
             @game_phases[0][:status] = %w[yellow_privates narrow_gauge]
-            @game_phases[3][:status] += %w[loco_works oil_tokens]
-            @game_phases[4][:status] += %w[loco_works oil_tokens]
-            @game_phases[5][:status] += %w[loco_works oil_tokens port_tokens]
+            @game_phases[3][:status] = %w[public_companies dual_gauge loco_works oil_tokens]
+            @game_phases[4][:status] = %w[public_companies dual_gauge loco_works oil_tokens]
+            @game_phases[5][:status] = %w[public_companies dual_gauge loco_works oil_tokens port_tokens]
           end
           @game_phases
         end
