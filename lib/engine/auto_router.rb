@@ -376,7 +376,7 @@ module Engine
             if (game_group_rules == "each_train_separate") {
               train_group = number_train_groups;
               ++number_train_groups;
-            } else if (game_group_rules && routes.length > 0) {
+            } else if (Array.isArray(game_group_rules) && routes.length > 0) {
               const train_name = routes[0].$train().$name();
               train_group = game_group_rules.findIndex(group => group.includes(train_name)) + 1;
               number_train_groups = game_group_rules.length + 1;
