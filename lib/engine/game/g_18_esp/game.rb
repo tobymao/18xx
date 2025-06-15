@@ -576,15 +576,10 @@ module Engine
           if end_game_trigger && !@game_ending
             @log << '-- Event: Endgame triggered --'
             @log << "Finish this OR; Game ends at the end of #{@turn + 1}.#{@operating_rounds}"
+            @operating_rounds = @round.round_num
             @game_ending = true
           end
           end_game_trigger
-        end
-
-        def total_rounds(name)
-          return super if !@game_ending || (@turn == @final_turn)
-
-          @round.round_num if name == self.class::OPERATING_ROUND_NAME
         end
 
         def event_close_companies!
