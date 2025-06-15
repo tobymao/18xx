@@ -84,6 +84,17 @@ module Engine
                   price: 70,
                 },
               ]
+            # 2M trains are more expensive than in base 1858.
+            @game_trains[1][:variants] =
+              [
+                {
+                  name: '2M',
+                  distance: [{ 'nodes' => %w[city offboard], 'pay' => 2, 'visit' => 2 },
+                             { 'nodes' => %w[town], 'pay' => 99, 'visit' => 99 }],
+                  track_type: :narrow,
+                  price: 140,
+                },
+              ]
             @game_trains <<
               {
                 name: 'Mail',
