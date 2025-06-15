@@ -146,7 +146,7 @@ module Engine
           },
           'X10' =>
           {
-            'count' => 2,
+            'count' => 4,
             'color' => 'brown',
             'code' =>
               'city=revenue:40,slots:2;' \

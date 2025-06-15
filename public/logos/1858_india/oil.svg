@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:dc="http://purl.org/dc/elements/1.1/"
+     xmlns:cc="http://creativecommons.org/ns#"
+     version="1.2"
+     baseProfile="tiny"
+     viewBox="-3.2 -6.4 70.4 86.4">
+  <metadata id="license">
+    <rdf:RDF>
+      <cc:Work rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+        <cc:license rdf:resource="http://creativecommons.org/licenses/by/3.0/"/>
+        <cc:attributionName rdf:resource="oil rig by ratacon studio from Noun Project (CC BY 3.0)"/>
+        <cc:attributionURL rdf:resource="https://thenounproject.com/icon/oil-rig-5113163/"/>
+      </cc:Work>
+      <cc:License rdf:about="http://creativecommons.org/licenses/by/3.0/">
+        <cc:permits rdf:resource="http://creativecommons.org/ns#Reproduction"/>
+        <cc:permits rdf:resource="http://creativecommons.org/ns#Distribution"/>
+        <cc:requires rdf:resource="http://creativecommons.org/ns#Notice"/>
+        <cc:requires rdf:resource="http://creativecommons.org/ns#Attribution"/>
+        <cc:permits rdf:resource="http://creativecommons.org/ns#DerivativeWorks"/>
+      </cc:License>
+    </rdf:RDF>
+  </metadata>
+  <circle r="42" cx="32" cy="36.8" fill="white"/>
+  <path d="M27.111,20.9534A5,5,0,1,1,30.9523,26.89,5,5,0,0,1,27.111,20.9534ZM25.19,23.6a6.769,6.769,0,0,1-.03-3.07A6.6863,6.6863,0,0,1,26.5,17.7l-6.46-1.67-2.37,5.82ZM54,48H51v6h8V48H56V30.9744l3.66.8756L61,26,38.88,20.7a6.9915,6.9915,0,0,1-.04,2.77,6.8528,6.8528,0,0,1-1.5,3.04L54,30.4958ZM8,36.1606V49H6v5h6V49H10V35a.96.96,0,0,0-.0457-.2267L15.69,21.39,18,16,16,3S6.38,7.1,4,16C.845,27.8,5.7751,34.0463,8,36.1606ZM42.7867,56H61v5H3V56H21.2134L27.95,27.71a6.9245,6.9245,0,0,0,1.84.93l-.15.6-.0033.0141C29.6823,29.2927,32,32.0869,32,32.0869s2.3178-2.7942,2.3633-2.8329L34.36,29.24l-.14-.61a6.8645,6.8645,0,0,0,1.83-.93ZM33.2924,33.6665l2.9943,3.66-1.3461-5.6738ZM27.724,37.313l2.9836-3.6465L29.069,31.6641Zm-.3773,3.62L32,45.5859l4.6533-4.6533L32,35.2459ZM23.7982,53.7878,30.5859,47l-4.1748-4.1748L26.41,42.83,23.8,53.78ZM39.5859,56,32,48.4141,24.4141,56Zm.6159-2.2122L40.2,53.78,37.6,42.82l-.0012-.0048L33.4141,47Z"/>
+</svg>
