@@ -184,7 +184,7 @@ module Engine
           @corporations.each do |corporation|
             next if corporation.id == 'NYC'
 
-            tile = hex_by_id(corporation.coordinates)&.tile
+            tile = hex_by_id(corporation.coordinates).tile
             tile.cities[corporation.city || 0].place_token(corporation, corporation.tokens.first, free: true)
           end
         end
@@ -196,7 +196,7 @@ module Engine
         def scranton_marker?(entity)
           return false if !entity.corporation? || entity.type == :minor
 
-          scranton_markers(entity).any?
+          !scranton_markers(entity).empty?
         end
 
         def scranton_markers(entity)
@@ -224,7 +224,7 @@ module Engine
           @log << "#{entity.name} buys a Scranton bonus token for $#{SCRANTON_MARKER_COST}."
 
           tile_icons = hex_by_id(SCRANTON_HEX).tile.icons
-          tile_icons.delete_at(tile_icons.find_index { |icon| icon.name == SCRANTON_MARKER_ICON })
+          tile_icons.delete_at(tile_icons.index { |icon| icon.name == SCRANTON_MARKER_ICON })
         end
       end
     end
