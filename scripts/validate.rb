@@ -53,6 +53,40 @@ class Validate
         _errors
       end
   end
+
+  def error_counts_by_title
+    error_ids_by_title.transform_values(&:size)
+  end
+
+  def ids_to_act_on
+    @ids_to_act_on ||=
+      begin
+        _ids_to_act_on = {'archive' => [], 'pin' => []}
+        error_ids_by_title.each do |title, ids|
+          key = {
+            prealpha: 'archive',
+            alpha: 'archive',
+            beta: 'pin',
+            production: 'pin',
+          }[Engine.meta_by_title(title)::DEV_STAGE]
+          _ids_to_act_on[key].concat(ids)
+        end
+        _ids_to_act_on.transform_values!(&:sort!)
+      end
+  end
+
+  def ids_to_pin
+    ids_to_act_on['pin']
+  end
+
+  def ids_to_archive
+    ids_to_act_on['archive']
+  end
+
+  def pin_and_archive!(pin_version)
+    pin_games(pin_version, ids_to_pin)
+    archive_games(ids_to_archive)
+  end
 end
 
 $count = 0
@@ -208,5 +242,11 @@ def pin_games(pin_version, game_ids)
       data.settings['pin'] = pin_version
     end
     data.save
+  end
+end
+
+def archive_games(game_ids)
+  game_ids.each do |id|
+    Game[id].archive!
   end
 end
