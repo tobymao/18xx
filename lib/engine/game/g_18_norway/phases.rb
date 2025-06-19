@@ -18,7 +18,7 @@ module Engine
             train_limit: 4,
             tiles: %i[yellow green],
             operating_rounds: 2,
-            status: %w[can_buy_companies nr_each_or xxx],
+            status: %w[can_buy_companies nr_each_or],
           },
           {
             name: '4',
