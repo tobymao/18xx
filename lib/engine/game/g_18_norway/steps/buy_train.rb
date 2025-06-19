@@ -88,8 +88,8 @@ module Engine
             [1, entity.cash]
           end
 
-          def needed_cash(entity)
-            cheapest_train_price(entity)
+          def needed_cash(_entity)
+            cheapest_train_price(current_entity)
           end
 
           def process_buy_train(action)

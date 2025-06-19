@@ -319,12 +319,13 @@ module Engine
           depot_trains.min_by(&:price)
         end
 
-        def cheapest_train_price(_corporation)
-          cheapest_train.price
+        def cheapest_train_price(corporation)
+          ability = abilities(corporation, :train_discount, time: 'buying_train')
+          cheapest_train.min_price(ability: ability)
         end
 
         def can_go_bankrupt?(player, corporation)
-          total_emr_buying_power(player, corporation) < cheapest_train_price
+          total_emr_buying_power(player, corporation) < cheapest_train_price(corporation)
         end
 
         def new_nationalization_round(round_num)
@@ -616,7 +617,7 @@ module Engine
 
           available = @depot.available_upcoming_trains.reject { |train| ship?(train) }
           return [] unless (train = available.min_by(&:price))
-          return [] if corp.cash >= train.price
+          return [] if corp.cash >= cheapest_train_price(corp)
 
           bundles = bundles_for_corporation(corp, corp)
 
