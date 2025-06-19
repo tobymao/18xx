@@ -2,7 +2,7 @@
 
 # ensure that ./db/data exists and is not owned by root
 #
-# - ./db/data/ is need for the postgres container
+# - ./db/data/ is needed for the postgres container
 #
 # - if it does not exist when docker-compose tries to create the container,
 #   docker-compose will create the dir, and it will be owned by root, preventing
@@ -14,6 +14,7 @@
 
 umask 0077
 mkdir -p db/data
+chmod 700 db/data
 
 if [[ $1 == 'podman' ]]; then
   db_uid=1000
