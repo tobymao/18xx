@@ -12,9 +12,11 @@ module Engine
             # Check if selling would make NSB president
             if bundle.shares.any?(&:president) &&
                   corporation.share_holders[@game.nsb] >= bundle.presidents_share.percent &&
-                  corporation.player_share_holders.reject do |p, _|
-                    p == bundle.owner || p == @game.nsb
-                  end.values.max.to_i < bundle.presidents_share.percent
+                  corporation.player_share_holders.none? do |sh, pct|
+                    next false if sh == bundle.owner
+                    
+                    pct >= bundle.presidents_share.percent
+                  end
               return false
             end
 
