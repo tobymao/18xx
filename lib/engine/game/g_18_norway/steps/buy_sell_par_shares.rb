@@ -14,7 +14,7 @@ module Engine
                   corporation.share_holders[@game.nsb] >= bundle.presidents_share.percent &&
                   corporation.player_share_holders.none? do |sh, pct|
                     next false if sh == bundle.owner
-                    
+
                     pct >= bundle.presidents_share.percent
                   end
               return false
