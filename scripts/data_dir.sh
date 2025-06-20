@@ -4,8 +4,8 @@
 #
 # - ./db/data/ is needed for the postgres container
 #
-# - if it does not exist when docker-compose tries to create the container,
-#   docker-compose will create the dir, and it will be owned by root, preventing
+# - if it does not exist when docker compose tries to create the container,
+#   docker compose will create the dir, and it will be owned by root, preventing
 #   the postgres container from working
 #
 # - postgres requires the data dir to be empty when it initializes, so if a file

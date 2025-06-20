@@ -24,7 +24,7 @@ gunzip --keep --force ${DB_FILE}
 TMP_DB_FILE=${DB_FILE/.gz/}
 
 # restore
-docker-compose exec rack rake dev_bounce
+docker compose exec rack rake dev_bounce
 docker exec -i 18xx_db_1 pg_restore --clean --username ${DB_USER} --dbname ${DB_NAME} --format tar < ${TMP_DB_FILE}
 
 # remove uncompressed backup
