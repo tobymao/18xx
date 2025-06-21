@@ -77,9 +77,15 @@ module View
       return @game.process_to_action(cursor) if game_id == @game&.id && cursor && cursor > @game.last_game_action_id
 
       load_game_with_class = lambda do
-        LOGGER.debug('Processing game...')
+        LOGGER.debug do
+          @_logger ||= {}
+          @_logger[:process] = Time.now
+          'Processing game actions...'
+        end
         @game = Engine::Game.load(@game_data, at_action: cursor, user: @user&.dig('id'))
-        LOGGER.debug('Done processing game')
+        LOGGER.debug do
+          "Done processing game actions: #{Time.now - @_logger[:process]} seconds"
+        end
         store(:game, @game, skip: true)
       end
 
@@ -101,7 +107,11 @@ module View
 
       return h('div.padded', 'Loading game...') unless @game
 
-      LOGGER.debug('Rendering game view...')
+      LOGGER.debug do
+        @_logger ||= {}
+        @_logger[:render] = Time.now
+        'Rendering game view...'
+      end
       page =
         case route_anchor
         when nil
@@ -123,7 +133,9 @@ module View
         when 'auto'
           h(Game::Auto, game: @game, game_data: @game_data, user: @user)
         end
-      LOGGER.debug('Done rendering game view')
+      LOGGER.debug do
+        "Done rendering game view: #{Time.now - @_logger[:render]} seconds"
+      end
 
       @connection = nil if @game_data[:mode] == :hotseat || cursor
 
