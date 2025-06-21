@@ -48,6 +48,8 @@ module Engine
           ]
         ).freeze
 
+        TOKEN_COST = { 'mine' => 50, 'oil' => 100, 'port' => 200 }.freeze
+
         def setup
           super
           setup_hex_tokens
@@ -226,12 +228,34 @@ module Engine
           "#{super} + #{format_revenue_currency(bonus_revenue)} mine/oil/port bonus"
         end
 
+        def timeline
+          super.concat(
+            [
+              "Mine tokens (cost #{format_currency(TOKEN_COST['mine'])}) " \
+              "available: #{hexes_with_tokens(mine_hexes)}.",
+
+              "Oil tokens (cost #{format_currency(TOKEN_COST['oil'])}) " \
+              "available: #{hexes_with_tokens(oil_hexes)}.",
+
+              "Port tokens (cost #{format_currency(TOKEN_COST['port'])}) " \
+              "available: #{hexes_with_tokens(port_hexes)}.",
+            ]
+          )
+        end
+
         private
 
         def setup_hex_tokens
           @mine_corp = dummy_corp('mine', '1858_india/mine', mine_hexes)
           @oil_corp = dummy_corp('oil', '1858_india/oil', oil_hexes)
           @port_corp = dummy_corp('port', '1858_india/port', port_hexes)
+        end
+
+        # Returns a string listing hexes with hex tokens, or 'none' if none
+        # of them have any hex tokens.
+        def hexes_with_tokens(hexes)
+          token_hexes = hexes.reject { |h| h.tokens.empty? }
+          token_hexes.empty? ? 'none' : token_hexes.map(&:coordinates).join(', ')
         end
 
         def dummy_corp(sym, logo, hexes)

@@ -8,7 +8,6 @@ module Engine
       module Step
         class CollectTokens < Engine::Step::Base
           ACTIONS = %w[remove_hex_token pass].freeze
-          TOKEN_COST = { 'mine' => 50,  'oil' => 100, 'port' => 200 }.freeze
 
           def actions(entity)
             return [] unless current_entity == entity
@@ -37,11 +36,11 @@ module Engine
 
           def help
             'Collect mine tokens ' \
-              "(#{@game.format_currency(TOKEN_COST['mine'])} each), " \
+              "(#{@game.format_currency(@game.class::TOKEN_COST['mine'])} each), " \
               'oil tokens ' \
-              "(#{@game.format_currency(TOKEN_COST['oil'])} each) " \
+              "(#{@game.format_currency(@game.class::TOKEN_COST['oil'])} each) " \
               'and port tokens ' \
-              "(#{@game.format_currency(TOKEN_COST['port'])} each)."
+              "(#{@game.format_currency(@game.class::TOKEN_COST['port'])} each)."
           end
 
           def log_skip(entity)
@@ -88,9 +87,9 @@ module Engine
           # and the current phase must allow them to be taken.
           def available_tokens(corporation)
             tokens = []
-            tokens.concat(mines) if corporation.cash >= TOKEN_COST['mine']
-            tokens.concat(oil) if corporation.cash >= TOKEN_COST['oil']
-            tokens.concat(ports) if corporation.cash >= TOKEN_COST['port']
+            tokens.concat(mines) if corporation.cash >= @game.class::TOKEN_COST['mine']
+            tokens.concat(oil) if corporation.cash >= @game.class::TOKEN_COST['oil']
+            tokens.concat(ports) if corporation.cash >= @game.class::TOKEN_COST['port']
             tokens
           end
 
@@ -106,7 +105,7 @@ module Engine
           end
 
           def token_price(token)
-            TOKEN_COST[token.corporation.id]
+            @game.class::TOKEN_COST[token.corporation.id]
           end
 
           def token_type(token)
