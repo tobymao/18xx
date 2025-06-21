@@ -37,13 +37,14 @@ module Engine
         EBUY_SELL_MORE_THAN_NEEDED = false
         CAPITALIZATION = :incremental
         MUST_BUY_TRAIN = :always
-        POOL_SHARE_DROP = :none
+        POOL_SHARE_DROP = :left_block
         SELL_AFTER = :p_any_operate
         SELL_MOVEMENT = :left_block
         HOME_TOKEN_TIMING = :float
         EBUY_PRES_SWAP = false
         EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = true
         MUST_EMERGENCY_ISSUE_BEFORE_EBUY = true
+        SOLD_OUT_INCREASE = true
 
         BANKRUPTCY_ENDS_GAME_AFTER = :one
 
