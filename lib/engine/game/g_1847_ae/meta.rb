@@ -18,6 +18,7 @@ module Engine
         GAME_PUBLISHER = :marflow_games
         GAME_RULES_URL = 'https://18xx-marflow-games.de/onewebmedia/1847%20AE%20-%20Rules%20EN%20-%20Final.pdf'
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1847-AE'
+        GAME_ISSUE_LABEL = '1847AE'
 
         PLAYER_RANGE = [3, 5].freeze
       end

@@ -16,6 +16,7 @@ module Engine
         GAME_LOCATION = 'India'
         GAME_PUBLISHER = :gmt_games
         GAME_RULES_URL = 'https://gmtwebsiteassets.s3.us-west-2.amazonaws.com/18India/18-India_Rules_Final_lo-res.pdf'
+        GAME_ISSUE_LABEL = '18India'
 
         PLAYER_RANGE = [2, 5].freeze
       end
