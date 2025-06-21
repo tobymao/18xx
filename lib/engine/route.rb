@@ -128,8 +128,7 @@ module Engine
               }
             end
           end
-
-          new_chains
+          new_chains.sort_by { |chain| chain[:paths].size }
         end
     end
 
@@ -153,6 +152,11 @@ module Engine
             connection_data[0] = segment(chain, right: head[:right])
           else
             connection_data.shift
+            if (chain = select(tail[:right], node)[0])
+              # This node can be reached from either the head or the tail of the
+              # chain. All head connections have been offered, switch to the tail.
+              connection_data << segment(chain, left: tail[:right])
+            end
           end
         when tail[:right]
           if (chain = next_chain(tail[:left], tail[:chain], node))
