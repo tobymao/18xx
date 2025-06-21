@@ -15,10 +15,11 @@ module Engine
 
         attr_accessor :ndem_acting_player, :number_ndem_shares, :ndem_state
 
-        CERT_LIMIT = { 3 => 16, 4 => 13, 5 => 10 }.freeze
+        CERT_LIMIT = { 2 => 27, 3 => 16, 4 => 13, 5 => 10 }.freeze
         CERT_LIMIT_INCREASED = { 3 => 18, 4 => 14, 5 => 11 }.freeze
 
         BIDDING_TOKENS = {
+          '2': 7,
           '3': 6,
           '4': 5,
           '5': 4,
@@ -34,7 +35,7 @@ module Engine
           'IRM' => 3,
         }.freeze
 
-        STARTING_CASH = { 3 => 500, 4 => 375, 5 => 300 }.freeze
+        STARTING_CASH = { 2 => 750, 3 => 500, 4 => 375, 5 => 300 }.freeze
 
         STARTING_COMPANIES = %w[P1 P2 P3 P4 P5 P6 P7 P8 P9 P10 P11 P12 P13 P14 P15 P16 P17 P18
                                 C1 C2 C3 C4 C5 C6 C7 M1 M2 M3 M4 M5 M6 M7 M8 M9 M10 M11 M12 M13 M14 M15
@@ -51,7 +52,6 @@ module Engine
         ].freeze
 
         MUST_SELL_IN_BLOCKS = true
-        SELL_MOVEMENT = :left_per_10_if_pres_else_left_one
         PRIVATE_TRAINS = %w[P1 P2 P3 P4 P5 P6].freeze
         EXTRA_TRAINS = %w[2P P+ LP 3/2P].freeze
         EXTRA_TRAIN_PERMANENTS = %w[2P LP 3/2P].freeze
@@ -508,6 +508,10 @@ module Engine
 
           ndem = @round.entities.pop
           @round.entities.insert(@round.entity_index + 1, ndem)
+        end
+
+        def sell_movement(_corporation)
+          @sell_movement ||= @players.size == 2 ? :left_share_pres : :left_per_10_if_pres_else_left_one
         end
 
         def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil, movement: nil)
