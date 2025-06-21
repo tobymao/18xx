@@ -1,5 +1,3 @@
-version: '3.5'
-
 x-rack: &rack
   image: 18xx_rack:dev
   environment:
