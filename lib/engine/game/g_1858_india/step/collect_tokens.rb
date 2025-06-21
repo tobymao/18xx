@@ -88,9 +88,9 @@ module Engine
           # and the current phase must allow them to be taken.
           def available_tokens(corporation)
             tokens = []
-            tokens += mines if corporation.cash >= TOKEN_COST['mine']
-            tokens += oil if corporation.cash >= TOKEN_COST['oil']
-            tokens += ports if corporation.cash >= TOKEN_COST['port']
+            tokens.concat(mines) if corporation.cash >= TOKEN_COST['mine']
+            tokens.concat(oil) if corporation.cash >= TOKEN_COST['oil']
+            tokens.concat(ports) if corporation.cash >= TOKEN_COST['port']
             tokens
           end
 
