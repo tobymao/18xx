@@ -530,7 +530,11 @@ module Engine
           return if token
 
           visited = route.visited_stops
-          token = visited.find { |stop| harbor_token?(stop, route.corporation) }
+          token = if ship?(route.train)
+                    visited.find { |stop| harbor_token?(stop, route.corporation) || stop.tokened_by?(route.corporation) }
+                  else
+                    visited.find { |stop| stop.tokened_by?(route.corporation) }
+                  end
 
           raise NoToken, 'Route must contain token' unless token
         end
