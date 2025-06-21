@@ -508,7 +508,7 @@ module Engine
         def reorder_players
           if corporations.none?(&:floated)
             @log << '-- Stock round ended with no floated corporations. Ending game.'
-            end_game!
+            return end_game!
           end
 
           super
