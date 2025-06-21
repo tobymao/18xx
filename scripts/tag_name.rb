@@ -10,4 +10,4 @@ version = JSON.parse(File.read(file))
 timestamp = version['version_epochtime'].to_i
 version_localtime = Time.at(timestamp)
 
-puts version_localtime.strftime('%Y-%m-%d_%H.%M.%S')
+print version_localtime.strftime('%Y-%m-%d_%H.%M.%S')

@@ -6,7 +6,7 @@ To use the script, first add paths to the logos in the entities. Review another 
 
 Run the development docker container. In a terminal window, enter the following to get a Ruby prompt:
 
-docker-compose exec rack rake dev_irb
+docker compose exec rack rake dev_irb
 
 Then in Ruby, enter (for 1849, for example):
 
