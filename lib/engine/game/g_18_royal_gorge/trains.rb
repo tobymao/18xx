@@ -39,14 +39,15 @@ module Engine
                        { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
             price: 500,
             num: 2,
-            events: [{ 'type' => 'close_companies' }, { 'type' => 'gray_phase', 'when' => 2 }],
+            events: [{ 'type' => 'close_companies' },
+                     { 'type' => 'gray_phase', 'when' => 2 },
+                     { 'type' => 'trigger_endgame', 'when' => 2 }],
           },
           {
             name: '6x2',
             distance: [{ 'nodes' => %w[city offboard town], 'pay' => 6, 'visit' => 6, 'multiplier' => 2 }],
             price: 650,
             num: 5,
-            events: [{ 'type' => 'trigger_endgame' }],
           },
         ].deep_freeze
 
