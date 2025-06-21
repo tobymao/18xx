@@ -13,7 +13,7 @@ module Engine
           'D19' => 'Ålesund',
           'E18' => 'Molde',
           'E22' => 'Jostedal',
-          'G24' => 'Jotunhimen',
+          'G24' => 'Jotunheimen',
           'H17' => 'Trondheim',
           'H23' => 'Lillehammer',
           'H29' => 'Oslo',
