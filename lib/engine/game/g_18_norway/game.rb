@@ -166,7 +166,7 @@ module Engine
 
           corporation_by_id('R').add_ability(Engine::Ability::Base.new(
             type: 'free_tunnel',
-            description: 'Free tunnel'
+            description: 'May build tunnels for free'
           ))
 
           corporation_by_id('V').add_ability(Engine::Ability::Base.new(
@@ -181,7 +181,7 @@ module Engine
 
           corporation_by_id('S').add_ability(Engine::Ability::Base.new(
             type: 'extra_tile_lay',
-            description: 'May lay two yellow',
+            description: 'May lay two yellow until Oslo is connected',
           ))
 
           corporation_by_id('J').add_ability(Engine::Ability::Base.new(
@@ -191,7 +191,7 @@ module Engine
 
           corporation_by_id('B').add_ability(Engine::Ability::Base.new(
             type: 'ignore_mandatory_train',
-            description: 'Not mandatory to own a train',
+            description: 'Not mandatory to own a train unil Phase 5',
           ))
 
           @corporations.each do |corporation|

@@ -13,10 +13,10 @@ else
 fi
 
 # create gzipped backup file in docker container
-docker exec -i 18xx_db_1 bash -c "pg_dump --host localhost --port ${DB_PORT} --user ${DB_USER} --no-password --exclude-table schema_info --exclude-table message_bus --data-only --format t ${DB_NAME} | gzip > /home/db/${DB_FILE}"
+docker exec -i 18xx-db-1 bash -c "pg_dump --host localhost --port ${DB_PORT} --user ${DB_USER} --no-password --exclude-table schema_info --exclude-table message_bus --data-only --format t ${DB_NAME} | gzip > /home/db/${DB_FILE}"
 
 # copy backup to host
-docker cp 18xx_db_1:/home/db/${DB_FILE} .
+docker cp 18xx-db-1:/home/db/${DB_FILE} .
 
 # remove backup from docker container
-docker exec -i 18xx_db_1 rm -v /home/db/${DB_FILE}
+docker exec -i 18xx-db-1 rm -v /home/db/${DB_FILE}

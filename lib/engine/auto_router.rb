@@ -11,12 +11,14 @@ module Engine
 
     def initialize(game, flash = nil)
       @game = game
+      @train_autoroute_group = @game.class::TRAIN_AUTOROUTE_GROUPS
       @next_hexside_bit = 0
       @flash = flash
     end
 
     def compute(corporation, **opts)
       @running = true
+      @route_timeout = opts[:route_timeout] || 10
       trains = @game.route_trains(corporation).sort_by(&:price)
       train_routes, path_walk_timed_out = path(trains, corporation, **opts)
       @flash&.call('Auto route path walk failed to complete (PATH TIMEOUT)') if path_walk_timed_out
@@ -350,6 +352,12 @@ module Engine
             ([train, routes]) => [...routes, null], // add a null route to the end for the "no route for this train" case
           );
 
+          if (trains_to_routes.length === 0) {
+            this.router.running = false;
+            this.update_callback([]);
+            return;
+          }
+
           for (let i = 0; i < trains_to_routes.length; ++i) {
             // the last route is the null route so skip it
             for (let j = 0; j < trains_to_routes[i].length - 1; ++j) {
@@ -364,11 +372,11 @@ module Engine
               : 0;
             r += routes[0].estimate_revenue;
             let train_group = 0;
-            const game_group_rules = this.router.game.$class().TRAIN_AUTOROUTE_GROUPS;
+            const game_group_rules = this.router.train_autoroute_group;
             if (game_group_rules == "each_train_separate") {
               train_group = number_train_groups;
               ++number_train_groups;
-            } else if (game_group_rules && routes.length > 0) {
+            } else if (Array.isArray(game_group_rules) && routes.length > 0) {
               const train_name = routes[0].$train().$name();
               train_group = game_group_rules.findIndex(group => group.includes(train_name)) + 1;
               number_train_groups = game_group_rules.length + 1;
@@ -453,6 +461,9 @@ module Engine
                 this.router.$real_revenue(this.best_routes)
                 this.update_callback(this.best_routes)
                 this.render = false;
+            }
+            if (performance.now() - this.start_of_all > this.router.route_timeout * 1000) {
+                throw 'ROUTE_TIMEOUT';
             }
             await next_frame();
             if (!this.router.running) {
