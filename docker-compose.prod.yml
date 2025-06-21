@@ -1,5 +1,3 @@
-version: '3.5'
-
 x-rack: &rack
   command: bash -c "bundle exec rake prod_up && bundle exec unicorn -c config/unicorn.rb"
   image: 18xx_rack:prod
