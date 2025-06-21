@@ -91,6 +91,11 @@ module Engine
           'M8' => 'BOMBAY',
           'M12' => 'MADRAS',
           'N11' => 'MYSORE',
+
+          # Bonus amounts.
+          'C18' => 'Mine bonus',
+          'C22' => 'Oil bonus',
+          'C26' => 'Port bonus',
         }.freeze
 
         HEXES = {
@@ -766,7 +771,26 @@ module Engine
             %w[P15] =>
                     'path=a:2,b:2,terminal:1,ignore:1;',
           },
+
+          gray: {
+            %w[C18] =>
+                    'offboard=revenue:yellow_20|green_30|brown_40|gray_50;' \
+                    'icon=image:mine;',
+            %w[C22] =>
+                    'offboard=revenue:yellow_0|green_0|brown_40|gray_50;' \
+                    'icon=image:1858_india/oil;',
+            %w[C26] =>
+                    'offboard=revenue:yellow_0|green_0|brown_0|gray_50;' \
+                    'icon=image:port;',
+          },
         }.freeze
+
+        MINE_BONUS_HEX = 'C18'
+        OIL_BONUS_HEX = 'C22'
+        PORT_BONUS_HEX = 'C26'
+        MINE_HEXES = %w[D3 G4 G26 H19 I16 K16].freeze
+        OIL_HEXES = %w[I8 G6 L15].freeze
+        PORT_HEXES = %w[L17 O8].freeze
 
         # These are the number of provincial borders crossed when travelling between cities.
         # This is done as a 2D hash of city coordinates. The rows and columns are ordered

@@ -37,6 +37,14 @@ module Engine
             "#{train.name} + Mail"
           end
 
+          def log_extra_revenue(entity, extra_revenue)
+            return unless extra_revenue&.nonzero?
+
+            @log << "#{entity.name} receives " \
+                    "#{@game.format_revenue_currency(extra_revenue)} " \
+                    'revenue from mines and ports.'
+          end
+
           private
 
           def choosing?(corporation)
