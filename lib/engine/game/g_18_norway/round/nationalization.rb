@@ -19,7 +19,11 @@ module Engine
           end
 
           def select_entities
-            @game.operating_order.reverse
+            entities = @game.operating_order.reverse
+            p5_owner = @game.company_by_id('P5')&.owner
+            return entities unless p5_owner&.corporation?
+
+            [p5_owner] + entities.reject { |e| e == p5_owner }
           end
 
           def show_in_history?
