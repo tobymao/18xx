@@ -77,6 +77,11 @@ module Engine
           only_president: 'Move left only when president sells'
         )
 
+        STATUS_TEXT = Base::STATUS_TEXT.merge(
+          'nr_one_or' => ['NR after first OR', 'Nationalization Round only after first Operating Round'],
+          'nr_each_or' => ['NR after each OR', 'Nationalization Round after each Operating Round'],
+        ).freeze
+
         ASSIGNMENT_TOKENS = {
           'MOUNTAIN_SMALL' => '/icons/hill.svg',
           'MOUNTAIN_BIG' => '/icons/mountain.svg',
@@ -361,12 +366,12 @@ module Engine
             when Engine::Round::Operating
               if @round.round_num < @operating_rounds
                 or_round_finished
-                if !custom_end_game_reached?
+                if @phase.status.include?('nr_each_or') || @phase.status.include?('nr_one_or')
                   new_nationalization_round(@round.round_num)
                 else
                   new_operating_round(@round.round_num + 1)
                 end
-              elsif !custom_end_game_reached? && @phase.tiles.include?(:green)
+              elsif @phase.status.include?('nr_each_or')
                 or_round_finished
                 new_nationalization_round(@round.round_num)
               else
