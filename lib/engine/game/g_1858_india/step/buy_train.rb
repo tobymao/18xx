@@ -38,6 +38,10 @@ module Engine
                     "#{@game.format_currency(price)}"
           end
 
+          def show_companies_on_left?
+            true
+          end
+
           private
 
           def can_buy_mail_train?(entity)
