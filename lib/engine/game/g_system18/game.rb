@@ -291,8 +291,16 @@ module Engine
           @map_name ||= find_map_name || 'base'
         end
 
+        # Common map name
+        # for now this only handles Britain_N and Britain_S
+        def cmap_name
+          return @map_name unless @map_name.include?('britain_')
+
+          'britain'
+        end
+
         def layout
-          send("map_#{map_name}_layout")
+          send("map_#{cmap_name}_layout")
         end
 
         def init_starting_cash(players, bank)
@@ -307,7 +315,7 @@ module Engine
         end
 
         def game_capitalization
-          @game_capitalizaton ||= send("map_#{map_name}_game_capitalization")
+          @game_capitalizaton ||= send("map_#{cmap_name}_game_capitalization")
         end
 
         def init_corporations(stock_market)
@@ -335,7 +343,7 @@ module Engine
         end
 
         def game_market
-          send("map_#{map_name}_game_market")
+          send("map_#{cmap_name}_game_market")
         end
 
         def find_train(trains, name)
@@ -363,11 +371,11 @@ module Engine
 
         def game_phases
           phases = []
-          proto = send("map_#{map_name}_game_phases")
+          proto = send("map_#{cmap_name}_game_phases")
           proto.each { |pp| phases << pp.dup }
 
-          if respond_to?("map_#{map_name}_post_game_phases")
-            phases = send("map_#{map_name}_post_game_phases", phases)
+          if respond_to?("map_#{cmap_name}_post_game_phases")
+            phases = send("map_#{cmap_name}_post_game_phases", phases)
           else
             # change last phase based on train roster
             phases.last[:name] = game_trains.last[:name]
@@ -378,21 +386,21 @@ module Engine
         end
 
         def half_dividend_by_map?
-          return game_capitalization == :incremental unless respond_to?("map_#{map_name}_half_dividend")
+          return game_capitalization == :incremental unless respond_to?("map_#{cmap_name}_half_dividend")
 
-          send("map_#{map_name}_half_dividend")
+          send("map_#{cmap_name}_half_dividend")
         end
 
         def share_price_change_for_dividend_as_full_cap_by_map?
-          return game_capitalization == :full unless respond_to?("map_#{map_name}_share_price_change_for_dividend_as_full_cap")
+          return game_capitalization == :full unless respond_to?("map_#{cmap_name}_share_price_change_for_dividend_as_full_cap")
 
-          send("map_#{map_name}_share_price_change_for_dividend_as_full_cap")
+          send("map_#{cmap_name}_share_price_change_for_dividend_as_full_cap")
         end
 
         def movement_type_at_emr_share_issue_by_map
-          return :left_block unless respond_to?("map_#{map_name}_movement_type_at_emr_share_issue")
+          return :left_block unless respond_to?("map_#{cmap_name}_movement_type_at_emr_share_issue")
 
-          send("map_#{map_name}_movement_type_at_emr_share_issue")
+          send("map_#{cmap_name}_movement_type_at_emr_share_issue")
         end
 
         def redef_const(const, value)
@@ -443,7 +451,7 @@ module Engine
           #################################################
           # Map-specific constant overrides
           #
-          send("map_#{map_name}_constants")
+          send("map_#{cmap_name}_constants")
 
           #################################################
           # Map-specific setup
@@ -454,7 +462,7 @@ module Engine
         end
 
         def init_round
-          return send("map_#{map_name}_init_round") if respond_to?("map_#{map_name}_init_round")
+          return send("map_#{cmap_name}_init_round") if respond_to?("map_#{cmap_name}_init_round")
 
           return super unless game_companies.empty?
 
@@ -464,8 +472,8 @@ module Engine
         end
 
         def operating_steps
-          if respond_to?("map_#{map_name}_operating_steps")
-            send("map_#{map_name}_operating_steps")
+          if respond_to?("map_#{cmap_name}_operating_steps")
+            send("map_#{cmap_name}_operating_steps")
           elsif game_companies.empty?
             [
               GSystem18::Step::Bankrupt,
@@ -515,9 +523,9 @@ module Engine
         end
 
         def next_round!
-          return super unless respond_to?("map_#{map_name}_next_round!")
+          return super unless respond_to?("map_#{cmap_name}_next_round!")
 
-          send("map_#{map_name}_next_round!")
+          send("map_#{cmap_name}_next_round!")
         end
 
         def emergency_issuable_bundles(entity)
@@ -547,21 +555,21 @@ module Engine
         end
 
         def upgrade_ignore_num_cities(from)
-          return false unless respond_to?("map_#{map_name}_upgrade_ignore_num_cities")
+          return false unless respond_to?("map_#{cmap_name}_upgrade_ignore_num_cities")
 
-          send("map_#{map_name}_upgrade_ignore_num_cities", from)
+          send("map_#{cmap_name}_upgrade_ignore_num_cities", from)
         end
 
         def or_round_finished
-          return unless respond_to?("map_#{map_name}_or_round_finished")
+          return unless respond_to?("map_#{cmap_name}_or_round_finished")
 
-          send("map_#{map_name}_or_round_finished")
+          send("map_#{cmap_name}_or_round_finished")
         end
 
         def rust_trains!(train, entity)
-          return super unless respond_to?("map#{map_name}_rust_trains!")
+          return super unless respond_to?("map#{cmap_name}_rust_trains!")
 
-          send("map_#{map_name}_rust_trains!", train, entity)
+          send("map_#{cmap_name}_rust_trains!", train, entity)
         end
 
         def close_corporation(corporation, quiet: false)
@@ -572,91 +580,91 @@ module Engine
           @corporations << corporation
 
           @log << "#{corporation.name} is now available to start"
-          return unless respond_to?("map_#{map_name}_close_corporation_extra")
+          return unless respond_to?("map_#{cmap_name}_close_corporation_extra")
 
-          send("map_#{map_name}_close_corporation_extra", corporation)
+          send("map_#{cmap_name}_close_corporation_extra", corporation)
         end
 
         def check_other(route)
-          return unless respond_to?("map_#{map_name}_check_other")
+          return unless respond_to?("map_#{cmap_name}_check_other")
 
-          send("map_#{map_name}_check_other", route)
+          send("map_#{cmap_name}_check_other", route)
         end
 
         def post_lay_tile(entity, tile)
-          return unless respond_to?("map_#{map_name}_post_lay_tile")
+          return unless respond_to?("map_#{cmap_name}_post_lay_tile")
 
-          send("map_#{map_name}_post_lay_tile", entity, tile)
+          send("map_#{cmap_name}_post_lay_tile", entity, tile)
         end
 
         def token_same_hex?(entity, hex, token)
-          return false unless respond_to?("map_#{map_name}_token_same_hex?")
+          return false unless respond_to?("map_#{cmap_name}_token_same_hex?")
 
-          send("map_#{map_name}_token_same_hex?", entity, hex, token)
+          send("map_#{cmap_name}_token_same_hex?", entity, hex, token)
         end
 
         def company_header(company)
-          return super unless respond_to?("map_#{map_name}_company_header")
+          return super unless respond_to?("map_#{cmap_name}_company_header")
 
-          send("map_#{map_name}_company_header", company)
+          send("map_#{cmap_name}_company_header", company)
         end
 
         def can_par?(corporation, entity)
-          return super unless respond_to?("map_#{map_name}_can_par?")
+          return super unless respond_to?("map_#{cmap_name}_can_par?")
 
-          send("map_#{map_name}_can_par?", corporation, entity)
+          send("map_#{cmap_name}_can_par?", corporation, entity)
         end
 
         def after_par(corporation)
-          return super unless respond_to?("map_#{map_name}_after_par")
+          return super unless respond_to?("map_#{cmap_name}_after_par")
 
-          send("map_#{map_name}_after_par", corporation)
+          send("map_#{cmap_name}_after_par", corporation)
         end
 
         def tokener_check_connected(entity, city, hex)
-          return true unless respond_to?("map_#{map_name}_tokener_check_connected")
+          return true unless respond_to?("map_#{cmap_name}_tokener_check_connected")
 
-          send("map_#{map_name}_tokener_check_connected", entity, city, hex)
+          send("map_#{cmap_name}_tokener_check_connected", entity, city, hex)
         end
 
         def tokener_available_hex(entity, hex)
-          return true unless respond_to?("map_#{map_name}_tokener_available_hex")
+          return true unless respond_to?("map_#{cmap_name}_tokener_available_hex")
 
-          send("map_#{map_name}_tokener_available_hex", entity, hex)
+          send("map_#{cmap_name}_tokener_available_hex", entity, hex)
         end
 
         def revenue_for(route, stops)
           revenue = super
 
-          return revenue unless respond_to?("map_#{map_name}_extra_revenue_for")
+          return revenue unless respond_to?("map_#{cmap_name}_extra_revenue_for")
 
-          revenue + send("map_#{map_name}_extra_revenue_for", route, stops)
+          revenue + send("map_#{cmap_name}_extra_revenue_for", route, stops)
         end
 
         def revenue_str(route)
           revenue_str = super
 
-          return revenue_str unless respond_to?("map_#{map_name}_extra_revenue_str")
+          return revenue_str unless respond_to?("map_#{cmap_name}_extra_revenue_str")
 
-          revenue_str + send("map_#{map_name}_extra_revenue_str", route)
+          revenue_str + send("map_#{cmap_name}_extra_revenue_str", route)
         end
 
         def extra_revenue(entity, routes)
-          return super unless respond_to?("map_#{map_name}_extra_revenue")
+          return super unless respond_to?("map_#{cmap_name}_extra_revenue")
 
-          send("map_#{map_name}_extra_revenue", entity, routes)
+          send("map_#{cmap_name}_extra_revenue", entity, routes)
         end
 
         def submit_revenue_str(routes, show_subsidy)
-          return super unless respond_to?("map_#{map_name}_submit_revenue_str")
+          return super unless respond_to?("map_#{cmap_name}_submit_revenue_str")
 
-          send("map_#{map_name}_submit_revenue_str", routes, show_subsidy)
+          send("map_#{cmap_name}_submit_revenue_str", routes, show_subsidy)
         end
 
         def timeline
-          return super unless respond_to?("map_#{map_name}_timeline")
+          return super unless respond_to?("map_#{cmap_name}_timeline")
 
-          send("map_#{map_name}_timeline")
+          send("map_#{cmap_name}_timeline")
         end
 
         def ipo_name(_corp)
@@ -672,57 +680,57 @@ module Engine
         end
 
         def can_remove_icon?(entity)
-          return false unless respond_to?("map_#{map_name}_can_remove_icon?")
+          return false unless respond_to?("map_#{cmap_name}_can_remove_icon?")
 
-          send("map_#{map_name}_can_remove_icon?", entity)
+          send("map_#{cmap_name}_can_remove_icon?", entity)
         end
 
         def icon_hexes(entity)
-          return [] unless respond_to?("map_#{map_name}_icon_hexes")
+          return [] unless respond_to?("map_#{cmap_name}_icon_hexes")
 
-          send("map_#{map_name}_icon_hexes", entity)
+          send("map_#{cmap_name}_icon_hexes", entity)
         end
 
         def remove_icon(entity, hex_id)
-          return unless respond_to?("map_#{map_name}_remove_icon")
+          return unless respond_to?("map_#{cmap_name}_remove_icon")
 
-          send("map_#{map_name}_remove_icon", entity, hex_id)
+          send("map_#{cmap_name}_remove_icon", entity, hex_id)
         end
 
         def removable_icon_action_str
-          return unless respond_to?("map_#{map_name}_removable_icon_action_str")
+          return unless respond_to?("map_#{cmap_name}_removable_icon_action_str")
 
-          send("map_#{map_name}_removable_icon_action_str")
+          send("map_#{cmap_name}_removable_icon_action_str")
         end
 
         def status_str(corporation)
-          return super unless respond_to?("map_#{map_name}_status_str")
+          return super unless respond_to?("map_#{cmap_name}_status_str")
 
-          send("map_#{map_name}_status_str", corporation)
+          send("map_#{cmap_name}_status_str", corporation)
         end
 
         def modify_tile_lay(entity, action)
-          return action unless respond_to?("map_#{map_name}_modify_tile_lay")
+          return action unless respond_to?("map_#{cmap_name}_modify_tile_lay")
 
-          send("map_#{map_name}_modify_tile_lay", entity, action)
+          send("map_#{cmap_name}_modify_tile_lay", entity, action)
         end
 
         def pre_lay_tile_action(action, entity, tile_lay)
-          return unless respond_to?("map_#{map_name}_pre_lay_tile_action")
+          return unless respond_to?("map_#{cmap_name}_pre_lay_tile_action")
 
-          send("map_#{map_name}_pre_lay_tile_action", action, entity, tile_lay)
+          send("map_#{cmap_name}_pre_lay_tile_action", action, entity, tile_lay)
         end
 
         def place_home_token(corporation)
-          return super unless respond_to?("map_#{map_name}_place_home_token")
+          return super unless respond_to?("map_#{cmap_name}_place_home_token")
 
-          send("map_#{map_name}_place_home_token", corporation)
+          send("map_#{cmap_name}_place_home_token", corporation)
         end
 
         def home_token_locations(corporation)
-          return super unless respond_to?("map_#{map_name}_home_token_locations")
+          return super unless respond_to?("map_#{cmap_name}_home_token_locations")
 
-          send("map_#{map_name}_home_token_locations", corporation)
+          send("map_#{cmap_name}_home_token_locations", corporation)
         end
       end
     end
