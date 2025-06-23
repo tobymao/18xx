@@ -718,6 +718,12 @@ module Engine
 
           send("map_#{map_name}_place_home_token", corporation)
         end
+
+        def home_token_locations(corporation)
+          return super unless respond_to?("map_#{map_name}_home_token_locations")
+
+          send("map_#{map_name}_home_token_locations", corporation)
+        end
       end
     end
   end

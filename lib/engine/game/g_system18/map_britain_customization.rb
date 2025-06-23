@@ -498,19 +498,25 @@ module Engine
           @round.last_old_tile = old_tile
         end
 
-        def map_britain_place_home_token(corporation)
-          return if corporation.tokens.first&.used
+        def map_britain_home_token_locations(corporation)
+          corporation.coordinates.map { |coord| hex_by_id(coord) }
+        end
 
-          Array(corporation.coordinates).each do |coord|
-            hex = hex_by_id(coord)
-            tile = hex&.tile
-            cities = tile.cities
-            city = cities.find { |c| c.reserved_by?(corporation) } || cities.first
-            token = corporation.find_token_by_type
-
-            @log << "#{corporation.name} places a token on #{hex.name}"
-            city.place_token(corporation, token)
-          end
+        def map_britain_operating_steps
+          [
+            GSystem18::Step::Bankrupt,
+            Engine::Step::Exchange,
+            Engine::Step::SpecialTrack,
+            Engine::Step::SpecialToken,
+            Engine::Step::BuyCompany,
+            GSystem18::Step::HomeToken,
+            GSystem18::Step::Track,
+            GSystem18::Step::Token,
+            Engine::Step::Route,
+            GSystem18::Step::Dividend,
+            Engine::Step::DiscardTrain,
+            GSystem18::Step::BuyTrain,
+          ]
         end
 
         # FIXME: add reopen! method to Engine::Company
