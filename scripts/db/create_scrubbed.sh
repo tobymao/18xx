@@ -17,7 +17,7 @@ set -x
 ./scripts/db/load_from_backup.sh
 
 # scrub the local data
-docker-compose exec --env DB_LOG_LEVEL=fatal rack bundle exec ruby -e "load 'scripts/db_scrub.rb'; scrub_all_users!"
+docker compose exec --env DB_LOG_LEVEL=fatal rack bundle exec ruby -e "load 'scripts/db_scrub.rb'; scrub_all_users!"
 
 # dump the scrubbed data
 ./scripts/db/dump.sh "db.backup.scrubbed.$(date +"%Y%m%d.%H%M").gz"

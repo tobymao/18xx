@@ -11,8 +11,13 @@ module Engine
             return super unless entity.name == 'MZ'
 
             [Engine::Action::PlaceToken.new(entity,
-                                            city: @game.city_by_id('F24-0-2'),
+                                            city: get_mz_city(entity),
                                             slot: 0)]
+          end
+
+          def get_mz_city(entity)
+            cities = @game.hex_by_id(entity.coordinates).tile.cities
+            entity.city < cities.length ? cities[entity.city] : cities.first
           end
 
           def process_place_token(action)

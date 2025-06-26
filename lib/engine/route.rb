@@ -128,8 +128,7 @@ module Engine
               }
             end
           end
-
-          new_chains
+          new_chains.sort_by { |chain| chain[:paths].size }
         end
     end
 
@@ -153,6 +152,11 @@ module Engine
             connection_data[0] = segment(chain, right: head[:right])
           else
             connection_data.shift
+            if (chain = select(tail[:right], node)[0])
+              # This node can be reached from either the head or the tail of the
+              # chain. All head connections have been offered, switch to the tail.
+              connection_data << segment(chain, left: tail[:right])
+            end
           end
         when tail[:right]
           if (chain = next_chain(tail[:left], tail[:chain], node))
@@ -311,7 +315,11 @@ module Engine
       @game.check_other(self)
     end
 
-    def revenue(suppress_check_other: false, supress_route_token_check: false)
+    def check_route_combination!
+      @game.check_route_combination(@routes)
+    end
+
+    def revenue(supress_route_token_check: false, suppress_check_route_combination: false)
       @revenue ||=
         begin
           visited = visited_stops
@@ -325,7 +333,8 @@ module Engine
           end
 
           check_terminals!
-          check_other! unless suppress_check_other
+          check_other!
+          check_route_combination! unless suppress_check_route_combination
           check_cycles!
           check_distance!(visited)
           check_overlap!

@@ -34,7 +34,7 @@ module Engine
         end
 
         def emergency_issuable_bundles(entity)
-          return [] unless entity.trains.empty?
+          return [] unless trainless?(entity)
           return [] if entity.cash >= @depot.max_depot_price
 
           eligible, remaining = issuable_shares(entity)
@@ -46,6 +46,10 @@ module Engine
           return [] unless entity.corporation?
 
           bundles_for_corporation(share_pool, entity).reject { |bundle| entity.cash < bundle.price }
+        end
+
+        def trainless?(corporation)
+          corporation.trains.empty?
         end
       end
     end

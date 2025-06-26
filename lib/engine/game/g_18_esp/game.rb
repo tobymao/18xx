@@ -365,8 +365,8 @@ module Engine
         end
 
         def setup
-          @corporations, @future_corporations = @corporations.partition do |corporation|
-            corporation.type == :minor || north_corp?(corporation)
+          @future_corporations = @corporations.select do |corporation|
+            corporation.type != :minor && !north_corp?(corporation)
           end
           @corporations.each { |c| c.shares.first.double_cert = true if c.type == :minor }
 
@@ -540,7 +540,7 @@ module Engine
         end
 
         def event_south_majors_available!
-          @corporations.concat(@future_corporations)
+          @future_corporations = []
           @can_acquire_minors = true
           @log << '-- Major corporations in the south now available --'
         end
@@ -571,7 +571,15 @@ module Engine
           remaining = @depot.upcoming.size
           total = @depot.trains.count { |t| t.sym == train_sym }
 
-          total - remaining > 1
+          end_game_trigger = total - remaining > 1
+
+          if end_game_trigger && !@game_ending
+            @log << '-- Event: Endgame triggered --'
+            @log << "Finish this OR; Game ends at the end of #{@turn + 1}.#{@operating_rounds}"
+            @operating_rounds = @round.round_num
+            @game_ending = true
+          end
+          end_game_trigger
         end
 
         def event_close_companies!
@@ -632,6 +640,8 @@ module Engine
         def status_array(corporation)
           return if corporation.type == :minor
 
+          return availability_status_array if @future_corporations.include?(corporation)
+
           goal_status = ['Goals Left:']
 
           goal_status << ["Destination #{corporation.destination}"] unless corporation.destination_connected?
@@ -649,6 +659,10 @@ module Engine
           status = goal_status + train_status
           status = nil if status.length.zero?
           status
+        end
+
+        def availability_status_array
+          ['Available on Phase 3']
         end
 
         def company_status_str(company)
@@ -777,11 +791,9 @@ module Engine
           hexes = route.hexes.reject { |h| self.class::DOUBLE_HEX.include?(h.name) }
           raise GameError, 'Route visits same hex twice' if hexes.size != hexes.uniq.size
 
-          if route.train.id == '2P-0' && !@perm2_ran_aranjuez && route.hexes.none? do |hex|
-               hex.id == ARANJUEZ_HEX
-             end
+          if route.train.id == '2P-0' && !@perm2_ran_aranjuez && !p2_route_runs_aranjuez_to_mardid?(route)
             raise GameError,
-                  '2P first run must include Aranjuez'
+                  '2P first run must include Aranjuez and Madrid'
           end
           wrong_track = skip_route_track_type(route.train)
           raise GameError, 'Routes must use correct gauage' if wrong_track && route.paths.any? { |p| p.track == wrong_track }
@@ -792,11 +804,14 @@ module Engine
         def check_p2_aranjuez(routes)
           return if @perm2_ran_aranjuez
 
-          @perm2_ran_aranjuez = true if routes.any? do |route|
-                                          route.train.id == '2P-0' && route.hexes.any? do |hex|
-                                            hex.id == ARANJUEZ_HEX
-                                          end
-                                        end
+          @perm2_ran_aranjuez = routes.any? do |route|
+            p2_route_runs_aranjuez_to_mardid?(route)
+          end
+        end
+
+        def p2_route_runs_aranjuez_to_mardid?(route)
+          route.train.id == '2P-0' &&
+          ([ARANJUEZ_HEX, MADRID_HEX] - route.hexes.map(&:id)).empty?
         end
 
         def valid_interchange?(tile, entity)
@@ -883,13 +898,13 @@ module Engine
           if corporation == mza && !corporation.tokens.first.used
             token = corporation.tokens.first
             hex = hex_by_id(corporation.coordinates)
-            city = if corporation_by_id('MZ')&.ipoed
-                     # MZA special case if MZ already exists on the map
-                     hex.tile.cities.size > 1 ? city_by_id("#{hex.tile.id}-#{corporation.city}") : hex.tile.cities.first
-                   else
-                     # MZA exists, but no MZ. Place on original location
-                     city_by_id("#{hex.tile.id}-#{corporation.city}")
-                   end
+            cities = hex.tile.cities
+            city =
+              if cities.one?
+                cities.first
+              else
+                cities[corporation.city]
+              end
             @log << "#{corporation.name} places a token on #{hex.id}"
             cheater = !city.tokenable?(corporation)
             city.place_token(corporation, token, cheater: cheater, check_tokenable: false)
@@ -932,7 +947,7 @@ module Engine
           @luxury_carriages.dup.each do |owner, amount|
             next if owner == 'bank'
 
-            transfer_amount = amount - 1
+            transfer_amount = amount
             @luxury_carriages['bank'] += transfer_amount
             @luxury_carriages[owner] = 1
           end
@@ -1079,6 +1094,18 @@ module Engine
           end
         end
 
+        def corporation_available?(corp)
+          @future_corporations.none?(corp)
+        end
+
+        def sorted_corporations
+          # Corporations sorted by some potential game rules
+          ipoed, others = corporations.partition(&:ipoed)
+          corps = others - @future_corporations
+
+          ipoed.sort + corps + @future_corporations
+        end
+
         def skip_route_track_type(train)
           case train.track_type
           when :narrow
@@ -1143,6 +1170,17 @@ module Engine
 
           # close corp
           close_corporation(minor)
+        end
+
+        def close_corporation(corporation, quiet: false)
+          if corporation.type == :minor
+            corporation.placed_tokens.each do |token|
+              city = token.city
+              remove_slot = city.tokens.compact.any?(&:cheater)
+              city.delete_token!(token, remove_slot: remove_slot)
+            end
+          end
+          super
         end
 
         def southern_major_corps
@@ -1370,6 +1408,12 @@ module Engine
               check.call([path.hex, path]) if path.nodes.size > 1
             end
           end
+        end
+
+        def other_bank_info
+          return unless (@luxury_carriages['bank']).positive?
+
+          ['Tenders', (@luxury_carriages['bank']).to_s]
         end
       end
     end

@@ -92,7 +92,6 @@ module Engine
             @log << "#{entity.name} removed the Gauge Change Marker between #{hex.id} and #{neighbor.id}"
             @round.removed_gauge << [hex.id, neighbor.id].sort
             @game.removed_gauge_change_marker(hex, neighbor)
-            LOGGER.debug "Remove GC >> #{@round.removed_gauge} / #{@game.gauge_change_markers}"
           end
 
           # ------  ------
@@ -105,6 +104,10 @@ module Engine
           # Added multple yellow tile check and Yellow OO reservation check
           def process_lay_tile(action)
             if action.tile.color == :yellow
+              # check for invalid ferry placement
+              if action.tile.id == 'IF2-0' && (action.tile.rotation == 1 && action.hex.id == 'J37')
+                raise GameError, 'Invalid Ferry Tile Placement'
+              end
               raise GameError, 'New yellow tiles must extend path from railhead and previously laid tiles' \
                unless connected_to_track_laying_path?(action.hex)
 
@@ -115,21 +118,13 @@ module Engine
             @round.next_empty_hexes = calculate_railhead_hexes unless @game.loading
           end
 
-          def debug_track_info(action, str)
-            LOGGER.debug "Track > Lay Tile > #{str}"
-            LOGGER.debug "hex: #{action.hex} - tile: #{action.hex.tile} - borders: #{action.hex.tile.borders.inspect}"
-            LOGGER.debug "New tile: #{action.tile} - borders: #{action.tile.borders.inspect}"
-          end
-
           # Base code doesn't handle one token and a reservation in first city on OO tile
           # Moves a reservation from city to hex to allow any of the two cities to be tokened
           # Reservation to be moved back to empty city after token is placed (See HomeTrack < HomeToken)
           def move_oo_reservations(action)
             tile = action.tile
-            LOGGER.debug "Track::move_oo_reservations > tile.labels: #{tile.labels}"
             cities = tile.cities
             reservations = cities.flat_map(&:reservations).compact + tile.reservations
-            LOGGER.debug "Track::move_oo_reservations > reservations: #{reservations}"
             tile.reservations = reservations.uniq
             cities.each(&:remove_all_reservations!)
           end

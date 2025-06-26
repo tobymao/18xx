@@ -10,6 +10,7 @@ module Engine
             train_limit: 4,
             tiles: [:yellow],
             operating_rounds: 2,
+            status: ['nr_one_or'],
           },
           {
             name: '3',
@@ -17,7 +18,7 @@ module Engine
             train_limit: 4,
             tiles: %i[yellow green],
             operating_rounds: 2,
-            status: ['can_buy_companies'],
+            status: %w[can_buy_companies nr_each_or],
           },
           {
             name: '4',
@@ -25,7 +26,7 @@ module Engine
             train_limit: 3,
             tiles: %i[yellow green],
             operating_rounds: 2,
-            status: ['can_buy_companies'],
+            status: %w[can_buy_companies nr_each_or],
           },
           {
             name: '5',
@@ -33,6 +34,7 @@ module Engine
             train_limit: 2,
             tiles: %i[yellow green brown],
             operating_rounds: 2,
+            status: ['nr_each_or'],
           },
           {
             name: '6',

@@ -37,13 +37,14 @@ module Engine
         EBUY_SELL_MORE_THAN_NEEDED = false
         CAPITALIZATION = :incremental
         MUST_BUY_TRAIN = :always
-        POOL_SHARE_DROP = :none
+        POOL_SHARE_DROP = :left_block
         SELL_AFTER = :p_any_operate
         SELL_MOVEMENT = :left_block
         HOME_TOKEN_TIMING = :float
         EBUY_PRES_SWAP = false
         EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = true
         MUST_EMERGENCY_ISSUE_BEFORE_EBUY = true
+        SOLD_OUT_INCREASE = true
 
         BANKRUPTCY_ENDS_GAME_AFTER = :one
 
@@ -76,6 +77,11 @@ module Engine
           pays_bonus_3: 'Triple jump if dividend ≥ 3X',
           only_president: 'Move left only when president sells'
         )
+
+        STATUS_TEXT = Base::STATUS_TEXT.merge(
+          'nr_one_or' => ['NR after first OR', 'Nationalization Round only after first Operating Round'],
+          'nr_each_or' => ['NR after each OR', 'Nationalization Round after each Operating Round'],
+        ).freeze
 
         ASSIGNMENT_TOKENS = {
           'MOUNTAIN_SMALL' => '/icons/hill.svg',
@@ -166,7 +172,7 @@ module Engine
 
           corporation_by_id('R').add_ability(Engine::Ability::Base.new(
             type: 'free_tunnel',
-            description: 'Free tunnel'
+            description: 'May build tunnels for free'
           ))
 
           corporation_by_id('V').add_ability(Engine::Ability::Base.new(
@@ -181,7 +187,7 @@ module Engine
 
           corporation_by_id('S').add_ability(Engine::Ability::Base.new(
             type: 'extra_tile_lay',
-            description: 'May lay two yellow',
+            description: 'May lay two yellow until Oslo is connected',
           ))
 
           corporation_by_id('J').add_ability(Engine::Ability::Base.new(
@@ -191,7 +197,7 @@ module Engine
 
           corporation_by_id('B').add_ability(Engine::Ability::Base.new(
             type: 'ignore_mandatory_train',
-            description: 'Not mandatory to own a train',
+            description: 'Not mandatory to own a train unil Phase 5',
           ))
 
           @corporations.each do |corporation|
@@ -290,6 +296,15 @@ module Engine
           revenue
         end
 
+        def stock_round
+          Engine::Round::Stock.new(self, [
+            Engine::Step::DiscardTrain,
+            Engine::Step::Exchange,
+            Engine::Step::SpecialTrack,
+            G18Norway::Step::BuySellParShares,
+          ])
+        end
+
         def operating_round(round_num)
           Engine::Round::Operating.new(self, [
             Engine::Step::Bankrupt,
@@ -319,12 +334,13 @@ module Engine
           depot_trains.min_by(&:price)
         end
 
-        def cheapest_train_price(_corporation)
-          cheapest_train.price
+        def cheapest_train_price(corporation)
+          ability = abilities(corporation, :train_discount, time: 'buying_train')
+          cheapest_train.min_price(ability: ability)
         end
 
         def can_go_bankrupt?(player, corporation)
-          total_emr_buying_power(player, corporation) < cheapest_train_price
+          total_emr_buying_power(player, corporation) < cheapest_train_price(corporation)
         end
 
         def new_nationalization_round(round_num)
@@ -361,12 +377,12 @@ module Engine
             when Engine::Round::Operating
               if @round.round_num < @operating_rounds
                 or_round_finished
-                if !custom_end_game_reached?
+                if @phase.status.include?('nr_each_or') || @phase.status.include?('nr_one_or')
                   new_nationalization_round(@round.round_num)
                 else
                   new_operating_round(@round.round_num + 1)
                 end
-              elsif !custom_end_game_reached? && @phase.tiles.include?(:green)
+              elsif @phase.status.include?('nr_each_or')
                 or_round_finished
                 new_nationalization_round(@round.round_num)
               else
@@ -380,6 +396,12 @@ module Engine
               reorder_players
               new_stock_round
             end
+        end
+
+        def payout_companies(ignore: [])
+          return if @round.is_a?(G18Norway::Round::Nationalization)
+
+          super
         end
 
         def add_new_share(share)
@@ -429,7 +451,7 @@ module Engine
         end
 
         def oslo
-          @oslo ||= hex_by_id('G29')
+          @oslo ||= hex_by_id('H29')
         end
 
         def init_graph
@@ -508,7 +530,11 @@ module Engine
           return if token
 
           visited = route.visited_stops
-          token = visited.find { |stop| harbor_token?(stop, route.corporation) }
+          token = if ship?(route.train)
+                    visited.find { |stop| harbor_token?(stop, route.corporation) || stop.tokened_by?(route.corporation) }
+                  else
+                    visited.find { |stop| stop.tokened_by?(route.corporation) }
+                  end
 
           raise NoToken, 'Route must contain token' unless token
         end
@@ -616,7 +642,7 @@ module Engine
 
           available = @depot.available_upcoming_trains.reject { |train| ship?(train) }
           return [] unless (train = available.min_by(&:price))
-          return [] if corp.cash >= train.price
+          return [] if corp.cash >= cheapest_train_price(corp)
 
           bundles = bundles_for_corporation(corp, corp)
 
@@ -666,6 +692,21 @@ module Engine
           return false if @turn <= 1 && !@round.operating?
 
           super(entity, bundle)
+        end
+
+        def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil, movement: nil)
+          corporation = bundle.corporation
+
+          # Check if selling would make NSB president
+          if bundle.shares.any?(&:president) &&
+             corporation.share_holders[nsb] >= bundle.presidents_share.percent &&
+             corporation.player_share_holders.reject do |p, _|
+               p == bundle.owner || p == nsb
+             end.values.max.to_i < bundle.presidents_share.percent
+            raise GameError, 'Cannot sell shares as NSB would become president'
+          end
+
+          super
         end
       end
     end

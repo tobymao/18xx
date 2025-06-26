@@ -111,9 +111,9 @@ module Engine
             distance: 6,
             price: 200,
             rusts_on: '10H',
-            events: [{ 'type' => 'green_par' }, { 'type' => 'buy_tokens' }],
+            events: [{ 'type' => 'green_par' }],
           },
-          { name: '8H', distance: 8, price: 350, rusts_on: '16H', events: [{ 'type' => 'bonds' }] },
+          { name: '8H', distance: 8, price: 350, rusts_on: '16H' },
           {
             name: '10H',
             num: 2,
@@ -126,7 +126,7 @@ module Engine
             num: 1,
             distance: 12,
             price: 800,
-            events: [{ 'type' => 'close_companies' }, { 'type' => 'earthquake' }, { 'type' => 'e_tokens' }],
+            events: [{ 'type' => 'close_companies' }, { 'type' => 'earthquake' }],
           },
           { name: '16H', distance: 16, price: 1100 },
           { name: 'E', num: 6, available_on: '12H', distance: 99, price: 550 },
@@ -134,20 +134,18 @@ module Engine
         ].freeze
 
         def game_trains
-          train_list = super.dup
-          train_list.reject! { |t| t[:name] == 'E' } unless electric_dreams?
-
-          conditions = [
-            { name: '6H', type: 'buy_tokens', condition: !acquiring_station_tokens? },
-            { name: '8H', type: 'bonds', condition: !bonds? },
-            { name: '12H', type: 'e_tokens', condition: !electric_dreams? },
-          ]
-
-          conditions.each do |cond|
-            train_list.find { |t| t[:name] == cond[:name] }[:events].reject! { |e| e['type'] == cond[:type] } if cond[:condition]
+          unless @game_trains
+            @game_trains = super.map(&:dup)
+            _train_4h, train_6h, train_8h, _train_10h, train_12h, _train_16h, train_e, _train_r6h = @game_trains
+            train_6h[:events] = [{ 'type' => 'green_par' }, { 'type' => 'buy_tokens' }] if acquiring_station_tokens?
+            train_8h[:events] = [{ 'type' => 'bonds' }] if bonds?
+            if electric_dreams?
+              train_12h[:events] =
+                [{ 'type' => 'close_companies' }, { 'type' => 'earthquake' }, { 'type' => 'e_tokens' }]
+            end
+            @game_trains.delete(train_e) unless electric_dreams?
           end
-
-          train_list
+          @game_trains
         end
 
         CAPITALIZATION = :incremental

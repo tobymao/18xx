@@ -7,34 +7,44 @@ require_relative 'route'
 
 module Engine
   class AutoRouter
+    attr_accessor :running
+
     def initialize(game, flash = nil)
       @game = game
+      @train_autoroute_group = @game.class::TRAIN_AUTOROUTE_GROUPS
       @next_hexside_bit = 0
       @flash = flash
     end
 
     def compute(corporation, **opts)
-      trains = @game.route_trains(corporation).sort_by(&:price).reverse
-
-      train_groups =
-        if (groups = @game.class::TRAIN_AUTOROUTE_GROUPS)
-          trains.group_by { |t| groups.index { |g| g.include?(t.name) } }.values
-        else
-          [trains]
-        end
-
-      routes = opts.delete(:routes)
-
-      train_groups.flat_map do |train_group|
-        opts[:routes] = routes.select { |r| train_group.include?(r.train) }
-        compute_for_train_group(train_group, corporation, **opts)
-      end
+      @running = true
+      @route_timeout = opts[:route_timeout] || 10
+      trains = @game.route_trains(corporation).sort_by(&:price)
+      train_routes, path_walk_timed_out = path(trains, corporation, **opts)
+      @flash&.call('Auto route path walk failed to complete (PATH TIMEOUT)') if path_walk_timed_out
+      route(train_routes, opts[:callback])
     end
 
-    def compute_for_train_group(trains, corporation, **opts)
+    def route(trains_to_routes, callback)
+      %x{
+        (new Autorouter(#{self}, #{trains_to_routes}, #{callback})).autoroute();
+      }
+    end
+
+    def real_revenue(routes)
+      routes.each do |route|
+        route.clear_cache!(only_routes: true)
+        route.routes = routes
+        route.revenue
+      end
+      @game.routes_revenue(routes)
+    rescue GameError
+      -1
+    end
+
+    def path(trains, corporation, **opts)
       static = opts[:routes] || []
       path_timeout = opts[:path_timeout] || 30
-      route_timeout = opts[:route_timeout] || 10
       route_limit = opts[:route_limit] || 10_000
 
       connections = {}
@@ -83,7 +93,7 @@ module Engine
           last_right = nil
 
           complete = lambda do
-            chains << { nodes: [left, right], paths: chain }
+            chains << { nodes: [left, right], paths: chain, hexes: chain.map(&:hex) }
             last_left = left
             last_right = right
             left, right = nil
@@ -147,11 +157,15 @@ module Engine
               @game,
               @game.phase,
               train,
-              connection_data: connection,
+              # we have to clone to prevent multiple routes having the same connection array.
+              # If we don't clone, then later route.touch_node calls will affect all routes with
+              # the same connection array
+              connection_data: connection.clone,
               bitfield: bitfield_from_connection(connection, hexside_bits),
             )
             route.routes = [route]
-            route.revenue(suppress_check_other: true) # defer route-collection checks til later
+            # defer route combination checks until we have the full combination of routes to check
+            route.revenue(suppress_check_route_combination: true)
             train_routes[train] << route
           rescue RouteTooLong
             # ignore for this train, and abort walking this path if ignored for all trains
@@ -181,38 +195,7 @@ module Engine
         train_routes[train] = routes.sort_by(&:revenue).reverse.take(route_limit)
       end
 
-      sorted_routes = train_routes.map { |_train, routes| routes }
-
-      limit = sorted_routes.map(&:size).reduce(&:*)
-      LOGGER.debug do
-        "Finding route combos of best #{train_routes.map { |k, v| k.name + ':' + v.size.to_s }.join(', ')} "\
-          "routes with depth #{limit}"
-      end
-
-      now = Time.now
-      possibilities = js_evaluate_combos(sorted_routes, route_timeout)
-
-      if path_walk_timed_out
-        @flash&.call('Auto route path walk failed to complete (PATH TIMEOUT)')
-      elsif Time.now - now > route_timeout
-        @flash&.call('Auto route selection failed to complete (ROUTE TIMEOUT)')
-      end
-
-      # final sanity check on best combos: recompute each route.revenue in case it needs to reject a combo
-      max_routes = possibilities.max_by do |routes|
-        routes.each do |route|
-          route.clear_cache!(only_routes: true)
-          route.routes = routes
-          route.revenue
-        end
-        @game.routes_revenue(routes)
-      rescue GameError => e
-        # report error but still include combo with errored route in the result set
-        LOGGER.debug { " Sanity check error, likely an auto_router bug: #{e}" }
-        routes
-      end || []
-
-      max_routes.each { |route| route.routes = max_routes }
+      [train_routes, path_walk_timed_out]
     end
 
     # inputs:
@@ -290,167 +273,230 @@ module Engine
       bitfield[entry] |= mask
     end
 
-    # The js-in-Opal algorithm
-    def js_evaluate_combos(_rb_sorted_routes, _route_timeout)
-      rb_possibilities = []
-      possibilities_count = 0
-      conflicts = 0
-      now = Time.now
-
-      %x{
-        let possibilities = []
-        let combos = []
-        let counter = 0
-        let max_revenue = 0
-        let js_now = Date.now()
-        let js_route_timeout = _route_timeout * 1000
-
-        // marshal Opal objects to js for faster/easier access
-        const js_sorted_routes = []
-        let limit = 1
-        Opal.send(_rb_sorted_routes, 'each', [], function(rb_routes) {
-          let js_routes = []
-          limit *= rb_routes.length
-          Opal.send(rb_routes, 'each', [], function(rb_route)
-          {
-            js_routes.push( { route: rb_route, bitfield: rb_route.bitfield, revenue: rb_route.revenue } )
-          })
-          js_sorted_routes.push(js_routes)
-        })
-        let old_limit = limit
-
-        // init combos with first train's routes
-        for (r=0; r < js_sorted_routes[0].length; r++) {
-          const route = js_sorted_routes[0][r]
-          counter += 1
-          combo = { revenue: route.revenue, routes: [route] }
-          combos.push(combo) // save combo for later extension even if not yet a valid combo
-
-          if (is_valid_combo(combo))
-          {
-            possibilities_count += 1
-
-            // accumulate best-value combos, or start over if found a bigger best
-            if (combo.revenue >= max_revenue) {
-              if (combo.revenue > max_revenue) {
-                possibilities = []
-                max_revenue = combo.revenue
-              }
-              possibilities.push(combo)
-            }
-          }
-        }
-
-        continue_looking = true
-        // generate combos with remaining trains' routes
-        for (let train=1; continue_looking && (train < js_sorted_routes.length); train++) {
-          // Recompute limit, since by 3rd train it will start going down as invalid combos are excluded from the test set
-          // revised limit = combos.length * remaining train route lengths
-          limit = combos.length
-          for (let remaining=train; remaining < js_sorted_routes.length; remaining++)
-            limit *= js_sorted_routes[remaining].length
-          if (limit != old_limit) {
-            console.log("  adjusting depth to " + limit + " because first " +
-                        train + " trains only had " + combos.length + " valid combos")
-            old_limit = limit
-          }
-
-          let new_combos = []
-          for (let rt=0; continue_looking && (rt < js_sorted_routes[train].length); rt++) {
-            const route = js_sorted_routes[train][rt]
-            for (let c=0; c < combos.length; c++) {
-              const combo = combos[c]
-              counter += 1
-              if ((counter % 1_000_000) == 0) {
-                console.log(counter + " / " + limit)
-                if (Date.now() - js_now > js_route_timeout) {
-                  console.log("Route timeout reached")
-                  continue_looking = false
-                  break
-                }
-              }
-
-              if (js_route_bitfield_conflicts(combo, route))
-                conflicts += 1
-              else {
-                // copy the combo, add the route
-                let newcombo = { revenue: combo.revenue, routes: [...combo.routes] }
-                newcombo.routes.push(route)
-                newcombo.revenue += route.revenue
-                new_combos.push(newcombo) // save newcombo for later extension even if not yet a valid combo
-
-                if (is_valid_combo(newcombo)) {
-                  possibilities_count += 1
-
-                  // accumulate best-value combos, or start over if found a bigger best
-                  if (newcombo.revenue >= max_revenue) {
-                    if (newcombo.revenue > max_revenue) {
-                      possibilities = []
-                      max_revenue = newcombo.revenue
-                    }
-                    possibilities.push(newcombo)
-                  }
-                }
-              }
-            }
-          }
-          new_combos.forEach((combo, n) => { combos.push(combo) })
-        }
-
-        // marshall best combos back to Opal
-        for (let p=0; p < possibilities.length; p++) {
-          const combo = possibilities[p]
-          let rb_routes = []
-          for (route of combo.routes) {
-            rb_routes['$<<'](route.route)
-          }
-          rb_possibilities['$<<'](rb_routes)
-        }
-      }
-
-      LOGGER.debug do
-        "Found #{possibilities_count} possible combos (#{rb_possibilities.size} best) and rejected #{conflicts} "\
-          "conflicting combos in: #{Time.now - now}"
-      end
-      rb_possibilities
-    end
-
     %x{
-      // do final combo validation using game-specific checks driven by
-      // route.check_other! that was skipped when building routes
-      function is_valid_combo(cb) {
-        // temporarily marshall back to opal since we need to call the opal route.check_other!
-        let rb_rts = []
-        for (let rt of cb.routes) {
-          rt.route['$routes='](rb_rts) // allows route.check_other! to process all routes
-          rb_rts['$<<'](rt.route)
+      class Autorouter {
+        constructor(router, trains_to_routes_map, update_callback) {
+          this.router = router;
+          this.trains_to_routes_map = trains_to_routes_map;
+          this.update_callback = update_callback;
         }
 
-        // Run route.check_other! for the full combo, to see if game- and action-specific rules are followed.
-        // Eg. 1870 destination runs should reject combos that don't have a route from home to destination city
-        try {
-          for (let rt of cb.routes) {
-            rt.route['$check_other!']() // throws if bad combo
+        // Give an upper bound estimate for the revenue for the routes. Ideally, this is as tight as possible since it reduces
+        // the number of calls to the real revenue function which is quite heavy. This returns -1 if the routes are invalid.
+        estimate_revenue(routes_metadata) {
+          if (routes_metadata.invalid_because_overlap) {
+            return -1;
           }
-          return true
+          return routes_metadata.estimate_revenue;
         }
-        catch (err) {
-          return false
+
+
+        // This is a heuristic to determine if we should continue exploring theroutes. If we have a route combo prefix that is
+        // invalid and we know can't become true, we should return false here. Ideally we return false as often as possible since
+        // this will prune the search space and make the autorouter faster.
+        is_worth_adding_trains(routes, routes_metadata, current_train_data) {
+          // If we hit an invalid overlap, we know we will always return -1 from estimate_revenue even if we add more trains, so
+          // we can stop exploring this route combo prefix.
+          if (routes_metadata.invalid_because_overlap) {
+              return false;
+          }
+
+          // TODO: I wonder if it's always true that revenue is less than
+          // or equal to the sum of the revenues of trains individually
+          return (
+            routes_metadata.estimate_revenue +
+              current_train_data.max_possible_revenue_for_rest_of_trains >
+              this.best_revenue_so_far
+          );
+        }
+
+        // This is the helper function which does all the bookkeeping of metadata about the current route combo. It is likely
+        // this will be extended with more fields if we add more hueristics
+        add_train_to_routes_metadata(
+          route,
+          train_group,
+          metadata,
+        ) {
+          let bitfield = [...metadata.bitfield];
+          bitfield[train_group] = js_route_bitfield_merge(
+              route.bitfield,
+              bitfield[train_group],
+          );
+          return {
+            estimate_revenue:
+              metadata.estimate_revenue + route.estimate_revenue,
+            bitfield,
+            invalid_because_overlap:
+              metadata.invalid_because_overlap ||
+              js_route_bitfield_conflicts(
+                route.bitfield,
+                metadata.bitfield[train_group],
+              ),
+          };
+        }
+
+        // This is the base case metadata that should match the structure of add_train_to_routes_metadata
+        get_empty_metadata(number_train_groups) {
+          return {
+            estimate_revenue: 0,
+            bitfield: new Array(number_train_groups).fill(null).map(() => []),
+            invalid_because_overlap: false,
+          };
+        }
+
+        async autoroute() {
+          this.start_of_all = this.start_of_execution_tick = performance.now();
+          this.best_revenue_so_far = 0; // the best revenue we have found for a valid set of trains
+          this.best_routes = []; // the best set of routes
+          let trains_to_routes = Array.from(this.trains_to_routes_map).map(
+            ([train, routes]) => [...routes, null], // add a null route to the end for the "no route for this train" case
+          );
+
+          if (trains_to_routes.length === 0) {
+            this.router.running = false;
+            this.update_callback([]);
+            return;
+          }
+
+          for (let i = 0; i < trains_to_routes.length; ++i) {
+            // the last route is the null route so skip it
+            for (let j = 0; j < trains_to_routes[i].length - 1; ++j) {
+              trains_to_routes[i][j].estimate_revenue = trains_to_routes[i][j].revenue;
+            }
+          }
+          let train_data = null;
+          let number_train_groups = 0;
+          trains_to_routes.forEach((routes) => {
+            let r = train_data
+              ? train_data.max_possible_revenue_for_rest_of_trains
+              : 0;
+            r += routes[0].estimate_revenue;
+            let train_group = 0;
+            const game_group_rules = this.router.train_autoroute_group;
+            if (game_group_rules == "each_train_separate") {
+              train_group = number_train_groups;
+              ++number_train_groups;
+            } else if (Array.isArray(game_group_rules) && routes.length > 0) {
+              const train_name = routes[0].$train().$name();
+              train_group = game_group_rules.findIndex(group => group.includes(train_name)) + 1;
+              number_train_groups = game_group_rules.length + 1;
+            } else {
+              number_train_groups = 1;
+            }
+            train_data = {
+              routes,
+              train_group,
+              max_possible_revenue_for_rest_of_trains: r,
+              next_train_data: train_data,
+            };
+          });
+          this.find_best_combo([], this.get_empty_metadata(number_train_groups), train_data).then(() => {
+            let best_routes = this.best_routes;
+            // Fix up the revenue calculations since routes revenue can be
+            // impacted by each other
+            this.router.$real_revenue(best_routes)
+            this.router.running = false
+            Opal.LOGGER.$info("routing phase took " + (performance.now() - this.start_of_all) + "ms")
+            this.update_callback(best_routes);
+          }).catch((e) => {
+            this.router.flash("Auto route selection failed to complete (" + e + ")");
+            Opal.LOGGER.$error("routing phase failed with: " + e);
+            Opal.LOGGER.$error(e.stack);
+            this.router.running = false;
+            this.update_callback([]);
+          });
+        }
+
+        // This is the heavy recursive function which searches all combinations of routes per train. The high level view is that
+        // the function recursively picks a route per train and checks if the route combo is better than the best route combo.
+        // route_combo -- An array of routes that represents the prefix of selected routes per train
+        // selected_routes_metadata : a bag of information to make searching faster which represents all the important
+        //      information about the current route combo.
+        // current_train_data : a bunch of information about the current train we are selecting a route for. This is a recursive
+        //      data structure where we have a layer per train (.next_train_data).
+        async find_best_combo(
+          route_combo,
+          starting_combo_metadata,
+          current_train_data,
+        ) {
+          for (let route of current_train_data.routes) {
+            await this.check_if_we_should_break();
+
+            let current_routes_metadata = starting_combo_metadata;
+            if (route) { // route is null for the "empty route"
+              current_routes_metadata = this.add_train_to_routes_metadata(
+                route,
+                current_train_data.train_group,
+                starting_combo_metadata,
+              );
+              route_combo.push(route);
+            }
+
+            // if we have selected a route for every train, let's evaluate the route combo
+            if (current_train_data.next_train_data === null) {
+              let estimate = this.estimate_revenue(current_routes_metadata);
+              if (estimate > this.best_revenue_so_far) {
+                let revenue = this.router.$real_revenue(route_combo);
+                if (revenue > this.best_revenue_so_far) {
+                  this.best_revenue_so_far = revenue;
+                  this.best_routes = route_combo.map((r) => r.$clone());
+                  this.render = true;
+                }
+              }
+            // if we have more trains to pick routes for, check if it's worth exploring and if so, explore!
+            } else if (this.is_worth_adding_trains(route_combo, current_routes_metadata, current_train_data.next_train_data)) {
+              await this.find_best_combo(route_combo, current_routes_metadata, current_train_data.next_train_data);
+            }
+
+            if (route) { // "unselect" the route for this train
+                console.assert(route_combo.pop() === route, "AutoRouter: popped wrong route");
+            }
+          }
+        }
+
+        // This is a helper function to check if we should break out of the autorouter loop and update the UI.
+        async check_if_we_should_break() {
+          if (performance.now() - this.start_of_execution_tick > 30) {
+            if (this.render) {
+                this.router.$real_revenue(this.best_routes)
+                this.update_callback(this.best_routes)
+                this.render = false;
+            }
+            if (performance.now() - this.start_of_all > this.router.route_timeout * 1000) {
+                throw 'ROUTE_TIMEOUT';
+            }
+            await next_frame();
+            if (!this.router.running) {
+              return;
+            }
+            this.start_of_execution_tick = performance.now();
+          }
         }
       }
 
-      function js_route_bitfield_conflicts(combo, testroute) {
-        for (let cr of combo.routes) {
-          // each route has 1 or more ints in bitfield array
-          // only test up to the shorter size, since bits beyond that obviously don't conflict
-          let index = Math.min(cr.bitfield.length, testroute.bitfield.length) - 1;
-          while (index >= 0) {
-            if ((cr.bitfield[index] & testroute.bitfield[index]) != 0)
-              return true
-            index -= 1
-          }
+      function js_route_bitfield_conflicts(a, b) {
+        "use strict";
+        let index = Math.min(a.length, b.length) - 1;
+        while (index >= 0) {
+          if ((a[index] & b[index]) != 0) return true;
+          index -= 1;
         }
-        return false
+        return false;
+      }
+
+      function js_route_bitfield_merge(a, b) {
+        "use strict";
+        let max = Math.max(a.length, b.length);
+        let result = [];
+        for (let i = 0; i < max; ++i) {
+          result.push((a[i] ?? 0) | (b[i] ?? 0));
+        }
+        return result;
+      }
+
+      function next_frame() {
+        "use strict";
+        return new Promise(resolve => requestAnimationFrame(resolve));
       }
     }
   end

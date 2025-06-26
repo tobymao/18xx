@@ -258,15 +258,15 @@ module Engine
           super + north_south_bonus(route, stops) + east_west_bonus(route, stops)
         end
 
-        def private_colors_available(phase)
+        def private_batches_available(phase)
           if phase.status.include?('yellow_privates')
-            %i[yellow]
+            %i[private_batch1]
           elsif phase.status.include?('green_privates')
-            %i[yellow green]
+            %i[private_batch1 private_batch2]
           elsif phase.status.include?('all_privates')
-            %i[yellow green lightblue]
+            %i[private_batch1 private_batch2 private_batch3]
           elsif phase.status.include?('blue_privates')
-            %i[lightblue]
+            %i[private_batch3]
           else
             []
           end

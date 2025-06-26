@@ -27,12 +27,11 @@ module Engine
         CURRENCY_FORMAT_STR = '$%s'
 
         MUST_BUY_TRAIN = :always
-        EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = true
+        EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
         SELL_AFTER = :operate
         SOLD_SHARES_DESTINATION = :corporation
         MARKET_SHARE_LIMIT = 80 # percent
         EBUY_FROM_OTHERS = :never
-        TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }].freeze
 
         BANK_CASH = 8_000
 
@@ -66,7 +65,6 @@ module Engine
                     train_limit: 3,
                     tiles: %i[yellow green],
                     operating_rounds: 2,
-                    status: %i['may_convert_acquire'],
                   },
                   {
                     name: '5',
@@ -74,7 +72,6 @@ module Engine
                     train_limit: 2,
                     tiles: %i[yellow green brown],
                     operating_rounds: 2,
-                    status: %i['may_convert_acquire'],
                   },
                   {
                     name: '3D',
@@ -125,6 +122,7 @@ module Engine
                                { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
                     price: 500,
                     num: 99,
+                    # events: [{ 'type' => 'convert_2r_trains' }],
                   },
                   # The 2R trains are reserved for corps which buy in Minors 4-9
                   {
@@ -145,22 +143,88 @@ module Engine
                   },
         ].freeze
 
+        SCRANTON_HEX = 'G12'
+        SCRANTON_MARKER_ICON = 'mine'
+        SCRANTON_MARKER_COST = 40
+        DOUBLING_TOKEN_CORPS = %w[B&A ERIE PRR].freeze
+        MINOR_UPGRADES = %w[yellow green].freeze
+
+        def new_auction_round
+          Engine::Round::Auction.new(self, [
+            Engine::Step::SelectionAuction,
+          ])
+        end
+
+        def stock_round
+          Engine::Round::Stock.new(self, [
+            Engine::Step::DiscardTrain,
+            Engine::Step::Exchange,
+            Engine::Step::SpecialTrack,
+            Engine::Step::BuySellParShares,
+          ])
+        end
+
         def operating_round(round_num)
           Round::Operating.new(self, [
             Engine::Step::Bankrupt,
-            Engine::Step::Exchange,
-            Engine::Step::SpecialTrack,
             Engine::Step::SpecialToken,
-            Engine::Step::BuyCompany,
-            Engine::Step::HomeToken,
-            Engine::Step::Track,
+            G18PA::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
-            Engine::Step::Dividend,
+            G18PA::Step::Dividend,
             Engine::Step::DiscardTrain,
             Engine::Step::BuyTrain,
-            [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
+        end
+
+        def setup
+          @scranton_marker_ability = Engine::Ability::Description.new(type: 'description', description: 'Scranton Token')
+
+          # place the home station for all corporations and minors except NYC.
+          @corporations.each do |corporation|
+            next if corporation.id == 'NYC'
+
+            tile = hex_by_id(corporation.coordinates).tile
+            tile.cities[corporation.city || 0].place_token(corporation, corporation.tokens.first, free: true)
+          end
+        end
+
+        def scranton_marker_available?
+          hex_by_id(SCRANTON_HEX).tile.icons.any? { |icon| icon.name == SCRANTON_MARKER_ICON }
+        end
+
+        def scranton_marker?(entity)
+          return false if !entity.corporation? || entity.type == :minor
+
+          !scranton_markers(entity).empty?
+        end
+
+        def scranton_markers(entity)
+          entity.all_abilities.select { |ability| ability.description == @scranton_marker_ability.description }
+        end
+
+        def connected_to_scranton?(entity)
+          graph.reachable_hexes(entity).include?(hex_by_id(SCRANTON_HEX))
+        end
+
+        def can_buy_scranton_marker?(entity)
+          return false if !entity.corporation? || entity.type == :minor
+
+          scranton_marker_available? &&
+            !scranton_marker?(entity) &&
+            buying_power(entity) >= SCRANTON_MARKER_COST &&
+            connected_to_scranton?(entity)
+        end
+
+        def buy_scranton_marker(entity)
+          return unless can_buy_scranton_marker?(entity)
+
+          entity.spend(SCRANTON_MARKER_COST, @bank)
+          entity.add_ability(@scranton_marker_ability.dup)
+          @log << "#{entity.name} buys a Scranton bonus token for $#{SCRANTON_MARKER_COST}."
+
+          tile_icons = hex_by_id(SCRANTON_HEX).tile.icons
+          tile_icons.delete_at(tile_icons.index { |icon| icon.name == SCRANTON_MARKER_ICON })
         end
       end
     end

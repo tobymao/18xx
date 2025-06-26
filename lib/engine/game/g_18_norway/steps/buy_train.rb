@@ -41,11 +41,14 @@ module Engine
           end
 
           def buyable_trains(entity)
-            return super if must_buy_train?(entity) || entity.cash >= @depot.min_depot_price
+            trains = super
 
-            # We need to add the ships in the case that the company have a train but have less money then the next available train
-            super + @depot.depot_trains.select do |train|
-              @game.ship?(train) && entity.cash >= train.price
+            # Remove any ships that we already have
+            trains.reject do |train|
+              next unless @game.ship?(train)                            # We want to keep all trains
+              next true if must_buy_train?(entity)                      # Remove all ships if we must buy a train
+
+              entity.trains.any? { |ship| ship.name == train.name }
             end
           end
 
@@ -69,6 +72,7 @@ module Engine
             @log << "#{corporation.name} receives a free S3 train"
             @game.buy_train(corporation, train, :free)
             @depot.remove_train(train)
+            add_ship_revenue(@game.p4)
             train.buyable = true
             train.reserved = true
             ability.use!
@@ -85,8 +89,8 @@ module Engine
             [1, entity.cash]
           end
 
-          def needed_cash(entity)
-            cheapest_train_price(entity)
+          def needed_cash(_entity)
+            cheapest_train_price(current_entity)
           end
 
           def process_buy_train(action)

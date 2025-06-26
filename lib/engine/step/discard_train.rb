@@ -23,7 +23,7 @@ module Engine
       end
 
       def description
-        'Discard Train'
+        'Discard Trains'
       end
 
       def process_discard_train(action)

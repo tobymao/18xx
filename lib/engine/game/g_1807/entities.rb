@@ -13,7 +13,7 @@ module Engine
             revenue: 10,
             discount: 10,
             desc: 'P1. No special abilities.',
-            color: 'yellow',
+            color: 'white',
           },
           {
             name: 'Stockton and Darlington',
@@ -23,7 +23,7 @@ module Engine
             revenue: 15,
             discount: 15,
             desc: 'P2. Gives an extra, free, track lay in Darlington (I17) when owned by a player.',
-            color: 'yellow',
+            color: 'white',
             abilities: [
               {
                 type: 'tile_lay',
@@ -42,7 +42,7 @@ module Engine
             revenue: 15,
             discount: 15,
             desc: 'P3. Gives an extra, free, track lay in Falkirk (D8) when owned by a player.',
-            color: 'yellow',
+            color: 'white',
             abilities: [
               {
                 type: 'tile_lay',
@@ -61,7 +61,7 @@ module Engine
             revenue: 15,
             discount: 15,
             desc: 'P4. Gives an extra, free, track lay in Canterbury (V28) when owned by a player.',
-            color: 'yellow',
+            color: 'white',
             abilities: [
               {
                 type: 'tile_lay',
@@ -80,7 +80,7 @@ module Engine
             revenue: 20,
             discount: 20,
             desc: 'P5. Gives an extra, free, track lay in Leicester (P18) when owned by a player.',
-            color: 'yellow',
+            color: 'white',
             abilities: [
               {
                 type: 'tile_lay',
@@ -98,8 +98,8 @@ module Engine
             value: 60,
             revenue: 20,
             discount: 20,
-            desc: 'P6. Gives a £10 revenue bonus for Newcastle (G17) when owned by a public company or a system.',
-            color: 'yellow',
+            desc: 'P6. Gives a £10 revenue bonus for Newcastle (G17).',
+            color: 'white',
             abilities: [
               {
                 type: 'hex_bonus',
@@ -116,8 +116,8 @@ module Engine
             value: 75,
             revenue: 25,
             discount: 25,
-            desc: 'P7. Gives a £10 revenue bonus for London when owned by a public company or a system.',
-            color: 'yellow',
+            desc: 'P7. Gives a £10 revenue bonus for London.',
+            color: 'white',
             abilities: [
               {
                 type: 'hex_bonus',
@@ -134,8 +134,8 @@ module Engine
             value: 75,
             revenue: 25,
             discount: 25,
-            desc: 'P8. Gives a £10 revenue bonus for London when owned by a public company or a system.',
-            color: 'yellow',
+            desc: 'P8. Gives a £10 revenue bonus for London.',
+            color: 'white',
             abilities: [
               {
                 type: 'hex_bonus',
@@ -153,8 +153,8 @@ module Engine
             value: 75,
             revenue: 25,
             discount: 25,
-            desc: 'P9. Gives a £10 revenue bonus for London when owned by a public company or a system.',
-            color: 'yellow',
+            desc: 'P9. Gives a £10 revenue bonus for London.',
+            color: 'white',
             abilities: [
               {
                 type: 'hex_bonus',
@@ -171,9 +171,8 @@ module Engine
             value: 90,
             revenue: 30,
             discount: 30,
-            desc: 'P10. Gives a £10 revenue bonus for Liverpool (M11) ' \
-                  'when owned by a public company or a system.',
-            color: 'yellow',
+            desc: 'P10. Gives a £10 revenue bonus for Liverpool (M11).',
+            color: 'white',
             abilities: [
               {
                 type: 'hex_bonus',
@@ -189,9 +188,8 @@ module Engine
             type: 'ferry',
             value: 50,
             revenue: 10,
-            desc: 'F1. Gives a £10 revenue bonus for one of the Ireland off-board areas ' \
-                  'when owned by a public company or a system.',
-            color: 'aqua',
+            desc: 'F1. Gives a £10 revenue bonus for one of the Ireland off-board areas.',
+            color: '#9fd9f7',
             abilities: [
               { type: 'revenue_change', revenue: 15, on_phase: '3' },
               { type: 'revenue_change', revenue: 20, on_phase: '5' },
@@ -210,9 +208,8 @@ module Engine
             type: 'ferry',
             value: 50,
             revenue: 10,
-            desc: 'F2. Gives a £10 revenue bonus for one of the Ireland off-board areas ' \
-                  'when owned by a public company or a system.',
-            color: 'aqua',
+            desc: 'F2. Gives a £10 revenue bonus for one of the Ireland off-board areas.',
+            color: '#9fd9f7',
             abilities: [
               { type: 'revenue_change', revenue: 15, on_phase: '3' },
               { type: 'revenue_change', revenue: 20, on_phase: '5' },
@@ -231,9 +228,8 @@ module Engine
             type: 'ferry',
             value: 50,
             revenue: 10,
-            desc: 'F3. Gives a £10 revenue bonus for one of the Ireland off-board areas ' \
-                  'when owned by a public company or a system.',
-            color: 'aqua',
+            desc: 'F3. Gives a £10 revenue bonus for one of the Ireland off-board areas.',
+            color: '#9fd9f7',
             abilities: [
               { type: 'revenue_change', revenue: 15, on_phase: '3' },
               { type: 'revenue_change', revenue: 20, on_phase: '5' },
@@ -252,9 +248,8 @@ module Engine
             type: 'ferry',
             value: 100,
             revenue: 20,
-            desc: 'F4. Gives a £10 revenue bonus for the Hull off-board area (L22) ' \
-                  'when owned by a public company or a system.',
-            color: 'aqua',
+            desc: 'F4. Gives a £10 revenue bonus for the Hull off-board area (L22).',
+            color: '#9fd9f7',
             abilities: [
               { type: 'revenue_change', revenue: 30, on_phase: '3' },
               { type: 'revenue_change', revenue: 40, on_phase: '5' },
@@ -273,9 +268,8 @@ module Engine
             type: 'ferry',
             value: 100,
             revenue: 20,
-            desc: 'F5. Gives a £10 revenue bonus for the Harwich off-board area (S29) ' \
-                  'when owned by a public company or a system.',
-            color: 'aqua',
+            desc: 'F5. Gives a £10 revenue bonus for the Harwich off-board area (S29).',
+            color: '#9fd9f7',
             abilities: [
               { type: 'revenue_change', revenue: 30, on_phase: '3' },
               { type: 'revenue_change', revenue: 40, on_phase: '5' },
@@ -294,9 +288,8 @@ module Engine
             type: 'ferry',
             value: 100,
             revenue: 20,
-            desc: 'F6. Gives a £10 revenue bonus for the Plymouth off-board area (X8) ' \
-                  'when owned by a public company or a system.',
-            color: 'aqua',
+            desc: 'F6. Gives a £10 revenue bonus for the Plymouth off-board area (X8).',
+            color: '#9fd9f7',
             abilities: [
               { type: 'revenue_change', revenue: 30, on_phase: '3' },
               { type: 'revenue_change', revenue: 40, on_phase: '5' },
@@ -315,9 +308,8 @@ module Engine
             type: 'ferry',
             value: 150,
             revenue: 30,
-            desc: 'F7. Gives a £10 revenue bonus for the Dover off-board area (V30) ' \
-                  'when owned by a public company or a system.',
-            color: 'aqua',
+            desc: 'F7. Gives a £10 revenue bonus for the Dover off-board area (V30).',
+            color: '#9fd9f7',
             abilities: [
               { type: 'revenue_change', revenue: 45, on_phase: '3' },
               { type: 'revenue_change', revenue: 60, on_phase: '5' },
@@ -336,9 +328,8 @@ module Engine
             type: 'ferry',
             value: 150,
             revenue: 30,
-            desc: 'F8. Gives a £10 revenue bonus for the Aberdeen off-board area (A13) ' \
-                  'when owned by a public company or a system.',
-            color: 'aqua',
+            desc: 'F8. Gives a £10 revenue bonus for the Aberdeen off-board area (A13).',
+            color: '#9fd9f7',
             abilities: [
               { type: 'revenue_change', revenue: 45, on_phase: '3' },
               { type: 'revenue_change', revenue: 60, on_phase: '5' },
@@ -357,9 +348,8 @@ module Engine
             type: 'underground',
             value: 100,
             revenue: 40,
-            desc: 'U1. Gives a £10 revenue bonus for London when owned by a public company or a system.',
-            color: '#9b0056',
-            text_color: 'white',
+            desc: 'U1. Gives a £10 revenue bonus for London.',
+            color: '#f7b7a8',
             abilities: [
               { type: 'revenue_change', revenue: 50, on_phase: '7' },
               {
@@ -376,9 +366,8 @@ module Engine
             type: 'underground',
             value: 150,
             revenue: 75,
-            desc: 'U2. Gives a £10 revenue bonus for London when owned by a public company or a system.',
-            color: 'black',
-            text_color: 'white',
+            desc: 'U2. Gives a £10 revenue bonus for London.',
+            color: '#f7b7a8',
             abilities: [
               {
                 type: 'hex_bonus',
@@ -402,8 +391,8 @@ module Engine
             coordinates: 'U13',
             shares: [100],
             max_ownership_percent: 100,
-            color: '#7c7b8c',
-            reservation_color: 'yellow',
+            color: '#ffed00',
+            text_color: 'black',
           },
           {
             sym: 'BG',
@@ -417,8 +406,8 @@ module Engine
             city: 0,
             shares: [100],
             max_ownership_percent: 100,
-            color: '#7c7b8c',
-            reservation_color: 'yellow',
+            color: '#ffed00',
+            text_color: 'black',
           },
           {
             sym: 'EC',
@@ -432,8 +421,8 @@ module Engine
             city: 1,
             shares: [100],
             max_ownership_percent: 100,
-            color: '#7c7b8c',
-            reservation_color: 'yellow',
+            color: '#ffed00',
+            text_color: 'black',
           },
           {
             sym: 'EG',
@@ -446,8 +435,8 @@ module Engine
             coordinates: 'D10',
             shares: [100],
             max_ownership_percent: 100,
-            color: '#7c7b8c',
-            reservation_color: 'yellow',
+            color: '#1a1a18',
+            text_color: 'white',
           },
           {
             sym: 'EK',
@@ -461,8 +450,8 @@ module Engine
             city: 1,
             shares: [100],
             max_ownership_percent: 100,
-            color: '#7c7b8c',
-            reservation_color: 'yellow',
+            color: '#ffed00',
+            text_color: 'black',
           },
           {
             sym: 'EPD',
@@ -475,8 +464,8 @@ module Engine
             coordinates: 'C11',
             shares: [100],
             max_ownership_percent: 100,
-            color: '#7c7b8c',
-            reservation_color: 'yellow',
+            color: '#ef7c00',
+            text_color: 'black',
           },
           {
             sym: 'GA',
@@ -490,8 +479,8 @@ module Engine
             city: 0,
             shares: [100],
             max_ownership_percent: 100,
-            color: '#7c7b8c',
-            reservation_color: 'yellow',
+            color: '#e3000f',
+            text_color: 'white',
           },
           {
             sym: 'GC',
@@ -505,8 +494,8 @@ module Engine
             city: 1,
             shares: [100],
             max_ownership_percent: 100,
-            color: '#7c7b8c',
-            reservation_color: 'yellow',
+            color: '#afca05',
+            text_color: 'black',
           },
           {
             sym: 'GJ',
@@ -519,8 +508,8 @@ module Engine
             coordinates: 'P14',
             shares: [100],
             max_ownership_percent: 100,
-            color: '#7c7b8c',
-            reservation_color: 'yellow',
+            color: '#007ab5',
+            text_color: 'white',
           },
           {
             sym: 'LB',
@@ -534,8 +523,8 @@ module Engine
             city: 1,
             shares: [100],
             max_ownership_percent: 100,
-            color: '#7c7b8c',
-            reservation_color: 'yellow',
+            color: '#007ab5',
+            text_color: 'white',
           },
           {
             sym: 'LH',
@@ -549,8 +538,8 @@ module Engine
             city: 0,
             shares: [100],
             max_ownership_percent: 100,
-            color: '#7c7b8c',
-            reservation_color: 'yellow',
+            color: '#1a1a18',
+            text_color: 'white',
           },
           {
             sym: 'LR',
@@ -564,8 +553,8 @@ module Engine
             city: 1,
             shares: [100],
             max_ownership_percent: 100,
-            color: '#7c7b8c',
-            reservation_color: 'yellow',
+            color: '#afca05',
+            text_color: 'black',
           },
           {
             sym: 'LS',
@@ -579,8 +568,8 @@ module Engine
             city: 0,
             shares: [100],
             max_ownership_percent: 100,
-            color: '#7c7b8c',
-            reservation_color: 'yellow',
+            color: '#afca05',
+            text_color: 'black',
           },
           {
             sym: 'LY',
@@ -594,8 +583,8 @@ module Engine
             city: 0,
             shares: [100],
             max_ownership_percent: 100,
-            color: '#7c7b8c',
-            reservation_color: 'yellow',
+            color: '#ad4482',
+            text_color: 'white',
           },
           {
             sym: 'MC',
@@ -608,8 +597,8 @@ module Engine
             coordinates: 'O19',
             shares: [100],
             max_ownership_percent: 100,
-            color: '#7c7b8c',
-            reservation_color: 'yellow',
+            color: '#00963f',
+            text_color: 'white',
           },
           {
             sym: 'ML',
@@ -623,8 +612,8 @@ module Engine
             city: 1,
             shares: [100],
             max_ownership_percent: 100,
-            color: '#7c7b8c',
-            reservation_color: 'yellow',
+            color: '#ffffff',
+            text_color: 'black',
           },
           {
             sym: 'ND',
@@ -637,8 +626,8 @@ module Engine
             coordinates: 'G17',
             shares: [100],
             max_ownership_percent: 100,
-            color: '#7c7b8c',
-            reservation_color: 'yellow',
+            color: '#007ab5',
+            text_color: 'white',
           },
           {
             sym: 'NM',
@@ -651,8 +640,8 @@ module Engine
             coordinates: 'O17',
             shares: [100],
             max_ownership_percent: 100,
-            color: '#7c7b8c',
-            reservation_color: 'yellow',
+            color: '#ffed00',
+            text_color: 'black',
           },
           {
             sym: 'NU',
@@ -665,8 +654,8 @@ module Engine
             coordinates: 'L12',
             shares: [100],
             max_ownership_percent: 100,
-            color: '#7c7b8c',
-            reservation_color: 'yellow',
+            color: '#9c9c9c',
+            text_color: 'white',
           },
           {
             sym: 'SAM',
@@ -679,8 +668,8 @@ module Engine
             coordinates: 'M17',
             shares: [100],
             max_ownership_percent: 100,
-            color: '#7c7b8c',
-            reservation_color: 'yellow',
+            color: '#ffed00',
+            text_color: 'black',
           },
           {
             sym: 'SE',
@@ -694,8 +683,8 @@ module Engine
             city: 0,
             shares: [100],
             max_ownership_percent: 100,
-            color: '#7c7b8c',
-            reservation_color: 'yellow',
+            color: '#00963f',
+            text_color: 'white',
           },
           {
             sym: 'TV',
@@ -708,8 +697,8 @@ module Engine
             coordinates: 'U11',
             shares: [100],
             max_ownership_percent: 100,
-            color: '#7c7b8c',
-            reservation_color: 'yellow',
+            color: '#e3000f',
+            text_color: 'white',
           },
           {
             sym: 'VN',
@@ -722,8 +711,8 @@ module Engine
             coordinates: 'U7',
             shares: [100],
             max_ownership_percent: 100,
-            color: '#7c7b8c',
-            reservation_color: 'yellow',
+            color: '#1a1a18',
+            text_color: 'white',
           },
           {
             sym: 'YNM',
@@ -736,8 +725,8 @@ module Engine
             coordinates: 'K19',
             shares: [100],
             max_ownership_percent: 100,
-            color: '#7c7b8c',
-            reservation_color: 'yellow',
+            color: '#ffed00',
+            text_color: 'black',
           },
           {
             sym: 'CR',
@@ -748,7 +737,8 @@ module Engine
             tokens: [0, 20, 20, 20],
             type: 'public',
             shares: [20, 10, 10, 10, 10, 10, 10, 10, 10],
-            color: '#3c7b5c',
+            color: '#008bd2',
+            text_color: 'white',
           },
           {
             sym: 'GER',
@@ -759,7 +749,8 @@ module Engine
             tokens: [0, 20, 20, 20],
             type: 'public',
             shares: [20, 10, 10, 10, 10, 10, 10, 10, 10],
-            color: '#3c7b5c',
+            color: '#c2e6fb',
+            text_color: 'black',
           },
           {
             sym: 'GNR',
@@ -770,7 +761,8 @@ module Engine
             tokens: [0, 20, 20, 20],
             type: 'public',
             shares: [20, 10, 10, 10, 10, 10, 10, 10, 10],
-            color: '#3c7b5c',
+            color: '#a7d3ae',
+            text_color: 'black',
           },
           {
             sym: 'LBSC',
@@ -781,7 +773,8 @@ module Engine
             tokens: [0, 20, 20, 20],
             type: 'public',
             shares: [20, 10, 10, 10, 10, 10, 10, 10, 10],
-            color: '#3c7b5c',
+            color: '#ffcc00',
+            text_color: 'black',
           },
           {
             sym: 'LNW',
@@ -792,7 +785,8 @@ module Engine
             tokens: [0, 20, 20, 20],
             type: 'public',
             shares: [20, 10, 10, 10, 10, 10, 10, 10, 10],
-            color: '#3c7b5c',
+            color: '#878786',
+            text_color: 'white',
           },
           {
             sym: 'LSW',
@@ -803,7 +797,8 @@ module Engine
             tokens: [0, 20, 20, 20],
             type: 'public',
             shares: [20, 10, 10, 10, 10, 10, 10, 10, 10],
-            color: '#3c7b5c',
+            color: '#f2f1ed',
+            text_color: 'black',
           },
           {
             sym: 'LYR',
@@ -814,7 +809,8 @@ module Engine
             tokens: [0, 20, 20, 20],
             type: 'public',
             shares: [20, 10, 10, 10, 10, 10, 10, 10, 10],
-            color: '#3c7b5c',
+            color: '#d1999c',
+            text_color: 'black',
           },
           {
             sym: 'MR',
@@ -825,7 +821,8 @@ module Engine
             tokens: [0, 20, 20, 20],
             type: 'public',
             shares: [20, 10, 10, 10, 10, 10, 10, 10, 10],
-            color: '#3c7b5c',
+            color: '#fdaf94',
+            text_color: 'black',
           },
           {
             sym: 'NBR',
@@ -836,7 +833,8 @@ module Engine
             tokens: [0, 20, 20, 20],
             type: 'public',
             shares: [20, 10, 10, 10, 10, 10, 10, 10, 10],
-            color: '#3c7b5c',
+            color: '#ae9675',
+            text_color: 'white',
           },
           {
             sym: 'NER',
@@ -847,18 +845,20 @@ module Engine
             tokens: [0, 20, 20, 20],
             type: 'public',
             shares: [20, 10, 10, 10, 10, 10, 10, 10, 10],
-            color: '#3c7b5c',
+            color: '#dbe283',
+            text_color: 'black',
           },
           {
-            sym: 'SEC',
-            name: 'South Eastern Railway',
-            logo: '1807/SEC',
+            sym: 'SECR',
+            name: 'South Eastern and Chatham Railway',
+            logo: '1807/SECR',
             float_percent: 20,
             always_market_price: true,
             tokens: [0, 20, 20, 20],
             type: 'public',
             shares: [20, 10, 10, 10, 10, 10, 10, 10, 10],
-            color: '#3c7b5c',
+            color: '#fff7b2',
+            text_color: 'black',
           },
           {
             sym: 'GCR',
@@ -869,7 +869,8 @@ module Engine
             tokens: [0, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20],
             type: 'system',
             shares: [20, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5],
-            color: '#3c7b5c',
+            color: '#fdf39a',
+            text_color: 'black',
           },
           {
             sym: 'GWR',
@@ -880,7 +881,8 @@ module Engine
             tokens: [0, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20],
             type: 'system',
             shares: [20, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5],
-            color: '#3c7b5c',
+            color: '#9c9c9c',
+            text_color: 'white',
           },
           {
             sym: 'LMS',
@@ -891,7 +893,8 @@ module Engine
             tokens: [0, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20],
             type: 'system',
             shares: [20, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5],
-            color: '#3c7b5c',
+            color: '#965256',
+            text_color: 'white',
           },
           {
             sym: 'LNE',
@@ -902,7 +905,8 @@ module Engine
             tokens: [0, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20],
             type: 'system',
             shares: [20, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5],
-            color: '#3c7b5c',
+            color: '#999bb3',
+            text_color: 'white',
           },
           {
             sym: 'SR',
@@ -913,12 +917,17 @@ module Engine
             tokens: [0, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20],
             type: 'system',
             shares: [20, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5],
-            color: '#3c7b5c',
+            color: '#948f63',
+            text_color: 'white',
           },
         ].freeze
 
+        CORPORATION_SIZES = { 2 => :small, 10 => :medium, 20 => :large }.freeze
         MINORS_GROUP_A = %w[EG EPD GA GC ML ND NU YNM].freeze
         MINORS_GROUP_B = %w[BE BG GJ NM MC SAM TV VN EC EK LB LH LR LS LY SE].freeze
+        MINORS_COLOR_BATCH1 = '#ffffff' # minors available from the start of the game
+        MINORS_COLOR_BATCH2 = '#fff381' # minors available from the second stock round
+        MINORS_COLOR_BATCH3 = '#d7ead8' # minors available phase 3
 
         def company_header(company)
           case company.type
@@ -975,9 +984,9 @@ module Engine
           minors_sr2 = group_a.pop(2) + group_b.pop(4)
           minors_phase3 = group_a + group_b
 
-          minors_start.each { |minor| minor.reservation_color = :yellow }
-          minors_sr2.each { |minor| minor.reservation_color = :palegreen }
-          minors_phase3.each { |minor| minor.reservation_color = :green }
+          minors_start.each { |minor| minor.reservation_color = MINORS_COLOR_BATCH1 }
+          minors_sr2.each { |minor| minor.reservation_color = MINORS_COLOR_BATCH2 }
+          minors_phase3.each { |minor| minor.reservation_color = MINORS_COLOR_BATCH3 }
 
           @log << 'The minor companies available from the start of the game are: ' \
                   "#{minors_start.map(&:id).sort.join(', ')}."

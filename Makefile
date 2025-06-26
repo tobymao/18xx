@@ -1,5 +1,5 @@
 .DEFAULT_GOAL := dev_up_b
-CONTAINER_COMPOSE ?= $(CONTAINER_ENGINE)-compose
+CONTAINER_COMPOSE ?= $(CONTAINER_ENGINE) compose
 CONTAINER_ENGINE ?= docker
 
 clean:
@@ -52,7 +52,11 @@ prod_deploy : clean
 	$(CONTAINER_COMPOSE) run rack rake precompile && \
 		rsync --verbose --checksum public/pinned/*.js.gz deploy@18xx:~/18xx/public/pinned/ && \
 		rsync --verbose --checksum public/assets/*.js public/assets/*.js.gz public/assets/version.json deploy@18xx:~/18xx/public/assets/ && \
-		ssh -l deploy 18xx "source ~/.profile && cd ~/18xx/ && git pull && make prod_rack_up_b_d"
+		ssh -t -l deploy 18xx "source ~/.profile && cd ~/18xx/ && git pull && make prod_rack_up_b_d && make tag"
+
+# tag currently checked out commit with date in public/assets/version.json
+tag:
+	./scripts/tag_deployment.sh $(CONTAINER_COMPOSE)
 
 style:
 	$(CONTAINER_COMPOSE) exec rack rubocop -A

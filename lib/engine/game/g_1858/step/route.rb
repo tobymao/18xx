@@ -21,6 +21,8 @@ module Engine
 
           def log_company_revenue(corporation)
             corporation.companies.each do |company|
+              next unless @game.private_railway?(company)
+
               revenue_str = @game.format_revenue_currency(company.revenue)
               @log << "#{corporation.name} receives #{revenue_str} revenue " \
                       "from private railway #{company.name}"

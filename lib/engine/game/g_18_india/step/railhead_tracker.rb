@@ -28,14 +28,12 @@ module Engine
             last_tile = @round.laid_yellow_hexes.last.tile
             unless [1, 6].include?(last_tile.exits.size) # exclude triple town tiles (6 exits) and OO tiles (1 exit)
               empty_neighbors = empty_neighbors(last_tile.hex, last_tile.exits)
-              LOGGER.debug "railhead_hexes >> empty_neighbors: #{empty_neighbors.inspect}"
               return empty_neighbors if [1, 2].include?(empty_neighbors.size)
             end
 
             corp = @round.current_operator
             railheads = corp.placed_tokens.map(&:city)
             placed_paths = @round.laid_yellow_hexes.map(&:tile).map(&:paths) # paths on all previously laid yellow hexes
-            LOGGER.debug "railhead_hexes >> corp: #{corp.inspect}, railheads: #{railheads.inspect}"
 
             next_hexes = []
             railheads.each do |railhead|
@@ -51,11 +49,9 @@ module Engine
                 sequence = placed_paths.map { |tile_paths| tile_paths.map { |p| visited_paths.keys.index(p) }.compact.min }
                 next unless sequence.each_cons(2).all? { |x, y| x < y }
 
-                LOGGER.debug " >> path found to hex: #{empty_neighbors.inspect}, sequence: #{sequence.inspect}"
                 next_hexes.concat(empty_neighbors)
               end
             end
-            LOGGER.debug "railhead_hexes >> next_hexes: #{next_hexes.uniq.inspect}"
             next_hexes.uniq
           end
 

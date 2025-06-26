@@ -137,6 +137,7 @@ module Engine
 
           def process_bid(action)
             action.entity.unpass!
+            @round.last_to_act = action.entity
 
             if discount_mode?
               # GL has been purchased
@@ -155,6 +156,7 @@ module Engine
           end
 
           def process_par(action)
+            @round.last_to_act = action.entity
             process_purchase(action)
           end
 

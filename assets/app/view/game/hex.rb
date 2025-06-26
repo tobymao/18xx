@@ -197,7 +197,8 @@ module View
           end
 
           step = @game.round.active_step
-          if @actions.include?('remove_hex_token') && @hex.tokens.find { |t| t.corporation == @entity }
+          if @actions.include?('remove_hex_token') &&
+              step.can_remove_hex_token?(@entity, @hex)
             return process_action(Engine::Action::RemoveHexToken.new(
               @entity,
               hex: @hex,
