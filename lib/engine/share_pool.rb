@@ -47,13 +47,15 @@ module Engine
       corporation = bundle.corporation
       ipoed = corporation.ipoed
       floated = corporation.floated?
+      name = entity.name
+      name += " (#{entity.owner.name})" if @game.round.is_a?(Engine::Round::Stock) && entity != entity.owner
 
       corporation.ipoed = true if bundle.presidents_share
       price = bundle.price
       par_price = corporation.par_price&.price
 
       if ipoed != corporation.ipoed && par_price && !silent
-        @log << "#{entity.name} #{@game.ipo_verb(corporation)} #{corporation.name} at "\
+        @log << "#{name} #{@game.ipo_verb(corporation)} #{corporation.name} at "\
                 "#{@game.format_currency(par_price)}"
       end
 
@@ -74,14 +76,14 @@ module Engine
         price = exchange_price || 0
         case exchange
         when :free
-          @log << "#{entity.name} receives #{share_str}" unless silent
+          @log << "#{name} receives #{share_str}" unless silent
         when Company
           unless silent
             @log << if exchange_price
-                      "#{entity.name} exchanges #{exchange.name} and #{@game.format_currency(price)}"\
+                      "#{name} exchanges #{exchange.name} and #{@game.format_currency(price)}"\
                         " from #{from} for #{share_str}"
                     else
-                      "#{entity.name} exchanges #{exchange.name} from #{from} for #{share_str}"
+                      "#{name} exchanges #{exchange.name} from #{from} for #{share_str}"
                     end
           end
         end
@@ -93,7 +95,7 @@ module Engine
         verb = entity == corporation ? 'redeems' : 'buys'
         unless silent
           discounter_str = discounter ? "(#{discounter.name}) " : ''
-          @log << "#{entity.name} #{discounter_str}#{verb} #{share_str} "\
+          @log << "#{name} #{discounter_str}#{verb} #{share_str} "\
                   "from #{from} "\
                   "for #{@game.format_currency(price)}#{swap_text}#{borrowed_text}"
         end
@@ -152,7 +154,10 @@ module Engine
     end
 
     def log_sell_shares(entity, verb, bundle, price, swap_text)
-      @log << "#{entity.name} #{verb} #{num_presentation(bundle)} " \
+      name = entity.name
+      name += " (#{entity.owner.name})" if @game.round.is_a?(Engine::Round::Stock) && entity != entity.owner
+
+      @log << "#{name} #{verb} #{num_presentation(bundle)} " \
               "of #{bundle.corporation.name} and receives #{@game.format_currency(price)}#{swap_text}"
     end
 
