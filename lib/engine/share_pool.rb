@@ -50,7 +50,7 @@ module Engine
       name = entity.name
       name += " (#{entity.owner.name})" if @game.round.is_a?(Engine::Round::Stock) && entity != entity.owner
 
-      corporation.ipoed = true if bundle.presidents_share || (!ipoed && corporation.presidents_share.owner != corporation)
+      corporation.ipoed = true if bundle.presidents_share || corporation.owner&.player?
       price = bundle.price
       par_price = corporation.par_price&.price
 
