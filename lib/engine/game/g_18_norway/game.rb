@@ -297,7 +297,7 @@ module Engine
         end
 
         def stock_round
-          Engine::Round::Stock.new(self, [
+          G18Norway::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
             Engine::Step::Exchange,
             Engine::Step::SpecialTrack,
