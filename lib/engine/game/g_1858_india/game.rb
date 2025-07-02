@@ -63,7 +63,7 @@ module Engine
             G1858::Step::Token,
             G1858India::Step::Route,
             G1858::Step::Dividend,
-            G1858::Step::DiscardTrain,
+            G1858India::Step::DiscardTrain,
             G1858India::Step::BuyTrain,
             G1858::Step::IssueShares,
           ], round_num: round_num)
