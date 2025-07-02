@@ -456,9 +456,9 @@ module Engine
           corps.each_with_index do |c, idx|
             c[:float_percent] = 20
             c[:always_market_price] = true
-            c[:tokens] = [[0, 0,  100, 100],      # DGN
+            c[:tokens] = [[0, 40, 100, 100],      # DGN
                           [0, 40, 100, 100],      # GFN
-                          [0, 0,  100, 100],      # PHX
+                          [0, 40, 100, 100],      # PHX
                           [0, 40, 100, 100],      # KKN
                           [0, 40, 100, 100],      # SPX
                           [0, 40, 100, 100]][idx] # PGS
@@ -470,6 +470,9 @@ module Engine
 
         def map_britain_n_game_corporations(corps)
           n_corps = map_britain_game_corporations(corps)
+          n_corps.each do |c|
+            c[:tokens] = [0, 40, 100]
+          end
           find_corp(n_corps, 'DGN')[:coordinates] = 'F7'
           find_corp(n_corps, 'PHX')[:coordinates] = 'F9'
           n_corps.delete(find_corp(n_corps, 'SPX'))
@@ -479,6 +482,9 @@ module Engine
 
         def map_britain_s_game_corporations(corps)
           s_corps = map_britain_game_corporations(corps)
+          s_corps.each do |c|
+            c[:tokens] = [0, 40, 100]
+          end
           find_corp(s_corps, 'DGN')[:coordinates] = 'I8'
           find_corp(s_corps, 'PHX')[:coordinates] = 'G8'
           s_corps.delete(find_corp(s_corps, 'PGS'))

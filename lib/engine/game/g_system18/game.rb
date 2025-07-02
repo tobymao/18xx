@@ -710,15 +710,15 @@ module Engine
         end
 
         def modify_tile_lay(entity, action)
-          return action unless respond_to?("map_#{cmap_name}_modify_tile_lay")
+          return action unless respond_to?("map_#{map_name}_modify_tile_lay")
 
-          send("map_#{cmap_name}_modify_tile_lay", entity, action)
+          send("map_#{map_name}_modify_tile_lay", entity, action)
         end
 
         def pre_lay_tile_action(action, entity, tile_lay)
-          return unless respond_to?("map_#{cmap_name}_pre_lay_tile_action")
+          return unless respond_to?("map_#{map_name}_pre_lay_tile_action")
 
-          send("map_#{cmap_name}_pre_lay_tile_action", action, entity, tile_lay)
+          send("map_#{map_name}_pre_lay_tile_action", action, entity, tile_lay)
         end
 
         def place_home_token(corporation)
