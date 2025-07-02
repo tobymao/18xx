@@ -63,6 +63,18 @@ module Engine
             designer: 'Ian Wilson',
           },
           {
+            sym: :map_Britain_N,
+            short_name: 'Map: Britain-North',
+            players: [2, 3],
+            designer: 'Ian Wilson',
+          },
+          {
+            sym: :map_Britain_S,
+            short_name: 'Map: Britain-South',
+            players: [2, 3],
+            designer: 'Ian Wilson',
+          },
+          {
             sym: :map_Northern_Italy,
             short_name: 'Map: Northern Italy',
             players: [2, 3, 4],

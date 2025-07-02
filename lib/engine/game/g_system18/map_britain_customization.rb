@@ -16,8 +16,34 @@ module Engine
         BRITAIN_WALES_BONUS_VAL_HEX = 'G2'
         BRITAIN_LONDON_BONUS_VAL_HEX = 'L11'
         BRITAIN_MINE_BONUS_VAL_HEX = 'G12'
+        BRITAIN_N_MINE_BONUS_VAL_HEX = 'D5'
 
         # rubocop:disable Layout/LineLength
+        def map_britain_x1_tile(count)
+          {
+            'X1' =>
+            {
+              'count' => count,
+              'color' => 'gray',
+              'code' => 'city=revenue:70,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=OO',
+            },
+          }
+        end
+        # rubocop:enable Layout/LineLength
+
+        # rubocop:disable Layout/LineLength
+        def map_britain_x2_tile(count)
+          {
+            'X2' =>
+            {
+              'count' => count,
+              'color' => 'gray',
+              'code' => 'city=revenue:50,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
+            },
+          }
+        end
+        # rubocop:enable Layout/LineLength
+
         def map_britain_game_tiles(tiles)
           tiles['8'] = 6
           tiles['9'] = 6
@@ -25,28 +51,33 @@ module Engine
           tiles['24'] = 2
           tiles['25'] = 2
           tiles['448'] = 3
-          tiles.merge!({
-                         'X1' =>
-            {
-              'count' => 3,
-              'color' => 'gray',
-              'code' => 'city=revenue:70,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=OO',
-            },
-                         'X2' =>
-            {
-              'count' => 1,
-              'color' => 'gray',
-              'code' => 'city=revenue:50,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
-            },
-                       })
+          tiles.merge!(map_britain_x1_tile(3))
+          tiles.merge!(map_britain_x2_tile(1))
         end
-        # rubocop:enable Layout/LineLength
+
+        def map_britain_n_game_tiles(tiles)
+          tiles['8'] = 4
+          tiles['9'] = 4
+          tiles['448'] = 1
+          tiles.merge!(map_britain_x1_tile(2))
+        end
+
+        def map_britain_s_game_tiles(tiles)
+          tiles['8'] = 4
+          tiles['9'] = 4
+          tiles['448'] = 2
+          tiles.delete('53')
+          tiles.delete('59')
+          tiles.delete('61')
+          tiles.merge!(map_britain_x1_tile(1))
+          tiles.merge!(map_britain_x2_tile(1))
+        end
 
         def map_britain_layout
           :pointy
         end
 
-        def map_britain_game_location_names
+        def map_britain_n_game_location_names
           {
             'A4' => 'Scotland Bonus',
             'A6' => 'Glasgow',
@@ -55,6 +86,7 @@ module Engine
             'C4' => '(Scotland)',
             'C8' => 'Carlisle',
             'C10' => 'Newcastle',
+            'D5' => 'Mine Bonus',
             'D11' => 'Sunderland & Middlesbrough',
             'E6' => 'Preston',
             'E10' => 'York',
@@ -62,6 +94,11 @@ module Engine
             'F7' => 'Bolton & Manchester',
             'F9' => 'Leeds & Bradford',
             'F11' => 'Hull',
+          }
+        end
+
+        def map_britain_s_game_location_names
+          {
             'G2' => 'Wales Bonus',
             'G6' => 'Crewe & Stoke on Trent',
             'G8' => 'Derby',
@@ -87,8 +124,128 @@ module Engine
           }
         end
 
+        def map_britain_game_location_names
+          map_britain_n_game_location_names.merge(map_britain_s_game_location_names)
+        end
+
+        def map_britain_north_gray_hexes
+          {
+            %w[a5] => 'junction;path=a:5,b:_0,terminal:1',
+            %w[A4] => 'offboard=revenue:yellow_10|green_20|brown_30|gray_40',
+            %w[C12] => 'path=a:0,b:1',
+            %w[D5] => 'offboard=revenue:yellow_10|green_20|brown_30|gray_40',
+          }
+        end
+
+        def map_britain_north_extra_hexes
+          {
+            %w[G6] => 'junction;path=a:3,b:_0,terminal:1',
+            %w[G8 G10] => 'junction;path=a:2,b:_0,terminal:1;path=a:3,b:_0,terminal:1',
+          }
+        end
+
+        def map_britain_south_gray_hexes
+          {
+            %w[G2] => 'offboard=revenue:yellow_10|green_20|brown_20|gray_30',
+            %w[G12] => 'offboard=revenue:yellow_10|green_20|brown_30|gray_40',
+            %w[J1] => 'town=revenue:10;path=a:4,b:_0',
+            %w[L11] => 'offboard=revenue:yellow_10|green_20|brown_30|gray_40',
+          }
+        end
+
+        def map_britain_south_extra_hexes
+          {
+            %w[F5] => 'junction;path=a:5,b:_0,terminal:1',
+            %w[F7 F9 F11] => 'junction;path=a:0,b:_0,terminal:1;path=a:5,b:_0,terminal:1',
+          }
+        end
+
+        def map_britain_north_red_hexes
+          {
+            %w[B3] => 'offboard=revenue:yellow_20|green_20|brown_30|gray_30;path=a:4,b:_0;path=a:5,b:_0;icon=image:port',
+            %w[F5] => 'offboard=revenue:yellow_30|green_40|brown_50|gray_70;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
+          }
+        end
+
         # rubocop:disable Layout/LineLength
-        def map_britain_game_hexes
+        def map_britain_south_red_hexes
+          {
+            %w[I2] => 'offboard=revenue:yellow_20|green_20|brown_30|gray_30;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;icon=image:port',
+            %w[J13] => 'offboard=revenue:yellow_10|green_20|brown_30|gray_40;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;icon=image:port',
+            %w[K2] => 'offboard=revenue:yellow_20|green_30|brown_40|gray_40;path=a:4,b:_0;path=a:5,b:_0;icon=image:port',
+            %w[K10] => 'offboard=revenue:yellow_40|green_50|brown_70|gray_100;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
+          }
+        end
+        # rubocop:enable Layout/LineLength
+
+        def map_britain_north_green_hexes
+          {
+            %w[F7] => 'city=revenue:40,pos:0;city=revenue:40,pos:2;path=a:0,b:_0;path=a:2,b:_1;label=OO',
+          }
+        end
+
+        def map_britain_south_green_hexes
+          {
+            %w[H7] => 'city=revenue:40,pos:3;city=revenue:40,pos:5;path=a:3,b:_1;path=a:5,b:_0;label=OO',
+          }
+        end
+
+        def map_britain_north_yellow_hexes
+          {
+            %w[A6] => 'city=revenue:30;path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0;label=B',
+            %w[F9] => 'city=revenue:30,pos:0;city=revenue:30,pos:3;path=a:3,b:_1;label=OO',
+          }
+        end
+
+        # rubocop:disable Layout/LineLength
+        def map_britain_north_white_hexes
+          {
+            %w[B5 C4] => '',
+            %w[A8] => 'city=revenue:0',
+            %w[A10] => 'border=type:province,color:brown,edge:5',
+            %w[B7] => 'upgrade=cost:40,terrain:mountain;icon=image:mine,sticky:1;border=type:province,color:brown,edge:5',
+            %w[B9] => 'upgrade=cost:40,terrain:mountain;border=type:province,color:brown,edge:0;border=type:province,color:brown,edge:4;border=type:province,color:brown,edge:5',
+            %w[B11] => 'border=type:province,color:brown,edge:1;border=type:province,color:brown,edge:2',
+            %w[C6] => 'border=type:province,color:brown,cost:80,edge:5',
+            %w[C8] => 'city=revenue:0;upgrade=cost:20,terrain:water;border=type:province,color:brown,edge:1;border=type:province,color:brown,edge:2;border=type:province,color:brown,edge:3',
+            %w[C10] => 'city=revenue:0;upgrade=cost:20,terrain:water;border=type:province,color:brown,edge:2',
+            %w[D7] => 'upgrade=cost:40,terrain:mountain;border=type:province,color:brown,cost:80,edge:2',
+            %w[D9] => 'upgrade=cost:40,terrain:mountain;icon=image:mine,sticky:1',
+            %w[D11] => 'town=revenue:0;town=revenue:0',
+            %w[E6 E10] => 'city=revenue:0',
+            %w[E8] => 'upgrade=cost:80,terrain:mountain',
+            %w[E12] => 'upgrade=cost:40,terrain:mountain',
+            %w[F11] => 'city=revenue:0;upgrade=cost:20,terrain:water',
+          }
+        end
+        # rubocop:enable Layout/LineLength
+
+        # rubocop:disable Layout/LineLength
+        def map_britain_south_white_hexes
+          {
+            %w[H11 I10 J7 K6 K12 L3 L9] => '',
+            %w[G4] => 'upgrade=cost:40,terrain:mountain;border=type:province,color:brown,edge:4;border=type:province,color:brown,edge:5',
+            %w[G6] => 'town=revenue:0;town=revenue:0;border=type:province,color:brown,edge:1',
+            %w[G8] => 'city=revenue:0',
+            %w[G10] => 'upgrade=cost:20,terrain:water;icon=image:mine,sticky:1',
+            %w[H3] => 'upgrade=cost:40,terrain:mountain;border=type:province,color:brown,edge:4',
+            %w[H5] => 'border=type:province,color:brown,edge:0;border=type:province,color:brown,edge:1;border=type:province,color:brown,edge:2',
+            %w[H9] => 'city=revenue:0',
+            %w[I4] => 'upgrade=cost:40,terrain:mountain;icon=image:mine,sticky:1;border=type:province,color:brown,edge:3;border=type:province,color:brown,edge:4;border=type:province,color:brown,edge:5',
+            %w[I6] => 'upgrade=cost:20,terrain:water;border=type:province,color:brown,edge:1',
+            %w[I8 I12] => 'city=revenue:0',
+            %w[J3] => 'city=revenue:0;border=type:province,color:brown,cost:80,edge:4;border=type:impassable,edge:5',
+            %w[J5] => 'city=revenue:0;border=type:province,color:brown,cost:80,edge:1;border=type:province,color:brown,edge:2',
+            %w[J9 J11] => 'town=revenue:0;town=revenue:0',
+            %w[K4] => 'border=type:impassable,edge:2',
+            %w[K8] => 'town=revenue:0;town=revenue:0;upgrade=cost:20,terrain:water',
+            %w[L5 L7] => 'city=revenue:0',
+          }
+        end
+        # rubocop:enable Layout/LineLength
+
+        # rubocop:disable Layout/LineLength
+        def map_britain_game_hexes_old
           {
             gray: {
               %w[a5] => 'junction;path=a:5,b:_0,terminal:1',
@@ -154,59 +311,130 @@ module Engine
         end
         # rubocop:enable Layout/LineLength
 
+        def map_britain_game_hexes
+          {
+            gray: map_britain_north_gray_hexes.merge(map_britain_south_gray_hexes),
+            red: map_britain_north_red_hexes.merge(map_britain_south_red_hexes),
+            green: map_britain_north_green_hexes.merge(map_britain_south_green_hexes),
+            yellow: map_britain_north_yellow_hexes,
+            white: map_britain_north_white_hexes.merge(map_britain_south_white_hexes),
+          }
+        end
+
+        def map_britain_n_game_hexes
+          {
+            gray: map_britain_north_gray_hexes.merge(map_britain_north_extra_hexes),
+            red: map_britain_north_red_hexes,
+            green: map_britain_north_green_hexes,
+            yellow: map_britain_north_yellow_hexes,
+            white: map_britain_north_white_hexes,
+          }
+        end
+
+        def map_britain_s_game_hexes
+          {
+            gray: map_britain_south_gray_hexes.merge(map_britain_south_extra_hexes),
+            red: map_britain_south_red_hexes,
+            green: map_britain_south_green_hexes,
+            white: map_britain_south_white_hexes,
+          }
+        end
+
+        def map_britain_dgn_charter
+          {
+            name: 'DGN Charter',
+            sym: 'DGN',
+            value: 0,
+            revenue: 0,
+            desc: 'Allows opening DGN corporation',
+            color: '#50c878',
+          }
+        end
+
+        def map_britain_gfn_charter
+          {
+            name: 'GFN Charter',
+            sym: 'GFN',
+            value: 0,
+            revenue: 0,
+            desc: 'Allows opening GFN corporation',
+            color: '#999999',
+          }
+        end
+
+        def map_britain_phx_charter
+          {
+            name: 'PHX Charter',
+            sym: 'PHX',
+            value: 0,
+            revenue: 0,
+            desc: 'Allows opening PHX corporation',
+            color: '#ff7518',
+            text_color: 'black',
+          }
+        end
+
+        def map_britain_kkn_charter
+          {
+            name: 'KKN Charter',
+            sym: 'KKN',
+            value: 0,
+            revenue: 0,
+            desc: 'Allows opening KKN corporation',
+            color: '#0096ff',
+          }
+        end
+
+        def map_britain_spx_charter
+          {
+            name: 'SPX Charter',
+            sym: 'SPX',
+            value: 0,
+            revenue: 0,
+            desc: 'Allows opening SPX corporation',
+            color: '#fafa33',
+            text_color: 'black',
+          }
+        end
+
+        def map_britain_pgs_charter
+          {
+            name: 'PGS Charter',
+            sym: 'PGS',
+            value: 0,
+            revenue: 0,
+            desc: 'Allows opening PGS corporation',
+            color: '#cd79a7',
+            text_color: 'black',
+          }
+        end
+
         def map_britain_game_companies
           [
-            {
-              name: 'DGN Charter',
-              sym: 'DGN',
-              value: 0,
-              revenue: 0,
-              desc: 'Allows opening DGN corporation',
-              color: '#50c878',
-            },
-            {
-              name: 'GFN Charter',
-              sym: 'GFN',
-              value: 0,
-              revenue: 0,
-              desc: 'Allows opening GFN corporation',
-              color: '#999999',
-            },
-            {
-              name: 'PHX Charter',
-              sym: 'PHX',
-              value: 0,
-              revenue: 0,
-              desc: 'Allows opening PHX corporation',
-              color: '#ff7518',
-              text_color: 'black',
-            },
-            {
-              name: 'KKN Charter',
-              sym: 'KKN',
-              value: 0,
-              revenue: 0,
-              desc: 'Allows opening KKN corporation',
-              color: '#0096ff',
-            },
-            {
-              name: 'SPX Charter',
-              sym: 'SPX',
-              value: 0,
-              revenue: 0,
-              desc: 'Allows opening SPX corporation',
-              color: '#fafa33',
-              text_color: 'black',
-            },
-            {
-              name: 'PGS Charter',
-              sym: 'PGS',
-              value: 0,
-              revenue: 0,
-              desc: 'Allows opening PGS corporation',
-              color: '#cd79a7',
-              text_color: 'black',
-            },
+            map_britain_dgn_charter,
+            map_britain_gfn_charter,
+            map_britain_phx_charter,
+            map_britain_kkn_charter,
+            map_britain_spx_charter,
+            map_britain_pgs_charter,
+          ]
+        end
+
+        def map_britain_n_game_companies
+          [
+            map_britain_dgn_charter,
+            map_britain_phx_charter,
+            map_britain_kkn_charter,
+            map_britain_pgs_charter,
+          ]
+        end
+
+        def map_britain_s_game_companies
+          [
+            map_britain_dgn_charter,
+            map_britain_gfn_charter,
+            map_britain_phx_charter,
+            map_britain_spx_charter,
           ]
         end
 
@@ -240,12 +468,46 @@ module Engine
           corps
         end
 
+        def map_britain_n_game_corporations(corps)
+          n_corps = map_britain_game_corporations(corps)
+          find_corp(n_corps, 'DGN')[:coordinates] = 'F7'
+          find_corp(n_corps, 'PHX')[:coordinates] = 'F9'
+          n_corps.delete(find_corp(n_corps, 'SPX'))
+          n_corps.delete(find_corp(n_corps, 'GFN'))
+          n_corps
+        end
+
+        def map_britain_s_game_corporations(corps)
+          s_corps = map_britain_game_corporations(corps)
+          find_corp(s_corps, 'DGN')[:coordinates] = 'I8'
+          find_corp(s_corps, 'PHX')[:coordinates] = 'G8'
+          s_corps.delete(find_corp(s_corps, 'PGS'))
+          s_corps.delete(find_corp(s_corps, 'KKN'))
+          s_corps
+        end
+
         def map_britain_game_cash
           { 3 => 420, 4 => 315, 5 => 250 }
         end
 
+        def map_britain_n_game_cash
+          { 2 => 480, 3 => 320 }
+        end
+
+        def map_britain_s_game_cash
+          { 2 => 480, 3 => 320 }
+        end
+
         def map_britain_game_cert_limit
           { 3 => 16, 4 => 12, 5 => 10 }
+        end
+
+        def map_britain_n_game_cert_limit
+          { 2 => 16, 3 => 11 }
+        end
+
+        def map_britain_s_game_cert_limit
+          { 2 => 16, 3 => 11 }
         end
 
         def map_britain_game_capitalization
@@ -277,6 +539,24 @@ module Engine
           trains
         end
 
+        def map_britain_n_game_trains(trains)
+          # don't use D trains
+          trains.delete(find_train(trains, 'D'))
+          find_train(trains, '4')[:rusts_on] = '8'
+          # udpate quantities
+          find_train(trains, '2')[:num] = 4
+          find_train(trains, '3')[:num] = 3
+          find_train(trains, '4')[:num] = 2
+          find_train(trains, '5')[:num] = 2
+          find_train(trains, '6')[:num] = 1
+          find_train(trains, '8')[:num] = 99
+          trains
+        end
+
+        def map_britain_s_game_trains(trains)
+          map_britain_n_game_trains(trains)
+        end
+
         def map_britain_game_phases
           self.class::S18_INCCAP_PHASES
         end
@@ -295,6 +575,21 @@ module Engine
           @britain_mines = BRITAIN_MINE_HEXES.map { |h| hex_by_id(h) }
           @britain_corps_with_mines = {}
           @scotland_bonus_val = hex_by_id(BRITAIN_SCOTLAND_BONUS_VAL_HEX).tile.offboards.first
+          @wales_bonus_val = hex_by_id(BRITAIN_WALES_BONUS_VAL_HEX).tile.offboards.first
+          @london_bonus_val = hex_by_id(BRITAIN_LONDON_BONUS_VAL_HEX).tile.offboards.first
+          @mine_bonus_val = hex_by_id(BRITAIN_MINE_BONUS_VAL_HEX).tile.offboards.first
+        end
+
+        def map_britain_n_setup
+          @britain_mines = BRITAIN_MINE_HEXES.map { |h| hex_by_id(h) }
+          @britain_corps_with_mines = {}
+          @scotland_bonus_val = hex_by_id(BRITAIN_SCOTLAND_BONUS_VAL_HEX).tile.offboards.first
+          @mine_bonus_val = hex_by_id(BRITAIN_N_MINE_BONUS_VAL_HEX).tile.offboards.first
+        end
+
+        def map_britain_s_setup
+          @britain_mines = BRITAIN_MINE_HEXES.map { |h| hex_by_id(h) }
+          @britain_corps_with_mines = {}
           @wales_bonus_val = hex_by_id(BRITAIN_WALES_BONUS_VAL_HEX).tile.offboards.first
           @london_bonus_val = hex_by_id(BRITAIN_LONDON_BONUS_VAL_HEX).tile.offboards.first
           @mine_bonus_val = hex_by_id(BRITAIN_MINE_BONUS_VAL_HEX).tile.offboards.first
@@ -490,27 +785,33 @@ module Engine
           old_tile = hex.tile
 
           if tile_lay[:lay_replaced] && ((@round.last_old_tile != tile) ||
-                                         (@tiles.count { |t| t.name == tile.name } != 1) ||
-                                         (tile.color != :yellow))
+              (@tiles.count { |t| t.name == tile.name } != 1) ||
+              (tile.color != :yellow))
             raise GameError, 'Must lay yellow tile just replaced'
           end
 
           @round.last_old_tile = old_tile
         end
 
-        def map_britain_place_home_token(corporation)
-          return if corporation.tokens.first&.used
+        def map_britain_home_token_locations(corporation)
+          corporation.coordinates.map { |coord| hex_by_id(coord) }
+        end
 
-          Array(corporation.coordinates).each do |coord|
-            hex = hex_by_id(coord)
-            tile = hex&.tile
-            cities = tile.cities
-            city = cities.find { |c| c.reserved_by?(corporation) } || cities.first
-            token = corporation.find_token_by_type
-
-            @log << "#{corporation.name} places a token on #{hex.name}"
-            city.place_token(corporation, token)
-          end
+        def map_britain_operating_steps
+          [
+            GSystem18::Step::Bankrupt,
+            Engine::Step::Exchange,
+            Engine::Step::SpecialTrack,
+            Engine::Step::SpecialToken,
+            Engine::Step::BuyCompany,
+            GSystem18::Step::HomeToken,
+            GSystem18::Step::Track,
+            GSystem18::Step::Token,
+            Engine::Step::Route,
+            GSystem18::Step::Dividend,
+            Engine::Step::DiscardTrain,
+            GSystem18::Step::BuyTrain,
+          ]
         end
 
         # FIXME: add reopen! method to Engine::Company
