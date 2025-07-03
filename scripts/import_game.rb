@@ -36,6 +36,8 @@ def import_game(game_id)
   game_json_string = res.body
   game_json = JSON.parse(game_json_string)
 
+  raise "import_game: #{game_json['error']}" if game_json['error']
+
   actions_json = game_json.delete('actions')
   # Synthetic: Whether actions were included
   game_json.delete('loaded')
