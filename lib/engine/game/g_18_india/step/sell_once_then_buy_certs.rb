@@ -193,6 +193,7 @@ module Engine
           end
 
           def can_buy_from_ipo?(entity, company)
+            return false if @game.round_counter == 1
             return false if @round.bought_from_market
             return false if @round.bought_from_hand
             return false if @round.bought_from_ipo && @round.current_actions.count > 1
