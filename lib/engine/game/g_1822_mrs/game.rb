@@ -32,6 +32,15 @@ module Engine
 
         STARTING_CASH = { 2 => 750, 3 => 500, 4 => 375, 5 => 300, 6 => 250, 7 => 215 }.freeze
 
+        BIDDING_TOKENS = {
+          '2': 7,
+          '3': 6,
+          '4': 5,
+          '5': 4,
+          '6': 3,
+          '7': 3,
+        }.freeze
+
         MARKET = [
           ['', '', '', '', '', '', '', '', '', '', '', '', '',
            '330', '360', '400', '450', '500e', '550e', '600e'],
@@ -206,6 +215,7 @@ module Engine
 
         def starting_companies
           return self.class::STARTING_COMPANIES_ADVANCED if optional_advanced?
+          return self.class::STARTING_COMPANIES_STARTER if optional_starter?
           return self.class::STARTING_COMPANIES_TWOPLAYER if @players.size == 2
 
           self.class::STARTING_COMPANIES
@@ -213,6 +223,10 @@ module Engine
 
         def optional_advanced?
           @optional_rules&.include?(:advanced)
+        end
+
+        def optional_starter?
+          @optional_rules&.include?(:starter)
         end
       end
     end

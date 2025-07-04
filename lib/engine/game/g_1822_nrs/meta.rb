@@ -22,7 +22,7 @@ module Engine
         GAME_ISSUE_LABEL = '1822'
         GAME_IS_VARIANT_OF = G1822::Meta
 
-        PLAYER_RANGE = [3, 7].freeze
+        PLAYER_RANGE = [2, 7].freeze
       end
     end
   end

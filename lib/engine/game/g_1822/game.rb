@@ -36,11 +36,11 @@ module Engine
 
         BANK_CASH = 12_000
 
-        CERT_LIMIT = { 2 => 40, 3 => 26, 4 => 20, 5 => 16, 6 => 13, 7 => 11 }.freeze
+        CERT_LIMIT = { 2 => 33, 3 => 26, 4 => 20, 5 => 16, 6 => 13, 7 => 11 }.freeze
 
         EBUY_FROM_OTHERS = :never
 
-        STARTING_CASH = { 2 => 1000, 3 => 700, 4 => 525, 5 => 420, 6 => 350, 7 => 300 }.freeze
+        STARTING_CASH = { 2 => 900, 3 => 700, 4 => 525, 5 => 420, 6 => 350, 7 => 300 }.freeze
 
         CAPITALIZATION = :incremental
 
@@ -348,7 +348,7 @@ module Engine
         TWO_HOME_CORPORATION = 'LNWR'
 
         BIDDING_TOKENS = {
-          '2': 7,
+          '2': 8,
           '3': 6,
           '4': 5,
           '5': 4,
