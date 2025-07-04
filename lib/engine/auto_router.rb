@@ -64,9 +64,20 @@ module Engine
       path_walk_timed_out = false
       now = Time.now
 
-      skip_paths = static.flat_map(&:paths).to_h { |path| [path, true] }
+      skip_paths = if @train_autoroute_group.nil?
+                     static.flat_map(&:paths).to_h { |path| [path, true] }
+                   elsif @train_autoroute_group == :each_train_separate
+                     # all trains have their own autoroute group so it's not possible to fill skip_paths
+                     {}
+                   else # rubocop:disable Lint/DuplicateBranch
+                     # NOTE: there is room for an optimization here. In the case of TRAIN_AUTOROUTE_GROUP being an array,
+                     # we need to compare the train types that are prefilled and the train types that will be searched and
+                     # if there is overlap and all the trains that are being searched can't visit the path it can be in skip_path
+                     {}
+                   end
+
       # if only routing for subset of trains, omit the trains we won't assemble routes for
-      skip_trains = static.flat_map(:train).to_a
+      skip_trains = static.flat_map(&:train).to_a
       trains -= skip_trains
 
       train_routes = Hash.new { |h, k| h[k] = [] }    # map of train to route list
