@@ -77,7 +77,7 @@ module Engine
                    end
 
       # if only routing for subset of trains, omit the trains we won't assemble routes for
-      skip_trains = static.flat_map(:train).to_a
+      skip_trains = static.flat_map(&:train).to_a
       trains -= skip_trains
 
       train_routes = Hash.new { |h, k| h[k] = [] }    # map of train to route list
