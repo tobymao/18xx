@@ -122,7 +122,7 @@ module View
       inputs = [
         render_input('Description', id: :description, placeholder: 'Add a title', label_style: @label_style),
         render_input(
-          'Min Players',
+          "Min Players (#{min_p})",
           id: :min_players,
           type: :number,
           attrs: {
@@ -130,6 +130,7 @@ module View
             max: max_p,
             value: min_players,
             required: true,
+            onFocus: 'this.select()',
           },
           container_style: @mode == :hotseat ? { display: 'none' } : {},
           input_style: { width: '3.5rem' },
@@ -137,7 +138,7 @@ module View
           on: { input: -> { update_inputs } },
         ),
         render_input(
-          @mode == :hotseat ? 'Players' : 'Max Players',
+          @mode == :hotseat ? 'Players' : "Max Players (#{max_p})",
           id: :max_players,
           type: :number,
           attrs: {
@@ -145,6 +146,7 @@ module View
             max: max_p,
             value: max_players,
             required: true,
+            onFocus: 'this.select()',
           },
           input_style: { width: '3.5rem' },
           label_style: @label_style,
