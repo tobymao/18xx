@@ -17,7 +17,7 @@ module Engine
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/System18'
         GAME_RULES_URL = 'https://github.com/tobymao/18xx/wiki/System18'
 
-        PLAYER_RANGE = [2, 5].freeze
+        PLAYER_RANGE = [1, 5].freeze
         OPTIONAL_RULES = [
           {
             sym: :map_NEUS,
@@ -97,6 +97,12 @@ module Engine
             short_name: 'Map: Russia',
             players: [2, 3],
             designer: 'Ian Wilson',
+          },
+          {
+            sym: :map_Gotland,
+            short_name: 'Map: Gotland',
+            players: [1],
+            designer: 'Pontus Nilsson',
           },
         ].freeze
 
