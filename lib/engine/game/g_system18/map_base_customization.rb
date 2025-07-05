@@ -37,11 +37,11 @@ module Engine
         end
 
         def map_base_game_cash
-          { 2 => 800, 3 => 500, 4 => 400, 5 => 300 }
+          { 1 => 1000, 2 => 800, 3 => 500, 4 => 400, 5 => 300 }
         end
 
         def map_base_game_cert_limit
-          { 2 => 20, 3 => 15, 4 => 10, 5 => 8 }
+          { 1 => 20, 2 => 20, 3 => 15, 4 => 10, 5 => 8 }
         end
 
         def map_base_game_capitalization
