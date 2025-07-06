@@ -8,6 +8,12 @@ module Engine
 
         AXES = { x: :number, y: :letter }.freeze
 
+        # Used by 1837, not used in 1824
+        MINE_HEXES = [].freeze
+
+        # Used by 1837, not used in 1824
+        ITALY_HEXES = [].freeze
+
         TILES = {
           '1' => 1,
           '2' => 1,

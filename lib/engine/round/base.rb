@@ -140,6 +140,7 @@ module Engine
         end
 
         @active_step ||= @steps.find { |step| step.active? && step.blocking? }
+        @active_step
       end
 
       def auto_actions
