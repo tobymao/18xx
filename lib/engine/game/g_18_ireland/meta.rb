@@ -24,6 +24,11 @@ module Engine
             short_name: 'Larger £5,000 bank',
             desc: 'Larger bank variant, instead of £4,000',
           },
+          {
+            sym: :more_tiles,
+            short_name: 'More of each tile',
+            desc: 'Adds 50% more of each tile type'
+          }
         ].freeze
       end
     end
