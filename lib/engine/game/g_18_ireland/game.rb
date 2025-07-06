@@ -48,20 +48,21 @@ module Engine
 
           Bank.new(cash, log: @log)
         end
-#
-#        def init_tile(name, val)
-#          if more_tiles?
-#            modified_val = if val.is_a?(Integer)
-#                             (1.5 * val).ceil
-#                           elsif val != 'unlimited' && val.is_a?(Hash) && val.key?('count') && val['count'].is_a?(Integer)
-#                               val.merge('count' => (1.5 * val['count']).floor)
-#                           else
-#                             val # Fallback for unexpected 'val' types
-#                           end
-#            super(name, modified_val)
-#          else
-#            super(name, val)
-#        end
+
+        def init_tile(name, val)
+          if more_tiles?
+            modified_val = if val.is_a?(Integer)
+                             (1.5 * val).ceil
+                           elsif val != 'unlimited' && val.is_a?(Hash) && val.key?('count') && val['count'].is_a?(Integer)
+                               val.merge('count' => (1.5 * val['count']).ceil)
+                           else
+                             val # Fallback for unexpected 'val' types
+                           end
+            super(name, modified_val)
+          else
+            super(name, val)
+          end
+        end
 
         CERT_LIMIT = { 3 => 16, 4 => 12, 5 => 10, 6 => 8 }.freeze
 
