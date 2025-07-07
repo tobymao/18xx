@@ -2014,6 +2014,9 @@ module Engine
               end
 
             corp_tokens_with_count.each do |corp, (tokens_to_remove, token_count)|
+              # Sort the tokens to make sure that a corporation's home token
+              # does not get removed.
+              tokens_to_remove.sort_by! { |t| corp.tokens.index(t) }
               (token_count - 1).times do
                 @log << "Extra token for #{corp.name} is returned to their available tokens"
                 token = tokens_to_remove.pop
