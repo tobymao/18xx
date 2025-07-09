@@ -60,6 +60,13 @@ module Engine
               end
               @round.pending_tokens.shift
             elsif action.entity.name == 'SPD' && tile.name == '235'
+              #remove and swap the NWR that appeared... hacky...
+              city = action.city
+              old_token = city.tokens[0]
+              old_token.remove!
+              city.exchange_token(action.entity.find_token_by_type)
+
+              # apply "other" OO token once first to operate is applied if floated
               corporation = @game.corporations.find { |c| c.name == 'NWR' }
               if corporation&.floated
                 token = corporation.find_token_by_type
