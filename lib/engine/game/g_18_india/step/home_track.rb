@@ -60,7 +60,7 @@ module Engine
               end
               @round.pending_tokens.shift
             elsif action.entity.name == 'SPD' && tile.name == '235'
-              #remove and swap the NWR that appeared... hacky...
+              # remove and swap the NWR that appeared... hacky...
               city = action.city
               old_token = city.tokens[0]
               old_token.remove!
