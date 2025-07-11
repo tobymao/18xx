@@ -724,8 +724,13 @@ module Engine
             return unless action.hex.id == 'F5'
             return if p2_company.closed? || action.entity == p2_company
 
-            p2_company.remove_ability(p2_company.all_abilities.first)
-            @log << "#{p2_company.name} loses the ability to lay F5"
+            # Remove p2 ability to lay F5, but if someone else already
+            # have built there the ability has already been lost
+            p2_ability = p2_company.all_abilities.first
+            return if p2_ability.nil?
+
+            p2_company.remove_ability(p2_ability)
+            @log << "#{p2_company.name} loses the ability to lay tile 470 in F5"
           end
         end
 
