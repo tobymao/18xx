@@ -133,7 +133,7 @@ module Engine
           },
           green: {
             ['F9'] => 'city=revenue:30,slots:2;path=a:2,b:_0;path=a:3,b:_0;'\
-                      'path=a:4,b:_0;path=a:5,b:_0;label=K;upgrade=cost:80,terrain:water',
+                      'path=a:4,b:_0;path=a:5,b:_0;label=K;upgrade=cost:80',
           },
         }.freeze
 
