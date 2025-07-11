@@ -2,9 +2,18 @@ Fixes #[PUT_ISSUE_NUMBER_HERE]
 
 <!--
 
-Please minimize the amount of changes to shared `lib/engine` code, if possible
+Your PR title should start with a tag showing the affected 18xx title or titles,
+e.g., "[1889] use fancy logos".
 
-If you are implementing a new game, please break up the changes into multiple PRs for ease of review.
+Please minimize the amount of changes to shared `lib/engine` code, if
+possible. If you are changing any shared code there, please include "[core]" at
+the start of your PR title.
+
+If your changes affect the developer/maintainer experience but are not end-user
+facing, please inclue a "[dev]" tag.
+
+If you are implementing a new game, please break up the changes into multiple
+PRs for ease of review.
 
 -->
 
