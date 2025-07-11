@@ -623,6 +623,8 @@ module Engine
               map_britain_stock_round_finished
               @operating_rounds = @phase.operating_rounds
               reorder_players
+              return if @finished
+
               new_operating_round
             when Round::Operating
               if @round.round_num < @operating_rounds
