@@ -4,12 +4,27 @@ module Engine
   module Game
     module G1822NRS
       module Entities
-        STARTING_COMPANIES = %w[P1 P2 P3 P4 P6 P7 P8 P9 P11 P12 P13 P14 P15 P16 P18 P19 P20 P21
-                                C1 C5 C6 C7 C8 C10 M1 M2 M3 M4 M5 M6 M7 M8 M9 M10 M15
-                                M16 M26 M27 M28 M29].freeze
+        CONCESSIONS = %w[C1 C5 C6 C7 C8 C10].freeze
 
-        STARTING_CORPORATIONS = %w[1 2 3 4 5 6 7 8 9 10 15 16 26 27 28 29
-                                   LNWR CR MR LYR NBR NER].freeze
+        # 1-10, 15, 16, 26-29
+        MINORS_CORPORATIONS = %w[1 2 3 4 5 6 7 8 9 10 15 16 26 27 28 29].freeze
+        MINORS_COMPANIES = MINORS_CORPORATIONS.map { |m| "M#{m}" }.freeze
+
+        STARTING_COMPANIES = [
+          # P1-P21, except P5, P10, P17
+          'P1', 'P2', 'P3', 'P4', 'P6', 'P7', 'P8', 'P9', 'P11', 'P12', 'P13', 'P14', 'P15', 'P16', 'P18', 'P19', 'P20', 'P21',
+          *CONCESSIONS,
+          *MINORS_COMPANIES
+        ].freeze
+
+        STARTING_COMPANIES_TWOPLAYER = [
+          # P1-P12
+          'P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7', 'P8', 'P9', 'P10', 'P11', 'P12',
+          *CONCESSIONS,
+          *MINORS_COMPANIES
+        ].freeze
+
+        STARTING_CORPORATIONS = (MINORS_CORPORATIONS + %w[LNWR CR MR LYR NBR NER]).freeze
 
         STARTING_COMPANIES_OVERRIDE = {
           'M15' => { desc: 'A 50% director’s certificate in the associated minor company. Starting location is N29.' },

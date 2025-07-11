@@ -29,9 +29,12 @@ module Engine
             desc: 'shorter game on the southern part of the map',
           },
         ].freeze
-        GAME_RULES_URL = 'https://boardgamegeek.com/filepage/219065/1822-railways-great-britain-rules'
+        GAME_RULES_URL = {
+          'Rules' => 'https://boardgamegeek.com/filepage/219065/1822-railways-great-britain-rules',
+          '2-player rules (BGG thread)' => 'https://boardgamegeek.com/thread/2429917/article/34848979#34848979',
+        }.freeze
 
-        PLAYER_RANGE = [3, 7].freeze
+        PLAYER_RANGE = [2, 7].freeze
 
         OPTIONAL_RULES = [
           {
