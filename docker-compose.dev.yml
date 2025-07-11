@@ -5,6 +5,8 @@ x-rack: &rack
     RACK_ENV: development
     RUBYOPTS: --yjit
     OPAL_PREFORK_DISABLE: "true"
+    # debug/info/warn/error/fatal
+    DB_LOG_LEVEL: fatal
   build:
     args:
       RACK_ENV: development
