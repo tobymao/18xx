@@ -471,7 +471,7 @@ module Engine
         def exchange_coal_minor(minor)
           target = exchange_target(minor)
           @log << "#{minor.id} exchanged for a share of #{target.id}"
-          merge_minor!(minor, target)
+          merge_minor!(minor, target, allow_president_change: target.ipoed)
         end
 
         def event_close_mountain_railways!
