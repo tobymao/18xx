@@ -1108,7 +1108,6 @@ module Engine
 
           node_hexes = {}
           visits.each do |node|
-            print node.hex.name
             raise GameError, 'Cannot visit multiple towns/cities in same hex' if node_hexes[node.hex]
 
             node_hexes[node.hex] = true
