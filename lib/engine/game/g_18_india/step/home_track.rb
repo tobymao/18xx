@@ -47,15 +47,13 @@ module Engine
             @round.pending_tokens.shift
           end
 
-          def place_second_OO_token(tile, corp_name)
-              corporation = @game.corporation_by_id(corp_name)
-              LOGGER.debug {corporation }
-              LOGGER.debug {corp_name }
-              if corporation&.floated
-                token = corporation.next_token
-                city = tile.cities.reject(&:tokened?).first
-                city.place_token(corporation, token) if city.tokenable?(corporation, tokens: token)
-              end
+          def place_second_oo_token(tile, corp_name)
+            corporation = @game.corporation_by_id(corp_name)
+            return unless corporation&.floated
+
+            token = corporation.next_token
+            city = tile.cities.reject(&:tokened?).first
+            city.place_token(corporation, token) if city.tokenable?(corporation, tokens: token)
           end
 
           def process_place_token(action)
@@ -63,7 +61,7 @@ module Engine
             tile = action.city.tile
             # apply "other" OO token once first to operate is applied if floated
             if action.entity.name == 'NWR' && tile.name == '235'
-              place_second_OO_token(tile, 'SPD')
+              place_second_oo_token(tile, 'SPD')
               @round.pending_tokens.shift
             elsif action.entity.name == 'SPD' && tile.name == '235'
               # remove and swap the NWR that appeared... hacky...
@@ -73,7 +71,7 @@ module Engine
               city.exchange_token(action.entity.find_token_by_type)
 
               # apply "other" OO token once first to operate is applied if floated
-              place_second_OO_token(tile, 'NWR')
+              place_second_oo_token(tile, 'NWR')
               @round.pending_tokens.shift
             end
             # otherwise make sure reservations are preserved
