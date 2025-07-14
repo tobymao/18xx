@@ -47,32 +47,33 @@ module Engine
             @round.pending_tokens.shift
           end
 
+          def place_second_OO_token(tile, corp_name)
+              corporation = @game.corporation_by_id(corp_name)
+              LOGGER.debug {corporation }
+              LOGGER.debug {corp_name }
+              if corporation&.floated
+                token = corporation.next_token
+                city = tile.cities.reject(&:tokened?).first
+                city.place_token(corporation, token) if city.tokenable?(corporation, tokens: token)
+              end
+          end
+
           def process_place_token(action)
             super
             tile = action.city.tile
             # apply "other" OO token once first to operate is applied if floated
             if action.entity.name == 'NWR' && tile.name == '235'
-              corporation = @game.corporations.find { |c| c.name == 'SPD' }
-              if corporation&.floated
-                token = corporation.find_token_by_type
-                city = tile.cities.reject(&:tokened?).first
-                city.place_token(corporation, token) if city.tokenable?(corporation, tokens: token)
-              end
+              place_second_OO_token(tile, 'SPD')
               @round.pending_tokens.shift
             elsif action.entity.name == 'SPD' && tile.name == '235'
               # remove and swap the NWR that appeared... hacky...
               city = action.city
-              old_token = city.tokens[0]
+              old_token = city.tokens.first
               old_token.remove!
               city.exchange_token(action.entity.find_token_by_type)
 
               # apply "other" OO token once first to operate is applied if floated
-              corporation = @game.corporations.find { |c| c.name == 'NWR' }
-              if corporation&.floated
-                token = corporation.find_token_by_type
-                city = tile.cities.reject(&:tokened?).first
-                city.place_token(corporation, token) if city.tokenable?(corporation, tokens: token)
-              end
+              place_second_OO_token(tile, 'NWR')
               @round.pending_tokens.shift
             end
             # otherwise make sure reservations are preserved
