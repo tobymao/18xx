@@ -25,7 +25,7 @@ module Engine
           {
             sym: :unit_2,
             short_name: 'Unit 2',
-            players: [2, 3],
+            players: [2, 3, 4],
           },
           {
             sym: :unit_3,
