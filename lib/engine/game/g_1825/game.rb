@@ -1105,7 +1105,6 @@ module Engine
           else
             super(route, visits, build_dummy_train(route, num))
           end
-          return if %w[3T 4T].include?(route.train.name)
 
           node_hexes = {}
           visits.each do |node|
@@ -1113,7 +1112,7 @@ module Engine
 
             node_hexes[node.hex] = true
           end
-          return if %w[U3 2+2].include?(route.train.name)
+          return if %w[3T 4T U3 2+2].include?(route.train.name)
 
           raise GameError, 'Route cannot begin/end in a town' if visits.first.town? && visits.last.town?
 
