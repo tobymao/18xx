@@ -43,12 +43,38 @@ module Engine
               connected: false,
               extra_action: true
             )
+
             @round.pending_tokens.shift
+          end
+
+          def place_second_oo_token(tile, corp_name)
+            corporation = @game.corporation_by_id(corp_name)
+            return unless corporation&.floated
+
+            token = corporation.next_token
+            city = tile.cities.reject(&:tokened?).first
+            city.place_token(corporation, token) if city.tokenable?(corporation, tokens: token)
           end
 
           def process_place_token(action)
             super
             tile = action.city.tile
+            # apply "other" OO token once first to operate is applied if floated
+            if action.entity.name == 'NWR' && tile.name == '235'
+              place_second_oo_token(tile, 'SPD')
+              @round.pending_tokens.shift
+            elsif action.entity.name == 'SPD' && tile.name == '235'
+              # remove and swap the NWR that appeared... hacky...
+              city = action.city
+              old_token = city.tokens.first
+              old_token.remove!
+              city.exchange_token(action.entity.find_token_by_type)
+
+              # apply "other" OO token once first to operate is applied if floated
+              place_second_oo_token(tile, 'NWR')
+              @round.pending_tokens.shift
+            end
+            # otherwise make sure reservations are preserved
             replace_oo_reservations(tile) unless tile.reservations.empty? # move hex reservation
           end
 
@@ -79,7 +105,9 @@ module Engine
             (old_tile.exits - tile.exits).empty?
           end
 
-          def potential_tiles(_entity_or_entities, _hex)
+          def potential_tiles(_entity_or_entities, hex)
+            return if hex.name == 'G8'
+
             @game.tiles.select { |t| %w[13 12 206 205].include?(t.name) }.uniq(&:name)
           end
         end
