@@ -32,6 +32,7 @@ module Engine
 
         HOME_TOKEN_TIMING = :float
 
+        EBUY_PRES_SWAP = false
         EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
         EBUY_FROM_OTHERS = :always
         EBUY_SELL_MORE_THAN_NEEDED = true
