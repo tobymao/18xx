@@ -254,7 +254,8 @@ module Engine
 
       return if majority_share_holders.any? { |player| player == previous_president }
 
-      president = majority_share_holders
+      president = majority_share_holders.find { |player| player == corporation.presidents_share.owner } unless previous_president
+      president ||= majority_share_holders
         .select { |p| p.percent_of(corporation) >= corporation.presidents_percent }
         .min_by do |p|
         if previous_president == self
