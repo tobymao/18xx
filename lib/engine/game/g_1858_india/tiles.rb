@@ -61,6 +61,7 @@ module Engine
           '107' => 2,
           '108' => 2,
           '112' => 2,
+          '116' => 2,
           '201' => 'unlimited',
           '202' => 'unlimited',
           '204' => 4,
@@ -121,15 +122,6 @@ module Engine
             'count' => 2,
             'color' => 'green',
             'code' => 'junction;path=a:0,b:_0,track:narrow;path=a:2,b:_0,track:narrow;path=a:4,b:_0,track:narrow',
-          },
-          'X5' =>
-          {
-            'count' => 2,
-            'color' => 'green',
-            'code' =>
-              'town=revenue:10;' \
-              'path=a:0,b:_0,track:narrow;path=a:3,b:_0,track:narrow;' \
-              'path=a:4,b:_0,track:narrow;path=a:5,b:_0,track:narrow',
           },
           'X6' =>
           {
