@@ -14,6 +14,7 @@ require_relative 'map_china_rapid_development_customization'
 require_relative 'map_poland_customization'
 require_relative 'map_britain_customization'
 require_relative 'map_northern_italy_customization'
+require_relative 'map_ms_customization'
 
 module Engine
   module Game
@@ -32,6 +33,7 @@ module Engine
         include MapPolandCustomization
         include MapBritainCustomization
         include MapNorthernItalyCustomization
+        include MapMsCustomization
 
         register_colors(red: '#d1232a',
                         orange: '#f58121',
@@ -272,6 +274,7 @@ module Engine
         LAYOUT = :pointy
         TILE_LAYS = [{ lay: true, upgrade: true, cost: 0 }].freeze
         EBUY_FROM_OTHERS = :never
+        EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = true
         COLOR_SEQUENCE = %i[white yellow green brown gray].freeze
         SELL_BUY_ORDER = :sell_buy_sell
         SELL_AFTER = :first
@@ -403,6 +406,14 @@ module Engine
           send("map_#{cmap_name}_movement_type_at_emr_share_issue")
         end
 
+        def init_bank
+          if respond_to?("map_#{cmap_name}_init_bank")
+            send("map_#{cmap_name}_init_bank")
+          else
+            Bank.new(99_999, log: @log, check: false)
+          end
+        end
+
         def redef_const(const, value)
           mod = is_a?(Module) ? self : self.class
           mod.send(:remove_const, const) if mod.const_defined?(const)
@@ -425,6 +436,7 @@ module Engine
           redef_const(:COLOR_SEQUENCE, %i[white yellow green brown gray])
           redef_const(:GAME_END_CHECK, { bankrupt: :immediate, final_phase: :one_more_full_or_set })
           redef_const(:TILE_LAYS, [{ lay: true, upgrade: true, cost: 0 }])
+          redef_const(:EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST, true)
 
           if game_capitalization == :incremental
             ######################################################
@@ -513,13 +525,19 @@ module Engine
         end
 
         # hijack method to see if game should end
-        def reorder_players
+        def new_operating_round(round)
           if corporations.none?(&:floated)
-            @log << '-- Stock round ended with no floated corporations. Ending game.'
+            @log << '-- Round ended with no floated corporations. Ending game.'
             end_game!
           end
 
           super
+        end
+
+        def reorder_players
+          return super unless respond_to?("map_#{cmap_name}_reorder_players")
+
+          send("map_#{cmap_name}_reorder_players")
         end
 
         def next_round!
@@ -561,7 +579,7 @@ module Engine
         end
 
         def or_round_finished
-          return unless respond_to?("map_#{cmap_name}_or_round_finished")
+          return super unless respond_to?("map_#{cmap_name}_or_round_finished")
 
           send("map_#{cmap_name}_or_round_finished")
         end
@@ -586,9 +604,15 @@ module Engine
         end
 
         def check_other(route)
-          return unless respond_to?("map_#{cmap_name}_check_other")
+          return super unless respond_to?("map_#{cmap_name}_check_other")
 
           send("map_#{cmap_name}_check_other", route)
+        end
+
+        def check_route_combination(routes)
+          return super unless respond_to?("map_#{cmap_name}_check_route_combination")
+
+          send("map_#{cmap_name}_check_route_combination", routes)
         end
 
         def post_lay_tile(entity, tile)
@@ -731,6 +755,18 @@ module Engine
           return super unless respond_to?("map_#{cmap_name}_home_token_locations")
 
           send("map_#{cmap_name}_home_token_locations", corporation)
+        end
+
+        def destinate(corporation)
+          return super unless respond_to?("map_#{cmap_name}_destinate")
+
+          send("map_#{cmap_name}_destinate", corporation)
+        end
+
+        # used by maps that destinate
+        def destination_hex(corporation)
+          ability = corporation.abilities.first
+          hexes.find { |h| h.name == ability.hexes.first } if ability
         end
       end
     end

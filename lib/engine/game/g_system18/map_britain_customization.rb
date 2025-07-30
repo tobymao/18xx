@@ -446,6 +446,7 @@ module Engine
               sym: 'PGS',
               name: 'Pegasus',
               logo: 'System18/PGS',
+              simple_logo: 'System18/PGS.alt',
               tokens: [0, 40, 100],
               coordinates: nil,
               color: '#cd79a7',
