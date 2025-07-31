@@ -164,7 +164,7 @@ module Engine
         def map_ms_game_trains(trains)
           find_train(trains, '2')[:num] = 4
           find_train(trains, '3')[:num] = 3
-          find_train(trains, '4')[:num] = 2
+          find_train(trains, '4')[:num] = 3
           find_train(trains, '4')[:rusts_on] = '8'
           find_train(trains, '5')[:num] = 2
           find_train(trains, '5')[:price] = 450
