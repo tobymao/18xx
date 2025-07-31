@@ -483,6 +483,15 @@ module Engine
           stock_round
         end
 
+        def stock_round
+          GSystem18::Round::Stock.new(self, [
+            Engine::Step::DiscardTrain,
+            Engine::Step::Exchange,
+            Engine::Step::SpecialTrack,
+            Engine::Step::BuySellParShares,
+          ])
+        end
+
         def operating_steps
           if respond_to?("map_#{cmap_name}_operating_steps")
             send("map_#{cmap_name}_operating_steps")
@@ -522,16 +531,6 @@ module Engine
 
         def operating_round(round_num)
           GSystem18::Round::Operating.new(self, operating_steps, round_num: round_num)
-        end
-
-        # hijack method to see if game should end
-        def new_operating_round(round)
-          if corporations.none?(&:floated)
-            @log << '-- Round ended with no floated corporations. Ending game.'
-            end_game!
-          end
-
-          super
         end
 
         def reorder_players
