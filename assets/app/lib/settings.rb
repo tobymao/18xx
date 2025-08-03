@@ -40,6 +40,9 @@ module Lib
       path_timeout: 30,
       route_timeout: 10,
       show_stats: false,
+      is_async: true,
+      invite_only: false,
+      auto_routing: false,
     }.freeze
 
     def self.included(base)
@@ -56,14 +59,13 @@ module Lib
        Lib::Storage[option],
        SETTINGS[option]].compact.first
     end
+    alias color_for setting_for
 
     def toggle_setting(option, game = nil)
       value = !setting_for(option, game)
       Lib::Storage[option] = value
       Lib::Storage["#{option}_#{game.class.title}"] = value if game
     end
-
-    alias color_for setting_for
 
     def route_prop(index, prop)
       setting_for(route_prop_string(index, prop))
