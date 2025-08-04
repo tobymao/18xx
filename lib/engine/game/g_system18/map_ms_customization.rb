@@ -5,15 +5,15 @@ module Engine
     module GSystem18
       module MapMsCustomization
         CORP_DEST = [
-          { 'corp_hex' => 'B5', 'corp_city' => 0, 'dest' => 'F1' }, # ATSF
-          { 'corp_hex' => 'B5', 'corp_city' => 1, 'dest' => 'F1' }, # MKT
-          { 'corp_hex' => 'C8', 'corp_city' => 0, 'dest' => 'F3' }, # MP
-          { 'corp_hex' => 'D9', 'corp_city' => 0, 'dest' => 'F3' }, # SSW
-          { 'corp_hex' => 'E8', 'corp_city' => 0, 'dest' => 'B11' }, # IC
-          { 'corp_hex' => 'F1', 'corp_city' => 0, 'dest' => 'G8' }, # SP
-          { 'corp_hex' => 'F3', 'corp_city' => 0, 'dest' => 'B1' }, # FWD
-          { 'corp_hex' => 'F3', 'corp_city' => 1, 'dest' => 'G8' }, # T&P
-          { 'corp_hex' => 'F9', 'corp_city' => 0, 'dest' => 'C8' }, # GMO
+          { corp_hex: 'B5', corp_city: 0, dest: 'F1' }, # ATSF
+          { corp_hex: 'B5', corp_city: 1, dest: 'F1' }, # MKT
+          { corp_hex: 'C8', corp_city: 0, dest: 'F3' }, # MP
+          { corp_hex: 'D9', corp_city: 0, dest: 'F3' }, # SSW
+          { corp_hex: 'E8', corp_city: 0, dest: 'B11' }, # IC
+          { corp_hex: 'F1', corp_city: 0, dest: 'G8' }, # SP
+          { corp_hex: 'F3', corp_city: 0, dest: 'B1' }, # FWD
+          { corp_hex: 'F3', corp_city: 1, dest: 'G8' }, # T&P
+          { corp_hex: 'F9', corp_city: 0, dest: 'C8' }, # GMO
         ].freeze
 
         def map_ms_game_tiles(tiles)
@@ -306,7 +306,7 @@ module Engine
 
           home_city = entity.tokens.first.city
           dest_hex = @round.connection_available[entity]
-          return if routes.any? { |r| r.visited_stops.include?(home_city) && route.visited_stops.map(&:hex).include?(dest_hex) }
+          return if routes.any? { |r| r.visited_stops.include?(home_city) && r.visited_stops.map(&:hex).include?(dest_hex) }
 
           raise GameError, 'At least one train must include home token and destination hex'
         end
