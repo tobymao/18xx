@@ -9,6 +9,7 @@ require 'view/form'
 module View
   class CreateGame < Form
     include GameManager
+    include Lib::Settings
     include Lib::WhatsThis::AutoRoute
 
     needs :mode, default: :multi, store: true
@@ -21,7 +22,7 @@ module View
     needs :title, default: nil
     needs :production, default: nil
     needs :optional_rules, default: [], store: true
-    needs :is_async, default: true, store: true
+    needs :is_async, default: nil, store: true
     needs :keywords, default: nil, store: true
 
     # hashmap, game title to min/max player count
@@ -74,10 +75,21 @@ module View
           when :multi
             inputs << h(:label, { style: @label_style }, 'Game Options')
             inputs << render_game_type
-            inputs << render_input('Invite only game', id: 'unlisted', type: :checkbox,
-                                                       container_style: { paddingLeft: '0.5rem' })
+            inputs << render_input(
+              'Invite only game',
+              id: 'unlisted',
+              type: :checkbox,
+              container_style: { paddingLeft: '0.5rem' },
+              attrs: { checked: setting_for(:invite_only) == true },
+            )
             if selected_game_or_variant::AUTOROUTE
-              inputs << render_input('Auto Routing', id: 'auto_routing', type: :checkbox, siblings: [auto_route_whats_this])
+              inputs << render_input(
+                'Auto Routing',
+                id: 'auto_routing',
+                type: :checkbox,
+                siblings: [auto_route_whats_this],
+                attrs: { checked: setting_for(:auto_routing) == true },
+              )
             end
           when :hotseat
             inputs << h(:label, { style: @label_style }, 'Player Names')
@@ -389,20 +401,30 @@ module View
     end
 
     def render_game_type
+      if @is_async.nil?
+        is_async = setting_for(:is_async)
+        @is_async =
+          if is_async.nil?
+            true
+          else
+            is_async
+          end
+      end
+
       h(:div, { style: { padding: '0.5rem' } }, [
         render_input(
           'Async',
           id: 'async',
           type: 'radio',
           attrs: { name: 'is_async', checked: @is_async == true },
-          on: { click: -> { store(:is_async, is_async, skip: true) } }
+          on: { click: -> { store(:is_async, true, skip: true) } }
         ),
         render_input(
           'Live',
           id: 'live',
           type: 'radio',
           attrs: { name: 'is_async', checked: @is_async == false },
-          on: { click: -> { store(:is_async, is_async, skip: true) } }
+          on: { click: -> { store(:is_async, false, skip: true) } }
         ),
       ])
     end
