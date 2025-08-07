@@ -80,11 +80,17 @@ module Engine
             players: [2, 3, 4],
             designer: 'Ian Wilson',
           },
+          {
+            sym: :map_MS,
+            short_name: 'Map: Mississippi',
+            players: [2, 3, 4],
+            designer: 'Ian Wilson',
+          },
         ].freeze
 
         MUTEX_RULES = [
           %i[map_NEUS map_France map_Twisting_Tracks map_UK_Limited map_China_Rapid_Development map_Poland map_Britain
-             map_Northern_Italy],
+             map_Northern_Italy map_MS],
         ].freeze
       end
     end
