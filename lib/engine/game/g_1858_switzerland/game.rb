@@ -272,11 +272,10 @@ module Engine
           end
         end
 
-        MOUNTAIN_RAILWAY_TILE = 'X28'
-        MOUNTAIN_RAILWAY_ASSIGNMENT = '+40'
-        MOUNTAIN_RAILWAY_BONUS = 40
         ASSIGNMENT_TOKENS = {
-          MOUNTAIN_RAILWAY_ASSIGNMENT => '/icons/1858_switzerland/mountain.svg',
+          '+20' => '/icons/1858_switzerland/mountain.svg',
+          '+30' => '/icons/1858_switzerland/mountain.svg',
+          '+40' => '/icons/1858_switzerland/mountain.svg',
         }.freeze
 
         def submit_revenue_str(routes, _show_subsidy)
@@ -294,14 +293,18 @@ module Engine
 
         def mountain_bonus(entity, routes)
           return 0 if routes.empty?
+          return 0 unless mountain_railway_built?(entity)
 
-          mountain_railway_built?(entity) ? MOUNTAIN_RAILWAY_BONUS : 0
+          entity.assignments.sum do |assignment, _|
+            mr = MOUNTAIN_RAILWAYS.values.find { |r| r[:assignment] == assignment }
+            mr ? mr[:bonus] : 0
+          end
         end
 
         def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
           return super unless mountain_hex?(tile)
 
-          super + Array(@tiles.find { |t| t.name == MOUNTAIN_RAILWAY_TILE })
+          super + tiles.select { |t| mountain_railway_tile?(t) }
         end
 
         def upgrades_to?(from, to, special, selected_company: nil)
@@ -310,12 +313,24 @@ module Engine
           return valid if mountain_railway_built?(current_entity)
           return valid unless mountain_hex?(from)
 
-          valid || to.name == MOUNTAIN_RAILWAY_TILE
+          valid || mountain_railway_tile?(to)
+        end
+
+        def tile_cost_with_discount(tile, hex, entity, _spender, cost)
+          tile_cost = super
+          return tile_cost unless mountain_railway_tile?(tile)
+
+          # When building a mountain railway you pay a cost for the tile, not
+          # for the hex's terrain.
+          mr_cost = MOUNTAIN_RAILWAYS[tile.name][:cost]
+          @log << "#{entity.id} building a mountain railway in " \
+                  "#{hex.coordinates} costs #{format_currency(mr_cost)}."
+          tile_cost - 120 + mr_cost
         end
 
         def after_lay_tile(_hex, tile, entity)
-          if tile.name == MOUNTAIN_RAILWAY_TILE
-            entity.assign!(MOUNTAIN_RAILWAY_ASSIGNMENT)
+          if mountain_railway_tile?(tile)
+            entity.assign!(MOUNTAIN_RAILWAYS[tile.name][:assignment])
           elsif robot_owner?(entity) && home_route_complete?(entity)
             private_nationalised(entity)
           end
@@ -431,6 +446,12 @@ module Engine
 
         private
 
+        MOUNTAIN_RAILWAYS = {
+          'X28' => { tile: 'X28', assignment: '+20', bonus: 20, cost: 60 },
+          'X29' => { tile: 'X29', assignment: '+30', bonus: 30, cost: 90 },
+          'X30' => { tile: 'X30', assignment: '+40', bonus: 40, cost: 120 },
+        }.freeze
+
         def sbb
           @sbb ||= corporation_by_id('SBB')
         end
@@ -477,10 +498,16 @@ module Engine
           tile.color == :white && tile.upgrades.any? { |u| u.cost == 120 }
         end
 
+        def mountain_railway_tile?(tile)
+          @mr_tiles ||= MOUNTAIN_RAILWAYS.keys
+          @mr_tiles.include?(tile.name)
+        end
+
         def mountain_railway_built?(entity)
           return false unless entity.corporation?
 
-          entity.assignments.key?(MOUNTAIN_RAILWAY_ASSIGNMENT)
+          @mr_assignments ||= MOUNTAIN_RAILWAYS.map { |_, mr| mr[:assignment] }
+          entity.assignments.keys.intersect?(@mr_assignments)
         end
 
         # Called when a private railway company owned by the robot has finished
