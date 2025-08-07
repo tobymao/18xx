@@ -231,7 +231,7 @@ module Engine
         end
 
         def map_ms_constants
-          redef_const(:GAME_END_CHECK, { bankrupt: :immediate, bank: :full_or, final_phase: :one_more_full_or_set })
+          redef_const(:GAME_END_CHECK, { bankrupt: :immediate, final_phase: :one_more_full_or_set, bank: :full_or })
           redef_const(:EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST, false)
         end
 
@@ -283,6 +283,10 @@ module Engine
 
         def map_ms_setup
           @corporations.each do |corporation|
+            # place all home tokens
+            place_home_token(corporation)
+
+            # assign destination
             ability = abilities(corporation, :assign_hexes)
             hex = hex_by_id(ability.hexes.first)
 
@@ -335,6 +339,12 @@ module Engine
           return '' if extra.zero?
 
           "+ #{format_revenue_currency(extra)} destination bonus"
+        end
+
+        def map_ms_game_end_check_values
+          return self.class::GAME_END_CHECK unless @phase.name == 'D'
+
+          { bankrupt: :immediate, final_phase: :one_more_full_or_set }
         end
       end
     end
