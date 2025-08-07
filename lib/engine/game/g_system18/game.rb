@@ -767,6 +767,12 @@ module Engine
           ability = corporation.abilities.first
           hexes.find { |h| h.name == ability.hexes.first } if ability
         end
+
+        def game_end_check_values(name)
+          return super unless respond_to?("map_#{cmap_name}_game_end_check_values")
+
+          send("map_#{cmap_name}_game_end_check_values", name)
+        end
       end
     end
   end
