@@ -15,6 +15,10 @@ module Engine
             ACTIONS
           end
 
+          def visible_corporations
+            @game.sorted_corporations.select { |c| !c.closed? && c.type == :major }
+          end
+
           def active_entities
             exchangables.take(1).map(&:owner)
           end

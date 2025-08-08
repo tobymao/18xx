@@ -14,6 +14,10 @@ module Engine
           def must_buy_train?(entity)
             # Rule VII.11 all entities must own a train, unless coal company and there are no g-trains in the depot
             return false unless entity.trains.empty?
+
+            # Rule X.3 and X.4: Construction railways cannot own any trains
+            return false if @game.construction_railway?(entity) || @game.bond_railway?(entity)
+
             return true unless @game.coal_railway?(entity)
 
             depot_g_trains = @depot.depot_trains.select { |t| @game.goods_train?(t.name) }
@@ -42,9 +46,15 @@ module Engine
               raise GameError, 'Coal railways can only own g-trains'
             end
 
+            super
+
             @game.two_train_bought = true if train.name == '2'
 
-            super
+            return unless @game.two_player?
+
+            # Rule X.4, need to handle extra tokening of bond railway
+            @game.set_last_train_buyer(entity, train) if train.name == '4' && @depot.depot_trains.first.name == '5'
+            @game.set_last_train_buyer(entity, train) if train.name == '5' && @depot.depot_trains.first.name == '6'
           end
 
           def buyable_trains(entity)
@@ -60,6 +70,13 @@ module Engine
             trains.select!(&:from_depot?) unless @game.can_buy_train_from_others?
 
             trains
+          end
+
+          def spend_minmax(entity, train)
+            # Rule VII.11, bullet 8: Face price must be paid if buying from another player's corporation
+            return [train.price, train.price] if train.owner&.corporation? && train.owner.owner != entity.owner
+
+            super
           end
         end
       end

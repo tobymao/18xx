@@ -6,6 +6,9 @@ module Engine
   module Game
     module G1824
       class Corporation < Engine::Corporation
+        # Used for correct valuation of coal railway shares
+        attr_accessor :coal_price
+
         def initialize(sym:, name:, **opts)
           ipo_shares = opts[:ipo_shares] || []
           @reserved_ipo_shares = opts[:reserved_shares] || []
@@ -23,6 +26,12 @@ module Engine
             share.buyable = false
           end
           @real_presidents_percent = @presidents_share.percent
+
+          # Used for 2 player variant initial SR
+          @stack = nil
+
+          # Used for coal railway valuation
+          @coal_price = 0
         end
 
         def floated?
@@ -62,10 +71,11 @@ module Engine
           @real_presidents_percent = @presidents_share.percent
         end
 
-        # Used when a pre-staatsbahn is unsold during initial SR.
+        # Used when a pre-staatsbahn is unsold during initial SR, or
+        # when pre-staatsbahn becomes a construction railway (2 players)
         # We need to unreserve one of the shares of the national.
         def unreserve_one_share!
-          (shares.find { |s| !s.buyable })&.buyable = true
+          (shares.find { |s| !s.buyable && s.percent == 10 })&.buyable = true
         end
 
         def should_not_float_until_exchange!
@@ -84,6 +94,28 @@ module Engine
           @floatable = true
           @percent_total_ipo_shares = 100
           @real_presidents_percent = @presidents_share.percent
+        end
+
+        def make_construction_railway!
+          @type = :construction_railway
+          a = @abilities.first
+          remove_ability(a)
+        end
+
+        def make_bond_railway!
+          @type = :bond_railway
+          remove_reserve_for_all_shares!
+          @ipoed = true
+          float!
+
+          # Presidency share is treated as a double cert
+          @presidents_share.double_cert = true
+        end
+
+        def receivership?
+          return true if @type == :bond_railway
+
+          super
         end
       end
     end
