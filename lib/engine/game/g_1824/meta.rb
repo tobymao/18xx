@@ -9,20 +9,25 @@ module Engine
         include Game::Meta
 
         DEV_STAGE = :prealpha
+        DEPENDS_ON = '1837'
 
-        GAME_SUBTITLE = 'Austrian-Hungarian Railway'
-        GAME_DESIGNER = 'Leonhard Orgler & Helmut Ohley'
-        GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1824'
-        GAME_LOCATION = 'Austria-Hungary'
+        GAME_SUBTITLE = 'Austrian-Hungarian Railway'.freeze
+        GAME_DESIGNER = 'Leonhard Orgler & Helmut Ohley'.freeze
+        GAME_IMPLEMENTER = 'Per Westling'.freeze
+        GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1824'.freeze
+        GAME_LOCATION = 'Austria-Hungary'.freeze
         GAME_PUBLISHER = :lonny_games
-        GAME_RULES_URL = 'https://boardgamegeek.com/filepage/188242/1824-english-rules'
+        GAME_RULES_URL = 'https://boardgamegeek.com/filepage/188242/1824-english-rules'.freeze
 
-        PLAYER_RANGE = [2, 6].freeze
+        # TODO: There are still some rules missing for 2 player version, so only allow 3-6.
+        # Do remember to remove this TODO, and the 2 player not yet supported comment below when done.
+        PLAYER_RANGE = [3, 6].freeze
         OPTIONAL_RULES = [
           {
             sym: :cisleithania,
             short_name: 'Cisleithania',
-            desc: 'Use the smaller Cislethania map, with some reduction of components - 2-3 players',
+            desc: 'Use the smaller Cislethania map, with some reduction of components - 2-3 players. '\
+                  'For 2 players Cistleithania is always used. (2 player is not yet supported at 18xx.games)',
           },
           {
             sym: :goods_time,
@@ -30,6 +35,15 @@ module Engine
             desc: 'Use the Goods Time Variant (3-6 players) - pre-set scenario',
           },
         ].freeze
+
+        def self.check_options(options, _min_players, max_players)
+          optional_rules = (options || []).map(&:to_sym)
+          if optional_rules.include?(:cisleithania) && !max_players.nil? && (max_players > 3)
+            { error: 'Cisleithania variant is for 2-3 players' }
+          elsif optional_rules.include?(:cisleithania) && optional_rules.include?(:goods_time)
+            { error: 'Cisleithania and Goods Time combined not supported' }
+          end
+        end
       end
     end
   end
