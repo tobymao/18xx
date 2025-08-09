@@ -12,6 +12,14 @@ module Engine
         class SellOnceThenBuyCerts < Engine::Step::BuySellParShares
           include Engine::Step::ShareBuying
 
+          def help
+            return unless @game.turn == 1
+
+            'Errata to rule 7.2.2: Certificates in the IPO are not available '\
+              'for purchase by players until the second Stock Round. See the '\
+              '"Official Living Rules FAQ" link on the Info page.'
+          end
+
           def log_pass(entity)
             return @log << "#{entity.name} passes" if @round.current_actions.empty?
             return if bought? && sold?
