@@ -17,7 +17,7 @@ module Engine
             return true unless @game.coal_railway?(entity)
 
             depot_g_trains = @depot.depot_trains.select { |t| @game.goods_train?(t.name) }
-            depot_g_trains.any?
+            !depot_g_trains.empty?
           end
 
           def pass_if_cannot_buy_train?(_entity)

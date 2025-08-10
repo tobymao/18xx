@@ -28,12 +28,6 @@ module Engine
 
         attr_accessor :two_train_bought, :forced_mountain_railway_exchange, :coal_company_initial_cash, :player_debts
 
-        # TODO: Can these be removed? They do not seem to be used in 1824?
-        register_colors(
-          gray70: '#B3B3B3',
-          gray50: '#7F7F7F'
-        )
-
         CURRENCY_FORMAT_STR = '%sG'
 
         # Rule III.3 standard game, X.2 Cislethania 2p, XI.2 Cislethania 3p
@@ -282,9 +276,9 @@ module Engine
           :bank
         end
 
-        # 1824 use normal tile upgrades so use Base version instead
-        def upgrades_to?(from, to, special = false, selected_company: nil)
-          Base.instance_method(:upgrades_to?).bind_call(self, from, to, special, selected_company)
+        # Needed to shortcut 1837 special behavior in upgrades_to?
+        def use_yellow_town_tile_upgrades_to?(_from)
+          false
         end
 
         # Similar to 1837
@@ -391,13 +385,13 @@ module Engine
           # TODO: Improve this solution
           @coal_company_initial_cash = Hash.new { |h, k| h[k] = [] }
 
-          # Initialize the player depts, if player have to take an emergency loan
+          # Initialize the player debts, if player have to take an emergency loan
           @player_debts = Hash.new { |h, k| h[k] = 0 }
 
           super
           setup_regionals
           @sd_to_form = false
-          @ug_to_form = false
+          # Initialize the player debts, if player have to take an emergency loan
           @kk_to_form = false
         end
 
@@ -746,8 +740,9 @@ module Engine
         end
 
         # 1824 uses standard sold out stock movement. Rule VIII.3, bullet 4: move up 1 if not at top
-        def sold_out_stock_movement(corporation)
-          Base.instance_method(:sold_out_stock_movement).bind_call(self, corporation)
+        # Disable 1837 special for sold out stock movement, and instead uses base version
+        def use_diagonal_stock_movement?
+          false
         end
 
         def take_player_loan(player, loan)

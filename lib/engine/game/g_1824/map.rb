@@ -96,7 +96,7 @@ module Engine
             'count' => 1,
             'color' => 'green',
             'code' =>
-            'city=revenue:40;city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:5,b:_0;path=a:1,b:_1;'\
+            'city=revenue:50;city=revenue:50;city=revenue:50;path=a:0,b:_0;path=a:5,b:_0;path=a:1,b:_1;'\
             'path=a:2,b:_2;path=a:3,b:_2;path=a:4,b:_1;label=W',
           },
           '493' =>
@@ -320,7 +320,7 @@ module Engine
               %w[A6 A10] => TOWN_WITH_MOUNTAIN,
               %w[B13 B25 F11] => DOUBLE_TOWN_WITH_WATER,
               %w[H3] => CITY_WITH_MOUNTAIN,
-              %w[A18 C26 E26 I8] => CITY_WITH_MOUNTAIN,
+              %w[A18 C26 E26 I8] => CITY_LABEL_T,
               %w[B5 B9 B15 B23 C12 E8 F7 G4 G10] => CITY,
               %w[B7 B11 B19 B21 C8 C14 C20 C22 C24 D9 D11 D13 D15 E6
                  F9 F13 G6 H9 H11] => PLAIN,

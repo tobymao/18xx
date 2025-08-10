@@ -65,12 +65,7 @@ module Engine
         # Used when a pre-staatsbahn is unsold during initial SR.
         # We need to unreserve one of the shares of the national.
         def unreserve_one_share!
-          shares.each do |share|
-            next if share.buyable
-
-            share.buyable = true
-            break
-          end
+          (shares.find { |s| !s.buyable })&.buyable = true
         end
 
         def should_not_float_until_exchange!

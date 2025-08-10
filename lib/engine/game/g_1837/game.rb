@@ -770,9 +770,14 @@ module Engine
         end
 
         def upgrades_to?(from, to, special = false, selected_company: nil)
-          return yellow_town_tile_upgrades_to?(from, to) if from.color == :yellow && !from.towns.empty?
+          return yellow_town_tile_upgrades_to?(from, to) if use_yellow_town_tile_upgrades_to?(from)
 
           super
+        end
+
+        # Need this separate method due to 1824
+        def use_yellow_town_tile_upgrades_to?(from)
+          from.color == :yellow && !from.towns.empty?
         end
 
         def yellow_town_tile_upgrades_to?(from, to)
@@ -798,11 +803,18 @@ module Engine
         end
 
         def sold_out_stock_movement(corporation)
+          return super unless use_diagonal_stock_movement?
+
           if corporation.owner.percent_of(corporation) <= 40
             @stock_market.move_up(corporation)
           else
             @stock_market.move_diagonally_up_left(corporation)
           end
+        end
+
+        # Needed as code shared with 1824
+        def use_diagonal_stock_movement?
+          true
         end
 
         def operated_this_round?(entity)

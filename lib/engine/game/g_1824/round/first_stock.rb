@@ -77,6 +77,7 @@ module Engine
 
               # There is no implementation for close of a major Pre-Staatbahn - this is a weird corner case
               if company.sym.end_with?('1')
+                # TODO: See https://boardgamegeek.com/thread/3546208/what-if-main-preestatsbahn-not-sold-during-startin
                 raise GameError, 'The weird case of unsold SD1, KK1, UG1 is not supported. Please reconsider. They are good!'
               end
 
