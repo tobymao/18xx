@@ -146,7 +146,7 @@ module Engine
         end
 
         def map_ms_game_cash
-          { 2 => 860, 3 => 575, 4 => 40 }
+          { 2 => 860, 3 => 575, 4 => 430 }
         end
 
         def map_ms_game_cert_limit
@@ -174,7 +174,7 @@ module Engine
           find_train(trains, '8')[:available_on] = '6'
           find_train(trains, 'D')[:num] = 10
           find_train(trains, 'D')[:available_on] = '8'
-          find_train(trains, 'D').delete(:discount)
+          find_train(trains, 'D')[:discount] = { '5' => 200, '6' => 200, '8' => 200 }
           trains
         end
 
