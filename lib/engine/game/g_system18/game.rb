@@ -768,10 +768,10 @@ module Engine
           hexes.find { |h| h.name == ability.hexes.first } if ability
         end
 
-        def game_end_check_values(name)
+        def game_end_check_values
           return super unless respond_to?("map_#{cmap_name}_game_end_check_values")
 
-          send("map_#{cmap_name}_game_end_check_values", name)
+          send("map_#{cmap_name}_game_end_check_values")
         end
       end
     end
