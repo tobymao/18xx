@@ -391,7 +391,7 @@ module Engine
           super
           setup_regionals
           @sd_to_form = false
-          # Initialize the player debts, if player have to take an emergency loan
+          @ug_to_form = false
           @kk_to_form = false
         end
 
