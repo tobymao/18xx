@@ -188,11 +188,11 @@ module Engine
         ].freeze
 
         S18_FULLCAP_PHASES = [
-          { name: '2', train_limit: 4, tiles: [:yellow], operating_rounds: 1 },
+          { name: '2', train_limit: 3, tiles: [:yellow], operating_rounds: 1 },
           {
             name: '3',
             on: '3',
-            train_limit: 4,
+            train_limit: 3,
             tiles: %i[yellow green],
             operating_rounds: 2,
           },
@@ -227,11 +227,11 @@ module Engine
         ].freeze
 
         S18_INCCAP_PHASES = [
-          { name: '2', train_limit: 4, tiles: [:yellow], operating_rounds: 2 },
+          { name: '2', train_limit: 3, tiles: [:yellow], operating_rounds: 2 },
           {
             name: '3',
             on: '3',
-            train_limit: 4,
+            train_limit: 3,
             tiles: %i[yellow green],
             operating_rounds: 2,
           },
