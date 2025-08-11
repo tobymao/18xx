@@ -169,9 +169,8 @@ module Engine
           find_train(trains, '5')[:num] = 2
           find_train(trains, '5')[:price] = 450
           find_train(trains, '5')[:rusts_on] = 'D'
-          find_train(trains, '6')[:num] = 2
+          find_train(trains, '6')[:num] = 1
           find_train(trains, '8')[:num] = 2
-          find_train(trains, '8')[:available_on] = '6'
           find_train(trains, 'D')[:num] = 10
           find_train(trains, 'D')[:available_on] = '8'
           find_train(trains, 'D')[:discount] = { '5' => 200, '6' => 200, '8' => 200 }
