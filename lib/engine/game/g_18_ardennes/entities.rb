@@ -40,7 +40,16 @@ module Engine
             capitalization: :none,
             coordinates: 'B8',
             city: 0,
-            abilities: [{ type: 'exchange', corporations: 'ipoed', from: %w[ipo market] }],
+            abilities: [
+              { type: 'exchange', corporations: 'ipoed', from: %w[ipo market] },
+              {
+                type: 'description',
+                description: 'Can form NL',
+                desc_detail: 'This minor can be used to start the ' \
+                             'Maatschappij tot Exploitatie van ' \
+                             'Staatsspoorwegen (NL) public company.',
+              },
+            ],
           },
           {
             sym: '2',
@@ -56,7 +65,16 @@ module Engine
             capitalization: :none,
             coordinates: 'B8',
             city: 1,
-            abilities: [{ type: 'exchange', corporations: 'ipoed', from: %w[ipo market] }],
+            abilities: [
+              { type: 'exchange', corporations: 'ipoed', from: %w[ipo market] },
+              {
+                type: 'description',
+                description: 'Can form NL',
+                desc_detail: 'This minor can be used to start the ' \
+                             'Maatschappij tot Exploitatie van ' \
+                             'Staatsspoorwegen (NL) public company.',
+              },
+            ],
           },
           {
             sym: '3',
@@ -71,7 +89,17 @@ module Engine
             max_ownership_percent: 100,
             capitalization: :none,
             coordinates: 'E15',
-            abilities: [{ type: 'exchange', corporations: 'ipoed', from: %w[ipo market] }],
+            abilities: [
+              { type: 'exchange', corporations: 'ipoed', from: %w[ipo market] },
+              {
+                type: 'description',
+                description: 'Can form BE / NL / P',
+                desc_detail: 'This minor can be used to start the ' \
+                             'État Belge (BE), Maatschappij tot Exploitatie van ' \
+                             'Staatsspoorwegen (NL) or Preußische ' \
+                             'Staatseisenbahnen (P) public companies.,',
+              },
+            ],
           },
           {
             sym: '4',
@@ -86,7 +114,16 @@ module Engine
             max_ownership_percent: 100,
             capitalization: :none,
             coordinates: 'G25',
-            abilities: [{ type: 'exchange', corporations: 'ipoed', from: %w[ipo market] }],
+            abilities: [
+              { type: 'exchange', corporations: 'ipoed', from: %w[ipo market] },
+              {
+                type: 'description',
+                description: 'Can form BY',
+                desc_detail: 'This minor can be used to start the ' \
+                             'Königlich Bayerische Staats-Eisenbahn (BY) ' \
+                             'public company.',
+              },
+            ],
           },
           {
             sym: '5',
@@ -101,7 +138,17 @@ module Engine
             max_ownership_percent: 100,
             capitalization: :none,
             coordinates: 'J24',
-            abilities: [{ type: 'exchange', corporations: 'ipoed', from: %w[ipo market] }],
+            abilities: [
+              { type: 'exchange', corporations: 'ipoed', from: %w[ipo market] },
+              {
+                type: 'description',
+                description: 'Can form BY / E',
+                desc_detail: 'This minor can be used to start the ' \
+                             'Königlich Bayerische Staats-Eisenbahn (BY) or ' \
+                             'Compagnie des chemins de fer de l\'Est (E) ' \
+                             'public companies.',
+              },
+            ],
           },
           {
             sym: '6',
@@ -116,7 +163,16 @@ module Engine
             max_ownership_percent: 100,
             capitalization: :none,
             coordinates: 'H6',
-            abilities: [{ type: 'exchange', corporations: 'ipoed', from: %w[ipo market] }],
+            abilities: [
+              { type: 'exchange', corporations: 'ipoed', from: %w[ipo market] },
+              {
+                type: 'description',
+                description: 'Can form BE / N',
+                desc_detail: 'This minor can be used to start the ' \
+                             'État Belge (BE) or Compagnie des chemins de fer ' \
+                             'du Nord (N) public companies.',
+              },
+            ],
           },
           {
             sym: '7',
@@ -131,7 +187,17 @@ module Engine
             max_ownership_percent: 100,
             capitalization: :none,
             coordinates: 'I21',
-            abilities: [{ type: 'exchange', corporations: 'ipoed', from: %w[ipo market] }],
+            abilities: [
+              { type: 'exchange', corporations: 'ipoed', from: %w[ipo market] },
+              {
+                type: 'description',
+                description: 'Can form BY / E',
+                desc_detail: 'This minor can be used to start the ' \
+                             'Königlich Bayerische Staats-Eisenbahn (BY) or ' \
+                             'Compagnie des chemins de fer de l\'Est (E) ' \
+                             'public companies.',
+              },
+            ],
           },
           {
             sym: '8',
@@ -147,7 +213,16 @@ module Engine
             capitalization: :none,
             coordinates: 'M7',
             city: 0,
-            abilities: [{ type: 'exchange', corporations: 'ipoed', from: %w[ipo market] }],
+            abilities: [
+              { type: 'exchange', corporations: 'ipoed', from: %w[ipo market] },
+              {
+                type: 'description',
+                description: 'Can form N',
+                desc_detail: 'This minor can be used to start the ' \
+                             'Compagnie des chemins de fer du Nord (N) ' \
+                             'public company.',
+              },
+            ],
           },
           {
             sym: '9',
@@ -163,7 +238,16 @@ module Engine
             capitalization: :none,
             coordinates: 'M7',
             city: 1,
-            abilities: [{ type: 'exchange', corporations: 'ipoed', from: %w[ipo market] }],
+            abilities: [
+              { type: 'exchange', corporations: 'ipoed', from: %w[ipo market] },
+              {
+                type: 'description',
+                description: 'Can form E ',
+                desc_detail: 'This minor can be used to start the ' \
+                             'Compagnie des chemins de fer de l\'Est (E) ' \
+                             'public company.',
+              },
+            ],
           },
           {
             sym: '10',
@@ -178,7 +262,15 @@ module Engine
             max_ownership_percent: 100,
             capitalization: :none,
             coordinates: 'D18',
-            abilities: [{ type: 'exchange', corporations: 'ipoed', from: %w[ipo market] }],
+            abilities: [
+              { type: 'exchange', corporations: 'ipoed', from: %w[ipo market] },
+              {
+                type: 'description',
+                description: 'Can form P',
+                desc_detail: 'This minor can be used to start the ' \
+                             'Preußische Staatseisenbahnen (P) public company.',
+              },
+            ],
           },
           {
             sym: '11',
@@ -193,7 +285,15 @@ module Engine
             max_ownership_percent: 100,
             capitalization: :none,
             coordinates: 'B16',
-            abilities: [{ type: 'exchange', corporations: 'ipoed', from: %w[ipo market] }],
+            abilities: [
+              { type: 'exchange', corporations: 'ipoed', from: %w[ipo market] },
+              {
+                type: 'description',
+                description: 'Can form P',
+                desc_detail: 'This minor can be used to start the ' \
+                             'Preußische Staatseisenbahnen (P) public company.',
+              },
+            ],
           },
           {
             sym: '12',
@@ -208,7 +308,16 @@ module Engine
             max_ownership_percent: 100,
             capitalization: :none,
             coordinates: 'K11',
-            abilities: [{ type: 'exchange', corporations: 'ipoed', from: %w[ipo market] }],
+            abilities: [
+              { type: 'exchange', corporations: 'ipoed', from: %w[ipo market] },
+              {
+                type: 'description',
+                description: 'Can form E',
+                desc_detail: 'This minor can be used to start the ' \
+                             'Compagnie des chemins de fer de l\'Est (E) ' \
+                             'public company.',
+              },
+            ],
           },
           {
             sym: '13',
@@ -223,7 +332,17 @@ module Engine
             max_ownership_percent: 100,
             capitalization: :none,
             coordinates: 'E9',
-            abilities: [{ type: 'exchange', corporations: 'ipoed', from: %w[ipo market] }],
+            abilities: [
+              { type: 'exchange', corporations: 'ipoed', from: %w[ipo market] },
+              {
+                type: 'description',
+                description: 'Can form BE / NL',
+                desc_detail: 'This minor can be used to start the ' \
+                             'État Belge (BE) or ' \
+                             'Maatschappij tot Exploitatie van ' \
+                             'Staatsspoorwegen (NL) public company.',
+              },
+            ],
           },
           {
             sym: '14',
@@ -238,7 +357,15 @@ module Engine
             max_ownership_percent: 100,
             capitalization: :none,
             coordinates: 'F10',
-            abilities: [{ type: 'exchange', corporations: 'ipoed', from: %w[ipo market] }],
+            abilities: [
+              { type: 'exchange', corporations: 'ipoed', from: %w[ipo market] },
+              {
+                type: 'description',
+                description: 'Can form BE',
+                desc_detail: 'This minor can be used to start the ' \
+                             'État Belge (BE) public company.',
+              },
+            ],
           },
           {
             sym: '15',
@@ -254,7 +381,16 @@ module Engine
             capitalization: :none,
             coordinates: 'E25',
             city: 1,
-            abilities: [{ type: 'exchange', corporations: 'ipoed', from: %w[ipo market] }],
+            abilities: [
+              { type: 'exchange', corporations: 'ipoed', from: %w[ipo market] },
+              {
+                type: 'description',
+                description: 'Can form BY / P',
+                desc_detail: 'This minor can be used to start the ' \
+                             'Königlich Bayerische Staats-Eisenbahn (BY) or ' \
+                             'Preußische Staatseisenbahnen (P) public companies.',
+              },
+            ],
           },
           {
             sym: 'BY',
