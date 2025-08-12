@@ -226,11 +226,31 @@ module Engine
           },
           'X28' =>
           {
-            'count' => 3,
+            'count' => 1,
             'color' => 'green',
             'code' =>
               'stripes=color:yellow;' \
-              'offboard=revenue:green_30|brown_30|gray_30;' \
+              'offboard=revenue:20;' \
+              'icon=image:1858_switzerland/mountain,loc:2.5;' \
+              'path=a:0,b:_0,track:dual;',
+          },
+          'X29' =>
+          {
+            'count' => 1,
+            'color' => 'green',
+            'code' =>
+              'stripes=color:yellow;' \
+              'offboard=revenue:30;' \
+              'icon=image:1858_switzerland/mountain,loc:2.5;' \
+              'path=a:0,b:_0,track:dual;',
+          },
+          'X30' =>
+          {
+            'count' => 1,
+            'color' => 'green',
+            'code' =>
+              'stripes=color:yellow;' \
+              'offboard=revenue:40,loc:0;' \
               'icon=image:1858_switzerland/mountain,loc:2.5;' \
               'path=a:0,b:_0,track:dual;',
           },
