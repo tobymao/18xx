@@ -1773,6 +1773,8 @@ module Engine
 
         def check_route_combination(routes)
           routes.each do |route|
+            next if route.chains.empty?
+
             # make sure routes from same supertrain intersect
             super_routes = routes.reject do |r|
               r.chains.empty? ||
