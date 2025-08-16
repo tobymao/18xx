@@ -75,7 +75,7 @@ module View
             next unless share.president
 
             children << h(Corporation, corporation: share.corporation)
-            children << if @game.respond_to?(:par_chart)
+            children << if @game.respond_to?(:par_chart) && @game.par_chart
                           h(ParChart, corporation_to_par: share.corporation)
                         else
                           h(Par, corporation: share.corporation)

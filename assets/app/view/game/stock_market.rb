@@ -553,7 +553,7 @@ module View
           ])
         end
 
-        children << h(ParChart) if @game.respond_to?(:par_chart)
+        children << h(ParChart) if @game.respond_to?(:par_chart) && @game.par_chart
         children << h(LoanChart) if @game.respond_to?(:loan_chart)
 
         h(:div, children)
