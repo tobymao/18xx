@@ -276,9 +276,10 @@ module Engine
           :bank
         end
 
-        # Needed to shortcut 1837 special behavior in upgrades_to?
-        def use_yellow_town_tile_upgrades_to?(_from)
-          false
+        # 1824 differ from 1837 as it allows any legal single town upgrade to green (duble towns have no green tiles)
+        def yellow_town_tile_upgrades_to?(_from, to)
+          # honors pre-existing track?
+          from.paths_are_subset_of?(to.paths)
         end
 
         # Similar to 1837
@@ -368,6 +369,12 @@ module Engine
           depot.export!
           potentially_form_nationals
         end
+
+        # 1824 does not have a par chart, but 1837 do, so disable it.
+        def par_chart; end
+
+        # 1824 does not need this (as it does not use par_chart), but 1837 do, so make it noop.
+        def set_par(_corporation, _share_price, _slot); end
 
         def init_stock_market
           StockMarket.new(game_market, self.class::CERT_LIMIT_TYPES)
@@ -737,12 +744,6 @@ module Engine
           else
             super
           end
-        end
-
-        # 1824 uses standard sold out stock movement. Rule VIII.3, bullet 4: move up 1 if not at top
-        # Disable 1837 special for sold out stock movement, and instead uses base version
-        def use_diagonal_stock_movement?
-          false
         end
 
         def take_player_loan(player, loan)
