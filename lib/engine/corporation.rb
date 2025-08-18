@@ -241,6 +241,10 @@ module Engine
       "<#{self.class.name}: #{id}>"
     end
 
+    def to_s
+      inspect
+    end
+
     # Is it legal to hold percent shares in this corporation?
     def holding_ok?(share_holder, extra_percent = 0)
       return true if share_holder == self

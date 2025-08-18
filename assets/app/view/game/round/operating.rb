@@ -137,7 +137,10 @@ module View
 
           left << h(MapLegend, game: @game) if @game.show_map_legend? && @game.show_map_legend_on_left?
           right << h(Map, game: @game) unless hide_map
-          right << h(:div, div_props, [h(BuyCompanies, limit_width: true)]) if @current_actions.include?('buy_company')
+          if @current_actions.include?('buy_company')
+            on_left = @step.respond_to?(:show_companies_on_left?) && @step.show_companies_on_left?
+            (on_left ? left : right) << h(:div, div_props, [h(BuyCompanies, limit_width: true)])
+          end
           right << h(:div, div_props, [h(AcquireCompanies)]) if aquire_company_action
           right << h(:div, div_props, [h(CorporateSellCompanies)]) if @current_actions.include?('corporate_sell_company')
           right << h(:div, div_props, [h(CorporateBuyCompanies)]) if @current_actions.include?('corporate_buy_company')

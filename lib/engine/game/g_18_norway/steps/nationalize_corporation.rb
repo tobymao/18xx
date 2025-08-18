@@ -12,6 +12,7 @@ module Engine
           def actions(entity)
             return [] if !entity.corporation? || entity != current_entity
             return [] if @game.nationalized?(entity.corporation)
+            return [] if @round.nationalization_complete
 
             ['choose']
           end
@@ -41,11 +42,8 @@ module Engine
               pass!
               return
             end
-
-            value = @game.convert(action.entity, action.choice.to_i)
-            @log << "#{action.entity.name} nationalized and receives #{@game.format_currency(value)}"
-            @game.update_cert_limit
-            @game.next_round!
+            @game.round.nationalization_complete = true
+            @game.nationalize_corporation(action.entity, action.choice.to_i)
           end
         end
       end

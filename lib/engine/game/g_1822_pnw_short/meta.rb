@@ -16,6 +16,7 @@ module Engine
         GAME_IS_VARIANT_OF = G1822PNW::Meta
 
         GAME_TITLE = '1822PNW Short Scenario'
+        GAME_ISSUE_LABEL = '1822PNW'
 
         PLAYER_RANGE = [3, 5].freeze
 

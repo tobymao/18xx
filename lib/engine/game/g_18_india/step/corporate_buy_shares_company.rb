@@ -14,22 +14,6 @@ module Engine
 
           PURCHASE_ACTIONS = [Action::CorporateBuyShares, Action::CorporateBuyCompany].freeze
 
-          # for debugging only
-          def setup
-            entity = current_entity
-            LOGGER.debug { "G18India::Step::CorporateBuySharesCompany => Setup for #{entity.name}" }
-            LOGGER.debug { "> num_certs: #{@game.num_certs(entity)} / cert_limit: #{@game.cert_limit(entity)}" }
-            LOGGER.debug { "> corporations_bought: #{@round.corporations_bought[entity]}" }
-          end
-
-          # for debugging only
-          def debugging_log(str)
-            entity = current_entity
-            LOGGER.debug(str)
-            LOGGER.debug { "> Num Certs: #{@game.num_certs(entity)} / Cert Limit: #{@game.cert_limit(entity)}" }
-            LOGGER.debug { "> Bought?: #{bought?(entity)} - Last Bought: #{last_bought(entity).name} " }
-          end
-
           def description
             'Corporate Purchase Certificates from IPO or Market'
           end
@@ -131,7 +115,6 @@ module Engine
           end
 
           def process_corporate_buy_company(action)
-            LOGGER.debug { "process_corporate_buy_company #{action.inspect}" }
             entity = action.entity
             company = action.company
             price = action.price
@@ -170,7 +153,6 @@ module Engine
               entity.spend(price, @game.bank)
               @round.corporations_bought[entity] << company
             end
-            debugging_log('Process > Corporate Buy Company')
           end
 
           # ----- methods for buying shares -----
@@ -191,11 +173,6 @@ module Engine
             return if bundle.presidents_share
 
             entity.cash >= bundle.price
-          end
-
-          def process_corporate_buy_shares(action)
-            super
-            debugging_log('Process > Corporate Buy Shares')
           end
 
           # modified to change restrictions and allow self

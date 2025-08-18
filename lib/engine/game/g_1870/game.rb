@@ -530,11 +530,14 @@ module Engine
           border.type == :water
         end
 
-        def check_other(route)
+        def check_route_combination(routes)
+          return if routes.empty?
+
+          route = routes.first
           return unless (destination = @round.connection_runs[route.corporation])
 
           home = home_hex(route.corporation)
-          return if route.routes.any? do |r|
+          return if routes.any? do |r|
             next if r.visited_stops.size < 2
 
             (r.visited_stops.values_at(0, -1).map(&:hex) - [home, destination]).none?

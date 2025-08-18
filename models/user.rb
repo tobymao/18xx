@@ -20,6 +20,7 @@ class User < Base
     consent notifications webhook webhook_url webhook_user_id red_logo bg font bg2 font2 your_turn hotseat_game
     white yellow green brown gray red blue purple
     path_timeout route_timeout show_stats
+    is_async invite_only auto_routing
   ]).freeze
 
   def update_settings(params)
@@ -28,6 +29,14 @@ class User < Base
     params.each do |key, value|
       settings[key] = value if SETTINGS.include?(key)
     end
+    settings['is_async'] =
+      if params['live'] == true
+        false
+      elsif params['async'].nil?
+        true
+      else
+        params['async']
+      end
 
     settings.delete('webhook_url') if settings['webhook'] != 'custom'
   end

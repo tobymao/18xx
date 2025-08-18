@@ -117,8 +117,6 @@ module Engine
             unselected = player.hand - selected
             unselected.each { |company| company.owner = nil }
             @confirmed_selections += 1
-            LOGGER.debug "Process Muti-Select => confirmed_selections: #{@confirmed_selections} finished?: #{finished?}  "\
-                         "selected: #{selected.inspect} unselected: #{unselected.inspect}"
             @round.next_entity_index!
             action_finalized
           end

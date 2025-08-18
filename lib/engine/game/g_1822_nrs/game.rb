@@ -17,7 +17,7 @@ module Engine
 
         BIDDING_BOX_START_MINOR = nil
 
-        CERT_LIMIT = { 3 => 16, 4 => 13, 5 => 10, 6 => 9, 7 => 8 }.freeze
+        CERT_LIMIT = { 2 => 27, 3 => 16, 4 => 13, 5 => 10, 6 => 9, 7 => 8 }.freeze
 
         EXCHANGE_TOKENS = {
           'LNWR' => 4,
@@ -28,7 +28,16 @@ module Engine
           'NER' => 3,
         }.freeze
 
-        STARTING_CASH = { 3 => 500, 4 => 375, 5 => 300, 6 => 250, 7 => 215 }.freeze
+        STARTING_CASH = { 2 => 750, 3 => 500, 4 => 375, 5 => 300, 6 => 250, 7 => 215 }.freeze
+
+        BIDDING_TOKENS = {
+          '2': 7,
+          '3': 6,
+          '4': 5,
+          '5': 4,
+          '6': 3,
+          '7': 3,
+        }.freeze
 
         MARKET = [
           ['', '', '', '', '', '', '', '', '', '', '', '', '',
@@ -218,6 +227,12 @@ module Engine
               **corporation.merge(opts),
             )
           end.compact
+        end
+
+        def starting_companies
+          return self.class::STARTING_COMPANIES_TWOPLAYER if @players.size == 2
+
+          self.class::STARTING_COMPANIES
         end
       end
     end

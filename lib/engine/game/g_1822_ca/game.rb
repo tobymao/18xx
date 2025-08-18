@@ -15,6 +15,17 @@ module Engine
         include G1822CA::Map
         include G1822CA::Trains
 
+        CERT_LIMIT = { 2 => 40, 3 => 26, 4 => 20, 5 => 16, 6 => 13, 7 => 11 }.freeze
+        STARTING_CASH = { 2 => 1000, 3 => 700, 4 => 525, 5 => 420, 6 => 350, 7 => 300 }.freeze
+        BIDDING_TOKENS = {
+          '2': 7,
+          '3': 6,
+          '4': 5,
+          '5': 4,
+          '6': 3,
+          '7': 3,
+        }.freeze
+
         DOUBLE_HEX = %w[G13 I15 AB22 AG13 AH10].freeze
 
         BIDDING_BOX_START_MINOR = 'M6'

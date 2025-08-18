@@ -41,6 +41,16 @@ module Engine
             [Engine::Action::Dividend.new(current_entity, kind: 'withhold')]
           end
 
+          def payoff_loans(entity)
+            loans_to_pay_off = [(entity.cash / 100).floor, entity.loans.size].min
+            @game.payoff_loan(entity, loans_to_pay_off, entity) if loans_to_pay_off.positive?
+          end
+
+          def payout_corporation(amount, entity)
+            super
+            payoff_loans(entity) if @game.nationalized? && entity.loans.size.positive?
+          end
+
           def corporation_dividends(entity, per_share)
             return 0 if entity.minor?
             return 0 if entity == @game.rptla

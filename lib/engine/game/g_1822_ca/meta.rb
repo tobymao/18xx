@@ -19,7 +19,7 @@ module Engine
         GAME_PUBLISHER = :all_aboard_games
         GAME_RULES_URL = {
           'Rules' => 'https://boardgamegeek.com/filepage/238950/1822ca-rules',
-          '2-player Scenarios' => 'https://boardgamegeek.com/thread/2591186/1822ca-2-player-scenarios',
+          '2-player rules (BGG thread)' => 'https://boardgamegeek.com/thread/2591186/1822ca-2-player-scenarios',
         }.freeze
         GAME_TITLE = '1822CA'
         GAME_ISSUE_LABEL = '1822CA'

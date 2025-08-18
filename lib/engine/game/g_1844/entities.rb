@@ -17,6 +17,8 @@ module Engine
             value: 20,
             revenue: 5,
             desc: 'No special ability.',
+            min_price: 1,
+            max_price: 40,
           },
           {
             name: 'P2 - Bödelibahn',
@@ -26,6 +28,8 @@ module Engine
             desc: 'Once in the game, a corporation may place an additional yellow track tile' \
                   ' according to the rules. Either that corporation or its director must be' \
                   ' the owner of the company.',
+            min_price: 1,
+            max_price: 100,
             abilities: [
               {
                 type: 'tile_lay',
@@ -45,6 +49,8 @@ module Engine
             value: 80,
             revenue: 15,
             desc: 'Comes with a Tunnel company',
+            min_price: 1,
+            max_price: 160,
             abilities: [{ type: 'acquire_company', company: 'T1' }],
           },
           {
@@ -56,6 +62,8 @@ module Engine
                   ' additional tile lay and free of cost. Doing this closes the company; its owner receives 80 SFR' \
                   ' as a compensation. This happens at the latest by the sale of the first 5/5H train.' \
                   " Its owner can't waive that build.",
+            min_price: 1,
+            max_price: 220,
             abilities: [
               {
                 type: 'choose_ability',
@@ -70,6 +78,8 @@ module Engine
             sym: 'P5',
             value: 140,
             revenue: 25,
+            min_price: 1,
+            max_price: 280,
             desc: "Comes with a 10% share of the MOB. This share can't be sold until MOB has been parred.",
             abilities: [{ type: 'shares', shares: 'MOB_1' }],
           },

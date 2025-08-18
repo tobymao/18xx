@@ -45,7 +45,7 @@ module Engine
             company.type == :railway
           end
           @corporations, @future_corporations = @corporations.partition do |corporation|
-            corporation.type == :minor && corporation.reservation_color == :yellow
+            corporation.type == :minor && corporation.reservation_color == MINORS_COLOR_BATCH1
           end
         end
 
@@ -64,17 +64,24 @@ module Engine
           case @turn
           when 1
             # Ferry companies are now available.
-            ferries, @future_companies = @future_companies.partition { |c| c.type == :ferry }
-            @companies += ferries
+            new_companies_available! { |company| company.type == :ferry }
           when 2
             # Second batch of private companies are available.
-            batch2, @future_corporations = @future_corporations.partition do |corporation|
-              corporation.type == :minor && corporation.reservation_color == :palegreen
+            new_minors_available! do |corporation|
+              corporation.type == :minor && corporation.reservation_color == MINORS_COLOR_BATCH2
             end
-            @corporations += batch2
           end
 
           super
+        end
+
+        def stock_round
+          G1867::Round::Stock.new(self, [
+            G1867::Step::MajorTrainless,
+            Engine::Step::DiscardTrain,
+            Engine::Step::HomeToken,
+            G1807::Step::BuySellParShares,
+          ])
         end
 
         def operating_round(round_num)
@@ -98,22 +105,17 @@ module Engine
         end
 
         def event_minors_batch3!
-          batch3, @future_corporations = @future_corporations.partition do |corporation|
-            corporation.type == :minor && corporation.reservation_color == :green
+          new_minors_available! do |corporation|
+            corporation.type == :minor && corporation.reservation_color == MINORS_COLOR_BATCH3
           end
-          @corporations += batch3
         end
 
         def event_u1_available!
-          u1 = @future_companies.find { |company| company.sym == 'U1' }
-          @future_companies.delete(u1)
-          @companies << u1
+          new_companies_available! { |company| company.sym == 'U1' }
         end
 
         def event_u2_available!
-          u2 = @future_companies.find { |company| company.sym == 'U2' }
-          @future_companies.delete(u2)
-          @companies << u2
+          new_companies_available! { |company| company.sym == 'U2' }
         end
 
         def event_privates_close!
@@ -147,6 +149,24 @@ module Engine
               bonus_london_offboard(train, stops)
             end
           super + bonuses
+        end
+
+        private
+
+        def new_companies_available!(&block)
+          available, @future_companies = @future_companies.partition(&block)
+          @log << 'New private companies available for auction: ' \
+                  "#{available.map(&:id).join(', ')}."
+          @companies += available
+          update_cache(:companies)
+        end
+
+        def new_minors_available!(&block)
+          available, @future_corporations = @future_corporations.partition(&block)
+          @log << 'New minor companies available for auction: ' \
+                  "#{available.map(&:id).join(', ')}."
+          @corporations += available
+          update_cache(:corporations)
         end
       end
     end

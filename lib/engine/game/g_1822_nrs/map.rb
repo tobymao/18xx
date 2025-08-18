@@ -185,10 +185,12 @@ module Engine
               '',
             ['G10'] =>
               'border=edge:0,type:water,cost:40',
-            %w[L21 M28] =>
+            ['L21'] =>
               'upgrade=cost:20,terrain:swamp',
             %w[M22] =>
               'upgrade=cost:40,terrain:swamp',
+            ['M28'] =>
+              'upgrade=cost:20,terrain:swamp;stub=edge:5',
             %w[G14 I12 I24] =>
               'upgrade=cost:40,terrain:hill',
             %w[E10 F9 G8 H7 H9 H15 I8 I10 J7 J23 J25] =>
@@ -266,7 +268,7 @@ module Engine
               'city=revenue:yellow_40|green_60|brown_80|gray_100,slots:1,loc:4,groups:London;path=a:3,b:_1',
           },
           blue: {
-            %w[L11 R31] =>
+            ['L11'] =>
               'junction;path=a:2,b:_0,terminal:1',
             ['F17'] =>
               'junction;path=a:4,b:_0,terminal:1',

@@ -36,11 +36,11 @@ module Engine
 
         BANK_CASH = 12_000
 
-        CERT_LIMIT = { 2 => 40, 3 => 26, 4 => 20, 5 => 16, 6 => 13, 7 => 11 }.freeze
+        CERT_LIMIT = { 2 => 33, 3 => 26, 4 => 20, 5 => 16, 6 => 13, 7 => 11 }.freeze
 
         EBUY_FROM_OTHERS = :never
 
-        STARTING_CASH = { 2 => 1000, 3 => 700, 4 => 525, 5 => 420, 6 => 350, 7 => 300 }.freeze
+        STARTING_CASH = { 2 => 900, 3 => 700, 4 => 525, 5 => 420, 6 => 350, 7 => 300 }.freeze
 
         CAPITALIZATION = :incremental
 
@@ -348,7 +348,7 @@ module Engine
         TWO_HOME_CORPORATION = 'LNWR'
 
         BIDDING_TOKENS = {
-          '2': 7,
+          '2': 8,
           '3': 6,
           '4': 5,
           '5': 4,
@@ -644,7 +644,6 @@ module Engine
           end
 
           local_cities.group_by(&:itself).each do |k, v|
-            puts "Local train can only use each token on #{k.hex.id} once"
             raise GameError, "Local train can only use each token on #{k.hex.id} once" if v.size > 1
           end
         end
@@ -2015,6 +2014,9 @@ module Engine
               end
 
             corp_tokens_with_count.each do |corp, (tokens_to_remove, token_count)|
+              # Sort the tokens to make sure that a corporation's home token
+              # does not get removed.
+              tokens_to_remove.sort_by! { |t| corp.tokens.index(t) }
               (token_count - 1).times do
                 @log << "Extra token for #{corp.name} is returned to their available tokens"
                 token = tokens_to_remove.pop

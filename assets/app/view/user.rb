@@ -5,6 +5,7 @@
 require 'game_manager'
 require 'user_manager'
 require 'lib/settings'
+require 'lib/whats_this'
 require 'view/game_row'
 require 'view/logo'
 require 'view/form'
@@ -12,6 +13,7 @@ require 'view/form'
 module View
   class User < Form
     include Lib::Settings
+    include Lib::WhatsThis::AutoRoute
     include GameManager
     include UserManager
 
@@ -87,6 +89,7 @@ module View
         render_email,
         h('div#settings__options', [
           render_notifications,
+          render_default_game_options,
           h(:h3, 'Statistics'),
           render_checkbox('Show Individual Statistics on Profile Page', :show_stats),
           h(:h3, 'Display'),
@@ -424,6 +427,49 @@ module View
         edit_user(params)
         `setTimeout(function() { location.reload() }, 1000)`
       end
+    end
+
+    def render_default_game_options
+      is_async = setting_for(:is_async)
+
+      children = [
+        h(:h3, 'Default Game Options'),
+        h(:p, 'Your settings here will be used as the default selection whenever you create a new multiplayer game.'),
+        h(:div, { style: { padding: '0.5rem' } }, [
+            render_input(
+              'Async',
+              id: 'async',
+              type: 'radio',
+              attrs: { name: 'is_async', checked: is_async == true || is_async.nil? },
+              container_style: { display: 'inline-block' },
+            ),
+            render_input(
+              'Live',
+              id: 'live',
+              type: 'radio',
+              attrs: { name: 'is_async', checked: is_async == false },
+              container_style: { display: 'inline-block' },
+            ),
+          ]),
+
+        render_input(
+          'Invite only game',
+          id: 'invite_only',
+          type: :checkbox,
+          container_style: { paddingLeft: '0.5rem' },
+          attrs: { checked: setting_for(:invite_only) == true },
+        ),
+        render_input(
+          'Auto Routing',
+          id: 'auto_routing',
+          type: :checkbox,
+          container_style: { paddingLeft: '0.5rem' },
+          siblings: [auto_route_whats_this],
+          attrs: { checked: setting_for(:auto_routing) == true },
+        ),
+
+      ]
+      h(:div, children)
     end
   end
 end

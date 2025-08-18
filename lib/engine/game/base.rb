@@ -1482,7 +1482,11 @@ module Engine
         end
       end
 
+      # Intended for game specific rules that only depend on one route
       def check_other(_route); end
+
+      # Intended for game specific rules that depend on multiple routes
+      def check_route_combination(_routes); end
 
       def compute_stops(route, train = nil)
         train ||= route.train

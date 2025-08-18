@@ -41,11 +41,24 @@ module Engine
           end
 
           def buyable_trains(entity)
-            super.reject do |train|
-              next false unless @game.ship?(train)
+            trains = super
 
-              must_buy_train?(entity) || entity.trains.any? { |ship| ship.name == train.name }
+            # Remove any ships that we already have
+            trains.reject do |train|
+              next unless @game.ship?(train)                            # We want to keep all trains
+              next true if must_buy_train?(entity)                      # Remove all ships if we must buy a train
+
+              entity.trains.any? { |ship| ship.name == train.name }
             end
+          end
+
+          def process_sell_shares(action)
+            raise GameError, "Cannot sell shares of #{action.bundle.corporation.name}" unless can_sell?(action.entity,
+                                                                                                        action.bundle)
+
+            @game.sell_shares_and_change_price(action.bundle, movement: :left_share)
+
+            @round.recalculate_order if @round.respond_to?(:recalculate_order)
           end
 
           def free_ship(corporation)
@@ -59,6 +72,7 @@ module Engine
             @log << "#{corporation.name} receives a free S3 train"
             @game.buy_train(corporation, train, :free)
             @depot.remove_train(train)
+            add_ship_revenue(@game.p4)
             train.buyable = true
             train.reserved = true
             ability.use!
@@ -73,6 +87,10 @@ module Engine
 
           def spend_minmax(entity, _train)
             [1, entity.cash]
+          end
+
+          def needed_cash(_entity)
+            cheapest_train_price(current_entity)
           end
 
           def process_buy_train(action)

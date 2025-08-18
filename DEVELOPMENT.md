@@ -29,7 +29,7 @@ If that pop-up doesn't appear, open the `Ports` tab in the Codespace, hover the 
 If configuring the droplet from scratch, these are the requirements:
 
 - `docker`
-- `docker-compose`
+- `docker compose`
 - `make`
 - this repo (via `git clone`)
 
@@ -42,7 +42,7 @@ make
 ```
 
 To ensure a rebuild of one or more of the containers, this make task will add
-`--build` to the `docker-compose up` command that is run by the default task:
+`--build` to the `docker compose up` command that is run by the default task:
 
 ```
 make dev_up_b
@@ -58,7 +58,7 @@ As with dev, `make prod_up_b` will add `--build` to the compose command ran by
 `make prod_up`.
 
 To update the code on the server with the latest master and rerun
-`docker-compose up --build`:
+`docker compose up --build`:
 
 ```
 make prod_deploy
@@ -88,11 +88,11 @@ To restore the local database from a `db.backup.gz`:
 2. copy backup to db container
 
 ```
-CONTAINER_ID=$(docker ps | grep 18xx_db | awk '{print $1}')
+CONTAINER_ID=$(docker ps --filter name="db.?1" --format '{{.ID}}')
 docker cp db.backup.gz $CONTAINER_ID:/home/db
 ```
 
-3. go to the container with `docker-compose exec db bash`, then run these
+3. go to the container with `docker compose exec db bash`, then run these
    commands:
 
 ```
@@ -105,7 +105,7 @@ pg_restore -U root -d 18xx_development db.backup
 
 https://docs.docker.com/get-started/
 
-If `docker-compose up` requires login, you probably need to create an access
+If `docker compose up` requires login, you probably need to create an access
 token and login with the Docker CLI:
 
 - https://docs.docker.com/docker-hub/access-tokens/
@@ -146,17 +146,17 @@ Failures:
 
 #### Running test fixtures
 
-Run `docker-compose exec rack rake` while a docker instance is running to run rubocop and test games. This ensures your changes don't break existing games, and that the code matches the project's style guide.
+Run `docker compose exec rack rake` while a docker instance is running to run rubocop and test games. This ensures your changes don't break existing games, and that the code matches the project's style guide.
 
 Run a specific set of test fixtures using the `-e` flag to `rspec`. This is useful when testing a specific bug or reproducing an issue.
 
-`docker-compose exec rack rspec spec/lib/engine/games/game_spec.rb -e '<folder_name> <fixture_name>' [...]`
+`docker compose exec rack rspec spec/lib/engine/games/game_spec.rb -e '<folder_name> <fixture_name>' [...]`
 
-e.g. `docker-compose exec rack rspec spec/lib/engine/games/game_spec.rb -e '1860 19354'`
+e.g. `docker compose exec rack rspec spec/lib/engine/games/game_spec.rb -e '1860 19354'`
 
 #### Profiling the code
 
-Run `docker-compose exec rack rake stackprof[spec/fixtures/18_chesapeake/1277.json]` (or other file) to load and process the json file 1000 times. This will generate a stackprof.dump which can be further analyzed
+Run `docker compose exec rack rake stackprof[spec/fixtures/18_chesapeake/1277.json]` (or other file) to load and process the json file 1000 times. This will generate a stackprof.dump which can be further analyzed
 
 ```
 stackprof --d3-flamegraph stackprof.dump >stackprof.html
@@ -168,7 +168,7 @@ stackprof stackprof.dump
 Once a game has been made available on the website, bugs may be found where the solutions requires breaking active gamestates due to missing or added required actions. If the action is known to always need removal, or the additional action needed able to be determined computationally, we can automate this fix. This assumes you have a fixture/json file locally you want to fix.
 
 1. Update `repair` within `scripts/migrate_game.rb` with the logic required to add/delete a step
-2. Run `docker-compose exec rack irb`
+2. Run `docker compose exec rack irb`
 3. Execute `load "scripts/migrate_game.rb"`
 4. Execute `migrate_json('your_json_file.json')`
 
@@ -178,24 +178,24 @@ This will apply the migrations to the game file you specified, allowing you to v
 
 You may want example games in your development environment to test. One way to do this is to import games directly from the production website.
 
-1. Run `docker-compose exec rack irb`
+1. Run `docker compose exec rack irb`
 2. Execute `load "scripts/import_game.rb"`
 3. Execute `import_game(<product_game_id>)`
 
-A copy of that game is now available locally. All accounts in the imported games will have their passwords scrubbed and will be assigned "password" as their new default one. You can use this to login as any active user in the game. 
+A copy of that game is now available locally. All accounts in the imported games will have their passwords scrubbed and will be assigned "password" as their new default one. You can use this to login as any active user in the game.
 
 #### Pinning a game in your local test enviornment
 
 You may want to pin a specific game in your local development environment. Pinning a game allows for breaking changes to be introduced while 'freezing' the existing game to a previous code commit version. Pinning is designed to work in production environments only, the following workaround can be applied to pin games in your local development environment.
 
-1. Run `docker-compose exec rack irb`
+1. Run `docker compose exec rack irb`
 2. Import all the dependcies that will allow you to run `Game` class. Alternativly you can run `load "scripts/import_game.rb"`
 3. Run `game = Game[id: <id of game you want to pin>]`
 4. Run `game.settings['pin'] ='<sha of commit>'` . The sha should be of length 9 of the commit you want to pin to.
 5. Run `game.save` to save the changes.
 
 For the pin to work you need to generate the pin.js file. Doing so will break your development environment. Perform the following steps to generate the pin file and fix your development environment
-1. Run `docker-compose exec rack rake precompile`
+1. Run `docker compose exec rack rake precompile`
 2. Delete the contents of build folder
 3. Restart your  development environment server
 

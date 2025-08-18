@@ -19,7 +19,11 @@ DB.register_advisory_lock(:action_lock)
 if ENV['RACK_ENV'] == 'development' || ENV['RACK_ENV'] == 'test'
   require 'logger'
   logger = Logger.new($stdout)
-  logger.level = Logger::FATAL if ENV['RACK_ENV'] == 'test' || ENV['DB_LOG_LEVEL'] == 'fatal'
+  if ENV['RACK_ENV'] == 'test'
+    logger.level = Logger::FATAL
+  elsif ENV['DB_LOG_LEVEL']
+    logger.level = Logger.const_get(ENV['DB_LOG_LEVEL'].upcase)
+  end
   DB.loggers << logger
 end
 

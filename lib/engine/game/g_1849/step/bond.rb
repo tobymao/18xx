@@ -20,9 +20,15 @@ module Engine
 
           def round_state
             {
-              issued_bond: false,
-              redeemed_bond: false,
+              issued_bond: {},
+              redeemed_bond: {},
             }
+          end
+
+          def setup
+            super
+            @round.issued_bond = {}
+            @round.redeemed_bond = {}
           end
 
           def description
@@ -51,7 +57,7 @@ module Engine
             @log << "#{entity.name} issues its bond and receives #{@game.format_currency(@game.loan_value)}"
             @game.bank.spend(@game.loan_value, entity)
             entity.loans << loan
-            @round.issued_bond = true
+            @round.issued_bond[entity.name] = true
 
             initial_sp = entity.share_price.price
             @game.stock_market.move_left(entity)
@@ -63,12 +69,12 @@ module Engine
             @game.bonds? &&
              @game.issue_bonds_enabled &&
              entity.corporation? &&
-             !@round.redeemed_bond &&
+             !@round.redeemed_bond[entity.name] &&
              entity.loans.size < @game.maximum_loans(entity)
           end
 
           def can_payoff_loan?(entity)
-            !@round.issued_bond &&
+            !@round.issued_bond[entity.name] &&
               !entity.loans.empty? &&
               entity.cash >= entity.loans.first.amount
           end
@@ -90,7 +96,7 @@ module Engine
 
             entity.loans.delete(loan)
 
-            @round.redeemed_bond = true
+            @round.redeemed_bond[entity.name] = true
 
             initial_sp = entity.share_price.price
             @game.stock_market.move_right(entity)

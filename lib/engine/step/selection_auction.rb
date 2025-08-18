@@ -57,7 +57,13 @@ module Engine
       def next_entity!
         @round.next_entity_index!
         entity = entities[entity_index]
-        entity.pass! if @auctioning && max_bid(entity, @auctioning) < min_bid(@auctioning)
+        if @auctioning
+          entity.pass! if max_bid(entity, @auctioning) < min_bid(@auctioning)
+        elsif @companies.none? { |c| max_bid(entity, c) >= min_bid(c) }
+          @log << "#{entity.name} has no valid actions and passes"
+          entity.pass!
+          entity = nil if entities.all?(&:passed?)
+        end
         next_entity! if entity&.passed?
       end
 
