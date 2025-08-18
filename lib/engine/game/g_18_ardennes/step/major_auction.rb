@@ -304,6 +304,7 @@ module Engine
           # company concession.
           def qualifying_minor?(minor, concession)
             return false if minor.closed?
+            return false if minor.share_price.price.zero?
             return true unless restricted?
 
             coords = Entities::PUBLIC_COMPANY_HEXES[concession.id]
