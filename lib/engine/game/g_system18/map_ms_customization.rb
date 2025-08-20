@@ -231,7 +231,6 @@ module Engine
 
         def map_ms_constants
           redef_const(:GAME_END_CHECK, { bankrupt: :immediate, final_phase: :one_more_full_or_set, bank: :full_or })
-          redef_const(:EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST, false)
         end
 
         def map_ms_init_bank
