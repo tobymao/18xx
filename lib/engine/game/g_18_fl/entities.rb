@@ -33,7 +33,7 @@ module Engine
           {
             name: 'Peninsular and Occidental Steamship Company',
             value: 0,
-            discount: -30,
+            discount: -40,
             revenue: 10,
             desc: 'Closing this private grants the operating Corporation a port token to place on a port city. '\
                   'The port token increases the value of that city by $20 for that corporation only',
