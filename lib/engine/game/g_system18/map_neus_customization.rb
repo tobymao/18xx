@@ -98,7 +98,25 @@ module Engine
         end
 
         def map_neus_game_companies
-          []
+          [
+            {
+              name: 'Locomotive Works',
+              value: 150,
+              revenue: 30,
+              desc: 'Does not close while owned by a player. If owned by a player '\
+                    'when the first 5-train is purchased it may no longer be sold '\
+                    'to a public company and the revenue is increased to 50.',
+              sym: 'LW',
+              abilities: [{ type: 'close', on_phase: 'never', owner_type: 'player' },
+                          {
+                            type: 'revenue_change',
+                            revenue: 50,
+                            on_phase: '5',
+                            owner_type: 'player',
+                          }],
+              color: nil,
+            },
+          ]
         end
 
         # DGN GFN PHX KKN SPX
@@ -113,11 +131,11 @@ module Engine
         end
 
         def map_neus_game_cash
-          { 2 => 850, 3 => 575 }
+          { 2 => 850, 3 => 575, 4 => 430 }
         end
 
         def map_neus_game_cert_limit
-          { 2 => 20, 3 => 13 }
+          { 2 => 20, 3 => 13, 4 => 8 }
         end
 
         def map_neus_game_capitalization
@@ -137,16 +155,31 @@ module Engine
           find_train(trains, '3')[:num] = 3
           find_train(trains, '4')[:num] = 2
           find_train(trains, '5')[:num] = 2
+          find_train(trains, '5')[:events] = [{ 'type' => 'close_companies' }]
           find_train(trains, '6')[:num] = 1
           find_train(trains, 'D')[:num] = 10
           trains
         end
 
         def map_neus_game_phases
-          self.class::S18_FULLCAP_PHASES
+          phases = self.class::S18_FULLCAP_PHASES
+          phases[1][:status] = %w[can_buy_companies]
+          phases[2][:status] = %w[can_buy_companies]
+          phases
         end
 
-        def map_neus_constants; end
+        def map_neus_constants
+          redef_const(:STATUS_TEXT, {
+                        'can_buy_companies' =>
+                        ['Can Buy Companies', 'All corporations can buy companies from players'],
+                      })
+        end
+
+        def map_neus_init_round
+          Engine::Round::Auction.new(self, [
+            GSystem18::Step::UpwardsAuction,
+          ])
+        end
       end
     end
   end
