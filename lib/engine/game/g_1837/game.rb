@@ -799,6 +799,9 @@ module Engine
         end
 
         def sold_out_stock_movement(corporation)
+          # Needed for 1824, which use base behavior for sold out (and do not use diagonal stock movements)
+          return super unless @stock_market.hex_market
+
           if corporation.owner.percent_of(corporation) <= 40
             @stock_market.move_up(corporation)
           else
