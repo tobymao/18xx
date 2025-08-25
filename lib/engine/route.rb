@@ -466,14 +466,12 @@ module Engine
 
       # If we're reconstructing a route with multiple ways to satisfy
       # the connection data (e.g., 457--464, IR7--8), prefer ones that
-      # pass through the nodes associated with it.
-      if @node_signatures
-        candidates.each do |a, b, left, right, middle|
-          return [a, b, left, right, middle] if [left, right, middle].all? { |n| @node_signatures.include?(n.signature) }
-        end
-      end
+      # pass through the most nodes associated with it.
+      return candidates[0] unless @node_signatures
 
-      candidates[0]
+      candidates.max_by do |_a, _b, left, right, middle|
+        [left, right, middle].count { |n| @node_signatures.include?(n.signature) }
+      end
     end
 
     def find_matching_chains(hex_ids)
