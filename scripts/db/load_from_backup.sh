@@ -29,4 +29,4 @@ DB_CONTAINER_NAME=$(docker ps --filter name="db.?1" --format '{{.Names}}')
 docker exec -i ${DB_CONTAINER_NAME} pg_restore --clean --username ${DB_USER} --dbname ${DB_NAME} --format tar < ${TMP_DB_FILE}
 
 # remove uncompressed backup
-rm --verbose ${TMP_DB_FILE}
+rm -v ${TMP_DB_FILE}
