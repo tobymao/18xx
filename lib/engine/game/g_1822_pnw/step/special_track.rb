@@ -71,7 +71,7 @@ module Engine
             entities = Array(entity_or_entities)
             entity, *_combo_entities = entities
 
-            return hex.tile.paths.any? { |p| p.exits == tile.exits } if @game.port_company?(entity)
+            return legal_tile_rotation_port_company?(entity, hex, tile) if @game.port_company?(entity)
             return true if tile == @game.cube_tile
             return true if @game.legal_city_and_town_tile(hex, tile)
             return legal_tile_rotation_portage_company?(entity, hex, tile) if @game.portage_company?(entity)
@@ -79,6 +79,13 @@ module Engine
             return legal_tile_rotation_coal_company?(entity, hex, tile) if @game.coal_company?(entity)
 
             super
+          end
+
+          def legal_tile_rotation_port_company?(_entity, hex, tile)
+            # The water hexes can have both short and long track spikes. The short ones are to allow
+            # tiles adjacent to the water to be upgraded. The long track spikes show the legal orientations
+            # of the port tiles.
+            hex.tile.paths.any? { |p| (p.terminal == '1') && (p.exits == tile.exits) }
           end
 
           def available_hex_portage_company(entity, hex)
