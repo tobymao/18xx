@@ -59,23 +59,30 @@ module Engine
           def process_place_token(action)
             super
             tile = action.city.tile
-            # apply "other" OO token once first to operate is applied if floated
-            if action.entity.name == 'NWR' && tile.name == '235'
-              place_second_oo_token(tile, 'SPD')
-              @round.pending_tokens.shift
-            elsif action.entity.name == 'SPD' && tile.name == '235'
-              # remove and swap the NWR that appeared... hacky...
-              city = action.city
-              old_token = city.tokens.first
-              old_token.remove!
-              city.exchange_token(action.entity.find_token_by_type)
+            other_corp =
+              case [action.entity.name, tile.name]
+              when %w[NWR 235]
+                'SPD'
+              when %w[SPD 235]
+                city = action.city
+                old_token = city.tokens.first
+                old_token.remove!
+                city.exchange_token(action.entity.find_token_by_type)
+                'NWR'
+              when %w[EBR 235]
+                city = action.city
+                old_token = city.tokens.first
+                old_token.remove!
+                city.exchange_token(action.entity.find_token_by_type)
+                'EIR'
+              when %w[EIR 235]
+                'EBR'
+              end
 
-              # apply "other" OO token once first to operate is applied if floated
-              place_second_oo_token(tile, 'NWR')
-              @round.pending_tokens.shift
-            end
-            # otherwise make sure reservations are preserved
-            replace_oo_reservations(tile) unless tile.reservations.empty? # move hex reservation
+            return unless other_corp
+
+            place_second_oo_token(tile, other_corp)
+            @round.pending_tokens.shift
           end
 
           # Base code doesn't handle one token and one reservation on a OO tile
@@ -106,7 +113,7 @@ module Engine
           end
 
           def potential_tiles(_entity_or_entities, hex)
-            return if hex.name == 'G8'
+            return if (hex.name == 'G8') || (hex.name == 'P17')
 
             @game.tiles.select { |t| %w[13 12 206 205].include?(t.name) }.uniq(&:name)
           end
