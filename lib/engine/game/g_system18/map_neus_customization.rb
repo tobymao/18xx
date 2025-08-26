@@ -162,7 +162,10 @@ module Engine
         end
 
         def map_neus_game_phases
-          phases = self.class::S18_FULLCAP_PHASES
+          self.class::S18_FULLCAP_PHASES
+        end
+
+        def map_neus_post_game_phases(phases)
           phases[1][:status] = %w[can_buy_companies]
           phases[2][:status] = %w[can_buy_companies]
           phases
