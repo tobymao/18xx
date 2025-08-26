@@ -187,7 +187,7 @@ module Engine
             num: 5,
             discount: { '4' => 200, '5' => 200, '6' => 200 },
           },
-        ].freeze
+        ].deep_freeze
 
         S18_FULLCAP_PHASES = [
           { name: '2', train_limit: 3, tiles: [:yellow], operating_rounds: 1 },
@@ -226,7 +226,7 @@ module Engine
             tiles: %i[yellow green brown gray],
             operating_rounds: 2,
           },
-        ].freeze
+        ].deep_freeze
 
         S18_INCCAP_PHASES = [
           { name: '2', train_limit: 3, tiles: [:yellow], operating_rounds: 2 },
@@ -265,7 +265,7 @@ module Engine
             tiles: %i[yellow green brown gray],
             operating_rounds: 2,
           },
-        ].freeze
+        ].deep_freeze
 
         CURRENCY_FORMAT_STR = '$%s'
         MUST_SELL_IN_BLOCKS = false

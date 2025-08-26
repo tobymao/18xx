@@ -8,13 +8,6 @@ module Engine
     module GSystem18
       module Step
         class OrderAuction < GSystem18::Step::UpwardsAuction
-          def actions(entity)
-            acts = super.dup
-
-            acts.delete('pass') unless auctioning
-            acts
-          end
-
           def description
             'Bid on Initial Player Order'
           end
@@ -39,6 +32,15 @@ module Engine
 
             start_player = @auction_triggerer
             @round.goto_entity!(start_player)
+            next_entity!
+          end
+
+          def post_price_reduction(company)
+            super
+            return unless company.min_bid <= 0
+
+            @round.goto_entity!(company.owner)
+            company.owner.pass!
             next_entity!
           end
         end
