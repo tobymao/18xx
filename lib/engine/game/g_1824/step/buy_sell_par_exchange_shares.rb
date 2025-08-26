@@ -33,7 +33,7 @@ module Engine
           end
 
           def visible_corporations
-            @game.sorted_corporations.reject { |c| c.type == :minor }
+            @game.sorted_corporations.reject { |c| c.type == :minor || c.type == :construction_railway }
           end
 
           def can_buy?(_entity, bundle)
@@ -46,7 +46,9 @@ module Engine
 
           def can_sell?(_entity, bundle)
             # Rule VI.8, bullet 1, sub-bullet 2: Bank ownership cannot exceed 50% for started corporations
-            super && @game.buyable?(bundle.corporation) && (bundle.corporation.ipo_shares.sum(&:percent) + bundle.percent <= 50)
+            corp = bundle.corporation
+            super && @game.buyable?(corp) &&
+                    (@game.bond_railway?(corp) || (corp.ipo_shares.sum(&:percent) + bundle.percent <= 50))
           end
 
           # Rule VI.7, bullet 4: Exchange can take you over 60%
@@ -67,8 +69,15 @@ module Engine
             corporation = bundle.corporation
             return false if invalid_mountain_railway_exchange?(entity, corporation, exchange)
 
-            (exchange || corporation.holding_ok?(entity, bundle.common_percent)) &&
+            (exchange || corporation.holding_ok?(entity, bundle.common_percent) || allowed_buy_from_market(entity, bundle)) &&
               (@game.num_certs(entity) < @game.cert_limit(entity)) && @game.buyable?(corporation)
+          end
+
+          # Rule X.4, bullet 2: Maybe exceed 60% in 2 player 1824, if buying from market
+          def allowed_buy_from_market(_entity, bundle)
+            return false unless @game.two_player?
+
+            bundle.shares.first.owner == @game.share_pool
           end
 
           def process_buy_shares(action)
@@ -120,6 +129,11 @@ module Engine
             @game.payoff_player_loan(player, payoff_amount: action.amount)
             @round.last_to_act = player
             @round.current_actions << action
+          end
+
+          def allow_president_change?(corporation)
+            reserved = corporation.reserved_shares
+            reserved.none? { |s| s.percent == 20 }
           end
 
           private
