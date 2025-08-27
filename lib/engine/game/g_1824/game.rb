@@ -5,7 +5,6 @@ require_relative 'meta'
 require_relative '../base'
 require_relative '../g_1837/round/exchange'
 require_relative 'round/operating'
-require_relative 'company'
 require_relative 'depot'
 require_relative 'entities'
 require_relative 'map'
@@ -32,19 +31,14 @@ module Engine
 
         CURRENCY_FORMAT_STR = '%sG'
 
-        # Rule III.3 standard game, X.2 Cislethania 2p, XI.2 Cislethania 3p
+        # Rule III.3 standard game
         STARTING_CASH = { 3 => 820, 4 => 680, 5 => 560, 6 => 460 }.freeze
-        # Note! 700 for 3 players is a correction. The rule book has incorrect 680.
-        # Ref: https://boardgamegeek.com/thread/2342047/3-player-cisleithania-starting-treasury-error
-        CASH_CISLEITHANIA = { 2 => 830, 3 => 700 }.freeze
 
-        # Rule III.4 standard game, X.1 Cislethania 2p, XI.1 Cislethania 3p
+        # Rule III.4 standard game
         BANK_CASH = 12_000
-        BANK_CASH_CISLEITHANIA = { 2 => 4000, 3 => 9000 }.freeze
 
-        # Rule VI.7 standard game, X.2 Cislethania 2p, XI.2 Cislethania 3p
+        # Rule VI.7 standard game
         CERT_LIMIT = { 3 => 21, 4 => 16, 5 => 13, 6 => 11 }.freeze
-        CERT_LIMIT_CISLEITHANIA = { 2 => 14, 3 => 16 }.freeze
 
         # Rule VII.13, bullet 3
         DISCARDED_TRAINS = :remove
@@ -71,9 +65,6 @@ module Engine
           'exchange_coal_companies' => ['Coal Companies Exchange', 'All remaining coal companies are exchanged'],
           'ug_formation' => ['UG formation', 'UG forms at the end of the OR'],
           'kk_formation' => ['k&k formation', 'KK forms at the end of the OR'],
-          'close_construction_railways' => ['Close Construction Railways', 'All construction minors are closed'],
-          'vienna_tokened' => ['Vienna tokened',
-                               'When Vienna is upgraded to Brown the last token of the bond railway is placed there'],
         ).freeze
 
         STATUS_TEXT = Base::STATUS_TEXT.merge(
@@ -90,55 +81,16 @@ module Engine
           6 => 'Wocheinerbahn',
         }.freeze
 
-        # Standard game has 4 mine hexes, Cislethania has 3
-        MINE_HEX_NAMES = %w[C6 A12 A22 H25].freeze
-        MINE_HEX_NAMES_CISLEITHANIA = %w[C6 A12 A22].freeze
-
-        # Used for Bukowina bonus on the Cisleithania map
-        # Bukowina bonus is for a route that included Prag/Vienna and one of the 3 green hexes in the East
-        BUKOWINA_SOURCES = %w[E12 B9].freeze
-        BUKOWINA_TARGETS = %w[D25 E24 E26].freeze
-
         ASSIGNMENT_TOKENS = {
           'coal' => '/icons/1837/coalcar.svg',
         }.freeze
 
         # Modified from 1837 as 1824 does not have single shares in Pre-staatsbahn
         def company_header(company)
-          return stackify(company, 'COAL COMPANY') if company.color == :black
-          return stackify(company, 'MOUNTAIN RAILWAY') if company.color == :gray
+          return 'COAL COMPANY' if company.color == :black
+          return 'MOUNTAIN RAILWAY' if company.color == :gray
 
-          stackify(company, 'MINOR COMPANY')
-        end
-
-        def init_optional_rules(optional_rules)
-          opt_rules = super
-
-          # 2 player variant always use the Cisleithania map
-          opt_rules << :cisleithania if two_player? && !opt_rules.include?(:cisleithania)
-
-          # Good Time variant is not applicable if Cisleithania is used
-          opt_rules -= [:goods_time] if opt_rules.include?(:cisleithania)
-
-          opt_rules
-        end
-
-        def init_bank
-          return super unless option_cisleithania
-
-          Engine::Bank.new(BANK_CASH_CISLEITHANIA[@players.size], log: @log)
-        end
-
-        def init_starting_cash(players, bank)
-          return super unless option_cisleithania
-
-          players.each do |player|
-            bank.spend(CASH_CISLEITHANIA[@players.size], player)
-          end
-        end
-
-        def init_share_pool
-          G1824::SharePool.new(self)
+          'MINOR COMPANY'
         end
 
         # Need to handle special valuation of some minors, and also handle debt
@@ -161,31 +113,18 @@ module Engine
           share.price
         end
 
-        def game_cert_limit
-          return super unless option_cisleithania
-
-          CERT_LIMIT_CISLEITHANIA[@players.size]
-        end
-
         # Rule VI.78, bullet 4: Cannot buy if holding 60% or more
         # but can exceed via exchanges
         def can_hold_above_corp_limit?(_entity)
           true
         end
 
-        def can_buy_presidents_share_directly_from_market?(corporation)
-          # Rule X.4, bullet 3, sub-bullet 6: 20% is just a double share
-          return true if two_player? && bond_railway?(corporation)
-
-          super
-        end
-
-        # Modified 1837 version as the number of trains vary between player count and variant
+        # Modified base version as the number of trains vary between player count and variant
         def init_train_handler
           train_count_map = num_trains_map
           trains = game_trains.flat_map do |train|
             t = train
-            t = adjust_events_for_two_players(t) if two_player?
+            t = possibly_adjust_events_based_on_player_count(t)
             Array.new(train_count_map[t[:name]]) do |index|
               Train.new(**t, index: index)
             end
@@ -195,51 +134,11 @@ module Engine
         end
 
         def num_trains_map
-          if two_player?
-            self.class::TRAIN_COUNT_2P_CISLETHANIA
-          elsif @players.size == 3 && option_cisleithania
-            self.class::TRAIN_COUNT_3P_CISLETHANIA
-          else
-            self.class::TRAIN_COUNT_STANDARD
-          end
+          self.class::TRAIN_COUNT_STANDARD
         end
 
-        def game_corporations
-          corporations = CORPORATIONS.dup
-
-          if option_cisleithania && !two_player?
-            # Rule XI.1: Move home location for UG1, and reserve only 20% share of UG
-            corporations.map! do |m|
-              case m['sym']
-              when 'UG1'
-                m['coordinates'] = 'G12'
-                m['city'] = 0
-              when 'UG'
-                m['ipo_shares'] = [10, 10, 10, 10, 10, 10, 10, 10]
-                m['reserved_shares'] = [20]
-              end
-
-              m
-            end
-          end
-
-          corporations
-        end
-
-        def init_corporations(stock_market)
-          all = super
-
-          if option_cisleithania && two_player?
-            # Rule X.1: Remove Pre-Staatsbahns UG1 and UG2, Regionals BH and SB, Coal mine SPB
-            all.select { |c| %w[UG UG1 UG2 BH SB SPB].include?(c.id) }.each(&:close!)
-          end
-
-          if option_cisleithania && !two_player?
-            # Rule XI.1: Remove Pre-Staatsbahn UG2, Regionals BH and SB, Coal mine SPB
-            all.select { |c| %w[UG2 BH SB SPB].include?(c.id) }.each(&:close!)
-          end
-
-          all
+        def possibly_adjust_events_based_on_player_count(train)
+          train
         end
 
         def init_companies(players)
@@ -249,29 +148,14 @@ module Engine
             case players.size
             when 2
               2
-            when 3
-              option_cisleithania ? 3 : 4
+            when 3, 6
+              4
             when 4, 5
               6
-            when 6
-              4
             end
           mountain_railway_count.times { |index| companies << mountain_railway_definition(index) }
 
-          if option_cisleithania
-            # Rule X.1/XI.1: Remove Coal mine SPB, Pre-Staatsbahn UG2, and - if 2 players - UG1
-            removed_companies = players.size == 2 ? %w[SPB UG2 UG1] : %w[SPB UG2]
-            companies.reject! { |m| removed_companies.include?(m[:sym]) }
-          end
-
-          used_companies = companies.map { |company| G1824::Company.new(**company) }
-
-          # Rule X.3 Setup, need to do some modifications of companies for two players
-          # and need to do it before trains which also are affected
-          @close_construction_company_when_first_5_sold = false
-          setup_companies_for_two_players(used_companies) if two_player?
-
-          used_companies
+          companies.map { |company| Engine::Company.new(**company) }
         end
 
         def init_tiles
@@ -291,44 +175,22 @@ module Engine
             tiles['204'] = 3
           end
 
-          # Remove all Budapest specific tiles as Budapest is an offboard city in Cisleithania
-          %w[126 490 495 498].each { |name| tiles.delete(name) } if option_cisleithania
-
           tiles.flat_map do |name, val|
             init_tile(name, val)
           end
-        end
-
-        def option_cisleithania
-          two_player? || @optional_rules&.include?(:cisleithania)
         end
 
         def option_goods_time
           @optional_rules&.include?(:goods_time)
         end
 
-        def location_name(coord)
-          return super unless option_cisleithania
-
-          unless @location_names
-            @location_names = LOCATION_NAMES.dup
-            @location_names['F25'] = 'Kronstadt'
-            @location_names['G12'] = 'Budapest'
-            @location_names['I10'] = 'Bosnien'
-          end
-          @location_names[coord]
-        end
-
         def optional_hexes
-          option_cisleithania ? cisleithania_map : base_map
+          map_optional_hexes
         end
 
         def sold_shares_destination(_entity)
           # Rule VI.8 - 1824 has no bank pool
-          return :corporation unless two_player?
-
-          # Rule X.4, bullet 2 - 2 player 1824 has a bank pool
-          :bank
+          :corporation
         end
 
         # 1824 differ from 1837 as it allows any legal single town upgrade to green (duble towns have no green tiles)
@@ -392,10 +254,9 @@ module Engine
             G1837::Step::Bankrupt,
             G1824::Step::KkTokenChoice,
             G1824::Step::DiscardTrain,
-            G1824::Step::BondToken,
             Engine::Step::SpecialTrack,
-            G1824::Step::Track,
-            G1824::Step::Token,
+            Engine::Step::Track,
+            Engine::Step::Token,
             Engine::Step::Route,
             G1824::Step::Dividend,
             G1824::Step::BuyTrain,
@@ -440,7 +301,6 @@ module Engine
 
         def setup
           # To keep track of when 1st two train bought, for g-trains
-          # TODO: Check if this is needed?
           @two_train_bought = false
 
           # When 1st 4-train is bought any remaining MRs will be exchanged
@@ -450,25 +310,12 @@ module Engine
           @player_debts = Hash.new { |h, k| h[k] = 0 }
 
           super
+
           setup_regionals
+
           @sd_to_form = false
           @ug_to_form = false
           @kk_to_form = false
-
-          # Used in two-player for extra tokening when last 4 sold (or last 5, if were exported)
-          @train_based_bond_token_used = false
-          @corporation_to_put_train_based_bond_token = nil
-
-          # Used in two-player for extra tokening when Wien upgraded to brown
-          @upgrade_based_bond_token_used = false
-          @corporation_to_put_upgrade_based_bond_token = nil
-        end
-
-        def setup_mines
-          mine_hex_names = option_cisleithania ? MINE_HEX_NAMES_CISLEITHANIA : MINE_HEX_NAMES
-          mine_hex_names.each do |hex_id|
-            hex_by_id(hex_id).assign!(:coal)
-          end
         end
 
         def setup_nationals
@@ -556,29 +403,8 @@ module Engine
           @kk_to_form = true
         end
 
-        def event_close_construction_railways!
-          @log << "-- Event: #{EVENTS_TEXT['close_construction_railways'][1]} --"
-          @corporations.each do |c|
-            next unless construction_railway?(c)
-
-            @log << "#{c.name} closes without compensation"
-            c.tokens.first.swap!(blocking_token, check_tokenable: false) if c.color == :black
-            close_corporation(c, quiet: true)
-            graph.clear_graph_for(c)
-          end
-        end
-
-        def event_vienna_tokened!
-          @log << "-- Event: #{EVENTS_TEXT['vienna_tokened'][1]} --"
-          @token_vienna_when_brown = true
-        end
-
         def status_str(entity)
-          if bond_railway?(entity)
-            'Bond Railway - pay stock value each OR'
-          elsif construction_railway?(entity)
-            'Construction Railway - only build tracks'
-          elsif coal_railway?(entity)
+          if coal_railway?(entity)
             'Coal Railway - may only own g trains'
           elsif pre_staatsbahn?(entity)
             'Pre-Staatsbahn'
@@ -618,14 +444,6 @@ module Engine
           entity.company? && entity.meta[:type] == :mountain_railway
         end
 
-        def bond_railway?(entity)
-          entity.type == :bond_railway
-        end
-
-        def construction_railway?(entity)
-          entity.type == :construction_railway
-        end
-
         def coal_railway?(entity)
           entity.color == :black && entity.type == :minor
         end
@@ -648,10 +466,6 @@ module Engine
           entity.floatable
         end
 
-        def bond_railway
-          @bond_railway ||= @corporations.find { |c| bond_railway?(c) }
-        end
-
         def kk
           @kk ||= corporation_by_id('KK')
         end
@@ -665,26 +479,6 @@ module Engine
 
         def exchangable_for_mountain_railway?(player, corporation)
           corporation.type == :major && @companies.find { |c| mountain_railway?(c) && c.owned_by?(player) }
-        end
-
-        # Rule X.4, should be able to sell bundles with presidency share
-        def bundles_for_corporation(share_holder, corporation, shares: nil)
-          return super unless two_player?
-          return super unless bond_railway?(corporation)
-
-          shares = (shares || share_holder.shares_of(corporation))
-
-          bundles = (1..shares.size).flat_map do |n|
-            shares.combination(n).to_a.map { |ss| Engine::ShareBundle.new(ss) }
-          end
-
-          bundles = bundles.uniq do |b|
-            [b.shares.count { |s| s.percent == 10 },
-             b.presidents_share ? 1 : 0,
-             b.shares.find(&:last_cert) ? 1 : 0]
-          end
-
-          bundles.sort_by(&:percent)
         end
 
         def corporation_available?(entity)
@@ -756,19 +550,8 @@ module Engine
 
           minor = corporation_by_id(id)
 
-          # Need to handle construction railways when two player variant
-          if two_player? && company.stack == 1
-            if pre_staatsbahn?(minor)
-              create_construction_railway_from_bought_pre_staatsbahn(company, minor)
-            else
-              create_construction_railways_from_coal_mine(company, minor)
-            end
+          return if special_handling_after_by_company(company, minor)
 
-            company.stack = nil
-            return
-          end
-
-          company.stack = nil
           return unless coal_railway?(minor)
 
           # Rule IV.2, bullet 8: Coal Railways start with a g train bought from the depot
@@ -782,6 +565,11 @@ module Engine
           stock_market.set_par(regional_railway, share_price)
           association = "the associated Regional Railway of #{id}"
           log << "#{regional_railway.name} (#{association}) pars at #{format_currency(share_price.price)}."
+        end
+
+        # Needed for 2 player variant
+        def special_handling_after_by_company(_company, _minor)
+          false
         end
 
         # This 1837 version with some tweeks
@@ -892,13 +680,7 @@ module Engine
           all_stops = stops.map(&:hex)
           raise GameError, 'Route cannot visit same revenue center twice' if all_stops.size != all_stops.uniq.size
 
-          super + bukowina_bonus_amount(route, stops)
-        end
-
-        def revenue_str(route)
-          str = super
-          str += ' + Bukowina' if bukowina_bonus_amount(route, route.stops).positive?
-          str
+          super
         end
 
         def float_str(entity)
@@ -995,82 +777,11 @@ module Engine
           @player_debts[player] || 0
         end
 
-        def set_last_train_buyer(buyer, train)
-          return unless two_player?
-          return if @train_based_bond_token_used
-
-          @corporation_to_put_train_based_bond_token = buyer
-          @log << "Last #{train.name} bought by #{buyer.name} which means "\
-                  "#{buyer.name} (#{buyer.owner.name}) gets to put a #{bond_railway.name} "\
-                  'token anywhere where the slot it is free.'
-        end
-
-        def extra_token_entity
-          return unless two_player?
-          return if @train_based_bond_token_used
-
-          @corporation_to_put_train_based_bond_token
-        end
-
-        def clear_extra_token_entity
-          @train_based_bond_token_used = true
-          @corporation_to_put_train_based_bond_token = nil
-        end
-
-        def notify_vienna_can_be_tokened_by_bond_railway(entity)
-          return unless two_player?
-
-          @log << "Vienna upgraded to brown by #{entity.name} which means "\
-                  "#{entity.name} (#{entity.owner.name}) gets to put a #{bond_railway.name} token in Vienna."
-          @corporation_to_put_upgrade_based_bond_token = entity
-        end
-
-        def vienna_token_entity
-          return unless two_player?
-          return if @upgrade_based_bond_token_used
-
-          @corporation_to_put_upgrade_based_bond_token
-        end
-
-        def clear_vienna_token_entity
-          @upgrade_based_bond_token_used = true
-          @corporation_to_put_upgrade_based_bond_token = nil
-        end
-
-        def token_owner(_entity)
-          # This is so that extra token uses bond railway
-          # despite it not being active. This is for 2 player
-          # when last 4 (or 5) train is bought to place 2nd token.
-          return bond_railway if extra_token_entity
-
-          super
-        end
-
-        # Used during initial drafting, for two player variant
-        def any_stacks_left?
-          remaining_stacks.positive?
-        end
-
-        # Used during first stock round. Need special handling if initial drafting.
-        def buyable_bank_owned_companies
-          available = super
-          return available unless two_player?
-          return available unless any_stacks_left?
-
-          available.select!(&:stack)
-          if (single_stack = available.group_by(&:stack).find { |_stack, companies| companies.size == 1 })
-            available.select! { |c| c.stack == single_stack.first }
-          end
-          available.sort_by(&:stack)
-        end
-
-        def remaining_stacks
-          @companies.select { |c| c.stack && !c.closed? }.group_by(&:stack).size
-        end
-
         def return_kk_token(selected_token)
           selected = selected_token == 1 ? kk.placed_tokens.dup.first : kk.placed_tokens.dup.last
           selected.remove!
+          # Returned token should have price 40
+          kk.tokens.first.price = 40
           kk.tokens.last.price = 100
           @kk_token_choice_player = nil
         end
@@ -1098,21 +809,6 @@ module Engine
 
         def player_loan_interest(loan)
           (loan * 0.5).ceil
-        end
-
-        def mine_hex?(hex)
-          option_cisleithania ? MINE_HEX_NAMES_CISLEITHANIA.include?(hex.name) : MINE_HEX_NAMES.include?(hex.name)
-        end
-
-        def bukowina_bonus_amount(_route, stops)
-          return 0 unless option_cisleithania
-          return 0 unless stops.any? { |s| BUKOWINA_SOURCES.include?(s.hex.name) }
-          return 0 unless stops.any? { |s| BUKOWINA_TARGETS.include?(s.hex.name) }
-
-          # Rule X.4, last bullet: Run from Vienna/Prag to one of the Bukowina hexes
-          # gives a bonus of 50 Gulden. Bukowina bonus also applies for 3 player games
-          # on same map, although rule book does not explicitly state this.
-          50
         end
 
         MOUNTAIN_RAILWAY_DEFINITION = {
@@ -1150,148 +846,6 @@ module Engine
           definition[:name] = format(definition[:name], real_index, MOUNTAIN_RAILWAY_NAMES[real_index])
           definition[:desc] = format(definition[:desc], MOUNTAIN_RAILWAY_NAMES[real_index], real_index)
           definition
-        end
-
-        def select_randomly(collection)
-          collection.min_by { rand }
-        end
-
-        def stackify(company, header)
-          return header unless company.stack
-
-          real_header = "#{header} STACK #{company.stack}"
-          real_header += ' (CR)' if company.stack == 1
-          real_header
-        end
-
-        def setup_companies_for_two_players(companies)
-          available = companies.reject(&:closed?)
-          coal_companies = available.select { |c| c.meta[:type] == :coal }
-          pre_staatsbahns_primary = available.select { |c| c.meta[:type] == :pre_staatsbahn_primary }
-          pre_staatsbahns_secondary = available.select { |c| c.meta[:type] == :pre_staatsbahn_secondary }
-
-          # Follow X.3 Setup, with slight modification
-          # 1. Let 2nd player select one from stack 1-3, 1st player gets the other in stack
-          # 2. Repeat step 2 for player 1 first, player 2 second
-          # 3. Let 2nd player buy CR from stack 4 (and par associated Regional) and player 1 buy (and par) the other
-          # That completes the initial drafting
-
-          # Place remaining companies in their stacks, preparing for initial drafting
-          select_randomly(coal_companies).stack = 1
-          select_randomly(pre_staatsbahns_secondary).stack = 1
-          pre_staatsbahns_primary.each { |c| c.stack = 2 }
-          pre_staatsbahns_secondary.select { |c| c.stack.nil? }.each { |c| c.stack = 3 }
-          coal_companies.select { |c| c.stack.nil? }.each { |c| c.stack = 4 }
-
-          # Adjust descriptions so they match 2 player rules
-          companies.select { |c| c.sym == 'KK1' }.each do |c|
-            # Rule X.4, bullet 1: KK is formed when 1st 5 train is bought
-            c.desc = c.desc.gsub(/first 6 train/, 'first 5 train')
-          end
-          pre_staatsbahns_secondary.select { |c| c.stack == 1 }.each do |c|
-            # Rule X.3, penultimate paragraph: if KK1 is in stack 1, close construction corporations
-            # when 1st 5 train is bought, otherwise close when 1st 4 train is bought
-            @close_construction_company_when_first_5_sold = (c.sym == 'KK2')
-
-            # According to rule clarification, see https://boardgamegeek.com/thread/2929817/questions-about-2-player-variant
-            c.make_construction_company!
-
-            desc = 'Buyer take control of pre-staatsbahn XXX. That Railway will be a Construction Company '\
-                   'which just builds track, for free - no treasury or trains. '\
-                   "When first #{closed_construction} train is bought XXX closes, and #{format_currency(c.value)} "\
-                   'is added to the treasury of YYY. XXX cannot be exchanged for any shares, and no shares are reserved.'
-            c.desc = desc.gsub(/XXX/, c.sym).gsub(/YYY/, c.sym[0..-1])
-          end
-          coal_companies.select { |c| c.stack == 1 }.each do |c|
-            # According to rule clarification, see https://boardgamegeek.com/thread/2929817/questions-about-2-player-variant
-            c.make_construction_company!
-
-            desc = 'Buyer take control of minor Coal Railway XXX. That Railway will be a Construction Company '\
-                   'which just builds track, for free - no treasury or trains. '\
-                   "When first #{closed_construction} train is bought XXX closes, and nothing is added to YYY treasury. "\
-                   'XXX cannot be exchanged for any shares, and no shares are reserved.'
-            c.desc = desc.gsub(/XXX/, c.sym).gsub(/YYY/, associated_regional_name(c))
-          end
-        end
-
-        def closed_construction
-          @close_construction_company_when_first_5_sold ? '5' : '4'
-        end
-
-        def adjust_events_for_two_players(train)
-          # KK forms on 5 trains instead of 6 trains, and UG is not present when 2 players
-          close_construction_event = 'close_construction_railways'
-
-          if train[:name] == '4' && !@close_construction_company_when_first_5_sold
-            train[:events] = add_event(train, close_construction_event)
-          end
-
-          if train[:name] == '5'
-            train[:events] = [{ 'type' => 'exchange_coal_companies' }, { 'type' => 'kk_formation' }]
-            train[:events] = add_event(train, close_construction_event) if @close_construction_company_when_first_5_sold
-            train[:events] = add_event(train, 'vienna_tokened')
-          end
-
-          train[:events] = [] if train[:name] == '6'
-
-          train
-        end
-
-        def add_event(train, event)
-          events = train[:events]
-          added_event = { 'type' => event }
-
-          events << added_event unless events.include?(added_event)
-
-          events
-        end
-
-        def create_construction_railway_from_bought_pre_staatsbahn(company, minor)
-          make_minor_construction_railway(minor)
-
-          national = corporation_by_id(company.sym[0..-2])
-          national.unreserve_one_share!
-        end
-
-        def create_construction_railways_from_coal_mine(company, minor)
-          regional = get_associated_regional_railway(minor)
-          make_minor_construction_railway(minor)
-
-          regional.make_bond_railway!
-          share_price = stock_market.share_price([6, 1]) # This is the lower one at 50G
-          stock_market.set_par(regional, share_price)
-          regional.shares.each do |s|
-            @share_pool.transfer_shares(s.to_bundle, @share_pool, price: 0, allow_president_change: false)
-          end
-
-          # Tokens placed via events should be free
-          regional.tokens.each { |t| t.price = 0 }
-
-          association = "the associated Regional Railway of #{company.sym}"
-          log << "#{regional.name} (#{association}) pars at #{format_currency(share_price.price)}."
-          log << "#{regional.name} will not build or run trains but shareholders will receive current stock value "\
-                 'in revenue each OR.'
-        end
-
-        def make_minor_construction_railway(minor)
-          @log << "#{minor.name} returns its cash to the bank as it does not use any money."
-          minor.spend(minor.cash, @bank)
-          minor.add_ability(free_tile_lay_ability)
-          minor.make_construction_railway!
-        end
-
-        def free_tile_lay_ability
-          Engine::Ability::TileLay.new(
-            type: 'tile_lay',
-            tiles: [],
-            hexes: [],
-            closed_when_used_up: false,
-            reachable: true,
-            free: true,
-            special: false,
-            consume_tile_lay: true,
-            when: 'track'
-          )
         end
 
         def possibly_return_kk_token

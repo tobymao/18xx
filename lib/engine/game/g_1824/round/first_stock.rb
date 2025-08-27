@@ -10,40 +10,28 @@ module Engine
           attr_reader :reverse
 
           def description
-            return 'Initial Drafting' if @game.two_player? && @game.any_stacks_left?
-
             'First Stock Round'
           end
 
           def setup
-            if @game.two_player?
-              @game.log << 'During Initial Drafting one player selects one company from Stack 1-4, '\
-                           'and the other player gets the other company in that Stack. The order will '\
-                           'be reversed for the second stack, then normal.'
-              @game.log << 'No player may pass as long as there are still things in stacks.'
-              @game.log << 'After all Stacks have been drafted, then First Stock Round starts.'
-              @game.log << 'During the First Stock Round players can optionally buy ONE Mountain Railway '\
-                           'and shares. Any unsold Mountain Railways will be removed from the game.'
-              @game.log << 'NOTE! The two railways in stack 1 are construction railways which do not own '\
-                           'nor run any trains, just build track for free. And the associated Regional Railway '\
-                           'is a bond railway, which just payout - do not build nor own trains.'
-            else
-              @game.log << 'After First Stock Round is finished any unsold Pre-State Railways, Coal Railways, '\
-                           'and Mountain Railways will be removed from the game'
-            end
+            setup_pre_log_text
 
             @reverse = true
             @order_notified = false
 
             super
 
-            if @game.two_player?
-              @log << "Player order is reversed when selecting the first stack, that is #{@game.players.first.name} "\
-                      'selects first'
-            end
+            setup_post_log_text
 
             @entities.reverse!
           end
+
+          def setup_pre_log_text
+            @game.log << 'After First Stock Round is finished any unsold Pre-State Railways, Coal Railways, '\
+                         'and Mountain Railways will be removed from the game'
+          end
+
+          def setup_post_log_text; end
 
           def select_entities
             return super unless @reverse
@@ -52,15 +40,16 @@ module Engine
           end
 
           def next_entity_index!
-            if @entity_index == @game.players.size - 1
-              if @game.two_player? && @game.any_stacks_left?
-                do_handle_next_entity_index_for_two_players
-              else
-                do_handle_next_entity_index_for_multi_players
-              end
-            end
+            do_handle_next_entity_index if @entity_index == @game.players.size - 1
 
             super
+          end
+
+          def do_handle_next_entity_index
+            @reverse = false
+            @entities = @game.players
+            @game.log << 'Player order is from now on normal' unless @order_notified
+            @order_notified = true
           end
 
           def finish_round
@@ -135,27 +124,6 @@ module Engine
 
           def remove_share_reservation(national)
             national.unreserve_one_share!
-          end
-
-          def do_handle_next_entity_index_for_two_players
-            if @game.remaining_stacks == 1
-              @reverse = true
-              @entities = @game.players.reverse
-              @game.log << 'Player order is reversed when selecting from the last stack, '\
-                           "that is #{@game.players.last.name} selects first"
-            else
-              @reverse = false
-              @entities = @game.players
-              @game.log << 'Player order is normal when selecting from the 2nd and 3rd stacks, '\
-                           "that is #{@game.players.first.name} selects first"
-            end
-          end
-
-          def do_handle_next_entity_index_for_multi_players
-            @reverse = false
-            @entities = @game.players
-            @game.log << 'Player order is from now on normal' unless @order_notified
-            @order_notified = true
           end
         end
       end
