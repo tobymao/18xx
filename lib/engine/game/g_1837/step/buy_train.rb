@@ -20,6 +20,14 @@ module Engine
           def help
             return 'A train may only be surrendered in order to buy a new train' unless scrappable_trains(current_entity).empty?
 
+            if current_entity.trains.empty? && must_buy_train?(current_entity)
+              help_text = 'When a corporation is trainless and required to buy a train, the president may contribute' \
+                          ' in order to buy a higher cost train from the depot'
+              help_text += ' or buy a train from another corporation at any price' if @game.can_buy_train_from_others?
+              help_text += '.'
+              return help_text
+            end
+
             super
           end
 
@@ -34,6 +42,13 @@ module Engine
               super
           end
 
+          def buyable_trains(entity)
+            depot_trains = @depot.depot_trains.reject { |t| t.price < spend_minmax(entity, t).first }
+            other_trains = @game.can_buy_train_from_others? ? other_trains(entity) : []
+
+            depot_trains + other_trains
+          end
+
           def buyable_train_variants(train, entity)
             variants = super
             variants.select! { |t| @game.goods_train?(t[:name]) } if @game.coal_minor?(entity)
@@ -46,6 +61,15 @@ module Engine
             trains = super.reject { |t| t.owner.cash.negative? }
             trains.select! { |t| @game.goods_train?(t.name) } if @game.coal_minor?(entity)
             trains
+          end
+
+          def spend_minmax(entity, train)
+            max = buying_power(entity) + entity.owner.cash
+            min = @last_share_sold_price ? max - @last_share_sold_price : 1
+            return [min, max] unless train.from_depot?
+
+            min = [min, train.price].max
+            [min, train.price]
           end
 
           def can_entity_buy_train?(_entity)

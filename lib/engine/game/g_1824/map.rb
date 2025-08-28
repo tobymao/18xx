@@ -8,6 +8,12 @@ module Engine
 
         AXES = { x: :number, y: :letter }.freeze
 
+        # Used by 1837, not used in 1824
+        MINE_HEXES = [].freeze
+
+        # Used by 1837, not used in 1824
+        ITALY_HEXES = [].freeze
+
         TILES = {
           '1' => 1,
           '2' => 1,
@@ -90,7 +96,7 @@ module Engine
             'count' => 1,
             'color' => 'green',
             'code' =>
-            'city=revenue:40;city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:5,b:_0;path=a:1,b:_1;'\
+            'city=revenue:50;city=revenue:50;city=revenue:50;path=a:0,b:_0;path=a:5,b:_0;path=a:1,b:_1;'\
             'path=a:2,b:_2;path=a:3,b:_2;path=a:4,b:_1;label=W',
           },
           '493' =>
@@ -282,6 +288,8 @@ module Engine
         def cisleithania_map
           # For 3 players Budapest is a city for Pre-staatsbahn U1
           budapest = @players.size == 3 ? 'city' : 'offboard'
+          b_major = ';icon=image:1824/B,sticky:1'
+          b_minor = ';icon=image:1824/b_lower_case,sticky:1'
           {
             red: {
               ['A4'] => DRESDEN_1,
@@ -310,19 +318,57 @@ module Engine
               ['C6'] => MINE_1,
             },
             white: {
-              %w[A8 A20 C10 C16 D25 E24 G2] => TOWN,
+              %w[A8 A20 C10 C16 G2] => TOWN,
+              %w[D25 E24] => "#{TOWN}#{b_minor}",
               %w[A6 A10] => TOWN_WITH_MOUNTAIN,
               %w[B13 B25 F11] => DOUBLE_TOWN_WITH_WATER,
               %w[H3] => CITY_WITH_MOUNTAIN,
-              %w[A18 C26 E26 I8] => CITY_WITH_MOUNTAIN,
-              %w[B5 B9 B15 B23 C12 E8 F7 G4 G10] => CITY,
+              %w[A18 C26 I8] => CITY_LABEL_T,
+              ['E26'] => "#{CITY_LABEL_T}#{b_minor}",
+              %w[B5 B15 B23 C12 E8 F7 G4 G10] => CITY,
+              ['B9'] => "#{CITY}#{b_major}",
               %w[B7 B11 B19 B21 C8 C14 C20 C22 C24 D9 D11 D13 D15 E6
                  F9 F13 G6 H9 H11] => PLAIN,
               %w[D23 G8 H5 H7] => PLAIN_WITH_MOUNTAIN,
               %w[E10] => PLAIN_WITH_WATER,
-              ['E12'] => WIEN,
+              ['E12'] => "#{WIEN}#{b_major}",
             },
           }
+        end
+
+        def show_map_legend?
+          option_cisleithania
+        end
+
+        def map_legends
+          ['bonus_legend']
+        end
+
+        def bonus_legend(_font_color, *_extra_colors)
+          [
+            # table-wide props
+            {
+              style: {
+                margin: '0.5rem 0 0.5rem 0',
+                border: '1px solid',
+                borderCollapse: 'collapse',
+              },
+            },
+            # header
+            [
+              { text: 'Bonus', props: { style: { border: '1px solid' } } },
+              { text: 'Run', props: { style: { border: '1px solid' } } },
+              { text: 'Icons', props: { style: { border: '1px solid' } } },
+              { text: 'G', props: { style: { border: '1px solid' } } },
+            ],
+            # body
+            [
+              { text: 'Bukowina', props: { style: { border: '1px solid' } } },
+              { text: 'Prag/Wien - Bukowina', props: { style: { textAlign: 'center', border: '1px solid' } } },
+              { text: 'B-b', props: { style: { textAlign: 'center', border: '1px solid' } } },
+              { text: '50', props: { style: { textAlign: 'right', border: '1px solid' } } },
+            ],
+          ]
         end
       end
     end

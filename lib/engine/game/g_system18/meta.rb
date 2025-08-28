@@ -86,11 +86,17 @@ module Engine
             players: [2, 3, 4],
             designer: 'Ian Wilson',
           },
+          {
+            sym: :map_Scotland,
+            short_name: 'Map: Scotland',
+            players: [2, 3, 4],
+            designer: 'Ian Wilson',
+          },
         ].freeze
 
         MUTEX_RULES = [
           %i[map_NEUS map_France map_Twisting_Tracks map_UK_Limited map_China_Rapid_Development map_Poland map_Britain
-             map_Northern_Italy map_MS],
+             map_Britain_N map_Britain_S map_Northern_Italy map_MS map_Scotland],
         ].freeze
       end
     end

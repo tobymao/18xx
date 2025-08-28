@@ -15,6 +15,7 @@ require_relative 'map_poland_customization'
 require_relative 'map_britain_customization'
 require_relative 'map_northern_italy_customization'
 require_relative 'map_ms_customization'
+require_relative 'map_scotland_customization'
 
 module Engine
   module Game
@@ -34,6 +35,7 @@ module Engine
         include MapBritainCustomization
         include MapNorthernItalyCustomization
         include MapMsCustomization
+        include MapScotlandCustomization
 
         register_colors(red: '#d1232a',
                         orange: '#f58121',

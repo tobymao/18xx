@@ -7,7 +7,19 @@ module Engine
     module G1824
       module Step
         class BuySellParSharesFirstSr < Engine::Step::BuySellParShares
-          def can_buy_company?(_player, _company)
+          def actions(entity)
+            actions = super
+
+            return actions unless @game.two_player?
+
+            actions.delete(:pass) if @game.companies.find { |c| c.stack && c.stack < 4 }
+
+            actions
+          end
+
+          def can_buy_company?(player, company)
+            return allowed_to_buy_mr?(player) if @game.two_player? && @game.mountain_railway?(company)
+
             !bought?
           end
 
@@ -15,8 +27,8 @@ module Engine
             super && @game.buyable?(bundle.corporation)
           end
 
-          def can_sell?(_entity, bundle)
-            super && @game.buyable?(bundle.corporation)
+          def can_sell?(_entity, _bundle)
+            false
           end
 
           def can_gain?(_entity, bundle, exchange: false)
@@ -29,49 +41,53 @@ module Engine
             false
           end
 
+          def visible_corporations
+            return [] if @game.two_player? && @game.any_stacks_left?
+
+            @game.sorted_corporations.reject { |c| c.closed? || c.type == :minor || c.type == :construction_railway }
+          end
+
           def process_buy_company(action)
-            entity = action.entity
+            return super unless @game.two_player?
+
             company = action.company
-            price = action.price
-            company.value = price
+            player = action.entity
 
-            super
+            if bought_from_different_stack?(company)
+              raise GameError, "#{player.name} must buy from stack #{@game.current_stack} "\
+                               "as #{other_player(player).name} bought from it"
+            else
+              @game.log << "#{player.name} buys from stack #{company.stack}" if company.stack
+              @game.current_stack = @game.current_stack ? nil : company.stack
+              if @game.current_stack
+                @game.log << "#{other_player(player).name} must buy remaining from stack "\
+                             "#{@game.current_stack}"
+              end
 
-            minor = @game.minor_by_id(company.id)
-            return unless (minor = @game.minor_by_id(company.id))
-            return buy_pre_staatsbahn(minor, entity, action) if @game.pre_staatsbahn?(minor)
-
-            buy_coal_railway(minor, entity, price)
+              super
+            end
           end
 
           private
 
-          def buy_pre_staatsbahn(pre_staatsbahn, buyer, action)
-            treasury = action.price
-            @game.log << "Pre-Staatsbahn #{pre_staatsbahn.full_name} floats and receives "\
-                         "#{@game.format_currency(treasury)} in treasury"
-            pre_staatsbahn.owner = buyer
-            pre_staatsbahn.float!
-            @game.bank.spend(treasury, pre_staatsbahn)
+          def bought_from_different_stack?(company)
+            @game.current_stack && @game.current_stack != company.stack
           end
 
-          def buy_coal_railway(coal_railway, buyer, price)
-            regional_railway = @game.associated_regional_railway(coal_railway)
+          def bought_non_stack_entity_while_stacks_still_remain?(entity)
+            return false if entity.company? && entity.stack
 
-            coal_railway.owner = buyer
-            coal_railway.float!
-            @game.bank.spend(price, coal_railway)
-            g_train = @game.depot.upcoming.select { |t| @game.g_train?(t) }.shift
-            treasury = price - g_train.price
-            @game.log << "#{coal_railway.name} floats and buys a #{g_train.name} train from the depot "\
-                         "for #{@game.format_currency(g_train.price)} and remaining #{@game.format_currency(treasury)} "\
-                         'is put in treasury'
-            @game.buy_train(coal_railway, g_train, g_train.price)
+            @game.any_stacks_left?
+          end
 
-            share_price = @game.stock_market.par_prices.find { |s| s.price == price / 2 }
-            regional_railway.ipoed = true
-            @game.stock_market.set_par(regional_railway, share_price)
-            @game.log << "#{buyer.name} pars #{regional_railway.name} at #{@game.format_currency(share_price.price)}"
+          def allowed_to_buy_mr?(player)
+            return false if @game.any_stacks_left?
+
+            @game.companies.count { |c| @game.mountain_railway?(c) && c.owner == player }.zero?
+          end
+
+          def other_player(player)
+            @game.players.find { |p| p != player }
           end
         end
       end
