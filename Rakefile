@@ -208,6 +208,9 @@ task 'fixture_import', [:id] do |_task, args|
   game_data = db_game.to_h
   game_data[:actions] = game.raw_actions.map(&:to_h)
 
+  # this is required for opening fixtures in the browser at /fixture/<title>/<id>
+  game_data[:loaded] = true
+
   user = 1000
   group = 1000
 

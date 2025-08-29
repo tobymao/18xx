@@ -26,6 +26,9 @@ module Engine
           expect(rungame.finished).to eq(true)
           expect(data['status']).to eq('finished')
 
+          # this is required for opening fixtures in the browser at /fixture/<title>/<id>
+          expect(data['loaded']).to eq(true)
+
           # some fixtures want to test that the last N actions of the game replayed the same as in the fixture
           test_last_actions = data['test_last_actions']
           next unless test_last_actions
