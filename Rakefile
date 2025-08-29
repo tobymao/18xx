@@ -105,16 +105,24 @@ task :precompile do
   assets.combine(:all)
 
   # Copy to the pin directory
-  git_rev = `git rev-parse --short HEAD`.strip
   version_epochtime = Time.now.strftime('%s')
+  timestamp_tag = Time.at(version_epochtime.to_i).strftime('%Y-%m-%d_%H.%M.%S')
   pin_dir = Assets::OUTPUT_BASE + Assets::PIN_DIR
+  FileUtils.mkdir_p(pin_dir)
+  assets.pin("#{pin_dir}/#{timestamp_tag}.js.gz")
+
+  git_rev = `git rev-parse --short HEAD`.strip
+  repo = 'tobymao/18xx'
   File.write(Assets::OUTPUT_BASE + '/assets/version.json', JSON.dump(
+    timestamp_tag: timestamp_tag,
+    release_url: "https://github.com/#{repo}/releases/tag/#{timestamp_tag}",
+    unreleased_url: "https://github.com/#{repo}/compare/#{timestamp_tag}...master",
+
+    # keep old keys for backwards compatibility
     hash: git_rev,
     url: "https://github.com/tobymao/18xx/commit/#{git_rev}",
     version_epochtime: version_epochtime,
   ))
-  FileUtils.mkdir_p(pin_dir)
-  assets.pin("#{pin_dir}#{git_rev}.js.gz")
 
   assets.clean_intermediate_output_files
 end

@@ -428,3 +428,7 @@ div#game:focus {
     float: left;
   }
 }
+
+.hidden {
+  display: none;
+}

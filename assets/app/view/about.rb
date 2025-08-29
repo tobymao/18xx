@@ -17,6 +17,21 @@ module View
         link = node_to_s(h(:a, { attrs: { href: version['url'] } }, version['hash']))
         `document.getElementById('version').innerHTML = #{link}`
         `document.getElementById('version_localtime').innerHTML = #{version_localtime}`
+
+        if version['release_url']
+          release_link = node_to_s(
+            h(:a, { attrs: { href: version['release_url'], target: '_blank' } }, version['timestamp_tag'])
+          )
+          `document.getElementById('release').innerHTML = #{release_link}`
+
+          unreleased_link = node_to_s(
+            h(:a, { attrs: { href: version['unreleased_url'], target: '_blank' } }, 'View all unreleased commits.')
+          )
+          `document.getElementById('unreleased').innerHTML = #{unreleased_link}`
+
+          `document.getElementById('release_info').classList.remove('hidden')`
+          `document.getElementById('release_info_legacy').classList.add('hidden')`
+        end
       end
 
       message = <<~MESSAGE
@@ -27,7 +42,10 @@ module View
         code on <a href='https://github.com/tobymao/18xx/issues'>GitHub</a>. All games are used with express written consent from their respective rights holders. You can find more information about the games on the <a href='https://github.com/tobymao/18xx/wiki'>wiki</a>.
         </p>
 
+        <p id='release_info' class='hidden'>Current version: <span id='release'>unknown</span>. <span id='unreleased'></span></p>
+        <span id='release_info_legacy'>
         <p>Current version: <span id='version'>unknown</span> deployed at <span id='version_localtime'>unknown</span> (<a href="https://github.com/tobymao/18xx/commits/master">View all recent commits</a>)</p>
+        </span>
 
         <h2>Conduct Expectations</h2>
 
