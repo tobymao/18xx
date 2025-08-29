@@ -3,7 +3,7 @@
 See [`TILES.md`](/TILES.md) for some details and useful routes for tile
 development.
 
-See [Developing on Windows](https://github.com/tobymao/18xx/wiki/Developing-For-18xx.games#developing-on-windows) to get setup on Windows
+See [Developing on Windows](https://github.com/tobymao/18xx/wiki/Developing-For-18xx.games#developing-on-windows) to get setup on Windows Subsystem for Linux
 
 ## Use a Github Codespace
 
@@ -24,14 +24,18 @@ If that pop-up doesn't appear, open the `Ports` tab in the Codespace, hover the 
 ![image](https://user-images.githubusercontent.com/1711810/201538007-a5b4bf8a-9214-4ca3-a6a5-6304601c34c2.png)
 
 
-## Droplet configuration
+## Droplet/local configuration
 
-If configuring the droplet from scratch, these are the requirements:
+If configuring your local environment or the droplet from scratch, these are the requirements:
 
-- `docker`
-- `docker compose`
-- `make`
+- [Docker](https://docs.docker.com/desktop/)
+- `make` (can be installed via [Homebrew](https://formulae.brew.sh/formula/make))
 - this repo (via `git clone`)
+
+### For Maintainers
+
+- [GitHub CLI](https://cli.github.com/) is required to create new
+  [Releases](https://github.com/tobymao/18xx/releases) when deploying
 
 ## Docker
 
