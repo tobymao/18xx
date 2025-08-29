@@ -75,6 +75,10 @@ refresh your browser to load the new app.
 > commands, e.g., `DEV_DOCKERFILE=Dockerfile.amd64 make dev_up_b`. If you use
 > Docker Desktop, enable `Use Rosetta for x86_64/amd64 emulation on Apple
 > Silicon` in `Docker Desktop / Settings / General / Virtual Machine Options`.
+> A tool like [direnv](https://direnv.net/) can be used so you can set up a
+> `.envrc` file instead of manually setting `DEV_DOCKERFILE` every time you
+> start work on the project.  You should also run `ln -s .rerun.amd64 .rerun`
+> once.
 
 #### Database
 
