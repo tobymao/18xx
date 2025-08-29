@@ -165,6 +165,8 @@ Run a specific set of test fixtures using the `-e` flag to `rspec`. This is usef
 
 e.g. `docker compose exec rack rspec spec/lib/engine/games/game_spec.rb -e '1860 19354'`
 
+See also `public/fixtures/README.md` for more details on fixture tests and debugging.
+
 #### Profiling the code
 
 Run `docker compose exec rack rake stackprof[spec/fixtures/18_chesapeake/1277.json]` (or other file) to load and process the json file 1000 times. This will generate a stackprof.dump which can be further analyzed

@@ -153,11 +153,15 @@ def format_fixture_json(filename, chat: nil, pretty: nil)
 
   # remove player names
   data['players'].each.with_index do |player, index|
-    player['name'] = "Player #{index}"
+    player['name'] = "Player #{index + 1}" unless /(Player )?(\d+|[A-Z])/.match?(player['name'])
   end
 
-  # remove chats, unless chat arg was "keep"
-  if chat != 'keep'
+  # remove or  chats, unless chat arg was "keep"
+  if chat == 'scrub'
+    data['actions'].each do |action|
+      action['message'] = 'chat' if action['type'] == 'message'
+    end
+  elsif chat != 'keep'
     data['actions'].filter! do |action|
       action['type'] != 'message'
     end
@@ -207,6 +211,9 @@ task 'fixture_import', [:id] do |_task, args|
   # get the game data needed to dump game to JSON
   game_data = db_game.to_h
   game_data[:actions] = game.raw_actions.map(&:to_h)
+
+  # this is required for opening fixtures in the browser at /fixture/<title>/<id>
+  game_data[:loaded] = true
 
   user = 1000
   group = 1000
