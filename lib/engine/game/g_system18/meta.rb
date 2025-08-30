@@ -22,7 +22,7 @@ module Engine
           {
             sym: :map_NEUS,
             short_name: 'Map: Northeast US',
-            players: [2, 3],
+            players: [2, 3, 4],
             designer: 'Scott Petersen',
           },
           {

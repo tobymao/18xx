@@ -10,6 +10,7 @@ module Engine
         class UpwardsAuction < Engine::Step::Base
           include Engine::Step::PassableAuction
           ACTIONS = %w[bid pass].freeze
+          PRICE_DROP = 5
 
           attr_reader :companies
 
@@ -39,9 +40,9 @@ module Engine
             else
               @log << "#{entity.name} passes bidding"
               entity.pass!
-              return all_passed! if entities.all?(&:passed?)
+              return next_entity! unless entities.all?(&:passed?)
 
-              next_entity!
+              all_passed!
             end
           end
 
@@ -80,7 +81,7 @@ module Engine
           end
 
           def starting_bid(company)
-            [0, company.value].max
+            [0, company.min_bid].max
           end
 
           def min_bid(company)
@@ -128,9 +129,33 @@ module Engine
           end
 
           def all_passed!
-            # Need to move entity round once more to be back to the priority deal player
             @round.next_entity_index!
-            pass!
+
+            if @companies.empty?
+              # Need to move entity round once more to be back to the priority deal player
+              pass!
+              return
+            end
+
+            # if any privates still left, reduce price and start over
+            company = @companies.first
+            company.discount += PRICE_DROP
+            if @companies.first.min_bid <= 0
+              company.discount = company.value
+              player = @round.current_entity
+              company.owner = player
+              player.companies << company
+              @log << "#{player.name} receives #{company.name} for #{@game.format_currency(0)}"
+              company_auction_finished(company)
+              pass! if @companies.empty?
+            else
+              @log << "#{company.name} price reduced to #{@game.format_currency(company.min_bid)}"
+            end
+            post_price_reduction(company)
+          end
+
+          def post_price_reduction(_company)
+            entities.each(&:unpass!)
           end
 
           def resolve_bids
