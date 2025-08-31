@@ -110,25 +110,15 @@ module Engine
         ST_CLOUD_BONUS_STR = ' (St. Cloud Hotel)'
         ST_CLOUD_ICON_NAME = 'SCH'
 
-        GAME_END_CHECK = {
-          bankrupt: :immediate,
-          custom: :one_more_full_or_set,
-          stock_market: :one_more_full_or_set,
-        }.freeze
-        GAME_END_CHECK_STOCK = {
-          bankrupt: :immediate,
-          custom: :full_or,
-          stock_market: :full_or,
-        }.freeze
         GAME_END_REASONS_TEXT = {
           bankrupt: 'Player is bankrupt',
-          custom: '6x2-train is bought/exported',
           stock_market: 'Corporation enters end game trigger on stock market',
+          final_train: '6x2-train was bought/exported',
         }.freeze
         GAME_END_DESCRIPTION_REASON_MAP_TEXT = {
           bankrupt: 'Bankruptcy',
-          custom: '6x2-train was bought/exported',
           stock_market: 'Company hit max stock value',
+          final_train: '6x2-train was bought/exported',
         }.freeze
 
         def ipo_name(_entity = nil)
@@ -475,13 +465,12 @@ module Engine
               reorder_players
               new_operating_round
             when Round::Operating
+              or_round_finished
               if @round.round_num < @operating_rounds
-                or_round_finished
                 new_operating_round(@round.round_num + 1)
               else
-                @turn += 1
-                or_round_finished
                 or_set_finished
+                @turn += 1
                 round = new_stock_round
                 move_jeweler_cash!
                 round
@@ -569,7 +558,9 @@ module Engine
           if @depot.upcoming.first&.name == '2+'
             depot.export_all!('2+')
           elsif !@depot.upcoming.empty?
+            @exporting = true
             depot.export!
+            @exporting = false
           end
         end
 
@@ -1018,15 +1009,17 @@ module Engine
           corporation
         end
 
-        def custom_end_game_reached?
-          @endgame_triggered
-        end
-
         def event_trigger_endgame!
-          return if @game_end_reason
+          return if @final_turn
 
-          @log << '-- Event: Endgame triggered --'
-          @endgame_triggered = true
+          @log << '-- Event: Endgame triggered by the first 6x2 train being bought/exported --'
+
+          @final_turn ||=
+            if @optional_rules.include?(:shorter_game_end) && !@exporting
+              @turn
+            else
+              @turn + 1
+            end
         end
 
         def init_share_pool
@@ -1038,23 +1031,15 @@ module Engine
           G18RoyalGorge::StockMarket.new(game_market, [])
         end
 
-        # a 6-train exporting, or a sold out corp hitting the game end zone on
-        # the stock market mess with the timing, so two GAME_END_CHECK configs
-        # are needed
-        def game_end_check_values
-          if @round&.stock?
-            self.class::GAME_END_CHECK_STOCK
-          else
-            self.class::GAME_END_CHECK
-          end
-        end
-
         def game_end_check
-          # save the result so that the apparent endgame trigger doesn't change,
-          # but keep checking for bankruptcy
-          reason, after = super
-          @game_end_reason = reason if !@game_end_reason || (reason == :bankrupt)
-          [@game_end_reason, after] if @game_end_reason
+          if @players.any?(&:bankrupt)
+            %i[bankrupt immediate]
+          elsif @stock_market.max_reached?
+            @final_turn = @turn
+            %i[stock_market one_more_full_or_set]
+          elsif @final_turn
+            %i[final_train one_more_full_or_set]
+          end
         end
 
         def end_game!(player_initiated: false)
