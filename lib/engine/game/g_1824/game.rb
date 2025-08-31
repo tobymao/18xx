@@ -43,6 +43,9 @@ module Engine
         # Rule VII.13, bullet 3
         DISCARDED_TRAINS = :remove
 
+        # Differ from 1837, rule VII.5, bullet 1: placed when first operating
+        HOME_TOKEN_TIMING = :operate
+
         # SELL_BUY_ORDER, same as 1837 (:sell_buy), see Rule VI.1 bullet 4
         # SELL_AFTER, same as 1837 (:operate), see Rule VI.8
         # SELL_MOVEMENT, same as 1837 (:down_block), see Rule VIII.3
@@ -711,7 +714,6 @@ module Engine
           cash = minor_initial_cash(minor, price)
           @bank.spend(cash, minor)
           @log << "#{minor.name} receives #{format_currency(cash)}"
-          place_home_token(minor)
           if minor.corporation?
             minor.floated = true
           else
