@@ -231,5 +231,5 @@ task 'fixture_import', [:id] do |_task, args|
 
   format_fixture_json(filename, pretty: true)
 
-  sh "git add #{filename}"
+  sh %(git add "#{filename}")
 end
