@@ -248,7 +248,10 @@ module Engine
         end
 
         def map_northern_italy_game_phases
-          phases = Array.new(self.class::S18_INCCAP_PHASES)
+          self.class::S18_INCCAP_PHASES
+        end
+
+        def map_northern_italy_post_game_phases(phases)
           phases[0][:status] = ['local_tokens'] # 2
           phases[0][:train_limit] = 4           # 2
           phases[1][:status] = ['local_tokens'] # 3
