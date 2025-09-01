@@ -237,7 +237,6 @@ module Engine
 
         def init_round
           @log << '-- First Stock Round --'
-          @log << 'Player order is reversed during the first turn'
           G1824::Round::FirstStock.new(self, [
             G1824::Step::BuySellParSharesFirstSr,
           ])
@@ -486,6 +485,10 @@ module Engine
 
         def corporation_available?(entity)
           buyable?(entity)
+        end
+
+        def unbought_companies?
+          !buyable_bank_owned_companies.empty?
         end
 
         def entity_can_use_company?(_entity, _company)

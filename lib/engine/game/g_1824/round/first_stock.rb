@@ -27,11 +27,13 @@ module Engine
           end
 
           def setup_pre_log_text
+            @game.log << 'Player order is reversed during the first turn'
+          end
+
+          def setup_post_log_text
             @game.log << 'After First Stock Round is finished any unsold Pre-State Railways, Coal Railways, '\
                          'and Mountain Railways will be removed from the game'
           end
-
-          def setup_post_log_text; end
 
           def select_entities
             return super unless @reverse
