@@ -17,7 +17,15 @@ module Engine
             player_debt = @game.player_debt(entity)
 
             actions = super
-            actions << 'special_buy' if !actions.empty? && buyable_items(entity)
+
+            # To exchange a coal mine is an available action in case no other action has been done
+            # (but we also need to add pass if no actions were allowed)
+            if !bought? && !sold? && !buyable_items(entity).empty?
+              actions << 'special_buy'
+              actions << 'pass' if actions.one?
+            end
+
+            # If debt exists, add actions to pay off
             if player_debt.positive? && entity.cash.positive?
               actions << 'payoff_player_debt'
               actions << 'payoff_player_debt_partial'
