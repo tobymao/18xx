@@ -712,16 +712,13 @@ module Engine
           end
         end
 
-        # Simplified version compared to 1837
+        # Simplified version compared to 1837, and also 1824 does
+        # not place home tokens until a corporation (even minor) operate.
         def float_minor!(minor, price)
           cash = minor_initial_cash(minor, price)
           @bank.spend(cash, minor)
           @log << "#{minor.name} receives #{format_currency(cash)}"
-          if minor.corporation?
-            minor.floated = true
-          else
-            minor.float!
-          end
+          minor.floated = true
         end
 
         def take_player_loan(player, loan)
