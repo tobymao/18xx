@@ -129,8 +129,6 @@ module Engine
           end
 
           def all_passed!
-            # @round.next_entity_index!
-
             if @companies.empty?
               # Need to move entity round once more to be back to the priority deal player
               pass!
