@@ -109,6 +109,12 @@ module Engine
               can_gain?(entity, bundle)
           end
 
+          def can_gain?(entity, bundle, exchange: false)
+            return super if bundle.owner != @game.share_pool || !bundle.presidents_share
+
+            entity.shares_of(bundle.corporation).one?
+          end
+
           def already_president?(corporation)
             @round.presidencies&.include?(corporation)
           end
