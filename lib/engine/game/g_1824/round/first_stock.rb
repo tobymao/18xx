@@ -90,22 +90,19 @@ module Engine
                 next
               end
 
-              # There is no implementation for close of a major Pre-Staatbahn - this is a weird corner case
-              if company.sym.end_with?('1')
-                # TODO: See https://boardgamegeek.com/thread/3546208/what-if-main-preestatsbahn-not-sold-during-startin
-                raise GameError, 'The weird case of unsold SD1, KK1, UG1 is not supported. Please reconsider. They are good!'
-              end
 
               # Rule VI.3, bullet 10: Pre-State Railways not bought are removed from the game
               # 1. Close company representing the pre-staatsbahn
               # 2. Close connected Preestatsbahn Minor
               # 3. Remove reservation of starting city
               # 4. Remove reservation of shares in connected national
-              # 5. Do not make national floatable - still need phase to do that
-              @game.log << "Pre-staatsbahn #{company.sym} closes and reservations are removed"
+              # 5. Do not make national floatable - float happens when national formed
+              national = @game.corporation_by_id(company.sym[0..-2])
+              @game.log << "Pre-staatsbahn #{company.sym} closes and reservations are removed, and token is moved to #{national.name}'s charter"
               remove_city_reservation(minor)
-              remove_share_reservation(@game.corporation_by_id(company.sym[0..-2]))
+              remove_share_reservation(national)
               minor.close!
+              @game.return_token(national)
             end
 
             # The closed entities are removed from the game

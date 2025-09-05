@@ -702,11 +702,11 @@ module Engine
               'Exchange to float'
             end
           when 'UG'
-            'UG1 exchange to float'
+            'UG formation to float'
           when 'KK'
-            'KK1 exchange to float'
+            'KK formation to float'
           when 'SD'
-            'SD1 exchange to float'
+            'SD formation to float'
           else
             super
           end
@@ -782,10 +782,23 @@ module Engine
         def return_kk_token(selected_token)
           selected = selected_token == 1 ? kk.placed_tokens.dup.first : kk.placed_tokens.dup.last
           selected.remove!
-          # Returned token should have price 40
           kk.tokens.first.price = 40
           kk.tokens.last.price = 100
           @kk_token_choice_player = nil
+        end
+
+        def return_token(national)
+          price =
+            case national.tokens.size
+              when 4
+                0
+              when 3
+                40
+              else
+                100
+            end
+          token = Engine::Token.new(national, price: price)
+          national.tokens.unshift(token)
         end
 
         private
