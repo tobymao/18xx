@@ -243,7 +243,7 @@ module Engine
           '619' => '619b',
         }.freeze
 
-        TOKEN_PRICES_AFTER_BUST = [80, 60, 40].freeze
+        TOKEN_PRICES_AFTER_BUST = [80, 60, 40, 0].freeze
 
         def ipo_name(_entity = nil)
           'Treasury'
