@@ -39,6 +39,23 @@ module Engine
               SIMPLE_DIVIDEND_TYPES
             end
           end
+
+          def process_dividend(action)
+            super
+            handle_warranties!(action.entity)
+          end
+
+          def handle_warranties!(entity)
+            # remove one warranty from each train and see if it rusts
+            entity.trains.dup.each do |train|
+              train.name = train.name[0..-2] if train.name.include?('*')
+              next if !@game.deferred_rust.include?(train) || train.name.include?('*')
+
+              @log << "#{train.name} rusts after warranty expires"
+              @game.deferred_rust.delete(train)
+              @game.rust(train)
+            end
+          end
         end
       end
     end

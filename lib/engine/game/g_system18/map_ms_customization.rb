@@ -275,7 +275,7 @@ module Engine
             Engine::Step::Route,
             GSystem18::Step::Dividend,
             Engine::Step::DiscardTrain,
-            GSystem18::Step::SingleDepotTrainBuy,
+            GSystem18::Step::BuyTrain,
           ]
         end
 
@@ -343,6 +343,10 @@ module Engine
           return self.class::GAME_END_CHECK unless @phase.name == 'D'
 
           { bankrupt: :immediate, final_phase: :one_more_full_or_set }
+        end
+
+        def map_ms_train_warranted?(train)
+          %w[2 3 4 5].include?(train.name)
         end
       end
     end

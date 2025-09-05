@@ -20,6 +20,12 @@ module Engine
             entities.select { |ent| ent.companies.empty? }
           end
 
+          def all_pass_next_entity
+            # skip over players with companies
+            @round.next_entity_index!
+            @round.next_entity_index! until @round.current_entity.companies.empty?
+          end
+
           def post_win_order(winning_player)
             # winner cannot compete in future auctions
             entities.each do |entity|
