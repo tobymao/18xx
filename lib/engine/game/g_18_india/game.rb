@@ -814,7 +814,7 @@ module Engine
         def gipr_exchange_with_closing_corp(corporation)
           corporation.placed_tokens.each_with_index do |token, index|
             exchange_token = Engine::Token.new(gipr, type: :exchange)
-            next unless token.city.tokenable?(gipr, free: true, tokens: [exchange_token], cheater: true, same_hex_allowed: false)
+            next unless token.city.tokenable?(gipr, free: true, tokens: [exchange_token], cheater: true, same_hex_allowed: true)
 
             if index.zero?
               token.swap!(exchange_token)
@@ -829,8 +829,11 @@ module Engine
                 token: token,
                 exchange_token: exchange_token,
               }
+            elsif token.city.tokenable?(gipr, free: true, tokens: [exchange_token], cheater: true, same_hex_allowed: true)
+              token.remove!
             end
           end
+          close_corporation(corporation)
           @round.clear_cache!
         end
 
