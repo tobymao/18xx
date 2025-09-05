@@ -681,10 +681,10 @@ module Engine
           end
         end
 
-        def revenue_for(route, stops)
+        def revenue_for(_route, stops)
           # Rule VII.9, bullet 6: Cannot visit the same revenue center twice (see correction in info)
-          all_stops = stops.map(&:hex)
-          raise GameError, 'Route cannot visit same revenue center twice' if all_stops.size != all_stops.uniq.size
+          city_stops = stops.select { |s| s.hex.tile.towns.empty? }.map(&:hex)
+          raise GameError, 'Route cannot visit same revenue center twice' unless city_stops.size == city_stops.uniq.size
 
           super
         end
