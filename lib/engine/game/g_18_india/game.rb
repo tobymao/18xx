@@ -863,7 +863,8 @@ module Engine
           corporation.companies.clear
 
           # move corp owned shares to open market
-          corp_owned_shares = corporation.shares_by_corporation[corporation]
+          corp_owned_shares = shares.select { |s| s.owner == corporation }
+
           corp_owned_shares.each do |shares|
             next if shares.corporation == corporation
 
