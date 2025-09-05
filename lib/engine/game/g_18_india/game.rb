@@ -408,6 +408,7 @@ module Engine
               # Use transfer shares method to control receiver of funds
               bundle = ShareBundle.new(card.treasury)
               share_pool.transfer_shares(bundle, @share_pool, spender: @bank, receiver: bundle.corporation, price: bundle.price)
+              @log << "Share of #{card.name} is availabe in the Market"
             else
               @log << "Private #{card.name} is availabe in the Market"
               card.owner = @bank
