@@ -7,8 +7,22 @@ module Engine
     module G1824
       module Step
         class BuyTrain < Engine::Step::BuyTrain
-          def can_entity_buy_train?(_entity)
-            true
+          def actions(entity)
+            actions = super.clone
+            return actions unless entity.operator?
+
+            # Skip train buy if there are no trains to buy - this was needed as the super implementation
+            # resulted in Buy Train / Pass when coal company had no g-trains to buy
+            if can_entity_buy_train?(entity) && !must_buy_train?(entity) && buyable_trains(entity).empty?
+              actions.delete('pass')
+              actions.delete('buy_train')
+            end
+
+            actions
+          end
+
+          def can_entity_buy_train?(entity)
+            entity.operator?
           end
 
           def must_buy_train?(entity)
@@ -50,10 +64,9 @@ module Engine
 
           def buyable_trains(entity)
             trains = super
-            is_coal_company = @game.coal_railway?(entity)
 
             # Coal railways may only buy g-trains, other corporations may buy any
-            trains.reject! { |t| is_coal_company && !@game.goods_train?(t.name) }
+            trains.reject! { |t| @game.coal_railway?(entity) && !@game.goods_train?(t.name) }
 
             # Cannot buy g-trains until first 2 train has been bought
             trains.reject! { |t| @game.goods_train?(t.name) && !@game.two_train_bought }
