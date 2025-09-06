@@ -84,7 +84,7 @@ module Engine
             return false if invalid_mountain_railway_exchange?(entity, corporation, exchange)
 
             (exchange || corporation.holding_ok?(entity, bundle.common_percent) || allowed_buy_from_market(entity, bundle)) &&
-              (@game.num_certs(entity) < @game.cert_limit(entity)) #&& @game.buyable?(corporation)
+              (@game.num_certs(entity) < @game.cert_limit(entity))
           end
 
           # Needed for two player variant, see Cisleithania implementation

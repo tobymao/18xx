@@ -129,7 +129,7 @@ module Engine
             @game.corporation_by_id(corp.id + '1')
           end
 
-          def is_primary_pre_staatsbahn?(company)
+          def primary_pre_staatsbahn?(company)
             company.sym[2] == '1'
           end
 
@@ -158,7 +158,7 @@ module Engine
           end
 
           def remove_share_reservation(national, company)
-            if is_primary_pre_staatsbahn?(company)
+            if primary_pre_staatsbahn?(company)
               national.unreserve_president_share!
             else
               national.unreserve_one_share!

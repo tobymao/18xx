@@ -202,9 +202,8 @@ module Engine
           from.paths_are_subset_of?(to.paths)
         end
 
-        # 1824 version differ from 1837
-        def set_national_president!(national, tie_breaker = [])
-          tie_breaker = tie_breaker.reverse
+        # 1824 version differ from 1837 as a national can become in receivership, and tie breaker is different
+        def set_national_president!(national, tie_breaker)
           current_president = national.owner || national
 
           # president determined by most shares, then tie breaker, then current president
@@ -216,7 +215,11 @@ module Engine
             return
           end
 
-          president_factors = national.player_share_holders.to_h do |player, percent|
+          @players.each do |p|
+            tie_breaker << p unless tie_breaker.include?(p)
+          end
+
+          president_factors = president_candidates.to_h do |player, percent|
             [[percent, tie_breaker.index(player) || -1, player == current_president ? 1 : 0], player]
           end
           president = president_factors[president_factors.keys.max]
