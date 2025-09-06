@@ -2388,6 +2388,57 @@ module Engine
         company.value
       end
 
+      def game_ending_description
+        reason, after = game_end_check
+        return unless after
+
+        after_text = ''
+
+        unless @finished
+          after_text = case after
+                       when :immediate
+                         ' : Game Ends immediately'
+                       when :current_round
+                         if @round.is_a?(Round::Operating)
+                           " : Game Ends at conclusion of this OR (#{turn}.#{@round.round_num})"
+                         else
+                           " : Game Ends at conclusion of this round (#{turn})"
+                         end
+                       when :current_or
+                         if @round.is_a?(Round::Operating)
+                           " : Game Ends at conclusion of this OR (#{turn}.#{@round.round_num})"
+                         else
+                           " : Game Ends at conclusion of the next OR (#{turn}.#{@round.round_num})"
+                         end
+                       when :full_or
+                         if @round.is_a?(Round::Operating)
+                           " : Game Ends at conclusion of #{round_end.short_name} #{turn}.#{operating_rounds}"
+                         else
+                           " : Game Ends at conclusion of #{round_end.short_name} #{turn}.#{@phase.operating_rounds}"
+                         end
+                       when :one_more_full_or_set
+                         " : Game Ends at conclusion of #{round_end.short_name}"\
+                         " #{@final_turn}.#{final_operating_rounds}"
+                       end
+          after_text += additional_ending_after_text
+        end
+
+        "#{self.class::GAME_END_DESCRIPTION_REASON_MAP_TEXT[reason]}#{after_text}"
+      end
+
+      def round_description(name, round_number = nil)
+        round_number ||= @round.round_num
+        description = "#{name} Round "
+
+        total = total_rounds(name)
+
+        description += @turn.to_s unless @turn.zero?
+        description += '.' if total && !@turn.zero?
+        description += "#{round_number} (of #{total})" if total
+
+        description.strip
+      end
+
       private
 
       def init_graph
@@ -2810,44 +2861,6 @@ module Engine
         @phase.operating_rounds
       end
 
-      def game_ending_description
-        reason, after = game_end_check
-        return unless after
-
-        after_text = ''
-
-        unless @finished
-          after_text = case after
-                       when :immediate
-                         ' : Game Ends immediately'
-                       when :current_round
-                         if @round.is_a?(Round::Operating)
-                           " : Game Ends at conclusion of this OR (#{turn}.#{@round.round_num})"
-                         else
-                           " : Game Ends at conclusion of this round (#{turn})"
-                         end
-                       when :current_or
-                         if @round.is_a?(Round::Operating)
-                           " : Game Ends at conclusion of this OR (#{turn}.#{@round.round_num})"
-                         else
-                           " : Game Ends at conclusion of the next OR (#{turn}.#{@round.round_num})"
-                         end
-                       when :full_or
-                         if @round.is_a?(Round::Operating)
-                           " : Game Ends at conclusion of #{round_end.short_name} #{turn}.#{operating_rounds}"
-                         else
-                           " : Game Ends at conclusion of #{round_end.short_name} #{turn}.#{@phase.operating_rounds}"
-                         end
-                       when :one_more_full_or_set
-                         " : Game Ends at conclusion of #{round_end.short_name}"\
-                         " #{@final_turn}.#{final_operating_rounds}"
-                       end
-          after_text += additional_ending_after_text
-        end
-
-        "#{self.class::GAME_END_DESCRIPTION_REASON_MAP_TEXT[reason]}#{after_text}"
-      end
-
       def additional_ending_after_text
         ''
       end
@@ -3067,19 +3080,6 @@ module Engine
 
       def president_assisted_buy(_corporation, _train, _price)
         [0, 0]
-      end
-
-      def round_description(name, round_number = nil)
-        round_number ||= @round.round_num
-        description = "#{name} Round "
-
-        total = total_rounds(name)
-
-        description += @turn.to_s unless @turn.zero?
-        description += '.' if total && !@turn.zero?
-        description += "#{round_number} (of #{total})" if total
-
-        description.strip
       end
 
       def corporation_available?(_entity)
