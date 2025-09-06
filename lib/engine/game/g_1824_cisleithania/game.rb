@@ -125,13 +125,7 @@ module Engine
         def init_companies(players)
           companies = COMPANIES.dup
 
-          mountain_railway_count =
-            case players.size
-            when 2
-              2
-            when 3
-              3
-            end
+          mountain_railway_count = players.size
           mountain_railway_count.times { |index| companies << mountain_railway_definition(index) }
 
           # Rule X.1/XI.1: Remove Coal mine SPB, Pre-Staatsbahn UG2, and - if 2 players - UG1

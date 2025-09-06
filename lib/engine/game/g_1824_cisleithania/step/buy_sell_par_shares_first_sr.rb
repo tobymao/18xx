@@ -12,7 +12,7 @@ module Engine
 
             return actions unless @game.two_player?
 
-            actions.delete(:pass) if @game.companies.find { |c| c.stack && c.stack < 4 }
+            actions.delete('pass') if @game.companies.find { |c| c.stack && c.stack < 4 }
 
             actions
           end
