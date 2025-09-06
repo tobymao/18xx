@@ -52,6 +52,12 @@ module Engine
             end
           end
 
+          def ebuy_offer_only_cheapest_depot_train?
+            return false if @game.abilities(current_entity, :ignore_mandatory_train) && !@game.phase.tiles.include?(:brown)
+
+            @game.class::EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST
+          end
+
           def process_sell_shares(action)
             raise GameError, "Cannot sell shares of #{action.bundle.corporation.name}" unless can_sell?(action.entity,
                                                                                                         action.bundle)
