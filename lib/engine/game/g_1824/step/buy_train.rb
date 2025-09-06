@@ -22,10 +22,14 @@ module Engine
           end
 
           def can_entity_buy_train?(entity)
+            return false if entity.receivership?
+
             entity.operator?
           end
 
           def must_buy_train?(entity)
+            return false if entity.receivership?
+
             # Rule VII.11 all entities must own a train, unless coal company and there are no g-trains in the depot
             return false unless entity.trains.empty?
 

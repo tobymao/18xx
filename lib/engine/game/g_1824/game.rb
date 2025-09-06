@@ -202,6 +202,31 @@ module Engine
           from.paths_are_subset_of?(to.paths)
         end
 
+        # 1824 version differ from 1837
+        def set_national_president!(national, tie_breaker = [])
+          tie_breaker = tie_breaker.reverse
+          current_president = national.owner || national
+
+          # president determined by most shares, then tie breaker, then current president
+          president_candidates = national.player_share_holders.reject { |_, p| p < 20 }
+          if national.unpresidentable?
+            @log << "#{national.name} is in receivership as long as noone owns 20% or more"
+            @share_pool.change_president(national.presidents_share, current_president, national)
+            national.owner = nil
+            return
+          end
+
+          president_factors = national.player_share_holders.to_h do |player, percent|
+            [[percent, tie_breaker.index(player) || -1, player == current_president ? 1 : 0], player]
+          end
+          president = president_factors[president_factors.keys.max]
+          return unless current_president != president
+
+          @log << "#{president.name} becomes the president of #{national.name}"
+          @share_pool.change_president(national.presidents_share, current_president, president)
+          national.owner = president
+        end
+
         # Similar to 1837
         def next_round!
           @round =
@@ -257,7 +282,7 @@ module Engine
             G1824::Step::KkTokenChoice,
             G1824::Step::DiscardTrain,
             Engine::Step::SpecialTrack,
-            Engine::Step::Track,
+            G1824::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
             G1824::Step::Dividend,
@@ -472,19 +497,8 @@ module Engine
           @kk ||= corporation_by_id('KK')
         end
 
-        def buyable?(entity)
-          # TODO: Is this OK? Do we still need buyable?
-          return true if entity.nil?
-
-          entity.all_abilities.none? { |a| a.type == :no_buy }
-        end
-
         def exchangable_for_mountain_railway?(player, corporation)
           corporation.type == :major && @companies.find { |c| mountain_railway?(c) && c.owned_by?(player) }
-        end
-
-        def corporation_available?(entity)
-          buyable?(entity)
         end
 
         def unbought_companies?
@@ -494,14 +508,6 @@ module Engine
         def entity_can_use_company?(_entity, _company)
           # Return false here so that Exchange abilities does not appear in GUI
           false
-        end
-
-        def sorted_corporations
-          sorted_corporations = super
-          return sorted_corporations unless @turn == 1
-
-          # Remove unbuyable stuff in SR 1 to reduce information
-          sorted_corporations.select { |c| buyable?(c) }
         end
 
         # TODO: This is a work around to avoid bond railway to appear twice in Entities view.
@@ -648,7 +654,7 @@ module Engine
 
         def place_home_token(corporation)
           # When Staatsbahn is formed it uses existing Pre-Staatsbahn so no new token is placed
-          return if staatsbahn?(corporation)
+          return if staatsbahn?(corporation) && corporation.placed_tokens.any?
 
           super
         end
@@ -721,25 +727,21 @@ module Engine
           minor.floated = true
         end
 
-        def take_player_loan(player, loan)
-          # Give the player the money. The money for loans is outside money, doesnt count towards the normal bank money.
-          player.cash += loan
-
-          # Add interest to the loan, must atleast pay 150% of the loaned value
-          loan_interest = player_loan_interest(loan)
-          @player_debts[player] += loan + loan_interest
-
-          @log << "#{player.name} takes a loan of #{format_currency(loan)}. " \
-                  "Interest #{loan_interest} added to debt."
+        # Modifed 1837 version as it will log incorrect received amount after
+        # formation + float.
+        def float_corporation(corporation)
+          @log << "#{corporation.name} floats"
+          capitilization = corporation.par_price.price * corporation.total_ipo_shares
+          @bank.spend(capitilization, corporation)
+          @log << "#{corporation.name} receives #{format_currency(capitilization)}"
         end
 
         def take_loan(player, amount)
           loan_amount = (amount.to_f * 1.5).ceil
-
-          increase_debt(player, loan_amount)
+          @player_debts[player] += loan_amount
 
           @log << "#{player.name} takes a loan of #{format_currency(amount)}. " \
-                  "The player debt is increased by #{format_currency(loan_amount * 2)}."
+                  "The player debt is increased by #{format_currency(loan_amount)}."
 
           @bank.spend(loan_amount, player)
         end
@@ -748,7 +750,7 @@ module Engine
           @player_debts.each do |player, loan|
             next unless loan.positive?
 
-            interest = player_loan_interest(loan)
+            interest = (loan.to_f * 0.5).ceil
             new_loan = loan + interest
             @player_debts[player] = new_loan
             @log << "#{player.name} increases their loan by 50% (#{format_currency(interest)}) to "\
@@ -756,22 +758,21 @@ module Engine
           end
         end
 
-        # Pay full or partial of the player loan. The money from loans is
-        # outside money, doesnt count towards the normal bank money.
+        # Pay full or partial of the player loan.
         def payoff_player_loan(player, payoff_amount: nil)
           loan_balance = @player_debts[player]
           payoff_amount = player.cash if !payoff_amount || payoff_amount > player.cash
           payoff_amount = [payoff_amount, loan_balance].min
 
           @player_debts[player] -= payoff_amount
-          player.cash -= payoff_amount
+          player.spend(payoff_amount, player)
 
           @log <<
             if payoff_amount == loan_balance
               "#{player.name} pays off their loan of #{format_currency(loan_balance)}."
             else
-              "#{player.name} decreases their loan by #{format_currency(payoff_amount)} "\
-                "(#{format_currency(@player_debts[player])})."
+              "#{player.name} decreases their loan by #{format_currency(payoff_amount)}. "\
+                "Remaining debt is #{format_currency(player_debt(player))}."
             end
         end
 
@@ -790,12 +791,12 @@ module Engine
         def return_token(national)
           price =
             case national.tokens.size
-              when 4
-                0
-              when 3
-                40
-              else
-                100
+            when 4
+              0
+            when 3
+              40
+            else
+              100
             end
           token = Engine::Token.new(national, price: price)
           national.tokens.unshift(token)
@@ -876,8 +877,10 @@ module Engine
               return_kk_token(2)
             end
           else
-            # Only one token, so nothing to remove (this is a case when one KK pre-stadtsbahn not sold)
-            @log << 'Only one KK token on board so no token to return to charter'
+            if kk.placed_tokens.one?
+              # Only one token, so nothing to remove (this is a case when one KK pre-stadtsbahn not sold)
+              @log << 'Only one KK token on board so no token to return to charter'
+            end
             @kk_token_choice_player = nil
           end
         end

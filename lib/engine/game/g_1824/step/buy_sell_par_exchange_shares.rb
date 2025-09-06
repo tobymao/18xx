@@ -44,8 +44,15 @@ module Engine
             @game.sorted_corporations.reject { |c| c.type == :minor || c.type == :construction_railway }
           end
 
-          def can_buy?(_entity, bundle)
-            super && @game.buyable?(bundle.corporation)
+          def can_buy?(entity, bundle)
+            return unless bundle
+            return false if @game.player_debt(entity).positive?
+            return false unless super
+
+            bundle = bundle.to_bundle
+            corporation = bundle.corporation
+
+            !(@game.staatsbahn?(corporation) && bundle.presidents_share)
           end
 
           def can_par?(_entity, _parrer)
@@ -55,7 +62,7 @@ module Engine
           def can_sell?(_entity, bundle)
             # Rule VI.8, bullet 1, sub-bullet 2: Bank ownership cannot exceed 50% for started corporations
             corp = bundle.corporation
-            super && @game.buyable?(corp) && (corp.ipo_shares.sum(&:percent) + bundle.percent <= 50)
+            super && (corp.ipo_shares.sum(&:percent) + bundle.percent <= 50)
           end
 
           # Rule VI.7, bullet 4: Exchange can take you over 60%
@@ -77,7 +84,7 @@ module Engine
             return false if invalid_mountain_railway_exchange?(entity, corporation, exchange)
 
             (exchange || corporation.holding_ok?(entity, bundle.common_percent) || allowed_buy_from_market(entity, bundle)) &&
-              (@game.num_certs(entity) < @game.cert_limit(entity)) && @game.buyable?(corporation)
+              (@game.num_certs(entity) < @game.cert_limit(entity)) #&& @game.buyable?(corporation)
           end
 
           # Needed for two player variant, see Cisleithania implementation
@@ -137,6 +144,9 @@ module Engine
           end
 
           def allow_president_change?(corporation)
+            # In case of Staatsbahn, president change is only allowed after formation
+            return false if @game.staatsbahn?(corporation) && !corporation.floated?
+
             reserved = corporation.reserved_shares
             reserved.none? { |s| s.percent == 20 }
           end

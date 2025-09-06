@@ -68,11 +68,17 @@ module Engine
           @real_presidents_percent = @presidents_share.percent
         end
 
-        # Used when a pre-staatsbahn is unsold during initial SR, or
+        # Used when a secondary pre-staatsbahn is unsold during initial SR, or
         # when pre-staatsbahn becomes a construction railway (2 players)
         # We need to unreserve one of the shares of the national.
         def unreserve_one_share!
           (shares.find { |s| !s.buyable && s.percent == 10 })&.buyable = true
+        end
+
+        # Used when a primary pre-staatsbahn is unsold during initial SR
+        # We need to unreserve the 20% share of the national.
+        def unreserve_president_share!
+          (shares.find { |s| !s.buyable && s.percent == 20 })&.buyable = true
         end
 
         def should_not_float_until_exchange!
@@ -91,6 +97,17 @@ module Engine
           @floatable = true
           @percent_total_ipo_shares = 100
           @real_presidents_percent = @presidents_share.percent
+        end
+
+        def receivership?
+          return true if @floated && unpresidentable?
+
+          super
+        end
+
+        # True if no player owns 20% or more
+        def unpresidentable?
+          player_share_holders.reject { |_, p| p < 20 }.empty?
         end
       end
     end

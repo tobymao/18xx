@@ -11,18 +11,12 @@ module Engine
             !bought?
           end
 
-          def can_buy?(_entity, bundle)
-            super && @game.buyable?(bundle.corporation)
-          end
-
           def can_sell?(_entity, _bundle)
             false
           end
 
           def can_gain?(_entity, bundle, exchange: false)
-            return false if exchange
-
-            super && @game.buyable?(bundle.corporation)
+            exchange ? false : super
           end
 
           def can_exchange?(_entity)
