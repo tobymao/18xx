@@ -49,7 +49,7 @@ module Engine
             @log << "#{entity.name} pays #{@game.format_currency(cost)} to build tunnel at #{mountain_hex.id}"
             entity.spend(cost, @game.bank) if cost.positive?
 
-            factory_owner = @game.company_by_id('P3').owner
+            factory_owner = @game.company_by_id('P3A').owner
             @game.bank.spend(10, factory_owner) if factory_owner
             @log << "#{factory_owner.name} receives #{@game.format_currency(10)} for building a tunnel" if factory_owner
 

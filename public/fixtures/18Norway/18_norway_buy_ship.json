@@ -16,7 +16,7 @@
       "entity_type": "player",
       "id": 2,
       "created_at": 1743923763,
-      "company": "P2",
+      "company": "P2A",
       "price": 30
     },
     {
@@ -25,7 +25,7 @@
       "entity_type": "player",
       "id": 3,
       "created_at": 1743923765,
-      "company": "P3",
+      "company": "P3A",
       "price": 40
     },
     {
@@ -34,7 +34,7 @@
       "entity_type": "player",
       "id": 4,
       "created_at": 1743923766,
-      "company": "P4",
+      "company": "P4A",
       "price": 50
     },
     {
@@ -437,7 +437,7 @@
   "loaded": true,
   "result": {
     "0": 506,
-    "1": 390,
+    "1": 400,
     "2": 400
   },
   "manually_ended": true,
