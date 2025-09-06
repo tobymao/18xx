@@ -4,7 +4,7 @@ require_relative '../../share_pool'
 
 module Engine
   module Game
-    module G1824
+    module G1824Cisleithania
       class SharePool < Engine::SharePool
         def bank_at_limit?(corporation)
           return super unless @game.bond_railway?(corporation)

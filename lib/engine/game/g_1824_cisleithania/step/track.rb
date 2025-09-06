@@ -4,7 +4,7 @@ require_relative '../../../step/track'
 
 module Engine
   module Game
-    module G1824
+    module G1824Cisleithania
       module Step
         class Track < Engine::Step::Track
           def can_lay_tile?(entity)
