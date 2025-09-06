@@ -37,6 +37,8 @@ module Engine
         include MapMsCustomization
         include MapScotlandCustomization
 
+        attr_accessor :deferred_rust
+
         register_colors(red: '#d1232a',
                         orange: '#f58121',
                         black: '#110a0c',
@@ -430,6 +432,8 @@ module Engine
             @log << '-- ||============================================================================'
           end
 
+          @deferred_rust = []
+
           ###################################################
           # Default constant overrides for most maps
           # (to be re-overridden if needed by specific maps)
@@ -583,12 +587,6 @@ module Engine
           return super unless respond_to?("map_#{cmap_name}_or_round_finished")
 
           send("map_#{cmap_name}_or_round_finished")
-        end
-
-        def rust_trains!(train, entity)
-          return super unless respond_to?("map#{cmap_name}_rust_trains!")
-
-          send("map_#{cmap_name}_rust_trains!", train, entity)
         end
 
         def close_corporation(corporation, quiet: false)
@@ -774,6 +772,28 @@ module Engine
           return super unless respond_to?("map_#{cmap_name}_game_end_check_values")
 
           send("map_#{cmap_name}_game_end_check_values")
+        end
+
+        def rust?(train, purchased_train)
+          !@deferred_rust.include?(train) && super
+        end
+
+        def rust_trains!(train, entity)
+          return send("map_#{cmap_name}_rust_trains!", train, entity) if respond_to?("map#{cmap_name}_rust_trains!")
+
+          trains.each do |t|
+            next if !t.name.include?('*') || !rust?(t, train)
+
+            @deferred_rust << t
+          end
+
+          super
+        end
+
+        def train_warranted?(train)
+          return false unless respond_to?("map_#{cmap_name}_train_warranted?")
+
+          send("map_#{cmap_name}_train_warranted?", train)
         end
       end
     end

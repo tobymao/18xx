@@ -39,6 +39,14 @@ module Engine
             @emr_issue = false
           end
 
+          def buy_train_action(action)
+            super
+            return unless @game.train_warranted?(action.train)
+
+            @log << "#{action.entity.name} receives a warranty for the #{action.train.name} train"
+            action.train.name = action.train.name + '*'
+          end
+
           def other_trains(entity)
             return super unless @emr_issue
 

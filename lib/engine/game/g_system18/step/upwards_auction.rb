@@ -129,13 +129,13 @@ module Engine
           end
 
           def all_passed!
-            @round.next_entity_index!
-
             if @companies.empty?
               # Need to move entity round once more to be back to the priority deal player
               pass!
               return
             end
+
+            all_pass_next_entity
 
             # if any privates still left, reduce price and start over
             company = @companies.first
@@ -153,6 +153,10 @@ module Engine
               @log << "#{company.name} price reduced to #{@game.format_currency(company.min_bid)}"
               post_price_reduction(company)
             end
+          end
+
+          def all_pass_next_entity
+            @round.next_entity_index!
           end
 
           def post_price_reduction(_company)
