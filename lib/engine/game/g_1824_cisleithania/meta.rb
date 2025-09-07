@@ -14,6 +14,7 @@ module Engine
 
         DEV_STAGE = :alpha
 
+        GAME_IS_VARIANT_OF = G1824::Meta
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1824-Cisleithania-map'.freeze
         GAME_TITLE = '1824 Cisleithania'.freeze
 

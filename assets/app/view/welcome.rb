@@ -16,8 +16,8 @@ module View
 
     def render_notification
       message = <<~MESSAGE
-        <p><a href="https://github.com/tobymao/18xx/wiki/1824">1824</a> is now in alpha, together with the
-           <a href="https://github.com/tobymao/18xx/wiki/1824-Cisleithania-map">1824 Cisleithania map variants</a>.</p>
+        <p><a href="https://github.com/tobymao/18xx/wiki/1824">1824</a> is now in alpha, including the
+           <a href="https://github.com/tobymao/18xx/wiki/1824-Cisleithania-map">Cisleithania map variants</a>.</p>
 
         <p>Report bugs and make feature requests <a href='https://github.com/tobymao/18xx/issues'>on GitHub</a>.</p>
       MESSAGE

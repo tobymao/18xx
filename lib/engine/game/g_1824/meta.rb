@@ -27,6 +27,14 @@ module Engine
             desc: 'Use the Goods Time Variant (3-6 players) - pre-set scenario according to the rulebook.',
           },
         ].freeze
+        GAME_VARIANTS = [
+          {
+            sym: :cis,
+            name: 'Cisleithania',
+            title: '1824 Cisleithania',
+            desc: 'Alternate map for 2-3 players',
+          },
+        ].freeze
       end
     end
   end
