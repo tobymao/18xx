@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative '../../../../game_spec_helper'
+require 'spec_helper'
 
 describe Engine::Game::G18RoyalGorge::Game do
   describe 'endgame_triggered_on_buy' do
