@@ -8,7 +8,7 @@ module Engine
       module Meta
         include Game::Meta
 
-        DEV_STAGE = :prealpha
+        DEV_STAGE = :alpha
         DEPENDS_ON = '1837'
 
         GAME_SUBTITLE = 'Austrian-Hungarian Railway'.freeze
@@ -25,6 +25,14 @@ module Engine
             sym: :goods_time,
             short_name: 'Goods Time',
             desc: 'Use the Goods Time Variant (3-6 players) - pre-set scenario according to the rulebook.',
+          },
+        ].freeze
+        GAME_VARIANTS = [
+          {
+            sym: :cis,
+            name: 'Cisleithania',
+            title: '1824 Cisleithania',
+            desc: 'Alternate map for 2-3 players',
           },
         ].freeze
       end
