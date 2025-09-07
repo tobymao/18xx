@@ -12,6 +12,12 @@ module Engine
           include G1868WY::SkipCoalAndOil
           include G1868WY::Step::Tracker
 
+          def help
+            return unless @game.tokenless_dpr?(current_entity)
+
+            'DPR may lay/upgrade a city tile to make room for its new home token.'
+          end
+
           def setup
             super
 
@@ -20,7 +26,7 @@ module Engine
           end
 
           def can_lay_tile?(entity)
-            return false if @game.skip_homeless_dpr?(entity)
+            return false if @game.tokenless_dpr?(entity) && @round.num_laid_track.positive?
             return true if super
 
             # if 1 track point remains and a track laying private can be bought,
@@ -48,6 +54,7 @@ module Engine
           def actions(entity)
             return [] unless entity == current_entity
             return [] unless entity.corporation?
+            return actions_for_tokenless_dpr(entity) if @game.tokenless_dpr?(entity)
             return self.class::ACTIONS_WITH_PASS if can_lay_tile?(entity)
 
             %w[credit_mobilier pass]
@@ -56,6 +63,17 @@ module Engine
           def process_pass(action)
             log_pass(action.entity) if can_lay_tile?(action.entity)
             pass!
+          end
+
+          def hex_neighbors(entity, _hex)
+            @game.tokenless_dpr?(entity) ? (0..5).to_a : super
+          end
+
+          def actions_for_tokenless_dpr(dpr)
+            return %w[credit_mobilier pass] if @round.num_laid_track.positive?
+            return ACTIONS_WITH_PASS if @game.home_token_locations(dpr).empty?
+
+            []
           end
         end
       end

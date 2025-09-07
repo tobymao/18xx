@@ -84,10 +84,6 @@ module Engine
             super(@game.dpr)
           end
 
-          def map_action_optional?
-            true
-          end
-
           def process_place_token(action)
             token = action.token
 
@@ -111,7 +107,8 @@ module Engine
               entity == @game.dpr.player &&
               @game.dpr.floated? &&
               @game.dpr.tokens.count(&:used).zero? &&
-              !@game.home_token_locations(@game.dpr).empty?
+              !@game.home_token_locations(@game.dpr).empty? &&
+              @game.dpr_first_home_status != :placed
           end
 
           def initial_double_share_bundle?(bundle)

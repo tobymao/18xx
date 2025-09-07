@@ -11,7 +11,7 @@ module Engine
           include G1868WY::SkipCoalAndOil
 
           def actions(entity)
-            @game.skip_homeless_dpr?(entity) ? [] : super
+            @game.tokenless_dpr?(entity) ? [] : super
           end
 
           def available_hex(entity, hex, check_billings: true)
