@@ -43,6 +43,9 @@ module Engine
         # Rule VII.13, bullet 3
         DISCARDED_TRAINS = :remove
 
+        # Differ from 1837, rule VII.5, bullet 1: placed when first operating
+        HOME_TOKEN_TIMING = :operate
+
         # SELL_BUY_ORDER, same as 1837 (:sell_buy), see Rule VI.1 bullet 4
         # SELL_AFTER, same as 1837 (:operate), see Rule VI.8
         # SELL_MOVEMENT, same as 1837 (:down_block), see Rule VIII.3
@@ -199,6 +202,34 @@ module Engine
           from.paths_are_subset_of?(to.paths)
         end
 
+        # 1824 version differ from 1837 as a national can become in receivership, and tie breaker is different
+        def set_national_president!(national, tie_breaker)
+          current_president = national.owner || national
+
+          # president determined by most shares, then tie breaker, then current president
+          president_candidates = national.player_share_holders.reject { |_, p| p < 20 }
+          if national.unpresidentable?
+            @log << "#{national.name} is in receivership as long as noone owns 20% or more"
+            @share_pool.change_president(national.presidents_share, current_president, national)
+            national.owner = nil
+            return
+          end
+
+          @players.each do |p|
+            tie_breaker << p unless tie_breaker.include?(p)
+          end
+
+          president_factors = president_candidates.to_h do |player, percent|
+            [[percent, tie_breaker.index(player) || -1, player == current_president ? 1 : 0], player]
+          end
+          president = president_factors[president_factors.keys.max]
+          return unless current_president != president
+
+          @log << "#{president.name} becomes the president of #{national.name}"
+          @share_pool.change_president(national.presidents_share, current_president, president)
+          national.owner = president
+        end
+
         # Similar to 1837
         def next_round!
           @round =
@@ -234,7 +265,6 @@ module Engine
 
         def init_round
           @log << '-- First Stock Round --'
-          @log << 'Player order is reversed during the first turn'
           G1824::Round::FirstStock.new(self, [
             G1824::Step::BuySellParSharesFirstSr,
           ])
@@ -255,7 +285,7 @@ module Engine
             G1824::Step::KkTokenChoice,
             G1824::Step::DiscardTrain,
             Engine::Step::SpecialTrack,
-            Engine::Step::Track,
+            G1824::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
             G1824::Step::Dividend,
@@ -470,32 +500,17 @@ module Engine
           @kk ||= corporation_by_id('KK')
         end
 
-        def buyable?(entity)
-          # TODO: Is this OK? Do we still need buyable?
-          return true if entity.nil?
-
-          entity.all_abilities.none? { |a| a.type == :no_buy }
-        end
-
         def exchangable_for_mountain_railway?(player, corporation)
           corporation.type == :major && @companies.find { |c| mountain_railway?(c) && c.owned_by?(player) }
         end
 
-        def corporation_available?(entity)
-          buyable?(entity)
+        def unbought_companies?
+          !buyable_bank_owned_companies.empty?
         end
 
         def entity_can_use_company?(_entity, _company)
           # Return false here so that Exchange abilities does not appear in GUI
           false
-        end
-
-        def sorted_corporations
-          sorted_corporations = super
-          return sorted_corporations unless @turn == 1
-
-          # Remove unbuyable stuff in SR 1 to reduce information
-          sorted_corporations.select { |c| buyable?(c) }
         end
 
         # TODO: This is a work around to avoid bond railway to appear twice in Entities view.
@@ -642,7 +657,7 @@ module Engine
 
         def place_home_token(corporation)
           # When Staatsbahn is formed it uses existing Pre-Staatsbahn so no new token is placed
-          return if staatsbahn?(corporation)
+          return if staatsbahn?(corporation) && corporation.placed_tokens.any?
 
           super
         end
@@ -675,10 +690,10 @@ module Engine
           end
         end
 
-        def revenue_for(route, stops)
+        def revenue_for(_route, stops)
           # Rule VII.9, bullet 6: Cannot visit the same revenue center twice (see correction in info)
-          all_stops = stops.map(&:hex)
-          raise GameError, 'Route cannot visit same revenue center twice' if all_stops.size != all_stops.uniq.size
+          city_stops = stops.select { |s| s.hex.tile.towns.empty? }.map(&:hex)
+          raise GameError, 'Route cannot visit same revenue center twice' unless city_stops.size == city_stops.uniq.size
 
           super
         end
@@ -696,48 +711,40 @@ module Engine
               'Exchange to float'
             end
           when 'UG'
-            'UG1 exchange to float'
+            'UG formation to float'
           when 'KK'
-            'KK1 exchange to float'
+            'KK formation to float'
           when 'SD'
-            'SD1 exchange to float'
+            'SD formation to float'
           else
             super
           end
         end
 
-        # Simplified version compared to 1837
+        # Simplified version compared to 1837, and also 1824 does
+        # not place home tokens until a corporation (even minor) operate.
         def float_minor!(minor, price)
           cash = minor_initial_cash(minor, price)
           @bank.spend(cash, minor)
           @log << "#{minor.name} receives #{format_currency(cash)}"
-          place_home_token(minor)
-          if minor.corporation?
-            minor.floated = true
-          else
-            minor.float!
-          end
+          minor.floated = true
         end
 
-        def take_player_loan(player, loan)
-          # Give the player the money. The money for loans is outside money, doesnt count towards the normal bank money.
-          player.cash += loan
-
-          # Add interest to the loan, must atleast pay 150% of the loaned value
-          loan_interest = player_loan_interest(loan)
-          @player_debts[player] += loan + loan_interest
-
-          @log << "#{player.name} takes a loan of #{format_currency(loan)}. " \
-                  "Interest #{loan_interest} added to debt."
+        # Modifed 1837 version as it will log incorrect received amount after
+        # formation + float.
+        def float_corporation(corporation)
+          @log << "#{corporation.name} floats"
+          capitilization = corporation.par_price.price * corporation.total_ipo_shares
+          @bank.spend(capitilization, corporation)
+          @log << "#{corporation.name} receives #{format_currency(capitilization)}"
         end
 
         def take_loan(player, amount)
           loan_amount = (amount.to_f * 1.5).ceil
-
-          increase_debt(player, loan_amount)
+          @player_debts[player] += loan_amount
 
           @log << "#{player.name} takes a loan of #{format_currency(amount)}. " \
-                  "The player debt is increased by #{format_currency(loan_amount * 2)}."
+                  "The player debt is increased by #{format_currency(loan_amount)}."
 
           @bank.spend(loan_amount, player)
         end
@@ -746,7 +753,7 @@ module Engine
           @player_debts.each do |player, loan|
             next unless loan.positive?
 
-            interest = player_loan_interest(loan)
+            interest = (loan.to_f * 0.5).ceil
             new_loan = loan + interest
             @player_debts[player] = new_loan
             @log << "#{player.name} increases their loan by 50% (#{format_currency(interest)}) to "\
@@ -754,22 +761,21 @@ module Engine
           end
         end
 
-        # Pay full or partial of the player loan. The money from loans is
-        # outside money, doesnt count towards the normal bank money.
+        # Pay full or partial of the player loan.
         def payoff_player_loan(player, payoff_amount: nil)
           loan_balance = @player_debts[player]
           payoff_amount = player.cash if !payoff_amount || payoff_amount > player.cash
           payoff_amount = [payoff_amount, loan_balance].min
 
           @player_debts[player] -= payoff_amount
-          player.cash -= payoff_amount
+          player.spend(payoff_amount, player)
 
           @log <<
             if payoff_amount == loan_balance
               "#{player.name} pays off their loan of #{format_currency(loan_balance)}."
             else
-              "#{player.name} decreases their loan by #{format_currency(payoff_amount)} "\
-                "(#{format_currency(@player_debts[player])})."
+              "#{player.name} decreases their loan by #{format_currency(payoff_amount)}. "\
+                "Remaining debt is #{format_currency(player_debt(player))}."
             end
         end
 
@@ -780,10 +786,23 @@ module Engine
         def return_kk_token(selected_token)
           selected = selected_token == 1 ? kk.placed_tokens.dup.first : kk.placed_tokens.dup.last
           selected.remove!
-          # Returned token should have price 40
           kk.tokens.first.price = 40
           kk.tokens.last.price = 100
           @kk_token_choice_player = nil
+        end
+
+        def return_token(national)
+          price =
+            case national.tokens.size
+            when 4
+              0
+            when 3
+              40
+            else
+              100
+            end
+          token = Engine::Token.new(national, price: price)
+          national.tokens.unshift(token)
         end
 
         private
@@ -861,8 +880,10 @@ module Engine
               return_kk_token(2)
             end
           else
-            # Only one token, so nothing to remove (this is a case when one KK pre-stadtsbahn not sold)
-            @log << 'Only one KK token on board so no token to return to charter'
+            if kk.placed_tokens.one?
+              # Only one token, so nothing to remove (this is a case when one KK pre-stadtsbahn not sold)
+              @log << 'Only one KK token on board so no token to return to charter'
+            end
             @kk_token_choice_player = nil
           end
         end

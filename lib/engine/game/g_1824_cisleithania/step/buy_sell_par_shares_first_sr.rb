@@ -12,9 +12,19 @@ module Engine
 
             return actions unless @game.two_player?
 
-            actions.delete('pass') if @game.companies.find { |c| c.stack && c.stack < 4 }
+            actions.delete('pass') if stack_phase
+            actions.delete('par') if stack_phase || mr_phase
+            actions.delete('buy_shares') if stack_phase || mr_phase
 
             actions
+          end
+
+          def stack_phase
+            @game.two_player? && @game.any_stacks_left?
+          end
+
+          def mr_phase
+            @game.two_player? && !@game.any_stacks_left? && @game.unbought_companies?
           end
 
           def can_buy_company?(player, company)
@@ -24,7 +34,7 @@ module Engine
           end
 
           def visible_corporations
-            return [] if @game.two_player? && @game.any_stacks_left?
+            return [] if @game.two_player? && @game.unbought_companies?
 
             @game.sorted_corporations.reject { |c| c.closed? || c.type == :minor || c.type == :construction_railway }
           end
@@ -46,6 +56,24 @@ module Engine
                              "#{@game.current_stack}"
               end
 
+              super
+            end
+          end
+
+          def process_pass(action)
+            if @game.two_player? && !@game.any_stacks_left? && @game.unbought_companies?
+              # A player reject to buy a mountain railway, discard the one with the highest number
+              @game.buyable_bank_owned_companies.last.close!
+            end
+
+            super
+          end
+
+          def pass_description
+            if @round.current_actions.empty? && @game.two_player? && !@game.any_stacks_left? && @game.unbought_companies?
+              # A player need to decide if they want to draft a mountain railway or not
+              'Pass (Mountain Railway)'
+            else
               super
             end
           end

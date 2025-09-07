@@ -24,14 +24,18 @@ module Engine
             setup_post_log_text
 
             @entities.reverse!
+
+            @remembered_cities = Hash.new { |h, k| h[k] = 0 }
           end
 
           def setup_pre_log_text
+            @game.log << 'Player order is reversed during the first turn'
+          end
+
+          def setup_post_log_text
             @game.log << 'After First Stock Round is finished any unsold Pre-State Railways, Coal Railways, '\
                          'and Mountain Railways will be removed from the game'
           end
-
-          def setup_post_log_text; end
 
           def select_entities
             return super unless @reverse
@@ -88,22 +92,26 @@ module Engine
                 next
               end
 
-              # There is no implementation for close of a major Pre-Staatbahn - this is a weird corner case
-              if company.sym.end_with?('1')
-                # TODO: See https://boardgamegeek.com/thread/3546208/what-if-main-preestatsbahn-not-sold-during-startin
-                raise GameError, 'The weird case of unsold SD1, KK1, UG1 is not supported. Please reconsider. They are good!'
-              end
-
               # Rule VI.3, bullet 10: Pre-State Railways not bought are removed from the game
               # 1. Close company representing the pre-staatsbahn
               # 2. Close connected Preestatsbahn Minor
               # 3. Remove reservation of starting city
               # 4. Remove reservation of shares in connected national
-              # 5. Do not make national floatable - still need phase to do that
-              @game.log << "Pre-staatsbahn #{company.sym} closes and reservations are removed"
+              # 5. Do not make national floatable - float happens when national formed
+              national = get_staatsbahn(company)
+              @game.log << "Pre-staatsbahn #{company.sym} closes and reservations are removed, "\
+                           "and token is moved to #{national.name}'s charter"
               remove_city_reservation(minor)
-              remove_share_reservation(@game.corporation_by_id(company.sym[0..-2]))
+              remove_share_reservation(national, company)
               minor.close!
+              @game.return_token(national)
+            end
+
+            # In case if no pre-staatsbahn of a color was sold, the staatsbahn need to have home location set as it will
+            # have no tokens on board when forming.
+            @game.corporations.select { |c| @game.staatsbahn?(c) && c.reserved_shares.none? }.each do |corp|
+              minor = get_primary_pre_staatsbahn(corp)
+              add_city_reservation(corp, minor)
             end
 
             # The closed entities are removed from the game
@@ -113,6 +121,18 @@ module Engine
 
           private
 
+          def get_staatsbahn(company)
+            @game.corporation_by_id(company.sym[0..-2])
+          end
+
+          def get_primary_pre_staatsbahn(corp)
+            @game.corporation_by_id(corp.id + '1')
+          end
+
+          def primary_pre_staatsbahn?(company)
+            company.sym[2] == '1'
+          end
+
           def remove_city_reservation(minor)
             hex = @game.hex_by_id(minor.coordinates)
             tile = hex.tile
@@ -120,10 +140,29 @@ module Engine
             city = cities.find { |c| c.reserved_by?(minor) } || cities.first
             city.remove_reservation!(minor)
             minor.tokens.first.remove!
+
+            # Remember the city in case staatsbahn need to reserve it later
+            @remembered_cities[minor] = city
           end
 
-          def remove_share_reservation(national)
-            national.unreserve_one_share!
+          def add_city_reservation(corp, minor)
+            corp.coordinates = minor.coordinates
+
+            # This city was unreserved when pre-staatsbahn closed, and we remembered it for later use (ie now)
+            city = @remembered_cities[minor]
+
+            # TODO: When testing this with unsold KK, KK reservation does not appear until Wien is upgraded to
+            # brown. Why? Need to investigate further.
+            city.add_reservation!(corp, minor.city)
+            @game.log << "#{corp.name} reserves city in #{city.hex.id} as home token location"
+          end
+
+          def remove_share_reservation(national, company)
+            if primary_pre_staatsbahn?(company)
+              national.unreserve_president_share!
+            else
+              national.unreserve_one_share!
+            end
           end
         end
       end
