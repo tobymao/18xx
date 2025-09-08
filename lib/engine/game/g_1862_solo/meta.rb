@@ -14,6 +14,7 @@ module Engine
 
         DEV_STAGE = :prealpha
 
+        GAME_IS_VARIANT_OF = G1862::Meta
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1862'.freeze
         GAME_TITLE = '1862 Solo'.freeze
 
