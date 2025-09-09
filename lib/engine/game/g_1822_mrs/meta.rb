@@ -42,7 +42,12 @@ module Engine
                   'home tokens will be placed in Southwest England (D39).',
             players: [2],
           },
-
+          {
+            sym: :tax_haven_multiple,
+            short_name: 'Tax Haven Variant',
+            desc: 'P16 (Tax Haven) can use the cash it accumulates to buy 1 share per SR. Cannot '\
+                  'own multiple shares of one corporation.',
+          },
         ].freeze
 
         MUTEX_RULES = [
