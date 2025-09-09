@@ -110,6 +110,7 @@ module Engine
         COMPANY_CHPR = nil
         COMPANY_LCDR = nil
         COMPANY_OSTH = nil
+        COMPANY_LUR = 'P21' # Move Card
 
         PRIVATE_COMPANIES_ACQUISITION = {
           'P1' => { acquire: %i[major], phase: 5 },
