@@ -385,8 +385,11 @@ module Engine
           # Replace token
           city = hex_by_id(corporation.coordinates).tile.cities.find { |c| c.reserved_by?(corporation) }
           city.remove_reservation!(corporation)
-          city.place_token(ndem, ndem.find_token_by_type, check_tokenable: false)
-          graph.clear
+          # Don't double up on NdeM tokens
+          unless city.tokened_by?(ndem)
+            city.place_token(ndem, ndem.find_token_by_type, check_tokenable: false)
+            graph.clear
+          end
 
           # Add a stock certificate
           new_share = Share.new(ndem, percent: 10, index: @number_ndem_shares)
