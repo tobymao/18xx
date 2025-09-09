@@ -4,6 +4,7 @@ require 'snabberb/component'
 
 require 'engine'
 require_relative 'fixture_cache'
+require_relative 'matchers'
 
 Engine::Logger.set_level(Logger::FATAL)
 

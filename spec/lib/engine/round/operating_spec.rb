@@ -2,12 +2,6 @@
 
 require './spec/spec_helper'
 
-RSpec::Matchers.define :be_assigned_to do |expected|
-  match do |actual|
-    expected.assigned?(actual.id)
-  end
-end
-
 module Engine
   describe Round::Operating do
     let(:players) { %w[a b c] }
