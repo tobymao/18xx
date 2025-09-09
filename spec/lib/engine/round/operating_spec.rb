@@ -1,12 +1,6 @@
 # frozen_string_literal: true
 
-require './spec/spec_helper'
-
-RSpec::Matchers.define :be_assigned_to do |expected|
-  match do |actual|
-    expected.assigned?(actual.id)
-  end
-end
+require 'spec_helper'
 
 module Engine
   describe Round::Operating do
