@@ -7,16 +7,31 @@ module Engine
     module G1824
       module Step
         class BuyTrain < Engine::Step::BuyTrain
-          def can_entity_buy_train?(_entity)
-            true
+          def actions(entity)
+            actions = super.clone
+            return actions unless entity.operator?
+
+            # Skip train buy if there are no trains to buy - this was needed as the super implementation
+            # resulted in Buy Train / Pass when coal company had no g-trains to buy
+            if can_entity_buy_train?(entity) && !must_buy_train?(entity) && buyable_trains(entity).empty?
+              actions.delete('pass')
+              actions.delete('buy_train')
+            end
+
+            actions
+          end
+
+          def can_entity_buy_train?(entity)
+            return false if entity.receivership?
+
+            entity.operator?
           end
 
           def must_buy_train?(entity)
+            return false if entity.receivership?
+
             # Rule VII.11 all entities must own a train, unless coal company and there are no g-trains in the depot
             return false unless entity.trains.empty?
-
-            # Rule X.3 and X.4: Construction railways cannot own any trains
-            return false if @game.construction_railway?(entity) || @game.bond_railway?(entity)
 
             return true unless @game.coal_railway?(entity)
 
@@ -49,20 +64,13 @@ module Engine
             super
 
             @game.two_train_bought = true if train.name == '2'
-
-            return unless @game.two_player?
-
-            # Rule X.4, need to handle extra tokening of bond railway
-            @game.set_last_train_buyer(entity, train) if train.name == '4' && @depot.depot_trains.first.name == '5'
-            @game.set_last_train_buyer(entity, train) if train.name == '5' && @depot.depot_trains.first.name == '6'
           end
 
           def buyable_trains(entity)
             trains = super
-            is_coal_company = @game.coal_railway?(entity)
 
             # Coal railways may only buy g-trains, other corporations may buy any
-            trains.reject! { |t| is_coal_company && !@game.goods_train?(t.name) }
+            trains.reject! { |t| @game.coal_railway?(entity) && !@game.goods_train?(t.name) }
 
             # Cannot buy g-trains until first 2 train has been bought
             trains.reject! { |t| @game.goods_train?(t.name) && !@game.two_train_bought }

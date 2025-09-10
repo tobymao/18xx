@@ -13,6 +13,15 @@ module Engine
             @round.next_entity_index!
             pass!
           end
+
+          # don't update last_to_act since charter auctions don't affect PD
+          def post_win_order(_winning_player)
+            entities.each(&:unpass!)
+
+            # start with player after the auction initiator
+            @round.goto_entity!(@auction_triggerer)
+            next_entity!
+          end
         end
       end
     end

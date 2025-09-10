@@ -27,7 +27,11 @@ module Engine
 
         GAME_END_REASONS_TEXT = Base::GAME_END_REASONS_TEXT.merge(
           custom: 'First D Purchased'
-        )
+        ).freeze
+
+        GAME_END_DESCRIPTION_REASON_MAP_TEXT = Base::GAME_END_DESCRIPTION_REASON_MAP_TEXT.merge(
+          custom: 'First D Purchased'
+        ).freeze
 
         def cornelius
           # cornelius, as inheriting behaviour from the chessie cornelius private

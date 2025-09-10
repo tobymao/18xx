@@ -76,7 +76,7 @@ module Engine
 
           def setup
             setup_auction
-            @companies = @game.companies.reject(&:closed?).dup
+            @companies = @game.companies.reject(&:closed?).sort_by(&:value)
             # setup_tiered_auction
           end
 
@@ -129,13 +129,13 @@ module Engine
           end
 
           def all_passed!
-            @round.next_entity_index!
-
             if @companies.empty?
               # Need to move entity round once more to be back to the priority deal player
               pass!
               return
             end
+
+            all_pass_next_entity
 
             # if any privates still left, reduce price and start over
             company = @companies.first
@@ -147,22 +147,32 @@ module Engine
               player.companies << company
               @log << "#{player.name} receives #{company.name} for #{@game.format_currency(0)}"
               company_auction_finished(company)
+              post_win_order(player)
               pass! if @companies.empty?
             else
               @log << "#{company.name} price reduced to #{@game.format_currency(company.min_bid)}"
+              post_price_reduction(company)
             end
-            post_price_reduction(company)
+          end
+
+          def all_pass_next_entity
+            @round.next_entity_index!
           end
 
           def post_price_reduction(_company)
             entities.each(&:unpass!)
           end
 
-          def resolve_bids
-            super
+          def post_win_bid(winner, _company)
+            post_win_order(winner.entity)
+          end
+
+          def post_win_order(winning_player)
             entities.each(&:unpass!)
-            start_player = @auction_triggerer
-            @round.goto_entity!(start_player)
+
+            # start with player after the winner
+            @round.last_to_act = winning_player
+            @round.goto_entity!(winning_player)
             next_entity!
           end
         end

@@ -20,8 +20,14 @@ module Engine
             entities.select { |ent| ent.companies.empty? }
           end
 
-          def resolve_bids
-            super
+          def all_pass_next_entity
+            # skip over players with companies
+            @round.next_entity_index!
+            @round.next_entity_index! until @round.current_entity.companies.empty?
+          end
+
+          def post_win_order(winning_player)
+            # winner cannot compete in future auctions
             entities.each do |entity|
               if entity.companies.empty?
                 entity.unpass!
@@ -30,17 +36,8 @@ module Engine
               end
             end
 
-            start_player = @auction_triggerer
-            @round.goto_entity!(start_player)
-            next_entity!
-          end
-
-          def post_price_reduction(company)
-            super
-            return unless company.min_bid <= 0
-
-            @round.goto_entity!(company.owner)
-            company.owner.pass!
+            # no need to move PD
+            @round.goto_entity!(winning_player)
             next_entity!
           end
         end

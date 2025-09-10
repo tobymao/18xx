@@ -163,6 +163,18 @@ module Engine
 
         def setup
           setup_company_price_up_to_one_and_half_face
+
+          %w[P2 P3 P4].each do |prefix|
+            suffix = 'B'
+            suffix = rand.even? ? 'A' : 'B' if @optional_rules.include?(:random_private_companies)
+            suffix = 'A' if @optional_rules.include?(:private_b_companies)
+
+            @companies.select { |c| c.id.start_with?(prefix + suffix) }.each do |company|
+              company.close!
+              @round.active_step.companies.delete(company)
+            end
+          end
+
           MOUNTAIN_BIG_HEXES.each { |hex| hex_by_id(hex).assign!('MOUNTAIN_BIG') }
           MOUNTAIN_SMALL_HEXES.each { |hex| hex_by_id(hex).assign!('MOUNTAIN_SMALL') }
           corporation_by_id('H').add_ability(Engine::Ability::Base.new(
@@ -225,16 +237,24 @@ module Engine
           hex_by_id('J27').neighbors[2] = hex_by_id('I26')
         end
 
-        def p4
-          @p4 ||= company_by_id('P4')
+        def p4a
+          @p4a ||= company_by_id('P4A')
         end
 
         def thunes_mekaniske
-          @thunes_mekaniske ||= company_by_id('P2')
+          @thunes_mekaniske ||= company_by_id('P2A')
         end
 
         def owns_thunes_mekaniske?(owner)
           thunes_mekaniske.owner == owner
+        end
+
+        def hvite_svan
+          @hvite_svan ||= company_by_id('P2B')
+        end
+
+        def owns_hvite_svan?(owner)
+          hvite_svan.owner == owner
         end
 
         def big_mountain?(hex)
@@ -258,7 +278,7 @@ module Engine
           mult = 2
           mult = 1 if @phase.tiles.include?(:green)
           mult = 0 if @phase.tiles.include?(:brown)
-          cost += 5 * mult if route.all_hexes.include?(mjosa)
+          cost += 5 * mult if !owns_hvite_svan?(route.train.owner) && route.all_hexes.include?(mjosa)
 
           # P2 Thunes mekaniske verksted do not need to pay maintainance
           return cost if owns_thunes_mekaniske?(route.train.owner)
@@ -401,7 +421,7 @@ module Engine
         def payout_companies(ignore: [])
           return if @round.is_a?(G18Norway::Round::Nationalization)
 
-          super
+          super(ignore: @phase.name.to_i == 2 ? ignore + ['P3B'] : ignore)
         end
 
         def add_new_share(share)
@@ -707,6 +727,46 @@ module Engine
           end
 
           super
+        end
+
+        def after_phase_change(name)
+          super
+          # Only proceed if we're in phase 4
+          return unless name.to_i == 4
+
+          # Find P3B company and get its owner
+          p4b_company = @companies.find { |c| c.id == 'P4B' }
+          return unless p4b_company&.owner&.corporation?
+
+          corporation = p4b_company.owner
+
+          # Get L1 hex (which is currently an offboard hex)
+          l1_hex = hex_by_id('L1')
+          return unless l1_hex
+
+          # Create a new city tile to replace the offboard tile
+          new_tile = Tile.from_code(
+            'BODØ',
+            'red',
+            'city=revenue:green_0|brown_180,slots:1;path=a:0,b:_0',
+            reservation_blocks: self.class::TILE_RESERVATION_BLOCKS_OTHERS,
+            unlimited: false,
+            hidden: false
+          )
+          return unless new_tile
+
+          # Replace the tile on the hex
+          l1_hex.lay(new_tile)
+
+          # Create a new token for the corporation
+          token = Token.new(corporation)
+          corporation.tokens << token
+
+          # Place the token in the city (first city on the tile)
+          city = l1_hex.tile.cities.first
+          city.place_token(corporation, token, free: true, extra_slot: false)
+          @graph.clear
+          @log << "#{corporation.name} places a token in #{l1_hex.name} due to P4B ownership"
         end
       end
     end

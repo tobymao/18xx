@@ -34,3 +34,5 @@ validate*.json
 .idea
 
 .vscode
+
+.rerun
