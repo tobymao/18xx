@@ -531,15 +531,57 @@ module Engine
         end
 
         def status_array(corporation)
-          return if corporation.floated?
-          return unless (minor = @pledged_minors[corporation])
+          case corporation.type
+          when :minor
+            status_array_minor(corporation)
+          when :'5-share', :'10-share'
+            status_array_major(corporation)
+          end
+        end
 
-          player = minor.presidents_share.owner
-          verb = @round.auction? ? 'bid' : 'won the right'
+        def status_array_minor(minor)
+          return unless restricted?
+
+          cities =
+            if minor.floated?
+              minor.placed_tokens.map(&:city)
+            else
+              @cities.select { |city| city.reserved_by?(minor) }
+            end
+          majors = cities.flat_map { |city| associated_majors(city) }.uniq
           [
-            "#{player.name} has #{verb} to start this company using " \
-            "minor #{minor.id}.",
+            'Can start public company ' \
+            "#{majors.sort.join(', ').gsub(/,(?= [A-Z]+$)/, ' or')}.",
           ]
+        end
+
+        def status_array_major(corporation)
+          return if corporation.floated?
+
+          if (minor = @pledged_minors[corporation])
+            player = minor.presidents_share.owner
+            verb = @round.auction? ? 'bid' : 'won the right'
+            [
+              "#{player.name} has #{verb} to start this company using " \
+              "minor #{minor.id}.",
+            ]
+          elsif restricted?
+            cities = public_company_cities(corporation)
+            candidates = minor_corporations.select do |m|
+              m.placed_tokens.any? { |token| cities.include?(token.city) }
+            end
+            [
+              'May be started by any of minor companies ' \
+              "#{candidates.map(&:id).join(', ').gsub(/,(?= \d+$)/, ' or')}.",
+            ]
+          end
+        end
+
+        def public_company_cities(corporation)
+          PUBLIC_COMPANY_HEXES[corporation.id].map do |coord|
+            idx = coord == PARIS_HEX ? PARIS_CITIES[corporation.id] : 0
+            hex_by_id(coord).tile.cities[idx]
+          end
         end
 
         # The minimum amount of cash needed to start one of the corporations
