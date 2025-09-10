@@ -41,8 +41,9 @@ module Engine
             },
             white: {
               %w[A8 A20 C10 C16 G2] => G1824::Map::TOWN,
-              %w[D25 E24] => "#{G1824::Map::TOWN}#{b_minor}",
+              %w[D25] => "#{G1824::Map::TOWN}#{b_minor}",
               %w[A6 A10] => G1824::Map::TOWN_WITH_MOUNTAIN,
+              %w[E24] => "#{G1824::Map::TOWN_WITH_MOUNTAIN}#{b_minor}",
               %w[B13 B25 F11] => G1824::Map::DOUBLE_TOWN_WITH_WATER,
               %w[H3] => G1824::Map::CITY_WITH_MOUNTAIN,
               %w[A18 C26 I8] => G1824::Map::CITY_LABEL_T,
