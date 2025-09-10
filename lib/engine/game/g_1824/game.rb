@@ -467,7 +467,10 @@ module Engine
         end
 
         def exchange_entities
-          @companies.reject(&:closed?)
+          # Only one MR to exchange at a time - if we show all here they appear as multiple buttons in GUI
+          # under selected corporation. See #11988.
+          unclosed = @companies.reject(&:closed?)
+          unclosed.empty? ? [] : [unclosed.first]
         end
 
         def mountain_railway?(entity)
