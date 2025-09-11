@@ -196,7 +196,7 @@ module Engine
         end
 
         def operating_round(round_num)
-          G1824::Round::Operating.new(self, [
+          Engine::Round::Operating.new(self, [
             G1837::Step::Bankrupt,
             G1824::Step::KkTokenChoice,
             G1824::Step::DiscardTrain,

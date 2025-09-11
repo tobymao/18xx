@@ -4,7 +4,6 @@ require_relative '../g_1837/game'
 require_relative 'meta'
 require_relative '../base'
 require_relative '../g_1837/round/exchange'
-require_relative 'round/operating'
 require_relative 'depot'
 require_relative 'entities'
 require_relative 'map'
@@ -238,17 +237,17 @@ module Engine
               sr_round_finished
               @operating_rounds = @phase.operating_rounds
               reorder_players
-              new_exchange_round(Round::Operating)
+              new_exchange_round(Engine::Round::Operating)
             when G1837::Round::Exchange
               if @round_after_exchange == Engine::Round::Stock
                 new_stock_round
               else
                 new_operating_round(@round.round_num)
               end
-            when Round::Operating
+            when Engine::Round::Operating
               if @round.round_num < @operating_rounds
                 or_round_finished
-                new_exchange_round(Round::Operating, @round.round_num + 1)
+                new_exchange_round(Engine::Round::Operating, @round.round_num + 1)
               else
                 @turn += 1
                 or_round_finished
@@ -280,7 +279,7 @@ module Engine
         end
 
         def operating_round(round_num)
-          G1824::Round::Operating.new(self, [
+          Engine::Round::Operating.new(self, [
             G1837::Step::Bankrupt,
             G1824::Step::KkTokenChoice,
             G1824::Step::DiscardTrain,
