@@ -56,6 +56,12 @@ module Engine
             city.place_token(corporation, token) if city.tokenable?(corporation, tokens: token)
           end
 
+          def swap_higher_value_oo_token(city, entity)
+            old_token = city.tokens.first
+            old_token.remove!
+            city.exchange_token(entity.find_token_by_type)
+          end
+
           def process_place_token(action)
             super
             tile = action.city.tile
@@ -64,16 +70,10 @@ module Engine
               when %w[NWR 235]
                 'SPD'
               when %w[SPD 235]
-                city = action.city
-                old_token = city.tokens.first
-                old_token.remove!
-                city.exchange_token(action.entity.find_token_by_type)
+                swap_higher_value_oo_token(action.city, action.entity)
                 'NWR'
               when %w[EBR 235]
-                city = action.city
-                old_token = city.tokens.first
-                old_token.remove!
-                city.exchange_token(action.entity.find_token_by_type)
+                swap_higher_value_oo_token(action.city, action.entity)
                 'EIR'
               when %w[EIR 235]
                 'EBR'
