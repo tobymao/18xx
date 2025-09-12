@@ -196,10 +196,11 @@ module Engine
           :corporation
         end
 
-        # 1824 differ from 1837 as it allows any legal single town upgrade to green (duble towns have no green tiles)
+        # 1824 differ from 1837 as it allows any legal single town upgrade to green (double towns have no green tiles)
+        # TODO: Add a unit test for upgrade yellow single town to green, and no upgrade for double town
         def yellow_town_tile_upgrades_to?(from, to)
           # honors pre-existing track?
-          from.paths_are_subset_of?(to.paths)
+          from.paths_are_subset_of?(to.paths) && to.color == :green && from.towns.one? && to.towns.one?
         end
 
         # 1824 version differ from 1837 as a national can become in receivership, and tie breaker is different
