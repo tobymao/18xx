@@ -8,7 +8,6 @@ module Engine
       module Step
         class BuySellParShares < Engine::Step::BuySellParShares
           ACTIONS = %w[buy_company pass].freeze
-          UNCHARTERED_TOKEN_COST = 40
 
           def actions(entity)
             return [] unless entity == current_entity
@@ -23,42 +22,8 @@ module Engine
             []
           end
 
-          # Shares should not appear in market
-          def can_buy?(entity, bundle)
-            true
-          end
-
-          # Shares only bought as companies
-          def can_buy_any?(entity)
-            true
-          end
-
-          # Shares only bought as companies
-          def can_ipo_any?(entity)
-            false
-          end
-
-          def pool_shares(_)
-            []
-          end
-
-          def purchasable_companies(_)
-            []
-          end
-
           def can_buy_company?(player, company)
-            result = @game.ipo_rows.flatten.include?(company) && available_cash(player) >= company.value
-            puts "Can #{player.name} buy #{company.name}? #{result}, included? #{@game.buyable_bank_owned_companies.include?(company)}, available cash? #{available_cash(player) >= company.value}, company value? #{company.value}"
-            result
-          end
-
-          def process_par(action)
-            corporation = action.corporation
-            @game.convert_to_incremental!(corporation)
-            corporation.tokens.pop # 3 -> 2
-            raise GameError, 'Wrong number of tokens for Unchartered Company' if corporation.tokens.size != 2
-
-            super
+            @game.ipo_rows.flatten.include?(company) && available_cash(player) >= company.value
           end
 
           def get_par_prices(entity, _corp)

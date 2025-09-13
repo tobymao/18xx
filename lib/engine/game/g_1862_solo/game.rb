@@ -64,7 +64,7 @@ module Engine
           Company.new(
             sym: share.id,
             name: share.corporation.name,
-            value: 0, #share.price,
+            value: 0,
             desc: description,
             type: :share,
             color: share.corporation.color,
@@ -77,19 +77,19 @@ module Engine
 
         def deal_deck_to_ipo(deck)
           all_rows_indexes.each do |row|
-            @ipo_rows[row] = deck.pop(6)  # 6 shares per row
+            @ipo_rows[row] = deck.pop(6) # 6 shares per row
           end
         end
 
         def game_tiles
           TILES.dup.merge!({
-                            'X' =>
-                                {
-                                  'count' => 4,
-                                  'color' => 'brown',
-                                  'code' => '',
-                                },
-                          })
+                             'X' =>
+                                 {
+                                   'count' => 4,
+                                   'color' => 'brown',
+                                   'code' => '',
+                                 },
+                           })
         end
 
         # 1862 solo does not have any parliament rounds
@@ -125,7 +125,7 @@ module Engine
           @round_counter += 1
           stock_round
         end
-        
+
         def stock_round
           G1862::Round::Stock.new(self, [
             G1862::Step::BuyTokens,
@@ -158,7 +158,7 @@ module Engine
           []
         end
 
-        def init_corporations(stock_market)
+        def init_corporations(_stock_market)
           self.class::CORPORATIONS.map do |corporation|
             corporation[:float_percent] = 30
             corporation[:shares] = [10, 10, 10, 10, 10, 10, 10]
@@ -181,7 +181,7 @@ module Engine
           true
         end
 
-        def company_revenue_str(company)
+        def company_revenue_str(_company)
           '0'
         end
 
@@ -200,7 +200,7 @@ module Engine
         def ipo_timeline(index)
           row = @ipo_rows[index]
           row.map do |company|
-            "#{company.name}"
+            company.name.to_s
           end
         end
 
