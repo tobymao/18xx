@@ -528,8 +528,9 @@ module Engine
           if (president_shares = president.shares_of(sbb)).none? { |share| share.percent == 10 }
             ten_percent_share = @share_pool.shares_of(sbb).find { |share| share.percent == 10 } ||
                                   president_priority_order[-1].shares_of(sbb).find { |share| share.percent == 10 }
+            share_owner = ten_percent_share.owner
             @share_pool.transfer_shares(ShareBundle.new([ten_percent_share]), president, allow_president_change: false)
-            @share_pool.transfer_shares(ShareBundle.new(president_shares.take(2)), share.owner, allow_president_change: false)
+            @share_pool.transfer_shares(ShareBundle.new(president_shares.take(2)), share_owner, allow_president_change: false)
           end
 
           # Make sure president has the presidents cert
