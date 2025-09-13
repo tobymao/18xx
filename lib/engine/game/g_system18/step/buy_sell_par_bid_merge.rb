@@ -115,7 +115,6 @@ module Engine
           def connected?(minor_a, minor_b)
             # Mergeable candidates must be connected by track, minors only have one token which simplifies it
             # (partially borrowed from 1867)
-            # FIXME: avoid graph by using destination_connection
             parts = @game.graph.connected_nodes(minor_a).keys
             parts.select(&:city?).any? { |c| c.tokens.compact.any? { |t| t.corporation == minor_b } }
           end
@@ -142,9 +141,7 @@ module Engine
           end
 
           def choice_available?(entity)
-            entity.corporation? && entity.type == :major &&
-              !entity.floated? &&
-              (can_convert_any?(entity) || can_merge_any?(entity))
+            entity.corporation? && entity.type == :major && !entity.floated? && can_convert_any?(entity)
           end
 
           def entity_choices(entity)
