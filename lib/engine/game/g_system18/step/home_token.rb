@@ -8,7 +8,7 @@ module Engine
       module Step
         class HomeToken < Engine::Step::HomeToken
           def description
-            super unless @game.merging
+            return super unless @game.merging
 
             'Place Token'
           end
