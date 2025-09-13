@@ -5,7 +5,15 @@ module Engine
     module GSystem18
       module Entities
         def game_companies
+          return [] unless respond_to?("map_#{map_name}_game_companies")
+
           send("map_#{map_name}_game_companies")
+        end
+
+        def game_minors
+          return [] unless respond_to?("map_#{map_name}_game_minors")
+
+          send("map_#{map_name}_game_minors")
         end
 
         S18_CORPORATIONS = [
