@@ -24,38 +24,66 @@ module Engine
             expect(@text.lines.size).to eq(1)
           end
 
-          it 'players are anonymized' do
+          it 'game descriptions and player names are removed' do
             @data['players'].each do |player|
-              expect(player['name']).to match(/(Player )?(\d+|[A-Z])/)
+              expect(player['name']).to match(/^(Player )?(\d+|[A-Z])$/)
             end
+
+            if @data.dig('fixture_format', 'keep_user')
+              expect(@data['players']).to include(@data['user'])
+            else
+              expect(@data['user']).to eq({ 'id' => 0, 'name' => 'You' })
+            end
+
+            expect(@data['description']).to eq('') unless @data.dig('fixture_format', 'keep_description')
           end
 
           it 'has no chat messages' do
             expect(@data['actions'].count { |a| a['type'] == 'message' && a['message'] != 'chat' }).to eq(0)
           end
+
+          it 'is loaded and finished' do
+            # this is required for opening fixtures in the browser at /fixture/<title>/<id>
+            expect(@data['loaded']).to eq(true)
+            expect(@data['status']).to eq('finished')
+          end
+
+          it 'all actions have an Integer id' do
+            @data['actions'].each.with_index do |action, index|
+              expect(action['id']).to(
+                be_kind_of(Integer),
+                "Expected action at index #{index} to be an Integer instead of #{action['id']}."
+              )
+            end
+          end
         end
 
-        it 'is finished and matches result exactly' do
-          result = @data['result']
-          game_result = JSON.parse(JSON.generate(Engine::Game.load(@data).maybe_raise!.result))
-          expect(game_result).to eq(result)
+        [false, true].each do |strict|
+          describe "with strict: #{strict}" do
+            describe 'running full game' do
+              before(:all) do
+                @game = Engine::Game.load(@data, strict: strict).maybe_raise!
+              end
 
-          rungame = Engine::Game.load(@data, strict: true).maybe_raise!
-          expect(JSON.parse(JSON.generate(rungame.result))).to eq(result)
-          expect(rungame.finished).to eq(true)
-          expect(@data['status']).to eq('finished')
+              it 'is finished and matches result exactly' do
+                result = @data['result']
 
-          # this is required for opening fixtures in the browser at /fixture/<title>/<id>
-          expect(@data['loaded']).to eq(true)
+                game_result = JSON.parse(JSON.generate(@game.result))
+                expect(game_result).to eq(result)
+                expect(@game.finished).to eq(true)
+              end
 
-          # some fixtures want to test that the last N actions of the game replayed the same as in the fixture
-          test_last_actions = @data['test_last_actions']
-          next unless test_last_actions
+              it "last N actions in game match fixture's test_last_actions" do
+                test_last_actions = @data['test_last_actions']
+                next unless test_last_actions
 
-          actions = @data['actions']
-          (1..(test_last_actions.to_i)).each do |index|
-            run_action = rungame.actions[rungame.actions.size - index].to_h
-            expect(run_action).to eq(actions[actions.size - index])
+                actions = @data['actions']
+                (1..(test_last_actions.to_i)).each do |index|
+                  run_action = @game.actions[@game.actions.size - index].to_h
+                  expect(run_action).to eq(actions[actions.size - index])
+                end
+              end
+            end
           end
         end
       end
