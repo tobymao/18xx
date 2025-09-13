@@ -14,10 +14,11 @@ module Engine
           end
 
           def setup
-            setup_pre_log_text
-
-            @reverse = true
             @order_notified = false
+            @reverse = true
+            @turn = 1
+
+            setup_pre_log_text
 
             super
 

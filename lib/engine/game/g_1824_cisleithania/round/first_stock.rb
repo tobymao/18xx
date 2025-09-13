@@ -21,12 +21,6 @@ module Engine
             "Turn #{@turn}: #{text}"
           end
 
-          def setup
-            super
-
-            @turn = 1
-          end
-
           def setup_pre_log_text
             return super unless @game.two_player?
 
@@ -44,15 +38,14 @@ module Engine
           def setup_post_log_text
             return super unless @game.two_player?
 
-            @game.log << 'The player order are as follows:'
+            @game.log << 'The player order is as follows:'
             @game.log << "Turn 1 : #{draft_stack(4)}: #{player_order_reversed}"
             @game.log << "Turn 2 : #{draft_stack(3)}: #{player_order_normal}"
             @game.log << "Turn 3 : #{draft_stack(2)}: #{player_order_normal}"
             @game.log << "Turn 4 : #{draft_stack(1)}: #{player_order_reversed}"
             @game.log << "Turn 5 : #{mountain_railway_drafting}: #{player_order_normal}"
-            @game.log << "Turn 6 : Initial SR: #{player_order_reversed}"
-            @game.log << "Turn 7+: Initial SR: #{player_order_normal}"
-            @game.log << "Player order for turn #{@turn} is reversed"
+            @game.log << "Turn 6+: Initial SR: #{player_order_normal}"
+            log_player_order("for turn #{@turn}")
           end
 
           def do_handle_next_entity_index
@@ -60,18 +53,20 @@ module Engine
 
             @turn += 1
             case @turn
+            when 4
+              @reverse = true
+              @entities = @game.players.reverse
+              log_player_order("for turn #{@turn}")
             when 2, 3
               @reverse = false
               @entities = @game.players
-              @game.log << "Player order for turn #{@turn} is normal"
-            when 1, 4, 6
-              @reverse = true
-              @entities = @game.players.reverse
-              @game.log << "Player order for turn #{@turn} is reversed"
+              log_player_order("for turn #{@turn}")
             else
               @reverse = false
               @entities = @game.players
-              @game.log << "Player order for turn #{@turn} is from now on normal" if @turn == 7
+              return unless @turn == 5
+
+              log_player_order('from now on')
             end
           end
 
@@ -83,6 +78,11 @@ module Engine
           end
 
           private
+
+          def log_player_order(description)
+            @game.log << ''
+            @game.log << "Player order #{description} is #{@reverse ? 'reversed' : 'normal'}"
+          end
 
           def player_order_normal
             "#{@game.players.first.name}, #{@game.players.last.name}"
