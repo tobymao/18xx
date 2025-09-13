@@ -646,7 +646,7 @@ module Engine
             %w[P10 P11],
           ]
 
-          par_price = stock_market.par_prices[0]
+          par_price = stock_market.par_prices[-1]
 
           @players.each.with_index do |player, index|
             player.cash = 0
