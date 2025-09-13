@@ -310,7 +310,9 @@ module Engine
       end
 
       def can_buy_company?(player, company)
-        @game.buyable_bank_owned_companies.include?(company) && available_cash(player) >= company.value
+        result = @game.buyable_bank_owned_companies.include?(company) && available_cash(player) >= company.value
+        puts "Can #{player.name} buy #{company.name}? #{result}, included? #{@game.buyable_bank_owned_companies.include?(company)}, available cash? #{available_cash(player) >= company.value}, company value? #{company.value}"
+        result
       end
 
       def get_par_prices(entity, _corp)

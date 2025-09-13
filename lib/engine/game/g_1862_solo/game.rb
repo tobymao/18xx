@@ -48,7 +48,9 @@ module Engine
 
           corporations.each do |corporation|
             corporation.ipo_shares.each do |share|
-              draw_deck << convert_share_to_company(share)
+              company = convert_share_to_company(share)
+              company.owner = bank
+              draw_deck << company
             end
           end
 
@@ -90,6 +92,7 @@ module Engine
                           })
         end
 
+        # 1862 solo does not have any parliament rounds
         def next_round!
           @skip_round.clear
           @round =
@@ -109,10 +112,8 @@ module Engine
                 if @lner_triggered
                   @lner_triggered = false
                   form_lner
-                  new_stock_round
-                else
-                  new_parliament_round
                 end
+                new_stock_round
               end
             else
               raise "round class #{@round.class} not handled"
@@ -125,6 +126,14 @@ module Engine
           stock_round
         end
         
+        def stock_round
+          G1862::Round::Stock.new(self, [
+            G1862::Step::BuyTokens,
+            G1862::Step::ForcedSales,
+            G1862Solo::Step::BuySellParShares,
+          ])
+        end
+
         def show_ipo_rows?
           true
         end
@@ -143,6 +152,10 @@ module Engine
 
         def ipo_remove(row, company)
           @ipo_rows[row].delete(company)
+        end
+
+        def buyable_bank_owned_companies
+          []
         end
 
         def init_corporations(stock_market)
