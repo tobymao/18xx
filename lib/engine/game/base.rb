@@ -549,6 +549,7 @@ module Engine
         @raw_actions = []
         @turn_start_action_id = 0
         @last_turn_start_action_id = 0
+        @last_processed_action = 0
         @exception = nil
         @names = if names.is_a?(Hash)
                    names.freeze
