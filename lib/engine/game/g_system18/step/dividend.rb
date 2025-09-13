@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative '../../../step/dividend'
+require_relative 'minor_half_pay'
 
 module Engine
   module Game
@@ -10,6 +11,7 @@ module Engine
           DIVIDEND_TYPES = %i[payout half withhold].freeze
           SIMPLE_DIVIDEND_TYPES = %i[payout withhold].freeze
           include Engine::Step::HalfPay
+          include GSystem18::Step::MinorHalfPay
 
           def share_price_change(entity, revenue = 0)
             return super if @game.share_price_change_for_dividend_as_full_cap_by_map?

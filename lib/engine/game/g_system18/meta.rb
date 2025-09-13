@@ -8,7 +8,7 @@ module Engine
       module Meta
         include Game::Meta
 
-        DEV_STAGE = :alpha
+        DEV_STAGE = :beta
         PROTOTYPE = true
 
         GAME_DESIGNER = 'Scott Petersen'
@@ -92,11 +92,17 @@ module Engine
             players: [2, 3, 4],
             designer: 'Ian Wilson',
           },
+          {
+            sym: :map_Russia,
+            short_name: 'Map: Russia',
+            players: [2, 3],
+            designer: 'Ian Wilson',
+          },
         ].freeze
 
         MUTEX_RULES = [
           %i[map_NEUS map_France map_Twisting_Tracks map_UK_Limited map_China_Rapid_Development map_Poland map_Britain
-             map_Britain_N map_Britain_S map_Northern_Italy map_MS map_Scotland],
+             map_Britain_N map_Britain_S map_Northern_Italy map_MS map_Scotland map_Russia],
         ].freeze
       end
     end

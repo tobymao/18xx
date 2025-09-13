@@ -72,10 +72,6 @@ module Engine
         end
         # rubocop:enable Layout/LineLength
 
-        def map_uk_limited_game_companies
-          []
-        end
-
         # DGN GFN PHX KKN SPX
         def map_uk_limited_game_corporations(corps)
           corps.each_with_index do |c, idx|

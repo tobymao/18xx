@@ -20,6 +20,13 @@ module Engine
 
           def skip!
             @round.receivership_train_buy(self, :process_buy_train)
+            @game.no_trains(current_entity) if current_entity.trains.empty? && !current_entity.receivership?
+            super
+          end
+
+          def process_pass(action)
+            @game.no_trains(action.entity) if action.entity.trains.empty?
+            super
           end
 
           def process_sell_shares(action)

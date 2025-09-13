@@ -109,10 +109,6 @@ module Engine
           }
         end
 
-        def map_china_rapid_development_game_companies
-          []
-        end
-
         # DGN GFN PHX KKN SPX
         def map_china_rapid_development_game_corporations(corps)
           corps.each_with_index do |c, idx|

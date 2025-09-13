@@ -105,10 +105,6 @@ module Engine
           }
         end
 
-        def map_france_game_companies
-          []
-        end
-
         def map_france_game_corporations(corps)
           corps.each_with_index do |c, idx|
             c[:float_percent] = 20
