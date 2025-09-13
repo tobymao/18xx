@@ -352,7 +352,7 @@ module Engine
           Engine::Round::Operating.new(self, [
             G1822CA::Step::PendingToken,
             G1822::Step::FirstTurnHousekeeping,
-            Engine::Step::AcquireCompany,
+            G1822::Step::AcquireCompany,
             G1822CA::Step::DiscardTrain,
             G1822CA::Step::AssignSawmill,
             G1822::Step::SpecialChoose,
