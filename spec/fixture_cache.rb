@@ -18,16 +18,20 @@ class FixtureCache
     @cache.clear if @cache.size.positive? && !@cache.include?(title)
     @cache[title] ||= {}
 
-    game = @cache[title][file]
+    data = @cache.dig(title, file, :data)
+    unless data
+      data = JSON.parse(File.read(file))
+      @cache[title][file] = { data: data }
+    end
 
+    game = @cache.dig(title, file, :game)
     if game && (game.last_processed_action <= action)
       game.process_to_action(action)
     else
-      game = Engine::Game.load(file, at_action: action)
-      @cache[title][file] = game
+      game = Engine::Game.load(data, at_action: action)
+      @cache[title][file][:game] = game
     end
-
-    @cache[title].delete(file) if clear_cache
+    @cache[title][file].delete(:game) if clear_cache
 
     game.maybe_raise!
   end
