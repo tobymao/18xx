@@ -77,7 +77,6 @@ module Engine
           def setup
             setup_auction
             @companies = @game.companies.reject(&:closed?).sort_by(&:value)
-            # setup_tiered_auction
           end
 
           def starting_bid(company)
@@ -137,6 +136,14 @@ module Engine
 
             all_pass_next_entity
 
+            discount_company
+          end
+
+          def all_pass_next_entity
+            @round.next_entity_index!
+          end
+
+          def discount_company
             # if any privates still left, reduce price and start over
             company = @companies.first
             company.discount += PRICE_DROP
@@ -153,10 +160,6 @@ module Engine
               @log << "#{company.name} price reduced to #{@game.format_currency(company.min_bid)}"
               post_price_reduction(company)
             end
-          end
-
-          def all_pass_next_entity
-            @round.next_entity_index!
           end
 
           def post_price_reduction(_company)

@@ -7,13 +7,9 @@ module Engine
   module Game
     module GSystem18
       module Step
-        class OrderAuction < GSystem18::Step::UpwardsAuction
+        class OrderAuction < GSystem18::Step::ConsecutiveAuction
           def description
             'Bid on Initial Player Order'
-          end
-
-          def available
-            [@companies.first]
           end
 
           def initial_auction_entities
