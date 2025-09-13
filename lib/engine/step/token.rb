@@ -31,6 +31,11 @@ module Engine
       def process_place_token(action)
         entity = action.entity
 
+        if !@game.loading && !available_hex(entity, action.city.hex)
+          raise GameError, "#{entity.name} cannot place token in City "\
+                           "#{action.city.id} on hex #{action.city.hex.id}"
+        end
+
         place_token(entity, action.city, action.token)
         pass!
       end

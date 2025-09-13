@@ -149,6 +149,9 @@ module View
 
           step = @game.round.active_step(@selected_company)
           entity = @selected_company || step.current_entity
+
+          return unless step.available_hex(entity, @tile.hex)
+
           remove_token_step = @game.round.step_for(entity, 'remove_token')
           place_token_step = @game.round.step_for(entity, 'place_token')
           buy_token_step = @game.round.step_for(entity, 'buy_token')
