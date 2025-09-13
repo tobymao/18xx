@@ -4,7 +4,7 @@ require_relative '../../company'
 
 module Engine
   module Game
-    module G1824
+    module G1824Cisleithania
       class Company < Engine::Company
         attr_accessor :stack
 

@@ -55,9 +55,8 @@ module Engine
 
             choice = action.choice == 'Return one token' ? 1 : 2
             @log << "#{player.name} removes selected #{@game.kk.name} token from Wien, and put it as a "\
-                    "#{@game.format_currency(100)} token on the #{@game.kk.name} charter"
+                    "#{@game.format_currency(40)} token on the #{@game.kk.name} charter"
             @game.return_kk_token(choice)
-            @game.kk_token_choice_player = nil
           end
         end
       end

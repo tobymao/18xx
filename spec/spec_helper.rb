@@ -3,6 +3,7 @@
 require 'snabberb/component'
 
 require 'engine'
+require_relative 'fixture_cache'
 
 Engine::Logger.set_level(Logger::FATAL)
 
@@ -16,3 +17,7 @@ RSpec.configure do |config|
 end
 
 FIXTURES_DIR = File.join(File.dirname(__FILE__), '..', 'public', 'fixtures')
+
+def fixture_at_action(*args, **kwargs)
+  FixtureCache.instance.fixture_at_action(*args, **kwargs)
+end
