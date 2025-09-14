@@ -141,27 +141,32 @@ task 'migrate_json', [:json] do |_task, args|
   migrate_json(args[:json])
 end
 
-desc 'Remove player names, chats, and whitespace from public/fixtures/*/<id>.json'
-task 'fixture_format', [:id, :chat, :pretty] do |_task, args|
+desc 'Format and compress fixtures matching public/fixtures/*/<id>.json'
+task 'fixture_format', [:id, :pretty] do |_task, args|
   Dir.glob("public/fixtures/*/#{args[:id]}.json").each do |filename|
-    format_fixture_json(filename, chat: args[:chat], pretty: args[:pretty])
+    format_fixture_json(filename, pretty: args[:pretty])
   end
 end
 
-def format_fixture_json(filename, chat: nil, pretty: nil)
+def format_fixture_json(filename, pretty: nil)
   data = JSON.parse(File.read(filename))
+
+  settings = data['fixture_format'] || {}
 
   # remove player names
   data['players'].each.with_index do |player, index|
-    player['name'] = "Player #{index + 1}" unless /(Player )?(\d+|[A-Z])/.match?(player['name'])
+    player['name'] = "Player #{index + 1}" unless /^(Player )?(\d+|[A-Z])$/.match?(player['name'])
   end
 
+  data['user'] = { 'id' => 0, 'name' => 'You' } unless settings['keep_user']
+  data['description'] = '' unless settings['keep_description']
+
   # remove or  chats, unless chat arg was "keep"
-  if chat == 'scrub'
+  if settings['chat'] == 'scrub'
     data['actions'].each do |action|
       action['message'] = 'chat' if action['type'] == 'message'
     end
-  elsif chat != 'keep'
+  elsif settings['chat'] != 'keep'
     data['actions'].filter! do |action|
       action['type'] != 'message'
     end
