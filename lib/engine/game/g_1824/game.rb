@@ -272,8 +272,8 @@ module Engine
 
         def stock_round
           Engine::Round::Stock.new(self, [
-            G1824::Step::DiscardTrain,
             G1824::Step::KkTokenChoice, # In case train export triggers KK formation
+            G1824::Step::DiscardTrain,
             G1824::Step::ForcedMountainRailwayExchange, # In case train export after OR set triggers exchage
             G1824::Step::BuySellParExchangeShares,
           ])
@@ -281,8 +281,9 @@ module Engine
 
         def operating_round(round_num)
           Engine::Round::Operating.new(self, [
-            G1837::Step::Bankrupt,
             G1824::Step::KkTokenChoice,
+            Engine::Step::HomeToken,
+            G1837::Step::Bankrupt,
             G1824::Step::DiscardTrain,
             Engine::Step::SpecialTrack,
             G1824::Step::Track,
