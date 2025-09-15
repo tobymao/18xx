@@ -257,6 +257,8 @@ module View
         update_player_range(variant[:meta])
 
         stage = variant[:meta]::DEV_STAGE
+        next if stage == :prealpha && @production
+
         stage_str = stage == :production ? '' : "(#{stage}) "
 
         desc_text = variant[:desc] ? ": #{variant[:desc]}" : ''
@@ -269,7 +271,7 @@ module View
           attrs: { value: sym, checked: @selected_variant == variant },
           on: { input: toggle_game_variant(sym) },
         )])
-      end
+      end.compact
 
       optional_rules = selected_game_or_variant::OPTIONAL_RULES.map do |o_r|
         next if o_r[:hidden]
