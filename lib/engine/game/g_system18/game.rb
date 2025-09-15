@@ -564,7 +564,6 @@ module Engine
         end
 
         def emergency_issuable_bundles(entity)
-          return [] unless must_buy_train?(entity)
           return [] if game_capitalization != :incremental
           return [] if entity.trains.any?
           return [] unless @depot.min_depot_train
@@ -602,8 +601,14 @@ module Engine
           send("map_#{cmap_name}_or_round_finished")
         end
 
-        def close_corporation(corporation, quiet: false, reset: true)
-          super
+        def or_set_finished
+          return super unless respond_to?("map_#{cmap_name}_or_set_finished")
+
+          send("map_#{cmap_name}_or_set_finished")
+        end
+
+        def close_corporation_with_reset(corporation, quiet: false, reset: true)
+          close_corporation(corporation, quiet: quiet)
 
           if reset
             corporation = reset_corporation(corporation)
@@ -862,7 +867,7 @@ module Engine
           move_tokens(minor, corporation)
           receiving = move_assets(minor, corporation)
 
-          close_corporation(minor, reset: false)
+          close_corporation_with_reset(minor, reset: false)
 
           @log << "#{minor.name} converts into #{corporation.name} receiving #{receiving.join(', ')}"
         end
@@ -921,8 +926,8 @@ module Engine
           receiving = move_assets(@merge_a, @merge_corporation)
           receiving.concat(move_assets(@merge_b, @merge_corporation))
 
-          close_corporation(@merge_a, reset: false)
-          close_corporation(@merge_b, reset: false)
+          close_corporation_with_reset(@merge_a, reset: false)
+          close_corporation_with_reset(@merge_b, reset: false)
 
           @log << "#{@merge_a.name} and #{@merge_b.name} merges into #{@merge_corporation.name} receiving #{receiving.join(', ')}"
           @merging = false
@@ -996,6 +1001,12 @@ module Engine
           return unless respond_to?("map_#{cmap_name}_no_trains")
 
           send("map_#{cmap_name}_no_trains", entity)
+        end
+
+        def can_issue_shares_for_train?(entity)
+          return false unless respond_to?("map_#{cmap_name}_can_issue_shares_for_train?")
+
+          send("map_#{cmap_name}_can_issue_shares_for_train?", entity)
         end
       end
     end

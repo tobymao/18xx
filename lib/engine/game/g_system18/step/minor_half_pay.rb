@@ -28,13 +28,10 @@ module Engine
             price = entity.share_price.price
             LOGGER.debug { "minor - price: #{price}, revenue: #{revenue}" }
 
-            # minors are limited to one jump to the right
             if revenue.zero?
               { share_direction: :left, share_times: 1 }
-            elsif revenue >= price
-              { share_direction: :right, share_times: 1 }
             else
-              {}
+              { share_direction: :right, share_times: 1 }
             end
           end
 

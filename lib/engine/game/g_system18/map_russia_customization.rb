@@ -482,8 +482,12 @@ module Engine
           nationalize(entity, corporation_by_id(NATIONAL_CORP))
         end
 
-        def map_russia_or_round_finished
+        def map_russia_or_set_finished
           depot.export! if phase.name.to_i < 8
+        end
+
+        def map_russia_can_issue_shares_for_train?(entity)
+          entity.corporation? && entity.type == :major && entity.trains.empty? && entity.cash < @depot.min_depot_price
         end
       end
     end

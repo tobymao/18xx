@@ -15,6 +15,7 @@ module Engine
 
           def share_price_change(entity, revenue = 0)
             return super if @game.share_price_change_for_dividend_as_full_cap_by_map?
+            return super if entity.type == :minor
 
             price = entity.share_price.price
             LOGGER.debug { "price: #{price}, revenue: #{revenue}" }

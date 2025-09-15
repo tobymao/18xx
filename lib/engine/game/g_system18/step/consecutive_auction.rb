@@ -8,8 +8,8 @@ module Engine
     module GSystem18
       module Step
         class ConsecutiveAuction < GSystem18::Step::UpwardsAuction
-          def available
-            [@companies.first]
+          def may_bid?(company)
+            @companies.first == company
           end
         end
       end
