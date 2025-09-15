@@ -159,7 +159,8 @@ module Engine
         end
 
         def init_corporations(_stock_market)
-          self.class::CORPORATIONS.map do |corporation|
+          self.class::CORPORATIONS.map do |corp|
+            corporation = corp.dup
             corporation[:float_percent] = 30
             corporation[:shares] = [10, 10, 10, 10, 10, 10, 10]
             corporation[:max_ownership_percent] = 70
