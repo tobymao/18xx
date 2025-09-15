@@ -10,7 +10,13 @@ module Engine
           def actions(entity)
             return [] if entity.receivership?
 
-            super
+            acts = super
+            acts << 'sell_shares' if !acts.include?('sell_shares') && can_issue_shares?(entity)
+            acts
+          end
+
+          def can_issue_shares?(entity)
+            entity == current_entity && @game.can_issue_shares_for_train?(entity)
           end
 
           def setup
