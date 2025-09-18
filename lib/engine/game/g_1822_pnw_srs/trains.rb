@@ -51,11 +51,7 @@ module Engine
             distance: 5,
             num: 1,
             price: 500,
-            events: [
-              {
-                'type' => 'close_concessions',
-              },
-            ],
+            events: [],
           },
           {
             name: '6',
