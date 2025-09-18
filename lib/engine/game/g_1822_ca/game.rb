@@ -350,10 +350,10 @@ module Engine
 
         def operating_round(round_num)
           Engine::Round::Operating.new(self, [
+            G1822CA::Step::DiscardTrain,
             G1822CA::Step::PendingToken,
             G1822::Step::FirstTurnHousekeeping,
             G1822::Step::AcquireCompany,
-            G1822CA::Step::DiscardTrain,
             G1822CA::Step::AssignSawmill,
             G1822::Step::SpecialChoose,
             G1822CA::Step::SpecialTrack,
@@ -368,14 +368,13 @@ module Engine
             G1822CA::Step::MinorAcquisition,
             G1822CA::Step::AcquisitionTrack,
             G1822CA::Step::PendingToken,
-            G1822CA::Step::DiscardTrain,
             G1822CA::Step::IssueShares,
           ], round_num: round_num)
         end
 
         def stock_round
           G1822CA::Round::Stock.new(self, [
-            Engine::Step::DiscardTrain,
+            G1822CA::Step::DiscardTrain,
             G1822::Step::BuySellParShares,
           ])
         end
