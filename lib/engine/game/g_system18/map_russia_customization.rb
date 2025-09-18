@@ -484,6 +484,10 @@ module Engine
 
         def map_russia_or_set_finished
           depot.export! if phase.name.to_i < 8
+          # fix the fact turn has already advanced by the time we get here
+          @turn -= 1
+          game_end_check
+          @turn += 1
         end
 
         def map_russia_can_issue_shares_for_train?(entity)
