@@ -943,7 +943,7 @@ module Engine
 
           # delete shares after giving share value to shareholders
           entity.share_holders.keys.each do |share_holder|
-            unless share_holder == entity
+            if share_holder != entity && share_holder != @share_pool
               total = 0
               share_holder.shares_of(entity).each do |share|
                 @bank.spend(share.price, share_holder)
@@ -969,7 +969,7 @@ module Engine
 
           # move tokens if room in national and doesn't already have a token in the same hex
           # NOTE: this isn't robust - it only works for simple city revenues
-          entity.tokens.select(&:city).sort_by { |t| t.city.revenue }.reverse_each do |token|
+          entity.tokens.select(&:city).sort_by { |t| t.city.max_revenue }.reverse_each do |token|
             new_token = national.next_token
 
             city = token.city
