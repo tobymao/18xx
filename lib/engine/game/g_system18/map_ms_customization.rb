@@ -245,7 +245,10 @@ module Engine
         end
 
         def map_ms_reorder_players
-          return unless @players.any? { |p| !p.companies.empty? }
+          # call base game method if players have no privates
+          return self.class.superclass.instance_method(:reorder_players).bind_call(self) unless @players.any? do |p|
+                                                                                                  !p.companies.empty?
+                                                                                                end
 
           # find positional companies
           plast = @players.find { |p| p.companies.empty? }
@@ -253,6 +256,7 @@ module Engine
           p2 = @players.find { |p| p.companies.find { |c| c.sym == 'P2' } } || plast
           p3 = @players.find { |p| p.companies.find { |c| c.sym == 'P3' } } || plast
 
+          # remove privates from players
           @players.each { |p| p.companies.clear }
 
           @players = [p1, p2, p3, plast].take(@players.size)
@@ -346,6 +350,8 @@ module Engine
         end
 
         def map_ms_train_warranted?(train)
+          return false unless train.owner == @depot
+
           %w[2 3 4 5].include?(train.name)
         end
       end

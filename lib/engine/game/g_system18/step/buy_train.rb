@@ -53,8 +53,9 @@ module Engine
           end
 
           def buy_train_action(action)
+            warranted = @game.train_warranted?(action.train)
             super
-            return unless @game.train_warranted?(action.train)
+            return unless warranted
 
             @log << "#{action.entity.name} receives a warranty for the #{action.train.name} train"
             action.train.name = action.train.name + '*'
