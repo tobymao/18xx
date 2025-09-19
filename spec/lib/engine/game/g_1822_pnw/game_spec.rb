@@ -54,4 +54,22 @@ describe Engine::Game::G1822PNW::Game do
       expect(ornc.cash).to eq(0)
     end
   end
+
+  describe 'mill_ski_coal' do
+    it 'does not allow mill or ski companies to use the coal hex' do
+      # https://boardgamegeek.com/thread/3533826/article/46291488#46291488
+      game = fixture_at_action(592)
+
+      mill = game.company_by_id('P15')
+      ski = game.company_by_id('P17')
+      coal_hex = game.hex_by_id('J17')
+
+      # coal tile is on the hex
+      expect(coal_hex.tile.name).to eq('PNW4')
+
+      assign_step = game.round.step_for(mill, 'assign')
+      expect(assign_step.available_hex_mill(mill, coal_hex)).to eq(false)
+      expect(assign_step.available_hex_ski(ski, coal_hex)).to eq(false)
+    end
+  end
 end

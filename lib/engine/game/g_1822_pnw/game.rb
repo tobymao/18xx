@@ -111,6 +111,7 @@ module Engine
         COMPANY_LCDR = nil
         COMPANY_OSTH = nil
         COMPANY_LUR = 'P21' # Move Card
+        COMPANY_10X_REVENUE = nil
 
         PRIVATE_COMPANIES_ACQUISITION = {
           'P1' => { acquire: %i[major], phase: 5 },
@@ -243,6 +244,10 @@ module Engine
           entity.id == 'P16'
         end
 
+        def ski_company?(entity)
+          entity.id == 'P17'
+        end
+
         def boomtown_company?(entity)
           entity&.id == 'P18'
         end
@@ -261,6 +266,10 @@ module Engine
 
         def coal_token
           @coal_token ||= Engine::Token.new(nil, logo: '/icons/18_usa/mine.svg')
+        end
+
+        def coal_hex?(hex)
+          %w[PNW4 PNW5].include?(hex.tile.name)
         end
 
         def backroom_company?(entity)
@@ -998,8 +1007,12 @@ module Engine
           mill_bonus.sort_by { |v| v[:revenue] }.reverse&.first
         end
 
+        def mill_hex?(hex)
+          hex.assigned?('P15')
+        end
+
         def calculate_mill_bonus(route)
-          mill_hex = route.hexes.find { |hex| hex.assigned?('P15') }
+          mill_hex = route.hexes.find { |hex| mill_hex?(hex) }
           revenue = mill_hex ? mill_bonus_amount : 0
           if mill_hex && (train_type(route.train) == :etrain)
             revenue = mill_hex.tile.cities[0].tokened_by?(route.train.owner) ? mill_bonus_amount * 2 : 0
@@ -1027,8 +1040,12 @@ module Engine
           10 * route.all_hexes.count { |hex| hex.assigned?('forest') }
         end
 
+        def ski_hex?(hex)
+          hex.assigned?('P17')
+        end
+
         def ski_haus_revenue(route)
-          route.all_hexes.any? { |hex| hex.assigned?('P17') } ? 30 : 0
+          route.all_hexes.any? { |hex| ski_hex?(hex) } ? 30 : 0
         end
 
         def portage_penalty(route)
