@@ -45,6 +45,9 @@ module Engine
             @game.bank.spend(share_price.price * 2, entity)
 
             action = Action::Par.new(entity, corporation: corporation, share_price: share_price)
+            # give the generated Par action the same time stamp as the action that triggered the auction win
+            # this prevents problems with a programmed pass triggering on the Par
+            action.created_at = @game.actions.last.created_at
             process_par(action)
 
             # Clear the corporation of 'share' cash grabbed earlier.
