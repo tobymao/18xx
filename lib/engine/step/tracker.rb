@@ -426,7 +426,8 @@ module Engine
         all_new_exits_valid = new_exits.all? { |edge| hex.neighbors[edge] }
         return false unless all_new_exits_valid
 
-        entity_reaches_a_new_exit = !(new_exits & hex_neighbors(entity, hex)).empty?
+        neighbors = hex_neighbors(entity, hex) || []
+        entity_reaches_a_new_exit = !(new_exits & neighbors).empty?
         return false unless entity_reaches_a_new_exit
 
         return false unless old_paths_maintained?(hex, tile)
