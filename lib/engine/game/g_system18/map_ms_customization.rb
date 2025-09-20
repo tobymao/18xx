@@ -246,7 +246,7 @@ module Engine
 
         def map_ms_reorder_players
           # call base game method if players have no privates
-          return self.class.superclass.instance_method(:reorder_players).bind_call(self) unless @players.any? do |p|
+          return Engine::Game::Base.instance_method(:reorder_players).bind_call(self) unless @players.any? do |p|
                                                                                                   !p.companies.empty?
                                                                                                 end
 
