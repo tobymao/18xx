@@ -564,6 +564,8 @@ module Engine
 
         @optional_rules = init_optional_rules(optional_rules)
 
+        check_player_range!
+
         initialize_seed(seed)
 
         case self.class::DEV_STAGE
@@ -3418,6 +3420,16 @@ module Engine
 
       def corp_loans_text
         'Loans'
+      end
+
+      def check_player_range!
+        min_players = self.class.min_players(@optional_rules, @players.size)
+        max_players = self.class::PLAYER_RANGE[1]
+        return if (player_count = @players.size).between?(min_players, max_players)
+
+        rules = optional_rules.empty? ? '' : " (#{optional_rules.join(',')})"
+        player_s = "player#{player_count == 1 ? '' : 's'}"
+        raise GameError, "#{self.class.title}#{rules} does not support #{player_count} #{player_s}"
       end
     end
   end
