@@ -294,7 +294,9 @@ module Engine
             end
 
             # The corporation have atleast two share, calculate if corp or player should receive/pay difference
-            if ipo_shares > 1 && @game.num_certs(minor.owner) < @game.cert_limit
+            if ipo_shares > 1 &&
+              (!entity.counts_for_limit ||
+               @game.num_certs(minor.owner) < @game.cert_limit)
               choice = pay_choice_str(entity, minor, 2)
               choices['two_shares'] = choice if choice
             end
