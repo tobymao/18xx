@@ -128,6 +128,10 @@ module Engine
         end
 
         def check_options(_options, _min_players, _max_players); end
+
+        def min_players(_optional_rules, _num_players)
+          self::PLAYER_RANGE[0]
+        end
       end
     end
   end
