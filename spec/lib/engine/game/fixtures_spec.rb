@@ -69,6 +69,15 @@ module Engine
               )
             end
           end
+
+          it 'player scores are Integers' do
+            @data['result'].each do |player, score|
+              expect(score).to(
+                be_kind_of(Integer),
+                "Expected stored JSON score #{score} for player '#{player}' to be an Integer",
+              )
+            end
+          end
         end
 
         [false, true].each do |strict|

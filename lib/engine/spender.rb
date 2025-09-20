@@ -16,6 +16,7 @@ module Engine
     end
 
     def spend(cash, receiver, check_cash: true, check_positive: true, borrow_from: nil)
+      cash = cash.to_i
       self.check_cash(cash, borrow_from: borrow_from) if check_cash
       check_positive(cash) if check_positive
 
