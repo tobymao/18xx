@@ -25,7 +25,7 @@ class FixtureCache
     end
 
     game = @cache.dig(title, file, :game)
-    if game && (game.last_processed_action <= action)
+    if game && ((game.last_processed_action || 0) <= action)
       game.process_to_action(action)
     else
       game = Engine::Game.load(data, at_action: action)
