@@ -43,13 +43,46 @@ module Engine
               connected: false,
               extra_action: true
             )
+
             @round.pending_tokens.shift
+          end
+
+          def place_second_oo_token(tile, corp_name)
+            corporation = @game.corporation_by_id(corp_name)
+            return unless corporation&.floated
+
+            token = corporation.next_token
+            city = tile.cities.reject(&:tokened?).first
+            city.place_token(corporation, token) if city.tokenable?(corporation, tokens: token)
+          end
+
+          def swap_higher_value_oo_token(city, entity)
+            old_token = city.tokens.first
+            old_token.remove!
+            city.exchange_token(entity.find_token_by_type)
           end
 
           def process_place_token(action)
             super
             tile = action.city.tile
-            replace_oo_reservations(tile) unless tile.reservations.empty? # move hex reservation
+            other_corp =
+              case [action.entity.name, tile.name]
+              when %w[NWR 235]
+                'SPD'
+              when %w[SPD 235]
+                swap_higher_value_oo_token(action.city, action.entity)
+                'NWR'
+              when %w[EBR 235]
+                swap_higher_value_oo_token(action.city, action.entity)
+                'EIR'
+              when %w[EIR 235]
+                'EBR'
+              end
+
+            return unless other_corp
+
+            place_second_oo_token(tile, other_corp)
+            @round.pending_tokens.shift
           end
 
           # Base code doesn't handle one token and one reservation on a OO tile
@@ -79,7 +112,9 @@ module Engine
             (old_tile.exits - tile.exits).empty?
           end
 
-          def potential_tiles(_entity_or_entities, _hex)
+          def potential_tiles(_entity_or_entities, hex)
+            return if (hex.name == 'G8') || (hex.name == 'P17')
+
             @game.tiles.select { |t| %w[13 12 206 205].include?(t.name) }.uniq(&:name)
           end
         end
