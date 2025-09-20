@@ -756,7 +756,7 @@ module Engine
               'tile' => '9-0',
               'rotation' => 1,
             }
-            expect { game.process_action(action).maybe_raise! }.to raise_error(TypeError)
+            expect { game.process_action(action).maybe_raise! }.to raise_error(GameError)
           end
         end
       end
