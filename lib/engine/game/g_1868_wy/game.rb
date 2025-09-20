@@ -65,7 +65,7 @@ module Engine
         CERT_LIMIT = { 2 => 30, 3 => 20, 4 => 15, 5 => 12 }.freeze
         CAPITALIZATION = :incremental
         SELL_BUY_ORDER = :sell_buy
-        HOME_TOKEN_TIMING = :par
+        HOME_TOKEN_TIMING = :float
         NEXT_SR_PLAYER_ORDER = :first_to_pass
         MUST_SELL_IN_BLOCKS = true
         MUST_EMERGENCY_ISSUE_BEFORE_EBUY = true
@@ -663,6 +663,7 @@ module Engine
 
           super
 
+          place_home_token(corporation) if corporation == union_pacific
           upgrade_home(corporation)
 
           corporation.capitalization = :incremental
@@ -733,12 +734,8 @@ module Engine
             statuses << "Next: #{stack.map(&:name).reverse.slice(1, 4).join(', ')}"
           end
 
-          if corporation == dpr
-            if dpr_first_home_status == :placed && dpr.tokens.count(&:used).zero? && !home_token_locations(corporation).empty?
-              statuses << 'Choose new home as an SR action'
-            elsif !dpr_first_home_status && home_token_locations(corporation).empty?
-              statuses << 'Cannot par: no home token location available'
-            end
+          if corporation == dpr && !dpr.par_price && home_token_locations(corporation).empty?
+            statuses << 'Cannot par: no home token location available'
           end
 
           statuses.empty? ? nil : statuses
@@ -1503,8 +1500,8 @@ module Engine
             ''
           else
             @graph.clear
-            dpr.coordinates = '' if corporations.include?(dpr) && dpr.tokens.count(&:used).zero?
-            " Tokens are returned: #{corporations.map(&:name).join(' and ')}" unless corporations.empty?
+            dpr.coordinates = nil if corporations.include?(dpr) && dpr.tokens.count(&:used).zero?
+            " Tokens are returned: #{corporations.map(&:name).join(' and ')}"
           end
         end
 
@@ -1742,14 +1739,17 @@ module Engine
         def home_token_locations(corporation)
           if corporation == dpr
             hexes.select do |hex|
-              hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) }
+              # L2 is the only preprinted city space that is not another
+              # corporation's home
+              (hex.id == 'L2' || !hex.tile.paths.empty?) &&
+                hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) }
             end
           else
             [hex_by_id(corporation.coordinates)]
           end
         end
 
-        def skip_homeless_dpr?(entity)
+        def tokenless_dpr?(entity)
           entity == dpr && entity.tokens.count(&:used).zero?
         end
 
