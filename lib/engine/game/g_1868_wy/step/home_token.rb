@@ -10,11 +10,15 @@ module Engine
           def process_place_token(action)
             corp = token.corporation
 
-            if corp.id == @game.dpr.id && !corp.floated?
-              action.city.tile.add_reservation!(token.corporation, action.city)
+            if @game.tokenless_dpr?(corp)
               corp.coordinates = action.city.hex.id
-              @round.pending_tokens.shift
-              @log << "#{corp.name} reserves #{action.city.hex.id} (#{action.city.tile.location_name}) for its home token"
+              if corp.floated?
+                super
+              else
+                action.city.tile.add_reservation!(token.corporation, action.city)
+                @round.pending_tokens.shift
+                @log << "#{corp.name} reserves #{action.city.hex.id} (#{action.city.tile.location_name}) for its home token"
+              end
             else
               super
             end
