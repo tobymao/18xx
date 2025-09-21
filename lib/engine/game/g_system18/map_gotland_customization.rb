@@ -390,7 +390,7 @@ module Engine
           bundles = find_buyable_bundles(rival, count)
           return @log << 'No available shares to buy' if bundles.empty?
 
-          bundles.each { |bundle| process_buy_shares(bundle) }
+          bundles.each { |bundle| rival_buy_shares(bundle) }
         end
 
         def find_buyable_bundles(_entity, count)
@@ -404,7 +404,7 @@ module Engine
           bundles
         end
 
-        def process_buy_shares(bundle)
+        def rival_buy_shares(bundle)
           @log << "Rival buys one share from #{bundle.corporation.name}"
           share_pool.buy_shares(rival, bundle, exchange: true)
         end
@@ -414,10 +414,10 @@ module Engine
           return @log << 'Rival does not have any shares to sell' if shares.empty?
 
           shares_to_sell = count == :all ? shares : [find_lowest_value_share(shares)]
-          process_sell_shares(shares_to_sell)
+          rival_sell_shares(shares_to_sell)
         end
 
-        def process_sell_shares(shares)
+        def rival_sell_shares(shares)
           shares = [shares] unless shares.is_a?(Array)
           shares.group_by(&:corporation).each do |corp, corp_shares|
             @log << "Rival sells #{corp_shares.sum(&:percent)}% of #{corp.name}"
