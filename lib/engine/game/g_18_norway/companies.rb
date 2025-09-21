@@ -26,7 +26,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'P2B Mjøsa hvite svane',
+            name: 'P2B Mjøsas hvite svane',
             sym: 'P2B',
             value: 30,
             revenue: 10,
@@ -36,7 +36,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'P3A Søsa hvite svane',
+            name: 'P3A Sørumstand mekaniske verksted',
             sym: 'P3A',
             value: 40,
             revenue: 10,
@@ -50,7 +50,7 @@ module Engine
             sym: 'P3B',
             value: 40,
             revenue: 10,
-            desc: 'Owner of P3B only receive 10kr if first train has been bought '\
+            desc: 'Owner of P3B only receive 10kr if first 3 train has been bought '\
                   'P3B never closes.',
             abilities: [
               { type: 'close', on_phase: 'never' },
