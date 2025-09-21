@@ -1,10 +1,5 @@
 # frozen_string_literal: true
 
-require_relative 'step/gotland_difficulty_selection'
-require_relative 'round/gotland_difficulty_selection'
-require_relative 'step/gotland_nationalize_corporation'
-require_relative 'round/gotland_nationalization'
-
 module Engine
   module Game
     module GSystem18
@@ -15,6 +10,8 @@ module Engine
           'D7' => [3, 4, 5, 0, 1, 2],
         }.freeze
 
+        B3_BASE_REVENUE_GREEN = 50
+        B3_BASE_REVENUE_BROWN = 70
         DIFFICULTY_VALUES = {
           'easy' => 10,
           'normal' => 20,
@@ -63,12 +60,13 @@ module Engine
         ].freeze
 
         def map_gotland_setup
+          @newly_floated_corporations = []
           rival.owner = rival
         end
 
         def map_gotland_constants
           redef_const(:CURRENCY_FORMAT_STR, '%s SEK')
-          redef_const(:BANKRUPTCY_ENDS_GAME_AFTER, :all)
+          redef_const(:BANKRUPTCY_ENDS_GAME_AFTER, :one)
         end
 
         def map_gotland_game_companies
@@ -218,8 +216,8 @@ module Engine
           redef_const(:TILE_LAYS, [{ lay: true, upgrade: true, cost: difficulty_level_value }].freeze)
           reduce_float_costs(0)
 
-          @green_value = 50 - difficulty_level_value
-          @brown_value = 70 - difficulty_level_value
+          @green_value = B3_BASE_REVENUE_GREEN - difficulty_level_value
+          @brown_value = B3_BASE_REVENUE_BROWN - difficulty_level_value
           # Update the B3 hex with the new values
           hex = hex_by_id('B3')
           hex.tile.offboards.first.revenue = { 'green' => @green_value, 'brown' => @brown_value }
@@ -276,7 +274,7 @@ module Engine
         end
 
         def map_gotland_stock_round
-          GSystem18::Round::GotlandStock.new(self, stock_steps)
+          GSystem18::Round::Stock.new(self, stock_steps)
         end
 
         def map_gotland_operating_steps
@@ -315,14 +313,16 @@ module Engine
             corp = corporation_by_id(corp_hash[:sym])
             next if corp.floated?
 
-            ability = corp.all_abilities.find { |a| a.is_a?(Engine::Ability::FloatCost) && a.float_cost&.positive? }
+            ability = corp.all_abilities.find do |a|
+              a.is_a?(Engine::Game::GSystem18::Gotland::FloatCost) && a.float_cost&.positive?
+            end
             new_cost = difficulty_level_value * count
             count += 1
             if new_cost.zero?
               corp.remove_ability(ability) if ability
             else
-              ability ||= Engine::Ability::FloatCost.new(type: 'float_cost', description: '', desc_detail: '',
-                                                         float_cost: new_cost)
+              ability ||= Engine::Game::GSystem18::Gotland::FloatCost.new(type: 'float_cost', description: '', desc_detail: '',
+                                                                          float_cost: new_cost)
               corp.add_ability(ability) unless corp.all_abilities.include?(ability)
               ability.float_cost = new_cost
               ability.description = "Float cost: #{new_cost}"
@@ -331,18 +331,19 @@ module Engine
           end
         end
 
-        def can_par?(corporation, player)
+        def map_gotland_can_par?(corporation, player)
           player_president_shares = corporations.count { |corp| corp.president?(player) }
           return false if player_president_shares >= 4
 
-          super
+          # Super
+          !corporation.ipoed
         end
 
-        def float_corporation(corporation)
+        def map_gotland_float_corporation(corporation)
           player = corporation.owner
 
           ability = corporation.all_abilities.find do |a|
-            a.is_a?(Engine::Ability::FloatCost) && a.float_cost && a.float_cost.positive?
+            a.is_a?(Engine::Game::GSystem18::Gotland::FloatCost) && a.float_cost && a.float_cost.positive?
           end
           if ability
             float_cost = ability.float_cost
@@ -356,9 +357,16 @@ module Engine
           end
           floated_index = @corporation_float_order.index { |c| c[:sym] == corporation.id }
           reduce_float_costs(floated_index)
-          super
+
+          @log << "#{corporation.name} floats"
+
+          return if %i[incremental none].include?(corporation.capitalization)
+
+          @bank.spend(corporation.par_price.price * corporation.total_shares, corporation)
+          @log << "#{corporation.name} receives #{format_currency(corporation.cash)}"
+
           # Track newly floated corporations for the current stock round
-          @round.track_newly_floated(corporation) if @round.is_a?(GSystem18::Round::GotlandStock)
+          track_newly_floated(corporation) if @round.is_a?(GSystem18::Round::Stock)
         end
 
         # ----- Rival share randomizer -----
@@ -496,6 +504,28 @@ module Engine
           corporation.share_holders[owner] += share.percent if owner
           owner.shares_by_corporation[corporation] << share
           @_shares[share.id] = share
+        end
+
+        def map_gotland_stock_finish_round
+          # Check if any new corporations were floated during this stock round
+          if @newly_floated_corporations.empty?
+            # No new corporations floated, export trains equal to number of unfloated corporations
+            unfloated_count = corporations.count { |c| !c.floated? && c.floatable }
+            if unfloated_count.positive?
+              log << 'No new corporations floated during stock round'
+              log << "Exporting unfloated corporations count #{unfloated_count} train#{unfloated_count > 1 ? 's' : ''}"
+              unfloated_count.times do
+                depot.export! unless depot.upcoming.empty?
+              end
+            end
+          end
+
+          # Clear the tracking array for next stock round
+          @newly_floated_corporations.clear
+        end
+
+        def track_newly_floated(corporation)
+          @newly_floated_corporations << corporation
         end
 
         def map_gotland_next_round!

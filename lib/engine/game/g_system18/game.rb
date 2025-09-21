@@ -41,6 +41,7 @@ module Engine
         include MapRussiaCustomization
 
         attr_accessor :deferred_rust, :merging, :merge_a_city, :merge_b_city
+
         include MapGotlandCustomization
 
         register_colors(red: '#d1232a',
@@ -565,25 +566,6 @@ module Engine
           send("map_#{cmap_name}_next_round!")
         end
 
-        def stock_steps
-          unless respond_to?("map_#{cmap_name}_stock_steps")
-            return [
-              Engine::Step::DiscardTrain,
-              Engine::Step::Exchange,
-              Engine::Step::SpecialTrack,
-              Engine::Step::BuySellParShares,
-            ]
-          end
-
-          send("map_#{cmap_name}_stock_steps")
-        end
-
-        def stock_round
-          return super unless respond_to?("map_#{cmap_name}_stock_round")
-
-          send("map_#{cmap_name}_stock_round")
-        end
-
         def emergency_issuable_bundles(entity)
           return [] if game_capitalization != :incremental
           return [] if entity.trains.any?
@@ -628,9 +610,13 @@ module Engine
           send("map_#{cmap_name}_or_set_finished")
         end
 
-        def close_corporation_with_reset(corporation, quiet: false, reset: true)
-          return send("map_#{cmap_name}_close_corporation", corporation) if respond_to?("map_#{cmap_name}_close_corporation")
+        def close_corporation(corporation, quiet: false)
+          return super unless respond_to?("map_#{cmap_name}_close_corporation")
 
+          send("map_#{cmap_name}_close_corporation", corporation)
+        end
+
+        def close_corporation_with_reset(corporation, quiet: false, reset: true)
           close_corporation(corporation, quiet: quiet)
 
           if reset
@@ -680,6 +666,12 @@ module Engine
           return super unless respond_to?("map_#{cmap_name}_can_par?")
 
           send("map_#{cmap_name}_can_par?", corporation, entity)
+        end
+
+        def float_corporation(corporation)
+          return super unless respond_to?("map_#{cmap_name}_float_corporation")
+
+          send("map_#{cmap_name}_float_corporation", corporation)
         end
 
         def after_par(corporation)
@@ -818,17 +810,6 @@ module Engine
           send("map_#{cmap_name}_game_end_check_values")
         end
 
-
-        def bankruptcy_limit_reached?
-          case self.class::BANKRUPTCY_ENDS_GAME_AFTER
-          when :one
-            @players.any?(&:bankrupt)
-          when :all_but_one
-            @players.count { |p| !p.bankrupt } == 1
-          when :all
-            @players.all?(&:bankrupt)
-          end
-        end
         def rust?(train, purchased_train)
           !@deferred_rust.include?(train) && super
         end
