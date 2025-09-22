@@ -242,8 +242,7 @@ task 'fixture_import', [:id] do |_task, args|
   group = 1000
 
   # ensure proper fixtures dir exists
-  title = game_data[:title]
-  dir = File.join('public', 'fixtures', title)
+  dir = File.join('public', 'fixtures', game.meta.fixture_dir_name)
   FileUtils.mkdir_p(dir)
   FileUtils.chown(user, group, dir)
 
@@ -254,5 +253,5 @@ task 'fixture_import', [:id] do |_task, args|
 
   format_fixture_json(filename, pretty: true)
 
-  sh %(git add "#{filename}")
+  sh "git add '#{filename}'"
 end

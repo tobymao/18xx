@@ -25,6 +25,7 @@ module Engine
         GAME_DISPLAY_TITLE = '18 Los Angeles 1'
         GAME_FULL_TITLE = '18 Los Angeles: Railroading in the City of Angels 1st Edition'
         GAME_ISSUE_LABEL = '18 Los Angeles'
+        FIXTURE_DIR_NAME = '18LosAngeles1'
         GAME_IS_VARIANT_OF = G18LosAngeles::Meta
         GAME_ALIASES = ['18LA_1'].freeze
         GAME_VARIANTS = [].freeze

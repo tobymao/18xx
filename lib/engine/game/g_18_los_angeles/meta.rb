@@ -26,6 +26,7 @@ module Engine
         GAME_FULL_TITLE = '18 Los Angeles: Railroading in the City of Angels 2nd Edition'
         GAME_ALIASES = %w[18LA 18LA_2].freeze
         GAME_ISSUE_LABEL = '18 Los Angeles'
+        FIXTURE_DIR_NAME = '18LosAngeles2'
         GAME_VARIANTS = [
           {
             sym: :first_ed,

@@ -414,7 +414,8 @@ describe 'Assets' do
     end
 
     TEST_CASES.each do |game, game_id, actions|
-      data = JSON.parse(File.read("spec/fixtures/#{game}/#{game_id}.json"))
+      dir = Engine.meta_by_title(game).fixture_dir_name
+      data = JSON.parse(File.read("spec/fixtures/#{dir}/#{game_id}.json"))
       actions.each do |action_config|
         action, step, string = action_config
         describe "#{game} #{game_id}" do

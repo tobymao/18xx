@@ -47,7 +47,8 @@ class FixtureCache
 
   # one of the `describe` or `context` strings needs to match the fixture ID
   def game_file_for_test(descriptions, title)
-    test_files_for_title = Find.find("#{FIXTURES_DIR}/#{title}")
+    dir = Engine.meta_by_title(title).fixture_dir_name
+    test_files_for_title = Find.find("#{FIXTURES_DIR}/#{dir}")
     filenames = descriptions[0..-2].lazy.map do |description|
       test_files_for_title.find { |f| File.basename(f) == "#{description}.json" }
     end
