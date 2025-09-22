@@ -5,7 +5,6 @@ require 'spec_helper'
 describe Engine::Game::G1858::Game do
   describe 219_682 do
     it 'broad and narrow gauge graphs calculated' do
-      pending('fix for issue https://github.com/tobymao/18xx/issues/12031')
       game = fixture_at_action(942)
       corp = game.corporation_by_id('N')
       # Check which hexes are reachable by broad and metre gauge routes.
