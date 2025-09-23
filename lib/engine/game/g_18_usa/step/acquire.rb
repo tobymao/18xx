@@ -23,6 +23,16 @@ module Engine
             super
           end
 
+          def max_bid_for_corporation(corporation, acquired_corp)
+            # Notionally pay off all the acquired corps loans, and then they can be taken again
+            loan_payoff = acquired_corp.loans.size * @game.loan_value
+
+            @game.buying_power(corporation, extra_loans: acquired_corp.loans.size) +
+            acquired_corp.cash +
+            treasury_share_compensation(acquired_corp) -
+            loan_payoff + (@game.owns_p15?(acquired_corp) ? 100 : 0)
+          end
+          
           def process_acquire(buyer)
             @passed_scrap_trains = false
             super
