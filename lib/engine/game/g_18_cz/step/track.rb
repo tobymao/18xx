@@ -11,7 +11,7 @@ module Engine
           def process_lay_tile(action)
             return super unless @game.corporation_of_vaclav?(action.entity)
 
-            lay_tile_action(action, spender: @game.bank)
+            lay_tile_action(action, spender: @game.vaclav)
             pass! unless can_lay_tile?(action.entity)
           end
 
