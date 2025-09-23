@@ -52,6 +52,8 @@ module Engine
 
             place_token(entity, action.city, action.token,
                         same_hex_allowed: @game.token_same_hex?(entity, action.city.hex, action.token))
+
+            @game.bank.spend(-action.token.price, entity) if action.token.price.negative?
             pass!
           end
 

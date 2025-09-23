@@ -17,6 +17,7 @@ require_relative 'map_northern_italy_customization'
 require_relative 'map_ms_customization'
 require_relative 'map_scotland_customization'
 require_relative 'map_russia_customization'
+require_relative 'map_gotland_customization'
 
 module Engine
   module Game
@@ -40,6 +41,8 @@ module Engine
         include MapRussiaCustomization
 
         attr_accessor :deferred_rust, :merging, :merge_a_city, :merge_b_city
+
+        include MapGotlandCustomization
 
         register_colors(red: '#d1232a',
                         orange: '#f58121',
@@ -607,6 +610,12 @@ module Engine
           send("map_#{cmap_name}_or_set_finished")
         end
 
+        def close_corporation(corporation, quiet: false)
+          return super unless respond_to?("map_#{cmap_name}_close_corporation")
+
+          send("map_#{cmap_name}_close_corporation", corporation)
+        end
+
         def close_corporation_with_reset(corporation, quiet: false, reset: true)
           close_corporation(corporation, quiet: quiet)
 
@@ -657,6 +666,12 @@ module Engine
           return super unless respond_to?("map_#{cmap_name}_can_par?")
 
           send("map_#{cmap_name}_can_par?", corporation, entity)
+        end
+
+        def float_corporation(corporation)
+          return super unless respond_to?("map_#{cmap_name}_float_corporation")
+
+          send("map_#{cmap_name}_float_corporation", corporation)
         end
 
         def after_par(corporation)
