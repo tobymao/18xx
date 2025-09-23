@@ -731,8 +731,8 @@ module Engine
 
         def after_phase_change(name)
           super
-          # Only proceed if we're in phase 4
-          return unless name.to_i == 4
+          # Only proceed if we're in phase 5
+          return unless name.to_i == 5
 
           # Find P3B company and get its owner
           p4b_company = @companies.find { |c| c.id == 'P4B' }
