@@ -750,7 +750,7 @@ module Engine
           @log << "#{player.name} takes a loan of #{format_currency(amount)}. " \
                   "The player debt is increased by #{format_currency(loan_amount)}."
 
-          @bank.spend(loan_amount, player)
+          @bank.spend(amount, player)
         end
 
         def add_interest_player_loans!
@@ -772,7 +772,7 @@ module Engine
           payoff_amount = [payoff_amount, loan_balance].min
 
           @player_debts[player] -= payoff_amount
-          player.spend(payoff_amount, player)
+          player.spend(payoff_amount, @bank)
 
           @log <<
             if payoff_amount == loan_balance
