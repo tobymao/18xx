@@ -12,13 +12,22 @@ unless ENV['RACK_ENV'] == 'production'
     task.requires << 'rubocop-performance'
   end
 
+  desc 'Build the main JavaScript files'
+  task :compile do
+    Assets.new.combine
+  end
+
+  desc 'Build the main JavaScript files and all game-specific files'
+  task :compile_all do
+    Assets.new.combine(:all)
+  end
+
   desc 'Run spec in parallel'
   task :spec_parallel do
-    Assets.new.combine
     ParallelTests::CLI.new.run(['--type', 'rspec'])
   end
 
-  task default: %i[spec_parallel rubocop]
+  task default: %i[compile spec_parallel rubocop]
 end
 
 # Migrate
