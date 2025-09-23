@@ -140,7 +140,17 @@ module Engine
         TWO_PLAYER_HEXES_TO_REMOVE = %w[A22 B19 B21 B23 B25 C22 C24 C26 C28 D21 D23 D25 D27 D29 E20 E22 E24 E26
                                         E28 F21 F23 F25 F27 G20 G22 G24 G26 G28 H21 H23 H25 I20 I22 I24].freeze
 
+        attr_reader :vaclav
         attr_accessor :rusted_variants
+
+        class Vaclav < Player
+          def initialize
+            super(-1, 'Vaclav')
+          end
+
+          # allowed to go negative when spending on track lays
+          def check_cash(*args, **kwargs); end
+        end
 
         def setup
           @or = 0
@@ -151,7 +161,7 @@ module Engine
           @vaclavs_corporations = []
 
           unless multiplayer?
-            @vaclav = Player.new(-1, 'Vaclav')
+            @vaclav = Vaclav.new
             @corporations = @corporations.reject { |item| TWO_PLAYER_CORP_TO_REMOVE.include?(item.name) }
 
             @corporations.select { |item| item.type == :large }.each { |item| item.max_ownership_percent = 70 }
