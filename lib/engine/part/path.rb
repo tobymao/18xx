@@ -162,6 +162,7 @@ module Engine
             jp.walk(
               jskip: @junction,
               visited: visited,
+              skip_track: skip_track,
               skip_paths: skip_paths,
               counter: counter,
               converging: converging,

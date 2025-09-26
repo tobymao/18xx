@@ -24,7 +24,7 @@ module Engine
         private
 
         def first_normal_upcoming_train
-          @upcoming.reject { |t| @game.g_train?(t) }.first
+          @upcoming.reject { |t| @game.goods_train?(t.name) }.first
         end
       end
     end

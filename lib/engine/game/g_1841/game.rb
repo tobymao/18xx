@@ -2566,7 +2566,6 @@ module Engine
 
         def corp_minimum_to_retain(owner, corp, active)
           return 0 if can_sell_any_amount?(owner, corp, active)
-          return 0 if historical?(corp)
 
           corp.player_share_holders.reject { |s_h, _| s_h == owner }.values.max || 0
         end

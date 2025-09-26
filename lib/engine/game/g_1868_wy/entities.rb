@@ -53,7 +53,6 @@ module Engine
           def_corporation(
             sym: 'DPR',
             name: 'Denver Pacific Railway and Telegraph Company',
-            coordinates: '',
             color: '#4D2674',
           ),
 

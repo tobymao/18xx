@@ -141,15 +141,30 @@ module Engine
           end
 
           def process_remove_token(action)
-            unless player_can_purchase_token?(@remaining_choosers[0], action.city.tokens[action.slot])
+            player = @remaining_choosers[0]
+
+            unless player_can_purchase_token?(player, action.city.tokens[action.slot])
               raise GameError,
-                    "#{@remaining_choosers[0].name} does not have a company that can purchase a token at #{action.city.hex.id}"
+                    "#{player.name} does not have a company that can purchase a token at #{action.city.hex.id}"
             end
 
             @token_up_for_bid = action.city.tokens[action.slot]
 
-            @game.log << "#{@remaining_choosers[0].name} has chosen NDEM token at #{action.city.hex.id} for auction"
-            @remaining_bidders = get_player_list(start_player: @remaining_choosers[0])
+            hex = action.city.hex
+            if hex.id == 'N23'
+              minor_home, next_to =
+                case action.city.id[-1]
+                when '0'
+                  ["M15's home", 'O22']
+                when '1'
+                  ["M14's home", 'N21']
+                end
+              @game.log << "#{player.name} has chosen NDEM token at #{hex.id} (#{minor_home}, next to #{next_to}) for auction"
+            else
+              @game.log << "#{player.name} has chosen NDEM token at #{hex.id} for auction"
+            end
+
+            @remaining_bidders = get_player_list(start_player: player)
             @current_high_bid = 0
             @current_high_bidder = nil
             @auction_winner = nil

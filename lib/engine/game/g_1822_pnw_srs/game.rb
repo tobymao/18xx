@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require_relative '../g_1822_pnw/game'
-require_relative '../g_1822/scenario'
+require_relative '../g_1822_pnw/scenario'
 require_relative 'meta'
 require_relative 'trains'
 
@@ -10,7 +10,7 @@ module Engine
     module G1822PnwSrs
       class Game < G1822PNW::Game
         include_meta(G1822PnwSrs::Meta)
-        include G1822::Scenario
+        include G1822PNW::Scenario
         include Trains
 
         STARTING_COMPANIES = %w[P1 P2 P3 P5 P7 P9 P10 P11 P14 P15 P16 P18

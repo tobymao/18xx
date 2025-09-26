@@ -10,6 +10,7 @@ x-rack: &rack
   build:
     args:
       RACK_ENV: development
+    dockerfile: ${DEV_DOCKERFILE:-Dockerfile}
   volumes:
     - .:/18xx:z
     - /18xx/vendor
@@ -29,3 +30,5 @@ services:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: password
       POSTGRES_DB: 18xx_development
+    build:
+      dockerfile: ${DEV_DOCKERFILE:-Dockerfile}

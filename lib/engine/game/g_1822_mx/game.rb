@@ -62,6 +62,7 @@ module Engine
         # Don't run 1822 specific code for certain private companies
         COMPANY_LCDR = nil
         COMPANY_OSTH = nil
+        COMPANY_LUR = nil # Move Card
 
         PRIVATE_COMPANIES_ACQUISITION = {
           'P1' => { acquire: %i[major], phase: 5 },
@@ -308,7 +309,7 @@ module Engine
           Engine::Round::Operating.new(self, [
             G1822::Step::PendingToken,
             G1822::Step::FirstTurnHousekeeping,
-            Engine::Step::AcquireCompany,
+            G1822::Step::AcquireCompany,
             G1822::Step::DiscardTrain,
             G1822MX::Step::SpecialChoose,
             G1822MX::Step::SpecialTrack,
@@ -385,8 +386,11 @@ module Engine
           # Replace token
           city = hex_by_id(corporation.coordinates).tile.cities.find { |c| c.reserved_by?(corporation) }
           city.remove_reservation!(corporation)
-          city.place_token(ndem, ndem.find_token_by_type, check_tokenable: false)
-          graph.clear
+          # Don't double up on NdeM tokens
+          unless city.tokened_by?(ndem)
+            city.place_token(ndem, ndem.find_token_by_type, check_tokenable: false)
+            graph.clear
+          end
 
           # Add a stock certificate
           new_share = Share.new(ndem, percent: 10, index: @number_ndem_shares)

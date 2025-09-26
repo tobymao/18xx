@@ -244,73 +244,6 @@ module Engine
         end
         # rubocop:enable Layout/LineLength
 
-        # rubocop:disable Layout/LineLength
-        def map_britain_game_hexes_old
-          {
-            gray: {
-              %w[a5] => 'junction;path=a:5,b:_0,terminal:1',
-              %w[A4] => 'offboard=revenue:yellow_10|green_20|brown_30|gray_40',
-              %w[C12] => 'path=a:0,b:1',
-              %w[G2] => 'offboard=revenue:yellow_10|green_20|brown_20|gray_30',
-              %w[G12] => 'offboard=revenue:yellow_10|green_20|brown_30|gray_40',
-              %w[J1] => 'town=revenue:10;path=a:4,b:_0',
-              %w[L11] => 'offboard=revenue:yellow_10|green_20|brown_30|gray_40',
-            },
-
-            red: {
-              %w[B3] => 'offboard=revenue:yellow_20|green_20|brown_30|gray_30;path=a:4,b:_0;path=a:5,b:_0;icon=image:port',
-              %w[F5] => 'offboard=revenue:yellow_30|green_40|brown_50|gray_70;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
-              %w[I2] => 'offboard=revenue:yellow_20|green_20|brown_30|gray_30;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;icon=image:port',
-              %w[J13] => 'offboard=revenue:yellow_10|green_20|brown_30|gray_40;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;icon=image:port',
-              %w[K2] => 'offboard=revenue:yellow_20|green_30|brown_40|gray_40;path=a:4,b:_0;path=a:5,b:_0;icon=image:port',
-              %w[K10] => 'offboard=revenue:yellow_40|green_50|brown_70|gray_100;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
-            },
-            green: {
-              %w[F7] => 'city=revenue:40,pos:0;city=revenue:40,pos:2;path=a:0,b:_0;path=a:2,b:_1;label=OO',
-              %w[H7] => 'city=revenue:40,pos:3;city=revenue:40,pos:5;path=a:3,b:_1;path=a:5,b:_0;label=OO',
-            },
-            yellow: {
-              %w[A6] => 'city=revenue:30;path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0;label=B',
-              %w[F9] => 'city=revenue:30,pos:0;city=revenue:30,pos:3;path=a:3,b:_1;label=OO',
-            },
-            white: {
-              %w[B5 C4 H11 I10 J7 K6 K12 L3 L9] => '',
-              %w[A8] => 'city=revenue:0',
-              %w[A10] => 'border=type:province,color:brown,edge:5',
-              %w[B7] => 'upgrade=cost:40,terrain:mountain;icon=image:mine,sticky:1;border=type:province,color:brown,edge:5',
-              %w[B9] => 'upgrade=cost:40,terrain:mountain;border=type:province,color:brown,edge:0;border=type:province,color:brown,edge:4;border=type:province,color:brown,edge:5',
-              %w[B11] => 'border=type:province,color:brown,edge:1;border=type:province,color:brown,edge:2',
-              %w[C6] => 'border=type:province,color:brown,cost:80,edge:5',
-              %w[C8] => 'city=revenue:0;upgrade=cost:20,terrain:water;border=type:province,color:brown,edge:1;border=type:province,color:brown,edge:2;border=type:province,color:brown,edge:3',
-              %w[C10] => 'city=revenue:0;upgrade=cost:20,terrain:water;border=type:province,color:brown,edge:2',
-              %w[D7] => 'upgrade=cost:40,terrain:mountain;border=type:province,color:brown,cost:80,edge:2',
-              %w[D9] => 'upgrade=cost:40,terrain:mountain;icon=image:mine,sticky:1',
-              %w[D11] => 'town=revenue:0;town=revenue:0',
-              %w[E6 E10] => 'city=revenue:0',
-              %w[E8] => 'upgrade=cost:80,terrain:mountain',
-              %w[E12] => 'upgrade=cost:40,terrain:mountain',
-              %w[F11] => 'city=revenue:0;upgrade=cost:20,terrain:water',
-              %w[G4] => 'upgrade=cost:40,terrain:mountain;border=type:province,color:brown,edge:4;border=type:province,color:brown,edge:5',
-              %w[G6] => 'town=revenue:0;town=revenue:0;border=type:province,color:brown,edge:1',
-              %w[G8] => 'city=revenue:0',
-              %w[G10] => 'upgrade=cost:20,terrain:water;icon=image:mine,sticky:1',
-              %w[H3] => 'upgrade=cost:40,terrain:mountain;border=type:province,color:brown,edge:4',
-              %w[H5] => 'border=type:province,color:brown,edge:0;border=type:province,color:brown,edge:1;border=type:province,color:brown,edge:2',
-              %w[H9] => 'city=revenue:0',
-              %w[I4] => 'upgrade=cost:40,terrain:mountain;icon=image:mine,sticky:1;border=type:province,color:brown,edge:3;border=type:province,color:brown,edge:4;border=type:province,color:brown,edge:5',
-              %w[I6] => 'upgrade=cost:20,terrain:water;border=type:province,color:brown,edge:1',
-              %w[I8 I12] => 'city=revenue:0',
-              %w[J3] => 'city=revenue:0;border=type:province,color:brown,cost:80,edge:4;border=type:impassable,edge:5',
-              %w[J5] => 'city=revenue:0;border=type:province,color:brown,cost:80,edge:1;border=type:province,color:brown,edge:2',
-              %w[J9 J11] => 'town=revenue:0;town=revenue:0',
-              %w[K4] => 'border=type:impassable,edge:2',
-              %w[K8] => 'town=revenue:0;town=revenue:0;upgrade=cost:20,terrain:water',
-              %w[L5 L7] => 'city=revenue:0',
-            },
-          }
-        end
-        # rubocop:enable Layout/LineLength
-
         def map_britain_game_hexes
           {
             gray: map_britain_north_gray_hexes.merge(map_britain_south_gray_hexes),
@@ -446,6 +379,7 @@ module Engine
               sym: 'PGS',
               name: 'Pegasus',
               logo: 'System18/PGS',
+              simple_logo: 'System18/PGS.alt',
               tokens: [0, 40, 100],
               coordinates: nil,
               color: '#cd79a7',
@@ -575,6 +509,7 @@ module Engine
           redef_const(:CURRENCY_FORMAT_STR, '£%s')
           redef_const(:TILE_UPGRADES_MUST_USE_MAX_EXITS, %i[unlabeled_cities])
           redef_const(:TILE_LAYS, [{ lay: true, upgrade: true, cost: 0 }, { lay_replaced: :if_green_upgraded }])
+          redef_const(:REMOVE_UNUSED_RESERVATIONS, true)
         end
 
         def map_britain_setup
