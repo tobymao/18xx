@@ -288,9 +288,14 @@ module Engine
 
           case @units.keys.sort.map(&:to_s).join
           when '1'
-            add_train_list(trains, { '2' => 6, '3' => 4, '4' => 3, '5' => 4  })
+            add_train_list(trains, { '2' => 6, '3' => 4, '4' => 3, '5' => 4 })
           when '2'
-            add_train_list(trains, { '2' => 5, '3' => 3, '4' => 2, '5' => 3, '6' => 2 })
+            if @kits[3]
+              # Special exception: don't use 6-trains included in Unit 2 when using Kit 3
+              add_train_list(trains, { '2' => 5, '3' => 3, '4' => 2, '5' => 3 })
+            else
+              add_train_list(trains, { '2' => 5, '3' => 3, '4' => 2, '5' => 3, '6' => 2 })
+            end
           when '3'
             # extra 5/3T/U3 for minors
             add_train_list(trains, { '2' => 5, '3' => 3, '4' => 1, '5' => 3, '7' => 2, '3T' => 1, 'U3' => 1 })
