@@ -151,6 +151,14 @@ module Engine
             reserved.none? { |s| s.percent == 20 }
           end
 
+          def action_is_shenanigan?(_entity, _other_entity, _action, _corporation, _corp_buying)
+            return 'Exchange of Coal Minor' if action.is_a?(Action::SpecialBuy)
+            return 'Payoff of player debt' if action.is_a?(Action::PayoffPlayerDebt)
+            return 'Partial payoff of player debt' if action.is_a?(Action::PayoffPlayerDebtPartial)
+
+            super
+          end
+
           private
 
           def exchangable_ability(entity)
