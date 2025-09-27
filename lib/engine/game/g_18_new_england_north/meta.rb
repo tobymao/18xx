@@ -20,6 +20,7 @@ module Engine
         GAME_RULES_URL = 'https://github.com/tobymao/18xx/wiki/18NewEngland-2:-Northern-States'
         GAME_SUBTITLE = nil
         GAME_TITLE = '18NewEngland 2: Northern States'
+        FIXTURE_DIR_NAME = '18NewEngland2'
         GAME_ISSUE_LABEL = '18NewEngland'
 
         PLAYER_RANGE = [2, 4].freeze

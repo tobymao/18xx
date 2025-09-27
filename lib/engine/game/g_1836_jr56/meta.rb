@@ -12,6 +12,8 @@ module Engine
         # 1856 for obvious reasons
         DEPENDS_ON = '1856'
 
+        FIXTURE_DIR_NAME = '1836jr56'
+
         GAME_DESIGNER = 'David G. D. Hecht'
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1836Jr-56'
         GAME_LOCATION = 'Netherlands'

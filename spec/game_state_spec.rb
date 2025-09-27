@@ -22,7 +22,8 @@ module Engine
   describe 'Fixture Game State' do
     let(:game_file) do
       title = game_title_for_test(RSpec.current_example)
-      Find.find("#{FIXTURES_DIR}/#{title}").find { |f| File.basename(f) == "#{described_class}.json" }
+      dir = Engine.meta_by_title(title).fixture_dir_name
+      Find.find("#{FIXTURES_DIR}/#{dir}").find { |f| File.basename(f) == "#{described_class}.json" }
     end
 
     describe '18Chesapeake' do

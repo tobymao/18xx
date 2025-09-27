@@ -7,7 +7,9 @@ require 'json'
 
 module Engine
   Find.find(FIXTURES_DIR).select { |f| File.basename(f) =~ /.json/ }.each do |fixture|
-    game_title = File.basename(File.dirname(fixture))
+    game_fixture_dir_name = File.basename(File.dirname(fixture))
+    meta = Engine.meta_by_title(game_fixture_dir_name)
+    game_title = meta.title
     filename = File.basename(fixture)
     game_id = filename.split('.json').first
     describe game_title do
@@ -15,6 +17,14 @@ module Engine
         before(:all) do
           @text = File.read(fixture)
           @data = JSON.parse(@text)
+        end
+
+        it 'has the correct title field in the file' do
+          expect(@data['title']).to eq(game_title)
+        end
+
+        it "#{fixture} has the right directory name" do
+          expect(game_fixture_dir_name).to eq(meta.fixture_dir_name)
         end
 
         describe 'formatted with `make fixture_format`' do
