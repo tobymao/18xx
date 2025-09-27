@@ -32,13 +32,7 @@ module Engine
         BUKOWINA_SOURCES = %w[E12 B9].freeze
         BUKOWINA_TARGETS = %w[D25 E24 E26].freeze
 
-        EVENTS_TEXT = Base::EVENTS_TEXT.merge(
-          'buy_across' => ['Buy Across', 'Trains can be bought between companies'],
-          'close_mountain_railways' => ['Mountain Railways Close', 'Any still open Montain railways are exchanged or closed'],
-          'sd_formation' => ['SD formation', 'SD forms at the end of the OR'],
-          'exchange_coal_companies' => ['Coal Companies Exchange', 'All remaining coal companies are exchanged'],
-          'ug_formation' => ['UG formation', 'UG forms at the end of the OR'],
-          'kk_formation' => ['k&k formation', 'KK forms at the end of the OR'],
+        EVENTS_TEXT = G1824::Game::EVENTS_TEXT.dup.merge(
           'close_construction_railways' => ['Close Construction Railways', 'All construction minors are closed'],
           'vienna_tokened' => ['Vienna tokened',
                                'When Vienna is upgraded to Brown the last token of the bond railway is placed there'],
@@ -57,32 +51,37 @@ module Engine
           super
         end
 
-        def possibly_adjust_events_based_on_player_count(train)
-          return train unless two_player?
+        def game_trains
+          return super unless two_player?
 
-          # KK forms on 5 trains instead of 6 trains, and UG is not present when 2 players
-          close_construction_event = 'close_construction_railways'
+          unless @game_trains
+            trains = super.map(&:dup)
 
-          if train[:name] == '4' && !@close_construction_company_when_first_5_sold
-            train[:events] = add_event(train, close_construction_event)
+            _train_2, _train_3, train_4, train_5, train_6, _train_8, _train_10,
+            _train_1g, _train_2g, _train_3g, _train_4g, _train_5g = trains
+
+            train_4_events = train_4[:events].dup
+            train_4_events << { 'type' => 'close_construction_railways' } unless @close_construction_company_when_first_5_sold
+
+            # KK forms on 5 trains instead of 6 trains, and UG is not present when 2 players
+            train_5_events = [{ 'type' => 'exchange_coal_companies' }, { 'type' => 'kk_formation' },
+                              { 'type' => 'vienna_tokened' }]
+            train_5_events << { 'type' => 'close_construction_railways' } if @close_construction_company_when_first_5_sold
+
+            train_4[:events] = train_4_events
+            train_5[:events] = train_5_events
+            train_6[:events] = []
+
+            @game_trains = trains.deep_freeze
           end
-
-          if train[:name] == '5'
-            train[:events] = [{ 'type' => 'exchange_coal_companies' }, { 'type' => 'kk_formation' }]
-            train[:events] = add_event(train, close_construction_event) if @close_construction_company_when_first_5_sold
-            train[:events] = add_event(train, 'vienna_tokened')
-          end
-
-          train[:events] = [] if train[:name] == '6'
-
-          train
+          @game_trains
         end
 
         def num_trains_map
           if two_player?
-            self.class::TRAIN_COUNT_2P_CISLETHANIA
+            self.class::TRAIN_COUNT_2P_CISLETHANIA.freeze
           else
-            self.class::TRAIN_COUNT_3P_CISLETHANIA
+            self.class::TRAIN_COUNT_3P_CISLETHANIA.freeze
           end
         end
 
@@ -461,15 +460,6 @@ module Engine
 
         def closed_construction
           @close_construction_company_when_first_5_sold ? '5' : '4'
-        end
-
-        def add_event(train, event)
-          events = train[:events]
-          added_event = { 'type' => event }
-
-          events << added_event unless events.include?(added_event)
-
-          events
         end
 
         def create_construction_railway_from_bought_pre_staatsbahn(company, minor)
