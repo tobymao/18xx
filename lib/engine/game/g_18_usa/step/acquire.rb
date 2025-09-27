@@ -30,7 +30,6 @@ module Engine
               super
             end
           end
-          
           def process_acquire(buyer)
             @passed_scrap_trains = false
             super
