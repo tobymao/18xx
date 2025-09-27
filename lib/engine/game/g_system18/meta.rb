@@ -106,10 +106,7 @@ module Engine
           },
         ].freeze
 
-        MUTEX_RULES = [
-          %i[map_NEUS map_France map_Twisting_Tracks map_UK_Limited map_China_Rapid_Development map_Poland map_Britain
-             map_Britain_N map_Britain_S map_Northern_Italy map_MS map_Scotland map_Russia],
-        ].freeze
+        MUTEX_RULES = [OPTIONAL_RULES.map { |r| r[:sym] }].freeze
       end
     end
   end
