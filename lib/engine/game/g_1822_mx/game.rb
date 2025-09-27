@@ -152,10 +152,6 @@ module Engine
 
         DOUBLE_HEX = %w[L19 M22 M26].freeze
 
-        def init_graph
-          Graph.new(self, home_as_token: true)
-        end
-
         TRAINS = [
           {
             name: 'L',
