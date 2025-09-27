@@ -132,6 +132,10 @@ module Engine
         def min_players(_optional_rules, _num_players)
           self::PLAYER_RANGE[0]
         end
+
+        def max_players(_optional_rules, _num_players)
+          self::PLAYER_RANGE[1]
+        end
       end
     end
   end

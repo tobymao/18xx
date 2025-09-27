@@ -3424,7 +3424,7 @@ module Engine
 
       def check_player_range!
         min_players = self.class.min_players(@optional_rules, @players.size)
-        max_players = self.class::PLAYER_RANGE[1]
+        max_players = self.class.max_players(@optional_rules, @players.size)
         return if (player_count = @players.size).between?(min_players, max_players)
 
         rules = optional_rules.empty? ? '' : " (#{optional_rules.join(',')})"
