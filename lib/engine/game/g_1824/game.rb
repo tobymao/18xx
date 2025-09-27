@@ -659,6 +659,11 @@ module Engine
           super
         end
 
+        # 1837 use as special functionality for token graphs so we need to use base functionality
+        def token_graph_for_entity(_entity)
+          @graph
+        end
+
         def associated_coal_railway(regional_railway)
           coal_railway =
             case regional_railway.name
