@@ -9,6 +9,9 @@ module Engine
         # Used for correct valuation of coal railway shares
         attr_accessor :coal_price
 
+        # Used for correct capitalization of majors
+        attr_reader :float_amount_factor
+
         def initialize(sym:, name:, **opts)
           ipo_shares = opts[:ipo_shares] || []
           @reserved_ipo_shares = opts[:reserved_shares] || []
@@ -29,6 +32,12 @@ module Engine
 
           # Used for coal railway valuation
           @coal_price = 0
+
+          # Used for floating cash amount as this varies with number of reserved shares
+          # Float amount is normally 10 times par, but for corporations that have reserved
+          # shares, these do not contribute to the amount. This value is set up to 10 minus
+          # 1 per reserved 10%, but can be adjusted in case minors are not sold during SR1.
+          @float_amount_factor = 10 - (@reserved_ipo_shares.sum / 10)
         end
 
         def floated?
@@ -66,19 +75,22 @@ module Engine
           @percent_total_ipo_shares = 100
           @reserved_ipo_shares = []
           @real_presidents_percent = @presidents_share.percent
+
+          # Get 100% capital when floating
+          @float_amount_factor = 10
         end
 
         # Used when a secondary pre-staatsbahn is unsold during initial SR, or
         # when pre-staatsbahn becomes a construction railway (2 players)
         # We need to unreserve one of the shares of the national.
         def unreserve_one_share!
-          (shares.find { |s| !s.buyable && s.percent == 10 })&.buyable = true
+          do_unreserve_one_share!
         end
 
         # Used when a primary pre-staatsbahn is unsold during initial SR
         # We need to unreserve the 20% share of the national.
         def unreserve_president_share!
-          (shares.find { |s| !s.buyable && s.percent == 20 })&.buyable = true
+          do_unreserve_one_share!(president_share: true)
         end
 
         def should_not_float_until_exchange!
@@ -108,6 +120,19 @@ module Engine
         # True if no player owns 20% or more
         def unpresidentable?
           player_share_holders.reject { |_, p| p < 20 }.empty?
+        end
+
+        private
+
+        def do_unreserve_one_share!(president_share = false)
+          share_percent = president_share ? 20 : 10
+          a_share = shares.find { |s| !s.buyable && s.percent == share_percent }
+          return unless a_share
+
+          a_share.buyable = true
+
+          # Get 100% capital when floating
+          @float_amount_factor -= president_share ? 2 : 1
         end
       end
     end
