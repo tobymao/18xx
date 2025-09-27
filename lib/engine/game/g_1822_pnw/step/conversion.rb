@@ -11,20 +11,23 @@ module Engine
       module Step
         module Conversion
           def min_exchange_shares(par, minors_value, minors_cash)
-            ((minors_value - minors_cash - 1) / par).floor + 1
+            shares = ((minors_value - minors_cash - 1) / par).floor + 1
+            [2, shares].max
           end
 
           def max_exchange_shares(par, minors_value, player_cash)
-            ((minors_value + [player_cash, (par - 1)].min) / par).floor
+            shares = ((minors_value + [player_cash, (par - 1)].min) / par).floor
+            [6, shares].min
           end
 
           def possible_exchanged_shares(par, minors_cash, minors_value, player_cash)
-            return [6] if (6 * par) < minors_value && par == 100 && minors_cash >= (minors_value - 600)
-            return [] if (6 * par) < minors_value
+            if (6 * par) < minors_value
+              return (par == 100 ? [6] : [])
+            end
 
             min_shares = min_exchange_shares(par, minors_value, minors_cash)
             max_shares = max_exchange_shares(par, minors_value, player_cash)
-            (2..10).select { |n| (min_shares..max_shares).cover?(n) }
+            (min_shares..max_shares).to_a
           end
 
           def can_par_at?(par, minors_cash, minors_value, player_cash)
