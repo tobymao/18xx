@@ -213,6 +213,9 @@ module Engine
           '66' => 1,
           '67' => 1,
           '68' => 1,
+        }.deep_freeze
+
+        UNIT2_GRAY_TILES = {
           '49' => 1,
           '50' => 1,
           '51' => 2,
@@ -570,7 +573,11 @@ module Engine
         def game_tiles
           gtiles = {}
           append_game_tiles(gtiles, UNIT1_TILES) if @units[1]
-          append_game_tiles(gtiles, UNIT2_TILES) if @units[2]
+          if @units[2]
+            append_game_tiles(gtiles, UNIT2_TILES)
+            # Special exception: don't use gray tiles included in Unit 2 when using Kit 3
+            append_game_tiles(gtiles, UNIT2_GRAY_TILES) unless @kits[3]
+          end
           append_game_tiles(gtiles, UNIT3_TILES) if @units[3]
           append_game_tiles(gtiles, R1_TILES) if @regionals[1]
           append_game_tiles(gtiles, R2_TILES) if @regionals[2]
