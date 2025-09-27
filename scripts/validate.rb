@@ -144,18 +144,27 @@ def run_game(game, actions = nil, strict: false, silent: false)
   data
 end
 
-def validate_all(*titles, families: [], game_ids: nil, strict: false, status: %w[active finished], filename: 'validate.json', silent: false)
+def validate_all(*titles, families: true, game_ids: nil, strict: false, status: %w[active finished], filename: 'validate.json', silent: false)
   $count = 0
   $total = 0
   $total_time = 0
   page = []
   data = {}
 
-  families.each { |f| titles.concat(titles_for_game_family(f)) }
+  titles =
+    if families
+      titles.flat_map do |title|
+        titles_for_game_family(title)
+      end.uniq.sort
+    else
+      titles.sort
+    end
 
   where_args = {Sequel.pg_jsonb_op(:settings).has_key?('pin') => false, status: status}
   where_args[:title] = titles unless titles.empty?
   where_args[:id] = game_ids if game_ids
+
+  puts "Finding game IDS for #{where_args}"
 
   DB[:games].order(:id).where(**where_args).select(:id).paged_each(rows_per_fetch: 100) do |game|
     page << game
