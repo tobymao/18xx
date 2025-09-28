@@ -57,14 +57,17 @@ module Engine
             @order_notified = true
           end
 
+          def finish_round_text
+            'First SR is finished - any unsold Pre-State Railways, Coal Railways, or Montain Railways are removed from the game'
+          end
+
           def finish_round
             # It is (barely) possible BH has been sold out - handle stock movement for that
             @game.corporations.select { |c| c.type == :major && c.floated? }.sort.each do |corp|
               sold_out_stock_movement(corp) if sold_out?(corp)
             end
 
-            @game.log << 'First stock round is finished - any unsold Pre-State Railways, Coal Railways, ' \
-                         ' and Montain Railways are removed from the game'
+            @game.log << finish_round_text if finish_round_text
 
             @game.companies.each do |company|
               next if company.closed? || company.owned_by_player?

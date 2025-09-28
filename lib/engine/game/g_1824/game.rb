@@ -498,7 +498,11 @@ module Engine
         end
 
         def exchangable_for_mountain_railway?(player, corporation)
-          corporation.type == :major && @companies.find { |c| mountain_railway?(c) && c.owned_by?(player) }
+          shares_exchangable?(corporation) && @companies.find { |c| mountain_railway?(c) && c.owned_by?(player) }
+        end
+
+        def shares_exchangable?(corporation)
+          corporation.type == :major
         end
 
         def unbought_companies?
