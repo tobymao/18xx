@@ -35,6 +35,15 @@ module Engine
             desc: 'Use increased train numbers in train roster',
           },
         ].freeze
+
+        GAME_VARIANTS = [
+          {
+            sym: :solo,
+            name: 'Solo',
+            title: '1862 Solo',
+            desc: 'Solo variant',
+          },
+        ].freeze
       end
     end
   end

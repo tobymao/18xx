@@ -40,7 +40,7 @@ module Engine
             name: '6',
             on: '6',
             # Minor is not available in phase 6, but as merge to Staatsbahn
-            # happends at end of OR, we can let minor keep its 2 trains
+            # happens at end of OR, we can let minor keep its 2 trains
             train_limit: { minor: 2, major: 2, national: 3 },
             tiles: %i[yellow green brown],
             operating_rounds: 3,
@@ -48,14 +48,17 @@ module Engine
           {
             name: '8',
             on: '8',
-            train_limit: { major: 2, national: 3 },
+            # Similar to phase 6, it is possible to reach phase 8 while minor
+            # still remains (merged at the end of OR)
+            train_limit: { minor: 2, major: 2, national: 3 },
             tiles: %i[yellow green brown gray],
             operating_rounds: 3,
           },
           {
             name: '10',
             on: '10',
-            train_limit: { major: 2, national: 3 },
+            # See phase 8
+            train_limit: { minor: 2, major: 2, national: 3 },
             tiles: %i[yellow green brown gray],
             operating_rounds: 3,
           },

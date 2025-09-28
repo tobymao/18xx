@@ -6,7 +6,7 @@ module Engine
   module Game
     module G1822PNW
       module Step
-        class AcquireCompany < Engine::Step::AcquireCompany
+        class AcquireCompany < G1822::Step::AcquireCompany
           attr_reader :choices
 
           def actions(entity)

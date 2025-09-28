@@ -75,6 +75,10 @@ refresh your browser to load the new app.
 > commands, e.g., `DEV_DOCKERFILE=Dockerfile.amd64 make dev_up_b`. If you use
 > Docker Desktop, enable `Use Rosetta for x86_64/amd64 emulation on Apple
 > Silicon` in `Docker Desktop / Settings / General / Virtual Machine Options`.
+> A tool like [direnv](https://direnv.net/) can be used so you can set up a
+> `.envrc` file instead of manually setting `DEV_DOCKERFILE` every time you
+> start work on the project.  You should also run `ln -s .rerun.amd64 .rerun`
+> once.
 
 #### Database
 
@@ -157,9 +161,11 @@ Run `docker compose exec rack rake` while a docker instance is running to run ru
 
 Run a specific set of test fixtures using the `-e` flag to `rspec`. This is useful when testing a specific bug or reproducing an issue.
 
-`docker compose exec rack rspec spec/lib/engine/games/game_spec.rb -e '<folder_name> <fixture_name>' [...]`
+`docker compose exec rack rspec spec/lib/engine/game/fixtures_spec.rb -e '<folder_name> <fixture_name>' [...]`
 
-e.g. `docker compose exec rack rspec spec/lib/engine/games/game_spec.rb -e '1860 19354'`
+e.g. `docker compose exec rack rspec spec/lib/engine/game/fixtures_spec.rb -e '1860 19354'`
+
+See also `public/fixtures/README.md` for more details on fixture tests and debugging.
 
 #### Profiling the code
 

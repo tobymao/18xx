@@ -110,6 +110,7 @@ module Engine
         COMPANY_CHPR = nil
         COMPANY_LCDR = nil
         COMPANY_OSTH = nil
+        COMPANY_LUR = 'P21' # Move Card
 
         PRIVATE_COMPANIES_ACQUISITION = {
           'P1' => { acquire: %i[major], phase: 5 },
@@ -646,7 +647,7 @@ module Engine
             %w[P10 P11],
           ]
 
-          par_price = stock_market.par_prices[0]
+          par_price = stock_market.par_prices[-1]
 
           @players.each.with_index do |player, index|
             player.cash = 0

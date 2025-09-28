@@ -71,7 +71,8 @@ module Engine
           end
 
           def half_pay_withhold_amount(entity, revenue)
-            entity.type == :minor ? revenue / 2.0 : (revenue / 2 / entity.total_shares).to_i * entity.total_shares
+            half = revenue / 2
+            entity.type == :minor ? half : (half / entity.total_shares).to_i * entity.total_shares
           end
 
           def holder_for_corporation(entity)

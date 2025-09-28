@@ -19,8 +19,16 @@ class Validate
     File.write(filename, JSON.pretty_generate(data))
   end
 
+  def parsed
+    @parsed ||= JSON.parse(File.read(filename))
+  end
+
   def data
-    @data ||= JSON.parse(File.read(filename))
+    @data ||= parsed.reject { |k, v| k == 'summary' }
+  end
+
+  def summary
+    @summary ||= parsed['summary']
   end
 
   def ids
@@ -136,22 +144,33 @@ def run_game(game, actions = nil, strict: false, silent: false)
   data
 end
 
-def validate_all(*titles, game_ids: nil, strict: false, status: %w[active finished], filename: 'validate.json', silent: false)
+def validate_all(*titles, families: true, game_ids: nil, strict: false, status: %w[active finished], filename: 'validate.json', silent: false)
   $count = 0
   $total = 0
   $total_time = 0
   page = []
   data = {}
 
+  titles =
+    if families
+      titles.flat_map do |title|
+        titles_for_game_family(title)
+      end.uniq.sort
+    else
+      titles.sort
+    end
+
   where_args = {Sequel.pg_jsonb_op(:settings).has_key?('pin') => false, status: status}
-  where_args[:title] = titles if titles.any?
+  where_args[:title] = titles unless titles.empty?
   where_args[:id] = game_ids if game_ids
+
+  puts "Finding game IDS for #{where_args}"
 
   DB[:games].order(:id).where(**where_args).select(:id).paged_each(rows_per_fetch: 100) do |game|
     page << game
     if page.size >= 100
       where_args2 = {id: page.map { |p| p[:id] }}
-      where_args2[:title] = titles if titles.any?
+      where_args2[:title] = titles unless titles.empty?
       games = Game.eager(:user, :players, :actions).where(**where_args2).all
       _ = games.each do |game|
         data[game.id]=run_game(game, strict: strict, silent: silent)
@@ -161,7 +180,7 @@ def validate_all(*titles, game_ids: nil, strict: false, status: %w[active finish
   end
 
   where_args3 = {id: page.map { |p| p[:id] }}
-  where_args3[:title] = titles if titles.any?
+  where_args3[:title] = titles unless titles.empty?
 
   games = Game.eager(:user, :players, :actions).where(**where_args3).all
   _ = games.each do |game|
@@ -249,4 +268,31 @@ def archive_games(game_ids)
   game_ids.each do |id|
     Game[id].archive!
   end
+end
+
+# returns Array<String> for all titles related to this one via DEPENDS_ON and
+# GAME_VARIANTS connections
+def titles_for_game_family(title)
+  titles = Set.new
+
+  meta = Engine.meta_by_title(title)
+  top = meta
+  top = Engine.meta_by_title(top::DEPENDS_ON) until top::DEPENDS_ON.nil?
+
+  dependent_metas = Engine::GAME_METAS.group_by { |m| m::DEPENDS_ON }
+  metas = [top, *dependent_metas[top.title]]
+
+  until metas.empty?
+    meta = metas.pop
+    title = meta.title
+    next if titles.include?(title)
+
+    titles.add(title)
+    meta::GAME_VARIANTS.each do |variant|
+      metas << Engine.meta_by_title(variant[:title])
+    end
+    metas.concat(dependent_metas[title] || [])
+  end
+
+  titles.sort
 end

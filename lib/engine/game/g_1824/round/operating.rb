@@ -1,20 +1,15 @@
 # frozen_string_literal: true
 
-require_relative '../../g_1837/round/operating'
+require_relative '../../../round/operating'
 
 module Engine
   module Game
     module G1824
       module Round
-        class Operating < G1837::Round::Operating
-        end
-
-        def round_state
-          super.merge(
-            {
-              pending_tokens: [],
-            }
-          )
+        class Operating < Engine::Round::Operating
+          def pending_tokens
+            []
+          end
         end
       end
     end

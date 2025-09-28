@@ -176,9 +176,9 @@ module Engine
 
         def setup
           # Move 3 last ordinary shares of TR to bank pool
-          @share_pool.buy_shares(
-            @share_pool,
+          @share_pool.transfer_shares(
             ShareBundle.new(tr.shares.dup.reverse.take(3)),
+            @share_pool,
           )
 
           @corporations.each do |corporation|

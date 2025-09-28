@@ -70,10 +70,10 @@ module Engine
 
             @game.minors
               .select { |minor| minor.owner == player }
-              .each { |minor| @game.close_corporation(minor, quiet: true) }
+              .each { |minor| @game.close_corporation_with_reset(minor, quiet: true) }
 
             # close/restart target corp
-            @game.close_corporation(corp)
+            @game.close_corporation_with_reset(corp)
 
             if player.companies.any?
               @log << "#{player.name}'s companies close: #{player.companies.map(&:sym).join(', ')}"
@@ -84,7 +84,7 @@ module Engine
             player.spend(player.cash, @game.bank) if player.cash.positive?
 
             @game.corporations.dup.each do |corporation|
-              @game.close_corporation(corporation) if corporation.share_price&.type == :close
+              @game.close_corporation_with_reset(corporation) if corporation.share_price&.type == :close
             end
 
             @game.declare_bankrupt(player)

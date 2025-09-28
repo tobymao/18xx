@@ -8,7 +8,7 @@ module Engine
       module Meta
         include Game::Meta
 
-        DEV_STAGE = :prealpha
+        DEV_STAGE = :alpha
         DEPENDS_ON = '1837'
 
         GAME_SUBTITLE = 'Austrian-Hungarian Railway'.freeze
@@ -19,31 +19,22 @@ module Engine
         GAME_PUBLISHER = :lonny_games
         GAME_RULES_URL = 'https://boardgamegeek.com/filepage/188242/1824-english-rules'.freeze
 
-        # TODO: There are still some rules missing for 2 player version, so only allow 3-6.
-        # Do remember to remove this TODO, and the 2 player not yet supported comment below when done.
         PLAYER_RANGE = [3, 6].freeze
         OPTIONAL_RULES = [
           {
-            sym: :cisleithania,
-            short_name: 'Cisleithania',
-            desc: 'Use the smaller Cislethania map, with some reduction of components - 2-3 players. '\
-                  'For 2 players Cistleithania is always used. (2 player is not yet supported at 18xx.games)',
-          },
-          {
             sym: :goods_time,
             short_name: 'Goods Time',
-            desc: 'Use the Goods Time Variant (3-6 players) - pre-set scenario',
+            desc: 'Use the Goods Time Variant (3-6 players) - pre-set scenario according to the rulebook.',
           },
         ].freeze
-
-        def self.check_options(options, _min_players, max_players)
-          optional_rules = (options || []).map(&:to_sym)
-          if optional_rules.include?(:cisleithania) && !max_players.nil? && (max_players > 3)
-            { error: 'Cisleithania variant is for 2-3 players' }
-          elsif optional_rules.include?(:cisleithania) && optional_rules.include?(:goods_time)
-            { error: 'Cisleithania and Goods Time combined not supported' }
-          end
-        end
+        GAME_VARIANTS = [
+          {
+            sym: :cis,
+            name: 'Cisleithania',
+            title: '1824 Cisleithania',
+            desc: 'Alternate map for 2-3 players',
+          },
+        ].freeze
       end
     end
   end

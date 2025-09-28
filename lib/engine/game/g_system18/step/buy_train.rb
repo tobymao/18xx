@@ -10,7 +10,13 @@ module Engine
           def actions(entity)
             return [] if entity.receivership?
 
-            super
+            acts = super
+            acts << 'sell_shares' if !acts.include?('sell_shares') && can_issue_shares?(entity)
+            acts
+          end
+
+          def can_issue_shares?(entity)
+            entity == current_entity && @game.can_issue_shares_for_train?(entity)
           end
 
           def setup
@@ -20,6 +26,13 @@ module Engine
 
           def skip!
             @round.receivership_train_buy(self, :process_buy_train)
+            @game.no_trains(current_entity) if current_entity.trains.empty? && !current_entity.receivership?
+            super
+          end
+
+          def process_pass(action)
+            @game.no_trains(action.entity) if action.entity.trains.empty?
+            super
           end
 
           def process_sell_shares(action)
@@ -37,6 +50,15 @@ module Engine
           def process_buy_train(action)
             super
             @emr_issue = false
+          end
+
+          def buy_train_action(action)
+            warranted = @game.train_warranted?(action.train)
+            super
+            return unless warranted
+
+            @log << "#{action.entity.name} receives a warranty for the #{action.train.name} train"
+            action.train.name = action.train.name + '*'
           end
 
           def other_trains(entity)

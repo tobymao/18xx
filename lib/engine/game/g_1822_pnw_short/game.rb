@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require_relative '../g_1822_pnw/game'
-require_relative '../g_1822/scenario'
+require_relative '../g_1822_pnw/scenario'
 require_relative 'meta'
 require_relative 'trains'
 require_relative 'round/stock'
@@ -11,7 +11,7 @@ module Engine
     module G1822PnwShort
       class Game < G1822PNW::Game
         include_meta(G1822PnwShort::Meta)
-        include G1822::Scenario
+        include G1822PNW::Scenario
         include Trains
 
         attr_reader :paired_assoc, :paired_unassoc

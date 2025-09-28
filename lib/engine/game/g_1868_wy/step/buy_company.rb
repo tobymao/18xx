@@ -11,7 +11,7 @@ module Engine
           include G1868WY::SkipCoalAndOil
 
           def can_buy_company?(entity)
-            @game.skip_homeless_dpr?(entity) ? false : super
+            @game.tokenless_dpr?(entity) ? false : super
           end
 
           def pay(entity, owner, price, company)

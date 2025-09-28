@@ -549,6 +549,7 @@ module Engine
         @raw_actions = []
         @turn_start_action_id = 0
         @last_turn_start_action_id = 0
+        @last_processed_action = 0
         @exception = nil
         @names = if names.is_a?(Hash)
                    names.freeze
@@ -562,6 +563,8 @@ module Engine
         @round_counter = 0
 
         @optional_rules = init_optional_rules(optional_rules)
+
+        check_player_range!
 
         initialize_seed(seed)
 
@@ -2388,6 +2391,57 @@ module Engine
         company.value
       end
 
+      def game_ending_description
+        reason, after = game_end_check
+        return unless after
+
+        after_text = ''
+
+        unless @finished
+          after_text = case after
+                       when :immediate
+                         ' : Game Ends immediately'
+                       when :current_round
+                         if @round.is_a?(Round::Operating)
+                           " : Game Ends at conclusion of this OR (#{turn}.#{@round.round_num})"
+                         else
+                           " : Game Ends at conclusion of this round (#{turn})"
+                         end
+                       when :current_or
+                         if @round.is_a?(Round::Operating)
+                           " : Game Ends at conclusion of this OR (#{turn}.#{@round.round_num})"
+                         else
+                           " : Game Ends at conclusion of the next OR (#{turn}.#{@round.round_num})"
+                         end
+                       when :full_or
+                         if @round.is_a?(Round::Operating)
+                           " : Game Ends at conclusion of #{round_end.short_name} #{turn}.#{operating_rounds}"
+                         else
+                           " : Game Ends at conclusion of #{round_end.short_name} #{turn}.#{@phase.operating_rounds}"
+                         end
+                       when :one_more_full_or_set
+                         " : Game Ends at conclusion of #{round_end.short_name}"\
+                         " #{@final_turn}.#{final_operating_rounds}"
+                       end
+          after_text += additional_ending_after_text
+        end
+
+        "#{self.class::GAME_END_DESCRIPTION_REASON_MAP_TEXT[reason]}#{after_text}"
+      end
+
+      def round_description(name, round_number = nil)
+        round_number ||= @round.round_num
+        description = "#{name} Round "
+
+        total = total_rounds(name)
+
+        description += @turn.to_s unless @turn.zero?
+        description += '.' if total && !@turn.zero?
+        description += "#{round_number} (of #{total})" if total
+
+        description.strip
+      end
+
       private
 
       def init_graph
@@ -2810,44 +2864,6 @@ module Engine
         @phase.operating_rounds
       end
 
-      def game_ending_description
-        reason, after = game_end_check
-        return unless after
-
-        after_text = ''
-
-        unless @finished
-          after_text = case after
-                       when :immediate
-                         ' : Game Ends immediately'
-                       when :current_round
-                         if @round.is_a?(Round::Operating)
-                           " : Game Ends at conclusion of this OR (#{turn}.#{@round.round_num})"
-                         else
-                           " : Game Ends at conclusion of this round (#{turn})"
-                         end
-                       when :current_or
-                         if @round.is_a?(Round::Operating)
-                           " : Game Ends at conclusion of this OR (#{turn}.#{@round.round_num})"
-                         else
-                           " : Game Ends at conclusion of the next OR (#{turn}.#{@round.round_num})"
-                         end
-                       when :full_or
-                         if @round.is_a?(Round::Operating)
-                           " : Game Ends at conclusion of #{round_end.short_name} #{turn}.#{operating_rounds}"
-                         else
-                           " : Game Ends at conclusion of #{round_end.short_name} #{turn}.#{@phase.operating_rounds}"
-                         end
-                       when :one_more_full_or_set
-                         " : Game Ends at conclusion of #{round_end.short_name}"\
-                         " #{@final_turn}.#{final_operating_rounds}"
-                       end
-          after_text += additional_ending_after_text
-        end
-
-        "#{self.class::GAME_END_DESCRIPTION_REASON_MAP_TEXT[reason]}#{after_text}"
-      end
-
       def additional_ending_after_text
         ''
       end
@@ -3067,19 +3083,6 @@ module Engine
 
       def president_assisted_buy(_corporation, _train, _price)
         [0, 0]
-      end
-
-      def round_description(name, round_number = nil)
-        round_number ||= @round.round_num
-        description = "#{name} Round "
-
-        total = total_rounds(name)
-
-        description += @turn.to_s unless @turn.zero?
-        description += '.' if total && !@turn.zero?
-        description += "#{round_number} (of #{total})" if total
-
-        description.strip
       end
 
       def corporation_available?(_entity)
@@ -3417,6 +3420,16 @@ module Engine
 
       def corp_loans_text
         'Loans'
+      end
+
+      def check_player_range!
+        min_players = self.class.min_players(@optional_rules, @players.size)
+        max_players = self.class.max_players(@optional_rules, @players.size)
+        return if (player_count = @players.size).between?(min_players, max_players)
+
+        rules = optional_rules.empty? ? '' : " (#{optional_rules.join(',')})"
+        player_s = "player#{player_count == 1 ? '' : 's'}"
+        raise GameError, "#{self.class.title}#{rules} does not support #{player_count} #{player_s}"
       end
     end
   end

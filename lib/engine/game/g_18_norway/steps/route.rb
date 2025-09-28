@@ -73,7 +73,7 @@ module Engine
           end
 
           def process_run_routes(action)
-            fee = action.routes.reduce(0) { |_num, route| @game.route_cost(route) }
+            fee = action.routes.reduce(0) { |num, route| num + @game.route_cost(route) }
             action.entity.spend(fee, @game.bank) if fee.positive?
             @log << "#{action.entity.name} spends #{@game.format_currency(fee)} on fees" if fee.positive?
             super

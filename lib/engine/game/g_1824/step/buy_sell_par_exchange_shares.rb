@@ -17,7 +17,15 @@ module Engine
             player_debt = @game.player_debt(entity)
 
             actions = super
-            actions << 'special_buy' if !actions.empty? && buyable_items(entity)
+
+            # To exchange a coal mine is an available action in case no other action has been done
+            # (but we also need to add pass if no actions were allowed)
+            if !bought? && !sold? && !buyable_items(entity).empty?
+              actions << 'special_buy'
+              actions << 'pass' if actions.one?
+            end
+
+            # If debt exists, add actions to pay off
             if player_debt.positive? && entity.cash.positive?
               actions << 'payoff_player_debt'
               actions << 'payoff_player_debt_partial'
@@ -33,11 +41,18 @@ module Engine
           end
 
           def visible_corporations
-            @game.sorted_corporations.reject { |c| c.type == :minor }
+            @game.sorted_corporations.reject { |c| c.type == :minor || c.type == :construction_railway }
           end
 
-          def can_buy?(_entity, bundle)
-            super && @game.buyable?(bundle.corporation)
+          def can_buy?(entity, bundle)
+            return unless bundle
+            return false if @game.player_debt(entity).positive?
+            return false unless super
+
+            bundle = bundle.to_bundle
+            corporation = bundle.corporation
+
+            !(@game.staatsbahn?(corporation) && bundle.presidents_share)
           end
 
           def can_par?(_entity, _parrer)
@@ -46,7 +61,8 @@ module Engine
 
           def can_sell?(_entity, bundle)
             # Rule VI.8, bullet 1, sub-bullet 2: Bank ownership cannot exceed 50% for started corporations
-            super && @game.buyable?(bundle.corporation) && (bundle.corporation.ipo_shares.sum(&:percent) + bundle.percent <= 50)
+            corp = bundle.corporation
+            super && (corp.ipo_shares.sum(&:percent) + bundle.percent <= 50)
           end
 
           # Rule VI.7, bullet 4: Exchange can take you over 60%
@@ -67,8 +83,13 @@ module Engine
             corporation = bundle.corporation
             return false if invalid_mountain_railway_exchange?(entity, corporation, exchange)
 
-            (exchange || corporation.holding_ok?(entity, bundle.common_percent)) &&
-              (@game.num_certs(entity) < @game.cert_limit(entity)) && @game.buyable?(corporation)
+            (exchange || corporation.holding_ok?(entity, bundle.common_percent) || allowed_buy_from_market(entity, bundle)) &&
+              (@game.num_certs(entity) < @game.cert_limit(entity))
+          end
+
+          # Needed for two player variant, see Cisleithania implementation
+          def allowed_buy_from_market(_entity, _bundle)
+            false
           end
 
           def process_buy_shares(action)
@@ -120,6 +141,14 @@ module Engine
             @game.payoff_player_loan(player, payoff_amount: action.amount)
             @round.last_to_act = player
             @round.current_actions << action
+          end
+
+          def allow_president_change?(corporation)
+            # In case of Staatsbahn, president change is only allowed after formation
+            return false if @game.staatsbahn?(corporation) && !corporation.floated?
+
+            reserved = corporation.reserved_shares
+            reserved.none? { |s| s.percent == 20 }
           end
 
           private

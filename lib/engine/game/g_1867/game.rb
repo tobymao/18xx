@@ -391,7 +391,7 @@ module Engine
 
         # Minors are done as corporations with a size of 2
 
-        attr_reader :trainless_major
+        attr_reader :trainless_major, :national
 
         def ipo_name(_entity = nil)
           'Treasury'
@@ -577,7 +577,9 @@ module Engine
           end
         end
 
-        def nationalization_transfer_assets(corporation); end
+        def nationalization_transfer_assets(corporation)
+          corporation.spend(corporation.cash, @bank) if corporation.cash.positive?
+        end
 
         def nationalize!(corporation)
           return if !corporation.floated? || !@corporations.include?(corporation)

@@ -12,13 +12,22 @@ unless ENV['RACK_ENV'] == 'production'
     task.requires << 'rubocop-performance'
   end
 
+  desc 'Build the main JavaScript files'
+  task :compile do
+    Assets.new.combine
+  end
+
+  desc 'Build the main JavaScript files and all game-specific files'
+  task :compile_all do
+    Assets.new.combine(:all)
+  end
+
   desc 'Run spec in parallel'
   task :spec_parallel do
-    Assets.new.combine
     ParallelTests::CLI.new.run(['--type', 'rspec'])
   end
 
-  task default: %i[spec_parallel rubocop]
+  task default: %i[compile spec_parallel rubocop]
 end
 
 # Migrate
@@ -141,27 +150,39 @@ task 'migrate_json', [:json] do |_task, args|
   migrate_json(args[:json])
 end
 
-desc 'Remove player names, chats, and whitespace from public/fixtures/*/<id>.json'
-task 'fixture_format', [:id, :chat, :pretty] do |_task, args|
+desc 'Format and compress fixtures matching public/fixtures/*/<id>.json'
+task 'fixture_format', [:id, :pretty] do |_task, args|
   Dir.glob("public/fixtures/*/#{args[:id]}.json").each do |filename|
-    format_fixture_json(filename, chat: args[:chat], pretty: args[:pretty])
+    format_fixture_json(filename, pretty: args[:pretty])
   end
 end
 
-def format_fixture_json(filename, chat: nil, pretty: nil)
-  data = JSON.parse(File.read(filename))
+def format_fixture_json(filename, pretty: nil)
+  orig_text = File.read(filename)
+  data = JSON.parse(orig_text)
+
+  settings = data['fixture_format'] || {}
 
   # remove player names
   data['players'].each.with_index do |player, index|
-    player['name'] = "Player #{index}"
+    player['name'] = "Player #{index + 1}" unless /^(Player )?(\d+|[A-Z])$/.match?(player['name'])
   end
 
-  # remove chats, unless chat arg was "keep"
-  if chat != 'keep'
+  data['user'] = { 'id' => 0, 'name' => 'You' } unless settings['keep_user']
+  data['description'] = '' unless settings['keep_description']
+
+  # remove or  chats, unless chat arg was "keep"
+  if settings['chat'] == 'scrub'
+    data['actions'].each do |action|
+      action['message'] = 'chat' if action['type'] == 'message'
+    end
+  elsif settings['chat'] != 'keep'
     data['actions'].filter! do |action|
       action['type'] != 'message'
     end
   end
+
+  data['result'].transform_values!(&:to_i)
 
   # TODO: get rid of undone actions
 
@@ -169,11 +190,17 @@ def format_fixture_json(filename, chat: nil, pretty: nil)
   # readable/diffable JSON; if arg is not given or is "0", the JSON will be
   # compressed to a single line with minimal whitespace
   if !pretty.nil? && pretty != '0'
-    File.write(filename, JSON.pretty_generate(data))
+    out_text = JSON.pretty_generate(data)
+    return if out_text == orig_text
+
+    File.write(filename, out_text)
     puts "Wrote #{filename} in \"pretty\" format"
-    puts 'Use `rake fixture_format[<id>]` to compress it before submitting a PR'
+    puts 'Use `make fixture_format` to compress it and all other fixtures before submitting a PR'
   else
-    File.write(filename, data.to_json)
+    out_text = data.to_json
+    return if out_text == orig_text
+
+    File.write(filename, out_text)
     puts "Wrote #{filename}"
   end
 end
@@ -208,12 +235,14 @@ task 'fixture_import', [:id] do |_task, args|
   game_data = db_game.to_h
   game_data[:actions] = game.raw_actions.map(&:to_h)
 
+  # this is required for opening fixtures in the browser at /fixture/<title>/<id>
+  game_data[:loaded] = true
+
   user = 1000
   group = 1000
 
   # ensure proper fixtures dir exists
-  title = game_data[:title]
-  dir = File.join('public', 'fixtures', title)
+  dir = File.join('public', 'fixtures', game.meta.fixture_dir_name)
   FileUtils.mkdir_p(dir)
   FileUtils.chown(user, group, dir)
 
@@ -224,5 +253,5 @@ task 'fixture_import', [:id] do |_task, args|
 
   format_fixture_json(filename, pretty: true)
 
-  sh "git add #{filename}"
+  sh "git add '#{filename}'"
 end

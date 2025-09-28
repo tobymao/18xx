@@ -15,9 +15,16 @@ module Engine
       raise GameError, "#{amount} is not valid to spend" unless amount.positive?
     end
 
+    def check_receiver(cash, receiver)
+      raise GameError, "Cash receiver must be a different entity: #{name}.spend(#{cash}, #{receiver.name})" if receiver == self
+    end
+
     def spend(cash, receiver, check_cash: true, check_positive: true, borrow_from: nil)
+      check_receiver(cash, receiver)
+
+      cash = cash.to_i
       self.check_cash(cash, borrow_from: borrow_from) if check_cash
-      check_positive(cash) if check_positive
+      self.check_positive(cash) if check_positive
 
       # Check if we need to borrow from our borrow_from target
       if borrow_from && (cash > @cash)
