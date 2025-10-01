@@ -280,7 +280,7 @@ module Engine
             # Interest - See Loan
             G1856::Step::Dividend,
             Engine::Step::DiscardTrain,
-            G1836Jr56::Step::BuySingleTrainOfType,
+            G1836Jr56::Step::BuyTrain,
             # Repay Loans - See Loan
             [G1856::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
