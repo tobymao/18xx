@@ -1111,13 +1111,8 @@ module Engine
           @stock_market.market[0].find { |p| p.price == market_price }
         end
 
-        def event_change_float!(_event = nil)
-          change_float
-        end
-
-        def change_float
-          # This shouldn't happen
-          raise NotImplementedError if @percent_to_operate == 60
+        def event_change_float!
+          raise NotImplementedError if @percent_to_operate == 60 # This shouldn't happen
 
           @percent_to_operate += 10
           @log << "-- Event: #{@phase.name.to_i + 1}-trains are available. Unoperated corporations need to have
