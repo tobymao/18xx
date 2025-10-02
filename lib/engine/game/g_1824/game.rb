@@ -598,22 +598,20 @@ module Engine
           # This part has been simplified in 1824, as a minor can only have one owner
           # and if its a lesser pre-staatsbahn it should correspond to a 10% share in
           # the mergee, otherwise 20%.
-          minor.share_holders.each do |sh, _|
-            num_shares = sh.shares_of(minor).size
-            next if num_shares.zero?
 
-            num_shares = 2 if coal_minor?(minor) || minor.id.end_with?('1')
+          owner = minor.owner
+          num_shares = coal_minor?(minor) || minor.id.end_with?('1') ? 2 : 1
 
-            share = corporation.shares.find { |s| !s.buyable && s.percent == num_shares * 10 }
-            @log << "#{sh.name} receives #{num_shares} share#{num_shares > 1 ? 's' : ''} of #{corporation.name}"
-            share.buyable = true
+          share = corporation.shares.find { |s| !s.buyable && s.percent == num_shares * 10 }
+          @log << "#{owner.name} receives #{num_shares} share#{num_shares > 1 ? 's' : ''} of #{corporation.name}"
+          share.buyable = true
 
-            # 1824 fix. We explicitly set allow_president_change to true here as we otherwise get a strange
-            # behavior when presidency decided for nationals. Might need revisiting.
-            @share_pool.transfer_shares(share.to_bundle, sh, allow_president_change: true)
-            if @round.respond_to?(:non_paying_shares) && operated_this_round?(minor)
-              @round.non_paying_shares[sh][corporation] += num_shares
-            end
+          # 1824 fix. We explicitly set allow_president_change to true here as we otherwise get a strange
+          # behavior when presidency decided for nationals. Might need revisiting.
+          @share_pool.transfer_shares(share.to_bundle, owner, allow_president_change: true)
+
+          if @round.respond_to?(:non_paying_shares) && operated_this_round?(minor)
+            @round.non_paying_shares[owner][corporation] += num_shares
           end
 
           if minor.cash.positive?

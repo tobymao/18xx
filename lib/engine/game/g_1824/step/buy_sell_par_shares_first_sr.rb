@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
-require_relative '../../../step/buy_sell_par_shares'
+require_relative 'buy_sell_par_shares'
 
 module Engine
   module Game
     module G1824
       module Step
-        class BuySellParSharesFirstSr < Engine::Step::BuySellParShares
+        class BuySellParSharesFirstSr < G1824::Step::BuySellParShares
           def can_sell?(_entity, _bundle)
             false
           end
@@ -17,10 +17,6 @@ module Engine
 
           def can_exchange?(_entity)
             false
-          end
-
-          def visible_corporations
-            @game.sorted_corporations.reject { |c| c.closed? || c.type == :minor }
           end
         end
       end
