@@ -498,7 +498,7 @@ module Engine
         end
 
         def exchangable_for_mountain_railway?(player, corporation)
-          shares_exchangable?(corporation) && @companies.find { |c| mountain_railway?(c) && c.owned_by?(player) }
+          shares_exchangable?(corporation) && @companies.any? { |c| mountain_railway?(c) && c.owned_by?(player) }
         end
 
         def shares_exchangable?(corporation)
