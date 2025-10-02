@@ -278,6 +278,7 @@ module Engine
             G1824::Step::KkTokenChoice,
             G1837::Step::Bankrupt,
             G1824::Step::DiscardTrain,
+            G1824::Step::ForcedMountainRailwayExchange,
             Engine::Step::SpecialTrack,
             G1824::Step::Track,
             Engine::Step::Token,
