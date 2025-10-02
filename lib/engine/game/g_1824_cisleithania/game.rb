@@ -460,14 +460,10 @@ module Engine
           return header unless company.stack
 
           case company.stack
-          when 1
-            'Construction Railway (Stack 1)'
-          when 2
-            'Large Pre-staatsbahn (Stack 2)'
-          when 3
-            'Small Pre-staatsbahn (Stack 3)'
-          when 4
-            'Coal Railway (Stack 4)'
+          when 1 then 'Construction Railway (Stack 1)'
+          when 2 then 'Large Pre-staatsbahn (Stack 2)'
+          when 3 then 'Small Pre-staatsbahn (Stack 3)'
+          when 4 then 'Coal Railway (Stack 4)'
           end
         end
 
