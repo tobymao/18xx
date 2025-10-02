@@ -8,7 +8,6 @@ module Engine
       module Step
         class BuySellParExchangeShares < Engine::Step::BuySellParShares
           EXCHANGE_ACTIONS = %w[buy_shares].freeze
-          BUY_ACTION = %w[special_buy].freeze
           PURCHASE_ACTIONS = Engine::Step::BuySellParShares::PURCHASE_ACTIONS + [Action::SpecialBuy]
 
           def actions(entity)
