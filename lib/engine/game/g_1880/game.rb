@@ -495,7 +495,7 @@ module Engine
           @end_game_triggered
         end
 
-        def end_game!(player_initiated: false)
+        def end_game!(game_end_reason)
           return if @finished
 
           @minors.each do |m|

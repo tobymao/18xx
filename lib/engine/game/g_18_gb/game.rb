@@ -926,7 +926,7 @@ module Engine
 
           case @depot.upcoming.size
           when 0
-            end_game!
+            end_game!(:final_train)
           when 1, 2
             trigger_end_game_restrictions
           end

@@ -778,7 +778,7 @@ module Engine
           end
         end
 
-        def end_game!(player_initiated: false)
+        def end_game!(game_end_reason)
           return if @finished
 
           logged_drop = false

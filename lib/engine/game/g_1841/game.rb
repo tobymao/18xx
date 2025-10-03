@@ -1003,8 +1003,8 @@ module Engine
 
         # A corp is not considered to have operated until the end of it's first OR
         def done_operating!(entity)
-          end_timing = game_end_check&.last
-          end_game! if end_timing == :current_turn
+          game_end_reason, end_timing = game_end_check
+          end_game!(game_end_reason) if end_timing == :current_turn
 
           return unless entity&.corporation?
           return if @done_this_round[entity]

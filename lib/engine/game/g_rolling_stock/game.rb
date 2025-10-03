@@ -426,7 +426,7 @@ module Engine
           if @cost_level == self.class::END_CARD_BACK || @stock_market.max_reached?
             @log << 'Game ends: Max Stock price has been reached' if @stock_market.max_reached?
             @log << 'Game ends: Game end card reached' if @cost_level == self.class::END_CARD_BACK
-            return end_game!
+            return end_game!(:stock_market)
           end
 
           return if @cost_level != self.class::END_CARD_FRONT || !@offering.empty?

@@ -88,6 +88,10 @@ module Engine
               )
             end
           end
+
+          it 'has a non-null game_end_reason' do
+            expect(@data['game_end_reason']).not_to eq(nil)
+          end
         end
 
         [false, true].each do |strict|
@@ -103,6 +107,12 @@ module Engine
                 game_result = JSON.parse(JSON.generate(@game.result))
                 expect(game_result).to eq(result)
                 expect(@game.finished).to eq(true)
+              end
+
+              it 'game_end_reason matches' do
+                game_end_reason = @data['game_end_reason']&.to_sym
+
+                expect(@game.game_end_reason).to eq(game_end_reason)
               end
 
               it "last N actions in game match fixture's test_last_actions" do

@@ -1042,7 +1042,7 @@ module Engine
           @final_turn
         end
 
-        def end_game!(player_initiated: false)
+        def end_game!(game_end_reason)
           return if @finished
 
           if !@manually_ended && @round.finished?

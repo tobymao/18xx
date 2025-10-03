@@ -98,7 +98,7 @@ module Engine
                   :tiles, :turn, :total_loans, :undo_possible, :redo_possible, :round_history, :all_tiles,
                   :optional_rules, :exception, :last_processed_action, :broken_action,
                   :turn_start_action_id, :last_turn_start_action_id, :programmed_actions, :round_counter,
-                  :manually_ended, :seed
+                  :manually_ended, :seed, :game_end_reason
 
       # Game end check is described as a dictionary
       # with reason => after
@@ -854,14 +854,16 @@ module Engine
 
         action_processed(action)
 
-        end_timing = game_end_check&.last
-        end_game! if end_timing == :immediate
+        game_end_reason, end_timing = game_end_check
+        end_game!(game_end_reason) if end_timing == :immediate
 
         while @round.finished? && !@finished
           @round.entities.each(&:unpass!)
 
-          if end_now?(end_timing) || @turn >= 100
-            end_game!
+          if end_now?(end_timing)
+            end_game!(game_end_reason)
+          elsif @turn >= 100
+            end_game!(:dnf)
           else
             transition_to_next_round!
           end
@@ -1363,11 +1365,12 @@ module Engine
         (price * (100.0 - self.class::DISCARDED_TRAIN_DISCOUNT.to_f) / 100.0).ceil.to_i
       end
 
-      def end_game!(player_initiated: false)
+      def end_game!(game_end_reason)
         return if @finished
 
         @finished = true
-        @manually_ended = player_initiated
+        @game_end_reason = game_end_reason
+        @manually_ended = @game_end_reason == :manually_ended
         store_player_info
         @round_counter += 1
         scores = result.map { |id, value| "#{@players.find { |p| p.id == id.to_i }&.name} (#{format_currency(value)})" }

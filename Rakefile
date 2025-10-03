@@ -184,6 +184,11 @@ def format_fixture_json(filename, pretty: nil)
 
   data['result'].transform_values!(&:to_i)
 
+  if data['game_end_reason'].nil?
+    game = Engine::Game.load(data).maybe_raise!
+    data['game_end_reason'] = game.game_end_reason
+  end
+
   # TODO: get rid of undone actions
 
   # if 'pretty' arg is given, any value other than "0" will produce

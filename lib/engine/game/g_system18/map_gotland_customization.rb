@@ -121,7 +121,7 @@ module Engine
         def map_gotland_close_corporation(corporation)
           corporation.close!
           @log << "#{corporation.name} did not survive you lose"
-          end_game!
+          end_game!(:bankrupt)
         end
 
         def map_gotland_game_trains(trains)

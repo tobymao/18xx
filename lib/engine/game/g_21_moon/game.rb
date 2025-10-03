@@ -919,7 +919,7 @@ module Engine
           player.shares.sum { |s| @end_bonuses[s.corporation].size * (s.percent / 10) * END_BONUS_VALUE }
         end
 
-        def end_game!(player_initiated: false)
+        def end_game!(game_end_reason)
           super
 
           if @end_bonuses.empty?
