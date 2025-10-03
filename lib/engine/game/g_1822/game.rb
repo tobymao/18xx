@@ -56,6 +56,7 @@ module Engine
 
         GAME_END_CHECK = { bank: :full_or, stock_market: :current_or }.freeze
         GAME_END_ON_NOTHING_SOLD_IN_SR1 = true
+        GAME_END_LOCK_FIRST_TRIGGER = true
 
         STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(
           par_1: :red,
@@ -1136,7 +1137,6 @@ module Engine
 
         def setup
           @nothing_sold_in_sr = true
-          @game_end_reason = nil
 
           # Setup the bidding token per player
           @bidding_token_per_player = init_bidding_token
@@ -1943,15 +1943,13 @@ module Engine
           entity.id == self.class::MINOR_14_ID
         end
 
-        def game_end_check
-          # Once the game end has been determined, it's set in stone
-          @game_end_reason ||= compute_game_end
-        end
-
-        def compute_game_end
-          return [:bank, @round.is_a?(Engine::Round::Operating) ? :full_or : :current_or] if @bank.broken?
-
-          return %i[stock_market current_or] if @stock_market.max_reached?
+        def game_end_timing(reason)
+          case reason
+          when :bank
+            @round.is_a?(Engine::Round::Operating) ? :full_or : :current_or
+          else
+            super
+          end
         end
 
         def preprocess_action(action)

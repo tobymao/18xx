@@ -87,10 +87,10 @@ module Engine
 
         EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
 
-        GAME_END_CHECK = { custom: :one_more_full_or_set }.freeze
+        GAME_END_CHECK = { second_eight: :one_more_full_or_set }.freeze
 
         GAME_END_REASONS_TEXT = Base::GAME_END_REASONS_TEXT.merge(
-          custom: 'Second 8 train is bought'
+          second_eight: 'Second 8 train is bought'
         )
 
         MINOR_TILE_LAYS = [{ lay: true, upgrade: true, cost: 0 }].freeze
@@ -563,7 +563,7 @@ module Engine
           close_all_minors
         end
 
-        def custom_end_game_reached?
+        def game_end_check_second_eight?
           # game end on second 8 train purhcase
           return false unless @phase&.phases&.last == @phase&.current
 
@@ -996,7 +996,7 @@ module Engine
               new_operating_round
             when Round::Operating
               or_round_finished
-              skip_pre_final_or = custom_end_game_reached? && !final_ors?
+              skip_pre_final_or = game_end_check_second_eight? && !final_ors?
               if @round.round_num < @operating_rounds && !skip_pre_final_or
                 new_operating_round(@round.round_num + 1)
               else

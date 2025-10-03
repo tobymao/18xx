@@ -47,7 +47,7 @@ module Engine
 
         STARTING_CASH = { 3 => 600, 4 => 480, 5 => 400, 6 => 340, 7 => 300 }.freeze
 
-        GAME_END_CHECK = { custom: :one_more_full_or_set }.freeze
+        GAME_END_CHECK = { final_train: :one_more_full_or_set }.freeze
         P0_AWARD = { 'A2' => 40, 'B1' => 70, 'B2' => 100 }.freeze
 
         ASSIGNMENT_TOKENS = {
@@ -57,7 +57,7 @@ module Engine
         TRAINS_NOT_TRIGGERING_SR = %w[2P 8E 10].freeze
 
         GAME_END_REASONS_TEXT = {
-          custom: 'Last 8 train sold',
+          final_train: 'Last 8 train sold',
         }.freeze
 
         GAME_END_REASONS_TIMING_TEXT = {
@@ -65,7 +65,7 @@ module Engine
         }.freeze
 
         GAME_END_DESCRIPTION_REASON_MAP_TEXT = {
-          custom: 'Last 8 train was purchased',
+          final_train: 'Last 8 train was purchased',
         }.freeze
 
         STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(
@@ -491,7 +491,7 @@ module Engine
           game_minors.map { |minor| G1880::Minor.new(**minor) }
         end
 
-        def custom_end_game_reached?
+        def game_end_check_final_train?
           @end_game_triggered
         end
 

@@ -87,7 +87,11 @@ module Engine
 
           blocking || process
         end
-        raise GameError, "No step found for action #{type} at #{action.id}: #{action.to_h}" unless step
+        unless step
+          game_over = @game.finished ? ' (game is over)' : ''
+          msg = "No step found for action #{type} at #{action.id}#{game_over}: #{action.to_h}"
+          raise GameError, msg
+        end
 
         step.acted = true
         step.send("process_#{action.type}", action)

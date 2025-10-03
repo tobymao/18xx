@@ -104,17 +104,32 @@ module Engine
       # with reason => after
       #   reason: What kind of game end check to do
       #   after: When game should end if check triggered
-      # Leave out a reason if game does not support that.
-      # Allowed reasons:
-      #  bankrupt, stock_market, bank, final_train, final_phase, all_closed, custom
+      # Reasons implemented here:
+      #   - all_closed: all corporations and companies have closed
+      #   - bank: bank is broken
+      #   - bankrupt: the required number of players (see
+      #               BANKRUPTCY_ENDS_GAME_AFTER) have gone bankrupt
+      #   - final_phase: reached the last phase
+      #   - final_train: no trains left in the Depot
+      #   - stock_market: a corporation reached an end game cell on the stock
+      #                   market
+      #   - fixed_round: game ends after a predetermined number of rounds;
+      #                  game_end_check_fixed_round? is not implemented here,
+      #                  but :fixed_round is included in GAME_END_REASONS_TEXT
       # Allowed after:
-      #  immediate - ends in current turn
+      #  immediate - ends after current action
       #  current_round - ends at the end of the current round
       #  current_or - ends at the next end of an OR
       #  full_or - ends at the next end of a complete OR set
       #  one_more_full_or_set - finish the current OR set, then
       #                         end after the next complete OR set
       GAME_END_CHECK = { bankrupt: :immediate, bank: :full_or }.freeze
+
+      GAME_END_TIMING_PRIORITY = %i[immediate current_round current_or full_or one_more_full_or_set].freeze
+
+      # Once a game end trigger (reason+timing) has been found, stop checking
+      # the other possible tirggers
+      GAME_END_LOCK_FIRST_TRIGGER = false
 
       BANKRUPTCY_ALLOWED = true
       # How many players does bankrupcy cause to end the game
@@ -355,7 +370,7 @@ module Engine
         stock_market: 'Corporation enters end game trigger on stock market',
         final_train: 'The final train is purchased',
         final_phase: 'The final phase is entered',
-        custom: 'Unknown custom reason', # override on subclasses
+        fixed_round: 'Fixed number of rounds',
       }.freeze
 
       GAME_END_REASONS_TIMING_TEXT = {
@@ -2807,35 +2822,60 @@ module Engine
         self.class::GAME_END_CHECK
       end
 
-      def custom_end_game_reached?
-        false
+      def game_end_timing(reason)
+        raise GameError, ":#{reason} not found in game_end_check_values" unless game_end_check_values.include?(reason)
+
+        game_end_check_values[reason]
       end
 
       def game_end_check
-        triggers = {
-          all_closed: all_closed?,
-          bankrupt: bankruptcy_limit_reached?,
-          bank: @bank.broken?,
-          stock_market: @stock_market.max_reached?,
-          final_train: @depot.empty?,
-          final_phase: @phase&.phases&.last == @phase&.current,
-          custom: custom_end_game_reached?,
-        }.select { |_, t| t }
+        return @game_end_trigger if self.class::GAME_END_LOCK_FIRST_TRIGGER && @game_end_trigger
 
-        %i[immediate current_round current_or full_or one_more_full_or_set].each do |after|
-          triggers.keys.each do |reason|
-            if game_end_check_values[reason] == after
-              @final_turn ||= @turn + 1 if after == :one_more_full_or_set
-              return [reason, after]
-            end
-          end
+        priority = self.class::GAME_END_TIMING_PRIORITY
+        game_end_check_values.each do |reason, _after|
+          next unless send("game_end_check_#{reason}?")
+
+          after = game_end_timing(reason)
+          next if @game_end_trigger && priority.index(after) >= priority.index(@game_end_trigger[1])
+
+          @game_end_trigger = [reason, after]
+          break if self.class::GAME_END_LOCK_FIRST_TRIGGER
         end
 
-        nil
+        game_end_set_final_turn!(*@game_end_trigger) if @game_end_trigger
+        @game_end_trigger
       end
 
-      def all_closed?
+      def game_end_set_final_turn!(_reason, after)
+        @final_turn ||= @turn + 1 if after == :one_more_full_or_set
+      end
+
+      def game_end_check_all_closed?
         (@corporations + @companies).reject(&:closed?).empty?
+      end
+
+      def game_end_check_bankrupt?
+        bankruptcy_limit_reached?
+      end
+
+      def game_end_check_bank?
+        @bank.broken?
+      end
+
+      def game_end_check_stock_market?
+        @stock_market.max_reached?
+      end
+
+      def game_end_check_final_train?
+        @depot.empty?
+      end
+
+      def game_end_check_final_phase?
+        @phase&.phases&.last == @phase&.current
+      end
+
+      def game_end_check_fixed_round?
+        false
       end
 
       def final_or_in_set?(round)

@@ -147,7 +147,7 @@ module Engine
         GAME_END_REASONS_TEXT = {
           bank: 'The bank runs out of money',
           stock_market: 'Corporation hit max stock value or Bank of England has given 16 or more loans',
-          custom: 'Fifth corporation is in receivership',
+          closed_five: 'Fifth corporation is in receivership',
         }.freeze
 
         def price_movement_chart
@@ -163,12 +163,12 @@ module Engine
           ]
         end
 
-        GAME_END_CHECK = { bank: :full_or, stock_market: :full_or, custom: :full_or }.freeze
+        GAME_END_CHECK = { bank: :full_or, stock_market: :full_or, closed_five: :full_or }.freeze
 
         GAME_END_DESCRIPTION_REASON_MAP_TEXT = {
           bank: 'Bank Broken',
           stock_market: 'Corporation hit max stock value or Bank of England has given 16 or more loans',
-          custom: 'Fifth corporation is in receivership',
+          closed_five: 'Fifth corporation is in receivership',
         }.freeze
 
         PHASES = [{ name: '2', train_limit: 4, tiles: [:yellow], operating_rounds: 1 },
@@ -790,7 +790,7 @@ module Engine
           super
         end
 
-        def custom_end_game_reached?
+        def game_end_check_closed_five?
           @close_corp_count >= 5
         end
 

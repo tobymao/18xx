@@ -151,10 +151,10 @@ module Engine
         LAYOUT = :flat
 
         # Game end after the ORs in the third turn, of if any company reach 24
-        GAME_END_CHECK = { stock_market: :current_or, custom: :full_or }.freeze
+        GAME_END_CHECK = { stock_market: :current_or, fixed_round: :full_or }.freeze
 
         GAME_END_REASONS_TEXT = Base::GAME_END_REASONS_TEXT.merge(
-          custom: 'Complete set of 3SR-7OR'
+          fixed_round: 'Complete set of 3SR-7OR'
         )
 
         GAME_END_REASONS_TIMING_TEXT = Base::GAME_END_REASONS_TIMING_TEXT.merge(
@@ -1192,7 +1192,7 @@ module Engine
           corporations
         end
 
-        def custom_end_game_reached?
+        def game_end_check_fixed_round?
           @turn == 3
         end
 

@@ -1238,14 +1238,6 @@ module Engine
           @round.active_step.respond_to?(:hide_bank_companies?) && @round.active_step.hide_bank_companies? ? [] : super
         end
 
-        def game_end_check
-          if @stock_market.max_reached?
-            %i[stock_market current_or]
-          elsif @bank.broken?
-            [:bank, @round.is_a?(Engine::Round::Operating) ? :full_or : :current_or]
-          end
-        end
-
         def train_help_mail_contracts
           'Mail contract(s) gives a subsidy equal to one half of the base value of the start and end '\
             'stations from one of the trains operated. Doubled values (for E trains or destination tokens) '\

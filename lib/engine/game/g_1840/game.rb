@@ -47,11 +47,7 @@ module Engine
 
         TILE_LAYS = [{ lay: true, upgrade: true, cost: 0 }, { lay: true, upgrade: true, cost: 0 }].freeze
 
-        GAME_END_CHECK = { custom: :current_round }.freeze
-
-        GAME_END_REASONS_TEXT = Base::GAME_END_REASONS_TEXT.merge(
-          custom: 'Fixed number of Rounds'
-        )
+        GAME_END_CHECK = { fixed_round: :current_round }.freeze
 
         NEXT_SR_PLAYER_ORDER = :most_cash
 
@@ -869,7 +865,7 @@ module Engine
           CR_MULTIPLIER[index]
         end
 
-        def custom_end_game_reached?
+        def game_end_check_fixed_round?
           @cr_counter == 6
         end
 

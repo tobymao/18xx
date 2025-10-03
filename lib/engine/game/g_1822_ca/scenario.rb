@@ -184,10 +184,6 @@ module Engine
           end.compact
         end
 
-        def game_end_check
-          @game_end_reason ||= compute_game_end
-        end
-
         def block_detroit_duluth; end
         def event_open_detroit_duluth!; end
 

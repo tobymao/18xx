@@ -50,9 +50,9 @@ module Engine
         MUST_SELL_IN_BLOCKS = true
         SELL_MOVEMENT = :left_per_10_if_pres_else_left_one
 
-        GAME_END_CHECK = { stock_market: :current_or, custom: :full_or }.freeze
+        GAME_END_CHECK = { stock_market: :current_or, bid_boxes: :full_or }.freeze
         GAME_END_REASONS_TEXT = Base::GAME_END_REASONS_TEXT.merge(
-          custom: 'Cannot refill bid boxes'
+          bid_boxes: 'Cannot refill bid boxes'
         )
 
         ASSIGNMENT_TOKENS = {
@@ -604,9 +604,8 @@ module Engine
           company.id[0] == self.class::COMPANY_PRIVATE_PREFIX
         end
 
-        def game_end_check
-          return %i[stock_market current_or] if @stock_market.max_reached?
-          return %i[custom full_or] if bidbox.length < self.class::BIDDING_BOX_MINOR_COUNT
+        def game_end_check_bid_boxes?
+          bidbox.length < self.class::BIDDING_BOX_MINOR_COUNT
         end
 
         def reset_sold_in_sr!

@@ -249,31 +249,26 @@ module Engine
         BANKRUPTCY_ENDS_GAME_AFTER = :all_but_one
         MUST_EMERGENCY_ISSUE_BEFORE_EBUY = true
 
-        GAME_END_CHECK = { bankrupt: :immediate, bank: :current_or, stock_market: :current_turn, custom: :current_turn }.freeze
+        GAME_END_CHECK = { bankrupt: :immediate, bank: :current_or, stock_market: :current_turn, offboards: :current_turn }.freeze
+
+        GAME_END_TIMING_PRIORITY = %i[immediate current_turn current_or].freeze
 
         GAME_END_REASONS_TEXT = {
           bankrupt: 'player is bankrupt', # this is prefixed in the UI
           bank: 'The bank runs out of money',
           stock_market: 'Corporation enters end game trigger on stock market',
-          final_train: 'The final train is purchased',
-          final_phase: 'The final phase is entered',
-          custom: 'All offboards are connected to a city',
+          offboards: 'All offboards are connected to a city',
         }.freeze
 
         GAME_END_DESCRIPTION_REASON_MAP_TEXT = {
           bank: 'Bank Broken',
           bankrupt: 'Bankruptcy',
           stock_market: 'Company hit max stock value',
-          final_train: 'Final train was purchased',
-          final_phase: 'Final phase was reached',
-          custom: 'All offboards are connected to a city',
+          offboards: 'All offboards are connected to a city',
         }.freeze
         GAME_END_REASONS_TIMING_TEXT = {
           immediate: 'Immediately',
-          current_round: 'End of the current round',
           current_or: 'Next end of an OR',
-          full_or: 'Next end of a complete OR set',
-          one_more_full_or_set: 'End of the next complete OR set after the current one',
           current_turn: 'End of an OR turn or end of a SR',
         }.freeze
 
@@ -2763,35 +2758,13 @@ module Engine
           @offboard_groups.all? { |_k, v| v.any? { |hex| @offboard_connected[hex] } }
         end
 
-        def game_end_check
-          triggers = {
-            bankrupt: bankruptcy_limit_reached?,
-            bank: @bank.broken?,
-            stock_market: @stock_market.max_reached?,
-            final_train: @depot.empty?,
-            final_phase: @phase&.phases&.last == @phase&.current,
-            custom: custom_end_game_reached?,
-          }.select { |_, t| t }
-
-          %i[immediate current_turn current_round current_or full_or one_more_full_or_set].each do |after|
-            triggers.keys.each do |reason|
-              if game_end_check_values[reason] == after
-                @final_turn ||= @turn + 1 if after == :one_more_full_or_set
-                return [reason, after]
-              end
-            end
-          end
-
-          nil
-        end
-
         def end_now?(after)
           return true if after == :current_turn
 
           super
         end
 
-        def custom_end_game_reached?
+        def game_end_check_offboards?
           all_offboards_connected?
         end
 

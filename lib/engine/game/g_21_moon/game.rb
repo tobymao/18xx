@@ -174,11 +174,7 @@ module Engine
         BANKRUPTCY_ENDS_GAME_AFTER = :all_but_one
 
         # Game will end after 5 sets of ORs - checked in end_now? below
-        GAME_END_CHECK = { bankrupt: :immediate, custom: :current_or }.freeze
-
-        GAME_END_REASONS_TEXT = Base::GAME_END_REASONS_TEXT.merge(
-          custom: 'Fixed number of ORs'
-        )
+        GAME_END_CHECK = { bankrupt: :immediate, fixed_round: :current_or }.freeze
 
         # Two lays or upgrades, but only one from each base
         TILE_LAYS = [
@@ -609,7 +605,7 @@ module Engine
         end
 
         # Game will end directly after the end of OR 11
-        def end_now?(_after)
+        def game_end_check_fixed_round?
           @or == LAST_OR
         end
 

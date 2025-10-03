@@ -72,10 +72,10 @@ module Engine
         MUST_BUY_TRAIN = :always
         EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
         EBUY_FROM_OTHERS = :value
-        GAME_END_CHECK = { bankrupt: :immediate, custom: :one_more_full_or_set }.freeze
+        GAME_END_CHECK = { bankrupt: :immediate, phase_seven: :one_more_full_or_set }.freeze
         GAME_END_REASONS_TEXT = {
           bankrupt: 'player is bankrupt',
-          custom: '7-train is bought/exported',
+          phase_seven: '7-train is bought/exported',
         }.freeze
         GAME_END_REASONS_TIMING_TEXT = {
           immediate: "Immediately, bankrupt player's score is $0",
@@ -710,7 +710,7 @@ module Engine
           @lhp_train_pending
         end
 
-        def custom_end_game_reached?
+        def game_end_check_phase_seven?
           @endgame_triggered
         end
 

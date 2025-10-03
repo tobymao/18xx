@@ -77,14 +77,14 @@ module Engine
         OR_SETS = [1, 1, 1, 1, 2, 2, 2, 3].freeze
 
         GAME_END_REASONS_TEXT = Base::EVENTS_TEXT.merge(
-          custom: 'End of Game',
+          fixed_round: 'End of Game',
         ).freeze
 
         GAME_END_REASONS_TIMING_TEXT = Base::EVENTS_TEXT.merge(
           full_or: 'Ends after the last OR set',
         ).freeze
 
-        GAME_END_CHECK = { custom: :full_or }.freeze
+        GAME_END_CHECK = { fixed_round: :full_or }.freeze
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
           'medium_corps_available' => ['Medium Corps Available',
@@ -315,7 +315,7 @@ module Engine
           super
         end
 
-        def custom_end_game_reached?
+        def game_end_check_fixed_round?
           @turn == @last_or
         end
 

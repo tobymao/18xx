@@ -110,6 +110,11 @@ module Engine
         ST_CLOUD_BONUS_STR = ' (St. Cloud Hotel)'
         ST_CLOUD_ICON_NAME = 'SCH'
 
+        GAME_END_CHECK = {
+          bankrupt: :immediate,
+          stock_market: :one_more_full_or_set,
+          final_train: :one_more_full_or_set,
+        }.freeze
         GAME_END_REASONS_TEXT = {
           bankrupt: 'Player is bankrupt',
           stock_market: 'Corporation enters end game trigger on stock market',
@@ -152,8 +157,6 @@ module Engine
         end
 
         def setup
-          @game_end_reason = nil
-
           @corporation_phase_color = {}
           @corporations[0..1].each { |c| @corporation_phase_color[c.name] = 'Yellow' }
           @corporations[2..3].each { |c| @corporation_phase_color[c.name] = 'Green' }
@@ -1031,15 +1034,12 @@ module Engine
           G18RoyalGorge::StockMarket.new(game_market, [])
         end
 
-        def game_end_check
-          if @players.any?(&:bankrupt)
-            %i[bankrupt immediate]
-          elsif @stock_market.max_reached?
-            @final_turn = @turn
-            %i[stock_market one_more_full_or_set]
-          elsif @final_turn
-            %i[final_train one_more_full_or_set]
-          end
+        def game_end_set_final_turn!(reason, _after)
+          @final_turn = @turn if reason == :stock_market
+        end
+
+        def game_end_check_final_train?
+          @final_turn
         end
 
         def end_game!(player_initiated: false)

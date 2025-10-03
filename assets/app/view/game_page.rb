@@ -406,8 +406,13 @@ module View
       name = @round.class.name.split(':').last
       description += @game.round_description(name)
       description += @game.finished ? ' - Game Over' : " - #{@round.description}"
-      game_end = @game.game_ending_description
-      description += " - #{game_end}" if game_end
+
+      if @game.manually_ended
+        description += ' - manually ended'
+      elsif (game_end = @game.game_ending_description)
+        description += " - #{game_end}"
+      end
+
       description += " - Pinned to Version: #{@pin}" if @pin
       h(:h4, description)
     end
