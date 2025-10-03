@@ -510,6 +510,7 @@ module Engine
             end
           end
 
+          corporation.set_cash(0, @bank)
           @corporations.delete(corporation)
           @starting_phase.delete(corporation)
           corporation.close!

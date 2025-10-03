@@ -1847,6 +1847,10 @@ module Engine
           ability.description = "Exchange tokens: #{ability.count}"
         end
 
+        def spending_entities
+          [super, @tax_haven, (@phase_revenue || {}).values]
+        end
+
         def train_type(train)
           train.name == 'E' ? :etrain : :normal
         end

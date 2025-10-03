@@ -1592,6 +1592,7 @@ module Engine
               token.remove!
             end
           end
+          corporation.set_cash(0, @bank)
           corporation.close!
           corporation = reset_corporation(corporation)
           tokens.each do |token|

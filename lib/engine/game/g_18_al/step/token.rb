@@ -15,7 +15,7 @@ module Engine
 
               if city.hex.name == ability.hexes.first
                 @log << "#{entity.name} receives $100 - #{ability.description}"
-                entity.cash += 100
+                @game.bank.spend(100, entity)
                 entity.remove_ability(ability)
               end
             end

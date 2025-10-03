@@ -193,6 +193,10 @@ module Engine
           add_default_autopass
         end
 
+        def spending_entities
+          [super, @foreign_investor]
+        end
+
         # enable conditiional auto-pass for everyone at the start
         def add_default_autopass
           @players.each do |player|

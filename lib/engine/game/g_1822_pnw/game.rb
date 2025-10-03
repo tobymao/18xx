@@ -650,7 +650,7 @@ module Engine
           par_price = stock_market.par_prices[-1]
 
           @players.each.with_index do |player, index|
-            player.cash = 0
+            player.set_cash(0, @bank)
             minors[index].each do |id|
               company = company_by_id(id)
               corp = find_corporation(company)

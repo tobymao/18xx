@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative 'development_company'
+
 module Engine
   module Game
     module G1868WY
@@ -20,21 +22,15 @@ module Engine
         def init_oil_companies
           @players.map.with_index do |player, index|
             sym = "Oil-#{self.class::LETTERS[index]}"
-            oil_company = Engine::Minor.new(
+            oil_company = DevelopmentCompany.new(
+              player: player,
               type: :oil,
               sym: sym,
               name: self.class::OIL_COMPANY_NAMES[index],
               logo: "1868_wy/#{sym}",
-              tokens: [],
-              color: :black,
               abilities: [{ type: 'no_buy', owner_type: 'player' }],
             )
             3.times { new_oil_token!(oil_company) }
-            oil_company.owner = player
-
-            def oil_company.cash
-              player.cash
-            end
 
             oil_company
           end

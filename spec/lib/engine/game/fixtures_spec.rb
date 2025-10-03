@@ -126,6 +126,14 @@ module Engine
                 end
               end
 
+              it 'all expected cash is accounted for' do
+                starting_cash = @game.bank_starting_cash
+                ending_cash = @game.spenders.sum(&:cash)
+
+                expect(ending_cash).to be_kind_of(Integer)
+                expect(ending_cash).to eq(starting_cash)
+              end
+
               it "all player debt came from the Bank's @debt and is accounted for" do
                 total_debt = [@game.bank, *@game.players].sum(&:debt)
                 expect(total_debt).to eq(0)

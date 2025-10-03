@@ -1879,7 +1879,7 @@ module Engine
           end
         end
 
-        corporation.spend(corporation.cash, @bank) if corporation.cash.positive?
+        corporation.set_cash(0, @bank)
         if self.class::CLOSED_CORP_TRAINS_REMOVED
           corporation.trains.each { |t| t.buyable = false }
         else
@@ -2529,7 +2529,7 @@ module Engine
       end
 
       def spenders
-        spending_entities.flatten.compact.uniq
+        spending_entities.flatten.compact.map { |e| e.spender || e }.uniq
       end
 
       private

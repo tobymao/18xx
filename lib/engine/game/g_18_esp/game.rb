@@ -1156,6 +1156,7 @@ module Engine
           c.share_price&.corporations&.delete(c)
 
           @corporations.delete(c)
+          c.set_cash(0, @bank)
           c.close!
         end
 

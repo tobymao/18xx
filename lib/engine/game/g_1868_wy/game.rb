@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'credit_mobilier'
+require_relative 'development_company'
 require_relative 'entities'
 require_relative 'golden_spike'
 require_relative 'map'
@@ -1036,22 +1037,16 @@ module Engine
 
         def init_coal_companies
           @players.map.with_index do |player, index|
-            coal_company = Engine::Minor.new(
+            coal_company = DevelopmentCompany.new(
+              player: player,
               type: :coal,
               sym: "Coal-#{self.class::LETTERS[index]}",
               name: self.class::COAL_COMPANY_NAMES[index],
               logo: '1868_wy/coal',
-              tokens: [],
-              color: :black,
               abilities: [{ type: 'no_buy', owner_type: 'player' }],
             )
             add_coal_development_tokens(coal_company)
-            coal_company.owner = player
             coal_company.float!
-
-            def coal_company.cash
-              player.cash
-            end
 
             coal_company
           end

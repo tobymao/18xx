@@ -393,7 +393,7 @@ module Engine
             )
           end
           @boe.owner = @share_pool
-          @boe.cash = BOE_STARTING_CASH
+          @boe.set_cash(BOE_STARTING_CASH, @bank)
           @stock_market.set_par(@boe, lookup_boe_price(BOE_STARTING_PRICE))
           @extra_tile_lay = false
           @close_corp_count = 0
@@ -439,6 +439,10 @@ module Engine
         def init_stock_market
           G1848::StockMarket.new(game_market, self.class::CERT_LIMIT_TYPES,
                                  multiple_buy_types: self.class::MULTIPLE_BUY_TYPES)
+        end
+
+        def bank_starting_cash
+          BANK_CASH + BOE_STARTING_CASH
         end
 
         def operating_order

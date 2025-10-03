@@ -43,9 +43,9 @@ module Engine
 
         BANK_CASH_NORMAL = 14_400
         BANK_CASH_LITE = 10_900
-        def init_bank
-          cash = lite? ? BANK_CASH_LITE : BANK_CASH_NORMAL
-          Bank.new(cash, log: @log)
+
+        def bank_starting_cash
+          lite? ? self.class::BANK_CASH_LITE : self.class::BANK_CASH_NORMAL
         end
 
         STARTING_CASH_NORMAL = { 3 => 1120, 4 => 840, 5 => 672, 6 => 560, 7 => 480, 8 => 420 }.freeze
