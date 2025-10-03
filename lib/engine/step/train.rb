@@ -262,6 +262,22 @@ module Engine
         false
       end
 
+      def try_take_player_loan(entity, cost)
+        return unless cost.positive?
+        return unless cost > entity.cash
+
+        case @game.class::EBUY_CAN_TAKE_PLAYER_LOAN
+        when :after_sell
+          raise GameError, "#{entity.name} still needs to sell shares before a loan can be granted." if sellable_shares?(entity)
+        when :no_sell
+          raise GameError, "#{entity.name} already sold shares this round. Cannot take loans." unless @corporations_sold.empty?
+        when false
+          return
+        end
+
+        @game.take_player_loan(entity, cost - entity.cash)
+      end
+
       private
 
       def face_value_ability?(entity)

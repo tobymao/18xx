@@ -6,6 +6,10 @@ module Engine
   module Spender
     attr_accessor :cash
 
+    def debt
+      @debt || 0
+    end
+
     def check_cash(amount, borrow_from: nil)
       available = @cash + (borrow_from ? borrow_from.cash : 0)
       raise GameError, "#{name} has #{@cash} and cannot spend #{amount}" if (available - amount).negative?
@@ -36,6 +40,45 @@ module Engine
       end
 
       receiver.cash += cash
+    end
+
+    def take_cash_loan(cash, bank, interest: 0)
+      bank.spend(cash, self)
+
+      total_debt = cash + interest_amount(cash, interest)
+      self.debt += total_debt
+      bank.debt -= total_debt
+
+      { cash: cash, debt: total_debt }
+    end
+
+    def take_interest(bank, interest: 0)
+      added_interest = interest_amount(self.debt, interest)
+      self.debt += added_interest
+      bank.debt -= added_interest
+      added_interest
+    end
+
+    def repay_cash_loan(bank, payoff_amount: nil)
+      amount = [payoff_amount || cash, self.debt].min
+
+      spend(amount, bank)
+      self.debt -= amount
+      bank.debt += amount
+
+      amount
+    end
+
+    protected
+
+    def debt=(amount)
+      @debt = amount
+    end
+
+    private
+
+    def interest_amount(amount, rate)
+      (amount * rate / 100.0).ceil
     end
   end
 end

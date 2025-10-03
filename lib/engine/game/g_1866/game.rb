@@ -43,6 +43,9 @@ module Engine
         EBUY_CAN_SELL_SHARES = false
         EBUY_FROM_OTHERS = :never
 
+        EBUY_CAN_TAKE_PLAYER_LOAN = true
+        PLAYER_LOAN_INTEREST_RATE = 100
+
         TILE_TYPE = :lawson
         LAYOUT = :pointy
 
@@ -1216,10 +1219,6 @@ module Engine
           end
         end
 
-        def player_value(player)
-          player.value - @player_debts[player]
-        end
-
         def price_movement_chart
           [
             ['Market Action', 'Movement'],
@@ -1327,9 +1326,6 @@ module Engine
             @stock_turn_token_in_play[player] = []
             @stock_turn_token_number[player] = 0
           end
-
-          # Initialize the player depts, if player have to take an emergency loan
-          @player_debts = Hash.new { |h, k| h[k] = 0 }
 
           @london_reservation_entity = corporation_by_id('L')
           @corporations.delete(@london_reservation_entity)
@@ -1965,19 +1961,6 @@ module Engine
           log_share_price_row(entity, before_share_price)
         end
 
-        def payoff_player_loan(player)
-          if player.cash >= @player_debts[player]
-            player.cash -= @player_debts[player]
-            @log << "#{player.name} pays off their loan of #{format_currency(@player_debts[player])}"
-            @player_debts[player] = 0
-          else
-            @player_debts[player] -= player.cash
-            @log << "#{player.name} decreases their loan by #{format_currency(player.cash)} "\
-                    "(#{format_currency(@player_debts[player])})"
-            player.cash = 0
-          end
-        end
-
         def port_token_bonus(entity, routes)
           # Find all the port hexes and see which route pays the most
           port_hexes = {}
@@ -2013,10 +1996,6 @@ module Engine
           hex = hex_by_id(hex_coordinates)
           city = hex.tile.cities.first
           city.place_token(corporation, token, free: true, check_tokenable: false)
-        end
-
-        def player_debt(player)
-          @player_debts[player] || 0
         end
 
         def player_loan_interest(loan)
@@ -2275,11 +2254,6 @@ module Engine
           before_share_price = entity.share_price
           @stock_market.move_down(entity)
           log_share_price_row(entity, before_share_price)
-        end
-
-        def take_player_loan(player, loan)
-          player.cash += loan
-          @player_debts[player] += loan + player_loan_interest(loan)
         end
 
         def train_type(train)

@@ -87,7 +87,7 @@ module Engine
             if major.cash < to_pay
               difference = to_pay - major.cash
 
-              @game.take_loan(major.owner, difference - major.owner.cash) if major.owner.cash < difference
+              @game.take_player_loan(major.owner, difference - major.owner.cash) if major.owner.cash < difference
               major.owner.spend(difference, major)
               @log << "#{major.owner.name} subvents #{major.name} with #{@game.format_currency(difference)}"
             end

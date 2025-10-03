@@ -45,7 +45,7 @@ module Engine
                     actions: actions,
                     pin: pin || data.dig('settings', 'pin'),
                     seed: seed || data.dig('settings', 'seed'),
-                    optional_rules: optional_rules,
+                    optional_rules: optional_rules || data.dig('settings', 'optional_rules'),
                     user: user,
                     **kwargs)
       when Hash
@@ -286,6 +286,19 @@ module Engine
 
       # loans taken during ebuy can lead to receviership
       EBUY_CORP_LOANS_RECEIVERSHIP = false
+
+      # false - player loans not available in this game
+      # true - no restrictions
+      # :after_sell - must sell shares before taking loan
+      # :no_sell - cannot take loan after selling shares
+      EBUY_CAN_TAKE_PLAYER_LOAN = false
+
+      # integer representing percentage of loan balance
+      PLAYER_LOAN_INTEREST_RATE = 50
+
+      # integer representing percentage of loan balance, endgame penalty on
+      # player's final score for taking a loan
+      PLAYER_LOAN_ENDGAME_PENALTY = 0
 
       # where should sold shares go to?
       # :bank - bank pool
@@ -2378,10 +2391,6 @@ module Engine
         @companies
       end
 
-      def player_debt(_player)
-        0
-      end
-
       def render_hex_reservation?(_corporation)
         true
       end
@@ -2460,17 +2469,84 @@ module Engine
         description.strip
       end
 
+      def take_player_loan(
+        player,
+        amount,
+        interest: self.class::PLAYER_LOAN_INTEREST_RATE
+      )
+        cash_loan = player.take_cash_loan(amount, @bank, interest: interest)
+        loan = cash_loan[:cash]
+        debt = cash_loan[:debt]
+
+        penalty = (amount * self.class::PLAYER_LOAN_ENDGAME_PENALTY / 100.0).ceil
+        player.penalty += penalty
+
+        message = "#{player.name} takes a loan of #{format_currency(loan)} from #{@bank.name}."
+        message += " With #{interest}% interest, the total amount owed is #{format_currency(debt)}." if interest.positive?
+        message += " #{player.name} takes a game end penalty of #{format_currency(penalty)}" if penalty.positive?
+        @log << message
+      end
+
+      def add_player_loan_interest(player, interest: self.class::PLAYER_LOAN_INTEREST_RATE)
+        return unless player.debt.positive?
+
+        added_interest = player.take_interest(@bank, interest: interest)
+
+        @log << "#{player.name} increases their loan by #{interest}% (#{format_currency(added_interest)}) to "\
+                "#{format_currency(player.debt)}"
+      end
+
+      def payoff_player_loan(player, payoff_amount: nil)
+        if payoff_amount && payoff_amount > player.cash
+          LOGGER.warn do
+            "payoff_player_loan(#{player.name},payoff_amount:#{payoff_amount}) - player only has "\
+              "#{format_currency(player.cash)}, proceeding with #{player.cash} instead of #{payoff_amount}"
+          end
+          payoff_amount = player.cash
+        end
+
+        paid = player.repay_cash_loan(@bank, payoff_amount: payoff_amount)
+
+        @log << if player.debt.zero?
+                  "#{player.name} pays off their loan of #{format_currency(paid)}."
+                else
+                  "#{player.name} pays #{format_currency(paid)} toward their loan. "\
+                    "#{format_currency(player.debt)} is still owed."
+                end
+      end
+
+      def add_interest_player_loans!
+        players.each { |p| add_player_loan_interest(p) }
+      end
+
+      def bank_starting_cash
+        cash = self.class::BANK_CASH
+        cash.is_a?(Hash) ? cash[players.size] : cash
+      end
+
+      def init_bank_kwargs
+        { check: game_end_check_values.include?(:bank) }
+      end
+
+      def spenders
+        spending_entities.flatten.compact.uniq
+      end
+
       private
+
+      # Games introducing other entities that use cash, e.g., national railways
+      # that stay separate from @corporations (like 1861), need to override this
+      # method to include those entities.
+      def spending_entities
+        [@bank, @players, @corporations, @minors]
+      end
 
       def init_graph
         Graph.new(self)
       end
 
       def init_bank
-        cash = self.class::BANK_CASH
-        cash = cash[players.size] if cash.is_a?(Hash)
-
-        Bank.new(cash, log: @log, check: game_end_check_values.include?(:bank))
+        Bank.new(bank_starting_cash, log: @log, **init_bank_kwargs)
       end
 
       def init_cert_limit

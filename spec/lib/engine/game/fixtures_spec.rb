@@ -125,6 +125,11 @@ module Engine
                   expect(run_action).to eq(actions[actions.size - index])
                 end
               end
+
+              it "all player debt came from the Bank's @debt and is accounted for" do
+                total_debt = [@game.bank, *@game.players].sum(&:debt)
+                expect(total_debt).to eq(0)
+              end
             end
           end
         end

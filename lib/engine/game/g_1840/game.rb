@@ -45,6 +45,10 @@ module Engine
         EBUY_CAN_SELL_SHARES = false
         ALLOW_TRAIN_BUY_FROM_OTHERS = false
 
+        EBUY_CAN_TAKE_PLAYER_LOAN = true
+        PLAYER_LOAN_INTEREST_RATE = -100
+        PLAYER_LOAN_ENDGAME_PENALTY = 200
+
         TILE_LAYS = [{ lay: true, upgrade: true, cost: 0 }, { lay: true, upgrade: true, cost: 0 }].freeze
 
         GAME_END_CHECK = { fixed_round: :current_round }.freeze
@@ -256,7 +260,6 @@ module Engine
           @first_stock_round = true
           @or = 0
           @active_maintenance_cost = {}
-          @player_debts = Hash.new { |h, k| h[k] = 0 }
           @last_revenue = Hash.new { |h, k| h[k] = 0 }
           @player_order_first_sr = Hash.new { |h, k| h[k] = 0 }
           @all_tram_corporations = @corporations.select { |item| item.type == :minor }
@@ -720,18 +723,6 @@ module Engine
           train.owner = nil
         end
 
-        def increase_debt(player, amount)
-          @player_debts[player] += amount * 2
-        end
-
-        def player_debt(player)
-          @player_debts[player]
-        end
-
-        def player_value(player)
-          super - player_debt(player)
-        end
-
         def check_other(route)
           check_track_type(route)
           check_red_tiles(route)
@@ -892,16 +883,11 @@ module Engine
           end
         end
 
-        def take_loan(player, amount)
+        def take_player_loan(player, amount)
           loan_count = (amount / 100.to_f).ceil
           loan_amount = loan_count * 100
 
-          increase_debt(player, loan_amount)
-
-          @log << "#{player.name} takes a loan of #{format_currency(loan_amount)}. " \
-                  "The player value is decreased by #{format_currency(loan_amount * 2)}."
-
-          @bank.spend(loan_amount, player)
+          super(player, loan_amount)
         end
 
         def remove_open_tram_corporations

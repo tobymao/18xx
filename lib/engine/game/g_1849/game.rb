@@ -171,6 +171,8 @@ module Engine
         SELL_MOVEMENT = :down_per_10
         POOL_SHARE_DROP = :down_block
 
+        PLAYER_LOAN_INTEREST_RATE = 0
+
         MARKET_TEXT = Base::MARKET_TEXT.merge(phase_limited: 'Can only enter during phase 16',
                                               par: 'Yellow phase par',
                                               par_1: 'Green phase par',
@@ -260,7 +262,7 @@ module Engine
         IFT_BUFFER = 3
 
         attr_accessor :swap_choice_player, :swap_location, :swap_other_player, :swap_corporation,
-                      :loan_choice_player, :player_debts,
+                      :loan_choice_player,
                       :old_operating_order, :moved_this_turn,
                       :e_token_sold, :e_tokens_enabled, :issue_bonds_enabled, :buy_tokens_enabled
 
@@ -314,7 +316,6 @@ module Engine
 
           @available_par_groups = %i[par]
 
-          @player_debts = Hash.new { |h, k| h[k] = 0 }
           @moved_this_turn = []
         end
 
@@ -807,7 +808,7 @@ module Engine
         end
 
         def player_value(player)
-          player.value - @player_debts[player] - player.shares_by_corporation.sum do |corp, _|
+          player.value - player.shares_by_corporation.sum do |corp, _|
             player.num_shares_of(corp) * corp.loans.size * 100
           end
         end

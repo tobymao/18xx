@@ -12,7 +12,7 @@ module Engine
             return [] if entity != current_entity || !current_entity.player?
             return %w[buy_shares sell_shares] if must_sell?(current_entity)
 
-            player_debt = @game.player_debt(entity)
+            player_debt = entity.debt
             actions = []
             # Must have the buy_shares action, otherwise we dont show the stock page during a operating round
             actions << 'buy_shares'
@@ -42,7 +42,7 @@ module Engine
 
           def process_buy_shares(action)
             entity = current_entity
-            player_debt = @game.player_debt(entity)
+            player_debt = entity.debt
             unless player_debt.zero?
               raise GameError, "#{entity.name} can't buy any shares as long there is a loan "\
                                "(#{@game.format_currency(player_debt)})"
