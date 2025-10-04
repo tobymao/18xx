@@ -774,6 +774,7 @@ module Engine
 
         def destinated?(entity)
           return false unless entity.coordinates
+          return false unless entity.floated?
 
           home_node = hex_by_id(entity.coordinates).tile.cities.find { |c| c.tokened_by?(entity) || c.reserved_by?(entity) }
           destination_hex = hex_by_id(entity.destination_coordinates)
