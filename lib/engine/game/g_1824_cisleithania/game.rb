@@ -346,6 +346,10 @@ module Engine
           entity.type == :construction_railway
         end
 
+        def minor_for_partition_of_or?(corp)
+          super || construction_railway?(corp)
+        end
+
         # Used for MR exchange. Do allow bond railway shares to be exchanged as well.
         def shares_exchangable?(corporation)
           super || bond_railway(corporation)
@@ -371,23 +375,21 @@ module Engine
           bundles.sort_by(&:percent)
         end
 
-        def special_handling_after_by_company(company, minor)
-          return false unless two_player?
+        def after_buy_company_final_touch(company, minor, price)
+          return super unless two_player?
 
           stack = company.stack
           company.stack = nil
 
-          return false unless stack == 1
+          # Construction railways is in stack 1
+          return super unless stack == 1
 
-          # Need to handle construction railways when two player variant
           if pre_staatsbahn?(minor)
             handle_unreserve_of_pre_staatsbahn(company)
           else
             create_bond_railway(company, minor)
           end
-          make_minor_construction_railway(minor)
-
-          true
+          minor.make_construction_railway!(self, minor)
         end
 
         private
@@ -471,14 +473,6 @@ module Engine
           @close_construction_company_when_first_5_sold ? '5' : '4'
         end
 
-        def make_minor_construction_railway(minor)
-          @log << "#{minor.name} becomes a construction railway. "\
-                  'It returns its cash to the bank as it does not use any money.'
-          minor.spend(minor.cash, @bank)
-          minor.add_ability(free_tile_lay_ability)
-          minor.make_construction_railway!
-        end
-
         def handle_unreserve_of_pre_staatsbahn(company)
           national = corporation_by_id(company.sym[0..-2])
           national.unreserve_one_share!
@@ -501,20 +495,6 @@ module Engine
           log << "#{regional.name} (#{association}) pars at #{format_currency(share_price.price)}."
           log << "#{regional.name} will not build or run trains but shareholders will receive current stock value "\
                  'in revenue each OR.'
-        end
-
-        def free_tile_lay_ability
-          Engine::Ability::TileLay.new(
-            type: 'tile_lay',
-            tiles: [],
-            hexes: [],
-            closed_when_used_up: false,
-            reachable: true,
-            free: true,
-            special: false,
-            consume_tile_lay: true,
-            when: 'track'
-          )
         end
       end
     end
