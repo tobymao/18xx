@@ -54,6 +54,10 @@ module Engine
           def can_scrap_train?(entity)
             return true if entity.corporation? && !@passed_scrap_trains && entity.trains.find { |t| @game.pullman_train?(t) }
           end
+
+          def max_bid_for_corporation(corporation, acquired_corp)
+            super + (@game.owns_p15?(acquired_corp) ? @game.loan_value : 0)
+          end
         end
       end
     end
