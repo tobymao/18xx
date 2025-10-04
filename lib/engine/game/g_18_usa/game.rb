@@ -924,6 +924,7 @@ module Engine
         def add_subsidy(corporation, hex)
           return unless (subsidy = @subsidies_by_hex.delete(hex.coordinates))
 
+          @log << "#{corporation.name} receives the #{subsidy[:name]}" unless subsidy[:name] == 'No Subsidy'
           hex.tile.icons.reject! { |icon| icon.name.include?('subsidy') }
           subsidy_company = create_company_from_subsidy(subsidy)
           assign_boomtown_subsidy(hex, corporation) if subsidy_company.id == 'S8'
