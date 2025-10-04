@@ -152,11 +152,12 @@ module Engine
           end
 
           def action_is_shenanigan?(entity, other_entity, action, corporation, corp_buying)
-            return 'Exchange of Coal Minor' if action.is_a?(Action::SpecialBuy)
-            return 'Payoff of player debt' if action.is_a?(Action::PayoffPlayerDebt)
-            return 'Partial payoff of player debt' if action.is_a?(Action::PayoffPlayerDebtPartial)
-
-            super
+            case action
+            when Action::SpecialBuy then 'Exchange of Coal Minor'
+            when Action::PayoffPlayerDebt then 'Payoff of player debt'
+            when Action::PayoffPlayerDebtPartial then 'Partial payoff of player debt'
+            else super
+            end
           end
 
           private
