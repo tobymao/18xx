@@ -436,10 +436,18 @@ module Engine
           end
           return resources.transform_values(&:first) if resources.one?
 
+          # Edge case - only one ability for both resources and that ability has a count of one.
+          resource_abilities = resources.values
+          if resource_abilities.all?(&:one?) &&
+              resource_abilities[0] == resource_abilities[1] &&
+              resource_abilities[0][0].count == 1
+            return [nil, nil]
+          end
+
           # Filter out duplicates
-          dups = resources.values[0].intersection(resources.values[1])
-          resources.transform_values! { |abilities| (abilities - dups)&.first || dups.shift }
-          resources
+          dups = resource_abilities[0].intersection(resource_abilities[1])
+          resource_abilities.transform_values! { |abilities| (abilities - dups)&.first || dups.shift }
+          resource_abilities
         end
 
         def consume_abilities_to_lay_resource_tile(hex, tile, selected_companies)
