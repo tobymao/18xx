@@ -198,7 +198,6 @@ module Engine
             @log << "#{corporation.name} pars at #{price}"
             corporation.ipoed = true
             shares_prices = chartered ? @game.par_prices : @game.repar_prices
-            # owner = chartered ? @game.bank : corporation
             player = @game.players.first
             share_price = shares_prices.find { |p| p.price == price }
             @game.stock_market.set_par(corporation, share_price)
@@ -242,23 +241,27 @@ module Engine
           end
 
           def float_chartered_corporation(corporation)
-            float_corporation(corporation, 'Chartered', 10, @game.class::CHARTERED_TOKEN_COST)
+            float_corporation(corporation, 'Chartered', 10)
+
+            total_token_cost = @game.class::CHARTERED_TOKEN_COST * 3
+            @log << "#{corporation.name} buys 3 tokens and pays #{total_token_cost}"
+            corporation.spend(total_token_cost, @game.bank)
           end
 
           def float_unchartered_corporation(corporation)
-            float_corporation(corporation, 'Non-chartered', 5, @game.class::UNCHARTERED_TOKEN_COST)
+            float_corporation(corporation, 'Non-chartered', 5)
+
+            @round.buy_tokens = corporation
+            @log << "#{corporation.name} must buy tokens"
+            @round.clear_cache!
           end
 
-          def float_corporation(corporation, type, shares, token_cost)
+          def float_corporation(corporation, type, shares)
             corporation.floated = true
 
             cash = corporation.par_price.price * shares
             @log << "#{type} #{corporation.name} floats and receives #{cash}"
             @game.bank.spend(cash, corporation)
-
-            total_token_cost = token_cost * 3
-            @log << "#{corporation.name} buys 3 tokens and pays #{total_token_cost}"
-            corporation.spend(token_cost, @game.bank)
 
             @game.assign_first_permit(corporation)
           end

@@ -172,7 +172,7 @@ module Engine
         end
 
         def show_ipo_rows?
-          true
+          @round.buy_tokens.nil?
         end
 
         def can_par_corporations?
