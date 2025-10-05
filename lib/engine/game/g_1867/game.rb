@@ -276,8 +276,7 @@ module Engine
                        { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
             price: 1000,
             num: 6,
-            events: [{ 'type' => 'signal_end_game' },
-                     { 'type' => 'minors_nationalized' },
+            events: [{ 'type' => 'minors_nationalized' },
                      { 'type' => 'trainless_nationalization' },
                      { 'type' => 'train_trade_allowed' }],
             discount: {
@@ -357,10 +356,7 @@ module Engine
         LIMIT_TOKENS_AFTER_MERGER = 2
         MINIMUM_MINOR_PRICE = 50
 
-        EVENTS_TEXT = Base::EVENTS_TEXT.merge('signal_end_game' => ['Signal End Game',
-                                                                    'Game Ends 3 ORs after purchase/export'\
-                                                                    ' of first 8 train'],
-                                              'green_minors_available' => ['Green Minors become available'],
+        EVENTS_TEXT = Base::EVENTS_TEXT.merge('green_minors_available' => ['Green Minors become available'],
                                               'majors_can_ipo' => ['Majors can be started'],
                                               'minors_cannot_start' => ['Minors cannot start'],
                                               'minors_nationalized' => ['Minors are nationalized'],
@@ -801,6 +797,11 @@ module Engine
           super
         end
 
+        def game_end_set_final_turn!(_reason, _after)
+          @final_operating_rounds = 3
+          @final_turn ||= @turn + 1
+        end
+
         # The merger process can result in the new major having just two
         # tokens. This gives them their third token if that has happened.
         def fix_token_count!(corporation)
@@ -850,9 +851,11 @@ module Engine
         end
 
         def or_round_finished
-          current_phase = phase.name.to_i
-          depot.export! if current_phase >= 4 && current_phase <= 7
+          return unless @phase.status.include?('export_train')
+
+          depot.export!
           post_train_buy
+          game_end_check
         end
 
         def new_or!
@@ -1022,14 +1025,6 @@ module Engine
           @log << 'Minors nationalized' if removed.any?
           removed.sort.each { |c| nationalize!(c) }
           @corporations = corporations
-        end
-
-        def event_signal_end_game!
-          # There's always 3 ORs after the 8 train is bought
-          @final_operating_rounds = 3
-          # Hit the game end check now to set the correct turn
-          game_end_check
-          @log << "First 8 train bought/exported, ending game at the end of #{@turn + 1}.#{@final_operating_rounds}"
         end
 
         def event_trainless_nationalization!
