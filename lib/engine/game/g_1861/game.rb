@@ -234,7 +234,7 @@ module Engine
           receiving << "trains (#{trains})" unless trains.empty?
           conjunction = receiving.empty? ? '' : 'and '
           receiving << (conjunction + format_currency(corporation.cash))
-          corporation.spend(corporation.cash, @national) if corporation.cash.positive?
+          corporation.spend(corporation.cash, @national, check_positive: false)
           @log << "#{@national.id} received #{receiving.join(', ')} from #{corporation.id}"
         end
 

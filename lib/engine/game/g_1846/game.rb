@@ -149,6 +149,7 @@ module Engine
           bankrupt: :immediate,
           bank: :full_or,
           all_closed: :immediate,
+          final_train: :one_more_full_or_set,
         }.freeze
 
         ORANGE_GROUP = [
@@ -827,10 +828,10 @@ module Engine
 
         def game_end_check_values
           @game_end_check_values ||=
-            begin
-              values = super.dup # get copy of GAME_END_CHECK that is not frozen
-              values[:final_train] = :one_more_full_or_set if two_player?
-              values
+            if two_player?
+              self.class::GAME_END_CHECK
+            else
+              self.class::GAME_END_CHECK.except(:final_train)
             end
         end
 

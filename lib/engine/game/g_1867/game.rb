@@ -578,7 +578,7 @@ module Engine
         end
 
         def nationalization_transfer_assets(corporation)
-          corporation.spend(corporation.cash, @bank) if corporation.cash.positive?
+          corporation.set_cash(0, @bank)
         end
 
         def nationalize!(corporation)
@@ -778,7 +778,7 @@ module Engine
           end
         end
 
-        def end_game!(player_initiated: false)
+        def end_game!(game_end_reason)
           return if @finished
 
           logged_drop = false
@@ -826,6 +826,10 @@ module Engine
           return if corporation.tokens.size == 3
 
           corporation.tokens << Engine::Token.new(corporation, price: 40)
+        end
+
+        def spending_entities
+          [super, @national]
         end
 
         private

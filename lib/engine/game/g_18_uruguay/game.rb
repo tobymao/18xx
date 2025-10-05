@@ -76,10 +76,10 @@ module Engine
         NUMBER_OF_LOANS = 99
         LOAN_VALUE = 100
 
-        GAME_END_CHECK = { bankrupt: :immediate, custom: :one_more_full_or_set }.freeze
+        GAME_END_CHECK = { bankrupt: :immediate, nationalized: :one_more_full_or_set }.freeze
 
         GAME_END_REASONS_TEXT = Base::GAME_END_REASONS_TEXT.merge(
-          custom: 'Nationalized'
+          nationalized: 'Nationalized'
         )
 
         ASSIGNMENT_TOKENS = {

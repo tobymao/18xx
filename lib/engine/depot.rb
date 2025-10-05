@@ -15,7 +15,6 @@ module Engine
       @trains.each { |train| train.owner = self }
       @upcoming = @trains.dup
       @discarded = []
-      @bank = @game.bank
     end
 
     def export!
@@ -135,12 +134,8 @@ module Engine
       end
     end
 
-    def cash
-      @bank.cash
-    end
-
-    def cash=(new_cash)
-      @bank.cash = new_cash
+    def spender
+      @game.bank
     end
 
     def name

@@ -12,7 +12,7 @@ module Engine
 
             actions = super
 
-            actions << 'special_buy' if @game.debt(entity).positive?
+            actions << 'special_buy' if entity.debt.positive?
 
             actions << 'pass' if !actions.include?('pass') && !actions.empty?
 
@@ -24,26 +24,23 @@ module Engine
           end
 
           def can_buy_any_from_market?(entity)
-            super && @game.debt(entity).zero?
+            super && entity.debt.zero?
           end
 
           def process_special_buy(action)
             player = action.entity
 
-            debt = @game.debt(player)
-
-            player.spend(debt, @game.bank)
-            @game.reset_debt(player)
-
+            debt = player.debt
+            player.repay_cash_loan(@game.bank)
             @log << "#{player.name} pays off #{@game.format_currency(debt)}"
           end
 
           def can_buy_any_from_ipo?(entity)
-            super && @game.debt(entity).zero?
+            super && entity.debt.zero?
           end
 
           def buyable_items(entity)
-            [Item.new(description: 'Payoff all debt', cost: @game.debt(entity))]
+            [Item.new(description: 'Payoff all debt', cost: entity.debt)]
           end
 
           def item_str(item)

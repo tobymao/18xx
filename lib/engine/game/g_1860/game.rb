@@ -29,6 +29,7 @@ module Engine
         CURRENCY_FORMAT_STR = '£%s'
 
         BANK_CASH = 10_000
+        BANK_CASH_AND_COMPANY_CREDITS = 20_000
 
         CERT_LIMIT = { 2 => 32, 3 => 21, 4 => 16 }.freeze
 
@@ -269,9 +270,9 @@ module Engine
 
         TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded_or_city, upgrade: false }].freeze
 
-        GAME_END_CHECK = { stock_market: :current_or, bank: :current_or, custom: :immediate }.freeze
+        GAME_END_CHECK = { stock_market: :current_or, bank: :current_or, nationalization: :immediate }.freeze
         GAME_END_REASONS_TEXT = Base::GAME_END_REASONS_TEXT.merge(
-          custom: 'Nationalization complete'
+          nationalization: 'Nationalization complete'
         )
 
         PAR_RANGE = {
@@ -307,9 +308,12 @@ module Engine
           775
         ].freeze
 
-        def init_bank
-          # amount doesn't matter here
-          Bank.new(20_000, log: @log, check: false)
+        def init_bank_kwargs
+          { check: false }
+        end
+
+        def bank_starting_cash
+          BANK_CASH_AND_COMPANY_CREDITS
         end
 
         def option_23p_map?
@@ -582,7 +586,7 @@ module Engine
         end
 
         # game ends when all floated corps have nationalized
-        def custom_end_game_reached?
+        def game_end_check_nationalization?
           return false unless @nationalization
           return false unless @round.finished?
 
@@ -828,7 +832,7 @@ module Engine
             bankrupt: 'Bankruptcy',
             stock_market: 'Company hit max stock value',
             final_train: 'Final train was purchased',
-            custom: 'Nationalization complete',
+            nationalization: 'Nationalization complete',
           }
           "#{reason_map[reason]}#{after_text}"
         end

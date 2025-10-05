@@ -50,7 +50,7 @@ describe Engine::Game::G18Norway::Game do
 
         # Give corporation a train enough money to buy next ship but not enough cash for next train
         corporation.trains << game.depot.upcoming.first
-        corporation.cash = 150 # Less than cheapest train price but enough to buy ship
+        corporation.set_cash(150, game.bank) # Less than cheapest train price but enough to buy ship
         game.depot.export_all!('2', silent: true) # Export 2 trains so corporation can afford next train
 
         step = game.round.active_step

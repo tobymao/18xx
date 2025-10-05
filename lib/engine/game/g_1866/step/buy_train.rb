@@ -65,16 +65,6 @@ module Engine
             @took_loan = false
           end
 
-          def try_take_player_loan(entity, cost)
-            return unless cost.positive?
-            return unless cost > entity.cash
-
-            difference = cost - entity.cash
-            @game.take_player_loan(entity, difference)
-            @log << "#{entity.name} takes a loan of #{@game.format_currency(difference)} with "\
-                    "#{@game.format_currency(@game.player_loan_interest(difference))} in interest"
-          end
-
           def reject_infrastructure_train(trains)
             trains.reject { |t| @game.infrastructure_train?(t) }
           end

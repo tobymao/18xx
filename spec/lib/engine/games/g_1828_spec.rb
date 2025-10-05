@@ -51,7 +51,7 @@ module Engine
       end
 
       it 'should remove unparred corporations at purple phase' do
-        player_1.cash = 10_000
+        player_1.set_cash(10_000, game.bank)
         stock_market.set_par(corporation, game.par_prices.first)
         5.times { game.share_pool.buy_shares(player_1, corporation.shares.first) }
 
@@ -78,7 +78,7 @@ module Engine
       let(:va_tile) { game.hex_by_id('K11').tile }
 
       it 'should block unless coal marker purchased' do
-        player_1.cash = 10_000
+        player_1.set_cash(10_000, game.bank)
         stock_market.set_par(ic, game.par_prices.first)
         5.times { game.share_pool.buy_shares(player_1, ic.shares.first) }
 
@@ -118,7 +118,7 @@ module Engine
       end
 
       it 'should acquire coal marker when laying VA tunnel' do
-        player_1.cash = 10_000
+        player_1.set_cash(10_000, game.bank)
         stock_market.set_par(co, game.par_prices.first)
         5.times { game.share_pool.buy_shares(player_1, co.shares.first) }
 

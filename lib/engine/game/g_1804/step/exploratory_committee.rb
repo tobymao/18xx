@@ -14,7 +14,7 @@ module Engine
               next if !corp.par_price || corp.floated?
 
               amount = corp.par_price.price
-              corp.cash += amount
+              @game.bank.spend(amount, corp)
               @game.log << "#{corp.name} receives $#{amount} from the bank (par price) because it is parred but not yet floated"
             end
           end

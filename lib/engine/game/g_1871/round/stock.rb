@@ -173,8 +173,7 @@ module Engine
           end
 
           def split_pick_money(amount)
-            @split_corporation.cash -= amount
-            @split_branch.cash += amount
+            @split_corporation.spend(amount, @split_branch) unless amount.zero?
             @log << "#{@split_corporation.full_name} transfers #{@game.format_currency(amount)} to #{@split_branch.full_name}"
 
             # Skip the next step if we aren't dealing with the hunslet

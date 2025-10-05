@@ -59,19 +59,6 @@ module Engine
             false
           end
 
-          def try_take_player_loan(entity, cost)
-            return unless cost.positive?
-            return unless cost > entity.cash
-
-            difference = cost - entity.cash
-
-            @game.increase_debt(entity, difference)
-
-            @log << "#{entity.name} takes a debt of #{@game.format_currency(difference)}"
-
-            @game.bank.spend(difference, entity)
-          end
-
           def train_available?(entity, train)
             return true if @game.train_of_size?(train, entity.type) || @game.train_of_size?(train, :small)
             return false if entity.type == :small
