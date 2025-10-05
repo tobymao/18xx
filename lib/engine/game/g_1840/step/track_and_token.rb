@@ -81,13 +81,16 @@ module Engine
           end
 
           def available_hex(entity, hex)
-            return @game.graph.reachable_hexes(entity)[hex] unless can_lay_tile?(entity, hex)
+            return @game.graph.reachable_hexes(entity)[hex] unless can_lay_tile?(entity)
 
             return orange_tile_available?(hex) if @game.orange_framed?(hex.tile) && hex.tile == hex.original_tile
 
             return @game.graph.connected_nodes(entity)[hex] if @normal_placed
 
-            super
+            return true if super
+            return false if @game.class::NO_TOKEN_REMOVE_HEX.include?(hex.coordinates)
+
+            hex.tile.cities.any? { |c| c.tokens.any? { |t| t&.corporation&.type == :city } }
           end
 
           def orange_tile_available?(hex)
