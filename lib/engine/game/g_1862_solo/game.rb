@@ -11,6 +11,7 @@ module Engine
         include_meta(G1862Solo::Meta)
 
         attr_reader :ipo_rows
+        attr_accessor :ipo_row_index
 
         # No cert limit
         CERT_LIMIT = {
@@ -53,6 +54,7 @@ module Engine
           @corporations.each { |corp| add_marker(corp) }
 
           @chartered = {}
+          @ipo_row_index = {}
 
           # randomize and distribute train permits
           permit_list = 2.times.flat_map { %i[freight express local] }
@@ -93,7 +95,7 @@ module Engine
         # create a placeholder 'company' for shares in IPO
         def convert_share_to_company(share)
           description = "Certificate for #{share.percent}\% of #{share.corporation.full_name}."
-          G1862Solo::Company.new(
+          Company.new(
             sym: share.id,
             name: share.corporation.name,
             value: 0,
@@ -111,7 +113,7 @@ module Engine
           all_rows_indexes.each do |row|
             @ipo_rows[row] = deck.pop(6) # 6 shares per row
             @ipo_rows[row].each do |company|
-              company.ipo_row_index = row
+              @ipo_row_index[company] = row
             end
           end
         end
@@ -298,10 +300,8 @@ module Engine
           corporations.sort_by(&:name)
         end
 
-        # TODO: Should we use any special sorting in 1862 Solo?
         def sorted_corporations
-          # Corporations sorted by some potential game rules
-          ipoed, others = corporations.partition(&:ipoed)
+          ipoed, others = corporations.reject(&:closed?).partition(&:ipoed)
           ipoed.sort + others
         end
 
@@ -322,6 +322,9 @@ module Engine
 
           @log << "Removing #{corp.name} from game"
         end
+
+        # No use in 1862 Solo
+        def reorder_players(_order, _log_player_order, _silent); end
 
         private
 

@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
-require_relative '../../../step/buy_sell_par_shares'
+require_relative '../../g_1862/step/buy_sell_par_shares'
 
 module Engine
   module Game
     module G1862Solo
       module Step
-        class BuySellParShares < Engine::Step::BuySellParShares
+        class BuySellParShares < G1862::Step::BuySellParShares
           ACTIONS = %w[buy_company choose pass].freeze
 
           def actions(entity)
@@ -23,10 +23,6 @@ module Engine
                 bought_shares: [],
               }
             )
-          end
-
-          def visible_corporations
-            @game.corporations.reject(&:closed?)
           end
 
           def can_buy_company?(player, company)
@@ -74,12 +70,13 @@ module Engine
             if share.corporation.share_price
               renderings << ["buy##{company.id}", "Buy #{company.name} for #{@game.company_value(company)}"]
             elsif @game.can_par_corporations?
-              # TODO: Need to get all possible par prices - separate view?
               # TODO: Is it possible to use interval?
-              price1 = @game.repar_prices.first.price
-              renderings << ["par_unchartered##{price1}##{company.id}", "Par at #{price1} (unchartered)"]
-              price2 = @game.par_prices.first.price
-              renderings << ["par_chartered##{price2}##{company.id}", "Par at #{price2} (chartered)"]
+              @game.repar_prices.each do |rp|
+                renderings << ["par_unchartered##{rp.price}##{company.id}", "Par at #{rp.price} (unchartered)"]
+              end
+              @game.par_prices.each do |pp|
+                renderings << ["par_chartered##{pp.price}##{company.id}", "Par at #{pp.price} (chartered)"]
+              end
             end
 
             renderings
@@ -112,6 +109,7 @@ module Engine
           end
 
           def process_pass(action)
+            @game.log << "#{action.entity.name} passes"
             action.entity.pass!
           end
 
@@ -125,7 +123,7 @@ module Engine
             owner = @game.bank
             player = @game.players.first
 
-            @game.ipo_rows[company.ipo_row_index].delete(company)
+            @game.ipo_rows[@game.ipo_row_index[company]].delete(company)
             buy_shares(player, ShareBundle.new([share]), allow_president_change: false)
 
             player.spend(price, owner)
@@ -152,9 +150,9 @@ module Engine
             id = parts[1]
             index = parts[2].to_i
             company = get_company(id)
-            @game.ipo_rows[company.ipo_row_index].delete(company)
+            @game.ipo_rows[@game.ipo_row_index[company]].delete(company)
             @game.ipo_rows[index].prepend(company)
-            company.ipo_row_index = index
+            @game.ipo_row_index[company] = index
             @log << "#{company.name} moves to top of IPO Row #{index + 1}"
           end
 
@@ -209,7 +207,7 @@ module Engine
 
           def action_remove(choice)
             company = get_company_from_choice(choice)
-            @log << "#{company.name} drops from IPO Row #{company.ipo_row_index + 1}"
+            @log << "#{company.name} drops from IPO Row #{@game.ipo_row_index[company] + 1}"
             cleanup_company(company)
             share = company.treasury
             corporation = share.corporation
@@ -239,38 +237,30 @@ module Engine
 
           def cleanup_company(company)
             @round.bought_shares << company.treasury
-            @game.ipo_rows[company.ipo_row_index].delete(company)
+            @game.ipo_rows[@game.ipo_row_index[company]].delete(company)
             company.close!
           end
 
           def float_chartered_corporation(corporation)
-            corporation.floated = true
-
-            cash = corporation.par_price.price * 10
-            @log << "Chartered #{corporation.name} floats and receives #{cash}"
-            @game.bank.spend(cash, corporation)
-
-            token_cost = 60 * 3
-            @log << "#{corporation.name} buys 3 tokens and pays #{token_cost}"
-
-            corporation.spend(token_cost, @game.bank)
-            @game.assign_first_permit(corporation)
+            float_corporation(corporation, 'Chartered', 10, @game.class::CHARTERED_TOKEN_COST)
           end
 
           def float_unchartered_corporation(corporation)
+            float_corporation(corporation, 'Non-chartered', 5, @game.class::UNCHARTERED_TOKEN_COST)
+          end
+
+          def float_corporation(corporation, type, shares, token_cost)
             corporation.floated = true
 
-            cash = corporation.par_price.price * 5
-            @log << "Non-chartered #{corporation.name} floats and receives #{cash}"
+            cash = corporation.par_price.price * shares
+            @log << "#{type} #{corporation.name} floats and receives #{cash}"
             @game.bank.spend(cash, corporation)
 
-            # TODO, unchartered should buy 2 to 7 tokens, not always 3
-            token_cost = 40 * 3
-            @log << "#{corporation.name} buys 3 tokens and pays #{token_cost}"
+            total_token_cost = token_cost * 3
+            @log << "#{corporation.name} buys 3 tokens and pays #{total_token_cost}"
             corporation.spend(token_cost, @game.bank)
 
             @game.assign_first_permit(corporation)
-            @game.remove_corporation(random_corporation)
           end
         end
       end
