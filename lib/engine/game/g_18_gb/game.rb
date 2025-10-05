@@ -932,6 +932,24 @@ module Engine
           end
         end
 
+        def next_round!
+          @round =
+            case @round
+            when Round::Operating
+              or_round_finished
+              return if @finished
+
+              if @round.round_num < @operating_rounds
+                new_operating_round(@round.round_num + 1)
+              else
+                @turn += 1
+                new_stock_round
+              end
+            else
+              super
+            end
+        end
+
         def price_movement_chart
           [
             ['Action', 'Share Price Change'],
