@@ -61,8 +61,9 @@ module Engine
 
           def can_sell?(_entity, bundle)
             # Rule VI.8, bullet 1, sub-bullet 2: Bank ownership cannot exceed 50% for started corporations
+            # Include bank pool (in case 2-player, 3+ do not use bank pool)
             corp = bundle.corporation
-            super && (corp.ipo_shares.sum(&:percent) + bundle.percent <= 50)
+            super && (corp.ipo_shares.sum(&:percent) + corp.percent_in_market + bundle.percent <= 50)
           end
 
           # Rule VI.7, bullet 4: Exchange can take you over 60%

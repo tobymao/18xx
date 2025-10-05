@@ -77,6 +77,10 @@ module Engine
             super
           end
 
+          def finish_round_text
+            return super unless @game.two_player?
+          end
+
           private
 
           def log_player_order(description)
