@@ -76,6 +76,10 @@ module Engine
         type = action.type
         clear_cache!
 
+        if @game.finished && type != 'message'
+          raise GameIsOver, "Cannot process action #{type} at #{action.id}: #{action.to_h}"
+        end
+
         before_process(action)
 
         step = @steps.find do |s|
@@ -83,15 +87,11 @@ module Engine
 
           process = s.actions(action.entity).include?(type)
           blocking = s.blocking?
-          raise GameError, "Blocking step #{s.description} cannot process action #{action.id}" if blocking && !process
+          raise GameError, "Blocking step #{s.description} cannot process action #{type} at #{action.id}" if blocking && !process
 
           blocking || process
         end
-        unless step
-          game_over = @game.finished ? ' (game is over)' : ''
-          msg = "No step found for action #{type} at #{action.id}#{game_over}: #{action.to_h}"
-          raise GameError, msg
-        end
+        raise GameError, "No step found for action #{type} at #{action.id}: #{action.to_h}" unless step
 
         step.acted = true
         step.send("process_#{action.type}", action)
