@@ -24,7 +24,6 @@ module Engine
             actions = super.dup
             actions << 'choose' if choosing?(entity)
 
-            # puts "actions(#{entity.name}) = #{actions.to_s}" if [entity, entity.owner].include?(current_entity)
             actions
           end
 

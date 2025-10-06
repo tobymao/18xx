@@ -70,6 +70,11 @@ module Engine
           create_decks(@corporations)
         end
 
+        # 1862 Solo does not use obligations
+        def game_corporations
+          []
+        end
+
         def ready_corporations
           @corporations.reject(:closed?)
         end
@@ -95,7 +100,9 @@ module Engine
         # create a placeholder 'company' for shares in IPO
         def convert_share_to_company(share)
           description = "Certificate for #{share.percent}\% of #{share.corporation.full_name}."
-          Company.new(
+          presidency_share = share.corporation.presidents_share.id
+          ability = Engine::Ability::Shares.new(type: 'shares', shares: presidency_share)
+          company = Company.new(
             sym: share.id,
             name: share.corporation.name,
             value: 0,
@@ -107,6 +114,17 @@ module Engine
             treasury: share,
             revenue: nil,
           )
+          company.add_ability(ability)
+          company
+        end
+
+        def abilities(entity, type = nil, time: nil, on_phase: nil, passive_ok: nil, strict_time: nil)
+          if entity&.company? && type == :shares
+            presidency_share = entity.treasury.corporation.presidents_share
+            Engine::Ability::Shares.new(type: 'shares', shares: presidency_share)
+          else
+            super
+          end
         end
 
         def deal_deck_to_ipo(deck)
@@ -165,6 +183,7 @@ module Engine
 
         def stock_round
           G1862::Round::Stock.new(self, [
+            G1862Solo::Step::CompanyPendingPar,
             G1862::Step::BuyTokens,
             G1862::Step::ForcedSales,
             G1862Solo::Step::BuySellParShares,
@@ -219,16 +238,12 @@ module Engine
           end
         end
 
-        def stock_prices
-          par_prices
+        def uncharted_par_prices
+          repar_prices.select { |p| p.type == :repar }
         end
 
-        def par_prices
-          @par_prices ||= stock_market.market.first.select { |p| p.type == :par }
-        end
-
-        def repar_prices
-          @repar_prices ||= stock_market.market.first.select { |p| p.type == :repar }
+        def chartered_par_prices
+          repar_prices.select { |p| p.type == :par }
         end
 
         # So that value is not shown on company cards representing shares
@@ -301,8 +316,17 @@ module Engine
         end
 
         def sorted_corporations
-          ipoed, others = corporations.reject(&:closed?).partition(&:ipoed)
+          ipoed, others = @corporations.reject(&:closed?).partition(&:ipoed)
           ipoed.sort + others
+        end
+
+        def random_corporation
+          # Get a random corporation, which player does not own any shares of. TODO: Is this correct?
+          @corporations.reject { |c| c.closed? || c.ipoed || player_owns_any_shares_of?(c) }.min_by { rand }
+        end
+
+        def player_owns_any_shares_of?(corp)
+          @players.first.shares_by_corporation[corp].any?
         end
 
         # TODO: Is this OK as 1862 solo version?
@@ -310,7 +334,7 @@ module Engine
           legal_to_start?(corporation)
         end
 
-        def remove_corporation(corp)
+        def remove_corporation(corp, reason = nil)
           corp.close!
 
           # TODO: If there are tile or token in this hex, freeze it instead
@@ -320,7 +344,14 @@ module Engine
             @ipo_rows[row].reject! { |c| c.name == corp.name }
           end
 
-          @log << "Removing #{corp.name} from game"
+          log_text = "Removing #{corp.name} from game "
+          log_text += reason if reason
+          @log << log_text
+        end
+
+        # Always the player acting in 1862 Solo
+        def acting_for_entity(_entity)
+          @players.first
         end
 
         # No use in 1862 Solo

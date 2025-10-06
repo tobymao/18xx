@@ -21,6 +21,8 @@ module Engine
             super.merge(
               {
                 bought_shares: [],
+                companies_pending_par: [],
+                chartered_par: false,
               }
             )
           end
@@ -48,6 +50,10 @@ module Engine
             nil
           end
 
+          def companies_pending_par
+            @round.companies_pending_par
+          end
+
           def get_par_prices(entity, _corp)
             @game.repar_prices.select { |p| p.price * 3 <= entity.cash }
           end
@@ -70,13 +76,8 @@ module Engine
             if share.corporation.share_price
               renderings << ["buy##{company.id}", "Buy #{company.name} for #{@game.company_value(company)}"]
             elsif @game.can_par_corporations?
-              # TODO: Is it possible to use interval?
-              @game.repar_prices.each do |rp|
-                renderings << ["par_unchartered##{rp.price}##{company.id}", "Par at #{rp.price} (unchartered)"]
-              end
-              @game.par_prices.each do |pp|
-                renderings << ["par_chartered##{pp.price}##{company.id}", "Par at #{pp.price} (chartered)"]
-              end
+              renderings << ["par_unchartered##{company.id}", 'Par unchartered']
+              renderings << ["par_chartered##{company.id}", 'Par chartered']
             end
 
             renderings
@@ -136,7 +137,7 @@ module Engine
           end
 
           def action_deal(choice)
-            @game.remove_corporation(random_corporation)
+            @game.remove_corporation(@game.random_corporation, 'due to deal action')
             index = choice.split('#').last.to_i
             @game.deal_to_ipo_row(index)
             card_text = @game.cards_to_deal == 1 ? 'card is' : 'cards are'
@@ -157,51 +158,17 @@ module Engine
           end
 
           def action_par_chartered(choice)
-            parts = choice.split('#')
-            raise GameError, "Incorrect choice format #{choice}" unless parts.size == 3
-
-            price = parts[1].to_i
-            id = parts[2].to_sym
-            company = get_company(id)
-            share = company.treasury
-            corporation = share.corporation
-            @game.chartered[corporation] = true
-
-            par_corporation(share, corporation, price, true)
+            company = get_company_from_choice(choice)
+            @round.companies_pending_par << company
+            @round.chartered_par = true
             cleanup_company(company)
           end
 
           def action_par_unchartered(choice)
-            parts = choice.split('#')
-            raise GameError, "Incorrect choice format #{choice}" unless parts.size == 3
-
-            price = parts[1].to_i
-            id = parts[2].to_sym
-            company = get_company(id)
-            share = company.treasury
-            corporation = share.corporation
-
-            @game.convert_to_incremental!(corporation)
-            corporation.tokens.pop # 3 -> 2
-            raise GameError, 'Wrong number of tokens for Unchartered Company' if corporation.tokens.size != 2
-
-            # Unchartered starts shares in treasury
-            corporation.shares.each { |s| s.owner = corporation }
-
-            par_corporation(share, corporation, price, false)
+            company = get_company_from_choice(choice)
+            @round.companies_pending_par << company
+            @round.chartered_par = false
             cleanup_company(company)
-
-            @game.remove_corporation(random_corporation)
-          end
-
-          def par_corporation(share, corporation, price, chartered)
-            @log << "#{corporation.name} pars at #{price}"
-            corporation.ipoed = true
-            shares_prices = chartered ? @game.par_prices : @game.repar_prices
-            player = @game.players.first
-            share_price = shares_prices.find { |p| p.price == price }
-            @game.stock_market.set_par(corporation, share_price)
-            buy_shares(player, ShareBundle.new([share]), allow_president_change: true)
           end
 
           def action_remove(choice)
@@ -210,7 +177,7 @@ module Engine
             cleanup_company(company)
             share = company.treasury
             corporation = share.corporation
-            @game.remove_corporation(corporation)
+            @game.remove_corporation(corporation, 'as share dropped')
           end
 
           def get_company_from_choice(choice)
@@ -223,15 +190,6 @@ module Engine
             raise GameError, "Company with ID #{id} not found in IPO rows" unless company
 
             company
-          end
-
-          def random_corporation
-            # Get a random corporatiion, which player does not own any shares of. TODO: Is this correct?
-            @game.corporations.reject { |c| c.closed? || c.ipoed || player_owns_any_shares_of?(c) }.min_by { rand }
-          end
-
-          def player_owns_any_shares_of?(corp)
-            @game.players.first.shares_by_corporation[corp].any?
           end
 
           def cleanup_company(company)
