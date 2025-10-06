@@ -5,6 +5,9 @@ require 'json'
 require_relative 'scripts_helper'
 require_relative 'migrate_game'
 
+class GameResultError < Engine::GameError
+end
+
 # class to facilitate interacting with the results of validate_all() in an irb
 # console
 class Validate
@@ -101,7 +104,7 @@ $count = 0
 $total = 0
 $total_time = 0
 
-def run_game(game, actions = nil, strict: false, silent: false)
+def run_game(game, actions = nil, strict: false, silent: false, trace: false, validate_result: true, return_engine: false)
   actions ||= game.actions.map(&:to_h)
   data = {
     'id' => game.id,
@@ -115,37 +118,66 @@ def run_game(game, actions = nil, strict: false, silent: false)
   $total += 1
   time = Time.now
   begin
-    engine = Engine::Game.load(game, strict: strict)
+    engine = Engine::Game.load(game, actions: actions, strict: strict)
   rescue Exception => e # rubocop:disable Lint/RescueException
     $count += 1
-    data['finished']=false
-    #data['stack']=e.backtrace
-    data['exception']=e
+    data['finished_validation']=false
+    data['exception']=e.inspect
+    data['stack']=e.backtrace if trace
     return data
   end
 
   begin
-      engine.maybe_raise!
+    # maybe_raise! clears @broken_action, so grab it now
+    broken_action = engine.broken_action&.to_h
+
+    engine.maybe_raise!
 
     time = Time.now - time
     $total_time += time
-    data['finished']=true
 
+    data['finished_validation']=true
     data['actions']=engine.actions.size
     data['result']=engine.result
+    data['game_finished'] = engine.finished
     data['game_end_reason'] = engine.game_end_reason
+
+    if validate_result
+      errors = []
+
+      unless engine.finished == (data['status'] == 'finished')
+        errors << "got engine.finished=#{engine.finished} with data['status']=#{data['status']}"
+      end
+
+      engine_result = engine.result.transform_keys(&:to_s).sort_by { |_, v| v }.reverse.to_h
+      db_result = game.result.transform_keys(&:to_s).sort_by { |_, v| v }.reverse.to_h
+      if engine_result != db_result
+        errors <<  "DB stored result #{db_result} does not match engine computed result #{engine_result}"
+      end
+
+      unless errors.empty?
+        raise GameResultError, errors.join('; ')
+      end
+      # TODO -- :turn :round :acting
+      # update :updated_at (or is this auto with migration?)
+    end
+
   rescue Exception => e # rubocop:disable Lint/RescueException
     $count += 1
     data['url']="https://18xx.games/game/#{game.id}?action=#{engine.last_processed_action}"
     data['last_action']=engine.last_processed_action
-    data['finished']=false
-    #data['stack']=e.backtrace
-    data['exception']=e
+    data['finished_validation']=false
+    data['exception']=e.inspect
+    data['broken_action']=broken_action
+    data['stack']=e.backtrace if trace
   end
+
+  data['engine'] = engine if return_engine
+
   data
 end
 
-def validate_all(*titles, families: true, game_ids: nil, strict: false, status: %w[active finished], filename: 'validate.json', silent: false)
+def validate_all(*titles, families: true, game_ids: nil, strict: false, status: %w[active finished], filename: 'validate.json', silent: false, trace: true)
   $count = 0
   $total = 0
   $total_time = 0
@@ -174,7 +206,7 @@ def validate_all(*titles, families: true, game_ids: nil, strict: false, status: 
       where_args2[:title] = titles unless titles.empty?
       games = Game.eager(:user, :players, :actions).where(**where_args2).all
       _ = games.each do |game|
-        data[game.id]=run_game(game, strict: strict, silent: silent)
+        data[game.id]=run_game(game, strict: strict, silent: silent, trace: trace)
       end
       page.clear
     end
@@ -185,7 +217,7 @@ def validate_all(*titles, families: true, game_ids: nil, strict: false, status: 
 
   games = Game.eager(:user, :players, :actions).where(**where_args3).all
   _ = games.each do |game|
-    data[game.id]=run_game(game, silent: silent)
+    data[game.id]=run_game(game, silent: silent, trace: trace)
   end
   puts "#{$count}/#{$total} avg #{$total_time / $total}"
   data['summary']={'failed':$count, 'total':$total, 'total_time':$total_time, 'avg_time':$total_time / $total}

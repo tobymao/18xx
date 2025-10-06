@@ -28,6 +28,7 @@ docker-compose.override.yml
 
 db.backup*
 validate*.json
+migrate*.json
 .pgpass
 
 # RubyMine configfiles
