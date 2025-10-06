@@ -768,7 +768,14 @@ module Engine
           case action['type']
           when 'undo'
             undo_to = if (id = action['action_id'])
-                        id.zero? ? 0 : actions.index { |a| a['id'] == action['action_id'] } + 1
+                        if id.zero?
+                          0
+                        else
+                          idx = actions.index { |a| a['id'] == id }
+                          raise ActionError, "Could not find target action_id for undo action: #{action}" if idx.nil?
+
+                          idx + 1
+                        end
                       else
                         filtered_actions.rindex { |a| a && a['type'] != 'message' } || 0
                       end
