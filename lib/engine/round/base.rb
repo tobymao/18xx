@@ -76,9 +76,7 @@ module Engine
         type = action.type
         clear_cache!
 
-        if @game.finished && type != 'message'
-          raise GameIsOver, "Cannot process action #{type} at #{action.id}: #{action.to_h}"
-        end
+        raise GameIsOver, "Cannot process action #{type} at #{action.id}: #{action.to_h}" if @game.finished && type != 'message'
 
         before_process(action)
 
