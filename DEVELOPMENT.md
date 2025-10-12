@@ -17,7 +17,7 @@ This will create a VM hosted by Github just for you with the repo already cloned
 
 You are able to run `make` from the Terminal tab to build and start the 18xx server (based on the current branch checked out)
 
-After the server is running, a pop-up in the bottom right should appear informing you that the server can be opened in a browser.  
+After the server is running, a pop-up in the bottom right should appear informing you that the server can be opened in a browser.
 
 If that pop-up doesn't appear or if the url opens on a different port than `9292`, open the `Ports` tab in the Codespace, hover the "local address" for port `9292` and click the globe to open the server in a browser.
 
