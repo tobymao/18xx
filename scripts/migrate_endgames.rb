@@ -33,6 +33,8 @@ def migrate_endgames(ids, page_size: 50, filename: 'migrate_endgames.json')
         broken_action = game_data['broken_action']
         db_broken_action_model = game.actions.find { |a| a.action_id == broken_action['id'] }
 
+        raise "Could not find broken action from DB" unless db_broken_action_model
+
         db_broken_action = db_broken_action_model.action
         db_broken_action['id'] = db_broken_action_model.action_id
         db_broken_action['created_at'] = db_broken_action_model.created_at.to_i
@@ -77,6 +79,11 @@ def migrate_endgames(ids, page_size: 50, filename: 'migrate_endgames.json')
       # update status ("finished" vs "active")
       if game_data['game_finished'] != (game.status == 'finished')
         game.status = game_data['game_finished'] ? 'finished' : 'active'
+
+        if game.finished_at.nil?
+          game.finished_at = game.actions.last.updated_at || game.actions.last.created_at
+        end
+
         game.save
         game_data['status_updated'] = true
       end
@@ -87,7 +94,7 @@ def migrate_endgames(ids, page_size: 50, filename: 'migrate_endgames.json')
       if game_data['result'] != game_data['old_db_result']
         delta =
           game_data['result'].map do |k, v|
-            delta = (v - game_data['old_db_result'][k])
+            delta = (v - (game_data['old_db_result'][k] || 0))
             [k, delta] unless delta.zero?
           end
         game_data['result_delta'] = delta.compact.sort_by { |_k, v| v.abs }.reverse.to_h
@@ -106,6 +113,9 @@ def migrate_endgames(ids, page_size: 50, filename: 'migrate_endgames.json')
       end
 
       # save all the data for report
+      data['games'] << game_data.except('engine')
+    rescue Exception => e
+      game_data['exception'] << e.inspect
       data['games'] << game_data.except('engine')
     end
   end
