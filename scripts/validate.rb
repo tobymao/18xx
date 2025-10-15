@@ -476,3 +476,11 @@ def titles_for_game_family(title)
 
   titles.sort
 end
+
+# https://github.com/tobymao/18xx/issues/12131
+def chats_with_auto_actions(game_id)
+  Game[game_id].actions.select do |action|
+    action.action['type'] == 'message' &&
+      !(action.action['auto_actions'] || []).empty?
+  end
+end
