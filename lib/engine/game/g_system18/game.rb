@@ -507,7 +507,7 @@ module Engine
             Engine::Step::DiscardTrain,
             Engine::Step::Exchange,
             Engine::Step::SpecialTrack,
-            Engine::Step::BuySellParShares,
+            GSystem18::Step::BuySellParShares,
           ]
         end
 

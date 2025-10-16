@@ -7,6 +7,14 @@ module Engine
     module G1824
       module Step
         class BuyTrain < Engine::Step::BuyTrain
+          def round_state
+            super.merge(
+              {
+                train_exchanged_by_entity: [],
+              }
+            )
+          end
+
           def actions(entity)
             actions = super.clone
             return actions unless entity.operator?
@@ -50,6 +58,11 @@ module Engine
           def process_buy_train(action)
             entity ||= action.entity
             train = action.train
+            if action.exchange
+              raise GameError, "#{entity.name} has already exchanged trains this OR" unless discountable_trains_allowed?(entity)
+
+              @round.train_exchanged_by_entity << entity.id
+            end
 
             if entity&.corporation? && !@game.goods_train?(train.name) && @game.coal_railway?(entity)
               raise GameError, 'Coal railways can only own g-trains'
@@ -79,6 +92,10 @@ module Engine
             return [train.price, train.price] if train.owner&.corporation? && train.owner.owner != entity.owner
 
             super
+          end
+
+          def discountable_trains_allowed?(entity)
+            !@round.train_exchanged_by_entity.include?(entity.id)
           end
         end
       end

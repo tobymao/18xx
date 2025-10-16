@@ -361,13 +361,13 @@ module Engine
 
           @log << "#{corporation.name} floats"
 
+          # Track newly floated corporations for the current stock round
+          track_newly_floated(corporation) if @round.is_a?(GSystem18::Round::Stock)
+
           return if %i[incremental none].include?(corporation.capitalization)
 
           @bank.spend(corporation.par_price.price * corporation.total_shares, corporation)
           @log << "#{corporation.name} receives #{format_currency(corporation.cash)}"
-
-          # Track newly floated corporations for the current stock round
-          track_newly_floated(corporation) if @round.is_a?(GSystem18::Round::Stock)
         end
 
         # ----- Rival share randomizer -----
@@ -559,6 +559,13 @@ module Engine
               reorder_players
               new_stock_round
             end
+        end
+
+        def map_gotland_can_dump?(entity, bundle)
+          corporation = bundle.corporation
+          return false if (corporation.share_holders[rival] || 0) > (corporation.share_holders[entity] - bundle.percent)
+
+          bundle.can_dump?(entity)
         end
       end
     end

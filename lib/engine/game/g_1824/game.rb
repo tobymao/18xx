@@ -279,6 +279,7 @@ module Engine
             G1824::Step::KkTokenChoice,
             G1837::Step::Bankrupt,
             G1824::Step::DiscardTrain,
+            G1824::Step::ForcedMountainRailwayExchange,
             Engine::Step::SpecialTrack,
             G1824::Step::Track,
             Engine::Step::Token,
@@ -459,10 +460,7 @@ module Engine
         end
 
         def exchange_entities
-          # Only one MR to exchange at a time - if we show all here they appear as multiple buttons in GUI
-          # under selected corporation. See #11988.
-          unclosed = @companies.reject(&:closed?)
-          unclosed.empty? ? [] : [unclosed.first]
+          @companies.reject(&:closed?)
         end
 
         def mountain_railway?(entity)
@@ -470,11 +468,15 @@ module Engine
         end
 
         def coal_railway?(entity)
-          entity.color == :black && entity.type == :minor
+          entity.color == :black && minor?(entity)
         end
 
         def pre_staatsbahn?(entity)
-          entity.color != :black && entity.type == :minor
+          entity.color != :black && minor?(entity)
+        end
+
+        def minor?(entity)
+          entity.type == :minor
         end
 
         def regional?(entity)
@@ -496,7 +498,11 @@ module Engine
         end
 
         def exchangable_for_mountain_railway?(player, corporation)
-          corporation.type == :major && @companies.find { |c| mountain_railway?(c) && c.owned_by?(player) }
+          shares_exchangable?(corporation) && @companies.any? { |c| mountain_railway?(c) && c.owned_by?(player) }
+        end
+
+        def shares_exchangable?(corporation)
+          regional?(corporation)
         end
 
         def unbought_companies?
@@ -516,8 +522,12 @@ module Engine
         end
 
         def operating_order
-          minors, majors = @corporations.select(&:floated?).partition { |c| c.type == :minor || c.type == :construction_railway }
+          minors, majors = @corporations.select(&:floated?).partition { |c| minor_for_partition_of_or?(c) }
           minors + majors.sort
+        end
+
+        def minor_for_partition_of_or?(corp)
+          minor?(corp)
         end
 
         def exchange_order
@@ -560,8 +570,10 @@ module Engine
 
           minor = corporation_by_id(id)
 
-          return if special_handling_after_by_company(company, minor)
+          after_buy_company_final_touch(company, minor, price)
+        end
 
+        def after_buy_company_final_touch(_company, minor, price)
           return unless coal_railway?(minor)
 
           # Rule IV.2, bullet 8: Coal Railways start with a g train bought from the depot
@@ -575,11 +587,6 @@ module Engine
           stock_market.set_par(regional_railway, share_price)
           association = "the associated Regional Railway of #{id}"
           log << "#{regional_railway.name} (#{association}) pars at #{format_currency(share_price.price)}."
-        end
-
-        # Needed for 2 player variant
-        def special_handling_after_by_company(_company, _minor)
-          false
         end
 
         # This 1837 version with some tweeks
@@ -596,22 +603,20 @@ module Engine
           # This part has been simplified in 1824, as a minor can only have one owner
           # and if its a lesser pre-staatsbahn it should correspond to a 10% share in
           # the mergee, otherwise 20%.
-          minor.share_holders.each do |sh, _|
-            num_shares = sh.shares_of(minor).size
-            next if num_shares.zero?
 
-            num_shares = 2 if coal_minor?(minor) || minor.id.end_with?('1')
+          owner = minor.owner
+          num_shares = coal_minor?(minor) || minor.id.end_with?('1') ? 2 : 1
 
-            share = corporation.shares.find { |s| !s.buyable && s.percent == num_shares * 10 }
-            @log << "#{sh.name} receives #{num_shares} share#{num_shares > 1 ? 's' : ''} of #{corporation.name}"
-            share.buyable = true
+          share = corporation.shares.find { |s| !s.buyable && s.percent == num_shares * 10 }
+          @log << "#{owner.name} receives #{num_shares} share#{num_shares > 1 ? 's' : ''} of #{corporation.name}"
+          share.buyable = true
 
-            # 1824 fix. We explicitly set allow_president_change to true here as we otherwise get a strange
-            # behavior when presidency decided for nationals. Might need revisiting.
-            @share_pool.transfer_shares(share.to_bundle, sh, allow_president_change: true)
-            if @round.respond_to?(:non_paying_shares) && operated_this_round?(minor)
-              @round.non_paying_shares[sh][corporation] += num_shares
-            end
+          # 1824 fix. We explicitly set allow_president_change to true here as we otherwise get a strange
+          # behavior when presidency decided for nationals. Might need revisiting.
+          @share_pool.transfer_shares(share.to_bundle, owner, allow_president_change: true)
+
+          if @round.respond_to?(:non_paying_shares) && operated_this_round?(minor)
+            @round.non_paying_shares[owner][corporation] += num_shares
           end
 
           if minor.cash.positive?
@@ -655,6 +660,11 @@ module Engine
           return if staatsbahn?(corporation) && corporation.placed_tokens.any?
 
           super
+        end
+
+        # 1837 use as special functionality for token graphs so we need to use base functionality
+        def token_graph_for_entity(_entity)
+          @graph
         end
 
         def associated_coal_railway(regional_railway)

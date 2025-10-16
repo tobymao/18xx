@@ -16,6 +16,7 @@ module GameManager
     base.needs :connection, default: nil, store: true
     base.needs :flash_opts, default: {}, store: true
     base.needs :game_classes_loaded, default: {}, store: true
+    base.needs :strict, default: false, store: true
   end
 
   def create_hotseat(**opts)
@@ -48,6 +49,7 @@ module GameManager
 
   def enter_fixture(path)
     @connection.get("/fixtures/#{path}.json", '') do |data|
+      store(:strict, true, skip: true)
       store(:game_data, data, skip: false)
     end
   end
