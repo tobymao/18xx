@@ -80,9 +80,9 @@ module View
         LOGGER.debug do
           @_logger ||= {}
           @_logger[:process] = Time.now
-          'Processing game actions...'
+          "Processing game actions, strict: #{strict}..."
         end
-        @game = Engine::Game.load(@game_data, at_action: cursor, user: @user&.dig('id'))
+        @game = Engine::Game.load(@game_data, at_action: cursor, user: @user&.dig('id'), strict: strict)
         LOGGER.debug do
           "Done processing game actions: #{Time.now - @_logger[:process]} seconds"
         end
@@ -502,6 +502,14 @@ module View
 
     def step
       @game.round.active_step
+    end
+
+    def strict
+      if (param = Lib::Params['strict'])
+        !%w[f false].include?(param)
+      else
+        @strict
+      end
     end
   end
 end

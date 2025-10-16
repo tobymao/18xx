@@ -184,7 +184,7 @@ def validate_all(*titles, families: true, game_ids: nil, strict: false, status: 
 
   games = Game.eager(:user, :players, :actions).where(**where_args3).all
   _ = games.each do |game|
-    data[game.id]=run_game(game, silent: silent)
+    data[game.id]=run_game(game, strict: strict, silent: silent)
   end
   puts "#{$count}/#{$total} avg #{$total_time / $total}"
   data['summary']={'failed':$count, 'total':$total, 'total_time':$total_time, 'avg_time':$total_time / $total}

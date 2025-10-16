@@ -28,7 +28,7 @@ class FixtureCache
     if game && ((game.last_processed_action || 0) <= action)
       game.process_to_action(action)
     else
-      game = Engine::Game.load(data, at_action: action)
+      game = Engine::Game.load(data, at_action: action, strict: true)
       @cache[title][file][:game] = game
     end
     @cache[title][file].delete(:game) if clear_cache
