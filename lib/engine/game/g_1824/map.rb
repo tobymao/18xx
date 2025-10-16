@@ -186,7 +186,7 @@ module Engine
           'H15' => 'Fünfkirchen',
           'H23' => 'Hermannstadt',
           'I8' => 'Triest',
-          'K12' => 'Sarajevo',
+          'J11' => 'Sarajevo',
         }.freeze
 
         DRESDEN_1 = 'offboard=revenue:yellow_10|green_20|brown_30|gray_40,hide:1,groups:Dresden;'\
@@ -206,12 +206,10 @@ module Engine
         BUKAREST_2 = 'offboard=revenue:yellow_10|green_30|brown_40|gray_50,groups:Bukarest;path=a:2,b:_0,terminal:1;'\
                      'border=edge:3'
         SARAJEVO = 'city=revenue:yellow_10|green_10|brown_50|gray_50;'\
-                   'path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1;path=a:2,b:_0,terminal:1;border=edge:0;border=edge:1;'\
-                   'path=a:3,b:_0,terminal:1;path=a:4,b:_0,terminal:1;path=a:5,b:_0,terminal:1;border=edge:4;border=edge:5'
-        SARAJEVO_W = 'path=a:2,b:5;path=a:3,b:4;border=edge:4;border=edge:5'
-        SARAJEVO_E = 'path=a:1,b:2;path=a:0,b:3;border=edge:0;border=edge:1'
-        SARAJEVO_SW = 'path=a:2,b:3;border=edge:2;border=edge:3;border=edge:4'
-        SARAJEVO_SE = 'path=a:2,b:3;border=edge:1;border=edge:2;border=edge:3'
+                   'path=a:1,b:_0,lanes:2,terminal:1;path=a:2,b:_0,terminal:1;border=edge:1;'\
+                   'path=a:3,b:_0,terminal:1;path=a:4,b:_0,lanes:2,terminal:1;border=edge:4'
+        SARAJEVO_W = 'path=a:2,b:4,b_lane:2.0;path=a:3,b:4,b_lane:2.1;border=edge:4;border=edge:5'
+        SARAJEVO_E = 'path=a:2,b:1,b_lane:2.0;path=a:3,b:1,b_lane:2.1;border=edge:0;border=edge:1'
         WIEN = 'city=revenue:30;path=a:0,b:_0;city=revenue:30;'\
                'path=a:1,b:_1;city=revenue:30;path=a:2,b:_2;upgrade=cost:20,terrain:water;label=W'
 
@@ -260,8 +258,6 @@ module Engine
               ['J13'] => SARAJEVO,
               ['J11'] => SARAJEVO_W,
               ['J15'] => SARAJEVO_E,
-              ['K12'] => SARAJEVO_SW,
-              ['K14'] => SARAJEVO_SE,
             },
             gray: {
               ['A12'] => MINE_2,

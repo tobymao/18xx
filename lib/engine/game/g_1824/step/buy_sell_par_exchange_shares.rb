@@ -8,7 +8,6 @@ module Engine
       module Step
         class BuySellParExchangeShares < G1824::Step::BuySellParShares
           EXCHANGE_ACTIONS = %w[buy_shares].freeze
-          BUY_ACTION = %w[special_buy].freeze
           PURCHASE_ACTIONS = Engine::Step::BuySellParShares::PURCHASE_ACTIONS + [Action::SpecialBuy]
 
           def actions(entity)
@@ -57,8 +56,9 @@ module Engine
 
           def can_sell?(_entity, bundle)
             # Rule VI.8, bullet 1, sub-bullet 2: Bank ownership cannot exceed 50% for started corporations
+            # Include bank pool (in case 2-player, 3+ do not use bank pool)
             corp = bundle.corporation
-            super && (corp.ipo_shares.sum(&:percent) + bundle.percent <= 50)
+            super && (corp.ipo_shares.sum(&:percent) + corp.percent_in_market + bundle.percent <= 50)
           end
 
           # Rule VI.7, bullet 4: Exchange can take you over 60%
@@ -137,6 +137,15 @@ module Engine
             @game.payoff_player_loan(player, payoff_amount: action.amount)
             @round.last_to_act = player
             @round.current_actions << action
+          end
+
+          def action_is_shenanigan?(entity, other_entity, action, corporation, corp_buying)
+            case action
+            when Action::SpecialBuy then 'Exchange of Coal Minor'
+            when Action::PayoffPlayerDebt then 'Payoff of player debt'
+            when Action::PayoffPlayerDebtPartial then 'Partial payoff of player debt'
+            else super
+            end
           end
 
           private

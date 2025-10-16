@@ -19,7 +19,7 @@ You are able to run `make` from the Terminal tab to build and start the 18xx ser
 
 After the server is running, a pop-up in the bottom right should appear informing you that the server can be opened in a browser.
 
-If that pop-up doesn't appear, open the `Ports` tab in the Codespace, hover the "local address" for port `9292` and click the globe to open the server in a browser.
+If that pop-up doesn't appear or if the url opens on a different port than `9292`, open the `Ports` tab in the Codespace, hover the "local address" for port `9292` and click the globe to open the server in a browser.
 
 ![image](https://user-images.githubusercontent.com/1711810/201538007-a5b4bf8a-9214-4ca3-a6a5-6304601c34c2.png)
 
