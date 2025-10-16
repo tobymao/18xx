@@ -559,6 +559,13 @@ module Engine
               new_stock_round
             end
         end
+
+        def map_gotland_can_dump?(entity, bundle)
+          corporation = bundle.corporation
+          return false if (corporation.share_holders[rival] || 0) > (corporation.share_holders[entity] - bundle.percent)
+
+          bundle.can_dump?(entity)
+        end
       end
     end
   end
