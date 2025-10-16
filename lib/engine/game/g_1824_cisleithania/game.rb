@@ -200,6 +200,7 @@ module Engine
             G1824::Step::KkTokenChoice,
             G1824::Step::DiscardTrain,
             G1824Cisleithania::Step::BondToken,
+            G1824::Step::ForcedMountainRailwayExchange, # In case train export after OR set triggers exchage
             Engine::Step::SpecialTrack,
             G1824Cisleithania::Step::Track,
             G1824Cisleithania::Step::Token,
