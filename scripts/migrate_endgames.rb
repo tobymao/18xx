@@ -33,7 +33,7 @@ def migrate_endgames(ids, page_size: 50, filename: 'migrate_endgames.json')
         broken_action = game_data['broken_action']
         db_broken_action_model = game.actions.find { |a| a.action_id == broken_action['id'] }
 
-        raise "Could not find broken action from DB" unless db_broken_action_model
+        raise 'Could not find broken action from DB' unless db_broken_action_model
 
         db_broken_action = db_broken_action_model.action
         db_broken_action['id'] = db_broken_action_model.action_id
@@ -80,9 +80,7 @@ def migrate_endgames(ids, page_size: 50, filename: 'migrate_endgames.json')
       if game_data['game_finished'] != (game.status == 'finished')
         game.status = game_data['game_finished'] ? 'finished' : 'active'
 
-        if game.finished_at.nil?
-          game.finished_at = game.actions.last.updated_at || game.actions.last.created_at
-        end
+        game.finished_at = game.actions.last.updated_at || game.actions.last.created_at if game.finished_at.nil?
 
         game.save
         game_data['status_updated'] = true
@@ -114,7 +112,7 @@ def migrate_endgames(ids, page_size: 50, filename: 'migrate_endgames.json')
 
       # save all the data for report
       data['games'] << game_data.except('engine')
-    rescue Exception => e
+    rescue Exception => e # rubocop:disable Lint/RescueException
       game_data['exception'] << e.inspect
       data['games'] << game_data.except('engine')
     end
