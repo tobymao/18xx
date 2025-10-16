@@ -360,13 +360,13 @@ module Engine
 
           @log << "#{corporation.name} floats"
 
+          # Track newly floated corporations for the current stock round
+          track_newly_floated(corporation) if @round.is_a?(GSystem18::Round::Stock)
+
           return if %i[incremental none].include?(corporation.capitalization)
 
           @bank.spend(corporation.par_price.price * corporation.total_shares, corporation)
           @log << "#{corporation.name} receives #{format_currency(corporation.cash)}"
-
-          # Track newly floated corporations for the current stock round
-          track_newly_floated(corporation) if @round.is_a?(GSystem18::Round::Stock)
         end
 
         # ----- Rival share randomizer -----
