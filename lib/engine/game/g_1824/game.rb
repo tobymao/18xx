@@ -470,11 +470,15 @@ module Engine
         end
 
         def coal_railway?(entity)
-          entity.color == :black && entity.type == :minor
+          entity.color == :black && minor?(entity)
         end
 
         def pre_staatsbahn?(entity)
-          entity.color != :black && entity.type == :minor
+          entity.color != :black && minor?(entity)
+        end
+
+        def minor?(entity)
+          entity.type == :minor
         end
 
         def regional?(entity)
@@ -496,7 +500,11 @@ module Engine
         end
 
         def exchangable_for_mountain_railway?(player, corporation)
-          corporation.type == :major && @companies.find { |c| mountain_railway?(c) && c.owned_by?(player) }
+          shares_exchangable?(corporation) && @companies.any? { |c| mountain_railway?(c) && c.owned_by?(player) }
+        end
+
+        def shares_exchangable?(corporation)
+          regional?(corporation)
         end
 
         def unbought_companies?
@@ -516,8 +524,12 @@ module Engine
         end
 
         def operating_order
-          minors, majors = @corporations.select(&:floated?).partition { |c| c.type == :minor || c.type == :construction_railway }
+          minors, majors = @corporations.select(&:floated?).partition { |c| minor_for_partition_of_or?(c) }
           minors + majors.sort
+        end
+
+        def minor_for_partition_of_or?(corp)
+          minor?(corp)
         end
 
         def exchange_order
@@ -560,8 +572,10 @@ module Engine
 
           minor = corporation_by_id(id)
 
-          return if special_handling_after_by_company(company, minor)
+          after_buy_company_final_touch(company, minor, price)
+        end
 
+        def after_buy_company_final_touch(_company, minor, price)
           return unless coal_railway?(minor)
 
           # Rule IV.2, bullet 8: Coal Railways start with a g train bought from the depot
@@ -575,11 +589,6 @@ module Engine
           stock_market.set_par(regional_railway, share_price)
           association = "the associated Regional Railway of #{id}"
           log << "#{regional_railway.name} (#{association}) pars at #{format_currency(share_price.price)}."
-        end
-
-        # Needed for 2 player variant
-        def special_handling_after_by_company(_company, _minor)
-          false
         end
 
         # This 1837 version with some tweeks
