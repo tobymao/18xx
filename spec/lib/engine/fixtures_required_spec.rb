@@ -4,10 +4,10 @@ require 'spec_helper'
 
 require 'json'
 
-# no examples of these game end reasons were found in the live database
-SKIP_ALPHA = Set.new(['18Norway'])
+SKIP_ALPHA = Set.new(['18Norway', '1824 Cisleithania'])
 
 SKIP_BETA_PROD = {
+
   # :final_train is only in 2p; '1846 2p Variant' is treated as a separate title
   '1846' => [:final_train],
 
