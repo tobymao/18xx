@@ -38,6 +38,7 @@ class Api
             game.to_h
           end
 
+          # POST '/api/game/<game_id>/leave'
           r.is 'leave' do
             halt(400, 'Cannot leave because game has started') unless game.status == 'new'
             halt(400, 'You are not in the game') unless users.any? { |u| u.id == user.id }
@@ -173,6 +174,7 @@ class Api
             game.to_h
           end
 
+          # POST '/api/game/<game_id>/player_order
           r.is 'player_order' do
             game.settings['player_order'] = r.params['player_order']
             game.save
@@ -192,20 +194,20 @@ class Api
 
         # POST '/api/game'
         r.is do
-          title = r['title']
+          title = r.params['title']
 
           params = {
             user: user,
-            description: r['description'],
-            min_players: r['min_players'],
-            max_players: r['max_players'],
+            description: r.params['description'],
+            min_players: r.params['min_players'],
+            max_players: r.params['max_players'],
             settings: {
-              seed: (r['seed'] || Random.new_seed) % (2**31),
-              player_order: r['player_order'],
-              unlisted: r['unlisted'],
-              optional_rules: r['optional_rules'],
-              auto_routing: r['auto_routing'],
-              is_async: r['async'],
+              seed: (r.params['seed'] || Random.new_seed) % (2**31),
+              player_order: r.params['player_order'],
+              unlisted: r.params['unlisted'],
+              optional_rules: r.params['optional_rules'],
+              auto_routing: r.params['auto_routing'],
+              is_async: r.params['async'],
             },
             title: title,
             round: 'Unstarted',
