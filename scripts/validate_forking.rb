@@ -82,7 +82,7 @@ def validate(**kwargs)
     end.uniq.sort
   end
 
-  pin_key = Sequel.pg_jsonb_op(:settings).key?('pin')
+  pin_key = Sequel.pg_jsonb_op(:settings).has_key?('pin') # rubocop:disable Style/PreferredHashMethods
   where_kwargs = {
     pin_key => false,
     :status => %w[active finished],
