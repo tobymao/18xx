@@ -22,15 +22,15 @@ module Engine
           bankrupt: :immediate,
           stock_market: :current_round,
           bank: :full_or,
-          custom: :one_more_full_or_set,
+          final_phase: :one_more_full_or_set,
         }.freeze
 
         GAME_END_REASONS_TEXT = Base::GAME_END_REASONS_TEXT.merge(
-          custom: 'First D Purchased'
+          final_phase: 'First D Purchased'
         ).freeze
 
         GAME_END_DESCRIPTION_REASON_MAP_TEXT = Base::GAME_END_DESCRIPTION_REASON_MAP_TEXT.merge(
-          custom: 'First D Purchased'
+          final_phase: 'First D Purchased'
         ).freeze
 
         def cornelius
@@ -166,7 +166,7 @@ module Engine
           @d_trigger = true
         end
 
-        def custom_end_game_reached?
+        def game_end_check_final_phase?
           @d_trigger
         end
       end

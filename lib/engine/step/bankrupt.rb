@@ -37,9 +37,7 @@ module Engine
 
         sell_bankrupt_shares(player, corp)
         @round.recalculate_order if @round.respond_to?(:recalculate_order)
-
-        player.spend(player.cash, @game.bank) if player.cash.positive?
-
+        player.set_cash(0, @game.bank)
         @game.declare_bankrupt(player)
       end
 

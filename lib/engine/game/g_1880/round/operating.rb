@@ -31,7 +31,7 @@ module Engine
           end
 
           def after_end_of_turn(operator)
-            @game.end_game! if trigger_game_end?(operator)
+            @game.end_game!(:final_train) if trigger_game_end?(operator)
           end
 
           def trigger_game_end?(operator)

@@ -13,7 +13,7 @@ module Engine
         include Entities
         include Map
 
-        GAME_END_CHECK = { stock_market: :current_or, custom: :current_or }.freeze
+        GAME_END_CHECK = { stock_market: :current_or, fixed_round: :current_or }.freeze
 
         BANKRUPTCY_ENDS_GAME_AFTER = :all_but_one
 
@@ -53,10 +53,6 @@ module Engine
         MARKET_SHARE_LIMIT = 80
 
         COMPANY_CLASS = G22Mars::Company
-
-        GAME_END_REASONS_TEXT = Base::GAME_END_REASONS_TEXT.merge(
-          custom: 'Fixed number of ORs'
-        )
 
         MARKET_TEXT = Base::MARKET_TEXT.merge(
           multiple_buy: 'Can buy two shares in the corporation per turn',
@@ -179,7 +175,7 @@ module Engine
           @revolt_round = determine_revolt_round
         end
 
-        def end_now?(_after)
+        def game_end_check_fixed_round?
           @or == LAST_OR
         end
 

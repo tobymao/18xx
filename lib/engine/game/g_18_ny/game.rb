@@ -40,9 +40,9 @@ module Engine
 
         SOLD_OUT_TOP_ROW_MOVEMENT = :down_right
 
-        GAME_END_CHECK = { bankrupt: :immediate, bank: :full_or, custom: :full_or }.freeze
+        GAME_END_CHECK = { bankrupt: :immediate, bank: :full_or, closed: :full_or }.freeze
         GAME_END_REASONS_TEXT = Base::GAME_END_REASONS_TEXT.merge(
-          custom: 'All but one corporation is closed',
+          closed: 'All but one corporation is closed',
         )
 
         ALL_COMPANIES_ASSIGNABLE = true
@@ -361,7 +361,7 @@ module Engine
             end
         end
 
-        def custom_end_game_reached?
+        def game_end_check_closed?
           @corporations.count { |c| !c.closed? } <= 1
         end
 

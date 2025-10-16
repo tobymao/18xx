@@ -40,18 +40,6 @@ module Engine
             entity.trains.count { |t| !@game.extra_train?(t) } < @game.train_limit(entity)
           end
 
-          def try_take_player_loan(entity, cost)
-            return unless cost.positive?
-            return unless cost > entity.cash
-
-            raise GameError, "#{entity.name} still need to sell shares before a loan can be granted" if sellable_shares?(entity)
-
-            difference = cost - entity.cash
-            @game.take_player_loan(entity, difference)
-            @log << "#{entity.name} takes a loan of #{@game.format_currency(difference)} with "\
-                    "#{@game.format_currency(@game.player_loan_interest(difference))} in interest"
-          end
-
           def check_e_train(action)
             return if !action.variant || (action.variant && action.variant != @game.class::E_TRAIN)
 

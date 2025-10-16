@@ -88,6 +88,10 @@ module Engine
               )
             end
           end
+
+          it 'has a non-null game_end_reason' do
+            expect(@data['game_end_reason']).not_to eq(nil)
+          end
         end
 
         [false, true].each do |strict|
@@ -105,6 +109,12 @@ module Engine
                 expect(@game.finished).to eq(true)
               end
 
+              it 'game_end_reason matches' do
+                game_end_reason = @data['game_end_reason']&.to_sym
+
+                expect(@game.game_end_reason).to eq(game_end_reason)
+              end
+
               it "last N actions in game match fixture's test_last_actions" do
                 test_last_actions = @data['test_last_actions']
                 next unless test_last_actions
@@ -114,6 +124,19 @@ module Engine
                   run_action = @game.actions[@game.actions.size - index].to_h
                   expect(run_action).to eq(actions[actions.size - index])
                 end
+              end
+
+              it 'all expected cash is accounted for' do
+                starting_cash = @game.bank_starting_cash
+                ending_cash = @game.spenders.sum(&:cash)
+
+                expect(ending_cash).to be_kind_of(Integer)
+                expect(ending_cash).to eq(starting_cash)
+              end
+
+              it "all player debt came from the Bank's @debt and is accounted for" do
+                total_debt = [@game.bank, *@game.players].sum(&:debt)
+                expect(total_debt).to eq(0)
               end
             end
           end

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'credit_mobilier'
+require_relative 'development_company'
 require_relative 'entities'
 require_relative 'golden_spike'
 require_relative 'map'
@@ -72,10 +73,10 @@ module Engine
         MUST_BUY_TRAIN = :always
         EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
         EBUY_FROM_OTHERS = :value
-        GAME_END_CHECK = { bankrupt: :immediate, custom: :one_more_full_or_set }.freeze
+        GAME_END_CHECK = { bankrupt: :immediate, phase_seven: :one_more_full_or_set }.freeze
         GAME_END_REASONS_TEXT = {
           bankrupt: 'player is bankrupt',
-          custom: '7-train is bought/exported',
+          phase_seven: '7-train is bought/exported',
         }.freeze
         GAME_END_REASONS_TIMING_TEXT = {
           immediate: "Immediately, bankrupt player's score is $0",
@@ -710,7 +711,7 @@ module Engine
           @lhp_train_pending
         end
 
-        def custom_end_game_reached?
+        def game_end_check_phase_seven?
           @endgame_triggered
         end
 
@@ -1036,22 +1037,16 @@ module Engine
 
         def init_coal_companies
           @players.map.with_index do |player, index|
-            coal_company = Engine::Minor.new(
+            coal_company = DevelopmentCompany.new(
+              player: player,
               type: :coal,
               sym: "Coal-#{self.class::LETTERS[index]}",
               name: self.class::COAL_COMPANY_NAMES[index],
               logo: '1868_wy/coal',
-              tokens: [],
-              color: :black,
               abilities: [{ type: 'no_buy', owner_type: 'player' }],
             )
             add_coal_development_tokens(coal_company)
-            coal_company.owner = player
             coal_company.float!
-
-            def coal_company.cash
-              player.cash
-            end
 
             coal_company
           end

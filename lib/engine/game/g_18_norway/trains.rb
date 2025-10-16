@@ -39,7 +39,7 @@ module Engine
             distance: 6,
             price: 630,
             num: 3,
-            events: [{ 'type' => 'custom_end_game' }],
+            events: [{ 'type' => 'end_game' }],
           },
           {
             name: 'D',

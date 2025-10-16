@@ -91,15 +91,7 @@ module Engine
           def try_take_player_loan(entity, cost)
             @round.president_helped = true
 
-            return unless cost.positive?
-            return unless cost > entity.cash
-
-            raise GameError, "#{entity.name} still need to sell shares before a loan can be granted" if sellable_shares?(entity)
-
-            difference = (cost - entity.cash)
-            @game.take_player_loan(entity, difference)
-            @log << "Bank covers the #{@game.format_currency(difference)} missing;"\
-                    " #{entity.name} gets an endgame loan of #{@game.format_currency(difference * 2)}"
+            super
           end
 
           def sellable_shares?(player)

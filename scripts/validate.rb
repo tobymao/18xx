@@ -133,6 +133,7 @@ def run_game(game, actions = nil, strict: false, silent: false)
 
     data['actions']=engine.actions.size
     data['result']=engine.result
+    data['game_end_reason'] = engine.game_end_reason
   rescue Exception => e # rubocop:disable Lint/RescueException
     $count += 1
     data['url']="https://18xx.games/game/#{game.id}?action=#{engine.last_processed_action}"

@@ -15,7 +15,7 @@ module Engine
             return unless @game.corporations.none?(&:floated)
 
             @log << '-- Round ended with no floated corporations. Ending game. --'
-            @game.end_game!
+            @game.end_game!(:dnf)
           end
         end
       end

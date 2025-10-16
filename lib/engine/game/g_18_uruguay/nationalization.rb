@@ -164,6 +164,7 @@ module Engine
             bundle = ShareBundle.new(shares)
             sell_shares_and_change_price(bundle, movement: :none) unless corporation == share_holder
           end
+          @rptla.set_cash(0, @bank)
           @rptla.close!
           @corporations.delete(@rptla)
         end
@@ -186,7 +187,7 @@ module Engine
           @nationalized
         end
 
-        def custom_end_game_reached?
+        def game_end_check_nationalized?
           @nationalized
         end
 

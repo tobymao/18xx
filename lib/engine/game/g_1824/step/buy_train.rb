@@ -55,12 +55,6 @@ module Engine
             @game.depot.min_depot_price > (entity.cash + entity.owner.cash)
           end
 
-          def try_take_player_loan(entity, cost)
-            return unless cost > entity.cash
-
-            @game.take_loan(entity, cost - entity.cash)
-          end
-
           def process_buy_train(action)
             entity ||= action.entity
             train = action.train

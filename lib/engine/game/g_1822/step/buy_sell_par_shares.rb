@@ -24,7 +24,7 @@ module Engine
             return ['sell_shares'] if must_sell?(entity)
 
             # You can either buy shares or you can use your bidding tokens, you can always sell shares
-            player_debt = @game.player_debt(entity)
+            player_debt = entity.debt
             actions = []
             actions << 'buy_shares' if @bid_actions.zero? && can_buy_any?(entity) && player_debt.zero?
             actions << 'par' if @bid_actions.zero? && can_ipo_any?(entity) && player_debt.zero?
@@ -43,7 +43,7 @@ module Engine
 
             choices = @game.company_choices(entity, :stock_round)
             if !choices.empty? && entity.id == @game.class::COMPANY_OSTH &&
-                (@bid_actions.positive? || @game.player_debt(entity.owner).positive?)
+                (@bid_actions.positive? || entity.owner.debt.positive?)
               return {}
             end
 

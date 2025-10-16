@@ -8,7 +8,7 @@ module Engine
       module Round
         class Operating < Engine::Round::Operating
           def next_entity!
-            return @game.end_game! if @entities[@entity_index].reached_max_value
+            return @game.end_game!(:stock_market) if @entities[@entity_index].reached_max_value
 
             super
           end

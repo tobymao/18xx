@@ -38,7 +38,7 @@ module Engine
             bonus = @game.format_currency(one_time_bonus)
             @log << "#{entity.name} receives #{bonus} for a token in #{hex_name}"
             @log << "Until phase 6 #{entity.name} also receives: #{description}" if route_bonus_given
-            entity.cash += one_time_bonus
+            @game.bank.spend(one_time_bonus, entity)
           end
 
           def adjust_token_price_ability!(entity, token, hex, city, special_ability: nil)

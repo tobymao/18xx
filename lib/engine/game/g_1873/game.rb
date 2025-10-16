@@ -60,10 +60,10 @@ module Engine
         TILE_LAYS = [{ lay: true, upgrade: true, cost: 0 },
                      { lay: :double_lay, upgrade: :double_lay, cost: 0 }].freeze
 
-        GAME_END_CHECK = { stock_market: :current_or, custom: :one_more_full_or_set }.freeze
+        GAME_END_CHECK = { stock_market: :current_or, phase_five: :one_more_full_or_set }.freeze
 
         GAME_END_REASONS_TEXT = Base::GAME_END_REASONS_TEXT.merge(
-          custom: 'Phase 5 is entered'
+          phase_five: 'Phase 5 is entered'
         )
 
         RAILWAY_MIN_BID = 100
@@ -1222,7 +1222,7 @@ module Engine
             end
         end
 
-        def custom_end_game_reached?
+        def game_end_check_phase_five?
           @phase.name == '5a' || @phase.name == 'D'
         end
 

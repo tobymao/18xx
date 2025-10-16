@@ -25,7 +25,7 @@ module Engine
         CORPORATION_CLASS = G1824::Corporation
         DEPOT_CLASS = G1824::Depot
 
-        attr_accessor :two_train_bought, :forced_mountain_railway_exchange, :player_debts, :current_stack,
+        attr_accessor :two_train_bought, :forced_mountain_railway_exchange, :current_stack,
                       :kk_token_choice_player
 
         CURRENCY_FORMAT_STR = '%sG'
@@ -55,6 +55,7 @@ module Engine
         EBUY_FROM_OTHERS = :always
         EBUY_SELL_MORE_THAN_NEEDED = true
         EBUY_SELL_MORE_THAN_NEEDED_SETS_PURCHASE_MIN = true
+        EBUY_CAN_TAKE_PLAYER_LOAN = true
         MUST_BUY_TRAIN = :always
 
         # Rule IX. This differ from 1837 as players in 1824 do not go bankrupt.
@@ -94,7 +95,7 @@ module Engine
         # Need to handle special valuation of some minors, and also handle debt
         def player_value(player)
           shares_valuation = player.shares.select { |s| s.corporation.ipoed }.sum { |s| player_share_valuation(s) }
-          player.cash + shares_valuation + player.companies.sum(&:value) - @player_debts[player]
+          player.cash + shares_valuation + player.companies.sum(&:value) - player.debt
         end
 
         def player_share_valuation(share)
@@ -330,9 +331,6 @@ module Engine
 
           # When 1st 4-train is bought any remaining MRs will be exchanged
           @forced_mountain_railway_exchange = []
-
-          # Initialize the player debts, if player have to take an emergency loan
-          @player_debts = Hash.new { |h, k| h[k] = 0 }
 
           super
 
@@ -746,50 +744,6 @@ module Engine
           @log << "#{corporation.name} receives #{format_currency(capitilization)}"
         end
 
-        def take_loan(player, amount)
-          loan_amount = (amount.to_f * 1.5).ceil
-          @player_debts[player] += loan_amount
-
-          @log << "#{player.name} takes a loan of #{format_currency(amount)}. " \
-                  "The player debt is increased by #{format_currency(loan_amount)}."
-
-          @bank.spend(amount, player)
-        end
-
-        def add_interest_player_loans!
-          @player_debts.each do |player, loan|
-            next unless loan.positive?
-
-            interest = (loan.to_f * 0.5).ceil
-            new_loan = loan + interest
-            @player_debts[player] = new_loan
-            @log << "#{player.name} increases their loan by 50% (#{format_currency(interest)}) to "\
-                    "#{format_currency(new_loan)}."
-          end
-        end
-
-        # Pay full or partial of the player loan.
-        def payoff_player_loan(player, payoff_amount: nil)
-          loan_balance = @player_debts[player]
-          payoff_amount = player.cash if !payoff_amount || payoff_amount > player.cash
-          payoff_amount = [payoff_amount, loan_balance].min
-
-          @player_debts[player] -= payoff_amount
-          player.spend(payoff_amount, @bank)
-
-          @log <<
-            if payoff_amount == loan_balance
-              "#{player.name} pays off their loan of #{format_currency(loan_balance)}."
-            else
-              "#{player.name} decreases their loan by #{format_currency(payoff_amount)}. "\
-                "Remaining debt is #{format_currency(player_debt(player))}."
-            end
-        end
-
-        def player_debt(player)
-          @player_debts[player] || 0
-        end
-
         def return_kk_token(selected_token)
           selected = selected_token == 1 ? kk.placed_tokens.dup.first : kk.placed_tokens.dup.last
           selected.remove!
@@ -831,10 +785,6 @@ module Engine
           form_national_railway!(national, kk_minors)
           possibly_return_kk_token
           @kk_to_form = false
-        end
-
-        def player_loan_interest(loan)
-          (loan * 0.5).ceil
         end
 
         MOUNTAIN_RAILWAY_DEFINITION = {

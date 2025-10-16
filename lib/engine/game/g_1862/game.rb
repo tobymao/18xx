@@ -463,10 +463,10 @@ module Engine
         # NOTE: that the definition of an "upgrade" is extended to include "N" tiles
         TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }].freeze
 
-        GAME_END_CHECK = { stock_market: :current_or, bank: :full_or, custom: :full_or }.freeze
+        GAME_END_CHECK = { stock_market: :current_or, bank: :full_or, lner: :full_or }.freeze
         GAME_END_REASONS_TEXT = Base::GAME_END_REASONS_TEXT.merge(
           bank: 'The bank runs out of money before LNER forms',
-          custom: 'LNER forms before bank runs out of money'
+          lner: 'LNER forms before bank runs out of money'
         )
 
         STATUS_TEXT = Base::STATUS_TEXT.merge(
@@ -1081,30 +1081,11 @@ module Engine
           @log << 'LNER will form at end of current OR set'
         end
 
-        # overridden to change bank condition
-        def game_end_check
-          triggers = {
-            bankrupt: bankruptcy_limit_reached?,
-            bank: @bank.broken? && !@lner,
-            stock_market: @stock_market.max_reached?,
-            final_train: @depot.empty?,
-            final_phase: @phase.phases.last == @phase.current,
-            custom: custom_end_game_reached?,
-          }.select { |_, t| t }
-
-          %i[immediate current_round current_or full_or one_more_full_or_set].each do |after|
-            triggers.keys.each do |reason|
-              if game_end_check_values[reason] == after
-                @final_turn ||= @turn + 1 if after == :one_more_full_or_set
-                return [reason, after]
-              end
-            end
-          end
-
-          nil
+        def game_end_check_bank?
+          @bank.broken? && !@lner
         end
 
-        def custom_end_game_reached?
+        def game_end_check_lner?
           @lner
         end
 

@@ -148,10 +148,10 @@ module Engine
         ).freeze
 
         GAME_END_REASONS_TEXT = Base::GAME_END_REASONS_TEXT.merge(
-          custom: "6*D discounted to #{FINAL_6D_PRICE} F"
+          discounted_six: "6*D discounted to #{FINAL_6D_PRICE} F"
         )
 
-        GAME_END_CHECK = { bankrupt: :immediate, custom: :one_more_full_or_set }.freeze
+        GAME_END_CHECK = { bankrupt: :immediate, discounted_six: :one_more_full_or_set }.freeze
 
         OR_COUNT_IN_LAST_SET = 4
 
@@ -344,7 +344,7 @@ module Engine
           super
         end
 
-        def custom_end_game_reached?
+        def game_end_check_discounted_six?
           @end_game_triggered
         end
       end

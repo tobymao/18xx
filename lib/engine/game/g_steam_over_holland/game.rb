@@ -165,10 +165,9 @@ module Engine
                   }].freeze
 
         # Game ends after 5 sets of ORs - checked in end_now? below
-        GAME_END_CHECK = { custom: :current_or, stock_market: :current }.freeze
+        GAME_END_CHECK = { fixed_round: :current_or, stock_market: :current }.freeze
 
         GAME_END_REASONS_TEXT = Base::GAME_END_REASONS_TEXT.merge(
-          custom: 'Fixed number of ORs',
           stock_market: 'Company reached the top of the market.',
         ).freeze
 
@@ -298,7 +297,7 @@ module Engine
         end
 
         # Game ends after the end of OR 5.2
-        def end_now?(_after)
+        def game_end_check_fixed_round?
           @or == LAST_OR
         end
 

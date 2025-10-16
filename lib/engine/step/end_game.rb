@@ -15,7 +15,7 @@ module Engine
 
       def process_end_game(action)
         @log << "Game ended manually by #{action.entity.name}"
-        @game.end_game!(player_initiated: true)
+        @game.end_game!(:manually_ended)
       end
 
       def blocks?

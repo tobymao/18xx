@@ -11,14 +11,13 @@ module Engine
             return [] unless entity == current_entity
 
             actions = super
-            actions << 'payoff_player_debt' if @game.player_debt(entity).positive? && can_fully_payoff?(entity)
+            actions << 'payoff_player_debt' if entity.debt.positive? && can_fully_payoff?(entity)
 
             actions
           end
 
           def can_fully_payoff?(entity)
-            total_owed = @game.player_debt(entity) + @game.player_interest(entity)
-            entity.cash >= total_owed
+            entity.cash >= entity.debt
           end
 
           def process_payoff_player_debt(action)
@@ -28,11 +27,11 @@ module Engine
           end
 
           def can_buy_any?(entity)
-            @game.player_debt(entity).zero? && super
+            entity.debt.zero? && super
           end
 
           def can_ipo_any?(entity)
-            @game.player_debt(entity).zero? && super
+            entity.debt.zero? && super
           end
 
           def visible_corporations

@@ -142,17 +142,17 @@ module View
           ]),
         ])
 
-        if @game.respond_to?(:player_debt) && @game.player_debt(@player).positive?
+        if @player.debt.positive?
           trs << h(:tr, [
             h(:td, 'Loan'),
-            h('td.right', @game.format_currency(@game.player_debt(@player))),
+            h('td.right', @game.format_currency(@player.debt)),
           ])
         end
 
-        if @game.respond_to?(:player_loans)
+        if @player.penalty.positive?
           trs << h(:tr, [
-            h(:td, 'Loans'),
-            h('td.right', td_cert_props, "#{@game.player_loans(@player)}/#{@game.max_player_loans}"),
+            h(:td, 'Penalty'),
+            h('td.right', @game.format_currency(@player.penalty)),
           ])
         end
 

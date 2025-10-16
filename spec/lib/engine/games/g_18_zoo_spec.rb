@@ -244,7 +244,7 @@ module Engine
         let(:share_price) { stock_market.par_prices.find { |par_price| par_price.price == 5 } }
 
         it 'can\'t buy over 80%' do
-          player_1.cash = 10_000
+          player_1.set_cash(10_000, game.bank)
           stock_market.set_par(corporation, stock_market.par_prices.find { |price| price.price == 5 })
           3.times { game.share_pool.buy_shares(player_1, corporation.shares[0]) }
 
@@ -252,11 +252,11 @@ module Engine
         end
 
         it 'should be able to get 100% buying from market' do
-          player_1.cash = 10_000
+          player_1.set_cash(10_000, game.bank)
           stock_market.set_par(corporation, stock_market.par_prices.find { |price| price.price == 5 })
           3.times { game.share_pool.buy_shares(player_1, corporation.shares[0]) }
 
-          player_2.cash = 10_000
+          player_2.set_cash(10_000, game.bank)
           game.share_pool.buy_shares(player_2, corporation.shares[0])
           game.share_pool.sell_shares(ShareBundle.new(player_2.shares))
 
@@ -271,11 +271,11 @@ module Engine
           next_sr!
           next_sr!
 
-          player_1.cash = 10_000
+          player_1.set_cash(10_000, game.bank)
           stock_market.set_par(corporation, stock_market.par_prices.find { |price| price.price == 5 })
           3.times { game.share_pool.buy_shares(player_1, corporation.shares[0]) }
 
-          player_2.cash = 10_000
+          player_2.set_cash(10_000, game.bank)
           2.times do
             game.share_pool.buy_shares(player_2, corporation.shares[0])
             game.share_pool.sell_shares(ShareBundle.new(player_2.shares))
