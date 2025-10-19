@@ -12,7 +12,7 @@ module Engine
 
           def actions(entity)
             actions = super.dup
-            if entity.debt.positive?
+            if entity.player? && entity.debt.positive?
               actions.delete('buy_shares')
               actions << 'payoff_player_debt' if entity.cash.positive?
             end
