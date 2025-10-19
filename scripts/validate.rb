@@ -2,6 +2,7 @@
 # rubocop:disable all
 
 require 'json'
+
 require_relative 'scripts_helper'
 require_relative 'migrate_game'
 
@@ -13,7 +14,27 @@ end
 class Validate
   attr_reader :filename
 
+  def merge_with!(filename)
+    other_data = JSON.parse(File.read(filename)).except('processes').except('summary')
+
+    @data = data
+    if (common = data.keys & other_data.keys).size > 0
+      raise Exeption, "cannot merge, found game IDs in common: #{common}"
+    end
+    @data.merge!(other_data)
+
+    @data['summary'] = recompute_summary!
+
+    write(@filename)
+  end
+
+  def inspect
+    "#<#{self.class.name} @filename=#{@filename.inspect} @strict=#{strict} #{errors.size}/#{size}>"
+  end
+
   def initialize(filename)
+    raise "#{filename} not found" unless File.exist?(filename)
+
     @filename = filename
   end
 
@@ -26,12 +47,56 @@ class Validate
     @parsed ||= JSON.parse(File.read(filename))
   end
 
+  def [](key)
+    parsed[key]
+  end
+
   def data
-    @data ||= parsed.reject { |k, v| k == 'summary' }
+    @data ||= parsed.except('summary').except('processes')
+  end
+
+  def size
+    data.size
   end
 
   def summary
-    @summary ||= parsed['summary']
+    @summary ||= parsed['summary'] || {}
+  end
+
+  def kwargs
+    summary.key?('kwargs') ? summary['kwargs'] : {}
+  end
+
+  def strict
+    kwargs.key?('strict') ? kwargs['strict'] : 'nil'
+  end
+
+  def clear_cache!
+    @ids = nil
+    @titles = nil
+    @errors = nil
+    @error_ids = nil
+    @error_titles = nil
+    @error_ids_by_title = nil
+    @ids = nil
+    @errors_really_broken = nil
+    @ids_to_act_on = nil
+  end
+
+  def recompute_summary!
+    clear_cache!
+
+    total_games = ids.size
+    total_time = data.sum { |_id, g| g['time'] || 0 }
+    avg_time = total_time / total_games
+
+    @summary = {
+      'failed_ids' => error_ids,
+      'failed' => errors.size,
+      'total' => total_games,
+      'total_time' => total_time,
+      'avg_time' => avg_time,
+    }
   end
 
   def ids
@@ -40,6 +105,10 @@ class Validate
 
   def titles
     @titles ||= data.map { |_id, g| g['title'] }.uniq.sort
+  end
+
+  def non_errors
+    @non_errors ||= data.reject { |_id, g| g['exception'] }
   end
 
   def errors
@@ -61,12 +130,65 @@ class Validate
           obj[game['title']] << game['id']
         end
         _errors.transform_values!(&:sort)
-        _errors
+        _errors.sort_by { |t, _| t }.to_h
       end
+  end
+
+  def error_ids_by_title_pp
+    error_ids_by_title.each do |title, ids|
+      puts %("#{title}" => #{ids.to_s})
+    end
+    nil
   end
 
   def error_counts_by_title
     error_ids_by_title.transform_values(&:size)
+  end
+
+  def errors_grouped_by_type
+    errors.group_by do |id, game|
+      game['exception'].split(' ').first[2..-2]
+    end
+  end
+
+  def errors_counts_by_type
+    errors_grouped_by_type.transform_values(&:size)
+  end
+
+  def sorted_hash(hash)
+    hash.transform_values do |value|
+      if value.is_a?(Hash)
+        sorted_hash(value)
+      elsif value.is_a?(Array)
+        value.sort
+      else
+        value
+      end
+    end.sort_by { |key, _| key }.to_h
+  end
+
+  def errors_counts_by_type_title
+    sorted_hash(
+      errors_grouped_by_type.transform_values do |value|
+        value.group_by { |_id, g| g['title']}.transform_values(&:size)
+      end
+    )
+  end
+
+  def errors_ids_by_type_title
+    sorted_hash(
+      errors_grouped_by_type.transform_values do |value|
+        value.group_by { |_id, g| g['title']}.transform_values do |games2|
+          games2.map do |id, game|
+            game['id'].to_i
+          end
+        end
+      end
+    )
+  end
+
+  def errors_really_broken
+    @errors_really_broken ||= errors.select { |_id, g| !g['broken_action'] || g['exception'] !~ /GameError/ }
   end
 
   def ids_to_act_on
@@ -98,13 +220,30 @@ class Validate
     pin_games(pin_version, ids_to_pin)
     archive_games(ids_to_archive)
   end
+
+  # these games are now finished; should be rare, usually games that finish
+  # sooner due to a bug fix have subsequent actions and are thefore broken
+  def expected_unfinished_ids
+    data.filter_map do |_id, g|
+      non_exception = !g['exception'] && g['game_finished'] && (g['status'] != 'finished') && g['id']
+      exception = g['exception'] && g['exception'] =~ /game is over/ && g['id']
+      non_exception || exception
+    end
+  end
+
+  # these games will become unfinished, reappearing in players' active games
+  def expected_finished_ids
+    data.filter_map do |_id, g|
+      g['exception'] && !g['game_finished'] && (g['status'] == 'finished') && g['id']
+    end
+  end
 end
 
 $count = 0
 $total = 0
 $total_time = 0
 
-def run_game(game, actions = nil, strict: false, silent: false, trace: false, validate_result: true, return_engine: false)
+def run_game(game, actions = nil, strict: false, silent: false, trace: false, validate_result: false, return_engine: false)
   actions ||= game.actions.map(&:to_h)
   data = {
     'id' => game.id,
@@ -134,12 +273,13 @@ def run_game(game, actions = nil, strict: false, silent: false, trace: false, va
     engine.maybe_raise!
 
     time = Time.now - time
+    data['time'] = time
     $total_time += time
-
     data['finished_validation']=true
+    data['game_finished'] = engine.finished
+    data['game_finished_matches_status'] = (data['status'] == 'finished') == engine.finished
     data['actions']=engine.actions.size
     data['result']=engine.result
-    data['game_finished'] = engine.finished
     data['game_end_reason'] = engine.game_end_reason
 
     if validate_result
@@ -151,7 +291,8 @@ def run_game(game, actions = nil, strict: false, silent: false, trace: false, va
 
       engine_result = engine.result.transform_keys(&:to_s).sort_by { |_, v| v }.reverse.to_h
       db_result = game.result.transform_keys(&:to_s).sort_by { |_, v| v }.reverse.to_h
-      if engine_result != db_result
+      if (engine.finished && engine_result != db_result) ||
+          (!engine.finished && db_result != {})
         errors <<  "DB stored result #{db_result} does not match engine computed result #{engine_result}"
       end
 
@@ -164,12 +305,16 @@ def run_game(game, actions = nil, strict: false, silent: false, trace: false, va
 
   rescue Exception => e # rubocop:disable Lint/RescueException
     $count += 1
+    time = Time.now - time
+    data['time'] = time
     data['url']="https://18xx.games/game/#{game.id}?action=#{engine.last_processed_action}"
     data['last_action']=engine.last_processed_action
     data['finished_validation']=false
+    data['game_finished'] = engine.finished
+    data['game_finished_matches_status'] = (data['status'] == 'finished') == engine.finished
     data['exception']=e.inspect
-    data['broken_action']=broken_action
     data['stack']=e.backtrace if trace
+    data['broken_action']=broken_action&.to_h
   end
 
   data['engine'] = engine if return_engine
@@ -177,7 +322,7 @@ def run_game(game, actions = nil, strict: false, silent: false, trace: false, va
   data
 end
 
-def validate_all(*titles, families: true, game_ids: nil, strict: false, status: %w[active finished], filename: 'validate.json', silent: false, trace: true)
+def validate_all(*titles, families: true, game_ids: nil, strict: false, status: %w[active finished], filename: 'validate.json', silent: false, trace: false)
   $count = 0
   $total = 0
   $total_time = 0
@@ -246,7 +391,7 @@ def revalidate_broken(filename)
   $total_time = 0
   data = JSON.parse(File.read(filename))
   data = data.map do |game, val|
-    if game != 'summary' && !val['finished'] && !val['pin']
+    if game != 'summary' && !val['finished_validation'] && !val['pin']
       reload_game = Game[val['id']]
       d = run_game(reload_game, migrate_db_actions(reload_game))
       d['original']=val
@@ -328,4 +473,12 @@ def titles_for_game_family(title)
   end
 
   titles.sort
+end
+
+# https://github.com/tobymao/18xx/issues/12131
+def chats_with_auto_actions(game_id)
+  Game[game_id].actions.select do |action|
+    action.action['type'] == 'message' &&
+      !(action.action['auto_actions'] || []).empty?
+  end
 end
