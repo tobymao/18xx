@@ -732,7 +732,7 @@ module Engine
         # IPO shares, which caused a bug previously.
         def float_corporation(corporation)
           @log << "#{corporation.name} floats"
-          capitilization = corporation.par_price.price * corporation.float_amount_factor
+          capitilization = corporation.par_price.price * corporation.capitalization_share_count
           @bank.spend(capitilization, corporation)
           @log << "#{corporation.name} receives #{format_currency(capitilization)}"
         end
