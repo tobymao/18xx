@@ -16,7 +16,6 @@ module Engine
           @game.log << "#{corp.name} reached #{@game.format_currency(377)} share value,
                       game will end after it operates."
           corp.reached_max_value = true
-          @game.max_value_reached = true
         end
 
         def right_ledge?(coordinates)

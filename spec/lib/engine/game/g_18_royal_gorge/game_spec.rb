@@ -84,7 +84,7 @@ describe Engine::Game::G18RoyalGorge::Game do
       expect(game.turn_round_num).to eq([6, 2])
       expect(game.round.operating?).to eq(true)
       expect(game.round.stock?).to eq(false)
-      expect(game.game_ending_description).to eq('Company hit max stock value : Game Ends at conclusion of OR 6.2')
+      expect(game.game_ending_description).to eq('6x2-train was bought/exported : Game Ends at conclusion of OR 6.2')
     end
 
     it 'game over' do

@@ -19,7 +19,7 @@ module Engine
 
         attr_reader :can_acquire_minors
 
-        attr_accessor :player_debts, :combined_trains, :luxury_carriages
+        attr_accessor :combined_trains, :luxury_carriages
 
         CURRENCY_FORMAT_STR = '₧%d'
 
@@ -87,10 +87,12 @@ module Engine
 
         EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
 
-        GAME_END_CHECK = { custom: :one_more_full_or_set }.freeze
+        EBUY_CAN_TAKE_PLAYER_LOAN = :no_sell
+
+        GAME_END_CHECK = { second_eight: :one_more_full_or_set }.freeze
 
         GAME_END_REASONS_TEXT = Base::GAME_END_REASONS_TEXT.merge(
-          custom: 'Second 8 train is bought'
+          second_eight: 'Second 8 train is bought'
         )
 
         MINOR_TILE_LAYS = [{ lay: true, upgrade: true, cost: 0 }].freeze
@@ -382,9 +384,6 @@ module Engine
           @opened_mountain_passes = []
           @combined_trains = {}
 
-          # Initialize the player depts, if player have to take an emergency loan
-          init_player_debts
-
           @tile_groups = init_tile_groups
           initialize_tile_opposites!
           @unused_tiles = []
@@ -523,22 +522,6 @@ module Engine
           NORTH_CORPS.include? entity.name
         end
 
-        def init_player_debts
-          @player_debts = @players.to_h { |player| [player.id, { debt: 0, interest: 0 }] }
-        end
-
-        def player_debt(player)
-          @player_debts[player.id][:debt]
-        end
-
-        def player_interest(player)
-          @player_debts[player.id][:interest]
-        end
-
-        def player_value(player)
-          player.value - player_debt(player) - player_interest(player)
-        end
-
         def event_south_majors_available!
           @future_corporations = []
           @can_acquire_minors = true
@@ -563,7 +546,7 @@ module Engine
           close_all_minors
         end
 
-        def custom_end_game_reached?
+        def game_end_check_second_eight?
           # game end on second 8 train purhcase
           return false unless @phase&.phases&.last == @phase&.current
 
@@ -996,7 +979,7 @@ module Engine
               new_operating_round
             when Round::Operating
               or_round_finished
-              skip_pre_final_or = custom_end_game_reached? && !final_ors?
+              skip_pre_final_or = game_end_check_second_eight? && !final_ors?
               if @round.round_num < @operating_rounds && !skip_pre_final_or
                 new_operating_round(@round.round_num + 1)
               else
@@ -1031,49 +1014,6 @@ module Engine
 
         def can_hold_above_corp_limit?(_entity)
           true
-        end
-
-        def reset_debt(player)
-          entity = @player_debts[player.id]
-          entity[:debt] = 0
-        end
-
-        def take_player_loan(player, loan)
-          # Give the player the money.from the bank
-          @bank.spend(loan, player)
-
-          loan_amount = loan
-          interest = (loan_amount * 0.5).ceil
-
-          @log << "#{player.name} recieves #{format_currency(loan)} from the bank. \
-                    The loan amount is #{format_currency(loan_amount)}.\
-                  Interest of 50% is applied, the total owed is #{format_currency(loan_amount + interest)}"
-
-          # Add interest to the loan, must atleast pay 150% of the loaned value
-
-          @player_debts[player.id][:interest] += interest
-          @player_debts[player.id][:debt] += loan_amount
-        end
-
-        def payoff_player_loan(player)
-          # Pay full or partial of the player loan. The money from loans is outside money, doesnt count towards
-          # the normal bank money.
-          total_owed = @player_debts[player.id][:interest] + @player_debts[player.id][:debt]
-          if player.cash >= total_owed
-            player.spend(total_owed, @bank)
-            @log << "#{player.name} pays off their loan of #{format_currency(total_owed)}"
-            @player_debts[player.id][:interest] = 0
-            @player_debts[player.id][:debt] = 0
-          else
-            principal_raw = (player.cash / 1.2).floor
-            principal = (principal_raw / 10).floor * 10
-            interest = principal * 0.2
-            payment = principal + interest
-            @player_debts[player.id][:debt] -= payment
-            @log << "#{player.name} pays #{format_currency(payment)}. Loan decreases by #{format_currency(principal)}. "\
-                    "#{player.name} pays #{format_currency(interest)} in interest"
-            player.spend(payment, @bank)
-          end
         end
 
         def remove_dest_icon(corp)
@@ -1216,6 +1156,7 @@ module Engine
           c.share_price&.corporations&.delete(c)
 
           @corporations.delete(c)
+          c.set_cash(0, @bank)
           c.close!
         end
 

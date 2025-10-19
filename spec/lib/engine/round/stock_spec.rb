@@ -37,7 +37,7 @@ module Engine
 
     describe '#can_buy?' do
       it 'can buy yellow at limit' do
-        player_0.cash = 10_000
+        player_0.set_cash(10_000, game.bank)
         market.set_par(corp_0, market.market[2][4])
         market.set_par(corp_1, market.market[2][4])
         market.set_par(corp_2, market.market[2][4])
@@ -57,8 +57,8 @@ module Engine
       end
 
       it "can't buy when at cert limit when doing so would gain you the presidency" do
-        player_0.cash = 10_000
-        player_1.cash = 10_000
+        player_0.set_cash(10_000, game.bank)
+        player_1.set_cash(10_000, game.bank)
         market.set_par(corp_0, market.market[2][4])
         market.set_par(corp_1, market.market[2][4])
         market.set_par(corp_2, market.market[2][4])
@@ -82,7 +82,7 @@ module Engine
 
       it 'can\'t buy over 60%' do
         goto_new_sr!
-        player_0.cash = 10_000
+        player_0.set_cash(10_000, game.bank)
         market.set_par(corp_0, market.market[7][0])
         6.times { game.share_pool.buy_shares(player_0, corp_0.shares[0]) }
         # Force game to SR 2
@@ -92,7 +92,7 @@ module Engine
 
       it 'can buy gray over 60%' do
         goto_new_sr!
-        player_0.cash = 10_000
+        player_0.set_cash(10_000, game.bank)
         market.set_par(corp_0, market.market[8][0])
         6.times { game.share_pool.buy_shares(player_0, corp_0.shares[0]) }
         # Force game to SR 2
@@ -102,7 +102,7 @@ module Engine
 
       it 'must sell when over 60%' do
         goto_new_sr!
-        player_0.cash = 10_000
+        player_0.set_cash(10_000, game.bank)
         market.set_par(corp_0, market.market[7][0])
         7.times { game.share_pool.buy_shares(player_0, corp_0.shares[0]) }
 
@@ -114,7 +114,7 @@ module Engine
 
       it 'needn\'t sell gray when over 60%' do
         goto_new_sr!
-        player_0.cash = 10_000
+        player_0.set_cash(10_000, game.bank)
         market.set_par(corp_0, market.market[8][0])
         7.times { game.share_pool.buy_shares(player_0, corp_0.shares[0]) }
         # Force game to SR 2
@@ -164,8 +164,8 @@ module Engine
         cv = game.abilities(game.cornelius, :shares).shares.first.corporation
         corp = game.corporations.find { |c| ![bo, cv].include?(c) }
 
-        player_0.cash = 10_000
-        player_1.cash = 10_000
+        player_0.set_cash(10_000, game.bank)
+        player_1.set_cash(10_000, game.bank)
 
         expect_share_counts = lambda do |counts|
           expect(player_0.num_shares_of(corp)).to eq(counts[0])
@@ -221,8 +221,8 @@ module Engine
       let(:game) { Game::G1828::Game.new(%w[a b c]) }
 
       before :each do
-        player_0.cash = 10_000
-        player_1.cash = 10_000
+        player_0.set_cash(10_000, game.bank)
+        player_1.set_cash(10_000, game.bank)
 
         market.set_par(corp_0, game.par_prices[0])
         5.times { game.share_pool.buy_shares(player_0, corp_0.shares.first) }

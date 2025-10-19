@@ -572,9 +572,8 @@ module Engine
           certs
         end
 
-        def init_bank
-          # amount doesn't matter here
-          Bank.new(BANK_CASH, log: @log, check: false)
+        def init_bank_kwargs
+          { check: false }
         end
 
         def bank_cash

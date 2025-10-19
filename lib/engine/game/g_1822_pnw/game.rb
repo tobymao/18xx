@@ -650,7 +650,7 @@ module Engine
           par_price = stock_market.par_prices[-1]
 
           @players.each.with_index do |player, index|
-            player.cash = 0
+            player.set_cash(0, @bank)
             minors[index].each do |id|
               company = company_by_id(id)
               corp = find_corporation(company)
@@ -1236,14 +1236,6 @@ module Engine
 
         def buyable_bank_owned_companies
           @round.active_step.respond_to?(:hide_bank_companies?) && @round.active_step.hide_bank_companies? ? [] : super
-        end
-
-        def game_end_check
-          if @stock_market.max_reached?
-            %i[stock_market current_or]
-          elsif @bank.broken?
-            [:bank, @round.is_a?(Engine::Round::Operating) ? :full_or : :current_or]
-          end
         end
 
         def train_help_mail_contracts

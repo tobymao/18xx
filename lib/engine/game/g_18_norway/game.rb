@@ -52,7 +52,7 @@ module Engine
 
         CLOSED_CORP_RESERVATIONS_REMOVED = false
 
-        GAME_END_CHECK = { bankrupt: :immediate, custom: :one_more_full_or_set }.freeze
+        GAME_END_CHECK = { bankrupt: :immediate, six_train: :one_more_full_or_set }.freeze
 
         DEPOT_CLASS = G18Norway::Depot
 
@@ -93,13 +93,13 @@ module Engine
           'lm_brown' => ['brown_ferries', 'Mjøsa brown ferry lines opens up.'],
         }.freeze
 
-        def custom_end_game_reached?
-          @custom_end_game
+        def game_end_check_six_train?
+          @end_game_triggered
         end
 
-        def event_custom_end_game!
+        def event_end_game!
           @log << '-- Event: End game --'
-          @custom_end_game = true
+          @end_game_triggered = true
         end
 
         def hovedbanen
@@ -376,7 +376,7 @@ module Engine
         end
 
         def float_corporation(corporation)
-          nationalize_corporation(corporation, 1) if custom_end_game_reached?
+          nationalize_corporation(corporation, 1) if game_end_check_six_train?
         end
 
         def next_round!

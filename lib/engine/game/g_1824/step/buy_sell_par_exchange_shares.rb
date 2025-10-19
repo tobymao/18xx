@@ -13,7 +13,7 @@ module Engine
           def actions(entity)
             return company_actions(entity) if entity.company?
 
-            player_debt = @game.player_debt(entity)
+            player_debt = entity.debt
 
             actions = super
 
@@ -41,7 +41,7 @@ module Engine
 
           def can_buy?(entity, bundle)
             return unless bundle
-            return false if @game.player_debt(entity).positive?
+            return false if entity.debt.positive?
             return false unless super
 
             bundle = bundle.to_bundle

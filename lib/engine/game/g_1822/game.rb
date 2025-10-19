@@ -40,6 +40,8 @@ module Engine
 
         EBUY_FROM_OTHERS = :never
 
+        EBUY_CAN_TAKE_PLAYER_LOAN = :after_sell
+
         STARTING_CASH = { 2 => 900, 3 => 700, 4 => 525, 5 => 420, 6 => 350, 7 => 300 }.freeze
 
         CAPITALIZATION = :incremental
@@ -56,6 +58,7 @@ module Engine
 
         GAME_END_CHECK = { bank: :full_or, stock_market: :current_or }.freeze
         GAME_END_ON_NOTHING_SOLD_IN_SR1 = true
+        GAME_END_LOCK_FIRST_TRIGGER = true
 
         STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(
           par_1: :red,
@@ -551,7 +554,7 @@ module Engine
         UPGRADE_COST_L_TO_2 = 80
 
         attr_reader :minor_14_city_exit, :tax_haven
-        attr_accessor :bidding_token_per_player, :player_debts
+        attr_accessor :bidding_token_per_player
 
         def bank_sort(corporations)
           corporations.reject { |c| c.type == :minor }.sort_by(&:name)
@@ -1043,7 +1046,7 @@ module Engine
         end
 
         def player_value(player)
-          player.value - @player_debts[player] + tax_haven_value(player)
+          player.value + tax_haven_value(player)
         end
 
         def purchasable_companies(entity = nil)
@@ -1136,13 +1139,9 @@ module Engine
 
         def setup
           @nothing_sold_in_sr = true
-          @game_end_reason = nil
 
           # Setup the bidding token per player
           @bidding_token_per_player = init_bidding_token
-
-          # Initialize the player depts, if player have to take an emergency loan
-          @player_debts = Hash.new { |h, k| h[k] = 0 }
 
           # Initialize a dummy player for phase revenue companies
           # to hold the cash it generates
@@ -1308,18 +1307,6 @@ module Engine
           entity.add_ability(new_ability)
         end
 
-        def add_interest_player_loans!
-          @player_debts.each do |player, loan|
-            next unless loan.positive?
-
-            interest = player_loan_interest(loan)
-            new_loan = loan + interest
-            @player_debts[player] = new_loan
-            @log << "#{player.name} increases their loan by 50% (#{format_currency(interest)}) to "\
-                    "#{format_currency(new_loan)}"
-          end
-        end
-
         def after_place_pending_token(city)
           return unless city.hex.name == self.class::MINOR_14_HOME_HEX
 
@@ -1433,10 +1420,6 @@ module Engine
           return [] unless company&.owner&.player?
 
           [company.owner]
-        end
-
-        def player_loan_interest(loan)
-          (loan * 0.5).ceil
         end
 
         def company_ability_extra_track?(company)
@@ -1805,25 +1788,6 @@ module Engine
           @optional_rules&.include?(:plus_expansion_single_stack)
         end
 
-        # Pay full or partial of the player loan. The money from loans is
-        # outside money, doesnt count towards the normal bank money.
-        def payoff_player_loan(player, payoff_amount: nil)
-          loan_balance = @player_debts[player]
-          payoff_amount = player.cash if !payoff_amount || payoff_amount > player.cash
-          payoff_amount = [payoff_amount, loan_balance].min
-
-          @player_debts[player] -= payoff_amount
-          player.cash -= payoff_amount
-
-          @log <<
-            if payoff_amount == loan_balance
-              "#{player.name} pays off their loan of #{format_currency(loan_balance)}"
-            else
-              "#{player.name} decreases their loan by #{format_currency(payoff_amount)} "\
-                "(#{format_currency(@player_debts[player])})"
-            end
-        end
-
         def place_destination_token(entity, hex, token, city = nil, log: true)
           city ||= destination_city(hex, entity)
           city.place_token(entity, token, free: true, check_tokenable: false, cheater: true)
@@ -1840,10 +1804,6 @@ module Engine
 
         def destination_city(hex, _entity)
           hex.tile.cities.first
-        end
-
-        def player_debt(player)
-          @player_debts[player] || 0
         end
 
         def pullman_train?(train)
@@ -1887,12 +1847,8 @@ module Engine
           ability.description = "Exchange tokens: #{ability.count}"
         end
 
-        def take_player_loan(player, loan)
-          # Give the player the money. The money for loans is outside money, doesnt count towards the normal bank money.
-          player.cash += loan
-
-          # Add interest to the loan, must atleast pay 150% of the loaned value
-          @player_debts[player] += loan + player_loan_interest(loan)
+        def spending_entities
+          [super, @tax_haven, (@phase_revenue || {}).values]
         end
 
         def train_type(train)
@@ -1943,15 +1899,13 @@ module Engine
           entity.id == self.class::MINOR_14_ID
         end
 
-        def game_end_check
-          # Once the game end has been determined, it's set in stone
-          @game_end_reason ||= compute_game_end
-        end
-
-        def compute_game_end
-          return [:bank, @round.is_a?(Engine::Round::Operating) ? :full_or : :current_or] if @bank.broken?
-
-          return %i[stock_market current_or] if @stock_market.max_reached?
+        def game_end_timing(reason)
+          case reason
+          when :bank
+            @round.is_a?(Engine::Round::Operating) ? :full_or : :current_or
+          else
+            super
+          end
         end
 
         def preprocess_action(action)

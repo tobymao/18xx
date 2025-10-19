@@ -12,7 +12,7 @@ module Engine
     include ShareHolder
     include Spender
 
-    attr_accessor :bankrupt
+    attr_accessor :bankrupt, :penalty
     attr_reader :name, :companies, :id, :history, :unsold_companies
 
     def initialize(id, name)
@@ -22,10 +22,11 @@ module Engine
       @companies = []
       @history = []
       @unsold_companies = []
+      @penalty = 0
     end
 
     def value
-      @cash + shares.select { |s| s.corporation.ipoed }.sum(&:price) + @companies.sum(&:value)
+      @cash + shares.select { |s| s.corporation.ipoed }.sum(&:price) + @companies.sum(&:value) - debt - @penalty
     end
 
     def owner

@@ -532,13 +532,8 @@ module Engine
           "/icons/1822_ca/sawmill_#{token_type}.svg"
         end
 
-        def game_end_check
-          @game_end_reason ||=
-            begin
-              reason = compute_game_end
-              @operating_rounds += 1 if reason == %i[bank full_or]
-              reason
-            end
+        def game_end_set_final_turn!(reason, after)
+          @operating_rounds += 1 if [reason, after] == %i[bank full_or]
         end
 
         def grain_train?(train)

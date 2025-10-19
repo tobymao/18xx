@@ -154,7 +154,9 @@ module Engine
 
         BANKRUPTCY_ENDS_GAME_AFTER = :all_but_one
 
-        GAME_END_CHECK = { bankrupt: :immediate, bank: :full_or, stock_market: :after_max_operates }.freeze
+        GAME_END_CHECK = { bankrupt: :immediate, stock_market: :after_max_operates, bank: :full_or }.freeze
+
+        GAME_END_TIMING_PRIORITY = %i[immediate after_max_operates full_or].freeze
 
         GAME_END_REASONS_TIMING_TEXT = Base::GAME_END_REASONS_TIMING_TEXT.merge(
           after_max_operates: 'After corporation finishes operating'
@@ -168,6 +170,8 @@ module Engine
         SELL_BUY_ORDER = :sell_buy
         SELL_MOVEMENT = :down_per_10
         POOL_SHARE_DROP = :down_block
+
+        PLAYER_LOAN_INTEREST_RATE = 0
 
         MARKET_TEXT = Base::MARKET_TEXT.merge(phase_limited: 'Can only enter during phase 16',
                                               par: 'Yellow phase par',
@@ -258,8 +262,7 @@ module Engine
         IFT_BUFFER = 3
 
         attr_accessor :swap_choice_player, :swap_location, :swap_other_player, :swap_corporation,
-                      :loan_choice_player, :player_debts,
-                      :max_value_reached,
+                      :loan_choice_player,
                       :old_operating_order, :moved_this_turn,
                       :e_token_sold, :e_tokens_enabled, :issue_bonds_enabled, :buy_tokens_enabled
 
@@ -288,18 +291,9 @@ module Engine
 
         def end_now?(after)
           return false unless after
-
           return false if after == :after_max_operates
 
           @round.round_num == @operating_rounds
-        end
-
-        def game_end_check
-          return %i[stock_market after_max_operates] if @max_value_reached
-
-          return %i[bank full_or] if @bank.broken?
-
-          nil
         end
 
         def price_movement_chart
@@ -322,7 +316,6 @@ module Engine
 
           @available_par_groups = %i[par]
 
-          @player_debts = Hash.new { |h, k| h[k] = 0 }
           @moved_this_turn = []
         end
 
@@ -815,7 +808,7 @@ module Engine
         end
 
         def player_value(player)
-          player.value - @player_debts[player] - player.shares_by_corporation.sum do |corp, _|
+          player.value - player.shares_by_corporation.sum do |corp, _|
             player.num_shares_of(corp) * corp.loans.size * 100
           end
         end

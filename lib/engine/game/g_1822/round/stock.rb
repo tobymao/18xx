@@ -43,7 +43,7 @@ module Engine
           end
 
           def finish_round
-            return @game.end_game! if @game.class::GAME_END_ON_NOTHING_SOLD_IN_SR1 && @game.nothing_sold_in_sr?
+            return @game.end_game!(:dnf) if @game.class::GAME_END_ON_NOTHING_SOLD_IN_SR1 && @game.nothing_sold_in_sr?
 
             float_minors = []
             minor_count = 0

@@ -110,6 +110,11 @@ module Engine
         ST_CLOUD_BONUS_STR = ' (St. Cloud Hotel)'
         ST_CLOUD_ICON_NAME = 'SCH'
 
+        GAME_END_CHECK = {
+          bankrupt: :immediate,
+          stock_market: :one_more_full_or_set,
+          final_train: :one_more_full_or_set,
+        }.freeze
         GAME_END_REASONS_TEXT = {
           bankrupt: 'Player is bankrupt',
           stock_market: 'Corporation enters end game trigger on stock market',
@@ -152,8 +157,6 @@ module Engine
         end
 
         def setup
-          @game_end_reason = nil
-
           @corporation_phase_color = {}
           @corporations[0..1].each { |c| @corporation_phase_color[c.name] = 'Yellow' }
           @corporations[2..3].each { |c| @corporation_phase_color[c.name] = 'Green' }
@@ -506,7 +509,7 @@ module Engine
           @stock_market.set_par(corporation, price)
           bundle = ShareBundle.new(corporation.shares_of(corporation))
           @share_pool.transfer_shares(bundle, @share_pool)
-          corporation.cash = 50
+          corporation.set_cash(50, @bank)
           corporation
         end
 
@@ -541,7 +544,7 @@ module Engine
           # debt increases
           old_price = @debt_corp.share_price
           @stock_market.move_right(@debt_corp)
-          @debt_corp.cash = @debt_corp.share_price.price
+          @debt_corp.set_cash(@debt_corp.share_price.price, @bank)
 
           log_share_price(@debt_corp, old_price, 1)
         end
@@ -549,7 +552,7 @@ module Engine
         def or_set_finished
           handle_metal_payout(@steel_corp)
           init_available_steel
-          @steel_corp.cash = 50
+          @steel_corp.set_cash(50, @bank)
 
           handle_metal_payout(@gold_corp)
           @gold_shipped = 0
@@ -572,7 +575,7 @@ module Engine
             num_shares = payee.num_shares_of(entity)
 
             if payee == gold_miner&.owner && entity == @gold_corp
-              entity.cash += per_share * 2
+              @bank.spend(per_share * 2, entity)
               num_shares += 2
             end
 
@@ -904,7 +907,7 @@ module Engine
           corporation.ipoed = true
           corporation.floated = true
           price = @stock_market.share_price([0, 6])
-          corporation.cash = price.price
+          corporation.set_cash(price.price, @bank)
           @stock_market.set_par(corporation, price)
           bundle = ShareBundle.new(corporation.shares_of(corporation))
           @share_pool.transfer_shares(bundle, @share_pool)
@@ -1031,18 +1034,15 @@ module Engine
           G18RoyalGorge::StockMarket.new(game_market, [])
         end
 
-        def game_end_check
-          if @players.any?(&:bankrupt)
-            %i[bankrupt immediate]
-          elsif @stock_market.max_reached?
-            @final_turn = @turn
-            %i[stock_market one_more_full_or_set]
-          elsif @final_turn
-            %i[final_train one_more_full_or_set]
-          end
+        def game_end_set_final_turn!(reason, _after)
+          @final_turn = @turn if reason == :stock_market
         end
 
-        def end_game!(player_initiated: false)
+        def game_end_check_final_train?
+          @final_turn
+        end
+
+        def end_game!(game_end_reason)
           return if @finished
 
           if !@manually_ended && @round.finished?
@@ -1086,7 +1086,7 @@ module Engine
           return unless (player = local_jeweler&.player)
 
           @log << "#{player.name} receives #{format_currency(@local_jeweler_cash)} from #{local_jeweler.name}"
-          player.cash += @local_jeweler_cash
+          @bank.spend(@local_jeweler_cash, player)
           @local_jeweler_cash = 0
         end
 
@@ -1257,7 +1257,7 @@ module Engine
         end
 
         def rust(train)
-          if (amount = train.salvage || 0).positive?
+          if train.owner != @depot && (amount = train.salvage || 0).positive?
             @bank.spend(amount, train.owner)
             @log << "#{train.owner.name} salvages a #{train.name} train for #{format_currency(amount)}"
           end
