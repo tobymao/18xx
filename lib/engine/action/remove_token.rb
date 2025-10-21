@@ -7,6 +7,8 @@ module Engine
     class RemoveToken < Base
       attr_reader :city, :slot
 
+      REQUIRED_ARGS = %i[city slot].freeze
+
       def initialize(entity, city:, slot:)
         super(entity)
         @city = city

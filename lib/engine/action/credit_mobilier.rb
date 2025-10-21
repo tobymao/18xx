@@ -7,6 +7,8 @@ module Engine
     class CreditMobilier < Base
       attr_reader :hex, :amount
 
+      REQUIRED_ARGS = %i[hex amount].freeze
+
       def initialize(entity, hex:, amount:)
         super(entity)
         @hex = hex

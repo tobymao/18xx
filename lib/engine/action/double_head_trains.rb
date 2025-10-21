@@ -7,6 +7,8 @@ module Engine
     class DoubleHeadTrains < Base
       attr_reader :trains
 
+      REQUIRED_ARGS = %i[trains].freeze
+
       def initialize(entity, trains:)
         super(entity)
         @trains = trains

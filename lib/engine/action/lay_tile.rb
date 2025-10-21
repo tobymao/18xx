@@ -7,6 +7,8 @@ module Engine
     class LayTile < Base
       attr_reader :hex, :tile, :rotation, :combo_entities
 
+      REQUIRED_ARGS = %i[tile hex rotation].freeze
+
       def initialize(entity, tile:, hex:, rotation:, combo_entities: [])
         super(entity)
         @hex = hex

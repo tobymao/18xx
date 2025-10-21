@@ -8,6 +8,8 @@ module Engine
     class ProgramMergerPass < ProgramEnable
       attr_reader :corporations_by_round, :options
 
+      REQUIRED_ARGS = %i[corporations_by_round options].freeze
+
       def initialize(entity, corporations_by_round:, options:)
         super(entity)
         @corporations_by_round = corporations_by_round

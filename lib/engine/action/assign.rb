@@ -7,6 +7,8 @@ module Engine
     class Assign < Base
       attr_reader :target
 
+      REQUIRED_ARGS = %i[target].freeze
+
       def initialize(entity, target:)
         super(entity)
         @target = target

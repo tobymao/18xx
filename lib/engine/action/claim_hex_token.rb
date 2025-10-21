@@ -7,6 +7,8 @@ module Engine
     class ClaimHexToken < Base
       attr_reader :hex, :token_type
 
+      REQUIRED_ARGS = %i[hex].freeze
+
       def initialize(entity, hex:, token_type: nil)
         super(entity)
         @hex = hex

@@ -7,6 +7,8 @@ module Engine
     class Split < Base
       attr_reader :corporation
 
+      REQUIRED_ARGS = %i[corporation].freeze
+
       def initialize(entity, corporation:)
         super(entity)
         @corporation = corporation

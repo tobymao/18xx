@@ -7,6 +7,8 @@ module Engine
     class SelectMultipleCompanies < Base
       attr_reader :entity, :companies
 
+      REQUIRED_ARGS = %i[companies].freeze
+
       def initialize(entity, companies:)
         super(entity)
         @companies = companies
