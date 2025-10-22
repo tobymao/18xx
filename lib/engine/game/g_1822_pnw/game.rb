@@ -1139,12 +1139,7 @@ module Engine
           company.close!
         end
 
-        def company_status_str(company)
-          index = bidbox_minors.index(company) || bidbox_privates.index(company)
-          return "Bid box #{index + 1}" if index
-
-          nil
-        end
+        def company_status_game_specific(_company); end
 
         def status_str(corporation)
           return super unless regional_railway?(corporation)

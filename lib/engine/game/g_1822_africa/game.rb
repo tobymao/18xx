@@ -911,12 +911,8 @@ module Engine
           entity.trains.count { |t| !extra_train?(t) } < train_limit(entity)
         end
 
-        def company_status_str(company)
-          if company == company_reserve_tiles && @reserved_tiles&.any?
-            return "[#{@reserved_tiles.map { |t| "##{t.name}" }.join(', ')}]"
-          end
-
-          super
+        def company_status_game_specific(company)
+          "[#{@reserved_tiles.map { |t| "##{t.name}" }.join(', ')}]" if company == company_reserve_tiles && @reserved_tiles&.any?
         end
 
         # Stubbed out because this game doesn't use it, but base 22 does

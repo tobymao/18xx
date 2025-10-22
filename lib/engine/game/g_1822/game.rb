@@ -674,39 +674,117 @@ module Engine
         end
 
         def company_status_str(company)
-          bidbox_minors.each_with_index do |c, index|
-            return "Bid box #{index + 1}" if c == company
+          bidbox_status_str(company) ||
+            company_status_game_specific(company) ||
+            nil
+        end
+
+        def bidbox_status_str(company)
+          index = bidbox_minors.index(company) ||
+                  bidbox_concessions.index(company) ||
+                  bidbox_privates.index(company)
+          return unless index
+
+          status = ["Bid box #{index + 1}"]
+          status.concat(minor_float_status(company))
+          status
+        end
+
+        def company_status_game_specific(company)
+          return unless company.company?
+
+          if self.class::PRIVATE_PHASE_REVENUE.include?(company.sym) && company.owner&.player?
+            return "(#{format_currency(@phase_revenue[company.sym].cash)})"
           end
 
-          bidbox_concessions.each_with_index do |c, index|
-            return "Bid box #{index + 1}" if c == company
-          end
-
-          if optional_plus_expansion? && !optional_plus_expansion_single_stack?
-            bidbox_privates.each do |c|
-              next unless c == company
-
-              return 'Bid box 1' if self.class::PLUS_EXPANSION_BIDBOX_1.include?(c.id)
-              return 'Bid box 2' if self.class::PLUS_EXPANSION_BIDBOX_2.include?(c.id)
-              return 'Bid box 3' if self.class::PLUS_EXPANSION_BIDBOX_3.include?(c.id)
-            end
-          else
-            bidbox_privates.each_with_index do |c, index|
-              return "Bid box #{index + 1}" if c == company
-            end
-          end
-
-          if self.class::PRIVATE_PHASE_REVENUE.include?(company.id) && company.owner&.player?
-            return "(#{format_currency(@phase_revenue[company.id].cash)})"
-          end
-
-          if company.id == self.class::COMPANY_OSTH && company.owner&.player? && @tax_haven.value.positive?
+          if company.sym == self.class::COMPANY_OSTH && company.owner&.player? && @tax_haven.value.positive?
             cash = format_currency(@tax_haven.cash)
             shares = @tax_haven.shares.map { |s| s.corporation.name }.join(',')
             return "(#{cash},#{shares})"
           end
 
           nil
+        end
+
+        def minor_float_status(company)
+          return [] unless company.company?
+          return [] unless company.sym[0] == self.class::COMPANY_MINOR_PREFIX
+          return [minor_float_status_train_export(company)] unless (bid = @round.highest_bid(company))
+
+          float_index = minor_float_index(company)
+          status = ["Float Order: #{float_index + 1}"]
+
+          share_price = minor_float_share_price(bid)
+          presidency_price = share_price.price * 2
+          status << "Share Price: #{format_currency(share_price.price)}"
+
+          cash = minor_float_starting_cash(bid.price, presidency_price)
+          status << "Starting Cash: #{format_currency(cash)}"
+
+          status
+        end
+
+        def minors_to_float
+          to_float = bidbox_minors.filter_map.with_index do |minor, bb_index|
+            next unless (minor_bid = @round.highest_bid(minor))
+
+            [minor_bid, bb_index]
+          end
+          to_float.sort_by { |mb, bb_index| [mb.price, -bb_index] }.reverse
+        end
+
+        def minor_float_index(company)
+          minors_to_float.find_index { |mb, _bb_idx| mb.company == company }
+        end
+
+        def minor_float_share_price(bid)
+          bid_amount = bid.price
+
+          max_par_price = stock_market.par_prices.map(&:price).max
+          par_price_to_find = phase.name.to_i == 1 ? self.class::MINOR_START_PAR_PRICE : bid_amount / 2
+          par_price_to_find = max_par_price if par_price_to_find > max_par_price
+
+          stock_market.par_prices.find { |pp| pp.price <= par_price_to_find }
+        end
+
+        def minor_float_starting_cash(bid_amount, presidency_price)
+          if phase.name.to_i < 3
+            presidency_price
+          else
+            bid_amount
+          end
+        end
+
+        def minor_float_status_train_export(company)
+          return unless company.company?
+          return if @round.highest_bid(company)
+
+          upcoming_l_count = depot.upcoming.count { |t| t.name == 'L' }
+          bidless_minors = bidbox_minors.reject { |m| @round.highest_bid(m) }
+
+          will_remove_l = (bidless_minors.index(company) + 1) <= upcoming_l_count
+
+          l_2 = phase.name.to_i == 1 ? 'L' : '2'
+
+          to_export =
+            if company == bidbox_minors.first
+              train = depot.upcoming[upcoming_l_count.positive? ? bidless_minors.size : 0]
+              if train.name == 'L'
+                "two #{l_2} trains"
+              elsif will_remove_l
+                '2 train and 3 train'
+              else
+                "#{train.name} train"
+              end
+            elsif will_remove_l
+              "#{l_2} train"
+            end
+
+          "no bids: will #{minor_float_train_export_verb} #{to_export}" if to_export
+        end
+
+        def minor_float_train_export_verb
+          'remove'
         end
 
         def compute_other_paths(routes, route)
