@@ -16,8 +16,12 @@ module Engine
           end
 
           def legal_tile_rotation?(entity, hex, tile)
-            return false if @game.class::GREEN_CITY_TILES.include?(hex.tile.name) &&
-              !tile.exits.intersect?(hex_neighbors(entity, hex))
+            if @game.class::GREEN_CITY_TILES.include?(hex.tile.name)
+              return false if hex.tile.exits.sort != tile.exits.sort
+              return true if hex.tile.cities.first.tokened_by?(entity)
+              return true if @game.saved_tokens_hex == hex && @game.saved_tokens.any? { |t| t[:entity] == entity }
+              return false unless tile.exits.intersect?(hex_neighbors(entity, hex) || [])
+            end
 
             return super if hex.id != @game.class::PARIS_HEX || hex.tile.color != :green
 
