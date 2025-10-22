@@ -36,56 +36,53 @@ require_relative 'meta'
 
 module Engine
   module Game
-    def self.load(data, at_action: nil, actions: nil, pin: nil, seed: nil, optional_rules: nil, user: nil, **kwargs)
+    # kwargs are forwarded to initialize
+    def self.load(data, **kwargs)
       case data
       when String
-        data = JSON.parse(File.exist?(data) ? File.read(data) : data)
-        return load(data,
-                    at_action: at_action,
-                    actions: actions,
-                    pin: pin || data.dig('settings', 'pin'),
-                    seed: seed || data.dig('settings', 'seed'),
-                    optional_rules: optional_rules || data.dig('settings', 'optional_rules'),
-                    user: user,
-                    **kwargs)
+        data =
+          if data.to_i.to_s == data
+            data.to_i
+          else
+            JSON.parse(File.exist?(data) ? File.read(data) : data)
+          end
+        return load(data, **kwargs)
+      when Integer
+        return load(::Game[data], **kwargs)
       when Hash
         title = data['title']
-        names = data['players'].to_h { |p| [p['id'] || p['name'], p['name']] }
+        names = data['players']
+        names = names.to_h { |p| [p['id'] || p['name'], p['name']] } if names.is_a?(Array)
         id = data['id']
-        actions ||= data['actions'] || []
-        pin ||= data.dig('settings', 'pin')
-        seed ||= data.dig('settings', 'seed')
-        optional_rules ||= data.dig('settings', 'optional_rules') || []
-      when Integer
-        db_game = ::Game[data]
-        return load(db_game,
-                    at_action: at_action,
-                    actions: actions,
-                    pin: pin || db_game.settings['pin'],
-                    seed: seed || db_game.settings['seed'],
-                    optional_rules: optional_rules || db_game.settings['optional_rules'],
-                    user: user,
-                    **kwargs)
+        actions = kwargs[:actions] || data['actions'] || []
+        settings = data['settings'] || {}
       when ::Game
         title = data.title
         names = data.ordered_players.to_h { |u| [u.id, u.name] }
         id = data.id
-        actions ||= data.actions.map(&:to_h)
-        pin ||= data.settings['pin']
-        seed ||= data.settings['seed']
-        optional_rules ||= data.settings['optional_rules'] || []
+        actions = kwargs[:actions] || data.actions.map(&:to_h)
+        settings = data.settings || {}
+      else
+        raise GameError, "Could not resolve data of type #{data.class} into a loadable Game"
       end
+
+      pin = kwargs[:pin] || settings['pin']
+      seed = kwargs[:seed] || settings['seed']
+      optional_rules = kwargs[:optional_rules] || settings['optional_rules'] || []
+
+      init_kwargs = %i[description min_players max_players settings created_at updated_at finished_at].to_h do |key|
+        [key, data[key] || data[key.to_s]]
+      end
+      init_kwargs.merge!(kwargs)
 
       Engine.game_by_title(title).new(
         names,
         id: id,
         actions: actions,
-        at_action: at_action,
         pin: pin,
         seed: seed,
         optional_rules: optional_rules,
-        user: user,
-        **kwargs
+        **init_kwargs
       )
     end
 
@@ -564,8 +561,20 @@ module Engine
         true
       end
 
-      def initialize(names, id: 0, actions: [], at_action: nil, pin: nil, strict: false, optional_rules: [], user: nil, seed: nil)
+      def initialize(
+        names,
+        id: 0,
+        actions: [],
+        at_action: nil,
+        pin: nil,
+        strict: false,
+        optional_rules: [],
+        user: nil,
+        seed: nil,
+        **init_kwargs
+      )
         @id = id
+        @init_kwargs = init_kwargs
         @turn = 1
         @final_turn = nil
         @loading = false
@@ -921,6 +930,7 @@ module Engine
         if @exception
           exception = @exception
           @exception = nil
+          LOGGER.error { "@broken_action = #{@broken_action.to_json}" }
           @broken_action = nil
           raise exception
         end
@@ -992,12 +1002,13 @@ module Engine
           if @filtered_actions[index]
             process_action(action)
             # maintain original action ids
-            @raw_actions.last['id'] = action['id']
+            @raw_actions.last['id'] = action['id'] unless @raw_actions.empty?
             @last_processed_action = action['id']
           else
             @raw_actions << action
           end
         end
+        self
       end
 
       # hook from Engine::Round::Operating before next_entity!
@@ -2541,7 +2552,32 @@ module Engine
         spending_entities.flatten.compact.map { |e| e.spender || e }.uniq
       end
 
+      def to_json(*args)
+        to_h.to_json(*args)
+      end
+
       private
+
+      def to_h
+        user = { id: @user }
+        name = @players.find { |p| p.id == @user }&.name
+        user[:name] = name if name
+
+        {
+          **@init_kwargs,
+          id: id,
+          user: user,
+          # use @names instead of @players to preserve initial player order
+          players: @names.map { |p_id, p_name| { id: p_id, name: p_name } },
+          title: meta.title,
+          status: @finished ? 'active' : 'finished',
+          turn: @turn,
+          round: round.class.round_name,
+          acting: active_players_id,
+          result: @finished ? result : nil,
+          actions: raw_actions.map(&:to_h),
+        }
+      end
 
       # Games introducing other entities that use cash, e.g., national railways
       # that stay separate from @corporations (like 1861), need to override this
