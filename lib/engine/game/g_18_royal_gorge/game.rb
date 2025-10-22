@@ -1075,7 +1075,7 @@ module Engine
         end
 
         def sell_movement(corporation)
-          corporation.type == :rail ? :left_block_pres : :none
+          corporation.type == :rail ? :left_share_pres : :none
         end
 
         def local_jeweler
