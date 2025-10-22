@@ -578,7 +578,7 @@ module Engine
 
           # Rule IV.2, bullet 8: Coal Railways start with a g train bought from the depot
           g_train = depot.upcoming.select { |t| goods_train?(t.name) }.shift
-          log << "#{id} buys a #{g_train.name} train from the depot for #{format_currency(g_train.price)}"
+          log << "#{minor.id} buys a #{g_train.name} train from the depot for #{format_currency(g_train.price)}"
           buy_train(minor, g_train, g_train.price)
 
           regional_railway = get_associated_regional_railway(minor)
