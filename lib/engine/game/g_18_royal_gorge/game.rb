@@ -146,7 +146,8 @@ module Engine
           # put established year on charter
           corporations = corporations.map do |corporation|
             corp = corporation.dup
-            corp[:abilities] = [{ type: 'base', description: "Est. #{ESTABLISHED[corp[:sym]]}" }]
+            corp[:abilities] ||= []
+            corp[:abilities] << { type: 'base', description: "Est. #{ESTABLISHED[corp[:sym]]}" }
             corp
           end
 
