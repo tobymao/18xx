@@ -177,9 +177,9 @@ module Engine
             %w[K15 M15] => 'upgrade=cost:20,terrain:water;icon=image:18_royal_gorge/mine,name:mine',
             %w[G11 J14 N16] => 'upgrade=cost:20,terrain:water;',
             # towns
-            %w[B8 C3 G9 I17 K3 M3] => 'town=revenue:0;',
+            %w[B8 C3 G9 I17 K3 L12 M3] => 'town=revenue:0;',
             %w[E19 F16] => 'town=revenue:0;upgrade=cost:10,terrain:mountain;',
-            %w[H4 I9 F6 H14 L12] => 'town=revenue:0;icon=image:18_royal_gorge/mine,name:mine;',
+            %w[H4 I9 F6 H14] => 'town=revenue:0;icon=image:18_royal_gorge/mine,name:mine;',
             %w[E3] => 'town=revenue:0;label=R',
             # cities
             %w[G17 K7] => 'city=revenue:0',
