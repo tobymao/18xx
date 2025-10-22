@@ -72,4 +72,51 @@ describe Engine::Game::G1822PNW::Game do
       expect(assign_step.available_hex_ski(ski, coal_hex)).to eq(false)
     end
   end
+
+  describe '179700' do
+    context '17 closes' do
+      it 'its home is not reserved by SPS' do
+        game = fixture_at_action(967)
+
+        m17 = game.corporation_by_id('17')
+        sps = game.corporation_by_id('SPS')
+        portland = game.hex_by_id('O8').tile.cities[0]
+
+        expect(sps.tokens.count(&:used)).to eq(0)
+        expect(portland.available_slots).to eq(0)
+        expect(portland.reserved_by?(m17)).to eq(true)
+        expect(portland.reserved_by?(sps)).to eq(false)
+        expect(m17.closed?).to eq(false)
+
+        # finish the SR, closing 17 from bidbox 1
+        game.process_to_action(968)
+
+        expect(sps.tokens.count(&:used)).to eq(0)
+        expect(portland.available_slots).to eq(1)
+        expect(portland.reserved_by?(m17)).to eq(false)
+        expect(portland.reserved_by?(sps)).to eq(false)
+        expect(m17.closed?).to eq(true)
+      end
+
+      it 'when SPS starts with a full home city, its token goes into an extra slot' do
+        game = fixture_at_action(1301)
+
+        gnr = game.corporation_by_id('GNR')
+        sps = game.corporation_by_id('SPS')
+        portland = game.hex_by_id('O8').tile.cities[0]
+
+        expect(game.current_entity).to eq(gnr)
+        expect(portland.available_slots).to eq(0)
+        expect(portland.slots(all: true)).to eq(4)
+        expect(portland.tokened_by?(sps)).to eq(false)
+
+        game.process_to_action(1302)
+
+        expect(game.current_entity).to eq(sps)
+        expect(portland.available_slots).to eq(0)
+        expect(portland.slots(all: true)).to eq(5)
+        expect(portland.tokened_by?(sps)).to eq(true)
+      end
+    end
+  end
 end
