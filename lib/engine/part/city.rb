@@ -52,7 +52,14 @@ module Engine
       end
 
       def find_reservation(corporation)
-        @reservations.find_index { |r| r && [r, r.owner].include?(corporation) }
+        return unless (index = @reservations.find_index { |r| r && [r, r.owner].include?(corporation) })
+
+        if (token = @tokens[index])
+          raise GameError, "Token slot reserved on #{hex.id} for #{corporation.name} is occupied "\
+                           "by #{token.corporation.name}"
+        end
+
+        index
       end
 
       def reserved_by?(corporation)
