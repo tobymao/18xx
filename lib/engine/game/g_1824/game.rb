@@ -197,6 +197,11 @@ module Engine
           from.paths_are_subset_of?(to.paths) && to.color == :green && from.towns.one? && to.towns.one?
         end
 
+        # 1824 does not have any special cases here so use base version instead of 1837 version
+        def legal_tile_rotation?(_entity, _hex, _tile)
+          true
+        end
+
         # 1824 version differ from 1837 as a national can become in receivership, and tie breaker is different
         def set_national_president!(national, tie_breaker)
           current_president = national.owner || national
