@@ -4,6 +4,11 @@ module Engine
   class GameError < RuntimeError
   end
 
+  # problem with the structure of the Engine::Action object or the hash being
+  # used to create it
+  class ActionError < GameError
+  end
+
   class GameIsOver < GameError
   end
 
