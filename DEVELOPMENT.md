@@ -167,6 +167,14 @@ e.g. `docker compose exec rack rspec spec/lib/engine/game/fixtures_spec.rb -e '1
 
 See also `public/fixtures/README.md` for more details on fixture tests and debugging.
 
+#### Debugging
+
+Add a call to `debug!` from `lib/engine/debug.rb` to set a breakpoint in the
+code. `debug!` works on both the Ruby (via
+[pry-byebug](https://github.com/deivid-rodriguez/pry-byebug)) and JavaScript
+([`debugger`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/debugger))
+sides.
+
 #### Profiling the code
 
 Run `docker compose exec rack rake stackprof[spec/fixtures/18_chesapeake/1277.json]` (or other file) to load and process the json file 1000 times. This will generate a stackprof.dump which can be further analyzed
