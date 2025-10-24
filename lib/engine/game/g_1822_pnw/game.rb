@@ -27,6 +27,11 @@ module Engine
           '5': 4,
         }.freeze
 
+        # Rule 7.1.8: "If another end condition is triggered after the first
+        # that would make the game end sooner, then that end game condition
+        # takes precedence in deciding when the game ends."
+        GAME_END_LOCK_FIRST_TRIGGER = false
+
         EXCHANGE_TOKENS = {
           'CPR' => 3,
           'GNR' => 3,
