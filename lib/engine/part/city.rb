@@ -47,8 +47,12 @@ module Engine
         !@tokens.compact.empty?
       end
 
-      def tokened_by?(corporation)
-        @tokens.any? { |t| t&.corporation == corporation } || @extra_tokens.any? { |t| t&.corporation == corporation }
+      def tokened_by?(corporation, types: [])
+        token = (@tokens + @extra_tokens).find { |t| t&.corporation == corporation }
+        return false unless token
+        return true if types == []
+
+        types.include?(token.type)
       end
 
       def find_reservation(corporation)

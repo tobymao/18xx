@@ -45,7 +45,7 @@ module Engine
         false
       end
 
-      def tokened_by?(_corporation)
+      def tokened_by?(_corporation, *)
         false
       end
 
