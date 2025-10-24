@@ -4,3 +4,7 @@ db/data/
 log/
 .git*
 db.backup*
+
+#*#
+*~
+.#*
