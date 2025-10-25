@@ -48,11 +48,11 @@ module Engine
       end
 
       def tokened_by?(corporation, types: [])
-        token = (@tokens + @extra_tokens).find { |t| t&.corporation == corporation }
-        return false unless token
+        corp_tokens = (@tokens + @extra_tokens).select { |t| t&.corporation == corporation }
+        return false if corp_tokens.empty?
         return true if types == []
 
-        types.include?(token.type)
+        corp_tokens.map(&:type).intersect?(types)
       end
 
       def find_reservation(corporation)
