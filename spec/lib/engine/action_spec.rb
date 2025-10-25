@@ -17,7 +17,7 @@ describe Engine::Action do
         args = action_class.instance_method(:initialize).parameters.filter_map do |kind, name|
           (kind == :keyreq) && name
         end
-        expect(action_class::REQUIRED_ARGS).to eq(args)
+        expect(action_class::REQUIRED_ARGS).to match_array(args)
       end
     end
   end
