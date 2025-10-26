@@ -514,7 +514,7 @@ module Engine
             revenue: 15,
             desc: 'This private comes with 1 water Engineer and 2 Harbor Rights. When bought by a corporation, '\
                   'the owning corporation may lay a second harbor marker on an harbor hex, doubling the harbor right bonus '\
-                  'for that hex. Other coproraitons can buy harbor rights from this corporation for 50c',
+                  'for that hex. Other corporations can buy harbor rights from this corporation for 50c',
             sym: 'F',
           },
           {
@@ -552,7 +552,7 @@ module Engine
             revenue: 20,
             desc: 'The private comes with 1 mining Engineer and 2 mining Rights. THe owning corporation may close '\
                   'this private to place a mining token in an empty, connected station as a neutral token. Other '\
-                  'coprorations can buy mining rights from this corproation for 50c',
+                  'corporations can buy mining rights from this corproation for 50c',
             sym: 'H',
           },
           {
