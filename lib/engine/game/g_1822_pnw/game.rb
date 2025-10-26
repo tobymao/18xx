@@ -471,10 +471,10 @@ module Engine
 
         def operating_round(round_num)
           Engine::Game::G1822PNW::Round::Operating.new(self, [
+            G1822::Step::DiscardTrain,
             G1822::Step::PendingToken,
             G1822::Step::FirstTurnHousekeeping,
             G1822PNW::Step::AcquireCompany,
-            G1822::Step::DiscardTrain,
             G1822PNW::Step::Assign,
             Engine::Step::SpecialChoose,
             G1822PNW::Step::SpecialTrack,
@@ -487,7 +487,6 @@ module Engine
             G1822::Step::BuyTrain,
             G1822PNW::Step::MinorAcquisition,
             G1822::Step::PendingToken,
-            G1822::Step::DiscardTrain,
             G1822PNW::Step::IssueShares,
           ], round_num: round_num)
         end

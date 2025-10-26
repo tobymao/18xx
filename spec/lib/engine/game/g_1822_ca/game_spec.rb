@@ -391,7 +391,7 @@ describe Engine::Game::G1822CA::Game do
 
   describe '4' do
     it 'M13 Toronto' do
-      game = fixture_at_action(1258)
+      game = fixture_at_action(988)
 
       toronto_hex = game.hex_by_id('AC21')
       cities = toronto_hex.tile.cities

@@ -520,10 +520,10 @@ module Engine
 
         def operating_round(round_num)
           Engine::Round::Operating.new(self, [
+            G1822::Step::DiscardTrain,
             G1822::Step::PendingToken,
             G1822::Step::FirstTurnHousekeeping,
             G1822::Step::AcquireCompany,
-            G1822::Step::DiscardTrain,
             G1822::Step::SpecialChoose,
             G1822Africa::Step::LayGameReserve,
             G1822Africa::Step::SpecialTrack,
@@ -537,14 +537,13 @@ module Engine
             G1822Africa::Step::BuyTrain,
             G1822Africa::Step::MinorAcquisition,
             G1822::Step::PendingToken,
-            G1822::Step::DiscardTrain,
             G1822Africa::Step::IssueShares,
           ], round_num: round_num)
         end
 
         def stock_round(round_num = 1)
           G1822Africa::Round::Stock.new(self, [
-            Engine::Step::DiscardTrain,
+            G1822::Step::DiscardTrain,
             G1822::Step::BuySellParShares,
           ], round_num: round_num)
         end
