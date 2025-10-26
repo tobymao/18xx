@@ -1,15 +1,12 @@
 # frozen_string_literal: true
 
+require 'spec_helper'
+
 require 'find'
-require './spec/spec_helper'
 
 module Engine
   describe Game::G1836Jr56::Game do
     let(:players) { %w[a b c] }
-
-    let(:game_file) do
-      Find.find(FIXTURES_DIR).find { |f| File.basename(f) == "#{game_file_name}.json" }
-    end
 
     let(:actions) do
       [
