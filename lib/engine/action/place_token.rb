@@ -8,9 +8,9 @@ module Engine
       attr_reader :city, :slot
       attr_accessor :cost, :token
 
-      REQUIRED_ARGS = %i[city slot].freeze
+      REQUIRED_ARGS = %i[city].freeze
 
-      def initialize(entity, city:, slot:, cost: nil, tokener: nil, token_type: nil)
+      def initialize(entity, city:, slot: nil, cost: nil, tokener: nil, token_type: nil)
         super(entity)
         @city = city
         @slot = slot
