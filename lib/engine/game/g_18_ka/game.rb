@@ -552,7 +552,7 @@ module Engine
             revenue: 20,
             desc: 'The private comes with 1 mining Engineer and 2 mining Rights. THe owning corporation may close '\
                   'this private to place a mining token in an empty, connected station as a neutral token. Other '\
-                  'corporations can buy mining rights from this corproation for 50c',
+                  'corporations can buy mining rights from this corporation for 50c',
             sym: 'H',
           },
           {
