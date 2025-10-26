@@ -7,6 +7,8 @@ module Engine
     class DiscardTrain < Base
       attr_reader :train
 
+      REQUIRED_ARGS = %i[train].freeze
+
       def initialize(entity, train:)
         super(entity)
         @train = train

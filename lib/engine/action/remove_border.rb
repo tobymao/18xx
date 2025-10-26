@@ -7,6 +7,8 @@ module Engine
     class RemoveBorder < Base
       attr_reader :hex, :edge
 
+      REQUIRED_ARGS = %i[hex edge].freeze
+
       def initialize(entity, hex:, edge:)
         super(entity)
         @hex = hex

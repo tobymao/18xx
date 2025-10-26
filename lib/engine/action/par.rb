@@ -7,6 +7,8 @@ module Engine
     class Par < Base
       attr_reader :corporation, :share_price, :purchase_for, :borrow_from, :slot
 
+      REQUIRED_ARGS = %i[corporation share_price].freeze
+
       def initialize(entity, corporation:, share_price:, slot: nil, purchase_for: nil, borrow_from: nil)
         super(entity)
         @corporation = corporation

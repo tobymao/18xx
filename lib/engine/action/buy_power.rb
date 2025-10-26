@@ -7,6 +7,8 @@ module Engine
     class BuyPower < Base
       attr_reader :power
 
+      REQUIRED_ARGS = %i[power].freeze
+
       def initialize(entity, power:)
         super(entity)
         @power = power
