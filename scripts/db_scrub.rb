@@ -5,11 +5,13 @@ raise "You probably don't want to scrub the prod db" unless ENV['RACK_ENV'] == '
 require_relative 'scripts_helper'
 
 def scrub_all_users!
-  User.each { |user| scrub_user!(user) }
+  DB.transaction do
+    User.each { |user| scrub_user!(user) }
 
-  scrub_passwords!
+    scrub_passwords!
 
-  Action.where(**{ Sequel.pg_jsonb_op(:action).get_text('type') => 'message' }).delete
+    scrub_chat!
+  end
 end
 
 def scrub_user!(user)
@@ -23,4 +25,19 @@ end
 
 def scrub_passwords!
   DB[:users].update(password: Argon2::Password.create('password'))
+end
+
+def scrub_chat!
+  chat_actions(auto_actions: false).delete
+  chat_actions(auto_actions: true).all.each do |db_action|
+    db_action.action['message'] = '[redacted]'
+    db_action.save
+  end
+end
+
+def chat_actions(auto_actions:)
+  Action.where(**{
+                 Sequel.pg_jsonb_op(:action).get_text('type') => 'message',
+                 Sequel.pg_jsonb_op(:action).has_key?('auto_actions') => auto_actions, # rubocop:disable Style/PreferredHashMethods
+               })
 end
