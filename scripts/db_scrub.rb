@@ -38,6 +38,6 @@ end
 def chat_actions(auto_actions:)
   Action.where(**{
                  Sequel.pg_jsonb_op(:action).get_text('type') => 'message',
-                 Sequel.pg_jsonb_op(:action).key?('auto_actions') => auto_actions,
+                 Sequel.pg_jsonb_op(:action).has_key?('auto_actions') => auto_actions, # rubocop:disable Style/PreferredHashMethods
                })
 end
