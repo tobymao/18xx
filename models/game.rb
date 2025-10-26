@@ -137,7 +137,7 @@ class Game < Base
   end
 
   def to_h(include_actions: false, logged_in_user_id: nil)
-    remove_messages = !players.find { |p| p.id == logged_in_user_id } && user_id != logged_in_user_id
+    remove_messages = players.none? { |p| p.id == logged_in_user_id } && user_id != logged_in_user_id
 
     actions_h =
       if include_actions
