@@ -4,7 +4,10 @@ require_relative 'scripts_helper'
 
 # return first game (and action) found where the given block (which takes an
 # Engine::Game object `game` as its argument) returns `true`
-# For example:
+#
+# For example, to find all 1822PNW games where
+# https://github.com/tobymao/18xx/issues/9266 is reproducible:
+#
 #   find_game(all: true, title: '1822PNW') do |game|
 #     p11 = game.company_by_id('P11')
 #     seattle = game.hex_by_id('H11')
@@ -14,11 +17,13 @@ require_relative 'scripts_helper'
 #       (seattle.tile.color == :white || portland.tile.color == :white)
 #   end
 #
-# all - if true, find all games instead of just one match
-# process_actions - if false, only check the games at initial setup
-# strict - forwarded to `Engine::Game.load()`
-# page_size - how many games to fetch from the DB at once
-# **kwargs - forwarded to the DB query for games; recommended to include `id` or `title`
+# Arguments:
+#
+#   all - if true, find all games instead of just one match
+#   process_actions - if false, only check the games at initial setup
+#   strict - forwarded to `Engine::Game.load()`
+#   page_size - how many games to fetch from the DB at once
+#   **kwargs - forwarded to the DB query for games; recommended to include `id` or `title`
 def find_game(all: false, process_actions: true, strict: true, page_size: 100, **kwargs)
   pin_key = Sequel.pg_jsonb_op(:settings).has_key?('pin') # rubocop:disable Style/PreferredHashMethods
   where_kwargs = {
