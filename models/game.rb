@@ -137,10 +137,25 @@ class Game < Base
   end
 
   def to_h(include_actions: false, logged_in_user_id: nil)
-    actions_h = include_actions ? actions.map(&:to_h) : []
-    if !players.find { |p| p.id == logged_in_user_id } && user_id != logged_in_user_id
-      actions_h.reject! { |a| a['type'] == 'message' }
-    end
+    remove_messages = !players.find { |p| p.id == logged_in_user_id } && user_id != logged_in_user_id
+
+    actions_h =
+      if include_actions
+        actions.map do |db_action|
+          action = db_action.to_h
+          if remove_messages && action['type'] == 'message' && action['auto_actions'] && !action['auto_actions'].empty?
+            action.delete('message')
+            action.delete('user')
+            action.merge!(action['auto_actions'].shift)
+            action['id'] = db_action.action_id
+          end
+          action
+        end
+      else
+        []
+      end
+
+    actions_h.reject! { |a| a['type'] == 'message' } if remove_messages
     settings_h = settings.to_h
 
     # Move user settings and hide from other players
