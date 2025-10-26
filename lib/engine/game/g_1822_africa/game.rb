@@ -116,7 +116,7 @@ module Engine
         CARDIFF_HEX = nil
         ENGLISH_CHANNEL_HEX = nil
         MERTHYR_TYDFIL_PONTYPOOL_HEX = nil
-        UPGRADABLE_S_HEX_NAME = nil
+        UPGRADEABLE_S_HEX_NAME = nil
         BIDDING_BOX_START_PRIVATE = nil
         BIDDING_BOX_START_MINOR = nil
         DOUBLE_HEX = [].freeze
