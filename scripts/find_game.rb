@@ -4,6 +4,15 @@ require_relative 'scripts_helper'
 
 # return first game (and action) found where the given block (which takes an
 # Engine::Game object `game` as its argument) returns `true`
+# For example:
+#   find_game(all: true, title: '1822PNW') do |game|
+#     p11 = game.company_by_id('P11')
+#     seattle = game.hex_by_id('H11')
+#     portland = game.hex_by_id('O8')
+#
+#     p11.owner&.corporation? && (p11.owner.type == :major) &&
+#       (seattle.tile.color == :white || portland.tile.color == :white)
+#   end
 #
 # all - if true, find all games instead of just one match
 # process_actions - if false, only check the games at initial setup
