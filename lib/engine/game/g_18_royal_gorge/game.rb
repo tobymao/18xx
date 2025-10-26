@@ -146,7 +146,8 @@ module Engine
           # put established year on charter
           corporations = corporations.map do |corporation|
             corp = corporation.dup
-            corp[:abilities] = [{ type: 'base', description: "Est. #{ESTABLISHED[corp[:sym]]}" }]
+            corp[:abilities] ||= []
+            corp[:abilities] << { type: 'base', description: "Est. #{ESTABLISHED[corp[:sym]]}" }
             corp
           end
 
@@ -460,36 +461,48 @@ module Engine
           @stock_market.share_prices_with_types(@available_par_groups)
         end
 
+        def transition_to_next_round!
+          finish_round!
+          super
+        end
+
+        def finish_round!
+          case @round
+          when Round::Stock
+            reorder_players
+          when Round::Operating
+            or_round_finished
+            or_set_finished unless @round.round_num < @operating_rounds
+          when Round::Auction
+            # reorder as normal first so that if there is a tie for most cash,
+            # the player who would be first with :after_last_to_act turn order
+            # gets the tiebreaker
+            reorder_players(silent: true)
+
+            # most cash goes first, but keep same relative order; don't
+            # reorder by descending cash
+            @players.rotate!(@players.index(@players.max_by(&:cash)))
+
+            @log << "#{@players.first.name} has priority deal"
+          end
+        end
+
         def next_round!
           @round =
             case @round
             when Round::Stock
               @operating_rounds = @phase.operating_rounds
-              reorder_players
               new_operating_round
             when Round::Operating
-              or_round_finished
               if @round.round_num < @operating_rounds
                 new_operating_round(@round.round_num + 1)
               else
-                or_set_finished
                 @turn += 1
                 round = new_stock_round
                 move_jeweler_cash!
                 round
               end
             when Round::Auction
-              # reorder as normal first so that if there is a tie for most cash,
-              # the player who would be first with :after_last_to_act turn order
-              # gets the tiebreaker
-              reorder_players(silent: true)
-
-              # most cash goes first, but keep same relative order; don't
-              # reorder by descending cash
-              @players.rotate!(@players.index(@players.max_by(&:cash)))
-
-              @log << "#{@players.first.name} has priority deal"
-
               new_stock_round
             end
         end
@@ -1074,7 +1087,7 @@ module Engine
         end
 
         def sell_movement(corporation)
-          corporation.type == :rail ? :left_block_pres : :none
+          corporation.type == :rail ? :left_share_pres : :none
         end
 
         def local_jeweler
