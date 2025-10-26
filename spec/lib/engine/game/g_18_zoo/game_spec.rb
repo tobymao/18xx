@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
+require 'spec_helper'
+
 require 'find'
-require './spec/spec_helper'
 
 module Engine
   describe Game::G18ZOO::Game do
@@ -191,8 +192,8 @@ module Engine
 
             it "should start with #{expected_ticket_zoo[num_players]} ticket zoo" do
               expect(player_1.companies.count do |c|
-                c.name.start_with?('ZOOTicket')
-              end).to eq(expected_ticket_zoo[num_players])
+                       c.name.start_with?('ZOOTicket')
+                     end).to eq(expected_ticket_zoo[num_players])
             end
 
             if expected_corporations[variant]
@@ -437,7 +438,5 @@ module Engine
         [1, 2].each { |index| expect(game.corporation_available?(game.corporations[index])).to be_falsy }
       end
     end
-
-
   end
 end
