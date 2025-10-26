@@ -547,9 +547,9 @@ module Engine
         TRACK_PLAIN = %w[7 8 9 80 81 82 83 544 545 546 60 169].freeze
         TRACK_TOWN = %w[3 4 58 141 142 143 144 767 768 769 X17].freeze
 
-        UPGRADABLE_S_YELLOW_CITY_TILE = '57'
-        UPGRADABLE_S_YELLOW_ROTATIONS = [2, 5].freeze
-        UPGRADABLE_S_HEX_NAME = 'D35'
+        UPGRADEABLE_S_YELLOW_CITY_TILE = '57'
+        UPGRADEABLE_S_YELLOW_ROTATIONS = [2, 5].freeze
+        UPGRADEABLE_S_HEX_NAME = 'D35'
 
         UPGRADE_COST_L_TO_2 = 80
 
@@ -1276,8 +1276,8 @@ module Engine
 
         def upgrades_to?(from, to, _special = false, selected_company: nil)
           # This is needed because the S tile upgrade removes the town in yellow
-          if self.class::UPGRADABLE_S_HEX_NAME == from.hex&.name && from.color == :white
-            return self.class::UPGRADABLE_S_YELLOW_CITY_TILE == to.name
+          if self.class::UPGRADEABLE_S_HEX_NAME == from.hex&.name && from.color == :white
+            return self.class::UPGRADEABLE_S_YELLOW_CITY_TILE == to.name
           end
 
           # Special case for P2 Middleton Railway where we remove a town from a tile

@@ -35,9 +35,9 @@ module Engine
           entity, *_combo_entities = entities
 
           # We will remove a town from the white S tile, this meaning we will not follow the normal path upgrade rules
-          if hex.name == @game.class::UPGRADABLE_S_HEX_NAME &&
-            tile.name == @game.class::UPGRADABLE_S_YELLOW_CITY_TILE &&
-            @game.class::UPGRADABLE_S_YELLOW_ROTATIONS.include?(tile.rotation)
+          if hex.name == @game.class::UPGRADEABLE_S_HEX_NAME &&
+            tile.name == @game.class::UPGRADEABLE_S_YELLOW_CITY_TILE &&
+            @game.class::UPGRADEABLE_S_YELLOW_ROTATIONS.include?(tile.rotation)
             return true
           end
 
