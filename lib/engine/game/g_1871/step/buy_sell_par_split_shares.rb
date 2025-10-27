@@ -124,18 +124,19 @@ module Engine
           end
 
           def visible_corporations
-            # Always show ML and SL
-            @game.corporations[0..1].reject(&:closed?) +
+            corps = Array(@game.corporations).compact.reject(&:closed?)
 
-              # Show ipoed
-              @game.corporations[2..6].reject(&:closed?).select(&:ipoed) +
-              (@game.tranch_available? ? @game.corporations[2..6].reject(&:closed?).reject(&:ipoed) : []) +
+            # Split IPOed vs not
+            ipoed, _others = corps.partition(&:ipoed)
 
-              # Only show Branches when ipoed
-              @game.corporations[8..13].select(&:ipoed).reject(&:closed?) +
+            # Grab PEIR corps that aren’t IPOed
+            peir_not_ipoed = Array(corps[0..6]).compact.reject(&:ipoed)
 
-              # Always show the PEIR
-              [@game.peir]
+            ordered = ipoed.sort
+            ordered.concat(peir_not_ipoed) if @game.tranch_available?
+            ordered << @game.peir
+
+            ordered
           end
 
           def get_par_prices_with_help(entity, _corp, extra_cash: 0)
