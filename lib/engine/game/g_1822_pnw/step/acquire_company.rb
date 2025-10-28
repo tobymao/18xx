@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative '../../../step/route'
+require_relative '../../g_1822/step/acquire_company'
 
 module Engine
   module Game
