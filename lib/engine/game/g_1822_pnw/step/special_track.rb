@@ -117,6 +117,9 @@ module Engine
           end
 
           def available_hex_coal_company(entity, hex)
+            return false if @game.mill_hex?(hex)
+            return false if @game.ski_hex?(hex)
+
             hex.all_neighbors.keys if abilities(entity).hexes.include?(hex.id) && @game.graph.connected_hexes(entity.owner)[hex]
           end
 
@@ -197,6 +200,10 @@ module Engine
           end
 
           def process_lay_tile_coal_company(action)
+            hex = action.hex
+            raise GameError, "Cannot lay Rockport Coal Mine in Paper Mill hex #{hex.id}" if @game.mill_hex?(hex)
+            raise GameError, "Cannot lay Rockport Coal Mine in Ski Haus hex #{hex.id}" if @game.ski_hex?(hex)
+
             tile_lay = get_tile_lay(action.entity)
             raise GameError, 'Cannot lay coal company now' if !tile_lay || !tile_lay[:lay]
 
