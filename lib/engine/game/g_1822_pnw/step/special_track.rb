@@ -139,6 +139,7 @@ module Engine
           end
 
           def process_lay_tile(action)
+            handle_tokencity(action) if @game.tokencity?(action.hex)
             return process_lay_tile_cube_company(action) if @game.cube_company?(action.entity)
             if @game.company_ability_extra_track?(action.entity) && action.tile == @game.cube_tile
               return process_lay_tile_extra_track_cube(action)
@@ -235,6 +236,12 @@ module Engine
 
           def border_cost_discount(entity, spender, border, cost, hex)
             hex == @game.seattle_hex ? 75 : super
+          end
+
+          def handle_tokencity(action)
+            return unless (p11 = action.entity).sym == 'P11'
+
+            abilities(p11).use! if p11.owner.type == :major
           end
         end
       end
