@@ -1120,15 +1120,12 @@ module Engine
 
         def close_corporation(corporation, quiet: false)
           super
-          if associated_minor?(corporation)
-            major = associated_major(corporation)
-            hex_by_id(corporation.coordinates).tile.cities[0].add_reservation!(major)
-            @log << "#{major.name} reservation takes the place of #{corporation.name}"
-          elsif regional_railway?(corporation)
-            company = company_by_id(company_id_from_corp_id(corporation.id))
-            company.owner&.companies&.delete(company)
-            company.close!
-          end
+
+          return unless regional_railway?(corporation)
+
+          company = company_by_id(company_id_from_corp_id(corporation.id))
+          company.owner&.companies&.delete(company)
+          company.close!
         end
 
         def company_status_str(company)
