@@ -259,7 +259,9 @@ module Engine
     end
 
     def check_cycles!
-      return if @train.local?
+      return if @train.local? &&
+                connection_data.one? &&
+                connection_data[0][:left] == connection_data[0][:right]
 
       cycles = {}
 
