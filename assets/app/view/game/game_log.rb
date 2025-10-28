@@ -195,6 +195,8 @@ module View
           line_props[:style][:fontWeight] = 'bold' if line.is_a?(String) && line.start_with?('--')
 
           if line.is_a?(Engine::Action::Message)
+            next [] if line.message.empty?
+
             line_props[:style][:fontWeight] = 'bold'
             line_props[:style][:marginTop] = '0.5em'
 

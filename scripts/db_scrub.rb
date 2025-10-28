@@ -5,13 +5,15 @@ raise "You probably don't want to scrub the prod db" unless ENV['RACK_ENV'] == '
 require_relative 'scripts_helper'
 
 def scrub_all_users!
-  DB.transaction do
-    User.each { |user| scrub_user!(user) }
+  scrub_emails_and_settings!
+  scrub_passwords!
+  scrub_chat!
+end
 
-    scrub_passwords!
+def scrub_emails_and_settings!
+  puts 'Removing user emails and settings…'
 
-    scrub_chat!
-  end
+  User.each { |user| scrub_user!(user) }
 end
 
 def scrub_user!(user)
@@ -24,20 +26,15 @@ rescue StandardError
 end
 
 def scrub_passwords!
+  puts %(Setting all user passwords to "password"…)
+
   DB[:users].update(password: Argon2::Password.create('password'))
 end
 
 def scrub_chat!
-  chat_actions(auto_actions: false).delete
-  chat_actions(auto_actions: true).all.each do |db_action|
-    db_action.action['message'] = '[redacted]'
-    db_action.save
-  end
-end
+  puts 'Setting all user messages to ""…'
 
-def chat_actions(auto_actions:)
-  Action.where(**{
-                 Sequel.pg_jsonb_op(:action).get_text('type') => 'message',
-                 Sequel.pg_jsonb_op(:action).has_key?('auto_actions') => auto_actions, # rubocop:disable Style/PreferredHashMethods
-               })
+  Action
+    .where(**{ Sequel.pg_jsonb_op(:action).get_text('type') => 'message' })
+    .update(action: Sequel.pg_jsonb_op(:action).set('{"message"}', Sequel.pg_jsonb('""')))
 end
