@@ -265,7 +265,11 @@ module Engine
         end
 
         def coal_token
-          @coal_token ||= Engine::Token.new(nil, logo: '/icons/18_usa/mine.svg')
+          @coal_token ||= Engine::Token.new(nil, logo: '/icons/18_usa/mine.svg', type: :coal)
+        end
+
+        def city_tokened_by?(city, entity)
+          city.tokened_by?(entity, types: %i[normal destination])
         end
 
         def coal_hex?(hex)
@@ -491,7 +495,7 @@ module Engine
             G1822PNW::Step::Track,
             G1822::Step::DestinationToken,
             G1822::Step::Token,
-            G1822PNW::Step::Route,
+            G1822::Step::Route,
             G1822PNW::Step::Dividend,
             G1822::Step::BuyTrain,
             G1822PNW::Step::MinorAcquisition,

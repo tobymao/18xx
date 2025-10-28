@@ -575,7 +575,7 @@ module Engine
           raise GameError, 'Cannot run Pullman train' if pullman_train?(route.train)
 
           if train_type(route.train) == :etrain &&
-             visits.count { |v| v.city? && v.tokened_by?(route.corporation) } < 2
+             visits.count { |v| v.city? && v.tokened_by?(route.corporation, types: %i[normal destination]) } < 2
             raise GameError, 'E-train route must have at least 2 tokened cities'
           end
 
@@ -1096,7 +1096,7 @@ module Engine
                       stops.sum do |stop|
                         next 0 unless stop.city?
 
-                        tokened = stop.tokened_by?(entity)
+                        tokened = stop.tokened_by?(entity, types: %i[normal destination])
                         # If we got a token in English channel, calculate the revenue from the france offboard
                         if tokened && stop.hex.name == self.class::ENGLISH_CHANNEL_HEX
                           france_stop ? france_stop.route_revenue(route.phase, route.train) : 0
@@ -2166,8 +2166,8 @@ module Engine
 
         def e_route_distance_str(route)
           corp = route.train.owner
-          total_laid_tokens = corp.tokens.count(&:used)
-          paying_stops = route.visited_stops.count { |stop| stop.tokened_by?(corp) }
+          total_laid_tokens = corp.tokens.count { |t| t.used && %i[normal destination].include?(t.type) }
+          paying_stops = route.visited_stops.count { |stop| stop.tokened_by?(corp, types: %i[normal destination]) }
           "#{paying_stops}/#{total_laid_tokens}"
         end
 
