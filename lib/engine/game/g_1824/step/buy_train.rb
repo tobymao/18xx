@@ -47,8 +47,37 @@ module Engine
             !depot_g_trains.empty?
           end
 
+          def president_may_contribute?(entity, _shell = nil)
+            must_buy_train?(entity)
+          end
+
+          def can_ebuy_sell_shares?(entity)
+            owner = entity.owner
+            available_cash = entity.cash + owner.cash
+
+            prices = [cheapest_train_price(entity), cheapest_discountable_train_price(entity)].select(&:positive?)
+            return false if prices.empty?
+
+            available_cash < prices.min
+          end
+
           def pass_if_cannot_buy_train?(_entity)
             false
+          end
+
+          def cheapest_train_price(corporation)
+            return buyable_trains(corporation).map(&:price).min unless buyable_trains(corporation).empty?
+
+            0
+          end
+
+          def cheapest_discountable_train_price(corporation)
+            return 0 unless discountable_trains_allowed?(corporation)
+
+            discountable_trains = @game.discountable_trains_for(corporation)
+            return discountable_trains.map(&:price).min unless discountable_trains.empty?
+
+            0
           end
 
           def must_take_player_loan?(entity)
