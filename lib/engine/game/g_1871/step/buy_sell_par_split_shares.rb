@@ -124,16 +124,19 @@ module Engine
           end
 
           def visible_corporations
-            corps = Array(@game.corporations).compact.reject(&:closed?)
+            corps = @game.corporations
 
-            # Split IPOed vs not
-            ipoed, _others = corps.partition(&:ipoed)
+            # First, display ipoed corporations in descending operating order
+            ipoed = corps.select(&:ipoed)
 
-            # Grab PEIR corps that aren’t IPOed
-            peir_not_ipoed = Array(corps[0..6]).compact.reject(&:ipoed)
+            # Next, select non-ipoed PEIR corporations
+            peir_not_ipoed = corps[0..6].reject(&:ipoed)
 
+            # Only display non-ipoed PEIR corps if an open tranch space is available
             ordered = ipoed.sort
             ordered.concat(peir_not_ipoed) if @game.tranch_available?
+
+            # Finally, display the PEIR itself
             ordered << @game.peir
 
             ordered
