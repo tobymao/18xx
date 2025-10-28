@@ -609,6 +609,10 @@ module Engine
             company_by_id('KM')&.close!
             @log << 'Closing the PEIR'
             peir.set_cash(0, @bank)
+            peir.trains.dup.each do |train|
+              @log << "#{peir.name} discards #{train.name}, removed from game"
+              remove_train(train)
+            end
             peir.close!
             return
           end
