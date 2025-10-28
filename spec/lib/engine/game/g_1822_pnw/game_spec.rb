@@ -15,6 +15,36 @@ describe Engine::Game::G1822PNW::Game do
     end
   end
 
+  describe '1822PNW_game_end_stock_market' do
+    it ':stock market ending takes precedence, even when triggered after :bank ending was triggered' do
+      game = fixture_at_action(1414)
+
+      expect(game.finished).to eq(false)
+      expect(game.bank.broken?).to eq(false)
+      expect(game.stock_market.max_reached?).to be_nil
+      expect(game.game_ending_description).to be_nil
+
+      game.process_to_action(1415)
+      expect(game.finished).to eq(false)
+      expect(game.bank.broken?).to eq(true)
+      expect(game.stock_market.max_reached?).to be_nil
+      expect(game.game_ending_description).to eq('Bank Broken : Game Ends at conclusion of OR 10.2')
+
+      game.process_to_action(1419)
+      expect(game.finished).to eq(false)
+      expect(game.bank.broken?).to eq(true)
+      expect(game.stock_market.max_reached?).to eq(true)
+      expect(game.game_ending_description).to eq('Company hit max stock value : Game Ends at conclusion of this OR (10.1)')
+
+      game.process_to_action(1445)
+      expect(game.finished).to eq(true)
+      expect(game.bank.broken?).to eq(true)
+      expect(game.stock_market.max_reached?).to eq(true)
+      expect(game.game_ending_description).to eq('Company hit max stock value')
+      expect(game.round.round_num).to eq(1)
+    end
+  end
+
   describe 'merger_high_value_minors' do
     it 'can only par at $100' do
       game = fixture_at_action(156)
