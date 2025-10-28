@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require './spec/spec_helper'
+require 'spec_helper'
 
 module Engine
   describe Game::G1828::Game do
