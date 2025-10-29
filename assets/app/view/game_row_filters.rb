@@ -41,7 +41,12 @@ module View
 
     def render_reset
       attrs = {
-        on: { click: -> { update_filters('') } },
+        on: {
+          click: lambda do |_|
+            `document.querySelector('#game_filters select').value = ''`
+            update_filters('')
+          end,
+        },
       }
       h('button', attrs, 'Reset filters')
     end
