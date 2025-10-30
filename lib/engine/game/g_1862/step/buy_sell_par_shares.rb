@@ -9,6 +9,14 @@ module Engine
         class BuySellParShares < Engine::Step::BuySellParShares
           UNCHARTERED_TOKEN_COST = 40
 
+          def confirm_pass?
+            @game.current_entity.companies.any?
+          end
+
+          def confirm_pass_message
+            'You are still under obligation to float a Chartered Company. Pass?'
+          end
+
           def can_buy?(entity, bundle)
             return unless bundle&.buyable
 

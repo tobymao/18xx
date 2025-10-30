@@ -57,6 +57,9 @@ module Engine
         pass!
       end
 
+      def confirm_pass? = false
+      def confirm_pass_message = 'Pass?'
+
       def skip!
         log_skip(current_entity) if !@acted && current_entity
         pass!

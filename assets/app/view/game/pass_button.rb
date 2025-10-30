@@ -8,14 +8,16 @@ module View
       include Actionable
 
       needs :for_player, default: nil
-      needs :before_process_pass, default: -> {}, store: true
+      needs :before_process_pass, default: -> { true }, store: true
 
       def render
         props = {
           on: {
             click: lambda do
-              @before_process_pass.call
-              process_action(Engine::Action::Pass.new(@for_player || @game.pass_entity(@user)))
+              proceed = @before_process_pass.call
+              unless [false, :halt].include?(proceed)
+                process_action(Engine::Action::Pass.new(@for_player || @game.pass_entity(@user)))
+              end
             end,
           },
         }
