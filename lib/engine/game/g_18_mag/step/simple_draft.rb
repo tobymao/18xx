@@ -177,7 +177,7 @@ module Engine
               raise GameError, 'Logic error: must specify minor or corporation on bid action'
             end
 
-            @round.next_entity_index!
+            @round.next_entity_index! unless finished?
             action_finalized
           end
 
