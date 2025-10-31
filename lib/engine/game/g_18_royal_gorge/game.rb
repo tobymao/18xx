@@ -76,6 +76,7 @@ module Engine
           gray_phase: ['Gray Phase Begins'],
           treaty_of_boston: ['Treaty of Boston'],
           close_companies: ["Close private companies (#{COMPANIES_CLOSE_PHASE_5.join(',')})"],
+          trigger_endgame: ['Trigger Endgame'],
         )
 
         DEBT_PENALTY = {
