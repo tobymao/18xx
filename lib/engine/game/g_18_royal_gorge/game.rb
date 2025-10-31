@@ -137,6 +137,8 @@ module Engine
         end
 
         def game_corporations
+          return @game_corporations if @game_corporations
+
           # SF, RG, and three random corporations
           corporations = INCLUDED_CORPORATIONS + MAYBE_CORPORATIONS.sort_by { rand }.take(3)
 
@@ -147,14 +149,18 @@ module Engine
           corporations = corporations.map do |corporation|
             corp = corporation.dup
             corp[:abilities] ||= []
-            corp[:abilities] << { type: 'base', description: "Est. #{ESTABLISHED[corp[:sym]]}" }
+
+            if corp[:abilities].none? { |a| a[:description] =~ /^Est\./ }
+              corp[:abilities] << { type: 'base', description: "Est. #{ESTABLISHED[corp[:sym]]}" }
+            end
+
             corp
           end
 
           @log << "Railroads in the game: #{corporations.map { |c| c[:sym] }.join(', ')}"
 
           # add on non-railway corporations
-          corporations + self.class::METAL_CORPORATIONS + [DEBT_CORPORATION]
+          @game_corporations = corporations + self.class::METAL_CORPORATIONS + [DEBT_CORPORATION]
         end
 
         def setup
