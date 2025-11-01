@@ -471,7 +471,7 @@ module Engine
           # In case of a forced MR exchange, we only want to show one MR for a player
           # as the player can only exchange the MR with the lowest number. We do not
           # do this always as a player can do an unforced exchange with any MR.
-          candidates.group_by(&:owner).transform_values(&:first).values
+          candidates.group_by(&:owner).map { |_o, c| c.first }
         end
 
         def mountain_railway?(entity)
