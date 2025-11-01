@@ -70,7 +70,7 @@ module Engine
              165Y 180Y 195Y 220Y 245Y 270Y 300Y 330Y 365Y 400Y 440Y 480Y],
            ].freeze
         STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(
-          pays_bonus_3: :white,
+          pays_bonus_3: :green,
           only_president: :gray
         ).freeze
         MARKET_TEXT = Base::MARKET_TEXT.merge(
