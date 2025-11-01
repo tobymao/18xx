@@ -465,7 +465,17 @@ module Engine
         end
 
         def exchange_entities
-          @companies.reject(&:closed?)
+          candidates = @companies.reject(&:closed?)
+          return candidates if forced_mountain_railway_exchange.empty?
+
+          # In case of a forced MR exchange, we only want to show one MR for a player
+          # as the player can only exchange the MR with the lowest number. We do not
+          # do this always as a player can do an unforced exchange with any MR.
+          one_per_owner = []
+          candidates.each do |c|
+            one_per_owner << c unless one_per_owner.find { |o| o.owner == c.owner }
+          end
+          one_per_owner
         end
 
         def mountain_railway?(entity)
