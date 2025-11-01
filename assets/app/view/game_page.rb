@@ -80,9 +80,15 @@ module View
         LOGGER.debug do
           @_logger ||= {}
           @_logger[:process] = Time.now
-          "Processing game actions, strict: #{strict}..."
+          "Processing game actions, strict: #{strict}, use_engine_v2: #{use_engine_v2}..."
         end
-        @game = Engine::Game.load(@game_data, at_action: cursor, user: @user&.dig('id'), strict: strict)
+        @game = Engine::Game.load(
+          @game_data,
+          at_action: cursor,
+          user: @user&.dig('id'),
+          strict: strict,
+          use_engine_v2: use_engine_v2
+        )
         LOGGER.debug do
           "Done processing game actions: #{Time.now - @_logger[:process]} seconds"
         end
@@ -515,6 +521,16 @@ module View
       else
         @strict
       end
+    end
+
+    # https://github.com/tobymao/18xx/issues/12193
+    def use_engine_v2
+      if (param = Lib::Params['v2'])
+        return false if param.start_with?('f')
+        return true if param.start_with?('t')
+      end
+
+      @game_data.dig('settings', 'use_engine_v2')
     end
   end
 end

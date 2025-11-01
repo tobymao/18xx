@@ -10,6 +10,14 @@ module Lib
       end
     end
 
+    module EngineV2
+      def engine_v2_whats_this
+        h(Component,
+          tooltip: 'Various work-in-progress changes to make the game Engine more efficient.',
+          url: 'https://github.com/tobymao/18xx/wiki/Engine-V2')
+      end
+    end
+
     class Component < Snabberb::Component
       needs :tooltip
       needs :url
