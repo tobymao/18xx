@@ -37,6 +37,7 @@ module Lib
                 attrs: {
                   href: @url,
                   title: @tooltip,
+                  target: '_blank',
                 },
                 style: { 'text-decoration' => 'underline dotted' },
               },
