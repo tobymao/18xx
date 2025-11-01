@@ -574,9 +574,18 @@ module Engine
         def check_distance(route, visits)
           raise GameError, 'Cannot run Pullman train' if pullman_train?(route.train)
 
-          if train_type(route.train) == :etrain &&
-             visits.count { |v| v.city? && v.tokened_by?(route.corporation, types: %i[normal destination]) } < 2
-            raise GameError, 'E-train route must have at least 2 tokened cities'
+          if train_type(route.train) == :etrain
+            tokened_city = ->(visit) { visit.city? && visit.tokened_by?(route.corporation, types: %i[normal destination]) }
+
+            tokens_visited = visits.count(&tokened_city)
+            raise GameError, 'E-train route must have at least 2 tokened cities' if tokens_visited < 2
+
+            unless [visits.first, visits.last].all?(&tokened_city)
+              tokens_placed = route.corporation.tokens.count { |t| t.used && %i[normal destination].include?(t.type) }
+              raise RouteTooLong, 'E-train route cannot extend beyond tokened cities' if tokens_visited == tokens_placed
+
+              raise GameError, 'E-train route must start and end at tokened cities'
+            end
           end
 
           english_channel_visit = english_channel_visit(visits)

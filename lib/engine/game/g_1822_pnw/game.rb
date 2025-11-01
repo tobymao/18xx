@@ -1053,6 +1053,8 @@ module Engine
         end
 
         def ski_haus_revenue(route)
+          return 0 if train_type(route.train) == :etrain
+
           route.all_hexes.any? { |hex| ski_hex?(hex) } ? 30 : 0
         end
 
