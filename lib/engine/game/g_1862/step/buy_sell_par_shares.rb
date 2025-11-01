@@ -10,7 +10,7 @@ module Engine
           UNCHARTERED_TOKEN_COST = 40
 
           def help
-            return if current_entity.companies.none?
+            return if current_entity.companies.empty?
 
             company_plural = current_entity.companies.size > 1 ? 'Companies' : 'Company'
 
