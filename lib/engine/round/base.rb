@@ -39,6 +39,31 @@ module Engine
           step.setup
           step
         end
+
+        # hash for quick lookup in either direction, e.g.,
+        # { 'track' => Step::Track, Step::Track => 'track' }
+        #
+        # if there are multiple steps of the same class, all but the first have
+        # a number (starting with 2) appended to their string representation
+        @steps_h = @steps.group_by(&:type).each_with_object({}) do |(step_type, grouped_steps), steps_h|
+          if grouped_steps.one?
+            step = grouped_steps[0]
+            steps_h[step_type] = step
+            steps_h[step] = step_type
+          else
+            grouped_steps.each.with_index do |grouped_step, index|
+              key =
+                if index.zero?
+                  step_type
+                else
+                  "#{step_type}#{index + 1}"
+                end
+              steps_h[key] = grouped_step
+              steps_h[grouped_step] = key
+            end
+          end
+        end
+        @steps_h.freeze
       end
 
       def setup; end
@@ -80,19 +105,13 @@ module Engine
 
         before_process(action)
 
-        step = @steps.find do |s|
-          next unless s.active?
-
-          process = s.actions(action.entity).include?(type)
-          blocking = s.blocking?
-          raise GameError, "Blocking step #{s.description} cannot process action #{type} at #{action.id}" if blocking && !process
-
-          blocking || process
-        end
+        step = processing_step(action)
         raise GameError, "No step found for action #{type} at #{action.id}: #{action.to_h}" unless step
 
         step.acted = true
         step.send("process_#{action.type}", action)
+
+        action.step = @steps_h[step] if @game.use_engine_v2
 
         @at_start = false
 
@@ -218,6 +237,26 @@ module Engine
       def highest_bid(_entity); end
 
       private
+
+      def processing_step(action)
+        if @game.use_engine_v2 && action.step
+          # TODO(12193): with strict flag, verify `process` and `blocking` for
+          # the step as in the `else` block
+          @steps_h[action.step]
+        else
+          @steps.find do |s|
+            next unless s.active?
+
+            process = s.actions(action.entity).include?(action.type)
+            blocking = s.blocking?
+            if blocking && !process
+              raise GameError, "Blocking step #{s.description} cannot process action #{action.type} at #{action.id}"
+            end
+
+            blocking || process
+          end
+        end
+      end
 
       def before_process(_action); end
 
