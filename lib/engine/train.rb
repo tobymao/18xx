@@ -55,6 +55,7 @@ module Engine
         salvage: @salvage,
         track_type: @track_type,
         buyable: @buyable,
+        ignore_rust_obsolete_schedule: false,
       }
 
       # Primary variant should be at the head of the list.

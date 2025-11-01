@@ -156,12 +156,14 @@ module View
           # per the train variant initialization.  If other variants
           # do not have an explicit rust/obsolete, inherit the base
           # values for display purposes.
-          base_variant = first.variants.values[0]
+          base_variant = first.variants.values.find { |v| !v[:ignore_rust_obsolete_schedule] }
 
           base_rust = base_variant[:rusts_on]
           base_obsolete = base_variant[:obsolete_on]
 
           first.variants.each do |name, train_variant|
+            next if train_variant[:ignore_rust_obsolete_schedule]
+
             train_variant[:rusts_on] ||= base_rust
             train_variant[:obsolete_on] ||= base_obsolete
 
