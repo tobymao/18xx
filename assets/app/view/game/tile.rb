@@ -21,6 +21,7 @@ module View
       needs :tile
       needs :routes, default: []
       needs :show_coords, default: nil
+      needs :show_tiles, default: nil
 
       # helper method to pass @tile and @region_use to every part
       def render_tile_part(part_class, **kwargs)
@@ -120,6 +121,7 @@ module View
         # can be hidden
         children << rendered_loc_name if rendered_loc_name && setting_for(:show_location_names, @game)
         children << render_coords if @show_coords
+        children << render_tile_names if @show_tiles
         children << render_tile_part(Part::DebugRegionWeights) if Lib::Params['grid']
 
         children.flatten!
@@ -127,13 +129,12 @@ module View
         h('g.tile', children)
       end
 
-      def rotation
-        @rotation ||=
-          if @tile.hex.layout == :pointy
-            'rotate(-30) translate(62 40.5)'
-          else
-            'rotate(0) translate(32 70.02)'
-          end
+      def bottom_corner(left: false)
+        if @tile.hex.layout == :pointy
+          "rotate(-30) translate(#{left ? '-' : ''}62 40.5)"
+        else
+          "rotate(0) translate(#{left ? '-' : ''}32 70.02)"
+        end
       end
 
       def render_coords
@@ -141,7 +142,7 @@ module View
           attrs: {
             'dominant-baseline': 'central',
             fill: 'black',
-            transform: rotation,
+            transform: bottom_corner,
           },
           style: {
             fontSize: '24px',
@@ -150,6 +151,25 @@ module View
 
         h(:g, [
           h(:text, props, @tile.hex.coordinates),
+          ])
+      end
+
+      def render_tile_names
+        return [] if @tile.preprinted
+
+        props = {
+          attrs: {
+            'dominant-baseline': 'central',
+            fill: 'black',
+            transform: bottom_corner(left: true),
+          },
+          style: {
+            fontSize: '24px',
+          },
+        }
+
+        h(:g, [
+          h(:text, props, @tile.name),
           ])
       end
     end
