@@ -24,6 +24,8 @@ module Engine
               actions << 'pass' if actions.one?
             end
 
+            actions << 'pass' if add_pass_to_allow_mr_change?(entity, actions)
+
             # If debt exists, add actions to pay off
             if player_debt.positive? && entity.cash.positive?
               actions << 'payoff_player_debt'
@@ -160,6 +162,15 @@ module Engine
             return false unless exchange
 
             !@game.mountain_railway_exchangable? || !@game.exchangable_for_mountain_railway?(entity, corporation)
+          end
+
+          def add_pass_to_allow_mr_change?(entity, actions)
+            # There might be that we have no other possible actions, but still have an MR we might want to exchange
+            return false unless entity.player?
+            return false unless @game.mountain_railway_exchangable?
+            return false if bought? || actions.include?('pass')
+
+            @game.companies.find { |c| @game.mountain_railway?(c) && c.owner == entity }
           end
         end
       end
