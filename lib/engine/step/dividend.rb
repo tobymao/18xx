@@ -10,6 +10,7 @@ module Engine
       ACTIONS = %w[dividend].freeze
 
       def actions(entity)
+        return [] unless entity == current_entity
         return [] if entity.company? || total_revenue.zero?
 
         ACTIONS
