@@ -16,6 +16,8 @@ module Engine
         include G1822::Scenario
 
         BIDDING_BOX_START_MINOR = nil
+        ENGLISH_CHANNEL_HEX = nil
+        FRANCE_HEX = nil
 
         CERT_LIMIT = { 2 => 27, 3 => 16, 4 => 13, 5 => 10, 6 => 9, 7 => 8 }.freeze
 

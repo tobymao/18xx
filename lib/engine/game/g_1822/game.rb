@@ -574,32 +574,43 @@ module Engine
         def check_distance(route, visits)
           raise GameError, 'Cannot run Pullman train' if pullman_train?(route.train)
 
+          if (english_channel_visits = english_channel_visit(visits)).positive?
+            if self.class::LOCAL_TRAINS.include?(route.train.name)
+              raise GameError, 'LP train cannot have a route over the English Channel'
+            end
+
+            # 8.1.4 Must visit both hex tiles to be a valid visit. If you are
+            # tokened out from France then you can't visit the English Channel
+            # tile either.
+            raise RouteTooShort, 'Must connect English Channel to France' if english_channel_visits == 1
+
+            if english_channel_visits == 2 && visits.size == 2
+              raise GameError, 'Route must have at least 2 stops; English Channel to France only counts as 1'
+            end
+          end
+
           if train_type(route.train) == :etrain
             tokened_city = ->(visit) { visit.city? && visit.tokened_by?(route.corporation, types: %i[normal destination]) }
 
             tokens_visited = visits.count(&tokened_city)
             raise GameError, 'E-train route must have at least 2 tokened cities' if tokens_visited < 2
 
-            unless [visits.first, visits.last].all?(&tokened_city)
+            etrain_valid_start_end =
+              case [visits.first, visits.last].count(&tokened_city)
+              when 2
+                true
+              when 1
+                english_channel_etrain?(route.corporation, english_channel_visits)
+              else
+                false
+              end
+            unless etrain_valid_start_end
               tokens_placed = route.corporation.tokens.count { |t| t.used && %i[normal destination].include?(t.type) }
               raise RouteTooLong, 'E-train route cannot extend beyond tokened cities' if tokens_visited == tokens_placed
 
               raise GameError, 'E-train route must start and end at tokened cities'
             end
           end
-
-          english_channel_visit = english_channel_visit(visits)
-          # Permanent local train cant run in the english channel
-          if self.class::LOCAL_TRAINS.include?(route.train.name) && english_channel_visit.positive?
-            raise GameError, 'Local train can not have a route over the english channel'
-          end
-
-          # Must visit both hex tiles to be a valid visit. If you are tokened out from france then you cant visit the
-          # EC tile either.
-          raise GameError, 'Must connect english channel to france' if english_channel_visit == 1
-
-          # Special case when a train just runs english channel to france, this only counts as one visit
-          raise GameError, 'Route must have at least 2 stops' if english_channel_visit == 2 && visits.size == 2
 
           super
         end
@@ -1682,7 +1693,14 @@ module Engine
         end
 
         def english_channel_visit(visits)
+          return 0 if !self.class::ENGLISH_CHANNEL_HEX || !self.class::FRANCE_HEX
+
           visits.count { |v| v.hex.name == self.class::ENGLISH_CHANNEL_HEX || v.hex.name == self.class::FRANCE_HEX }
+        end
+
+        def english_channel_etrain?(corporation, english_channel_visits)
+          english_channel_visits == 2 &&
+            hex_by_id(self.class::ENGLISH_CHANNEL_HEX).tile.cities[0].tokened_by?(corporation)
         end
 
         def exchange_tokens(entity)

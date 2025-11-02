@@ -117,6 +117,8 @@ module Engine
         COMPANY_OSTH = nil
         COMPANY_LUR = 'P21' # Move Card
         COMPANY_10X_REVENUE = nil
+        ENGLISH_CHANNEL_HEX = nil
+        FRANCE_HEX = nil
 
         PRIVATE_COMPANIES_ACQUISITION = {
           'P1' => { acquire: %i[major], phase: 5 },
