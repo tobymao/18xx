@@ -45,6 +45,8 @@ module Engine
         COMPANY_CHPR = 'P28' # Station Swap
         COMPANY_5X_REVENUE = 'P9'
         COMPANY_HSBC = nil # Grimsby/Hull Bridge
+        ENGLISH_CHANNEL_HEX = nil
+        FRANCE_HEX = nil
 
         COMPANY_WINNIPEG_TOKEN = 'P10'
 

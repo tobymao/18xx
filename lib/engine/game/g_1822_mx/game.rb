@@ -63,6 +63,8 @@ module Engine
         COMPANY_LCDR = nil
         COMPANY_OSTH = nil
         COMPANY_LUR = nil # Move Card
+        ENGLISH_CHANNEL_HEX = nil
+        FRANCE_HEX = nil
 
         PRIVATE_COMPANIES_ACQUISITION = {
           'P1' => { acquire: %i[major], phase: 5 },
