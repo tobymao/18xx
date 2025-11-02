@@ -40,7 +40,7 @@ module View
         return h(:div) if companies.empty?
 
         divs = [render_title(number)]
-        divs << render_first_ipo(companies) if @show_first
+        divs << render_first_ipo(companies, number) if @show_first
         divs << h(CompaniesTable, game: @game, companies: companies) unless companies.empty?
 
         h('div.player.card', { style: card_style }, divs)
@@ -59,7 +59,7 @@ module View
         h('div.player.title.nowrap', props, ["IPO Row #{number}"])
       end
 
-      def render_first_ipo(ipo_row)
+      def render_first_ipo(ipo_row, number)
         button_props = {
           style: {
             display: 'grid',
@@ -70,6 +70,15 @@ module View
         first_company = ipo_row.shift
         inputs = []
         inputs.concat(render_buy_input(first_company)) if @current_actions.intersect?(%w[buy_company corporate_buy_company])
+
+        # Make it possible for a title to inject more choices than just buy
+        if @step.respond_to?(:general_input_renderings_ipo_row)
+          renderings = @step.general_input_renderings_ipo_row(@current_entity, first_company, number - 1)
+          renderings.each do |(choice, description)|
+            inputs.concat(render_general_input(choice, description))
+          end
+        end
+
         children = []
         children << h(Company, company: first_company, interactive: !inputs.empty?)
         children << h('div.margined_bottom', button_props, inputs) if !inputs.empty? && @selected_company == first_company
@@ -91,6 +100,19 @@ module View
         [h(:button,
            { on: { click: buy } },
            "Buy #{company.name} from IPO Row for #{@game.format_currency(company.value)}")]
+      end
+
+      def render_general_input(choice, description)
+        action = lambda do
+          process_action(Engine::Action::Choose.new(
+            @current_entity,
+            choice: choice,
+          ))
+          store(:selected_company, nil, skip: true)
+        end
+        [h(:button,
+           { on: { click: action } },
+           description)]
       end
     end
   end
