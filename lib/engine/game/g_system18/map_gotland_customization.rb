@@ -10,8 +10,8 @@ module Engine
           'D7' => [3, 4, 5, 0, 1, 2],
         }.freeze
 
-        B3_BASE_REVENUE_GREEN = 50
-        B3_BASE_REVENUE_BROWN = 70
+        B1_BASE_REVENUE_GREEN = 50
+        B1_BASE_REVENUE_BROWN = 70
         DIFFICULTY_VALUES = {
           'easy' => 10,
           'normal' => 20,
@@ -164,8 +164,8 @@ module Engine
                            'count' => 1,
                            'color' => 'green',
                            'code' => 'city=revenue:50,slots:1;city=revenue:50,slots:1;'\
-                                     'path=a:0,b:_0;path=a:3,b:_0,track:narrow;'\
-                                     'path=a:4,b:_1;path=a:3,b:_1,track:narrow;label=V',
+                                     'path=a:0,b:_0;path=a:3,b:_0;'\
+                                     'path=a:4,b:_1;path=a:3,b:_1;label=V',
                          },
                          'SVD4' => {
                            'count' => 1,
@@ -176,8 +176,8 @@ module Engine
                            'count' => 1,
                            'color' => 'brown',
                            'code' => 'city=revenue:70,slots:1;city=revenue:70,slots:1;'\
-                                     'path=a:0,b:_0;path=a:3,b:_0,track:narrow;'\
-                                     'path=a:4,b:_1;path=a:3,b:_1,track:narrow;label=V',
+                                     'path=a:0,b:_0;path=a:3,b:_0;'\
+                                     'path=a:4,b:_1;path=a:3,b:_1;label=V',
                          },
                        })
         end
@@ -217,10 +217,10 @@ module Engine
           redef_const(:TILE_LAYS, [{ lay: true, upgrade: true, cost: difficulty_level_value }].freeze)
           reduce_float_costs(0)
 
-          @green_value = B3_BASE_REVENUE_GREEN - difficulty_level_value
-          @brown_value = B3_BASE_REVENUE_BROWN - difficulty_level_value
-          # Update the B3 hex with the new values
-          hex = hex_by_id('B3')
+          @green_value = B1_BASE_REVENUE_GREEN - difficulty_level_value
+          @brown_value = B1_BASE_REVENUE_BROWN - difficulty_level_value
+          # Update the B1 hex with the new values
+          hex = hex_by_id('B1')
           hex.tile.offboards.first.revenue = { 'green' => @green_value, 'brown' => @brown_value }
         end
 
@@ -244,12 +244,13 @@ module Engine
               ['D7'] => d_tile('D7'),
             },
             red: {
-              %w[B3] => 'offboard=revenue:green_50|brown_70,format:%d-X;path=a:0,b:_0,track:narrow',
+              ['B1'] => 'offboard=revenue:green_50|brown_70,format:%d-X;path=a:0,b:_0,track:narrow',
             },
             blue: {
               %w[A12] => 'offboard=revenue:yellow_10|brown_20;path=a:5,b:_0',
               %w[C14 F5] => 'offboard=revenue:yellow_10|brown_20;path=a:2,b:_0',
               %w[D13] => 'offboard=revenue:yellow_10|brown_20;path=a:3,b:_0',
+              ['B3'] => 'town=revenue:0;path=a:0,b:_0;path=a:3,b:_0',
             },
             gray: {
               ['F1'] => 'path=a:0,b:5',
