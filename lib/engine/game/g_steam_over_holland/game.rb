@@ -432,7 +432,7 @@ module Engine
         end
 
         def min_train_price(entity)
-          if werkspoor.owned_by?(entity)
+          if werkspoor&.owned_by?(entity)
             @depot.min_depot_price * 0.9
           else
             @depot.min_depot_price
