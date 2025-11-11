@@ -378,9 +378,8 @@ module Engine
           # return if not enough normal stops
           return visits if normal_stops.size < paying_distance['pay']
 
-          # remove smallest normal stop that has less revenue than dit
-          worst_stop = normal_stops.min_by { |stop| stop.route_revenue(route.phase, route.train) }
-          visits.reject { |stop| stop == worst_stop }
+          # ignore the optional dit stop
+          normal_stops
         end
 
         def setup_turn
