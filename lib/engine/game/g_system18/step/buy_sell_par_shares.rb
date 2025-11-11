@@ -14,6 +14,14 @@ module Engine
 
             super
           end
+
+          def available_par_cash(entity, corporation, share_price: nil)
+            if @game.respond_to?("map_#{@game.cmap_name}_available_par_cash")
+              return @game.send("map_#{@game.cmap_name}_available_par_cash", entity, corporation, share_price)
+            end
+
+            entity.cash
+          end
         end
       end
     end

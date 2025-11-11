@@ -149,5 +149,9 @@ module Engine
     def player
       nil
     end
+
+    def inspect
+      "<#{self.class.name}>"
+    end
   end
 end

@@ -215,6 +215,8 @@ module Engine
         end
       end
 
+      def highest_bid(_entity); end
+
       private
 
       def before_process(_action); end
