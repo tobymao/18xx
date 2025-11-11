@@ -40,7 +40,7 @@ module Engine
           step
         end
 
-        if @game.use_engine_v2
+        if @game.use_engine_v2 # rubocop:disable Style/GuardClause
           # hash for quick lookup in either direction, e.g.,
           # { 'track' => Step::Track, Step::Track => 'track' }
           #
