@@ -4,7 +4,7 @@ require 'spec_helper'
 
 require 'json'
 
-SKIP_ALPHA = Set.new(['18Norway', '1824 Cisleithania'])
+SKIP_ALPHA = Set.new(['1824 Cisleithania'])
 
 SKIP_BETA_PROD = {
 
