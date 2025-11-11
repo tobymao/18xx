@@ -40,30 +40,32 @@ module Engine
           step
         end
 
-        # hash for quick lookup in either direction, e.g.,
-        # { 'track' => Step::Track, Step::Track => 'track' }
-        #
-        # if there are multiple steps of the same class, all but the first have
-        # a number (starting with 2) appended to their string representation
-        @steps_h = @steps.group_by(&:type).each_with_object({}) do |(step_type, grouped_steps), steps_h|
-          if grouped_steps.one?
-            step = grouped_steps[0]
-            steps_h[step_type] = step
-            steps_h[step] = step_type
-          else
-            grouped_steps.each.with_index do |grouped_step, index|
-              key =
-                if index.zero?
-                  step_type
-                else
-                  "#{step_type}#{index + 1}"
-                end
-              steps_h[key] = grouped_step
-              steps_h[grouped_step] = key
+        if @game.use_engine_v2
+          # hash for quick lookup in either direction, e.g.,
+          # { 'track' => Step::Track, Step::Track => 'track' }
+          #
+          # if there are multiple steps of the same class, all but the first have
+          # a number (starting with 2) appended to their string representation
+          @steps_h = @steps.group_by(&:type).each_with_object({}) do |(step_type, grouped_steps), steps_h|
+            if grouped_steps.one?
+              step = grouped_steps[0]
+              steps_h[step_type] = step
+              steps_h[step] = step_type
+            else
+              grouped_steps.each.with_index do |grouped_step, index|
+                key =
+                  if index.zero?
+                    step_type
+                  else
+                    "#{step_type}#{index + 1}"
+                  end
+                steps_h[key] = grouped_step
+                steps_h[grouped_step] = key
+              end
             end
           end
+          @steps_h.freeze
         end
-        @steps_h.freeze
       end
 
       def setup; end
