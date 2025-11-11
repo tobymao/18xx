@@ -67,6 +67,9 @@ module Engine
         def map_gotland_constants
           redef_const(:CURRENCY_FORMAT_STR, '%s SEK')
           redef_const(:BANKRUPTCY_ENDS_GAME_AFTER, :one)
+          redef_const(:STATUS_TEXT, {
+                        'nr_or' => ['NR', 'Nationalization Round after Operating Rounds'],
+                      })
         end
 
         def map_gotland_game_companies
@@ -137,7 +140,54 @@ module Engine
         end
 
         def map_gotland_game_phases
-          self.class::S18_INCCAP_PHASES
+          [
+            {
+              name: '2',
+              train_limit: 3,
+              tiles: [:yellow],
+              operating_rounds: 2,
+            },
+            {
+              name: '3',
+              on: '3',
+              train_limit: 3,
+              tiles: %i[yellow green],
+              operating_rounds: 2,
+              status: ['nr_or'],
+            },
+            {
+              name: '4',
+              on: '4',
+              train_limit: 3,
+              tiles: %i[yellow green],
+              operating_rounds: 2,
+              status: ['nr_or'],
+            },
+            {
+              name: '5',
+              on: '5',
+              train_limit: 2,
+              tiles: %i[yellow green brown],
+              operating_rounds: 2,
+              status: ['nr_or'],
+            },
+            {
+              name: '6',
+              on: '6',
+              train_limit: 2,
+              tiles: %i[yellow green brown],
+              operating_rounds: 2,
+              status: ['nr_or'],
+            },
+            {
+              name: '8',
+              on: '8',
+              train_limit: 2,
+              tiles: %i[yellow green brown gray],
+              operating_rounds: 2,
+              status: ['nr_or'],
+            },
+          ].deep_freeze
         end
 
         def map_gotland_game_cert_limit
@@ -564,7 +614,11 @@ module Engine
                 @turn += 1
                 or_round_finished
                 or_set_finished
-                new_nationalization_round(@round.round_num)
+                if @phase.status.include?('nr_or')
+                  new_nationalization_round(@round.round_num)
+                else
+                  new_stock_round
+                end
               end
             when init_round.class
               init_round_finished
