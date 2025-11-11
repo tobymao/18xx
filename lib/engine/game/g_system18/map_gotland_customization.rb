@@ -340,6 +340,17 @@ module Engine
           !corporation.ipoed
         end
 
+        def map_gotland_available_par_cash(entity, corporation, _share_price)
+          available = entity.cash
+
+          ability = corporation.all_abilities.find do |a|
+            a.is_a?(Engine::Game::GSystem18::Gotland::FloatCost) && a.float_cost && a.float_cost.positive?
+          end
+          available -= ability.float_cost if ability
+
+          available
+        end
+
         def map_gotland_float_corporation(corporation)
           player = corporation.owner
 
