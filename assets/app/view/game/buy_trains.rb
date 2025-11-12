@@ -628,9 +628,10 @@ module View
         }
 
         rows = @depot.upcoming.reject(&:reserved).group_by(&:name).flat_map do |_, trains|
+          train_count = trains.first.unlimited ? '∞' : trains.size
           [h(:div, @game.info_train_name(trains.first)),
            h(:div, @game.info_train_price(trains.first)),
-           h(:div, trains.size)]
+           h(:div, train_count)]
         end
 
         h(:div, div_props, [

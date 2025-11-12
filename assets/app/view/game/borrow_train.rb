@@ -78,9 +78,10 @@ module View
 
         rows = @depot.upcoming.group_by(&:name).flat_map do |_, trains|
           names_to_prices = trains.first.names_to_prices
+          train_count = trains.first.unlimited ? '∞' : trains.size
           [h(:div, names_to_prices.keys.join(', ')),
            h(:div, names_to_prices.values.map { |p| @game.format_currency(p) }.join(', ')),
-           h(:div, trains.size)]
+           h(:div, train_count)]
         end
 
         h(:div, div_props, [

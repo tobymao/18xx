@@ -230,10 +230,16 @@ module View
           event_text = event_text.flat_map { |e| [h('span.nowrap', e), ', '] }[0..-2]
           name = (@game.info_available_train(first_train, train) ? '→' : '') + @game.info_train_name(train)
 
+          remaining =
+            if trains.first.unlimited
+              '∞'
+            else
+              "#{remaining.size} / #{trains.size}"
+            end
           train_content = [
             h(:td, name),
             h("td#{price_str_class}", @game.info_train_price(train)),
-            h('td.center', "#{remaining.size} / #{trains.size}"),
+            h('td.center', remaining),
           ]
 
           show_rusts_inline = true

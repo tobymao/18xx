@@ -1056,6 +1056,10 @@ module Engine
         train.obsolete_on == purchased_train.sym
       end
 
+      def update_trains_cache
+        update_cache(:trains)
+      end
+
       def shares
         @corporations.flat_map(&:shares) + @players.flat_map(&:shares) + @share_pool.shares
       end
@@ -2647,7 +2651,7 @@ module Engine
 
       def init_train_handler
         trains = game_trains.flat_map do |train|
-          Array.new((train[:num] || num_trains(train))) do |index|
+          Array.new(num_trains(train) || train[:num]) do |index|
             self.class::TRAIN_CLASS.new(**train, index: index)
           end
         end
@@ -2659,8 +2663,12 @@ module Engine
         self.class::TRAINS
       end
 
-      def num_trains(_train)
-        raise NotImplementedError
+      def num_trains(train)
+        if train[:num] == 'unlimited'
+          (train[:events] || []).filter_map { |e| e['when'] }.max || 1
+        else
+          train[:num]
+        end
       end
 
       def init_minors

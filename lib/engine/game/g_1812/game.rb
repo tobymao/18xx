@@ -291,7 +291,7 @@ module Engine
           trains_3t.zip(@three_plus_one) do |t3, t3plus|
             depot.forget_train(t3)
             t3plus.reserved = false
-            @depot.unshift_train(t3plus)
+            @depot.insert_train(t3plus)
           end
           @convert_3s = false
         end
