@@ -384,6 +384,8 @@ module Engine
             num_players == 2 ? 3 : num_players + 2
           when '4'
             num_players
+          else
+            train[:num]
           end
         end
 

@@ -2651,7 +2651,7 @@ module Engine
 
       def init_train_handler
         trains = game_trains.flat_map do |train|
-          Array.new(num_trains(train) || train[:num]) do |index|
+          Array.new(num_trains(train)) do |index|
             self.class::TRAIN_CLASS.new(**train, index: index)
           end
         end
