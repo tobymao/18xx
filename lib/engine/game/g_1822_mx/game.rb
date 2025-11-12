@@ -716,7 +716,7 @@ module Engine
         end
 
         def minor_float_index(company)
-          return super unless bidbox_concessions.first.id == bidbox_start_concession
+          return super unless bidbox_concessions.first&.id == bidbox_start_concession
           return super unless @round.highest_bid(@c1)
 
           c1_par = self.class::MINOR_START_PAR_PRICE
