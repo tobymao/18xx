@@ -224,7 +224,7 @@ module Engine
 
           @log << "#{corporation.name} adds an extra #{train.name} train to the depot"
           train.reserved = false
-          @depot.unshift_train(train)
+          @depot.insert_train(train)
         end
 
         def init_train_handler

@@ -34,7 +34,7 @@ module Engine
             train = action.train
             entity = action.entity
             entity.trains.delete(train)
-            @game.depot.unshift_train(train)
+            @game.depot.insert_train(train)
             @log << "#{entity.name} scraps a #{train.name} train"
           end
 

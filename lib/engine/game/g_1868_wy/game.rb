@@ -1821,10 +1821,6 @@ module Engine
           train
         end
 
-        def update_trains_cache
-          update_cache(:trains)
-        end
-
         def attach_big_boy(train, entity = nil, log: true, double_head: false)
           @big_boy_train_dh_original = nil unless double_head
           detached = detach_big_boy(log: false)

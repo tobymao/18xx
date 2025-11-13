@@ -1280,10 +1280,6 @@ module Engine
           rusted_trains.uniq { |train| train.variants.keys[0] }
         end
 
-        def update_trains_cache
-          update_cache(:trains)
-        end
-
         def distance(train)
           if train.distance.is_a?(Numeric)
             [train.distance, 0]
