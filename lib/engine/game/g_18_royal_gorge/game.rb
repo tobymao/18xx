@@ -1283,6 +1283,12 @@ module Engine
           end
           super
         end
+
+        def legal_tile_rotation?(_entity, hex, tile)
+          return false if [hex.tile.name, tile.name] == %w[RG6 RG7]
+
+          true
+        end
       end
     end
   end
