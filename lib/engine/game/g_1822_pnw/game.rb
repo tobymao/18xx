@@ -165,7 +165,7 @@ module Engine
           'P18' => 'P18 (Special Tile Upgrade)',
           'P19' => 'P19 (Rockport Coal Mine)',
           'P20' => 'P20 (Backroom Negotiations)',
-          'P21' => 'P21 (Credit Mobiier)',
+          'P21' => 'P21 (Credit Mobilier)',
           'M1' => '1',
           'M2' => '2',
           'M3' => '3',
