@@ -66,7 +66,7 @@ module Engine
           full_or: 'Next end of a complete OR set, with one additional OR added on ' \
                    '(if bank breaks during an OR). Next end of an OR (if bank breaks during an SR).',
         }.freeze
-                
+
         PRIVATE_MAIL_CONTRACTS = %w[P22 P23].freeze
         PRIVATE_SMALL_MAIL_CONTRACTS = %w[P24 P25].freeze
         PRIVATE_PHASE_REVENUE = %w[P8 P9].freeze
