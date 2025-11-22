@@ -148,10 +148,10 @@ module Engine
         MUST_BUY_TRAIN = :always
         TRAIN_PRICE_MULTIPLE = 5
 
-        GAME_END_CHECK = { stock_market: :current_round, custom: :full_or }.freeze
+        GAME_END_CHECK = { stock_market: :current_round, sl_formed: :full_or }.freeze
 
         GAME_END_REASONS_TEXT = Base::GAME_END_REASONS_TEXT.merge(
-          custom: 'SL forms'
+          sl_formed: 'SL forms'
         )
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
@@ -304,7 +304,7 @@ module Engine
           @log << '-- Event: SL will form at end of current OR --'
         end
 
-        def custom_end_game_reached?
+        def game_end_check_sl_formed?
           @sl
         end
 
@@ -510,6 +510,7 @@ module Engine
             end
           end
 
+          corporation.set_cash(0, @bank)
           @corporations.delete(corporation)
           @starting_phase.delete(corporation)
           corporation.close!

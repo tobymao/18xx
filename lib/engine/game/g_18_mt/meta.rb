@@ -14,6 +14,7 @@ module Engine
         GAME_DESIGNER = 'R. Ryan Driskel'
         GAME_LOCATION = 'Montana, USA'
         GAME_TITLE = '18MT: Big Sky Barons'
+        FIXTURE_DIR_NAME = '18MT'
         GAME_ISSUE_LABEL = '18MT'
         GAME_RULES_URL = {
           'Wiki Rules Highlights' => 'https://github.com/tobymao/18xx/wiki/18MT:-Big-Sky-Barons',

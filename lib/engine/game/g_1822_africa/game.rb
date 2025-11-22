@@ -50,9 +50,9 @@ module Engine
         MUST_SELL_IN_BLOCKS = true
         SELL_MOVEMENT = :left_per_10_if_pres_else_left_one
 
-        GAME_END_CHECK = { stock_market: :current_or, custom: :full_or }.freeze
+        GAME_END_CHECK = { stock_market: :current_or, bid_boxes: :full_or }.freeze
         GAME_END_REASONS_TEXT = Base::GAME_END_REASONS_TEXT.merge(
-          custom: 'Cannot refill bid boxes'
+          bid_boxes: 'Cannot refill bid boxes'
         )
 
         ASSIGNMENT_TOKENS = {
@@ -116,7 +116,7 @@ module Engine
         CARDIFF_HEX = nil
         ENGLISH_CHANNEL_HEX = nil
         MERTHYR_TYDFIL_PONTYPOOL_HEX = nil
-        UPGRADABLE_S_HEX_NAME = nil
+        UPGRADEABLE_S_HEX_NAME = nil
         BIDDING_BOX_START_PRIVATE = nil
         BIDDING_BOX_START_MINOR = nil
         DOUBLE_HEX = [].freeze
@@ -520,10 +520,10 @@ module Engine
 
         def operating_round(round_num)
           Engine::Round::Operating.new(self, [
+            G1822::Step::DiscardTrain,
             G1822::Step::PendingToken,
             G1822::Step::FirstTurnHousekeeping,
-            Engine::Step::AcquireCompany,
-            G1822::Step::DiscardTrain,
+            G1822::Step::AcquireCompany,
             G1822::Step::SpecialChoose,
             G1822Africa::Step::LayGameReserve,
             G1822Africa::Step::SpecialTrack,
@@ -537,14 +537,13 @@ module Engine
             G1822Africa::Step::BuyTrain,
             G1822Africa::Step::MinorAcquisition,
             G1822::Step::PendingToken,
-            G1822::Step::DiscardTrain,
             G1822Africa::Step::IssueShares,
           ], round_num: round_num)
         end
 
         def stock_round(round_num = 1)
           G1822Africa::Round::Stock.new(self, [
-            Engine::Step::DiscardTrain,
+            G1822::Step::DiscardTrain,
             G1822::Step::BuySellParShares,
           ], round_num: round_num)
         end
@@ -604,9 +603,8 @@ module Engine
           company.id[0] == self.class::COMPANY_PRIVATE_PREFIX
         end
 
-        def game_end_check
-          return %i[stock_market current_or] if @stock_market.max_reached?
-          return %i[custom full_or] if bidbox.length < self.class::BIDDING_BOX_MINOR_COUNT
+        def game_end_check_bid_boxes?
+          bidbox.length < self.class::BIDDING_BOX_MINOR_COUNT
         end
 
         def reset_sold_in_sr!
@@ -913,12 +911,8 @@ module Engine
           entity.trains.count { |t| !extra_train?(t) } < train_limit(entity)
         end
 
-        def company_status_str(company)
-          if company == company_reserve_tiles && @reserved_tiles&.any?
-            return "[#{@reserved_tiles.map { |t| "##{t.name}" }.join(', ')}]"
-          end
-
-          super
+        def company_status_game_specific(company)
+          "[#{@reserved_tiles.map { |t| "##{t.name}" }.join(', ')}]" if company == company_reserve_tiles && @reserved_tiles&.any?
         end
 
         # Stubbed out because this game doesn't use it, but base 22 does

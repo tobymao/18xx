@@ -93,14 +93,14 @@ module Engine
 
         SELL_MOVEMENT = :left_share_pres
         SELL_BUY_ORDER = :sell_buy
-        GAME_END_CHECK = { custom: :immediate }.freeze
+        GAME_END_CHECK = { stock_market: :immediate }.freeze
         SOLD_OUT_INCREASE = false
         EBUY_FROM_OTHERS = :never
         PRESIDENT_SALES_TO_MARKET = false
         CAPITALIZATION = :incremental
 
         GAME_END_REASONS_TEXT = Base::GAME_END_REASONS_TEXT.merge(
-          custom: 'Max stock price in phase 3 or 10 or end card flipped in phase 10',
+          stock_market: 'Max stock price in phase 3 or 10 or end card flipped in phase 10',
         )
 
         ALLOW_MULTIPLE_PROGRAMS = true
@@ -191,6 +191,10 @@ module Engine
           @synergy_income = {}
 
           add_default_autopass
+        end
+
+        def spending_entities
+          [super, @foreign_investor]
         end
 
         # enable conditiional auto-pass for everyone at the start
@@ -426,7 +430,7 @@ module Engine
           if @cost_level == self.class::END_CARD_BACK || @stock_market.max_reached?
             @log << 'Game ends: Max Stock price has been reached' if @stock_market.max_reached?
             @log << 'Game ends: Game end card reached' if @cost_level == self.class::END_CARD_BACK
-            return end_game!
+            return end_game!(:stock_market)
           end
 
           return if @cost_level != self.class::END_CARD_FRONT || !@offering.empty?
@@ -436,7 +440,7 @@ module Engine
           @log << 'Game will end on next turn'
         end
 
-        def custom_end_game_reached?
+        def game_end_check_stock_market?
           @stock_market.max_reached? && @round.is_a?(Round::Investment)
         end
 

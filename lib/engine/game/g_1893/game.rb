@@ -297,7 +297,7 @@ module Engine
             on: '2',
             train_limit: { minor: 2, corporation: 3 },
             tiles: [:yellow],
-            status: ['rhine_impassible'],
+            status: ['rhine_impassable'],
             operating_rounds: 2,
           },
           {
@@ -655,7 +655,7 @@ module Engine
 
         STATUS_TEXT = Base::STATUS_TEXT.merge(
           'can_buy_trains' => ['Can Buy trains', 'Can buy trains from other corporations'],
-          'rhine_impassible' => ['Rhine impassible', 'Cannot lay tile across the Rhine'],
+          'rhine_impassable' => ['Rhine impassable', 'Cannot lay tile across the Rhine'],
           'may_found_agv' => ['May found AGV', 'AGV may be founded during the SR'],
           'may_found_hgk' => ['May found HGK', 'HGK may be founded during the SR']
         ).freeze

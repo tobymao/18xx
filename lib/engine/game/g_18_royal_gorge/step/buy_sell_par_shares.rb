@@ -119,6 +119,14 @@ module Engine
               cash >= modify_purchase_price(bundle)
             end
           end
+
+          def action_is_shenanigan?(_entity, _other_entity, action, _corporation, _share_to_buy)
+            case action
+            when Action::BuyShares, Action::SellShares
+              return false if [@game.gold_corp, @game.steel_corp].include?(action.bundle.corporation)
+            end
+            super
+          end
         end
       end
     end

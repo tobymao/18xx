@@ -150,10 +150,6 @@ module Engine
           }
         end
 
-        def map_twisting_tracks_game_companies
-          []
-        end
-
         # DGN GFN PHX KKN SPX
         def map_twisting_tracks_game_corporations(corps)
           corps.each_with_index do |c, idx|
@@ -227,11 +223,11 @@ module Engine
 
         def map_twisting_tracks_game_phases
           [
-            { name: '2', train_limit: 4, tiles: [:yellow], operating_rounds: 1 },
+            { name: '2', train_limit: 3, tiles: [:yellow], operating_rounds: 1 },
             {
               name: '3',
               on: '3',
-              train_limit: 4,
+              train_limit: 3,
               tiles: %i[yellow green],
               operating_rounds: 2,
             },

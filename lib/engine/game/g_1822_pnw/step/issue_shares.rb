@@ -7,6 +7,10 @@ module Engine
     module G1822PNW
       module Step
         class IssueShares < Engine::Game::G1822::Step::IssueShares
+          def actions(entity)
+            entity.corporation? && entity.type == :minor ? [] : super
+          end
+
           def process_sell_shares(action)
             @game.share_pool.sell_shares(action.bundle)
             old_price = action.entity.share_price

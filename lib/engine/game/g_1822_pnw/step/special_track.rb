@@ -71,7 +71,7 @@ module Engine
             entities = Array(entity_or_entities)
             entity, *_combo_entities = entities
 
-            return hex.tile.paths.any? { |p| p.exits == tile.exits } if @game.port_company?(entity)
+            return legal_tile_rotation_port_company?(entity, hex, tile) if @game.port_company?(entity)
             return true if tile == @game.cube_tile
             return true if @game.legal_city_and_town_tile(hex, tile)
             return legal_tile_rotation_portage_company?(entity, hex, tile) if @game.portage_company?(entity)
@@ -79,6 +79,13 @@ module Engine
             return legal_tile_rotation_coal_company?(entity, hex, tile) if @game.coal_company?(entity)
 
             super
+          end
+
+          def legal_tile_rotation_port_company?(_entity, hex, tile)
+            # The water hexes can have both short and long track spikes. The short ones are to allow
+            # tiles adjacent to the water to be upgraded. The long track spikes show the legal orientations
+            # of the port tiles.
+            hex.tile.paths.any? { |p| (p.terminal == '1') && (p.exits == tile.exits) }
           end
 
           def available_hex_portage_company(entity, hex)
@@ -110,6 +117,9 @@ module Engine
           end
 
           def available_hex_coal_company(entity, hex)
+            return false if @game.mill_hex?(hex)
+            return false if @game.ski_hex?(hex)
+
             hex.all_neighbors.keys if abilities(entity).hexes.include?(hex.id) && @game.graph.connected_hexes(entity.owner)[hex]
           end
 
@@ -129,6 +139,7 @@ module Engine
           end
 
           def process_lay_tile(action)
+            handle_tokencity(action) if @game.tokencity?(action.hex)
             return process_lay_tile_cube_company(action) if @game.cube_company?(action.entity)
             if @game.company_ability_extra_track?(action.entity) && action.tile == @game.cube_tile
               return process_lay_tile_extra_track_cube(action)
@@ -190,6 +201,10 @@ module Engine
           end
 
           def process_lay_tile_coal_company(action)
+            hex = action.hex
+            raise GameError, "Cannot lay Rockport Coal Mine in Paper Mill hex #{hex.id}" if @game.mill_hex?(hex)
+            raise GameError, "Cannot lay Rockport Coal Mine in Ski Haus hex #{hex.id}" if @game.ski_hex?(hex)
+
             tile_lay = get_tile_lay(action.entity)
             raise GameError, 'Cannot lay coal company now' if !tile_lay || !tile_lay[:lay]
 
@@ -221,6 +236,12 @@ module Engine
 
           def border_cost_discount(entity, spender, border, cost, hex)
             hex == @game.seattle_hex ? 75 : super
+          end
+
+          def handle_tokencity(action)
+            return unless (p11 = action.entity).sym == 'P11'
+
+            abilities(p11).use! if p11.owner.type == :major
           end
         end
       end

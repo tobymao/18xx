@@ -119,6 +119,13 @@ module Engine
             @train_salvaged = true
             @game.salvage_train(action.train)
           end
+
+          def help
+            return if !@round.active_train_loan && !can_take_loan?(current_entity)
+
+            'Once a loan is taken, a train must be purchased. Use the undo button to return the loans' \
+              ' in order to pass without purchasing a train.'
+          end
         end
       end
     end

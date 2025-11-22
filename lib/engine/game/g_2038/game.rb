@@ -204,10 +204,8 @@ module Engine
           'group_c_corps_available' => ['Group C Corporations become available'],
         ).freeze
 
-        def init_bank
-          return super unless optional_short_game
-
-          Engine::Bank.new(4_000, log: @log)
+        def bank_starting_cash
+          optional_short_game ? 4_000 : BANK_CASH
         end
 
         def new_auction_round

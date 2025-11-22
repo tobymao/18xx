@@ -45,6 +45,8 @@ module Engine
         COMPANY_CHPR = 'P28' # Station Swap
         COMPANY_5X_REVENUE = 'P9'
         COMPANY_HSBC = nil # Grimsby/Hull Bridge
+        ENGLISH_CHANNEL_HEX = nil
+        FRANCE_HEX = nil
 
         COMPANY_WINNIPEG_TOKEN = 'P10'
 
@@ -350,10 +352,10 @@ module Engine
 
         def operating_round(round_num)
           Engine::Round::Operating.new(self, [
+            G1822CA::Step::DiscardTrain,
             G1822CA::Step::PendingToken,
             G1822::Step::FirstTurnHousekeeping,
-            Engine::Step::AcquireCompany,
-            G1822CA::Step::DiscardTrain,
+            G1822::Step::AcquireCompany,
             G1822CA::Step::AssignSawmill,
             G1822::Step::SpecialChoose,
             G1822CA::Step::SpecialTrack,
@@ -368,14 +370,13 @@ module Engine
             G1822CA::Step::MinorAcquisition,
             G1822CA::Step::AcquisitionTrack,
             G1822CA::Step::PendingToken,
-            G1822CA::Step::DiscardTrain,
             G1822CA::Step::IssueShares,
           ], round_num: round_num)
         end
 
         def stock_round
           G1822CA::Round::Stock.new(self, [
-            Engine::Step::DiscardTrain,
+            G1822CA::Step::DiscardTrain,
             G1822::Step::BuySellParShares,
           ])
         end
@@ -532,13 +533,8 @@ module Engine
           "/icons/1822_ca/sawmill_#{token_type}.svg"
         end
 
-        def game_end_check
-          @game_end_reason ||=
-            begin
-              reason = compute_game_end
-              @operating_rounds += 1 if reason == %i[bank full_or]
-              reason
-            end
+        def game_end_set_final_turn!(reason, after)
+          @operating_rounds += 1 if [reason, after] == %i[bank full_or]
         end
 
         def grain_train?(train)

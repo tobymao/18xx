@@ -21,9 +21,9 @@ module Engine
         include_meta(G1807::Meta)
 
         GAME_END_REASONS_TEXT = Base::GAME_END_REASONS_TEXT.merge(
-          custom: 'The first 4+4 or 6G train is purchased.',
+          train: 'The first 4+4 or 6G train is purchased.',
         )
-        GAME_END_CHECK = { custom: :one_more_full_or_set }.freeze
+        GAME_END_CHECK = { train: :one_more_full_or_set }.freeze
 
         def setup
           # TODO: check which bits of this are needed, just cut-n-pasted from 1867.

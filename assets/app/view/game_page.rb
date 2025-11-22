@@ -80,9 +80,9 @@ module View
         LOGGER.debug do
           @_logger ||= {}
           @_logger[:process] = Time.now
-          'Processing game actions...'
+          "Processing game actions, strict: #{strict}..."
         end
-        @game = Engine::Game.load(@game_data, at_action: cursor, user: @user&.dig('id'))
+        @game = Engine::Game.load(@game_data, at_action: cursor, user: @user&.dig('id'), strict: strict)
         LOGGER.debug do
           "Done processing game actions: #{Time.now - @_logger[:process]} seconds"
         end
@@ -406,8 +406,13 @@ module View
       name = @round.class.name.split(':').last
       description += @game.round_description(name)
       description += @game.finished ? ' - Game Over' : " - #{@round.description}"
-      game_end = @game.game_ending_description
-      description += " - #{game_end}" if game_end
+
+      if @game.manually_ended
+        description += ' - manually ended'
+      elsif (game_end = @game.game_ending_description)
+        description += " - #{game_end}"
+      end
+
       description += " - Pinned to Version: #{@pin}" if @pin
       h(:h4, description)
     end
@@ -428,12 +433,7 @@ module View
 
       case @round
       when Engine::Round::Stock
-        if current_entity_actions.include?('place_token') && step.respond_to?(:map_action_optional?) && step.map_action_optional?
-          h(:div, [
-              h(Game::Round::Stock, game: @game),
-              h(Game::Map, game: @game),
-            ])
-        elsif !(%w[place_token lay_tile remove_token] & current_entity_actions).empty?
+        if !(%w[place_token lay_tile remove_token] & current_entity_actions).empty?
           h(Game::Map, game: @game)
         else
           h(Game::Round::Stock, game: @game)
@@ -507,6 +507,14 @@ module View
 
     def step
       @game.round.active_step
+    end
+
+    def strict
+      if (param = Lib::Params['strict'])
+        !%w[f false].include?(param)
+      else
+        @strict
+      end
     end
   end
 end

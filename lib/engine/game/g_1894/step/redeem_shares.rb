@@ -33,7 +33,7 @@ module Engine
           def process_sell_shares(action)
             corporation = action.entity
 
-            corporation.cash += action.bundle.share_price * action.bundle.num_shares
+            @game.bank.spend(action.bundle.share_price * action.bundle.num_shares, corporation)
 
             @log << "#{corporation.name} reissues #{@game.share_pool.num_presentation(action.bundle)} "\
                     "for #{@game.format_currency(action.bundle.share_price)}"

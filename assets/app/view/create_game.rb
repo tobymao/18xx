@@ -9,6 +9,7 @@ require 'view/form'
 module View
   class CreateGame < Form
     include GameManager
+    include Lib::Settings
     include Lib::WhatsThis::AutoRoute
 
     needs :mode, default: :multi, store: true
@@ -21,7 +22,7 @@ module View
     needs :title, default: nil
     needs :production, default: nil
     needs :optional_rules, default: [], store: true
-    needs :is_async, default: true, store: true
+    needs :is_async, default: nil, store: true
     needs :keywords, default: nil, store: true
 
     # hashmap, game title to min/max player count
@@ -74,10 +75,21 @@ module View
           when :multi
             inputs << h(:label, { style: @label_style }, 'Game Options')
             inputs << render_game_type
-            inputs << render_input('Invite only game', id: 'unlisted', type: :checkbox,
-                                                       container_style: { paddingLeft: '0.5rem' })
+            inputs << render_input(
+              'Invite only game',
+              id: 'unlisted',
+              type: :checkbox,
+              container_style: { paddingLeft: '0.5rem' },
+              attrs: { checked: setting_for(:invite_only) == true },
+            )
             if selected_game_or_variant::AUTOROUTE
-              inputs << render_input('Auto Routing', id: 'auto_routing', type: :checkbox, siblings: [auto_route_whats_this])
+              inputs << render_input(
+                'Auto Routing',
+                id: 'auto_routing',
+                type: :checkbox,
+                siblings: [auto_route_whats_this],
+                attrs: { checked: setting_for(:auto_routing) == true },
+              )
             end
           when :hotseat
             inputs << h(:label, { style: @label_style }, 'Player Names')
@@ -111,24 +123,18 @@ module View
 
     def render_inputs
       title = selected_game_or_variant.title
-      min_p = @min_p[title]
-      max_p = @max_p[title]
-      max_players = @max_players || max_p
-      if selected_game_or_variant.respond_to?(:min_players)
-        min_p = selected_game_or_variant.min_players(@optional_rules, max_players)
-      end
-      min_players = @min_players || min_p
+
+      game_max_players = @max_p[title]
+      game_min_players = selected_game_or_variant.min_players(@optional_rules, game_max_players)
 
       inputs = [
         render_input('Description', id: :description, placeholder: 'Add a title', label_style: @label_style),
         render_input(
-          'Min Players',
+          "Min Players (#{game_min_players})",
           id: :min_players,
           type: :number,
           attrs: {
-            min: min_p,
-            max: max_p,
-            value: min_players,
+            value: @min_players || @min_p[title],
             required: true,
           },
           container_style: @mode == :hotseat ? { display: 'none' } : {},
@@ -137,13 +143,11 @@ module View
           on: { input: -> { update_inputs } },
         ),
         render_input(
-          @mode == :hotseat ? 'Players' : 'Max Players',
+          @mode == :hotseat ? 'Players' : "Max Players (#{game_max_players})",
           id: :max_players,
           type: :number,
           attrs: {
-            min: min_p,
-            max: max_p,
-            value: max_players,
+            value: @max_players || @max_p[title],
             required: true,
           },
           input_style: { width: '3.5rem' },
@@ -245,6 +249,8 @@ module View
         update_player_range(variant[:meta])
 
         stage = variant[:meta]::DEV_STAGE
+        next if stage == :prealpha && @production
+
         stage_str = stage == :production ? '' : "(#{stage}) "
 
         desc_text = variant[:desc] ? ": #{variant[:desc]}" : ''
@@ -257,7 +263,7 @@ module View
           attrs: { value: sym, checked: @selected_variant == variant },
           on: { input: toggle_game_variant(sym) },
         )])
-      end
+      end.compact
 
       optional_rules = selected_game_or_variant::OPTIONAL_RULES.map do |o_r|
         next if o_r[:hidden]
@@ -389,20 +395,30 @@ module View
     end
 
     def render_game_type
+      if @is_async.nil?
+        is_async = setting_for(:is_async)
+        @is_async =
+          if is_async.nil?
+            true
+          else
+            is_async
+          end
+      end
+
       h(:div, { style: { padding: '0.5rem' } }, [
         render_input(
           'Async',
           id: 'async',
           type: 'radio',
           attrs: { name: 'is_async', checked: @is_async == true },
-          on: { click: -> { store(:is_async, is_async, skip: true) } }
+          on: { click: -> { store(:is_async, true, skip: true) } }
         ),
         render_input(
           'Live',
           id: 'live',
           type: 'radio',
           attrs: { name: 'is_async', checked: @is_async == false },
-          on: { click: -> { store(:is_async, is_async, skip: true) } }
+          on: { click: -> { store(:is_async, false, skip: true) } }
         ),
       ])
     end
@@ -412,14 +428,21 @@ module View
 
       game_params = params
 
+      if @mode != :json
+        title = selected_game_or_variant.title
+
+        max_players = game_params[:max_players].to_i
+        min_players = game_params[:min_players].to_i
+
+        if min_players < @min_p[title] || max_players > @max_p[title] || min_players > max_players
+          min = @min_p[title] == @max_p[title] ? '' : "within #{@min_p[title]}-"
+          player_s = "player#{@max_p[title] == 1 ? '' : 's'}"
+          return store(:flash_opts, "Invalid player count. Must be #{min}#{@max_p[title]} #{player_s}.")
+        end
+      end
+
       case @mode
       when :multi
-        title = selected_game_or_variant&.title
-        if game_params[:min_players].to_i < @min_p[title] || game_params[:max_players].to_i > @max_p[title]
-          return store(:flash_opts,
-                       'Invalid playercount')
-        end
-
         game_params[:seed] = game_params[:seed].to_i
         game_params[:seed] = nil if (game_params[:seed]).zero?
         return create_game(game_params)
@@ -514,33 +537,20 @@ module View
       return unless selected_game_or_variant
 
       title = selected_game_or_variant.title
-      max_p = @max_p[title]
-      min_p = @min_p[title]
       max_players_elm = Native(@inputs[:max_players])&.elm
       min_players_elm = Native(@inputs[:min_players])&.elm
 
       if title_change
-        max_players = max_p
-        min_players = min_p
-      else
-        # NOTE: Letters resolve to 0 when converted to integers
-        max_players = max_players_elm&.value.to_i
-        min_players = min_players_elm&.value.to_i
-      end
-      if max_players
-        max_players = [max_players, min_p].max
-        max_players = [max_players, max_p].min
-        max_players_elm&.value = max_players
-        if selected_game_or_variant.respond_to?(:min_players)
-          min_p = selected_game_or_variant.min_players(@optional_rules, max_players)
-        end
+        update_player_range(selected_game_or_variant)
+        game_max_players = @max_p[title]
+        game_min_players = selected_game_or_variant.min_players(@optional_rules, @max_players || game_max_players)
+        max_players_elm&.value = game_max_players
+        min_players_elm&.value = game_min_players
       end
 
-      if min_players
-        min_players = [min_players, min_p].max
-        min_players = [min_players, max_players || max_p].min
-        min_players_elm&.value = min_players
-      end
+      # NOTE: Letters resolve to 0 when converted to integers
+      max_players = max_players_elm&.value&.to_i
+      min_players = min_players_elm&.value&.to_i
 
       store(:max_players, max_players, skip: true)
       store(:min_players, min_players, skip: true)

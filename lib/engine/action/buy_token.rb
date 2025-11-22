@@ -7,6 +7,8 @@ module Engine
     class BuyToken < Base
       attr_reader :city, :slot, :price
 
+      REQUIRED_ARGS = %i[city slot price].freeze
+
       def initialize(entity, city:, slot:, price:)
         super(entity)
         @city = city

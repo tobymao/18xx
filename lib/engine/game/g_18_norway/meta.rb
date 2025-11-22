@@ -8,7 +8,7 @@ module Engine
       module Meta
         include Game::Meta
 
-        DEV_STAGE = :alpha
+        DEV_STAGE = :beta
         PROTOTYPE = true
 
         GAME_DESIGNER = 'Pontus Nilsson and Arne Kjell Vikhagen'
@@ -18,7 +18,18 @@ module Engine
         GAME_INFO_URL = ''
 
         PLAYER_RANGE = [3, 5].freeze
-        OPTIONAL_RULES = [].freeze
+        OPTIONAL_RULES = [
+          {
+            sym: :private_b_companies,
+            short_name: 'Use private B companies',
+            desc: 'Use side B for private companies P2, P3 and P4',
+          },
+          {
+            sym: :random_private_companies,
+            short_name: 'Use random private companies sides',
+            desc: 'Randomly choose side A or Bfor P2, P3 and P4',
+          },
+        ].freeze
       end
     end
   end

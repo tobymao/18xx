@@ -87,7 +87,7 @@ module View
       def render_par(target = nil)
         return [h(:div, 'Cannot Par')] unless @game.can_par?(@corporation, @current_entity)
 
-        if @game.respond_to?(:par_chart)
+        if @game.respond_to?(:par_chart) && @game.par_chart
           render_par_from_par_chart
         else
           render_inline_selection(target)

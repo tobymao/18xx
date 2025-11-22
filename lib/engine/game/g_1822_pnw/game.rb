@@ -27,6 +27,11 @@ module Engine
           '5': 4,
         }.freeze
 
+        # Rule 7.1.8: "If another end condition is triggered after the first
+        # that would make the game end sooner, then that end game condition
+        # takes precedence in deciding when the game ends."
+        GAME_END_LOCK_FIRST_TRIGGER = false
+
         EXCHANGE_TOKENS = {
           'CPR' => 3,
           'GNR' => 3,
@@ -110,6 +115,10 @@ module Engine
         COMPANY_CHPR = nil
         COMPANY_LCDR = nil
         COMPANY_OSTH = nil
+        COMPANY_LUR = 'P21' # Move Card
+        COMPANY_10X_REVENUE = nil
+        ENGLISH_CHANNEL_HEX = nil
+        FRANCE_HEX = nil
 
         PRIVATE_COMPANIES_ACQUISITION = {
           'P1' => { acquire: %i[major], phase: 5 },
@@ -242,6 +251,10 @@ module Engine
           entity.id == 'P16'
         end
 
+        def ski_company?(entity)
+          entity.id == 'P17'
+        end
+
         def boomtown_company?(entity)
           entity&.id == 'P18'
         end
@@ -259,7 +272,15 @@ module Engine
         end
 
         def coal_token
-          @coal_token ||= Engine::Token.new(nil, logo: '/icons/18_usa/mine.svg')
+          @coal_token ||= Engine::Token.new(nil, logo: '/icons/18_usa/mine.svg', type: :coal)
+        end
+
+        def city_tokened_by?(city, entity)
+          city.tokened_by?(entity, types: %i[normal destination])
+        end
+
+        def coal_hex?(hex)
+          %w[PNW4 PNW5].include?(hex.tile.name)
         end
 
         def backroom_company?(entity)
@@ -470,10 +491,10 @@ module Engine
 
         def operating_round(round_num)
           Engine::Game::G1822PNW::Round::Operating.new(self, [
+            G1822::Step::DiscardTrain,
             G1822::Step::PendingToken,
             G1822::Step::FirstTurnHousekeeping,
             G1822PNW::Step::AcquireCompany,
-            G1822::Step::DiscardTrain,
             G1822PNW::Step::Assign,
             Engine::Step::SpecialChoose,
             G1822PNW::Step::SpecialTrack,
@@ -481,12 +502,11 @@ module Engine
             G1822PNW::Step::Track,
             G1822::Step::DestinationToken,
             G1822::Step::Token,
-            G1822PNW::Step::Route,
+            G1822::Step::Route,
             G1822PNW::Step::Dividend,
             G1822::Step::BuyTrain,
             G1822PNW::Step::MinorAcquisition,
             G1822::Step::PendingToken,
-            G1822::Step::DiscardTrain,
             G1822PNW::Step::IssueShares,
           ], round_num: round_num)
         end
@@ -646,10 +666,10 @@ module Engine
             %w[P10 P11],
           ]
 
-          par_price = stock_market.par_prices[0]
+          par_price = stock_market.par_prices[-1]
 
           @players.each.with_index do |player, index|
-            player.cash = 0
+            player.set_cash(0, @bank)
             minors[index].each do |id|
               company = company_by_id(id)
               corp = find_corporation(company)
@@ -997,8 +1017,12 @@ module Engine
           mill_bonus.sort_by { |v| v[:revenue] }.reverse&.first
         end
 
+        def mill_hex?(hex)
+          hex.assigned?('P15')
+        end
+
         def calculate_mill_bonus(route)
-          mill_hex = route.hexes.find { |hex| hex.assigned?('P15') }
+          mill_hex = route.hexes.find { |hex| mill_hex?(hex) }
           revenue = mill_hex ? mill_bonus_amount : 0
           if mill_hex && (train_type(route.train) == :etrain)
             revenue = mill_hex.tile.cities[0].tokened_by?(route.train.owner) ? mill_bonus_amount * 2 : 0
@@ -1026,8 +1050,14 @@ module Engine
           10 * route.all_hexes.count { |hex| hex.assigned?('forest') }
         end
 
+        def ski_hex?(hex)
+          hex.assigned?('P17')
+        end
+
         def ski_haus_revenue(route)
-          route.all_hexes.any? { |hex| hex.assigned?('P17') } ? 30 : 0
+          return 0 if train_type(route.train) == :etrain
+
+          route.all_hexes.any? { |hex| ski_hex?(hex) } ? 30 : 0
         end
 
         def portage_penalty(route)
@@ -1103,23 +1133,15 @@ module Engine
 
         def close_corporation(corporation, quiet: false)
           super
-          if associated_minor?(corporation)
-            major = associated_major(corporation)
-            hex_by_id(corporation.coordinates).tile.cities[0].add_reservation!(major)
-            @log << "#{major.name} reservation takes the place of #{corporation.name}"
-          elsif regional_railway?(corporation)
-            company = company_by_id(company_id_from_corp_id(corporation.id))
-            company.owner&.companies&.delete(company)
-            company.close!
-          end
+
+          return unless regional_railway?(corporation)
+
+          company = company_by_id(company_id_from_corp_id(corporation.id))
+          company.owner&.companies&.delete(company)
+          company.close!
         end
 
-        def company_status_str(company)
-          index = bidbox_minors.index(company) || bidbox_privates.index(company)
-          return "Bid box #{index + 1}" if index
-
-          nil
-        end
+        def company_status_game_specific(_company); end
 
         def status_str(corporation)
           return super unless regional_railway?(corporation)
@@ -1235,14 +1257,6 @@ module Engine
 
         def buyable_bank_owned_companies
           @round.active_step.respond_to?(:hide_bank_companies?) && @round.active_step.hide_bank_companies? ? [] : super
-        end
-
-        def game_end_check
-          if @stock_market.max_reached?
-            %i[stock_market current_or]
-          elsif @bank.broken?
-            [:bank, @round.is_a?(Engine::Round::Operating) ? :full_or : :current_or]
-          end
         end
 
         def train_help_mail_contracts

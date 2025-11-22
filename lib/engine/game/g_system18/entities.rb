@@ -5,7 +5,15 @@ module Engine
     module GSystem18
       module Entities
         def game_companies
+          return [] unless respond_to?("map_#{map_name}_game_companies")
+
           send("map_#{map_name}_game_companies")
+        end
+
+        def game_minors
+          return [] unless respond_to?("map_#{map_name}_game_minors")
+
+          send("map_#{map_name}_game_minors")
         end
 
         S18_CORPORATIONS = [
@@ -14,6 +22,7 @@ module Engine
             sym: 'DGN',
             name: 'Dragon',
             logo: 'System18/DGN',
+            simple_logo: 'System18/DGN.alt',
             tokens: [0, 40, 100],
             coordinates: nil,
             color: '#50c878',
@@ -25,6 +34,7 @@ module Engine
             sym: 'GFN',
             name: 'Griffin',
             logo: 'System18/GFN',
+            simple_logo: 'System18/GFN.alt',
             tokens: [0, 40, 100],
             coordinates: nil,
             color: '#999999',
@@ -36,6 +46,7 @@ module Engine
             sym: 'PHX',
             name: 'Phoenix',
             logo: 'System18/PHX',
+            simple_logo: 'System18/PHX.alt',
             tokens: [0, 40, 100],
             coordinates: nil,
             color: '#ff7518',
@@ -48,6 +59,7 @@ module Engine
             sym: 'KKN',
             name: 'Kraken',
             logo: 'System18/KKN',
+            simple_logo: 'System18/KKN.alt',
             tokens: [0, 40, 100],
             coordinates: nil,
             color: '#0096ff',
@@ -59,6 +71,7 @@ module Engine
             sym: 'SPX',
             name: 'Sphinx',
             logo: 'System18/SPX',
+            simple_logo: 'System18/SPX.alt',
             tokens: [0, 40, 100],
             coordinates: nil,
             color: '#fafa33',

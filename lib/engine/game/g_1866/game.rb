@@ -23,6 +23,7 @@ module Engine
           stock_market_st: :three_rounds,
           final_phase: :three_rounds,
         }.freeze
+        GAME_END_TIMING_PRIORITY = %i[three_rounds current_round].freeze
         GAME_END_REASONS_TEXT = {
           stock_market: 'Corporation enters end game trigger on stock market',
           stock_market_st: 'Stock Turn Token enters end game trigger on stock market',
@@ -41,6 +42,9 @@ module Engine
 
         EBUY_CAN_SELL_SHARES = false
         EBUY_FROM_OTHERS = :never
+
+        EBUY_CAN_TAKE_PLAYER_LOAN = true
+        PLAYER_LOAN_INTEREST_RATE = 100
 
         TILE_TYPE = :lawson
         LAYOUT = :pointy
@@ -934,7 +938,7 @@ module Engine
           end
         end
 
-        def end_game!(player_initiated: false)
+        def end_game!(game_end_reason)
           return if @finished
 
           @corporations.each do |corporation|
@@ -987,40 +991,34 @@ module Engine
           self.class::CORPORATIONS.select { |c| corporations.include?(c[:sym]) }
         end
 
-        def game_end_check
+        def game_end_check_stock_market?
           @corp_max_reached ||= @corporations.any? do |c|
             reached = corporation?(c) && c.floated? && c.share_price.end_game_trigger?
             @game_end_triggered_corporation ||= c if reached
             reached
           end
+        end
+
+        def game_end_check_stock_market_st?
           @st_max_reached ||= @stock_turn_token_in_play.values.flatten.any? do |c|
             reached = !c.closed? && c.share_price.end_game_trigger?
             @game_end_triggered_corporation ||= c if reached
             reached
           end
+        end
+
+        def game_end_check_final_phase?
           phase_trigger = @phase.phases.last == @phase.current
           @game_end_triggered_corporation ||= @round.active_entities[0] if phase_trigger
+          phase_trigger
+        end
 
-          triggers = {
-            stock_market: @corp_max_reached,
-            stock_market_st: @st_max_reached,
-            final_phase: phase_trigger,
-          }.select { |_, t| t }
-
-          %i[three_rounds current_round].each do |after|
-            triggers.keys.each do |reason|
-              next unless game_end_check_values[reason] == after
-
-              game_end_triggered = game_end_triggered?
-              @final_round ||= @round.round_num + (after == :three_rounds ? 3 : 0)
-              @game_end_triggered_round ||= @round.round_num
-              @game_end_three_rounds ||= after == :three_rounds
-              update_stock_turn_token_names if game_end_triggered != game_end_triggered?
-              return [reason, after]
-            end
-          end
-
-          nil
+        def game_end_set_final_turn!(_reason, after)
+          game_end_triggered = game_end_triggered?
+          @final_round ||= @round.round_num + (after == :three_rounds ? 3 : 0)
+          @game_end_triggered_round ||= @round.round_num
+          @game_end_three_rounds ||= after == :three_rounds
+          update_stock_turn_token_names if game_end_triggered != game_end_triggered?
         end
 
         def game_ending_description
@@ -1221,10 +1219,6 @@ module Engine
           end
         end
 
-        def player_value(player)
-          player.value - @player_debts[player]
-        end
-
         def price_movement_chart
           [
             ['Market Action', 'Movement'],
@@ -1332,9 +1326,6 @@ module Engine
             @stock_turn_token_in_play[player] = []
             @stock_turn_token_number[player] = 0
           end
-
-          # Initialize the player depts, if player have to take an emergency loan
-          @player_debts = Hash.new { |h, k| h[k] = 0 }
 
           @london_reservation_entity = corporation_by_id('L')
           @corporations.delete(@london_reservation_entity)
@@ -1601,6 +1592,7 @@ module Engine
               token.remove!
             end
           end
+          corporation.set_cash(0, @bank)
           corporation.close!
           corporation = reset_corporation(corporation)
           tokens.each do |token|
@@ -1970,19 +1962,6 @@ module Engine
           log_share_price_row(entity, before_share_price)
         end
 
-        def payoff_player_loan(player)
-          if player.cash >= @player_debts[player]
-            player.cash -= @player_debts[player]
-            @log << "#{player.name} pays off their loan of #{format_currency(@player_debts[player])}"
-            @player_debts[player] = 0
-          else
-            @player_debts[player] -= player.cash
-            @log << "#{player.name} decreases their loan by #{format_currency(player.cash)} "\
-                    "(#{format_currency(@player_debts[player])})"
-            player.cash = 0
-          end
-        end
-
         def port_token_bonus(entity, routes)
           # Find all the port hexes and see which route pays the most
           port_hexes = {}
@@ -2018,10 +1997,6 @@ module Engine
           hex = hex_by_id(hex_coordinates)
           city = hex.tile.cities.first
           city.place_token(corporation, token, free: true, check_tokenable: false)
-        end
-
-        def player_debt(player)
-          @player_debts[player] || 0
         end
 
         def player_loan_interest(loan)
@@ -2280,11 +2255,6 @@ module Engine
           before_share_price = entity.share_price
           @stock_market.move_down(entity)
           log_share_price_row(entity, before_share_price)
-        end
-
-        def take_player_loan(player, loan)
-          player.cash += loan
-          @player_debts[player] += loan + player_loan_interest(loan)
         end
 
         def train_type(train)

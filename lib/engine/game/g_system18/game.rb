@@ -14,6 +14,10 @@ require_relative 'map_china_rapid_development_customization'
 require_relative 'map_poland_customization'
 require_relative 'map_britain_customization'
 require_relative 'map_northern_italy_customization'
+require_relative 'map_ms_customization'
+require_relative 'map_scotland_customization'
+require_relative 'map_russia_customization'
+require_relative 'map_gotland_customization'
 
 module Engine
   module Game
@@ -32,6 +36,13 @@ module Engine
         include MapPolandCustomization
         include MapBritainCustomization
         include MapNorthernItalyCustomization
+        include MapMsCustomization
+        include MapScotlandCustomization
+        include MapRussiaCustomization
+
+        attr_accessor :deferred_rust, :merging, :merge_a_city, :merge_b_city
+
+        include MapGotlandCustomization
 
         register_colors(red: '#d1232a',
                         orange: '#f58121',
@@ -183,14 +194,14 @@ module Engine
             num: 5,
             discount: { '4' => 200, '5' => 200, '6' => 200 },
           },
-        ].freeze
+        ].deep_freeze
 
         S18_FULLCAP_PHASES = [
-          { name: '2', train_limit: 4, tiles: [:yellow], operating_rounds: 1 },
+          { name: '2', train_limit: 3, tiles: [:yellow], operating_rounds: 1 },
           {
             name: '3',
             on: '3',
-            train_limit: 4,
+            train_limit: 3,
             tiles: %i[yellow green],
             operating_rounds: 2,
           },
@@ -222,14 +233,14 @@ module Engine
             tiles: %i[yellow green brown gray],
             operating_rounds: 2,
           },
-        ].freeze
+        ].deep_freeze
 
         S18_INCCAP_PHASES = [
-          { name: '2', train_limit: 4, tiles: [:yellow], operating_rounds: 2 },
+          { name: '2', train_limit: 3, tiles: [:yellow], operating_rounds: 2 },
           {
             name: '3',
             on: '3',
-            train_limit: 4,
+            train_limit: 3,
             tiles: %i[yellow green],
             operating_rounds: 2,
           },
@@ -261,7 +272,7 @@ module Engine
             tiles: %i[yellow green brown gray],
             operating_rounds: 2,
           },
-        ].freeze
+        ].deep_freeze
 
         CURRENCY_FORMAT_STR = '$%s'
         MUST_SELL_IN_BLOCKS = false
@@ -272,6 +283,7 @@ module Engine
         LAYOUT = :pointy
         TILE_LAYS = [{ lay: true, upgrade: true, cost: 0 }].freeze
         EBUY_FROM_OTHERS = :never
+        EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = true
         COLOR_SEQUENCE = %i[white yellow green brown gray].freeze
         SELL_BUY_ORDER = :sell_buy_sell
         SELL_AFTER = :first
@@ -282,6 +294,7 @@ module Engine
         STATUS_TEXT = {}.freeze
         TILE_UPGRADES_MUST_USE_MAX_EXITS = [].freeze
         DISCARDED_TRAINS = :remove
+        REMOVE_UNUSED_RESERVATIONS = false
 
         def find_map_name
           optional_rules&.find { |r| r.to_s.include?('map_') }&.to_s&.delete_prefix('map_')&.downcase
@@ -323,7 +336,7 @@ module Engine
             self.class::CORPORATION_CLASS.new(
               min_price: stock_market.par_prices.map(&:price).min,
               capitalization: game_capitalization,
-              **corporation.merge(corporation_opts),
+              **corporation.merge(corporation_opts(corporation)),
             )
           end
         end
@@ -332,8 +345,8 @@ module Engine
           corps.find { |c| c[:sym] == sym }
         end
 
-        def corporation_opts
-          two_player? ? { max_ownership_percent: 70 } : {}
+        def corporation_opts(corporation)
+          two_player? && corporation[:type] != 'minor' ? { max_ownership_percent: 70 } : {}
         end
 
         def location_name(coord)
@@ -403,6 +416,18 @@ module Engine
           send("map_#{cmap_name}_movement_type_at_emr_share_issue")
         end
 
+        def init_bank
+          if respond_to?("map_#{cmap_name}_init_bank")
+            send("map_#{cmap_name}_init_bank")
+          else
+            Bank.new(99_999, log: @log, check: false)
+          end
+        end
+
+        def bank_starting_cash
+          init_bank.cash
+        end
+
         def redef_const(const, value)
           mod = is_a?(Module) ? self : self.class
           mod.send(:remove_const, const) if mod.const_defined?(const)
@@ -417,6 +442,8 @@ module Engine
             @log << '-- ||============================================================================'
           end
 
+          @deferred_rust = []
+
           ###################################################
           # Default constant overrides for most maps
           # (to be re-overridden if needed by specific maps)
@@ -425,13 +452,15 @@ module Engine
           redef_const(:COLOR_SEQUENCE, %i[white yellow green brown gray])
           redef_const(:GAME_END_CHECK, { bankrupt: :immediate, final_phase: :one_more_full_or_set })
           redef_const(:TILE_LAYS, [{ lay: true, upgrade: true, cost: 0 }])
+          redef_const(:EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST, true)
+          redef_const(:REMOVE_UNUSED_RESERVATIONS, false)
 
           if game_capitalization == :incremental
             ######################################################
             # Default constant overrides for Incremental Cap maps
             #
             redef_const(:SELL_BUY_ORDER, :sell_buy)
-            redef_const(:SELL_AFTER, :after_sr_floated)
+            redef_const(:SELL_AFTER, :first)
             redef_const(:SELL_MOVEMENT, :left_block_pres)
             redef_const(:SOLD_OUT_INCREASE, true)
             redef_const(:MUST_EMERGENCY_ISSUE_BEFORE_EBUY, true)
@@ -469,6 +498,23 @@ module Engine
           @log << "-- #{round_description('Stock', 1)} --"
           @round_counter = 1
           stock_round
+        end
+
+        def stock_steps
+          return send("map_#{cmap_name}_stock_steps") if respond_to?("map_#{cmap_name}_stock_steps")
+
+          [
+            Engine::Step::DiscardTrain,
+            Engine::Step::Exchange,
+            Engine::Step::SpecialTrack,
+            GSystem18::Step::BuySellParShares,
+          ]
+        end
+
+        def stock_round
+          return send("map_#{cmap_name}_stock_round") if respond_to?("map_#{cmap_name}_stock_round")
+
+          GSystem18::Round::Stock.new(self, stock_steps)
         end
 
         def operating_steps
@@ -512,14 +558,10 @@ module Engine
           GSystem18::Round::Operating.new(self, operating_steps, round_num: round_num)
         end
 
-        # hijack method to see if game should end
         def reorder_players
-          if corporations.none?(&:floated)
-            @log << '-- Stock round ended with no floated corporations. Ending game.'
-            end_game!
-          end
+          return super unless respond_to?("map_#{cmap_name}_reorder_players")
 
-          super
+          send("map_#{cmap_name}_reorder_players")
         end
 
         def next_round!
@@ -561,34 +603,49 @@ module Engine
         end
 
         def or_round_finished
-          return unless respond_to?("map_#{cmap_name}_or_round_finished")
+          return super unless respond_to?("map_#{cmap_name}_or_round_finished")
 
           send("map_#{cmap_name}_or_round_finished")
         end
 
-        def rust_trains!(train, entity)
-          return super unless respond_to?("map#{cmap_name}_rust_trains!")
+        def or_set_finished
+          return super unless respond_to?("map_#{cmap_name}_or_set_finished")
 
-          send("map_#{cmap_name}_rust_trains!", train, entity)
+          send("map_#{cmap_name}_or_set_finished")
         end
 
         def close_corporation(corporation, quiet: false)
-          super
+          return super unless respond_to?("map_#{cmap_name}_close_corporation")
 
-          corporation = reset_corporation(corporation)
-          hex_by_id(corporation.coordinates).tile.add_reservation!(corporation, corporation.city)
-          @corporations << corporation
+          send("map_#{cmap_name}_close_corporation", corporation)
+        end
 
-          @log << "#{corporation.name} is now available to start"
+        def close_corporation_with_reset(corporation, quiet: false, reset: true)
+          close_corporation(corporation, quiet: quiet)
+
+          if reset
+            corporation = reset_corporation(corporation)
+            hex_by_id(corporation.coordinates).tile.add_reservation!(corporation, corporation.city)
+            @corporations << corporation
+
+            @log << "#{corporation.name} is now available to start"
+          end
+
           return unless respond_to?("map_#{cmap_name}_close_corporation_extra")
 
           send("map_#{cmap_name}_close_corporation_extra", corporation)
         end
 
         def check_other(route)
-          return unless respond_to?("map_#{cmap_name}_check_other")
+          return super unless respond_to?("map_#{cmap_name}_check_other")
 
           send("map_#{cmap_name}_check_other", route)
+        end
+
+        def check_route_combination(routes)
+          return super unless respond_to?("map_#{cmap_name}_check_route_combination")
+
+          send("map_#{cmap_name}_check_route_combination", routes)
         end
 
         def post_lay_tile(entity, tile)
@@ -613,6 +670,12 @@ module Engine
           return super unless respond_to?("map_#{cmap_name}_can_par?")
 
           send("map_#{cmap_name}_can_par?", corporation, entity)
+        end
+
+        def float_corporation(corporation)
+          return super unless respond_to?("map_#{cmap_name}_float_corporation")
+
+          send("map_#{cmap_name}_float_corporation", corporation)
         end
 
         def after_par(corporation)
@@ -731,6 +794,238 @@ module Engine
           return super unless respond_to?("map_#{cmap_name}_home_token_locations")
 
           send("map_#{cmap_name}_home_token_locations", corporation)
+        end
+
+        def destinate(corporation)
+          return super unless respond_to?("map_#{cmap_name}_destinate")
+
+          send("map_#{cmap_name}_destinate", corporation)
+        end
+
+        # used by maps that destinate
+        def destination_hex(corporation)
+          ability = corporation.abilities.first
+          hexes.find { |h| h.name == ability.hexes.first } if ability
+        end
+
+        def game_end_check_values
+          return super unless respond_to?("map_#{cmap_name}_game_end_check_values")
+
+          send("map_#{cmap_name}_game_end_check_values")
+        end
+
+        def rust?(train, purchased_train)
+          !@deferred_rust.include?(train) && super
+        end
+
+        def rust_trains!(train, entity)
+          return send("map_#{cmap_name}_rust_trains!", train, entity) if respond_to?("map#{cmap_name}_rust_trains!")
+
+          trains.each do |t|
+            next if !t.name.include?('*') || !rust?(t, train)
+
+            @deferred_rust << t
+          end
+
+          super
+        end
+
+        def train_warranted?(train)
+          return false unless respond_to?("map_#{cmap_name}_train_warranted?")
+
+          send("map_#{cmap_name}_train_warranted?", train)
+        end
+
+        def operating_order
+          return send("map_#{cmap_name}_operating_order") if respond_to?("map_#{cmap_name}_operating_order")
+
+          @minors.select(&:floated?) +
+            @corporations.select { |c| c.floated? && c.type == :minor }.sort +
+            @corporations.select { |c| c.floated? && c.type != :minor }.sort
+        end
+
+        # borrowed from 1867
+        def move_tokens(from, to)
+          from.tokens.each do |token|
+            new_token = to.next_token
+            unless new_token
+              new_token = Engine::Token.new(to)
+              to.tokens << new_token
+            end
+
+            city = token.city
+            token.remove!
+            city.place_token(to, new_token, check_tokenable: false)
+          end
+        end
+
+        # borrowed from 1867
+        def move_assets(from, to)
+          receiving = []
+
+          if from.cash.positive?
+            receiving << format_currency(from.cash)
+            from.spend(from.cash, to)
+          end
+
+          companies = transfer(:companies, from, to).map(&:name)
+          receiving << "companies (#{companies.join(', ')})" if companies.any?
+
+          trains = transfer(:trains, from, to).map(&:name)
+          receiving << "trains (#{trains})" if trains.any?
+
+          receiving
+        end
+
+        # mostly borrowed from 1867
+        def convert(player, corporation, minor)
+          @stock_market.set_par(corporation, minor.share_price)
+          share = corporation.shares.first
+          @share_pool.buy_shares(player, share.to_bundle, exchange: :free)
+
+          move_tokens(minor, corporation)
+          receiving = move_assets(minor, corporation)
+
+          close_corporation_with_reset(minor, reset: false)
+
+          @log << "#{minor.name} converts into #{corporation.name} receiving #{receiving.join(', ')}"
+        end
+
+        def merge(player, corporation, minor_a, minor_b)
+          @log << "Merging minors #{minor_a.id} and #{minor_b.id} into 10-share corporation #{corporation.id}"
+
+          @merging = true
+          @merge_a = minor_a
+          @merge_b = minor_b
+          @merge_corporation = corporation
+
+          # After merge it is the sum of the two minors' share prices (rounded down)
+          new_price = @stock_market.market.flatten.sort_by(&:price).reverse.find do |sp|
+            sp.price <= (minor_a.share_price.price + minor_b.share_price.price)
+          end
+
+          @stock_market.set_par(corporation, new_price)
+          share = corporation.shares.first
+          @share_pool.buy_shares(player, share.to_bundle, exchange: :free)
+
+          token_a = minor_a.tokens.first
+          token_b = minor_b.tokens.first
+
+          @merge_a_city = token_a.city
+          @merge_b_city = token_b.city
+
+          if token_a.hex == token_b.hex && token_a.city != token_b.city
+            # special case: minors have tokens in different cities in same hex
+            # - player needs to select which city gets the token
+
+            @round.pending_tokens << {
+              entity: corporation,
+              hexes: [token_a.hex],
+              token: corporation.find_token_by_type,
+            }
+            token_a.remove!
+            token_b.remove!
+          else
+            # otherwise, corporation gets minor_a token
+            # and then it gets minor_b token if it's in a different hex
+            move_tokens(minor_a, corporation)
+            if minor_b.tokens.map(&:hex).none? { |t| t && corporation.tokens.map(&:hex).include?(t) }
+              move_tokens(minor_b, corporation)
+            else
+              token_b.remove!
+            end
+
+            finish_merge
+          end
+        end
+
+        def finish_merge
+          # tokens are taken care of at this point
+          #
+          receiving = move_assets(@merge_a, @merge_corporation)
+          receiving.concat(move_assets(@merge_b, @merge_corporation))
+
+          close_corporation_with_reset(@merge_a, reset: false)
+          close_corporation_with_reset(@merge_b, reset: false)
+
+          @log << "#{@merge_a.name} and #{@merge_b.name} merges into #{@merge_corporation.name} receiving #{receiving.join(', ')}"
+          @merging = false
+          @merge_a = nil
+          @merge_b = nil
+          @merge_corporation = nil
+        end
+
+        # for the moment, this is tailored for the Russia map
+        def nationalize(entity, national)
+          LOGGER.debug "nationalize(#{entity&.id}, #{national&.id})"
+          return unless entity.corporation?
+
+          # delete shares after giving share value to shareholders
+          entity.share_holders.keys.each do |share_holder|
+            if share_holder != entity && share_holder != @share_pool
+              total = 0
+              share_holder.shares_of(entity).each do |share|
+                @bank.spend(share.price, share_holder)
+                total += share.price
+              end
+              @log << "#{share_holder.name} receives #{format_currency(total)} for shares of #{entity.name}" if total.positive?
+            end
+            share_holder.shares_by_corporation.delete(entity)
+          end
+
+          # cash to bank, trains tossed out, privates closed
+          entity.spend(entity.cash, @bank) if entity.cash.positive?
+          entity.trains.each { |t| t.buyable = false }
+          entity.companies.dup.each do |company|
+            company.close!
+            @log << "#{company.name} closes"
+          end
+
+          # delete shares in pool and marker from market
+          @share_pool.shares_by_corporation.delete(entity)
+          entity.share_price&.corporations&.delete(entity)
+          @corporations.delete(entity)
+
+          # move tokens if room in national and doesn't already have a token in the same hex
+          # NOTE: this isn't robust - it only works for simple city revenues
+          entity.tokens.select(&:city).sort_by { |t| t.city.max_revenue }.reverse_each do |token|
+            new_token = national.next_token
+
+            city = token.city
+            hex = token.hex
+
+            token.remove!
+
+            next unless new_token
+            next if national.tokens.any? { |t| t.hex == hex }
+
+            city.place_token(national, new_token, check_tokenable: false)
+            @log << "#{national.name} tokens #{hex.id}"
+          end
+
+          entity.close!
+          @cert_limit = init_cert_limit
+          @round.force_next_entity! if @round.current_entity == entity
+
+          @log << "#{entity.name} has been nationalized"
+        end
+
+        def must_buy_train?(entity)
+          return super unless respond_to?("map_#{cmap_name}_must_buy_train?")
+
+          send("map_#{cmap_name}_must_buy_train?", entity)
+        end
+
+        def no_trains(entity)
+          return unless respond_to?("map_#{cmap_name}_no_trains")
+
+          send("map_#{cmap_name}_no_trains", entity)
+        end
+
+        def can_issue_shares_for_train?(entity)
+          return false unless respond_to?("map_#{cmap_name}_can_issue_shares_for_train?")
+
+          send("map_#{cmap_name}_can_issue_shares_for_train?", entity)
         end
       end
     end

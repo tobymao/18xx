@@ -7,6 +7,8 @@ module Engine
     class AcquireCompany < Base
       attr_reader :entity, :company
 
+      REQUIRED_ARGS = %i[company].freeze
+
       def initialize(entity, company:)
         super(entity)
         @company = company

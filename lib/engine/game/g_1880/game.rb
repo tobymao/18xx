@@ -39,6 +39,7 @@ module Engine
         DISCARDED_TRAINS = :remove
         CERT_LIMIT_INCLUDES_PRIVATES = false
         EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
+        EBUY_CAN_TAKE_PLAYER_LOAN = true
         MARKET_SHARE_LIMIT = 80 # percent
 
         BANK_CASH = 37_860
@@ -47,7 +48,7 @@ module Engine
 
         STARTING_CASH = { 3 => 600, 4 => 480, 5 => 400, 6 => 340, 7 => 300 }.freeze
 
-        GAME_END_CHECK = { custom: :one_more_full_or_set }.freeze
+        GAME_END_CHECK = { final_train: :one_more_full_or_set }.freeze
         P0_AWARD = { 'A2' => 40, 'B1' => 70, 'B2' => 100 }.freeze
 
         ASSIGNMENT_TOKENS = {
@@ -57,7 +58,7 @@ module Engine
         TRAINS_NOT_TRIGGERING_SR = %w[2P 8E 10].freeze
 
         GAME_END_REASONS_TEXT = {
-          custom: 'Last 8 train sold',
+          final_train: 'Last 8 train sold',
         }.freeze
 
         GAME_END_REASONS_TIMING_TEXT = {
@@ -65,7 +66,7 @@ module Engine
         }.freeze
 
         GAME_END_DESCRIPTION_REASON_MAP_TEXT = {
-          custom: 'Last 8 train was purchased',
+          final_train: 'Last 8 train was purchased',
         }.freeze
 
         STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(
@@ -383,9 +384,6 @@ module Engine
           @communism = false
           @foreign_investors_operate = true
 
-          # Initialize the player depts, if player have to take an emergency loan
-          @player_debts = Hash.new { |h, k| h[k] = 0 }
-
           setup_foreign_investors
           setup_building_permits
           setup_unsaleable_shares
@@ -491,11 +489,11 @@ module Engine
           game_minors.map { |minor| G1880::Minor.new(**minor) }
         end
 
-        def custom_end_game_reached?
+        def game_end_check_final_train?
           @end_game_triggered
         end
 
-        def end_game!(player_initiated: false)
+        def end_game!(game_end_reason)
           return if @finished
 
           @minors.each do |m|
@@ -568,10 +566,6 @@ module Engine
           @log << "#{foreign_investor.full_name} receives a share of #{corporation.name}"
         end
 
-        def player_value(player)
-          super - player_debt(player)
-        end
-
         def value_for_dumpable(player, corporation)
           return 0 if @communism && corporation.owner == player
 
@@ -579,52 +573,6 @@ module Engine
             .select { |bundle| bundle.can_dump?(player) && @share_pool&.fit_in_bank?(bundle) }
             .max_by(&:price)
           max_bundle ? max_bundle.price - (max_bundle.num_shares * 5) : 0
-        end
-
-        def player_debt(player)
-          @player_debts[player] || 0
-        end
-
-        def take_player_loan(player, loan)
-          # Give the player the money. The money for loans is outside money, doesnt count towards the normal bank money.
-          player.cash += loan
-
-          # Add interest to the loan, must atleast pay 150% of the loaned value
-          interest = player_loan_interest(loan)
-          @player_debts[player] += loan + interest
-          @log << "#{player.name} takes a loan of #{format_currency(loan)} with "\
-                  "#{format_currency(interest)} in interest"
-        end
-
-        def add_interest_player_loans!
-          @player_debts.each do |player, loan|
-            next unless loan.positive?
-
-            interest = player_loan_interest(loan)
-            new_loan = loan + interest
-            @player_debts[player] = new_loan
-            @log << "#{player.name} increases their loan by 50% (#{format_currency(interest)}) to "\
-                    "#{format_currency(new_loan)}"
-          end
-        end
-
-        def payoff_player_loan(player)
-          # Pay full or partial of the player loan. The money from loans is outside money, doesnt count towards
-          # the normal bank money.
-          if player.cash >= @player_debts[player]
-            player.cash -= @player_debts[player]
-            @log << "#{player.name} pays off their loan of #{format_currency(@player_debts[player])}"
-            @player_debts[player] = 0
-          else
-            @player_debts[player] -= player.cash
-            @log << "#{player.name} decreases their loan by #{format_currency(player.cash)} "\
-                    "(#{format_currency(@player_debts[player])})"
-            player.cash = 0
-          end
-        end
-
-        def player_loan_interest(loan)
-          (loan * 0.5).ceil
         end
 
         def tile_lays(entity)

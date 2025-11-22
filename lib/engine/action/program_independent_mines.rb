@@ -8,6 +8,8 @@ module Engine
     class ProgramIndependentMines < ProgramEnable
       attr_reader :indefinite, :skip_track, :skip_buy, :skip_close
 
+      REQUIRED_ARGS = %i[skip_track skip_buy skip_close indefinite].freeze
+
       def initialize(entity, skip_track:, skip_buy:, skip_close:, indefinite:)
         super(entity)
         @skip_track = skip_track

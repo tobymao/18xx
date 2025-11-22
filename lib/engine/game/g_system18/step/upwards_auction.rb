@@ -10,6 +10,7 @@ module Engine
         class UpwardsAuction < Engine::Step::Base
           include Engine::Step::PassableAuction
           ACTIONS = %w[bid pass].freeze
+          PRICE_DROP = 5
 
           attr_reader :companies
 
@@ -39,9 +40,9 @@ module Engine
             else
               @log << "#{entity.name} passes bidding"
               entity.pass!
-              return all_passed! if entities.all?(&:passed?)
+              return next_entity! unless entities.all?(&:passed?)
 
-              next_entity!
+              all_passed!
             end
           end
 
@@ -75,12 +76,11 @@ module Engine
 
           def setup
             setup_auction
-            @companies = @game.companies.reject(&:closed?).dup
-            # setup_tiered_auction
+            @companies = @game.companies.reject(&:closed?).sort_by(&:value)
           end
 
           def starting_bid(company)
-            [0, company.value].max
+            [0, company.min_bid].max
           end
 
           def min_bid(company)
@@ -128,16 +128,54 @@ module Engine
           end
 
           def all_passed!
-            # Need to move entity round once more to be back to the priority deal player
-            @round.next_entity_index!
-            pass!
+            if @companies.empty?
+              # Need to move entity round once more to be back to the priority deal player
+              pass!
+              return
+            end
+
+            all_pass_next_entity
+
+            discount_company
           end
 
-          def resolve_bids
-            super
+          def all_pass_next_entity
+            @round.next_entity_index!
+          end
+
+          def discount_company
+            # if any privates still left, reduce price and start over
+            company = @companies.first
+            company.discount += PRICE_DROP
+            if @companies.first.min_bid <= 0
+              company.discount = company.value
+              player = @round.current_entity
+              company.owner = player
+              player.companies << company
+              @log << "#{player.name} receives #{company.name} for #{@game.format_currency(0)}"
+              company_auction_finished(company)
+              post_win_order(player)
+              pass! if @companies.empty?
+            else
+              @log << "#{company.name} price reduced to #{@game.format_currency(company.min_bid)}"
+              post_price_reduction(company)
+            end
+          end
+
+          def post_price_reduction(_company)
             entities.each(&:unpass!)
-            start_player = @auction_triggerer
-            @round.goto_entity!(start_player)
+          end
+
+          def post_win_bid(winner, _company)
+            post_win_order(winner.entity)
+          end
+
+          def post_win_order(winning_player)
+            entities.each(&:unpass!)
+
+            # start with player after the winner
+            @round.last_to_act = winning_player
+            @round.goto_entity!(winning_player)
             next_entity!
           end
         end

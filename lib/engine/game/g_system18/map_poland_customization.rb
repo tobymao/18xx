@@ -235,7 +235,10 @@ module Engine
         end
 
         def map_poland_game_phases
-          phases = self.class::S18_INCCAP_PHASES
+          self.class::S18_INCCAP_PHASES
+        end
+
+        def map_poland_post_game_phases(phases)
           phases[0][:status] = ['local_tokens'] # 2
           phases[1][:status] = ['local_tokens'] # 3
           phases[2][:status] = ['local_tokens'] # 4

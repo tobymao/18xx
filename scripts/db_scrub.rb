@@ -5,11 +5,15 @@ raise "You probably don't want to scrub the prod db" unless ENV['RACK_ENV'] == '
 require_relative 'scripts_helper'
 
 def scrub_all_users!
-  User.each { |user| scrub_user!(user) }
-
+  scrub_emails_and_settings!
   scrub_passwords!
+  scrub_chat!
+end
 
-  Action.where(**{ Sequel.pg_jsonb_op(:action).get_text('type') => 'message' }).delete
+def scrub_emails_and_settings!
+  puts 'Removing user emails and settings…'
+
+  User.each { |user| scrub_user!(user) }
 end
 
 def scrub_user!(user)
@@ -22,5 +26,15 @@ rescue StandardError
 end
 
 def scrub_passwords!
+  puts %(Setting all user passwords to "password"…)
+
   DB[:users].update(password: Argon2::Password.create('password'))
+end
+
+def scrub_chat!
+  puts 'Setting all user messages to ""…'
+
+  Action
+    .where(**{ Sequel.pg_jsonb_op(:action).get_text('type') => 'message' })
+    .update(action: Sequel.pg_jsonb_op(:action).set('{"message"}', Sequel.pg_jsonb('""')))
 end

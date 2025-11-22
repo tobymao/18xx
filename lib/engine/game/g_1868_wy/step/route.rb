@@ -10,6 +10,10 @@ module Engine
         class Route < Engine::Step::Route
           include G1868WY::SkipCoalAndOil
 
+          def actions(entity)
+            @game.tokenless_dpr?(entity) ? [] : super
+          end
+
           def available_hex(entity, hex, check_billings: true)
             if (spike = @game.spike_hex?(hex))
               @game.spike_hex_available?(spike) { |h| super(entity, h) }

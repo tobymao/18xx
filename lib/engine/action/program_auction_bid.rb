@@ -7,6 +7,8 @@ module Engine
     class ProgramAuctionBid < ProgramEnable
       attr_reader :bid_target, :enable_maximum_bid, :maximum_bid, :enable_buy_price, :buy_price, :auto_pass_after
 
+      REQUIRED_ARGS = %i[bid_target maximum_bid buy_price].freeze
+
       def initialize(entity, bid_target:, maximum_bid:, buy_price:, enable_maximum_bid: false,
                      enable_buy_price: false, auto_pass_after: false)
         super(entity)

@@ -7,6 +7,8 @@ module Engine
     class BuyShares < Base
       attr_reader :entity, :bundle, :swap, :purchase_for, :borrow_from, :total_price, :discounter
 
+      REQUIRED_ARGS = %i[shares].freeze
+
       def initialize(entity, shares:, share_price: nil, percent: nil, swap: nil, purchase_for: nil,
                      borrow_from: nil, total_price: nil, discounter: nil)
         super(entity)

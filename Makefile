@@ -63,3 +63,6 @@ style:
 
 test:
 	$(CONTAINER_COMPOSE) exec rack rake
+
+fixture_format:
+	$(CONTAINER_COMPOSE) exec rack rake fixture_format[*]

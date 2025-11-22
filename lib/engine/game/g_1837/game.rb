@@ -32,6 +32,7 @@ module Engine
 
         HOME_TOKEN_TIMING = :float
 
+        EBUY_PRES_SWAP = false
         EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
         EBUY_FROM_OTHERS = :always
         EBUY_SELL_MORE_THAN_NEEDED = true
@@ -471,7 +472,7 @@ module Engine
         def exchange_coal_minor(minor)
           target = exchange_target(minor)
           @log << "#{minor.id} exchanged for a share of #{target.id}"
-          merge_minor!(minor, target)
+          merge_minor!(minor, target, allow_president_change: target.ipoed)
         end
 
         def event_close_mountain_railways!
@@ -798,6 +799,9 @@ module Engine
         end
 
         def sold_out_stock_movement(corporation)
+          # Needed for 1824, which use base behavior for sold out (and do not use diagonal stock movements)
+          return super unless @stock_market.hex_market?
+
           if corporation.owner.percent_of(corporation) <= 40
             @stock_market.move_up(corporation)
           else

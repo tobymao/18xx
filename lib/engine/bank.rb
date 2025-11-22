@@ -18,6 +18,9 @@ module Engine
       @broken = false
       @companies = []
       @check = check
+
+      # should be zero-sum with players' @debt
+      @debt = 0
     end
 
     def check_cash(amount, borrow_from: nil)

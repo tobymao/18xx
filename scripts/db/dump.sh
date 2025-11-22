@@ -12,13 +12,15 @@ else
     DB_FILE="${1}"
 fi
 
+DB_FILE_PATH_IN_CONTAINER=${DB_FILE_PATH_IN_CONTAINER:-/home/db/}
+
 DB_CONTAINER_NAME=$(docker ps --filter name="db.?1" --format '{{.Names}}')
 
 # create gzipped backup file in docker container
-docker exec -i ${DB_CONTAINER_NAME} bash -c "pg_dump --host localhost --port ${DB_PORT} --user ${DB_USER} --no-password --exclude-table schema_info --exclude-table message_bus --data-only --format t ${DB_NAME} | gzip > /home/db/${DB_FILE}"
+docker exec -i ${DB_CONTAINER_NAME} bash -c "pg_dump --host localhost --port ${DB_PORT} --user ${DB_USER} --no-password --exclude-table schema_info --exclude-table message_bus --data-only --format t ${DB_NAME} | gzip > ${DB_FILE_PATH_IN_CONTAINER}${DB_FILE}"
 
 # copy backup to host
-docker cp ${DB_CONTAINER_NAME}:/home/db/${DB_FILE} .
+docker cp ${DB_CONTAINER_NAME}:${DB_FILE_PATH_IN_CONTAINER}${DB_FILE} .
 
 # remove backup from docker container
-docker exec -i ${DB_CONTAINER_NAME} rm -v /home/db/${DB_FILE}
+docker exec -i ${DB_CONTAINER_NAME} rm -v ${DB_FILE_PATH_IN_CONTAINER}${DB_FILE}

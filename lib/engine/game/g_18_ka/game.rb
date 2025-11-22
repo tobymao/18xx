@@ -247,7 +247,7 @@ module Engine
           'M8' => 'Chryse Gulf',
           'I10' => 'Deimos Down',
           'C12' => 'Olympus Mons',
-          'F13' => 'Ascreus',
+          'F13' => 'Ascraeus',
           'N15' => 'Chryse Harbor',
           'A16' => 'Elysium',
           'E16' => 'Pavis',
@@ -326,7 +326,7 @@ module Engine
             on: '6',
             train_limit: 2,
             tiles: %i[yellow green brown gray],
-            status: %w[fullcap facing_6 upgradable_towns no_loans],
+            status: %w[fullcap facing_6 upgradeable_towns no_loans],
             operating_rounds: 3,
           },
           {
@@ -334,7 +334,7 @@ module Engine
             on: '8',
             train_limit: 2,
             tiles: %i[yellow green brown gray black],
-            status: %w[fullcap facing_6 upgradable_towns no_loans],
+            status: %w[fullcap facing_6 upgradeable_towns no_loans],
             operating_rounds: 3,
           },
         ].freeze
@@ -467,7 +467,7 @@ module Engine
             name: 'Cosmic Corn Company',
             value: 30,
             revenue: 10,
-            desc: 'The owning corporation may place the Farm (F) tile on an equitorial hex as a bonus disconnected '\
+            desc: 'The owning corporation may place the Farm (F) tile on an equatorial hex as a bonus disconnected '\
                   'tile lay. In exchange for closing this private the corporation may token it for free',
             sym: 'C',
             abilities: [
@@ -514,14 +514,14 @@ module Engine
             revenue: 15,
             desc: 'This private comes with 1 water Engineer and 2 Harbor Rights. When bought by a corporation, '\
                   'the owning corporation may lay a second harbor marker on an harbor hex, doubling the harbor right bonus '\
-                  'for that hex. Other coproraitons can buy harbor rights from this corporation for 50c',
+                  'for that hex. Other corporations can buy harbor rights from this corporation for 50c',
             sym: 'F',
           },
           {
             name: 'Capitol Contract',
             value: 70,
             revenue: 15,
-            desc: 'The owning corporation may place the Capitol (C) tile on an equitorial hex as a bonus disconnected '\
+            desc: 'The owning corporation may place the Capitol (C) tile on an equatorial hex as a bonus disconnected '\
                   'tile lay. In exchange for closing this private the corporation may token it for free',
             sym: 'G',
             abilities: [
@@ -536,7 +536,7 @@ module Engine
               },
               {
                 type: 'token',
-                description: 'Token in the Captiol tile for free',
+                description: 'Token in the Capitol tile for free',
                 hexes: EQUATOR_HEXES,
                 count: 1,
                 price: 0,
@@ -550,16 +550,16 @@ module Engine
             name: 'Mole People',
             value: 80,
             revenue: 20,
-            desc: 'The private comes with 1 mining Engineer and 2 mining Rights. THe owning corporation may close '\
+            desc: 'The private comes with 1 mining Engineer and 2 mining Rights. The owning corporation may close '\
                   'this private to place a mining token in an empty, connected station as a neutral token. Other '\
-                  'coprorations can buy mining rights from this corproation for 50c',
+                  'corporations can buy mining rights from this corporation for 50c',
             sym: 'H',
           },
           {
             name: 'Space Elevator',
             value: 90,
             revenue: 20,
-            desc: 'The owning corporation may place the Space Elevator (SE) tile on an equitorial hex as a bonus '\
+            desc: 'The owning corporation may place the Space Elevator (SE) tile on an equatorial hex as a bonus '\
                   'disconnected tile lay. In exchange for closing this private the corporation may token it for free',
             sym: 'I',
             abilities: [
@@ -585,7 +585,7 @@ module Engine
             ],
           },
           {
-            name: 'Protoype Maglev',
+            name: 'Prototype Maglev',
             value: 100,
             revenue: 25,
             desc: 'Comes with a 2T. The 2T train may be sold at any time (including SR) to any corporation '\
@@ -607,7 +607,7 @@ module Engine
             name: 'Underground Connections',
             value: 150,
             revenue: 35,
-            desc: 'The owning corporation can close this company to repalce an existing token with a token of the '\
+            desc: 'The owning corporation can close this company to replace an existing token with a token of the '\
                   'corporation, with exceptions. This private may not be sold to a corporation. In a stock round this '\
                   'private can be exchanged to buy the presidency of a corporation with this private as '\
                   'the only compensation to the corporation',
@@ -623,7 +623,7 @@ module Engine
           # Tier 1
           {
             sym: 'OL',
-            name: 'Olympean Lines',
+            name: 'Olympian Lines',
             logo: '18_ka/OL',
             simple_logo: '18_ka/OL.alt',
             tokens: [0, 40, 80, 120],

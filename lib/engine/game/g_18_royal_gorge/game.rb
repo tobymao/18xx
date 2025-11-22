@@ -76,6 +76,7 @@ module Engine
           gray_phase: ['Gray Phase Begins'],
           treaty_of_boston: ['Treaty of Boston'],
           close_companies: ["Close private companies (#{COMPANIES_CLOSE_PHASE_5.join(',')})"],
+          trigger_endgame: ['Trigger Endgame'],
         )
 
         DEBT_PENALTY = {
@@ -112,23 +113,18 @@ module Engine
 
         GAME_END_CHECK = {
           bankrupt: :immediate,
-          custom: :one_more_full_or_set,
           stock_market: :one_more_full_or_set,
-        }.freeze
-        GAME_END_CHECK_STOCK = {
-          bankrupt: :immediate,
-          custom: :full_or,
-          stock_market: :full_or,
+          final_train: :one_more_full_or_set,
         }.freeze
         GAME_END_REASONS_TEXT = {
           bankrupt: 'Player is bankrupt',
-          custom: '6x2-train is bought/exported',
           stock_market: 'Corporation enters end game trigger on stock market',
+          final_train: '6x2-train was bought/exported',
         }.freeze
         GAME_END_DESCRIPTION_REASON_MAP_TEXT = {
           bankrupt: 'Bankruptcy',
-          custom: '6x2-train was bought/exported',
           stock_market: 'Company hit max stock value',
+          final_train: '6x2-train was bought/exported',
         }.freeze
 
         def ipo_name(_entity = nil)
@@ -142,6 +138,8 @@ module Engine
         end
 
         def game_corporations
+          return @game_corporations if @game_corporations
+
           # SF, RG, and three random corporations
           corporations = INCLUDED_CORPORATIONS + MAYBE_CORPORATIONS.sort_by { rand }.take(3)
 
@@ -151,19 +149,22 @@ module Engine
           # put established year on charter
           corporations = corporations.map do |corporation|
             corp = corporation.dup
-            corp[:abilities] = [{ type: 'base', description: "Est. #{ESTABLISHED[corp[:sym]]}" }]
+            corp[:abilities] ||= []
+
+            if corp[:abilities].none? { |a| a[:description] =~ /^Est\./ }
+              corp[:abilities] << { type: 'base', description: "Est. #{ESTABLISHED[corp[:sym]]}" }
+            end
+
             corp
           end
 
           @log << "Railroads in the game: #{corporations.map { |c| c[:sym] }.join(', ')}"
 
           # add on non-railway corporations
-          corporations + self.class::METAL_CORPORATIONS + [DEBT_CORPORATION]
+          @game_corporations = corporations + self.class::METAL_CORPORATIONS + [DEBT_CORPORATION]
         end
 
         def setup
-          @game_end_reason = nil
-
           @corporation_phase_color = {}
           @corporations[0..1].each { |c| @corporation_phase_color[c.name] = 'Yellow' }
           @corporations[2..3].each { |c| @corporation_phase_color[c.name] = 'Green' }
@@ -467,37 +468,48 @@ module Engine
           @stock_market.share_prices_with_types(@available_par_groups)
         end
 
+        def transition_to_next_round!
+          finish_round!
+          super
+        end
+
+        def finish_round!
+          case @round
+          when Round::Stock
+            reorder_players
+          when Round::Operating
+            or_round_finished
+            or_set_finished unless @round.round_num < @operating_rounds
+          when Round::Auction
+            # reorder as normal first so that if there is a tie for most cash,
+            # the player who would be first with :after_last_to_act turn order
+            # gets the tiebreaker
+            reorder_players(silent: true)
+
+            # most cash goes first, but keep same relative order; don't
+            # reorder by descending cash
+            @players.rotate!(@players.index(@players.max_by(&:cash)))
+
+            @log << "#{@players.first.name} has priority deal"
+          end
+        end
+
         def next_round!
           @round =
             case @round
             when Round::Stock
               @operating_rounds = @phase.operating_rounds
-              reorder_players
               new_operating_round
             when Round::Operating
               if @round.round_num < @operating_rounds
-                or_round_finished
                 new_operating_round(@round.round_num + 1)
               else
                 @turn += 1
-                or_round_finished
-                or_set_finished
                 round = new_stock_round
                 move_jeweler_cash!
                 round
               end
             when Round::Auction
-              # reorder as normal first so that if there is a tie for most cash,
-              # the player who would be first with :after_last_to_act turn order
-              # gets the tiebreaker
-              reorder_players(silent: true)
-
-              # most cash goes first, but keep same relative order; don't
-              # reorder by descending cash
-              @players.rotate!(@players.index(@players.max_by(&:cash)))
-
-              @log << "#{@players.first.name} has priority deal"
-
               new_stock_round
             end
         end
@@ -517,7 +529,7 @@ module Engine
           @stock_market.set_par(corporation, price)
           bundle = ShareBundle.new(corporation.shares_of(corporation))
           @share_pool.transfer_shares(bundle, @share_pool)
-          corporation.cash = 50
+          corporation.set_cash(50, @bank)
           corporation
         end
 
@@ -552,7 +564,7 @@ module Engine
           # debt increases
           old_price = @debt_corp.share_price
           @stock_market.move_right(@debt_corp)
-          @debt_corp.cash = @debt_corp.share_price.price
+          @debt_corp.set_cash(@debt_corp.share_price.price, @bank)
 
           log_share_price(@debt_corp, old_price, 1)
         end
@@ -560,7 +572,7 @@ module Engine
         def or_set_finished
           handle_metal_payout(@steel_corp)
           init_available_steel
-          @steel_corp.cash = 50
+          @steel_corp.set_cash(50, @bank)
 
           handle_metal_payout(@gold_corp)
           @gold_shipped = 0
@@ -569,7 +581,9 @@ module Engine
           if @depot.upcoming.first&.name == '2+'
             depot.export_all!('2+')
           elsif !@depot.upcoming.empty?
+            @exporting = true
             depot.export!
+            @exporting = false
           end
         end
 
@@ -581,7 +595,7 @@ module Engine
             num_shares = payee.num_shares_of(entity)
 
             if payee == gold_miner&.owner && entity == @gold_corp
-              entity.cash += per_share * 2
+              @bank.spend(per_share * 2, entity)
               num_shares += 2
             end
 
@@ -913,7 +927,7 @@ module Engine
           corporation.ipoed = true
           corporation.floated = true
           price = @stock_market.share_price([0, 6])
-          corporation.cash = price.price
+          corporation.set_cash(price.price, @bank)
           @stock_market.set_par(corporation, price)
           bundle = ShareBundle.new(corporation.shares_of(corporation))
           @share_pool.transfer_shares(bundle, @share_pool)
@@ -1018,15 +1032,17 @@ module Engine
           corporation
         end
 
-        def custom_end_game_reached?
-          @endgame_triggered
-        end
-
         def event_trigger_endgame!
-          return if @game_end_reason
+          return if @final_turn
 
-          @log << '-- Event: Endgame triggered --'
-          @endgame_triggered = true
+          @log << '-- Event: Endgame triggered by the first 6x2 train being bought/exported --'
+
+          @final_turn ||=
+            if @optional_rules.include?(:shorter_game_end) && !@exporting
+              @turn
+            else
+              @turn + 1
+            end
         end
 
         def init_share_pool
@@ -1038,26 +1054,15 @@ module Engine
           G18RoyalGorge::StockMarket.new(game_market, [])
         end
 
-        # a 6-train exporting, or a sold out corp hitting the game end zone on
-        # the stock market mess with the timing, so two GAME_END_CHECK configs
-        # are needed
-        def game_end_check_values
-          if @round&.stock?
-            self.class::GAME_END_CHECK_STOCK
-          else
-            self.class::GAME_END_CHECK
-          end
+        def game_end_set_final_turn!(reason, _after)
+          @final_turn = @turn if reason == :stock_market
         end
 
-        def game_end_check
-          # save the result so that the apparent endgame trigger doesn't change,
-          # but keep checking for bankruptcy
-          reason, after = super
-          @game_end_reason = reason if !@game_end_reason || (reason == :bankrupt)
-          [@game_end_reason, after] if @game_end_reason
+        def game_end_check_final_train?
+          @final_turn
         end
 
-        def end_game!(player_initiated: false)
+        def end_game!(game_end_reason)
           return if @finished
 
           if !@manually_ended && @round.finished?
@@ -1089,7 +1094,7 @@ module Engine
         end
 
         def sell_movement(corporation)
-          corporation.type == :rail ? :left_block_pres : :none
+          corporation.type == :rail ? :left_share_pres : :none
         end
 
         def local_jeweler
@@ -1101,7 +1106,7 @@ module Engine
           return unless (player = local_jeweler&.player)
 
           @log << "#{player.name} receives #{format_currency(@local_jeweler_cash)} from #{local_jeweler.name}"
-          player.cash += @local_jeweler_cash
+          @bank.spend(@local_jeweler_cash, player)
           @local_jeweler_cash = 0
         end
 
@@ -1272,7 +1277,7 @@ module Engine
         end
 
         def rust(train)
-          if (amount = train.salvage || 0).positive?
+          if train.owner != @depot && (amount = train.salvage || 0).positive?
             @bank.spend(amount, train.owner)
             @log << "#{train.owner.name} salvages a #{train.name} train for #{format_currency(amount)}"
           end

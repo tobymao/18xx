@@ -8,6 +8,12 @@ module Engine
 
         AXES = { x: :number, y: :letter }.freeze
 
+        # Standard game has 4 mine hexes
+        MINE_HEXES = %w[C6 A12 A22 H25].freeze
+
+        # Used by 1837, not used in 1824
+        ITALY_HEXES = [].freeze
+
         TILES = {
           '1' => 1,
           '2' => 1,
@@ -90,7 +96,7 @@ module Engine
             'count' => 1,
             'color' => 'green',
             'code' =>
-            'city=revenue:40;city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:5,b:_0;path=a:1,b:_1;'\
+            'city=revenue:50;city=revenue:50;city=revenue:50;path=a:0,b:_0;path=a:5,b:_0;path=a:1,b:_1;'\
             'path=a:2,b:_2;path=a:3,b:_2;path=a:4,b:_1;label=W',
           },
           '493' =>
@@ -174,42 +180,43 @@ module Engine
           'G10' => 'Graz',
           'G18' => 'Szegedin',
           'G26' => 'Kronstadt',
+          'G28' => 'Bukarest',
           'H1' => 'Mailand',
           'H3' => 'Bozen',
           'H15' => 'Fünfkirchen',
           'H23' => 'Hermannstadt',
-          'H27' => 'Bukarest',
           'I8' => 'Triest',
-          'J13' => 'Sarajevo',
+          'J11' => 'Sarajevo',
         }.freeze
 
         DRESDEN_1 = 'offboard=revenue:yellow_10|green_20|brown_30|gray_40,hide:1,groups:Dresden;'\
-                    'path=a:4,b:_0,terminal:1;path=a:5,b:_0,terminal:1'
+                    'path=a:4,b:_0,terminal:1;path=a:5,b:_0,terminal:1;border=edge:0'
         DRESDEN_2 = 'offboard=revenue:yellow_10|green_20|brown_30|gray_40,groups:Dresden;'\
-                    'path=a:4,b:_0,terminal:1'
+                    'path=a:4,b:_0,terminal:1;border=edge:3'
         KIEW_1 = 'offboard=revenue:yellow_10|green_30|brown_40|gray_50,hide:1,groups:Kiew;'\
-                 'path=a:0,b:_0,terminal:1;path=a:5,b:_0,terminal:1'
+                 'path=a:0,b:_0,terminal:1;path=a:5,b:_0,terminal:1;border=edge:4'
         KIEW_2 = 'offboard=revenue:yellow_10|green_30|brown_40|gray_50,groups:Kiew;'\
-                 'path=a:0,b:_0,terminal:1'
+                 'path=a:0,b:_0,terminal:1;border=edge:1'
         MAINLAND_1 = 'offboard=revenue:yellow_10|green_30|brown_50|gray_70,hide:1,groups:Mainland;'\
-                     'path=a:3,b:_0,terminal:1;path=a:4,b:_0,terminal:1'
-        MAINLAND_2 = 'offboard=revenue:yellow_10|green_30|brown_50|gray_70,groups:Mainland;path=a:3,b:_0,terminal:1'
+                     'path=a:3,b:_0,terminal:1;path=a:4,b:_0,terminal:1;border=edge:5'
+        MAINLAND_2 = 'offboard=revenue:yellow_10|green_30|brown_50|gray_70,groups:Mainland;'\
+                     'path=a:3,b:_0,terminal:1;border=edge:2'
         BUKAREST_1 = 'offboard=revenue:yellow_10|green_30|brown_40|gray_50,hide:1,groups:Bukarest;'\
-                     'path=a:1,b:_0,terminal:1'
-        BUKAREST_2 = 'offboard=revenue:yellow_10|green_30|brown_40|gray_50,groups:Bukarest;path=a:2,b:_0,terminal:1'
+                     'path=a:1,b:_0,terminal:1;border=edge:0'
+        BUKAREST_2 = 'offboard=revenue:yellow_10|green_30|brown_40|gray_50,groups:Bukarest;path=a:2,b:_0,terminal:1;'\
+                     'border=edge:3'
         SARAJEVO = 'city=revenue:yellow_10|green_10|brown_50|gray_50;'\
-                   'path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1;path=a:2,b:_0,terminal:1;'\
-                   'path=a:3,b:_0,terminal:1;path=a:4,b:_0,terminal:1;path=a:5,b:_0,terminal:1'
-        SARAJEVO_W = 'path=a:2,b:5;path=a:3,b:4'
-        SARAJEVO_E = 'path=a:0,b:3;path=a:1,b:2'
-        SARAJEVO_S = 'path=a:2,b:3'
+                   'path=a:1,b:_0,lanes:2,terminal:1;path=a:2,b:_0,terminal:1;border=edge:1;'\
+                   'path=a:3,b:_0,terminal:1;path=a:4,b:_0,lanes:2,terminal:1;border=edge:4'
+        SARAJEVO_W = 'path=a:2,b:4,b_lane:2.0;path=a:3,b:4,b_lane:2.1;border=edge:4;border=edge:5'
+        SARAJEVO_E = 'path=a:2,b:1,b_lane:2.0;path=a:3,b:1,b_lane:2.1;border=edge:0;border=edge:1'
         WIEN = 'city=revenue:30;path=a:0,b:_0;city=revenue:30;'\
                'path=a:1,b:_1;city=revenue:30;path=a:2,b:_2;upgrade=cost:20,terrain:water;label=W'
 
         MINE_1 = 'city=revenue:yellow_10|green_10|brown_40|gray_40;path=a:2,b:_0,terminal:1;path=a:3,b:_0,terminal:1'
         MINE_2 = 'city=revenue:yellow_10|green_10|brown_40|gray_40;path=a:1,b:_0,terminal:1;path=a:5,b:_0,terminal:1'
         MINE_3 = 'city=revenue:yellow_20|green_20|brown_60|gray_60;path=a:1,b:_0,terminal:1;path=a:5,b:_0,terminal:1'
-        MINE_4 = 'city=revenue:yellow_10|green_10|brown_40|gray_40;path=a:1,b:_0,terminal:1;path=a:3,b:_0,terminal:1'
+        MINE_4 = 'city=revenue:yellow_20|green_20|brown_60|gray_60;path=a:1,b:_0,terminal:1;path=a:3,b:_0,terminal:1'
 
         TOWN = 'town=revenue:0'
         TOWN_WITH_WATER = 'town=revenue:0;upgrade=cost:20,terrain:water'
@@ -224,10 +231,10 @@ module Engine
         PLAIN_WITH_MOUNTAIN = 'upgrade=cost:40,terrain:mountain'
         PLAIN_WITH_WATER = 'upgrade=cost:20,terrain:water'
 
-        def base_map
+        def map_optional_hexes
           plain_hexes = %w[B7 B11 B17 B19 B21 C8 C14 C20 C22 C24 D9 D11 D13 D15 D17 E6 E18 E22
                            F9 F13 F15 F21 F25 G6 G12 G14 G22 G24 H9 H13 H19 H21 I10 I12 I14]
-          one_town = %w[A8 A20 C10 C16 D25 E20 E24 F19 G2 G20 H11 I20 I22]
+          one_town = %w[A8 A20 C10 C16 D25 E20 F19 G2 G20 H11 I20 I22]
           two_towns = %w[B13 B25 F11 I16]
           if option_goods_time
             # Variant Goods Time transform some plain hexes to town(s) hexes
@@ -249,19 +256,18 @@ module Engine
               ['H1'] => MAINLAND_1,
               ['I2'] => MAINLAND_2,
               ['J13'] => SARAJEVO,
+              ['J11'] => SARAJEVO_W,
+              ['J15'] => SARAJEVO_E,
             },
             gray: {
               ['A12'] => MINE_2,
               ['A22'] => MINE_3,
               ['C6'] => MINE_1,
               ['H25'] => MINE_4,
-              ['J11'] => SARAJEVO_W,
-              ['J15'] => SARAJEVO_E,
-              %w[K12 ̈́K14] => SARAJEVO_S,
             },
             white: {
               one_town => TOWN,
-              %w[A6 A10] => TOWN_WITH_MOUNTAIN,
+              %w[A6 A10 E24] => TOWN_WITH_MOUNTAIN,
               two_towns => DOUBLE_TOWN,
               %w[D19 H3] => CITY_WITH_MOUNTAIN,
               %w[A18 C26 E26 I8] => CITY_LABEL_T,
@@ -275,52 +281,6 @@ module Engine
               %w[E14 G18] => CITY_WITH_WATER,
               %w[H17 I18] => TOWN_WITH_WATER,
               ['E16'] => DOUBLE_TOWN_WITH_WATER,
-            },
-          }
-        end
-
-        def cisleithania_map
-          # For 3 players Budapest is a city for Pre-staatsbahn U1
-          budapest = @players.size == 3 ? 'city' : 'offboard'
-          {
-            red: {
-              ['A4'] => DRESDEN_1,
-              ['A24'] => KIEW_1,
-              ['A26'] => KIEW_2,
-              ['B3'] => DRESDEN_2,
-              ['E14'] =>
-                'offboard=revenue:yellow_20|green_30|brown_40|gray_40;path=a:0,b:_0,terminal:1;'\
-                'path=a:1,b:_0,terminal:1;path=a:2,b:_0,terminal:1;path=a:3,b:_0,terminal:1',
-              ['G12'] =>
-                "#{budapest}=revenue:yellow_20|green_40|brown_60|gray_70;"\
-                'path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1;path=a:2,b:_0,terminal:1;path=a:3,b:_0,terminal:1',
-              ['F25'] =>
-                'offboard=revenue:yellow_20|green_30|brown_40|gray_40;path=a:2,b:_0,terminal:1;'\
-                'path=a:3,b:_0,terminal:1',
-              ['H1'] => MAINLAND_1,
-              ['I2'] => MAINLAND_2,
-              ['I10'] =>
-                'offboard=revenue:yellow_10|green_10|brown_50|gray_50;path=a:1,b:_0,terminal:1;'\
-                'path=a:2,b:_0,terminal:1;path=a:3,b:_0,terminal:1',
-            },
-            gray: {
-              ['A12'] => MINE_2,
-              ['A22'] => MINE_3,
-              ['B17'] => 'path=a:0,b:3;path=a:1,b:4;path=a:1,b:3;path=a:0,b:4',
-              ['C6'] => MINE_1,
-            },
-            white: {
-              %w[A8 A20 C10 C16 D25 E24 G2] => TOWN,
-              %w[A6 A10] => TOWN_WITH_MOUNTAIN,
-              %w[B13 B25 F11] => DOUBLE_TOWN_WITH_WATER,
-              %w[H3] => CITY_WITH_MOUNTAIN,
-              %w[A18 C26 E26 I8] => CITY_WITH_MOUNTAIN,
-              %w[B5 B9 B15 B23 C12 E8 F7 G4 G10] => CITY,
-              %w[B7 B11 B19 B21 C8 C14 C20 C22 C24 D9 D11 D13 D15 E6
-                 F9 F13 G6 H9 H11] => PLAIN,
-              %w[D23 G8 H5 H7] => PLAIN_WITH_MOUNTAIN,
-              %w[E10] => PLAIN_WITH_WATER,
-              ['E12'] => WIEN,
             },
           }
         end

@@ -58,7 +58,7 @@ module Engine
             sym: 'Y4',
             name: 'William Palmer (Y4)',
             desc: 'Owning player will start the game with a 10% of Rio Grande and a 10% share of CF&I. '\
-                  'Closes when the first 5+ train is purchased.',
+                  'Closes when the first 5+ train is purchased. May never be sold to a corporation.',
             value: 75,
             revenue: 5,
             abilities: [
@@ -324,6 +324,16 @@ module Engine
             coordinates: 'L2',
             tokens: 3,
             color: 'red',
+            abilities: [
+              {
+                type: 'reservation',
+                hex: 'D12',
+              },
+              {
+                type: 'reservation',
+                hex: 'F12',
+              },
+            ],
           ),
           def_corporation(
             sym: 'SF',

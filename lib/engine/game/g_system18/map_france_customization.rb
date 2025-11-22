@@ -6,29 +6,43 @@ module Engine
       module MapFranceCustomization
         # rubocop:disable Layout/LineLength
         def map_france_game_tiles(tiles)
+          tiles['895'] = 1
           tiles.merge!({
+                         'X1' =>
+                         {
+                           'count' => 1,
+                           'color' => 'green',
+                           'code' =>
+                           'city=revenue:60,loc:5.5;city=revenue:60,loc:1.5;city=revenue:60,loc:3.5;path=a:5,b:_0;path=a:1,b:_1;path=a:2,b:_1;path=a:3,b:_2;path=a:4,b:_2;label=P',
+                         },
                          'X2' =>
-            {
-              'count' => 1,
-              'color' => 'gray',
-              'code' =>
-              'city=revenue:70,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=B',
-            },
-                         'X4' =>
               {
                 'count' => 1,
-                'color' => 'green',
+                'color' => 'brown',
                 'code' =>
-                'city=revenue:60,loc:5.5;city=revenue:60,loc:1.5;city=revenue:60,loc:3.5;path=a:5,b:_0;path=a:1,b:_1;path=a:2,b:_1;path=a:3,b:_2;path=a:4,b:_2;label=P',
+                'city=revenue:80,slots:2,loc:5.5;city=revenue:80,loc:2.5;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_1;path=a:3,b:_1;path=a:4,b:_0;path=a:5,b:_0;label=P',
               },
+                         'X3' =>
+              {
+                'count' => 1,
+                'color' => 'gray',
+                'code' =>
+                'city=revenue:60,loc:0.5;city=revenue:60,loc:2.5;path=a:0,b:_0;path=a:_0,b:1;path=a:2,b:_1;path=a:_1,b:3;path=a:4,b:_0;path=a:5,b:_1;label=OO',
+              },
+                         'X4' =>
+                {
+                  'count' => 1,
+                  'color' => 'gray',
+                  'code' =>
+                  'city=revenue:70,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=B',
+                },
                          'X5' =>
                 {
                   'count' => 1,
-                  'color' => 'brown',
+                  'color' => 'gray',
                   'code' =>
-                  'city=revenue:80,slots:2,loc:5.5;city=revenue:80,loc:2.5;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_1;path=a:3,b:_1;path=a:4,b:_0;path=a:5,b:_0;label=P',
+                  'city=revenue:50,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=L',
                 },
-
                        })
         end
 
@@ -62,23 +76,24 @@ module Engine
         def map_france_game_hexes
           {
             gray: {
-              %w[A5] => 'town=revenue:0;path=a:0,b:_0;path=a:5,b:_0',
+              %w[A5 B10] => 'town=revenue:0;path=a:0,b:_0;path=a:5,b:_0',
               %w[B8] => 'town=revenue:0;town=revenue:0;path=a:0,b:_0;path=a:1,b:_0;path=a:0,b:_1;path=a:5,b:_1',
               %w[C1] => 'town=revenue:0;path=a:4,b:_0;path=a:5,b:_0',
               %w[D10] => 'town=revenue:0;path=a:1,b:_0;path=a:2,b:_0',
-              %w[E1 F2] => 'town=revenue:0;path=a:3,b:_0;path=a:4,b:_0',
+              %w[E1 F2 G3] => 'town=revenue:0;path=a:3,b:_0;path=a:4,b:_0',
               %w[E9] => 'town=revenue:0;town=revenue:0;path=a:0,b:_0;path=a:1,b:_0;path=a:1,b:_1;path=a:2,b:_1',
               %w[G9] => 'town=revenue:0;path=a:2,b:_0;path=a:3,b:_0',
             },
 
             red: {
               %w[B4] => 'offboard=revenue:green_40|brown_70;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
-              %w[C11] => 'offboard=revenue:yellow_20|green_30|brown_40;path=a:1,b:_0',
+              %w[C11] => 'offboard=revenue:yellow_20|green_30|brown_40;path=a:1,b:_0;path=a:2,b:_0',
               %w[F10] => 'offboard=revenue:green_30|brown_40;path=a:1,b:_0;path=a:0,b:_0',
-              %w[G5] => 'offboard=revenue:yellow_20|green_20|brown_40;path=a:2,b:_0;path=a:3,b:_0',
+              %w[G5] => 'offboard=revenue:yellow_20|green_20|brown_40;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0',
             },
             white: {
-              %w[C3 C9 D2 E3 E7 F4 F6] => 'city',
+              %w[C3 C9 D2 E3 F4 F6] => 'city',
+              %w[E7] => 'city=revenue:0;future_label=label:L,color:gray',
               %w[C7 D6 E5] => 'town=revenue:0;town=revenue:0',
             },
             yellow: {
@@ -88,10 +103,6 @@ module Engine
               ['F8'] => 'city=revenue:30;path=a:1,b:_0;label=B',
             },
           }
-        end
-
-        def map_france_game_companies
-          []
         end
 
         def map_france_game_corporations(corps)

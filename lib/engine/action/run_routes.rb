@@ -8,6 +8,8 @@ module Engine
     class RunRoutes < Base
       attr_reader :routes, :extra_revenue, :subsidy
 
+      REQUIRED_ARGS = %i[routes].freeze
+
       def initialize(entity, routes:, extra_revenue: 0, subsidy: 0)
         super(entity)
         @routes = routes

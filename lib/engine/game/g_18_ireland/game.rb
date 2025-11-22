@@ -43,10 +43,8 @@ module Engine
         CURRENCY_FORMAT_STR = '£%s'
 
         # This allows the larger bank variant
-        def init_bank
-          cash = larger_bank? ? self.class::LARGER_BANK_CASH : self.class::BANK_CASH
-
-          Bank.new(cash, log: @log)
+        def bank_starting_cash
+          larger_bank? ? self.class::LARGER_BANK_CASH : self.class::BANK_CASH
         end
 
         CERT_LIMIT = { 3 => 16, 4 => 12, 5 => 10, 6 => 8 }.freeze

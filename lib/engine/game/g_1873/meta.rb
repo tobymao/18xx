@@ -16,6 +16,7 @@ module Engine
         GAME_PUBLISHER = :all_aboard_games
         GAME_RULES_URL = 'https://boardgamegeek.com/filepage/238954/harzbahn-1873-rules-2022-all-aboard-games'
         GAME_TITLE = 'Harzbahn 1873'
+        FIXTURE_DIR_NAME = '1873'
 
         PLAYER_RANGE = [2, 5].freeze
         OPTIONAL_RULES = [

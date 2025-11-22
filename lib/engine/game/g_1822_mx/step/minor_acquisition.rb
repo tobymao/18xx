@@ -14,7 +14,8 @@ module Engine
 
           def entity_connects?(entity, minor)
             minor_city = if !minor.owner || minor.owner == @bank
-                           # Trying to acquire a bidbox minor. Trace route to its hometokenplace
+                           # Trying to acquire a bidbox minor. Trace route to
+                           # its home token
                            @game.hex_by_id(minor.coordinates).tile.cities.find { |c| c.reserved_by?(minor) }
                          else
                            # Minors only have one token, check if its connected

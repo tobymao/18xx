@@ -65,6 +65,7 @@ module Engine
             saved_tokens = @game.saved_tokens
             saved_tokens.shift
             @game.save_tokens(saved_tokens)
+            @game.clear_graph_for_entity(action.entity)
           end
 
           def token_cost_override(_entity, _city_hex, _slot, _token)

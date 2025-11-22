@@ -17,6 +17,7 @@ module View
           render_controls('Simple Logos', :simple_logos),
           render_controls('Location Names', :show_location_names),
           render_controls('Hex Coordinates', :show_coords),
+          render_controls('Tile Numbers', :show_tiles),
           starting_map_controls,
           route_controls,
         ].compact

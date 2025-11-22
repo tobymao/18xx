@@ -16,32 +16,64 @@ module Engine
             color: nil,
           },
           {
-            name: 'P2 Thunes mekaniske verksted',
-            sym: 'P2',
+            name: 'P2A Thunes mekaniske verksted',
+            sym: 'P2A',
             value: 30,
-            revenue: 5,
-            desc: 'Public company owning P2 does not need to pay for snow on tracks. '\
+            revenue: 10,
+            desc: 'Public company owning P2A does not need to pay for snow on tracks. '\
                   'Closes when first 5 train is bought.',
             abilities: [],
             color: nil,
           },
           {
-            name: 'P3 Sørumsand mekaniske verksted',
-            sym: 'P3',
+            name: 'P2B Mjøsas hvite svane',
+            sym: 'P2B',
+            value: 30,
+            revenue: 10,
+            desc: 'Public company owning P2B does not need to pay for trafficing Mjøsa. '\
+                  'Closes when first 5 train is bought.',
+            abilities: [],
+            color: nil,
+          },
+          {
+            name: 'P3A Sørumstand mekaniske verksted',
+            sym: 'P3A',
             value: 40,
             revenue: 10,
-            desc: 'Owner of P3 receive 10kr as additional payment from the bank each time '\
+            desc: 'Owner of P3A receive 10kr as additional payment from the bank each time '\
                   'a tunnel is built. Closes when first 5 train is bought.',
             abilities: [],
             color: nil,
           },
           {
-            name: 'P4 Mellemværftet',
-            sym: 'P4',
+            name: 'P3B Ofotbanen',
+            sym: 'P3B',
+            value: 40,
+            revenue: 10,
+            desc: 'Owner of P3B only receive 10kr if first 3 train has been bought '\
+                  'P3B never closes.',
+            abilities: [
+              { type: 'close', on_phase: 'never' },
+            ],
+            color: nil,
+          },
+          {
+            name: 'P4A Mellemværftet',
+            sym: 'P4A',
             value: 50,
             revenue: 10,
-            desc: 'Owner of P4 receive 10kr as additional payment from the bank each time '\
+            desc: 'Owner of P4A receive 10kr as additional payment from the bank each time '\
                   'a ship is bought. Closes when first 5 train is bought.',
+            abilities: [],
+            color: nil,
+          },
+          {
+            name: 'P4B Bodø stasjon',
+            sym: 'P4B',
+            value: 50,
+            revenue: 0,
+            desc: 'Public company owning P4B gets an extra station in Bodø (L1) '\
+                  'when P4B closes. Closes when first 5 train is bought.',
             abilities: [],
             color: nil,
           },

@@ -208,11 +208,14 @@ module Engine
 
           def initialize(name = nil)
             @name = name
-            @cash = 0
           end
 
           def corporation?
             true
+          end
+
+          def spender
+            @bank
           end
         end
 
@@ -408,6 +411,7 @@ module Engine
               # Use transfer shares method to control receiver of funds
               bundle = ShareBundle.new(card.treasury)
               share_pool.transfer_shares(bundle, @share_pool, spender: @bank, receiver: bundle.corporation, price: bundle.price)
+              @log << "Share of #{card.name} is availabe in the Market"
             else
               @log << "Private #{card.name} is availabe in the Market"
               card.owner = @bank
@@ -813,7 +817,7 @@ module Engine
         def gipr_exchange_with_closing_corp(corporation)
           corporation.placed_tokens.each_with_index do |token, index|
             exchange_token = Engine::Token.new(gipr, type: :exchange)
-            next unless token.city.tokenable?(gipr, free: true, tokens: [exchange_token], cheater: true, same_hex_allowed: false)
+            next unless token.city.tokenable?(gipr, free: true, tokens: [exchange_token], cheater: true, same_hex_allowed: true)
 
             if index.zero?
               token.swap!(exchange_token)
@@ -828,8 +832,11 @@ module Engine
                 token: token,
                 exchange_token: exchange_token,
               }
+            elsif token.city.tokenable?(gipr, free: true, tokens: [exchange_token], cheater: true, same_hex_allowed: true)
+              token.remove!
             end
           end
+          close_corporation(corporation)
           @round.clear_cache!
         end
 
@@ -862,7 +869,8 @@ module Engine
           corporation.companies.clear
 
           # move corp owned shares to open market
-          corp_owned_shares = corporation.shares_by_corporation[corporation]
+          corp_owned_shares = shares.select { |s| s.owner == corporation }
+
           corp_owned_shares.each do |shares|
             next if shares.corporation == corporation
 

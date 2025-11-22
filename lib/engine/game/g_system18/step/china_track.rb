@@ -7,15 +7,6 @@ module Engine
     module GSystem18
       module Step
         class ChinaTrack < Track
-          def round_state
-            super.merge({ citytown_track: 0 })
-          end
-
-          def setup
-            super
-            @round.citytown_track = 0
-          end
-
           def process_lay_tile(action)
             lay_tile_action(action)
             tile = action.tile
@@ -25,7 +16,6 @@ module Engine
               old_price = entity.share_price
               @game.stock_market.move_right(action.entity)
               @game.log_share_price(entity, old_price)
-              @round.citytown_track += 1
             end
 
             pass! unless can_lay_tile?(action.entity)
@@ -38,7 +28,7 @@ module Engine
           end
 
           def pass!
-            if @round.citytown_track.zero?
+            if @round.num_laid_track.zero?
               old_price = current_entity.share_price
               @game.stock_market.move_left(current_entity)
               @game.log_share_price(current_entity, old_price)

@@ -22,6 +22,10 @@ module Engine
             actions
           end
 
+          def name_with_player(entity)
+            "#{entity.name} (#{entity.player.name})"
+          end
+
           def description
             'Acquire Corporations'
           end
@@ -31,13 +35,13 @@ module Engine
           end
 
           def log_pass(entity)
-            message = "#{entity.name} passes bidding"
+            message = "#{name_with_player(entity)} passes bidding"
             message << "on #{@auctioning.name}" if @auctioning
             @log << message
           end
 
           def log_skip(entity)
-            @log << "#{entity.name} cannot afford bidding on #{@auctioning.name}"
+            @log << "#{name_with_player(entity)} cannot afford bidding on #{@auctioning.name}"
           end
 
           def process_bid(action)
@@ -58,7 +62,7 @@ module Engine
               pass_auction(entity)
               resolve_bids
             else
-              @log << "#{entity.name} passes bidding"
+              @log << "#{name_with_player(entity)} passes bidding"
               entity.pass!
               return all_passed! if entities.all?(&:passed?)
 
@@ -68,7 +72,7 @@ module Engine
 
           def process_merge(action)
             @auctioning = action.corporation
-            @log << "#{action.entity.id} selects #{action.corporation.full_name} for auctioning"
+            @log << "#{name_with_player(action.entity)} selects #{action.corporation.full_name} for auctioning"
           end
 
           def can_bid_any?(entity)
@@ -170,7 +174,7 @@ module Engine
             entity = bid.entity
             price = bid.price
 
-            @log << "#{entity.name} bids #{@game.format_currency(price)} for #{corporation.name}"
+            @log << "#{name_with_player(entity)} bids #{@game.format_currency(price)} for #{corporation.name}"
 
             @bids[corporation] << bid
           end
@@ -189,7 +193,7 @@ module Engine
             buying_corporation.spend(price, @game.bank)
 
             @game.buy_tram_corporation(buying_corporation, corporation)
-            @log << "#{buying_corporation.name} wins the auction for #{corporation.name} "\
+            @log << "#{name_with_player(buying_corporation)} wins the auction for #{corporation.name} "\
                     "with a bid of #{@game.format_currency(price)}"
 
             @round.corporation_bought_minor << {

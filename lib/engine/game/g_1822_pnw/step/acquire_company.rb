@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
-require_relative '../../../step/route'
+require_relative '../../g_1822/step/acquire_company'
 
 module Engine
   module Game
     module G1822PNW
       module Step
-        class AcquireCompany < Engine::Step::AcquireCompany
+        class AcquireCompany < G1822::Step::AcquireCompany
           attr_reader :choices
 
           def actions(entity)
@@ -49,8 +49,7 @@ module Engine
 
             if minor_city
               minor_city.reservations.delete(old_corporation)
-            else
-              old_home_city = @game.hex_by_id(major.coordinates).tile.cities.find { |c| c.reserved_by?(major) }
+            elsif (old_home_city = @game.hex_by_id(major.coordinates).tile.cities.find { |c| c.reserved_by?(major) })
               old_home_city.reservations.delete(major)
             end
 

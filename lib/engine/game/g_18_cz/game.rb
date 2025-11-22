@@ -50,6 +50,10 @@ module Engine
         EBUY_FROM_OTHERS = :never # allow ebuying other corp trains for up to face
         EBUY_CAN_SELL_SHARES = false # player cannot sell shares
 
+        EBUY_CAN_TAKE_PLAYER_LOAN = true
+        PLAYER_LOAN_INTEREST_RATE = 0
+        PLAYER_LOAN_ENDGAME_PENALTY = 100
+
         AVAILABLE_CORP_COLOR = '#c6e9af'
 
         SHOW_SHARE_PERCENT_OWNERSHIP = true # allow corporation cards to show percentage ownership breakdown for players
@@ -77,14 +81,14 @@ module Engine
         OR_SETS = [1, 1, 1, 1, 2, 2, 2, 3].freeze
 
         GAME_END_REASONS_TEXT = Base::EVENTS_TEXT.merge(
-          custom: 'End of Game',
+          fixed_round: 'End of Game',
         ).freeze
 
         GAME_END_REASONS_TIMING_TEXT = Base::EVENTS_TEXT.merge(
           full_or: 'Ends after the last OR set',
         ).freeze
 
-        GAME_END_CHECK = { custom: :full_or }.freeze
+        GAME_END_CHECK = { fixed_round: :full_or }.freeze
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
           'medium_corps_available' => ['Medium Corps Available',
@@ -140,7 +144,17 @@ module Engine
         TWO_PLAYER_HEXES_TO_REMOVE = %w[A22 B19 B21 B23 B25 C22 C24 C26 C28 D21 D23 D25 D27 D29 E20 E22 E24 E26
                                         E28 F21 F23 F25 F27 G20 G22 G24 G26 G28 H21 H23 H25 I20 I22 I24].freeze
 
+        attr_reader :vaclav
         attr_accessor :rusted_variants
+
+        class Vaclav < Player
+          def initialize
+            super(-1, 'Vaclav')
+          end
+
+          # allowed to go negative when spending on track lays
+          def check_cash(*args, **kwargs); end
+        end
 
         def setup
           @or = 0
@@ -151,7 +165,7 @@ module Engine
           @vaclavs_corporations = []
 
           unless multiplayer?
-            @vaclav = Player.new(-1, 'Vaclav')
+            @vaclav = Vaclav.new
             @corporations = @corporations.reject { |item| TWO_PLAYER_CORP_TO_REMOVE.include?(item.name) }
 
             @corporations.select { |item| item.type == :large }.each { |item| item.max_ownership_percent = 70 }
@@ -165,7 +179,6 @@ module Engine
           new_corporation_for_vaclav(:small) unless multiplayer?
 
           block_lay_for_purple_tiles
-          init_player_debts
         end
 
         def new_corporation_for_vaclav(size)
@@ -290,10 +303,6 @@ module Engine
           StockMarket.new(self.class::MARKET, [], zigzag: :flip)
         end
 
-        def init_player_debts
-          @player_debts = @players.to_h { |player| [player.id, { debt: 0, penalty_interest: 0 }] }
-        end
-
         def new_operating_round(round_num = 1)
           @or += 1
           @companies.each do |company|
@@ -305,7 +314,7 @@ module Engine
           super
         end
 
-        def custom_end_game_reached?
+        def game_end_check_fixed_round?
           @turn == @last_or
         end
 
@@ -599,37 +608,6 @@ module Engine
           str
         end
 
-        def increase_debt(player, amount)
-          entity = @player_debts[player.id]
-          entity[:debt] += amount
-          entity[:penalty_interest] += amount
-        end
-
-        def reset_debt(player)
-          entity = @player_debts[player.id]
-          entity[:debt] = 0
-        end
-
-        def debt(player)
-          @player_debts[player.id][:debt]
-        end
-
-        def penalty_interest(player)
-          @player_debts[player.id][:penalty_interest]
-        end
-
-        def player_debt(player)
-          debt(player)
-        end
-
-        def player_interest(player)
-          penalty_interest(player)
-        end
-
-        def player_value(player)
-          player.value - debt(player) - penalty_interest(player)
-        end
-
         def result_players
           @players.reject { |p| p == @vaclav }
         end
@@ -713,7 +691,7 @@ module Engine
         end
 
         def can_par?(corporation, parrer)
-          super && debt(parrer).zero?
+          super && parrer.debt.zero?
         end
 
         def corporation_of_vaclav?(corporation)

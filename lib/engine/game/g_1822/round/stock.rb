@@ -43,7 +43,7 @@ module Engine
           end
 
           def finish_round
-            return @game.end_game! if @game.class::GAME_END_ON_NOTHING_SOLD_IN_SR1 && @game.nothing_sold_in_sr?
+            return @game.end_game!(:dnf) if @game.class::GAME_END_ON_NOTHING_SOLD_IN_SR1 && @game.nothing_sold_in_sr?
 
             float_minors = []
             minor_count = 0
@@ -120,12 +120,7 @@ module Engine
             minor.reservation_color = :white
 
             # Get the correct par price according to phase
-            current_phase = @game.phase.name.to_i
-            max_par_price = @game.stock_market.par_prices.map(&:price).max
-            par_price_to_find = current_phase == 1 ? @game.class::MINOR_START_PAR_PRICE : bid_amount / 2
-            par_price_to_find = max_par_price if par_price_to_find > max_par_price
-
-            share_price = @game.stock_market.par_prices.find { |pp| pp.price <= par_price_to_find }
+            share_price = @game.minor_float_share_price(bid)
             presidency_price = share_price.price * 2
 
             # Set the par price of the minor, player buys presidency
@@ -138,11 +133,7 @@ module Engine
             minor.spend(minor.cash, @game.bank)
 
             # Move the correct amount to money to the minor. This is according to phase of the game
-            treasury = if current_phase < 3
-                         presidency_price
-                       else
-                         bid_amount
-                       end
+            treasury = @game.minor_float_starting_cash(bid_amount, presidency_price)
 
             # Spend the remaining bid amount
             excess = bid_amount - presidency_price

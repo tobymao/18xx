@@ -11,10 +11,12 @@ module View
       url_search_params = Lib::Params::URLSearchParams.new
       return '' if url_search_params.unsupported
 
+      title_elm = render_title(url_search_params)
+
       h('div#game_filters.game_row', { key: @header }, [
         h(:h2, 'Filters'),
-        render_title(url_search_params),
-        render_reset,
+        title_elm,
+        render_reset(title_elm),
       ])
     end
 
@@ -39,10 +41,16 @@ module View
       h('select', attrs, game_options)
     end
 
-    def render_reset
+    def render_reset(title_elm)
       attrs = {
-        on: { click: -> { update_filters('') } },
+        on: {
+          click: lambda do
+            Native(title_elm)&.elm&.value = ''
+            update_filters('')
+          end,
+        },
       }
+
       h('button', attrs, 'Reset filters')
     end
 

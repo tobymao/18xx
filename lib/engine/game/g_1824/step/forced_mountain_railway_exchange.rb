@@ -15,6 +15,10 @@ module Engine
             ACTIONS
           end
 
+          def visible_corporations
+            @game.sorted_corporations.select { |c| !c.closed? && c.type == :major }
+          end
+
           def active_entities
             exchangables.take(1).map(&:owner)
           end
@@ -36,7 +40,7 @@ module Engine
           end
 
           def description
-            'Exchange'
+            'Exchange Mountain Railway for share in Regional Railway'
           end
 
           def pass_description
@@ -61,28 +65,17 @@ module Engine
             false
           end
 
-          def can_gain?(entity, bundle, exchange: false)
-            super && @game.buyable?(bundle.corporation)
-          end
+          def can_gain?(_entity, bundle, exchange: false)
+            return false unless bundle
 
-          def can_exchange?(entity, bundle = nil)
-            return false unless (ability = @game.abilities(entity, :exchange))
-            return can_gain?(entity.owner, bundle, exchange: true) if bundle
-
-            shares = []
-            @game.exchange_corporations(ability).each do |corporation|
-              shares << corporation.available_share if ability.from.include?(:ipo)
-              shares << @game.share_pool.shares_by_corporation[corporation]&.first if ability.from.include?(:market)
-            end
-
-            shares.any? { |s| can_gain?(entity.owner, s&.to_bundle, exchange: true) }
+            corp = bundle.corporation
+            exchange && @game.regional?(corp) && !corp.total_ipo_shares.zero?
           end
 
           def process_buy_shares(action)
             company = action.entity
             player = company.owner
             bundle = action.bundle
-            raise GameError, "Cannot exchange #{company.id} for #{bundle.corporation.id}" unless can_exchange?(company, bundle)
 
             bundle.share_price = 0
             @game.share_pool.buy_shares(player, bundle, exchange: company, exchange_price: 0)

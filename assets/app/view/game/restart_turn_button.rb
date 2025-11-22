@@ -25,7 +25,7 @@ module View
       end
 
       def button_disabled?
-        !@game.undo_possible || !@game.turn_start_action_id
+        !@game.undo_possible || !@game.turn_start_action_id || @game.round.is_a?(Engine::Round::Auction)
       end
     end
   end

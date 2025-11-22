@@ -8,7 +8,7 @@ module Engine
       module Meta
         include Game::Meta
 
-        DEV_STAGE = :alpha
+        DEV_STAGE = :beta
         PROTOTYPE = true
 
         GAME_DESIGNER = 'Scott Petersen'
@@ -17,12 +17,12 @@ module Engine
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/System18'
         GAME_RULES_URL = 'https://github.com/tobymao/18xx/wiki/System18'
 
-        PLAYER_RANGE = [2, 5].freeze
+        PLAYER_RANGE = [1, 5].freeze
         OPTIONAL_RULES = [
           {
             sym: :map_NEUS,
             short_name: 'Map: Northeast US',
-            players: [2, 3],
+            players: [2, 3, 4],
             designer: 'Scott Petersen',
           },
           {
@@ -80,12 +80,33 @@ module Engine
             players: [2, 3, 4],
             designer: 'Ian Wilson',
           },
+          {
+            sym: :map_MS,
+            short_name: 'Map: Mississippi',
+            players: [2, 3, 4],
+            designer: 'Ian Wilson',
+          },
+          {
+            sym: :map_Scotland,
+            short_name: 'Map: Scotland',
+            players: [2, 3, 4],
+            designer: 'Ian Wilson',
+          },
+          {
+            sym: :map_Russia,
+            short_name: 'Map: Russia',
+            players: [2, 3],
+            designer: 'Ian Wilson',
+          },
+          {
+            sym: :map_Gotland,
+            short_name: 'Map: Gotland',
+            players: [1],
+            designer: 'Pontus Nilsson',
+          },
         ].freeze
 
-        MUTEX_RULES = [
-          %i[map_NEUS map_France map_Twisting_Tracks map_UK_Limited map_China_Rapid_Development map_Poland map_Britain
-             map_Northern_Italy],
-        ].freeze
+        MUTEX_RULES = [OPTIONAL_RULES.map { |r| r[:sym] }].freeze
       end
     end
   end

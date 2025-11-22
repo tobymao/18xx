@@ -36,56 +36,53 @@ require_relative 'meta'
 
 module Engine
   module Game
-    def self.load(data, at_action: nil, actions: nil, pin: nil, seed: nil, optional_rules: nil, user: nil, **kwargs)
+    # kwargs are forwarded to initialize
+    def self.load(data, **kwargs)
       case data
       when String
-        data = JSON.parse(File.exist?(data) ? File.read(data) : data)
-        return load(data,
-                    at_action: at_action,
-                    actions: actions,
-                    pin: pin || data.dig('settings', 'pin'),
-                    seed: seed || data.dig('settings', 'seed'),
-                    optional_rules: optional_rules,
-                    user: user,
-                    **kwargs)
+        data =
+          if data.to_i.to_s == data
+            data.to_i
+          else
+            JSON.parse(File.exist?(data) ? File.read(data) : data)
+          end
+        return load(data, **kwargs)
+      when Integer
+        return load(::Game[data], **kwargs)
       when Hash
         title = data['title']
-        names = data['players'].to_h { |p| [p['id'] || p['name'], p['name']] }
+        names = data['players']
+        names = names.to_h { |p| [p['id'] || p['name'], p['name']] } if names.is_a?(Array)
         id = data['id']
-        actions ||= data['actions'] || []
-        pin ||= data.dig('settings', 'pin')
-        seed ||= data.dig('settings', 'seed')
-        optional_rules ||= data.dig('settings', 'optional_rules') || []
-      when Integer
-        db_game = ::Game[data]
-        return load(db_game,
-                    at_action: at_action,
-                    actions: actions,
-                    pin: pin || db_game.settings['pin'],
-                    seed: seed || db_game.settings['seed'],
-                    optional_rules: optional_rules || db_game.settings['optional_rules'],
-                    user: user,
-                    **kwargs)
+        actions = kwargs[:actions] || data['actions'] || []
+        settings = data['settings'] || {}
       when ::Game
         title = data.title
         names = data.ordered_players.to_h { |u| [u.id, u.name] }
         id = data.id
-        actions ||= data.actions.map(&:to_h)
-        pin ||= data.settings['pin']
-        seed ||= data.settings['seed']
-        optional_rules ||= data.settings['optional_rules'] || []
+        actions = kwargs[:actions] || data.actions.map(&:to_h)
+        settings = data.settings || {}
+      else
+        raise GameError, "Could not resolve data of type #{data.class} into a loadable Game"
       end
+
+      pin = kwargs[:pin] || settings['pin']
+      seed = kwargs[:seed] || settings['seed']
+      optional_rules = kwargs[:optional_rules] || settings['optional_rules'] || []
+
+      init_kwargs = %i[description min_players max_players settings created_at updated_at finished_at].to_h do |key|
+        [key, data[key] || data[key.to_s]]
+      end
+      init_kwargs.merge!(kwargs)
 
       Engine.game_by_title(title).new(
         names,
         id: id,
         actions: actions,
-        at_action: at_action,
         pin: pin,
         seed: seed,
         optional_rules: optional_rules,
-        user: user,
-        **kwargs
+        **init_kwargs
       )
     end
 
@@ -98,23 +95,38 @@ module Engine
                   :tiles, :turn, :total_loans, :undo_possible, :redo_possible, :round_history, :all_tiles,
                   :optional_rules, :exception, :last_processed_action, :broken_action,
                   :turn_start_action_id, :last_turn_start_action_id, :programmed_actions, :round_counter,
-                  :manually_ended, :seed
+                  :manually_ended, :seed, :game_end_reason, :game_end_trigger
 
       # Game end check is described as a dictionary
       # with reason => after
       #   reason: What kind of game end check to do
       #   after: When game should end if check triggered
-      # Leave out a reason if game does not support that.
-      # Allowed reasons:
-      #  bankrupt, stock_market, bank, final_train, final_phase, all_closed, custom
+      # Reasons implemented here:
+      #   - all_closed: all corporations and companies have closed
+      #   - bank: bank is broken
+      #   - bankrupt: the required number of players (see
+      #               BANKRUPTCY_ENDS_GAME_AFTER) have gone bankrupt
+      #   - final_phase: reached the last phase
+      #   - final_train: no trains left in the Depot
+      #   - stock_market: a corporation reached an end game cell on the stock
+      #                   market
+      #   - fixed_round: game ends after a predetermined number of rounds;
+      #                  game_end_check_fixed_round? is not implemented here,
+      #                  but :fixed_round is included in GAME_END_REASONS_TEXT
       # Allowed after:
-      #  immediate - ends in current turn
+      #  immediate - ends after current action
       #  current_round - ends at the end of the current round
       #  current_or - ends at the next end of an OR
       #  full_or - ends at the next end of a complete OR set
       #  one_more_full_or_set - finish the current OR set, then
       #                         end after the next complete OR set
       GAME_END_CHECK = { bankrupt: :immediate, bank: :full_or }.freeze
+
+      GAME_END_TIMING_PRIORITY = %i[immediate current_round current_or full_or one_more_full_or_set].freeze
+
+      # Once a game end trigger (reason+timing) has been found, stop checking
+      # the other possible tirggers
+      GAME_END_LOCK_FIRST_TRIGGER = false
 
       BANKRUPTCY_ALLOWED = true
       # How many players does bankrupcy cause to end the game
@@ -272,6 +284,19 @@ module Engine
       # loans taken during ebuy can lead to receviership
       EBUY_CORP_LOANS_RECEIVERSHIP = false
 
+      # false - player loans not available in this game
+      # true - no restrictions
+      # :after_sell - must sell shares before taking loan
+      # :no_sell - cannot take loan after selling shares
+      EBUY_CAN_TAKE_PLAYER_LOAN = false
+
+      # integer representing percentage of loan balance
+      PLAYER_LOAN_INTEREST_RATE = 50
+
+      # integer representing percentage of loan balance, endgame penalty on
+      # player's final score for taking a loan
+      PLAYER_LOAN_ENDGAME_PENALTY = 0
+
       # where should sold shares go to?
       # :bank - bank pool
       # :corporation - back to corporation/ipo
@@ -355,7 +380,7 @@ module Engine
         stock_market: 'Corporation enters end game trigger on stock market',
         final_train: 'The final train is purchased',
         final_phase: 'The final phase is entered',
-        custom: 'Unknown custom reason', # override on subclasses
+        fixed_round: 'Fixed number of rounds',
       }.freeze
 
       GAME_END_REASONS_TIMING_TEXT = {
@@ -536,8 +561,20 @@ module Engine
         true
       end
 
-      def initialize(names, id: 0, actions: [], at_action: nil, pin: nil, strict: false, optional_rules: [], user: nil, seed: nil)
+      def initialize(
+        names,
+        id: 0,
+        actions: [],
+        at_action: nil,
+        pin: nil,
+        strict: false,
+        optional_rules: [],
+        user: nil,
+        seed: nil,
+        **init_kwargs
+      )
         @id = id
+        @init_kwargs = init_kwargs
         @turn = 1
         @final_turn = nil
         @loading = false
@@ -549,6 +586,7 @@ module Engine
         @raw_actions = []
         @turn_start_action_id = 0
         @last_turn_start_action_id = 0
+        @last_processed_action = 0
         @exception = nil
         @names = if names.is_a?(Hash)
                    names.freeze
@@ -562,6 +600,8 @@ module Engine
         @round_counter = 0
 
         @optional_rules = init_optional_rules(optional_rules)
+
+        check_player_range!
 
         initialize_seed(seed)
 
@@ -737,7 +777,14 @@ module Engine
           case action['type']
           when 'undo'
             undo_to = if (id = action['action_id'])
-                        id.zero? ? 0 : actions.index { |a| a['id'] == action['action_id'] } + 1
+                        if id.zero?
+                          0
+                        else
+                          idx = actions.index { |a| a['id'] == id }
+                          raise ActionError, "Could not find target action_id for undo action: #{action}" if idx.nil?
+
+                          idx + 1
+                        end
                       else
                         filtered_actions.rindex { |a| a && a['type'] != 'message' } || 0
                       end
@@ -836,14 +883,16 @@ module Engine
 
         action_processed(action)
 
-        end_timing = game_end_check&.last
-        end_game! if end_timing == :immediate
+        game_end_reason, end_timing = game_end_check
+        end_game!(game_end_reason) if end_timing == :immediate
 
         while @round.finished? && !@finished
           @round.entities.each(&:unpass!)
 
-          if end_now?(end_timing) || @turn >= 100
-            end_game!
+          if end_now?(end_timing)
+            end_game!(game_end_reason)
+          elsif @turn >= 100
+            end_game!(:dnf)
           else
             transition_to_next_round!
           end
@@ -863,6 +912,8 @@ module Engine
       def transition_to_next_round!
         store_player_info
         next_round!
+        return if @finished
+
         check_programmed_actions
 
         finalize_round_setup
@@ -879,6 +930,7 @@ module Engine
         if @exception
           exception = @exception
           @exception = nil
+          LOGGER.error { "@broken_action = #{@broken_action.to_json}" }
           @broken_action = nil
           raise exception
         end
@@ -950,12 +1002,13 @@ module Engine
           if @filtered_actions[index]
             process_action(action)
             # maintain original action ids
-            @raw_actions.last['id'] = action['id']
+            @raw_actions.last['id'] = action['id'] unless @raw_actions.empty?
             @last_processed_action = action['id']
           else
             @raw_actions << action
           end
         end
+        self
       end
 
       # hook from Engine::Round::Operating before next_entity!
@@ -1001,6 +1054,10 @@ module Engine
       # Before obsoleting, check if this specific train should obsolete.
       def obsolete?(train, purchased_train)
         train.obsolete_on == purchased_train.sym
+      end
+
+      def update_trains_cache
+        update_cache(:trains)
       end
 
       def shares
@@ -1345,11 +1402,12 @@ module Engine
         (price * (100.0 - self.class::DISCARDED_TRAIN_DISCOUNT.to_f) / 100.0).ceil.to_i
       end
 
-      def end_game!(player_initiated: false)
+      def end_game!(game_end_reason)
         return if @finished
 
         @finished = true
-        @manually_ended = player_initiated
+        @game_end_reason = game_end_reason
+        @manually_ended = @game_end_reason == :manually_ended
         store_player_info
         @round_counter += 1
         scores = result.map { |id, value| "#{@players.find { |p| p.id == id.to_i }&.name} (#{format_currency(value)})" }
@@ -1845,7 +1903,7 @@ module Engine
           end
         end
 
-        corporation.spend(corporation.cash, @bank) if corporation.cash.positive?
+        corporation.set_cash(0, @bank)
         if self.class::CLOSED_CORP_TRAINS_REMOVED
           corporation.trains.each { |t| t.buyable = false }
         else
@@ -2357,10 +2415,6 @@ module Engine
         @companies
       end
 
-      def player_debt(_player)
-        0
-      end
-
       def render_hex_reservation?(_corporation)
         true
       end
@@ -2388,17 +2442,160 @@ module Engine
         company.value
       end
 
+      def game_ending_description
+        reason, after = game_end_check
+        return unless after
+
+        after_text = ''
+
+        unless @finished
+          after_text = case after
+                       when :immediate
+                         ' : Game Ends immediately'
+                       when :current_round
+                         if @round.is_a?(Round::Operating)
+                           " : Game Ends at conclusion of this OR (#{turn}.#{@round.round_num})"
+                         else
+                           " : Game Ends at conclusion of this round (#{turn})"
+                         end
+                       when :current_or
+                         if @round.is_a?(Round::Operating)
+                           " : Game Ends at conclusion of this OR (#{turn}.#{@round.round_num})"
+                         else
+                           " : Game Ends at conclusion of the next OR (#{turn}.#{@round.round_num})"
+                         end
+                       when :full_or
+                         if @round.is_a?(Round::Operating)
+                           " : Game Ends at conclusion of #{round_end.short_name} #{turn}.#{operating_rounds}"
+                         else
+                           " : Game Ends at conclusion of #{round_end.short_name} #{turn}.#{@phase.operating_rounds}"
+                         end
+                       when :one_more_full_or_set
+                         " : Game Ends at conclusion of #{round_end.short_name}"\
+                         " #{@final_turn}.#{final_operating_rounds}"
+                       end
+          after_text += additional_ending_after_text
+        end
+
+        "#{self.class::GAME_END_DESCRIPTION_REASON_MAP_TEXT[reason]}#{after_text}"
+      end
+
+      def round_description(name, round_number = nil)
+        round_number ||= @round.round_num
+        description = "#{name} Round "
+
+        total = total_rounds(name)
+
+        description += @turn.to_s unless @turn.zero?
+        description += '.' if total && !@turn.zero?
+        description += "#{round_number} (of #{total})" if total
+
+        description.strip
+      end
+
+      def take_player_loan(
+        player,
+        amount,
+        interest: self.class::PLAYER_LOAN_INTEREST_RATE
+      )
+        cash_loan = player.take_cash_loan(amount, @bank, interest: interest)
+        loan = cash_loan[:cash]
+        debt = cash_loan[:debt]
+
+        penalty = (amount * self.class::PLAYER_LOAN_ENDGAME_PENALTY / 100.0).ceil
+        player.penalty += penalty
+
+        message = "#{player.name} takes a loan of #{format_currency(loan)} from #{@bank.name}."
+        message += " With #{interest}% interest, the total amount owed is #{format_currency(debt)}." if interest.positive?
+        message += " #{player.name} takes a game end penalty of #{format_currency(penalty)}" if penalty.positive?
+        @log << message
+      end
+
+      def add_player_loan_interest(player, interest: self.class::PLAYER_LOAN_INTEREST_RATE)
+        return unless player.debt.positive?
+
+        added_interest = player.take_interest(@bank, interest: interest)
+
+        @log << "#{player.name} increases their loan by #{interest}% (#{format_currency(added_interest)}) to "\
+                "#{format_currency(player.debt)}"
+      end
+
+      def payoff_player_loan(player, payoff_amount: nil)
+        if payoff_amount && payoff_amount > player.cash
+          LOGGER.warn do
+            "payoff_player_loan(#{player.name},payoff_amount:#{payoff_amount}) - player only has "\
+              "#{format_currency(player.cash)}, proceeding with #{player.cash} instead of #{payoff_amount}"
+          end
+          payoff_amount = player.cash
+        end
+
+        paid = player.repay_cash_loan(@bank, payoff_amount: payoff_amount)
+
+        @log << if player.debt.zero?
+                  "#{player.name} pays off their loan of #{format_currency(paid)}."
+                else
+                  "#{player.name} pays #{format_currency(paid)} toward their loan. "\
+                    "#{format_currency(player.debt)} is still owed."
+                end
+      end
+
+      def add_interest_player_loans!
+        players.each { |p| add_player_loan_interest(p) }
+      end
+
+      def bank_starting_cash
+        cash = self.class::BANK_CASH
+        cash.is_a?(Hash) ? cash[players.size] : cash
+      end
+
+      def init_bank_kwargs
+        { check: game_end_check_values.include?(:bank) }
+      end
+
+      def spenders
+        spending_entities.flatten.compact.map { |e| e.spender || e }.uniq
+      end
+
+      def to_json(*args)
+        to_h.to_json(*args)
+      end
+
       private
+
+      def to_h
+        user = { id: @user }
+        name = @players.find { |p| p.id == @user }&.name
+        user[:name] = name if name
+
+        {
+          **@init_kwargs,
+          id: id,
+          user: user,
+          # use @names instead of @players to preserve initial player order
+          players: @names.map { |p_id, p_name| { id: p_id, name: p_name } },
+          title: meta.title,
+          status: @finished ? 'active' : 'finished',
+          turn: @turn,
+          round: round.class.round_name,
+          acting: active_players_id,
+          result: @finished ? result : nil,
+          actions: raw_actions.map(&:to_h),
+        }
+      end
+
+      # Games introducing other entities that use cash, e.g., national railways
+      # that stay separate from @corporations (like 1861), need to override this
+      # method to include those entities.
+      def spending_entities
+        [@bank, @players, @corporations, @minors]
+      end
 
       def init_graph
         Graph.new(self)
       end
 
       def init_bank
-        cash = self.class::BANK_CASH
-        cash = cash[players.size] if cash.is_a?(Hash)
-
-        Bank.new(cash, log: @log, check: game_end_check_values.include?(:bank))
+        Bank.new(bank_starting_cash, log: @log, **init_bank_kwargs)
       end
 
       def init_cert_limit
@@ -2454,7 +2651,7 @@ module Engine
 
       def init_train_handler
         trains = game_trains.flat_map do |train|
-          Array.new((train[:num] || num_trains(train))) do |index|
+          Array.new(num_trains(train)) do |index|
             self.class::TRAIN_CLASS.new(**train, index: index)
           end
         end
@@ -2466,8 +2663,12 @@ module Engine
         self.class::TRAINS
       end
 
-      def num_trains(_train)
-        raise NotImplementedError
+      def num_trains(train)
+        if train[:num] == 'unlimited'
+          (train[:events] || []).filter_map { |e| e['when'] }.max || 1
+        else
+          train[:num]
+        end
       end
 
       def init_minors
@@ -2753,35 +2954,60 @@ module Engine
         self.class::GAME_END_CHECK
       end
 
-      def custom_end_game_reached?
-        false
+      def game_end_timing(reason)
+        raise GameError, ":#{reason} not found in game_end_check_values" unless game_end_check_values.include?(reason)
+
+        game_end_check_values[reason]
       end
 
       def game_end_check
-        triggers = {
-          all_closed: all_closed?,
-          bankrupt: bankruptcy_limit_reached?,
-          bank: @bank.broken?,
-          stock_market: @stock_market.max_reached?,
-          final_train: @depot.empty?,
-          final_phase: @phase&.phases&.last == @phase&.current,
-          custom: custom_end_game_reached?,
-        }.select { |_, t| t }
+        return @game_end_trigger if self.class::GAME_END_LOCK_FIRST_TRIGGER && @game_end_trigger
 
-        %i[immediate current_round current_or full_or one_more_full_or_set].each do |after|
-          triggers.keys.each do |reason|
-            if game_end_check_values[reason] == after
-              @final_turn ||= @turn + 1 if after == :one_more_full_or_set
-              return [reason, after]
-            end
-          end
+        priority = self.class::GAME_END_TIMING_PRIORITY
+        game_end_check_values.each do |reason, _after|
+          next unless send("game_end_check_#{reason}?")
+
+          after = game_end_timing(reason)
+          next if @game_end_trigger && priority.index(after) >= priority.index(@game_end_trigger[1])
+
+          @game_end_trigger = [reason, after]
+          break if self.class::GAME_END_LOCK_FIRST_TRIGGER
         end
 
-        nil
+        game_end_set_final_turn!(*@game_end_trigger) if @game_end_trigger
+        @game_end_trigger
       end
 
-      def all_closed?
+      def game_end_set_final_turn!(_reason, after)
+        @final_turn ||= @turn + 1 if after == :one_more_full_or_set
+      end
+
+      def game_end_check_all_closed?
         (@corporations + @companies).reject(&:closed?).empty?
+      end
+
+      def game_end_check_bankrupt?
+        bankruptcy_limit_reached?
+      end
+
+      def game_end_check_bank?
+        @bank.broken?
+      end
+
+      def game_end_check_stock_market?
+        @stock_market.max_reached?
+      end
+
+      def game_end_check_final_train?
+        @depot.empty?
+      end
+
+      def game_end_check_final_phase?
+        @phase&.phases&.last == @phase&.current
+      end
+
+      def game_end_check_fixed_round?
+        false
       end
 
       def final_or_in_set?(round)
@@ -2808,44 +3034,6 @@ module Engine
 
       def final_operating_rounds
         @phase.operating_rounds
-      end
-
-      def game_ending_description
-        reason, after = game_end_check
-        return unless after
-
-        after_text = ''
-
-        unless @finished
-          after_text = case after
-                       when :immediate
-                         ' : Game Ends immediately'
-                       when :current_round
-                         if @round.is_a?(Round::Operating)
-                           " : Game Ends at conclusion of this OR (#{turn}.#{@round.round_num})"
-                         else
-                           " : Game Ends at conclusion of this round (#{turn})"
-                         end
-                       when :current_or
-                         if @round.is_a?(Round::Operating)
-                           " : Game Ends at conclusion of this OR (#{turn}.#{@round.round_num})"
-                         else
-                           " : Game Ends at conclusion of the next OR (#{turn}.#{@round.round_num})"
-                         end
-                       when :full_or
-                         if @round.is_a?(Round::Operating)
-                           " : Game Ends at conclusion of #{round_end.short_name} #{turn}.#{operating_rounds}"
-                         else
-                           " : Game Ends at conclusion of #{round_end.short_name} #{turn}.#{@phase.operating_rounds}"
-                         end
-                       when :one_more_full_or_set
-                         " : Game Ends at conclusion of #{round_end.short_name}"\
-                         " #{@final_turn}.#{final_operating_rounds}"
-                       end
-          after_text += additional_ending_after_text
-        end
-
-        "#{self.class::GAME_END_DESCRIPTION_REASON_MAP_TEXT[reason]}#{after_text}"
       end
 
       def additional_ending_after_text
@@ -3067,19 +3255,6 @@ module Engine
 
       def president_assisted_buy(_corporation, _train, _price)
         [0, 0]
-      end
-
-      def round_description(name, round_number = nil)
-        round_number ||= @round.round_num
-        description = "#{name} Round "
-
-        total = total_rounds(name)
-
-        description += @turn.to_s unless @turn.zero?
-        description += '.' if total && !@turn.zero?
-        description += "#{round_number} (of #{total})" if total
-
-        description.strip
       end
 
       def corporation_available?(_entity)
@@ -3417,6 +3592,16 @@ module Engine
 
       def corp_loans_text
         'Loans'
+      end
+
+      def check_player_range!
+        min_players = self.class.min_players(@optional_rules, @players.size)
+        max_players = self.class.max_players(@optional_rules, @players.size)
+        return if (player_count = @players.size).between?(min_players, max_players)
+
+        rules = optional_rules.empty? ? '' : " (#{optional_rules.join(',')})"
+        player_s = "player#{player_count == 1 ? '' : 's'}"
+        raise GameError, "#{self.class.title}#{rules} does not support #{player_count} #{player_s}"
       end
     end
   end

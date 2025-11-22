@@ -7,6 +7,8 @@ module Engine
     class SellCompany < Base
       attr_reader :entity, :company, :price
 
+      REQUIRED_ARGS = %i[company price].freeze
+
       def initialize(entity, company:, price:)
         super(entity)
         @company = company
