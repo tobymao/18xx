@@ -125,7 +125,7 @@ module Engine
         private
 
         def do_unreserve_one_share!(president_share = false)
-          a_share = shares.find { |s| !s.buyable && s.president == president_share }
+          a_share = shares.find { |s| !s.buyable && s.percent == (president_share ? 20 : 10)}
           raise GameError, 'Game broken - reserved share is missing! Report issue.' unless a_share
 
           a_share.buyable = true
