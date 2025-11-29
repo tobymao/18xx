@@ -549,7 +549,7 @@ module Engine
             G18RoyalGorge::Step::SpecialTrack,
             Engine::Step::BuyCompany,
             G18RoyalGorge::Step::Track,
-            Engine::Step::Token,
+            G18RoyalGorge::Step::Token,
             G18RoyalGorge::Step::Route,
             G18RoyalGorge::Step::Dividend,
             G18RoyalGorge::Step::BridgeLease,
