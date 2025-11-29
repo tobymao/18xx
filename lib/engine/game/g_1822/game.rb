@@ -780,7 +780,7 @@ module Engine
 
           will_remove_l = (bidless_minors.index(company) + 1) <= upcoming_l_count
 
-          l_2 = phase.name.to_i == 1 ? 'L' : '2'
+          l_2 = 'L/2'
 
           to_export =
             if company == bidbox_minors.first
@@ -788,7 +788,7 @@ module Engine
               if train.name == 'L'
                 "two #{l_2} trains"
               elsif will_remove_l
-                '2 train and 3 train'
+                "#{l_2} train and 3 train"
               else
                 "#{train.name} train"
               end
