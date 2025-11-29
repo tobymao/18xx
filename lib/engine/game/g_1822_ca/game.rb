@@ -63,7 +63,8 @@ module Engine
 
         GAME_END_REASONS_TIMING_TEXT = {
           current_or: 'Next end of an OR',
-          full_or: 'Next end of a complete OR set, with one additional OR added on',
+          full_or: 'Next end of a complete OR set, with one additional OR added on ' \
+                   '(if bank breaks during an OR). Next end of an OR (if bank breaks during an SR).',
         }.freeze
 
         PRIVATE_MAIL_CONTRACTS = %w[P22 P23].freeze

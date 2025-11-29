@@ -57,6 +57,11 @@ module Engine
         }.freeze
 
         GAME_END_CHECK = { bank: :full_or, stock_market: :current_or }.freeze
+        GAME_END_REASONS_TIMING_TEXT = {
+          current_or: 'Next end of an OR',
+          full_or: 'Next end of a complete OR set (if bank breaks during an OR). ' \
+                   'Next end of an OR (if bank breaks during an SR).',
+        }.freeze
         GAME_END_ON_NOTHING_SOLD_IN_SR1 = true
         GAME_END_LOCK_FIRST_TRIGGER = true
 
