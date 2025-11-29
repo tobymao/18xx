@@ -1035,6 +1035,10 @@ module Engine
           timeline
         end
 
+        def development_company_by_id(id)
+          minor_by_id(id)
+        end
+
         def init_coal_companies
           @players.map.with_index do |player, index|
             coal_company = DevelopmentCompany.new(
