@@ -19,6 +19,10 @@ module Engine
           end
 
           def process_remove_token(action)
+            if !@game.loading && !available_hex_remove_token?(action.city.hex)
+              raise GameError, "#{action.entity.name} cannot remove a token from #{action.city.hex.name}"
+            end
+
             city = action.city
             entity = action.entity
             token = city.tokens[action.slot]
@@ -37,6 +41,10 @@ module Engine
           end
 
           def process_place_token(action)
+            if !@game.loading && !available_hex_place_token?(action.entity, action.city.hex)
+              raise GameError, "#{action.entity.name} cannot place a token on #{action.city.hex.name}"
+            end
+
             entity = action.entity
             city = action.city
 
@@ -48,6 +56,10 @@ module Engine
           end
 
           def process_lay_tile(action)
+            if !@game.loading && !available_hex_lay_tile?(action.entity, action.hex)
+              raise GameError, "#{action.entity.name} cannot lay a tile on #{action.hex.name}"
+            end
+
             entity = action.entity
             spender = @game.owning_major_corporation(entity)
             tile = action.tile
