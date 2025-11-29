@@ -180,8 +180,6 @@ module Engine
           end
 
           def process_par(action)
-            check_too_much_sold(action)
-
             super
 
             major = action.corporation
@@ -240,34 +238,6 @@ module Engine
             when Engine::Action::SellCompany
               action.company.value
             end
-          end
-
-          # A player is only allowed to sell shares (or the GL minor) before
-          # starting a public company if they use the cash from the sale to
-          # start the public company at a higher price than would have been
-          # possible without the sale. This method throws an error if the par
-          # price could have been used with fewer items sold.
-          def check_too_much_sold(par_action)
-            return if @round.current_actions.empty?
-
-            player = par_action.entity
-            major = par_action.corporation
-            minor = @game.pledged_minors[major]
-
-            par_price = par_action.share_price
-            par_cost = (3 * par_price.price) -
-                       @game.minor_sale_value(minor, par_price)
-            surplus_cash = available_cash(player) - par_cost
-
-            return if @round.current_actions.all? do |sale_action|
-              cheapest_sale(sale_action) > surplus_cash
-            end
-
-            msg = 'More shares have been sold than were needed to start ' \
-                  "#{major.id} at a par price of " \
-                  "#{@game.format_currency(par_price.price)}. Either choose " \
-                  'a higher par price or undo some or all of the sales.'
-            raise GameError, msg
           end
         end
       end
