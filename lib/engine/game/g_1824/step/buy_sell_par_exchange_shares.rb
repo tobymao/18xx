@@ -34,9 +34,16 @@ module Engine
           end
 
           def company_actions(entity)
-            return EXCHANGE_ACTIONS if @game.mountain_railway?(entity) && @game.mountain_railway_exchangable?
+            return [] if bought?
+            return [] unless entity.owned_by?(current_entity)
+            return [] unless @game.mountain_railway?(entity)
+            return [] unless @game.mountain_railway_exchangable?
 
-            []
+            EXCHANGE_ACTIONS
+          end
+
+          def blocking?
+            super || @game.companies.any? { |c| !company_actions(c).empty? }
           end
 
           def can_buy?(entity, bundle)
