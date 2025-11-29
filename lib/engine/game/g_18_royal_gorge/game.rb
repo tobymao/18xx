@@ -113,7 +113,7 @@ module Engine
 
         GAME_END_CHECK = {
           bankrupt: :immediate,
-          stock_market: :one_more_full_or_set,
+          stock_market: :full_or,
           final_train: :one_more_full_or_set,
         }.freeze
         GAME_END_REASONS_TEXT = {
@@ -126,6 +126,7 @@ module Engine
           stock_market: 'Company hit max stock value',
           final_train: '6x2-train was bought/exported',
         }.freeze
+        GAME_END_TIMING_PRIORITY = %i[immediate one_more_full_or_set full_or].freeze
 
         def ipo_name(_entity = nil)
           'Treasury'
@@ -1036,6 +1037,7 @@ module Engine
           return if @final_turn
 
           @log << '-- Event: Endgame triggered by the first 6x2 train being bought/exported --'
+          @final_train = true
 
           @final_turn ||=
             if @optional_rules.include?(:shorter_game_end) && !@exporting
@@ -1059,7 +1061,7 @@ module Engine
         end
 
         def game_end_check_final_train?
-          @final_turn
+          @final_train
         end
 
         def end_game!(game_end_reason)
