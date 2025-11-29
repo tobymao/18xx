@@ -79,6 +79,7 @@ module Engine
         def map_gotland_game_corporations(corps)
           corps.each_with_index do |c, idx|
             c[:float_percent] = 40
+            c[:always_market_price] = true
             c[:coordinates] = %w[B5 B9 D11 B5 G2][idx]
             c[:city] = [1, nil, nil, 0, nil][idx]
             c[:shares] = [40, 20, 20, 20]
