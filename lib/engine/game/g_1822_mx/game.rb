@@ -699,7 +699,7 @@ module Engine
         def company_status_game_specific(_company); end
 
         def bidbox_status_str(company)
-          if company == @c1
+          if company == @c1 && !company.owner.player?
             if @round.highest_bid(company)
               [
                 'Bid box 1',
