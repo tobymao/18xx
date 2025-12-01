@@ -43,14 +43,14 @@ module Engine
           end
 
           def can_sell?(entity, bundle)
-            return false if @game.class::MUST_SELL_IN_BLOCKS && @corporations_sold.include?(bundle.corporation)
+            return false if @corporations_sold.include?(bundle.corporation)
             return false if current_entity != entity && must_issue_before_ebuy?(current_entity)
 
             super
           end
 
           def must_sell_shares?(corporation)
-            return false if corporation.cash >= @game.depot.min_depot_price || !corporation.trains.empty?
+            return false if corporation.cash >= @game.min_train_price(corporation) || !corporation.trains.empty?
 
             can_issue?(corporation)
           end
@@ -69,13 +69,13 @@ module Engine
           def can_close_corp?(entity)
             entity.trains.empty? &&
               !can_issue?(entity) &&
-              entity.cash + entity.owner.cash < @game.depot.min_depot_price &&
+              entity.cash + entity.owner.cash < @game.min_train_price(entity) &&
               @game.graph.route_info(entity)&.dig(:route_train_purchase)
           end
 
           def can_afford_needed_train?(entity)
             entity.trains.empty? &&
-              entity.cash + entity.owner.cash >= @game.depot.min_depot_price &&
+              entity.cash + entity.owner.cash >= @game.min_train_price(entity) &&
               @game.graph.route_info(entity)&.dig(:route_train_purchase)
           end
         end
