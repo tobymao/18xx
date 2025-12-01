@@ -202,7 +202,7 @@ module Engine
 
           # Give PEIR their initial cash and setup their shares to not count
           # towards the limit
-          peir.cash = 200
+          peir.set_cash(200, @bank)
           @peir_shares = peir.shares
 
           # If Ice Boat shipping is in the game, set its corporations
@@ -608,6 +608,11 @@ module Engine
             @log << "Closing the King's Mail"
             company_by_id('KM')&.close!
             @log << 'Closing the PEIR'
+            peir.set_cash(0, @bank)
+            peir.trains.dup.each do |train|
+              @log << "#{peir.name} discards #{train.name}, removed from game"
+              remove_train(train)
+            end
             peir.close!
             return
           end

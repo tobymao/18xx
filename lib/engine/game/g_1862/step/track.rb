@@ -25,6 +25,19 @@ module Engine
             super
           end
 
+          def process_pass(action)
+            raise GameError, "Must lay home track tile for #{action.entity.name}" if must_lay_track?(action.entity)
+
+            log_pass(action.entity)
+            pass!
+          end
+
+          def must_lay_track?(entity)
+            return false unless entity == current_entity
+
+            @game.hex_by_id(entity.coordinates).tile.color == :white
+          end
+
           def track_upgrade?(_from, to, _hex)
             # this also takes care of adding small stations, since that is never yellow to yellow
             to.color != :yellow || to.label.to_s == 'N'

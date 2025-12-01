@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'rspec'
+
 RSpec::Matchers.define :be_assigned_to do |expected|
   match do |actual|
     expected.assigned?(actual.id)

@@ -16,6 +16,7 @@ module Engine
         GAME_FULL_TITLE = 'The Old Prince 1871'.freeze
         GAME_DROPDOWN_TITLE = 'The Old Prince 1871'.freeze
         GAME_ISSUE_LABEL = '1871'
+        FIXTURE_DIR_NAME = '1871'
 
         GAME_DESIGNER = 'Lucas Boyd'.freeze
         GAME_IMPLEMENTER = 'Christopher Giroir'.freeze

@@ -151,10 +151,10 @@ module Engine
         LAYOUT = :flat
 
         # Game end after the ORs in the third turn, of if any company reach 24
-        GAME_END_CHECK = { stock_market: :current_or, custom: :full_or }.freeze
+        GAME_END_CHECK = { stock_market: :current_or, fixed_round: :full_or }.freeze
 
         GAME_END_REASONS_TEXT = Base::GAME_END_REASONS_TEXT.merge(
-          custom: 'Complete set of 3SR-7OR'
+          fixed_round: 'Complete set of 3SR-7OR'
         )
 
         GAME_END_REASONS_TIMING_TEXT = Base::GAME_END_REASONS_TIMING_TEXT.merge(
@@ -200,6 +200,10 @@ module Engine
         SELL_BUY_ORDER = :sell_buy
 
         EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
+
+        EBUY_CAN_TAKE_PLAYER_LOAN = :after_sell
+        PLAYER_LOAN_INTEREST_RATE = -100
+        PLAYER_LOAN_ENDGAME_PENALTY = 200
 
         HOME_TOKEN_TIMING = :float
 
@@ -263,9 +267,6 @@ module Engine
           @available_companies = []
           @future_companies = []
           @ticket_zoo_current_value = ZOO_TICKET_VALUE[1][0]
-
-          # Initialize the player depts, if player have to take an emergency debt
-          @player_debts = Hash.new { |h, k| h[k] = 0 }
 
           draw_size = @players.size == 5 ? 6 : 4
           @companies_for_isr = @companies.first(draw_size)
@@ -412,10 +413,10 @@ module Engine
         def player_value(player)
           player.cash + player.shares.select { |s| s.corporation.ipoed }.sum(&:price) +
             player.companies.select { |company| company.name.start_with?('ZOOTicket') }.sum(&:value) -
-            player_debt(player)
+            player.penalty
         end
 
-        def end_game!(player_initiated: false)
+        def end_game!(game_end_reason)
           return if @finished
 
           update_zoo_tickets_value(4, 0)
@@ -996,14 +997,7 @@ module Engine
           @timeline << "NEARBY FAMILY: #{near_family_text}" if near_family_text
           @timeline << 'SR 3: at the start of SR 3 the reserved R shares are available to buy.'
           @timeline << 'END: if during a forced train purchase the player doesn\'t have enough money, the bank covers'\
-                       ' the expense; the player gets a negative debt (loan) equal to twice what the bank paid'
-        end
-
-        def take_player_loan(player, debt)
-          # Give the player the money. The money for loans is outside money, doesnt count towards the normal bank money.
-          player.cash += debt
-
-          @player_debts[player] += debt
+                       ' the expense; the player gets a penalty equal to twice what the bank paid'
         end
 
         def rust?(train, purchased_train)
@@ -1131,10 +1125,6 @@ module Engine
           help
         end
 
-        def player_debt(player)
-          @player_debts[player] * 2
-        end
-
         def local_length
           99
         end
@@ -1192,7 +1182,7 @@ module Engine
           corporations
         end
 
-        def custom_end_game_reached?
+        def game_end_check_fixed_round?
           @turn == 3
         end
 

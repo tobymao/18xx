@@ -7,6 +7,8 @@ module Engine
     class UseGraph < Base
       attr_reader :graph_id
 
+      REQUIRED_ARGS = %i[graph_id].freeze
+
       def initialize(entity, graph_id:)
         super(entity)
         @graph_id = graph_id

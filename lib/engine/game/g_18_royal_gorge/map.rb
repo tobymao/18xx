@@ -164,22 +164,22 @@ module Engine
         HEXES = {
           white: {
             # blank
-            %w[N2 G3 B4 F4 L4 N4 C5 G5 M5 H6 N6 C7 G7 M7 F8 E9 K9 M9 H10 L10 K11
+            %w[N2 G3 F4 L4 N4 C5 G5 M5 H6 N6 C7 G7 M7 F8 E9 K9 M9 H10 L10 I11 K11
                M11 J12 N12 G13 K13 M13 N14 G15 I15 H16 J16 L16 E17 K17 H18 G19] => '',
             # mines only
             %w[E7 H8 F18] => 'icon=image:18_royal_gorge/mine,name:mine;',
             # mountains
-            %w[I11 J10 L6] => 'upgrade=cost:10,terrain:mountain;',
+            %w[J10 L6] => 'upgrade=cost:10,terrain:mountain;',
             %w[J8] => 'upgrade=cost:10,terrain:mountain;icon=image:18_royal_gorge/mine,name:mine;',
             %w[C9 D16 E5 I5 J4 J6 K5] => 'upgrade=cost:20,terrain:mountain;',
             %w[B10 D4 D6 D8 D18] => 'upgrade=cost:30,terrain:mountain;icon=image:18_royal_gorge/mine,name:mine;',
             # water
             %w[K15 M15] => 'upgrade=cost:20,terrain:water;icon=image:18_royal_gorge/mine,name:mine',
-            %w[G11 J14 N16] => 'upgrade=cost:20,terrain:water;',
+            %w[B4 G11 J14 N16] => 'upgrade=cost:20,terrain:water;',
             # towns
-            %w[B8 C3 G9 I17 K3 M3] => 'town=revenue:0;',
+            %w[B8 C3 G9 I17 K3 L12 M3] => 'town=revenue:0;',
             %w[E19 F16] => 'town=revenue:0;upgrade=cost:10,terrain:mountain;',
-            %w[H4 I9 F6 H14 L12] => 'town=revenue:0;icon=image:18_royal_gorge/mine,name:mine;',
+            %w[H4 I9 F6 H14] => 'town=revenue:0;icon=image:18_royal_gorge/mine,name:mine;',
             %w[E3] => 'town=revenue:0;label=R',
             # cities
             %w[G17 K7] => 'city=revenue:0',

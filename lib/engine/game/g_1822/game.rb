@@ -40,6 +40,8 @@ module Engine
 
         EBUY_FROM_OTHERS = :never
 
+        EBUY_CAN_TAKE_PLAYER_LOAN = :after_sell
+
         STARTING_CASH = { 2 => 900, 3 => 700, 4 => 525, 5 => 420, 6 => 350, 7 => 300 }.freeze
 
         CAPITALIZATION = :incremental
@@ -55,7 +57,13 @@ module Engine
         }.freeze
 
         GAME_END_CHECK = { bank: :full_or, stock_market: :current_or }.freeze
+        GAME_END_REASONS_TIMING_TEXT = {
+          current_or: 'Next end of an OR',
+          full_or: 'Next end of a complete OR set (if bank breaks during an OR). ' \
+                   'Next end of an OR (if bank breaks during an SR).',
+        }.freeze
         GAME_END_ON_NOTHING_SOLD_IN_SR1 = true
+        GAME_END_LOCK_FIRST_TRIGGER = true
 
         STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(
           par_1: :red,
@@ -544,14 +552,14 @@ module Engine
         TRACK_PLAIN = %w[7 8 9 80 81 82 83 544 545 546 60 169].freeze
         TRACK_TOWN = %w[3 4 58 141 142 143 144 767 768 769 X17].freeze
 
-        UPGRADABLE_S_YELLOW_CITY_TILE = '57'
-        UPGRADABLE_S_YELLOW_ROTATIONS = [2, 5].freeze
-        UPGRADABLE_S_HEX_NAME = 'D35'
+        UPGRADEABLE_S_YELLOW_CITY_TILE = '57'
+        UPGRADEABLE_S_YELLOW_ROTATIONS = [2, 5].freeze
+        UPGRADEABLE_S_HEX_NAME = 'D35'
 
         UPGRADE_COST_L_TO_2 = 80
 
         attr_reader :minor_14_city_exit, :tax_haven
-        attr_accessor :bidding_token_per_player, :player_debts
+        attr_accessor :bidding_token_per_player
 
         def bank_sort(corporations)
           corporations.reject { |c| c.type == :minor }.sort_by(&:name)
@@ -571,23 +579,43 @@ module Engine
         def check_distance(route, visits)
           raise GameError, 'Cannot run Pullman train' if pullman_train?(route.train)
 
-          if train_type(route.train) == :etrain &&
-             visits.count { |v| v.city? && v.tokened_by?(route.corporation) } < 2
-            raise GameError, 'E-train route must have at least 2 tokened cities'
+          if (english_channel_visits = english_channel_visit(visits)).positive?
+            if self.class::LOCAL_TRAINS.include?(route.train.name)
+              raise GameError, 'LP train cannot have a route over the English Channel'
+            end
+
+            # 8.1.4 Must visit both hex tiles to be a valid visit. If you are
+            # tokened out from France then you can't visit the English Channel
+            # tile either.
+            raise RouteTooShort, 'Must connect English Channel to France' if english_channel_visits == 1
+
+            if english_channel_visits == 2 && visits.size == 2
+              raise GameError, 'Route must have at least 2 stops; English Channel to France only counts as 1'
+            end
           end
 
-          english_channel_visit = english_channel_visit(visits)
-          # Permanent local train cant run in the english channel
-          if self.class::LOCAL_TRAINS.include?(route.train.name) && english_channel_visit.positive?
-            raise GameError, 'Local train can not have a route over the english channel'
+          if train_type(route.train) == :etrain
+            tokened_city = ->(visit) { visit.city? && visit.tokened_by?(route.corporation, types: %i[normal destination]) }
+
+            tokens_visited = visits.count(&tokened_city)
+            raise GameError, 'E-train route must have at least 2 tokened cities' if tokens_visited < 2
+
+            etrain_valid_start_end =
+              case [visits.first, visits.last].count(&tokened_city)
+              when 2
+                true
+              when 1
+                english_channel_etrain?(route.corporation, english_channel_visits)
+              else
+                false
+              end
+            unless etrain_valid_start_end
+              tokens_placed = route.corporation.tokens.count { |t| t.used && %i[normal destination].include?(t.type) }
+              raise RouteTooLong, 'E-train route cannot extend beyond tokened cities' if tokens_visited == tokens_placed
+
+              raise GameError, 'E-train route must start and end at tokened cities'
+            end
           end
-
-          # Must visit both hex tiles to be a valid visit. If you are tokened out from france then you cant visit the
-          # EC tile either.
-          raise GameError, 'Must connect english channel to france' if english_channel_visit == 1
-
-          # Special case when a train just runs english channel to france, this only counts as one visit
-          raise GameError, 'Route must have at least 2 stops' if english_channel_visit == 2 && visits.size == 2
 
           super
         end
@@ -662,39 +690,117 @@ module Engine
         end
 
         def company_status_str(company)
-          bidbox_minors.each_with_index do |c, index|
-            return "Bid box #{index + 1}" if c == company
+          bidbox_status_str(company) ||
+            company_status_game_specific(company) ||
+            nil
+        end
+
+        def bidbox_status_str(company)
+          index = bidbox_minors.index(company) ||
+                  bidbox_concessions.index(company) ||
+                  bidbox_privates.index(company)
+          return unless index
+
+          status = ["Bid box #{index + 1}"]
+          status.concat(minor_float_status(company))
+          status
+        end
+
+        def company_status_game_specific(company)
+          return unless company.company?
+
+          if self.class::PRIVATE_PHASE_REVENUE.include?(company.sym) && company.owner&.player?
+            return "(#{format_currency(@phase_revenue[company.sym].cash)})"
           end
 
-          bidbox_concessions.each_with_index do |c, index|
-            return "Bid box #{index + 1}" if c == company
-          end
-
-          if optional_plus_expansion? && !optional_plus_expansion_single_stack?
-            bidbox_privates.each do |c|
-              next unless c == company
-
-              return 'Bid box 1' if self.class::PLUS_EXPANSION_BIDBOX_1.include?(c.id)
-              return 'Bid box 2' if self.class::PLUS_EXPANSION_BIDBOX_2.include?(c.id)
-              return 'Bid box 3' if self.class::PLUS_EXPANSION_BIDBOX_3.include?(c.id)
-            end
-          else
-            bidbox_privates.each_with_index do |c, index|
-              return "Bid box #{index + 1}" if c == company
-            end
-          end
-
-          if self.class::PRIVATE_PHASE_REVENUE.include?(company.id) && company.owner&.player?
-            return "(#{format_currency(@phase_revenue[company.id].cash)})"
-          end
-
-          if company.id == self.class::COMPANY_OSTH && company.owner&.player? && @tax_haven.value.positive?
+          if company.sym == self.class::COMPANY_OSTH && company.owner&.player? && @tax_haven.value.positive?
             cash = format_currency(@tax_haven.cash)
             shares = @tax_haven.shares.map { |s| s.corporation.name }.join(',')
             return "(#{cash},#{shares})"
           end
 
           nil
+        end
+
+        def minor_float_status(company)
+          return [] unless company.company?
+          return [] unless company.sym[0] == self.class::COMPANY_MINOR_PREFIX
+          return [minor_float_status_train_export(company)] unless (bid = @round.highest_bid(company))
+
+          float_index = minor_float_index(company)
+          status = ["Float Order: #{float_index + 1}"]
+
+          share_price = minor_float_share_price(bid)
+          presidency_price = share_price.price * 2
+          status << "Share Price: #{format_currency(share_price.price)}"
+
+          cash = minor_float_starting_cash(bid.price, presidency_price)
+          status << "Starting Cash: #{format_currency(cash)}"
+
+          status
+        end
+
+        def minors_to_float
+          to_float = bidbox_minors.filter_map.with_index do |minor, bb_index|
+            next unless (minor_bid = @round.highest_bid(minor))
+
+            [minor_bid, bb_index]
+          end
+          to_float.sort_by { |mb, bb_index| [mb.price, -bb_index] }.reverse
+        end
+
+        def minor_float_index(company)
+          minors_to_float.find_index { |mb, _bb_idx| mb.company == company }
+        end
+
+        def minor_float_share_price(bid)
+          bid_amount = bid.price
+
+          max_par_price = stock_market.par_prices.map(&:price).max
+          par_price_to_find = phase.name.to_i == 1 ? self.class::MINOR_START_PAR_PRICE : bid_amount / 2
+          par_price_to_find = max_par_price if par_price_to_find > max_par_price
+
+          stock_market.par_prices.find { |pp| pp.price <= par_price_to_find }
+        end
+
+        def minor_float_starting_cash(bid_amount, presidency_price)
+          if phase.name.to_i < 3
+            presidency_price
+          else
+            bid_amount
+          end
+        end
+
+        def minor_float_status_train_export(company)
+          return unless company.company?
+          return if @round.highest_bid(company)
+
+          upcoming_l_count = depot.upcoming.count { |t| t.name == 'L' }
+          bidless_minors = bidbox_minors.reject { |m| @round.highest_bid(m) }
+
+          will_remove_l = (bidless_minors.index(company) + 1) <= upcoming_l_count
+
+          l_2 = 'L/2'
+
+          to_export =
+            if company == bidbox_minors.first
+              train = depot.upcoming[upcoming_l_count.positive? ? bidless_minors.size : 0]
+              if train.name == 'L'
+                "two #{l_2} trains"
+              elsif will_remove_l
+                "#{l_2} train and 3 train"
+              else
+                "#{train.name} train"
+              end
+            elsif will_remove_l
+              "#{l_2} train"
+            end
+
+          "no bids: will #{minor_float_train_export_verb} #{to_export}" if to_export
+        end
+
+        def minor_float_train_export_verb
+          'remove'
         end
 
         def compute_other_paths(routes, route)
@@ -979,10 +1085,10 @@ module Engine
 
         def operating_round(round_num)
           Engine::Round::Operating.new(self, [
+            G1822::Step::DiscardTrain,
             G1822::Step::PendingToken,
             G1822::Step::FirstTurnHousekeeping,
             G1822::Step::AcquireCompany,
-            G1822::Step::DiscardTrain,
             G1822::Step::SpecialChoose,
             G1822::Step::SpecialTrack,
             G1822::Step::SpecialToken,
@@ -994,7 +1100,6 @@ module Engine
             G1822::Step::BuyTrain,
             G1822::Step::MinorAcquisition,
             G1822::Step::PendingToken,
-            G1822::Step::DiscardTrain,
             G1822::Step::IssueShares,
           ], round_num: round_num)
         end
@@ -1043,7 +1148,7 @@ module Engine
         end
 
         def player_value(player)
-          player.value - @player_debts[player] + tax_haven_value(player)
+          player.value + tax_haven_value(player)
         end
 
         def purchasable_companies(entity = nil)
@@ -1094,7 +1199,7 @@ module Engine
                       stops.sum do |stop|
                         next 0 unless stop.city?
 
-                        tokened = stop.tokened_by?(entity)
+                        tokened = stop.tokened_by?(entity, types: %i[normal destination])
                         # If we got a token in English channel, calculate the revenue from the france offboard
                         if tokened && stop.hex.name == self.class::ENGLISH_CHANNEL_HEX
                           france_stop ? france_stop.route_revenue(route.phase, route.train) : 0
@@ -1136,13 +1241,9 @@ module Engine
 
         def setup
           @nothing_sold_in_sr = true
-          @game_end_reason = nil
 
           # Setup the bidding token per player
           @bidding_token_per_player = init_bidding_token
-
-          # Initialize the player depts, if player have to take an emergency loan
-          @player_debts = Hash.new { |h, k| h[k] = 0 }
 
           # Initialize a dummy player for phase revenue companies
           # to hold the cash it generates
@@ -1200,7 +1301,7 @@ module Engine
 
         def stock_round
           G1822::Round::Stock.new(self, [
-            Engine::Step::DiscardTrain,
+            G1822::Step::DiscardTrain,
             G1822::Step::BuySellParShares,
           ])
         end
@@ -1277,8 +1378,8 @@ module Engine
 
         def upgrades_to?(from, to, _special = false, selected_company: nil)
           # This is needed because the S tile upgrade removes the town in yellow
-          if self.class::UPGRADABLE_S_HEX_NAME == from.hex&.name && from.color == :white
-            return self.class::UPGRADABLE_S_YELLOW_CITY_TILE == to.name
+          if self.class::UPGRADEABLE_S_HEX_NAME == from.hex&.name && from.color == :white
+            return self.class::UPGRADEABLE_S_YELLOW_CITY_TILE == to.name
           end
 
           # Special case for P2 Middleton Railway where we remove a town from a tile
@@ -1306,18 +1407,6 @@ module Engine
           )
           entity.remove_ability(ability) if ability
           entity.add_ability(new_ability)
-        end
-
-        def add_interest_player_loans!
-          @player_debts.each do |player, loan|
-            next unless loan.positive?
-
-            interest = player_loan_interest(loan)
-            new_loan = loan + interest
-            @player_debts[player] = new_loan
-            @log << "#{player.name} increases their loan by 50% (#{format_currency(interest)}) to "\
-                    "#{format_currency(new_loan)}"
-          end
         end
 
         def after_place_pending_token(city)
@@ -1433,10 +1522,6 @@ module Engine
           return [] unless company&.owner&.player?
 
           [company.owner]
-        end
-
-        def player_loan_interest(loan)
-          (loan * 0.5).ceil
         end
 
         def company_ability_extra_track?(company)
@@ -1691,7 +1776,14 @@ module Engine
         end
 
         def english_channel_visit(visits)
+          return 0 if !self.class::ENGLISH_CHANNEL_HEX || !self.class::FRANCE_HEX
+
           visits.count { |v| v.hex.name == self.class::ENGLISH_CHANNEL_HEX || v.hex.name == self.class::FRANCE_HEX }
+        end
+
+        def english_channel_etrain?(corporation, english_channel_visits)
+          english_channel_visits == 2 &&
+            hex_by_id(self.class::ENGLISH_CHANNEL_HEX).tile.cities[0].tokened_by?(corporation)
         end
 
         def exchange_tokens(entity)
@@ -1805,25 +1897,6 @@ module Engine
           @optional_rules&.include?(:plus_expansion_single_stack)
         end
 
-        # Pay full or partial of the player loan. The money from loans is
-        # outside money, doesnt count towards the normal bank money.
-        def payoff_player_loan(player, payoff_amount: nil)
-          loan_balance = @player_debts[player]
-          payoff_amount = player.cash if !payoff_amount || payoff_amount > player.cash
-          payoff_amount = [payoff_amount, loan_balance].min
-
-          @player_debts[player] -= payoff_amount
-          player.cash -= payoff_amount
-
-          @log <<
-            if payoff_amount == loan_balance
-              "#{player.name} pays off their loan of #{format_currency(loan_balance)}"
-            else
-              "#{player.name} decreases their loan by #{format_currency(payoff_amount)} "\
-                "(#{format_currency(@player_debts[player])})"
-            end
-        end
-
         def place_destination_token(entity, hex, token, city = nil, log: true)
           city ||= destination_city(hex, entity)
           city.place_token(entity, token, free: true, check_tokenable: false, cheater: true)
@@ -1840,10 +1913,6 @@ module Engine
 
         def destination_city(hex, _entity)
           hex.tile.cities.first
-        end
-
-        def player_debt(player)
-          @player_debts[player] || 0
         end
 
         def pullman_train?(train)
@@ -1887,12 +1956,8 @@ module Engine
           ability.description = "Exchange tokens: #{ability.count}"
         end
 
-        def take_player_loan(player, loan)
-          # Give the player the money. The money for loans is outside money, doesnt count towards the normal bank money.
-          player.cash += loan
-
-          # Add interest to the loan, must atleast pay 150% of the loaned value
-          @player_debts[player] += loan + player_loan_interest(loan)
+        def spending_entities
+          [super, @tax_haven, (@phase_revenue || {}).values]
         end
 
         def train_type(train)
@@ -1943,15 +2008,13 @@ module Engine
           entity.id == self.class::MINOR_14_ID
         end
 
-        def game_end_check
-          # Once the game end has been determined, it's set in stone
-          @game_end_reason ||= compute_game_end
-        end
-
-        def compute_game_end
-          return [:bank, @round.is_a?(Engine::Round::Operating) ? :full_or : :current_or] if @bank.broken?
-
-          return %i[stock_market current_or] if @stock_market.max_reached?
+        def game_end_timing(reason)
+          case reason
+          when :bank
+            @round.is_a?(Engine::Round::Operating) ? :full_or : :current_or
+          else
+            super
+          end
         end
 
         def preprocess_action(action)
@@ -2213,8 +2276,8 @@ module Engine
 
         def e_route_distance_str(route)
           corp = route.train.owner
-          total_laid_tokens = corp.tokens.count(&:used)
-          paying_stops = route.visited_stops.count { |stop| stop.tokened_by?(corp) }
+          total_laid_tokens = corp.tokens.count { |t| t.used && %i[normal destination].include?(t.type) }
+          paying_stops = route.visited_stops.count { |stop| stop.tokened_by?(corp, types: %i[normal destination]) }
           "#{paying_stops}/#{total_laid_tokens}"
         end
 

@@ -95,8 +95,9 @@ module Engine
                 choices[shares.to_s] = if money_difference.zero?
                                          "#{@associated_minor.owner.name} receives #{shares} shares"
                                        elsif money_difference.positive?
+                                         cash_to_president = [money_difference, minors_cash].min
                                          "#{@associated_minor.owner.name} receives #{shares} shares and " \
-                                           "#{@game.format_currency(money_difference)}"
+                                           "#{@game.format_currency(cash_to_president)}"
                                        else
                                          "#{@associated_minor.owner.name} receives #{shares} shares and pays " \
                                            "#{@game.format_currency(-1 * money_difference)}"
@@ -157,9 +158,10 @@ module Engine
                            "to get #{@selected_shares} shares of #{@new_corporation.name}"
               @player.spend(shares_value - minors_value, @new_corporation)
             elsif (@selected_shares * @selected_par) < minors_value
+              cash_to_president = [(minors_value - shares_value), @new_corporation.cash].min
               @game.log << "#{@player.name} gets #{@selected_shares} shares of #{@new_corporation.name} " \
-                           "and #{@game.format_currency(minors_value - shares_value)}"
-              @new_corporation.spend(minors_value - shares_value, @player)
+                           "and #{@game.format_currency(cash_to_president)}"
+              @new_corporation.spend(cash_to_president, @player)
             else
               @game.log << "#{@player.name} gets #{@selected_shares} shares of #{@new_corporation.name}"
             end

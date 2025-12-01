@@ -63,6 +63,8 @@ module Engine
         COMPANY_LCDR = nil
         COMPANY_OSTH = nil
         COMPANY_LUR = nil # Move Card
+        ENGLISH_CHANNEL_HEX = nil
+        FRANCE_HEX = nil
 
         PRIVATE_COMPANIES_ACQUISITION = {
           'P1' => { acquire: %i[major], phase: 5 },
@@ -151,10 +153,6 @@ module Engine
         MINOR_14_ID = nil
 
         DOUBLE_HEX = %w[L19 M22 M26].freeze
-
-        def init_graph
-          Graph.new(self, home_as_token: true)
-        end
 
         TRAINS = [
           {
@@ -307,10 +305,10 @@ module Engine
 
         def operating_round(round_num)
           Engine::Round::Operating.new(self, [
+            G1822::Step::DiscardTrain,
             G1822::Step::PendingToken,
             G1822::Step::FirstTurnHousekeeping,
             G1822::Step::AcquireCompany,
-            G1822::Step::DiscardTrain,
             G1822MX::Step::SpecialChoose,
             G1822MX::Step::SpecialTrack,
             G1822::Step::SpecialToken,
@@ -322,7 +320,6 @@ module Engine
             G1822::Step::BuyTrain,
             G1822MX::Step::MinorAcquisition,
             G1822::Step::PendingToken,
-            G1822::Step::DiscardTrain,
             G1822MX::Step::IssueShares,
             G1822MX::Step::CashOutNdem,
             G1822MX::Step::AuctionNdemTokens,
@@ -357,7 +354,7 @@ module Engine
 
         def stock_round
           G1822MX::Round::Stock.new(self, [
-            Engine::Step::DiscardTrain,
+            G1822::Step::DiscardTrain,
             G1822MX::Step::BuySellParShares,
           ])
         end
@@ -460,9 +457,9 @@ module Engine
           concessions = @companies.select { |c| c.id[0] == self.class::COMPANY_CONCESSION_PREFIX }
           privates = @companies.select { |c| c.id[0] == self.class::COMPANY_PRIVATE_PREFIX }
 
-          c1 = concessions.find { |c| c.id == bidbox_start_concession }
-          concessions.delete(c1)
-          concessions.unshift(c1)
+          @c1 = concessions.find { |c| c.id == bidbox_start_concession }
+          concessions.delete(@c1)
+          concessions.unshift(@c1)
 
           p1 = privates.find { |c| c.id == bidbox_start_private }
           privates.delete(p1)
@@ -699,11 +696,43 @@ module Engine
           company.close!
         end
 
-        def company_status_str(company)
-          index = bidbox_minors.index(company) || bidbox_concessions.index(company) || bidbox_privates.index(company)
-          return "Bid box #{index + 1}" if index
+        def company_status_game_specific(_company); end
 
-          nil
+        def bidbox_status_str(company)
+          if company == @c1 && !company.owner.player?
+            if @round.highest_bid(company)
+              [
+                'Bid box 1',
+                "M18 Float Order: #{minor_float_index(company) + 1}",
+                "Share Price: #{format_currency(50)}",
+                "Starting Cash: #{format_currency(100)}",
+              ]
+            else
+              ['Bid box 1']
+            end
+          else
+            super
+          end
+        end
+
+        def minor_float_index(company)
+          return super unless bidbox_concessions.first&.id == bidbox_start_concession
+          return super unless @round.highest_bid(@c1)
+
+          c1_par = self.class::MINOR_START_PAR_PRICE
+
+          if company == @c1
+            will_float = minors_to_float
+            will_float.find_index { |mb, _index| minor_float_share_price(mb).price == c1_par } || will_float.size
+          elsif minor_float_share_price(@round.highest_bid(company)).price == c1_par
+            super + 1
+          else
+            super
+          end
+        end
+
+        def minor_float_train_export_verb
+          'give NDEM'
         end
 
         def terrain?(tile, terrain)

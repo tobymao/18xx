@@ -62,15 +62,6 @@ module Engine
             cheapest_variant[:price]
           end
 
-          def try_take_player_loan(player, cost)
-            return unless cost.positive?
-            return unless cost > player.cash
-
-            difference = cost - player.cash
-
-            @game.take_loan(player, difference)
-          end
-
           def process_buy_train(action)
             check_spend(action)
             buy_train_action(action)

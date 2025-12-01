@@ -25,7 +25,7 @@ module Engine
         CORPORATION_CLASS = G1824::Corporation
         DEPOT_CLASS = G1824::Depot
 
-        attr_accessor :two_train_bought, :forced_mountain_railway_exchange, :player_debts, :current_stack,
+        attr_accessor :two_train_bought, :forced_mountain_railway_exchange, :current_stack,
                       :kk_token_choice_player
 
         CURRENCY_FORMAT_STR = '%sG'
@@ -55,12 +55,13 @@ module Engine
         EBUY_FROM_OTHERS = :always
         EBUY_SELL_MORE_THAN_NEEDED = true
         EBUY_SELL_MORE_THAN_NEEDED_SETS_PURCHASE_MIN = true
+        EBUY_CAN_TAKE_PLAYER_LOAN = true
         MUST_BUY_TRAIN = :always
 
         # Rule IX. This differ from 1837 as players in 1824 do not go bankrupt.
         GAME_END_CHECK = { bank: :full_or }.freeze
 
-        EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+        EVENTS_TEXT = Base::EVENTS_TEXT.dup.merge(
           'buy_across' => ['Buy Across', 'Trains can be bought between companies'],
           'close_mountain_railways' => ['Mountain Railways Close', 'Any still open Montain railways are exchanged or closed'],
           'sd_formation' => ['SD formation', 'SD forms at the end of the OR'],
@@ -69,7 +70,7 @@ module Engine
           'kk_formation' => ['k&k formation', 'KK forms at the end of the OR'],
         ).freeze
 
-        STATUS_TEXT = Base::STATUS_TEXT.merge(
+        STATUS_TEXT = Base::STATUS_TEXT.dup.merge(
           'may_exchange_coal_railways' => ['Coal Railway exchange', 'May exchange Coal Railways during SR'],
           'may_exchange_mountain_railways' => ['Mountain Railway exchange', 'May exchange Mountain Railways during SR']
         ).freeze
@@ -83,10 +84,6 @@ module Engine
           6 => 'Wocheinerbahn',
         }.freeze
 
-        ASSIGNMENT_TOKENS = {
-          'coal' => '/icons/1837/coalcar.svg',
-        }.freeze
-
         # Modified from 1837 as 1824 does not have single shares in Pre-staatsbahn
         def company_header(company)
           return 'COAL COMPANY' if company.color == :black
@@ -98,7 +95,7 @@ module Engine
         # Need to handle special valuation of some minors, and also handle debt
         def player_value(player)
           shares_valuation = player.shares.select { |s| s.corporation.ipoed }.sum { |s| player_share_valuation(s) }
-          player.cash + shares_valuation + player.companies.sum(&:value) - @player_debts[player]
+          player.cash + shares_valuation + player.companies.sum(&:value) - player.debt
         end
 
         def player_share_valuation(share)
@@ -121,14 +118,16 @@ module Engine
           true
         end
 
+        def game_trains
+          self.class::TRAINS.dup.deep_freeze
+        end
+
         # Modified base version as the number of trains vary between player count and variant
         def init_train_handler
           train_count_map = num_trains_map
           trains = game_trains.flat_map do |train|
-            t = train
-            t = possibly_adjust_events_based_on_player_count(t)
-            Array.new(train_count_map[t[:name]]) do |index|
-              Train.new(**t, index: index)
+            Array.new(train_count_map[train[:name]]) do |index|
+              Train.new(**train, index: index)
             end
           end
 
@@ -137,10 +136,6 @@ module Engine
 
         def num_trains_map
           self.class::TRAIN_COUNT_STANDARD
-        end
-
-        def possibly_adjust_events_based_on_player_count(train)
-          train
         end
 
         def init_companies(players)
@@ -200,6 +195,11 @@ module Engine
         def yellow_town_tile_upgrades_to?(from, to)
           # honors pre-existing track?
           from.paths_are_subset_of?(to.paths) && to.color == :green && from.towns.one? && to.towns.one?
+        end
+
+        # 1824 does not have any special cases here so use base version instead of 1837 version
+        def legal_tile_rotation?(_entity, _hex, _tile)
+          true
         end
 
         # 1824 version differ from 1837 as a national can become in receivership, and tie breaker is different
@@ -280,11 +280,11 @@ module Engine
         end
 
         def operating_round(round_num)
-          Engine::Round::Operating.new(self, [
+          G1824::Round::Operating.new(self, [
             G1824::Step::KkTokenChoice,
-            Engine::Step::HomeToken,
             G1837::Step::Bankrupt,
             G1824::Step::DiscardTrain,
+            G1824::Step::ForcedMountainRailwayExchange,
             Engine::Step::SpecialTrack,
             G1824::Step::Track,
             Engine::Step::Token,
@@ -336,9 +336,6 @@ module Engine
 
           # When 1st 4-train is bought any remaining MRs will be exchanged
           @forced_mountain_railway_exchange = []
-
-          # Initialize the player debts, if player have to take an emergency loan
-          @player_debts = Hash.new { |h, k| h[k] = 0 }
 
           super
 
@@ -468,10 +465,13 @@ module Engine
         end
 
         def exchange_entities
-          # Only one MR to exchange at a time - if we show all here they appear as multiple buttons in GUI
-          # under selected corporation. See #11988.
-          unclosed = @companies.reject(&:closed?)
-          unclosed.empty? ? [] : [unclosed.first]
+          candidates = @companies.reject(&:closed?)
+          return candidates if forced_mountain_railway_exchange.empty?
+
+          # In case of a forced MR exchange, we only want to show one MR for a player
+          # as the player can only exchange the MR with the lowest number. We do not
+          # do this always as a player can do an unforced exchange with any MR.
+          candidates.group_by(&:owner).map { |_o, c| c.first }
         end
 
         def mountain_railway?(entity)
@@ -479,11 +479,15 @@ module Engine
         end
 
         def coal_railway?(entity)
-          entity.color == :black && entity.type == :minor
+          entity.color == :black && minor?(entity)
         end
 
         def pre_staatsbahn?(entity)
-          entity.color != :black && entity.type == :minor
+          entity.color != :black && minor?(entity)
+        end
+
+        def minor?(entity)
+          entity.type == :minor
         end
 
         def regional?(entity)
@@ -505,7 +509,11 @@ module Engine
         end
 
         def exchangable_for_mountain_railway?(player, corporation)
-          corporation.type == :major && @companies.find { |c| mountain_railway?(c) && c.owned_by?(player) }
+          shares_exchangable?(corporation) && @companies.any? { |c| mountain_railway?(c) && c.owned_by?(player) }
+        end
+
+        def shares_exchangable?(corporation)
+          regional?(corporation)
         end
 
         def unbought_companies?
@@ -525,8 +533,12 @@ module Engine
         end
 
         def operating_order
-          minors, majors = @corporations.select(&:floated?).partition { |c| c.type == :minor || c.type == :construction_railway }
+          minors, majors = @corporations.select(&:floated?).partition { |c| minor_for_partition_of_or?(c) }
           minors + majors.sort
+        end
+
+        def minor_for_partition_of_or?(corp)
+          minor?(corp)
         end
 
         def exchange_order
@@ -569,13 +581,15 @@ module Engine
 
           minor = corporation_by_id(id)
 
-          return if special_handling_after_by_company(company, minor)
+          after_buy_company_final_touch(company, minor, price)
+        end
 
+        def after_buy_company_final_touch(_company, minor, price)
           return unless coal_railway?(minor)
 
           # Rule IV.2, bullet 8: Coal Railways start with a g train bought from the depot
           g_train = depot.upcoming.select { |t| goods_train?(t.name) }.shift
-          log << "#{id} buys a #{g_train.name} train from the depot for #{format_currency(g_train.price)}"
+          log << "#{minor.id} buys a #{g_train.name} train from the depot for #{format_currency(g_train.price)}"
           buy_train(minor, g_train, g_train.price)
 
           regional_railway = get_associated_regional_railway(minor)
@@ -584,11 +598,6 @@ module Engine
           stock_market.set_par(regional_railway, share_price)
           association = "the associated Regional Railway of #{id}"
           log << "#{regional_railway.name} (#{association}) pars at #{format_currency(share_price.price)}."
-        end
-
-        # Needed for 2 player variant
-        def special_handling_after_by_company(_company, _minor)
-          false
         end
 
         # This 1837 version with some tweeks
@@ -605,22 +614,20 @@ module Engine
           # This part has been simplified in 1824, as a minor can only have one owner
           # and if its a lesser pre-staatsbahn it should correspond to a 10% share in
           # the mergee, otherwise 20%.
-          minor.share_holders.each do |sh, _|
-            num_shares = sh.shares_of(minor).size
-            next if num_shares.zero?
 
-            num_shares = 2 if coal_minor?(minor) || minor.id.end_with?('1')
+          owner = minor.owner
+          num_shares = coal_minor?(minor) || minor.id.end_with?('1') ? 2 : 1
 
-            share = corporation.shares.find { |s| !s.buyable && s.percent == num_shares * 10 }
-            @log << "#{sh.name} receives #{num_shares} share#{num_shares > 1 ? 's' : ''} of #{corporation.name}"
-            share.buyable = true
+          share = corporation.shares.find { |s| !s.buyable && s.percent == num_shares * 10 }
+          @log << "#{owner.name} receives #{num_shares} share#{num_shares > 1 ? 's' : ''} of #{corporation.name}"
+          share.buyable = true
 
-            # 1824 fix. We explicitly set allow_president_change to true here as we otherwise get a strange
-            # behavior when presidency decided for nationals. Might need revisiting.
-            @share_pool.transfer_shares(share.to_bundle, sh, allow_president_change: true)
-            if @round.respond_to?(:non_paying_shares) && operated_this_round?(minor)
-              @round.non_paying_shares[sh][corporation] += num_shares
-            end
+          # 1824 fix. We explicitly set allow_president_change to true here as we otherwise get a strange
+          # behavior when presidency decided for nationals. Might need revisiting.
+          @share_pool.transfer_shares(share.to_bundle, owner, allow_president_change: true)
+
+          if @round.respond_to?(:non_paying_shares) && operated_this_round?(minor)
+            @round.non_paying_shares[owner][corporation] += num_shares
           end
 
           if minor.cash.positive?
@@ -664,6 +671,11 @@ module Engine
           return if staatsbahn?(corporation) && corporation.placed_tokens.any?
 
           super
+        end
+
+        # 1837 use as special functionality for token graphs so we need to use base functionality
+        def token_graph_for_entity(_entity)
+          @graph
         end
 
         def associated_coal_railway(regional_railway)
@@ -743,50 +755,6 @@ module Engine
           @log << "#{corporation.name} receives #{format_currency(capitilization)}"
         end
 
-        def take_loan(player, amount)
-          loan_amount = (amount.to_f * 1.5).ceil
-          @player_debts[player] += loan_amount
-
-          @log << "#{player.name} takes a loan of #{format_currency(amount)}. " \
-                  "The player debt is increased by #{format_currency(loan_amount)}."
-
-          @bank.spend(amount, player)
-        end
-
-        def add_interest_player_loans!
-          @player_debts.each do |player, loan|
-            next unless loan.positive?
-
-            interest = (loan.to_f * 0.5).ceil
-            new_loan = loan + interest
-            @player_debts[player] = new_loan
-            @log << "#{player.name} increases their loan by 50% (#{format_currency(interest)}) to "\
-                    "#{format_currency(new_loan)}."
-          end
-        end
-
-        # Pay full or partial of the player loan.
-        def payoff_player_loan(player, payoff_amount: nil)
-          loan_balance = @player_debts[player]
-          payoff_amount = player.cash if !payoff_amount || payoff_amount > player.cash
-          payoff_amount = [payoff_amount, loan_balance].min
-
-          @player_debts[player] -= payoff_amount
-          player.spend(payoff_amount, @bank)
-
-          @log <<
-            if payoff_amount == loan_balance
-              "#{player.name} pays off their loan of #{format_currency(loan_balance)}."
-            else
-              "#{player.name} decreases their loan by #{format_currency(payoff_amount)}. "\
-                "Remaining debt is #{format_currency(player_debt(player))}."
-            end
-        end
-
-        def player_debt(player)
-          @player_debts[player] || 0
-        end
-
         def return_kk_token(selected_token)
           selected = selected_token == 1 ? kk.placed_tokens.dup.first : kk.placed_tokens.dup.last
           selected.remove!
@@ -828,10 +796,6 @@ module Engine
           form_national_railway!(national, kk_minors)
           possibly_return_kk_token
           @kk_to_form = false
-        end
-
-        def player_loan_interest(loan)
-          (loan * 0.5).ceil
         end
 
         MOUNTAIN_RAILWAY_DEFINITION = {

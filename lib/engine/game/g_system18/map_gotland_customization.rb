@@ -10,8 +10,8 @@ module Engine
           'D7' => [3, 4, 5, 0, 1, 2],
         }.freeze
 
-        B3_BASE_REVENUE_GREEN = 50
-        B3_BASE_REVENUE_BROWN = 70
+        B1_BASE_REVENUE_GREEN = 50
+        B1_BASE_REVENUE_BROWN = 70
         DIFFICULTY_VALUES = {
           'easy' => 10,
           'normal' => 20,
@@ -67,6 +67,9 @@ module Engine
         def map_gotland_constants
           redef_const(:CURRENCY_FORMAT_STR, '%s SEK')
           redef_const(:BANKRUPTCY_ENDS_GAME_AFTER, :one)
+          redef_const(:STATUS_TEXT, {
+                        'nr_or' => ['NR', 'Nationalization Round after Operating Rounds'],
+                      })
         end
 
         def map_gotland_game_companies
@@ -76,6 +79,7 @@ module Engine
         def map_gotland_game_corporations(corps)
           corps.each_with_index do |c, idx|
             c[:float_percent] = 40
+            c[:always_market_price] = true
             c[:coordinates] = %w[B5 B9 D11 B5 G2][idx]
             c[:city] = [1, nil, nil, 0, nil][idx]
             c[:shares] = [40, 20, 20, 20]
@@ -119,9 +123,10 @@ module Engine
         end
 
         def map_gotland_close_corporation(corporation)
+          corporation.set_cash(0, @bank)
           corporation.close!
           @log << "#{corporation.name} did not survive you lose"
-          end_game!
+          end_game!(:bankrupt)
         end
 
         def map_gotland_game_trains(trains)
@@ -136,7 +141,54 @@ module Engine
         end
 
         def map_gotland_game_phases
-          self.class::S18_INCCAP_PHASES
+          [
+            {
+              name: '2',
+              train_limit: 3,
+              tiles: [:yellow],
+              operating_rounds: 2,
+            },
+            {
+              name: '3',
+              on: '3',
+              train_limit: 3,
+              tiles: %i[yellow green],
+              operating_rounds: 2,
+              status: ['nr_or'],
+            },
+            {
+              name: '4',
+              on: '4',
+              train_limit: 3,
+              tiles: %i[yellow green],
+              operating_rounds: 2,
+              status: ['nr_or'],
+            },
+            {
+              name: '5',
+              on: '5',
+              train_limit: 2,
+              tiles: %i[yellow green brown],
+              operating_rounds: 2,
+              status: ['nr_or'],
+            },
+            {
+              name: '6',
+              on: '6',
+              train_limit: 2,
+              tiles: %i[yellow green brown],
+              operating_rounds: 2,
+              status: ['nr_or'],
+            },
+            {
+              name: '8',
+              on: '8',
+              train_limit: 2,
+              tiles: %i[yellow green brown gray],
+              operating_rounds: 2,
+              status: ['nr_or'],
+            },
+          ].deep_freeze
         end
 
         def map_gotland_game_cert_limit
@@ -163,8 +215,8 @@ module Engine
                            'count' => 1,
                            'color' => 'green',
                            'code' => 'city=revenue:50,slots:1;city=revenue:50,slots:1;'\
-                                     'path=a:0,b:_0;path=a:3,b:_0,track:narrow;'\
-                                     'path=a:4,b:_1;path=a:3,b:_1,track:narrow;label=V',
+                                     'path=a:0,b:_0;path=a:3,b:_0;'\
+                                     'path=a:4,b:_1;path=a:3,b:_1;label=V',
                          },
                          'SVD4' => {
                            'count' => 1,
@@ -175,8 +227,8 @@ module Engine
                            'count' => 1,
                            'color' => 'brown',
                            'code' => 'city=revenue:70,slots:1;city=revenue:70,slots:1;'\
-                                     'path=a:0,b:_0;path=a:3,b:_0,track:narrow;'\
-                                     'path=a:4,b:_1;path=a:3,b:_1,track:narrow;label=V',
+                                     'path=a:0,b:_0;path=a:3,b:_0;'\
+                                     'path=a:4,b:_1;path=a:3,b:_1;label=V',
                          },
                        })
         end
@@ -216,10 +268,10 @@ module Engine
           redef_const(:TILE_LAYS, [{ lay: true, upgrade: true, cost: difficulty_level_value }].freeze)
           reduce_float_costs(0)
 
-          @green_value = B3_BASE_REVENUE_GREEN - difficulty_level_value
-          @brown_value = B3_BASE_REVENUE_BROWN - difficulty_level_value
-          # Update the B3 hex with the new values
-          hex = hex_by_id('B3')
+          @green_value = B1_BASE_REVENUE_GREEN - difficulty_level_value
+          @brown_value = B1_BASE_REVENUE_BROWN - difficulty_level_value
+          # Update the B1 hex with the new values
+          hex = hex_by_id('B1')
           hex.tile.offboards.first.revenue = { 'green' => @green_value, 'brown' => @brown_value }
         end
 
@@ -243,12 +295,13 @@ module Engine
               ['D7'] => d_tile('D7'),
             },
             red: {
-              %w[B3] => 'offboard=revenue:green_50|brown_70,format:%d-X;path=a:0,b:_0,track:narrow',
+              ['B1'] => 'offboard=revenue:green_50|brown_70,format:%d-X;path=a:0,b:_0,track:narrow',
             },
             blue: {
               %w[A12] => 'offboard=revenue:yellow_10|brown_20;path=a:5,b:_0',
               %w[C14 F5] => 'offboard=revenue:yellow_10|brown_20;path=a:2,b:_0',
               %w[D13] => 'offboard=revenue:yellow_10|brown_20;path=a:3,b:_0',
+              ['B3'] => 'town=revenue:0;path=a:0,b:_0;path=a:3,b:_0',
             },
             gray: {
               ['F1'] => 'path=a:0,b:5',
@@ -339,6 +392,17 @@ module Engine
           !corporation.ipoed
         end
 
+        def map_gotland_available_par_cash(entity, corporation, _share_price)
+          available = entity.cash
+
+          ability = corporation.all_abilities.find do |a|
+            a.is_a?(Engine::Game::GSystem18::Gotland::FloatCost) && a.float_cost && a.float_cost.positive?
+          end
+          available -= ability.float_cost if ability
+
+          available
+        end
+
         def map_gotland_float_corporation(corporation)
           player = corporation.owner
 
@@ -360,13 +424,13 @@ module Engine
 
           @log << "#{corporation.name} floats"
 
+          # Track newly floated corporations for the current stock round
+          track_newly_floated(corporation) if @round.is_a?(GSystem18::Round::Stock)
+
           return if %i[incremental none].include?(corporation.capitalization)
 
           @bank.spend(corporation.par_price.price * corporation.total_shares, corporation)
           @log << "#{corporation.name} receives #{format_currency(corporation.cash)}"
-
-          # Track newly floated corporations for the current stock round
-          track_newly_floated(corporation) if @round.is_a?(GSystem18::Round::Stock)
         end
 
         # ----- Rival share randomizer -----
@@ -551,13 +615,24 @@ module Engine
                 @turn += 1
                 or_round_finished
                 or_set_finished
-                new_nationalization_round(@round.round_num)
+                if @phase.status.include?('nr_or')
+                  new_nationalization_round(@round.round_num)
+                else
+                  new_stock_round
+                end
               end
             when init_round.class
               init_round_finished
               reorder_players
               new_stock_round
             end
+        end
+
+        def map_gotland_can_dump?(entity, bundle)
+          corporation = bundle.corporation
+          return false if (corporation.share_holders[rival] || 0) > (corporation.share_holders[entity] - bundle.percent)
+
+          bundle.can_dump?(entity)
         end
       end
     end

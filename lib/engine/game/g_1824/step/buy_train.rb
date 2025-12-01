@@ -7,6 +7,14 @@ module Engine
     module G1824
       module Step
         class BuyTrain < Engine::Step::BuyTrain
+          def round_state
+            super.merge(
+              {
+                train_exchanged_by_entity: [],
+              }
+            )
+          end
+
           def actions(entity)
             actions = super.clone
             return actions unless entity.operator?
@@ -39,23 +47,51 @@ module Engine
             !depot_g_trains.empty?
           end
 
+          def president_may_contribute?(entity, _shell = nil)
+            must_buy_train?(entity)
+          end
+
+          def can_ebuy_sell_shares?(entity)
+            owner = entity.owner
+            available_cash = entity.cash + owner.cash
+
+            prices = [cheapest_train_price(entity), cheapest_discountable_train_price(entity)].select(&:positive?)
+            return false if prices.empty?
+
+            available_cash < prices.min
+          end
+
           def pass_if_cannot_buy_train?(_entity)
             false
+          end
+
+          def cheapest_train_price(corporation)
+            return buyable_trains(corporation).map(&:price).min unless buyable_trains(corporation).empty?
+
+            0
+          end
+
+          def cheapest_discountable_train_price(corporation)
+            return 0 unless discountable_trains_allowed?(corporation)
+
+            discountable_trains = @game.discountable_trains_for(corporation)
+            return discountable_trains.map(&:price).min unless discountable_trains.empty?
+
+            0
           end
 
           def must_take_player_loan?(entity)
             @game.depot.min_depot_price > (entity.cash + entity.owner.cash)
           end
 
-          def try_take_player_loan(entity, cost)
-            return unless cost > entity.cash
-
-            @game.take_loan(entity, cost - entity.cash)
-          end
-
           def process_buy_train(action)
             entity ||= action.entity
             train = action.train
+            if action.exchange
+              raise GameError, "#{entity.name} has already exchanged trains this OR" unless discountable_trains_allowed?(entity)
+
+              @round.train_exchanged_by_entity << entity.id
+            end
 
             if entity&.corporation? && !@game.goods_train?(train.name) && @game.coal_railway?(entity)
               raise GameError, 'Coal railways can only own g-trains'
@@ -85,6 +121,10 @@ module Engine
             return [train.price, train.price] if train.owner&.corporation? && train.owner.owner != entity.owner
 
             super
+          end
+
+          def discountable_trains_allowed?(entity)
+            !@round.train_exchanged_by_entity.include?(entity.id)
           end
         end
       end

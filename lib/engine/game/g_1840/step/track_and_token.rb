@@ -19,6 +19,10 @@ module Engine
           end
 
           def process_remove_token(action)
+            if !@game.loading && !available_hex_remove_token?(action.city.hex)
+              raise GameError, "#{action.entity.name} cannot remove a token from #{action.city.hex.name}"
+            end
+
             city = action.city
             entity = action.entity
             token = city.tokens[action.slot]
@@ -37,6 +41,10 @@ module Engine
           end
 
           def process_place_token(action)
+            if !@game.loading && !available_hex_place_token?(action.entity, action.city.hex)
+              raise GameError, "#{action.entity.name} cannot place a token on #{action.city.hex.name}"
+            end
+
             entity = action.entity
             city = action.city
 
@@ -48,6 +56,10 @@ module Engine
           end
 
           def process_lay_tile(action)
+            if !@game.loading && !available_hex_lay_tile?(action.entity, action.hex)
+              raise GameError, "#{action.entity.name} cannot lay a tile on #{action.hex.name}"
+            end
+
             entity = action.entity
             spender = @game.owning_major_corporation(entity)
             tile = action.tile
@@ -81,13 +93,34 @@ module Engine
           end
 
           def available_hex(entity, hex)
-            return @game.graph.reachable_hexes(entity)[hex] unless can_lay_tile?(entity, hex)
+            return true if available_hex_remove_token?(hex)
+            return true if available_hex_place_token?(entity, hex)
+            return true if available_hex_lay_tile?(entity, hex)
 
+            false
+          end
+
+          def available_hex_place_token?(entity, hex)
+            return false unless can_place_token?(entity)
+            return false unless @game.graph.reachable_hexes(entity)[hex]
+
+            hex.tile.cities.any? do |city|
+              city.tokenable?(entity, spender: @game.owning_major_corporation(entity))
+            end
+          end
+
+          def available_hex_remove_token?(hex)
+            return false if @game.class::NO_TOKEN_REMOVE_HEX.include?(hex.coordinates)
+
+            hex.tile.cities.any? { |c| c.tokens.any? { |t| t&.corporation&.type == :city } }
+          end
+
+          def available_hex_lay_tile?(entity, hex)
+            return false unless can_lay_tile?(entity)
             return orange_tile_available?(hex) if @game.orange_framed?(hex.tile) && hex.tile == hex.original_tile
-
             return @game.graph.connected_nodes(entity)[hex] if @normal_placed
 
-            super
+            tracker_available_hex(entity, hex)
           end
 
           def orange_tile_available?(hex)

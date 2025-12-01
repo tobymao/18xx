@@ -7,6 +7,8 @@ module Engine
     class HexToken < Base
       attr_reader :hex, :token, :cost
 
+      REQUIRED_ARGS = %i[hex].freeze
+
       def initialize(entity, hex:, cost: nil, token_type: nil, token: nil)
         super(entity)
         @hex = hex

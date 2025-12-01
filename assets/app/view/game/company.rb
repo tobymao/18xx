@@ -186,7 +186,8 @@ module View
               backgroundColor: color_for(:bg2),
               color: color_for(:font2),
             }
-            children << h(:div, { style: status_style }, @game.company_status_str(@company))
+            statuses = Array(@game.company_status_str(@company))
+            children << h(:div, { style: status_style }, statuses.map { |s| h(:div, s) })
           end
 
           unless @interactive

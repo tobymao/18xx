@@ -137,10 +137,6 @@ class Game < Base
   end
 
   def to_h(include_actions: false, logged_in_user_id: nil)
-    actions_h = include_actions ? actions.map(&:to_h) : []
-    if !players.find { |p| p.id == logged_in_user_id } && user_id != logged_in_user_id
-      actions_h.reject! { |a| a['type'] == 'message' }
-    end
     settings_h = settings.to_h
 
     # Move user settings and hide from other players
@@ -162,7 +158,7 @@ class Game < Base
       round: round,
       acting: acting.to_a,
       result: result.to_h,
-      actions: actions_h,
+      actions: actions_h(include_actions: include_actions, logged_in_user_id: logged_in_user_id),
       loaded: include_actions,
       created_at: created_at_ts,
       updated_at: updated_at_ts,
@@ -173,5 +169,29 @@ class Game < Base
   def validate
     super
     errors.add(:finished_at, 'must be set for finished games') if status == 'finished' && !finished_at
+  end
+
+  # Remove chat messages for players not in the game. Keeps the chat action (but
+  # removes the `message` contents) if the action is the target for an undo, or
+  # if it has auto actions attached.
+  def actions_h(include_actions: false, logged_in_user_id: nil)
+    return [] unless include_actions
+
+    remove_messages = players.none? { |p| p.id == logged_in_user_id } && user_id != logged_in_user_id
+    undo_targets = actions.filter_map { |a| a.action['type'] == 'undo' && a.action['action_id'] }.to_set
+
+    actions.filter_map do |db_action|
+      action = db_action.to_h
+      if remove_messages && action['type'] == 'message'
+        # rubocop:disable Style/GuardClause
+        if undo_targets.include?(action['id']) || (action['auto_actions'] && !action['auto_actions'].empty?)
+          action['message'] = ''
+        else
+          next
+        end
+        # rubocop:enable Style/GuardClause
+      end
+      action
+    end
   end
 end

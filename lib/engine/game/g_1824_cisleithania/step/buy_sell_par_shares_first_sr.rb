@@ -36,7 +36,7 @@ module Engine
           def visible_corporations
             return [] if @game.two_player? && @game.unbought_companies?
 
-            @game.sorted_corporations.reject { |c| c.closed? || c.type == :minor || c.type == :construction_railway }
+            super
           end
 
           def process_buy_company(action)

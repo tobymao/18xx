@@ -7,6 +7,8 @@ module Engine
     class SpecialBuy < Base
       attr_reader :entity, :item
 
+      REQUIRED_ARGS = %i[item].freeze
+
       def initialize(entity, item:)
         super(entity)
         @item = item

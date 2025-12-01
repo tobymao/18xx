@@ -7,6 +7,8 @@ module Engine
     class RemoveHexToken < Base
       attr_reader :hex
 
+      REQUIRED_ARGS = %i[hex].freeze
+
       def initialize(entity, hex:)
         super(entity)
         @hex = hex

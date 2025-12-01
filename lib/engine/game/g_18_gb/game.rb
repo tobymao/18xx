@@ -922,17 +922,32 @@ module Engine
         end
 
         def or_round_finished
-          depot.export! unless @train_bought
-          trigger_end_game_restrictions if @depot.upcoming.size <= 2
+          @depot.export! unless @train_bought
+
+          case @depot.upcoming.size
+          when 0
+            end_game!(:final_train)
+          when 1, 2
+            trigger_end_game_restrictions
+          end
         end
 
-        def end_now?(after)
-          if @round.is_a?(round_end) && @depot.upcoming.size == 1 && !@train_bought
-            @depot.export!
-            return true
-          end
+        def next_round!
+          @round =
+            case @round
+            when Round::Operating
+              or_round_finished
+              return if @finished
 
-          super
+              if @round.round_num < @operating_rounds
+                new_operating_round(@round.round_num + 1)
+              else
+                @turn += 1
+                new_stock_round
+              end
+            else
+              super
+            end
         end
 
         def price_movement_chart

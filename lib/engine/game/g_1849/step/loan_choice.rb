@@ -58,8 +58,10 @@ module Engine
             else
               @log << "#{player.name} chooses to take #{@game.format_currency(500)} loan
                      and reduce #{@game.format_currency(750)} from their score."
-              @game.bank.spend(500, player)
-              @game.player_debts[player] += 750
+
+              # game end penalty instead of paying loan back
+              player.take_cash_loan(500, @game.bank, interest: -100)
+              player.penalty += 750
             end
 
             @game.loan_choice_player = nil

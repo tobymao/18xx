@@ -335,6 +335,7 @@ module Engine
         SELL_BUY_ORDER = :sell_buy
         EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
         GAME_END_CHECK = { bank: :current_or, final_phase: :one_more_full_or_set }.freeze
+        GAME_END_TIMING_PRIORITY = %i[one_more_full_or_set current_or].freeze
 
         BONUS_CAPITALS = %w[F16 L12 O7].freeze
         BONUS_REVENUE = 'D2'
@@ -578,7 +579,7 @@ module Engine
         end
 
         def nationalization_transfer_assets(corporation)
-          corporation.spend(corporation.cash, @bank) if corporation.cash.positive?
+          corporation.set_cash(0, @bank)
         end
 
         def nationalize!(corporation)
@@ -778,7 +779,7 @@ module Engine
           end
         end
 
-        def end_game!(player_initiated: false)
+        def end_game!(game_end_reason)
           return if @finished
 
           logged_drop = false
@@ -800,32 +801,16 @@ module Engine
           super
         end
 
-        def game_end_check_values
-          return super unless @game_end_check
-
-          # Game end checks are tested in the order soonest to furthest away.
-          # In 1861/1867 this means that :bank (end of current OR) is tested
-          # before :final_phase (end of next OR set). But we need the final
-          # phase test to take precedence, so if the game end has been
-          # triggered than we just need to look for the :final_phase test
-          # as this will extend the game if the final phase is reached after
-          # the bank breaks.
-          super.select { |reason, _| reason == :final_phase }
-        end
-
-        def game_end_check
-          # The game end might have been triggered by the bank breaking, but if
-          # the final phase is entered before the end of the operating round
-          # then the game is extended.
-          @game_end_check = super || @game_end_check
-        end
-
         # The merger process can result in the new major having just two
         # tokens. This gives them their third token if that has happened.
         def fix_token_count!(corporation)
           return if corporation.tokens.size == 3
 
           corporation.tokens << Engine::Token.new(corporation, price: 40)
+        end
+
+        def spending_entities
+          [super, @national]
         end
 
         private

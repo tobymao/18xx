@@ -7,6 +7,8 @@ module Engine
     class Dividend < Base
       attr_reader :amount, :kind
 
+      REQUIRED_ARGS = %i[kind].freeze
+
       def initialize(entity, kind:, amount: nil)
         super(entity)
         @kind = kind

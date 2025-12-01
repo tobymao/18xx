@@ -2,7 +2,7 @@
 
 require 'snabberb/component'
 
-require 'engine'
+require_relative '../lib/engine'
 require_relative 'fixture_cache'
 require_relative 'matchers'
 

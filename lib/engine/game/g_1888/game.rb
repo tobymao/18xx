@@ -238,10 +238,8 @@ module Engine
           @corporations.each { |c| c.float_percent = 50 } if prototype?
         end
 
-        def init_bank
-          cash = prototype? ? self.class::PROTOTYPE_BANK_CASH : self.class::BANK_CASH
-
-          Bank.new(cash, log: @log)
+        def bank_starting_cash
+          prototype? ? self.class::PROTOTYPE_BANK_CASH : self.class::BANK_CASH
         end
 
         def yanda

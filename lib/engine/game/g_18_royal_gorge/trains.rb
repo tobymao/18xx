@@ -45,7 +45,7 @@ module Engine
             name: '6x2',
             distance: [{ 'nodes' => %w[city offboard town], 'pay' => 6, 'visit' => 6, 'multiplier' => 2 }],
             price: 650,
-            num: 5,
+            num: 'unlimited',
             events: [{ 'type' => 'trigger_endgame' }],
           },
         ].deep_freeze

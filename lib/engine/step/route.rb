@@ -8,6 +8,7 @@ module Engine
       ACTIONS = %w[run_routes].freeze
 
       def actions(entity)
+        return [] unless entity == current_entity
         return [] if !entity.operator? || @game.route_trains(entity).empty? || !@game.can_run_route?(entity)
 
         ACTIONS

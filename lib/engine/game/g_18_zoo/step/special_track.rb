@@ -7,7 +7,7 @@ module Engine
     module G18ZOO
       module Step
         class SpecialTrack < Engine::Step::SpecialTrack
-          TILES_UPGRADABLE_WITH_MOLES = %w[7 X7 8 X8 9 X9].freeze
+          TILES_UPGRADEABLE_WITH_MOLES = %w[7 X7 8 X8 9 X9].freeze
 
           include Engine::Game::G18ZOO::Step::Tracker
 
@@ -41,7 +41,7 @@ module Engine
           private
 
           def available_hex_for_moles(hex)
-            TILES_UPGRADABLE_WITH_MOLES.include?(hex.tile.name)
+            TILES_UPGRADEABLE_WITH_MOLES.include?(hex.tile.name)
           end
 
           def available_hex_for_rabbits(hex)

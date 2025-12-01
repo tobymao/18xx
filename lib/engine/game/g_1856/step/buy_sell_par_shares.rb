@@ -40,7 +40,7 @@ module Engine
 
           def failed_to_raise_money(player)
             @game.log << "-- #{player.name} is unable to raise funds and is bankrupt --"
-            @game.end_game!
+            @game.end_game!(:bankrupt)
           end
 
           def national_buy_liquidity(player)

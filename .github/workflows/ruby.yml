@@ -4,24 +4,30 @@ on:
   push:
     branches: [ master ]
   pull_request:
-    branches: [ master ]
+    branches: [ '*' ]
 
 env:
     OPAL_PREFORK_DISABLE: "true"
 
 jobs:
-  build:
-
-    runs-on: ubuntu-latest
-
+  build_and_test:
+    runs-on: ubuntu-24.04
     steps:
     - uses: actions/checkout@v3
     - name: Set up Ruby 3.2
       uses: ruby/setup-ruby@v1
       with:
         ruby-version: 3.2
-    - name: Build and test with Rake
+    - name: Bundler
       run: |
         gem install bundler
         bundle install --jobs 4 --retry 3
-        bundle exec rake
+    - name: RuboCop
+      run: |
+        bundle exec rake rubocop
+    - name: Opal
+      run: |
+        bundle exec rake compile_all
+    - name: RSpec
+      run: |
+        bundle exec rake spec_parallel

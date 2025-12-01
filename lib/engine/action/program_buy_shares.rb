@@ -9,6 +9,8 @@ module Engine
       attr_accessor :from_market
       attr_reader :corporation, :until_condition, :auto_pass_after
 
+      REQUIRED_ARGS = %i[corporation until_condition].freeze
+
       def initialize(entity, corporation:, until_condition:, from_market: false, auto_pass_after: false)
         super(entity)
         @corporation = corporation

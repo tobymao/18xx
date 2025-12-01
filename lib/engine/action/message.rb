@@ -7,6 +7,8 @@ module Engine
     class Message < Base
       attr_reader :message
 
+      REQUIRED_ARGS = %i[message].freeze
+
       def initialize(entity, message:)
         super(entity)
         @message = message

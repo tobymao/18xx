@@ -1,20 +1,19 @@
 # frozen_string_literal: true
 
-require_relative '../../../step/buy_sell_par_shares'
+require_relative 'buy_sell_par_shares'
 
 module Engine
   module Game
     module G1824
       module Step
-        class BuySellParExchangeShares < Engine::Step::BuySellParShares
+        class BuySellParExchangeShares < G1824::Step::BuySellParShares
           EXCHANGE_ACTIONS = %w[buy_shares].freeze
-          BUY_ACTION = %w[special_buy].freeze
           PURCHASE_ACTIONS = Engine::Step::BuySellParShares::PURCHASE_ACTIONS + [Action::SpecialBuy]
 
           def actions(entity)
             return company_actions(entity) if entity.company?
 
-            player_debt = @game.player_debt(entity)
+            player_debt = entity.debt
 
             actions = super
 
@@ -31,22 +30,34 @@ module Engine
               actions << 'payoff_player_debt_partial'
             end
 
+            actions << 'pass' if add_pass_to_actions_as_mr_exchange_available?(entity, actions)
+
             actions
           end
 
-          def company_actions(entity)
-            return EXCHANGE_ACTIONS if @game.mountain_railway?(entity) && @game.mountain_railway_exchangable?
+          def add_pass_to_actions_as_mr_exchange_available?(entity, actions)
+            return false if actions.include?('pass')
+            return false unless entity == current_entity
 
-            []
+            @game.companies.any? { |c| !c.closed? && c.owner == entity && !company_actions(c).empty? }
           end
 
-          def visible_corporations
-            @game.sorted_corporations.reject { |c| c.type == :minor || c.type == :construction_railway }
+          def company_actions(entity)
+            return [] if bought?
+            return [] unless entity.owned_by?(current_entity)
+            return [] unless @game.mountain_railway?(entity)
+            return [] unless @game.mountain_railway_exchangable?
+
+            EXCHANGE_ACTIONS
+          end
+
+          def blocking?
+            super || @game.companies.any? { |c| !c.closed? && !company_actions(c).empty? }
           end
 
           def can_buy?(entity, bundle)
             return unless bundle
-            return false if @game.player_debt(entity).positive?
+            return false if entity.debt.positive?
             return false unless super
 
             bundle = bundle.to_bundle
@@ -61,8 +72,9 @@ module Engine
 
           def can_sell?(_entity, bundle)
             # Rule VI.8, bullet 1, sub-bullet 2: Bank ownership cannot exceed 50% for started corporations
+            # Include bank pool (in case 2-player, 3+ do not use bank pool)
             corp = bundle.corporation
-            super && (corp.ipo_shares.sum(&:percent) + bundle.percent <= 50)
+            super && (corp.ipo_shares.sum(&:percent) + corp.percent_in_market + bundle.percent <= 50)
           end
 
           # Rule VI.7, bullet 4: Exchange can take you over 60%
@@ -143,12 +155,13 @@ module Engine
             @round.current_actions << action
           end
 
-          def allow_president_change?(corporation)
-            # In case of Staatsbahn, president change is only allowed after formation
-            return false if @game.staatsbahn?(corporation) && !corporation.floated?
-
-            reserved = corporation.reserved_shares
-            reserved.none? { |s| s.percent == 20 }
+          def action_is_shenanigan?(entity, other_entity, action, corporation, corp_buying)
+            case action
+            when Action::SpecialBuy then 'Exchange of Coal Minor'
+            when Action::PayoffPlayerDebt then 'Payoff of player debt'
+            when Action::PayoffPlayerDebtPartial then 'Partial payoff of player debt'
+            else super
+            end
           end
 
           private

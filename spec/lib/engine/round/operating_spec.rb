@@ -59,7 +59,7 @@ module Engine
       corp.trains.slice!(2)
       source = train.owner
       game.depot.remove_train(train)
-      corp.cash += train.price
+      game.bank.spend(train.price, corp)
       game.phase.buying_train!(corp, train, source)
       game.buy_train(corp, train, train.price)
     end
@@ -82,7 +82,7 @@ module Engine
 
     before :each do
       game.stock_market.set_par(corporation, game.stock_market.par_prices[0])
-      corporation.cash = 100
+      corporation.set_cash(100, game.bank)
       corporation.owner = game.players.first
       allow(corporation).to receive(:floated?) { true }
     end
@@ -98,26 +98,26 @@ module Engine
         game.stock_market.set_par(corporation2, game.stock_market.par_prices[0])
         next_round!
 
-        corporation.cash = 1000
+        corporation.set_cash(1000, game.bank)
         corporation.owner = player
-        corporation2.cash = 1000
+        corporation2.set_cash(1000, game.bank)
         corporation2.owner = player
-        player.cash = 2000
-        player2.cash = 2000
+        player.set_cash(2000, game.bank)
+        player2.set_cash(2000, game.bank)
         # Make player 1 president of two companies, player 2 have the same amount of shares
         4.times { game.share_pool.buy_shares(player, corporation.shares.first) }
         5.times { game.share_pool.buy_shares(player2, corporation.shares.first) }
         3.times { game.share_pool.buy_shares(player, corporation2.shares.first) }
         4.times { game.share_pool.buy_shares(player2, corporation2.shares.first) }
-        player.cash = 2000
-        player2.cash = 2000
+        player.set_cash(2000, game.bank)
+        player2.set_cash(2000, game.bank)
         subject.process_action(Action::LayTile.new(corporation, tile: Tile.for('5'), hex: hex_k8, rotation: 3))
       end
 
       describe 'sellable_bundles' do
         it 'should not return bundles that cause a president change' do
-          player.cash = 1
-          corporation.cash = 1
+          player.set_cash(1, game.bank)
+          corporation.set_cash(1, game.bank)
           bundles = game.sellable_bundles(player, corporation)
           # Player is president of corp 1, but cannot sell any shares without a president change
           expect(bundles.size).to eq(0)
@@ -155,8 +155,8 @@ module Engine
           fake_buy_train(train, corporation2)
           # Ensure we can sell shares.
           game.share_pool.buy_shares(player, corporation2.shares.first)
-          corporation.cash = 1
-          player.cash = 1
+          corporation.set_cash(1, game.bank)
+          player.set_cash(1, game.bank)
 
           bundle = game.bundles_for_corporation(player, corporation2).first
           subject.process_action(Action::SellShares.new(
@@ -179,7 +179,7 @@ module Engine
           available = subject.active_step.buyable_trains(corporation)
           expect(available.size).to eq(2)
 
-          corporation.cash = 1
+          corporation.set_cash(1, game.bank)
           available = subject.active_step.buyable_trains(corporation)
           expect(available.size).to eq(1)
         end
@@ -187,7 +187,7 @@ module Engine
         describe 'buy_train' do
           it 'allows purchasing with emergency funds if must buy' do
             expect(subject.active_step.must_buy_train?(corporation)).to be true
-            corporation.cash = 1
+            corporation.set_cash(1, game.bank)
             train = subject.active_step.buyable_trains(corporation).first
             subject.process_action(Action::BuyTrain.new(corporation, train: train, price: train.price))
           end
@@ -195,7 +195,7 @@ module Engine
             train = subject.active_step.buyable_trains(corporation).first
             subject.process_action(Action::BuyTrain.new(corporation, train: train, price: train.price))
             expect(subject.active_step.must_buy_train?(corporation)).to be false
-            corporation.cash = 1
+            corporation.set_cash(1, game.bank)
             train = subject.active_step.buyable_trains(corporation).first
             action = Action::BuyTrain.new(corporation, train: train, price: train.price)
             expect { subject.process_action(action) }.to raise_error GameError
@@ -210,7 +210,7 @@ module Engine
               fake_buy_train(train, corporation2)
             end
 
-            corporation.cash = 1000
+            corporation.set_cash(1000, game.bank)
             train = subject.active_step.buyable_trains(corporation).first
             action = Action::BuyTrain.new(corporation, train: train, price: train.price)
             subject.process_action(action)
@@ -230,7 +230,7 @@ module Engine
             train = subject.active_step.buyable_trains(corporation).first
             game.buy_train(corporation2, train, train.price)
 
-            corporation.cash = 1
+            corporation.set_cash(1, game.bank)
             train = subject.active_step.buyable_trains(corporation).first
             action = Action::BuyTrain.new(corporation, train: train, price: train.price)
             fake_buy_train(train, corporation)
@@ -244,7 +244,7 @@ module Engine
             end
             fake_buy_train(subject.active_step.buyable_trains(corporation).first, corporation2)
 
-            corporation.cash = subject.active_step.buyable_trains(corporation).first.price
+            corporation.set_cash(subject.active_step.buyable_trains(corporation).first.price, game.bank)
             train = subject.active_step.buyable_trains(corporation).find { |t| t.name == 'D' }
             action = Action::BuyTrain.new(corporation, train: train, price: train.price)
             fake_buy_train(train, corporation)
@@ -261,7 +261,7 @@ module Engine
               hex.lay(tile.rotate!(2))
 
               game.stock_market.set_par(corporation3, game.stock_market.par_prices[0])
-              corporation3.cash = 1000
+              corporation3.set_cash(1000, game.bank)
               corporation3.ipoed = true
 
               next_round! # get past turn 1 so shares are sellable
@@ -276,8 +276,8 @@ module Engine
             it 'does not allow declaring bankruptcy when president has enough cash to buy a train' do
               train = remove_trains_until!('6')
 
-              corporation.cash = train.price - 1
-              corporation.player.cash = 1
+              corporation.set_cash(train.price - 1, game.bank)
+              corporation.player.set_cash(1, game.bank)
 
               action = Action::Bankrupt.new(corporation)
               expect { subject.process_action(action) }.to raise_error GameError, /Cannot go bankrupt/
@@ -295,8 +295,8 @@ module Engine
               # 6T, cost is $630
               remove_trains_until!('6')
 
-              corporation.cash = 600
-              corporation.player.cash = 29
+              corporation.set_cash(600, game.bank)
+              corporation.player.set_cash(29, game.bank)
 
               expect(game.liquidity(player, emergency: true)).to eq(119)
 
@@ -316,8 +316,8 @@ module Engine
               # 6T, cost is $630
               remove_trains_until!('6')
 
-              corporation.cash = 530
-              corporation.player.cash = 9
+              corporation.set_cash(530, game.bank)
+              corporation.player.set_cash(9, game.bank)
 
               expect(game.liquidity(player, emergency: true)).to eq(99)
 
@@ -401,26 +401,26 @@ module Engine
         game.stock_market.set_par(corporation2, game.stock_market.par_prices[0])
         next_round!
 
-        corporation.cash = 1000
+        corporation.set_cash(1000, game.bank)
         corporation.owner = player
-        corporation2.cash = 1000
+        corporation2.set_cash(1000, game.bank)
         corporation2.owner = player
-        player.cash = 2000
-        player2.cash = 2000
+        player.set_cash(2000, game.bank)
+        player2.set_cash(2000, game.bank)
         # Make player 1 president of two companies, player 2 have the same amount of shares
         4.times { game.share_pool.buy_shares(player, corporation.shares.first) }
         5.times { game.share_pool.buy_shares(player2, corporation.shares.first) }
         3.times { game.share_pool.buy_shares(player, corporation2.shares.first) }
         4.times { game.share_pool.buy_shares(player2, corporation2.shares.first) }
-        player.cash = 2000
-        player2.cash = 2000
+        player.set_cash(2000, game.bank)
+        player2.set_cash(2000, game.bank)
         subject.process_action(Action::LayTile.new(corporation, tile: Tile.for('57'), hex: hex_c13, rotation: 1))
       end
 
       describe 'sellable_bundles' do
         it 'should return bundles that cause a president change' do
-          player.cash = 1
-          corporation.cash = 1
+          player.set_cash(1, game.bank)
+          corporation.set_cash(1, game.bank)
           expect(subject.current_entity).to eq(corporation)
           bundles = game.sellable_bundles(player, corporation)
           # Player is president of corp 1, and it is the current corp
@@ -437,8 +437,8 @@ module Engine
         it 'returns other corp trains if no shares are sold' do
           train = subject.active_step.buyable_trains(corporation).first
           fake_buy_train(train, corporation2)
-          corporation.cash = 1
-          player.cash = 1
+          corporation.set_cash(1, game.bank)
+          player.set_cash(1, game.bank)
 
           available = subject.active_step.buyable_trains(corporation)
           expect(available.size).to eq(2)
@@ -446,8 +446,8 @@ module Engine
         it 'returns other corp trains if sold shares does not exceed face value' do
           train = subject.active_step.buyable_trains(corporation).first
           fake_buy_train(train, corporation2)
-          corporation.cash = 1
-          player.cash = 1
+          corporation.set_cash(1, game.bank)
+          player.set_cash(1, game.bank)
 
           bundle = game.bundles_for_corporation(player, corporation2).first
           subject.process_action(Action::SellShares.new(
@@ -466,8 +466,8 @@ module Engine
             fake_buy_train(train, corporation2)
           end
 
-          corporation.cash = 1
-          player.cash = 1
+          corporation.set_cash(1, game.bank)
+          player.set_cash(1, game.bank)
 
           bundle = game.bundles_for_corporation(player, corporation2)[3]
 
@@ -490,7 +490,7 @@ module Engine
           end
           fake_buy_train(subject.active_step.buyable_trains(corporation).first, corporation2)
 
-          corporation.cash = subject.active_step.buyable_trains(corporation).first.price
+          corporation.set_cash(subject.active_step.buyable_trains(corporation).first.price, game.bank)
           train = subject.active_step.buyable_trains(corporation).find { |t| t.name == 'D' }
           action = Action::BuyTrain.new(corporation, train: train, price: train.price)
           fake_buy_train(train, corporation)
@@ -500,9 +500,9 @@ module Engine
         it 'allows purchasing another players train' do
           fake_buy_train(subject.active_step.buyable_trains(corporation).first, corporation2)
 
-          corporation.cash = 1
+          corporation.set_cash(1, game.bank)
           train = corporation2.trains.first
-          player.cash = train.price
+          player.set_cash(train.price, game.bank)
           action = Action::BuyTrain.new(corporation, train: train, price: train.price)
 
           subject.process_action(action)
@@ -510,9 +510,9 @@ module Engine
         it 'does not allow purchasing another players train for above price' do
           fake_buy_train(subject.active_step.buyable_trains(corporation).first, corporation2)
 
-          corporation.cash = 1
+          corporation.set_cash(1, game.bank)
           train = corporation2.trains.first
-          player.cash = train.price
+          player.set_cash(train.price, game.bank)
           action = Action::BuyTrain.new(corporation, train: train, price: train.price + 1)
           fake_buy_train(train, corporation)
           expect { subject.process_action(action) }.to raise_error GameError
@@ -619,13 +619,13 @@ module Engine
       before :each do
         game.stock_market.set_par(corporation, game.stock_market.par_prices[0])
         corporation.ipoed = true
-        corporation.cash = 80
+        corporation.set_cash(80, game.bank)
         bundle = ShareBundle.new(corporation.shares.first)
         game.share_pool.transfer_shares(bundle, game.players.first)
 
         game.stock_market.set_par(corporation_1, game.stock_market.par_prices[0])
         corporation_1.ipoed = true
-        corporation_1.cash = 80
+        corporation_1.set_cash(80, game.bank)
         bundle = ShareBundle.new(corporation_1.shares.first)
         game.share_pool.transfer_shares(bundle, game.players[1])
 
@@ -737,7 +737,7 @@ module Engine
           it 'is removed if owned by a player when a 5 train is bought' do
             goto_train_step!
             train = remove_trains_until!('5')
-            corporation.cash = train.price
+            corporation.set_cash(train.price, game.bank)
 
             subject.process_action(
               Action::BuyTrain.new(
@@ -829,7 +829,7 @@ module Engine
         let(:city) { tile.cities.first }
 
         before :each do
-          corporation.cash = 0
+          corporation.set_cash(0, game.bank)
         end
 
         it 'is an available until buy train step' do
@@ -860,7 +860,7 @@ module Engine
           expect(subject.actions_for(corporation)).to include('sell_shares')
 
           # Dividend step
-          corporation.cash += 80
+          game.bank.spend(80, corporation)
           subject.process_action(Action::Dividend.new(corporation, kind: 'payout'))
 
           expect(subject.actions_for(corporation)).not_to include('sell_shares')
@@ -919,7 +919,7 @@ module Engine
         let(:city) { tile.cities.first }
 
         before :each do
-          corporation.cash = 330
+          corporation.set_cash(330, game.bank)
           bundle = ShareBundle.new(corporation.shares.first(2))
           game.share_pool.transfer_shares(bundle, game.share_pool)
         end
@@ -954,7 +954,7 @@ module Engine
           # Dividend step
           subject.process_action(Action::Dividend.new(corporation, kind: 'payout'))
 
-          corporation.cash += 80
+          game.bank.spend(80, corporation)
           expect(subject.actions_for(corporation)).not_to include('buy_shares')
 
           # Pass on buy train step
@@ -1008,12 +1008,12 @@ module Engine
           fake_buy_train(subject.active_step.buyable_trains(corporation).first, corporation_1)
 
           # enough cash for a 6
-          corporation.cash = subject.active_step.buyable_trains(corporation).first.price
+          corporation.set_cash(subject.active_step.buyable_trains(corporation).first.price, game.bank)
         end
 
         describe 'corporation can afford a 6' do
           before :each do
-            corporation.cash = 800
+            corporation.set_cash(800, game.bank)
           end
 
           it 'does not allow president contributing cash to purchase a 7/8' do
@@ -1054,7 +1054,7 @@ module Engine
 
         describe 'corporation cannot afford a 6' do
           before :each do
-            corporation.cash = 799
+            corporation.set_cash(799, game.bank)
           end
 
           describe 'has shares to issue' do
@@ -1123,7 +1123,7 @@ module Engine
             it 'allows president selling shares to purchase a 7/8 even if a 6 is affordable '\
                'with the presidential cash' do
               player = corporation.owner
-              player.cash = 1
+              player.set_cash(1, game.bank)
 
               # give the president a 3rd share that they can sell
               bundle = ShareBundle.new(corporation.shares[0])

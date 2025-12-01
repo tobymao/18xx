@@ -28,7 +28,7 @@ class FixtureCache
     if game && ((game.last_processed_action || 0) <= action)
       game.process_to_action(action)
     else
-      game = Engine::Game.load(data, at_action: action)
+      game = Engine::Game.load(data, at_action: action, strict: true)
       @cache[title][file][:game] = game
     end
     @cache[title][file].delete(:game) if clear_cache
@@ -47,7 +47,8 @@ class FixtureCache
 
   # one of the `describe` or `context` strings needs to match the fixture ID
   def game_file_for_test(descriptions, title)
-    test_files_for_title = Find.find("#{FIXTURES_DIR}/#{title}")
+    dir = Engine.meta_by_title(title).fixture_dir_name
+    test_files_for_title = Find.find("#{FIXTURES_DIR}/#{dir}")
     filenames = descriptions[0..-2].lazy.map do |description|
       test_files_for_title.find { |f| File.basename(f) == "#{description}.json" }
     end

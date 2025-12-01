@@ -7,6 +7,8 @@ module Engine
     class Choose < Base
       attr_reader :choice
 
+      REQUIRED_ARGS = %i[choice].freeze
+
       def initialize(entity, choice:)
         super(entity)
         @choice = choice

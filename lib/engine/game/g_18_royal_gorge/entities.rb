@@ -324,6 +324,16 @@ module Engine
             coordinates: 'L2',
             tokens: 3,
             color: 'red',
+            abilities: [
+              {
+                type: 'reservation',
+                hex: 'D12',
+              },
+              {
+                type: 'reservation',
+                hex: 'F12',
+              },
+            ],
           ),
           def_corporation(
             sym: 'SF',

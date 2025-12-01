@@ -55,6 +55,10 @@ module Engine
 
           private
 
+          def runnable_trains(entity)
+            super.reject { |train| @game.mail_train?(train) }
+          end
+
           def choosing?(corporation)
             @game.owns_mail_train?(corporation) &&
               !mail_train_attached?(corporation) &&

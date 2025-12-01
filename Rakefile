@@ -12,13 +12,22 @@ unless ENV['RACK_ENV'] == 'production'
     task.requires << 'rubocop-performance'
   end
 
+  desc 'Build the main JavaScript files'
+  task :compile do
+    Assets.new.combine
+  end
+
+  desc 'Build the main JavaScript files and all game-specific files'
+  task :compile_all do
+    Assets.new.combine(:all)
+  end
+
   desc 'Run spec in parallel'
   task :spec_parallel do
-    Assets.new.combine
     ParallelTests::CLI.new.run(['--type', 'rspec'])
   end
 
-  task default: %i[spec_parallel rubocop]
+  task default: %i[compile spec_parallel rubocop]
 end
 
 # Migrate
@@ -173,6 +182,13 @@ def format_fixture_json(filename, pretty: nil)
     end
   end
 
+  data['result'].transform_values!(&:to_i)
+
+  if data['game_end_reason'].nil?
+    game = Engine::Game.load(data).maybe_raise!
+    data['game_end_reason'] = game.game_end_reason
+  end
+
   # TODO: get rid of undone actions
 
   # if 'pretty' arg is given, any value other than "0" will produce
@@ -231,8 +247,7 @@ task 'fixture_import', [:id] do |_task, args|
   group = 1000
 
   # ensure proper fixtures dir exists
-  title = game_data[:title]
-  dir = File.join('public', 'fixtures', title)
+  dir = File.join('public', 'fixtures', game.meta.fixture_dir_name)
   FileUtils.mkdir_p(dir)
   FileUtils.chown(user, group, dir)
 
@@ -243,5 +258,5 @@ task 'fixture_import', [:id] do |_task, args|
 
   format_fixture_json(filename, pretty: true)
 
-  sh %(git add "#{filename}")
+  sh "git add '#{filename}'"
 end

@@ -149,6 +149,7 @@ module Engine
           bankrupt: :immediate,
           bank: :full_or,
           all_closed: :immediate,
+          final_train: :one_more_full_or_set,
         }.freeze
 
         ORANGE_GROUP = [
@@ -271,11 +272,6 @@ module Engine
         def setup
           @turn = setup_turn
           @second_tokens_in_green = {}
-
-          # When creating a game the game will not have enough to start
-          unless (player_count = @players.size).between?(*self.class::PLAYER_RANGE)
-            raise GameError, "#{self.class::GAME_TITLE} does not support #{player_count} players"
-          end
 
           if first_edition?
             remove_icons(self.class::BOOMTOWN_HEXES, self.class::ABILITY_ICONS['BT'])
@@ -832,10 +828,10 @@ module Engine
 
         def game_end_check_values
           @game_end_check_values ||=
-            begin
-              values = super.dup # get copy of GAME_END_CHECK that is not frozen
-              values[:final_train] = :one_more_full_or_set if two_player?
-              values
+            if two_player?
+              self.class::GAME_END_CHECK
+            else
+              self.class::GAME_END_CHECK.except(:final_train)
             end
         end
 
