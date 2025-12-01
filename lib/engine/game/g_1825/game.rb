@@ -1109,22 +1109,11 @@ module Engine
           else
             super(route, visits, build_dummy_train(route, num))
           end
-          return if %w[3T 4T].include?(route.train.name)
 
-          node_hexes = {}
-          visits.each do |node|
-            # For 3T and 4T trains, allow multiple towns in same hex but not cities
-            if %w[3T 4T].include?(route.train.name)
-              raise GameError, 'Cannot visit multiple cities in same hex' if node.city? && node_hexes[node.hex]
-
-              node_hexes[node.hex] = true if node.city?
-              # Towns are allowed multiple times for 3T/4T, so no check needed
-            else
-              # For all other trains, the existing rule applies
-              raise GameError, 'Cannot visit multiple towns/cities in same hex' if node_hexes[node.hex]
-
-              node_hexes[node.hex] = true
-            end
+          # A train route cannot visit more than one stop on the same hex,
+          # unless it is a 3T or a 4T and all the stops are towns.
+          raise GameError, 'Cannot visit multiple towns/cities in same hex' if visits.group_by(&:hex).any? do |_, stops|
+            stops.size > 1 && !(%w[3T 4T].include?(route.train.name) && stops.all?(&:town?))
           end
 
           return if %w[3T 4T U3 2+2].include?(route.train.name)
