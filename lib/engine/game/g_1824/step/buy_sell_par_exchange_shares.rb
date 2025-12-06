@@ -30,7 +30,16 @@ module Engine
               actions << 'payoff_player_debt_partial'
             end
 
+            actions << 'pass' if add_pass_to_actions_as_mr_exchange_available?(entity, actions)
+
             actions
+          end
+
+          def add_pass_to_actions_as_mr_exchange_available?(entity, actions)
+            return false if actions.include?('pass')
+            return false unless entity == current_entity
+
+            @game.companies.any? { |c| !c.closed? && c.owner == entity && !company_actions(c).empty? }
           end
 
           def company_actions(entity)
@@ -43,7 +52,7 @@ module Engine
           end
 
           def blocking?
-            super || @game.companies.any? { |c| !company_actions(c).empty? }
+            super || @game.companies.any? { |c| !c.closed? && !company_actions(c).empty? }
           end
 
           def can_buy?(entity, bundle)
