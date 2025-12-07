@@ -747,10 +747,11 @@ module Engine
         end
 
         # Modifed 1837 version as it will log incorrect received amount after
-        # formation + float.
+        # formation + float. Also use special float amount factor to handle unreserve of
+        # IPO shares, which caused a bug previously.
         def float_corporation(corporation)
           @log << "#{corporation.name} floats"
-          capitilization = corporation.par_price.price * corporation.total_ipo_shares
+          capitilization = corporation.par_price.price * corporation.capitalization_share_count
           @bank.spend(capitilization, corporation)
           @log << "#{corporation.name} receives #{format_currency(capitilization)}"
         end
