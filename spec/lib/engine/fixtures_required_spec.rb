@@ -45,6 +45,7 @@ SKIP_BETA_PROD = {
   '18ZOO - Map E' => %i[stock_market fixed_round],
   '18ZOO - Map F' => %i[stock_market fixed_round],
   '18ZOO' => %i[stock_market fixed_round],
+  'Steam Over Holland' => [:stock_market],
 }.freeze
 
 def fixtures(meta)
