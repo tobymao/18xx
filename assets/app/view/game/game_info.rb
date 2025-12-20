@@ -438,7 +438,7 @@ module View
             display: 'flex',
             flexDirection: 'column',
             boxSizing: 'border-box',
-            height: '55px',
+            height: '3.5em',
             padding: '4px',
             border: '1px solid rgba(0,0,0,0.2)',
             justifyContent: justify,
