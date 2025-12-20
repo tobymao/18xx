@@ -758,7 +758,8 @@ module Engine
         end
 
         def red_to_red_route?(route)
-          route.stops.count { |stop| stop.tile.color == :red } > 1
+          route.visited_stops.first.tile.color == :red &&
+            route.visited_stops.last.tile.color == :red
         end
 
         def token_owner(entity)
