@@ -124,18 +124,22 @@ module Engine
           end
 
           def visible_corporations
-            # Always show ML and SL
-            @game.corporations[0..1].reject(&:closed?) +
+            corps = @game.corporations
 
-              # Show ipoed
-              @game.corporations[2..6].reject(&:closed?).select(&:ipoed) +
-              (@game.tranch_available? ? @game.corporations[2..6].reject(&:closed?).reject(&:ipoed) : []) +
+            # First, display ipoed corporations in descending operating order
+            ipoed = corps.select(&:ipoed)
 
-              # Only show Branches when ipoed
-              @game.corporations[8..13].select(&:ipoed).reject(&:closed?) +
+            # Next, select non-ipoed PEIR corporations
+            peir_not_ipoed = corps[0..6].reject(&:ipoed)
 
-              # Always show the PEIR
-              [@game.peir]
+            # Only display non-ipoed PEIR corps if an open tranch space is available
+            ordered = ipoed.sort
+            ordered.concat(peir_not_ipoed) if @game.tranch_available?
+
+            # Finally, display the PEIR itself
+            ordered << @game.peir
+
+            ordered
           end
 
           def get_par_prices_with_help(entity, _corp, extra_cash: 0)
@@ -167,6 +171,7 @@ module Engine
             entity = action.entity
             raise GameError, "#{corporation.name} cannot be split" unless @game.can_split?(corporation, entity)
 
+            @round.pass_order.delete(entity)
             entity.unpass!
             # Set data needed for splitting
             @round.split_start(corporation)

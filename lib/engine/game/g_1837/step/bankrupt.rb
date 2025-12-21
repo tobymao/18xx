@@ -51,7 +51,7 @@ module Engine
             end
 
             @game.declare_bankrupt(player)
-            player.cash = 0
+            player.set_cash(0, @game.bank)
 
             @round.bankrupting_corporations << entity
           end

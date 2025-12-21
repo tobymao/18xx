@@ -426,17 +426,19 @@ module View
     def submit
       return if !selected_game_or_variant && @mode != :json
 
-      title = selected_game_or_variant.title
-
       game_params = params
 
-      max_players = game_params[:max_players].to_i
-      min_players = game_params[:min_players].to_i
+      if @mode != :json
+        title = selected_game_or_variant.title
 
-      if min_players < @min_p[title] || max_players > @max_p[title] || min_players > max_players
-        min = @min_p[title] == @max_p[title] ? '' : "within #{@min_p[title]}-"
-        player_s = "player#{@max_p[title] == 1 ? '' : 's'}"
-        return store(:flash_opts, "Invalid player count. Must be #{min}#{@max_p[title]} #{player_s}.")
+        max_players = game_params[:max_players].to_i
+        min_players = game_params[:min_players].to_i
+
+        if min_players < @min_p[title] || max_players > @max_p[title] || min_players > max_players
+          min = @min_p[title] == @max_p[title] ? '' : "within #{@min_p[title]}-"
+          player_s = "player#{@max_p[title] == 1 ? '' : 's'}"
+          return store(:flash_opts, "Invalid player count. Must be #{min}#{@max_p[title]} #{player_s}.")
+        end
       end
 
       case @mode

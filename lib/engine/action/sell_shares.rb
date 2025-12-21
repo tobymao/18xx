@@ -8,6 +8,8 @@ module Engine
     class SellShares < Base
       attr_reader :entity, :bundle, :swap
 
+      REQUIRED_ARGS = %i[shares].freeze
+
       def initialize(entity, shares:, share_price: nil, percent: nil, swap: nil)
         super(entity)
         @bundle = ShareBundle.new(shares, percent)

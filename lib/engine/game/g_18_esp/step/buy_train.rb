@@ -22,16 +22,6 @@ module Engine
             variants
           end
 
-          def try_take_player_loan(entity, cost)
-            return unless cost.positive?
-            return unless cost > entity.cash
-
-            raise GameError, "#{entity.name} already sold shares this round. Can not take loans" unless @corporations_sold.empty?
-
-            difference = cost - entity.cash
-            @game.take_player_loan(entity, difference)
-          end
-
           def room?(entity, _shell = nil)
             entity.trains.count { |t| !@game.extra_train?(t) } < @game.train_limit(entity)
           end

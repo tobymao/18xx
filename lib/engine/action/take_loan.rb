@@ -7,6 +7,8 @@ module Engine
     class TakeLoan < Base
       attr_reader :loan
 
+      REQUIRED_ARGS = %i[loan].freeze
+
       def initialize(entity, loan:)
         super(entity)
         @loan = loan

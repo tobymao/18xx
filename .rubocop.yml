@@ -34,6 +34,10 @@ Layout/MultilineOperationIndentation:
 Layout/SpaceBeforeBrackets:
   Enabled: false
 
+Lint/Debugger:
+  DebuggerMethods:
+    Engine: debug!
+
 Lint/MissingSuper: # TODO enable & check offenses
   Enabled: false
 

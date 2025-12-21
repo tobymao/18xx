@@ -19,7 +19,7 @@ module Engine
           @game.chattanooga_reached = true
           @game.remove_icons(@game.chattanooga_hex.name)
           bonus = 50
-          entity.cash += bonus
+          @game.bank.spend(bonus, entity)
           location_name = @game.get_location_name(@game.chattanooga_hex.name)
           @log << "#{entity.name} connects to #{location_name} and receives #{@game.format_currency(bonus)}"
         end

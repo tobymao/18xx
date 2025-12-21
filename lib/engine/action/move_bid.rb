@@ -7,6 +7,8 @@ module Engine
     class MoveBid < Base
       attr_reader :company, :corporation, :price, :from_company, :from_price
 
+      REQUIRED_ARGS = %i[price from_company from_price].freeze
+
       def initialize(entity, price:, from_company:, from_price:, company: nil, corporation: nil)
         super(entity)
         @company = company

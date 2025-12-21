@@ -7,6 +7,8 @@ module Engine
     class CombinedTrains < Base
       attr_reader :base, :additional_train, :additional_train_variant
 
+      REQUIRED_ARGS = %i[base additional_train additional_train_variant].freeze
+
       def initialize(entity, base:, additional_train:, additional_train_variant:)
         super(entity)
         @base = base

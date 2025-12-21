@@ -27,7 +27,7 @@ module Engine
 
             super
 
-            # The farm / captiol / space elevator privates close immediately on token ability use
+            # The farm / capitol / space elevator privates close immediately on token ability use
             return unless %w[C G I].include?(company.sym)
 
             @game.log << "#{company.name} closes"

@@ -9,7 +9,7 @@ module Engine
 
     attr_accessor :obsolete, :events, :variants, :obsolete_on, :rusted, :rusts_on, :index, :name,
                   :distance, :reserved, :no_local, :multiplier, :track_type
-    attr_reader :available_on, :discount, :sym, :variant, :requires_token, :ever_operated, :operated, :salvage
+    attr_reader :available_on, :discount, :sym, :variant, :requires_token, :ever_operated, :operated, :salvage, :unlimited
 
     attr_writer :buyable
 
@@ -35,7 +35,15 @@ module Engine
       @events = (opts[:events] || []).select { |e| @index == (e['when'] || 1) - 1 }
       @reserved = opts[:reserved] || false
       @requires_token = opts[:requires_token].nil? ? true : opts[:requires_token]
+      @unlimited = opts[:num] == 'unlimited'
+      @opts = opts
       init_variants(opts[:variants])
+    end
+
+    def clone_unlimited
+      raise GameError, "Cannot clone #{self}, opts[:num] = #{@opts[:num]}" unless @unlimited
+
+      Train.new(name: @name, distance: @distance, price: @price, index: @index + 1, **@opts)
     end
 
     def operated=(value)
@@ -55,6 +63,7 @@ module Engine
         salvage: @salvage,
         track_type: @track_type,
         buyable: @buyable,
+        ignore_rust_obsolete_schedule: false,
       }
 
       # Primary variant should be at the head of the list.
@@ -136,6 +145,10 @@ module Engine
 
     def inspect
       "<Train: #{id}>"
+    end
+
+    def to_s
+      inspect
     end
   end
 end

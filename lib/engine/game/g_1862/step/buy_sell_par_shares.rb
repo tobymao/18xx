@@ -9,6 +9,14 @@ module Engine
         class BuySellParShares < Engine::Step::BuySellParShares
           UNCHARTERED_TOKEN_COST = 40
 
+          def help
+            return if current_entity.companies.empty?
+
+            company_plural = current_entity.companies.size > 1 ? 'Companies' : 'Company'
+
+            "Reminder: You are still under obligation for #{current_entity.companies.size} Chartered #{company_plural}."
+          end
+
           def can_buy?(entity, bundle)
             return unless bundle&.buyable
 

@@ -291,7 +291,7 @@ module Engine
           trains_3t.zip(@three_plus_one) do |t3, t3plus|
             depot.forget_train(t3)
             t3plus.reserved = false
-            @depot.unshift_train(t3plus)
+            @depot.insert_train(t3plus)
           end
           @convert_3s = false
         end
@@ -384,6 +384,8 @@ module Engine
             num_players == 2 ? 3 : num_players + 2
           when '4'
             num_players
+          else
+            train[:num]
           end
         end
 

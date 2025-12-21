@@ -200,6 +200,7 @@ module Engine
             G1824::Step::KkTokenChoice,
             G1824::Step::DiscardTrain,
             G1824Cisleithania::Step::BondToken,
+            G1824::Step::ForcedMountainRailwayExchange, # In case train export after OR set triggers exchage
             Engine::Step::SpecialTrack,
             G1824Cisleithania::Step::Track,
             G1824Cisleithania::Step::Token,
@@ -346,7 +347,16 @@ module Engine
           entity.type == :construction_railway
         end
 
-        # Rule X.4, should be able to sell bundles with presidency share
+        def minor_for_partition_of_or?(corp)
+          super || construction_railway?(corp)
+        end
+
+        # Used for MR exchange. Do allow bond railway shares to be exchanged as well.
+        def shares_exchangable?(corporation)
+          super || bond_railway(corporation)
+        end
+
+        # Rule X.4, should be able to sell bundles with presidency share (if bond railway)
         def bundles_for_corporation(share_holder, corporation, shares: nil)
           return super unless two_player?
           return super unless bond_railway?(corporation)
@@ -366,22 +376,21 @@ module Engine
           bundles.sort_by(&:percent)
         end
 
-        def special_handling_after_by_company(company, minor)
-          return false unless two_player?
+        def after_buy_company_final_touch(company, minor, price)
+          return super unless two_player?
 
           stack = company.stack
           company.stack = nil
 
-          return false unless stack == 1
+          # Construction railways is in stack 1
+          return super unless stack == 1
 
-          # Need to handle construction railways when two player variant
           if pre_staatsbahn?(minor)
-            create_construction_railway_from_bought_pre_staatsbahn(company, minor)
+            handle_unreserve_of_pre_staatsbahn(company)
           else
-            create_construction_railways_from_coal_mine(company, minor)
+            create_bond_railway(company, minor)
           end
-
-          true
+          minor.make_construction_railway!(self, minor)
         end
 
         private
@@ -453,25 +462,25 @@ module Engine
         def stackify(company, header)
           return header unless company.stack
 
-          real_header = "#{header} STACK #{company.stack}"
-          real_header += ' (CR)' if company.stack == 1
-          real_header
+          case company.stack
+          when 1 then 'Construction Railway (Stack 1)'
+          when 2 then 'Large Pre-staatsbahn (Stack 2)'
+          when 3 then 'Small Pre-staatsbahn (Stack 3)'
+          when 4 then 'Coal Railway (Stack 4)'
+          end
         end
 
         def closed_construction
           @close_construction_company_when_first_5_sold ? '5' : '4'
         end
 
-        def create_construction_railway_from_bought_pre_staatsbahn(company, minor)
-          make_minor_construction_railway(minor)
-
+        def handle_unreserve_of_pre_staatsbahn(company)
           national = corporation_by_id(company.sym[0..-2])
           national.unreserve_one_share!
         end
 
-        def create_construction_railways_from_coal_mine(company, minor)
+        def create_bond_railway(company, minor)
           regional = get_associated_regional_railway(minor)
-          make_minor_construction_railway(minor)
 
           regional.make_bond_railway!
           share_price = stock_market.share_price([6, 1]) # This is the lower one at 50G
@@ -487,27 +496,6 @@ module Engine
           log << "#{regional.name} (#{association}) pars at #{format_currency(share_price.price)}."
           log << "#{regional.name} will not build or run trains but shareholders will receive current stock value "\
                  'in revenue each OR.'
-        end
-
-        def make_minor_construction_railway(minor)
-          @log << "#{minor.name} returns its cash to the bank as it does not use any money."
-          minor.spend(minor.cash, @bank)
-          minor.add_ability(free_tile_lay_ability)
-          minor.make_construction_railway!
-        end
-
-        def free_tile_lay_ability
-          Engine::Ability::TileLay.new(
-            type: 'tile_lay',
-            tiles: [],
-            hexes: [],
-            closed_when_used_up: false,
-            reachable: true,
-            free: true,
-            special: false,
-            consume_tile_lay: true,
-            when: 'track'
-          )
         end
       end
     end

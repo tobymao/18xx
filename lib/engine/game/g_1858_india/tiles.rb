@@ -56,11 +56,12 @@ module Engine
           },
           '87' => 4,
           '88' => 4,
-          '89' => 1,
+          '89' => 2,
           '106' => 2,
           '107' => 2,
           '108' => 2,
           '112' => 2,
+          '116' => 2,
           '201' => 'unlimited',
           '202' => 'unlimited',
           '204' => 4,
@@ -71,6 +72,11 @@ module Engine
           '622' => 2,
           '630' => 'unlimited',
           '631' => 'unlimited',
+          '644' => 'unlimited',
+          '645' => 'unlimited',
+          '657' => 'unlimited',
+          '658' => 'unlimited',
+          '659' => 'unlimited',
           '660' => 1,
           '661' => 1,
           '662' => 1,
@@ -117,18 +123,9 @@ module Engine
             'color' => 'green',
             'code' => 'junction;path=a:0,b:_0,track:narrow;path=a:2,b:_0,track:narrow;path=a:4,b:_0,track:narrow',
           },
-          'X5' =>
-          {
-            'count' => 1,
-            'color' => 'green',
-            'code' =>
-              'town=revenue:10;' \
-              'path=a:0,b:_0,track:narrow;path=a:3,b:_0,track:narrow;' \
-              'path=a:4,b:_0,track:narrow;path=a:5,b:_0,track:narrow',
-          },
           'X6' =>
           {
-            'count' => 1,
+            'count' => 2,
             'color' => 'green',
             'code' =>
               'town=revenue:10;' \
@@ -318,6 +315,14 @@ module Engine
               'path=a:3,b:_0,track:dual;' \
               'path=a:4,b:_0,track:dual;' \
               'path=a:5,b:_0,track:dual;',
+          },
+          'X39' =>
+          {
+            'count' => 1,
+            'color' => 'green',
+            'code' =>
+              'path=a:0,b:4;' \
+              'path=a:1,b:3,track:narrow;',
           },
         }.freeze
       end

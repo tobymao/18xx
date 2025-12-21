@@ -424,6 +424,10 @@ module Engine
           end
         end
 
+        def bank_starting_cash
+          init_bank.cash
+        end
+
         def redef_const(const, value)
           mod = is_a?(Module) ? self : self.class
           mod.send(:remove_const, const) if mod.const_defined?(const)
@@ -503,7 +507,7 @@ module Engine
             Engine::Step::DiscardTrain,
             Engine::Step::Exchange,
             Engine::Step::SpecialTrack,
-            Engine::Step::BuySellParShares,
+            GSystem18::Step::BuySellParShares,
           ]
         end
 

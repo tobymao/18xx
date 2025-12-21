@@ -7,6 +7,8 @@ module Engine
     class Respond < Base
       attr_reader :entity, :corporation, :company, :accept
 
+      REQUIRED_ARGS = %i[corporation company accept].freeze
+
       def initialize(entity, corporation:, company:, accept:)
         super(entity)
         @corporation = corporation

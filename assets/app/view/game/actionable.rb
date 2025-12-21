@@ -110,10 +110,12 @@ module View
           @game_data[:result] = game.result
           @game_data[:manually_ended] = game.manually_ended
           @game_data[:status] = 'finished'
+          @game_data[:game_end_reason] = game.game_end_reason
         else
           @game_data[:result] = {}
           @game_data[:status] = 'active'
           @game_data[:manually_ended] = nil
+          @game_data[:game_end_reason] = nil
         end
 
         if hotseat?
@@ -132,6 +134,7 @@ module View
               active_players: game.active_players_id,
               turn: game.turn,
               round: game.round.name,
+              game_end_reason: @game_data[:game_end_reason],
             }
             json['meta'] = meta
           end

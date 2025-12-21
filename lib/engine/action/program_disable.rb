@@ -7,6 +7,8 @@ module Engine
     class ProgramDisable < Base
       attr_reader :reason, :original_type
 
+      REQUIRED_ARGS = %i[reason].freeze
+
       def initialize(entity, reason:, original_type: nil)
         super(entity)
         @reason = reason

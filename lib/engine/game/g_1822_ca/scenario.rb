@@ -184,10 +184,6 @@ module Engine
           end.compact
         end
 
-        def game_end_check
-          @game_end_reason ||= compute_game_end
-        end
-
         def block_detroit_duluth; end
         def event_open_detroit_duluth!; end
 
@@ -201,6 +197,9 @@ module Engine
             Company.new(**company.merge(opts))
           end.compact
         end
+
+        # no extra OR in set when bank breaks
+        def game_end_set_final_turn!(reason, after); end
       end
     end
   end

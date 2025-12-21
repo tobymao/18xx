@@ -7,6 +7,8 @@ module Engine
     class FailedMerge < Base
       attr_reader :corporations
 
+      REQUIRED_ARGS = %i[corporations].freeze
+
       def initialize(entity, corporations:)
         super(entity)
         @corporations = corporations

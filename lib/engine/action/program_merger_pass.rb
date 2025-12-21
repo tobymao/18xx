@@ -8,7 +8,7 @@ module Engine
     class ProgramMergerPass < ProgramEnable
       attr_reader :corporations_by_round, :options
 
-      def initialize(entity, corporations_by_round:, options:)
+      def initialize(entity, corporations_by_round: nil, options: nil)
         super(entity)
         @corporations_by_round = corporations_by_round
         @options = options

@@ -79,8 +79,7 @@ module Engine
           # Checks whether a player can afford to buy a share in the corporation
           # that has just been converted.
           def can_buy_any?(player)
-            @game.num_certs(corporation) < @game.cert_limit(corporation) &&
-              player.cash >= corporation.share_price.price &&
+            player.cash >= corporation.share_price.price &&
               corporation.holding_ok?(player, 10)
           end
 

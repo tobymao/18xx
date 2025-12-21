@@ -9,7 +9,7 @@ module Engine
         class Route < Engine::Step::Route
           def actions(entity)
             return [] unless entity.corporation?
-            return [] if entity.runnable_trains.empty?
+            return [] if runnable_trains(entity).empty?
 
             ACTIONS
           end
@@ -34,6 +34,12 @@ module Engine
 
             super
             log_company_revenue(entity)
+          end
+
+          private
+
+          def runnable_trains(entity)
+            entity.runnable_trains
           end
         end
       end

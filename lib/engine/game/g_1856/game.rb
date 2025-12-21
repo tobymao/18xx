@@ -165,7 +165,7 @@ module Engine
               on: '6',
               train_limit: 2,
               tiles: %i[yellow green brown gray],
-              status: %w[fullcap facing_6 upgradable_towns no_loans],
+              status: %w[fullcap facing_6 upgradeable_towns no_loans],
               operating_rounds: 3,
             },
             {
@@ -173,7 +173,7 @@ module Engine
               on: 'D',
               train_limit: 2,
               tiles: %i[yellow green brown gray black],
-              status: %w[fullcap facing_6 upgradable_towns no_loans],
+              status: %w[fullcap facing_6 upgradeable_towns no_loans],
               operating_rounds: 3,
             },
             {
@@ -181,7 +181,7 @@ module Engine
               on: '8',
               train_limit: 2,
               tiles: %i[yellow green brown gray black],
-              status: %w[fullcap facing_6 upgradable_towns no_loans],
+              status: %w[fullcap facing_6 upgradeable_towns no_loans],
               operating_rounds: 3,
             },
           ]
@@ -859,7 +859,7 @@ module Engine
             '60% to start',
             'An unstarted corporation needs 60% sold from the IPO to start for the first time',
           ],
-          'upgradable_towns' => [
+          'upgradeable_towns' => [
             'Towns can be upgraded',
             'Single town tiles can be upgraded to plain track or yellow cities. '\
             'Double town tiles can be upgraded to green cities',

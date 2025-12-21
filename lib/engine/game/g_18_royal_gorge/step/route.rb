@@ -164,7 +164,7 @@ module Engine
 
               # upgraded info
               new_length = train.distance[0]['visit'] + amount
-              new_name = train.name.sub(/\d+/, new_length.to_s)
+              new_name = train.name.sub(/\d+/, new_length.to_s + '*')
 
               # create upgraded variant if necessary
               unless train.variants.include?(new_name)
@@ -181,6 +181,7 @@ module Engine
                                     name: new_name,
                                     distance: distance,
                                     buyable: false,
+                                    ignore_rust_obsolete_schedule: true,
                                   })
               end
 

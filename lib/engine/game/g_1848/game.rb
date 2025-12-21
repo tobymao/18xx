@@ -147,7 +147,7 @@ module Engine
         GAME_END_REASONS_TEXT = {
           bank: 'The bank runs out of money',
           stock_market: 'Corporation hit max stock value or Bank of England has given 16 or more loans',
-          custom: 'Fifth corporation is in receivership',
+          closed_five: 'Fifth corporation is in receivership',
         }.freeze
 
         def price_movement_chart
@@ -163,12 +163,12 @@ module Engine
           ]
         end
 
-        GAME_END_CHECK = { bank: :full_or, stock_market: :full_or, custom: :full_or }.freeze
+        GAME_END_CHECK = { bank: :full_or, stock_market: :full_or, closed_five: :full_or }.freeze
 
         GAME_END_DESCRIPTION_REASON_MAP_TEXT = {
           bank: 'Bank Broken',
           stock_market: 'Corporation hit max stock value or Bank of England has given 16 or more loans',
-          custom: 'Fifth corporation is in receivership',
+          closed_five: 'Fifth corporation is in receivership',
         }.freeze
 
         PHASES = [{ name: '2', train_limit: 4, tiles: [:yellow], operating_rounds: 1 },
@@ -393,7 +393,7 @@ module Engine
             )
           end
           @boe.owner = @share_pool
-          @boe.cash = BOE_STARTING_CASH
+          @boe.set_cash(BOE_STARTING_CASH, @bank)
           @stock_market.set_par(@boe, lookup_boe_price(BOE_STARTING_PRICE))
           @extra_tile_lay = false
           @close_corp_count = 0
@@ -439,6 +439,10 @@ module Engine
         def init_stock_market
           G1848::StockMarket.new(game_market, self.class::CERT_LIMIT_TYPES,
                                  multiple_buy_types: self.class::MULTIPLE_BUY_TYPES)
+        end
+
+        def bank_starting_cash
+          BANK_CASH + BOE_STARTING_CASH
         end
 
         def operating_order
@@ -790,7 +794,7 @@ module Engine
           super
         end
 
-        def custom_end_game_reached?
+        def game_end_check_closed_five?
           @close_corp_count >= 5
         end
 

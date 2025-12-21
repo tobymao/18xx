@@ -7,6 +7,8 @@ module Engine
     class PayoffPlayerDebtPartial < Base
       attr_reader :amount
 
+      REQUIRED_ARGS = %i[amount].freeze
+
       def initialize(entity, amount:)
         super(entity)
         @amount = amount

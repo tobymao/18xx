@@ -7,6 +7,8 @@ module Engine
     class SellTrain < Base
       attr_reader :train, :price
 
+      REQUIRED_ARGS = %i[train price].freeze
+
       def initialize(entity, train:, price:)
         super(entity)
         @train = train

@@ -10,8 +10,9 @@ module Engine
           # Extend the base method to allow tiles to be upgraded with gauge
           # conversions. Most of the checks for valid gauge conversions is done
           # in G1858India::Game.gauge_conversion?, here we check that either
-          # two paths are converted from broad to narrow gauge (or vice versa)
-          # on a city or town tile, or one path on a plain track tile.
+          # one path is converted from broad to narrow gauge (or vice versa)
+          # on a plain track tile, or either one or two paths are converted on
+          # a city or town tile.
           def old_paths_maintained?(hex, tile)
             return super unless @game.gauge_conversion?(hex.tile, tile)
 
@@ -27,9 +28,9 @@ module Engine
               gauges[path.track][new_path.track] += 1
             end
 
-            valid_changes = tile.city_towns.empty? ? 1 : 2
-            (gauges[:broad][:narrow].zero? && (gauges[:narrow][:broad] == valid_changes)) ||
-            (gauges[:narrow][:broad].zero? && (gauges[:broad][:narrow] == valid_changes))
+            valid_changes = tile.city_towns.empty? ? [1] : [1, 2]
+            (gauges[:broad][:narrow].zero? && valid_changes.include?(gauges[:narrow][:broad])) ||
+            (gauges[:narrow][:broad].zero? && valid_changes.include?(gauges[:broad][:narrow]))
           end
         end
       end

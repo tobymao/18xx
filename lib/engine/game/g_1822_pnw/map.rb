@@ -65,7 +65,7 @@ module Engine
         HEXES = {
           white: {
             %w[A10 A12 A18 B9 B11 B17 B21 C10 C18 C20 D21 E12 E22 F21 G20 G22 H15 H23 I14 I22 J11 J21 K4 K6 K8 K10 K14 K18
-               K20 L5 L7 M12 M16 M18 N7 N11 N17 O6 P7 P11 P15] => '',
+               K20 L5 L7 M12 M16 M18 N7 N11 N17 P7 P11 P15] => '',
             %w[A20 C22 D13 E20 F5 G2 G8 G12 I8 J7 J13 J19 K12 K22 M10 P5 P13 P19] => 'town=revenue:0',
             %w[B19 D19 F13 G14 G16 H21 J5 J23 L9 L11 L19 L23 P17] => 'city=revenue:0',
             %w[D23] => 'city=revenue:0;icon=image:1822_pnw/GNR,name:GNR_home',
@@ -81,8 +81,10 @@ module Engine
             %w[M4] => 'city=revenue:20;path=a:_0,b:2;border=edge:5,type:water,cost:75',
             %w[M14 N13] => 'upgrade=cost:75,terrain:mountain',
             %w[N5] => 'city=revenue:0;border=edge:2,type:water,cost:75',
+            %w[O6] => 'border=edge:4,type:impassable;',
             %w[O8] => 'city=revenue:20,slots:4;upgrade=cost:20;'\
                       'path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0,lanes:2;label=Por;'\
+                      'border=edge:1,type:impassable;'\
                       'icon=image:1822_pnw/SPS,name:SPS_home;icon=image:1822_pnw/ORNC,name:ORNC_home',
             %w[O20] => 'city=revenue:0;icon=image:1822_pnw/NP,name:NP_home',
           },

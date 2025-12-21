@@ -3,7 +3,6 @@
 require_relative 'entities'
 require_relative 'map'
 require_relative 'meta'
-require_relative 'player'
 require_relative 'stock_market'
 require_relative '../base'
 
@@ -14,8 +13,6 @@ module Engine
         include_meta(G1844::Meta)
         include Entities
         include Map
-
-        PLAYER_CLASS = G1844::Player
 
         CURRENCY_FORMAT_STR = '%s SFR'
 
@@ -33,6 +30,7 @@ module Engine
         NEXT_SR_PLAYER_ORDER = :most_cash
         EBUY_PRES_SWAP = false
         EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
+        EBUY_CAN_TAKE_PLAYER_LOAN = true
         DISCARDED_TRAINS = :remove
 
         TRACK_RESTRICTION = :permissive
@@ -505,10 +503,7 @@ module Engine
             @log << msg
             next if !share_holder.player? || !share_holder.cash.negative?
 
-            debt = share_holder.cash.abs
-            share_holder.debt += debt
-            share_holder.cash += debt
-            @log << "#{share_holder.name} takes #{format_currency(debt)} of debt to complete payment"
+            take_player_loan(share_holder, share_holder.cash.abs, interest: 0)
           end
         end
 
@@ -550,10 +545,6 @@ module Engine
           super - (player.companies & privates).sum(&:value)
         end
 
-        def player_debt(player)
-          player.debt
-        end
-
         def init_stock_market
           G1844::StockMarket.new(game_market, self.class::CERT_LIMIT_TYPES,
                                  multiple_buy_types: self.class::MULTIPLE_BUY_TYPES)
@@ -575,7 +566,7 @@ module Engine
               reorder_players(log_player_order: true)
               new_stock_round
             when Engine::Round::Stock
-              apply_interest_to_player_debt!
+              add_interest_player_loans!
               @operating_rounds = @phase.operating_rounds
               reorder_players(log_player_order: true)
               new_operating_round
@@ -774,6 +765,7 @@ module Engine
 
         def destinated?(entity)
           return false unless entity.coordinates
+          return false unless entity.floated?
 
           home_node = hex_by_id(entity.coordinates).tile.cities.find { |c| c.tokened_by?(entity) || c.reserved_by?(entity) }
           destination_hex = hex_by_id(entity.destination_coordinates)
@@ -973,37 +965,6 @@ module Engine
           @regional_skip_paths ||= @hexes.select { |hex| hex.tile.color == :red }.flat_map do |hex|
             hex.tile.paths.map { |path| [path, true] }
           end.to_h
-        end
-
-        def take_player_loan(player, loan)
-          player.cash += loan # debt does not come from the bank
-          interest = player_debt_interest(loan)
-          player.debt += loan + interest
-
-          @log << "#{player.name} takes #{format_currency(loan)} in debt"
-          @log << "#{player.name} has 50% interest (#{format_currency(interest)}) applied to this debt"
-        end
-
-        def apply_interest_to_player_debt!
-          @players.each do |player|
-            next if player.debt.zero?
-
-            interest = player_debt_interest(player.debt)
-            player.debt += interest
-            @log << "#{player.name} has an additional 50% interest (#{format_currency(interest)}) applied to their debt"
-          end
-        end
-
-        def payoff_player_loan(player)
-          payoff = player.cash >= player.debt ? player.debt : player.cash
-          verb = payoff == player.debt ? 'pays off' : 'decreases'
-          @log << "#{player.name} #{verb} their debt of #{format_currency(player.debt)}"
-          player.cash -= payoff
-          player.debt -= payoff
-        end
-
-        def player_debt_interest(debt)
-          (debt * 0.5).ceil
         end
       end
     end

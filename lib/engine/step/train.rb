@@ -67,8 +67,9 @@ module Engine
         remaining = price - buying_power(entity)
         if remaining.positive? && can_finance?(entity)
           financed_cash = remaining
-          entity.cash += financed_cash
-          @log << "#{@game.bank.name} finances #{@game.format_currency(financed_cash)}"
+          financer = @game.bank
+          financer.spend(financed_cash, entity)
+          @log << "#{financer.name} finances #{@game.format_currency(financed_cash)}"
           remaining = 0
         end
 
@@ -113,7 +114,7 @@ module Engine
         @game.buy_train(entity, train, price)
         @game.phase.buying_train!(entity, train, source)
 
-        action.entity.cash -= financed_cash if financed_cash
+        entity.spend(financed_cash, financer) if financed_cash
         pass! if !can_buy_train?(entity) && pass_if_cannot_buy_train?(entity)
       end
 
@@ -260,6 +261,22 @@ module Engine
 
       def can_finance?(_entity)
         false
+      end
+
+      def try_take_player_loan(entity, cost)
+        return unless cost.positive?
+        return unless cost > entity.cash
+
+        case @game.class::EBUY_CAN_TAKE_PLAYER_LOAN
+        when :after_sell
+          raise GameError, "#{entity.name} still needs to sell shares before a loan can be granted." if sellable_shares?(entity)
+        when :no_sell
+          raise GameError, "#{entity.name} already sold shares this round. Cannot take loans." unless @corporations_sold.empty?
+        when false
+          return
+        end
+
+        @game.take_player_loan(entity, cost - entity.cash)
       end
 
       private

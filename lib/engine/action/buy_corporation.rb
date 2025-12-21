@@ -7,6 +7,8 @@ module Engine
     class BuyCorporation < Base
       attr_reader :entity, :corporation, :minor, :price
 
+      REQUIRED_ARGS = %i[price].freeze
+
       def initialize(entity, price:, corporation: nil, minor: nil)
         super(entity)
         @corporation = corporation

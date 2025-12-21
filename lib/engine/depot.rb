@@ -15,7 +15,6 @@ module Engine
       @trains.each { |train| train.owner = self }
       @upcoming = @trains.dup
       @discarded = []
-      @bank = @game.bank
     end
 
     def export!
@@ -71,30 +70,28 @@ module Engine
       train.variants.map { |_, v| v[:price] }.max
     end
 
-    def unshift_train(train)
-      train.owner = self
-      @upcoming.unshift(train)
-      @depot_trains = nil
-    end
-
     def remove_train(train)
-      @upcoming.delete(train)
+      delete_from_upcoming(train)
       @discarded.delete(train)
       @depot_trains = nil
     end
 
     def forget_train(train)
       @trains.delete(train)
-      @upcoming.delete(train)
-      @discarded.delete(train)
-      @depot_trains = nil
+      remove_train(train)
+    end
+
+    def delete_from_upcoming(train)
+      index = @upcoming.index(train)
+      deleted = @upcoming.delete(train)
+      return if !index || !deleted&.unlimited || (@upcoming[index]&.name == train.name)
+
+      insert_train(train.clone_unlimited, index)
+      @game.update_trains_cache
     end
 
     def add_train(train)
-      train.owner = self
-      @trains << train
-      @upcoming << train
-      @depot_trains = nil
+      insert_train(train, @upcoming.size)
     end
 
     def insert_train(train, index = 0)
@@ -135,12 +132,8 @@ module Engine
       end
     end
 
-    def cash
-      @bank.cash
-    end
-
-    def cash=(new_cash)
-      @bank.cash = new_cash
+    def spender
+      @game.bank
     end
 
     def name
@@ -153,6 +146,10 @@ module Engine
 
     def player
       nil
+    end
+
+    def inspect
+      "<#{self.class.name}>"
     end
   end
 end

@@ -165,10 +165,9 @@ module Engine
                   }].freeze
 
         # Game ends after 5 sets of ORs - checked in end_now? below
-        GAME_END_CHECK = { custom: :current_or, stock_market: :current }.freeze
+        GAME_END_CHECK = { fixed_round: :current_or, stock_market: :current }.freeze
 
         GAME_END_REASONS_TEXT = Base::GAME_END_REASONS_TEXT.merge(
-          custom: 'Fixed number of ORs',
           stock_market: 'Company reached the top of the market.',
         ).freeze
 
@@ -298,7 +297,7 @@ module Engine
         end
 
         # Game ends after the end of OR 5.2
-        def end_now?(_after)
+        def game_end_check_fixed_round?
           @or == LAST_OR
         end
 
@@ -425,11 +424,19 @@ module Engine
         end
 
         def emergency_issuable_bundles(entity)
-          return [] if @round.issued_shares[entity] || entity.cash >= @depot.min_depot_price
+          return [] if @round.issued_shares[entity] || entity.cash >= min_train_price(entity)
 
           num_shares = [entity.num_player_shares, 5 - entity.num_market_shares].min
 
           bundles_for_corporation(entity, entity).reject { |bundle| bundle.num_shares > num_shares }
+        end
+
+        def min_train_price(entity)
+          if werkspoor&.owned_by?(entity)
+            @depot.min_depot_price * 0.9
+          else
+            @depot.min_depot_price
+          end
         end
 
         def upgrades_to_correct_city_town?(from, to)
@@ -454,6 +461,10 @@ module Engine
           end
 
           terrain_cost - discounts
+        end
+
+        def werkspoor
+          @werkspoor ||= company_by_id('W')
         end
       end
     end

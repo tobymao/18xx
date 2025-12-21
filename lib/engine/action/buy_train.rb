@@ -8,6 +8,8 @@ module Engine
     class BuyTrain < Base
       attr_reader :train, :price, :exchange, :variant, :shell, :slots, :extra_due, :warranties
 
+      REQUIRED_ARGS = %i[train price].freeze
+
       def initialize(entity, train:, price:, variant: nil, exchange: nil, shell: nil, slots: nil,
                      extra_due: nil, warranties: nil)
         super(entity)

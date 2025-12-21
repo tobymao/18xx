@@ -95,6 +95,7 @@ module View
             Tile,
             tile: @tile,
             show_coords: setting_for(:show_coords, @game) && (@role == :map),
+            show_tiles: setting_for(:show_tiles, @game) && (@role == :map),
             routes: @routes,
             game: @game
           )
