@@ -215,8 +215,7 @@ module View
           remaining.each.with_index do |train2, index|
             train2.events.each do |event|
               event_name = event['type']
-              # skip globally hidden events
-              next if @game.class::HIDDEN_EVENTS.include?(event_name)
+              next if event['hidden'] # don't show hidden events on the info page
 
               if (mapping = @game.class::EVENTS_TEXT[event_name])
                 events << event_name
@@ -279,7 +278,7 @@ module View
           h(:tr, tr_props, train_content)
         end
 
-        event_text = events.uniq.reject { |sym| @game.class::HIDDEN_EVENTS.include?(sym) }.map do |sym|
+        event_text = events.uniq.map do |sym|
           desc = @game.class::EVENTS_TEXT[sym]
           h(:tr, [h('td.nowrap', { style: { maxWidth: '30vw' } }, desc[0]), h(:td, desc[1])])
         end

@@ -357,8 +357,6 @@ module Engine
           ['Companies Close', 'All companies unless otherwise noted are discarded from the game'],
       }.freeze
 
-      HIDDEN_EVENTS = [].freeze
-
       STATUS_TEXT = {
         'can_buy_companies' =>
           ['Can Buy Companies', 'All corporations can buy companies from players'],

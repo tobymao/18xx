@@ -199,7 +199,7 @@ module Engine
               price: 100,
               rusts_on: '4',
               num: 6,
-              events: [{ 'type' => 'change_float', 'when' => 6 }],
+              events: [{ 'type' => 'change_float', 'when' => 6, 'hidden' => true }],
             },
             {
               name: '3',
@@ -207,7 +207,7 @@ module Engine
               price: 225,
               rusts_on: '6',
               num: 5,
-              events: [{ 'type' => 'change_float', 'when' => 5 }],
+              events: [{ 'type' => 'change_float', 'when' => 5, 'hidden' => true }],
             },
             {
               name: '4',
@@ -216,7 +216,7 @@ module Engine
               rusts_on: @optional_rules&.include?(:eight_train_variant) ? '8' : 'D',
               num: 4,
               events: [{ 'type' => 'no_more_escrow_corps', 'when' => 4 },
-                       { 'type' => 'change_float', 'when' => 4 }],
+                       { 'type' => 'change_float', 'when' => 4, 'hidden' => true }],
             },
             {
               name: '5',
@@ -225,7 +225,7 @@ module Engine
               num: 3,
               events: [{ 'type' => 'close_companies' },
                        { 'type' => 'no_more_incremental_corps', 'when' => 3 },
-                       { 'type' => 'change_float', 'when' => 3 }],
+                       { 'type' => 'change_float', 'when' => 3, 'hidden' => true }],
             },
             {
               name: '6',
@@ -331,11 +331,8 @@ module Engine
                                        'Does not affect corporations which have already been parred'],
             'no_more_incremental_corps' => ['New Corporations are Full Cap',
                                             'Does not affect corporations which have already been parred'],
-            'change_float' => nil,
           }
         ).freeze
-
-        HIDDEN_EVENTS = ['change_float'].freeze
 
         FALSE_PRESIDENCY_ABILITY = Ability::Description.new(
           type: 'description',

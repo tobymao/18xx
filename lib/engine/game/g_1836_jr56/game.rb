@@ -98,7 +98,7 @@ module Engine
               price: 100,
               rusts_on: '4',
               num: 5,
-              events: [{ 'type' => 'change_float', 'when' => 5 }],
+              events: [{ 'type' => 'change_float', 'when' => 5, 'hidden' => true }],
             },
             {
               name: '3',
@@ -106,7 +106,7 @@ module Engine
               price: 225,
               rusts_on: '6',
               num: 4,
-              events: [{ 'type' => 'change_float', 'when' => 4 }],
+              events: [{ 'type' => 'change_float', 'when' => 4, 'hidden' => true }],
             },
             {
               name: '4',
@@ -115,7 +115,7 @@ module Engine
               rusts_on: @optional_rules&.include?(:diesel_variant) ? 'D' : '8',
               num: 3,
               events: [{ 'type' => 'no_more_escrow_corps', 'when' => 3 },
-                       { 'type' => 'change_float', 'when' => 3 }],
+                       { 'type' => 'change_float', 'when' => 3, 'hidden' => true }],
             },
             {
               name: '5',
@@ -124,7 +124,7 @@ module Engine
               num: 2,
               events: [{ 'type' => 'close_companies' },
                        { 'type' => 'no_more_incremental_corps', 'when' => 2 },
-                       { 'type' => 'change_float', 'when' => 2 }],
+                       { 'type' => 'change_float', 'when' => 2, 'hidden' => true }],
             },
             {
               name: '6',
