@@ -256,7 +256,7 @@ module Engine
           train_list
         end
 
-        attr_reader :post_nationalization, :bankrupted
+        attr_reader :post_nationalization, :bankrupted, :capitalization
         attr_accessor :borrowed_trains, :national_ever_owned_permanent, :false_national_president,
                       :nationalization_train_discard_trigger, :percent_to_operate
 
@@ -546,6 +546,7 @@ module Engine
           national.add_ability(self.class::NATIONAL_FORCED_WITHHOLD_ABILITY)
 
           @percent_to_operate = 20
+          @capitalization = :escrow
         end
 
         def unlimited_bonus_tokens?
@@ -800,10 +801,12 @@ module Engine
         def event_no_more_escrow_corps!
           @log << 'New corporations will be started as incremental cap corporations'
           @corporations.reject(&:capitalization).each { |c| remove_dest_icons(c) }
+          @capitalization = :incremental
         end
 
         def event_no_more_incremental_corps!
           @log << 'New corporations will be started as full cap corporations'
+          @capitalization = :full
         end
 
         def event_close_companies!

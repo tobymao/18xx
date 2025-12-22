@@ -247,6 +247,7 @@ module Engine
           national.add_ability(self.class::NATIONAL_FORCED_WITHHOLD_ABILITY)
 
           @percent_to_operate = 20
+          @capitalization = :escrow
         end
 
         def stock_round

@@ -53,13 +53,12 @@ module Engine
         end
 
         def capitalization_type
-          return :escrow if !@destinated && @game.phase.status.include?('escrow')
-          return :incremental if (@destinated && @game.phase.status.include?('escrow')) ||
-            @game.phase.status.include?('incremental')
-          return :full if @game.phase.status.include?('fullcap')
-
-          # This shouldn't happen
-          raise NotImplementedError
+          case @game.capitalization
+          when :escrow then @destinated ? :incremental : :escrow
+          when :incremental then :incremental
+          when :full then :full
+          else raise NoImplementedError
+          end
         end
       end
     end
