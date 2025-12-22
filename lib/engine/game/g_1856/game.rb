@@ -256,9 +256,9 @@ module Engine
           train_list
         end
 
-        attr_reader :post_nationalization, :bankrupted, :capitalization
+        attr_reader :post_nationalization, :bankrupted, :capitalization, :percent_to_operate
         attr_accessor :borrowed_trains, :national_ever_owned_permanent, :false_national_president,
-                      :nationalization_train_discard_trigger, :percent_to_operate
+                      :nationalization_train_discard_trigger
 
         # This is unlimited in 1891
         # They're also 5% shares if there are more than 20 shares. It's weird.
