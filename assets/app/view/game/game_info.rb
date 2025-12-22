@@ -217,9 +217,9 @@ module View
               event_name = event['type']
               next if event['hidden'] # don't show hidden events on the info page
 
-              if (mapping = @game.class::EVENTS_TEXT[event_name])
+              if @game.class::EVENTS_TEXT[event_name]
                 events << event_name
-                event_name = mapping[0]
+                event_name = @game.class::EVENTS_TEXT[event_name][0]
               end
 
               event_text << if index.zero?
