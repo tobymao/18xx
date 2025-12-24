@@ -275,7 +275,7 @@ module Engine
             distance: [{ 'nodes' => %w[city offboard], 'pay' => 8, 'visit' => 8 },
                        { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
             price: 1000,
-            num: 6,
+            num: 'unlimited',
             events: [{ 'type' => 'minors_nationalized' },
                      { 'type' => 'trainless_nationalization' },
                      { 'type' => 'train_trade_allowed' }],
@@ -294,7 +294,7 @@ module Engine
                        { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
             multiplier: 2,
             price: 600,
-            num: 20,
+            num: 'unlimited',
             available_on: '8',
             discount: {
               '5' => 275,
@@ -311,7 +311,7 @@ module Engine
                        { 'nodes' => %w[city town], 'pay' => 0, 'visit' => 99 }],
             multiplier: 2,
             price: 1500,
-            num: 20,
+            num: 'unlimited',
             available_on: '8',
             discount: {
               '5' => 275,
