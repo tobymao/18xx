@@ -207,6 +207,7 @@ class Api
               unlisted: r.params['unlisted'],
               optional_rules: r.params['optional_rules'],
               auto_routing: r.params['auto_routing'],
+              use_engine_v2: r.params['use_engine_v2'],
               is_async: r.params['async'],
             },
             title: title,
