@@ -43,7 +43,7 @@ module Engine
         def floated?
           return false unless @floatable
 
-          @floated ||= (percent_to_float <= 0)
+          @floated ||= (percent_to_float <= 0 && @par_price)
         end
 
         def float!
@@ -120,6 +120,14 @@ module Engine
         # True if no player owns 20% or more
         def unpresidentable?
           player_share_holders.reject { |_, p| p < 20 }.empty?
+        end
+
+        # Need to cover the case where a unassociated regional railway has reached floating without being parred
+        def floatable
+          return false unless super
+          return true unless @type == :major
+
+          !@par_price.nil?
         end
 
         private
