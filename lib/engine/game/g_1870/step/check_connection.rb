@@ -14,6 +14,8 @@ module Engine
           # This also needs to be checked in the beginning of the OR, because it's possible for a
           # token to be removed during the SR if a corporation closes
           def auto_actions(entity)
+            return [] if @game.finished
+
             corporations = if @round.entity_index.zero? || @round.step_passed?(G1870::Step::CheckConnection)
                              @round.entities.select { |c| destination?(c) } # destinate in OR order
                            else
