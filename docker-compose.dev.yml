@@ -3,7 +3,7 @@ x-rack: &rack
   environment:
     DATABASE_URL: postgres://root:password@db:5432/18xx_development
     RACK_ENV: development
-    RUBYOPTS: --yjit
+    RUBYOPT: --yjit
     OPAL_PREFORK_DISABLE: "true"
     # debug/info/warn/error/fatal
     DB_LOG_LEVEL: fatal
