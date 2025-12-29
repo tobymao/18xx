@@ -57,7 +57,7 @@ module Engine
           when :escrow then @destinated ? :incremental : :escrow
           when :incremental then :incremental
           when :full then :full
-          else raise NoImplementedError
+          else raise NotImplementedError
           end
         end
       end
