@@ -130,8 +130,8 @@ module Engine
 
           a_share.buyable = true
 
-          # Do adjust capitalization capital as a 10% or 20% share is unreserved
-          @capitalization_share_count -= president_share ? 2 : 1
+          # Do increase capitalization capital as a 10% or 20% share is unreserved
+          @capitalization_share_count += president_share ? 2 : 1
         end
       end
     end
