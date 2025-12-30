@@ -56,18 +56,18 @@ describe Engine::Game::G1824::Game do
       expect(game).to have_available_hexes(%w[B5 B7 C6])
     end
 
-    it 'SD formation' do
+    it 'SD formation after OR 5.1' do
       game = fixture_at_action(280) # Before last action in OR 5.1
 
       sd = game.corporation_by_id('SD')
       sd1 = game.corporation_by_id('SD1')
       sd2 = game.corporation_by_id('SD2')
       sd3 = game.corporation_by_id('SD3')
+      pre_staatsbahns = [sd1, sd2, sd3]
 
+      # Check cash and status before formation
       expect(sd.floated?).to be false
-      expect(sd1.closed?).to be false
-      expect(sd2.closed?).to be false
-      expect(sd3.closed?).to be false
+      pre_staatsbahns.each { |corp| expect(corp.closed?).to be false }
       expect(sd.cash).to eq(0)
       expect(sd1.cash).to eq(47)
       expect(sd2.cash).to eq(0)
@@ -82,20 +82,30 @@ describe Engine::Game::G1824::Game do
       expect(get_token_owners_in_hex(game, innsbruck)).to eq([['SD3', nil]])
 
       # Check trains before formation
-      [sd1, sd2, sd3].each { |corp| expect(corp.trains.map(&:name)).to eq(%w[3]) }
+      pre_staatsbahns.each { |corp| expect(corp.trains.map(&:name)).to eq(%w[3]) }
       expect(sd.trains).to be_empty
 
-      game = fixture_at_action(281) # OR 5.2 started, SD formed at end of OR 5.1
+      # Check shares before formation
+      p1 = game.players.find { |p| p.name == 'Player 1' }
+      p2 = game.players.find { |p| p.name == 'Player 2' }
+      p3 = game.players.find { |p| p.name == 'Player 3' }
+      p4 = game.players.find { |p| p.name == 'Player 4' }
+      expect(get_percentage_owned(p1, sd)).to eq(10)
+      expect(get_percentage_owned(p1, sd2)).to eq(100)
+      expect(get_percentage_owned(p1, sd3)).to eq(100)
+      expect(get_percentage_owned(p2, sd)).to eq(20)
+      expect(get_percentage_owned(p2, sd1)).to eq(100)
+      expect(get_percentage_owned(p3, sd)).to eq(0)
+      expect(get_percentage_owned(p4, sd)).to eq(10)
+
+      # Step forward one step,to OR 5.2, when SD should have formed
+      game.process_to_action(281)
 
       # Check cash and status after formation
-      expect(sd.cash).to eq(720 + 47 + 0 + 15)
-      expect(sd1.cash).to eq(0)
-      expect(sd2.cash).to eq(0)
-      expect(sd3.cash).to eq(0)
+      expect(sd.cash).to eq((6 * 120) + 47 + 0 + 15)
+      pre_staatsbahns.each { |corp| expect(corp.cash).to eq(0) }
       expect(sd.floated?).to be true
-      expect(sd1.closed?).to be true
-      expect(sd2.closed?).to be true
-      expect(sd3.closed?).to be true
+      pre_staatsbahns.each { |corp| expect(corp.closed?).to be true }
 
       # Check tokens after formation
       expect(get_token_owners_in_hex(game, vienna)).to eq([['SD'], ['KK1'], ['KK2']])
@@ -103,14 +113,28 @@ describe Engine::Game::G1824::Game do
       expect(get_token_owners_in_hex(game, innsbruck)).to eq([['SD', nil]])
 
       # Check trains after formation
-      [sd1, sd2, sd3].each { |corp| expect(corp.trains).to be_empty }
+      pre_staatsbahns.each { |corp| expect(corp.trains).to be_empty }
       expect(sd.trains.map(&:name)).to eq(%w[3 3 3])
+
+      # Check shares after formation
+      expect(get_percentage_owned(p1, sd)).to eq(30)
+      expect(get_percentage_owned(p1, sd2)).to eq(0)
+      expect(get_percentage_owned(p1, sd3)).to eq(0)
+      expect(get_percentage_owned(p2, sd)).to eq(40)
+      expect(get_percentage_owned(p2, sd1)).to eq(0)
+      expect(get_percentage_owned(p3, sd)).to eq(0)
+      expect(get_percentage_owned(p4, sd)).to eq(10)
+      expect(sd.president?(p2)).to be true
     end
 
     def get_token_owners_in_hex(game, hex_id)
       game.hex_by_id(hex_id).tile.cities.map do |city|
         city.tokens.map { |t| t&.corporation&.id }
       end
+    end
+
+    def get_percentage_owned(player, corporation)
+      player.shares_of(corporation).sum(&:percent)
     end
   end
 end
