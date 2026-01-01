@@ -207,7 +207,7 @@ describe Engine::Game::G1824::Game do
       expect(kk.trains.map(&:name)).to eq(['4'])
 
       # Check shares after formation
-      expect(get_percentage_owned_by_players(game, sd)).to eq(60)
+      expect(get_percentage_owned_by_players(game, kk)).to eq(60)
       expect(get_percentage_owned(p1, kk)).to eq(0)
       expect(get_percentage_owned(p2, kk)).to eq(40)
       expect(get_percentage_owned(p3, kk)).to eq(0)
