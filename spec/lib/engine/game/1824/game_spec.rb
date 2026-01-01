@@ -82,7 +82,7 @@ describe Engine::Game::G1824::Game do
       expect(get_token_owners_in_hex(game, innsbruck)).to eq([['SD3', nil]])
 
       # Check trains before formation
-      pre_staatsbahns.each { |corp| expect(corp.trains.map(&:name)).to eq(%w[3]) }
+      pre_staatsbahns.each { |corp| expect(corp.trains.map(&:name)).to eq(['3']) }
       expect(sd.trains).to be_empty
 
       # Check shares before formation
@@ -127,14 +127,143 @@ describe Engine::Game::G1824::Game do
       expect(sd.president?(p2)).to be true
     end
 
-    def get_token_owners_in_hex(game, hex_id)
-      game.hex_by_id(hex_id).tile.cities.map do |city|
-        city.tokens.map { |t| t&.corporation&.id }
+    describe '1824_game_end_reason_bank' do
+      it 'UG formation after OR 5.2' do
+        game = fixture_at_action(322) # Before last action in OR 5.2
+
+        ug = game.corporation_by_id('UG')
+        ug1 = game.corporation_by_id('UG1')
+        ug2 = game.corporation_by_id('UG2')
+        pre_staatsbahns = [ug1, ug2]
+
+        # Check cash and status before formation
+        expect(ug.floated?).to be false
+        pre_staatsbahns.each { |corp| expect(corp.closed?).to be false }
+        expect(ug.cash).to eq(0)
+        expect(ug1.cash).to eq(80)
+        expect(ug2.cash).to eq(179)
+
+        # Check tokens before formation
+        budapest = 'F17'
+        funfkirchen = 'H15'
+        expect(get_token_owners_in_hex(game, budapest)).to eq([['UG1', nil]])
+        expect(get_token_owners_in_hex(game, funfkirchen)).to eq([['UG2', nil]])
+
+        # Check trains before formation
+        expect(ug1.trains.map(&:name)).to eq(['4'])
+        expect(ug2.trains.map(&:name)).to eq(['3'])
+        expect(ug.trains).to be_empty
+
+        # Check shares before formation
+        p1 = game.players.find { |p| p.name == 'Player 1' }
+        p2 = game.players.find { |p| p.name == 'Player 2' }
+        p3 = game.players.find { |p| p.name == 'Player 3' }
+        p4 = game.players.find { |p| p.name == 'Player 4' }
+        expect(get_percentage_owned(p1, ug)).to eq(0)
+        expect(get_percentage_owned(p2, ug)).to eq(0)
+        expect(get_percentage_owned(p3, ug)).to eq(0)
+        expect(get_percentage_owned(p3, ug1)).to eq(100)
+        expect(get_percentage_owned(p3, ug2)).to eq(100)
+        expect(get_percentage_owned(p4, ug)).to eq(0)
+
+        # Step forward one step,to SR 6, when UG should have formed
+        game.process_to_action(323)
+
+        # Check cash and status after formation
+        expect(ug.cash).to eq((7 * 120) + 80 + 179)
+        pre_staatsbahns.each { |corp| expect(corp.cash).to eq(0) }
+        expect(ug.floated?).to be true
+        pre_staatsbahns.each { |corp| expect(corp.closed?).to be true }
+
+        # Check tokens after formation
+        expect(get_token_owners_in_hex(game, budapest)).to eq([['UG', nil]])
+        expect(get_token_owners_in_hex(game, funfkirchen)).to eq([['UG', nil]])
+
+        # Check trains after formation
+        pre_staatsbahns.each { |corp| expect(corp.trains).to be_empty }
+        expect(ug.trains.map(&:name)).to eq(%w[4 3])
+
+        # Check shares after formation
+        expect(get_percentage_owned(p1, ug)).to eq(0)
+        expect(get_percentage_owned(p2, ug)).to eq(0)
+        expect(get_percentage_owned(p3, ug)).to eq(30)
+        expect(get_percentage_owned(p3, ug1)).to eq(0)
+        expect(get_percentage_owned(p3, ug2)).to eq(0)
+        expect(get_percentage_owned(p4, ug)).to eq(0)
+        expect(ug.president?(p3)).to be true
+      end
+
+      it 'KK formation after OR 6.1' do
+        game = fixture_at_action(396) # Before last action in OR 6.1
+
+        kk = game.corporation_by_id('KK')
+        kk1 = game.corporation_by_id('KK1')
+        kk2 = game.corporation_by_id('KK2')
+        pre_staatsbahns = [kk1, kk2]
+
+        # Check cash and status before formation
+        expect(kk.floated?).to be false
+        pre_staatsbahns.each { |corp| expect(corp.closed?).to be false }
+        expect(kk.cash).to eq(0)
+        expect(kk1.cash).to eq(195)
+        expect(kk2.cash).to eq(230)
+
+        # Check tokens before formation
+        vienna = 'E12'
+        expect(get_token_owners_in_hex(game, vienna)).to eq([['SD'], %w[KK1 KK2 MS]])
+
+        # Check trains before formation
+        expect(kk1.trains.map(&:name)).to eq(['4'])
+        expect(kk.trains).to be_empty
+        expect(kk2.trains).to be_empty
+
+        # Check shares before formation
+        p1 = game.players.find { |p| p.name == 'Player 1' }
+        p2 = game.players.find { |p| p.name == 'Player 2' }
+        p3 = game.players.find { |p| p.name == 'Player 3' }
+        p4 = game.players.find { |p| p.name == 'Player 4' }
+        expect(get_percentage_owned(p1, kk)).to eq(0)
+        expect(get_percentage_owned(p2, kk)).to eq(30)
+        expect(get_percentage_owned(p2, kk2)).to eq(100)
+        expect(get_percentage_owned(p3, kk)).to eq(0)
+        expect(get_percentage_owned(p4, kk)).to eq(0)
+        expect(get_percentage_owned(p4, kk1)).to eq(100)
+
+        # Step forward one step,to OR 6.2, when KK should have formed
+        game.process_to_action(397)
+
+        # Check cash and status after formation
+        expect(kk.cash).to eq((7 * 120) + 195 + 230)
+        pre_staatsbahns.each { |corp| expect(corp.cash).to eq(0) }
+        expect(kk.floated?).to be true
+        pre_staatsbahns.each { |corp| expect(corp.closed?).to be true }
+
+        # Check tokens after formation
+        expect(get_token_owners_in_hex(game, vienna)).to eq([['SD'], ["KK", nil, "MS"]])
+
+        # Check trains after formation
+        pre_staatsbahns.each { |corp| expect(corp.trains).to be_empty }
+        expect(kk.trains.map(&:name)).to eq(['4'])
+
+        # Check shares after formation
+        expect(get_percentage_owned(p1, kk)).to eq(0)
+        expect(get_percentage_owned(p2, kk)).to eq(40)
+        expect(get_percentage_owned(p2, kk2)).to eq(0)
+        expect(get_percentage_owned(p3, kk)).to eq(0)
+        expect(get_percentage_owned(p4, kk)).to eq(20)
+        expect(get_percentage_owned(p4, kk1)).to eq(0)
+        expect(kk.president?(p2)).to be true
       end
     end
+  end
 
-    def get_percentage_owned(player, corporation)
-      player.shares_of(corporation).sum(&:percent)
+  def get_token_owners_in_hex(game, hex_id)
+    game.hex_by_id(hex_id).tile.cities.map do |city|
+      city.tokens.map { |t| t&.corporation&.id }
     end
+  end
+
+  def get_percentage_owned(player, corporation)
+    player.shares_of(corporation).sum(&:percent)
   end
 end
