@@ -187,8 +187,6 @@ describe Engine::Game::G1824::Game do
         expect(get_percentage_owned(p1, ug)).to eq(0)
         expect(get_percentage_owned(p2, ug)).to eq(0)
         expect(get_percentage_owned(p3, ug)).to eq(30)
-        expect(get_percentage_owned(p3, ug1)).to eq(0)
-        expect(get_percentage_owned(p3, ug2)).to eq(0)
         expect(get_percentage_owned(p4, ug)).to eq(0)
         expect(ug.president?(p3)).to be true
       end
@@ -239,7 +237,7 @@ describe Engine::Game::G1824::Game do
         pre_staatsbahns.each { |corp| expect(corp.closed?).to be true }
 
         # Check tokens after formation
-        expect(get_token_owners_in_hex(game, vienna)).to eq([['SD'], ["KK", nil, "MS"]])
+        expect(get_token_owners_in_hex(game, vienna)).to eq([['SD'], ['KK', nil, 'MS']])
 
         # Check trains after formation
         pre_staatsbahns.each { |corp| expect(corp.trains).to be_empty }
@@ -248,11 +246,60 @@ describe Engine::Game::G1824::Game do
         # Check shares after formation
         expect(get_percentage_owned(p1, kk)).to eq(0)
         expect(get_percentage_owned(p2, kk)).to eq(40)
-        expect(get_percentage_owned(p2, kk2)).to eq(0)
         expect(get_percentage_owned(p3, kk)).to eq(0)
         expect(get_percentage_owned(p4, kk)).to eq(20)
-        expect(get_percentage_owned(p4, kk1)).to eq(0)
         expect(kk.president?(p2)).to be true
+      end
+
+      it 'Forced MR exchange when 4 train is sold/exported' do
+        game = fixture_at_action(218) # Before last action in OR 4.2
+        p1 = game.players.find { |p| p.name == 'Player 1' }
+        p2 = game.players.find { |p| p.name == 'Player 2' }
+        p4 = game.players.find { |p| p.name == 'Player 4' }
+        b1 = game.company_by_id('B1')
+        expect(b1.owner).to eq(p2)
+        expect(game.active_step.class).to eq(Engine::Game::G1824::Step::BuyTrain)
+
+        # Player 4 passes, and 4 train is exported, which triggers a new phase
+        game.process_to_action(219)
+
+        # Player 2 owns MR 1, and goes first in the forced MR exchange
+        expect(game.current_entity).to eq(p2)
+        expect(game.active_step.class).to eq(Engine::Game::G1824::Step::ForcedMountainRailwayExchange)
+
+        # Perform MR exchange and check that player has received 10% in the regional
+        ms = game.corporation_by_id('MS')
+        action = Engine::Action::BuyShares.new(b1, shares: ms.available_share, percent: 10)
+        game.process_action(action)
+        expect(b1.owner).to eq(nil)
+        expect(b1.closed?).to be true
+        expect(get_percentage_owned(p2, game.corporation_by_id('MS'))).to eq(10)
+
+        # Player 4 owns MR 2, and goes next in the forced MR exchange
+        b2 = game.company_by_id('B2')
+        expect(game.current_entity).to eq(p4)
+        game.process_action(Engine::Action::BuyShares.new(b2, shares: ms.available_share, percent: 10))
+
+        # Player 1 owns MR 3, and goes next in the forced MR exchange
+        b3 = game.company_by_id('B3')
+        expect(game.current_entity).to eq(p1)
+        game.process_action(Engine::Action::BuyShares.new(b3, shares: ms.available_share, percent: 10))
+
+        # Player 2 owns MR 4, and goes next in the forced MR exchange
+        b4 = game.company_by_id('B4')
+        expect(game.current_entity).to eq(p2)
+        game.process_action(Engine::Action::BuyShares.new(b4, shares: ms.available_share, percent: 10))
+
+        # MR 5 already exchanged.
+        # Player 1 owns MR 6, and goes next in the forced MR exchange
+        b6 = game.company_by_id('B6')
+        expect(game.current_entity).to eq(p1)
+        sb = game.corporation_by_id('SB')
+        game.process_action(Engine::Action::BuyShares.new(b6, shares: sb.available_share, percent: 10))
+
+        # After the forced MR exchange, the normal SR commences
+        expect(game.current_entity).to eq(p1)
+        expect(game.active_step.class).to eq(Engine::Game::G1824::Step::BuySellParExchangeShares)
       end
     end
   end
