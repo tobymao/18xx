@@ -207,7 +207,7 @@ describe Engine::Game::G1824::Game do
       expect(kk.trains.map(&:name)).to eq(['4'])
 
       # Check shares after formation
-      expect(get_percentage_owned_by_players(game, sd)).to eq(60)
+      expect(get_percentage_owned_by_players(game, kk)).to eq(60)
       expect(get_percentage_owned(p1, kk)).to eq(0)
       expect(get_percentage_owned(p2, kk)).to eq(40)
       expect(get_percentage_owned(p3, kk)).to eq(0)
@@ -264,6 +264,40 @@ describe Engine::Game::G1824::Game do
       # After the forced MR exchange, the normal SR commences
       expect(game.current_entity).to eq(p1)
       expect(game.active_step.class).to eq(Engine::Game::G1824::Step::BuySellParExchangeShares)
+    end
+
+    it 'Verify #12275 - MR exchange wont float a regional, and parring is possible' do
+      game = fixture_at_action(128) # Start of SR4
+      share_price_100 = game.stock_market.par_prices.find { |par_price| par_price.price == 100 }
+
+      bh = game.corporation_by_id('BH')
+      p2 = game.players.find { |p| p.name == 'Player 2' }
+      p3 = game.players.find { |p| p.name == 'Player 3' }
+      p4 = game.players.find { |p| p.name == 'Player 4' }
+
+      expect(game.active_step.class).to eq(Engine::Game::G1824::Step::BuySellParExchangeShares)
+      game.process_action(Engine::Action::BuyShares.new(game.company_by_id('B4'), shares: bh.available_share, percent: 10))
+      game.process_action(Engine::Action::Pass.new(p3))
+      game.process_action(Engine::Action::BuyShares.new(game.company_by_id('B2'), shares: bh.available_share, percent: 10))
+      game.process_action(Engine::Action::BuyShares.new(game.company_by_id('B6'), shares: bh.available_share, percent: 10))
+      game.process_action(Engine::Action::BuyShares.new(game.company_by_id('B1'), shares: bh.available_share, percent: 10))
+      game.process_action(Engine::Action::Pass.new(p3))
+      game.process_action(Engine::Action::Pass.new(p4))
+
+      # BH has exchanged 40%. Another exchange will not float it as still not parred
+      expect(get_percentage_owned_by_players(game, bh)).to eq(40)
+      game.process_action(Engine::Action::BuyShares.new(game.company_by_id('B3'), shares: bh.available_share, percent: 10))
+      expect(bh.floated?).to be false
+      expect(get_percentage_owned_by_players(game, bh)).to eq(50)
+
+      # Parring it will now float BH
+      expect(game.current_entity).to eq(p2)
+      expect(p2.cash).to eq(205)
+      game.process_action(Engine::Action::Par.new(p2, corporation: bh, share_price: share_price_100))
+      expect(get_percentage_owned_by_players(game, bh)).to eq(70)
+      expect(bh.floated?).to be true
+      expect(bh.cash).to eq(10 * 100)
+      expect(p2.cash).to eq(5)
     end
   end
 

@@ -43,7 +43,7 @@ module Engine
         def floated?
           return false unless @floatable
 
-          @floated ||= (percent_to_float <= 0 && @par_price)
+          @floated ||= (percent_to_float <= 0 && !@par_price.nil? && @presidents_share&.owned_by_player?)
         end
 
         def float!
