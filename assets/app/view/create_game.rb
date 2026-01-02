@@ -212,6 +212,8 @@ module View
           else
             selected_game.game_variants[sym]
           end
+
+        maybe_adjust_player_range(selected_game_or_variant)
         update_inputs(title_change: true)
       end
     end
@@ -240,7 +242,10 @@ module View
           @optional_rules << sym
           uncheck_mutex(sym)
         end
+
+        maybe_adjust_player_range(selected_game_or_variant)
         store(:optional_rules, @optional_rules)
+        update_inputs
       end
     end
 
@@ -291,7 +296,6 @@ module View
           attrs: {
             value: o_r[:sym],
             checked: @optional_rules.include?(o_r[:sym]),
-            disabled: !@visible_optional_rules.find { |vo_r| vo_r[:sym] == o_r[:sym] },
           },
           on: { input: toggle_optional_rule(o_r[:sym]) },
         )])
@@ -548,6 +552,8 @@ module View
         min_players_elm&.value = game_min_players
       end
 
+      maybe_adjust_player_range(selected_game_or_variant)
+
       # NOTE: Letters resolve to 0 when converted to integers
       max_players = max_players_elm&.value&.to_i
       min_players = min_players_elm&.value&.to_i
@@ -563,11 +569,9 @@ module View
 
       visible_rules = []
       selected_game::OPTIONAL_RULES.each do |rule|
-        if filtered_rule?(rule)
-          @optional_rules.delete(rule[:sym])
-        else
-          visible_rules << rule
-        end
+        next if rule[:hidden]
+
+        visible_rules << rule
       end
       sync_rules
 
@@ -710,6 +714,38 @@ module View
     def update_player_range(meta)
       title = meta.title
       @min_p[title], @max_p[title] = meta::PLAYER_RANGE
+    end
+
+    def allowed_players_for(meta)
+      title = meta.title
+      base = (@min_p[title]..@max_p[title]).to_a
+
+      rules = meta::OPTIONAL_RULES
+      selected = rules.select { |r| @optional_rules.include?(r[:sym]) && r[:players] }
+
+      selected.reduce(base) { |acc, r| acc & r[:players] }
+    end
+
+    def maybe_adjust_player_range(meta)
+      allowed = allowed_players_for(meta)
+      return if allowed.empty?
+
+      max_players_elm = Native(@inputs[:max_players])&.elm
+      min_players_elm = Native(@inputs[:min_players])&.elm
+
+      current_max = max_players_elm&.value&.to_i
+      current_min = min_players_elm&.value&.to_i
+
+      # Only adjust if current values are outside the allowed set
+      needs_adjust =
+        (current_min && !allowed.include?(current_min)) ||
+        (current_max && !allowed.include?(current_max)) ||
+        (current_min && current_max && current_min > current_max)
+
+      return unless needs_adjust
+
+      min_players_elm&.value = allowed.min
+      max_players_elm&.value = allowed.max
     end
   end
 end
