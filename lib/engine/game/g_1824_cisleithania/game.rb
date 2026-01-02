@@ -86,7 +86,7 @@ module Engine
         end
 
         def game_corporations
-          corporations = CORPORATIONS.dup
+          corporations = CORPORATIONS.map(&:dup)
 
           return corporations if two_player?
 
