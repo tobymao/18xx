@@ -19,7 +19,9 @@ describe Engine::Game::G1824::Game do
     end
 
     it 'SD formation after OR 4.2' do
-      game = fixture_at_action(218) # Before last action in OR 4.2
+      start_action = 218 # Just before last action in OR 4.2
+      game = fixture_at_action(start_action)
+      expect_at(game, Engine::Game::G1824::Step::BuyTrain, [4, 2], game.corporation_by_id('MS'))
 
       sd = game.corporation_by_id('SD')
       sd1 = game.corporation_by_id('SD1')
@@ -61,8 +63,9 @@ describe Engine::Game::G1824::Game do
       expect(get_percentage_owned(p3, sd3)).to eq(100)
       expect(get_percentage_owned(p4, sd)).to eq(0)
 
-      # Step forward one step,to SR 5, when SD should have formed
-      game.process_to_action(219)
+      # Step forward one step,to SR 5 (Forced MR exchange), when SD should have formed
+      game.process_to_action(start_action + 1)
+      expect_at(game, Engine::Game::G1824::Step::ForcedMountainRailwayExchange, [5, 1], p2)
 
       # Check cash and status after formation
       expect(sd.cash).to eq((6 * 120) + 110 + 5 + 31)
@@ -88,10 +91,21 @@ describe Engine::Game::G1824::Game do
       expect(get_percentage_owned(p3, sd)).to eq(10)
       expect(get_percentage_owned(p4, sd)).to eq(0)
       expect(sd.president?(p2)).to be true
+
+      expect(get_number_of_shares(game, p1)).to eq(8)
+      expect(game.num_certs(p1)).to eq(8) # 6 share certificates plus 2 MR
+      expect(get_number_of_shares(game, p2)).to eq(6)
+      expect(game.num_certs(p2)).to eq(6) # 6 share certificates plus 2 MR
+      expect(get_number_of_shares(game, p3)).to eq(8)
+      expect(game.num_certs(p3)).to eq(5) # 3 president shares
+      expect(get_number_of_shares(game, p4)).to eq(7)
+      expect(game.num_certs(p4)).to eq(6) # 2 president shares, 1 MR
     end
 
     it 'UG formation after OR 5.2' do
-      game = fixture_at_action(322) # Before last action in OR 5.2
+      start_action = 322 # Just before last action in OR 5.2
+      game = fixture_at_action(start_action)
+      expect_at(game, Engine::Game::G1824::Step::BuyTrain, [5, 2], game.corporation_by_id('BK'))
 
       ug = game.corporation_by_id('UG')
       ug1 = game.corporation_by_id('UG1')
@@ -129,7 +143,8 @@ describe Engine::Game::G1824::Game do
       expect(get_percentage_owned(p4, ug)).to eq(0)
 
       # Step forward one step,to SR 6, when UG should have formed
-      game.process_to_action(323)
+      game.process_to_action(start_action + 1)
+      expect_at(game, Engine::Game::G1824::Step::BuySellParExchangeShares, [6, 1], p4)
 
       # Check cash and status after formation
       expect(ug.cash).to eq((7 * 120) + 80 + 179)
@@ -152,10 +167,21 @@ describe Engine::Game::G1824::Game do
       expect(get_percentage_owned(p3, ug)).to eq(30)
       expect(get_percentage_owned(p4, ug)).to eq(0)
       expect(ug.president?(p3)).to be true
+
+      expect(get_number_of_shares(game, p1)).to eq(13)
+      expect(game.num_certs(p1)).to eq(10) # 3 president shares
+      expect(get_number_of_shares(game, p2)).to eq(11)
+      expect(game.num_certs(p2)).to eq(10) # 1 president share
+      expect(get_number_of_shares(game, p3)).to eq(10)
+      expect(game.num_certs(p3)).to eq(8) # 2 president shares
+      expect(get_number_of_shares(game, p4)).to eq(10)
+      expect(game.num_certs(p4)).to eq(8) # 2 president shares
     end
 
     it 'KK formation after OR 6.1' do
-      game = fixture_at_action(396) # Before last action in OR 6.1
+      start_action = 396 # Just before last action in OR 6.1
+      game = fixture_at_action(start_action)
+      expect_at(game, Engine::Game::G1824::Step::BuyTrain, [6, 1], game.corporation_by_id('CL'))
 
       kk = game.corporation_by_id('KK')
       kk1 = game.corporation_by_id('KK1')
@@ -191,7 +217,8 @@ describe Engine::Game::G1824::Game do
       expect(get_percentage_owned(p4, kk1)).to eq(100)
 
       # Step forward one step,to OR 6.2, when KK should have formed
-      game.process_to_action(397)
+      game.process_to_action(start_action + 1)
+      expect_at(game, Engine::Game::G1824::Step::Track, [6, 2], game.corporation_by_id('MS'))
 
       # Check cash and status after formation
       expect(kk.cash).to eq((7 * 120) + 195 + 230)
@@ -213,10 +240,22 @@ describe Engine::Game::G1824::Game do
       expect(get_percentage_owned(p3, kk)).to eq(0)
       expect(get_percentage_owned(p4, kk)).to eq(20)
       expect(kk.president?(p2)).to be true
+
+      expect(get_number_of_shares(game, p1)).to eq(17)
+      expect(game.num_certs(p1)).to eq(14) # 3 president shares
+      expect(get_number_of_shares(game, p2)).to eq(14)
+      expect(game.num_certs(p2)).to eq(13) # 1 president share
+      expect(get_number_of_shares(game, p3)).to eq(14)
+      expect(game.num_certs(p3)).to eq(12) # 2 president shares
+      expect(get_number_of_shares(game, p4)).to eq(13)
+      expect(game.num_certs(p4)).to eq(12) # 1 president share
     end
 
     it 'Forced MR exchange when first 4 train is sold/exported' do
-      game = fixture_at_action(218) # Before last action in OR 4.2
+      start_action = 218 # Just before last action in OR 4.2
+      game = fixture_at_action(start_action)
+      expect_at(game, Engine::Game::G1824::Step::BuyTrain, [4, 2], game.corporation_by_id('MS'))
+
       p1 = game.players.find { |p| p.name == 'Player 1' }
       p2 = game.players.find { |p| p.name == 'Player 2' }
       p4 = game.players.find { |p| p.name == 'Player 4' }
@@ -225,11 +264,9 @@ describe Engine::Game::G1824::Game do
       expect(game.active_step.class).to eq(Engine::Game::G1824::Step::BuyTrain)
 
       # Player 4 passes, and 4 train is exported, which triggers a new phase
-      game.process_to_action(219)
-
+      game.process_to_action(start_action + 1)
       # Player 2 owns MR 1, and goes first in the forced MR exchange
-      expect(game.current_entity).to eq(p2)
-      expect(game.active_step.class).to eq(Engine::Game::G1824::Step::ForcedMountainRailwayExchange)
+      expect_at(game, Engine::Game::G1824::Step::ForcedMountainRailwayExchange, [5, 1], p2)
 
       # Perform MR exchange and check that player has received 10% in the regional
       ms = game.corporation_by_id('MS')
@@ -307,6 +344,96 @@ describe Engine::Game::G1824::Game do
     end
   end
 
+  describe 'verification_of_kk_formation' do
+    it 'Verification of #12226 - formation where primary owner not president' do
+      start_action = 533 # Just before last of OR 7.1
+      game = fixture_at_action(start_action)
+      expect_at(game, Engine::Game::G1824::Step::BuyTrain, [7, 1], game.corporation_by_id('BH'))
+
+      kk = game.corporation_by_id('KK')
+      kk1 = game.corporation_by_id('KK1')
+      kk2 = game.corporation_by_id('KK2')
+      pre_staatsbahns = [kk1, kk2]
+
+      # Check cash and status before formation
+      expect(kk.floated?).to be false
+      pre_staatsbahns.each { |corp| expect(corp.closed?).to be false }
+      expect(kk.cash).to eq(0)
+      expect(kk1.cash).to eq(1)
+      expect(kk2.cash).to eq(333)
+
+      # Check tokens before formation
+      vienna = 'E12'
+      expect(get_token_owners_in_hex(game, vienna)).to eq([['SD'], %w[KK1 KK2 BK]])
+
+      # Check trains before formation
+      pre_staatsbahns.each { |corp| expect(corp.trains.map(&:name)).to be_empty }
+      expect(kk.trains).to be_empty
+
+      # Check shares before formation
+      p1 = game.players.find { |p| p.name == 'Player 1' }
+      p2 = game.players.find { |p| p.name == 'Player 2' }
+      p3 = game.players.find { |p| p.name == 'Player 3' }
+      p4 = game.players.find { |p| p.name == 'Player 4' }
+      expect(get_percentage_owned(p1, kk)).to eq(30)
+      expect(get_percentage_owned(p1, kk2)).to eq(100)
+      expect(get_percentage_owned(p2, kk)).to eq(0)
+      expect(get_percentage_owned(p3, kk)).to eq(0)
+      expect(get_percentage_owned(p3, kk1)).to eq(100)
+      expect(get_percentage_owned(p4, kk)).to eq(0)
+
+      expect(get_number_of_shares(game, p1)).to eq(15)
+      expect(game.num_certs(p1)).to eq(13) # 2 president shares (one is KK2)
+      expect(get_number_of_shares(game, p2)).to eq(13)
+      expect(game.num_certs(p2)).to eq(11) # 2 president shares
+      expect(get_number_of_shares(game, p3)).to eq(14)
+      expect(game.num_certs(p3)).to eq(11) # 3 president shares (one is KK1)
+      expect(get_number_of_shares(game, p4)).to eq(14)
+      expect(game.num_certs(p4)).to eq(12) # 2 president shares
+
+      # Step forward one step, to OR 7.2, when KK should have formed
+      game.process_to_action(start_action + 1)
+      expect_at(game, Engine::Game::G1824::Step::Track, [7, 2], game.corporation_by_id('SB'))
+
+      # Check cash and status after formation
+      expect(kk.cash).to eq((7 * 120) + 1 + 333)
+      pre_staatsbahns.each { |corp| expect(corp.cash).to eq(0) }
+      expect(kk.floated?).to be true
+      pre_staatsbahns.each { |corp| expect(corp.closed?).to be true }
+
+      # Check tokens after formation
+      expect(get_token_owners_in_hex(game, vienna)).to eq([['SD'], ['KK', nil, 'BK']])
+
+      # Check trains after formation
+      pre_staatsbahns.each { |corp| expect(corp.trains).to be_empty }
+      expect(kk.trains.map(&:name)).to be_empty
+
+      # Check shares after formation
+      expect(get_percentage_owned_by_players(game, kk)).to eq(60)
+      expect(get_percentage_owned(p1, kk)).to eq(40)
+      expect(get_percentage_owned(p2, kk)).to eq(0)
+      expect(get_percentage_owned(p3, kk)).to eq(20)
+      expect(get_percentage_owned(p4, kk)).to eq(0)
+
+      # KK presidency goes to p1 as most shares
+      expect(kk.president?(p1)).to be true
+
+      # p1 exchange 2 KK2 shares for 1 KK, but also becomes president, so cert number is still 2
+      expect(get_number_of_shares(game, p1)).to eq(14)
+      expect(game.num_certs(p1)).to eq(12) # 2 president shares
+
+      expect(get_number_of_shares(game, p2)).to eq(13)
+      expect(game.num_certs(p2)).to eq(11) # 2 president shares
+
+      # p3 exchange 2 KK1 shares for 1 KK, but does not become president, so cert number increases by 1
+      expect(get_number_of_shares(game, p3)).to eq(14)
+      expect(game.num_certs(p3)).to eq(12) # 2 president shares
+
+      expect(get_number_of_shares(game, p4)).to eq(14)
+      expect(game.num_certs(p4)).to eq(12) # 2 president shares
+    end
+  end
+
   def get_token_owners_in_hex(game, hex_id)
     game.hex_by_id(hex_id).tile.cities.map do |city|
       city.tokens.map { |t| t&.corporation&.id }
@@ -319,5 +446,15 @@ describe Engine::Game::G1824::Game do
 
   def get_percentage_owned_by_players(game, corporation)
     game.players.sum { |player| get_percentage_owned(player, corporation) }
+  end
+
+  def get_number_of_shares(game, player)
+    player.shares.sum { |share| game.minor?(share.corporation) ? 2 : share.percent / 10 }
+  end
+
+  def expect_at(game, step_class, turn_round_num, entity)
+    expect(game.active_step.class).to eq(step_class)
+    expect(game.turn_round_num).to eq(turn_round_num)
+    expect(game.current_entity).to eq(entity)
   end
 end
