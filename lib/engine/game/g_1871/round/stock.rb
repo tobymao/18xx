@@ -200,6 +200,8 @@ module Engine
               split_pick_branch(branch)
             when SPLIT_PICK_TOKENS
               if choose.choice == 'done'
+                raise GameError, "#{@split_branch.full_name} must swap at least one token" unless @split_branch.tokens.first&.used
+
                 @log << "#{current_entity.name} is done swapping tokens"
                 split_next
               else
