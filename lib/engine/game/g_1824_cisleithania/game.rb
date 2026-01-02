@@ -92,13 +92,13 @@ module Engine
 
           # Rule XI.1: Move home location for UG1, and reserve only 20% share of UG
           corporations.map! do |m|
-            case m['sym']
+            case m[:sym]
             when 'UG1'
-              m['coordinates'] = 'G12'
-              m['city'] = 0
+              m[:coordinates] = 'G12'
+              m[:city] = 0
             when 'UG'
-              m['ipo_shares'] = [10, 10, 10, 10, 10, 10, 10, 10]
-              m['reserved_shares'] = [20]
+              m[:ipo_shares] = [10, 10, 10, 10, 10, 10, 10, 10]
+              m[:reserved_shares] = [20]
             end
 
             m
