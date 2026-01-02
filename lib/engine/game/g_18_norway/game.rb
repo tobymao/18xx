@@ -273,7 +273,7 @@ module Engine
           @mjosa ||= hex_by_id('I26')
         end
 
-        def route_cost(route)
+        def mjosa_cost(route)
           cost = 0
           mult = 2
           mult = 1 if @phase.tiles.include?(:green)
@@ -283,7 +283,15 @@ module Engine
           # P2 Thunes mekaniske verksted do not need to pay maintainance
           return cost if owns_thunes_mekaniske?(route.train.owner)
 
-          cost + (route.all_hexes.count { |hex| mountain?(hex) } * 10)
+          cost
+        end
+
+        def total_route_cost(route)
+          mjosa_cost(route) + mountain_cost(route)
+        end
+
+        def mountain_cost(route)
+          route.all_hexes.count { |hex| mountain?(hex) } * 10
         end
 
         def check_other(route)
@@ -292,15 +300,15 @@ module Engine
           raise GameError, 'Ships cannot run on land' if ship?(route.train) && track_types != [route.train.track_type]
           raise GameError, 'Trains cannot run on water' if !ship?(route.train) && track_types.include?(:narrow)
 
-          cost = route_cost(route)
+          cost = total_route_cost(route)
           raise GameError, 'Cannot afford the fees for this route' if route.train.owner.cash < cost
         end
 
         def revenue_str(route)
           stop_hexes = route.stops.map(&:hex)
           str = route.hexes.map { |h| stop_hexes.include?(h) ? h&.name : "(#{h&.name})" }.join('-')
-          cost = route_cost(route)
-          str += " -Fee(#{cost})" if cost.positive?
+          str += " + Mjøsa fee (#{mjosa_cost(route)})" if mjosa_cost(route).positive?
+          str += " + Mountain fee (#{mountain_cost(route)})" if mountain_cost(route).positive?
           str
         end
 
