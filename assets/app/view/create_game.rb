@@ -173,7 +173,7 @@ module View
       game::OPTIONAL_RULES.map do |o_r|
         @optional_rules << o_r[:sym] if o_r[:default]
       end
-      store(:optional_rules, @optional_rules, skip: true)
+      store(:optional_rules, @optional_rules)
     end
 
     def uncheck_game_variant
@@ -575,7 +575,7 @@ module View
       end
       sync_rules
 
-      store(:optional_rules, @optional_rules, skip: true)
+      store(:optional_rules, @optional_rules)
       store(:visible_optional_rules, visible_rules)
     end
 
