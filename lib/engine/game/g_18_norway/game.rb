@@ -273,7 +273,7 @@ module Engine
           @mjosa ||= hex_by_id('I26')
         end
 
-        def mjosa_cost(route)
+        def mjosa_fee(route)
           cost = 0
           mult = 2
           mult = 1 if @phase.tiles.include?(:green)
@@ -286,12 +286,12 @@ module Engine
           cost
         end
 
-        def total_route_cost(route)
-          mjosa_cost(route) + mountain_cost(route)
+        def mountain_fee(route)
+          route.all_hexes.count { |hex| mountain?(hex) } * 10
         end
 
-        def mountain_cost(route)
-          route.all_hexes.count { |hex| mountain?(hex) } * 10
+        def total_route_cost(route)
+          mjosa_fee(route) + mountain_fee(route)
         end
 
         def check_other(route)
@@ -307,8 +307,8 @@ module Engine
         def revenue_str(route)
           stop_hexes = route.stops.map(&:hex)
           str = route.hexes.map { |h| stop_hexes.include?(h) ? h&.name : "(#{h&.name})" }.join('-')
-          str += " + Mjøsa fee (#{mjosa_cost(route)})" if mjosa_cost(route).positive?
-          str += " + Mountain fee (#{mountain_cost(route)})" if mountain_cost(route).positive?
+          str += " + Mjøsa fee (#{format_currency(mjosa_fee(route))})" if mjosa_fee(route).positive?
+          str += " + Mountain fee (#{format_currency(mountain_fee(route))})" if mountain_fee(route).positive?
           str
         end
 
