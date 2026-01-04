@@ -7,22 +7,21 @@ module Engine
     module G18BB
       module Step
         class Assign < G1846::Step::Assign
-
           def actions(entity)
-            actions = entity.company? && entity.sym == "GMC" ? gmc_actions(entity) : super
-            
+            actions = entity.company? && entity.sym == 'GMC' ? gmc_actions(entity) : super
+
             return actions unless blocking?
 
             ACTIONS_WITH_PASS
           end
-          
-          def gmc_actions(entity)
-             has_assign =  @game.abilities(entity, :assign_hexes) || @game.abilities(entity, :assign_corporation)
-             return ACTIONS if has_assign && @game.tiles.none? {|t| t.name == "M1"}
 
-             []
+          def gmc_actions(entity)
+            has_assign = @game.abilities(entity, :assign_hexes) || @game.abilities(entity, :assign_corporation)
+            return ACTIONS if has_assign && @game.tiles.none? { |t| t.name == 'M1' }
+
+            []
           end
-          
+
           def setup
             @steamboat = @game.steamboat
             @sw_steamboat = @game.sw_steamboat
@@ -64,7 +63,6 @@ module Engine
           def blocking?
             blocking_for_steamboat? || blocking_for_sw_steamboat? || blocking_for_oil_and_gas?
           end
-
 
           def description
             return super unless blocking?

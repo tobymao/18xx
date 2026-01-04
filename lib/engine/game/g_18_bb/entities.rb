@@ -14,23 +14,23 @@ module Engine
                                            'The owning corporation must pay the normal $20 '\
                                            'cost to lay this extra tile/upgrade. Using this ability closes the C&WI.',
                      :abilities => cwi[:abilities].append({
-                                    type: 'tile_lay',
-                                    closed_when_used_up: true,
-                                    owner_type: 'corporation',
-                                    hexes: %w[D6 E7 F8],
-                                    tiles: %w[298 7 8 9 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31],
-                                    count: 1,
-              })
+                                                            type: 'tile_lay',
+                                                            closed_when_used_up: true,
+                                                            owner_type: 'corporation',
+                                                            hexes: %w[D6 E7 F8],
+                                                            tiles: %w[298 7 8 9 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31],
+                                                            count: 1,
+                                                          }),
                    })
 
         bt = BASE_COMPANIES.find { |d| d[:sym] == 'BT' }
-        bt[:abilities].find {|a| a[:type] == "assign_hexes"}[:hexes].append("J10")
+        bt[:abilities].find { |a| a[:type] == 'assign_hexes' }[:hexes].append('J10')
         bt.update({
                     desc: 'Adds a $20 bonus to Cincinnati (H12) or Louisville (J10) for '\
                           'the owning corporation. Bonus must be assigned'\
                           ' after being purchased by a corporation. '\
                           'Bonus persists after this company closes in Phase III but is removed in Phase IV.',
-                    
+
                   })
 
         lsl = BASE_COMPANIES.find { |d| d[:sym] == 'LSL' }
@@ -174,28 +174,28 @@ module Engine
               color: nil,
               abilities: [
                 {
-                    type: 'tile_lay',
-                    consume_tile_lay: true,
-                    owner_type: 'corporation',
-                    hexes: %w[G3 C9 J12],
-                    tiles: %w[M1],
-                    count: 1,
-              },
-              {
-                        type: 'assign_hexes',
-                        when: %w[track_and_token],
-                        hexes: %w[G3 C9 J12],
-                        tiles:  %w[M1],
-                        count_per_or: 1,
-                        owner_type: 'corporation',
-                      },
-                      {
-                        type: 'assign_corporation',
-                        when: 'sold',
-                        count: 1,
-                        owner_type: 'corporation',
-                      },
-              ]
+                  type: 'tile_lay',
+                  consume_tile_lay: true,
+                  owner_type: 'corporation',
+                  hexes: %w[G3 C9 J12],
+                  tiles: %w[M1],
+                  count: 1,
+                },
+                {
+                  type: 'assign_hexes',
+                  when: %w[track_and_token],
+                  hexes: %w[G3 C9 J12],
+                  tiles: %w[M1],
+                  count_per_or: 1,
+                  owner_type: 'corporation',
+                },
+                {
+                  type: 'assign_corporation',
+                  when: 'sold',
+                  count: 1,
+                  owner_type: 'corporation',
+                },
+              ],
             },
             {
               name: 'Bridging Company',

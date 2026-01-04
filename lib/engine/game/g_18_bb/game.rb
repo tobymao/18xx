@@ -166,7 +166,7 @@ module Engine
 
         def num_trains(train)
           num = super
-          num = num +1 if train[:name] == '2' && !@minors.none? {|m| m.name == "BRP"}
+          num += 1 if train[:name] == '2' && @minors.any? { |m| m.name == 'BRP' }
           num
         end
 
@@ -326,15 +326,15 @@ module Engine
 
         def tile_valid_for_phase?(tile, hex: nil, phase_color_cache: nil)
           return true if tile.name == 'M1'
-          super
-        end
-
-         def upgrades_to?(from, to, _special = false, selected_company: nil)
-          return true if from.color == :white && to.name == "M1"
 
           super
         end
 
+        def upgrades_to?(from, to, _special = false, selected_company: nil)
+          return true if from.color == :white && to.name == 'M1'
+
+          super
+        end
       end
     end
   end
