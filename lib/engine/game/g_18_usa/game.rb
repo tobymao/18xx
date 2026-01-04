@@ -428,26 +428,26 @@ module Engine
 
         def abilities_to_lay_resource_tile(hex, tile, selected_companies)
           # Prioritize single resource type abilities
-          resources = {}
+          resource_abilities = {}
           tile_resources(tile).each do |r|
-            resources[r] = resource_abilities_for_hex(hex, r, selected_companies).sort_by do |a|
+            resource_abilities[r] = resource_abilities_for_hex(hex, r, selected_companies).sort_by do |a|
               [a.tiles.size, a.owner.id]
             end
           end
-          return resources.transform_values(&:first) if resources.one?
-
-          # Edge case - only one ability for both resources and that ability has a count of one.
-          resource_abilities = resources.values
-          if resource_abilities.all?(&:one?) &&
-              resource_abilities[0] == resource_abilities[1] &&
-              resource_abilities[0][0].count == 1
-            return [nil, nil]
-          end
+          return resource_abilities.transform_values(&:first) if resource_abilities.one?
 
           # Filter out duplicates
-          dups = resource_abilities[0].intersection(resource_abilities[1])
-          resource_abilities.transform_values! { |abilities| (abilities - dups)&.first || dups.shift }
-          resource_abilities
+          resource_ability_values = resource_abilities.values
+          dups = resource_ability_values[0].intersection(resource_ability_values[1])
+          dup_pos = 0
+          resource_abilities.transform_values do |abilities|
+            unless (ability = (abilities - dups)&.first)
+              # Workaround for opal bug with array.shift
+              ability = dups[dup_pos]
+              dup_pos += 1
+            end
+            ability
+          end
         end
 
         def consume_abilities_to_lay_resource_tile(hex, tile, selected_companies)
