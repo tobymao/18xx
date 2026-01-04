@@ -20,6 +20,8 @@ module Engine
 
         include_meta(G1807::Meta)
 
+        attr_reader :london_small, :london_zoomed
+
         GAME_END_REASONS_TEXT = Base::GAME_END_REASONS_TEXT.merge(
           train: 'The first 4+4 or 6G train is purchased.',
         )
@@ -28,7 +30,6 @@ module Engine
         def setup
           # TODO: check which bits of this are needed, just cut-n-pasted from 1867.
           @interest = {}
-          setup_company_price_up_to_face
 
           @show_majors = false
           setup_london_hexes
@@ -47,6 +48,10 @@ module Engine
           @corporations, @future_corporations = @corporations.partition do |corporation|
             corporation.type == :minor && corporation.reservation_color == MINORS_COLOR_BATCH1
           end
+        end
+
+        def game_cert_limit
+          @cert_limit_reduced ? CERT_LIMIT_REDUCED : CERT_LIMIT
         end
 
         def add_neutral_tokens(_hexes)
@@ -91,15 +96,15 @@ module Engine
             Engine::Step::BuyCompany,
             G1867::Step::RedeemShares,
             G1807::Step::SpecialTrack,
-            G1867::Step::Track,
-            G1867::Step::Token,
+            G1807::Step::Track,
+            G1807::Step::Token,
             Engine::Step::Route,
             G1867::Step::Dividend,
             # The blocking buy company needs to be before loan operations
             [G1867::Step::BuyCompanyPreloan, { blocks: true }],
-            G1867::Step::LoanOperations,
+            G1807::Step::LoanOperations,
             Engine::Step::DiscardTrain,
-            G1867::Step::BuyTrain,
+            G1807::Step::BuyTrain,
             [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
@@ -118,9 +123,16 @@ module Engine
           new_companies_available! { |company| company.sym == 'U2' }
         end
 
-        def event_privates_close!
-          # TODO: implement this.
+        def event_cert_limit_reduced!
+          @cert_limit_reduced = true
+          @cert_limit = init_cert_limit
+          @log << "Certificate limit is reduced to #{@cert_limit}"
         end
+
+        # The 1867 code calls this method if a company is trainless at the end
+        # of a company's buy trains step in an operating. 1807 does not have
+        # nationalisation, so do nothing.
+        def nationalize!(_corporation); end
 
         def buyable_bank_owned_companies
           @companies.select { |company| !company.closed? && !company.owner }
@@ -140,7 +152,8 @@ module Engine
 
         def revenue_for(route, stops)
           train = route.train
-          bonuses =
+          revenue = stops.sum { |stop| stop.route_revenue(route.phase, train) }
+          bonuses = bonus_privates(train, stops, route.routes) +
             if goods_train?(train)
               bonus_mine(train, stops)
             else
@@ -148,7 +161,7 @@ module Engine
               bonus_welsh_border(train, stops) +
               bonus_london_offboard(train, stops)
             end
-          super + bonuses
+          revenue + bonuses
         end
 
         private
@@ -167,6 +180,30 @@ module Engine
                   "#{available.map(&:id).join(', ')}."
           @corporations += available
           update_cache(:corporations)
+        end
+
+        def check_other(route)
+          check_city_revisited(route)
+          check_london(route)
+        end
+
+        def check_city_revisited(route)
+          # Multiple cities on the same hex cannot be visited by the same train.
+          return if route.visited_stops
+                         .select(&:city?)
+                         .group_by(&:tile)
+                         .all? { |_hex, cities| cities.one? }
+
+          raise GameError, 'Route may not visit multiple cities on the same hex.'
+        end
+
+        def check_london(route)
+          # Can only run to London if running to your own token.
+          london_stops = route.visited_stops & @london_cities
+          return if london_stops.all? { |city| city.tokened_by?(current_entity) }
+
+          raise GameError, 'Route may not include London unless running to a ' \
+                           "#{current_entity.id} token."
         end
       end
     end

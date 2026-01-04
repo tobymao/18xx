@@ -8,7 +8,7 @@ module Engine
         BANK_CASH = 20_000
         STARTING_CASH = { 3 => 630, 4 => 470, 5 => 375 }.freeze
         CERT_LIMIT = { 3 => 32, 4 => 24, 5 => 19 }.freeze
-        CERT_LIMIT_PHASE7 = { 3 => 21, 4 => 16, 5 => 13 }.freeze
+        CERT_LIMIT_REDUCED = { 3 => 21, 4 => 16, 5 => 13 }.freeze
 
         MARKET_TEXT = Base::MARKET_TEXT.merge(
           close: 'Company closes',

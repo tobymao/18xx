@@ -138,7 +138,7 @@ module Engine
           'BF14' => {
             'count' => 4,
             'color' => 'gray',
-            'code' => 'city=revenue:70,slots:3;' \
+            'code' => 'city=revenue:70,slots:3;label=BGM;' \
                       'path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;' \
                       'path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
           },

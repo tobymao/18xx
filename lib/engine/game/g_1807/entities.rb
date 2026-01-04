@@ -10,23 +10,32 @@ module Engine
             sym: 'P1',
             type: 'railway',
             value: 30,
+            min_price: 1,
+            max_price: 30,
             revenue: 10,
             discount: 10,
             desc: 'P1. No special abilities.',
             color: 'white',
+            abilities: [
+              { type: 'close', on_phase: '8' },
+            ],
           },
           {
             name: 'Stockton and Darlington',
             sym: 'P2',
             type: 'railway',
             value: 45,
+            min_price: 1,
+            max_price: 45,
             revenue: 15,
             discount: 15,
             desc: 'P2. Gives an extra, free, track lay in Darlington (I17) when owned by a player.',
             color: 'white',
             abilities: [
+              { type: 'close', on_phase: '8' },
               {
                 type: 'tile_lay',
+                when: 'owning_player_track',
                 free: true,
                 owner_type: 'player',
                 hexes: %w[I17],
@@ -39,13 +48,17 @@ module Engine
             sym: 'P3',
             type: 'railway',
             value: 45,
+            min_price: 1,
+            max_price: 45,
             revenue: 15,
             discount: 15,
             desc: 'P3. Gives an extra, free, track lay in Falkirk (D8) when owned by a player.',
             color: 'white',
             abilities: [
+              { type: 'close', on_phase: '8' },
               {
                 type: 'tile_lay',
+                when: 'owning_player_track',
                 free: true,
                 owner_type: 'player',
                 hexes: %w[D8],
@@ -58,13 +71,17 @@ module Engine
             sym: 'P4',
             type: 'railway',
             value: 45,
+            min_price: 1,
+            max_price: 45,
             revenue: 15,
             discount: 15,
             desc: 'P4. Gives an extra, free, track lay in Canterbury (V28) when owned by a player.',
             color: 'white',
             abilities: [
+              { type: 'close', on_phase: '8' },
               {
                 type: 'tile_lay',
+                when: 'owning_player_track',
                 free: true,
                 owner_type: 'player',
                 hexes: %w[V28],
@@ -77,13 +94,17 @@ module Engine
             sym: 'P5',
             type: 'railway',
             value: 60,
+            min_price: 1,
+            max_price: 60,
             revenue: 20,
             discount: 20,
             desc: 'P5. Gives an extra, free, track lay in Leicester (P18) when owned by a player.',
             color: 'white',
             abilities: [
+              { type: 'close', on_phase: '8' },
               {
                 type: 'tile_lay',
+                when: 'owning_player_track',
                 free: true,
                 owner_type: 'player',
                 hexes: %w[P18],
@@ -96,11 +117,14 @@ module Engine
             sym: 'P6',
             type: 'railway',
             value: 60,
+            min_price: 1,
+            max_price: 60,
             revenue: 20,
             discount: 20,
             desc: 'P6. Gives a £10 revenue bonus for Newcastle (G17).',
             color: 'white',
             abilities: [
+              { type: 'close', on_phase: '8' },
               {
                 type: 'hex_bonus',
                 owner_type: 'corporation',
@@ -114,11 +138,14 @@ module Engine
             sym: 'P7',
             type: 'railway',
             value: 75,
+            min_price: 1,
+            max_price: 75,
             revenue: 25,
             discount: 25,
             desc: 'P7. Gives a £10 revenue bonus for London.',
             color: 'white',
             abilities: [
+              { type: 'close', on_phase: '8' },
               {
                 type: 'hex_bonus',
                 owner_type: 'corporation',
@@ -132,11 +159,14 @@ module Engine
             sym: 'P8',
             type: 'railway',
             value: 75,
+            min_price: 1,
+            max_price: 75,
             revenue: 25,
             discount: 25,
             desc: 'P8. Gives a £10 revenue bonus for London.',
             color: 'white',
             abilities: [
+              { type: 'close', on_phase: '8' },
               {
                 type: 'hex_bonus',
                 owner_type:
@@ -151,11 +181,14 @@ module Engine
             sym: 'P9',
             type: 'railway',
             value: 75,
+            min_price: 1,
+            max_price: 75,
             revenue: 25,
             discount: 25,
             desc: 'P9. Gives a £10 revenue bonus for London.',
             color: 'white',
             abilities: [
+              { type: 'close', on_phase: '8' },
               {
                 type: 'hex_bonus',
                 owner_type: 'corporation',
@@ -169,11 +202,14 @@ module Engine
             sym: 'P10',
             type: 'railway',
             value: 90,
+            min_price: 1,
+            max_price: 90,
             revenue: 30,
             discount: 30,
             desc: 'P10. Gives a £10 revenue bonus for Liverpool (M11).',
             color: 'white',
             abilities: [
+              { type: 'close', on_phase: '8' },
               {
                 type: 'hex_bonus',
                 owner_type: 'corporation',
@@ -187,6 +223,8 @@ module Engine
             sym: 'F1',
             type: 'ferry',
             value: 50,
+            min_price: 1,
+            max_price: 50,
             revenue: 10,
             desc: 'F1. Gives a £10 revenue bonus for one of the Ireland off-board areas.',
             color: '#9fd9f7',
@@ -207,6 +245,8 @@ module Engine
             sym: 'F2',
             type: 'ferry',
             value: 50,
+            min_price: 1,
+            max_price: 50,
             revenue: 10,
             desc: 'F2. Gives a £10 revenue bonus for one of the Ireland off-board areas.',
             color: '#9fd9f7',
@@ -227,6 +267,8 @@ module Engine
             sym: 'F3',
             type: 'ferry',
             value: 50,
+            min_price: 1,
+            max_price: 50,
             revenue: 10,
             desc: 'F3. Gives a £10 revenue bonus for one of the Ireland off-board areas.',
             color: '#9fd9f7',
@@ -247,8 +289,10 @@ module Engine
             sym: 'F4',
             type: 'ferry',
             value: 100,
+            min_price: 1,
+            max_price: 100,
             revenue: 20,
-            desc: 'F4. Gives a £10 revenue bonus for the Hull off-board area (L22).',
+            desc: 'F4. Gives a £20 revenue bonus for the Hull off-board area (L22).',
             color: '#9fd9f7',
             abilities: [
               { type: 'revenue_change', revenue: 30, on_phase: '3' },
@@ -257,7 +301,7 @@ module Engine
               {
                 type: 'hex_bonus',
                 owner_type: 'corporation',
-                amount: 10,
+                amount: 20,
                 hexes: %w[L22],
               },
             ],
@@ -267,8 +311,10 @@ module Engine
             sym: 'F5',
             type: 'ferry',
             value: 100,
+            min_price: 1,
+            max_price: 100,
             revenue: 20,
-            desc: 'F5. Gives a £10 revenue bonus for the Harwich off-board area (S29).',
+            desc: 'F5. Gives a £20 revenue bonus for the Harwich off-board area (S29).',
             color: '#9fd9f7',
             abilities: [
               { type: 'revenue_change', revenue: 30, on_phase: '3' },
@@ -277,7 +323,7 @@ module Engine
               {
                 type: 'hex_bonus',
                 owner_type: 'corporation',
-                amount: 10,
+                amount: 20,
                 hexes: %w[S29],
               },
             ],
@@ -287,8 +333,10 @@ module Engine
             sym: 'F6',
             type: 'ferry',
             value: 100,
+            min_price: 1,
+            max_price: 100,
             revenue: 20,
-            desc: 'F6. Gives a £10 revenue bonus for the Plymouth off-board area (X8).',
+            desc: 'F6. Gives a £20 revenue bonus for the Plymouth off-board area (X8).',
             color: '#9fd9f7',
             abilities: [
               { type: 'revenue_change', revenue: 30, on_phase: '3' },
@@ -297,7 +345,7 @@ module Engine
               {
                 type: 'hex_bonus',
                 owner_type: 'corporation',
-                amount: 10,
+                amount: 20,
                 hexes: %w[X8],
               },
             ],
@@ -307,8 +355,10 @@ module Engine
             sym: 'F7',
             type: 'ferry',
             value: 150,
+            min_price: 1,
+            max_price: 150,
             revenue: 30,
-            desc: 'F7. Gives a £10 revenue bonus for the Dover off-board area (V30).',
+            desc: 'F7. Gives a £30 revenue bonus for the Dover off-board area (V30).',
             color: '#9fd9f7',
             abilities: [
               { type: 'revenue_change', revenue: 45, on_phase: '3' },
@@ -317,7 +367,7 @@ module Engine
               {
                 type: 'hex_bonus',
                 owner_type: 'corporation',
-                amount: 10,
+                amount: 30,
                 hexes: %w[V30],
               },
             ],
@@ -327,8 +377,10 @@ module Engine
             sym: 'F8',
             type: 'ferry',
             value: 150,
+            min_price: 1,
+            max_price: 150,
             revenue: 30,
-            desc: 'F8. Gives a £10 revenue bonus for the Aberdeen off-board area (A13).',
+            desc: 'F8. Gives a £30 revenue bonus for the Aberdeen off-board area (A13).',
             color: '#9fd9f7',
             abilities: [
               { type: 'revenue_change', revenue: 45, on_phase: '3' },
@@ -337,7 +389,7 @@ module Engine
               {
                 type: 'hex_bonus',
                 owner_type: 'corporation',
-                amount: 10,
+                amount: 30,
                 hexes: %w[A13],
               },
             ],
@@ -347,6 +399,8 @@ module Engine
             sym: 'U1',
             type: 'underground',
             value: 100,
+            min_price: 1,
+            max_price: 100,
             revenue: 40,
             desc: 'U1. Gives a £10 revenue bonus for London.',
             color: '#f7b7a8',
@@ -365,6 +419,8 @@ module Engine
             sym: 'U2',
             type: 'underground',
             value: 150,
+            min_price: 1,
+            max_price: 150,
             revenue: 75,
             desc: 'U2. Gives a £10 revenue bonus for London.',
             color: '#f7b7a8',
@@ -928,6 +984,7 @@ module Engine
         MINORS_COLOR_BATCH1 = '#ffffff' # minors available from the start of the game
         MINORS_COLOR_BATCH2 = '#fff381' # minors available from the second stock round
         MINORS_COLOR_BATCH3 = '#d7ead8' # minors available phase 3
+        IRISH_FERRIES = %w[F1 F2 F3].freeze
 
         def company_header(company)
           case company.type
@@ -994,6 +1051,10 @@ module Engine
                   "#{minors_sr2.map(&:id).sort.join(', ')}."
           @log << 'The minor companies available from phase 3 are: ' \
                   "#{minors_phase3.map(&:id).sort.join(', ')}."
+        end
+
+        def irish_ferry?(company)
+          IRISH_FERRIES.include?(company.sym)
         end
       end
     end
