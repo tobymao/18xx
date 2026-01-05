@@ -439,15 +439,8 @@ module Engine
           # Filter out duplicates
           resource_ability_values = resource_abilities.values
           dups = resource_ability_values[0].intersection(resource_ability_values[1])
-          dup_pos = 0
-          resource_abilities.transform_values do |abilities|
-            unless (ability = (abilities - dups)&.first)
-              # Workaround for opal bug with array.shift
-              ability = dups[dup_pos]
-              dup_pos += 1
-            end
-            ability
-          end
+          resource_abilities.transform_values! { |v| (v - dups)&.first }
+          resource_abilities.transform_values { |v| v || dups.shift }
         end
 
         def consume_abilities_to_lay_resource_tile(hex, tile, selected_companies)
