@@ -274,16 +274,11 @@ module Engine
         end
 
         def mjosa_fee(route)
-          cost = 0
-          mult = 2
-          mult = 1 if @phase.tiles.include?(:green)
-          mult = 0 if @phase.tiles.include?(:brown)
-          cost += 5 * mult if !owns_hvite_svan?(route.train.owner) && route.all_hexes.include?(mjosa)
+          return 0 if owns_hvite_svan?(route.train.owner)
+          return 0 if @phase.tiles.include?(:brown)
+          return 0 unless route.all_hexes.include?(mjosa)
 
-          # P2 Thunes mekaniske verksted do not need to pay maintainance
-          return cost if owns_thunes_mekaniske?(route.train.owner)
-
-          cost
+          @phase.tiles.include?(:green) ? 5 : 10
         end
 
         def mountain_fee(route)
