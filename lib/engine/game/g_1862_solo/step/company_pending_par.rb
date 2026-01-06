@@ -37,9 +37,8 @@ module Engine
             corporation = action.corporation
 
             company = companies_pending_par.first
-            index = @game.ipo_row_index[company]
             type = @round.chartered_par ? 'chartered' : 'unchartered'
-            @log << "#{corporation.name} pars #{type} at #{share_price.price} using share at IPO Row #{index + 1}"
+            @log << "#{corporation.name} pars #{type} at #{share_price.price}"
 
             corporation.ipoed = true
             @game.stock_market.set_par(corporation, share_price)

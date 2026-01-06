@@ -29,7 +29,7 @@ module View
         end
       end
 
-      def render_ipo_row(ipo_row, number)
+      def render_ipo_row(ipo_row, ipo_row_number)
         card_style = {
           border: '1px solid gainsboro',
           paddingBottom: '0.2rem',
@@ -39,14 +39,14 @@ module View
         companies = ipo_row.dup
         return h(:div) if companies.empty?
 
-        divs = [render_title(number)]
-        divs << render_first_ipo(companies, number) if @show_first
-        divs << h(CompaniesTable, game: @game, companies: companies) unless companies.empty?
+        divs = [render_title(ipo_row_number)]
+        divs << render_first_ipo(companies, ipo_row_number) if @show_first
+        divs << h(CompaniesTable, game: @game, companies: companies)
 
         h('div.player.card', { style: card_style }, divs)
       end
 
-      def render_title(number)
+      def render_title(ipo_row_number)
         bg_color = color_for(:bg2)
         props = {
           style: {
@@ -56,10 +56,10 @@ module View
           },
         }
 
-        h('div.player.title.nowrap', props, ["IPO Row #{number}"])
+        h('div.player.title.nowrap', props, ["IPO Row #{ipo_row_number}"])
       end
 
-      def render_first_ipo(ipo_row, number)
+      def render_first_ipo(ipo_row, ipo_row_number)
         button_props = {
           style: {
             display: 'grid',
@@ -67,16 +67,17 @@ module View
             width: 'max-content',
           },
         }
-        first_company = ipo_row.shift
+        first_company = ipo_row.first
         inputs = []
-        inputs.concat(render_buy_input(first_company)) if @current_actions.intersect?(%w[buy_company corporate_buy_company])
 
         # Make it possible for a title to inject more choices than just buy
         if @step.respond_to?(:general_input_renderings_ipo_row)
-          renderings = @step.general_input_renderings_ipo_row(@current_entity, first_company, number - 1)
+          renderings = @step.general_input_renderings_ipo_row(@current_entity, first_company, ipo_row_number)
           renderings.each do |(choice, description)|
             inputs.concat(render_general_input(choice, description))
           end
+        elsif !first_company.nil? && @current_actions.intersect?(%w[buy_company corporate_buy_company])
+          inputs.concat(render_buy_input(first_company))
         end
 
         children = []

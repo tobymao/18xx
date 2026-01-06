@@ -58,26 +58,38 @@ module Engine
             @game.repar_prices.select { |p| p.price * 3 <= entity.cash }
           end
 
-          def general_input_renderings_ipo_row(_entity, company, index)
+          def general_input_renderings_ipo_row(_entity, company, ipo_row_number)
             renderings = []
-            return renderings if @game.ipo_rows[index].empty?
-
-            share = company.treasury
-
-            @game.all_rows_indexes.each do |i|
-              next if i == index || @game.ipo_rows[i].empty?
-              next unless company.treasury.corporation == @game.ipo_rows[i].first.treasury.corporation
-
-              renderings << ["move##{company.id}##{i}", "Move to IPO Row #{i + 1}"]
+            if @game.ipo_rows[ipo_row_number - 1].empty?
+              # No company in this IPO row so 2nd part of action is nil
+              renderings << ["deal###{ipo_row_number}", "Deal to #{ipo_row_title(ipo_row_number)}"]
+              return renderings
             end
 
-            renderings << ["remove##{company.id}", "Remove #{company.name} from IPO Row #{index + 1}"]
+            share = company.treasury
+            company_from_ipo_row = "##{company.id}##{ipo_row_number}"
+
+            @game.all_rows_indexes.each do |index|
+              next if index + 1 == ipo_row_number || @game.ipo_rows[index].empty?
+              next unless company.treasury.corporation == @game.ipo_rows[index].first.treasury.corporation
+
+              renderings << ["move#{company_from_ipo_row}##{index + 1}", "Move to #{ipo_row_title(index + 1)}"]
+            end
+
+            renderings << ["remove#{company_from_ipo_row}", "Remove #{company.name}"]
 
             if share.corporation.share_price
-              renderings << ["buy##{company.id}", "Buy #{company.name} for #{@game.company_value(company)}"]
+              renderings << ["buy#{company_from_ipo_row}", "Buy #{company.name} for #{@game.company_value(company)}"]
             elsif @game.can_par_corporations?
-              renderings << ["par_unchartered##{company.id}", 'Par unchartered']
-              renderings << ["par_chartered##{company.id}", 'Par chartered']
+              renderings << ["par_unchartered#{company_from_ipo_row}", 'Par unchartered']
+              renderings << ["par_chartered#{company_from_ipo_row}", 'Par chartered']
+            end
+
+            @game.all_rows_indexes.each do |index|
+              next unless @game.ipo_rows[index].empty?
+
+              ipo_row_number = index + 1
+              renderings << ["deal###{ipo_row_number}", "Deal to #{ipo_row_title(ipo_row_number)}"]
             end
 
             renderings
@@ -89,21 +101,20 @@ module Engine
           end
 
           def process_choose(action)
-            choice = action.choice
-            if choice.start_with?('buy')
-              action_buy(choice)
-            elsif choice.start_with?('deal')
-              action_deal(choice)
-            elsif choice.start_with?('move')
-              action_move(choice)
-            elsif choice.start_with?('par_chartered')
-              action_par_chartered(choice)
-            elsif choice.start_with?('par_unchartered')
-              action_par_unchartered(choice)
-            elsif choice.start_with?('remove')
-              action_remove(choice)
+            choice, company_id, from_ipo_row_number, to_ipo_row_number = action.choice.split('#')
+            if choice == 'deal'
+              action_deal(from_ipo_row_number)
             else
-              raise GameError, "Unknown choice #{choice}"
+              company = get_company(company_id)
+              case choice
+              when 'buy' then action_buy(company, from_ipo_row_number)
+              when 'move' then action_move(company, from_ipo_row_number, to_ipo_row_number)
+              when 'par_chartered' then action_par_chartered(company, from_ipo_row_number)
+              when 'par_unchartered' then action_par_unchartered(company, from_ipo_row_number)
+              when 'remove' then action_remove(company, from_ipo_row_number)
+              else
+                raise GameError, "Unknown choice #{choice}"
+              end
             end
 
             track_action(action, @game.players.first)
@@ -116,15 +127,15 @@ module Engine
 
           private
 
-          def action_buy(choice)
-            company = get_company_from_choice(choice)
+          def action_buy(company, from_ipo_row_number)
+            index = get_ip_row_index(from_ipo_row_number)
             price = @game.company_value(company)
             share = company.treasury
             corporation = share.corporation
             owner = @game.bank
             player = @game.players.first
 
-            @game.ipo_rows[@game.ipo_row_index[company]].delete(company)
+            @game.ipo_rows[index].delete(company)
             buy_shares(player, ShareBundle.new([share]), allow_president_change: false)
 
             player.spend(price, owner)
@@ -133,56 +144,49 @@ module Engine
               @game.chartered[corporation] ? float_chartered_corporation(corporation) : float_unchartered_corporation(corporation)
             end
 
-            cleanup_company(company)
+            cleanup_company(company, index)
           end
 
-          def action_deal(choice)
+          def action_deal(ipo_row_number)
+            index = get_ip_row_index(ipo_row_number)
+            # This should remove corporation from all IPO rows
             @game.remove_corporation(@game.random_corporation, 'due to deal action')
-            index = choice.split('#').last.to_i
             @game.deal_to_ipo_row(index)
-            card_text = @game.cards_to_deal == 1 ? 'card is' : 'cards are'
-            @log << "#{@game.cards_to_deal} #{card_text} added to IPO Row #{index + 1}"
+            cards_to_deal = @game.ipo_rows[index].length
+            card_text = cards_to_deal == 1 ? 'card is' : 'cards are'
+            @log << "#{cards_to_deal} #{card_text} added to #{ipo_row_title(ipo_row_number)}"
           end
 
-          def action_move(choice)
-            parts = choice.split('#')
-            raise GameError, "Incorrect choice format #{choice}" unless parts.size == 3
-
-            id = parts[1]
-            index = parts[2].to_i
-            company = get_company(id)
-            @game.ipo_rows[@game.ipo_row_index[company]].delete(company)
-            @game.ipo_rows[index].prepend(company)
-            @game.ipo_row_index[company] = index
-            @log << "#{company.name} moves to top of IPO Row #{index + 1}"
+          def action_move(company, from_ipo_row_number, to_ipo_row_number)
+            index_from = get_ip_row_index(from_ipo_row_number)
+            index_to = get_ip_row_index(to_ipo_row_number)
+            @game.ipo_rows[index_from].delete(company)
+            @game.ipo_rows[index_to].prepend(company)
+            from_title = ipo_row_title(from_ipo_row_number)
+            to_title = ipo_row_title(to_ipo_row_number)
+            @log << "#{company.name} moves from top of #{from_title} to top of #{to_title}"
           end
 
-          def action_par_chartered(choice)
-            company = get_company_from_choice(choice)
+          def action_par_chartered(company, from_ipo_row_number)
             @round.companies_pending_par << company
             @round.chartered_par = true
-            cleanup_company(company)
+            cleanup_company(company, get_ip_row_index(from_ipo_row_number))
+            @log << "Par #{company.name} chartered with top share of #{ipo_row_title(from_ipo_row_number)}"
           end
 
-          def action_par_unchartered(choice)
-            company = get_company_from_choice(choice)
+          def action_par_unchartered(company, from_ipo_row_number)
             @round.companies_pending_par << company
             @round.chartered_par = false
-            cleanup_company(company)
+            cleanup_company(company, get_ip_row_index(from_ipo_row_number))
+            @log << "Par #{company.name} unchartered with top share of #{ipo_row_title(from_ipo_row_number)}"
           end
 
-          def action_remove(choice)
-            company = get_company_from_choice(choice)
-            @log << "#{company.name} drops from IPO Row #{@game.ipo_row_index[company] + 1}"
-            cleanup_company(company)
+          def action_remove(company, from_ipo_row_number)
+            @log << "Player selects #{company.name} for removal"
+            cleanup_company(company, get_ip_row_index(from_ipo_row_number))
             share = company.treasury
             corporation = share.corporation
             @game.remove_corporation(corporation, 'as share dropped')
-          end
-
-          def get_company_from_choice(choice)
-            id = choice.split('#').last
-            get_company(id)
           end
 
           def get_company(id)
@@ -192,9 +196,15 @@ module Engine
             company
           end
 
-          def cleanup_company(company)
+          def get_ip_row_index(ipo_row_number)
+            raise GameError, "Invalid #{ipo_row_title(ipo_row_number)}" unless ipo_row_number.to_i.positive?
+
+            ipo_row_number.to_i - 1
+          end
+
+          def cleanup_company(company, index_from)
             @round.bought_shares << company.treasury
-            @game.ipo_rows[@game.ipo_row_index[company]].delete(company)
+            @game.ipo_rows[index_from].delete(company)
             company.close!
           end
 
@@ -222,6 +232,10 @@ module Engine
             @game.bank.spend(cash, corporation)
 
             @game.assign_first_permit(corporation)
+          end
+
+          def ipo_row_title(ipo_row_number)
+            "IPO Row #{ipo_row_number}"
           end
         end
       end

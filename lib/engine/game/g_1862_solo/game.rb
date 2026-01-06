@@ -11,7 +11,6 @@ module Engine
         include_meta(G1862Solo::Meta)
 
         attr_reader :ipo_rows
-        attr_accessor :ipo_row_index
 
         # No cert limit
         CERT_LIMIT = {
@@ -54,7 +53,6 @@ module Engine
           @corporations.each { |corp| add_marker(corp) }
 
           @chartered = {}
-          @ipo_row_index = {}
 
           # randomize and distribute train permits
           permit_list = 2.times.flat_map { %i[freight express local] }
@@ -95,6 +93,7 @@ module Engine
 
           draw_deck.sort_by! { rand }
           deal_deck_to_ipo(draw_deck)
+          @deck = draw_deck
         end
 
         # create a placeholder 'company' for shares in IPO
@@ -130,10 +129,11 @@ module Engine
         def deal_deck_to_ipo(deck)
           all_rows_indexes.each do |row|
             @ipo_rows[row] = deck.pop(6) # 6 shares per row
-            @ipo_rows[row].each do |company|
-              @ipo_row_index[company] = row
-            end
           end
+        end
+
+        def deal_to_ipo_row(index)
+          @ipo_rows[index] = @deck.pop(6) # 6 shares per row
         end
 
         def game_tiles
