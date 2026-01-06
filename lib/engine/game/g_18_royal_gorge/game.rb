@@ -147,7 +147,7 @@ module Engine
           brown_companies = BROWN_COMPANIES.dup
 
           # remove strech goal companies if variant is not chosen
-          yellow_companies.reject! { |c| c[:sym] == 'Y7' } unless STRETCH_GOAL_COMPANIES_VARIANT
+          yellow_companies.reject! { |c| c[:sym] == 'Y8' } unless STRETCH_GOAL_COMPANIES_VARIANT
           yellow_companies.sort_by { rand }.take(2).sort_by { |c| c[:value] } +
             green_companies.sort_by { rand }.take(2).sort_by { |c| c[:value] } +
             brown_companies.sort_by { rand }.take(1)

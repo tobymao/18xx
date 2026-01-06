@@ -118,8 +118,8 @@ module Engine
             ],
           },
           {
-            sym: 'Y7',
-            name: 'Madam Evens (Y7)',
+            sym: 'Y8',
+            name: 'Madam Evens (Y8)',
             desc: 'Once purchased by a company the brothel token starts in Denver (K1). '\
                   'The brothel generates an additional $10 revenue only for the holding corporation. '\
                   'In the Brown Phase, the brothel is moved to Salida (B10) and becomes a $20 revenue. '\
