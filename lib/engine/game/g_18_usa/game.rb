@@ -428,18 +428,19 @@ module Engine
 
         def abilities_to_lay_resource_tile(hex, tile, selected_companies)
           # Prioritize single resource type abilities
-          resources = {}
+          resource_abilities = {}
           tile_resources(tile).each do |r|
-            resources[r] = resource_abilities_for_hex(hex, r, selected_companies).sort_by do |a|
+            resource_abilities[r] = resource_abilities_for_hex(hex, r, selected_companies).sort_by do |a|
               [a.tiles.size, a.owner.id]
             end
           end
-          return resources.transform_values(&:first) if resources.one?
+          return resource_abilities.transform_values(&:first) if resource_abilities.one?
 
           # Filter out duplicates
-          dups = resources.values[0].intersection(resources.values[1])
-          resources.transform_values! { |abilities| (abilities - dups)&.first || dups.shift }
-          resources
+          resource_ability_values = resource_abilities.values
+          dups = resource_ability_values[0].intersection(resource_ability_values[1])
+          resource_abilities.transform_values! { |v| (v - dups)&.first }
+          resource_abilities.transform_values { |v| v || dups.shift }
         end
 
         def consume_abilities_to_lay_resource_tile(hex, tile, selected_companies)
