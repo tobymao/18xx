@@ -124,13 +124,16 @@ module View
     def render_inputs
       title = selected_game_or_variant.title
 
-      game_max_players = @max_p[title]
-      game_min_players = selected_game_or_variant.min_players(@optional_rules, game_max_players)
+      allowed = allowed_players_for(selected_game_or_variant)
+      display_max_players = allowed.max
+
+      meta_min = selected_game_or_variant.min_players(@optional_rules, display_max_players)
+      display_min_players = [allowed.min, (meta_min || allowed.min)].max
 
       inputs = [
         render_input('Description', id: :description, placeholder: 'Add a title', label_style: @label_style),
         render_input(
-          "Min Players (#{game_min_players})",
+          "Min Players (#{display_min_players})",
           id: :min_players,
           type: :number,
           attrs: {
@@ -143,7 +146,7 @@ module View
           on: { input: -> { update_inputs } },
         ),
         render_input(
-          @mode == :hotseat ? 'Players' : "Max Players (#{game_max_players})",
+          @mode == :hotseat ? 'Players' : "Max Players (#{display_max_players})",
           id: :max_players,
           type: :number,
           attrs: {
@@ -250,7 +253,7 @@ module View
     end
 
     def render_optional
-      game_variants = @game_variants.map do |sym, variant|
+      game_variants = @game_variants.map do |_sym, variant|
         update_player_range(variant[:meta])
 
         stage = variant[:meta]::DEV_STAGE
@@ -261,13 +264,18 @@ module View
         desc_text = variant[:desc] ? ": #{variant[:desc]}" : ''
         label_text = "#{stage_str}#{variant[:name]}#{desc_text}"
 
-        h(:li, [render_input(
+        h(:li, { key: "#{selected_game_or_variant.title}-#{o_r[:sym]}" }, [
+        render_input(
           label_text,
           type: 'checkbox',
-          id: sym,
-          attrs: { value: sym, checked: @selected_variant == variant },
-          on: { input: toggle_game_variant(sym) },
-        )])
+          id: o_r[:sym],
+          attrs: {
+            value: o_r[:sym],
+            checked: @optional_rules.include?(o_r[:sym]),
+          },
+          on: { input: toggle_optional_rule(o_r[:sym]) },
+        ),
+      ])
       end.compact
 
       optional_rules = selected_game_or_variant::OPTIONAL_RULES.map do |o_r|
@@ -289,7 +297,8 @@ module View
         desc_text += " (#{parenthetical})" if parenthetical != ''
 
         label_text = "#{o_r[:short_name]}#{desc_text}"
-        h(:li, [render_input(
+        h(:li, { key: "#{selected_game_or_variant.title}-#{o_r[:sym]}" }, [
+        render_input(
           label_text,
           type: 'checkbox',
           id: o_r[:sym],
@@ -298,7 +307,8 @@ module View
             checked: @optional_rules.include?(o_r[:sym]),
           },
           on: { input: toggle_optional_rule(o_r[:sym]) },
-        )])
+        ),
+      ])
       end.compact
 
       ul_props = {
@@ -540,6 +550,10 @@ module View
     def update_inputs(title_change: false)
       return unless selected_game_or_variant
 
+      valid = selected_game_or_variant::OPTIONAL_RULES.map { |r| r[:sym] }
+      @optional_rules = Array(@optional_rules).select { |sym| valid.include?(sym) }
+      store(:optional_rules, @optional_rules, skip: true)
+
       title = selected_game_or_variant.title
       max_players_elm = Native(@inputs[:max_players])&.elm
       min_players_elm = Native(@inputs[:min_players])&.elm
@@ -590,6 +604,7 @@ module View
 
       uncheck_optional_rules
       @optional_rules = []
+      store(:optional_rules, @optional_rules)
 
       preselect_variant(@selected_game)
       preselect_optional_rules(@selected_game)
