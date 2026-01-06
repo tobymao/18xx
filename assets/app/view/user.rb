@@ -105,6 +105,7 @@ module View
         ]),
         render_tile_colors,
         render_route_colors,
+        render_password_change,
         h('div#settings__buttons', { style: { marginTop: '1rem' } }, [
           render_button('Save Changes') { submit },
           render_button('Reset to Defaults') { reset_settings },
@@ -115,6 +116,33 @@ module View
       ]
 
       render_form(title, inputs)
+    end
+
+    def render_password_change
+      h('div#settings__password', [
+        h(:h3, 'Change Password'),
+        render_input(
+          'Current Password',
+          id: :current_password,
+          type: :password,
+          attrs: { autocomplete: 'current-password' },
+          input_style: { width: '13rem' },
+        ),
+        render_input(
+          'New Password',
+          id: :new_password,
+          type: :password,
+          attrs: { autocomplete: 'new-password' },
+          input_style: { width: '13rem' },
+        ),
+        render_input(
+          'Confirm New Password',
+          id: :new_password_confirmation,
+          type: :password,
+          attrs: { autocomplete: 'new-password' },
+          input_style: { width: '13rem' },
+        ),
+      ])
     end
 
     def render_signup
@@ -470,6 +498,31 @@ module View
 
       ]
       h(:div, children)
+    end
+
+    def params
+      param = super
+
+      new_pw = (param[:new_password] || param['new_password']).to_s.strip
+
+      if new_pw.empty?
+        %i[current_password new_password new_password_confirmation].each { |k| param.delete(k) }
+        %w[current_password new_password new_password_confirmation].each { |k| param.delete(k) }
+      end
+
+      param
+    end
+
+    def clear_password_inputs
+      %i[current_password new_password new_password_confirmation].each do |k|
+        next unless @inputs[k]
+
+        input_elm(k).value = ''
+      end
+    end
+
+    def password_change_attempted?(p)
+      (p[:new_password] || p['new_password']).to_s.strip != ''
     end
   end
 end
