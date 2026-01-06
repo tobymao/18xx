@@ -68,6 +68,8 @@ module Engine
 
         PRESIDENT_SALES_TO_MARKET = Set['CF&I', 'VGC'].freeze
 
+        # Stretch Goal Companies Variant not yet fully implemented, there switching variant by default to false
+        STRETCH_GOAL_COMPANIES_VARIANT = false
         COMPANIES_CLOSE_PHASE_5 = %w[Y2 Y3 Y4 Y5 Y6 G2 G3 G5 G6 B3 B4 B5].freeze
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
@@ -111,6 +113,13 @@ module Engine
         ST_CLOUD_BONUS_STR = ' (St. Cloud Hotel)'
         ST_CLOUD_ICON_NAME = 'SCH'
 
+        MDM_EVENS_START_HEX = 'K1'
+        MDM_EVENS_BROWN_HEX = 'B10'
+        MDM_EVENS_START_BONUS = 10
+        MDM_EVENS_BROWN_BONUS = 20
+        MDM_EVENS_BONUS_STR = ' (Madam Evens)'
+        MDM_EVENS_ICON_NAME = 'MDE'
+
         GAME_END_CHECK = {
           bankrupt: :immediate,
           stock_market: :full_or,
@@ -133,9 +142,15 @@ module Engine
         end
 
         def game_companies
-          YELLOW_COMPANIES.sort_by { rand }.take(2).sort_by { |c| c[:value] } +
-            GREEN_COMPANIES.sort_by { rand }.take(2).sort_by { |c| c[:value] } +
-            BROWN_COMPANIES.sort_by { rand }.take(1)
+          yellow_companies = YELLOW_COMPANIES.dup
+          green_companies = GREEN_COMPANIES.dup
+          brown_companies = BROWN_COMPANIES.dup
+
+          # remove strech goal companies if variant is not chosen
+          yellow_companies.reject! { |c| c[:sym] == 'Y7' } unless STRETCH_GOAL_COMPANIES_VARIANT
+          yellow_companies.sort_by { rand }.take(2).sort_by { |c| c[:value] } +
+            green_companies.sort_by { rand }.take(2).sort_by { |c| c[:value] } +
+            brown_companies.sort_by { rand }.take(1)
         end
 
         def game_corporations
@@ -193,10 +208,25 @@ module Engine
           @updated_sulphur_springs_company_revenue = false
 
           @st_cloud_icon = Part::Icon.new("18_royal_gorge/#{ST_CLOUD_ICON_NAME}", ST_CLOUD_ICON_NAME)
+          setup_st_cloud_hotel
+
+          @mdm_evens_icon = Part::Icon.new("18_royal_gorge/#{MDM_EVENS_ICON_NAME}", MDM_EVENS_ICON_NAME)
+          setup_mdm_evens
+        end
+
+        def setup_st_cloud_hotel
           return unless st_cloud_hotel
 
           @st_cloud_hex = hex_by_id(ST_CLOUD_START_HEX)
           @st_cloud_hex.tile.icons << @st_cloud_icon
+        end
+
+        def setup_mdm_evens
+          return unless mdm_evens
+
+          @mdm_evens_hex = hex_by_id(MDM_EVENS_START_HEX)
+          @mdm_evens_hex.tile.icons << @mdm_evens_icon
+          @mdm_evens_bonus = MDM_EVENS_START_BONUS
         end
 
         def game_hexes
@@ -297,6 +327,7 @@ module Engine
 
         def event_brown_phase!
           event_st_cloud_moves!
+          event_mdm_evens_moves!
           event_sulphur_springs_revenue!
 
           @available_par_groups << :par_2
@@ -322,6 +353,17 @@ module Engine
           @st_cloud_hex.tile.icons.delete_if { |i| i.name == ST_CLOUD_ICON_NAME }
           @st_cloud_hex = hex_by_id(ST_CLOUD_BROWN_HEX)
           @st_cloud_hex.tile.icons << @st_cloud_icon
+        end
+
+        def event_mdm_evens_moves!
+          return unless mdm_evens
+
+          @log << '-- Event: Madame Evens moves to Salida --'
+
+          @mdm_evens_hex.tile.icons.delete_if { |i| i.name == MDM_EVENS_ICON_NAME }
+          @mdm_evens_hex = hex_by_id(MDM_EVENS_BROWN_HEX)
+          @mdm_evens_hex.tile.icons << @mdm_evens_icon
+          @mdm_evens_bonus = MDM_EVENS_BROWN_BONUS
         end
 
         def event_sulphur_springs_revenue!
@@ -995,6 +1037,10 @@ module Engine
           @coal_creek_mines ||= company_by_id('Y3')
         end
 
+        def mdm_evens
+          @mdm_evens ||= company_by_id('Y7')
+        end
+
         def upgrades_to?(from, to, special = false, selected_company: nil)
           if special && from.hex.id == SULPHUR_SPRINGS_HEX && selected_company == sulphur_springs
             return case from.color
@@ -1140,6 +1186,10 @@ module Engine
           route.corporation == st_cloud_hotel&.owner && stops.any? { |s| s.hex == @st_cloud_hex }
         end
 
+        def mdm_evens_bonus?(route, stops)
+          route.corporation == mdm_evens&.owner && stops.any? { |s| s.hex == @mdm_evens_hex }
+        end
+
         def ghost_town_bonus(route)
           bonus = { revenue: 0, description: '' }
           return bonus  unless route.corporation == ghost_town_tours&.owner
@@ -1164,6 +1214,7 @@ module Engine
         def revenue_for(route, stops)
           revenue = super
           revenue += ST_CLOUD_BONUS if st_cloud_bonus?(route, stops)
+          revenue += @mdm_evens_bonus if mdm_evens_bonus?(route, stops)
           revenue += ghost_town_bonus(route)[:revenue]
           revenue
         end
@@ -1171,6 +1222,7 @@ module Engine
         def revenue_str(route)
           str = super
           str += ST_CLOUD_BONUS_STR if st_cloud_bonus?(route, route.visited_stops)
+          str += MDM_EVENS_BONUS_STR if mdm_evens_bonus?(route, route.visited_stops)
           str += ghost_town_bonus(route)[:description]
           str += hanging_bridge_lease_revenue_str(route, route.visited_stops)
           str
