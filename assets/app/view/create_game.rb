@@ -253,7 +253,7 @@ module View
     end
 
     def render_optional
-      game_variants = @game_variants.map do |_sym, variant|
+      game_variants = @game_variants.map do |sym, variant|
         update_player_range(variant[:meta])
 
         stage = variant[:meta]::DEV_STAGE
@@ -264,18 +264,15 @@ module View
         desc_text = variant[:desc] ? ": #{variant[:desc]}" : ''
         label_text = "#{stage_str}#{variant[:name]}#{desc_text}"
 
-        h(:li, { key: "#{selected_game_or_variant.title}-#{o_r[:sym]}" }, [
-        render_input(
-          label_text,
-          type: 'checkbox',
-          id: o_r[:sym],
-          attrs: {
-            value: o_r[:sym],
-            checked: @optional_rules.include?(o_r[:sym]),
-          },
-          on: { input: toggle_optional_rule(o_r[:sym]) },
-        ),
-      ])
+        h(:li, { key: "#{selected_game.title}-variant-#{sym}" }, [
+          render_input(
+            label_text,
+            type: 'checkbox',
+            id: sym,
+            attrs: { value: sym, checked: @selected_variant == variant },
+            on: { input: toggle_game_variant(sym) },
+          ),
+        ])
       end.compact
 
       optional_rules = selected_game_or_variant::OPTIONAL_RULES.map do |o_r|
