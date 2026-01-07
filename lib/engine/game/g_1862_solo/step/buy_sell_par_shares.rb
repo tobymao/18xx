@@ -60,36 +60,41 @@ module Engine
 
           def general_input_renderings_ipo_row(_entity, company, ipo_row_number)
             renderings = []
+
             if @game.ipo_rows[ipo_row_number - 1].empty?
               # No company in this IPO row so 2nd part of action is nil
               renderings << ["deal###{ipo_row_number}", "Deal to #{ipo_row_title(ipo_row_number)}"]
               return renderings
             end
 
-            share = company.treasury
-            company_from_ipo_row = "##{company.id}##{ipo_row_number}"
-
             @game.all_rows_indexes.each do |index|
               next if index + 1 == ipo_row_number || @game.ipo_rows[index].empty?
               next unless company.treasury.corporation == @game.ipo_rows[index].first.treasury.corporation
 
-              renderings << ["move#{company_from_ipo_row}##{index + 1}", "Move to #{ipo_row_title(index + 1)}"]
+              choice = create_choice('move', company: company.id, from: ipo_row_number, to: index + 1)
+              renderings << [choice, "Move to #{ipo_row_title(index + 1)}"]
             end
 
-            renderings << ["remove#{company_from_ipo_row}", "Remove #{company.name}"]
+            choice = create_choice('remove', company: company.id, from: ipo_row_number)
+            renderings << [choice, "Remove #{company.name}"]
 
+            share = company.treasury
             if share.corporation.share_price
-              renderings << ["buy#{company_from_ipo_row}", "Buy #{company.name} for #{@game.company_value(company)}"]
+              choice = create_choice('buy', company: company.id, from: ipo_row_number)
+              renderings << [choice, "Buy #{company.name} for #{@game.company_value(company)}"]
             elsif @game.can_par_corporations?
-              renderings << ["par_unchartered#{company_from_ipo_row}", 'Par unchartered']
-              renderings << ["par_chartered#{company_from_ipo_row}", 'Par chartered']
+              choice = create_choice('par_unchartered', company: company.id, from: ipo_row_number)
+              renderings << [choice, 'Par unchartered']
+              choice = create_choice('par_chartered', company: company.id, from: ipo_row_number)
+              renderings << [choice, 'Par chartered']
             end
 
             @game.all_rows_indexes.each do |index|
               next unless @game.ipo_rows[index].empty?
 
               ipo_row_number = index + 1
-              renderings << ["deal###{ipo_row_number}", "Deal to #{ipo_row_title(ipo_row_number)}"]
+              choice = create_choice('deal', from: ipo_row_number)
+              renderings << [choice, "Deal to #{ipo_row_title(ipo_row_number)}"]
             end
 
             renderings
@@ -101,17 +106,17 @@ module Engine
           end
 
           def process_choose(action)
-            choice, company_id, from_ipo_row_number, to_ipo_row_number = action.choice.split('#')
-            if choice == 'deal'
-              action_deal(from_ipo_row_number)
+            choice = action.choice
+            if choice[:action] == 'deal'
+              action_deal(choice[:from])
             else
-              company = get_company(company_id)
-              case choice
-              when 'buy' then action_buy(company, from_ipo_row_number)
-              when 'move' then action_move(company, from_ipo_row_number, to_ipo_row_number)
-              when 'par_chartered' then action_par_chartered(company, from_ipo_row_number)
-              when 'par_unchartered' then action_par_unchartered(company, from_ipo_row_number)
-              when 'remove' then action_remove(company, from_ipo_row_number)
+              company = get_company(choice[:company])
+              case choice[:action]
+              when 'buy' then action_buy(company, choice[:from])
+              when 'move' then action_move(company, choice[:from], choice[:to])
+              when 'par_chartered' then action_par_chartered(company, choice[:from])
+              when 'par_unchartered' then action_par_unchartered(company, choice[:from])
+              when 'remove' then action_remove(company, choice[:from])
               else
                 raise GameError, "Unknown choice #{choice}"
               end
@@ -236,6 +241,10 @@ module Engine
 
           def ipo_row_title(ipo_row_number)
             "IPO Row #{ipo_row_number}"
+          end
+
+          def create_choice(action, company: nil, from: nil, to: nil)
+            { action: action, company: company, from: from, to: to }
           end
         end
       end
