@@ -58,13 +58,13 @@ module Engine
             @game.repar_prices.select { |p| p.price * 3 <= entity.cash }
           end
 
-          def general_input_renderings_ipo_row(_entity, company, ipo_row_number)
-            renderings = []
+          def choices_for_ipo_row(_entity, company, ipo_row_number)
+            choices_with_description = []
 
             if @game.ipo_rows[ipo_row_number - 1].empty?
-              # No company in this IPO row so 2nd part of action is nil
-              renderings << ["deal###{ipo_row_number}", "Deal to #{ipo_row_title(ipo_row_number)}"]
-              return renderings
+              choice = create_choice('deal', from: ipo_row_number)
+              choices_with_description << [choice, "Deal to #{ipo_row_title(ipo_row_number)}"]
+              return choices_with_description
             end
 
             @game.all_rows_indexes.each do |index|
@@ -72,21 +72,21 @@ module Engine
               next unless company.treasury.corporation == @game.ipo_rows[index].first.treasury.corporation
 
               choice = create_choice('move', company: company.id, from: ipo_row_number, to: index + 1)
-              renderings << [choice, "Move to #{ipo_row_title(index + 1)}"]
+              choices_with_description << [choice, "Move to #{ipo_row_title(index + 1)}"]
             end
 
             choice = create_choice('remove', company: company.id, from: ipo_row_number)
-            renderings << [choice, "Remove #{company.name}"]
+            choices_with_description << [choice, "Remove #{company.name}"]
 
             share = company.treasury
             if share.corporation.share_price
               choice = create_choice('buy', company: company.id, from: ipo_row_number)
-              renderings << [choice, "Buy #{company.name} for #{@game.company_value(company)}"]
+              choices_with_description << [choice, "Buy #{company.name} for #{@game.company_value(company)}"]
             elsif @game.can_par_corporations?
               choice = create_choice('par_unchartered', company: company.id, from: ipo_row_number)
-              renderings << [choice, 'Par unchartered']
+              choices_with_description << [choice, 'Par unchartered']
               choice = create_choice('par_chartered', company: company.id, from: ipo_row_number)
-              renderings << [choice, 'Par chartered']
+              choices_with_description << [choice, 'Par chartered']
             end
 
             @game.all_rows_indexes.each do |index|
@@ -94,10 +94,10 @@ module Engine
 
               ipo_row_number = index + 1
               choice = create_choice('deal', from: ipo_row_number)
-              renderings << [choice, "Deal to #{ipo_row_title(ipo_row_number)}"]
+              choices_with_description << [choice, "Deal to #{ipo_row_title(ipo_row_number)}"]
             end
 
-            renderings
+            choices_with_description
           end
 
           # Need to have false here as we are solo player

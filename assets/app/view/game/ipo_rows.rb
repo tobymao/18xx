@@ -67,16 +67,16 @@ module View
             width: 'max-content',
           },
         }
-        first_company = ipo_row.first
+        first_company = ipo_row.shift
         inputs = []
 
-        # Make it possible for a title to inject more choices than just buy
-        if @step.respond_to?(:general_input_renderings_ipo_row)
-          renderings = @step.general_input_renderings_ipo_row(@current_entity, first_company, ipo_row_number)
-          renderings.each do |(choice, description)|
-            inputs.concat(render_general_input(choice, description))
+        # Make it possible for a title to inject any choices
+        if @step.respond_to?(:choices_for_ipo_row)
+          choices_with_description = @step.choices_for_ipo_row(@current_entity, first_company, ipo_row_number)
+          choices_with_description.each do |(choice, description)|
+            inputs.concat(render_choice_with_description(choice, description))
           end
-        elsif !first_company.nil? && @current_actions.intersect?(%w[buy_company corporate_buy_company])
+        elsif @current_actions.intersect?(%w[buy_company corporate_buy_company])
           inputs.concat(render_buy_input(first_company))
         end
 
@@ -103,7 +103,7 @@ module View
            "Buy #{company.name} from IPO Row for #{@game.format_currency(company.value)}")]
       end
 
-      def render_general_input(choice, description)
+      def render_choice_with_description(choice, description)
         action = lambda do
           process_action(Engine::Action::Choose.new(
             @current_entity,
