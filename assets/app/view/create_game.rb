@@ -122,42 +122,47 @@ module View
     end
 
     def render_inputs
-      title = selected_game_or_variant.title
-
       allowed = allowed_players_for(selected_game_or_variant)
-      display_max_players = allowed.max
+      min_allowed = allowed.min
+      max_allowed = allowed.max
 
-      meta_min = selected_game_or_variant.min_players(@optional_rules, display_max_players)
-      display_min_players = [allowed.min, (meta_min || allowed.min)].max
+      meta_min = selected_game_or_variant.min_players(@optional_rules, max_allowed)
+
+      display_max_players = max_allowed
+      display_min_players = [min_allowed, (meta_min || min_allowed)].max
 
       inputs = [
-        render_input('Description', id: :description, placeholder: 'Add a title', label_style: @label_style),
-        render_input(
-          "Min Players (#{display_min_players})",
-          id: :min_players,
-          type: :number,
-          attrs: {
-            value: @min_players || @min_p[title],
-            required: true,
-          },
-          container_style: @mode == :hotseat ? { display: 'none' } : {},
-          input_style: { width: '3.5rem' },
-          label_style: @label_style,
-          on: { input: -> { update_inputs } },
-        ),
-        render_input(
-          @mode == :hotseat ? 'Players' : "Max Players (#{display_max_players})",
-          id: :max_players,
-          type: :number,
-          attrs: {
-            value: @max_players || @max_p[title],
-            required: true,
-          },
-          input_style: { width: '3.5rem' },
-          label_style: @label_style,
-          on: { input: -> { update_inputs } },
-        ),
-      ]
+         render_input('Description', id: :description, placeholder: 'Add a title', label_style: @label_style),
+         render_input(
+           "Min Players (#{display_min_players})",
+           id: :min_players,
+           type: :number,
+           attrs: {
+             value: @min_players || display_min_players,
+             required: true,
+             min: min_allowed,
+             max: max_allowed,
+           },
+           container_style: @mode == :hotseat ? { display: 'none' } : {},
+           input_style: { width: '3.5rem' },
+           label_style: @label_style,
+           on: { change: -> { update_inputs } },
+         ),
+         render_input(
+           @mode == :hotseat ? 'Players' : "Max Players (#{display_max_players})",
+           id: :max_players,
+           type: :number,
+           attrs: {
+             value: @max_players || display_max_players,
+             required: true,
+             min: min_allowed,
+             max: max_allowed,
+           },
+           input_style: { width: '3.5rem' },
+           label_style: @label_style,
+           on: { change: -> { update_inputs } },
+         ),
+       ]
 
       div_props = {}
       div_props[:style] = { display: 'none' } if @mode == :json
@@ -440,15 +445,12 @@ module View
       game_params = params
 
       if @mode != :json
-        title = selected_game_or_variant.title
-
         max_players = game_params[:max_players].to_i
         min_players = game_params[:min_players].to_i
 
-        if min_players < @min_p[title] || max_players > @max_p[title] || min_players > max_players
-          min = @min_p[title] == @max_p[title] ? '' : "within #{@min_p[title]}-"
-          player_s = "player#{@max_p[title] == 1 ? '' : 's'}"
-          return store(:flash_opts, "Invalid player count. Must be #{min}#{@max_p[title]} #{player_s}.")
+        allowed = allowed_players_for(selected_game_or_variant)
+        if !allowed.include?(min_players) || !allowed.include?(max_players)
+          return store(:flash_opts, "Player count must be within #{allowed.min}-#{allowed.max} for selected options.")
         end
       end
 
@@ -556,6 +558,11 @@ module View
       min_players_elm = Native(@inputs[:min_players])&.elm
 
       if title_change
+        @min_players = nil
+        @max_players = nil
+        store(:min_players, @min_players, skip: true)
+        store(:max_players, @max_players, skip: true)
+
         update_player_range(selected_game_or_variant)
         game_max_players = @max_p[title]
         game_min_players = selected_game_or_variant.min_players(@optional_rules, @max_players || game_max_players)
@@ -564,6 +571,7 @@ module View
       end
 
       maybe_adjust_player_range(selected_game_or_variant)
+      clamp_player_range(selected_game_or_variant)
 
       # NOTE: Letters resolve to 0 when converted to integers
       max_players = max_players_elm&.value&.to_i
@@ -602,6 +610,11 @@ module View
       uncheck_optional_rules
       @optional_rules = []
       store(:optional_rules, @optional_rules)
+
+      @min_players = nil
+      @max_players = nil
+      store(:min_players, @min_players, skip: true)
+      store(:max_players, @max_players, skip: true)
 
       preselect_variant(@selected_game)
       preselect_optional_rules(@selected_game)
@@ -752,6 +765,33 @@ module View
 
       min_players_elm&.value = allowed.min
       max_players_elm&.value = allowed.max
+    end
+
+    def clamp_player_range(meta)
+      allowed = allowed_players_for(meta)
+      return if allowed.empty?
+
+      min_elm = Native(@inputs[:min_players])&.elm
+      max_elm = Native(@inputs[:max_players])&.elm
+      return unless min_elm
+      return unless max_elm
+
+      # Mobile safety guard
+      return if min_elm.value.empty? || max_elm.value.empty?
+
+      min_val = min_elm.value.to_i
+      max_val = max_elm.value.to_i
+
+      min_allowed = allowed.min
+      max_allowed = allowed.max
+
+      min_val = [[min_val, min_allowed].max, max_allowed].min
+      max_val = [[max_val, min_allowed].max, max_allowed].min
+
+      max_val = min_val if min_val > max_val
+
+      min_elm.value = min_val
+      max_elm.value = max_val
     end
   end
 end
