@@ -42,11 +42,11 @@ module Engine
         ].freeze
 
         TRAIN_FOR_PLAYER_COUNT = {
-          2 => { '2': 5, '3': 4, '4': 2, '5': 3, '6': 3, '8': 4 },
-          3 => { '2': 7, '3': 5, '4': 3, '5': 3, '6': 3, '8': 6 },
-          4 => { '2': 9, '3': 7, '4': 4, '5': 3, '6': 3, '8': 8 },
-          5 => { '2': 10, '3': 8, '4': 5, '5': 3, '6': 3, '8': 10 },
-          6 => { '2': 10, '3': 9, '4': 5, '5': 3, '6': 3, '8': 12 },
+          2 => { '2': 5, '3': 4, '4': 2, '5': 3, '6': 3, '8': 4, '2n': 7, '3n': 5, '4n': 5, '5n': 4 },
+          3 => { '2': 7, '3': 5, '4': 3, '5': 3, '6': 3, '8': 6, '2n': 5, '3n': 5, '4n': 3, '5n': 4 },
+          4 => { '2': 9, '3': 7, '4': 4, '5': 3, '6': 3, '8': 8, '2n': 7, '3n': 6, '4n': 4, '5n': 5 },
+          5 => { '2': 10, '3': 8, '4': 5, '5': 3, '6': 3, '8': 10, '2n': 9, '3n': 7, '4n': 5, '5n': 6 },
+          6 => { '2': 10, '3': 9, '4': 5, '5': 3, '6': 3, '8': 12, '2n': 10, '3n': 8, '4n': 6, '5n': 7 },
         }.freeze
 
         PHASES = [{ name: '2', train_limit: 4, tiles: [:yellow], operating_rounds: 1 },
@@ -86,7 +86,14 @@ module Engine
                     operating_rounds: 3,
                   }].freeze
 
-        TRAINS = [{ name: '2', distance: 2, price: 100, rusts_on: '4' },
+        TRAINS = [
+                  # Regular Trains
+                  {
+                    name: '2',
+                    distance: 2,
+                    price: 100,
+                    rusts_on: '4',
+                  },
                   {
                     name: '3',
                     distance: 3,
@@ -148,7 +155,35 @@ module Engine
                         price: 800,
                       },
                     ],
-                  }].freeze
+                  },
+                  # Narrow Gauge Trains
+                  {
+                    name: '2n',
+                    distance: 2,
+                    price: 80,
+                    gauge: :narrow,
+                    rusts_on: '4',
+                  },
+                  {
+                    name: '3n',
+                    distance: 3,
+                    price: 160,
+                    gauge: :narrow,
+                    rusts_on: '6',
+                  },
+                  {
+                    name: '4n',
+                    distance: 4,
+                    price: 260,
+                    gauge: :narrow,
+                  },
+                  {
+                    name: '5n',
+                    distance: 5,
+                    price: 380,
+                    gauge: :narrow,
+                  },
+                  ].freeze
 
         def operating_round(round_num)
           Round::Operating.new(self, [
