@@ -162,6 +162,7 @@ module Engine
                       {
                         name: '4D',
                         distance: 4,
+                        track_type: :broad,
                         price: 800,
                       },
                     ],
