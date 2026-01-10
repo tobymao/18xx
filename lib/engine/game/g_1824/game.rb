@@ -282,7 +282,6 @@ module Engine
         def operating_round(round_num)
           G1824::Round::Operating.new(self, [
             G1824::Step::KkTokenChoice,
-            G1837::Step::Bankrupt,
             G1824::Step::DiscardTrain,
             G1824::Step::ForcedMountainRailwayExchange,
             Engine::Step::SpecialTrack,
@@ -776,6 +775,10 @@ module Engine
             end
           token = Engine::Token.new(national, price: price)
           national.tokens.unshift(token)
+        end
+
+        def can_go_bankrupt?(_entity, _corporation)
+          false
         end
 
         private
