@@ -42,7 +42,7 @@ module Engine
         ].freeze
 
         TRAIN_FOR_PLAYER_COUNT = {
-          2 => { '2': 5, '3': 4, '4': 2, '5': 3, '6': 3, '8': 4, '2n': 7, '3n': 5, '4n': 5, '5n': 4 },
+          2 => { '2': 5, '3': 4, '4': 2, '5': 3, '6': 3, '8': 4, '2n': 7, '3n': 5, '4n': 4, '5n': 5 },
           3 => { '2': 7, '3': 5, '4': 3, '5': 3, '6': 3, '8': 6, '2n': 5, '3n': 5, '4n': 3, '5n': 4 },
           4 => { '2': 9, '3': 7, '4': 4, '5': 3, '6': 3, '8': 8, '2n': 7, '3n': 6, '4n': 4, '5n': 5 },
           5 => { '2': 10, '3': 8, '4': 5, '5': 3, '6': 3, '8': 10, '2n': 9, '3n': 7, '4n': 5, '5n': 6 },
@@ -92,17 +92,20 @@ module Engine
                     name: '2',
                     distance: 2,
                     price: 100,
+                    gauge: :standard,
                     rusts_on: '4',
                   },
                   {
                     name: '3',
                     distance: 3,
                     price: 200,
+                    gauge: :standard,
                     rusts_on: '6',
                     variants: [
                       {
                         name: '3+',
                         distance: 3,
+                        gauge: :standard,
                         price: 230,
                       },
                     ],
@@ -111,11 +114,13 @@ module Engine
                     name: '4',
                     distance: 4,
                     price: 300,
+                    gauge: :standard,
                     rusts_on: '8',
                     variants: [
                       {
                         name: '4+',
                         distance: 4,
+                        gauge: :standard,
                         price: 340,
                       },
                     ],
@@ -124,10 +129,12 @@ module Engine
                     name: '5',
                     distance: 5,
                     price: 500,
+                    gauge: :standard,
                     variants: [
                       {
                         name: '5+',
                         distance: 5,
+                        gauge: :standard,
                         price: 550,
                       },
                     ],
@@ -136,10 +143,12 @@ module Engine
                     name: '6',
                     distance: 6,
                     price: 600,
+                    gauge: :standard,
                     variants: [
                       {
                         name: '6+',
                         distance: 6,
+                        gauge: :standard,
                         price: 660,
                       },
                     ],
@@ -148,6 +157,7 @@ module Engine
                     name: '8',
                     distance: 8,
                     price: 700,
+                    gauge: :starndard,
                     variants: [
                       {
                         name: '4D',
