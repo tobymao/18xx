@@ -55,9 +55,7 @@ module Engine
           @chartered = {}
 
           # randomize and distribute train permits
-          permit_list = 2.times.flat_map { %i[freight express local] }
-          permit_list.sort_by! { rand }
-          @all_permits = permit_list.dup
+          @all_permits = (%i[freight express local] * 2).sort_by { rand }
           @permits = Hash.new { |h, k| h[k] = [] }
           @original_permits = Hash.new { |h, k| h[k] = [] }
 
@@ -195,7 +193,7 @@ module Engine
         end
 
         def can_par_corporations?
-          @all_permits.any?
+          !@all_permits.empty?
         end
 
         def in_ipo?(company)
@@ -225,7 +223,6 @@ module Engine
         def init_corporations(_stock_market)
           self.class::CORPORATIONS.map do |corp|
             corporation = corp.dup
-            corp.deep_freeze
             corporation[:float_percent] = 30
             corporation[:shares] = [30, 10, 10, 10, 10, 10, 10, 10]
             corporation[:max_ownership_percent] = 70
@@ -326,7 +323,7 @@ module Engine
         end
 
         def player_owns_any_shares_of?(corp)
-          @players.first.shares_by_corporation[corp].any?
+          !@players.first.shares_by_corporation[corp].empty?
         end
 
         # TODO: Is this OK as 1862 solo version?
@@ -367,7 +364,7 @@ module Engine
           hex = @hexes.find { |h| h.id == corp.coordinates } # hex_by_id doesn't work here
           old_tile = hex.tile
           tile_string = ''
-          hex.tile = Tile.from_code(old_tile.name, 'brown', tile_string)
+          hex.tile = Tile.from_code(old_tile.name, 'gray', tile_string)
         end
       end
     end

@@ -73,7 +73,7 @@ module View
         # Make it possible for a title to inject any choices
         if @step.respond_to?(:choices_for_ipo_row)
           choices_with_description = @step.choices_for_ipo_row(@current_entity, first_company, ipo_row_number)
-          choices_with_description.each do |(choice, description)|
+          choices_with_description.each do |choice, description|
             inputs.concat(render_choice_with_description(choice, description))
           end
         elsif @current_actions.intersect?(%w[buy_company corporate_buy_company])
