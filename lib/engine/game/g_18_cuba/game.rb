@@ -92,20 +92,20 @@ module Engine
                     name: '2',
                     distance: 2,
                     price: 100,
-                    gauge: :standard,
+                    track_type: :broad,
                     rusts_on: '4',
                   },
                   {
                     name: '3',
                     distance: 3,
                     price: 200,
-                    gauge: :standard,
+                    track_type: :broad,
                     rusts_on: '6',
                     variants: [
                       {
                         name: '3+',
                         distance: 3,
-                        gauge: :standard,
+                        track_type: :broad,
                         price: 230,
                       },
                     ],
@@ -114,13 +114,13 @@ module Engine
                     name: '4',
                     distance: 4,
                     price: 300,
-                    gauge: :standard,
+                    track_type: :broad,
                     rusts_on: '8',
                     variants: [
                       {
                         name: '4+',
                         distance: 4,
-                        gauge: :standard,
+                        track_type: :broad,
                         price: 340,
                       },
                     ],
@@ -129,12 +129,12 @@ module Engine
                     name: '5',
                     distance: 5,
                     price: 500,
-                    gauge: :standard,
+                    track_type: :broad,
                     variants: [
                       {
                         name: '5+',
                         distance: 5,
-                        gauge: :standard,
+                        track_type: :broad,
                         price: 550,
                       },
                     ],
@@ -143,12 +143,12 @@ module Engine
                     name: '6',
                     distance: 6,
                     price: 600,
-                    gauge: :standard,
+                    track_type: :broad,
                     variants: [
                       {
                         name: '6+',
                         distance: 6,
-                        gauge: :standard,
+                        track_type: :broad,
                         price: 660,
                       },
                     ],
@@ -157,7 +157,7 @@ module Engine
                     name: '8',
                     distance: 8,
                     price: 700,
-                    gauge: :starndard,
+                    track_type: :broad,
                     variants: [
                       {
                         name: '4D',
@@ -171,27 +171,27 @@ module Engine
                     name: '2n',
                     distance: 2,
                     price: 80,
-                    gauge: :narrow,
+                    track_type: :narrow,
                     rusts_on: '4',
                   },
                   {
                     name: '3n',
                     distance: 3,
                     price: 160,
-                    gauge: :narrow,
+                    track_type: :narrow,
                     rusts_on: '6',
                   },
                   {
                     name: '4n',
                     distance: 4,
                     price: 260,
-                    gauge: :narrow,
+                    track_type: :narrow,
                   },
                   {
                     name: '5n',
                     distance: 5,
                     price: 380,
-                    gauge: :narrow,
+                    track_type: :narrow,
                   },
                   ].freeze
 
