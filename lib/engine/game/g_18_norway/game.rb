@@ -273,17 +273,20 @@ module Engine
           @mjosa ||= hex_by_id('I26')
         end
 
-        def route_cost(route)
-          cost = 0
-          mult = 2
-          mult = 1 if @phase.tiles.include?(:green)
-          mult = 0 if @phase.tiles.include?(:brown)
-          cost += 5 * mult if !owns_hvite_svan?(route.train.owner) && route.all_hexes.include?(mjosa)
+        def mjosa_fee(route)
+          return 0 if owns_hvite_svan?(route.train.owner)
+          return 0 if @phase.tiles.include?(:brown)
+          return 0 unless route.all_hexes.include?(mjosa)
 
-          # P2 Thunes mekaniske verksted do not need to pay maintainance
-          return cost if owns_thunes_mekaniske?(route.train.owner)
+          @phase.tiles.include?(:green) ? 5 : 10
+        end
 
-          cost + (route.all_hexes.count { |hex| mountain?(hex) } * 10)
+        def mountain_fee(route)
+          route.all_hexes.count { |hex| mountain?(hex) } * 10
+        end
+
+        def total_route_cost(route)
+          mjosa_fee(route) + mountain_fee(route)
         end
 
         def check_other(route)
@@ -292,15 +295,15 @@ module Engine
           raise GameError, 'Ships cannot run on land' if ship?(route.train) && track_types != [route.train.track_type]
           raise GameError, 'Trains cannot run on water' if !ship?(route.train) && track_types.include?(:narrow)
 
-          cost = route_cost(route)
+          cost = total_route_cost(route)
           raise GameError, 'Cannot afford the fees for this route' if route.train.owner.cash < cost
         end
 
         def revenue_str(route)
           stop_hexes = route.stops.map(&:hex)
           str = route.hexes.map { |h| stop_hexes.include?(h) ? h&.name : "(#{h&.name})" }.join('-')
-          cost = route_cost(route)
-          str += " -Fee(#{cost})" if cost.positive?
+          str += " + Mjøsa fee (#{format_currency(mjosa_fee(route))})" if mjosa_fee(route).positive?
+          str += " + Mountain fee (#{format_currency(mountain_fee(route))})" if mountain_fee(route).positive?
           str
         end
 
