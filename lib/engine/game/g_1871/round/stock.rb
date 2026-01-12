@@ -62,7 +62,7 @@ module Engine
             when SPLIT_PICK_TOKENS
               tokens = @game.split_token_choices(@split_corporation)
               token_choices = tokens.to_h { |t| [@split_corporation.tokens.find_index(t), t.city.hex.id] }
-              token_choices['done'] = 'Done' if @split_corporation.tokens.size < 4
+              token_choices['done'] = 'Done' if @split_branch.tokens.first&.used
               token_choices
             when SPLIT_PICK_PAR
               @game.stock_market.par_prices.to_h do |p|
@@ -200,6 +200,8 @@ module Engine
               split_pick_branch(branch)
             when SPLIT_PICK_TOKENS
               if choose.choice == 'done'
+                raise GameError, "#{@split_branch.full_name} must swap at least one token" unless @split_branch.tokens.first&.used
+
                 @log << "#{current_entity.name} is done swapping tokens"
                 split_next
               else

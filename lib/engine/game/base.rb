@@ -2312,7 +2312,7 @@ module Engine
         return if rusted_trains.empty?
 
         @log << "-- Event: #{rusted_trains.uniq.join(', ')} trains rust " \
-                "( #{owners.map { |c, t| "#{c} x#{t}" }.join(', ')}) --"
+                "(#{owners.map { |c, t| "#{c} x#{t}" }.join(', ')}) --"
       end
 
       def show_progress_bar?

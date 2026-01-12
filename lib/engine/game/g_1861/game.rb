@@ -128,9 +128,8 @@ module Engine
             distance: [{ 'nodes' => %w[city offboard], 'pay' => 8, 'visit' => 8 },
                        { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
             price: 1000,
-            num: 20,
-            events: [{ 'type' => 'signal_end_game' },
-                     { 'type' => 'minors_nationalized' },
+            num: 'unlimited',
+            events: [{ 'type' => 'minors_nationalized' },
                      { 'type' => 'trainless_nationalization' }],
           },
           {
@@ -139,7 +138,7 @@ module Engine
                        { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
             multiplier: 2,
             price: 600,
-            num: 20,
+            num: 'unlimited',
             available_on: '8',
           },
           {
@@ -148,7 +147,7 @@ module Engine
                        { 'nodes' => %w[city town], 'pay' => 0, 'visit' => 99 }],
             multiplier: 2,
             price: 1500,
-            num: 20,
+            num: 'unlimited',
             available_on: '8',
           },
         ].freeze
@@ -288,22 +287,12 @@ module Engine
 
         def or_round_finished; end
 
-        def event_signal_end_game!
-          if @round.round_num == 1
-            # If first round
-            # The current OR now has 3 rounds and finishes
-            @operating_rounds = @final_operating_rounds = 3
-            @final_turn = @turn
-            @log << "First 8 train bought/exported, ending game at the end of #{@turn}.#{@final_operating_rounds},"\
-                    ' skipping the next OR and SR'
-          else
-            # Else finish this OR, do the stock round then 3 more ORs
-            @final_operating_rounds = 3
-            @log << "First 8 train bought/exported, ending game at the end of #{@turn + 1}.#{@final_operating_rounds}"
-          end
+        def game_end_set_final_turn!(reason, after)
+          return unless after == :one_more_full_or_set
+          return super unless @round.round_num == 1
 
-          # Hit the game end check now to set the correct turn
-          game_end_check
+          @operating_rounds = @final_operating_rounds = 3
+          @final_turn = @turn
         end
       end
     end
