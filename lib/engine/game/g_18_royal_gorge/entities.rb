@@ -119,6 +119,22 @@ module Engine
           },
         ].freeze
 
+        YELLOW_COMPANIES_EXTRA = [
+          {
+            sym: 'Y8',
+            name: 'Madam Evens (Y8)',
+            desc: 'Once purchased by a company the brothel token starts in Denver (K1). '\
+                  'The brothel generates an additional $10 revenue only for the holding corporation. '\
+                  'In the Brown Phase, the brothel is moved to Salida (B10) and becomes a $20 revenue. '\
+                  'This private never closes.',
+            value: 50,
+            revenue: 5,
+            abilities: [
+              # +$10 revenue in Denver; moves to Salida in brown and increases to $20 revenue
+            ],
+          },
+        ].freeze
+
         GREEN_COMPANIES = [
           {
             sym: 'G1',
