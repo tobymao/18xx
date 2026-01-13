@@ -68,8 +68,6 @@ module Engine
 
         PRESIDENT_SALES_TO_MARKET = Set['CF&I', 'VGC'].freeze
 
-        # Stretch Goal Companies Variant not yet fully implemented, there switching variant by default to false
-        STRETCH_GOAL_COMPANIES_VARIANT = false
         COMPANIES_CLOSE_PHASE_5 = %w[Y2 Y3 Y4 Y5 Y6 G2 G3 G5 G6 B3 B4 B5].freeze
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
@@ -114,7 +112,7 @@ module Engine
         ST_CLOUD_ICON_NAME = 'SCH'
 
         MDM_EVENS_START_HEX = 'K1'
-        MDM_EVENS_BROWN_HEX = 'B10'
+        MDM_EVENS_BROWN_HEX = 'C11'
         MDM_EVENS_START_BONUS = 10
         MDM_EVENS_BROWN_BONUS = 20
         MDM_EVENS_BONUS_STR = ' (Madam Evens)'
@@ -141,13 +139,19 @@ module Engine
           'Treasury'
         end
 
+        def include_stretch_goal_companies?
+          # Stretch Goal Companies Variant not yet fully implemented, there switching variant by default to false
+          false
+        end
+
         def game_companies
           yellow_companies = YELLOW_COMPANIES.dup
+          yellow_companies_extra = YELLOW_COMPANIES_EXTRA.dup
           green_companies = GREEN_COMPANIES.dup
           brown_companies = BROWN_COMPANIES.dup
 
-          # remove strech goal companies if variant is not chosen
-          yellow_companies.reject! { |c| c[:sym] == 'Y8' } unless STRETCH_GOAL_COMPANIES_VARIANT
+          # add stretch goal companies if variant is chosen
+          yellow_companies += yellow_companies_extra if include_stretch_goal_companies?
           yellow_companies.sort_by { rand }.take(2).sort_by { |c| c[:value] } +
             green_companies.sort_by { rand }.take(2).sort_by { |c| c[:value] } +
             brown_companies.sort_by { rand }.take(1)
@@ -207,16 +211,15 @@ module Engine
           @sulphur_springs_connected = false
           @updated_sulphur_springs_company_revenue = false
 
-          @st_cloud_icon = Part::Icon.new("18_royal_gorge/#{ST_CLOUD_ICON_NAME}", ST_CLOUD_ICON_NAME)
           setup_st_cloud_hotel
 
-          @mdm_evens_icon = Part::Icon.new("18_royal_gorge/#{MDM_EVENS_ICON_NAME}", MDM_EVENS_ICON_NAME)
           setup_mdm_evens
         end
 
         def setup_st_cloud_hotel
           return unless st_cloud_hotel
 
+          @st_cloud_icon = Part::Icon.new("18_royal_gorge/#{ST_CLOUD_ICON_NAME}", ST_CLOUD_ICON_NAME)
           @st_cloud_hex = hex_by_id(ST_CLOUD_START_HEX)
           @st_cloud_hex.tile.icons << @st_cloud_icon
         end
@@ -224,6 +227,7 @@ module Engine
         def setup_mdm_evens
           return unless mdm_evens
 
+          @mdm_evens_icon = Part::Icon.new("18_royal_gorge/#{MDM_EVENS_ICON_NAME}", MDM_EVENS_ICON_NAME)
           @mdm_evens_hex = hex_by_id(MDM_EVENS_START_HEX)
           @mdm_evens_hex.tile.icons << @mdm_evens_icon
           @mdm_evens_bonus = MDM_EVENS_START_BONUS

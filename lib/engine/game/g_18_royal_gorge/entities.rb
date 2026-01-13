@@ -117,6 +117,9 @@ module Engine
               { type: 'no_buy' },
             ],
           },
+        ].freeze
+
+        YELLOW_COMPANIES_EXTRA = [
           {
             sym: 'Y8',
             name: 'Madam Evens (Y8)',
