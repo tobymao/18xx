@@ -226,8 +226,10 @@ module Engine
           return unless current_president != president
 
           @log << "#{president.name} becomes the president of #{national.name}"
-          @share_pool.change_president(national.presidents_share, current_president, president)
           national.owner = president
+          return if national.presidents_share.owner == president
+
+          @share_pool.change_president(national.presidents_share, national.presidents_share.owner, president)
         end
 
         # Similar to 1837
@@ -544,7 +546,7 @@ module Engine
           coal_minor_exchange_order
         end
 
-        # Changed log text compared to 1837
+        # 1824 version
         def exchange_coal_minor(minor)
           target = exchange_target(minor)
           @log << "#{minor.id} exchanged for the president's share of #{target.id}"
@@ -617,14 +619,12 @@ module Engine
           owner = minor.owner
           num_shares = coal_minor?(minor) || minor.id.end_with?('1') ? 2 : 1
 
-          share = corporation.shares.find { |s| !s.buyable && s.percent == num_shares * 10 }
+          share = corporation.reserved_shares.find { |s| s.percent == num_shares * 10 }
           @log << "#{owner.name} receives #{num_shares} share#{num_shares > 1 ? 's' : ''} of #{corporation.name}"
           share.buyable = true
-
-          # 1824 fix. We explicitly set allow_president_change to true here as we otherwise get a strange
-          # behavior when presidency decided for nationals. Might need revisiting.
-          @share_pool.transfer_shares(share.to_bundle, owner, allow_president_change: true)
-
+          @share_pool.transfer_shares(ShareBundle.new([share]), owner, allow_president_change: allow_president_change)
+          minor_share = owner.shares_by_corporation[minor].first
+          @share_pool.transfer_shares(ShareBundle.new([minor_share]), minor, allow_president_change: false)
           if @round.respond_to?(:non_paying_shares) && operated_this_round?(minor)
             @round.non_paying_shares[owner][corporation] += num_shares
           end
