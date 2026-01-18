@@ -189,6 +189,7 @@ module Engine
           super
           @tile_groups = init_tile_groups
           initialize_tile_opposites!
+          @unused_tiles = []
         end
 
         def init_tile_groups
