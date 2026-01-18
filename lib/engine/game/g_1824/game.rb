@@ -215,15 +215,13 @@ module Engine
             return
           end
 
-          @players.each do |p|
-            tie_breaker << p unless tie_breaker.include?(p)
-          end
+          tie_breaker |= @players
 
           president_factors = president_candidates.to_h do |player, percent|
-            [[percent, tie_breaker.index(player) || -1, player == current_president ? 1 : 0], player]
+            [[percent, tie_breaker.index(player), player == current_president ? 1 : 0], player]
           end
           president = president_factors[president_factors.keys.max]
-          return unless current_president != president
+          return if current_president == president
 
           @log << "#{president.name} becomes the president of #{national.name}"
           national.owner = president
@@ -623,8 +621,7 @@ module Engine
           @log << "#{owner.name} receives #{num_shares} share#{num_shares > 1 ? 's' : ''} of #{corporation.name}"
           share.buyable = true
           @share_pool.transfer_shares(ShareBundle.new([share]), owner, allow_president_change: allow_president_change)
-          minor_share = owner.shares_by_corporation[minor].first
-          @share_pool.transfer_shares(ShareBundle.new([minor_share]), minor, allow_president_change: false)
+
           if @round.respond_to?(:non_paying_shares) && operated_this_round?(minor)
             @round.non_paying_shares[owner][corporation] += num_shares
           end
