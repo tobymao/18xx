@@ -27,20 +27,52 @@ module Engine
         end
 
         def setup_preround
-          @original_corporations = @corporations.dup
+          @base_tiles = []
+          @skip_round = {}
+          @lner_triggered = nil
+          @lner = nil
 
-          super
+          # remove reservations (nice to have in starting map)
+          @corporations.each { |corp| remove_reservation(corp) }
 
-          @original_corporations.reject { |c| @corporations.include?(c) }.each do |c|
-            hex = @hexes.find { |h| h.id == c.coordinates } # hex_by_id doesn't work here
-            old_tile = hex.tile
-            tile_string = ''
-            hex.tile = Tile.from_code(old_tile.name, 'brown', tile_string)
+          @double_parliament = false
+
+          # randomize order of corporations, then remove some based on player count
+          @offer_order = @corporations.sort_by { rand }
+          removed = @offer_order.take(4)
+          removed.each do |corp|
+            @offer_order.delete(corp)
+            @corporations.delete(corp)
+
+            remove_corporation_hex(corp)
+
+            @log << "Removing #{corp.name} from game"
           end
+
+          # add markers for remaining companies
+          @corporations.each { |corp| add_marker(corp) }
+
+          @chartered = {}
+
+          # randomize and distribute train permits
+          @all_permits = (%i[freight express local] * 2).sort_by { rand }
+          @permits = Hash.new { |h, k| h[k] = [] }
+          @original_permits = Hash.new { |h, k| h[k] = [] }
+
+          @corporations.each { |c| convert_to_full!(c) }
 
           # Build draw and draft decks for player hand and IPO rows
           @ipo_rows = [[], [], [], [], [], [], [], [], []]
           create_decks(@corporations)
+        end
+
+        # 1862 Solo does not use obligations
+        def game_corporations
+          []
+        end
+
+        def ready_corporations
+          @corporations.reject(:closed?)
         end
 
         def create_decks(corporations)
@@ -48,20 +80,26 @@ module Engine
 
           corporations.each do |corporation|
             corporation.ipo_shares.each do |share|
+              next if share.percent > 10
+
               company = convert_share_to_company(share)
               company.owner = bank
               draw_deck << company
+              @companies << company
             end
           end
 
           draw_deck.sort_by! { rand }
           deal_deck_to_ipo(draw_deck)
+          @deck = draw_deck
         end
 
         # create a placeholder 'company' for shares in IPO
         def convert_share_to_company(share)
           description = "Certificate for #{share.percent}\% of #{share.corporation.full_name}."
-          Company.new(
+          presidency_share = share.corporation.presidents_share.id
+          ability = Engine::Ability::Shares.new(type: 'shares', shares: presidency_share)
+          company = Company.new(
             sym: share.id,
             name: share.corporation.name,
             value: 0,
@@ -73,12 +111,27 @@ module Engine
             treasury: share,
             revenue: nil,
           )
+          company.add_ability(ability)
+          company
+        end
+
+        def abilities(entity, type = nil, time: nil, on_phase: nil, passive_ok: nil, strict_time: nil)
+          if entity&.company? && type == :shares
+            presidency_share = entity.treasury.corporation.presidents_share
+            Engine::Ability::Shares.new(type: 'shares', shares: presidency_share)
+          else
+            super
+          end
         end
 
         def deal_deck_to_ipo(deck)
           all_rows_indexes.each do |row|
             @ipo_rows[row] = deck.pop(6) # 6 shares per row
           end
+        end
+
+        def deal_to_ipo_row(index)
+          @ipo_rows[index] = @deck.pop(6) # 6 shares per row
         end
 
         def game_tiles
@@ -128,6 +181,7 @@ module Engine
 
         def stock_round
           G1862::Round::Stock.new(self, [
+            G1862Solo::Step::CompanyPendingPar,
             G1862::Step::BuyTokens,
             G1862::Step::ForcedSales,
             G1862Solo::Step::BuySellParShares,
@@ -135,7 +189,11 @@ module Engine
         end
 
         def show_ipo_rows?
-          true
+          @round.buy_tokens.nil?
+        end
+
+        def can_par_corporations?
+          !@all_permits.empty?
         end
 
         def in_ipo?(company)
@@ -158,24 +216,41 @@ module Engine
           []
         end
 
+        def companies_to_payout(_ignore)
+          []
+        end
+
         def init_corporations(_stock_market)
           self.class::CORPORATIONS.map do |corp|
             corporation = corp.dup
             corporation[:float_percent] = 30
-            corporation[:shares] = [10, 10, 10, 10, 10, 10, 10]
+            corporation[:shares] = [30, 10, 10, 10, 10, 10, 10, 10]
             corporation[:max_ownership_percent] = 70
             corporation[:min_price] = 1
             initiated_corp = G1862Solo::Corporation.new(
               **corporation.merge(corporation_opts),
             )
-            initiated_corp.forced_share_percent = 10
+            initiated_corp.presidents_share.buyable = false
             initiated_corp
           end
         end
 
+        def uncharted_par_prices
+          repar_prices.select { |p| p.type == :repar }
+        end
+
+        def chartered_par_prices
+          repar_prices.select { |p| p.type == :par }
+        end
+
         # So that value is not shown on company cards representing shares
-        def company_value(_company)
-          0
+        def company_value(company)
+          corporation = company.treasury.corporation
+          corporation.share_price ? corporation.share_price.price : 0
+        end
+
+        def company_header(_company)
+          '10% SHARE'
         end
 
         def show_value_of_companies?(_owner)
@@ -189,6 +264,12 @@ module Engine
         # Timeline information for INFO tab
         def timeline
           timeline = []
+
+          timeline << if @all_permits.empty?
+                        'Permits left to assign: None'
+                      else
+                        "Permits left to assign: #{@all_permits.map(&:to_s).join(', ')}"
+                      end
 
           all_rows_indexes.each do |i|
             ipo_row_i = ipo_timeline(i)
@@ -205,10 +286,85 @@ module Engine
           end
         end
 
+        def status_array(corp)
+          status = []
+          status << %w[Chartered bold] if @chartered[corp]
+          status << ["Par: #{format_currency(corp.original_par_price.price)}"] if corp.ipoed
+          status << ['Cannot start'] if @all_permits.empty? && !corp.ipoed
+          status << ["Permits: #{@permits[corp].map(&:to_s).join(',')}"] if corp.floated?
+          status
+        end
+
+        def assign_first_permit(corporation)
+          raise GameError, 'No permits left to assign' if @all_permits.empty?
+
+          permit = @all_permits.shift
+          @permits[corporation] << permit
+          @original_permits[corporation] << permit
+          @log << "#{corporation.name} is assigned a #{permit.to_s.capitalize} permit"
+        end
+
+        # TODO: I assume there is no obligations in 1862 Solo?
+        def enforce_obligations; end
+
+        # TODO: Should we use any special sorting in 1862 Solo?
+        def bank_sort(corporations)
+          corporations.sort_by(&:name)
+        end
+
+        def sorted_corporations
+          ipoed, others = @corporations.reject(&:closed?).partition(&:ipoed)
+          ipoed.sort + others
+        end
+
+        def random_corporation
+          # Get a random corporation, which player does not own any shares of. TODO: Is this correct?
+          @corporations.reject { |c| c.closed? || c.ipoed || player_owns_any_shares_of?(c) }.min_by { rand }
+        end
+
+        def player_owns_any_shares_of?(corp)
+          !@players.first.shares_by_corporation[corp].empty?
+        end
+
+        # TODO: Is this OK as 1862 solo version?
+        def available_to_start?(corporation)
+          legal_to_start?(corporation)
+        end
+
+        def remove_corporation(corp, reason = nil)
+          corp.close!
+
+          # TODO: If there are tile or token in this hex, freeze it instead
+          remove_corporation_hex(corp)
+
+          all_rows_indexes.each do |row|
+            @ipo_rows[row].reject! { |c| c.name == corp.name }
+          end
+
+          log_text = "Removing #{corp.name} from game "
+          log_text += reason if reason
+          @log << log_text
+        end
+
+        # Always the player acting in 1862 Solo
+        def acting_for_entity(_entity)
+          @players.first
+        end
+
+        # No use in 1862 Solo
+        def reorder_players(_order, _log_player_order, _silent); end
+
         private
 
         def all_rows_indexes
           (0..8)
+        end
+
+        def remove_corporation_hex(corp)
+          hex = @hexes.find { |h| h.id == corp.coordinates } # hex_by_id doesn't work here
+          old_tile = hex.tile
+          tile_string = ''
+          hex.tile = Tile.from_code(old_tile.name, 'gray', tile_string)
         end
       end
     end

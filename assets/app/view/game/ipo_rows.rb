@@ -29,7 +29,7 @@ module View
         end
       end
 
-      def render_ipo_row(ipo_row, number)
+      def render_ipo_row(ipo_row, ipo_row_number)
         card_style = {
           border: '1px solid gainsboro',
           paddingBottom: '0.2rem',
@@ -39,14 +39,14 @@ module View
         companies = ipo_row.dup
         return h(:div) if companies.empty?
 
-        divs = [render_title(number)]
-        divs << render_first_ipo(companies) if @show_first
-        divs << h(CompaniesTable, game: @game, companies: companies) unless companies.empty?
+        divs = [render_title(ipo_row_number)]
+        divs << render_first_ipo(companies, ipo_row_number) if @show_first
+        divs << h(CompaniesTable, game: @game, companies: companies)
 
         h('div.player.card', { style: card_style }, divs)
       end
 
-      def render_title(number)
+      def render_title(ipo_row_number)
         bg_color = color_for(:bg2)
         props = {
           style: {
@@ -56,10 +56,10 @@ module View
           },
         }
 
-        h('div.player.title.nowrap', props, ["IPO Row #{number}"])
+        h('div.player.title.nowrap', props, ["IPO Row #{ipo_row_number}"])
       end
 
-      def render_first_ipo(ipo_row)
+      def render_first_ipo(ipo_row, ipo_row_number)
         button_props = {
           style: {
             display: 'grid',
@@ -69,7 +69,17 @@ module View
         }
         first_company = ipo_row.shift
         inputs = []
-        inputs.concat(render_buy_input(first_company)) if @current_actions.intersect?(%w[buy_company corporate_buy_company])
+
+        # Make it possible for a title to inject any choices
+        if @step.respond_to?(:choices_for_ipo_row)
+          choices_with_description = @step.choices_for_ipo_row(@current_entity, first_company, ipo_row_number)
+          choices_with_description.each do |choice, description|
+            inputs.concat(render_choice_with_description(choice, description))
+          end
+        elsif @current_actions.intersect?(%w[buy_company corporate_buy_company])
+          inputs.concat(render_buy_input(first_company))
+        end
+
         children = []
         children << h(Company, company: first_company, interactive: !inputs.empty?)
         children << h('div.margined_bottom', button_props, inputs) if !inputs.empty? && @selected_company == first_company
@@ -91,6 +101,19 @@ module View
         [h(:button,
            { on: { click: buy } },
            "Buy #{company.name} from IPO Row for #{@game.format_currency(company.value)}")]
+      end
+
+      def render_choice_with_description(choice, description)
+        action = lambda do
+          process_action(Engine::Action::Choose.new(
+            @current_entity,
+            choice: choice,
+          ))
+          store(:selected_company, nil, skip: true)
+        end
+        [h(:button,
+           { on: { click: action } },
+           description)]
       end
     end
   end

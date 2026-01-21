@@ -271,7 +271,7 @@ module Engine
             color: '#FFFF00',
             text_color: '#8B008B',
           },
-        ].freeze
+        ].deep_freeze
       end
     end
   end
