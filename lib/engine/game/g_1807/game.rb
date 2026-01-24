@@ -20,7 +20,7 @@ module Engine
 
         include_meta(G1807::Meta)
 
-        attr_reader :london_small, :london_zoomed
+        attr_reader :london_small, :london_zoomed, :london_cities
 
         GAME_END_REASONS_TEXT = Base::GAME_END_REASONS_TEXT.merge(
           train: 'The first 4+4 or 6G train is purchased.',
@@ -46,7 +46,7 @@ module Engine
             company.type == :railway
           end
           @corporations, @future_corporations = @corporations.partition do |corporation|
-            corporation.type == :minor && corporation.reservation_color == MINORS_COLOR_BATCH1
+            corporation.type != :minor || corporation.reservation_color == MINORS_COLOR_BATCH1
           end
         end
 
@@ -80,6 +80,31 @@ module Engine
           super
         end
 
+        def next_round!
+          clear_interest_paid
+          @round =
+            case @round
+            when Engine::Round::Stock
+              @operating_rounds = @final_operating_rounds || @phase.operating_rounds
+              reorder_players
+              new_operating_round
+            when Engine::Round::Operating
+              or_round_finished
+              or_set_finished if @round.round_num == @operating_rounds
+              new_merger_round
+            when G1867::Round::Merger
+              if @round.round_num < @operating_rounds
+                new_operating_round(@round.round_num + 1)
+              else
+                @turn += 1
+                new_stock_round
+              end
+            when init_round.class
+              reorder_players
+              new_stock_round
+            end
+        end
+
         def stock_round
           G1867::Round::Stock.new(self, [
             G1867::Step::MajorTrainless,
@@ -87,6 +112,17 @@ module Engine
             Engine::Step::HomeToken,
             G1807::Step::BuySellParShares,
           ])
+        end
+
+        def merger_round
+          G1867::Round::Merger.new(self, [
+            G1867::Step::MajorTrainless,
+            G1807::Step::DeclineTokens,
+            G1867::Step::ReduceTokens,
+            G1867::Step::PostMergerShares,
+            Engine::Step::DiscardTrain,
+            G1807::Step::Merge,
+          ], round_num: @round.round_num)
         end
 
         def operating_round(round_num)
@@ -107,6 +143,17 @@ module Engine
             G1807::Step::BuyTrain,
             [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
+        end
+
+        # Trains are exported after each operating round set, not after each
+        # operating round as in 1867.
+        def or_round_finished; end
+
+        def or_set_finished
+          return unless phase.status.include?('train_export')
+
+          depot.export!
+          post_train_buy
         end
 
         def event_minors_batch3!
@@ -144,6 +191,13 @@ module Engine
           end
         end
 
+        def merge_corporations
+          corps = []
+          corps += @corporations.select { |c| c.floated? && c.type == :minor } if phase.status.include?('minors_convert')
+          # TODO: add public companies if systems can form
+          corps
+        end
+
         def calculate_interest
           # Number of loans interest is due on is set before taking loans in that OR
           @interest.clear
@@ -162,6 +216,13 @@ module Engine
               bonus_london_offboard(train, stops)
             end
           revenue + bonuses
+        end
+
+        def fix_token_count!(corporation)
+          # TODO: needs extending to work for systems as well as public companies.
+          (corporation.tokens.size...4).each do |_|
+            corporation.tokens << Engine::Token.new(corporation, price: 20)
+          end
         end
 
         private
