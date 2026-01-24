@@ -157,10 +157,10 @@ module Engine
                     name: '8',
                     distance: 8,
                     price: 1100,
-                    num: 40,
+                    num: 'unlimited',
                     events: [{ 'type' => 'signal_end_game' }],
                   },
-                  { name: 'P', distance: 0, price: 200, available_on: '5', num: 20 }].freeze
+                  { name: 'P', distance: 0, price: 200, available_on: '5', num: 'unlimited' }].freeze
 
         def game_trains
           return seventeen_trains if @optional_rules.include?(:seventeen_trains)
