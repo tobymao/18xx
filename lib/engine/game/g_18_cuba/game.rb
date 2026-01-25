@@ -244,23 +244,18 @@ module Engine
         end
 
         def sugar_production(corporation, total_revenue)
-          return if total_revenue.zero? || !corporation.minor?
+          return if total_revenue.zero? || corporation.type != :minor
 
           sugar_cubes = case total_revenue
-                        when 0..29
-                          0
-                        when 30..79
-                          1
-                        when 80..150
-                          2
-                        else
-                          3
+                        when 0..29 then 0
+                        when 30..79 then 1
+                        when 80..150 then 2
+                        else 3
                         end
 
           @sugar_cubes[corporation] += sugar_cubes
           @log << "#{corporation.name} produces #{sugar_cubes} sugar cube(s) "\
-                  "from #{format_currency(total_revenue)} revenue "\
-                  "(total sugar cubes: #{@sugar_cubes[corporation]})."
+                  "from #{format_currency(total_revenue)} revenue."
         end
 
         def transition_to_next_round!
@@ -277,10 +272,10 @@ module Engine
 
         def or_round_finished
           # For the moment reset sugar cubes, handling for FC to be implemented later
-          return if @sugar_cubes.empty?
+          return if @sugar_cubes.values.none?(&:positive?)
 
           @sugar_cubes.clear
-          @log << 'All sugar cubes are removed at the end of the Operating Round.'
+          @log << 'All remainingsugar cubes are removed at the end of the Operating Round.'
         end
       end
     end
