@@ -763,6 +763,16 @@ module View
       max_players_elm = Native(@inputs[:max_players])&.elm
       min_players_elm = Native(@inputs[:min_players])&.elm
 
+      current_min = min_players_elm&.value&.to_i
+      current_max = max_players_elm&.value&.to_i
+
+      needs_adjust =
+        !allowed.include?(current_min) ||
+        !allowed.include?(current_max) ||
+        current_min > current_max
+
+      return unless needs_adjust
+
       min_players_elm&.value = allowed.min
       max_players_elm&.value = allowed.max
     end
