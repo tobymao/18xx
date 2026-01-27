@@ -295,7 +295,7 @@ module Engine
               ['D7'] => d_tile('D7'),
             },
             red: {
-              ['B1'] => 'offboard=revenue:green_50|brown_70,format:%d-X;path=a:0,b:_0,track:narrow',
+              ['B1'] => 'offboard=revenue:green_50|brown_70,format:%d-X;path=a:0,b:_0',
             },
             blue: {
               %w[A12] => 'offboard=revenue:yellow_10|brown_20;path=a:5,b:_0',
