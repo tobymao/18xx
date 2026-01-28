@@ -207,7 +207,7 @@ module Engine
             Engine::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
-            Engine::Step::Dividend,
+            G18Cuba::Step::Dividend,
             Engine::Step::DiscardTrain,
             Engine::Step::BuyTrain,
             [Engine::Step::BuyCompany, { blocks: true }],
@@ -236,10 +236,34 @@ module Engine
           @tile_groups = init_tile_groups
           initialize_tile_opposites!
           @unused_tiles = []
+          @sugar_cubes = {}
         end
 
         def init_tile_groups
           self.class::TILE_GROUPS
+        end
+
+        def sugar_production(corporation, total_revenue)
+          return if total_revenue.zero? || corporation.type != :minor
+
+          sugar_cubes = case total_revenue
+                        when 0..29 then 0
+                        when 30..79 then 1
+                        when 80..150 then 2
+                        else 3
+                        end
+
+          @sugar_cubes[corporation] = sugar_cubes
+          @log << "#{corporation.name} produces #{sugar_cubes} sugar cube(s) "\
+                  "from #{format_currency(total_revenue)} revenue."
+        end
+
+        def or_round_finished
+          # For the moment reset sugar cubes, handling for FC to be implemented later
+          return if @sugar_cubes.values.none?(&:positive?)
+
+          @sugar_cubes.clear
+          @log << 'All remaining sugar cubes are removed at the end of the Operating Round.'
         end
       end
     end
