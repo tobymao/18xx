@@ -1392,7 +1392,7 @@ module Engine
             next if corporation.ipoed
             tile = hex_by_id(corporation.coordinates).tile
             # When E15 tile is upgraded - the cities array on the tile has 2 elements rather than 3. 
-            # The positions of reservations reaarange, so it's safer to just iterate over all cities than to relay on original positions.
+            # The positions of reservations rearrange, so it's safer to just iterate over all cities than to rely on original positions.
             tile.cities.each do |city|
               city.remove_reservation!(corporation)
             end
