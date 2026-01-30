@@ -1390,15 +1390,17 @@ module Engine
 
           @corporations.each do |corporation|
             next if corporation.ipoed
+
             tile = hex_by_id(corporation.coordinates).tile
-            # When E15 tile is upgraded - the cities array on the tile has 2 elements rather than 3. 
-            # The positions of reservations rearrange, so it's safer to just iterate over all cities than to rely on original positions.
+            # When E15 tile is upgraded - the cities array on the tile has 2 elements rather than 3.
+            # The positions of reservations rearrange
+            # It's safer to just iterate over all cities than to rely on original positions.
             tile.cities.each do |city|
               city.remove_reservation!(corporation)
             end
           end
         end
-        
+
         def tile_lays(_entity)
           return REDUCED_TILE_LAYS if @phase.status.include?('reduced_tile_lay')
 
