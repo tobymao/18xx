@@ -27,8 +27,8 @@ module Engine
         TRACK_RESTRICTION = :permissive
         CURRENCY_FORMAT_STR = '$%s'
 
-        COMPANY_CONCESSION_PREFIX = 'C'
-        COMPANY_COMMISIONER_PREFIX = 'M'
+        COMPANY_CONCESSION_PREFIX = 'M'
+        COMPANY_COMMISIONER_PREFIX = 'C'
 
         BANK_CASH = 10_000
 
@@ -231,6 +231,14 @@ module Engine
           company.id[0] == self.class::COMPANY_CONCESSION_PREFIX ? 'CONCESSION' : 'COMMISSIONER'
         end
 
+        def commissioners
+          @commissioners ||= @companies.select { |c| c.id[0] == self.class::COMPANY_COMMISIONER_PREFIX }
+        end
+
+        def concessions
+          @concessions ||= @companies.select { |c| c.id[0] == self.class::COMPANY_CONCESSION_PREFIX }
+        end
+
         def setup
           super
           @tile_groups = init_tile_groups
@@ -241,6 +249,47 @@ module Engine
 
         def init_tile_groups
           self.class::TILE_GROUPS
+        end
+
+        def new_auction_round
+          Engine::Round::Auction.new(self, [G18Cuba::Step::SelectionAuction])
+        end
+
+        def new_draft_round
+          Engine::Round::Draft.new(self, [G18Cuba::Step::SimpleDraft], reverse_order: false)
+        end
+
+        def close_unopened_minors
+          @corporations.each { |c| c.close! if c.type == :minor && !c.floated? }
+          @log << 'Unopened minors close'
+        end
+
+        def next_round!
+          # After Init -> Auction Commissions -> Draft Concessions -> Stock Round -> Operating Rounds
+          @round =
+            case @round
+            when Round::Draft
+              new_stock_round
+            when Round::Stock
+              close_unopened_minors if @turn == 1 && @round.round_num == 1
+              @operating_rounds = @phase.operating_rounds
+              reorder_players
+              new_operating_round
+            when Round::Operating
+              if @round.round_num < @operating_rounds
+                or_round_finished
+                new_operating_round(@round.round_num + 1)
+              else
+                @turn += 1
+                or_round_finished
+                or_set_finished
+                new_stock_round
+              end
+            when init_round.class
+              init_round_finished
+              reorder_players(:least_cash, log_player_order: true)
+              new_draft_round
+            end
         end
 
         def sugar_production(corporation, total_revenue)
