@@ -77,7 +77,7 @@ module Engine
           end
 
           def process_bid(action)
-            # Assigns the company to the player, deducts the price, updates the game state, 
+            # Assigns the company to the player, deducts the price, updates the game state,
             # removes the company from the available auction list, logs the purchase, and advances the auction.
             company = action.company
             player = action.entity
