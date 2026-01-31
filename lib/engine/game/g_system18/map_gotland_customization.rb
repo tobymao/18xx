@@ -502,10 +502,10 @@ module Engine
         end
 
         # ----- Nationalize -----
-        def new_nationalization_round(round_num)
+        def new_nationalization_round
           GSystem18::Round::GotlandNationalization.new(self, [
               GSystem18::Step::GotlandNationalizeCorporation,
-              ], round_num: round_num)
+              ])
         end
 
         def nationalized?(entity)
@@ -595,12 +595,8 @@ module Engine
         def map_gotland_next_round!
           @round =
             case @round
-            when GSystem18::Round::DifficultySelection
-              rival_share_randomizer
-              new_stock_round
-            when GSystem18::Round::GotlandNationalization
-              @turn += 1
-              or_set_finished
+            when GSystem18::Round::DifficultySelection,
+                 GSystem18::Round::GotlandNationalization
               rival_share_randomizer
               new_stock_round
             when Engine::Round::Stock
@@ -616,7 +612,7 @@ module Engine
                 or_round_finished
                 or_set_finished
                 if @phase.status.include?('nr_or')
-                  new_nationalization_round(@round.round_num)
+                  new_nationalization_round
                 else
                   new_stock_round
                 end
