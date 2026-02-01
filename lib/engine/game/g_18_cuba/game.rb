@@ -28,7 +28,7 @@ module Engine
         CURRENCY_FORMAT_STR = '$%s'
 
         COMPANY_CONCESSION_PREFIX = 'M'
-        COMPANY_COMMISIONER_PREFIX = 'C'
+        COMPANY_COMMISSIONER_PREFIX = 'C'
 
         BANK_CASH = 10_000
 
@@ -232,11 +232,11 @@ module Engine
         end
 
         def commissioners
-          @commissioners ||= @companies.select { |c| c.id[0] == self.class::COMPANY_COMMISIONER_PREFIX }
+          @commissioners ||= @companies.select { |c| c.id.start_with?(COMPANY_COMMISSIONER_PREFIX) }
         end
 
         def concessions
-          @concessions ||= @companies.select { |c| c.id[0] == self.class::COMPANY_CONCESSION_PREFIX }
+          @concessions ||= @companies.select { |c| c.id.start_with?(COMPANY_CONCESSION_PREFIX) }
         end
 
         def setup
@@ -271,7 +271,7 @@ module Engine
             when Round::Draft
               new_stock_round
             when Round::Stock
-              close_unopened_minors if @turn == 1 && @round.round_num == 1
+              close_unopened_minors if @turn == 1 # && @round.round_num == 1
               @operating_rounds = @phase.operating_rounds
               reorder_players
               new_operating_round

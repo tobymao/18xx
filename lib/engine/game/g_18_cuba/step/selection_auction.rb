@@ -17,12 +17,6 @@ module Engine
             auction_entity(@cheapest)
           end
 
-          def round_state
-            {
-              companies_pending_par: [],
-            }
-          end
-
           def post_win_bid(_winner, _company)
             # After a commission (company) is won, rotate the auction starter to the next player.
             # Reset all pass states and automatically begin the next auction, if any
