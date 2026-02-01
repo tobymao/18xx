@@ -271,7 +271,7 @@ module Engine
             when Round::Draft
               new_stock_round
             when Round::Stock
-              close_unopened_minors if @turn == 1 # && @round.round_num == 1
+              close_unopened_minors if @turn == 1
               @operating_rounds = @phase.operating_rounds
               reorder_players
               new_operating_round
