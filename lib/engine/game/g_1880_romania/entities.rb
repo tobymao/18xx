@@ -97,6 +97,7 @@ module Engine
             logo: '1880_romania/Bess',
             simple_logo: '1880_romania/Bess.alt',
             tokens: [0, 40, 100],
+            coordinates: 'D23',
             color: :gray,
             max_ownership_percent: 100,
             always_market_price: true,
