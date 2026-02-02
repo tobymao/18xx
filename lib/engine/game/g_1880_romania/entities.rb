@@ -11,7 +11,6 @@ module Engine
             value: 20,
             revenue: 5,
             desc: 'May be closed any time during the game to give the owner 20 (if player) or 40 (if company) out of the bank.',
-            color: nil,
           },
           {
             name: 'Consorţiu Bethel Henry Strousberg',
@@ -21,7 +20,6 @@ module Engine
             desc: 'During yellow phase all companies of the owner of this private may build track towards and across the '\
                   'yellow doted border. Each time (until the communist phase) a connection is built across the yellow doted '\
                   'border, the owner receives 20.',
-            color: nil,
           },
           {
             name: 'Valea Jiului',
@@ -29,7 +27,6 @@ module Engine
             value: 40,
             revenue: 10,
             desc: 'Gives a discount of two mountain symbols for each hex with mountain terrain costs.',
-            color: nil,
           },
           {
             name: 'The Danube and Black Sea Railway and Free Port of Küstendjie',
@@ -39,7 +36,6 @@ module Engine
             desc: 'Comes with a +10 token. This token may be laid any time to any Danube harbor (blue anchor symbol). It '\
                   'remains there until the end of the game. This doesn’t close the private company. The token increases the '\
                   'value of the relevant city by 10 for all companies of the owning player.',
-            color: nil,
           },
           {
             name: 'REMAR – Reparatii Material Ruland',
@@ -50,7 +46,6 @@ module Engine
                   'in this company until the end of the game (it never rusts). The tender may be assigned each round to a '\
                   'train. This can be the same or a different train. It may be assigned to a restored 2-train. '\
                   'Company closes with 3+3.',
-            color: nil,
           },
           {
             name: 'Malaxa Manufacturing Company',
@@ -59,27 +54,26 @@ module Engine
             revenue: 10,
             desc: 'May be exchanged any time into a building permit of two consecutive phases which must be assigned '\
                   'immediately to a company. This private company is then discarded.',
-            color: nil,
           },
           {
             name: 'Electroputere S.A.',
             sym: 'P7',
             value: 100,
             revenue: 5,
-            desc: 'As soon as the first 3+3 train is bought or exported, this private is exchanged into a 3+3 train '\
+            desc: 'As soon as the first 3+3 train is bought or exported, this private is exchanged for a 3+3 train '\
                   'which must be assigned immediately to a company. If the company is then above the train limit it must '\
                   'remove trains until it is within the limit. It may choose which trains to remove.',
-            color: nil,
+            abilities: [{ type: 'close', on_phase: 'B2' }],
           },
           {
             name: 'Orient Express',
             sym: 'P8',
             value: 160,
             revenue: 0,
-            desc: 'Comes with the 20% director share of the TR with building permits for phases ABC. The TR has a discount '\
-                  'of one mountain symbol for each hex with mountain terrain costs. Note: Unlike 1880-China '\
-                  'NO two yellow tile lays during yellow phase.',
-            color: nil,
+            desc: 'Comes with the 20% director share of the TR with building permits for phases ABC. The TR gets a L10 discount '\
+                  'on all mountain terrain hex costs.',
+            abilities: [{ type: 'shares', shares: 'TR_0' },
+                        { type: 'close', when: 'par', corporation: 'TR' }],
           },
         ].freeze
 
@@ -89,7 +83,7 @@ module Engine
             sym: 'BR',
             name: 'Banat Railways',
             logo: '1880_romania/BR',
-            # simple_logo: '1880_romania/BR.alt',
+            simple_logo: '1880_romania/BR.alt',
             tokens: [0, 40, 100],
             coordinates: 'F3',
             color: '#f58121',
@@ -101,7 +95,7 @@ module Engine
             sym: 'Bess',
             name: 'Bessarabian Railways',
             logo: '1880_romania/Bess',
-            # simple_logo: '1880_romania/Bess.alt',
+            simple_logo: '1880_romania/Bess.alt',
             tokens: [0, 40, 100],
             color: :gray,
             max_ownership_percent: 100,
@@ -112,7 +106,7 @@ module Engine
             sym: 'CFR',
             name: 'Căile Ferate Române',
             logo: '1880_romania/CFR',
-            # simple_logo: '1880_romania/CFR.alt',
+            simple_logo: '1880_romania/CFR.alt',
             tokens: [0, 40, 100],
             coordinates: 'I16',
             city: 0,
@@ -126,7 +120,7 @@ module Engine
             sym: 'CR',
             name: 'Crișana Railways',
             logo: '1880_romania/CR',
-            # simple_logo: '1880_romania/CR.alt',
+            simple_logo: '1880_romania/CR.alt',
             tokens: [0, 40, 100],
             coordinates: 'C4',
             color: '#FBDA03',
@@ -139,7 +133,7 @@ module Engine
             sym: 'DR',
             name: 'Dobrudja Railways',
             logo: '1880_romania/DR',
-            # simple_logo: '1880_romania/DR.alt',
+            simple_logo: '1880_romania/DR.alt',
             tokens: [0, 40, 100],
             coordinates: 'J23',
             color: '#069847',
@@ -151,7 +145,7 @@ module Engine
             sym: 'GWR',
             name: 'Greater Wallachian Railways',
             logo: '1880_romania/GWR',
-            # simple_logo: '1880_romania/GWR.alt',
+            simple_logo: '1880_romania/GWR.alt',
             tokens: [0, 40, 100],
             coordinates: 'I16',
             city: 1,
@@ -164,7 +158,7 @@ module Engine
             sym: 'LCR',
             name: 'Lemberg-Czernowitz Railways',
             logo: '1880_romania/LCR',
-            # simple_logo: '1880_romania/LCR.alt',
+            simple_logo: '1880_romania/LCR.alt',
             tokens: [0, 40, 100],
             coordinates: 'A16',
             color: '#ADD8E6',
@@ -177,7 +171,7 @@ module Engine
             sym: 'LWR',
             name: 'Lesser Wallachian Railways',
             logo: '1880_romania/LWR',
-            # simple_logo: '1880_romania/LWR.alt',
+            simple_logo: '1880_romania/LWR.alt',
             tokens: [0, 40, 100],
             coordinates: 'J9',
             color: '#D5B36C',
@@ -189,7 +183,7 @@ module Engine
             sym: 'MR',
             name: 'Moldavia Railways',
             logo: '1880_romania/MR',
-            # simple_logo: '1880_romania/MR.alt',
+            simple_logo: '1880_romania/MR.alt',
             tokens: [0, 40, 100],
             coordinates: 'C20',
             color: '#AE4B84',
@@ -201,7 +195,7 @@ module Engine
             sym: 'SZ',
             name: 'Szatmár Railways',
             logo: '1880_romania/SZ',
-            # simple_logo: '1880_romania/SZ.alt',
+            simple_logo: '1880_romania/SZ.alt',
             tokens: [0, 40, 100],
             coordinates: 'A6',
             color: '#B0CC19',
@@ -213,19 +207,25 @@ module Engine
             sym: 'TR',
             name: 'Transylvanian Railways',
             logo: '1880_romania/TR',
-            # simple_logo: '1880_romania/TR.alt',
+            simple_logo: '1880_romania/TR.alt',
             tokens: [0, 40, 100],
             coordinates: 'F11',
             color: :black,
             max_ownership_percent: 100,
             always_market_price: true,
+            abilities: [{
+              type: 'tile_discount',
+              discount: 10,
+              terrain: 'mountain',
+              description: 'L10 discount on mountain terrain costs',
+            }],
           },
           {
             float_percent: 20,
             sym: 'VRL',
             name: 'Vârciorova-Roman line',
             logo: '1880_romania/VRL',
-            # simple_logo: '1880_romania/VRL.alt',
+            simple_logo: '1880_romania/VRL.alt',
             tokens: [0, 40, 100],
             coordinates: 'H15',
             city: 1,
