@@ -16,6 +16,8 @@ module View
 
     def render_notification
       message = <<~MESSAGE
+        <p>1880 Romania is Lonny&apos;s latest 18xx game, and is now live on <a href="https://www.kickstarter.com/projects/1840vienna/1880-romania">Kickstarter</a></p>
+
         <p><a href="https://github.com/tobymao/18xx/wiki/1858-India">1858 India</a> is now in alpha.</p>
 
         <p><a href="https://github.com/tobymao/18xx/wiki/1858-Switzerland">1858 Switzerland</a> is now in beta.</p>
