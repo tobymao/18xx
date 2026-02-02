@@ -12,11 +12,11 @@ module Engine
         DEPENDS_ON = '1880'
 
         GAME_DESIGNER = 'Lonny Orgler'
-        GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1880-Romania' # todo
+        GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1880-Romania'
         GAME_LOCATION = 'Romania'
         GAME_PUBLISHER = :lonny_games
-        GAME_RULES_URL = # todo
-          GAME_TITLE = '1880 Romania'
+        GAME_RULES_URL = ''
+        GAME_TITLE = '1880 Romania'
 
         PLAYER_RANGE = [3, 6].freeze
       end
