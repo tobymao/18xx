@@ -46,6 +46,7 @@ module Engine
         SELL_MOVEMENT = :down_block
         SOLD_OUT_INCREASE = true
         POOL_SHARE_DROP = :down_block
+        EBUY_FROM_OTHERS = :never
         IMPASSABLE_HEX_COLORS = %i[purple orange].freeze
         TRACK_RESTRICTION = :city_permissive
 
