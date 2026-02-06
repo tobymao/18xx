@@ -27,9 +27,6 @@ module Engine
         TRACK_RESTRICTION = :permissive
         CURRENCY_FORMAT_STR = '$%s'
 
-        COMPANY_CONCESSION_PREFIX = 'M'
-        COMPANY_COMMISSIONER_PREFIX = 'C'
-
         BANK_CASH = 10_000
 
         CERT_LIMIT = { 2 => 35, 3 => 30, 4 => 20, 5 => 17, 6 => 15 }.freeze
@@ -41,6 +38,7 @@ module Engine
              151 158 172 180 188 196 204 013 222 231 240 250 260 275 290 300],
         ].freeze
 
+        # Currently variants 2p medium, 3p short setup. Further variant support to be added later.
         TRAIN_FOR_PLAYER_COUNT = {
           2 => { '2': 5, '3': 4, '4': 2, '5': 3, '6': 3, '8': 4, '2n': 7, '3n': 5, '4n': 4, '5n': 5 },
           3 => { '2': 7, '3': 5, '4': 3, '5': 3, '6': 3, '8': 6, '2n': 5, '3n': 5, '4n': 3, '5n': 4 },
@@ -228,15 +226,22 @@ module Engine
         end
 
         def company_header(company)
-          company.id[0] == self.class::COMPANY_CONCESSION_PREFIX ? 'CONCESSION' : 'COMMISSIONER'
+          case company.type
+          when :concession
+            'CONCESSION'
+          when :commissioner
+            'COMMISSIONER'
+          else
+            raise "Unknown company type: #{company.type}"
+          end
         end
 
         def commissioners
-          @commissioners ||= @companies.select { |c| c.id.start_with?(COMPANY_COMMISSIONER_PREFIX) }
+          @commissioners ||= @companies.select { |c| c.type == :commission }
         end
 
         def concessions
-          @concessions ||= @companies.select { |c| c.id.start_with?(COMPANY_CONCESSION_PREFIX) }
+          @concessions ||= @companies.select { |c| c.type == :concession }
         end
 
         def setup

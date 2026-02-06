@@ -10,12 +10,22 @@ module Engine
           def setup
             super
             @companies = @game.concessions.sort
-            @completed_players = {}
+            @completed_players = Hash.new(0)
+          end
+
+          def actions_per_player
+            # currently only supports 2p medium and 3p short variants,  more variants in the future
+            # 2p 2 concessions max, 3-6p 1 concession max
+            case @game.players.size
+            when 2 then 2
+            else 1
+            end
           end
 
           def actions(entity)
             return [] if finished?
             return [] unless entity == current_entity
+            return [] if @completed_players[entity.player] >= actions_per_player
 
             %w[bid pass]
           end
@@ -33,7 +43,9 @@ module Engine
           end
 
           def finished?
-            @game.players.all? { |p| @completed_players[p] }
+            @game.players.all? do |player|
+              @completed_players[player] >= actions_per_player
+            end
           end
 
           def max_bid(_entity, company)
@@ -43,7 +55,7 @@ module Engine
           def process_pass(action)
             player = action.entity.player
             @log << "#{action.entity.name} passes and will not buy any concession"
-            @completed_players[player] = true
+            @completed_players[player] += 1
             @round.next_entity_index!
             action_finalized
           end
@@ -51,7 +63,7 @@ module Engine
           def process_bid(action)
             super
             player = action.entity.player
-            @completed_players[player] = true
+            @completed_players[player] += 1
           end
         end
       end

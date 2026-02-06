@@ -8,6 +8,7 @@ module Engine
           {
             name: 'Juan Tirry y Lacy',
             sym: 'C1',
+            type: :commission,
             value: 0,
             revenue: 0,
             desc: 'Marquis de la Cañada. Funding Amount: 30. Yellow plain track tile '\
@@ -17,6 +18,7 @@ module Engine
           {
             name: 'José a. Ferrety',
             sym: 'C2',
+            type: :commission,
             value: 0,
             revenue: 0,
             desc: 'Sociedad Económica. Funding Amount: 35. Yellow city tile (without Y city tiles or Havana)',
@@ -25,6 +27,7 @@ module Engine
           {
             name: 'Carlos Pedroso',
             sym: 'C3',
+            type: :commission,
             value: 0,
             revenue: 0,
             desc: 'Real Consulado. Funding Amount: 40. Green plain track tile '\
@@ -34,6 +37,7 @@ module Engine
           {
             name: 'Domingo Herrera',
             sym: 'C4',
+            type: :commission,
             value: 0,
             revenue: 0,
             desc: 'Ayuntamiento de la Habana (Havana City Council). Funding Amount: 50. '\
@@ -43,6 +47,7 @@ module Engine
           {
             name: 'Andrés de Zayas',
             sym: 'C5',
+            type: :commission,
             value: 0,
             revenue: 0,
             desc: 'Ayuntamiento de la Habana (Havana City Council). Funding Amount: 70. '\
@@ -52,6 +57,7 @@ module Engine
           {
             name: 'Francisco Romero',
             sym: 'C6',
+            type: :commission,
             value: 0,
             revenue: 0,
             desc: 'Real Consulado. Funding Amount: 80. Brown city tile (without Y city tiles or Havana)',
@@ -60,6 +66,7 @@ module Engine
           {
             name: 'Claudio Martínez de Pinillos, Count of Villanueva',
             sym: 'M1',
+            type: :concession,
             value: 120,
             revenue: 0,
             desc: 'None',
@@ -68,6 +75,7 @@ module Engine
           {
             name: 'Wenceslao de Villaurrutia, secretary',
             sym: 'M2',
+            type: :concession,
             value: 140,
             revenue: 0,
             desc: '1 Wagon. Must be assigned to a major company.',
@@ -76,6 +84,7 @@ module Engine
           {
             name: 'Antonio M. de Escovedo, trustee',
             sym: 'M3',
+            type: :concession,
             value: 150,
             revenue: 0,
             desc: 'May be exchanged anytime during the game in one sugar mill machine (+10/+20/+40) '\
@@ -85,6 +94,7 @@ module Engine
           {
             name: 'Joaquín de Uriarte, subintendant',
             sym: 'M4',
+            type: :concession,
             value: 170,
             revenue: 0,
             desc: '10% FC share',
@@ -93,6 +103,7 @@ module Engine
           {
             name: 'Miguel A. Herrera',
             sym: 'M5',
+            type: :concession,
             value: 180,
             revenue: 0,
             desc: 'Mail contract. Must be assigned to a major company. Gives the company at the start of '\
@@ -103,6 +114,7 @@ module Engine
           {
             name: 'Alfred Cruger, first engineer',
             sym: 'M6',
+            type: :concession,
             value: 200,
             revenue: 0,
             desc: '$80 discount on a n-train.',
