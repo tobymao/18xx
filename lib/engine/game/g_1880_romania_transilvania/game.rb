@@ -102,7 +102,7 @@ module Engine
             G1880::Step::Token,
             G1880::Step::Route,
             G1880::Step::Dividend,
-            G1880::Step::BuyTrain,
+            G1880RomaniaTransilvania::Step::BuyTrain,
             G1880::Step::CheckFIConnection,
           ], round_num: round_num)
         end
