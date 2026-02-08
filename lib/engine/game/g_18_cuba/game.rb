@@ -264,6 +264,12 @@ module Engine
           Engine::Round::Draft.new(self, [G18Cuba::Step::SimpleDraft], reverse_order: false)
         end
 
+        def stock_round
+          Round::Stock.new(self, [
+            G18Cuba::Step::BuySellParShares,
+          ])
+        end
+
         def close_unopened_minors
           @corporations.each { |c| c.close! if c.type == :minor && !c.floated? }
           @log << 'Unopened minors close'
