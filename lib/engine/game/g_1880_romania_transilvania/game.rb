@@ -66,16 +66,28 @@ module Engine
           unless @game_trains
             @game_trains = super.map(&:dup)
             trains_2, trains_2p, trains_3, trains_3p, trains_4, trains_4p, trains_6, trains_6e, trains_8, trains_8e = @game_trains
+
             trains_2[:num] = 6
+
             trains_2p[:num] = 3
+
             trains_3[:num] = 3
+
             trains_3p[:num] = 2
+            # Remove close_p7 event since P7 is not used in this variant]
+            trains_3p[:events] = [{ 'type' => 'communist_takeover' }]
+
             trains_4[:num] = 2
+
             trains_4p[:num] = 2
+
             trains_6[:num] = 2
+
             trains_6e[:num] = 1
             trains_6e[:events] = [{ 'type' => 'signal_end_game', 'when' => 1 }]
+
             trains_8[:num] = 'unlimited'
+
             trains_8e[:num] = 0
           end
           @game_trains
@@ -106,54 +118,6 @@ module Engine
             G1880::Step::CheckFIConnection,
           ], round_num: round_num)
         end
-
-        def dummy_company
-          @dummy ||= Company.new(
-            name: 'Dummy Company',
-            sym: 'DUMMY',
-            value: 0,
-          )
-          @dummy.close!
-          @dummy
-        end
-
-        # Not used in this variant
-        def rocket
-          dummy_company
-        end
-
-        # Not used in this variant
-        def rocket_train; end
-        def fix_rocket_ability; end
-        def force_exchange_rocket; end
-
-        # P0 and P5 not used in this variant. P1 is assumed to have the same effect as in base game.
-        def p0; end
-        def p5; end
-
-        # Not used in this variant
-        def ferry_hexes
-          []
-        end
-
-        # Not used in this variant
-        def ferry_company
-          dummy_company
-        end
-
-        # Not used in this variant
-        def taiwan_company
-          dummy_company
-        end
-
-        # Not used in this variant
-        def taiwan_hex; end
-
-        # Not used in this variant
-        def trans_siberian_bonus?(_stops); end
-
-        # Not used in this variant
-        def event_close_p7!; end
       end
     end
   end
