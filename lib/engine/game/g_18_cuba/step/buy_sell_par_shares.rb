@@ -98,9 +98,14 @@ module Engine
           end
 
           def can_buy?(entity, bundle)
-            super &&
-            # In G18Cuba, minor corporations may not sell additional shares to other players
-            !(bundle.owner.corporation? && bundle.corporation.type == :minor && bundle.corporation.floated?)
+            # In G18Cuba, buying shares of floated minors from IPO is not allowed unless the buyer is the minor's
+            # owner. Buying from the market is still allowed.
+            return false if bundle.owner.corporation? &&
+                            bundle.corporation.type == :minor &&
+                            bundle.corporation.floated? &&
+                            entity != bundle.corporation.owner
+
+            super
           end
         end
       end
