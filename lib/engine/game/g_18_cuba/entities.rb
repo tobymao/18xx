@@ -336,9 +336,9 @@ module Engine
           },
           {
             float_percent: 60,
-            sym: 'SB',
+            sym: 'CS',
             name: 'FC de Cárdenas a Soledad de Bemba',
-            logo: '18_cuba/SB',
+            logo: '18_cuba/CS',
             tokens: [0],
             shares: [40, 20, 20, 20],
             color: :brown,

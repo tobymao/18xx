@@ -29,10 +29,13 @@ module Engine
             @game.stock_market.set_par(corporation, share_price)
 
             bundle = minor_starting_bundle(corporation)
-            concession = exchange_concession!(entity)
+            concession = exchange_concession(entity)
+            raise GameError, 'No concession available for exchange' unless concession
+
             exchange_discount = concession.discount || 0
 
             exchange_price = (share_price.price * bundle.num_shares) - exchange_discount
+            raise GameError, 'Not enough cash to par this minor' if entity.cash < exchange_price
 
             @round.players_bought[entity][corporation] += bundle.percent
 
@@ -51,17 +54,31 @@ module Engine
             track_action(action, corporation)
           end
 
+          def available_par_cash(entity, corporation, share_price: nil)
+            # UI: Includes concession discount when calculating which par prices are affordable.
+            return entity.cash unless corporation.type == :minor
+
+            concession = exchange_concession(entity)
+            return 0 unless concession
+
+            entity.cash + (concession.discount || 0)
+          end
+
+          def get_par_prices(entity, corporation)
+            # UI: don't show par prices for minors if the player doesn't have a concession to exchange
+            return [] if corporation.type == :minor && !exchange_concession(entity)
+
+            super
+          end
+
           def minor_starting_bundle(corporation)
             shares = corporation.ipo_shares.take(2)
             ShareBundle.new(shares)
           end
 
-          def exchange_concession!(entity)
+          def exchange_concession(entity)
             # Retrieve concession by looking for a company with an exchange ability owned by the entity
-            concession = entity.companies.find { |c| @game.abilities(c, :exchange) }
-            raise GameError, 'No concession available for exchange' unless concession
-
-            concession
+            entity.companies.find { |c| @game.abilities(c, :exchange) }
           end
 
           def remove_exchange_ability(concession)
@@ -73,7 +90,7 @@ module Engine
           end
 
           def close_concession_if_applicable(concession)
-            concession.close! if special_abilities?(concession)
+            concession.close! unless special_abilities?(concession)
           end
 
           def special_abilities?(company)
@@ -81,7 +98,7 @@ module Engine
           end
 
           def can_buy?(entity, bundle)
-            super # &&
+            super &&
             # In G18Cuba, minor corporations may not sell additional shares to other players
             !(bundle.owner.corporation? && bundle.corporation.type == :minor && bundle.corporation.floated?)
           end
