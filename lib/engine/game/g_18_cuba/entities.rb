@@ -73,7 +73,7 @@ module Engine
             abilities: [
               {
                 type: 'exchange',
-                corporations: %w[HG JU HY DQ CO SB],
+                corporations: %w[HG JU HY DQ CO CS],
                 owner_type: 'player',
                 from: 'par',
               },
@@ -91,7 +91,7 @@ module Engine
             abilities: [
               {
                 type: 'exchange',
-                corporations: %w[HG JU HY DQ CO SB],
+                corporations: %w[HG JU HY DQ CO CS],
                 owner_type: 'player',
                 from: 'par',
               },
@@ -109,7 +109,7 @@ module Engine
             abilities: [
               {
                 type: 'exchange',
-                corporations: %w[HG JU HY DQ CO SB],
+                corporations: %w[HG JU HY DQ CO CS],
                 owner_type: 'player',
                 from: 'par',
               },
@@ -128,7 +128,7 @@ module Engine
             abilities: [
               {
                 type: 'exchange',
-                corporations: %w[HG JU HY DQ CO SB],
+                corporations: %w[HG JU HY DQ CO CS],
                 owner_type: 'player',
                 from: 'par',
               },
@@ -146,7 +146,7 @@ module Engine
             abilities: [
               {
                 type: 'exchange',
-                corporations: %w[HG JU HY DQ CO SB],
+                corporations: %w[HG JU HY DQ CO CS],
                 owner_type: 'player',
                 from: 'par',
               },
@@ -166,7 +166,7 @@ module Engine
             abilities: [
               {
                 type: 'exchange',
-                corporations: %w[HG JU HY DQ CO SB],
+                corporations: %w[HG JU HY DQ CO CS],
                 owner_type: 'player',
                 from: 'par',
               },

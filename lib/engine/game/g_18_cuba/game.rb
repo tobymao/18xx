@@ -229,7 +229,7 @@ module Engine
           case company.type
           when :concession
             'CONCESSION'
-          when :commissioner
+          when :commission
             'COMMISSIONER'
           else
             raise "Unknown company type: #{company.type}"
@@ -273,6 +273,15 @@ module Engine
         def close_unopened_minors
           @corporations.each { |c| c.close! if c.type == :minor && !c.floated? }
           @log << 'Unopened minors close'
+        end
+
+        def can_par?(corporation, entity)
+          # FC cannot be parred
+          # Minors can only be parred by players with a concession to exchange
+          return false if corporation.name == 'FC'
+          return super unless corporation.type == :minor
+
+          entity.companies.any? { |c| abilities(c, :exchange) }
         end
 
         def next_round!

@@ -45,6 +45,9 @@ module Engine
                 exchange: concession,
                 exchange_price: exchange_price,
               )
+
+            reserve_ipo_shares(corporation)
+
             remove_exchange_ability(concession)
             close_concession_if_applicable(concession)
 
@@ -52,6 +55,11 @@ module Engine
             @game.bank.spend(exchange_discount, corporation)
 
             track_action(action, corporation)
+          end
+
+          def reserve_ipo_shares(corporation)
+            shares = corporation.ipo_shares
+            shares.each { |s| s.buyable = false }
           end
 
           def available_par_cash(entity, corporation, share_price: nil)
@@ -62,13 +70,6 @@ module Engine
             return 0 unless concession
 
             entity.cash + (concession.discount || 0)
-          end
-
-          def get_par_prices(entity, corporation)
-            # UI: don't show par prices for minors if the player doesn't have a concession to exchange
-            return [] if corporation.type == :minor && !exchange_concession(entity)
-
-            super
           end
 
           def minor_starting_bundle(corporation)
@@ -95,15 +96,6 @@ module Engine
 
           def special_abilities?(company)
             company.abilities.any? { |a| a.type != :exchange }
-          end
-
-          def can_buy?(entity, bundle)
-            # In G18Cuba, buying shares of floated minors from IPO is not allowed. Buying from the market is still allowed.
-            return false if bundle.owner.corporation? &&
-                            bundle.corporation.type == :minor &&
-                            bundle.corporation.floated?
-
-            super
           end
         end
       end
