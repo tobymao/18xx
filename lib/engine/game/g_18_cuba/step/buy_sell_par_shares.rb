@@ -67,9 +67,37 @@ module Engine
             return entity.cash unless corporation.type == :minor
 
             concession = exchange_concession(entity)
-            return 0 unless concession
+            return entity.cash unless concession
 
             entity.cash + (concession.discount || 0)
+          end
+
+          def get_par_prices(entity, corporation)
+            # Only show par prices where the player can afford the full bundle
+            if corporation.type == :minor
+              concession = exchange_concession(entity)
+              available_cash = entity.cash + (concession&.discount || 0)
+
+              # Minor starting bundle size: number of shares required
+              bundle_size = minor_starting_bundle(corporation).num_shares
+
+              @game.stock_market.par_prices.select do |p|
+                (p.price * bundle_size) <= available_cash
+              end
+            else
+              # Normal corporations: just check cash vs price
+              @game.stock_market.par_prices.select { |p| p.price <= entity.cash }
+            end
+          end
+
+          def available_cash(entity)
+            # For minors, include concession discount in available cash calculation for parring.
+            cash = entity.cash
+
+            concession = exchange_concession(entity)
+            cash += concession.discount || 0 if concession
+
+            cash
           end
 
           def minor_starting_bundle(corporation)
