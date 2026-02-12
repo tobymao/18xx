@@ -288,7 +288,6 @@ module Engine
               type: 'exchange',
               owner_type: 'player',
               corporations: 'london',
-              owner_type: 'player',
               when: 'owning_player_sr_turn',
               count: 1,
               remove_when_used_up: false,

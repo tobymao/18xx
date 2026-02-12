@@ -29,7 +29,7 @@ module Engine
 
           def choices
             choices = []
-            choices << ['Buy Coal Token'] if can_buy_coal_token?(current_entity)
+            choices << ['Buy Coal Token ($80)'] if can_buy_coal_token?(current_entity)
             choices
           end
 
@@ -38,8 +38,7 @@ module Engine
           end
 
           def process_choose(action)
-            buy_coal_token(action.entity) if action.choice == 'Buy Coal Token'
-            @round.num_laid_track += 1
+            buy_coal_token(action.entity) if action.choice == 'Buy Coal Token ($80)'
           end
 
           def buy_coal_token(corporation)
