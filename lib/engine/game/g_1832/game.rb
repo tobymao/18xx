@@ -254,7 +254,7 @@ module Engine
                      when 'ipoed'
                        corporations.select(&:ipoed)
                     when 'london'
-                      corporations.select { |c| c.floated? && !c.operated? && exchange_ability.count > 0}
+                      corporations.select { |c| !c.player_share_holders.none? && !c.operated? && exchange_ability.count > 0}
                     else
                        exchange_ability.corporations.map { |c| corporation_by_id(c) }
                     end
