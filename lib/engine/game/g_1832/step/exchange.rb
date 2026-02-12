@@ -35,7 +35,7 @@ module Engine
             if company.name == 'London Investment'
                 @game.assign_london_company(bundle.corporation)
                 ability.use!
-                @round.next_entity_index!
+                @round.current_actions << action
             end
             if company.name != 'London Investment'
                 company.close!
