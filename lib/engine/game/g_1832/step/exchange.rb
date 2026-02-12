@@ -62,7 +62,6 @@ module Engine
             shares << @game.share_pool.shares_by_corporation[corporation]&.first if ability.from.include?(:market)
             end
 
-            @log << "Can exchange #{entity.name} from #{entity.owner}: "
             shares.compact.any? { |s| can_gain?(entity.owner, s&.to_bundle, exchange: true)}
         end
 
