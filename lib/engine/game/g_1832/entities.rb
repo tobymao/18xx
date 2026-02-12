@@ -293,7 +293,7 @@ module Engine
               remove_when_used_up: false,
               from: 'ipo',
             },
-            { type: 'no_buy' }],
+                        { type: 'no_buy' }],
             color: nil,
           },
           {

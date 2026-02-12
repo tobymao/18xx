@@ -3,52 +3,48 @@
 require_relative '../../../step/exchange'
 require_relative '../../../step/share_buying'
 
-
 module Engine
   module Game
     module G1832
       module Step
         class Exchange < Engine::Step::Exchange
+          ACTIONS = %w[buy_shares].freeze
 
-        ACTIONS = %w[buy_shares].freeze
-
-        def actions(entity)
+          def actions(entity)
             return ACTIONS if can_exchange?(entity)
 
             []
-        end
+          end
 
-        def blocks?
+          def blocks?
             false
-        end
+          end
 
-        def process_buy_shares(action)
+          def process_buy_shares(action)
             company = action.entity
             bundle = action.bundle
             unless (ability = @game.abilities(company, :exchange))
-            raise GameError,
-                "Could not assign #{company.name} to #{target.name}; :exchange ability not found"
+              raise GameError,
+                    "Could not assign #{company.name} to #{target.name}; :exchange ability not found"
             end
-            raise GameError, "Cannot exchange #{action.entity.id} for #{bundle.corporation.id}" unless can_exchange?(company, bundle)
+            raise GameError, "Cannot exchange #{action.entity.id} for #{bundle.corporation.id}" unless can_exchange?(company,
+                                                                                                                     bundle)
+
             buy_shares(company.owner, bundle, exchange: company)
             @round.players_history[company.owner][bundle.corporation] << action if @round.respond_to?(:players_history)
             if company.name == 'London Investment'
-                @game.assign_london_company(bundle.corporation)
-                ability.use!
-                @round.current_actions << action
+              @game.assign_london_company(bundle.corporation)
+              ability.use!
+              @round.current_actions << action
             end
-            if company.name != 'London Investment'
-                company.close!
-            end
-        end
+            company.close! if company.name != 'London Investment'
+          end
 
-
-        def can_buy?(entity, bundle)
+          def can_buy?(entity, bundle)
             can_gain?(entity, bundle, exchange: true)
-        end
+          end
 
-
-        def can_exchange?(entity, bundle = nil)
+          def can_exchange?(entity, bundle = nil)
             return false unless entity.company?
             return false unless (ability = @game.abilities(entity, :exchange))
 
@@ -57,16 +53,13 @@ module Engine
 
             shares = []
             @game.exchange_corporations(ability).each do |corporation|
-            shares << corporation.reserved_shares.first if ability.from.include?(:reserved)
-            shares << corporation.available_share if ability.from.include?(:ipo)
-            shares << @game.share_pool.shares_by_corporation[corporation]&.first if ability.from.include?(:market)
+              shares << corporation.reserved_shares.first if ability.from.include?(:reserved)
+              shares << corporation.available_share if ability.from.include?(:ipo)
+              shares << @game.share_pool.shares_by_corporation[corporation]&.first if ability.from.include?(:market)
             end
 
-            shares.compact.any? { |s| can_gain?(entity.owner, s&.to_bundle, exchange: true)}
-        end
-
-
-
+            shares.compact.any? { |s| can_gain?(entity.owner, s&.to_bundle, exchange: true) }
+          end
         end
       end
     end

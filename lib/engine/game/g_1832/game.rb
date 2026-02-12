@@ -246,34 +246,34 @@ module Engine
           @london_company = corporation
         end
 
-
         def exchange_corporations(exchange_ability)
-        candidates = case exchange_ability.corporations
-                     when 'any'
-                       corporations
-                     when 'ipoed'
-                       corporations.select(&:ipoed)
-                    when 'london'
-                      corporations.select { |c| (!@round.current_actions.any? { |x| x.instance_of?(Action::BuyShares) }) && !c.player_share_holders.none? && !c.operated? && exchange_ability.count > 0}
-                    else
-                       exchange_ability.corporations.map { |c| corporation_by_id(c) }
-                    end
-        candidates.reject(&:closed?)
-      end
+          candidates = case exchange_ability.corporations
+                       when 'any'
+                         corporations
+                       when 'ipoed'
+                         corporations.select(&:ipoed)
+                       when 'london'
+                         corporations.select do |c|
+                           !@round.current_actions.any? do |x|
+                             x.instance_of?(Action::BuyShares)
+                           end && !c.player_share_holders.none? && !c.operated? && exchange_ability.count > 0
+                         end
+                       else
+                         exchange_ability.corporations.map { |c| corporation_by_id(c) }
+                       end
+          candidates.reject(&:closed?)
+        end
 
+        def use!(**_kwargs)
+          @used = true
 
-      def use!(**_kwargs)
-        @used = true
+          @count_this_or += 1 if @count_per_or
 
-        @count_this_or += 1 if @count_per_or
+          return unless @count
 
-        return unless @count
-
-        @count -= 1
-        owner.remove_ability(self) if !@count.positive? && @remove_when_used_up
-      end
-
-      
+          @count -= 1
+          owner.remove_ability(self) if !@count.positive? && @remove_when_used_up
+        end
 
         def revenue_for(route, stops)
           revenue = super
@@ -370,9 +370,11 @@ module Engine
           company = action.entity
           bundle = action.bundle
 
-          return unless action.entity.name == "London Investment"
-          log << "Processing buy shares for London Investment"
-          raise GameError, "Cannot exchange #{action.entity.id} for #{bundle.corporation.id}" unless can_exchange?(company, bundle)
+          return unless action.entity.name == 'London Investment'
+
+          log << 'Processing buy shares for London Investment'
+          raise GameError, "Cannot exchange #{action.entity.id} for #{bundle.corporation.id}" unless can_exchange?(company,
+                                                                                                                   bundle)
 
           buy_shares(company.owner, bundle, exchange: company)
           @round.players_history[company.owner][bundle.corporation] << action if @round.respond_to?(:players_history)

@@ -22,25 +22,26 @@ module Engine
 
             {}
           end
-            def payout_shares(entity, revenue)
-                per_share = payout_per_share(entity, revenue)
 
-                payouts = {}
-                (@game.players + @game.corporations).each do |payee|
-                payout_entity(entity, payee, per_share, payouts)
-                end
+          def payout_shares(entity, revenue)
+            per_share = payout_per_share(entity, revenue)
 
-                receivers = payouts
-                            .sort_by { |_r, c| -c }
-                            .map { |receiver, cash| "#{@game.format_currency(cash)} to #{receiver.name}" }.join(', ')
+            payouts = {}
+            (@game.players + @game.corporations).each do |payee|
+              payout_entity(entity, payee, per_share, payouts)
+            end
 
-                if entity == @game.london_company
-                    @log << "London Investment closes"
-                    li =  @game.companies.find { |c| c.sym == 'P4' }
-                    li.close! if li
-                end
-                log_payout_shares(entity, revenue, per_share, receivers)
-            end           
+            receivers = payouts
+                        .sort_by { |_r, c| -c }
+                        .map { |receiver, cash| "#{@game.format_currency(cash)} to #{receiver.name}" }.join(', ')
+
+            if entity == @game.london_company
+              @log << 'London Investment closes'
+              li = @game.companies.find { |c| c.sym == 'P4' }
+              li.close! if li
+            end
+            log_payout_shares(entity, revenue, per_share, receivers)
+          end
         end
       end
     end
