@@ -8,6 +8,7 @@ require_relative 'meta'
 require_relative 'phases'
 require_relative 'trains'
 require_relative '../base'
+require_relative 'step/exchange'
 
 module Engine
   module Game
@@ -98,6 +99,7 @@ module Engine
         def stock_round
           G1870::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
+            G1832::Step::Exchange,
             G1832::Step::BuySellParShares,
             G1850::Step::PriceProtection,
           ])
@@ -106,7 +108,7 @@ module Engine
         def operating_round(round_num)
           Engine::Round::Operating.new(self, [
             Engine::Step::Bankrupt,
-            Engine::Step::Exchange,
+            G1832::Step::Exchange,
             G1832::Step::BuyCompany,
             G1870::Step::Assign,
             G1870::Step::SpecialTrack,
@@ -236,6 +238,43 @@ module Engine
           @coal_hex ||= hex_by_id('B14')
         end
 
+        def london_company
+          @london_company || nil
+        end
+
+        def assign_london_company(corporation)
+          @london_company = corporation
+        end
+
+
+        def exchange_corporations(exchange_ability)
+        candidates = case exchange_ability.corporations
+                     when 'any'
+                       corporations
+                     when 'ipoed'
+                       corporations.select(&:ipoed)
+                    when 'london'
+                      corporations.select { |c| c.floated? && !c.operated? && exchange_ability.count > 0}
+                    else
+                       exchange_ability.corporations.map { |c| corporation_by_id(c) }
+                    end
+        candidates.reject(&:closed?)
+      end
+
+
+      def use!(**_kwargs)
+        @used = true
+
+        @count_this_or += 1 if @count_per_or
+
+        return unless @count
+
+        @count -= 1
+        owner.remove_ability(self) if !@count.positive? && @remove_when_used_up
+      end
+
+      
+
         def revenue_for(route, stops)
           revenue = super
 
@@ -325,6 +364,18 @@ module Engine
           end
 
           @skip_paths
+        end
+
+        def process_buy_shares(action)
+          company = action.entity
+          bundle = action.bundle
+
+          return unless action.entity.name == "London Investment"
+          log << "Processing buy shares for London Investment"
+          raise GameError, "Cannot exchange #{action.entity.id} for #{bundle.corporation.id}" unless can_exchange?(company, bundle)
+
+          buy_shares(company.owner, bundle, exchange: company)
+          @round.players_history[company.owner][bundle.corporation] << action if @round.respond_to?(:players_history)
         end
       end
     end

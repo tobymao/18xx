@@ -287,10 +287,12 @@ module Engine
             abilities: [{
               type: 'exchange',
               owner_type: 'player',
-              corporations: 'any',
+              corporations: 'london',
+              count: 1,
+              remove_when_used_up: false,
               from: 'ipo',
             },
-                        { type: 'no_buy' }],
+            { type: 'no_buy' }],
             color: nil,
           },
           {
