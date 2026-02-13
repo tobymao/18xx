@@ -58,49 +58,43 @@ module Engine
           end
 
           def reserve_ipo_shares(corporation)
+            # Marks IPO shares as non-buyable after minor par.
             shares = corporation.ipo_shares
             shares.each { |s| s.buyable = false }
           end
 
+          def concession_discount(entity)
+            # Returns the concession discount available to the entity, if any.
+            concession = exchange_concession(entity)
+            concession&.discount || 0
+          end
+
           def available_par_cash(entity, corporation, share_price: nil)
-            # UI: Includes concession discount when calculating which par prices are affordable.
+            # Calculates available cash for parring, including concession discount for minors.
             return entity.cash unless corporation.type == :minor
 
-            concession = exchange_concession(entity)
-            return entity.cash unless concession
-
-            entity.cash + (concession.discount || 0)
+            entity.cash + concession_discount(entity)
           end
 
           def get_par_prices(entity, corporation)
-            # Only show par prices where the player can afford the full bundle
-            if corporation.type == :minor
-              concession = exchange_concession(entity)
-              available_cash = entity.cash + (concession&.discount || 0)
+            # Filters par prices to those affordable for a minor, accounting for bundle size and discount.
+            return super unless corporation.type == :minor
 
-              # Minor starting bundle size: number of shares required
-              bundle_size = minor_starting_bundle(corporation).num_shares
+            bundle_size = minor_starting_bundle(corporation).num_shares
+            available = available_par_cash(entity, corporation)
 
-              @game.stock_market.par_prices.select do |p|
-                (p.price * bundle_size) <= available_cash
-              end
-            else
-              # Normal corporations: just check cash vs price
-              @game.stock_market.par_prices.select { |p| p.price <= entity.cash }
+            @game.stock_market.par_prices.select do |price|
+              (price.price * bundle_size) <= available
             end
           end
 
           def available_cash(entity)
-            # For minors, include concession discount in available cash calculation for parring.
-            cash = entity.cash
-
-            concession = exchange_concession(entity)
-            cash += concession.discount || 0 if concession
-
-            cash
+            # Extends available cash with concession discount for step action availability checks.
+            entity.cash + concession_discount(entity)
           end
 
           def minor_starting_bundle(corporation)
+            # Builds the starting share bundle required to par a minor.
             shares = corporation.ipo_shares.take(2)
             ShareBundle.new(shares)
           end
@@ -111,11 +105,13 @@ module Engine
           end
 
           def remove_exchange_ability(concession)
+            # Removes the exchange ability from a concession after use. Sets discount to 0 to prevent reuse.
             ability = concession.abilities.find { |a| a.type == :exchange }
             return unless ability
 
             concession.remove_ability(ability)
             concession.value = 0
+            concession.discount = 0
           end
 
           def close_concession_if_applicable(concession)
