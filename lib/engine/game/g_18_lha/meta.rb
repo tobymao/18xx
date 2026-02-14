@@ -17,7 +17,7 @@ module Engine
         GAME_IS_VARIANT_OF = G18Rhineland::Meta
         GAME_TITLE = '18Lha'
         GAME_SUBTITLE = 'Lower Rhine Area'
-        
+
         PLAYER_RANGE = [2, 4].freeze
         OPTIONAL_RULES = [
           {

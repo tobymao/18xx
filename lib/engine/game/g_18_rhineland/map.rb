@@ -408,7 +408,7 @@ module Engine
             },
             gray: {
               ['B7'] => 'path=a:2,b:4;border=edge:0,type:impassable,color:blue;border=edge:1,type:impassable,color:blue;'\
-                    'border=edge:5,type:impassable,color:blue',
+                        'border=edge:5,type:impassable,color:blue',
               %w[A2 A8 A10 A12 B1 D1 F1 L3 L5 L7] => '',
               ['E2'] => 'city=revenue:yellow_20|brown_40;path=a:3,b:_0;path=a:5,b:_0',
               %w[F15 H15] => 'path=a:0,b:2',
