@@ -1,0 +1,23 @@
+# frozen_string_literal: true
+
+require_relative 'meta'
+require_relative '../g_18_rhineland/game'
+
+module Engine
+  module Game
+    module G18Lha
+      class Game < G18Rhineland::Game
+        include_meta(G18Lha::Meta)
+
+        BANK_CASH = { 2 => 6000, 3 => 6000, 4 => 8000 }.freeze
+
+        CURRENCY_FORMAT_STR = '%sM'
+
+        CERT_LIMIT = { 2 => 14, 3 => 14, 4 => 15 }.freeze
+
+        STARTING_CASH = { 2 => 600, 3 => 600, 4 => 450 }.freeze
+        LOWER_STARTING_CASH = { 2 => 500, 3 => 500, 4 => 375 }.freeze
+      end
+    end
+  end
+end

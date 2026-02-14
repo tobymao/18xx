@@ -4,7 +4,7 @@ require_relative '../../../step/dividend'
 
 module Engine
   module Game
-    module G18Rhl
+    module G18Rhineland
       module Step
         class Dividend < Engine::Step::Dividend
           def actions(entity)

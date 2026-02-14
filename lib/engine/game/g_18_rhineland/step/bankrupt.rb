@@ -4,7 +4,7 @@ require_relative '../../../step/bankrupt'
 
 module Engine
   module Game
-    module G18Rhl
+    module G18Rhineland
       module Step
         class Bankrupt < Engine::Step::Bankrupt
           def process_bankrupt(action)

@@ -4,7 +4,7 @@ require_relative '../../../step/special_token'
 
 module Engine
   module Game
-    module G18Rhl
+    module G18Rhineland
       module Step
         class SpecialToken < Engine::Step::SpecialToken
           def ability(entity)

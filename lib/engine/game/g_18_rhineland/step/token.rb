@@ -4,7 +4,7 @@ require_relative '../../../step/token'
 
 module Engine
   module Game
-    module G18Rhl
+    module G18Rhineland
       module Step
         class Token < Engine::Step::Token
           def actions(entity)

@@ -2,7 +2,7 @@
 
 module Engine
   module Game
-    module G18Rhl
+    module G18Rhineland
       module Entities
         CORPORATIONS = [
           {

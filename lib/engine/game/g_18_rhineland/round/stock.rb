@@ -4,7 +4,7 @@ require_relative '../../../round/stock'
 
 module Engine
   module Game
-    module G18Rhl
+    module G18Rhineland
       module Round
         class Stock < Engine::Round::Stock
           def finish_round

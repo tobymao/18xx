@@ -1,20 +1,21 @@
 # frozen_string_literal: true
 
-require_relative '../meta'
+require_relative '../g_18_rhineland/meta'
 
 module Engine
   module Game
     module G18Rhl
       module Meta
         include Game::Meta
+        include G18Rhineland::Meta
+
+        DEPENDS_ON = '18 Rhineland'
 
         DEV_STAGE = :production
 
+        GAME_IS_VARIANT_OF = G18Rhineland::Meta
+        GAME_TITLE = '18Rhl'
         GAME_SUBTITLE = 'Rhineland'
-        GAME_DESIGNER = 'Wolfram Janich'
-        GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18Rhl:-Rhineland'
-        GAME_LOCATION = 'Rhineland, Germany'
-        GAME_PUBLISHER = :marflow_games
         GAME_RULES_URL = 'https://18xx-marflow-games.de/onewebmedia/18Rhl%20-%20Rules%20%20EN.pdf'
 
         PLAYER_RANGE = [3, 6].freeze

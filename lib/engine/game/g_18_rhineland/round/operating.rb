@@ -4,7 +4,7 @@ require_relative '../../../round/operating'
 
 module Engine
   module Game
-    module G18Rhl
+    module G18Rhineland
       module Round
         class Operating < Engine::Round::Operating
           attr_accessor :teleport_ability

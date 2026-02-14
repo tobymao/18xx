@@ -4,7 +4,7 @@ require_relative '../../../step/base'
 
 module Engine
   module Game
-    module G18Rhl
+    module G18Rhineland
       module Step
         class RheBonusCheck < Engine::Step::Base
           # As long as the Aachen Duren Cologne link has not been built, we need

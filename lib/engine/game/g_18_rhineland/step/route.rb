@@ -5,7 +5,7 @@ require_relative '../../../step/route'
 
 module Engine
   module Game
-    module G18Rhl
+    module G18Rhineland
       module Step
         class Route < Engine::Step::Route
           def chart(_entity)

@@ -5,7 +5,7 @@ require_relative 'lay_tile_checks'
 
 module Engine
   module Game
-    module G18Rhl
+    module G18Rhineland
       module Step
         class SpecialTrack < Engine::Step::SpecialTrack
           include LayTileChecks

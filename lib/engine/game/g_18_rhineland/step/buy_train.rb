@@ -4,7 +4,7 @@ require_relative '../../../step/buy_train'
 
 module Engine
   module Game
-    module G18Rhl
+    module G18Rhineland
       module Step
         class BuyTrain < Engine::Step::BuyTrain
           def buyable_trains(entity)

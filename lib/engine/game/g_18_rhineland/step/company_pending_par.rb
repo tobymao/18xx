@@ -4,7 +4,7 @@ require_relative '../../../step/company_pending_par'
 
 module Engine
   module Game
-    module G18Rhl
+    module G18Rhineland
       module Step
         class CompanyPendingPar < Engine::Step::CompanyPendingPar
           def get_par_prices(_entity, corp)
