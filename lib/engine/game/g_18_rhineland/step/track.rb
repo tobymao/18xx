@@ -20,10 +20,11 @@ module Engine
           FOUR_SPOKERS_TO = %w[87 88 204].freeze
 
           def check_track_restrictions!(entity, old_tile, new_tile)
-            return if FOUR_SPOKERS_TO.include?(new_tile.name)
-            return if @game.optional_promotion_tiles && old_tile.name == '929' && new_tile.name == '949'
+            super unless skip_check_track_restrictions?(entity, old_tile, new_tile)
+          end
 
-            super
+          def skip_check_track_restrictions?(_entity, _old_tile, new_tile)
+            FOUR_SPOKERS_TO.include?(new_tile.name)
           end
 
           RHINE_METROPOLIS_HEXES = %w[D9 F9 I10].freeze

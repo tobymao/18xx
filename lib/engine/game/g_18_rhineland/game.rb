@@ -45,10 +45,6 @@ module Engine
         # Cannot buy other corp trains during emergency buy (rule 13.2)
         EBUY_FROM_OTHERS = :never
 
-        EVENTS_TEXT = Base::EVENTS_TEXT.merge(
-          'remove_tile_block' => ['Remove tile block', 'Hex E12 can now be upgraded to yellow'],
-        ).freeze
-
         MARKET = [%w[75
                      80
                      90
@@ -211,16 +207,7 @@ module Engine
         ].freeze
 
         def game_trains
-          trains = self.class::TRAINS
-          return trains unless optional_ratingen_variant
-
-          # Inject remove_tile_block event
-          trains.each do |t|
-            next unless t[:name] == '3'
-
-            t[:events] = [{ 'type' => 'remove_tile_block' }]
-          end
-          trains
+          self.class::TRAINS.dup.deep_freeze
         end
 
         def num_trains(train)
@@ -235,14 +222,6 @@ module Engine
 
         def optional_lower_starting_capital
           @optional_rules&.include?(:lower_starting_capital)
-        end
-
-        def optional_promotion_tiles
-          @optional_rules&.include?(:promotion_tiles)
-        end
-
-        def optional_ratingen_variant
-          @optional_rules&.include?(:ratingen_variant)
         end
 
         def init_starting_cash(players, bank)
@@ -284,7 +263,7 @@ module Engine
             G18Rhineland::Step::Track,
             G18Rhineland::Step::RheBonusCheck,
             G18Rhineland::Step::Token,
-            Engine::Step::Route,
+            G18Rhineland::Step::Route,
             G18Rhineland::Step::Dividend,
             Engine::Step::DiscardTrain,
             G18Rhineland::Step::BuyTrain,
@@ -327,54 +306,6 @@ module Engine
           end
         end
 
-        def cce
-          @cce_corporation ||= corporation_by_id('CCE')
-        end
-
-        def cme
-          @cme_corporation ||= corporation_by_id('CME')
-        end
-
-        def dee
-          @dee_corporation ||= corporation_by_id('DEE')
-        end
-
-        def keg
-          @keg_corporation ||= corporation_by_id('KEG')
-        end
-
-        def rhe
-          @rhe_corporation ||= corporation_by_id('RhE')
-        end
-
-        def prinz_wilhelm_bahn
-          return if optional_ratingen_variant
-
-          @prinz_wilhelm_bahn ||= company_by_id('PWB')
-        end
-
-        def angertalbahn
-          return unless optional_ratingen_variant
-
-          @angertalbahn ||= company_by_id('ATB')
-        end
-
-        def konzession_essen_osterath
-          @konzession_essen_osterath ||= company_by_id('KEO')
-        end
-
-        def seilzuganlage
-          @seilzuganlage ||= company_by_id('Szl')
-        end
-
-        def trajektanstalt
-          @trajektanstalt ||= company_by_id('Tjt')
-        end
-
-        def rhe_company
-          @rhe_company ||= company_by_id('RhE')
-        end
-
         def setup
           keg.shares[2].double_cert = true
           keg.shares[3].double_cert = true
@@ -384,15 +315,10 @@ module Engine
           @newly_floated = []
           @rhe_market_rise_applied = false
 
-          @essen_tile ||= @tiles.find { |t| t.name == 'Essen' } if optional_promotion_tiles
           @moers_tile_brown ||= @tiles.find { |t| t.name == '947' }
-          @moers_tile_gray ||= @tiles.find { |t| t.name == '950' } if optional_promotion_tiles
-          @d_k_tile ||= @tiles.find { |t| t.name == '932V' } if optional_promotion_tiles
-          @d_du_k_tile ||= @tiles.find { |t| t.name == '932' } unless optional_promotion_tiles
           @d_tile_brown ||= @tiles.find { |t| t.name == '927' }
           @k_tile_brown ||= @tiles.find { |t| t.name == '928' }
           @du_tile_brown ||= @tiles.find { |t| t.name == '929' }
-          @du_tile_gray ||= @tiles.find { |t| t.name == '949' } if optional_promotion_tiles
           @osterath_tile ||= @tiles.find { |t| t.name == '935' }
 
           @variable_placement = (rand % 9) + 1
@@ -574,70 +500,44 @@ module Engine
         UPGRADES_FROM_58 = %w[141 142 143 144].freeze
 
         def upgrades_to?(from, to, _special = false, selected_company: nil)
+          use_super, result = check_upgrades_to(from, to, selected_company)
+          return super if use_super
+
+          result
+        end
+
+        def check_upgrades_to(from, to, selected_company)
           # Osterath cannot be upgraded at all, and cannot be upgraded to in phase 5 or later
-          return false if from.name == @osterath_tile&.name ||
+          return [false, false] if from.name == @osterath_tile&.name ||
           (to.name == @osterath_tile&.name && @phase.name.to_i >= 5)
 
           # Private No. 2 allows Osterath tile to be put on E8 regardless
-          return true if from.hex.name == 'E8' &&
+          return [false, true] if from.hex.name == 'E8' &&
           to.name == @osterath_tile&.name &&
           selected_company == konzession_essen_osterath
 
           # Handle Rhine Metropolis upgrade from green
-          return to.name == '927' if from.color == :green && from.hex.name == 'F9'
-          return to.name == '928' if from.color == :green && from.hex.name == 'I10'
-          return to.name == '929' if from.color == :green && from.hex.name == 'D9'
+          return [false, to.name == '927'] if from.color == :green && from.hex.name == 'F9'
+          return [false, to.name == '928'] if from.color == :green && from.hex.name == 'I10'
+          return [false, to.name == '929'] if from.color == :green && from.hex.name == 'D9'
 
           # Handle Moers upgrades
-          return to.name == '947' if from.color == :green && from.hex.name == 'D7'
-          return to.name == '950' if from.color == :brown && from.hex.name == 'D7'
+          return [false, to.name == '947'] if from.color == :green && from.hex.name == 'D7'
+          return [false, to.name == '950'] if from.color == :brown && from.hex.name == 'D7'
 
           # Handle 3-spokers
-          return UPGRADES_FROM_3.include?(to.name) if from.name == '3'
-          return UPGRADES_FROM_4.include?(to.name) if from.name == '4'
-          return UPGRADES_FROM_58.include?(to.name) if from.name == '58'
-          return false if UPGRADES_FROM_58.include?(from.name)
+          return [false, UPGRADES_FROM_3.include?(to.name)] if from.name == '3'
+          return [false, UPGRADES_FROM_4.include?(to.name)] if from.name == '4'
+          return [false, UPGRADES_FROM_58.include?(to.name)] if from.name == '58'
+          return [false, false] if UPGRADES_FROM_58.include?(from.name)
 
           # Handle 4-spokers
-          return to.name == '87' if UPGRADES_TO_87.include?(from.name)
-          return to.name == '88' if UPGRADES_TO_88.include?(from.name)
-          return to.name == '204' if from.name == UPGRADE_TO_204
+          return [false, to.name == '87'] if UPGRADES_TO_87.include?(from.name)
+          return [false, to.name == '88'] if UPGRADES_TO_88.include?(from.name)
+          return [false, to.name == '204'] if from.name == UPGRADE_TO_204
+          return [false, to.name == '932'] if from.color == :brown && %w[D9 F9 I10].include?(from.hex.name)
 
-          if optional_promotion_tiles
-            # Essen can be upgraded to gray
-            return to.name == 'Essen' if from.color == :brown && from.name == '216' && from.hex.name == 'D13'
-
-            # Dusseldorf and Cologne can be upgraded to gray 932V
-            return to.name == '932V' if from.color == :brown && %w[F9 I10].include?(from.hex.name)
-
-            # Moers can be upgraded to gray 950
-            return to.name == '950' if from.color == :brown && from.hex.name == 'D7'
-
-            # Duisburg can be upgraded to gray 929
-            return to.name == '949' if from.color == :brown && from.hex.name == 'D9'
-          elsif from.color == :brown && %w[D9 F9 I10].include?(from.hex.name)
-            return to.name == '932'
-          end
-          # Duisburg, Dusseldorf and Cologne can be upgraded to gray 932
-
-          return super unless optional_ratingen_variant
-
-          # Hex E10 have special tile for upgrade to yellow, and green, and no brown
-          if from.hex.name == 'E10'
-            case from.color
-            when :white
-              return to.name == '1910'
-            when :yellow
-              return to.name == '1911'
-            else
-              return false
-            end
-          end
-
-          # Hex E12 is blocked for upgrade in yellow phase
-          return super if from.hex.name != RATINGEN_HEX || phase.name != '2'
-
-          raise GameError, "Cannot place a tile in #{from.hex.name} until green phase"
+          [true, nil]
         end
 
         def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
@@ -650,17 +550,6 @@ module Engine
 
           # Handle potential upgrades to Osterath tile
           upgrades |= [@osterath_tile] if OSTERATH_POTENTIAL_TILE_UPGRADES_FROM.include?(tile.name)
-
-          # Tile manifest for 947 should show Moers tile if Moers tile used
-          upgrades |= [@moers_tile_gray] if @moers_tile_gray && tile.name == '947'
-
-          # Tile manifest for 216 should show Essen tile if Essen tile used
-          upgrades |= [@essen_tile] if @essen_tile && tile.name == '216'
-
-          # Show correct potential upgrades for Rhine Metropolis hexes
-          upgrades |= [@d_k_tile] if @d_k_tile && %w[927 928].include?(tile.name)
-          upgrades |= [@d_du_k_tile] if @d_du_k_tile && %w[927 928 929].include?(tile.name)
-          upgrades |= [@du_tile_gray] if @du_tile_gray && tile.name == '929'
 
           # Show brown upgrades from Rhine Metropolis green tiles
           upgrades |= [@d_tile_brown] if %w[X921 X922].include?(tile.name)
@@ -675,17 +564,6 @@ module Engine
 
           # Need special handling - tile 1910 must match both stubs of base hex
           hex.tile.stubs.map(&:edge) == tile.exits
-        end
-
-        def hex_blocked_by_ability?(entity, ability, hex, _tile = nil)
-          return false if entity.player == ability.owner.player && (hex.name == 'E14' || hex == yellow_block_hex)
-
-          super
-        end
-
-        def event_remove_tile_block!
-          @log << "Hex #{RATINGEN_HEX} is now possible to upgrade to yellow"
-          yellow_block_hex.tile.icons.reject! { |i| i.name == 'green_hex' }
         end
 
         def illegal_revisit_of_rhine_metropolis_hex?(actual_visits)
@@ -850,8 +728,7 @@ module Engine
           actual_stops = revenue_stops.map { |rs| rs[:stop] }
           [montan_bonus(route, actual_stops),
            eastern_ruhr_area_bonus(actual_stops),
-           iron_rhine_bonus(actual_stops),
-           ratingen_bonus(route, actual_stops)]
+           iron_rhine_bonus(actual_stops)]
         end
 
         def aachen_duren_cologne_link_checkable?
@@ -1023,14 +900,18 @@ module Engine
 
           montan_bonus = brown_phase? ? 40 : 20
           if coal > 1 && steel > 1
-            bonus[:description] = 'Montanx2'
+            bonus[:description] = "#{montain_bonus_description}x2"
             montan_bonus *= 2
           else
-            bonus[:description] = 'Montan'
+            bonus[:description] = montain_bonus_description
           end
           bonus[:revenue] = montan_bonus
           bonus[:description] += " (=+#{montan_bonus}M)"
           bonus
+        end
+
+        def montan_bonus_description
+          'Industry'
         end
 
         def count_coal(route, stops)
@@ -1074,17 +955,6 @@ module Engine
 
           revenue_bonus = doubles.sum { |rs| rs[:revenue] } / 2
           bonus[:description] = 'RGE' + (doubles.size > 1 ? "x#{doubles.size}" : '') + " (=+#{revenue_bonus}M)"
-          bonus
-        end
-
-        def ratingen_bonus(route, stops)
-          bonus = { revenue: 0 }
-          return bonus if !optional_ratingen_variant ||
-                          stops.none? { |s| s.hex.id == RATINGEN_HEX } ||
-                          count_steel(route, stops).zero?
-
-          bonus[:revenue] = 30
-          bonus[:description] = 'Ratingen (=+30M)'
           bonus
         end
 

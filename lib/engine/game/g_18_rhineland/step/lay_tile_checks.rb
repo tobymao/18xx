@@ -8,8 +8,6 @@ module LayTileChecks
     @game.potential_icon_cleanup(action.tile)
 
     case action.tile.hex.name
-    when 'E12'
-      potentially_close_private(action, @game.angertalbahn)
     when 'E14'
       potentially_remove_ability_from_private(action, @game.prinz_wilhelm_bahn)
     when 'I10', 'F9', 'D9'
@@ -18,7 +16,7 @@ module LayTileChecks
   end
 
   def potentially_remove_ability_from_private(action, comp)
-    return if !comp || comp.owner != action.entity.player
+    return if comp&.owner != action.entity.player
 
     # Remove hex block
     comp.desc = 'Special ability used up. No extra effect until closed in phase 5.'

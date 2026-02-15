@@ -23,7 +23,7 @@ module Engine
           {
             sym: :optional_2_train,
             short_name: 'Optional 2-Train',
-            desc: 'Add an extra 2-train',
+            desc: 'Add a 6th 2-train',
           },
           {
             sym: :lower_starting_capital,

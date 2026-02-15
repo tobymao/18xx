@@ -30,11 +30,6 @@ module Engine
             desc: 'Reducing the total Starting Capital to 1500M. Recommended only for 3-4 players.',
           },
           {
-            sym: :promotion_tiles,
-            short_name: 'Promotion Tiles',
-            desc: 'Adds some extra tiles.',
-          },
-          {
             sym: :optional_game_end,
             short_name: 'Optional Game End',
             desc: "Player's banktrupcy will end the game",

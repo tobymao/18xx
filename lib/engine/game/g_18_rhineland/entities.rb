@@ -282,6 +282,14 @@ module Engine
           @cce_corporation ||= corporation_by_id('CCE')
         end
 
+        def cme
+          @cme_corporation ||= corporation_by_id('CME')
+        end
+
+        def dee
+          @dee_corporation ||= corporation_by_id('DEE')
+        end
+
         def keg
           @keg_corporation ||= corporation_by_id('KEG')
         end
@@ -291,15 +299,7 @@ module Engine
         end
 
         def prinz_wilhelm_bahn
-          return if optional_ratingen_variant
-
           @prinz_wilhelm_bahn ||= company_by_id('PWB')
-        end
-
-        def angertalbahn
-          return unless optional_ratingen_variant
-
-          @angertalbahn ||= company_by_id('ATB')
         end
 
         def konzession_essen_osterath
@@ -319,11 +319,8 @@ module Engine
         end
 
         def game_companies
-          # Private 1 is different in base game and in Ratingen Variant
           all = self.class::COMPANIES
-          return all.reject { |c| c[:sym] == 'ATB' } unless optional_ratingen_variant
-
-          all.reject { |c| c[:sym] == 'PWB' }
+          all.reject { |c| c[:sym] == 'ATB' }
         end
       end
     end

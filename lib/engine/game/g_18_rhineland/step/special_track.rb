@@ -17,11 +17,8 @@ module Engine
                       @round.tokened ||
                       # Do not allow special tile lay after train buys (to avoid exploits)
                       @round.bought_trains.include?(@game.current_entity) ||
-                      # Restrict private No2 and No4 (and No1 in Ratingen variant) to not be used in yellow phase
-                      (@game.phase.name == '2' &&
-                       (entity == @game.konzession_essen_osterath ||
-                        entity == @game.trajektanstalt ||
-                        entity == @game.angertalbahn))
+                      # Possibly restrict some privates in yellow phase
+                      (@game.phase.name == '2' && restricted_private_in_yellow_phase(entity))
 
             %i[tile_lay teleport].each do |type|
               ability = @game.abilities(
@@ -34,6 +31,10 @@ module Engine
               return ability if ability && !ability.used?
             end
             nil
+          end
+
+          def restricted_private_in_yellow_phase(entity)
+            entity == @game.konzession_essen_osterath || entity == @game.trajektanstalt
           end
 
           def legal_tile_rotations(entity, hex, tile)
