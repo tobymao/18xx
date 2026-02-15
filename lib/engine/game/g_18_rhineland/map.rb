@@ -413,6 +413,7 @@ module Engine
               ['E2'] => 'city=revenue:yellow_20|brown_40;path=a:3,b:_0;path=a:5,b:_0',
               %w[F15 H15] => 'path=a:0,b:2',
               ['G2'] => 'city=revenue:yellow_10|brown_20;path=a:4,b:_0;path=a:0,b:_0',
+              ['I4'] => 'path=a:0,b:3',
               ['J15'] => 'city=revenue:yellow_20|brown_40,loc:1;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
                          'icon=image:../logos/18_rhl/S',
               ['K14'] => 'path=a:1,b:3',
