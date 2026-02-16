@@ -36,20 +36,21 @@ module Engine
           ])
         end
 
-        # Used for disabled 1880 methods
-        def dummy_company
-          @dummy ||= Company.new(
+        def setup
+          super
+
+          # Used for disabled 1880 methods
+          @dummy_company ||= Company.new(
             name: 'Dummy Company',
             sym: 'DUMMY',
             value: 0,
           )
-          @dummy.close!
-          @dummy
+          @dummy_company.close!
         end
 
         # 1880 China method. Not used in this variant.
         def rocket
-          dummy_company
+          @dummy_company
         end
 
         # 1880 China method. Not used in this variant.
@@ -62,12 +63,12 @@ module Engine
 
         # 1880 China method. Not used in this variant.
         def ferry_company
-          dummy_company
+          @dummy_company
         end
 
         # 1880 China method. Not used in this variant.
         def taiwan_company
-          dummy_company
+          @dummy_company
         end
 
         # 1880 China method. Not used in this variant.
