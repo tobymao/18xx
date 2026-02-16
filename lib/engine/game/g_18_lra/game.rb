@@ -5,9 +5,9 @@ require_relative '../g_18_rhineland/game'
 
 module Engine
   module Game
-    module G18Lha
+    module G18Lra
       class Game < G18Rhineland::Game
-        include_meta(G18Lha::Meta)
+        include_meta(G18Lra::Meta)
 
         BANK_CASH = { 2 => 6000, 3 => 6000, 4 => 8000 }.freeze
 

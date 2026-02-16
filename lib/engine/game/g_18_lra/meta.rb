@@ -5,7 +5,7 @@ require_relative '../g_18_rhineland/meta'
 
 module Engine
   module Game
-    module G18Lha
+    module G18Lra
       module Meta
         include Game::Meta
         include G18Rhineland::Meta
