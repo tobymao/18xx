@@ -13,6 +13,7 @@ module Engine
             price: 180,
             rusts_on: '4+4',
             num: 5,
+            events: [{ 'type' => 'modify_borders' }],
           },
           {
             name: '3',
@@ -34,7 +35,8 @@ module Engine
             rusts_on: '6E',
             num: 5,
             events: [{ 'type' => 'communist_takeover' },
-                     { 'type' => 'close_p7' }],
+                     { 'type' => 'close_p7' },
+                     { 'type' => 'remove_borders' }],
           },
           {
             name: '4',
