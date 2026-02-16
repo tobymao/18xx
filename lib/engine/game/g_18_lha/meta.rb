@@ -15,8 +15,9 @@ module Engine
         DEV_STAGE = :prealpha
 
         GAME_IS_VARIANT_OF = G18Rhineland::Meta
-        GAME_TITLE = '18Lha'
-        GAME_SUBTITLE = 'Lower Rhine Area'
+        GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18LRA%3A-Lower-Rhineland-Area'
+        GAME_TITLE = '18Lra'
+        GAME_SUBTITLE = 'Lower Rhineland Area'
 
         PLAYER_RANGE = [2, 4].freeze
         OPTIONAL_RULES = [
@@ -30,16 +31,17 @@ module Engine
             short_name: 'Lower total Starting Capital',
             desc: 'Reducing the total Starting Capital to 1500M.',
           },
-          {
-            sym: :optional_game_end,
-            short_name: 'Optional Game End',
-            desc: "Player's banktrupcy will end the game",
-          },
-          {
-            sym: :short_game,
-            short_name: 'Short Game',
-            desc: 'Simplified 18xx rules, with player rounds and train rounds',
-          },
+          # Not yet implemented
+          # {
+          #   sym: :optional_game_end,
+          #   short_name: 'Optional Game End',
+          #   desc: "Player's banktrupcy will end the game",
+          # },
+          # {
+          #   sym: :short_game,
+          #   short_name: 'Short Game',
+          #   desc: 'Simplified 18xx rules, with player rounds and train rounds',
+          # },
         ].freeze
       end
     end

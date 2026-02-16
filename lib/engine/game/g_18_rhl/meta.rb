@@ -14,6 +14,7 @@ module Engine
         DEV_STAGE = :production
 
         GAME_IS_VARIANT_OF = G18Rhineland::Meta
+        GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18Rhl:-Rhineland'
         GAME_TITLE = '18Rhl'
         GAME_SUBTITLE = 'Rhineland'
         GAME_RULES_URL = 'https://18xx-marflow-games.de/onewebmedia/18Rhl%20-%20Rules%20%20EN.pdf'
