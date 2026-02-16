@@ -176,9 +176,8 @@ module Engine
         # Backtracking optimization to not backtrack to edges already reachable from this edge, avoiding redundant walks
         reachable_edges_from_edge = []
         if backtracking && skip && @tile.converging_exit?(skip)
-          reachable_edges_from_edge = hex.paths[skip].reject do |p|
-                                        p == self
-                                      end.flat_map(&:edges).map(&:num).reject { |e| e == skip }
+          reachable_edges_from_edge =
+            hex.paths[skip].reject { |p| p == self }.flat_map(&:edges).map(&:num).reject { |e| e == skip }
         end
 
         edges.each do |edge|
