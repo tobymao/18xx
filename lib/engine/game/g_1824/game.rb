@@ -63,7 +63,7 @@ module Engine
 
         EVENTS_TEXT = Base::EVENTS_TEXT.dup.merge(
           'buy_across' => ['Buy Across', 'Trains can be bought between companies'],
-          'close_mountain_railways' => ['Mountain Railways Close', 'Any still open Montain railways are exchanged or closed'],
+          'close_mountain_railways' => ['Mountain Railways Close', 'Any still open Mountain railways are exchanged or closed'],
           'sd_formation' => ['SD formation', 'SD forms at the end of the OR'],
           'exchange_coal_companies' => ['Coal Companies Exchange', 'All remaining coal companies are exchanged'],
           'ug_formation' => ['UG formation', 'UG forms at the end of the OR'],
