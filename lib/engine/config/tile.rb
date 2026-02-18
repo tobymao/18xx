@@ -292,7 +292,7 @@ module Engine
         # '479|a' => 'city=revenue:40,slots:2;town=revenue:40;path=a:3,b:_0;path=a:5,b:_0',
         # '479|b' => 'town=revenue:10;path=a:2,b:_0;path=a:_0,b:5;upgrade=cost:40,terrain:mountain',
         # '802|3' => 'city=revenue:40,slots:2;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=D',
-        '8858a' => 'city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:_0,b:2;path=a:1,b:_1;path=a:_1,b:3;label=OO',
+        '8858' => 'city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:_0,b:2;path=a:1,b:_1;path=a:_1,b:3;label=OO',
         '8859' => 'city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:_0,b:3;path=a:2,b:_1;path=a:_1,b:5;label=OO',
         '8860' => 'city=revenue:40;city=revenue:40;path=a:1,b:_0;path=a:_0,b:5;path=a:2,b:_1;path=a:_1,b:4;label=OO',
         '8862' => 'city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:5,b:_0;path=a:3,b:_1;path=a:4,b:_1;label=OO',
