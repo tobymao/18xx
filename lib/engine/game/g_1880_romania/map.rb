@@ -73,7 +73,12 @@ module Engine
           '31' => 1,
           '405' => 3,
           '619' => 5,
-          '8858a' => 1,
+          '8858a' =>
+            {
+              'count' => 1,
+              'color' => 'green',
+              'code' => 'city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:_0,b:2;path=a:1,b:_1;path=a:_1,b:3;label=OO',
+            },
           '8862' => 1,
           '8863' => 1,
           '8864' => 1,
