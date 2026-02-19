@@ -278,7 +278,7 @@ module Engine
         def can_par?(corporation, entity)
           # FC cannot be parred
           # Minors can only be parred by players with a concession to exchange
-          return false if corporation.name == 'FC'
+          return false if corporation.type == :state
           return super unless corporation.type == :minor
 
           entity.companies.any? { |c| abilities(c, :exchange) }

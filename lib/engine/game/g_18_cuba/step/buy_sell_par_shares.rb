@@ -88,11 +88,6 @@ module Engine
             end
           end
 
-          def available_cash(entity)
-            # Extends available cash with concession discount for step action availability checks.
-            entity.cash + concession_discount(entity)
-          end
-
           def minor_starting_bundle(corporation)
             # Builds the starting share bundle required to par a minor.
             shares = corporation.ipo_shares.take(2)
@@ -120,6 +115,22 @@ module Engine
 
           def special_abilities?(company)
             company.abilities.any? { |a| a.type != :exchange }
+          end
+
+          def can_buy?(entity, bundle)
+            corporation = bundle&.corporation
+
+            # Only apply custom logic to minors
+            return super unless corporation&.type == :minor
+
+            minor_not_parred = !corporation.ipoed
+            discount = exchange_concession(entity)&.discount.to_i
+
+            # Allow par if the minor is not parred and a concession discount is available
+            return true if minor_not_parred && discount.positive?
+
+            # Fallback to default engine rules
+            super
           end
         end
       end
