@@ -376,14 +376,15 @@ module Engine
           end
         end
 
+        def modify_map(map)
+          return map unless optional_ratingen_variant
+
+          map[:white][['E10']] += ';stub=edge:0;stub=edge:2;city=revenue:0'
+          map[:white][['E12']] += ';stub=edge:1;icon=image:1893/green_hex;label=R;'\
+                                  'icon=image:18_rhl/white_wooden_cube,sticky:1'
+        end
+
         def base_map
-          e10_configuration = 'border=edge:1,type:impassable,color:blue'
-          e12_configuration = 'town=revenue:0;town=revenue:0;upgrade=cost:30,terrain:mountain'
-          if optional_ratingen_variant
-            e10_configuration += ';stub=edge:0;stub=edge:2;city=revenue:0'
-            e12_configuration += ';stub=edge:1;icon=image:1893/green_hex;label=R;'\
-                                 'icon=image:18_rhl/white_wooden_cube,sticky:1'
-          end
           {
             red: {
               ['A4'] => 'offboard=revenue:yellow_40|brown_60,groups:NorthWest;path=a:0,b:_0,terminal:1;'\
@@ -431,8 +432,8 @@ module Engine
               ['D13'] => 'city=revenue:0;upgrade=cost:30,terrain:mountain;label=Y',
               ['E6'] => 'city=revenue:0;label=Y',
               ['E8'] => 'town=revenue:0;town=revenue:0;border=edge:4,type:impassable,color:blue',
-              ['E10'] => e10_configuration,
-              ['E12'] => e12_configuration,
+              ['E10'] => 'border=edge:1,type:impassable,color:blue',
+              ['E12'] => 'town=revenue:0;town=revenue:0;upgrade=cost:30,terrain:mountain',
               %w[E14 J13] => 'upgrade=cost:30,terrain:mountain',
               %w[F11 G14 H13] => 'upgrade=cost:60,terrain:mountain',
               ['G10'] => 'town=revenue:0;town=revenue:0;border=edge:0,type:impassable,color:blue;'\
