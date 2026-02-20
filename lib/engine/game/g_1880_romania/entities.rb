@@ -63,7 +63,7 @@ module Engine
             desc: 'As soon as the first 3+3 train is bought or exported, this private is exchanged for a 3+3 train '\
                   'which must be assigned immediately to a company. If the company is then above the train limit it must '\
                   'remove trains until it is within the limit. It may choose which trains to remove.',
-            abilities: [{ type: 'close', on_phase: 'B2' }],
+            # this company's ability is implemented in 1880's game class, with the
           },
           {
             name: 'P8. Orient Express',
