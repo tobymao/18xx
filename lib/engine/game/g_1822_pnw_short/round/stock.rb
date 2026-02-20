@@ -22,7 +22,7 @@ module Engine
             minor.reservation_color = :white
 
             share_price = @game.stock_market.par_prices.find { |pp| pp.price == 50 }
-            @game.stock_market.set_par(minor, share_price)
+            @game.par_corporation(minor, share_price)
             bundle = minor.shares[0].to_bundle
             bundle.share_price = 0
             @game.share_pool.buy_shares(bid.entity, bundle)

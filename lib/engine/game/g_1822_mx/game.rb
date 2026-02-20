@@ -416,7 +416,7 @@ module Engine
           # bidboxes need to be re-setup if this minor was in the top 4
           setup_bidboxes
 
-          stock_market.set_par(ndem, stock_market.par_prices.find { |pp| pp.price == 100 })
+          par_corporation(ndem, stock_market.par_prices.find { |pp| pp.price == 100 })
           ndem.ipoed = true
           ndem.owner = @share_pool # Not clear this is needed
           after_par(ndem) # Not clear this is needed

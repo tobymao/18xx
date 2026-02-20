@@ -219,7 +219,7 @@ module Engine
             entity = action.entity
             raise GameError, "#{corporation.name} cannot be parred" unless @game.can_par?(corporation, entity)
 
-            @game.stock_market.set_par(corporation, share_price)
+            @game.par_corporation(corporation, share_price)
             share = corporation.ipo_shares.first
             buy_shares(entity, share.to_bundle)
             @game.after_par(corporation)
@@ -312,7 +312,7 @@ module Engine
                 share_price = @game.stock_market.share_price([par_rows[0], par_rows[1]])
 
                 # Find the right spot on the stock market
-                @game.stock_market.set_par(minor, share_price)
+                @game.par_corporation(minor, share_price)
 
                 # Select the president share to get
                 share = minor.ipo_shares.first

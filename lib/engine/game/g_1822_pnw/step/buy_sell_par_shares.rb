@@ -105,7 +105,7 @@ module Engine
             @converting_major.capitalization = :incremental
             @game.remove_home_icon(@converting_major, minor.coordinates)
 
-            @game.stock_market.set_par(@converting_major, @par_price)
+            @game.par_corporation(@converting_major, @par_price)
 
             shares_value = (num_shares * @par_price.price)
             minor_value = minor.share_price.price * 2

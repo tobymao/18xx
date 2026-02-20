@@ -1346,7 +1346,7 @@ module Engine
 
         def merger_exchange_start(share_price)
           @merger_share_price = share_price
-          stock_market.set_par(@merger_target, share_price)
+          par_corporation(@merger_target, share_price)
           @log << "#{@merger_target.name} share price will be #{format_currency(share_price.price)}"
 
           # start the target
@@ -1864,7 +1864,7 @@ module Engine
           corp.tokens.select(&:used).each { |t| swap_token(target, corp, t) }
 
           # open and set share price of target
-          @stock_market.set_par(target, corp.share_price)
+          par_corporation(target, corp.share_price)
           target.ipoed = true
           target.floated = true
 

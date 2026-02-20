@@ -43,7 +43,7 @@ module Engine
 
             raise GameError, "#{corporation.name} cannot be parred" unless @game.can_par?(corporation, entity)
 
-            @game.stock_market.set_par(corporation, share_price)
+            @game.par_corporation(corporation, share_price)
             shares = corporation.ipo_shares.first(number)
             shares.each do |share|
               @round.players_bought[entity][corporation] += share.percent

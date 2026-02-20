@@ -49,7 +49,7 @@ module Engine
 
             acquire_private(corporation, minor)
             share_price = @game.par_price(minor)
-            @game.stock_market.set_par(corporation, share_price)
+            @game.par_corporation(corporation, share_price)
             @round.players_bought[player][corporation] += bundle.percent
             @log << "#{player.name} exchanges #{minor.name} and " \
                     "#{@game.format_currency(share_price.price)} for a " \

@@ -634,7 +634,7 @@ module Engine
             elsif idx == size
               lnwr = corporation_by_id('LNWR')
               price = par_prices(lnwr).first
-              @stock_market.set_par(lnwr, price)
+              par_corporation(lnwr, price)
               share = lnwr.ipo_shares.first
               @share_pool.buy_shares(player, share.to_bundle, exchange: nil, swap: nil, allow_president_change: true)
               after_par(lnwr)

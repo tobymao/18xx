@@ -104,7 +104,7 @@ module Engine
       let(:corporation) { game.corporations.first }
 
       before do
-        game.stock_market.set_par(corporation, share_price)
+        game.par_corporation(corporation, share_price)
         game.share_pool.buy_shares(player_1, corporation.shares[0])
         game.round.process_action(Action::BuyShares.new(player_1, shares: corporation.shares[0]))
       end
@@ -115,7 +115,7 @@ module Engine
       let(:corporation) { game.corporations.first }
 
       before do
-        game.stock_market.set_par(corporation, share_price)
+        game.par_corporation(corporation, share_price)
         2.times { game.share_pool.buy_shares(player_1, corporation.shares[0]) }
         game.round.process_action(Action::SellShares.new(player_1, shares: player_1.shares[1]))
       end
@@ -246,7 +246,7 @@ module Engine
 
         it 'can\'t buy over 80%' do
           player_1.set_cash(10_000, game.bank)
-          stock_market.set_par(corporation, stock_market.par_prices.find { |price| price.price == 5 })
+          game.par_corporation(corporation, stock_market.par_prices.find { |price| price.price == 5 })
           3.times { game.share_pool.buy_shares(player_1, corporation.shares[0]) }
 
           expect(game.active_step.can_buy?(player_1, corporation.shares[0])).to be_falsy
@@ -254,7 +254,7 @@ module Engine
 
         it 'should be able to get 100% buying from market' do
           player_1.set_cash(10_000, game.bank)
-          stock_market.set_par(corporation, stock_market.par_prices.find { |price| price.price == 5 })
+          game.par_corporation(corporation, stock_market.par_prices.find { |price| price.price == 5 })
           3.times { game.share_pool.buy_shares(player_1, corporation.shares[0]) }
 
           player_2.set_cash(10_000, game.bank)
@@ -273,7 +273,7 @@ module Engine
           next_sr!
 
           player_1.set_cash(10_000, game.bank)
-          stock_market.set_par(corporation, stock_market.par_prices.find { |price| price.price == 5 })
+          game.par_corporation(corporation, stock_market.par_prices.find { |price| price.price == 5 })
           3.times { game.share_pool.buy_shares(player_1, corporation.shares[0]) }
 
           player_2.set_cash(10_000, game.bank)

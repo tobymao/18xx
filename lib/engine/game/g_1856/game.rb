@@ -1152,7 +1152,7 @@ module Engine
 
         def float_national
           national.float!
-          @stock_market.set_par(national, calculate_national_price)
+          par_corporation(national, calculate_national_price)
         end
 
         # Handles the share exchange in nationalization

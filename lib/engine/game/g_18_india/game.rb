@@ -328,7 +328,7 @@ module Engine
         def assign_initial_ipo_price(corporations)
           corporations.each do |corporation|
             ipo_price = @stock_market.par_prices.find { |p| p.price == corporation.min_price }
-            @stock_market.set_par(corporation, ipo_price)
+            par_corporation(corporation, ipo_price)
             corporation.ipoed = true
             # remove marker from Marker Chart, it will be palced on chart when it Floats
             corporation.share_price.corporations.delete(corporation)
