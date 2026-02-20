@@ -152,7 +152,7 @@ module Engine
           @preussen_may_float = false
 
           @corporations.select { |corp| major?(corp) }.each do |corp|
-            @stock_market.set_par(corp, @stock_market.par_prices.find { |share_price| share_price.price == PAR_PRICES[corp.id] })
+            par_corporation(corp, @stock_market.par_prices.find { |share_price| share_price.price == PAR_PRICES[corp.id] })
           end
 
           corporation_by_id('BY').ipoed = true

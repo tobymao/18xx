@@ -87,7 +87,7 @@ module Engine
             new_price = @game.lookup_par_price(CONVERT_PAR)
             @log << "#{target.name} par price is set at #{@game.format_currency(new_price.price)}"
 
-            @game.stock_market.set_par(target, new_price)
+            @game.par_corporation(target, new_price)
             owner = minor.owner
 
             @converting = nil
@@ -125,7 +125,7 @@ module Engine
             new_price = @game.lookup_par_price(minors.sum { |m| m.share_price.price })
             @log << "#{target.name} par price is set at #{@game.format_currency(new_price.price)}"
 
-            @game.stock_market.set_par(target, new_price)
+            @game.par_corporation(target, new_price)
             share = @game.bank.shares_of(target).first
             @game.share_pool.buy_shares(owner, share.to_bundle, exchange: :free)
 
