@@ -37,7 +37,6 @@ module Engine
         def operating_round(round_num)
           G1880::Round::Operating.new(self, [
             Engine::Step::HomeToken,
-            G1880::Step::RocketPurchaseTrain,
             Engine::Step::Exchange,
             Engine::Step::DiscardTrain,
             G1880::Step::Assign,
@@ -50,14 +49,14 @@ module Engine
           ], round_num: round_num)
         end
 
-        def event_modify_borders!
+        def event_open_borders!
           @log << '-- Event: Borders opened, P2 still receives payment for built crossings --'
 
           self.class::BORDERS.each do |coord, edges|
             hex = hex_by_id(coord)
             next unless hex
 
-            hex.tile.modify_borders(edges, type: :province)
+            hex.tile.open_borders(edges, type: :province)
           end
 
           clear_graph
@@ -70,10 +69,8 @@ module Engine
             hex = hex_by_id(coord)
             next unless hex
 
-            hex.tile.modify_borders(edges, type: nil)
+            hex.tile.open_borders(edges, type: nil)
           end
-
-          clear_graph
         end
 
         def handle_province_crossing_income(hex, entity_or_entities)
@@ -92,7 +89,8 @@ module Engine
         def remove_border_calculate_cost!(tile, entity_or_entities, spender)
           total_cost, border_types = super
 
-          handle_province_crossing_income(tile.hex, entity_or_entities)
+          @province_crossings ||= {}
+          @province_crossings[tile.hex] = border_types.count { |t| %i[province impassable].include?(t) }
 
           [total_cost, border_types]
         end
