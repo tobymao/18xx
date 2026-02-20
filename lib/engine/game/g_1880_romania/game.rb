@@ -56,7 +56,7 @@ module Engine
             hex = hex_by_id(coord)
             next unless hex
 
-            hex.tile.open_borders(edges, type: :province)
+            hex.tile.modify_borders(edges, type: :province)
           end
 
           clear_graph
@@ -69,7 +69,7 @@ module Engine
             hex = hex_by_id(coord)
             next unless hex
 
-            hex.tile.open_borders(edges, type: nil)
+            hex.tile.modify_borders(edges, type: nil)
           end
         end
 
