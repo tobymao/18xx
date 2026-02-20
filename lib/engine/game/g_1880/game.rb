@@ -357,8 +357,8 @@ module Engine
           player_corps = @corporations.select { |c| c.owner == rocket.owner }
 
           if player_corps.empty?
-            @log << "Rocket of China's owner, #{rocket.owner} owns no corporations. '\
-                    'The rocket is exchanged for a 4 train, train is discarded."
+            @log << "#{rocket.name}'s owner, #{rocket.owner}, owns no corporations. "\
+                    "#{rocket.name} is closed, and its associated train is discarded."
             rocket.close!
             @depot.export!
           else

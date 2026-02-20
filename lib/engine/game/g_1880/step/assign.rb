@@ -44,7 +44,7 @@ module Engine
           def help
             return super unless @game.forced_exchange_rocket?
 
-            'Owner of Rocket of China must choose one of their corporations to receive the next 4 train from the depot at no cost'
+            "#{@game.rocket.owner.name} must choose one of their corporations to receive the next train from the depot at no cost"
           end
 
           def blocks?

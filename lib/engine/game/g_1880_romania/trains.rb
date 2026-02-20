@@ -35,7 +35,6 @@ module Engine
             rusts_on: '6E',
             num: 5,
             events: [{ 'type' => 'communist_takeover' },
-                     { 'type' => 'close_p7' },
                      { 'type' => 'remove_borders' }],
           },
           {

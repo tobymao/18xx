@@ -50,7 +50,7 @@ module Engine
         end
 
         def event_open_borders!
-          @log << '-- Event: Borders opened, P2 still receives payment for built crossings --'
+          @log << "-- Event: Borders opened, owner of #{p2.name} still receives payment for built crossings --"
 
           self.class::BORDERS.each do |coord, edges|
             hex = hex_by_id(coord)
@@ -99,6 +99,12 @@ module Engine
           @p2 ||= company_by_id('P2')
         end
 
+        # This game's Electroputere S.A. private company's forced train exchange is identical to the forced exchange for the
+        # Rocket of China in 1880, so we can reuse that logic here rather than recoding the whole thing.
+        def forced_exchange_rocket?
+          phase.name == 'B2' && !rocket.closed?
+        end
+
         # Used for disabled 1880 methods
         def dummy_company
           @dummy ||= Company.new(
@@ -109,14 +115,6 @@ module Engine
           @dummy.close!
           @dummy
         end
-
-        # 1880 China method. Not used in this variant.
-        def rocket
-          dummy_company
-        end
-
-        # 1880 China method. Not used in this variant.
-        def force_exchange_rocket; end
 
         # 1880 China method. Not used in this variant.
         def ferry_hexes
