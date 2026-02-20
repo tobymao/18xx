@@ -13,7 +13,7 @@ module Engine
             price: 180,
             rusts_on: '4+4',
             num: 5,
-            events: [{ 'type' => 'modify_borders' }],
+            events: [{ 'type' => 'open_borders' }],
           },
           {
             name: '3',
