@@ -6,14 +6,14 @@ module Engine
       module Entities
         COMPANIES = [
           {
-            name: 'Banater Montanbahn',
+            name: 'P1. Banater Montanbahn',
             sym: 'P1',
             value: 20,
             revenue: 5,
             desc: 'May be closed any time during the game to give the owner 20 (if player) or 40 (if company) out of the bank.',
           },
           {
-            name: 'Consorţiu Bethel Henry Strousberg',
+            name: 'P2. Consorţiu Bethel Henry Strousberg',
             sym: 'P2',
             value: 30,
             revenue: 10,
@@ -22,14 +22,14 @@ module Engine
                   'border, the owner receives 20.',
           },
           {
-            name: 'Valea Jiului',
+            name: 'P3. Valea Jiului',
             sym: 'P3',
             value: 40,
             revenue: 10,
             desc: 'Gives a discount of two mountain symbols for each hex with mountain terrain costs.',
           },
           {
-            name: 'The Danube and Black Sea Railway and Free Port of Küstendjie',
+            name: 'P4. The Danube and Black Sea Railway and Free Port of Küstendjie',
             sym: 'P4',
             value: 60,
             revenue: 20,
@@ -38,7 +38,7 @@ module Engine
                   'value of the relevant city by 10 for all companies of the owning player.',
           },
           {
-            name: 'REMAR – Reparatii Material Ruland',
+            name: 'P5. REMAR – Reparatii Material Ruland',
             sym: 'P5',
             value: 70,
             revenue: 10,
@@ -48,7 +48,7 @@ module Engine
                   'Company closes with 3+3.',
           },
           {
-            name: 'Malaxa Manufacturing Company',
+            name: 'P6. Malaxa Manufacturing Company',
             sym: 'P6',
             value: 30,
             revenue: 10,
@@ -56,7 +56,7 @@ module Engine
                   'immediately to a company. This private company is then discarded.',
           },
           {
-            name: 'Electroputere S.A.',
+            name: 'P7. Electroputere S.A.',
             sym: 'P7',
             value: 100,
             revenue: 5,
@@ -66,7 +66,7 @@ module Engine
             abilities: [{ type: 'close', on_phase: 'B2' }],
           },
           {
-            name: 'Orient Express',
+            name: 'P8. Orient Express',
             sym: 'P8',
             value: 160,
             revenue: 0,
