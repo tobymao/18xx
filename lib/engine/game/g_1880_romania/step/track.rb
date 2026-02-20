@@ -28,6 +28,18 @@ module Engine
 
             @log << "#{@game.p2.owner.name} receives #{@game.format_currency(income)} for province crossing"
           end
+
+          def potential_tiles(entity_or_entities, hex)
+            tiles = super
+
+            # prevents upgrades_to_correct_label method in 1880 from allowing L148 tile on non-B labeled hexes
+            tiles.reject! do |tile|
+              tile.name == 'L148' &&
+                !hex.tile.label&.to_s&.include?('B')
+            end
+
+            tiles
+          end
         end
       end
     end
