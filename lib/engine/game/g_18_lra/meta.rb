@@ -16,6 +16,7 @@ module Engine
 
         GAME_IS_VARIANT_OF = G18Rhl::Meta
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18LRA%3A-Lower-Rhineland-Area'
+        GAME_RULES_URL = 'https://boardgamegeek.com/file/download_redirect/qA9xPkLo8a1m91qcTomfgHRJVWRGbU9tZmhuUFpXV0JXMGVNaERzdDBmb3R4d3g3RTZteEE4eDl1d2c9/18Rhl-LRA+-+Rules+BGG+version.pdf'
         GAME_TITLE = '18Lra'
         GAME_SUBTITLE = 'Lower Rhineland Area'
 

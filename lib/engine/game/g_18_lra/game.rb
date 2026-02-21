@@ -32,6 +32,8 @@ module Engine
             0
           end
         end
+
+        def setup; end
       end
     end
   end
