@@ -20,12 +20,10 @@ module Engine
 
             buy_shares(company.owner, bundle, exchange: company)
             @round.players_history[company.owner][bundle.corporation] << action if @round.respond_to?(:players_history)
-            if company.name == 'London Investment'
-              @game.assign_london_company(bundle.corporation)
-              ability.use!
-              @round.current_actions << action
-            end
-            company.close! if company.name != 'London Investment'
+            @game.assign_london_corporation(bundle.corporation)
+            ability.use!
+            @round.current_actions << action
+            company.close!
           end
         end
       end

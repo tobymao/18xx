@@ -21,7 +21,7 @@ module Engine
         include G1832::Phases
         include G1832::Trains
 
-        attr_accessor :sell_queue, :reissued, :coal_token_counter, :coal_company_sold_or_closed
+        attr_accessor :sell_queue, :reissued, :coal_token_counter, :coal_company_sold_or_closed, :london_corporation
 
         CORPORATION_CLASS = G1832::Corporation
         CORPORATE_BUY_SHARE_ALLOW_BUY_FROM_PRESIDENT = true
@@ -238,13 +238,6 @@ module Engine
           @coal_hex ||= hex_by_id('B14')
         end
 
-        def london_company
-          @london_company || nil
-        end
-
-        def assign_london_company(corporation)
-          @london_company = corporation
-        end
 
         def exchange_corporations(exchange_ability)
           candidates = case exchange_ability.corporations
@@ -264,16 +257,6 @@ module Engine
           candidates.reject(&:closed?)
         end
 
-        def use!(**_kwargs)
-          @used = true
-
-          @count_this_or += 1 if @count_per_or
-
-          return unless @count
-
-          @count -= 1
-          owner.remove_ability(self) if !@count.positive? && @remove_when_used_up
-        end
 
         def revenue_for(route, stops)
           revenue = super
