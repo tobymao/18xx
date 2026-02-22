@@ -240,21 +240,8 @@ module Engine
 
 
         def exchange_corporations(exchange_ability)
-          candidates = case exchange_ability.corporations
-                       when 'any'
-                         corporations
-                       when 'ipoed'
-                         corporations.select(&:ipoed)
-                       when 'london'
-                         corporations.select do |c|
-                           !@round.current_actions.any? do |x|
-                             x.instance_of?(Action::BuyShares)
-                           end && !c.player_share_holders.none? && !c.operated? && exchange_ability.count > 0
-                         end
-                       else
-                         exchange_ability.corporations.map { |c| corporation_by_id(c) }
-                       end
-          candidates.reject(&:closed?)
+          super
+          candidates.reject(&:closed?).reject(&:operated?)
         end
 
 

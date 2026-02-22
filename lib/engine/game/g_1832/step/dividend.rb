@@ -6,7 +6,7 @@ require_relative '../../g_1870/step/dividend'
 
 module Engine
   module Game
-    module G1870
+    module G1832
       module Step
         class Dividend < G1870::Step::Dividend
 
