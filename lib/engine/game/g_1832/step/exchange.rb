@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require_relative '../../../step/exchange'
-require_relative '../../../step/share_buying'
 
 module Engine
   module Game
