@@ -8,17 +8,6 @@ module Engine
     module G1832
       module Step
         class Exchange < Engine::Step::Exchange
-          ACTIONS = %w[buy_shares].freeze
-
-          def actions(entity)
-            return ACTIONS if can_exchange?(entity)
-
-            []
-          end
-
-          def blocks?
-            false
-          end
 
           def process_buy_shares(action)
             company = action.entity
