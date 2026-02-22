@@ -28,27 +28,6 @@ module Engine
             end
             company.close! if company.name != 'London Investment'
           end
-
-          def can_buy?(entity, bundle)
-            can_gain?(entity, bundle, exchange: true)
-          end
-
-          def can_exchange?(entity, bundle = nil)
-            return false unless entity.company?
-            return false unless (ability = @game.abilities(entity, :exchange))
-
-            owner = entity.owner
-            return can_gain?(owner, bundle, exchange: true) if bundle
-
-            shares = []
-            @game.exchange_corporations(ability).each do |corporation|
-              shares << corporation.reserved_shares.first if ability.from.include?(:reserved)
-              shares << corporation.available_share if ability.from.include?(:ipo)
-              shares << @game.share_pool.shares_by_corporation[corporation]&.first if ability.from.include?(:market)
-            end
-
-            shares.compact.any? { |s| can_gain?(entity.owner, s&.to_bundle, exchange: true) }
-          end
         end
       end
     end
