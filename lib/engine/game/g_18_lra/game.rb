@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative 'entities'
 require_relative 'map'
 require_relative 'meta'
 require_relative 'phases'
@@ -11,6 +12,7 @@ module Engine
     module G18Lra
       class Game < G18Rhl::Game
         include_meta(G18Lra::Meta)
+        include Entities
         include Map
         include Phases
         include Trains

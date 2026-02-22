@@ -455,10 +455,11 @@ module Engine
               ['C3'] => 'town=revenue:10;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:5,b:_0',
               ['D2'] => 'offboard=revenue:yellow_20|brown_40,slots:2,loc:0,groups:Venio;path=a:0,b:3;border=edge:0',
               ['D6'] => 'town=revenue:10;path=a:2,b:_0;path=a:5,b:_0',
-              %w[D16 I9] => 'path=a:0,b:2',
+              ['D16'] => 'path=a:0,b:2',
               ['E1'] => 'city=revenue:yellow_20|brown_40,slots:2,loc:3,groups:Venio,hide:1;'\
                         'path=a:3,b:_0;path=a:5,b:_0;border=edge:3',
               ['F16'] => 'path=a:0,b:2;border=edge:1,type:impassable,color:blue',
+              ['I9'] => 'town=revenue:10;path=a:0,b:_0;path=a:2,b:_0',
               ['I15'] => 'border=edge:0,type:impassable,color:blue;'\
                          'border=edge:1,type:impassable,color:blue;border=edge:2,type:impassable,color:blue',
               ['J2'] => 'town=revenue:yellow_20|brown_50,loc:4;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;'\
