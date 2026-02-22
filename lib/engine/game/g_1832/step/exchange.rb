@@ -11,10 +11,6 @@ module Engine
           def process_buy_shares(action)
             company = action.entity
             bundle = action.bundle
-            unless (ability = @game.abilities(company, :exchange))
-              raise GameError,
-                    "Could not assign #{company.name} to #{target.name}; :exchange ability not found"
-            end
             raise GameError, "Cannot exchange #{action.entity.id} for #{bundle.corporation.id}" unless can_exchange?(company,
                                                                                                                      bundle)
 
