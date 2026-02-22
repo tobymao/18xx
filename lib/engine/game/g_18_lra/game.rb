@@ -70,7 +70,8 @@ module Engine
                           type: 'description',
                           description: 'Harbour token',
                           desc_detail: 'Last token is a Harbour token which can be used to token a harbour. '\
-                                       "cost #{price / 2}M before harbour reservation ceases in phase 5 (TO BE DONE)"))
+                                       "cost #{price / 2}M before harbour reservation ceases in phase 5 (TO BE DONE)"
+                        ))
           end
         end
 
