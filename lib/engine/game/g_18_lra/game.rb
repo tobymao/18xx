@@ -57,6 +57,21 @@ module Engine
             hex.tile.cities[harbour['city_id']].place_token(@harbours, token, free: true)
             @harbours.tokens << token
           end
+
+          # Add harbour tokens to all corporations except GVE
+          @corporations.each do |c|
+            next if c.id == 'GVE'
+
+            price = c.tokens.last.price + 20
+            logo = c.tokens.last.logo.gsub(/\.svg/, '_harbour\\0')
+            c.tokens << Engine::Token.new(c, price: price, logo: logo, simple_logo: logo, type: :harbour)
+
+            c.add_ability(Ability::Base.new(
+                          type: 'description',
+                          description: 'Harbour token',
+                          desc_detail: 'Last token is a Harbour token which can be used to token a harbour. '\
+                                       "cost #{price / 2}M before harbour reservation ceases in phase 5 (TO BE DONE)"))
+          end
         end
 
         def event_remove_tile_block!

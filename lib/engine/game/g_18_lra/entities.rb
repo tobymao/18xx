@@ -9,7 +9,7 @@ module Engine
             float_percent: 50,
             name: 'Aachen-Düsseldorf-Ruhrorter Eisenbahn',
             sym: 'ADR',
-            tokens: [0, 60, 80, 100],
+            tokens: [0, 60, 80],
             logo: '18_rhl/ADR',
             simple_logo: '18_rhl/ADR.alt',
             color: :green,
@@ -20,12 +20,6 @@ module Engine
                 description: 'Double yellow tiles first OR',
                 desc_detail: 'The ADR may lay two yellow tracks instead of one, during its first operating round (TO BE DONE)',
               },
-              {
-                type: 'base',
-                description: 'Harbour token',
-                desc_detail: 'Last token is a Harbour token which can be used to token a harbour. '\
-                             'Half cost before harbour reservation ceases in phase 5 (TO BE DONE)',
-              },
             ],
             always_market_price: true,
             max_ownership_percent: 100,
@@ -34,19 +28,12 @@ module Engine
             name: 'Bergisch-Märkische Eisenbahngesell.',
             sym: 'BME',
             float_percent: 50,
-            tokens: [0, 60, 80, 100],
+            tokens: [0, 60, 80],
             logo: '18_rhl/BME',
             simple_logo: '18_rhl/BME.alt',
             color: :brown,
             coordinates: 'G15',
-            abilities: [
-              {
-                type: 'base',
-                description: 'Harbour token',
-                desc_detail: 'Last token is a Harbour token which can be used to token a harbour. '\
-                             'Half cost before harbour reservation ceases in phase 5 (TO BE DONE)',
-              },
-            ],
+            abilities: [],
             always_market_price: true,
             max_ownership_percent: 100,
           },
@@ -54,7 +41,7 @@ module Engine
             name: 'Cöln-Mindener Eisenbahngesellschaft',
             sym: 'CME',
             float_percent: 50,
-            tokens: [0, 60, 80, 100],
+            tokens: [0, 60, 80],
             color: '#CD5C5C',
             logo: '18_rhl/CME',
             simple_logo: '18_rhl/CME.alt',
@@ -65,12 +52,6 @@ module Engine
                 description: 'Double yellow tiles first OR',
                 desc_detail: 'The CME may lay two yellow tracks instead of one, during its first operating round (TO BE DONE)',
               },
-              {
-                type: 'base',
-                description: 'Harbour token',
-                desc_detail: 'Last token is a Harbour token which can be used to token a harbour. '\
-                             'Half cost before harbour reservation ceases in phase 5 (TO BE DONE)',
-              },
             ],
             always_market_price: true,
             max_ownership_percent: 100,
@@ -80,7 +61,7 @@ module Engine
             sym: 'KEG',
             float_percent: 50,
             shares: [30, 10, 10, 10, 10, 10, 10, 10],
-            tokens: [0, 60, 80],
+            tokens: [0, 60],
             logo: '18_rhl/KEG',
             simple_logo: '18_rhl/KEG.alt',
             color: :orange,
@@ -96,12 +77,6 @@ module Engine
               {
                 type: 'base',
                 description: 'Presidency share 30%',
-              },
-              {
-                type: 'base',
-                description: 'Harbour token',
-                desc_detail: 'Last token is a Harbour token which can be used to token a harbour. '\
-                             'Half cost before harbour reservation ceases in phase 5 (TO BE DONE)',
               },
             ],
             always_market_price: true,
@@ -132,7 +107,7 @@ module Engine
             name: 'Cöln-Crefelder Eisenbahn',
             sym: 'CCE',
             float_percent: 50,
-            tokens: [0, 0, 80],
+            tokens: [0, 60],
             color: :blue,
             logo: '18_rhl/CCE',
             simple_logo: '18_rhl/CCE.alt',
@@ -145,12 +120,6 @@ module Engine
                 desc_detail: 'The CCE may place a station token during its normal tokening on Hex F10 (Krefeld) '\
                              'without an available route',
               },
-              {
-                type: 'base',
-                description: 'Harbour token',
-                desc_detail: 'Last token is a Harbour token which can be used to token a harbour. '\
-                             'Half cost before harbour reservation ceases in phase 5 (TO BE DONE)',
-              },
             ],
             always_market_price: true,
             max_ownership_percent: 100,
@@ -159,7 +128,7 @@ module Engine
             name: 'Rheinische Eisenbahngesellschaft',
             sym: 'RhE',
             float_percent: 50,
-            tokens: [0, 60, 80, 100],
+            tokens: [0, 60, 80],
             color: :purple,
             logo: '18_rhl/RhE',
             simple_logo: '18_rhl/RhE.alt',
@@ -171,12 +140,6 @@ module Engine
                 description: 'Double yellow tiles first OR',
                 desc_detail: 'The RhE may lay two yellow tracks instead of one, during its first operating round (TO BE DONE)',
               },
-              {
-                type: 'base',
-                description: 'Harbour token',
-                desc_detail: 'Last token is a Harbour token which can be used to token a harbour. '\
-                             'Half cost before harbour reservation ceases in phase 5 (TO BE DONE)',
-              },
             ],
             always_market_price: true,
             max_ownership_percent: 100,
@@ -185,7 +148,7 @@ module Engine
             name: 'Moerser Kreisbahn',
             sym: 'MKB',
             float_percent: 50,
-            tokens: [0, 60, 80],
+            tokens: [0, 60],
             # The 2nd share decided share percentage for shares (TO BE DONE - Check if 18Rhl code work for this)
             shares: [20, 10, 20, 20, 10, 10, 10],
             color: :black,
@@ -203,12 +166,6 @@ module Engine
                 type: 'base',
                 description: 'Two double (20%) certificates',
                 desc_detail: 'The first two (non-president) shares sold from IPO are double (20%) certificates (TO BE DONE)',
-              },
-              {
-                type: 'base',
-                description: 'Harbour token',
-                desc_detail: 'Last token is a Harbour token which can be used to token a harbour. '\
-                             'Half cost before harbour reservation ceases in phase 5 (TO BE DONE)',
               },
             ],
             always_market_price: true,
@@ -286,10 +243,6 @@ module Engine
                   'hold the directorturn the token certificate.',
           },
         ].freeze
-      end
-
-      def game_companies
-        self.class::COMPANIES
       end
     end
   end
