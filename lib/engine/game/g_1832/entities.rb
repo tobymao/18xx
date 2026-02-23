@@ -287,7 +287,7 @@ module Engine
             abilities: [{
               type: 'exchange',
               owner_type: 'player',
-              corporations: 'london',
+              corporations: 'ipoed',
               when: 'owning_player_sr_turn',
               count: 1,
               remove_when_used_up: false,

@@ -21,7 +21,7 @@ module Engine
         include G1832::Phases
         include G1832::Trains
 
-        attr_accessor :sell_queue, :reissued, :coal_token_counter, :coal_company_sold_or_closed, :london_corporation
+        attr_accessor :sell_queue, :reissued, :coal_token_counter, :coal_company_sold_or_closed, :london_corporation, :parred_this_sr
 
         CORPORATION_CLASS = G1832::Corporation
         CORPORATE_BUY_SHARE_ALLOW_BUY_FROM_PRESIDENT = true
@@ -106,6 +106,7 @@ module Engine
         end
 
         def operating_round(round_num)
+          @parred_this_sr = []
           Engine::Round::Operating.new(self, [
             Engine::Step::Bankrupt,
             G1832::Step::Exchange,
@@ -136,6 +137,7 @@ module Engine
           @sell_queue = []
           @reissued = {}
           @coal_token_counter = 5
+          @parred_this_sr = ["CG"]
 
           coal_company.max_price = coal_company.value
 
@@ -240,8 +242,8 @@ module Engine
 
 
         def exchange_corporations(exchange_ability)
-          super
-          candidates.reject(&:closed?).reject(&:operated?)
+          candidates = super
+          candidates.reject(&:closed?).reject(&:operated?).select { |c| @parred_this_sr.include?(c.id) }
         end
 
 
@@ -336,19 +338,7 @@ module Engine
           @skip_paths
         end
 
-        def process_buy_shares(action)
-          company = action.entity
-          bundle = action.bundle
 
-          return unless action.entity.name == 'London Investment'
-
-          log << 'Processing buy shares for London Investment'
-          raise GameError, "Cannot exchange #{action.entity.id} for #{bundle.corporation.id}" unless can_exchange?(company,
-                                                                                                                   bundle)
-
-          buy_shares(company.owner, bundle, exchange: company)
-          @round.players_history[company.owner][bundle.corporation] << action if @round.respond_to?(:players_history)
-        end
       end
     end
   end
