@@ -229,7 +229,7 @@ module Engine
           case company.type
           when :concession
             'CONCESSION'
-          when :commissioner
+          when :commission
             'COMMISSIONER'
           else
             raise "Unknown company type: #{company.type}"
@@ -264,9 +264,24 @@ module Engine
           Engine::Round::Draft.new(self, [G18Cuba::Step::SimpleDraft], reverse_order: false)
         end
 
+        def stock_round
+          Round::Stock.new(self, [
+            G18Cuba::Step::BuySellParShares,
+          ])
+        end
+
         def close_unopened_minors
           @corporations.each { |c| c.close! if c.type == :minor && !c.floated? }
           @log << 'Unopened minors close'
+        end
+
+        def can_par?(corporation, entity)
+          # FC cannot be parred
+          # Minors can only be parred by players with a concession to exchange
+          return false if corporation.type == :state
+          return super unless corporation.type == :minor
+
+          entity.companies.any? { |c| abilities(c, :exchange) }
         end
 
         def next_round!

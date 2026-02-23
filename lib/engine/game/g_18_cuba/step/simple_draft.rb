@@ -10,7 +10,7 @@ module Engine
           def setup
             super
             @companies = @game.concessions.sort
-            @completed_players = Hash.new(0)
+            @completed_actions_player = Hash.new(0)
           end
 
           def actions_per_player
@@ -25,7 +25,7 @@ module Engine
           def actions(entity)
             return [] if finished?
             return [] unless entity == current_entity
-            return [] if @completed_players[entity.player] >= actions_per_player
+            return [] if @completed_actions_player[entity.player] >= actions_per_player
 
             %w[bid pass]
           end
@@ -44,7 +44,7 @@ module Engine
 
           def finished?
             @game.players.all? do |player|
-              @completed_players[player] >= actions_per_player
+              @completed_actions_player[player] >= actions_per_player
             end
           end
 
@@ -55,7 +55,7 @@ module Engine
           def process_pass(action)
             player = action.entity.player
             @log << "#{action.entity.name} passes and will not buy any concession"
-            @completed_players[player] += 1
+            @completed_actions_player[player] += 1
             @round.next_entity_index!
             action_finalized
           end
@@ -63,7 +63,7 @@ module Engine
           def process_bid(action)
             super
             player = action.entity.player
-            @completed_players[player] += 1
+            @completed_actions_player[player] += 1
           end
         end
       end
