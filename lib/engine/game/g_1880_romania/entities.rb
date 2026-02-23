@@ -27,6 +27,15 @@ module Engine
             value: 40,
             revenue: 10,
             desc: 'Gives a discount of two mountain symbols for each hex with mountain terrain costs.',
+            abilities: [{
+              type: 'tile_discount',
+              discount: 20,
+              terrain: 'mountain',
+              exact_match: false,
+              owner_type: 'player',
+              when: 'owning_player_track',
+              description: 'Discount of two mountain symbols for each hex with mountain terrain costs',
+            }],
           },
           {
             name: 'P4. The Danube and Black Sea Railway and Free Port of Küstendjie',
@@ -63,7 +72,8 @@ module Engine
             desc: 'As soon as the first 3+3 train is bought or exported, this private is exchanged for a 3+3 train '\
                   'which must be assigned immediately to a company. If the company is then above the train limit it must '\
                   'remove trains until it is within the limit. It may choose which trains to remove.',
-            # this company's ability is implemented in 1880's game class, with the
+            # this company's ability is implemented in 1880's game class
+            # with the same logic as the Rocket of China forced exchange.
           },
           {
             name: 'P8. Orient Express',
