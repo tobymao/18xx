@@ -45,6 +45,16 @@ module Engine
             desc: 'Comes with a +10 token. This token may be laid any time to any Danube harbor (blue anchor symbol). It '\
                   'remains there until the end of the game. This doesn’t close the private company. The token increases the '\
                   'value of the relevant city by 10 for all companies of the owning player.',
+            abilities: [
+              {
+                type: 'assign_hexes',
+                hexes: %w[G23 G25 H4 J20 K9 K17],
+                count: 1,
+                owner_type: 'player',
+                when: 'owning_player_or_turn',
+                closed_when_used_up: false,
+              },
+            ],
           },
           {
             name: 'P5. REMAR – Reparatii Material Ruland',

@@ -164,7 +164,7 @@ module Engine
             Engine::Step::HomeToken,
             Engine::Step::Exchange,
             Engine::Step::DiscardTrain,
-            G1880::Step::Assign,
+            G1880Romania::Step::Assign,
             G1880Romania::Step::Track,
             G1880::Step::Token,
             G1880::Step::Route,
@@ -220,8 +220,29 @@ module Engine
           [total_cost, border_types]
         end
 
+        def revenue_for(route, stops)
+          revenue = super
+          revenue += 10 if danube_port_bonus?(route)
+
+          revenue
+        end
+
+        def revenue_str(route)
+          str = super
+          str += " + Danube Port Bonus (#{format_currency(10)})" if danube_port_bonus?(route)
+          str
+        end
+
         def p2
           @p2 ||= company_by_id('P2')
+        end
+
+        def danube_port
+          @danube_port ||= company_by_id('P4')
+        end
+
+        def danube_port_bonus?(route)
+          route.stops.any? { |stop| stop.hex.assigned?(danube_port.id) } && route.corporation.owner == danube_port.owner
         end
 
         # This game's Electroputere S.A. private company's forced train exchange is identical to the forced exchange for the
@@ -229,38 +250,6 @@ module Engine
         def forced_exchange_rocket?
           phase.name == 'B2' && !rocket.closed?
         end
-
-        # Used for disabled 1880 methods
-        def dummy_company
-          @dummy ||= Company.new(
-            name: 'Dummy Company',
-            sym: 'DUMMY',
-            value: 0,
-          )
-          @dummy.close!
-          @dummy
-        end
-
-        # 1880 China method. Not used in this variant.
-        def ferry_hexes
-          []
-        end
-
-        # 1880 China method. Not used in this variant.
-        def ferry_company
-          dummy_company
-        end
-
-        # 1880 China method. Not used in this variant.
-        def taiwan_company
-          dummy_company
-        end
-
-        # 1880 China method. Not used in this variant.
-        def taiwan_hex; end
-
-        # 1880 China method. Not used in this variant.
-        def trans_siberian_bonus?(_stops); end
       end
     end
   end
