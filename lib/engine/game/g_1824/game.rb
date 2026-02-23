@@ -678,6 +678,12 @@ module Engine
           super
         end
 
+        # 1837 uses a black token, we want to have a gray one
+        def blocking_token
+          @blocker ||= Corporation.new(sym: 'B', name: '', logo: '1824/blocking', tokens: [])
+          Token.new(@blocker)
+        end
+
         # 1837 use as special functionality for token graphs so we need to use base functionality
         def token_graph_for_entity(_entity)
           @graph

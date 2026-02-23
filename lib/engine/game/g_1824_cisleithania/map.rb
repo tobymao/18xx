@@ -19,18 +19,18 @@ module Engine
               ['A26'] => G1824::Map::KIEW_2,
               ['B3'] => G1824::Map::DRESDEN_2,
               ['E14'] =>
-                'offboard=revenue:yellow_20|green_30|brown_40|gray_40;path=a:0,b:_0,terminal:1;'\
+                'offboard=revenue:yellow_20|green_30|brown_40;path=a:0,b:_0,terminal:1;'\
                 'path=a:1,b:_0,terminal:1;path=a:2,b:_0,terminal:1;path=a:3,b:_0,terminal:1',
               ['G12'] =>
                 "#{budapest}=revenue:yellow_20|green_40|brown_60|gray_70;"\
                 'path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1;path=a:2,b:_0,terminal:1;path=a:3,b:_0,terminal:1',
               ['F25'] =>
-                'offboard=revenue:yellow_20|green_30|brown_40|gray_40;path=a:2,b:_0,terminal:1;'\
+                'offboard=revenue:yellow_20|green_30|brown_40;path=a:2,b:_0,terminal:1;'\
                 'path=a:3,b:_0,terminal:1',
               ['H1'] => G1824::Map::MAINLAND_1,
               ['I2'] => G1824::Map::MAINLAND_2,
               ['I10'] =>
-                'offboard=revenue:yellow_10|green_10|brown_50|gray_50;path=a:1,b:_0,terminal:1;'\
+                'offboard=revenue:yellow_10|brown_50;path=a:1,b:_0,terminal:1;'\
                 'path=a:2,b:_0,terminal:1;path=a:3,b:_0,terminal:1',
             },
             gray: {
