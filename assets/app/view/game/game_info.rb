@@ -215,6 +215,8 @@ module View
           remaining.each.with_index do |train2, index|
             train2.events.each do |event|
               event_name = event['type']
+              next if event['hidden'] # don't show hidden events on the info page
+
               if @game.class::EVENTS_TEXT[event_name]
                 events << event_name
                 event_name = @game.class::EVENTS_TEXT[event_name][0]
