@@ -218,7 +218,7 @@ module Engine
           tie_breaker |= @players
 
           president_factors = president_candidates.to_h do |player, percent|
-            [[percent, tie_breaker.index(player), player == current_president ? 1 : 0], player]
+            [[percent, -1 * tie_breaker.index(player)], player]
           end
           president = president_factors[president_factors.keys.max]
           return if current_president == president
