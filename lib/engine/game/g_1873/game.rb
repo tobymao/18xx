@@ -274,7 +274,7 @@ module Engine
           init_diesel_pool
 
           # float the MHE and move all shares into market and give it a 1T
-          @stock_market.set_par(@mhe, @stock_market.par_prices.find { |p| p.price == MHE_START_PRICE })
+          par_corporation(@mhe, @stock_market.par_prices.find { |p| p.price == MHE_START_PRICE })
           @mhe.ipoed = true
 
           @mhe.ipo_shares.each do |share|

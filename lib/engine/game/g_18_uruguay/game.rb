@@ -231,7 +231,7 @@ module Engine
             count: 0
           ))
 
-          @stock_market.set_par(@rptla, lookup_rptla_price(RPTLA_STARTING_PRICE))
+          par_corporation(@rptla, lookup_rptla_price(RPTLA_STARTING_PRICE))
 
           assign_goods(corn_farm, 'GOODS_CORN')
           assign_goods(sheep_farm, 'GOODS_SHEEP')

@@ -197,7 +197,7 @@ module Engine
           @corporations.each do |corp|
             share_price = @stock_market.par_prices.find { |p| p.price == rand_prices[0] }
             rand_prices.shift
-            @stock_market.set_par(corp, share_price)
+            par_corporation(corp, share_price)
             corp.ipoed = true
 
             corp.ipo_shares.each do |share|

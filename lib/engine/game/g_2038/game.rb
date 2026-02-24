@@ -314,7 +314,7 @@ module Engine
           abilities(company, :shares) do |ability|
             ability.shares.each do |share|
               if share.president
-                stock_market.set_par(share.corporation, share_price)
+                par_corporation(share.corporation, share_price)
                 share_pool.buy_shares(player, share, exchange: :free)
                 after_par(share.corporation)
               else

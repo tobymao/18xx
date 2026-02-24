@@ -210,9 +210,9 @@ module Engine
 
         def setup
           corporations.each do |i|
-            @stock_market.set_par(i, @stock_market.par_prices.find do |p|
-                                       p.price == PAR_PRICES[i.id]
-                                     end)
+            par_corporation(i, @stock_market.par_prices.find do |p|
+                                 p.price == PAR_PRICES[i.id]
+                               end)
             i.ipoed = true
           end
         end

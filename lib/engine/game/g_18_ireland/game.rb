@@ -584,7 +584,7 @@ module Engine
                 par_price = price / 2
                 share_price = @stock_market.par_prices.find { |sp| sp.price <= par_price }
 
-                @stock_market.set_par(corporation, share_price)
+                par_corporation(corporation, share_price)
                 @share_pool.buy_shares(player, share, exchange: :free)
 
                 after_par(corporation)

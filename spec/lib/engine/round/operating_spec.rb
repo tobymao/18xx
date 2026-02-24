@@ -81,7 +81,7 @@ module Engine
     end
 
     before :each do
-      game.stock_market.set_par(corporation, game.stock_market.par_prices[0])
+      game.par_corporation(corporation, game.stock_market.par_prices[0])
       corporation.set_cash(100, game.bank)
       corporation.owner = game.players.first
       allow(corporation).to receive(:floated?) { true }
@@ -94,8 +94,8 @@ module Engine
       subject { move_to_or! }
 
       before :each do
-        game.stock_market.set_par(corporation, game.stock_market.par_prices[0])
-        game.stock_market.set_par(corporation2, game.stock_market.par_prices[0])
+        game.par_corporation(corporation, game.stock_market.par_prices[0])
+        game.par_corporation(corporation2, game.stock_market.par_prices[0])
         next_round!
 
         corporation.set_cash(1000, game.bank)
@@ -260,7 +260,7 @@ module Engine
               tile = game.tile_by_id('6-0')
               hex.lay(tile.rotate!(2))
 
-              game.stock_market.set_par(corporation3, game.stock_market.par_prices[0])
+              game.par_corporation(corporation3, game.stock_market.par_prices[0])
               corporation3.set_cash(1000, game.bank)
               corporation3.ipoed = true
 
@@ -397,8 +397,8 @@ module Engine
       subject { move_to_or! }
 
       before :each do
-        game.stock_market.set_par(corporation, game.stock_market.par_prices[0])
-        game.stock_market.set_par(corporation2, game.stock_market.par_prices[0])
+        game.par_corporation(corporation, game.stock_market.par_prices[0])
+        game.par_corporation(corporation2, game.stock_market.par_prices[0])
         next_round!
 
         corporation.set_cash(1000, game.bank)
@@ -617,13 +617,13 @@ module Engine
       subject { move_to_or! }
 
       before :each do
-        game.stock_market.set_par(corporation, game.stock_market.par_prices[0])
+        game.par_corporation(corporation, game.stock_market.par_prices[0])
         corporation.ipoed = true
         corporation.set_cash(80, game.bank)
         bundle = ShareBundle.new(corporation.shares.first)
         game.share_pool.transfer_shares(bundle, game.players.first)
 
-        game.stock_market.set_par(corporation_1, game.stock_market.par_prices[0])
+        game.par_corporation(corporation_1, game.stock_market.par_prices[0])
         corporation_1.ipoed = true
         corporation_1.set_cash(80, game.bank)
         bundle = ShareBundle.new(corporation_1.shares.first)
@@ -1060,7 +1060,7 @@ module Engine
           describe 'has shares to issue' do
             describe 'with stock price of 112' do
               before :each do
-                game.stock_market.set_par(corporation, game.stock_market.par_prices[3])
+                game.par_corporation(corporation, game.stock_market.par_prices[3])
               end
 
               it 'can issue one share to buy a 6 and not a 7/8' do

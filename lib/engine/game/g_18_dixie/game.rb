@@ -501,7 +501,7 @@ module Engine
 
         def ipo_merger_corp(primary_corp, secondary_corp, merger_corp)
           merger_value = merger_price([primary_corp, secondary_corp])
-          @stock_market.set_par(merger_corp, merger_value)
+          par_corporation(merger_corp, merger_value)
           @log << "#{merger_corp.name} IPOs at #{merger_value.price}"
         end
 

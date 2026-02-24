@@ -151,7 +151,7 @@ module Engine
         def setup
           STOCK_PRICES.each do |corporation, price|
             corporation = corporation_by_id(corporation)
-            @stock_market.set_par(corporation, @stock_market.par_prices.find do |p|
+            par_corporation(corporation, @stock_market.par_prices.find do |p|
               p.price == price
             end)
             corporation.ipoed = true
