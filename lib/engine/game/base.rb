@@ -69,6 +69,7 @@ module Engine
       pin = kwargs[:pin] || settings['pin']
       seed = kwargs[:seed] || settings['seed']
       optional_rules = kwargs[:optional_rules] || settings['optional_rules'] || []
+      use_engine_v2 = kwargs[:use_engine_v2] || settings['use_engine_v2']
 
       init_kwargs = %i[description min_players max_players settings created_at updated_at finished_at].to_h do |key|
         [key, data[key] || data[key.to_s]]
@@ -82,6 +83,7 @@ module Engine
         pin: pin,
         seed: seed,
         optional_rules: optional_rules,
+        use_engine_v2: use_engine_v2,
         **init_kwargs
       )
     end
@@ -95,7 +97,7 @@ module Engine
                   :tiles, :turn, :total_loans, :undo_possible, :redo_possible, :round_history, :all_tiles,
                   :optional_rules, :exception, :last_processed_action, :broken_action,
                   :turn_start_action_id, :last_turn_start_action_id, :programmed_actions, :round_counter,
-                  :manually_ended, :seed, :game_end_reason, :game_end_trigger
+                  :manually_ended, :seed, :game_end_reason, :game_end_trigger, :use_engine_v2
 
       # Game end check is described as a dictionary
       # with reason => after
@@ -571,8 +573,13 @@ module Engine
         optional_rules: [],
         user: nil,
         seed: nil,
+        use_engine_v2: false,
         **init_kwargs
       )
+        # experimental flag; see
+        # https://github.com/tobymao/18xx/issues/12193
+        @use_engine_v2 = use_engine_v2
+
         @id = id
         @init_kwargs = init_kwargs
         @turn = 1
