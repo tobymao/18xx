@@ -14,7 +14,7 @@ module Engine
             super
             if entity == @game.london_corporation
               @log << 'London Investment closes'
-              li = @game.companies.find { |c| c.sym == 'P4' }
+              li = @game.company_by_id('P4')
               li.close! if li
             end
             log_payout_shares(entity, revenue, per_share, receivers)
