@@ -9,6 +9,7 @@ require_relative 'phases'
 require_relative 'trains'
 require_relative '../base'
 require_relative 'step/exchange'
+require_relative 'step/dividend'
 
 module Engine
   module Game
@@ -116,7 +117,7 @@ module Engine
             G1832::Step::Track,
             G1832::Step::Token,
             Engine::Step::Route,
-            G1870::Step::Dividend,
+            G1832::Step::Dividend,
             Engine::Step::DiscardTrain,
             G1870::Step::BuyTrain,
             [G1832::Step::BuyCompany, { blocks: true }],
@@ -337,8 +338,6 @@ module Engine
 
           @skip_paths
         end
-
-
       end
     end
   end

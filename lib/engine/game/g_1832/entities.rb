@@ -290,7 +290,7 @@ module Engine
               corporations: 'ipoed',
               when: 'owning_player_sr_turn',
               count: 1,
-              remove_when_used_up: false,
+              remove_when_used_up: true,
               from: 'ipo',
             },
                         { type: 'no_buy' }],
