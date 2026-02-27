@@ -402,9 +402,9 @@ module Engine
             %w[D1 C2 E2 D5 D11 B13 C16 C18 E16 E18 G22 H21 D21 F29
                G28] => 'town=revenue:0,style:hidden;icon=image:18_cuba/sugar-cane;upgrade=cost:10,sticky:1',
             %w[D3 B5 C6 C10 C12 B15 D17 E20 F23 F25] => '',
-            %w[C4 D13 E22 F21 G26] => 'city=revenue:0',
+            %w[C4 D13 F21 G26] => 'city=revenue:0',
             %w[B9 B11 C14 D15 D19 E22] => 'city=revenue:0;icon=image:18_cuba/FC,sticky:1',
-            %w[E24 G24] => 'city=revenue:0;label=Y',
+            %w[E24 ] => 'city=revenue:0;label=Y',
             %w[G24] => 'city=revenue:0;label=Y;icon=image:18_cuba/FC,sticky:1',
             %w[D9 G20
                F27] => 'town=revenue:0,style:hidden;icon=image:18_cuba/sugar-cane;'\
