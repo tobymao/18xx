@@ -8,6 +8,8 @@ require_relative 'meta'
 require_relative 'phases'
 require_relative 'trains'
 require_relative '../base'
+require_relative 'step/exchange'
+require_relative 'step/dividend'
 
 module Engine
   module Game
@@ -20,7 +22,7 @@ module Engine
         include G1832::Phases
         include G1832::Trains
 
-        attr_accessor :sell_queue, :reissued, :coal_token_counter, :coal_company_sold_or_closed
+        attr_accessor :sell_queue, :reissued, :coal_token_counter, :coal_company_sold_or_closed, :london_corporation, :parred_this_sr
 
         CORPORATION_CLASS = G1832::Corporation
         CORPORATE_BUY_SHARE_ALLOW_BUY_FROM_PRESIDENT = true
@@ -98,22 +100,24 @@ module Engine
         def stock_round
           G1870::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
+            G1832::Step::Exchange,
             G1832::Step::BuySellParShares,
             G1850::Step::PriceProtection,
           ])
         end
 
         def operating_round(round_num)
+          @parred_this_sr = []
           Engine::Round::Operating.new(self, [
             Engine::Step::Bankrupt,
-            Engine::Step::Exchange,
+            G1832::Step::Exchange,
             G1832::Step::BuyCompany,
             G1870::Step::Assign,
             G1870::Step::SpecialTrack,
             G1832::Step::Track,
             G1832::Step::Token,
             Engine::Step::Route,
-            G1870::Step::Dividend,
+            G1832::Step::Dividend,
             Engine::Step::DiscardTrain,
             G1870::Step::BuyTrain,
             [G1832::Step::BuyCompany, { blocks: true }],
@@ -134,6 +138,7 @@ module Engine
           @sell_queue = []
           @reissued = {}
           @coal_token_counter = 5
+          @parred_this_sr = ["CG"]
 
           coal_company.max_price = coal_company.value
 
@@ -235,6 +240,13 @@ module Engine
         def coal_hex
           @coal_hex ||= hex_by_id('B14')
         end
+
+
+        def exchange_corporations(exchange_ability)
+          candidates = super
+          candidates.reject(&:closed?).reject(&:operated?).select { |c| @parred_this_sr.include?(c.id) }
+        end
+
 
         def revenue_for(route, stops)
           revenue = super
