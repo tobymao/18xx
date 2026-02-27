@@ -43,70 +43,70 @@ module Engine
               'count' => 2,
               'color' => 'yellow',
               'code' =>
-                'city=revenue:20;path=a:0,b:_0,track:narrow;path=a:4,b:_0;path=a:5,b:_0',
+                'city=revenue:20,slots:2;path=a:0,b:_0,track:narrow;path=a:4,b:_0;path=a:5,b:_0',
             },
           'L53' =>
             {
               'count' => 2,
               'color' => 'yellow',
               'code' =>
-                'city=revenue:20;path=a:4,b:_0,track:narrow;path=a:0,b:_0;path=a:5,b:_0',
+                'city=revenue:20,slots:2;path=a:4,b:_0,track:narrow;path=a:0,b:_0;path=a:5,b:_0',
             },
           'L54' =>
             {
               'count' => 2,
               'color' => 'yellow',
               'code' =>
-                'city=revenue:20;path=a:0,b:_0,track:narrow;path=a:1,b:_0;path=a:5,b:_0',
+                'city=revenue:20,slots:2;path=a:0,b:_0,track:narrow;path=a:1,b:_0;path=a:5,b:_0',
             },
           'L55' =>
             {
               'count' => 2,
               'color' => 'yellow',
               'code' =>
-                'city=revenue:20;path=a:3,b:_0,track:narrow;path=a:1,b:_0;path=a:5,b:_0',
+                'city=revenue:20,slots:2;path=a:3,b:_0,track:narrow;path=a:1,b:_0;path=a:5,b:_0',
             },
           'L56' =>
             {
               'count' => 2,
               'color' => 'yellow',
               'code' =>
-                'city=revenue:20;path=a:2,b:_0,track:narrow;path=a:1,b:_0;path=a:5,b:_0',
+                'city=revenue:20,slots:2;path=a:2,b:_0,track:narrow;path=a:1,b:_0;path=a:5,b:_0',
             },
           'L57' =>
             {
               'count' => 2,
               'color' => 'yellow',
               'code' =>
-                'city=revenue:20;path=a:2,b:_0,track:narrow;path=a:3,b:_0;path=a:5,b:_0',
+                'city=revenue:20,slots:2;path=a:2,b:_0,track:narrow;path=a:3,b:_0;path=a:5,b:_0',
             },
           'L58' =>
             {
               'count' => 2,
               'color' => 'yellow',
               'code' =>
-                'city=revenue:20;path=a:3,b:_0,track:narrow;path=a:2,b:_0;path=a:5,b:_0',
+                'city=revenue:20,slots:2;path=a:3,b:_0,track:narrow;path=a:2,b:_0;path=a:5,b:_0',
             },
           'L59' =>
             {
               'count' => 2,
               'color' => 'yellow',
               'code' =>
-                'city=revenue:20;path=a:1,b:_0,track:narrow;path=a:2,b:_0;path=a:5,b:_0',
+                'city=revenue:20,slots:2;path=a:1,b:_0,track:narrow;path=a:2,b:_0;path=a:5,b:_0',
             },
           'L60' =>
             {
               'count' => 2,
               'color' => 'yellow',
               'code' =>
-                'city=revenue:20;path=a:1,b:_0,track:narrow;path=a:4,b:_0;path=a:5,b:_0',
+                'city=revenue:20,slots:2;path=a:1,b:_0,track:narrow;path=a:4,b:_0;path=a:5,b:_0',
             },
           'L61' =>
             {
               'count' => 2,
               'color' => 'yellow',
               'code' =>
-                'city=revenue:20;path=a:2,b:_0,track:narrow;path=a:4,b:_0;path=a:5,b:_0',
+                'city=revenue:20,slots:2;path=a:2,b:_0,track:narrow;path=a:4,b:_0;path=a:5,b:_0',
             },
 
           # green
@@ -400,12 +400,18 @@ module Engine
 
           white: {
             %w[D1 C2 E2 D5 D11 B13 C16 C18 E16 E18 G22 H21 D21 F29
-               G28] => 'icon=image:18_cuba/sugar-cane;upgrade=cost:10',
+               G28] => 'town=revenue:0,style:hidden;icon=image:18_cuba/sugar-cane;upgrade=cost:10,sticky:1',
             %w[D3 B5 C6 C10 C12 B15 D17 E20 F23 F25] => '',
-            %w[C4 C14 B9 B11 D13 D15 D19 E22 F21 G26] => 'city=revenue:0',
+            %w[C4 D13 E22 F21 G26] => 'city=revenue:0',
+            %w[B9 B11 C14 D15 D19 E22] => 'city=revenue:0;icon=image:18_cuba/FC,sticky:1',
             %w[E24 G24] => 'city=revenue:0;label=Y',
-            %w[D9 G20 F27] => 'icon=image:18_cuba/sugar-cane;upgrade=cost:10;border=edge:2,type:impassable',
-            %w[F19 E26] => 'icon=image:18_cuba/sugar-cane;upgrade=cost:10;border=edge:5,type:impassable',
+            %w[G24] => 'city=revenue:0;label=Y;icon=image:18_cuba/FC,sticky:1',
+            %w[D9 G20
+               F27] => 'town=revenue:0,style:hidden;icon=image:18_cuba/sugar-cane;'\
+                       'upgrade=cost:10,sticky:1;border=edge:2,type:impassable,',
+            %w[F19
+               E26] => 'town=revenue:0,style:hidden;icon=image:18_cuba/sugar-cane;'\
+                       'upgrade=cost:10,sticky:1;border=edge:5,type:impassable',
             ['C8'] => 'border=edge:5,type:impassable',
           },
           yellow: {
@@ -420,6 +426,8 @@ module Engine
             %w[E14 H25] => 'offboard=revenue:10;path=a:2,b:_0;path=a:3,b:_0;icon=image:anchor',
           },
         }.freeze
+
+        FC_HEX = %w[B9 B11 C14 D15 D19 E22 E24 G24].freeze
 
         LAYOUT = :pointy
       end
