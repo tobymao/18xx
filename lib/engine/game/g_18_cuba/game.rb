@@ -85,8 +85,8 @@ module Engine
             Engine::Step::SpecialTrack,
             Engine::Step::SpecialToken,
             Engine::Step::BuyCompany,
-            G18Cuba::Step::HomeToken,
-            G18Cuba::Step::Track,
+            Engine::Step::HomeToken,
+            Engine::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
             G18Cuba::Step::Dividend,
@@ -150,7 +150,7 @@ module Engine
 
         def stock_round
           Round::Stock.new(self, [
-            G18Cuba::Step::HomeToken,
+            Engine::Step::HomeToken,
             G18Cuba::Step::BuySellParShares,
           ])
         end
@@ -198,13 +198,20 @@ module Engine
         end
 
         def home_token_locations(corporation)
-          if corporation.type == :minor || corporation.id == 'FEC'
+          if corporation.type == :minor || corporation.sym == 'FEC'
             hexes.select do |hex|
               hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) }
             end
           else
             super
           end
+        end
+
+        def token_cost_override(entity, city, token)
+          return super unless entity.type == :minor || entity.sym == 'FEC'
+          return 0 if token == entity.tokens.first
+
+          super
         end
 
         def sugar_production(corporation, total_revenue)
