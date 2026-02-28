@@ -28,7 +28,7 @@ module Engine
                         brightGreen: '#6ec037')
         TRACK_RESTRICTION = :permissive
         CURRENCY_FORMAT_STR = '$%s'
-        HOME_TOKEN_TIMING = :par
+        HOME_TOKEN_TIMING = :operate
 
         BANK_CASH = 10_000
 
@@ -198,12 +198,19 @@ module Engine
         end
 
         def home_token_locations(corporation)
-          if corporation.type == :minor || corporation.sym == 'FEC'
-            hexes.select do |hex|
-              hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) }
+          # TODO: FEC corner case to be added with no available token -> use cheater token
+          return super if corporation.type != :minor && corporation.sym != 'FEC'
+
+          hexes.select do |hex|
+            # no token allowed on Y and H cities
+            next false if hex.tile.labels.any? { |l| %w[Y H].include?(l.to_s) }
+
+            hex.tile.cities.any? do |city|
+              next false unless city.tokenable?(corporation, free: true)
+
+              # no other minor may already be here
+              city.tokens.none? { |t| t&.corporation&.type == :minor }
             end
-          else
-            super
           end
         end
 

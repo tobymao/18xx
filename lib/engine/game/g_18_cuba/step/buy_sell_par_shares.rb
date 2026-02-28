@@ -53,6 +53,8 @@ module Engine
 
             @game.after_par(corporation)
             @game.bank.spend(exchange_discount, corporation)
+            # Place home token for minor after parring
+            @game.place_home_token(corporation)
 
             track_action(action, corporation)
           end

@@ -427,7 +427,7 @@ module Engine
           },
         }.freeze
 
-        FC_HEX = %w[B9 B11 C14 D15 D19 E22 E24 G24].freeze
+        FC_HEX = %w[B9 B11 C14 D15 D19 E22 G24].freeze
 
         LAYOUT = :pointy
       end
