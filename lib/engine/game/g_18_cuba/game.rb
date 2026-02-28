@@ -208,8 +208,7 @@ module Engine
         end
 
         def token_cost_override(entity, city, token)
-          return super unless entity.type == :minor || entity.sym == 'FEC'
-          return 0 if token == entity.tokens.first
+          return 0 if (entity.type == :minor || entity.sym == 'FEC') && (token == entity.tokens.first)
 
           super
         end
