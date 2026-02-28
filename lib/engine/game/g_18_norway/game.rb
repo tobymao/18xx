@@ -190,6 +190,8 @@ module Engine
           corporation_by_id('V').add_ability(Engine::Ability::Base.new(
             type: 'free_ship',
             description: 'Free S3 ship before phase 4',
+            count: 1,
+            remove_when_used_up: true,
           ))
 
           switcher.add_ability(Engine::Ability::Base.new(
