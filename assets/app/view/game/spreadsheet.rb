@@ -13,6 +13,7 @@ require 'lib/truncate'
 FLOATED = 2
 UNFLOATED = 1
 UNSTARTED = 0
+ZWSC = "\u200B"
 
 module View
   module Game
@@ -235,11 +236,11 @@ module View
         bank_subtitles = [
           *reserved_header,
           h(:th, render_sort_link(@game.ipo_name, :ipo_shares)),
-          h(:th, render_sort_link('Market', :market_shares)),
+          h(:th, @game.market? ? render_sort_link('Market', :market_shares) : ZWSC),
         ]
         prices_subtitles = [
           h(:th, render_sort_link(@game.ipo_name, :par_price)),
-          h(:th, render_sort_link('Market', :share_price)),
+          h(:th, @game.market? ? render_sort_link('Market', :share_price) : ZWSC),
         ]
         corporation_subtitles = [
           h(:th, render_sort_link('Cash', :cash)),
@@ -547,14 +548,22 @@ module View
             },
             n_ipo_shares),
           h('td.padded_number', bank_market_props,
-            "#{corporation.receivership? ? '*' : ''}#{n_market_shares}"),
+            if @game.market?
+              "#{corporation.receivership? ? '*' : ''}#{n_market_shares}"
+            else
+              ZWSC
+            end),
         ]
 
         prices_row_content = [
           h('td.padded_number', corporation.par_price ? @game.format_currency(corporation.par_price.price) : ''),
-          h('td.padded_number', market_props,
-            corporation.share_price ? @game.format_currency(corporation.share_price.price) : ''),
         ]
+        if @game.market?
+          prices_row_content << h('td.padded_number', market_props,
+                                  corporation.share_price ? @game.format_currency(corporation.share_price.price) : '')
+        else
+          prices_row_content << h(:td, market_props, '')
+        end
 
         corporation_row_content = [
           h('td.padded_number', @game.format_currency(corporation.cash)),

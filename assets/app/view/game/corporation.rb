@@ -499,7 +499,7 @@ module View
           market_tr_props[:style][:color] = contrast_on(color)
         end
 
-        if player_rows.any? || @corporation.num_market_shares.positive?
+        if @game.market? && (player_rows.any? || @corporation.num_market_shares.positive?)
           at_limit = @game.share_pool.bank_at_limit?(@corporation)
           double_certs = @game.share_pool.shares_of(@corporation).count(&:double_cert)
           other_flags = @game.share_flags(@game.share_pool.shares_of(@corporation))

@@ -225,6 +225,10 @@ module Engine
           @close_construction_company_when_first_5_sold = false
         end
 
+        def market?
+          two_player?
+        end
+
         def event_close_construction_railways!
           @log << "-- Event: #{EVENTS_TEXT['close_construction_railways'][1]} --"
           @corporations.each do |c|
