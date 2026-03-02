@@ -22,7 +22,8 @@ module Engine
         include G1832::Phases
         include G1832::Trains
 
-        attr_accessor :sell_queue, :reissued, :coal_token_counter, :coal_company_sold_or_closed, :london_corporation, :parred_this_sr
+        attr_accessor :sell_queue, :reissued, :coal_token_counter, :coal_company_sold_or_closed, :london_corporation,
+                      :parred_this_sr
 
         CORPORATION_CLASS = G1832::Corporation
         CORPORATE_BUY_SHARE_ALLOW_BUY_FROM_PRESIDENT = true
@@ -138,7 +139,7 @@ module Engine
           @sell_queue = []
           @reissued = {}
           @coal_token_counter = 5
-          @parred_this_sr = ["CG"]
+          @parred_this_sr = ['CG']
 
           coal_company.max_price = coal_company.value
 
@@ -241,12 +242,10 @@ module Engine
           @coal_hex ||= hex_by_id('B14')
         end
 
-
         def exchange_corporations(exchange_ability)
           candidates = super
           candidates.reject(&:closed?).reject(&:operated?).select { |c| @parred_this_sr.include?(c.id) }
         end
-
 
         def revenue_for(route, stops)
           revenue = super

@@ -27,9 +27,9 @@ module Engine
             actions.uniq
           end
 
-          def choices  
-            can_buy_coal_token?(current_entity) ? { 'buy_coal_token' => 'Buy Coal Token ($80)' } : {}  
-          end  
+          def choices
+            can_buy_coal_token?(current_entity) ? { 'buy_coal_token' => 'Buy Coal Token ($80)' } : {}
+          end
 
           def choice_name
             'Additional Track Actions'
