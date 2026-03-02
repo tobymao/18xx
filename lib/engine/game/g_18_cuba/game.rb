@@ -198,8 +198,8 @@ module Engine
         end
 
         def home_token_locations(corporation)
-          # TODO: FEC corner case to be added with no available token -> use cheater token
-          return super if corporation.type != :minor && corporation.sym != 'FEC'
+          # TODO: FEC home token, especifically corner case to be added with no available token -> use cheater token
+          return super unless corporation.type == :minor
 
           hexes.select do |hex|
             # no token allowed on Y and H cities
