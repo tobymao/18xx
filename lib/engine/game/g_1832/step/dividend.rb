@@ -11,11 +11,13 @@ module Engine
         class Dividend < G1870::Step::Dividend
           def payout_shares(entity, revenue)
             super
-            if entity == @game.london_corporation
-              li = @game.companies.find { |c| c.sym == 'P4' }
-              @log << 'London Investment closes' if li
-              li.close! if li
-            end
+            return unless entity == @game.london_corporation
+
+            li = @game.companies.find { |c| c.sym == 'P4' }
+            return unless li
+
+            @log << 'London Investment closes'
+            li.close!
           end
         end
       end
