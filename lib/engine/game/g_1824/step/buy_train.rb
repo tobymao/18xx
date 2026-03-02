@@ -66,7 +66,9 @@ module Engine
           end
 
           def cheapest_train_price(corporation)
-            return buyable_trains(corporation).map(&:price).min unless buyable_trains(corporation).empty?
+            candidates = buyable_trains(corporation)
+            candidates_in_depot = candidates.select(&:from_depot?)
+            return candidates_in_depot.map(&:price).min unless candidates_in_depot.empty?
 
             0
           end
@@ -75,7 +77,8 @@ module Engine
             return 0 unless discountable_trains_allowed?(corporation)
 
             discountable_trains = @game.discountable_trains_for(corporation)
-            return discountable_trains.map(&:price).min unless discountable_trains.empty?
+            discountables_in_depot = discountable_trains.select(&:from_depot?)
+            return discountables_in_depot.map(&:price).min unless discountables_in_depot.empty?
 
             0
           end
