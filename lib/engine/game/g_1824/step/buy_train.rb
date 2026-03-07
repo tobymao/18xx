@@ -11,17 +11,17 @@ module Engine
             super.merge(
               {
                 train_exchanged_by_entity: [],
+                shares_sold_by_owner: [],
               }
             )
           end
 
           def actions(entity)
             actions = super.clone
-            return actions unless entity.operator?
 
             # Skip train buy if there are no trains to buy - this was needed as the super implementation
             # resulted in Buy Train / Pass when coal company had no g-trains to buy
-            if can_entity_buy_train?(entity) && !must_buy_train?(entity) && buyable_trains(entity).empty?
+            if entity.operator? && can_entity_buy_train?(entity) && !must_buy_train?(entity) && buyable_trains(entity).empty?
               actions.delete('pass')
               actions.delete('buy_train')
             end
@@ -30,9 +30,7 @@ module Engine
           end
 
           def can_entity_buy_train?(entity)
-            return false if entity.receivership?
-
-            entity.operator?
+            !entity.receivership?
           end
 
           def must_buy_train?(entity)
@@ -55,10 +53,30 @@ module Engine
             owner = entity.owner
             available_cash = entity.cash + owner.cash
 
-            prices = [cheapest_train_price(entity), cheapest_discountable_train_price(entity)].select(&:positive?)
-            return false if prices.empty?
+            cheapest = cheapest_train_price(entity)
+            return false if entity.cash >= cheapest
 
-            available_cash < prices.min
+            available_cash < most_expensive_train_price(entity)
+          end
+
+          def process_sell_shares(action)
+            check_excessive_selling_of_shares_to_by_most_expensive(action)
+
+            # Store price of one share, to be used to stop some rule breaking actions
+            @round.shares_sold_by_owner << action.bundle.price_per_share
+
+            super
+          end
+
+          def check_excessive_selling_of_shares_to_by_most_expensive(action)
+            # Disallow selling if bundle larger than needed to afford most expensive depot train
+            bundle_with_one_less = action.bundle.price - action.bundle.price_per_share
+            available_cash = current_entity.cash + action.entity.cash
+            most_expensive = most_expensive_train_price(current_entity)
+
+            return if bundle_with_one_less + available_cash < most_expensive
+
+            raise GameError, 'Cannot sell more shares than needed to buy the most expensive available train'
           end
 
           def pass_if_cannot_buy_train?(_entity)
@@ -66,21 +84,22 @@ module Engine
           end
 
           def cheapest_train_price(corporation)
-            candidates = buyable_trains(corporation)
-            candidates_in_depot = candidates.select(&:from_depot?)
+            candidates_in_depot = buyable_depot_trains(corporation)
             return candidates_in_depot.map(&:price).min unless candidates_in_depot.empty?
 
             0
           end
 
-          def cheapest_discountable_train_price(corporation)
-            return 0 unless discountable_trains_allowed?(corporation)
-
-            discountable_trains = @game.discountable_trains_for(corporation)
-            discountables_in_depot = discountable_trains.select(&:from_depot?)
-            return discountables_in_depot.map(&:price).min unless discountables_in_depot.empty?
+          def most_expensive_train_price(corporation)
+            candidates_in_depot = buyable_depot_trains(corporation)
+            return candidates_in_depot.map(&:price).max unless candidates_in_depot.empty?
 
             0
+          end
+
+          def buyable_depot_trains(corporation)
+            candidates = buyable_trains(corporation)
+            candidates.select(&:from_depot?)
           end
 
           def must_take_player_loan?(entity)
@@ -100,9 +119,34 @@ module Engine
               raise GameError, 'Coal railways can only own g-trains'
             end
 
+            ensure_no_buy_train_after_selling_share(action)
+
+            ensure_excessive_seeling_not_done_to_buy_cheaper_train(action)
+
             super
 
             @game.two_train_bought = true if train.name == '2'
+          end
+
+          def ensure_no_buy_train_after_selling_share(action)
+            return if @round.shares_sold_by_owner.empty?
+            return if action.train.from_depot?
+
+            # During emegency financing we may not buy cross-over train if we have sold shares
+            raise GameError, 'Cannot buy train from other corporation if sold shares during emergency financing'
+          end
+
+          def ensure_excessive_seeling_not_done_to_buy_cheaper_train(action)
+            return if @round.shares_sold_by_owner.empty?
+            return unless action.train.from_depot?
+
+            # During emegency financing we may not sell more shares when needed to buy a train. We are allowed
+            # to sell shares to buy a more expensive one, but we may not sell more than needed to buy a train.
+            cheapest_share = @round.shares_sold_by_owner.min
+            available_cash = action.entity.cash + action.entity.owner.cash
+            return if available_cash - cheapest_share < action.price
+
+            raise GameError, 'Cannot sell more shares than needed to buy a depot train'
           end
 
           def buyable_trains(entity)

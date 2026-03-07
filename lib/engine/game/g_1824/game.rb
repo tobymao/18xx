@@ -52,11 +52,16 @@ module Engine
         MUST_SELL_IN_BLOCKS = false
 
         EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
-        EBUY_FROM_OTHERS = :always
         EBUY_SELL_MORE_THAN_NEEDED = true
-        EBUY_SELL_MORE_THAN_NEEDED_SETS_PURCHASE_MIN = true
         EBUY_CAN_TAKE_PLAYER_LOAN = true
         MUST_BUY_TRAIN = :always
+
+        EBUY_FROM_OTHERS = :value
+
+        # In 1824 you can continue to sell as long as there is a depot train you
+        # need to raise money. If this is true there is a message about not being
+        # allowed to sell more. Is the name of this constant wrong?
+        EBUY_SELL_MORE_THAN_NEEDED_SETS_PURCHASE_MIN = false
 
         # Rule IX. This differ from 1837 as players in 1824 do not go bankrupt.
         GAME_END_CHECK = { bank: :full_or }.freeze
