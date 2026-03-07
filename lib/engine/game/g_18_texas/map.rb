@@ -4,7 +4,6 @@ module Engine
   module Game
     module G18Texas
       module Map
-        # rubocop:disable Layout/LineLength
         TILES = {
           '5' => 4,
           '6' => 4,
@@ -58,8 +57,6 @@ module Engine
           },
           '512' => 1,
         }.freeze
-        # rubocop:enable Layout/LineLength
-
         LOCATION_NAMES = {
           'A12' => 'Oklahoma City',
           'A18' => 'Little Rock',
