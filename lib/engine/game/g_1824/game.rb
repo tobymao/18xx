@@ -386,6 +386,15 @@ module Engine
           'Reserved'
         end
 
+        def can_dump?(_entity, bundle)
+          super && within_bank_limit(bundle)
+        end
+
+        def within_bank_limit(bundle)
+          # 3+ player 1824 has a bank limit of 50% when selling, and no bank pool.
+          (bundle.corporation.num_ipo_shares * 10) + bundle.percent <= 50
+        end
+
         def sd_minors
           @sd_minors ||= %w[SD1 SD2 SD3].map { |id| corporation_by_id(id) }.reject(&:closed?)
         end
