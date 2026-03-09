@@ -225,7 +225,7 @@ module Engine
           @close_construction_company_when_first_5_sold = false
         end
 
-        def market?
+        def display_bank_pool?
           two_player?
         end
 

@@ -13,7 +13,6 @@ require 'lib/truncate'
 FLOATED = 2
 UNFLOATED = 1
 UNSTARTED = 0
-ZWSC = "\u200B"
 
 module View
   module Game
@@ -212,7 +211,7 @@ module View
 
         connection_run_header = @game.respond_to?(:connection_run) ? [h(:th, th_props[1, false], '')] : []
         connection_run_subheader = @game.respond_to?(:connection_run) ? [h(:th, render_sort_link('C-Run', :c_run))] : []
-        bank_width = 2
+        bank_width = @game.display_bank_pool? ? 2 : 1
         reserved_header = []
         if any_reserved_shares?
           bank_width += 1
@@ -221,9 +220,10 @@ module View
 
         corporation_props_size = 5 + extra.size + treasury.size
 
+        prices_width = @game.display_bank_pool? ? 2 : 1
         players_title = h(:th, th_props[@game.players.size], 'Players')
         bank_title = h(:th, th_props[bank_width], 'Bank')
-        prices_title = h(:th, th_props[2], 'Prices')
+        prices_title = h(:th, th_props[prices_width], 'Prices')
         corporation_title = h(:th, th_props[corporation_props_size, false], ['Corporation ', render_toggle_not_floated_link])
 
         subtitles = []
@@ -233,15 +233,18 @@ module View
           props[:style][:minWidth] = min_width(p)
           players_subtitles << h('th.name.nowrap', props, render_sort_link(p.name, p.id))
         end
+
         bank_subtitles = [
           *reserved_header,
           h(:th, render_sort_link(@game.ipo_name, :ipo_shares)),
-          h(:th, @game.market? ? render_sort_link('Market', :market_shares) : ZWSC),
         ]
+        bank_subtitles << h(:th, render_sort_link('Market', :market_shares)) if @game.display_bank_pool?
+
         prices_subtitles = [
           h(:th, render_sort_link(@game.ipo_name, :par_price)),
-          h(:th, @game.market? ? render_sort_link('Market', :share_price) : ZWSC),
         ]
+        prices_subtitles << h(:th, render_sort_link('Market', :share_price)) if @game.display_bank_pool?
+
         corporation_subtitles = [
           h(:th, render_sort_link('Cash', :cash)),
           *treasury,
@@ -537,33 +540,36 @@ module View
           players_row_content << h('td.padded_number', props, share_holding)
         end
 
-        bank_market_props = { style: { color: n_market_shares.zero? ? 'transparent' : 'inherit', borderRight: border_style } }
         bank_row_content = [
           *reserved,
           h('td.padded_number', {
               style: {
                 borderLeft: any_reserved_shares? ? '0px' : border_style,
+                borderRight: @game.display_bank_pool? ? '0px' : border_style,
                 color: n_ipo_shares.zero? ? 'transparent' : 'inherit',
               },
             },
             n_ipo_shares),
-          h('td.padded_number', bank_market_props,
-            if @game.market?
-              "#{corporation.receivership? ? '*' : ''}#{n_market_shares}"
-            else
-              ZWSC
-            end),
         ]
-
-        prices_row_content = [
-          h('td.padded_number', corporation.par_price ? @game.format_currency(corporation.par_price.price) : ''),
-        ]
-        if @game.market?
-          prices_row_content << h('td.padded_number', market_props,
-                                  corporation.share_price ? @game.format_currency(corporation.share_price.price) : '')
-        else
-          prices_row_content << h(:td, market_props, '')
+        if @game.display_bank_pool?
+          bank_market_props = { style: { color: n_market_shares.zero? ? 'transparent' : 'inherit', borderRight: border_style } }
+          bank_row_content << h('td.padded_number', bank_market_props,
+                                "#{corporation.receivership? ? '*' : ''}#{n_market_shares}")
         end
+
+        corporation_par_price = corporation.par_price ? @game.format_currency(corporation.par_price.price) : ''
+        corporation_share_price = corporation.share_price ? @game.format_currency(corporation.share_price.price) : ''
+        prices_row_content =
+          if @game.display_bank_pool?
+            [
+              h('td.padded_number', corporation_par_price),
+              h('td.padded_number', market_props, corporation_share_price),
+            ]
+          else
+            [
+              h('td.padded_number', market_props, corporation_par_price),
+            ]
+          end
 
         corporation_row_content = [
           h('td.padded_number', @game.format_currency(corporation.cash)),

@@ -378,7 +378,7 @@ module Engine
           end
         end
 
-        def market?
+        def display_bank_pool?
           false
         end
 
@@ -793,11 +793,6 @@ module Engine
 
         def can_go_bankrupt?(_entity, _corporation)
           false
-        end
-
-        def can_dump?(entity, bundle)
-          # If market is not used, then Bank cannot exceed 50%
-          super && (market? || (bundle.corporation.num_ipo_shares * 10) + bundle.percent <= 50)
         end
 
         private

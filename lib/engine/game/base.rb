@@ -2070,7 +2070,9 @@ module Engine
       # This is a hook to allow game specific logic to be invoked after a company is bought
       def company_bought(company, buyer); end
 
-      def market?
+      # Set this to false if bank pool should be hidden in entity and spreadsheet.
+      # This is for titles that only use Bank for shares, no separate Pool.
+      def display_bank_pool?
         true
       end
 
