@@ -11,7 +11,6 @@ module Engine
             super.merge(
               {
                 train_exchanged_by_entity: [],
-                shares_sold_by_owner: false,
               }
             )
           end
@@ -99,24 +98,9 @@ module Engine
               raise GameError, 'Coal railways can only own g-trains'
             end
 
-            ensure_no_cross_buy_train_after_selling_share(action)
-
             super
 
             @game.two_train_bought = true if train.name == '2'
-          end
-
-          def process_sell_shares(action)
-            super
-            @round.shares_sold_by_owner = true
-          end
-
-          def ensure_no_cross_buy_train_after_selling_share(action)
-            return unless @round.shares_sold_by_owner
-            return if action.train.from_depot?
-
-            # During emegency financing we may not buy cross-over train if we have sold shares
-            raise GameError, 'Cannot buy train from other corporation if sold shares during emergency financing'
           end
 
           def buyable_trains(entity)
