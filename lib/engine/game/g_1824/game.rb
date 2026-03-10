@@ -52,13 +52,11 @@ module Engine
         MUST_SELL_IN_BLOCKS = false
 
         EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
-        EBUY_FROM_OTHERS = :value # During EBUY cross buy is limited to face value (Rule VII.12, bullet 9)
-        EBUY_CAN_TAKE_PLAYER_LOAN = true # Do not have to sell shares fully or at all (Rule VII.12)
+        EBUY_FROM_OTHERS = :value # Rule VII.12, bullet 9
+        EBUY_SELL_MORE_THAN_NEEDED = false
+        EBUY_SELL_MORE_THAN_NEEDED_SETS_PURCHASE_MIN = true
+        EBUY_CAN_TAKE_PLAYER_LOAN = true
         MUST_BUY_TRAIN = :always
-
-        # In 1824 you can continue to sell shares to be able to buy a more expensive train. (Rule VII.12, bullet 8)
-        EBUY_SELL_MORE_THAN_NEEDED = true
-        EBUY_SELL_MORE_THAN_NEEDED_SETS_PURCHASE_MIN = false
 
         # Rule IX. This differ from 1837 as players in 1824 do not go bankrupt.
         GAME_END_CHECK = { bank: :full_or }.freeze
