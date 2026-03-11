@@ -89,12 +89,16 @@ module Engine
                   distance: [{ 'nodes' => %w[city offboard], 'pay' => 1, 'visit' => 1 },
                              { 'nodes' => %w[town], 'pay' => 99, 'visit' => 99 }],
                   track_type: :narrow,
-                  price: 70,
+                  price: 80,
                 },
               ]
 
             # M trains are more expensive than in base 1858.
-            @game_trains[1][:variants].first[:price] = 140 # 2M
+            @game_trains[1][:variants].first[:price] = 160 # 2M
+            @game_trains[2][:variants].first[:price] = 240 # 3M
+            @game_trains[3][:variants].first[:price] = 500 # 4M
+            @game_trains[4][:variants].first[:price] = 650 # 5M
+            @game_trains[5][:variants].first[:price] = 800 # 6M
 
             # This variant adds mail trains.
             @game_trains <<
