@@ -511,12 +511,15 @@ module View
           ])
         end
 
-        separator_props = { style: { height: '1px', borderBottom: '1px solid currentColor', }, }
-        separator = [
-          h('td.left', separator_props, ''),
-          h('td.right', separator_props, ''),
-          h('td.passed_number', separator_props, '')
-        ]
+        separator = []
+        if !pool_rows.empty? && (!player_rows.empty? || !other_corp_rows.empty? || !other_minor_rows.empty?)
+          separator_props = { style: { height: '1px', borderBottom: '1px solid currentColor', }, }
+          separator << h('tr.market', separator_props, [
+            h('td.left', separator_props, ''),
+            h('td.right', separator_props, ''),
+            h('td.passed_number', separator_props, '')
+          ])
+        end
 
         rows = [
           *pool_rows,
