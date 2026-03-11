@@ -71,7 +71,15 @@ module Engine
 
         def game_trains
           unless @game_trains
-            @game_trains = super.map(&:dup)
+            # Need to make a deep(ish) copy of the train definitions, to avoid
+            # and changes here leaking back into the base 1858 game.
+            @game_trains = super.map do |traindef|
+              train = traindef.dup
+              train[:events] = traindef[:events].map(&:dup) if traindef[:events]
+              train[:variants] = traindef[:variants].map(&:dup) if traindef[:variants]
+              train
+            end
+
             # Add the 1M variant to the 2H train.
             @game_trains.first[:variants] =
               [
@@ -84,17 +92,11 @@ module Engine
                   price: 70,
                 },
               ]
-            # 2M trains are more expensive than in base 1858.
-            @game_trains[1][:variants] =
-              [
-                {
-                  name: '2M',
-                  distance: [{ 'nodes' => %w[city offboard], 'pay' => 2, 'visit' => 2 },
-                             { 'nodes' => %w[town], 'pay' => 99, 'visit' => 99 }],
-                  track_type: :narrow,
-                  price: 140,
-                },
-              ]
+
+            # M trains are more expensive than in base 1858.
+            @game_trains[1][:variants].first[:price] = 140 # 2M
+
+            # This variant adds mail trains.
             @game_trains <<
               {
                 name: 'Mail',
