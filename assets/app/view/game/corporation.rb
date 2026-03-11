@@ -487,11 +487,7 @@ module View
           ])
         end
 
-        market_tr_props = {
-          style: {
-            borderBottom: player_rows.any? ? '1px solid currentColor' : '0',
-          },
-        }
+        market_tr_props = { style: {} }
 
         if player_rows.any? && @corporation.share_price&.highlight? &&
             (color = StockMarket::COLOR_MAP[@game.class::STOCKMARKET_COLORS[@corporation.share_price.type]])
@@ -515,8 +511,16 @@ module View
           ])
         end
 
+        separator_props = { style: { height: '1px', borderBottom: '1px solid currentColor', }, }
+        separator = [
+          h('td.left', separator_props, ''),
+          h('td.right', separator_props, ''),
+          h('td.passed_number', separator_props, '')
+        ]
+
         rows = [
           *pool_rows,
+          *separator,
           *player_rows,
           *other_corp_rows,
           *other_minor_rows,
