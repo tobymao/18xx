@@ -76,7 +76,7 @@ module Engine
             @log << if reassignments.empty?
                       "#{entity.owner.name} does not reassign any trains"
                     else
-                      "#{entity.owner.name} reassignes trains: #{reassignments.join(', ')}"
+                      "#{entity.owner.name} reassigns trains: #{reassignments.join(', ')}"
                     end
             pass!
           end
