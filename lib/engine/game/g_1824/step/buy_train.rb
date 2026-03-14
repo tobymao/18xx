@@ -17,11 +17,10 @@ module Engine
 
           def actions(entity)
             actions = super.clone
-            return actions unless entity.operator?
 
             # Skip train buy if there are no trains to buy - this was needed as the super implementation
             # resulted in Buy Train / Pass when coal company had no g-trains to buy
-            if can_entity_buy_train?(entity) && !must_buy_train?(entity) && buyable_trains(entity).empty?
+            if entity.operator? && can_entity_buy_train?(entity) && !must_buy_train?(entity) && buyable_trains(entity).empty?
               actions.delete('pass')
               actions.delete('buy_train')
             end
@@ -30,9 +29,7 @@ module Engine
           end
 
           def can_entity_buy_train?(entity)
-            return false if entity.receivership?
-
-            entity.operator?
+            !entity.receivership?
           end
 
           def must_buy_train?(entity)
@@ -55,10 +52,10 @@ module Engine
             owner = entity.owner
             available_cash = entity.cash + owner.cash
 
-            prices = [cheapest_train_price(entity), cheapest_discountable_train_price(entity)].select(&:positive?)
-            return false if prices.empty?
+            cheapest = cheapest_train_price(entity)
+            return false if entity.cash >= cheapest
 
-            available_cash < prices.min
+            available_cash < most_expensive_train_price(entity)
           end
 
           def pass_if_cannot_buy_train?(_entity)
@@ -66,18 +63,22 @@ module Engine
           end
 
           def cheapest_train_price(corporation)
-            return buyable_trains(corporation).map(&:price).min unless buyable_trains(corporation).empty?
+            candidates_in_depot = buyable_depot_trains(corporation)
+            return candidates_in_depot.map(&:price).min unless candidates_in_depot.empty?
 
             0
           end
 
-          def cheapest_discountable_train_price(corporation)
-            return 0 unless discountable_trains_allowed?(corporation)
-
-            discountable_trains = @game.discountable_trains_for(corporation)
-            return discountable_trains.map(&:price).min unless discountable_trains.empty?
+          def most_expensive_train_price(corporation)
+            candidates_in_depot = buyable_depot_trains(corporation)
+            return candidates_in_depot.map(&:price).max unless candidates_in_depot.empty?
 
             0
+          end
+
+          def buyable_depot_trains(corporation)
+            candidates = buyable_trains(corporation)
+            candidates.select(&:from_depot?)
           end
 
           def must_take_player_loan?(entity)
