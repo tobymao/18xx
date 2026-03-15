@@ -86,7 +86,7 @@ module Engine
             Engine::Step::SpecialToken,
             Engine::Step::BuyCompany,
             Engine::Step::HomeToken,
-            Engine::Step::Track,
+            G18Cuba::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
             G18Cuba::Step::Dividend,
