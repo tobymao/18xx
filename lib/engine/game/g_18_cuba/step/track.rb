@@ -9,6 +9,7 @@ module Engine
       module Step
         class Track < Engine::Step::Track
           def tracker_available_hex(entity, hex)
+            # TODO: FC logic with fee payments
             corp = entity.corporation? ? entity : @game.current_entity
 
             # 18Cuba: minors cannot build cities except on their home hex
