@@ -567,7 +567,7 @@ module Engine
             @log << "#{system.name} cannot have two coal markers, returning one to Virginia Coalfields"
           end
 
-          @stock_market.set_par(system, system_market_price(corporations))
+          par_corporation(system, system_market_price(corporations))
           system.ipoed = true
 
           system

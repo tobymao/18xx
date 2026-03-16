@@ -846,7 +846,7 @@ module Engine
           @log << "#{operator_for_edelsward_requisition.name} selects #{requisited.name} to be requisited by #{@edelsward.name}"
           shares = requisited.ipo_shares
           @share_pool.transfer_shares(Engine::ShareBundle.new(shares), @edelsward, price: 0)
-          @stock_market.set_par(requisited, @stock_market.par_prices.find { |p| p.price == 67 })
+          par_corporation(requisited, @stock_market.par_prices.find { |p| p.price == 67 })
 
           # Give the company free tile lays.
           ability = Engine::Ability::TileLay.new(type: 'tile_lay', tiles: [], hexes: [], closed_when_used_up: false,

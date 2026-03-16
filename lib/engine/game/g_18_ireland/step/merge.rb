@@ -163,7 +163,7 @@ module Engine
             initiator = action.entity
             merged_share_price = new_share_price
 
-            @game.stock_market.set_par(target, merged_share_price)
+            @game.par_corporation(target, merged_share_price)
 
             target.ipoed = true
 
