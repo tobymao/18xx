@@ -77,6 +77,7 @@ module Engine
           def setup
             super
             @destination_bases = []
+            @used_emergency_funding = false
           end
 
           def process_sell_shares(action)
@@ -86,6 +87,7 @@ module Engine
               raise GameError, 'President may not sell shares while corporation can sell treasury shares.'
             end
 
+            @used_emergency_funding = true
             super
           end
 
@@ -98,7 +100,29 @@ module Engine
 
             raise GameError, "#{corporation.name} cannot sell share bundle: #{bundle.shares}" unless bundle_index
 
+            @used_emergency_funding = true
             @game.sell_shares_and_change_price(bundle)
+          end
+
+          def buyable_trains(entity)
+            trains = super
+            return trains unless cross_buy_blocked?(entity)
+
+            trains.reject(&:owned_by_corporation?)
+          end
+
+          def spend_minmax(entity, train)
+            if train.owned_by_corporation?
+              return [0, 0] if cross_buy_blocked?(entity)
+
+              return [1, buying_power(entity)]
+            end
+
+            super
+          end
+
+          def cross_buy_blocked?(_entity)
+            @used_emergency_funding
           end
 
           def process_buy_train(action)
