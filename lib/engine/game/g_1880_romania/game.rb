@@ -35,6 +35,47 @@ module Engine
             G1880::Step::BuySellParShares,
           ])
         end
+
+        def setup
+          super
+
+          # Used for disabled 1880 methods
+          @dummy_company ||= Company.new(
+            name: 'Dummy Company',
+            sym: 'DUMMY',
+            value: 0,
+          )
+          @dummy_company.close!
+        end
+
+        # 1880 China method. Not used in this variant.
+        def rocket
+          @dummy_company
+        end
+
+        # 1880 China method. Not used in this variant.
+        def force_exchange_rocket; end
+
+        # 1880 China method. Not used in this variant.
+        def ferry_hexes
+          []
+        end
+
+        # 1880 China method. Not used in this variant.
+        def ferry_company
+          @dummy_company
+        end
+
+        # 1880 China method. Not used in this variant.
+        def taiwan_company
+          @dummy_company
+        end
+
+        # 1880 China method. Not used in this variant.
+        def taiwan_hex; end
+
+        # 1880 China method. Not used in this variant.
+        def trans_siberian_bonus?(_stops); end
       end
     end
   end
