@@ -16,6 +16,10 @@ module Engine
       def merger?
         true
       end
+
+      def use_operating_round_view?(_actions)
+        true
+      end
     end
   end
 end
