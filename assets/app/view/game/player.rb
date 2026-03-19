@@ -24,8 +24,10 @@ module View
       needs :show_companies, default: true
 
       def render
+        active = @game.round.active_step&.active_entities&.include?(@player)
+
         card_style = {
-          border: @game.round.can_act?(@player) ? '4px solid' : '1px solid gainsboro',
+          border: active ? '4px solid' : '1px solid gainsboro',
           paddingBottom: '0.2rem',
         }
         card_style[:display] = @display
