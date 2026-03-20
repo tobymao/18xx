@@ -3520,6 +3520,10 @@ module Engine
         false
       end
 
+      def train_actions_always_use_operating_round_view?
+        false
+      end
+
       def show_map_legend?
         false
       end

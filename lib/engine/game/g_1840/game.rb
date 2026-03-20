@@ -908,6 +908,10 @@ module Engine
         def sorted_corporations
           @sorted_corporations_for_company_round || operating_order
         end
+
+        def train_actions_always_use_operating_round_view?
+          false
+        end
       end
     end
   end
