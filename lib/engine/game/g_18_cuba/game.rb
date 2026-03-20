@@ -242,6 +242,47 @@ module Engine
           @sugar_cubes.clear
           @log << 'All remaining sugar cubes are removed at the end of the Operating Round.'
         end
+
+        def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
+          corp = selected_company || @round&.current_entity&.corporation
+
+          super.reject do |t|
+            tile_blocked_for_corp?(t, corp, tile.hex)
+          end
+        end
+
+        def tile_blocked_for_corp?(tile, corp)
+          return false unless corp
+
+          if corp.type == :minor
+            minor_tile_blocked?(tile, corp.tokens.first.hex)
+          else
+            major_tile_blocked?(tile)
+          end
+        end
+
+        private
+
+        def tile_has_only_track_type?(tile, track_type)
+          # Returns true if the tile contains only paths of the specified track type
+          # that is not allowed for the corporation
+          tile.paths.all? { |path| path.track == track_type }
+        end
+
+        def minor_tile_blocked?(tile, home_hex)
+          # Returns true if a tile is illegal for a minor:
+          # home hex forbids pure rejected track (broad for minors),
+          # other hexes also forbid city tiles
+          return tile_has_only_track_type?(tile, :broad) if tile.hex == home_hex
+
+          !tile.cities.empty? ||
+            tile_has_only_track_type?(tile, :broad)
+        end
+
+        def major_tile_blocked?(tile)
+          # Returns true if a yellow tile is illegal for a major: only pure broad tracks allowed on yellow
+          tile.color == :yellow && !tile_has_only_track_type?(tile, :broad)
+        end
       end
     end
   end
