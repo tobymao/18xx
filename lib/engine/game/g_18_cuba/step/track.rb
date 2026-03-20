@@ -14,7 +14,7 @@ module Engine
 
             # 18Cuba: minors cannot build cities except on their home hex
             return nil if corp.type == :minor &&
-                          hex.tile.cities.any? &&
+                          !hex.tile.cities.empty? &&
                           hex != corp.tokens.first.hex
 
             super
@@ -24,20 +24,14 @@ module Engine
             # TODO: upgrade logic to be checked
             # TODO: "none left" illegal tiles still showed in the UI, but should be hidden
             corp = entity.corporation? ? entity : @game.current_entity
-            tiles = super
 
-            track_to_reject = corp.type == :minor ? :broad : :narrow
-            home_hex = corp.tokens.first&.hex
-
-            tiles.reject! do |tile|
+            super.reject do |tile|
               if corp.type == :minor
-                minor_tile_blocked?(tile, hex, home_hex, track_to_reject)
+                minor_tile_blocked?(tile, corp.tokens.first.hex)
               else
                 major_tile_blocked?(tile)
               end
             end
-
-            tiles
           end
 
           def tile_has_only_track_type?(tile, track_type)
@@ -46,14 +40,16 @@ module Engine
             tile.paths.all? { |path| path.track == track_type }
           end
 
-          def minor_tile_blocked?(tile, hex, home_hex, track_to_reject)
+          private
+
+          def minor_tile_blocked?(tile, home_hex)
             # Returns true if a tile is illegal for a minor:
             # home hex forbids pure rejected track (broad for minors),
             # other hexes also forbid city tiles
-            return tile_has_only_track_type?(tile, track_to_reject) if hex == home_hex
+            return tile_has_only_track_type?(tile, :broad) if tile.hex == home_hex
 
-            tile.cities.any? ||
-              tile_has_only_track_type?(tile, track_to_reject)
+            !tile.cities.empty? ||
+              tile_has_only_track_type?(tile, :broad)
           end
 
           def major_tile_blocked?(tile)
