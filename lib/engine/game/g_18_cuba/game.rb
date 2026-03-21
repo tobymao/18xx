@@ -247,15 +247,16 @@ module Engine
           corp = selected_company || @round&.current_entity&.corporation
 
           super.reject do |t|
-            tile_blocked_for_corp?(t, corp, tile.hex)
+            # Hex not available for selector, therefore passing nil and ignoring home hex check for minors
+            tile_blocked_for_corp?(t, corp, nil, for_selector: true)
           end
         end
 
-        def tile_blocked_for_corp?(tile, corp)
+        def tile_blocked_for_corp?(tile, corp, hex, for_selector: false)
           return false unless corp
 
           if corp.type == :minor
-            minor_tile_blocked?(tile, corp.tokens.first.hex)
+            minor_tile_blocked?(tile, corp.tokens.first.hex, hex, for_selector: for_selector)
           else
             major_tile_blocked?(tile)
           end
@@ -264,19 +265,22 @@ module Engine
         private
 
         def tile_has_only_track_type?(tile, track_type)
-          # Returns true if the tile contains only paths of the specified track type
-          # that is not allowed for the corporation
+          # Returns true if all paths on the tile are of the given track type
           tile.paths.all? { |path| path.track == track_type }
         end
 
-        def minor_tile_blocked?(tile, home_hex)
-          # Returns true if a tile is illegal for a minor:
-          # home hex forbids pure rejected track (broad for minors),
-          # other hexes also forbid city tiles
-          return tile_has_only_track_type?(tile, :broad) if tile.hex == home_hex
+        def minor_tile_blocked?(tile, home_hex, current_hex, for_selector: false)
+          # Determines if a tile is illegal for a minor:
+          # - Tiles with only broad tracks are always illegal
+          # - City tiles are illegal except on the minor's home hex
+          # - When `for_selector` is true, the home/city rule is ignored because the hex is unknown
+          pure_broad = tile_has_only_track_type?(tile, :broad)
 
-          !tile.cities.empty? ||
-            tile_has_only_track_type?(tile, :broad)
+          return pure_broad if for_selector
+
+          return pure_broad if current_hex == home_hex
+
+          !tile.cities.empty? || pure_broad
         end
 
         def major_tile_blocked?(tile)
