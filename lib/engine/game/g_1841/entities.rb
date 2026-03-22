@@ -10,7 +10,7 @@ module Engine
         def game_companies
           companies = [
             {
-              name: '1 Società della Strada di Ferro da Napoli a Nocera e Castellamunare',
+              name: '1 Società della Strada di Ferro da Napoli a Nocera e Castellamunare (Bayard)',
               sym: 'Bayard',
               value: 50,
               revenue: 20,
