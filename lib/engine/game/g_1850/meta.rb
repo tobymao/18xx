@@ -14,7 +14,7 @@ module Engine
         GAME_SUBTITLE = 'The MidWest'
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1850'
         GAME_DESIGNER = 'Bill Dixon'
-        GAME_LOCATION = 'The Midwestern USA'
+        GAME_LOCATION = 'Midwestern USA'
         PUBLISHER = :golden_spike
         GAME_RULES_URL = 'https://www.tckroleplaying.com/bg/1850/1850-Rules.pdf'
 
