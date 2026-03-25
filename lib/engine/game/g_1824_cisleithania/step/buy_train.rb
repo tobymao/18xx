@@ -18,7 +18,7 @@ module Engine
             # Rule X.3 and X.4: Construction railways cannot buy any trains
             return false if @game.construction_railway?(entity) || @game.bond_railway?(entity)
 
-            entity.operator?
+            super
           end
 
           def process_buy_train(action)

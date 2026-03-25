@@ -225,6 +225,12 @@ module Engine
           @close_construction_company_when_first_5_sold = false
         end
 
+        def within_bank_limit(bundle)
+          # 3+ player 1824 has a bank limit of 50% when selling, and no bank pool.
+          # 2-player 1824 has a bank pool, and no limit for sales (except presidency).
+          two_player? || super
+        end
+
         def event_close_construction_railways!
           @log << "-- Event: #{EVENTS_TEXT['close_construction_railways'][1]} --"
           @corporations.each do |c|
