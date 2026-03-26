@@ -274,6 +274,7 @@ module Engine
           redef_const(:STATUS_TEXT, { 'local_tokens' => ['Local Tokens', 'Can only token in home region'] })
           redef_const(:SELL_MOVEMENT, :down_share)
           redef_const(:SOLD_OUT_INCREASE, true)
+          redef_const(:CERT_LIMIT_INCLUDES_PRIVATES, false)
         end
 
         def map_northern_italy_company_header(_company)
