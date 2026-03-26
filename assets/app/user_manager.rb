@@ -20,7 +20,8 @@ module UserManager
 
   def edit_user(params)
     @connection.safe_post('/user/edit', params) do |data|
-      store(:user, data, skip: false)
+      store(:user, data['user'], skip: false) if data['user']
+      store(:flash_opts, data['flash_opts'], skip: false) if data['flash_opts']
     end
   end
 
