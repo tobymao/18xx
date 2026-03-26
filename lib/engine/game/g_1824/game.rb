@@ -44,6 +44,7 @@ module Engine
 
         # Differ from 1837, rule VII.5, bullet 1: placed when first operating
         HOME_TOKEN_TIMING = :operate
+        STOCK_MARKET_TOKEN_TIMING = :par
 
         # SELL_BUY_ORDER, same as 1837 (:sell_buy), see Rule VI.1 bullet 4
         # SELL_AFTER, same as 1837 (:operate), see Rule VI.8
@@ -355,7 +356,7 @@ module Engine
             # Rule X.1, bullet 3: Do not use UG in two player game (it is closed)
             next if national.closed?
 
-            stock_market.set_par(national, share_price)
+            par_corporation(national, share_price)
             national.ipoed = true
           end
         end
@@ -603,7 +604,7 @@ module Engine
           regional_railway = get_associated_regional_railway(minor)
           regional_railway.ipoed = true
           share_price = stock_market.par_prices.find { |s| s.price == price / 2 }
-          stock_market.set_par(regional_railway, share_price)
+          par_corporation(regional_railway, share_price)
           association = "the associated Regional Railway of #{id}"
           log << "#{regional_railway.name} (#{association}) pars at #{format_currency(share_price.price)}."
         end

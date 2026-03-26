@@ -196,7 +196,7 @@ module Engine
               exchange_price = (share_price.price * share_multiplier) - corporation.par_via_exchange.value
               exchange_price = nil if exchange_price.negative?
 
-              @game.stock_market.set_par(corporation, share_price)
+              @game.par_corporation(corporation, share_price)
               @game.share_pool.buy_shares(action.entity,
                                           bundle,
                                           exchange: corporation.par_via_exchange,

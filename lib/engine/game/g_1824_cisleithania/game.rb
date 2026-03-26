@@ -484,7 +484,7 @@ module Engine
 
           regional.make_bond_railway!
           share_price = stock_market.share_price([6, 1]) # This is the lower one at 50G
-          stock_market.set_par(regional, share_price)
+          par_corporation(regional, share_price)
           regional.shares.each do |s|
             @share_pool.transfer_shares(s.to_bundle, @share_pool, price: 0, allow_president_change: false)
           end
