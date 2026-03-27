@@ -44,7 +44,7 @@ module Engine
             add_next_receiver_offer
           end
 
-          def process_response(action)
+          def process_respond(action)
             super
 
             add_next_receiver_offer if receiver_offers.empty?
