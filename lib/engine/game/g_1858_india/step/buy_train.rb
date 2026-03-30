@@ -21,6 +21,11 @@ module Engine
             trains.select { |train| @game.pullman?(train) }
           end
 
+          def other_trains(entity)
+            # Pullman trains cannot be bought across.
+            super.reject { |train| @game.pullman?(train) }
+          end
+
           def process_buy_company(action)
             corporation = action.entity
             company = action.company
