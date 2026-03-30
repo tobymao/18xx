@@ -14,14 +14,14 @@ module Engine
           end
 
           def choice_name
-            'Attach mail train to another train'
+            'Attach Pullman to another train'
           end
 
           def help
-            return unless @game.owns_mail_train?(current_entity)
+            return unless @game.owns_pullman?(current_entity)
             return unless attachable_trains(current_entity).empty?
 
-            "#{current_entity.id} owns a mail train but does not own any " \
+            "#{current_entity.id} owns a Pullman but does not own any " \
               'broad gauge trains that it can be attached to.'
           end
 
@@ -32,17 +32,17 @@ module Engine
           end
 
           def round_state
-            super.merge({ mail_trains: {} })
+            super.merge({ pullmans: {} })
           end
 
           def process_choose(action)
-            @round.mail_trains[action.entity] = @game.train_by_id(action.choice)
+            @round.pullmans[action.entity] = @game.train_by_id(action.choice)
           end
 
           def train_name(corporation, train)
-            return train.name unless @round.mail_trains[corporation] == train
+            return train.name unless @round.pullmans[corporation] == train
 
-            "#{train.name} + Mail"
+            "#{train.name} + Pullman"
           end
 
           def log_extra_revenue(entity, extra_revenue)
@@ -56,24 +56,24 @@ module Engine
           private
 
           def runnable_trains(entity)
-            super.reject { |train| @game.mail_train?(train) }
+            super.reject { |train| @game.pullman?(train) }
           end
 
           def choosing?(corporation)
-            @game.owns_mail_train?(corporation) &&
-              !mail_train_attached?(corporation) &&
+            @game.owns_pullman?(corporation) &&
+              !pullman_attached?(corporation) &&
               !attachable_trains(corporation).empty?
           end
 
-          # The trains that a mail train can be attached to.
+          # The trains that a Pullman can be attached to.
           def attachable_trains(corporation)
             corporation.trains.select do |train|
-              train.track_type == :broad && !@game.mail_train?(train)
+              train.track_type == :broad && !@game.pullman?(train)
             end
           end
 
-          def mail_train_attached?(corporation)
-            !@round.mail_trains[corporation].nil?
+          def pullman_attached?(corporation)
+            !@round.pullmans[corporation].nil?
           end
         end
       end
