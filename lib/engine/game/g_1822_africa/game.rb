@@ -51,6 +51,7 @@ module Engine
         SELL_MOVEMENT = :left_per_10_if_pres_else_left_one
 
         GAME_END_CHECK = { stock_market: :current_or, bid_boxes: :full_or }.freeze
+        GAME_END_LOCK_FIRST_TRIGGER = false
         GAME_END_REASONS_TEXT = Base::GAME_END_REASONS_TEXT.merge(
           bid_boxes: 'Cannot refill bid boxes'
         )
