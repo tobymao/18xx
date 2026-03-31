@@ -4,6 +4,7 @@ require_relative 'meta'
 require_relative '../g_1880/game'
 require_relative 'map'
 require_relative 'entities'
+require_relative 'step/special_choose'
 
 module Engine
   module Game
@@ -155,6 +156,7 @@ module Engine
         def stock_round
           G1880Romania::Round::Stock.new(self, [
             Engine::Step::Exchange,
+            G1880Romania::Step::SpecialChoose,
             G1880::Step::BuySellParShares,
           ])
         end
@@ -165,6 +167,7 @@ module Engine
             Engine::Step::Exchange,
             Engine::Step::DiscardTrain,
             G1880Romania::Step::Assign,
+            G1880Romania::Step::SpecialChoose,
             G1880Romania::Step::Track,
             G1880::Step::Token,
             G1880::Step::Route,
@@ -235,6 +238,10 @@ module Engine
 
         def p2
           @p2 ||= company_by_id('P2')
+        end
+
+        def p6
+          @p6 ||= company_by_id('P6')
         end
 
         def danube_port
