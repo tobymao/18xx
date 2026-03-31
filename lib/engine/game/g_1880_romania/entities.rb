@@ -10,7 +10,8 @@ module Engine
             sym: 'P1',
             value: 20,
             revenue: 5,
-            desc: 'May be closed any time during the game to give the owner 20 (if player) or 40 (if company) out of the bank.',
+            desc: "May be closed any time during the game to give L20 to the owning player or L40 to one of that players' "\
+                  'coporations, paid from the bank.',
           },
           {
             name: 'P2. Consorţiu Bethel Henry Strousberg',
@@ -61,8 +62,8 @@ module Engine
             sym: 'P5',
             value: 70,
             revenue: 10,
-            desc: 'Comes with a +1 tender. This tender must be assigned to a share company (not a foreign investor) and remain '\
-                  'in this company until the end of the game (it never rusts). The tender may be assigned each round to a '\
+            desc: 'Comes with a +1 tender. This tender must be assigned to a corporation (not a foreign investor) and remain '\
+                  'in this corporation until the end of the game (it never rusts). The tender may be assigned each round to a '\
                   'train. This can be the same or a different train. It may be assigned to a restored 2-train. '\
                   'Company closes with 3+3.',
           },
@@ -72,7 +73,13 @@ module Engine
             value: 30,
             revenue: 10,
             desc: 'May be exchanged any time into a building permit of two consecutive phases which must be assigned '\
-                  'immediately to a company. This private company is then discarded.',
+                  'immediately to a corporation. This private company is then discarded.',
+            abilities: [{
+              type: 'choose_ability',
+              when: %w[owning_player_sr_turn owning_player_or_turn],
+              owner_type: 'player',
+              description: 'Exchange for building permit of two consecutive phases',
+            }],
           },
           {
             name: 'P7. Electroputere S.A.',
@@ -80,8 +87,8 @@ module Engine
             value: 100,
             revenue: 5,
             desc: 'As soon as the first 3+3 train is bought or exported, this private is exchanged for a 3+3 train '\
-                  'which must be assigned immediately to a company. If the company is then above the train limit it must '\
-                  'remove trains until it is within the limit. It may choose which trains to remove.',
+                  'which must be assigned immediately to a corporation. If the corporation is then above the train '\
+                  'limit it must remove trains until it is within the limit. It may choose which trains to remove.',
             # this company's ability is implemented in 1880's game class
             # with the same logic as the Rocket of China forced exchange.
           },
