@@ -262,7 +262,7 @@ module Engine
 
         def revenue_for(route, stops)
           revenue = super
-          revenue += 10 if danube_port_bonus?(route)
+          revenue += 10 if danube_port_bonus?(route, stops)
 
           revenue
         end
@@ -305,8 +305,8 @@ module Engine
           remar.close!
         end
 
-        def danube_port_bonus?(route)
-          route.stops.any? { |stop| stop.hex.assigned?(danube_port.id) } && route.corporation.owner == danube_port.owner
+        def danube_port_bonus?(route, stops = route.stops)
+          stops.any? { |stop| stop.hex.assigned?(danube_port.id) } && route.corporation.owner == danube_port.owner
         end
 
         # This game's Electroputere S.A. private company's forced train exchange is identical to the forced exchange for the
