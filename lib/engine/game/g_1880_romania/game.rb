@@ -159,6 +159,13 @@ module Engine
           game_minors.map { |minor| G1880Romania::Minor.new(**minor) }
         end
 
+        def upgrades_to_correct_label?(from, to)
+          # B-labeled tiles are only for Bucuresti (I17), which starts with label=B
+          return false if to.label.to_s == 'B' && from.label.to_s != 'B'
+
+          super
+        end
+
         def stock_round
           G1880Romania::Round::Stock.new(self, [
             Engine::Step::Exchange,
