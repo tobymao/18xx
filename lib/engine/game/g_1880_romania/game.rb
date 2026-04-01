@@ -233,7 +233,11 @@ module Engine
         def tile_lays(entity)
           return [] unless can_build_track?(entity)
 
-          self.class::TILE_LAYS
+          tile_lays = [{ lay: true, upgrade: true }]
+          return tile_lays if entity.minor? || !@phase.tiles.include?(:green)
+
+          tile_lays << { lay: :not_if_upgraded, upgrade: false }
+          tile_lays
         end
 
         def remove_crossed_impassable_borders!(tile)
