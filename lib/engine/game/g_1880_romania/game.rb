@@ -4,6 +4,7 @@ require_relative 'meta'
 require_relative '../g_1880/game'
 require_relative 'map'
 require_relative 'entities'
+require_relative 'corporation'
 require_relative 'minor'
 require_relative 'step/route'
 require_relative 'step/special_choose'
@@ -15,6 +16,8 @@ module Engine
         include_meta(G1880Romania::Meta)
         include G1880Romania::Map
         include G1880Romania::Entities
+
+        CORPORATION_CLASS = G1880Romania::Corporation
 
         CURRENCY_FORMAT_STR = 'L%s'
 
