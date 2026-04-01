@@ -4,6 +4,7 @@ require_relative 'meta'
 require_relative '../g_1880/game'
 require_relative 'map'
 require_relative 'entities'
+require_relative 'minor'
 require_relative 'step/route'
 require_relative 'step/special_choose'
 
@@ -159,6 +160,10 @@ module Engine
         EVENTS_TEXT = G1880::Game::EVENTS_TEXT.merge(
           'signal_end_game' => ['Signal End Game', 'Game ends 3 ORs after purchase of last 6E train']
         ).freeze
+
+        def init_minors
+          game_minors.map { |minor| G1880Romania::Minor.new(**minor) }
+        end
 
         def stock_round
           G1880Romania::Round::Stock.new(self, [
