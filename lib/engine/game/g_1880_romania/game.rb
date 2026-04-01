@@ -230,6 +230,12 @@ module Engine
           @log << "#{consortiu.owner.name} receives #{format_currency(20)} for border crossing"
         end
 
+        def tile_lays(entity)
+          return [] unless can_build_track?(entity)
+
+          self.class::TILE_LAYS
+        end
+
         def remove_crossed_impassable_borders!(tile)
           hex = tile.hex
           removed = false
@@ -261,6 +267,13 @@ module Engine
           end
 
           clear_graph if removed
+        end
+
+        def routes_revenue(routes)
+          # Override to exclude stock_market_bonus from routes_revenue so the autorouter
+          # can compare route combinations fairly. The bonus is added in extra_revenue
+          # via the route step.
+          routes.sum(&:revenue)
         end
 
         def revenue_for(route, stops)
