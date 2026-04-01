@@ -4,6 +4,7 @@ require_relative 'meta'
 require_relative '../g_1880/game'
 require_relative 'map'
 require_relative 'entities'
+require_relative 'step/route'
 require_relative 'step/special_choose'
 
 module Engine
@@ -170,7 +171,7 @@ module Engine
             G1880Romania::Step::SpecialChoose,
             G1880Romania::Step::Track,
             G1880::Step::Token,
-            G1880::Step::Route,
+            G1880Romania::Step::Route,
             G1880::Step::Dividend,
             G1880Romania::Step::BuyTrain,
             G1880::Step::CheckFIConnection,
@@ -242,6 +243,18 @@ module Engine
 
         def p6
           @p6 ||= company_by_id('P6')
+        end
+
+        def remar
+          @remar ||= company_by_id('P5')
+        end
+
+        def event_communist_takeover!
+          super
+          return if remar.closed?
+
+          @log << "#{remar.name} closes"
+          remar.close!
         end
 
         def danube_port
