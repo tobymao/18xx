@@ -48,7 +48,6 @@ module Engine
           def choosing_tender?(entity)
             @tender_train ||= nil
             !@tender_train &&
-              !@game.remar.closed? &&
               entity.corporation? &&
               entity.assigned?(@game.remar.id) &&
               !tender_train_choices(entity).empty?
