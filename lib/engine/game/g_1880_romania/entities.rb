@@ -66,6 +66,14 @@ module Engine
                   'in this corporation until the end of the game (it never rusts). The tender may be assigned each round to a '\
                   'train. This can be the same or a different train. It may be assigned to a restored 2-train. '\
                   'Company closes with 3+3.',
+            abilities: [{
+              type: 'assign_corporation',
+              when: 'owning_player_or_turn',
+              owner_type: 'player',
+              count: 1,
+              closed_when_used_up: false,
+              description: 'Assign tender to a corporation permanently',
+            }],
           },
           {
             name: 'P6. Malaxa Manufacturing Company',
