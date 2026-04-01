@@ -80,6 +80,7 @@ module Engine
             end
 
             @tender_train.name = tender_name(@tender_train.name)
+            @game.clear_graph
           end
 
           def detach_tender
@@ -87,6 +88,7 @@ module Engine
             @tender_train.distance = @tender_original_train.distance
             @tender_original_train = nil
             @tender_train = nil
+            @game.clear_graph
           end
 
           def tender_name(name)
