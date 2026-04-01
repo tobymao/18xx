@@ -11,7 +11,7 @@ module Engine
         def can_ignore_borders?(entity)
           return false unless entity&.corporation?
 
-          entity.owner == @game.p2&.owner
+          entity.owner == @game.consortiu&.owner
         end
 
         def legal_tile_rotation?(entity_or_entities, hex, tile)
