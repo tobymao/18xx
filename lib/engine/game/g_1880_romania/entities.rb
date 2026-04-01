@@ -12,6 +12,12 @@ module Engine
             revenue: 5,
             desc: "May be closed any time during the game to give L20 to the owning player or L40 to one of that players' "\
                   'coporations, paid from the bank.',
+            abilities: [{
+              type: 'choose_ability',
+              when: %w[owning_player_sr_turn owning_player_or_turn],
+              owner_type: 'player',
+              description: 'Close for L20 to player or L40 to a corporation',
+            }],
           },
           {
             name: 'P2. Consorţiu Bethel Henry Strousberg',

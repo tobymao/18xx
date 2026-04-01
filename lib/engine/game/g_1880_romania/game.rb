@@ -179,7 +179,7 @@ module Engine
         end
 
         def event_open_borders!
-          @log << "-- Event: Borders opened, owner of #{p2.name} still receives payment for built crossings --"
+          @log << "-- Event: Borders opened, owner of #{consortiu.name} still receives payment for built crossings --"
 
           self.class::BORDERS.each do |coord, edges|
             hex = hex_by_id(coord)
@@ -210,9 +210,9 @@ module Engine
           return if crossings.empty?
 
           income = 20 * crossings.size
-          bank.spend(income, p2.owner)
+          bank.spend(income, consortiu.owner)
 
-          @log << "#{p2.owner.name} receives #{format_currency(income)} for province crossing"
+          @log << "#{consortiu.owner.name} receives #{format_currency(income)} for province crossing"
         end
 
         def remove_border_calculate_cost!(tile, entity_or_entities, spender)
@@ -237,16 +237,28 @@ module Engine
           str
         end
 
-        def p2
-          @p2 ||= company_by_id('P2')
+        def banater
+          @banater ||= company_by_id('P1')
         end
 
-        def p6
-          @p6 ||= company_by_id('P6')
+        def consortiu
+          @consortiu ||= company_by_id('P2')
+        end
+
+        def danube_port
+          @danube_port ||= company_by_id('P4')
         end
 
         def remar
           @remar ||= company_by_id('P5')
+        end
+
+        def malaxa
+          @malaxa ||= company_by_id('P6')
+        end
+
+        def rocket
+          @rocket ||= company_by_id('P7')
         end
 
         def event_communist_takeover!
@@ -255,10 +267,6 @@ module Engine
 
           @log << "#{remar.name} closes"
           remar.close!
-        end
-
-        def danube_port
-          @danube_port ||= company_by_id('P4')
         end
 
         def danube_port_bonus?(route)

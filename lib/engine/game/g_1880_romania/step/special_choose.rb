@@ -9,7 +9,7 @@ module Engine
         class SpecialChoose < Engine::Step::SpecialChoose
           def actions(entity)
             return [] unless entity.company?
-            return [] unless entity == @game.p6
+            return [] if entity != @game.banater && entity != @game.malaxa
             return [] unless @game.abilities(entity, :choose_ability)
             return [] if choices_ability(entity).empty?
 
@@ -17,13 +17,55 @@ module Engine
           end
 
           def description
-            'Exchange P6 for Building Permit'
+            'Use Private Company Ability'
           end
 
           def choices_ability(entity)
-            return {} unless entity == @game.p6
+            return banater_choices(entity) if entity == @game.banater
+            return malaxa_choices(entity) if entity == @game.malaxa
 
-            owner = @game.p6.owner
+            {}
+          end
+
+          def process_choose_ability(action)
+            return process_banater(action) if action.entity == @game.banater
+            return process_malaxa(action) if action.entity == @game.malaxa
+
+            raise GameError, "Unknown entity: #{action.entity.name}"
+          end
+
+          private
+
+          def banater_choices(entity)
+            owner = entity.owner
+            choices = { 'player' => "#{@game.format_currency(20)} to #{owner.name}" }
+            @game.corporations.select { |c| c.owner == owner && c.floated? }.each do |corp|
+              choices[corp.id] = "#{@game.format_currency(40)} to #{corp.full_name} (#{corp.id})"
+            end
+            choices
+          end
+
+          def process_banater(action)
+            entity = action.entity
+            owner = entity.owner
+
+            if action.choice == 'player'
+              @game.bank.spend(20, owner)
+              @game.log << "#{owner.name} receives #{@game.format_currency(20)} from closing #{entity.name}"
+            else
+              corp = @game.corporation_by_id(action.choice)
+              raise GameError, "Invalid corporation: #{action.choice}" unless corp
+
+              @game.bank.spend(40, corp)
+              @game.log << "#{corp.full_name} receives #{@game.format_currency(40)} from closing #{entity.name}"
+            end
+
+            @game.abilities(entity, :choose_ability)&.use!
+            entity.close!
+          end
+
+          def malaxa_choices(entity)
+            owner = entity.owner
             corps = @game.corporations.select { |c| c.owner == owner && c.floated? }
             choices = {}
             corps.each do |corp|
@@ -34,10 +76,8 @@ module Engine
             choices
           end
 
-          def process_choose_ability(action)
+          def process_malaxa(action)
             entity = action.entity
-            raise GameError, "#{entity.name} is not P6" unless entity == @game.p6
-
             corp_sym, permit = action.choice.split('|')
             corporation = @game.corporation_by_id(corp_sym)
 
