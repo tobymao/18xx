@@ -32,14 +32,15 @@ module Engine
             pending_city_selection?(entity, hex)
           end
 
+          def atlanta_cotton_port?(entity, hex)
+            entity == @game.port_company && hex.id == ATLANTA_HEX
+          end
+
           def process_assign(action)
             entity = action.entity
             target = action.target
 
-            return super unless target.is_a?(Engine::Hex) &&
-                                entity == @game.port_company &&
-                                target.id == ATLANTA_HEX &&
-                                target.tile.cities.size > 1
+            return super unless atlanta_cotton_port?(entity, target)
 
             unless (ability = @game.abilities(entity, :assign_hexes))
               raise GameError, "Could not assign #{entity.name} to #{target.name}; :assign_hexes ability not found"
