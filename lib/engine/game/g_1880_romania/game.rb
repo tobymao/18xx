@@ -273,6 +273,11 @@ module Engine
           str
         end
 
+        # hijacks most code from 1880 China referring to BCR to instead refer to the TR
+        def bcr
+          @bcr ||= corporation_by_id('TR')
+        end
+
         def banater
           @banater ||= company_by_id('P1')
         end
