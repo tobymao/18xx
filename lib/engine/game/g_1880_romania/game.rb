@@ -230,6 +230,12 @@ module Engine
           @log << "#{consortiu.owner.name} receives #{format_currency(income)} for province crossing"
         end
 
+        def tile_lays(entity)
+          return [] unless can_build_track?(entity)
+
+          self.class::TILE_LAYS
+        end
+
         def remove_border_calculate_cost!(tile, entity_or_entities, spender)
           total_cost, border_types = super
 
@@ -237,6 +243,13 @@ module Engine
           @province_crossings[tile.hex] = border_types.count { |t| %i[province impassable].include?(t) }
 
           [total_cost, border_types]
+        end
+
+        def routes_revenue(routes)
+          # Override to exclude stock_market_bonus from routes_revenue so the autorouter
+          # can compare route combinations fairly. The bonus is added in extra_revenue
+          # via the route step.
+          routes.sum(&:revenue)
         end
 
         def revenue_for(route, stops)

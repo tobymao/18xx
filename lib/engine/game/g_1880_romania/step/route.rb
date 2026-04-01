@@ -41,6 +41,12 @@ module Engine
           def process_run_routes(action)
             super
             detach_tender if @tender_train
+
+            bonus = @game.stock_market_bonus(action.entity)
+            return unless bonus.positive?
+
+            @round.extra_revenue = (@round.extra_revenue || 0) + bonus
+            @log << "#{action.entity.name} receives #{@game.format_currency(bonus)} stock market bonus"
           end
 
           private
