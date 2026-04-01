@@ -175,6 +175,10 @@ module Engine
           super
         end
 
+        def new_draft_round
+          Engine::Round::Draft.new(self, [G1880Romania::Step::SimpleDraft], reverse_order: false)
+        end
+
         def stock_round
           G1880Romania::Round::Stock.new(self, [
             Engine::Step::Exchange,
