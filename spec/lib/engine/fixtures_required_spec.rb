@@ -4,7 +4,7 @@ require 'spec_helper'
 
 require 'json'
 
-SKIP_ALPHA = %w[1858India].freeze
+SKIP_ALPHA = [].freeze
 
 SKIP_BETA_PROD = {
 
