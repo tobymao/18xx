@@ -226,8 +226,21 @@ module Engine
             hex = hex_by_id(coord)
             next unless hex
 
-            hex.tile.modify_borders(edges, type: nil)
+            edges.each do |edge|
+              border = hex.tile.borders.find { |b| b.edge == edge }
+              next unless border
+
+              hex.tile.borders.delete(border)
+
+              neighbor_hex = hex.all_neighbors[edge]
+              next unless neighbor_hex
+
+              inv_edge = Hex.invert(edge)
+              neighbor_hex.tile.borders.map! { |nb| nb.edge == inv_edge ? nil : nb }.compact!
+            end
           end
+
+          clear_graph
         end
 
         def handle_province_crossing_income(hex, entity_or_entities)
