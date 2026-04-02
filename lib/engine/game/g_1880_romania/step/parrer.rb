@@ -33,7 +33,7 @@ module Engine
             end
 
             @game.set_par(corp, share_price, slot)
-            @log << "#{entity.name} selects par #{@game.format_currency(share_price.price)} (slot #{slot}) for #{corp.name}"
+            @log << "#{entity.name} selects par #{@game.format_currency(share_price.price)} (slot #{slot + 1}) for #{corp.name}"
 
             @parring = {
               state: :choose_percent,
@@ -45,6 +45,53 @@ module Engine
             return if percent_choices.size > 1
 
             process_presidents_percent_choice(Action::Choose.new(@parring[:entity], choice: percent_choices.keys.first))
+          end
+
+          def process_presidents_percent_choice(action)
+            percent = action.choice
+            unless president_percent_choices.include?(percent)
+              error_msg = "Invalid percentage (#{percent}). " \
+                          "Choices are #{president_percent_choices.values.join(',')}."
+              raise GameError, error_msg
+            end
+
+            corporation = @parring[:corporation]
+            verb = corporation == @game.tr ? 'receives' : 'selects'
+            @log << "#{@parring[:entity].name} #{verb} #{percent}% presidency share"
+
+            if percent != corporation.presidents_percent
+              num_to_remove = (percent - corporation.presidents_percent) / corporation.share_percent
+              shares_to_remove = corporation.shares.select { |s| s.buyable && !s.president }.pop(num_to_remove)
+              shares_to_remove.each { |s| corporation.delete_share!(s) }
+              corporation.presidents_share.percent = percent
+            end
+
+            @parring[:state] = :choose_permit
+            permit_choices = @game.building_permit_choices(corporation)
+            return if permit_choices.size > 1
+
+            process_building_permit_choice(Action::Choose.new(@parring[:entity], choice: permit_choices.first))
+          end
+
+          def process_building_permit_choice(action)
+            permit = action.choice
+            unless @game.building_permit_choices(@parring[:corporation]).include?(permit)
+              error_msg = "Invalid building permit (#{permit}). " \
+                          "Choices are #{@game.building_permit_choices(@parring[:corporation]).join(',')}."
+              raise GameError, error_msg
+            end
+
+            @log << if @parring[:corporation] == @game.tr
+                      "#{@parring[:corporation].name} is automatically assigned an #{permit} building permit"
+                    else
+                      "#{@parring[:entity].name} selects #{permit} building permit"
+                    end
+
+            @parring[:corporation].building_permits = action.choice
+
+            @parring[:state] = :par_corporation
+            process_par(Action::Par.new(@parring[:entity], corporation: @parring[:corporation],
+                                                           share_price: @parring[:share_price]))
           end
         end
       end
