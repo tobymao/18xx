@@ -305,6 +305,12 @@ module Engine
           str
         end
 
+        def building_permit_choices(corporation)
+          return %w[ABC] if corporation == tr
+
+          super
+        end
+
         # hijacks most code from 1880 China referring to BCR to instead refer to the TR
         def tr
           @tr ||= corporation_by_id('TR')
