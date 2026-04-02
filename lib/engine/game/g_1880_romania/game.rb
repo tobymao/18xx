@@ -27,6 +27,8 @@ module Engine
 
         STARTING_CASH = { 3 => 600, 4 => 480, 5 => 400, 6 => 340 }.freeze
 
+        TRAINS_NOT_TRIGGERING_SR = %w[2P 8 8E].freeze
+
         PHASES = [{ name: 'A1', train_limit: 4, tiles: [:yellow] },
                   {
                     name: 'A2',
@@ -322,6 +324,10 @@ module Engine
           return %w[ABC] if corporation == tr
 
           super
+        end
+
+        def trains_not_triggering_sr?(train_name)
+          self.class::TRAINS_NOT_TRIGGERING_SR.include?(train_name)
         end
 
         # hijacks most code from 1880 China referring to BCR to instead refer to the TR
