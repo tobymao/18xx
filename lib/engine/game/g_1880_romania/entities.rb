@@ -84,7 +84,7 @@ module Engine
           {
             name: 'P6. Malaxa Manufacturing Company',
             sym: 'P6',
-            value: 30,
+            value: 70,
             revenue: 10,
             desc: 'May be exchanged any time into a building permit of two consecutive phases which must be assigned '\
                   'immediately to a corporation. This private company is then discarded.',
