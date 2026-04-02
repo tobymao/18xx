@@ -202,44 +202,40 @@ module Engine
           end
         end
 
-        def handle_province_crossing_income(hex, entity_or_entities)
-          entity = Array(entity_or_entities).first
-          return unless entity&.corporation?
+        def handle_border_crossing_income
+          return if consortiu.closed?
 
-          crossings = hex.tile.borders.select { |b| %i[province impassable].include?(b.type) }
-          return if crossings.empty?
-
-          income = 20 * crossings.size
-          bank.spend(income, consortiu.owner)
-
-          @log << "#{consortiu.owner.name} receives #{format_currency(income)} for province crossing"
+          bank.spend(20, consortiu.owner)
+          @log << "#{consortiu.owner.name} receives #{format_currency(20)} for border crossing"
         end
 
-        def province_crossings
-          @province_crossings ||= {}
-        end
 
         def remove_crossed_impassable_borders!(tile)
           hex = tile.hex
           removed = false
 
           tile.exits.each do |edge|
-            border = tile.borders.find { |b| b.edge == edge && b.type == :impassable }
+            border = tile.borders.find { |b| b.edge == edge && %i[impassable province].include?(b.type) }
             next unless border
 
             neighbor_hex = hex.all_neighbors[edge]
             next unless neighbor_hex
 
-            # Only remove once both sides have track connecting across the border
+            # Only complete the crossing once both sides have track
             inv_edge = Hex.invert(edge)
             next unless neighbor_hex.tile.exits.include?(inv_edge)
 
-            tile.borders.delete(border)
-            hex.neighbors[edge] = neighbor_hex
+            handle_border_crossing_income
 
-            inv_edge = Hex.invert(edge)
-            neighbor_hex.tile.borders.map! { |nb| nb.edge == inv_edge && nb.type == :impassable ? nil : nb }.compact!
-            neighbor_hex.neighbors[inv_edge] = hex
+            tile.borders.delete(border)
+            neighbor_hex.tile.borders.map! do |nb|
+              nb.edge == inv_edge && %i[impassable province].include?(nb.type) ? nil : nb
+            end.compact!
+
+            if border.type == :impassable
+              hex.neighbors[edge] = neighbor_hex
+              neighbor_hex.neighbors[inv_edge] = hex
+            end
 
             removed = true
           end

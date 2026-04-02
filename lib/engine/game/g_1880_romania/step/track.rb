@@ -24,18 +24,6 @@ module Engine
             super
           end
 
-          def pay_tile_cost!(entity_or_entities, tile, rotation, hex, spender, cost, extra_cost)
-            super
-
-            crossings = @game.province_crossings.delete(hex)
-            return unless crossings&.positive?
-
-            income = 20 * crossings
-            @game.bank.spend(income, @game.consortiu.owner)
-
-            @log << "#{@game.consortiu.owner.name} receives #{@game.format_currency(income)} for province crossing"
-          end
-
           def potential_tiles(entity_or_entities, hex)
             tiles = super
 

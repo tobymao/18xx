@@ -11,7 +11,6 @@ module Engine
         def remove_border_calculate_cost!(tile, entity_or_entities, spender)
           total_cost, border_types = super
 
-          @game.province_crossings[tile.hex] = border_types.count { |t| %i[province impassable].include?(t) }
           @game.remove_crossed_impassable_borders!(tile)
 
           [total_cost, border_types]
