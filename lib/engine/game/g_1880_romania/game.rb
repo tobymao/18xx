@@ -8,6 +8,8 @@ require_relative 'corporation'
 require_relative 'minor'
 require_relative 'step/route'
 require_relative 'step/special_choose'
+require_relative 'step/buy_sell_par_shares'
+require_relative 'step/company_pending_par'
 
 module Engine
   module Game
@@ -173,11 +175,18 @@ module Engine
           Engine::Round::Draft.new(self, [G1880Romania::Step::SimpleDraft], reverse_order: false)
         end
 
+        def new_auction_round
+          Engine::Round::Auction.new(self, [
+            G1880Romania::Step::CompanyPendingPar,
+            G1880::Step::SelectionAuction,
+          ])
+        end
+
         def stock_round
           G1880Romania::Round::Stock.new(self, [
             Engine::Step::Exchange,
             G1880Romania::Step::SpecialChoose,
-            G1880::Step::BuySellParShares,
+            G1880Romania::Step::BuySellParShares,
           ])
         end
 
@@ -274,8 +283,8 @@ module Engine
         end
 
         # hijacks most code from 1880 China referring to BCR to instead refer to the TR
-        def bcr
-          @bcr ||= corporation_by_id('TR')
+        def tr
+          @tr ||= corporation_by_id('TR')
         end
 
         def banater
