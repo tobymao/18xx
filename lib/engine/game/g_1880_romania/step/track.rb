@@ -20,7 +20,7 @@ module Engine
           def pay_tile_cost!(entity_or_entities, tile, rotation, hex, spender, cost, extra_cost)
             super
 
-            crossings = @game.instance_variable_get(:@province_crossings)&.delete(hex)
+            crossings = @game.province_crossings.delete(hex)
             return unless crossings&.positive?
 
             income = 20 * crossings

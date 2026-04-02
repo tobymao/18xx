@@ -253,13 +253,36 @@ module Engine
           tile_lays
         end
 
-        def remove_border_calculate_cost!(tile, entity_or_entities, spender)
-          total_cost, border_types = super
-
+        def province_crossings
           @province_crossings ||= {}
-          @province_crossings[tile.hex] = border_types.count { |t| %i[province impassable].include?(t) }
+        end
 
-          [total_cost, border_types]
+        def remove_crossed_impassable_borders!(tile)
+          hex = tile.hex
+          removed = false
+
+          tile.exits.each do |edge|
+            border = tile.borders.find { |b| b.edge == edge && b.type == :impassable }
+            next unless border
+
+            neighbor_hex = hex.all_neighbors[edge]
+            next unless neighbor_hex
+
+            # Only remove once both sides have track connecting across the border
+            inv_edge = Hex.invert(edge)
+            next unless neighbor_hex.tile.exits.include?(inv_edge)
+
+            tile.borders.delete(border)
+            hex.neighbors[edge] = neighbor_hex
+
+            inv_edge = Hex.invert(edge)
+            neighbor_hex.tile.borders.map! { |nb| nb.edge == inv_edge && nb.type == :impassable ? nil : nb }.compact!
+            neighbor_hex.neighbors[inv_edge] = hex
+
+            removed = true
+          end
+
+          clear_graph if removed
         end
 
         def routes_revenue(routes)
