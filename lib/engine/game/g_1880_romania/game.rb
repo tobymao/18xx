@@ -157,7 +157,7 @@ module Engine
                   { name: '2P', distance: 2, price: 250, num: 10, available_on: 'C2' }].freeze
 
         EVENTS_TEXT = G1880::Game::EVENTS_TEXT.merge(
-          'signal_end_game' => ['Signal End Game', 'Game ends 3 ORs after purchase of last 6E train']
+          'signal_end_game' => ['Signal End Game', 'Game ends 3 ORs after purchase or export of last 6E train']
         ).freeze
 
         def init_minors
@@ -351,6 +351,13 @@ module Engine
 
         def rocket
           @rocket ||= company_by_id('P7')
+        end
+
+        def event_signal_end_game!
+          @log << "-- Event: #{self.class::EVENTS_TEXT['signal_end_game'][1]} --"
+          @end_game_triggered = true
+          @final_operating_rounds = @round.round_num + 3
+          game_end_check
         end
 
         def event_communist_takeover!
