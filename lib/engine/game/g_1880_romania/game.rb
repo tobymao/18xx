@@ -6,10 +6,6 @@ require_relative 'map'
 require_relative 'entities'
 require_relative 'corporation'
 require_relative 'minor'
-require_relative 'step/route'
-require_relative 'step/special_choose'
-require_relative 'step/buy_sell_par_shares'
-require_relative 'step/company_pending_par'
 
 module Engine
   module Game
@@ -164,7 +160,7 @@ module Engine
                   { name: '2P', distance: 2, price: 250, num: 10, available_on: 'C2' }].freeze
 
         EVENTS_TEXT = G1880::Game::EVENTS_TEXT.merge(
-          'signal_end_game' => ['Signal End Game', 'Game ends 3 ORs after purchase or export of last 6E train']
+          'signal_end_game' => ['Signal End Game', 'Game ends 3 ORs after purchase/export of last 6E train']
         ).freeze
 
         def init_minors
@@ -172,7 +168,7 @@ module Engine
         end
 
         def upgrades_to_correct_label?(from, to)
-          # B-labeled tiles are only for Bucuresti (I17), which starts with label=B
+          # B-labeled tiles are only for Bucuresti (I17)
           return false if to.label.to_s == 'B' && from.label.to_s != 'B'
 
           super
@@ -326,11 +322,6 @@ module Engine
           super
         end
 
-        def trains_not_triggering_sr?(train_name)
-          self.class::TRAINS_NOT_TRIGGERING_SR.include?(train_name)
-        end
-
-        # hijacks most code from 1880 China referring to BCR to instead refer to the TR
         def tr
           @tr ||= corporation_by_id('TR')
         end
@@ -357,13 +348,6 @@ module Engine
 
         def rocket
           @rocket ||= company_by_id('P7')
-        end
-
-        def event_signal_end_game!
-          @log << "-- Event: #{self.class::EVENTS_TEXT['signal_end_game'][1]} --"
-          @end_game_triggered = true
-          @final_operating_rounds = @round.round_num + 3
-          game_end_check
         end
 
         def event_communist_takeover!
