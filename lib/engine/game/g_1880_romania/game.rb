@@ -33,6 +33,7 @@ module Engine
           'P4' => '/icons/1880_romania/danube_bonus.svg'
         ).freeze
 
+
         PHASES = [{ name: 'A1', train_limit: 4, tiles: [:yellow] },
                   {
                     name: 'A2',
@@ -323,6 +324,10 @@ module Engine
           return %w[ABC] if corporation == tr
 
           super
+        end
+
+        def trains_not_triggering_sr?(train_name)
+          self.class::TRAINS_NOT_TRIGGERING_SR.include?(train_name)
         end
 
         # hijacks most code from 1880 China referring to BCR to instead refer to the TR
