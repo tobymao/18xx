@@ -10,8 +10,8 @@ module Engine
             sym: 'P1',
             value: 20,
             revenue: 5,
-            desc: "May be closed any time during the game to give L20 to the owning player or L40 to one of that players' "\
-                  'coporations, paid from the bank.',
+            desc: 'May be closed any time during the game to give L20 to the owning player or L40 to one of that players’ '\
+                  'corporations, paid from the bank.',
             abilities: [{
               type: 'choose_ability',
               when: %w[owning_player_sr_turn owning_player_or_turn],
@@ -25,15 +25,15 @@ module Engine
             value: 30,
             revenue: 10,
             desc: 'During yellow phase all companies of the owner of this private may build track towards and across the '\
-                  'yellow doted border. Each time (until the communist phase) a connection is built across the yellow doted '\
-                  'border, the owner receives 20.',
+                  'yellow border. Each time (until the communist phase) a connection is built across the yellow '\
+                  'border, the owning player receives L20.',
           },
           {
             name: 'P3. Valea Jiului',
             sym: 'P3',
             value: 40,
             revenue: 10,
-            desc: 'Gives a discount of two mountain symbols for each hex with mountain terrain costs.',
+            desc: 'Gives a discount of L20 for each hex with mountain terrain costs.',
             abilities: [{
               type: 'tile_discount',
               discount: 20,
@@ -41,7 +41,7 @@ module Engine
               exact_match: false,
               owner_type: 'player',
               when: 'owning_player_track',
-              description: 'Discount of two mountain symbols for each hex with mountain terrain costs',
+              description: 'Discount of L20 for each hex with mountain terrain costs',
             }],
           },
           {
@@ -51,7 +51,7 @@ module Engine
             revenue: 20,
             desc: 'Comes with a +10 token. This token may be laid any time to any Danube harbor (blue anchor symbol). It '\
                   'remains there until the end of the game. This doesn’t close the private company. The token increases the '\
-                  'value of the relevant city by 10 for all companies of the owning player.',
+                  'value of the relevant city by L10 for all corporations of the owning player.',
             abilities: [
               {
                 type: 'assign_hexes',
@@ -71,7 +71,7 @@ module Engine
             desc: 'Comes with a +1 tender. This tender must be assigned to a corporation (not a foreign investor) and remain '\
                   'in this corporation until the end of the game (it never rusts). The tender may be assigned each round to a '\
                   'train. This can be the same or a different train. It may be assigned to a restored 2-train. '\
-                  'Company closes with 3+3.',
+                  'Company closes with the sale/export of the first 3+3.',
             abilities: [{
               type: 'assign_corporation',
               when: 'owning_player_or_turn',
@@ -86,7 +86,7 @@ module Engine
             sym: 'P6',
             value: 70,
             revenue: 10,
-            desc: 'May be exchanged any time into a building permit of two consecutive phases which must be assigned '\
+            desc: 'May be exchanged at any time for a building permit of two consecutive phases, which must be assigned '\
                   'immediately to a corporation. This private company is then discarded.',
             abilities: [{
               type: 'choose_ability',
