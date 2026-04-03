@@ -16,19 +16,12 @@ class Api
 
         # POST '/api/user/'
         r.is do
-          params = {
-            name: r.params['name']&.strip,
-            email: r.params['email'],
-            password: r.params['password'],
-            settings: {
-              notifications: r.params['notifications'],
-              webhook: r.params['webhook'],
-              webhook_url: r.params['webhook_url'],
-              webhook_user_id: r.params['webhook_user_id'],
-            },
-          }.reject { |_, v| v.empty? }
+          user = User.new
+          user.password = r.params['password'] if r.params['password'].present?
+          user.update_settings(r.params)
+          user.save
 
-          login_user(User.create(params))
+          login_user(user)
         end
 
         # POST '/api/user/forgot'

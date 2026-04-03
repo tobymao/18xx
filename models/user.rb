@@ -24,11 +24,14 @@ class User < Base
   ]).freeze
 
   def update_settings(params)
+    self.settings ||= {}
     self.name = params['name'] if params['name']
     self.email = params['email'] if params['email']
+
     params.each do |key, value|
       settings[key] = value if SETTINGS.include?(key)
     end
+
     settings['is_async'] =
       if params['live'] == true
         false
@@ -85,11 +88,15 @@ class User < Base
     validates_format(/^[^\s].*$/, :name, message: 'may not start with a whitespace')
     validates_format(/^[^@\s]+@[^@\s]+\.[^@\s]+$/, :email)
 
-    if settings['webhook'] && (
-        (settings['webhook_user_id']&.strip || '') == '' ||
-        settings['webhook_user_id']&.include?(' ')
-      )
-      errors.add(:webhook_user_id, 'spaces are not allowed in the user id. look at the wiki for more info')
-    end
+    validate_webhook_user_id
+  end
+
+  def validate_webhook_user_id
+    return if settings.to_h['webhook'].to_s.strip == ''
+
+    user_id = settings.to_h['webhook_user_id'].to_s
+
+    errors.add(:webhook_user_id, 'Webhook ID may not be empty') if user_id.strip.empty?
+    errors.add(:webhook_user_id, 'Webhook ID may not contain spaces') if user_id.include?(' ')
   end
 end
