@@ -605,9 +605,13 @@ module Engine
 
           same_spot.each do |sp, corps|
             current_order = corps.sort
-            moved, unmoved = current_order.partition { |c| just_moved.include?(c) }
+
+            newly_floated, others = current_order.partition { |c| !c.operated? }
+            moved, unmoved = others.partition { |c| just_moved.include?(c) }
+
             moved_ordered = moved.sort_by { |c| old_operating_order.index(c) }
-            new_order = unmoved + moved_ordered
+
+            new_order = unmoved + moved_ordered + newly_floated
             next if current_order == new_order
 
             @log << 'Updating operating order for sold (and moved) corporations now
