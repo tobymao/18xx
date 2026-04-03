@@ -4,6 +4,7 @@ require_relative '../g_1817/game'
 require_relative 'meta'
 require_relative 'map'
 require_relative 'entities'
+require_relative '../stubs_are_restricted'
 
 module Engine
   module Game
@@ -12,6 +13,7 @@ module Engine
         include_meta(G18USA::Meta)
         include G18USA::Entities
         include G18USA::Map
+        include StubsAreRestricted
 
         attr_accessor :pending_rusting_event, :p8_hexes
         attr_reader :jump_graph, :subsidies_by_hex, :recently_floated, :plain_yellow_city_tiles, :plain_green_city_tiles,
