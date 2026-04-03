@@ -49,9 +49,9 @@ module Engine
             sym: 'P4',
             value: 60,
             revenue: 20,
-            desc: 'Comes with a +10 token. This token may be laid any time to any Danube harbor (blue anchor symbol). It '\
+            desc: 'Comes with a +10 token. This token may be laid any time to any Danube harbor hex (blue anchor symbol). It '\
                   'remains there until the end of the game. This doesn’t close the private company. The token increases the '\
-                  'value of the relevant city by L10 for all corporations of the owning player.',
+                  'value of the assigned hex by L10 for all corporations and the Foreign Investor of the owning player.',
             abilities: [
               {
                 type: 'assign_hexes',
