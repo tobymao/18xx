@@ -92,7 +92,9 @@ module Engine
           end
 
           def elegible_receiver_and_company
-            @game.operating_order.select(&:receivership?).each do |candidate|
+            receivers = @game.operating_order.select(&:receivership?)
+            oversea_corp, others = receivers.partition { |corp| @game.abilities(corp, :overseas) }
+            (oversea_corp + others).each do |candidate|
               @game.foreign_investor.companies.sort_by(&:value).reverse_each do |company|
                 return [candidate, company] if candidate.cash >= foreign_price(candidate, company)
               end
