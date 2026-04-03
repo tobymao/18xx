@@ -40,6 +40,20 @@ module Engine
             desc: 'Based on construction of Angertalbahn (Anger valley railway)',
           },
         ].freeze
+        GAME_VARIANTS = [
+          {
+            sym: :rhineland,
+            name: 'Rhineland 2024',
+            title: '18Rhineland',
+            desc: '2024 version of 18 Rhl',
+          },
+          {
+            sym: :lra,
+            name: 'Lower Rhineland Area',
+            title: '18Lra',
+            desc: '2-4 player variant of 18 Rhineland (2024)',
+          },
+        ].freeze
       end
     end
   end
