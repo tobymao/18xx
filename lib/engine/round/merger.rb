@@ -20,7 +20,7 @@ module Engine
       def use_operating_round_view?(current_entity_actions)
         return false unless @game.train_actions_always_use_operating_round_view?
 
-        (%w[buy_train scrap_train reassign_trains] & current_entity_actions).any?
+        current_entity_actions.intersect?(%w[buy_train scrap_train reassign_trains])
       end
     end
   end
