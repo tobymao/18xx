@@ -259,16 +259,6 @@ module Engine
           WEST_RIVER_HEXES.include?(hex.id)
         end
 
-        # this allows the Western Land Grant company to use one of its 3 tiles lays anywhere on the map
-        def wlg_anywhere_available?
-          return false if !(wlg = wlg_company) || wlg.closed?
-
-          ability = wlg.all_abilities.find { |a| a.type == :tile_lay }
-          return false unless ability
-
-          ability.laid_hexes.none? { |hex_id| !WEST_RIVER_HEXES.include?(hex_id) }
-        end
-
         def event_close_companies!
           @log << '-- Event: Private companies close --'
           @companies.each do |company|
