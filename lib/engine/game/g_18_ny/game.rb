@@ -1134,7 +1134,7 @@ module Engine
           @log << '-- Event: NYC forms --'
           nyc_corporation.floatable = true
           nyc_corporation.float_percent = 10
-          @stock_market.set_par(nyc_corporation, nyc_formation_share_price)
+          par_corporation(nyc_corporation, nyc_formation_share_price)
           nyc_corporation.ipoed = true
           @nyc_formed = true
         end
