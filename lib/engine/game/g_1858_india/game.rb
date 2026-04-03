@@ -72,7 +72,7 @@ module Engine
         def game_trains
           unless @game_trains
             # Need to make a deep(ish) copy of the train definitions, to avoid
-            # and changes here leaking back into the base 1858 game.
+            # any changes here leaking back into the base 1858 game.
             @game_trains = super.map do |traindef|
               train = traindef.dup
               train[:events] = traindef[:events].map(&:dup) if traindef[:events]
