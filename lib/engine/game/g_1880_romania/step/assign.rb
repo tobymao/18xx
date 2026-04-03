@@ -7,6 +7,14 @@ module Engine
     module G1880Romania
       module Step
         class Assign < G1880::Step::Assign
+          def actions(entity)
+            return super unless entity == @game.danube_port
+            return [] if current_entity.minor?
+            return [] unless @game.abilities(entity, :assign_hexes)
+
+            ACTIONS
+          end
+
           def p5_block?
             false
           end
