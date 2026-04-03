@@ -377,7 +377,7 @@ module Engine
               hex = hex_by_id(coordinate)
               tile = hex&.tile
               if tile.color != :brown
-                # Don't take the token that's alerady pending
+                # Don't take the token that's already pending
                 token = corporation.tokens.find { |t| !t.used && !@round.pending_tokens.find { |p_t| p_t[:token] == t } }
                 tile.cities.first.place_token(corporation, token, free: true)
               else
@@ -411,6 +411,11 @@ module Engine
               hexes: [hex],
               token: corporation.next_token,
             }
+            # The pending token is appended after the first call to
+            # Round::Operating::active_step so the home token step was not
+            # active and Step::Track is set as the active step. Clear this
+            # step so that the home token can be placed.
+            @round.clear_cache!
           end
         end
 
