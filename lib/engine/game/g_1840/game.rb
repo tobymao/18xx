@@ -905,12 +905,12 @@ module Engine
                        'Purple → Yellow: -400 | Orange: -300 | Red: -100 | Purple +200  '].freeze
         end
 
-        def train_actions_always_use_operating_round_view?
-          true
-        end
-
         def sorted_corporations
           @sorted_corporations_for_company_round || operating_order
+        end
+
+        def train_actions_always_use_operating_round_view?
+          false
         end
       end
     end
