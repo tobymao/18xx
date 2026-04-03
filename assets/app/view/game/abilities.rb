@@ -87,6 +87,8 @@ module View
         views << render_sell_company_button if actions.include?('sell_company')
         views << render_close_company_button if actions.include?('manual_close_company')
         views << render_ability_choice_buttons if actions.include?('choose_ability')
+        views << render_assign_corporation_buttons if actions.include?('assign') &&
+          @game.abilities(@selected_company, :assign_corporation)
         views << render_ability_combos(@selected_company) if actions.include?('lay_tile')
         views << h(Exchange) if actions.include?('buy_shares')
         views << h(Map, game: @game) if !@game.round.is_a?(Engine::Round::Operating) &&
@@ -96,6 +98,20 @@ module View
         end
 
         views
+      end
+
+      def render_assign_corporation_buttons
+        step = @game.round.step_for(@selected_company, 'assign')
+        corporations = step.assignable_corporations(@selected_company)
+        return h(:div) if corporations.empty?
+
+        buttons = corporations.map do |corp|
+          click = lambda do
+            process_action(Engine::Action::Assign.new(@selected_company, target: corp))
+          end
+          h(:button, { on: { click: click } }, "Assign to #{corp.name}")
+        end
+        h(:div, buttons)
       end
 
       private
