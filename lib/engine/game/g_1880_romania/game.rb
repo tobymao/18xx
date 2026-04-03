@@ -25,6 +25,10 @@ module Engine
 
         TRAINS_NOT_TRIGGERING_SR = %w[2P 8 8E].freeze
 
+        ASSIGNMENT_TOKENS = G1880::Game::ASSIGNMENT_TOKENS.merge(
+          'P4' => '/icons/1880_romania/danube_bonus.svg'
+        ).freeze
+
         PHASES = [{ name: 'A1', train_limit: 4, tiles: [:yellow] },
                   {
                     name: 'A2',
