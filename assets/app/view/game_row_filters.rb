@@ -24,7 +24,7 @@ module View
 
     def render_title(url_search_params)
       raw = url_search_params['title'] || ''
-      selected_titles = raw.split('.').map(&:strip).reject(&:empty?)
+      selected_titles = raw.split('.').map { |t| t.strip.gsub('~', '.') }.reject(&:empty?)
 
       # Build lookup for display names
       title_display = {}
@@ -46,7 +46,7 @@ module View
         return if title.empty?
 
         new_titles = (selected_titles + [title]).uniq
-        url_search_params['title'] = new_titles.join('.')
+        url_search_params['title'] = new_titles.map { |t| t.gsub('.', '~') }.join('.')
         update_filters(url_search_params.to_query_string)
         target.JS['value'] = ''
       end
@@ -59,7 +59,7 @@ module View
           display = title_display[t] || t
           on_remove = lambda do
             new_titles = selected_titles.reject { |x| x == t }
-            url_search_params['title'] = new_titles.empty? ? '' : new_titles.join('.')
+            url_search_params['title'] = new_titles.empty? ? '' : new_titles.map { |t| t.gsub('.', '~') }.join('.')
             update_filters(url_search_params.to_query_string)
           end
 
