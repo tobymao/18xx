@@ -20,7 +20,6 @@ module Engine
 
         GAME_END_CHECK = {
           bankrupt: :immediate,
-          stock_market: :current_round,
           bank: :full_or,
           final_phase: :one_more_full_or_set,
         }.freeze
