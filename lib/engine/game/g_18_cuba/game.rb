@@ -148,8 +148,16 @@ module Engine
         end
 
         def clear_graph
-          @minor_graph = nil
+          @minor_graph.clear
           super
+        end
+
+        def clear_graph_for_entity(entity)
+          if entity&.type == :minor
+            @minor_graph.clear
+          else
+            super
+          end
         end
 
         def init_tile_groups
