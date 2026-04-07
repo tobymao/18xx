@@ -20,10 +20,10 @@ module Engine
           end
 
           def get_tile_lay(entity)
-            # 3 for minors and regionals, 6 for majors, 9 for nationals
+            # 3 for minors/regionals, 6 for majors, 9 for nationals
             return 3 if entity.total_shares == 2 || entity.total_shares == 4
+            return 9 if entity.type == :national
             return 6 if entity.total_shares == 10
-            # return 9 if national
           end
 
           def description
@@ -34,8 +34,9 @@ module Engine
           def lay_tile_action(action)
             tile = action.tile
             old_tile = action.hex.tile
+            entity = action.entity
             metropolis = @game.metropolis_tile?(tile)
-            points_available = get_tile_lay(action.entity) - @points_used
+            points_available = get_tile_lay(entity) - @points_used
             points_cost = if tile.color != :yellow && metropolis
                             4
                           elsif (tile.color == :yellow && metropolis) || tile.color != :yellow
@@ -46,7 +47,8 @@ module Engine
             raise GameError, 'Cannot lay an upgrade now' if tile.color != :yellow && points_cost > points_available
             raise GameError, 'Cannot lay a yellow now' if tile.color == :yellow && points_cost > points_available
 
-            lay_tile(action)
+            # Nationals pay no terrain costs — pass extra_cost: 0 override via lay_tile
+            lay_tile(action, entity: entity)
             @game.log << "Used #{points_cost} tile point(s) to lay tile"
             @game.log << "#{points_available - points_cost} point(s) remaining"
             if track_upgrade?(old_tile, tile, action.hex)

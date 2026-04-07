@@ -20,18 +20,24 @@ module Engine
             (revenue / 2 / entity.total_shares) * entity.total_shares
           end
 
+          def dividend_types(entity)
+            # Nationals must pay all revenue as dividends — no hold or split
+            return %i[payout] if entity.type == :national
+
+            DIVIDEND_TYPES
+          end
+
           def share_price_change(entity, revenue = 0)
+            # Minors and regionals have no stock market movement
             return {} if @game.minor_regional_order.include?(entity)
 
-            price = entity.share_price.price
             return { share_direction: :left, share_times: 1 } if revenue < 1
 
-            times = 0
-            times = 1 if revenue >= price
-            if times.positive?
-              { share_direction: :right, share_times: times }
+            price = entity.share_price.price
+            if revenue >= price
+              { share_direction: :right, share_times: 1 }
             else
-              {}
+              {} # dividend > 0 but < share price: no movement
             end
           end
         end

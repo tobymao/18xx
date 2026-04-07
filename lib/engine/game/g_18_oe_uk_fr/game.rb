@@ -53,6 +53,7 @@ module Engine
               price: 350,
             }],
             num: 3,
+            events: [{ 'type' => 'nationals_can_form' }],
           },
           {
             name: '5',
@@ -79,6 +80,7 @@ module Engine
               price: 600,
             }],
             num: 2,
+            events: [{ 'type' => 'nationals_can_form' }],
           },
           {
             name: '7+7',
@@ -93,6 +95,7 @@ module Engine
                        { 'nodes' => %w[city offboard town], 'pay' => 8, 'visit' => 8 }],
             price: 900,
             num: 6,
+            events: [{ 'type' => 'nationals_can_form' }],
           },
         ].freeze
 

@@ -7,6 +7,13 @@ module Engine
     module G18OE
       module Step
         class Token < Engine::Step::Token
+          def actions(entity)
+            # Nationals cannot place tokens on the map
+            return [] if entity.type == :national
+
+            super
+          end
+
           def available_hex(entity, hex)
             return nil unless @game.hex_within_national_region?(entity, hex)
 

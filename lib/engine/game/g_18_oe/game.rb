@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'meta'
+require_relative 'step/convert_to_national'
 require_relative '../base'
 
 module Engine
@@ -8,7 +9,8 @@ module Engine
     module G18OE
       class Game < Game::Base
         include_meta(G18OE::Meta)
-        attr_accessor :minor_regional_order, :minor_available_regions, :minor_floated_regions, :regional_corps_floated
+        attr_accessor :minor_regional_order, :minor_available_regions, :minor_floated_regions, :regional_corps_floated,
+                      :nationals_can_form, :nationals_formation_queue
 
         MARKET = [
           ['', '110', '120C', '135', '150', '165', '180', '200', '225', '250', '280', '310', '350', '390', '440', '490', '550'],
@@ -421,6 +423,9 @@ module Engine
           @minor_available_regions = %w[UK UK FR FR] # this should be set per variant, big game will need extra logic
           @minor_floated_regions = {}
           @regional_corps_floated = 0
+          @nationals_can_form = false
+          @nationals_formation_queue = []
+          @national_graph = Graph.new(self, home_as_token: true, no_blocking: true)
         end
 
         def ipo_name(_entity = nil)
@@ -428,7 +433,155 @@ module Engine
         end
 
         def operating_order
-          @minor_regional_order + (@corporations.select(&:floated?) - @minor_regional_order).sort
+          majors_and_nationals = @corporations.select { |c| c.floated? && %i[major national].include?(c.type) }
+          @minor_regional_order + (majors_and_nationals - @minor_regional_order).sort
+        end
+
+        def graph_for_entity(entity)
+          return @national_graph if entity.type == :national
+
+          @graph
+        end
+
+        def token_graph_for_entity(entity)
+          return @national_graph if entity.type == :national
+
+          @graph
+        end
+
+        def nationals_forming?
+          @nationals_can_form && @nationals_formation_queue.any?
+        end
+
+        def event_nationals_can_form!
+          @log << '-- Event: Nationals may now form --'
+          @nationals_can_form = true
+          purchaser_index = @players.index(@round.current_entity&.owner) || 0
+          @nationals_formation_queue = @players.rotate(purchaser_index).dup
+        end
+
+        def convert_to_national(corporation)
+          @log << "#{corporation.name} converts to a national"
+
+          # Treasury cash → bank
+          corporation.spend(corporation.cash, @bank) if corporation.cash.positive?
+
+          # Treasury shares → Open Market (may temporarily exceed 50% limit)
+          corporation.shares_of(corporation).dup.each { |s| transfer_share(s, @share_pool) }
+
+          # Remove all placed tokens from the map
+          corporation.placed_tokens.dup.each(&:remove!)
+
+          # Abandon merged minors (stub — full minor abandonment deferred)
+          # Remove track rights, OE markers etc. (stub — not yet tracked in code)
+
+          # Change company type to national
+          corporation.type = :national
+
+          # Set coordinates to all hexes in home zone for national graph virtual tokens
+          zone = CORPORATIONS_TRACK_RIGHTS[corporation.id]
+          corporation.coordinates = NATIONAL_REGION_HEXES[zone].dup
+
+          # Retain all trains including rusted; discard excess vs phase limit (rusted first)
+          enforce_national_train_limit(corporation)
+
+          @graph.clear
+          @national_graph.clear
+        end
+
+        def enforce_national_train_limit(corporation)
+          limit = @phase.train_limit(corporation)
+          return unless limit&.positive?
+
+          trains = corporation.trains.sort_by { |t| t.rusted? ? 0 : 1 }
+          while trains.size > limit
+            train = trains.shift
+            @depot.reclaim_train(train)
+            @log << "#{corporation.name} discards a #{train.name} train"
+          end
+        end
+
+        def national_revenue(entity)
+          zone = CORPORATIONS_TRACK_RIGHTS[entity.id]
+          zone_hexes = NATIONAL_REGION_HEXES[zone] || []
+
+          all_cities = []
+          all_towns = []
+          zone_hexes.each do |hex_id|
+            hex = hex_by_id(hex_id)
+            next unless hex
+
+            all_cities.concat(hex.tile.cities)
+            all_towns.concat(hex.tile.towns)
+          end
+
+          connected = @national_graph.connected_nodes(entity) || {}
+          linked_cities   = all_cities.select { |c| connected[c] }
+          linked_towns    = all_towns.select  { |t| connected[t] }
+          unlinked_cities = all_cities - linked_cities
+          unlinked_towns  = all_towns  - linked_towns
+
+          city_cap, town_cap = national_capacity(entity)
+          revenue = 0
+
+          # Linked cities at face value (best revenue first)
+          linked_cities.sort_by { |c| -(c.revenue[@phase.name] || 0) }.first(city_cap).each do |c|
+            revenue += c.revenue[@phase.name] || 0
+          end
+          city_cap -= [linked_cities.size, city_cap].min
+          city_cap -= [unlinked_cities.size, city_cap].min # unlinked consume capacity at £0
+          revenue += city_cap * 60                         # remaining capacity at £60/city
+
+          # Same logic for towns
+          linked_towns.sort_by { |t| -(t.revenue || 0) }.first(town_cap).each do |t|
+            revenue += t.revenue || 0
+          end
+          town_cap -= [linked_towns.size, town_cap].min
+          town_cap -= [unlinked_towns.size, town_cap].min
+          revenue += town_cap * 10 # remaining capacity at £10/town
+
+          # Inherent Pullman: +£10 × level of highest non-rusted train
+          best = entity.trains.reject(&:rusted?).max_by { |t| t.name.match(/\d+/).to_s.to_i }
+          revenue += best.name.match(/\d+/).to_s.to_i * 10 if best
+
+          revenue
+        end
+
+        def national_capacity(entity)
+          city_cap = 0
+          town_cap = 0
+          entity.trains.reject(&:rusted?).each do |t|
+            t.distance.each do |d|
+              nodes = d['nodes'] || []
+              if nodes.include?('city') || nodes.include?('offboard')
+                city_cap += d['pay'].to_i
+              elsif nodes == ['town']
+                town_cap += d['pay'].to_i
+              end
+            end
+          end
+          [city_cap, town_cap]
+        end
+
+        def routes_revenue(routes)
+          entity = routes.first&.train&.owner
+          return national_revenue(entity) if entity&.type == :national
+
+          super
+        end
+
+        def tile_cost(tile, entity, hex)
+          # Nationals are exempt from all terrain tile placement costs
+          return 0 if entity&.type == :national
+
+          super
+        end
+
+        def rust?(train, purchased_train)
+          # Nationals retain all trains — never rust trains owned by a national
+          return false if train.owner&.type == :national
+
+          super
         end
 
         def hex_within_national_region?(entity, hex)
@@ -539,7 +692,7 @@ module Engine
             Engine::Step::Route,
             G18OE::Step::Dividend,
             G18OE::Step::BuyTrain,
-            # Convert step to do national conversions at 4/6/8?
+            G18OE::Step::ConvertToNational,
             Engine::Step::IssueShares,
           ], round_num: round_num)
         end
