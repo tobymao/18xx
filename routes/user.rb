@@ -17,7 +17,7 @@ class Api
         # POST '/api/user/'
         r.is do
           user = User.new
-          user.password = r.params['password'] if r.params['password'].present?
+          user.password = r.params['password'] unless r.params['password']&.strip&.empty?
           user.update_settings(r.params)
           user.save
 
