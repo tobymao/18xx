@@ -26,7 +26,7 @@ module Engine
           end
 
           def use_operating_round_view?(actions)
-            !(%w[buy_train scrap_train reassign_trains] & actions).empty?
+            actions.intersect?(%w[buy_train scrap_train reassign_trains])
           end
         end
       end
