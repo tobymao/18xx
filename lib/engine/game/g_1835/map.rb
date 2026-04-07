@@ -4,6 +4,9 @@ module Engine
   module Game
     module G1835
       module Map
+        # Green single-town tiles that yellow double-town tiles may upgrade to
+        YELLOW_DOUBLE_TOWN_UPGRADES = %w[87 88 203 204].freeze
+
         TILES = {
           '1' => 1,
           '2' => 1,
@@ -67,7 +70,15 @@ module Engine
           '218' => 2,
           '219' => 2,
           '220' => 1,
-          '221' => 1,
+          # Custom definition: ferry path uses track:narrow so it renders dashed.
+          '221' => {
+            'count' => 1,
+            'color' => 'brown',
+            'code' => 'city=revenue:60,slots:2,loc:3;city=revenue:60,loc:0;' \
+                      'path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;' \
+                      'path=a:1,b:_1;path=a:0,b:_1;path=a:5,b:_1;' \
+                      'path=a:_0,b:_1,track:narrow;label=H',
+          },
         }.freeze
 
         LOCATION_NAMES = {
@@ -93,8 +104,8 @@ module Engine
           'O5' => 'Freiburg',
           'O15' => 'München',
           'I3' => 'Köln',
-          'M13' => 'Ostbayern',
           'M15' => 'Ostbayern',
+          'M17' => 'Ostbayern',
         }.freeze
 
         HEXES = {
@@ -150,7 +161,7 @@ module Engine
             ['G5'] => 'city=revenue:0,loc:0',
             ['H2'] => 'city=revenue:0,loc:3.5;label=Y',
             ['H16'] => 'city=revenue:0,loc:2.5',
-            ['H20'] => 'city=revenue:0,loc:0.5;upgrade=cost:50;label=Y',
+            ['H20'] => 'city=revenue:0,loc:0.5;label=Y',
             ['I3'] => 'city=revenue:0;label=Y;upgrade=cost:50',
             ['M9'] => 'city=revenue:0,loc:0.5',
             ['N12'] => 'city=revenue:0,loc:5',
@@ -194,7 +205,7 @@ module Engine
           },
           yellow: {
             ['E19'] =>
-                     'city=revenue:30,loc:1;city=revenue:30,loc:3;path=a:1,b:_0;path=a:2,b:_1',
+                     'city=revenue:30,loc:1;city=revenue:30,loc:3;path=a:1,b:_0;path=a:2,b:_1;label=B',
             ['G3'] =>
             'city=revenue:0,loc:0;city=revenue:0,loc:4.5;label=XX;upgrade=cost:50',
             ['J6'] => 'city=revenue:0;city=revenue:0;label=XX;upgrade=cost:50',
@@ -203,7 +214,7 @@ module Engine
           green: {
             ['C11'] =>
             'city=revenue:40;path=a:0,b:_0;city=revenue:40;path=a:2,b:_1;'\
-            'city=revenue=40;path=a:4,b:_2;path=a:3,b:_2;label=HH',
+            'city=revenue:40;path=a:4,b:_2;path=a:3,b:_2;label=HH',
             ['J8'] =>
             'city=revenue:40,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0;upgrade=cost:50;label=Y',
             ['L14'] =>
