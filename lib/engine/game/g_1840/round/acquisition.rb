@@ -24,6 +24,10 @@ module Engine
           def select_entities
             @game.sorted_corporations.select { |item| item.type == :major && @game.corporate_card_minors(item).size < 3 }
           end
+
+          def use_operating_round_view?(actions)
+            actions.intersect?(%w[buy_train scrap_train reassign_trains])
+          end
         end
       end
     end
