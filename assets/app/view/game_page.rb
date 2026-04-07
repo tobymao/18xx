@@ -289,9 +289,14 @@ module View
           end
         when '-', '0', '+' # + on qwertz
           button_click('zoom' + key)
-        when 'Home', 'End', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'
+        when 'Home', 'End', 'ArrowLeft', 'ArrowRight'
           button_click('hist_' + key)
           event.preventDefault
+        when 'ArrowUp', 'ArrowDown'
+          if Lib::Params['action']
+            button_click('hist_' + key)
+            event.preventDefault
+          end
         end
       end
     end

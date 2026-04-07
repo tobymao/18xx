@@ -86,7 +86,7 @@ module Engine
             Engine::Step::SpecialToken,
             Engine::Step::BuyCompany,
             Engine::Step::HomeToken,
-            Engine::Step::Track,
+            G18Cuba::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
             G18Cuba::Step::Dividend,
@@ -241,6 +241,51 @@ module Engine
 
           @sugar_cubes.clear
           @log << 'All remaining sugar cubes are removed at the end of the Operating Round.'
+        end
+
+        def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
+          corp = selected_company || @round&.current_entity&.corporation
+
+          super.reject do |t|
+            # Hex not available for selector, therefore passing nil and ignoring home hex check for minors
+            tile_blocked_for_corp?(t, corp, nil, for_selector: true)
+          end
+        end
+
+        def tile_blocked_for_corp?(tile, corp, hex, for_selector: false)
+          return false unless corp
+
+          if corp.type == :minor
+            minor_tile_blocked?(tile, corp.tokens.first.hex, hex, for_selector: for_selector)
+          else
+            major_tile_blocked?(tile)
+          end
+        end
+
+        private
+
+        def tile_has_only_track_type?(tile, track_type)
+          # Returns true if all paths on the tile are of the given track type
+          tile.paths.all? { |path| path.track == track_type }
+        end
+
+        def minor_tile_blocked?(tile, home_hex, current_hex, for_selector: false)
+          # Determines if a tile is illegal for a minor:
+          # - Tiles with only broad tracks are always illegal
+          # - City tiles are illegal except on the minor's home hex
+          # - When `for_selector` is true, the home/city rule is ignored because the hex is unknown
+          pure_broad = tile_has_only_track_type?(tile, :broad)
+
+          return pure_broad if for_selector
+
+          return pure_broad if current_hex == home_hex
+
+          !tile.cities.empty? || pure_broad
+        end
+
+        def major_tile_blocked?(tile)
+          # Returns true if a yellow tile is illegal for a major: only pure broad tracks allowed on yellow
+          tile.color == :yellow && !tile_has_only_track_type?(tile, :broad)
         end
       end
     end

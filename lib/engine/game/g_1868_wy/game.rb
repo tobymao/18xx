@@ -1522,8 +1522,9 @@ module Engine
           hex.tile.location_name = GHOST_TOWN_NAME
 
           if hex.tile.preprinted
-            hex.tile.cities.reject! { true }
-            hex.tile.towns.reject! { true }
+            hex.tile.cities.clear
+            hex.tile.towns.clear
+            hex.tile.city_towns.clear
             hex.remove_assignment!(pure_oil.id) if hex.assigned?(pure_oil.id)
             return
           end

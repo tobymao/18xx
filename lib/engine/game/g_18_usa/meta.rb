@@ -13,7 +13,7 @@ module Engine
 
         GAME_DESIGNER = 'Edward Reece, Mark Hendrickson, and Shawn Fox'
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18USA'
-        GAME_LOCATION = 'United States'
+        GAME_LOCATION = 'Continental USA'
         GAME_PUBLISHER = :all_aboard_games
         GAME_RULES_URL = {
           '18USA Rules' => 'https://boardgamegeek.com/filepage/238949/18usa-rules-all-aboard-games-2022',
