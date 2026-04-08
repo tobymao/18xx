@@ -280,6 +280,10 @@ module Engine
           @difficulty_value ||= DIFFICULTY_VALUES[difficulty_level]
         end
 
+        def map_gotland_player_value(player)
+          player.value * difficulty_level_value
+        end
+
         def map_hexes
           {
             white: {
