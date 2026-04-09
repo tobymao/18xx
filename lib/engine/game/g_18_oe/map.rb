@@ -34,7 +34,7 @@ module Engine
               S24 S26 S28 S30 S32 S36 S38 S40 S42 S44 S46 S48 S50 S52 S54 S56 S58 S62 S64 S66 S68 S70 S72 S74 S76 S78 S80 S82 S84 S86
               T23 T25 T29 T31 T33 T35 T39 T41 T43 T45 T47 T49 T51 T53 T55 T57 T59 T61 T63 T65 T67 T69 T71 T73 T75 T77 T79 T81
               U6 U8 U10 U12 U22 U26 U28 U30 U36 U38 U40 U42 U44 U46 U48 U50 U52 U54 U56 U58 U60 U62 U64 U66 U68 U70 U72 U74 U76 U78 U80
-              V5 V7 V9 V11 V13 V15 V17 V19 V23 V25 V29 V31 V33 V35 V37 V39 V43 V45 V47 V51 V53 V55 V57 V59 V61 V63 V65 V67 V69 V71 V73 V75 V77 V79
+              V5 V7 V9 V11 V13 V15 V17 V23 V25 V29 V31 V33 V35 V37 V39 V43 V45 V47 V51 V53 V55 V57 V59 V61 V63 V65 V67 V69 V71 V73 V75 V77 V79
               W6 W8 W10 W12 W14 W16 W18 W20 W22 W24 W26 W28 W30 W34 W36 W38 W40 W42 W44 W46 W48 W54 W56 W58 W60 W62 W64 W66 W68 W70 W72 W74 W76 W78
               X5 X7 X9 X11 X13 X15 X17 X19 X21 X23 X27 X29 X43 X45 X47 X49 X55 X57 X59 X61 X63 X65 X67 X69 X71 X73 X75 X77
               Y2 Y4 Y6 Y8 Y10 Y12 Y16 Y18 Y20 Y22 Y24 Y26 Y28 Y44 Y46 Y48 Y50 Y56 Y58 Y60 Y62 Y64 Y66 Y68 Y70 Y72 Y74 Y76 Y78
@@ -57,10 +57,11 @@ module Engine
             # England — coastal/estuary
             ['L31'] => 'border=edge:0,type:impassable',
             # Channel Islands
-            ['M30'] => 'border=edge:3,type:impassable;border=edge:5,type:impassable',
+            ['M30'] => 'border=edge:3,type:impassable;border=edge:5,type:impassable;upgrade=cost:45,terrain:water',
             # Franco-Belgian border
             ['N31'] => 'city=revenue:20;label=Y;path=a:1,b:_0;border=edge:2,type:impassable',
             # Pyrenees
+            ['V19'] => 'border=edge:4,type:impassable',
             ['V21'] => 'town=revenue:0;border=edge:1,type:impassable',
             # Kattegat / Danish straits
             ['K40'] => 'border=edge:4,type:impassable',
@@ -92,7 +93,7 @@ module Engine
             ['C72'] => 'border=edge:2,type:impassable;border=edge:3,type:impassable',
 
             # Towns — no terrain
-            %w[H17 H29 J17 L29 N33 O24 P19 P29 P33 P37 Q38 R29 S34 T27 X35 X37 Z41] => 'town=revenue:0',
+            %w[H17 H29 J17 L29 N33 O24 P19 P29 P33 P37 R29 S34 T27 X35 X37 Z41] => 'town=revenue:0',
             # Towns — mountain terrain
             %w[G24 I16 I26] => 'town=revenue:0;upgrade=cost:30,terrain:mountain',
             %w[E26 E28 J23] => 'town=revenue:0;upgrade=cost:45,terrain:mountain',
@@ -103,12 +104,13 @@ module Engine
             %w[J29 M26 W32] => 'town=revenue:0;town=revenue:0',
             ['T37'] => 'town=revenue:0;town=revenue:0;upgrade=cost:45,terrain:mountain',
             # Cities — no label, no terrain
-            %w[H21 J15 L25 Q26 R23 V27
+            %w[F25 H21 J15 L25 Q26 Q38 R23 V27
                C48 F49 K46 L53 N49 R47
                R55 S60 V41 Z47 J73 M62 O80
                Z27 DD17 M50 BB51 C74 AA82 Y14] => 'city=revenue:0',
             # Cities — label Y
-            %w[F25 N35 U34] => 'city=revenue:0;label=Y',
+            ['U34'] => 'city=revenue:0;label=Y',
+            ['N35'] => 'city=revenue:0;label=Y;upgrade=cost:30,terrain:water',
             # Cities — other labels
             ['K26'] => 'city=revenue:0;label=A',
             ['Q30'] => 'city=revenue:0;label=P',
