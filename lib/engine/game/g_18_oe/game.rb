@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 require_relative 'meta'
+require_relative 'entities'
+require_relative 'map'
 require_relative '../base'
 
 module Engine
@@ -8,6 +10,8 @@ module Engine
     module G18OE
       class Game < Game::Base
         include_meta(G18OE::Meta)
+        include G18OE::Entities
+        include G18OE::Map
         attr_accessor :minor_regional_order, :minor_available_regions, :minor_floated_regions, :regional_corps_floated
 
         MARKET = [
@@ -91,36 +95,137 @@ module Engine
         ].freeze
 
         TRAINS = [
+          # Level 2 — local only; rusts when first Level 4 train is bought
           {
             name: '2+2',
             distance: [{ 'nodes' => ['town'], 'pay' => 2, 'visit' => 99 },
                        { 'nodes' => %w[city offboard town], 'pay' => 2, 'visit' => 2 }],
             price: 100,
-            num: 5,
+            rusts_on: '4',
+            num: 30,
           },
+          # Level 3 — express (3) triggers Phase 3; local variant (3+3); rust at Level 6
           {
             name: '3',
             distance: [{ 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 },
                        { 'nodes' => %w[city offboard town], 'pay' => 3, 'visit' => 3 }],
             price: 200,
+            rusts_on: '6',
             variants: [{
               name: '3+3',
               distance: [{ 'nodes' => ['town'], 'pay' => 3, 'visit' => 99 },
                          { 'nodes' => %w[city offboard town], 'pay' => 3, 'visit' => 3 }],
               price: 225,
+              rusts_on: '6',
             }],
-            num: 4,
+            num: 20,
+          },
+          # Level 4 — express (4) triggers Phase 4; local variant (4+4)
+          {
+            name: '4',
+            distance: [{ 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 },
+                       { 'nodes' => %w[city offboard town], 'pay' => 4, 'visit' => 4 }],
+            price: 300,
+            variants: [{
+              name: '4+4',
+              distance: [{ 'nodes' => ['town'], 'pay' => 4, 'visit' => 99 },
+                         { 'nodes' => %w[city offboard town], 'pay' => 4, 'visit' => 4 }],
+              price: 350,
+            }],
+            num: 10,
+          },
+          # Level 5 — express (5) triggers Phase 5; local variant (5+5)
+          {
+            name: '5',
+            distance: [{ 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 },
+                       { 'nodes' => %w[city offboard town], 'pay' => 5, 'visit' => 5 }],
+            price: 400,
+            variants: [{
+              name: '5+5',
+              distance: [{ 'nodes' => ['town'], 'pay' => 5, 'visit' => 99 },
+                         { 'nodes' => %w[city offboard town], 'pay' => 5, 'visit' => 5 }],
+              price: 475,
+            }],
+            num: 8,
+          },
+          # Level 6 — express (6) triggers Phase 6; local variant (6+6)
+          {
+            name: '6',
+            distance: [{ 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 },
+                       { 'nodes' => %w[city offboard town], 'pay' => 6, 'visit' => 6 }],
+            price: 525,
+            variants: [{
+              name: '6+6',
+              distance: [{ 'nodes' => ['town'], 'pay' => 6, 'visit' => 99 },
+                         { 'nodes' => %w[city offboard town], 'pay' => 6, 'visit' => 6 }],
+              price: 600,
+            }],
+            num: 6,
+          },
+          # Level 7 — local (7+7) triggers Phase 7; diesel variant (4D)
+          # NOTE: Level 8 trains become available only after the 4th Level 7 purchase
+          {
+            name: '7+7',
+            distance: [{ 'nodes' => ['town'], 'pay' => 7, 'visit' => 99 },
+                       { 'nodes' => %w[city offboard town], 'pay' => 7, 'visit' => 7 }],
+            price: 750,
+            variants: [{
+              name: '4D',
+              distance: [{ 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 },
+                         { 'nodes' => %w[city offboard], 'pay' => 4, 'visit' => 99 }],
+              price: 850,
+            }],
+            num: 14,
+          },
+          # Level 8 — local (8+8) triggers Phase 8; diesel variant (5D)
+          {
+            name: '8+8',
+            distance: [{ 'nodes' => ['town'], 'pay' => 8, 'visit' => 99 },
+                       { 'nodes' => %w[city offboard town], 'pay' => 8, 'visit' => 8 }],
+            price: 900,
+            variants: [{
+              name: '5D',
+              distance: [{ 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 },
+                         { 'nodes' => %w[city offboard], 'pay' => 5, 'visit' => 99 }],
+              price: 1000,
+            }],
+            num: 8,
           },
         ].freeze
 
         CORPORATIONS_TRACK_RIGHTS = {
+          # United Kingdom
           'LNWR' => 'UK',
-          'GWR' => 'UK',
+          'GWR'  => 'UK',
           'GSWR' => 'UK',
-          'PLM' => 'FR',
+          # France / Belgium
+          'PLM'  => 'FR',
           'MIDI' => 'FR',
-          'OU' => 'FR',
-          'BEL' => 'FR',
+          'OU'   => 'FR',
+          'BEL'  => 'FR',
+          # Prussia / Holland / Switzerland
+          'BHB'  => 'PHS',
+          'POB'  => 'PHS',
+          'KSS'  => 'PHS',
+          'KBS'  => 'PHS',
+          # Austria-Hungary
+          'SB'   => 'AH',
+          'MAV'  => 'AH',
+          # Italy
+          'SFAI' => 'IT',
+          'SFR'  => 'IT',
+          # Spain / Portugal
+          'CHN'  => 'SP',
+          'MZA'  => 'SP',
+          'RCP'  => 'SP',
+          # Russia
+          'MSP'  => 'RU',
+          'MKV'  => 'RU',
+          'LRZD' => 'RU',
+          'WW'   => 'RU',
+          # Scandinavia
+          'DSJ'  => 'SC',
+          'BJV'  => 'SC',
         }.freeze
 
         NATIONAL_REGION_HEXES = {
@@ -133,8 +238,14 @@ module Engine
         }.freeze
 
         TRACK_RIGHTS_COST = {
-          'UK' => 40,
-          'FR' => 20,
+          'UK'  => 40,
+          'PHS' => 40,
+          'FR'  => 20,
+          'AH'  => 20,
+          'IT'  => 10,
+          'SP'  => 10,
+          'RU'  => 10,
+          'SC'  => 10,
         }.freeze
 
         MAX_FLOATED_REGIONALS = 18
@@ -418,9 +529,19 @@ module Engine
         def setup
           super
           @minor_regional_order = []
-          @minor_available_regions = %w[UK UK FR FR] # this should be set per variant, big game will need extra logic
+          # Derive available regions from the regional corporations actually defined,
+          # using only zones present in CORPORATIONS_TRACK_RIGHTS. This is failsafe:
+          # zones not yet in NATIONAL_REGION_HEXES are simply skipped at token placement.
+          @minor_available_regions = corporations
+            .select { |c| c.type == :regional }
+            .map { |c| CORPORATIONS_TRACK_RIGHTS[c.sym] }
+            .compact
           @minor_floated_regions = {}
           @regional_corps_floated = 0
+
+          corporations.each do |corp|
+            corp.par_via_exchange = companies.find { |c| c.sym == corp.id } if corp.type == :minor
+          end
         end
 
         def ipo_name(_entity = nil)
@@ -496,9 +617,11 @@ module Engine
 
         def after_par(corporation)
           super
-          # Spend the cost of the regionals track rights zone
-          region = NATIONAL_REGION_HEXES.select { |_key, value| value.include?(corporation.coordinates) }.keys.first
-          corporation.spend(TRACK_RIGHTS_COST[region], @bank)
+          # Spend the track rights zone fee when a regional pars.
+          # Zones not yet in TRACK_RIGHTS_COST (or not in NATIONAL_REGION_HEXES) are skipped safely.
+          region = CORPORATIONS_TRACK_RIGHTS[corporation.sym]
+          cost = TRACK_RIGHTS_COST[region]
+          corporation.spend(cost, @bank) if cost&.positive?
         end
 
         def issuable_shares(entity)
