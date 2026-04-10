@@ -40,12 +40,12 @@ module Engine
               Y2 Y4 Y6 Y8 Y10 Y12 Y16 Y18 Y20 Y22 Y24 Y26 Y28 Y44 Y46 Y48 Y50 Y56 Y58 Y60 Y62 Y64 Y66 Y68 Y70 Y72 Y74 Y76 Y78
               Z3 Z5 Z7 Z9 Z11 Z13 Z15 Z17 Z19 Z21 Z23 Z25 Z45 Z49 Z51 Z61 Z63 Z65 Z67 Z69 Z71 Z73 Z75 Z77 Z79
               AA2 AA4 AA6 AA8 AA10 AA12 AA14 AA16 AA18 AA20 AA22 AA48 AA50 AA52 AA54 AA62 AA64 AA66 AA68 AA70 AA72 AA74 AA76 AA78 AA80 AA84 AA86
-              BB1 BB3 BB5 BB7 BB9 BB11 BB13 BB15 BB17 BB19 BB27 BB39 BB41 BB53 BB55 BB57 BB63 BB65 BB67 BB69 BB71 BB77 BB83 BB85
-              CC6 CC8 CC10 CC12 CC14 CC16 CC18 CC20 CC38 CC40 CC54 CC64 CC66 CC68 CC76 CC78 CC80 CC82 CC84 CC86
-              DD5 DD7 DD9 DD11 DD13 DD15 DD39 DD55 DD65 DD67 DD69 DD71 DD79 DD81 DD83 DD85 DD87
-              EE52 EE68 EE70 EE72 EE80 EE82 EE84 EE86
-              FF49 FF51 FF53 FF67 FF69 FF81 FF83 FF85 FF87
-              GG50 GG52 GG68 GG70
+              AB1 AB3 AB5 AB7 AB9 AB11 AB13 AB15 AB17 AB19 AB27 AB39 AB41 AB53 AB55 AB57 AB63 AB65 AB67 AB69 AB71 AB77 AB83 AB85
+              AC6 AC8 AC10 AC12 AC14 AC16 AC18 AC20 AC38 AC40 AC54 AC64 AC66 AC68 AC76 AC78 AC80 AC82 AC84 AC86
+              AD5 AD7 AD9 AD11 AD13 AD15 AD39 AD55 AD65 AD67 AD69 AD71 AD79 AD81 AD83 AD85 AD87
+              AE52 AE68 AE70 AE72 AE80 AE82 AE84 AE86
+              AF49 AF51 AF53 AF67 AF69 AF81 AF83 AF85 AF87
+              AG50 AG52 AG68 AG70
             ] => '',
 
             # Impassable borders (landtiles_with_borders.csv)
@@ -67,8 +67,8 @@ module Engine
             ['K40'] => 'border=edge:4,type:impassable',
             ['K42'] => 'border=edge:1,type:impassable',
             # Adriatic — northern entry
-            ['CC56'] => 'border=edge:4,type:impassable',
-            ['CC58'] => 'border=edge:1,type:impassable',
+            ['AC56'] => 'border=edge:4,type:impassable',
+            ['AC58'] => 'border=edge:1,type:impassable',
             # Skagerrak / Norwegian coast
             ['I46'] => 'border=edge:5,type:impassable',
             ['I48'] => 'border=edge:0,type:impassable',
@@ -107,7 +107,7 @@ module Engine
             %w[F25 H21 J15 L25 Q26 Q38 R23 V27
                C48 F49 K46 L53 N49 R47
                R55 S60 V41 Z47 J73 M62 O80
-               Z27 DD17 M50 BB51 C74 AA82 Y14] => 'city=revenue:0',
+               Z27 AD17 M50 AB51 C74 AA82 Y14] => 'city=revenue:0',
             # Cities — label Y
             ['U34'] => 'city=revenue:0;label=Y',
             ['N35'] => 'city=revenue:0;label=Y;upgrade=cost:30,terrain:water',
@@ -144,14 +144,14 @@ module Engine
             ['S88']  => 'offboard=revenue:0;path=a:0,b:_0',                          # Sevastopol
             ['T87']  => 'offboard=revenue:0;path=a:0,b:_0',                          # Sevastopol
             ['Z1']   => 'offboard=revenue:0;city=revenue:0;city=revenue:0;path=a:0,b:_0', # Lisboa (2 station slots; RCP home)
-            ['BB87'] => 'offboard=revenue:0;path=a:0,b:_0',                          # Levant
-            ['DD1']  => 'offboard=revenue:0;path=a:0,b:_0',                          # North Africa & The Americas
-            ['FF5']  => 'offboard=revenue:0;path=a:0,b:_0',                          # Casablanca
-            ['FF11'] => 'offboard=revenue:0;path=a:0,b:_0',                          # Melilla
-            ['FF25'] => 'offboard=revenue:0;path=a:0,b:_0',                          # Alger
-            ['GG40'] => 'offboard=revenue:0;path=a:0,b:_0',                          # Tunis
-            ['GG88'] => 'offboard=revenue:0;path=a:0,b:_0',                          # Alexandria & Suez
-            ['HH87'] => 'offboard=revenue:0;path=a:0,b:_0',                          # Alexandria & Suez
+            ['AB87'] => 'offboard=revenue:0;path=a:0,b:_0',                          # Levant
+            ['AD1']  => 'offboard=revenue:0;path=a:0,b:_0',                          # North Africa & The Americas
+            ['AF5']  => 'offboard=revenue:0;path=a:0,b:_0',                          # Casablanca
+            ['AF11'] => 'offboard=revenue:0;path=a:0,b:_0',                          # Melilla
+            ['AF25'] => 'offboard=revenue:0;path=a:0,b:_0',                          # Alger
+            ['AG40'] => 'offboard=revenue:0;path=a:0,b:_0',                          # Tunis
+            ['AG88'] => 'offboard=revenue:0;path=a:0,b:_0',                          # Alexandria & Suez
+            ['AH87'] => 'offboard=revenue:0;path=a:0,b:_0',                          # Alexandria & Suez
           },
           blue: {},
         }.freeze

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'meta'
+require_relative 'map'
 require_relative '../base'
 
 module Engine
@@ -8,6 +9,7 @@ module Engine
     module G18OE
       class Game < Game::Base
         include_meta(G18OE::Meta)
+        include G18OE::Map
         attr_accessor :minor_regional_order, :minor_available_regions, :minor_floated_regions, :regional_corps_floated
 
         MARKET = [
