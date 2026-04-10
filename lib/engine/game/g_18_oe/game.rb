@@ -553,7 +553,9 @@ module Engine
         end
 
         def hex_within_national_region?(entity, hex)
-          NATIONAL_REGION_HEXES[CORPORATIONS_TRACK_RIGHTS[entity.id] || @minor_floated_regions[entity.id]].include?(hex.name)
+          region = CORPORATIONS_TRACK_RIGHTS[entity.id] || @minor_floated_regions[entity.id]
+          hexes = NATIONAL_REGION_HEXES[region]
+          hexes&.include?(hex.name) || false
         end
 
         def home_token_locations(corporation)
