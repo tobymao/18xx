@@ -118,6 +118,28 @@ module Engine
           'O80'  => 'Kiev',
           # Constantinople
           'AA82' => 'Constantinople',
+          # Red Offboard Locations
+          'A40'  => 'Norwegian Coast (to Narvik)',
+          'A54'  => 'North Sweden',
+          'A56'  => 'North Sweden',
+          'B41'  => 'Bergen',
+          'B83'  => 'Arkhangelsk',
+          'D25'  => 'Scottish Highlands',
+          'E88'  => 'Moskva',
+          'F87'  => 'Moskva',
+          'G88'  => 'Moskva',
+          'N1'   => 'New York',
+          'N87'  => 'Kharkov',
+          'S88'  => 'Sevastopol',
+          'T87'  => 'Sevastopol',
+          'AB87' => 'Levant',
+          'AD1'  => 'North Africa & The Americas',
+          'AF5'  => 'Casablanca',
+          'AF11' => 'Melilla',
+          'AF25' => 'Alger',
+          'AG40' => 'Tunis',
+          'AG88' => 'Alexandria & Suez',
+          'AH87' => 'Alexandria & Suez',
         }.freeze
 
         HEXES = {
@@ -291,7 +313,7 @@ module Engine
           red: {
             ['D25']  => 'offboard=revenue:0;path=a:0,b:_0',                          # Scottish Highlands
             ['A40']  => 'offboard=revenue:0;path=a:0,b:_0',                          # Norwegian Coast (to Narvik)
-            ['B41']  => 'offboard=revenue:0;path=a:0,b:_0',                          # Norwegian Coast (to Narvik)
+            ['B41']  => 'offboard=revenue:0;path=a:0,b:_0',                          # Bergen
             ['A54']  => 'offboard=revenue:0;path=a:0,b:_0',                          # North Sweden
             ['A56']  => 'offboard=revenue:0;path=a:0,b:_0',                          # North Sweden
             ['B83']  => 'offboard=revenue:0;path=a:0,b:_0',                          # Arkhangelsk
