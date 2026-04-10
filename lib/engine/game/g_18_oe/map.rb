@@ -312,7 +312,35 @@ module Engine
             ['AG88'] => 'offboard=revenue:0;path=a:0,b:_0',                          # Alexandria & Suez
             ['AH87'] => 'offboard=revenue:0;path=a:0,b:_0',                          # Alexandria & Suez
           },
-          blue: {},
+          blue: {
+            %w[
+              A58 A60 A62 A64 B59 B61 C60 C62 C68 C70 D27 D29
+              D31 D33 D35 D37 D39 D59 D61 D63 D65 E30 E32 E34
+              E36 E38 E40 E46 E60 E62 E64 F31 F33 F35 F37 F39
+              F41 F43 F45 F47 F57 F59 F61 F63 F65 F67 G22 G30
+              G32 G34 G36 G38 G40 G42 G48 G58 G60 G62 H23 H31
+              H33 H35 H37 H39 H41 H49 H57 H59 H61 I22 I24 I30
+              I32 I34 I36 I38 I40 I42 I54 I56 I58 I60 I62 J21
+              J31 J33 J35 J37 J39 J41 J43 J51 J53 J55 J57 J59
+              J61 K32 K34 K36 K38 K52 L33 L35 M32 N3 N5 N7
+              N9 N11 N13 N15 N17 N19 N21 N23 N25 N27 N29 O26
+              T83 T85 U14 U16 U18 U20 V49 W50 W52 X31 X39 X41
+              X51 X53 Y30 Y32 Y34 Y36 Y38 Y40 Y42 Y52 Y54 Z29
+              Z31 Z33 Z35 Z37 Z39 Z43 Z53 Z55 Z57 Z59 AA24 AA26
+              AA28 AA30 AA32 AA34 AA36 AA38 AA40 AA42 AA44 AA46 AA56 AA58
+              AA60 AB21 AB23 AB25 AB29 AB31 AB33 AB35 AB37 AB43 AB45 AB47
+              AB49 AB59 AB61 AB73 AB75 AB79 AB81 AC22 AC24 AC26 AC28 AC30
+              AC32 AC34 AC36 AC42 AC44 AC46 AC48 AC50 AC52 AC60 AC62 AC70
+              AC72 AC74 AD3 AD19 AD21 AD23 AD25 AD27 AD29 AD31 AD33 AD35
+              AD37 AD41 AD43 AD45 AD47 AD49 AD51 AD53 AD57 AD59 AD61 AD63
+              AD73 AD75 AD77 AE54 AE56 AE58 AE60 AE62 AE64 AE66 AE74 AE76
+              AE78 AF7 AF9 AF13 AF15 AF17 AF19 AF21 AF23 AF27 AF29 AF31
+              AF33 AF35 AF37 AF39 AF41 AF43 AF45 AF47 AF55 AF57 AF59 AF61
+              AF63 AF65 AF71 AF73 AF75 AF77 AF79 AG42 AG44 AG46 AG48 AG54
+              AG56 AG58 AG60 AG62 AG64 AG66 AG72 AG74 AG76 AG78 AG80 AG82
+              AG84 AG86
+            ] => '',
+          },
         }.freeze
       end
     end
