@@ -8,7 +8,12 @@ module Engine
       module Round
         class Draft < Engine::Round::Draft
           def select_entities
-            @game.players
+            @reverse_order ? @game.players.reverse : @game.players
+          end
+
+          def finished?
+            # Finished when all drafted OR all players passed
+            @game.all_entities_drafted? || entities.all?(&:passed?)
           end
         end
       end
