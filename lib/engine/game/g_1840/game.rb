@@ -55,6 +55,8 @@ module Engine
 
         NEXT_SR_PLAYER_ORDER = :most_cash
 
+        MARKET_SHARE_LIMIT = 100
+
         MARKET_TEXT = {
           par: 'City Corporation Par',
           par_2: 'Major Corporation Par',
