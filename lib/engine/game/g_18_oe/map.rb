@@ -93,8 +93,8 @@ module Engine
           'AD13' => 'Almeria',
           'AD15' => 'Lorca',
           'AD17' => 'Cartagena',
-          'U6'  => 'A Coruña',
-          'AC6' => 'Jerez de la Frontera and Cadiz',
+          'U6'   => 'A Coruña',
+          'AC6'  => 'Jerez de la Frontera and Cadiz',
           # Scandinavia
           'C48'  => 'Christiania',
           'D57'  => 'Stockholm',
@@ -116,11 +116,11 @@ module Engine
           'I46' => 'Odense',
           'I52' => 'Malmö',
           # PHS (Prussia / Holland / Switzerland)
-          'K46'  => 'Hamburg',
+          'K46' => 'Hamburg',
           'L53'  => 'Stettin',
-          'M50'  => 'Berlin',
+          'M50' => 'Berlin',
           'N49'  => 'Leipzig',
-          'R47'  => 'Breslau',
+          'R47' => 'Breslau',
           'J63' => 'Königsberg',
           'K60' => 'Danzig',
           'K62' => 'Elbing',
@@ -143,8 +143,8 @@ module Engine
           'S42' => 'Zürich',
           'T39' => 'Bern',
           # Austria-Hungary
-          'R55'  => 'Wien',
-          'S60'  => 'Budapest',
+          'R55' => 'Wien',
+          'S60' => 'Budapest',
           'P53' => 'Praha',
           'P61' => 'Krakau',
           'P69' => 'Lemberg',
@@ -166,17 +166,17 @@ module Engine
           'U64' => 'Arad and Temesvar',
           'U72' => 'Kronstadt',
           # Italy
-          'V41'  => 'Milano',
-          'Z47'  => 'Roma',
+          'V41' => 'Milano',
+          'Z47' => 'Roma',
           'AB51' => 'Napoli',
           'V39'  => 'Torino',
-          'V45'  => 'Verona',
-          'V47'  => 'Venezia',
+          'V45' => 'Verona',
+          'V47' => 'Venezia',
           'V51'  => 'Trieste',
           'W40'  => 'Genova',
-          'W46'  => 'Ferrara and Bologna',
+          'W46' => 'Ferrara and Bologna',
           'X45'  => 'Firenze',
-          'Y44'  => 'Livorno',
+          'Y44' => 'Livorno',
           'AA52' => 'Benevento',
           'AB39' => 'Sassari',
           'AB55' => 'Bari',
@@ -185,10 +185,10 @@ module Engine
           'AF49' => 'Palermo',
           'AF53' => 'Messina and Catania',
           # Russia
-          'C74'  => 'Sankt-Peterburg',
+          'C74' => 'Sankt-Peterburg',
           'J73'  => 'Minsk',
-          'M62'  => 'Warszawa',
-          'O80'  => 'Kiev',
+          'M62' => 'Warszawa',
+          'O80' => 'Kiev',
           'B67' => 'Helsinki',
           'B73' => 'Vyborg',
           'C64' => 'Turku',
@@ -234,9 +234,9 @@ module Engine
           # Balkans
           'V55'  => 'Zagreb',
           'W64'  => 'Beograd',
-          'W70'  => 'Craiova',
+          'W70' => 'Craiova',
           'W74'  => 'Bucharest',
-          'X55'  => 'Spalato',
+          'X55' => 'Spalato',
           'X59'  => 'Sarajevo',
           'Y64'  => 'Novi Bazar',
           'Y66'  => 'Niš',
@@ -337,24 +337,24 @@ module Engine
             ['AC56'] => 'border=edge:4,type:impassable',
             ['AC58'] => 'border=edge:1,type:impassable',
             # Skagerrak / Norwegian coast
-            ['I46'] => 'city=revenue:0;border=edge:5,type:impassable',
+            ['I46'] => 'town=revenue:0;town=revenue:0;border=edge:5,type:impassable',
             ['I48'] => 'border=edge:0,type:impassable;upgrade=cost:45,terrain:water',
             ['J47'] => 'border=edge:2,type:impassable;border=edge:3,type:impassable;border=edge:4,type:impassable;border=edge:5,type:impassable;upgrade=cost:60,terrain:water',
             ['J49'] => 'border=edge:0,type:impassable;border=edge:1,type:impassable;border=edge:5,type:impassable;upgrade=cost:60,terrain:water',
             ['K48'] => 'border=edge:2,type:impassable;border=edge:3,type:impassable',
             ['K50'] => 'border=edge:2,type:impassable',
             # North Sea — Danish coast
-            ['D47'] => 'city=revenue:0;border=edge:4,type:impassable;border=edge:5,type:impassable',
+            ['D47'] => 'town=revenue:0;town=revenue:0;border=edge:4,type:impassable;border=edge:5,type:impassable',
             ['D49'] => 'border=edge:1,type:impassable',
-            ['D51'] => 'city=revenue:0;border=edge:5,type:impassable;upgrade=cost:30,terrain:water',
-            ['D53'] => 'city=revenue:0;border=edge:0,type:impassable;upgrade=cost:30,terrain:water',
+            ['D51'] => 'town=revenue:0;town=revenue:0;border=edge:5,type:impassable;upgrade=cost:30,terrain:water',
+            ['D53'] => 'town=revenue:0;town=revenue:0;border=edge:0,type:impassable;upgrade=cost:30,terrain:water',
             ['E52'] => 'border=edge:2,type:impassable;border=edge:3,type:impassable;upgrade=cost:45,terrain:water',
             # Baltic — Gulf of Bothnia entry
             ['C66'] => 'border=edge:5,type:impassable',
             ['D67'] => 'border=edge:2,type:impassable',
             # Norwegian fjord coast
             ['B71'] => 'border=edge:5,type:impassable',
-            ['B73'] => 'city=revenue:0;border=edge:0,type:impassable;upgrade=cost:30,terrain:water',
+            ['B73'] => 'town=revenue:0;border=edge:0,type:impassable;upgrade=cost:30,terrain:water',
             ['B75'] => 'border=edge:4,type:impassable',
             ['B77'] => 'border=edge:1,type:impassable;upgrade=cost:45,terrain:water',
             ['C72'] => 'border=edge:2,type:impassable;border=edge:3,type:impassable;upgrade=cost:30,terrain:water',
@@ -372,21 +372,15 @@ module Engine
             %w[J29 M26 W32] => 'town=revenue:0;town=revenue:0',
             ['T37'] => 'town=revenue:0;town=revenue:0;upgrade=cost:45,terrain:mountain',
             # Cities — no label, no terrain
-            %w[F25 H21 J15 L25 Q26 Q38 R23 V27
-               C48 F49 K46 L53 N49 R47
-               R55 S60 V41 Z47 J73 M62 O80
-               Z27 AD17 M50 AB51 C74
+            %w[ H21 J15 L25 Q26 R23 V27
+               C48 F49 L53 N49 J73 AD17
                V17 W6 X13 Y20 AA20 AC8 AC16 AB27] => 'city=revenue:0',
             # Cities — no terrain (added station geometry)
-            %w[
-              AA52 AA62 AA84 AB39 AB55 AB57 AB69 AC40 AC6 AC68 AC84 AD79
-              AE72 AF49 AF53 AF87 AG68 B67 C58 C64 D69 D75 D77 D83
-              E44 E56 E70 F53 F73 G46 G68 G84 H47 H51 H55 H63
-              H71 H85 H87 I66 I76 I80 J69 J77 K60 K62 K68 K78
-              K86 L43 L79 L87 M44 M48 M56 M68 N41 N59 N65 N83
-              O56 P43 P53 P61 P69 P77 Q46 Q56 Q72 Q84 R53 R59
-              R67 S40 S68 S76 S78 T53 T61 T81 U56 U6 U62 U64
-              V39 V45 V47 V51 V55 V73 W40 W46 W64 W70 X55 Y44
+            %w[ AA62 AB57 AB69 AC40 AD79
+              AE72 AF49 B67 D77 E56 G68 H47 H63 H87 I76 J69 K78
+              K86 M44 M68
+              O56 P69 S76 S78 T53 T81
+              V39 V51 V55 W40 W64
               Y70
             ] => 'city=revenue:0',
             # Cities — label Y
@@ -396,11 +390,11 @@ module Engine
             ['K26'] => 'city=revenue:0;label=A',
             ['Q30'] => 'city=revenue:0;label=P',
             # Cities — terrain
-            ['Y14'] => 'city=revenue:0;upgrade=cost:45,terrain:mountain',
+            ['Y14'] => 'city=revenue:0;label=A;upgrade=cost:45,terrain:mountain',
             ['U32'] => 'city=revenue:0;upgrade=cost:30,terrain:mountain',
             ['AD9'] => 'city=revenue:0;upgrade=cost:30,terrain:mountain',
             ['D57'] => 'city=revenue:0;upgrade=cost:30,terrain:water',
-            ['I50'] => 'city=revenue:0;upgrade=cost:45,terrain:water',
+            ['I50'] => 'city=revenue:0;label=Y;upgrade=cost:45,terrain:water',
             ['AA82'] => 'city=revenue:0;upgrade=cost:45,terrain:water',
             # Cities — pre-printed revenue
             ['U24'] => 'city=revenue:10',
@@ -410,43 +404,57 @@ module Engine
             ['X33'] => 'city=revenue:20;label=Y;path=a:_0,b:5',
 
 
+            ['F25'] => 'city=revenue:0;label=Y',
+            ['Z27'] => 'city=revenue:0;label=Y',
+            ['K46'] => 'city=revenue:0;label=Y',
+            ['M50'] => 'city=revenue:0;label=B',
+            ['R47'] => 'city=revenue:0;label=Y',
+            ['R55'] => 'city=revenue:0;label=A',
+            ['S60'] => 'city=revenue:0;label=Y',
+            ['P53'] => 'city=revenue:0;label=Y',
+            ['V41'] => 'city=revenue:0;label=Y',
+            ['Z47'] => 'city=revenue:0;label=Y',
+            ['AB51'] => 'city=revenue:0;label=N',
+            ['C74'] => 'city=revenue:0;label=S',
+            ['M62'] => 'city=revenue:0;label=Y',
+            ['O80'] => 'city=revenue:0;label=Y',
             # Cities — water terrain
-            ['AE68'] => 'city=revenue:0;upgrade=cost:30,terrain:water',
-            ['D41'] => 'city=revenue:0;upgrade=cost:45,terrain:water',
-            ['D81'] => 'city=revenue:0;upgrade=cost:30,terrain:water',
+            ['AE68'] => 'town=revenue:0;upgrade=cost:30,terrain:water',
+            ['D41'] => 'town=revenue:0;town=revenue:0;upgrade=cost:45,terrain:water',
+            ['D81'] => 'town=revenue:0;upgrade=cost:30,terrain:water',
             ['I52'] => 'city=revenue:0;upgrade=cost:45,terrain:water',
-            ['J63'] => 'city=revenue:0;upgrade=cost:30,terrain:water',
-            ['L37'] => 'city=revenue:0;upgrade=cost:45,terrain:water',
-            ['L39'] => 'city=revenue:0;upgrade=cost:30,terrain:water',
+            ['J63'] => 'city=revenue:0;label=Y;upgrade=cost:30,terrain:water',
+            ['L37'] => 'city=revenue:0;label=Y;upgrade=cost:45,terrain:water',
+            ['L39'] => 'town=revenue:0;town=revenue:0;upgrade=cost:30,terrain:water',
             ['M36'] => 'city=revenue:0;upgrade=cost:30,terrain:water',
-            ['M38'] => 'city=revenue:0;upgrade=cost:30,terrain:water',
-            ['M72'] => 'city=revenue:0;upgrade=cost:30,terrain:water',
-            ['O40'] => 'city=revenue:0;upgrade=cost:30,terrain:water',
-            ['P85'] => 'city=revenue:0;upgrade=cost:30,terrain:water',
+            ['M38'] => 'town=revenue:0;upgrade=cost:30,terrain:water',
+            ['M72'] => 'town=revenue:0;upgrade=cost:30,terrain:water',
+            ['O40'] => 'city=revenue:0;label=Y;upgrade=cost:30,terrain:water',
+            ['P85'] => 'town=revenue:0;upgrade=cost:30,terrain:water',
             ['Q40'] => 'city=revenue:0;upgrade=cost:30,terrain:water',
-            ['S84'] => 'city=revenue:0;upgrade=cost:45,terrain:water',
-            ['S86'] => 'city=revenue:0;upgrade=cost:30,terrain:water',
-            ['U78'] => 'city=revenue:0;upgrade=cost:45,terrain:water',
-            ['U80'] => 'city=revenue:0;upgrade=cost:45,terrain:water',
-            ['W74'] => 'city=revenue:0;upgrade=cost:30,terrain:water',
+            ['S84'] => 'town=revenue:0;upgrade=cost:45,terrain:water',
+            ['S86'] => 'town=revenue:0;upgrade=cost:30,terrain:water',
+            ['U78'] => 'town=revenue:0;upgrade=cost:45,terrain:water',
+            ['U80'] => 'town=revenue:0;upgrade=cost:45,terrain:water',
+            ['W74'] => 'city=revenue:0;label=Y;upgrade=cost:30,terrain:water',
             # Cities — mountain terrain
-            ['AB83'] => 'city=revenue:0;upgrade=cost:45,terrain:mountain',
-            ['AC64'] => 'city=revenue:0;upgrade=cost:30,terrain:mountain',
-            ['B43'] => 'city=revenue:0;upgrade=cost:60,terrain:mountain',
+            ['AB83'] => 'town=revenue:0;upgrade=cost:45,terrain:mountain',
+            ['AC64'] => 'town=revenue:0;upgrade=cost:30,terrain:mountain',
+            ['B43'] => 'town=revenue:0;upgrade=cost:60,terrain:mountain',
             ['O52'] => 'city=revenue:0;upgrade=cost:30,terrain:mountain',
-            ['Q52'] => 'city=revenue:0;upgrade=cost:45,terrain:mountain',
+            ['Q52'] => 'town=revenue:0;upgrade=cost:45,terrain:mountain',
             ['S42'] => 'city=revenue:0;upgrade=cost:30,terrain:mountain',
-            ['S46'] => 'city=revenue:0;upgrade=cost:60,terrain:mountain',
+            ['S46'] => 'town=revenue:0;upgrade=cost:60,terrain:mountain',
             ['S50'] => 'city=revenue:0;upgrade=cost:30,terrain:mountain',
-            ['T39'] => 'city=revenue:0;upgrade=cost:120,terrain:mountain',
+            ['T39'] => 'town=revenue:0;upgrade=cost:120,terrain:mountain',
             ['T69'] => 'city=revenue:0;upgrade=cost:30,terrain:mountain',
-            ['U52'] => 'city=revenue:0;upgrade=cost:45,terrain:mountain',
-            ['U72'] => 'city=revenue:0;upgrade=cost:45,terrain:mountain',
-            ['X45'] => 'city=revenue:0;upgrade=cost:45,terrain:mountain',
-            ['X59'] => 'city=revenue:0;upgrade=cost:30,terrain:mountain',
-            ['Y64'] => 'city=revenue:0;upgrade=cost:45,terrain:mountain',
-            ['Y66'] => 'city=revenue:0;upgrade=cost:45,terrain:mountain',
-            ['Z73'] => 'city=revenue:0;upgrade=cost:30,terrain:mountain',
+            ['U52'] => 'town=revenue:0;upgrade=cost:45,terrain:mountain',
+            ['U72'] => 'town=revenue:0;upgrade=cost:45,terrain:mountain',
+            ['X45'] => 'city=revenue:0;label=Y;upgrade=cost:45,terrain:mountain',
+            ['X59'] => 'town=revenue:0;upgrade=cost:30,terrain:mountain',
+            ['Y64'] => 'town=revenue:0;upgrade=cost:45,terrain:mountain',
+            ['Y66'] => 'town=revenue:0;upgrade=cost:45,terrain:mountain',
+            ['Z73'] => 'town=revenue:0;upgrade=cost:30,terrain:mountain',
 
             # Terrain — water
             ['E78'] => 'upgrade=cost:5,terrain:water',
