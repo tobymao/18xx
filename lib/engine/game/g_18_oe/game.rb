@@ -534,7 +534,7 @@ module Engine
           # zones not yet in NATIONAL_REGION_HEXES are simply skipped at token placement.
           @minor_available_regions = corporations
             .select { |c| c.type == :regional }
-            .map { |c| CORPORATIONS_TRACK_RIGHTS[c.sym] }
+            .map { |c| CORPORATIONS_TRACK_RIGHTS[c.id] }
             .compact
           @minor_floated_regions = {}
           @regional_corps_floated = 0
@@ -621,7 +621,7 @@ module Engine
           super
           # Spend the track rights zone fee when a regional pars.
           # Zones not yet in TRACK_RIGHTS_COST (or not in NATIONAL_REGION_HEXES) are skipped safely.
-          region = CORPORATIONS_TRACK_RIGHTS[corporation.sym]
+          region = CORPORATIONS_TRACK_RIGHTS[corporation.id]
           cost = TRACK_RIGHTS_COST[region]
           corporation.spend(cost, @bank) if cost&.positive?
         end
