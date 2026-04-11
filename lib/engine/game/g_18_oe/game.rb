@@ -24,8 +24,10 @@ module Engine
           %w[60p 65 70 75 80],
           %w[50 60 65 70],
         ].freeze
-        CERT_LIMIT = { 3 => 48, 4 => 36, 5 => 29, 6 => 24, 7 => 20 }.freeze
-        STARTING_CASH = { 3 => 1735, 4 => 1300, 5 => 1040, 6 => 870, 7 => 745 }.freeze
+        CERT_LIMIT = { 2 => 99, 3 => 48, 4 => 36, 5 => 29, 6 => 24, 7 => 20 }.freeze
+        # Standard game: £5,400 total / num_players, rounded up to nearest £5.
+        # 2-player variant uses without-concessions formula (£5,200 / 2 = £2,600).
+        STARTING_CASH = { 2 => 2600, 3 => 1800, 4 => 1350, 5 => 1080, 6 => 900, 7 => 775 }.freeze
         BANK_CASH = 54_000
         CAPITALIZATION = :incremental
         SELL_BUY_ORDER = :sell_buy
