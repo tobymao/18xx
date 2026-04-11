@@ -358,9 +358,14 @@ module Engine
             shares: [100],
             float_percent: 100,
             max_ownership_percent: 100,
-            desc: '(Silver Banner Line) When merged into a major, the bank pays cash into the major\'s treasury '\
-                  'equal to the major\'s current share value at the time of merger. The cash is never part of '\
-                  'the minor\'s own treasury.',
+            abilities: [
+              {
+                type: 'description',
+                description: 'When merged into a major, the bank pays cash into the major\'s treasury '\
+                              'equal to the major\'s current share value at the time of merger. '\
+                              'The cash is never part of the minor\'s own treasury.',
+              },
+            ],
           },
           {
             name: 'Orange Scroll Surveyors',
@@ -371,8 +376,13 @@ module Engine
             shares: [100],
             float_percent: 100,
             max_ownership_percent: 100,
-            desc: '(Orange Scroll Surveyors) All track upgrades cost only 1 tile point for this minor, '\
-                  'including tiles with towns — but not cities, grand cities, or metropolises.',
+            abilities: [
+              {
+                type: 'description',
+                description: 'All track upgrades cost only 1 tile point, including tiles with towns — '\
+                              'but not cities, grand cities, or metropolises.',
+              },
+            ],
           },
           {
             name: 'Golden Bell Marketplace',
@@ -383,9 +393,14 @@ module Engine
             shares: [100],
             float_percent: 100,
             max_ownership_percent: 100,
-            desc: '(Golden Bell Marketplace) At the start of each OR, the president may choose this minor\'s '\
-                  'operating position: first, last, or normal order. The choice is announced before any other '\
-                  'RR operates that OR.',
+            abilities: [
+              {
+                type: 'description',
+                description: 'At the start of each OR, the president may choose this minor\'s operating '\
+                              'position: first, last, or normal order. The choice is announced before '\
+                              'any other RR operates that OR.',
+              },
+            ],
           },
           {
             name: 'Green Junction Mercantile',
@@ -396,11 +411,16 @@ module Engine
             shares: [100],
             float_percent: 100,
             max_ownership_percent: 100,
-            desc: '(Green Junction Mercantile) The president may place this minor\'s token in any non-metropolis, '\
-                  'non-red-zone city on the map (even unreachable). Trains run to or through that city by this '\
-                  'minor or its owning major earn a +£20 bonus (Phase 2–4). At Phase 5 start, the +£20 token '\
-                  'is removed; the president may then place a new token in the same or a different eligible city '\
-                  'for a +£40 bonus (Phase 5+). Placement occurs during the lay track step.',
+            abilities: [
+              {
+                type: 'description',
+                description: 'The president may place this minor\'s token in any non-metropolis, '\
+                              'non-red-zone city on the map (even unreachable). Trains run to or through '\
+                              'that city earn a +£20 bonus (Phase 2–4). At Phase 5 start, the +£20 token '\
+                              'is removed; the president may place a new token in the same or a different '\
+                              'eligible city for a +£40 bonus (Phase 5+). Placed during the lay track step.',
+              },
+            ],
           },
           {
             name: 'Blue Coast Bridge Construction Company',
@@ -411,10 +431,15 @@ module Engine
             shares: [100],
             float_percent: 100,
             max_ownership_percent: 100,
-            desc: '(Blue Coast Bridge Construction Company) Receives a 33% discount on all blue terrain '\
-                  '(water/coast) track construction costs (multiply total cost by 0.67, round down to nearest '\
-                  'pound). Each OR, may also spend 1 additional tile point to place a yellow tile in a hex '\
-                  'that has a blue terrain cost.',
+            abilities: [
+              {
+                type: 'description',
+                description: '33% discount on all blue terrain (water/coast) track construction costs '\
+                              '(multiply total cost by 0.67, round down to nearest £1). '\
+                              'Each OR may also spend 1 extra tile point to place a yellow tile '\
+                              'in a hex with a blue terrain cost.',
+              },
+            ],
           },
           {
             name: 'White Peak Mountain Railway',
@@ -425,10 +450,15 @@ module Engine
             shares: [100],
             float_percent: 100,
             max_ownership_percent: 100,
-            desc: '(White Peak Mountain Railway) Receives a 33% discount on all mountain/rough (green terrain) '\
-                  'track construction costs (multiply total cost by 0.67, round down to nearest pound). Each OR, '\
-                  'may also spend 1 additional tile point to place a yellow tile in a hex that has a green '\
-                  'terrain cost.',
+            abilities: [
+              {
+                type: 'description',
+                description: '33% discount on all mountain/rough (green terrain) track construction costs '\
+                              '(multiply total cost by 0.67, round down to nearest £1). '\
+                              'Each OR may also spend 1 extra tile point to place a yellow tile '\
+                              'in a hex with a green terrain cost.',
+              },
+            ],
           },
           {
             name: 'Indigo Foundry and Iron Works',
@@ -439,8 +469,12 @@ module Engine
             shares: [100],
             float_percent: 100,
             max_ownership_percent: 100,
-            desc: '(Indigo Foundry and Iron Works) Receives 2 extra tile points to use during its lay track '\
-                  'step every OR.',
+            abilities: [
+              {
+                type: 'description',
+                description: 'Receives 2 extra tile points to use during its lay track step every OR.',
+              },
+            ],
           },
           {
             name: 'Great Western Steamship Company',
@@ -451,8 +485,13 @@ module Engine
             shares: [100],
             float_percent: 100,
             max_ownership_percent: 100,
-            desc: '(Great Western Steamship Company) Reduces the number of sea zones that count towards '\
-                  'trains\' city limits by 1 during Train Phases 1–6, and by 2 during Train Phases 7–8.',
+            abilities: [
+              {
+                type: 'description',
+                description: 'Reduces the number of sea zones that count towards trains\' city limits '\
+                              'by 1 during Train Phases 1–6, and by 2 during Train Phases 7–8.',
+              },
+            ],
           },
           {
             name: 'Grey Locomotive Works',
@@ -463,9 +502,14 @@ module Engine
             shares: [100],
             float_percent: 100,
             max_ownership_percent: 100,
-            desc: '(Grey Locomotive Works) Receives a 10% discount on the purchase price of all trains '\
-                  '(including Pullman cars). Minor M still receives the full £15 royalty on Pullman purchases '\
-                  'even when this discount applies.',
+            abilities: [
+              {
+                type: 'description',
+                description: '10% discount on the purchase price of all trains (including Pullman cars). '\
+                              'Minor M still receives the full £15 royalty on Pullman purchases '\
+                              'even when this discount applies.',
+              },
+            ],
           },
           {
             name: 'Vermilion Seal Couriers',
@@ -476,10 +520,15 @@ module Engine
             shares: [100],
             float_percent: 100,
             max_ownership_percent: 100,
-            desc: '(Vermilion Seal Couriers) Owns a mail contract. At the start of each OR, the bank pays '\
-                  'contract revenue directly to the RR\'s treasury (not counted as train revenue): '\
-                  '£20 (Phase 2), £40 (Phase 3–4), £50 (Phase 5–6), £60 (Phase 7–8). '\
-                  'The revenue is available immediately to use when laying track or placing tokens that OR.',
+            abilities: [
+              {
+                type: 'description',
+                description: 'Mail contract: at the start of each OR the bank pays directly to treasury '\
+                              '(not counted as train revenue): £20 (Phase 2), £40 (Phase 3–4), '\
+                              '£50 (Phase 5–6), £60 (Phase 7–8). '\
+                              'Available immediately for track or token placement that OR.',
+              },
+            ],
           },
           {
             name: 'Krasnaya Strela',
@@ -490,10 +539,15 @@ module Engine
             shares: [100],
             float_percent: 100,
             max_ownership_percent: 100,
-            desc: '(Krasnaya Strela) Has a +1+1 marker that the president assigns to one train at the start '\
-                  'of the run trains step each OR. The assigned train\'s city limit and town count are each '\
-                  'increased by 1 (e.g. a 2+2 runs as a 3+3). For D trains, the extra city does not double '\
-                  'in value. This increase does not affect Pullman car revenue calculation.',
+            abilities: [
+              {
+                type: 'description',
+                description: '+1+1 marker: assigned to one train at the start of the run trains step each OR. '\
+                              'Increases that train\'s city limit and town count each by 1 '\
+                              '(e.g. a 2+2 runs as a 3+3). For D trains, the extra city does not double. '\
+                              'Does not affect Pullman car revenue calculation.',
+              },
+            ],
           },
           {
             name: 'Compagnie Internationale des Wagons-Lits',
@@ -504,11 +558,15 @@ module Engine
             shares: [100],
             float_percent: 100,
             max_ownership_percent: 100,
-            desc: '(Compagnie Internationale des Wagons-Lits) Owns 10 Pullman cars. At the start of Train Phase 4, '\
-                  'receives one free Pullman for its own use. Other RRs may purchase a Pullman during their buy '\
-                  'trains step for £150; the bank pays £15 royalty to Minor M or its owning major (no royalty '\
-                  'if purchased from the Open Market). Minor J\'s 10% discount applies to the purchase price '\
-                  'but not to the royalty.',
+            abilities: [
+              {
+                type: 'description',
+                description: 'Owns 10 Pullman cars. Receives one free Pullman at the start of Train Phase 4. '\
+                              'Other RRs may purchase a Pullman for £150; bank pays £15 royalty to Minor M '\
+                              'or its owning major (no royalty if purchased from the Open Market). '\
+                              'Minor J\'s 10% discount applies to the price but not to the royalty.',
+              },
+            ],
           },
           # -----------------------------------------------------------------------
           # Regionals — United Kingdom (UK)
