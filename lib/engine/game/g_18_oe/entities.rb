@@ -5,25 +5,81 @@ module Engine
     module G18OE
       module Entities
         COMPANIES = [
+          # -----------------------------------------------------------------------
+          # Row 1 — £20 privates (no special abilities)
+          # -----------------------------------------------------------------------
+          {
+            name: 'Robert Stephenson and Company',
+            sym: 'RSC',
+            value: 20,
+            revenue: 5,
+            desc: 'No special abilities. No markers or tokens.',
+            auction_row: 1,
+          },
           {
             name: 'Ponts et Chaussees',
             sym: 'PeC',
             value: 20,
             revenue: 5,
+            desc: 'No special abilities. No markers or tokens.',
             auction_row: 1,
           },
+          # -----------------------------------------------------------------------
+          # Row 2 — £40 privates
+          # -----------------------------------------------------------------------
           {
-            name: 'Star Harbor Trading Co.',
-            sym: 'SHTC',
-            value: 60,
-            revenue: 15,
+            name: 'Wien Südbahnhof',
+            sym: 'WS',
+            value: 40,
+            revenue: 10,
+            desc: 'During any RR\'s Place Token step, the owner may place one station token from any '\
+                  'controlled RR on the map for free (sea-zone crossing costs still apply). '\
+                  'If also owning the White Cliffs Ferry, this private may pay for that token\'s placement cost.',
             auction_row: 2,
           },
           {
-            name: 'Central Circle Transport Co.',
+            name: 'Barclay, Bevan, Barclay and Tritton',
+            sym: 'BBBT',
+            value: 40,
+            revenue: 10,
+            desc: 'One marker. Exercise one of three abilities: '\
+                  '(1) During any SR or a controlled RR\'s OR, re-set the par value of one owned regional or major '\
+                  'to any valid par value for that type. '\
+                  '(2) Place one share of any RR into custodianship — reserved for the owner; '\
+                  'place this private\'s marker on the share. '\
+                  '(3) At any time during a SR, prevent one RR\'s share marker from moving DOWN for the rest of that SR; '\
+                  'place this private\'s marker on that share marker. '\
+                  'Exercising ability (2) or (3) closes this private at end of the SR.',
+            auction_row: 2,
+          },
+          # -----------------------------------------------------------------------
+          # Row 3 — £60 privates
+          # -----------------------------------------------------------------------
+          {
+            name: 'Star Harbor Trading Company',
+            sym: 'SHTC',
+            value: 60,
+            revenue: 15,
+            desc: 'One marker and one token. During a controlled RR\'s Place Token step, place the token in any '\
+                  'port city at no cost (does not consume a token position). '\
+                  'The owning RR may use this city as a private or public port for sea crossings. '\
+                  'Other RRs\' tokens in this city do not block the owning RR and collect no revenue there. '\
+                  'The token city need not be reachable but may not serve as the sole token on a route, '\
+                  'nor be used to place further tokens. '\
+                  'May be exercised at any time during a SR, including while another player is purchasing stock.',
+            auction_row: 3,
+          },
+          {
+            name: 'Central Circle Transport Corporation',
             sym: 'CCTC',
             value: 60,
             revenue: 15,
+            desc: 'One marker and one token. During a controlled RR\'s Place Token step, place the token in any '\
+                  'non-port city at no cost (does not consume a token position). '\
+                  'The owning RR counts this hex as a town when running routes through it; '\
+                  'revenue: £10 (Phase 2), £20 (Phase 3–4), £40 (Phase 5–6), £60 (Phase 7–8). '\
+                  'Other RRs\' tokens in this city do not block the owning RR and collect no revenue there. '\
+                  'May be exercised at any time during a SR, including while another player is purchasing stock.',
             auction_row: 3,
           },
           {
@@ -31,14 +87,71 @@ module Engine
             sym: 'WCF',
             value: 60,
             revenue: 15,
+            desc: 'No markers or tokens. At the start of Train Phase 5, the owner may immediately place one '\
+                  'station token from any controlled RR on the White Cliffs Ferry token position next to Lille. '\
+                  'The RR pays treasury cash for the token but need not be connected to Lille. '\
+                  'If the owner waits, the token may instead be placed during that RR\'s Place Token step (consuming it). '\
+                  'The Ferry position functions as an open token slot in Lille until used. See §11.2.2.',
+            auction_row: 3,
+          },
+          # -----------------------------------------------------------------------
+          # Row 4 — £80 private
+          # -----------------------------------------------------------------------
+          {
+            name: 'Hochberg Mining and Lumber Company',
+            sym: 'HMLC',
+            value: 80,
+            revenue: 20,
+            desc: 'One token. During a controlled RR\'s Track Lay step, place the token on any rough-terrain hex '\
+                  'with a construction cost of at least £45 (hex may already contain track or one town, '\
+                  'which the token replaces). Turn the private face-down to indicate placement. '\
+                  'Only the owner\'s RRs may use track on hexes bearing this token. '\
+                  'To remove the token, another RR must pay the original terrain cost and expend one tile point '\
+                  '(two for a metropolis); nationals skip the terrain cost but still expend tile points.',
             auction_row: 4,
           },
+          # -----------------------------------------------------------------------
+          # Row 5 — £100 private
+          # -----------------------------------------------------------------------
+          {
+            name: 'Brandt and Brandau, Engineers',
+            sym: 'BBE',
+            value: 100,
+            revenue: 25,
+            desc: 'Four tokens. Up to two tokens may be used per OR by the owner, across one or two controlled RRs, '\
+                  'during their Track Lay step. Place a token on a rough-terrain hex and lay a yellow tile there '\
+                  'at no terrain cost (tile points are still spent; the tile may be immediately upgraded). '\
+                  'Only the owner\'s RRs may use track on hexes bearing these tokens. '\
+                  'Turn the private face-down when the last token is placed; it is removed from the game '\
+                  'when no tokens remain on the map.',
+            auction_row: 5,
+          },
+          # -----------------------------------------------------------------------
+          # Row 6 — £120 private
+          # -----------------------------------------------------------------------
+          {
+            name: 'Swift Metropolitan Line',
+            sym: 'SML',
+            value: 120,
+            revenue: 0,
+            desc: 'One marker. From Train Phase 4 onward, the owner designates one controlled RR to receive '\
+                  'a preserved 2+2 train taken from the rusted pool. The marker is placed on that train. '\
+                  'This train does not count against the train limit, cannot run on track already used by '\
+                  'the RR\'s other trains in the same OR, and can never be sold. '\
+                  'If held by a minor, the train transfers to the major when the minor merges.',
+            auction_row: 6,
+          },
+          # -----------------------------------------------------------------------
+          # Rows 7–12 — Minor-exchange companies (float all 12 minors)
+          # -----------------------------------------------------------------------
           {
             name: 'Golden Bell Marketplace',
             sym: 'C',
             value: 120,
             revenue: 0,
-            auction_row: 5,
+            desc: 'Purchased in the auction to acquire the Minor C charter. '\
+                  'Exchange this private during a Stock Round to float Minor C.',
+            auction_row: 7,
             abilities: [
               {
                 type: 'exchange',
@@ -53,7 +166,9 @@ module Engine
             sym: 'H',
             value: 120,
             revenue: 0,
-            auction_row: 5,
+            desc: 'Purchased in the auction to acquire the Minor H charter. '\
+                  'Exchange this private during a Stock Round to float Minor H.',
+            auction_row: 7,
             abilities: [
               {
                 type: 'exchange',
@@ -68,7 +183,9 @@ module Engine
             sym: 'K',
             value: 120,
             revenue: 0,
-            auction_row: 6,
+            desc: 'Purchased in the auction to acquire the Minor K charter. '\
+                  'Exchange this private during a Stock Round to float Minor K.',
+            auction_row: 8,
             abilities: [
               {
                 type: 'exchange',
@@ -83,7 +200,9 @@ module Engine
             sym: 'M',
             value: 120,
             revenue: 0,
-            auction_row: 6,
+            desc: 'Purchased in the auction to acquire the Minor M charter. '\
+                  'Exchange this private during a Stock Round to float Minor M.',
+            auction_row: 8,
             abilities: [
               {
                 type: 'exchange',
@@ -93,12 +212,173 @@ module Engine
               },
             ],
           },
+          {
+            name: 'Silver Banner Line',
+            sym: 'A',
+            value: 120,
+            revenue: 0,
+            desc: 'Purchased in the auction to acquire the Minor A charter. '\
+                  'Exchange this private during a Stock Round to float Minor A.',
+            auction_row: 9,
+            abilities: [
+              {
+                type: 'exchange',
+                corporations: %w[A],
+                owner_type: 'player',
+                from: %w[ipo],
+              },
+            ],
+          },
+          {
+            name: 'Orange Scroll Surveyors',
+            sym: 'B',
+            value: 120,
+            revenue: 0,
+            desc: 'Purchased in the auction to acquire the Minor B charter. '\
+                  'Exchange this private during a Stock Round to float Minor B.',
+            auction_row: 9,
+            abilities: [
+              {
+                type: 'exchange',
+                corporations: %w[B],
+                owner_type: 'player',
+                from: %w[ipo],
+              },
+            ],
+          },
+          {
+            name: 'Green Junction Mercantile',
+            sym: 'D',
+            value: 120,
+            revenue: 0,
+            desc: 'Purchased in the auction to acquire the Minor D charter. '\
+                  'Exchange this private during a Stock Round to float Minor D.',
+            auction_row: 10,
+            abilities: [
+              {
+                type: 'exchange',
+                corporations: %w[D],
+                owner_type: 'player',
+                from: %w[ipo],
+              },
+            ],
+          },
+          {
+            name: 'Blue Coast Bridge Construction Company',
+            sym: 'E',
+            value: 120,
+            revenue: 0,
+            desc: 'Purchased in the auction to acquire the Minor E charter. '\
+                  'Exchange this private during a Stock Round to float Minor E.',
+            auction_row: 10,
+            abilities: [
+              {
+                type: 'exchange',
+                corporations: %w[E],
+                owner_type: 'player',
+                from: %w[ipo],
+              },
+            ],
+          },
+          {
+            name: 'White Peak Mountain Railway',
+            sym: 'F',
+            value: 120,
+            revenue: 0,
+            desc: 'Purchased in the auction to acquire the Minor F charter. '\
+                  'Exchange this private during a Stock Round to float Minor F.',
+            auction_row: 11,
+            abilities: [
+              {
+                type: 'exchange',
+                corporations: %w[F],
+                owner_type: 'player',
+                from: %w[ipo],
+              },
+            ],
+          },
+          {
+            name: 'Indigo Foundry and Iron Works',
+            sym: 'G',
+            value: 120,
+            revenue: 0,
+            desc: 'Purchased in the auction to acquire the Minor G charter. '\
+                  'Exchange this private during a Stock Round to float Minor G.',
+            auction_row: 11,
+            abilities: [
+              {
+                type: 'exchange',
+                corporations: %w[G],
+                owner_type: 'player',
+                from: %w[ipo],
+              },
+            ],
+          },
+          {
+            name: 'Grey Locomotive Works',
+            sym: 'J',
+            value: 120,
+            revenue: 0,
+            desc: 'Purchased in the auction to acquire the Minor J charter. '\
+                  'Exchange this private during a Stock Round to float Minor J.',
+            auction_row: 12,
+            abilities: [
+              {
+                type: 'exchange',
+                corporations: %w[J],
+                owner_type: 'player',
+                from: %w[ipo],
+              },
+            ],
+          },
+          {
+            name: 'Krasnaya Strela',
+            sym: 'L',
+            value: 120,
+            revenue: 0,
+            desc: 'Purchased in the auction to acquire the Minor L charter. '\
+                  'Exchange this private during a Stock Round to float Minor L.',
+            auction_row: 12,
+            abilities: [
+              {
+                type: 'exchange',
+                corporations: %w[L],
+                owner_type: 'player',
+                from: %w[ipo],
+              },
+            ],
+          },
         ].freeze
 
         CORPORATIONS = [
           # -----------------------------------------------------------------------
-          # Minors (placeholder set from UK-FR variant)
+          # Minors — all 12 (A–M, excluding I)
           # -----------------------------------------------------------------------
+          {
+            name: 'Silver Banner Line',
+            logo: '18_oe/A',
+            sym: 'A',
+            tokens: [0, 20],
+            type: 'minor',
+            shares: [100],
+            float_percent: 100,
+            max_ownership_percent: 100,
+            desc: '(Silver Banner Line) When merged into a major, the bank pays cash into the major\'s treasury '\
+                  'equal to the major\'s current share value at the time of merger. The cash is never part of '\
+                  'the minor\'s own treasury.',
+          },
+          {
+            name: 'Orange Scroll Surveyors',
+            logo: '18_oe/B',
+            sym: 'B',
+            tokens: [0, 20],
+            type: 'minor',
+            shares: [100],
+            float_percent: 100,
+            max_ownership_percent: 100,
+            desc: '(Orange Scroll Surveyors) All track upgrades cost only 1 tile point for this minor, '\
+                  'including tiles with towns — but not cities, grand cities, or metropolises.',
+          },
           {
             name: 'Golden Bell Marketplace',
             logo: '18_oe/C',
@@ -108,6 +388,64 @@ module Engine
             shares: [100],
             float_percent: 100,
             max_ownership_percent: 100,
+            desc: '(Golden Bell Marketplace) At the start of each OR, the president may choose this minor\'s '\
+                  'operating position: first, last, or normal order. The choice is announced before any other '\
+                  'RR operates that OR.',
+          },
+          {
+            name: 'Green Junction Mercantile',
+            logo: '18_oe/D',
+            sym: 'D',
+            tokens: [0, 20],
+            type: 'minor',
+            shares: [100],
+            float_percent: 100,
+            max_ownership_percent: 100,
+            desc: '(Green Junction Mercantile) The president may place this minor\'s token in any non-metropolis, '\
+                  'non-red-zone city on the map (even unreachable). Trains run to or through that city by this '\
+                  'minor or its owning major earn a +£20 bonus (Phase 2–4). At Phase 5 start, the +£20 token '\
+                  'is removed; the president may then place a new token in the same or a different eligible city '\
+                  'for a +£40 bonus (Phase 5+). Placement occurs during the lay track step.',
+          },
+          {
+            name: 'Blue Coast Bridge Construction Company',
+            logo: '18_oe/E',
+            sym: 'E',
+            tokens: [0, 20],
+            type: 'minor',
+            shares: [100],
+            float_percent: 100,
+            max_ownership_percent: 100,
+            desc: '(Blue Coast Bridge Construction Company) Receives a 33% discount on all blue terrain '\
+                  '(water/coast) track construction costs (multiply total cost by 0.67, round down to nearest '\
+                  'pound). Each OR, may also spend 1 additional tile point to place a yellow tile in a hex '\
+                  'that has a blue terrain cost.',
+          },
+          {
+            name: 'White Peak Mountain Railway',
+            logo: '18_oe/F',
+            sym: 'F',
+            tokens: [0, 20],
+            type: 'minor',
+            shares: [100],
+            float_percent: 100,
+            max_ownership_percent: 100,
+            desc: '(White Peak Mountain Railway) Receives a 33% discount on all mountain/rough (green terrain) '\
+                  'track construction costs (multiply total cost by 0.67, round down to nearest pound). Each OR, '\
+                  'may also spend 1 additional tile point to place a yellow tile in a hex that has a green '\
+                  'terrain cost.',
+          },
+          {
+            name: 'Indigo Foundry and Iron Works',
+            logo: '18_oe/G',
+            sym: 'G',
+            tokens: [0, 20],
+            type: 'minor',
+            shares: [100],
+            float_percent: 100,
+            max_ownership_percent: 100,
+            desc: '(Indigo Foundry and Iron Works) Receives 2 extra tile points to use during its lay track '\
+                  'step every OR.',
           },
           {
             name: 'Great Western Steamship Company',
@@ -118,6 +456,21 @@ module Engine
             shares: [100],
             float_percent: 100,
             max_ownership_percent: 100,
+            desc: '(Great Western Steamship Company) Reduces the number of sea zones that count towards '\
+                  'trains\' city limits by 1 during Train Phases 1–6, and by 2 during Train Phases 7–8.',
+          },
+          {
+            name: 'Grey Locomotive Works',
+            logo: '18_oe/J',
+            sym: 'J',
+            tokens: [0, 20],
+            type: 'minor',
+            shares: [100],
+            float_percent: 100,
+            max_ownership_percent: 100,
+            desc: '(Grey Locomotive Works) Receives a 10% discount on the purchase price of all trains '\
+                  '(including Pullman cars). Minor M still receives the full £15 royalty on Pullman purchases '\
+                  'even when this discount applies.',
           },
           {
             name: 'Vermilion Seal Couriers',
@@ -128,6 +481,24 @@ module Engine
             shares: [100],
             float_percent: 100,
             max_ownership_percent: 100,
+            desc: '(Vermilion Seal Couriers) Owns a mail contract. At the start of each OR, the bank pays '\
+                  'contract revenue directly to the RR\'s treasury (not counted as train revenue): '\
+                  '£20 (Phase 2), £40 (Phase 3–4), £50 (Phase 5–6), £60 (Phase 7–8). '\
+                  'The revenue is available immediately to use when laying track or placing tokens that OR.',
+          },
+          {
+            name: 'Krasnaya Strela',
+            logo: '18_oe/L',
+            sym: 'L',
+            tokens: [0, 20],
+            type: 'minor',
+            shares: [100],
+            float_percent: 100,
+            max_ownership_percent: 100,
+            desc: '(Krasnaya Strela) Has a +1+1 marker that the president assigns to one train at the start '\
+                  'of the run trains step each OR. The assigned train\'s city limit and town count are each '\
+                  'increased by 1 (e.g. a 2+2 runs as a 3+3). For D trains, the extra city does not double '\
+                  'in value. This increase does not affect Pullman car revenue calculation.',
           },
           {
             name: 'Compagnie Internationale des Wagons-Lits',
@@ -138,6 +509,11 @@ module Engine
             shares: [100],
             float_percent: 100,
             max_ownership_percent: 100,
+            desc: '(Compagnie Internationale des Wagons-Lits) Owns 10 Pullman cars. At the start of Train Phase 4, '\
+                  'receives one free Pullman for its own use. Other RRs may purchase a Pullman during their buy '\
+                  'trains step for £150; the bank pays £15 royalty to Minor M or its owning major (no royalty '\
+                  'if purchased from the Open Market). Minor J\'s 10% discount applies to the purchase price '\
+                  'but not to the royalty.',
           },
           # -----------------------------------------------------------------------
           # Regionals — United Kingdom (UK)
