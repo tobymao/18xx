@@ -284,39 +284,35 @@ module Engine
         HEXES = {
           white: {
             %w[
-              A42 A66 A68 A70
-              B47 B49 B55 B57 B63 B65 B67 B69 B79
-              C46 C54 C56 C58 C64 C78 C80
-              D45 D55 D69 D71 D73 D75 D77 D79 D83 D85
-              E24 E42 E44 E48 E56 E58 E66 E68 E70 E74 E76 E80 E84 E86
-              F23 F51 F53 F55 F69 F71 F73 F75 F81 F83 F85
-              G16 G18 G20 G46 G50 G52 G54 G56 G68 G70 G72 G76 G78 G80 G82 G84 G86
-              H15 H19 H25 H27 H43 H45 H47 H51 H53 H55 H63 H65 H67 H69 H71 H75 H77 H79 H81 H85 H87
-              I14 I18 I28 I44 I64 I66 I68 I74 I76 I78 I80 I82
-              J13 J19 J45 J67 J69 J75 J77 J79 J81 J83 J85 J87
-              K22 K24 K28 K30 K54 K56 K58 K60 K62 K68 K70 K74 K76 K78 K80 K82 K84 K86
-              L27 L41 L43 L45 L47 L49 L51 L55 L57 L59 L61 L63 L65 L67 L73 L79 L81 L83 L85 L87
-              M22 M24 M40 M42 M44 M46 M48 M52 M54 M56 M58 M60 M64 M66 M68 M70 M82 M84 M86
-              N37 N41 N43 N47 N51 N53 N55 N57 N59 N61 N63 N65 N67 N83 N85
-              O30 O32 O34 O36 O38 O48 O56 O58 O60 O64 O66 O70 O72 O74 O76 O78 O84 O86
-              P21 P23 P25 P27 P31 P35 P39 P43 P47 P49 P51 P53 P59 P61 P63 P65 P67 P69 P71 P73 P75 P77 P79 P81
-              Q22 Q24 Q28 Q32 Q34 Q36 Q42 Q44 Q46 Q48 Q54 Q56 Q58 Q66 Q72 Q74 Q76 Q78 Q80 Q82 Q84 Q86
-              R25 R27 R31 R33 R35 R37 R41 R43 R45 R49 R53 R57 R59 R63 R65 R67 R73 R75 R77 R79 R81 R83 R85
-              S24 S26 S28 S30 S32 S36 S40 S56 S58 S64 S66 S68 S74 S76 S78 S80 S82
-              T25 T29 T31 T35 T53 T55 T57 T59 T61 T63 T65 T81
-              U6 U8 U22 U26 U28 U48 U50 U54 U56 U58 U60 U62 U64
-              V7 V23 V25 V33 V39 V43 V45 V47 V51 V53 V55 V57 V59 V61 V63 V71 V73 V75
-              W10 W12 W14 W16 W26 W28 W30 W34 W40 W46 W48 W56 W58 W60 W62 W64 W70 W72 W78
-              X5 X9 X17 X21 X29 X43 X49 X55 X75 X77
-              Y2 Y4 Y16 Y18 Y22 Y24 Y26 Y44 Y46 Y50 Y56 Y58 Y70 Y72 Y74 Y76
-              Z5 Z7 Z9 Z11 Z15 Z17 Z19 Z45 Z51 Z79
-              AA2 AA6 AA8 AA14 AA16 AA22 AA48 AA52 AA54 AA62 AA70 AA74 AA76 AA78 AA80 AA84
-              AB1 AB5 AB11 AB17 AB39 AB41 AB55 AB57 AB63 AB69
-              AC6 AC18 AC38 AC40 AC68 AC78 AC80 AC82 AC84 AC86
-              AD5 AD11 AD39 AD67 AD69 AD79 AD85 AD87
-              AE72 AE86
-              AF49 AF53 AF67 AF81 AF85 AF87
-              AG52 AG68
+              A42 A66 A68 A70 B47 B49 B55 B57 B63 B65 B69 B79
+              C46 C54 C56 C78 C80 D45 D55 D71 D73 D79 D85 E24
+              E42 E48 E58 E66 E68 E74 E76 E80 E84 E86 F23 F51
+              F55 F69 F71 F75 F81 F83 F85 G16 G18 G20 G50 G52
+              G54 G56 G70 G72 G76 G78 G80 G82 G86 H15 H19 H25
+              H27 H43 H45 H53 H65 H67 H69 H75 H77 H79 H81 I14
+              I18 I28 I44 I64 I68 I74 I78 I82 J13 J19 J45 J67
+              J75 J79 J81 J83 J85 J87 K22 K24 K28 K30 K54 K56
+              K58 K70 K74 K76 K80 K82 K84 L27 L41 L45 L47 L49
+              L51 L55 L57 L59 L61 L63 L65 L67 L73 L81 L83 L85
+              M22 M24 M40 M42 M46 M52 M54 M58 M60 M64 M66 M70
+              M82 M84 M86 N37 N43 N47 N51 N53 N55 N57 N61 N63
+              N67 N85 O30 O32 O34 O36 O38 O48 O58 O60 O64 O66
+              O70 O72 O74 O76 O78 O84 O86 P21 P23 P25 P27 P31
+              P35 P39 P47 P49 P51 P59 P63 P65 P67 P71 P73 P75
+              P79 P81 Q22 Q24 Q28 Q32 Q34 Q36 Q42 Q44 Q48 Q54
+              Q58 Q66 Q74 Q76 Q78 Q80 Q82 Q86 R25 R27 R31 R33
+              R35 R37 R41 R43 R45 R49 R57 R63 R65 R73 R75 R77
+              R79 R81 R83 R85 S24 S26 S28 S30 S32 S36 S56 S58
+              S64 S66 S74 S80 S82 T25 T29 T31 T35 T55 T57 T59
+              T63 T65 U8 U22 U26 U28 U48 U50 U54 U58 U60 V7
+              V23 V25 V33 V43 V53 V57 V59 V61 V63 V71 V75 W10
+              W12 W14 W16 W26 W28 W30 W34 W48 W56 W58 W60 W62
+              W72 W78 X5 X9 X17 X21 X29 X43 X49 X75 X77 Y2
+              Y4 Y16 Y18 Y22 Y24 Y26 Y46 Y50 Y56 Y58 Y72 Y74
+              Y76 Z5 Z7 Z9 Z11 Z15 Z17 Z19 Z45 Z51 Z79 AA2
+              AA6 AA8 AA14 AA16 AA22 AA48 AA54 AA70 AA74 AA76 AA78 AA80
+              AB1 AB5 AB11 AB17 AB41 AB63 AC18 AC38 AC78 AC80 AC82 AC86
+              AD5 AD11 AD39 AD67 AD69 AD85 AD87 AE86 AF67 AF81 AF85 AG52
             ] => '',
 
             # Impassable borders (landtiles_with_borders.csv)
@@ -341,24 +337,24 @@ module Engine
             ['AC56'] => 'border=edge:4,type:impassable',
             ['AC58'] => 'border=edge:1,type:impassable',
             # Skagerrak / Norwegian coast
-            ['I46'] => 'border=edge:5,type:impassable',
+            ['I46'] => 'city=revenue:0;border=edge:5,type:impassable',
             ['I48'] => 'border=edge:0,type:impassable;upgrade=cost:45,terrain:water',
             ['J47'] => 'border=edge:2,type:impassable;border=edge:3,type:impassable;border=edge:4,type:impassable;border=edge:5,type:impassable;upgrade=cost:60,terrain:water',
             ['J49'] => 'border=edge:0,type:impassable;border=edge:1,type:impassable;border=edge:5,type:impassable;upgrade=cost:60,terrain:water',
             ['K48'] => 'border=edge:2,type:impassable;border=edge:3,type:impassable',
             ['K50'] => 'border=edge:2,type:impassable',
             # North Sea — Danish coast
-            ['D47'] => 'border=edge:4,type:impassable;border=edge:5,type:impassable',
+            ['D47'] => 'city=revenue:0;border=edge:4,type:impassable;border=edge:5,type:impassable',
             ['D49'] => 'border=edge:1,type:impassable',
-            ['D51'] => 'border=edge:5,type:impassable;upgrade=cost:30,terrain:water',
-            ['D53'] => 'border=edge:0,type:impassable;upgrade=cost:30,terrain:water',
+            ['D51'] => 'city=revenue:0;border=edge:5,type:impassable;upgrade=cost:30,terrain:water',
+            ['D53'] => 'city=revenue:0;border=edge:0,type:impassable;upgrade=cost:30,terrain:water',
             ['E52'] => 'border=edge:2,type:impassable;border=edge:3,type:impassable;upgrade=cost:45,terrain:water',
             # Baltic — Gulf of Bothnia entry
             ['C66'] => 'border=edge:5,type:impassable',
             ['D67'] => 'border=edge:2,type:impassable',
             # Norwegian fjord coast
             ['B71'] => 'border=edge:5,type:impassable',
-            ['B73'] => 'border=edge:0,type:impassable;upgrade=cost:30,terrain:water',
+            ['B73'] => 'city=revenue:0;border=edge:0,type:impassable;upgrade=cost:30,terrain:water',
             ['B75'] => 'border=edge:4,type:impassable',
             ['B77'] => 'border=edge:1,type:impassable;upgrade=cost:45,terrain:water',
             ['C72'] => 'border=edge:2,type:impassable;border=edge:3,type:impassable;upgrade=cost:30,terrain:water',
@@ -381,6 +377,18 @@ module Engine
                R55 S60 V41 Z47 J73 M62 O80
                Z27 AD17 M50 AB51 C74
                V17 W6 X13 Y20 AA20 AC8 AC16 AB27] => 'city=revenue:0',
+            # Cities — no terrain (added station geometry)
+            %w[
+              AA52 AA62 AA84 AB39 AB55 AB57 AB69 AC40 AC6 AC68 AC84 AD79
+              AE72 AF49 AF53 AF87 AG68 B67 C58 C64 D69 D75 D77 D83
+              E44 E56 E70 F53 F73 G46 G68 G84 H47 H51 H55 H63
+              H71 H85 H87 I66 I76 I80 J69 J77 K60 K62 K68 K78
+              K86 L43 L79 L87 M44 M48 M56 M68 N41 N59 N65 N83
+              O56 P43 P53 P61 P69 P77 Q46 Q56 Q72 Q84 R53 R59
+              R67 S40 S68 S76 S78 T53 T61 T81 U56 U6 U62 U64
+              V39 V45 V47 V51 V55 V73 W40 W46 W64 W70 X55 Y44
+              Y70
+            ] => 'city=revenue:0',
             # Cities — label Y
             ['U34'] => 'city=revenue:0;label=Y',
             ['N35'] => 'city=revenue:0;label=Y;upgrade=cost:30,terrain:water',
@@ -401,49 +409,82 @@ module Engine
             ['M28'] => 'city=revenue:30;label=L;upgrade=cost:30,terrain:water;path=a:5,b:_0',
             ['X33'] => 'city=revenue:20;label=Y;path=a:_0,b:5',
 
+
+            # Cities — water terrain
+            ['AE68'] => 'city=revenue:0;upgrade=cost:30,terrain:water',
+            ['D41'] => 'city=revenue:0;upgrade=cost:45,terrain:water',
+            ['D81'] => 'city=revenue:0;upgrade=cost:30,terrain:water',
+            ['I52'] => 'city=revenue:0;upgrade=cost:45,terrain:water',
+            ['J63'] => 'city=revenue:0;upgrade=cost:30,terrain:water',
+            ['L37'] => 'city=revenue:0;upgrade=cost:45,terrain:water',
+            ['L39'] => 'city=revenue:0;upgrade=cost:30,terrain:water',
+            ['M36'] => 'city=revenue:0;upgrade=cost:30,terrain:water',
+            ['M38'] => 'city=revenue:0;upgrade=cost:30,terrain:water',
+            ['M72'] => 'city=revenue:0;upgrade=cost:30,terrain:water',
+            ['O40'] => 'city=revenue:0;upgrade=cost:30,terrain:water',
+            ['P85'] => 'city=revenue:0;upgrade=cost:30,terrain:water',
+            ['Q40'] => 'city=revenue:0;upgrade=cost:30,terrain:water',
+            ['S84'] => 'city=revenue:0;upgrade=cost:45,terrain:water',
+            ['S86'] => 'city=revenue:0;upgrade=cost:30,terrain:water',
+            ['U78'] => 'city=revenue:0;upgrade=cost:45,terrain:water',
+            ['U80'] => 'city=revenue:0;upgrade=cost:45,terrain:water',
+            ['W74'] => 'city=revenue:0;upgrade=cost:30,terrain:water',
+            # Cities — mountain terrain
+            ['AB83'] => 'city=revenue:0;upgrade=cost:45,terrain:mountain',
+            ['AC64'] => 'city=revenue:0;upgrade=cost:30,terrain:mountain',
+            ['B43'] => 'city=revenue:0;upgrade=cost:60,terrain:mountain',
+            ['O52'] => 'city=revenue:0;upgrade=cost:30,terrain:mountain',
+            ['Q52'] => 'city=revenue:0;upgrade=cost:45,terrain:mountain',
+            ['S42'] => 'city=revenue:0;upgrade=cost:30,terrain:mountain',
+            ['S46'] => 'city=revenue:0;upgrade=cost:60,terrain:mountain',
+            ['S50'] => 'city=revenue:0;upgrade=cost:30,terrain:mountain',
+            ['T39'] => 'city=revenue:0;upgrade=cost:120,terrain:mountain',
+            ['T69'] => 'city=revenue:0;upgrade=cost:30,terrain:mountain',
+            ['U52'] => 'city=revenue:0;upgrade=cost:45,terrain:mountain',
+            ['U72'] => 'city=revenue:0;upgrade=cost:45,terrain:mountain',
+            ['X45'] => 'city=revenue:0;upgrade=cost:45,terrain:mountain',
+            ['X59'] => 'city=revenue:0;upgrade=cost:30,terrain:mountain',
+            ['Y64'] => 'city=revenue:0;upgrade=cost:45,terrain:mountain',
+            ['Y66'] => 'city=revenue:0;upgrade=cost:45,terrain:mountain',
+            ['Z73'] => 'city=revenue:0;upgrade=cost:30,terrain:mountain',
+
             # Terrain — water
             ['E78'] => 'upgrade=cost:5,terrain:water',
-            %w[C50 C52 D81 E82 F77 F79 G64 G66 G74 H73 I70 I72
-               J63 J65 K64 K66 L39 L69 L71 L75 L77
-               M36 M38 M72 M74 M76 M78 M80
-               N39 N69 N71 N73 N75 N77 N79
-               O40 P41 P83 P85 P87
-               Q40 Q50 R87 S86
-               V77 W74 W76 X69 X71 X73 Y78 Z77 Z23
-               AE68 AE70] => 'upgrade=cost:30,terrain:water',
-            %w[A72 A74 C42 C76 D41 E50 E54 E72 G44 I52
-               K44 L37 N81 O82 S84 Q20
-               T75 T77 T79 U76 U78 U80 V79
+            %w[C50 C52 E82 F77 F79 G64 G66 G74 H73 I70 I72 J65 K64 K66 L69 L71 L75 L77 M74 M76 M78 M80
+               N39 N69 N71 N73 N75 N77 N79 P41 P83 P87 Q50 R87
+               V77 W76 X69 X71 X73 Y78 Z77 Z23 AE70] => 'upgrade=cost:30,terrain:water',
+            %w[A72 A74 C42 C76 E50 E54 E72 G44
+               K44 N81 O82 Q20
+               T75 T77 T79 U76 V79
                AB71 AE52] => 'upgrade=cost:45,terrain:water',
             %w[B81 C82 M34 T23 AB77 AC76 AD71 AG70] => 'upgrade=cost:60,terrain:water',
 
             # Terrain — mountain
             %w[B51 B53 H83 I84 I86 J71 K72
-               O46 O50 O52 O68 P45 P57
-               Q70 R39 S42 S50 S62 S70
-               T33 T69 U10
-               W54 X45 X59 X65
-               Z63 Z69 Z73 Z75 AA68
-               AB13 AB53 AC64 AC66 AD65 AF69 AG50] => 'upgrade=cost:30,terrain:mountain',
-            %w[A48 A50 A52 N45 O42 O44 O62 P55
-               Q52 Q60 Q62 Q64 Q68 R51 R61 R69
+               O46 O50 O68 P45 P57
+               Q70 R39 S62 S70
+               T33 U10
+               W54 X65
+               Z63 Z69 Z75 AA68
+               AB13 AB53 AC66 AD65 AF69 AG50] => 'upgrade=cost:30,terrain:mountain',
+            %w[A48 A50 A52 N45 O42 O44 O62 P55 Q60 Q62 Q64 Q68 R51 R61 R69
                S38 S44 S48 T67 T71 T73
-               U30 U52 U66 U74
+               U30 U66 U74
                V9 V13 V29 V35 V65 V69
                W20 W36 W42 W44 W68 X7 X15 X47 X57 X61 X63 X67
-               Y6 Y28 Y48 Y62 Y64 Y66 Y68
+               Y6 Y28 Y48 Y62 Y68
                Z21 Z49 Z61 Z65 Z71
                AA10 AA12 AA18 AA50 AA64 AA72
-               AB7 AB9 AB19 AB65 AB67 AB83 AC14 AC54 AD55 AD81 AD83 AE80 AF83] => 'upgrade=cost:45,terrain:mountain',
-            %w[A44 A46 B43 C44 D43
-               O54 R71 S46 S52 S54 S72
+               AB7 AB9 AB19 AB65 AB67 AC14 AC54 AD55 AD81 AD83 AE80 AF83] => 'upgrade=cost:45,terrain:mountain',
+            %w[A44 A46 C44 D43
+               O54 R71 S52 S54 S72
                T49 T51 U36 U40 U42 U46
-               U68 U70 U72 V11 V31 V37 V67
+               U68 U70 V11 V31 V37 V67
                W8 W24 W38 W66
                X19 X27 Y8 Y10 Y12 Y60 Z67
                AA66 AA86
                AB15 AB85 AE82 AE84 AF51] => 'upgrade=cost:60,terrain:mountain',
-            %w[B45 T39 T41 T43 T45 T47 U38 U44 W22 X23] => 'upgrade=cost:120,terrain:mountain',
+            %w[B45 T41 T43 T45 T47 U38 U44 W22 X23] => 'upgrade=cost:120,terrain:mountain',
           },
           yellow: {
             ['J25'] => 'city=revenue:30;label=Y;path=a:2,b:_0;path=a:_0,b:4',
