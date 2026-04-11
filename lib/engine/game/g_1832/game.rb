@@ -108,7 +108,7 @@ module Engine
             Engine::Step::Bankrupt,
             Engine::Step::Exchange,
             G1832::Step::BuyCompany,
-            G1870::Step::Assign,
+            G1832::Step::Assign,
             G1870::Step::SpecialTrack,
             G1832::Step::Track,
             G1832::Step::Token,
@@ -218,6 +218,13 @@ module Engine
           @cotton_company ||= company_by_id('P3')
         end
 
+        def highlight_city_assignment?(city)
+          hex = city.hex
+          return false unless hex.assigned?('P2')
+
+          hex.assignments['P2'] == hex.tile.cities.index(city)
+        end
+
         def can_hold_above_corp_limit?(_entity)
           true
         end
@@ -240,7 +247,14 @@ module Engine
           revenue = super
 
           cotton = 'P2'
-          revenue += 10 if route.corporation.assigned?(cotton) && stops.any? { |stop| stop.hex.assigned?(cotton) }
+          if route.corporation.assigned?(cotton) && stops.any? do |stop|
+               next false unless stop.hex.assigned?(cotton)
+
+               city_index = stop.hex.assignments[cotton]
+               city_index.is_a?(Integer) ? stop.hex.tile.cities.index(stop) == city_index : true
+             end
+            revenue += 10
+          end
 
           revenue += (route.corporation.assigned?('P3') ? 20 : 10) if stops.any? { |stop| stop.hex.assigned?('P3') }
 
