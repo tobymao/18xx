@@ -95,7 +95,7 @@ module Engine
             auction_row: 3,
           },
           # -----------------------------------------------------------------------
-          # Row 4 — £80 private
+          # Row 4 — £80 + £100 + £120 privates (HMLC, BBE, SML)
           # -----------------------------------------------------------------------
           {
             name: 'Hochberg Mining and Lumber Company',
@@ -110,9 +110,6 @@ module Engine
                   '(two for a metropolis); nationals skip the terrain cost but still expend tile points.',
             auction_row: 4,
           },
-          # -----------------------------------------------------------------------
-          # Row 5 — £100 private
-          # -----------------------------------------------------------------------
           {
             name: 'Brandt and Brandau, Engineers',
             sym: 'BBE',
@@ -124,11 +121,8 @@ module Engine
                   'Only the owner\'s RRs may use track on hexes bearing these tokens. '\
                   'Turn the private face-down when the last token is placed; it is removed from the game '\
                   'when no tokens remain on the map.',
-            auction_row: 5,
+            auction_row: 4,
           },
-          # -----------------------------------------------------------------------
-          # Row 6 — £120 private
-          # -----------------------------------------------------------------------
           {
             name: 'Swift Metropolitan Line',
             sym: 'SML',
@@ -139,10 +133,11 @@ module Engine
                   'This train does not count against the train limit, cannot run on track already used by '\
                   'the RR\'s other trains in the same OR, and can never be sold. '\
                   'If held by a minor, the train transfers to the major when the minor merges.',
-            auction_row: 6,
+            auction_row: 4,
           },
           # -----------------------------------------------------------------------
-          # Rows 7–12 — Minor-exchange companies (float all 12 minors)
+          # Rows 5–7 — Minor-exchange companies (float all 12 minors)
+          # Row 5: A B C  |  Row 6: D E F G  |  Row 7: H J K L M
           # -----------------------------------------------------------------------
           {
             name: 'Golden Bell Marketplace',
@@ -151,7 +146,7 @@ module Engine
             revenue: 0,
             desc: 'Purchased in the auction to acquire the Minor C charter. '\
                   'Exchange this private during a Stock Round to float Minor C.',
-            auction_row: 7,
+            auction_row: 5,
             abilities: [
               {
                 type: 'exchange',
@@ -185,7 +180,7 @@ module Engine
             revenue: 0,
             desc: 'Purchased in the auction to acquire the Minor K charter. '\
                   'Exchange this private during a Stock Round to float Minor K.',
-            auction_row: 8,
+            auction_row: 7,
             abilities: [
               {
                 type: 'exchange',
@@ -202,7 +197,7 @@ module Engine
             revenue: 0,
             desc: 'Purchased in the auction to acquire the Minor M charter. '\
                   'Exchange this private during a Stock Round to float Minor M.',
-            auction_row: 8,
+            auction_row: 7,
             abilities: [
               {
                 type: 'exchange',
@@ -219,7 +214,7 @@ module Engine
             revenue: 0,
             desc: 'Purchased in the auction to acquire the Minor A charter. '\
                   'Exchange this private during a Stock Round to float Minor A.',
-            auction_row: 9,
+            auction_row: 5,
             abilities: [
               {
                 type: 'exchange',
@@ -236,7 +231,7 @@ module Engine
             revenue: 0,
             desc: 'Purchased in the auction to acquire the Minor B charter. '\
                   'Exchange this private during a Stock Round to float Minor B.',
-            auction_row: 9,
+            auction_row: 5,
             abilities: [
               {
                 type: 'exchange',
@@ -253,7 +248,7 @@ module Engine
             revenue: 0,
             desc: 'Purchased in the auction to acquire the Minor D charter. '\
                   'Exchange this private during a Stock Round to float Minor D.',
-            auction_row: 10,
+            auction_row: 6,
             abilities: [
               {
                 type: 'exchange',
@@ -270,7 +265,7 @@ module Engine
             revenue: 0,
             desc: 'Purchased in the auction to acquire the Minor E charter. '\
                   'Exchange this private during a Stock Round to float Minor E.',
-            auction_row: 10,
+            auction_row: 6,
             abilities: [
               {
                 type: 'exchange',
@@ -287,7 +282,7 @@ module Engine
             revenue: 0,
             desc: 'Purchased in the auction to acquire the Minor F charter. '\
                   'Exchange this private during a Stock Round to float Minor F.',
-            auction_row: 11,
+            auction_row: 6,
             abilities: [
               {
                 type: 'exchange',
@@ -304,7 +299,7 @@ module Engine
             revenue: 0,
             desc: 'Purchased in the auction to acquire the Minor G charter. '\
                   'Exchange this private during a Stock Round to float Minor G.',
-            auction_row: 11,
+            auction_row: 6,
             abilities: [
               {
                 type: 'exchange',
@@ -321,7 +316,7 @@ module Engine
             revenue: 0,
             desc: 'Purchased in the auction to acquire the Minor J charter. '\
                   'Exchange this private during a Stock Round to float Minor J.',
-            auction_row: 12,
+            auction_row: 7,
             abilities: [
               {
                 type: 'exchange',
@@ -338,7 +333,7 @@ module Engine
             revenue: 0,
             desc: 'Purchased in the auction to acquire the Minor L charter. '\
                   'Exchange this private during a Stock Round to float Minor L.',
-            auction_row: 12,
+            auction_row: 7,
             abilities: [
               {
                 type: 'exchange',
