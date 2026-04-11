@@ -361,7 +361,13 @@ module Engine
 
             # Towns — no terrain
             %w[H17 H29 J17 L29 N33 O24 P19 P29 P33 P37 R29 S34 T27 X35 X37 Z41
-               V5 W18 X11 Z3 Z13 Z25 AA4 AB3 AC10 AC12 AC20 AD15] => 'town=revenue:0',
+               V5 V21 W18 X11 Z3 Z13 Z25 AA4 AB3 AC10 AC12 AC20 AD15
+               K60 K62 L43 M48 M56 P43 P61 Q56 Q72
+               R53 R59 R67 S40 S68 T61 U56 U62 X55
+               V45 V47 Y44 AA52 AB39 AB55
+               C64 D69 D75 D83 E70 F73 G84 H71 H85
+               I66 I80 K68 L79 L87 N59 N65 N83 Q84
+               V73 W70 AA84 AC68 AC84 AG68 AF87] => 'town=revenue:0',
             # Towns — mountain terrain
             %w[G24 I16 I26 U12 V15 AD13] => 'town=revenue:0;upgrade=cost:30,terrain:mountain',
             %w[E26 E28 J23] => 'town=revenue:0;upgrade=cost:45,terrain:mountain',
@@ -369,7 +375,11 @@ module Engine
             # Towns — water terrain
             %w[L23 AD7] => 'town=revenue:0;upgrade=cost:45,terrain:water',
             # Double towns
-            %w[J29 M26 W32] => 'town=revenue:0;town=revenue:0',
+            %w[J29 M26 W32
+               C58 E44 F53 G46 H51 H55
+               N41 Q46 U64 W46 AF53
+               J77 P77
+               AC6 U6] => 'town=revenue:0;town=revenue:0',
             ['T37'] => 'town=revenue:0;town=revenue:0;upgrade=cost:45,terrain:mountain',
             # Cities — no label, no terrain
             %w[ H21 J15 L25 Q26 R23 V27
