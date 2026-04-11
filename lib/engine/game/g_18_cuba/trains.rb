@@ -85,6 +85,7 @@ module Engine
             distance: 8,
             price: 700,
             track_type: :broad,
+            events: [{ 'type' => 'downgrade_4n_trains' }],
             variants: [
               {
                 name: '4D',
@@ -100,6 +101,7 @@ module Engine
             distance: 2,
             price: 80,
             track_type: :narrow,
+            available_on: '2',
             rusts_on: '4',
           },
           {
@@ -107,21 +109,39 @@ module Engine
             distance: 3,
             price: 160,
             track_type: :narrow,
+            available_on: '3',
             rusts_on: '6',
+            discount: { '2n' => 40 },
           },
           {
             name: '4n',
             distance: 4,
             price: 260,
             track_type: :narrow,
+            available_on: '4',
+            discount: { '3n' => 80 },
           },
           {
             name: '5n',
             distance: 5,
             price: 380,
             track_type: :narrow,
+            available_on: '5',
+            discount: { '4n' => 130, '4-1n' => 65 },
           },
           ].freeze
+
+        def event_downgrade_4n_trains!
+          @log << '-- Event: 4n trains downgrade to 4-1n trains --'
+          trains.each do |train|
+            next unless train.name == '4n'
+            next unless train.owned_by_corporation?
+
+            @log << "#{train.owner.name}'s 4n train downgrades to 4-1n"
+            train.name = '4-1n'
+            train.distance = 3
+          end
+        end
       end
     end
   end
