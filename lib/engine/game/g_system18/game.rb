@@ -815,6 +815,12 @@ module Engine
           send("map_#{cmap_name}_game_end_check_values")
         end
 
+        def player_value(player)
+          return super unless respond_to?("map_#{cmap_name}_player_value")
+
+          send("map_#{cmap_name}_player_value", player)
+        end
+
         def rust?(train, purchased_train)
           !@deferred_rust.include?(train) && super
         end
