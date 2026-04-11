@@ -382,7 +382,7 @@ module Engine
                AC6 U6] => 'town=revenue:0;town=revenue:0',
             ['T37'] => 'town=revenue:0;town=revenue:0;upgrade=cost:45,terrain:mountain',
             # Cities — no label, no terrain
-            %w[ H21 J15 L25 Q26 R23 V27
+            %w[ H21 J15 L25 Q26 Q38 R23 V27
                C48 F49 L53 N49 J73 AD17
                V17 W6 X13 Y20 AA20 AC8 AC16 AB27] => 'city=revenue:0',
             # Cities — no terrain (added station geometry)
