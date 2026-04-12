@@ -229,7 +229,7 @@ class Assets
     builder = Opal::Builder.new
     append_paths.each { |ap| builder.append_paths(ap) }
     path = "#{@out_path}/#{output_name}.js"
-    if !@cache || !File.exist?(path)
+    if !@cache || !File.exist?(path) || (@source_maps && !File.exist?("#{path}.map"))
       time = Time.now
       File.write(path, builder.build(name))
       File.write("#{path}.map", builder.source_map.map.to_json) if @source_maps
