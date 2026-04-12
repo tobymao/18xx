@@ -4,6 +4,8 @@ require_relative 'meta'
 require_relative 'entities'
 require_relative 'map'
 require_relative '../base'
+require_relative 'round/consolidation'
+require_relative 'step/consolidate'
 
 module Engine
   module Game
@@ -12,7 +14,8 @@ module Engine
         include_meta(G18OE::Meta)
         include G18OE::Entities
         include G18OE::Map
-        attr_accessor :minor_regional_order, :minor_available_regions, :minor_floated_regions, :regional_corps_floated
+        attr_accessor :minor_regional_order, :minor_available_regions, :minor_floated_regions, :regional_corps_floated,
+                      :consolidation_triggered, :consolidation_done
 
         MARKET = [
           ['', '110', '120C', '135', '150', '165', '180', '200', '225', '250', '280', '310', '350', '390', '440', '490', '550'],
@@ -583,11 +586,57 @@ module Engine
         end
 
         def must_buy_train?(entity)
-          # must buy the reserved 2+2, otherwise only majors must buy trains
-          # return unless entity.type == 'major'
-          return false if depot.depot_trains.first&.name != '2+2' && entity.type != :major
+          return false unless entity.corporation?
+          return false if entity.trains.any?
+          # 2+2 obligation waived once Phase 4 starts
+          return false if @phase.name.to_i >= 4
+
+          entity.floated?
+        end
+
+        # Inter-corp train sales only allowed in Major Phase (Phase 4+)
+        def can_buy_train_from_others?
+          @phase.name.to_i >= 4
+        end
+
+        # UP movement at end of SR: only for majors and nationals that are fully player-held
+        def sold_out_increase?(corporation)
+          %i[major national].include?(corporation.type)
+        end
+
+        # Set consolidation trigger at the end of the first OR set played under Phase 5+
+        def or_set_finished
+          super
+          @consolidation_triggered ||= (@phase.name.to_i >= 5)
+        end
+
+        def next_round!
+          # Insert consolidation round between OR set end and next SR (once only)
+          if @round.is_a?(Round::Operating) &&
+             @round.round_num >= @operating_rounds &&
+             @consolidation_triggered &&
+             !@consolidation_done
+            @log << '-- Consolidation Phase --'
+            @round = new_consolidation_round
+            return
+          end
+
+          # After consolidation round, proceed to SR
+          if @round.is_a?(Round::G18OE::Consolidation)
+            @consolidation_done = true
+            @turn += 1
+            or_set_finished
+            @round = new_stock_round
+            return
+          end
 
           super
+        end
+
+        def new_consolidation_round
+          Round::G18OE::Consolidation.new(self, [
+            G18OE::Step::Consolidate,
+          ])
         end
 
         def upgrades_to_correct_label?(from, to)
