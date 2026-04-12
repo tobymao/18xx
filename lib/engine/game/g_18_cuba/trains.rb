@@ -107,7 +107,7 @@ module Engine
           {
             name: '3n',
             distance: 3,
-            price: 160,
+            price: 180,
             track_type: :narrow,
             available_on: '3',
             rusts_on: '6',
@@ -135,11 +135,17 @@ module Engine
           @log << '-- Event: 4n trains downgrade to 4-1n trains --'
           trains.each do |train|
             next unless train.name == '4n'
-            next unless train.owned_by_corporation?
 
-            @log << "#{train.owner.name}'s 4n train downgrades to 4-1n"
+            @log << if train.owned_by_corporation?
+                      "#{train.owner.name}'s 4n train downgrades to 4-1n"
+                    else
+                      'Depot and Discard 4n trains downgrade to 4-1n'
+                    end
             train.name = '4-1n'
             train.distance = 3
+            train.variant[:name] = '4-1n'
+            train.variant[:distance] = 3
+            train.variants['4-1n'] = train.variants.delete('4n') if train.variants.key?('4n')
           end
         end
       end
