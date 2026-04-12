@@ -12,10 +12,12 @@ module View
       return '' if url_search_params.unsupported
 
       title_elm = render_title(url_search_params)
+      mode_elm = render_mode(url_search_params)
 
       h('div#game_filters.game_row', { key: @header }, [
         h(:h2, 'Filters'),
         title_elm,
+        mode_elm,
         render_reset,
       ])
     end
@@ -88,6 +90,36 @@ module View
       children << h('select', { on: { input: on_select }, style: { maxWidth: '90vw' } }, game_options)
 
       h(:div, children)
+    end
+
+    def render_mode(url_search_params)
+      current = url_search_params['mode'] || 'all'
+
+      buttons = [
+        { label: 'All', value: 'all' },
+        { label: 'Live', value: 'live' },
+        { label: 'Async', value: 'async' },
+      ].map do |opt|
+        active = current == opt[:value]
+        on_click = lambda do
+          url_search_params['mode'] = opt[:value] == 'all' ? '' : opt[:value]
+          update_filters(url_search_params.to_query_string)
+        end
+
+        h(:button, {
+            style: {
+              padding: '4px 12px',
+              cursor: 'pointer',
+              background: active ? '#4a4a4a' : '#ddd',
+              color: active ? '#fff' : '#333',
+              border: '1px solid #888',
+              fontWeight: active ? 'bold' : 'normal',
+            },
+            on: { click: on_click },
+          }, opt[:label])
+      end
+
+      h(:div, { style: { display: 'flex', margin: '6px 0' } }, buttons)
     end
 
     def render_reset
