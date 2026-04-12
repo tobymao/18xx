@@ -145,7 +145,7 @@ module Engine
             train.distance = 3
             train.variant[:name] = '4-1n'
             train.variant[:distance] = 3
-            train.variants.transform_keys!( { '4n' => '4n-1' })
+            train.variants.transform_keys!({ '4n' => '4n-1' })
           end
         end
       end
