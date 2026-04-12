@@ -29,20 +29,27 @@ module View
         h(:div, props, children)
       end
 
+      def format_time(ts)
+        return '' unless ts
+
+        Time.at(ts.to_i).strftime('%F %T')
+      end
+
+      def info_row(label, value)
+        h(:div, [
+          h(:label, { style: { fontWeight: 'bold' } }, "#{label}: "),
+          h(:span, value.to_s),
+        ])
+      end
+
       def render_game_info
-        items = []
-
-        items << h(:div, [h(:label, { style: { fontWeight: 'bold' } }, 'Description: '), h(:span, description)])
-
-        items << h(:div, [h(:label, { style: { fontWeight: 'bold' } }, 'Host: '), h(:span, host)])
-
-        ts = Time.at(created_at.to_i)
-        items << h(:div, [h(:label, { style: { fontWeight: 'bold' } }, 'Created: '), h(:span, ts.strftime('%F %T'))])
-
-        ts = Time.at(updated_at.to_i)
-        items << h(:div, [h(:label, { style: { fontWeight: 'bold' } }, 'Last Updated: '), h(:span, ts.strftime('%F %T'))])
-
-        items
+        data = @game_data
+        [
+          info_row('Description', data.dig['description']),
+          info_row('Host', data.dig('user', 'name')),
+          info_row('Created', format_time(data['created_at'])),
+          info_row('Last Updated', format_time(data['updated_at'])),
+        ]
       end
 
       def render_game_data_buttons
