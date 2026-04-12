@@ -139,7 +139,7 @@ module Engine
             @log << if train.owned_by_corporation?
                       "#{train.owner.name}'s 4n train downgrades to 4-1n"
                     else
-                      'Depot and Discard 4n trains downgrade to 4-1n'
+                      'Depot/Discard 4n train downgrades to 4-1n'
                     end
             train.name = '4-1n'
             train.distance = 3
