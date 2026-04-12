@@ -29,6 +29,30 @@ module View
         h(:div, props, children)
       end
 
+      def render_game_info
+        items = []
+
+        if (description = @game_data['description']).to_s != ''
+          items << h(:div, [h(:label, { style: { fontWeight: 'bold' } }, 'Description: '), h(:span, description)])
+        end
+
+        if (host = @game_data.dig('user', 'name'))
+          items << h(:div, [h(:label, { style: { fontWeight: 'bold' } }, 'Host: '), h(:span, host)])
+        end
+
+        if (created_at = @game_data['created_at'])
+          ts = Time.at(created_at.to_i)
+          items << h(:div, [h(:label, { style: { fontWeight: 'bold' } }, 'Created: '), h(:span, ts.strftime('%F %T'))])
+        end
+
+        if (updated_at = @game_data['updated_at'])
+          ts = Time.at(updated_at.to_i)
+          items << h(:div, [h(:label, { style: { fontWeight: 'bold' } }, 'Last Updated: '), h(:span, ts.strftime('%F %T'))])
+        end
+
+        items
+      end
+
       def render_game_data_buttons
         clone_game = lambda do
           @connection.unsubscribe(url(@game_data))
@@ -47,7 +71,6 @@ module View
         end
 
         buttons = [
-          h(:h3, 'Game Data'),
           h(:button, {
               on: { click: -> { store(:show_json, !@show_json) } },
               style: { width: '4.2rem' },
@@ -78,7 +101,7 @@ module View
 
         buttons.concat(render_random_seed)
 
-        h('div.margined', buttons)
+        h('div.margined', [h(:h3, 'Game Data')] + render_game_info + [h(:div, { style: { marginTop: '1rem' } }, buttons)])
       end
 
       def render_random_seed
