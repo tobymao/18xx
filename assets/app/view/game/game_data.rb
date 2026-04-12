@@ -43,12 +43,11 @@ module View
       end
 
       def render_game_info
-        data = @game_data
         [
-          info_row('Description', data.dig['description']),
-          info_row('Host', data.dig('user', 'name')),
-          info_row('Created', format_time(data['created_at'])),
-          info_row('Last Updated', format_time(data['updated_at'])),
+          info_row('Description', @game_data['description']),
+          info_row('Host', @game_data['user'] && @game_data['user']['name']),
+          info_row('Created', format_time(@game_data['created_at'])),
+          info_row('Last Updated', format_time(@game_data['updated_at'])),
         ]
       end
 
