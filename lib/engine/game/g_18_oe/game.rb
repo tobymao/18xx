@@ -240,7 +240,15 @@ module Engine
                      Q32 Q34 Q36 Q38 R23 R25 R27 R29 R31 R33 R35 R37 R39 S24 S26 S28 S30 S32 S34 S36 S38 T23 T25 T27 T29 T31 T33
                      T35 T37 U22 U24 U26 U28 U30 U32 U34 U36 U38 V21 V23 V25 V27 V29 V31 V33 V35 V37 W22 W24 W26 W28 W30 W32 W34
                      W36 W38 X25 X27 X29 X33 X35 X37 Y28 Z41], # plus Alger
+          # TODO: PHS, AH, IT, SP, RU, SC hex lists missing — blocked on physical map data (mapquest.txt §7)
         }.freeze
+
+        # TEMPORARY WORKAROUND (openpoints §2.5 / mapquest §7):
+        # Set to false while NATIONAL_REGION_HEXES is incomplete (only UK + FR defined).
+        # When false, minor home-token placement is unrestricted — any non-metropolis
+        # tokenable city on the map is eligible. Flip to true once all 8 zone hex lists
+        # are filled in and the regional token/revenue rules should be enforced.
+        NATIONAL_REGION_HEXES_COMPLETE = false
 
         TRACK_RIGHTS_COST = {
           'UK'  => 40,
@@ -566,6 +574,15 @@ module Engine
         def home_token_locations(corporation)
           # if minor, choose non-metropolis hex
           # if regional, starts on reserved hex
+
+          # TEMPORARY WORKAROUND: while NATIONAL_REGION_HEXES_COMPLETE is false, skip
+          # the zone filter and allow any non-metropolis tokenable city on the map.
+          # Remove this branch (and the constant) once all 8 zone hex lists are defined.
+          unless self.class::NATIONAL_REGION_HEXES_COMPLETE
+            return @hexes
+              .select { |hex| hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) } }
+              .reject { |hex| metropolis_hex?(hex) }
+          end
 
           available_regions = NATIONAL_REGION_HEXES.select { |key, _value| @minor_available_regions.include?(key) }
           region_hexes = available_regions.values.flatten
