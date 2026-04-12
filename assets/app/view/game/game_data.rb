@@ -32,23 +32,15 @@ module View
       def render_game_info
         items = []
 
-        if (description = @game_data['description']).to_s != ''
-          items << h(:div, [h(:label, { style: { fontWeight: 'bold' } }, 'Description: '), h(:span, description)])
-        end
+        items << h(:div, [h(:label, { style: { fontWeight: 'bold' } }, 'Description: '), h(:span, description)])
 
-        if (host = @game_data.dig('user', 'name'))
-          items << h(:div, [h(:label, { style: { fontWeight: 'bold' } }, 'Host: '), h(:span, host)])
-        end
+        items << h(:div, [h(:label, { style: { fontWeight: 'bold' } }, 'Host: '), h(:span, host)])
 
-        if (created_at = @game_data['created_at'])
-          ts = Time.at(created_at.to_i)
-          items << h(:div, [h(:label, { style: { fontWeight: 'bold' } }, 'Created: '), h(:span, ts.strftime('%F %T'))])
-        end
+        ts = Time.at(created_at.to_i)
+        items << h(:div, [h(:label, { style: { fontWeight: 'bold' } }, 'Created: '), h(:span, ts.strftime('%F %T'))])
 
-        if (updated_at = @game_data['updated_at'])
-          ts = Time.at(updated_at.to_i)
-          items << h(:div, [h(:label, { style: { fontWeight: 'bold' } }, 'Last Updated: '), h(:span, ts.strftime('%F %T'))])
-        end
+        ts = Time.at(updated_at.to_i)
+        items << h(:div, [h(:label, { style: { fontWeight: 'bold' } }, 'Last Updated: '), h(:span, ts.strftime('%F %T'))])
 
         items
       end
