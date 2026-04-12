@@ -30,8 +30,7 @@ module Lib
       def get_all(key)
         return [] if @unsupported
 
-        result = Native(`Array.from(#{@native.to_n}.getAll(#{key}))`)
-        result.to_a
+        @native.getAll(key)
       end
 
       def []=(key, value)
@@ -43,12 +42,12 @@ module Lib
       end
 
       def set_array(key, values)
-        @native&.delete(key)
-        Array(values).each { |v| `#{@native.to_n}.append(#{key}, #{v})` }
+        @native.delete(key)
+        values.each { |v| @native.append(key, v) }
       end
 
       def to_query_string
-        (@native&.toString() || '').gsub('%5B%5D', '[]')
+        @native&.toString() || ''
       end
     end
   end
