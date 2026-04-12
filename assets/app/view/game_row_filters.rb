@@ -16,15 +16,14 @@ module View
       h('div#game_filters.game_row', { key: @header }, [
         h(:h2, 'Filters'),
         title_elm,
-        render_reset(title_elm),
+        render_reset,
       ])
     end
 
     private
 
     def render_title(url_search_params)
-      raw = url_search_params['title'] || ''
-      selected_titles = raw.split('.').map { |t| t.strip.gsub('~', '.') }.reject(&:empty?)
+      selected_titles = url_search_params.get_all('title[]')
 
       # Build lookup for display names
       title_display = {}
@@ -46,7 +45,7 @@ module View
         return if title.empty?
 
         new_titles = (selected_titles + [title]).uniq
-        url_search_params['title'] = new_titles.map { |t| t.gsub('.', '~') }.join('.')
+        url_search_params.set_array('title[]', new_titles)
         update_filters(url_search_params.to_query_string)
         target.JS['value'] = ''
       end
@@ -59,7 +58,7 @@ module View
           display = title_display[t] || t
           on_remove = lambda do
             new_titles = selected_titles.reject { |x| x == t }
-            url_search_params['title'] = new_titles.empty? ? '' : new_titles.map { |t| t.gsub('.', '~') }.join('.')
+            url_search_params.set_array('title[]', new_titles)
             update_filters(url_search_params.to_query_string)
           end
 
@@ -91,7 +90,7 @@ module View
       h(:div, children)
     end
 
-    def render_reset(_title_elm)
+    def render_reset
       attrs = {
         on: {
           click: lambda do

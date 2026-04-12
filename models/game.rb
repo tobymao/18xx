@@ -17,7 +17,7 @@ class Game < Base
       SELECT *
       FROM games
       WHERE status = '%<status>s'
-        AND (:titles IS NULL OR title = ANY(string_to_array(:titles, '|')))
+        AND (:titles IS NULL OR title = ANY(:titles))
         AND NOT (status = 'new' AND COALESCE((settings->>'unlisted')::boolean, false))
       ORDER BY created_at DESC
       LIMIT #{QUERY_LIMIT}
@@ -33,7 +33,7 @@ class Game < Base
       LEFT JOIN user_games ug
         ON g.id = ug.id
       WHERE g.status = '%<status>s'
-        AND (:titles IS NULL OR g.title = ANY(string_to_array(:titles, '|')))
+        AND (:titles IS NULL OR g.title = ANY(:titles))
         AND ug.id IS NULL
         AND NOT (g.status = 'new' AND COALESCE((settings->>'unlisted')::boolean, false))
       ORDER BY g.%<ordered_by>s DESC
@@ -92,10 +92,10 @@ class Game < Base
 
       kwargs[:user_id] = user.id if user
       kwargs[:titles] = opts['title']&.then do |t|
-        t = t.strip
-        next nil if t.empty?
+        titles = Array(t).map(&:strip).reject(&:empty?)
+        next nil if titles.empty?
 
-        t.split('.').map { |s| s.gsub('~', '.') }.join('|')
+        Sequel.pg_array(titles)
       end
       kwargs[:status] = %w[new active]
       kwargs[:limit] = 1000
