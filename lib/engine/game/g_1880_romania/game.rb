@@ -27,7 +27,6 @@ module Engine
           'P4' => '/icons/1880_romania/danube_bonus.svg'
         ).freeze
 
-
         PHASES = [{ name: 'A1', train_limit: 4, tiles: [:yellow] },
                   {
                     name: 'A2',
@@ -215,7 +214,6 @@ module Engine
           bank.spend(20, consortiu.owner)
           @log << "#{consortiu.owner.name} receives #{format_currency(20)} for border crossing"
         end
-
 
         def remove_crossed_impassable_borders!(tile)
           hex = tile.hex
