@@ -1086,7 +1086,7 @@ module Engine
         def event_agv_buyable!
           @log << "Unreserved #{agv.name} shares are now available to buy"
           bond_price = @stock_market.par_prices.find { |p| p.price == 120 }
-          @stock_market.set_par(agv, bond_price)
+          par_corporation(agv, bond_price)
           move_buyable_shares_to_market(agv)
           @agv_mergable = true
           remove_ability(agv, :no_buy)
@@ -1119,7 +1119,7 @@ module Engine
         def event_hgk_buyable!
           @log << "Unreserved #{hgk.name} shares are now available to buy"
           bond_price = @stock_market.par_prices.reverse.find { |p| p.price == 120 }
-          @stock_market.set_par(hgk, bond_price)
+          par_corporation(hgk, bond_price)
           move_buyable_shares_to_market(hgk)
           @hgk_mergable = true
           remove_ability(hgk, :no_buy)

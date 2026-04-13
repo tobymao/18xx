@@ -118,8 +118,8 @@ module Engine
           mainline.full_name = mainline.full_name[0..-2] + 'ML'
           mainline.float_percent = 50
           shortline.full_name = shortline.full_name[0..-2] + 'SL'
-          stock_market.set_par(mainline, stock_market.share_price([1, 1]))
-          stock_market.set_par(shortline, stock_market.share_price([2, 1]))
+          par_corporation(mainline, stock_market.share_price([1, 1]))
+          par_corporation(shortline, stock_market.share_price([2, 1]))
 
           # Mainline and Shortline tokens start on the board
           @hexes.each do |hex|

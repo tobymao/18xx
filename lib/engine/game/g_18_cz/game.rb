@@ -194,7 +194,7 @@ module Engine
 
           par_value = PAR_RANGE[new_corporation.type].first
           price = @stock_market.par_prices.find { |p| p.price == par_value }
-          @stock_market.set_par(new_corporation, price)
+          par_corporation(new_corporation, price)
 
           index = 0
           until new_corporation.floated?

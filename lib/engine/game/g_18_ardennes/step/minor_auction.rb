@@ -181,7 +181,7 @@ module Engine
             @minors.delete(minor)
             if minor.corporation?
               share_price = par_price(price)
-              @game.stock_market.set_par(minor, share_price)
+              @game.par_corporation(minor, share_price)
               @game.bank.spend(share_price.price * 2, minor)
               @game.share_pool.buy_shares(player,
                                           minor.presidents_share.to_bundle,
