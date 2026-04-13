@@ -561,11 +561,25 @@ module Engine
           'Treasury'
         end
 
+        # True once MAX_FLOATED_REGIONALS have been floated and the 6 remaining
+        # unfloated regionals have been closed. This is the correct trigger for
+        # "Major Railroad Phase" entry: conversions and secondary-share purchases
+        # become available from this point on.
+        def major_phase?
+          @regional_corps_floated >= self.class::MAX_FLOATED_REGIONALS
+        end
+
         def operating_order
           @minor_regional_order + (@corporations.select(&:floated?) - @minor_regional_order).sort
         end
 
         def hex_within_national_region?(entity, hex)
+          # TEMPORARY WORKAROUND: while NATIONAL_REGION_HEXES_COMPLETE is false,
+          # skip the zone filter and allow track placement anywhere on the map.
+          # Remove this branch once all 8 zone hex lists are defined and the
+          # constant is flipped to true (see home_token_locations for the same pattern).
+          return true unless self.class::NATIONAL_REGION_HEXES_COMPLETE
+
           region = CORPORATIONS_TRACK_RIGHTS[entity.id] || @minor_floated_regions[entity.id]
           hexes = NATIONAL_REGION_HEXES[region]
           hexes&.include?(hex.name) || false
