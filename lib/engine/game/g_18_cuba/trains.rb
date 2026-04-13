@@ -120,6 +120,14 @@ module Engine
             track_type: :narrow,
             available_on: '4',
             discount: { '3n' => 80 },
+            variants: [
+              {
+                name: '4-1n',
+                distance: 3,
+                price: 130,
+                track_type: :narrow,
+              },
+            ],
           },
           {
             name: '5n',
@@ -141,11 +149,7 @@ module Engine
                     else
                       'Depot/Discard 4n train downgrades to 4-1n'
                     end
-            train.name = '4-1n'
-            train.distance = 3
-            train.variant[:name] = '4-1n'
-            train.variant[:distance] = 3
-            train.variants.transform_keys!({ '4n' => '4n-1' })
+            train.variant = '4-1n'
           end
         end
       end

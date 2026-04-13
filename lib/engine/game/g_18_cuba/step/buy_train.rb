@@ -22,6 +22,15 @@ module Engine
             end
           end
 
+          def buyable_train_variants(train, entity)
+            variants = super
+            # 4n trains can downgrade to 4-1n.
+            # Only the currently active variant (based on train.name) is buyable.
+            return variants.select { |variant| variant[:name] == train.name } if train.variants.key?('4-1n')
+
+            variants
+          end
+
           def discountable_trains_allowed?(entity)
             # Minors can only exchange for narrow gauge trains, and can only do so once per OR.
             entity.type == :minor && !@round.narrow_gauge_exchanged_by.include?(entity.id)
