@@ -29,7 +29,6 @@ module Engine
           'P4' => '/icons/1880_romania/danube_bonus.svg'
         ).freeze
 
-
         PHASES = [{ name: 'A1', train_limit: 4, tiles: [:yellow] },
                   {
                     name: 'A2',
