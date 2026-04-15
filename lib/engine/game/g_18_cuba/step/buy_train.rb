@@ -19,13 +19,13 @@ module Engine
               # Emergency buy: only depot/discard trains allowed (not from other companies),
               # and only the cheapest of the correct track type.
               available = @depot.depot_trains.select { |t| t.track_type == track_type }
-              cheapest_price = available.map { |t| t.price }.min
+              cheapest_price = available.map(&:price).min
               result = cheapest_price ? available.select { |t| t.price == cheapest_price } : []
               return result
             end
 
             # Normal buy: filter by track type.
-            return super.select { |t| t.track_type == track_type }
+            super.select { |t| t.track_type == track_type }
           end
 
           def buyable_train_variants(train, entity)
