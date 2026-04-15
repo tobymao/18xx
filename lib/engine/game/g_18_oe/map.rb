@@ -339,8 +339,10 @@ module Engine
             # Skagerrak / Norwegian coast
             ['I46'] => 'town=revenue:0;town=revenue:0;border=edge:5,type:impassable',
             ['I48'] => 'border=edge:0,type:impassable;upgrade=cost:45,terrain:water',
-            ['J47'] => 'border=edge:2,type:impassable;border=edge:3,type:impassable;border=edge:4,type:impassable;border=edge:5,type:impassable;upgrade=cost:60,terrain:water',
-            ['J49'] => 'border=edge:0,type:impassable;border=edge:1,type:impassable;border=edge:5,type:impassable;upgrade=cost:60,terrain:water',
+            ['J47'] => 'border=edge:2,type:impassable;border=edge:3,type:impassable;' \
+                       'border=edge:4,type:impassable;border=edge:5,type:impassable;upgrade=cost:60,terrain:water',
+            ['J49'] => 'border=edge:0,type:impassable;border=edge:1,type:impassable;' \
+                       'border=edge:5,type:impassable;upgrade=cost:60,terrain:water',
             ['K48'] => 'border=edge:2,type:impassable;border=edge:3,type:impassable',
             ['K50'] => 'border=edge:2,type:impassable',
             # North Sea — Danish coast
