@@ -115,7 +115,10 @@ module Engine
             corp = action.corporation
 
             unless @game.loading
-              raise GameError, 'BCR must par at 100' if action.corporation == @game.bcr && action.share_price.price != 100
+              if @game.bcr && action.corporation == @game.bcr && action.share_price.price != 100
+                raise GameError,
+                      'BCR must par at 100'
+              end
               raise GameError, 'Par slot already taken' if @game.par_chart[share_price][slot]
 
               unless get_par_prices(entity, corp).include?(share_price)
@@ -125,7 +128,7 @@ module Engine
             end
 
             @game.set_par(corp, share_price, slot)
-            @log << "#{entity.name} selects par #{@game.format_currency(share_price.price)} (slot #{slot}) for #{corp.name}"
+            @log << "#{entity.name} selects par #{@game.format_currency(share_price.price)} (slot #{slot + 1}) for #{corp.name}"
 
             @parring = {
               state: :choose_percent,
