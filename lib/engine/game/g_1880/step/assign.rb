@@ -10,7 +10,7 @@ module Engine
           ACTIONS_WITH_PASS = %w[assign pass].freeze
           def actions(entity)
             return [] if entity.player? || current_entity.minor?
-            return [] unless @game.abilities(entity, :assign_corporation)
+            return [] if !@game.abilities(entity, :assign_corporation) && !@game.abilities(entity, :assign_hexes)
 
             return ACTIONS if @game.forced_exchange_rocket? && entity == @game.rocket
             return ACTIONS_WITH_PASS if p5_block?
