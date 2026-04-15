@@ -15,10 +15,6 @@ module Engine
             regular_actions
           end
 
-          def choosing?(entity)
-            choosing_tender?(entity)
-          end
-
           def choice_name
             'Attach REMAR tender (+1 town stop) to a train'
           end
@@ -33,14 +29,21 @@ module Engine
 
           def process_choose(action)
             entity = action.entity
-            @tender_train = tender_train_choices(entity)[action.choice.to_i]
-            @log << "#{entity.name} attaches the REMAR tender to a #{@tender_train.name} train"
+            @round.tender_train = tender_train_choices(entity)[action.choice.to_i]
+            @log << "#{entity.name} attaches the REMAR tender to a #{@round.tender_train.name} train"
             attach_tender
+          end
+
+          def round_state
+            super.merge(
+              tender_train: nil,
+              tender_original_train: nil,
+            )
           end
 
           def process_run_routes(action)
             super
-            detach_tender if @tender_train
+            detach_tender if @round.tender_train
 
             bonus = @game.stock_market_bonus(action.entity)
             return unless bonus.positive?
@@ -52,8 +55,7 @@ module Engine
           private
 
           def choosing_tender?(entity)
-            @tender_train ||= nil
-            !@tender_train &&
+            !@round.tender_train &&
               entity.corporation? &&
               entity.assigned?(@game.remar.id) &&
               !tender_train_choices(entity).empty?
@@ -64,35 +66,35 @@ module Engine
           end
 
           def attach_tender
-            @tender_original_train = @tender_train.dup
+            @round.tender_original_train = @round.tender_train.dup
 
-            if @tender_train.distance.is_a?(Numeric)
-              city_dist = @tender_train.distance
-              @tender_train.distance = [
+            if @round.tender_train.distance.is_a?(Numeric)
+              city_dist = @round.tender_train.distance
+              @round.tender_train.distance = [
                 { 'nodes' => %w[city offboard town], 'pay' => city_dist, 'visit' => city_dist },
                 { 'nodes' => ['town'], 'pay' => 1, 'visit' => 1 },
               ]
             else
-              town_part_index = @tender_train.distance.index { |n| n['nodes'] == ['town'] }
+              town_part_index = @round.tender_train.distance.index { |n| n['nodes'] == ['town'] }
               if town_part_index
-                new_distance = @tender_train.distance.map(&:dup)
+                new_distance = @round.tender_train.distance.map(&:dup)
                 new_distance[town_part_index]['pay'] += 1
                 new_distance[town_part_index]['visit'] += 1
-                @tender_train.distance = new_distance
+                @round.tender_train.distance = new_distance
               else
-                @tender_train.distance = @tender_train.distance + [{ 'nodes' => ['town'], 'pay' => 1, 'visit' => 1 }]
+                @round.tender_train.distance = @round.tender_train.distance + [{ 'nodes' => ['town'], 'pay' => 1, 'visit' => 1 }]
               end
             end
 
-            @tender_train.name = tender_name(@tender_train.name)
+            @round.tender_train.name = tender_name(@round.tender_train.name)
             @game.clear_graph
           end
 
           def detach_tender
-            @tender_train.name = @tender_original_train.name
-            @tender_train.distance = @tender_original_train.distance
-            @tender_original_train = nil
-            @tender_train = nil
+            @round.tender_train.name = @round.tender_original_train.name
+            @round.tender_train.distance = @round.tender_original_train.distance
+            @round.tender_original_train = nil
+            @round.tender_train = nil
             @game.clear_graph
           end
 
