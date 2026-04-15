@@ -10,96 +10,96 @@ module Engine
 
         LOCATION_NAMES = {
           # UK / Ireland
-          'E26'  => 'Inverness',
-          'E28'  => 'Aberdeen',
-          'F25'  => 'Glasgow',
-          'F27'  => 'Dundee',
-          'G24'  => 'Stranraer',
-          'G26'  => 'Edinburgh',
-          'H17'  => 'Sligo',
-          'H21'  => 'Belfast',
-          'H29'  => 'Newcastle Upon Tyne',
-          'I16'  => 'Limerick',
-          'I20'  => 'Dublin',
-          'I26'  => 'Preston',
-          'J15'  => 'Cork',
-          'J17'  => 'Waterford',
-          'J23'  => 'Holyhead',
-          'J25'  => 'Liverpool',
-          'J27'  => 'Manchester',
-          'J29'  => 'Leeds and Sheffield',
-          'K26'  => 'Birmingham',
-          'L23'  => 'Cardiff',
-          'L25'  => 'Bristol',
-          'L29'  => 'Cambridge',
-          'M26'  => 'Southampton and Portsmouth',
-          'M28'  => 'London',
+          'E26' => 'Inverness',
+          'E28' => 'Aberdeen',
+          'F25' => 'Glasgow',
+          'F27' => 'Dundee',
+          'G24' => 'Stranraer',
+          'G26' => 'Edinburgh',
+          'H17' => 'Sligo',
+          'H21' => 'Belfast',
+          'H29' => 'Newcastle Upon Tyne',
+          'I16' => 'Limerick',
+          'I20' => 'Dublin',
+          'I26' => 'Preston',
+          'J15' => 'Cork',
+          'J17' => 'Waterford',
+          'J23' => 'Holyhead',
+          'J25' => 'Liverpool',
+          'J27' => 'Manchester',
+          'J29' => 'Leeds and Sheffield',
+          'K26' => 'Birmingham',
+          'L23' => 'Cardiff',
+          'L25' => 'Bristol',
+          'L29' => 'Cambridge',
+          'M26' => 'Southampton and Portsmouth',
+          'M28' => 'London',
           # France / Belgium
-          'N31'  => 'Lille',
-          'N33'  => 'Gent',
-          'N35'  => 'Brussel',
-          'O24'  => 'Cherbourg',
-          'O28'  => 'Le Havre',
-          'P19'  => 'Brest',
-          'P29'  => 'Rouen',
-          'P33'  => 'Reims',
-          'P37'  => 'Luxembourg',
-          'Q26'  => 'Le Mans',
-          'Q30'  => 'Paris',
-          'Q38'  => 'Nancy',
-          'R23'  => 'Nantes',
-          'R29'  => 'Orleans',
-          'S34'  => 'Dijon',
-          'T27'  => 'Limoges',
-          'T37'  => 'Geneve and Lausanne',
-          'U24'  => 'Bordeaux',
-          'U32'  => 'Saint-Etienne',
-          'U34'  => 'Lyon',
-          'V21'  => 'Bayonne',
-          'V27'  => 'Toulouse',
-          'W32'  => 'Nimes and Montpellier',
+          'N31' => 'Lille',
+          'N33' => 'Gent',
+          'N35' => 'Brussel',
+          'O24' => 'Cherbourg',
+          'O28' => 'Le Havre',
+          'P19' => 'Brest',
+          'P29' => 'Rouen',
+          'P33' => 'Reims',
+          'P37' => 'Luxembourg',
+          'Q26' => 'Le Mans',
+          'Q30' => 'Paris',
+          'Q38' => 'Nancy',
+          'R23' => 'Nantes',
+          'R29' => 'Orleans',
+          'S34' => 'Dijon',
+          'T27' => 'Limoges',
+          'T37' => 'Geneve and Lausanne',
+          'U24' => 'Bordeaux',
+          'U32' => 'Saint-Etienne',
+          'U34' => 'Lyon',
+          'V21' => 'Bayonne',
+          'V27' => 'Toulouse',
+          'W32' => 'Nimes and Montpellier',
           # Spain / Portugal / Mediterranean
-          'U12'  => 'Gijon',
-          'V5'   => 'Braga',
-          'V15'  => 'Santander',
-          'V17'  => 'Bilbao',
-          'W6'   => 'Porto',
-          'W18'  => 'Logrono',
-          'X11'  => 'Salamanca',
-          'X13'  => 'Valladoldid',
-          'X25'  => 'Andorra',
-          'X33'  => 'Marseille',
-          'X35'  => 'Toulon',
-          'X37'  => 'Nice',
-          'Y14'  => 'Madrid',
-          'Y20'  => 'Zaragoza',
-          'Z1'   => 'Lisboa',
-          'Z3'   => 'Sebutal',
-          'Z13'  => 'Toledo',
-          'Z25'  => 'Tarragona',
-          'Z27'  => 'Barcelona',
-          'Z41'  => 'Ajaccio',
-          'AA4'  => 'Evora',
+          'U12' => 'Gijon',
+          'V5' => 'Braga',
+          'V15' => 'Santander',
+          'V17' => 'Bilbao',
+          'W6' => 'Porto',
+          'W18' => 'Logrono',
+          'X11' => 'Salamanca',
+          'X13' => 'Valladoldid',
+          'X25' => 'Andorra',
+          'X33' => 'Marseille',
+          'X35' => 'Toulon',
+          'X37' => 'Nice',
+          'Y14' => 'Madrid',
+          'Y20' => 'Zaragoza',
+          'Z1' => 'Lisboa',
+          'Z3' => 'Sebutal',
+          'Z13' => 'Toledo',
+          'Z25' => 'Tarragona',
+          'Z27' => 'Barcelona',
+          'Z41' => 'Ajaccio',
+          'AA4' => 'Evora',
           'AA20' => 'Valencia',
-          'AB3'  => 'Loule',
+          'AB3' => 'Loule',
           'AB27' => 'Palma',
-          'AC8'  => 'Sevilla',
+          'AC8' => 'Sevilla',
           'AC10' => 'Cordoba',
           'AC12' => 'Granada',
           'AC16' => 'Murcia',
           'AC20' => 'Alicante',
-          'AD7'  => 'Gibraltar',
-          'AD9'  => 'Malaga',
+          'AD7' => 'Gibraltar',
+          'AD9' => 'Malaga',
           'AD13' => 'Almeria',
           'AD15' => 'Lorca',
           'AD17' => 'Cartagena',
-          'U6'   => 'A Coruña',
-          'AC6'  => 'Jerez de la Frontera and Cadiz',
+          'U6' => 'A Coruña',
+          'AC6' => 'Jerez de la Frontera and Cadiz',
           # Scandinavia
-          'C48'  => 'Christiania',
-          'D57'  => 'Stockholm',
-          'F49'  => 'Goteborg',
-          'I50'  => 'Kobenhavn',
+          'C48' => 'Christiania',
+          'D57' => 'Stockholm',
+          'F49' => 'Goteborg',
+          'I50' => 'Kobenhavn',
           'B43' => 'Voss',
           'C58' => 'Gavle and Upsala',
           'D41' => 'Stavanger',
@@ -117,9 +117,9 @@ module Engine
           'I52' => 'Malmö',
           # PHS (Prussia / Holland / Switzerland)
           'K46' => 'Hamburg',
-          'L53'  => 'Stettin',
+          'L53' => 'Stettin',
           'M50' => 'Berlin',
-          'N49'  => 'Leipzig',
+          'N49' => 'Leipzig',
           'R47' => 'Breslau',
           'J63' => 'Königsberg',
           'K60' => 'Danzig',
@@ -169,13 +169,13 @@ module Engine
           'V41' => 'Milano',
           'Z47' => 'Roma',
           'AB51' => 'Napoli',
-          'V39'  => 'Torino',
+          'V39' => 'Torino',
           'V45' => 'Verona',
           'V47' => 'Venezia',
-          'V51'  => 'Trieste',
-          'W40'  => 'Genova',
+          'V51' => 'Trieste',
+          'W40' => 'Genova',
           'W46' => 'Ferrara and Bologna',
-          'X45'  => 'Firenze',
+          'X45' => 'Firenze',
           'Y44' => 'Livorno',
           'AA52' => 'Benevento',
           'AB39' => 'Sassari',
@@ -186,7 +186,7 @@ module Engine
           'AF53' => 'Messina and Catania',
           # Russia
           'C74' => 'Sankt-Peterburg',
-          'J73'  => 'Minsk',
+          'J73' => 'Minsk',
           'M62' => 'Warszawa',
           'O80' => 'Kiev',
           'B67' => 'Helsinki',
@@ -232,16 +232,16 @@ module Engine
           'U80' => 'Akkerman',
           'V73' => 'Ploesti',
           # Balkans
-          'V55'  => 'Zagreb',
-          'W64'  => 'Beograd',
+          'V55' => 'Zagreb',
+          'W64' => 'Beograd',
           'W70' => 'Craiova',
-          'W74'  => 'Bucharest',
+          'W74' => 'Bucharest',
           'X55' => 'Spalato',
-          'X59'  => 'Sarajevo',
-          'Y64'  => 'Novi Bazar',
-          'Y66'  => 'Niš',
-          'Y70'  => 'Sofia',
-          'Z73'  => 'Philippopolis',
+          'X59' => 'Sarajevo',
+          'Y64' => 'Novi Bazar',
+          'Y66' => 'Niš',
+          'Y70' => 'Sofia',
+          'Z73' => 'Philippopolis',
           'AA62' => 'Shkoder',
           'AA84' => 'Scutari',
           'AB69' => 'Salonica',
@@ -258,22 +258,22 @@ module Engine
           # Constantinople
           'AA82' => 'Constantinople',
           # Red Offboard Locations
-          'A40'  => 'Norwegian Coast (to Narvik)',
-          'A54'  => 'North Sweden',
-          'A56'  => 'North Sweden',
-          'B41'  => 'Bergen',
-          'B83'  => 'Arkhangelsk',
-          'D25'  => 'Scottish Highlands',
-          'E88'  => 'Moskva',
-          'F87'  => 'Moskva',
-          'G88'  => 'Moskva',
-          'N1'   => 'New York',
-          'N87'  => 'Kharkov',
-          'S88'  => 'Sevastopol',
-          'T87'  => 'Sevastopol',
+          'A40' => 'Norwegian Coast (to Narvik)',
+          'A54' => 'North Sweden',
+          'A56' => 'North Sweden',
+          'B41' => 'Bergen',
+          'B83' => 'Arkhangelsk',
+          'D25' => 'Scottish Highlands',
+          'E88' => 'Moskva',
+          'F87' => 'Moskva',
+          'G88' => 'Moskva',
+          'N1' => 'New York',
+          'N87' => 'Kharkov',
+          'S88' => 'Sevastopol',
+          'T87' => 'Sevastopol',
           'AB87' => 'Levant',
-          'AD1'  => 'North Africa & The Americas',
-          'AF5'  => 'Casablanca',
+          'AD1' => 'North Africa & The Americas',
+          'AF5' => 'Casablanca',
           'AF11' => 'Melilla',
           'AF25' => 'Alger',
           'AG40' => 'Tunis',
@@ -383,16 +383,15 @@ module Engine
             ['T37'] => 'town=revenue:0;town=revenue:0;upgrade=cost:45,terrain:mountain',
             # Cities — no label, no terrain
             %w[ H21 J15 L25 Q26 Q38 R23 V27
-               C48 F49 L53 N49 J73 AD17
-               V17 W6 X13 Y20 AA20 AC8 AC16 AB27] => 'city=revenue:0',
+                C48 F49 L53 N49 J73 AD17
+                V17 W6 X13 Y20 AA20 AC8 AC16 AB27] => 'city=revenue:0',
             # Cities — no terrain (added station geometry)
             %w[ AA62 AB57 AB69 AC40 AD79
-              AE72 AF49 B67 D77 E56 G68 H47 H63 H87 I76 J69 K78
-              K86 M44 M68
-              O56 P69 S76 S78 T53 T81
-              V39 V51 V55 W40 W64
-              Y70
-            ] => 'city=revenue:0',
+                AE72 AF49 B67 D77 E56 G68 H47 H63 H87 I76 J69 K78
+                K86 M44 M68
+                O56 P69 S76 S78 T53 T81
+                V39 V51 V55 W40 W64
+                Y70] => 'city=revenue:0',
             # Cities — label Y
             ['U34'] => 'city=revenue:0;label=Y',
             ['N35'] => 'city=revenue:0;label=Y;upgrade=cost:30,terrain:water',
@@ -412,7 +411,6 @@ module Engine
             ['O28'] => 'city=revenue:10;path=a:_0,b:1',
             ['M28'] => 'city=revenue:30;label=L;upgrade=cost:30,terrain:water;path=a:5,b:_0',
             ['X33'] => 'city=revenue:20;label=Y;path=a:_0,b:5',
-
 
             ['F25'] => 'city=revenue:0;label=Y',
             ['Z27'] => 'city=revenue:0;label=Y',
@@ -509,23 +507,23 @@ module Engine
             ['J27'] => 'city=revenue:20;upgrade=cost:30,terrain:mountain;path=a:1,b:_0;path=a:_0,b:4',
           },
           red: {
-            ['D25']  => 'offboard=revenue:0;path=a:0,b:_0',                          # Scottish Highlands
-            ['A40']  => 'offboard=revenue:0;path=a:0,b:_0',                          # Norwegian Coast (to Narvik)
-            ['B41']  => 'offboard=revenue:0;path=a:0,b:_0',                          # Bergen
-            ['A54']  => 'offboard=revenue:0;path=a:0,b:_0',                          # North Sweden
-            ['A56']  => 'offboard=revenue:0;path=a:0,b:_0',                          # North Sweden
-            ['B83']  => 'offboard=revenue:0;path=a:0,b:_0',                          # Arkhangelsk
-            ['E88']  => 'offboard=revenue:0;path=a:0,b:_0',                          # Moskva
-            ['F87']  => 'offboard=revenue:0;path=a:0,b:_0',                          # Moskva
-            ['G88']  => 'offboard=revenue:0;path=a:0,b:_0',                          # Moskva
-            ['N1']   => 'offboard=revenue:0;path=a:0,b:_0',                          # New York
-            ['N87']  => 'offboard=revenue:0;path=a:0,b:_0',                          # Kharkov
-            ['S88']  => 'offboard=revenue:0;path=a:0,b:_0',                          # Sevastopol
-            ['T87']  => 'offboard=revenue:0;path=a:0,b:_0',                          # Sevastopol
-            ['Z1']   => 'offboard=revenue:0;city=revenue:0;city=revenue:0;path=a:0,b:_0', # Lisboa (2 station slots; RCP home)
-            ['AB87'] => 'offboard=revenue:0;path=a:0,b:_0',                          # Levant
-            ['AD1']  => 'offboard=revenue:0;path=a:0,b:_0',                          # North Africa & The Americas
-            ['AF5']  => 'offboard=revenue:0;path=a:0,b:_0',                          # Casablanca
+            ['D25'] => 'offboard=revenue:0;path=a:0,b:_0',                          # Scottish Highlands
+            ['A40'] => 'offboard=revenue:0;path=a:0,b:_0',                          # Norwegian Coast (to Narvik)
+            ['B41'] => 'offboard=revenue:0;path=a:0,b:_0',                          # Bergen
+            ['A54'] => 'offboard=revenue:0;path=a:0,b:_0',                          # North Sweden
+            ['A56'] => 'offboard=revenue:0;path=a:0,b:_0',                          # North Sweden
+            ['B83'] => 'offboard=revenue:0;path=a:0,b:_0',                          # Arkhangelsk
+            ['E88'] => 'offboard=revenue:0;path=a:0,b:_0',                          # Moskva
+            ['F87'] => 'offboard=revenue:0;path=a:0,b:_0',                          # Moskva
+            ['G88'] => 'offboard=revenue:0;path=a:0,b:_0',                          # Moskva
+            ['N1'] => 'offboard=revenue:0;path=a:0,b:_0', # New York
+            ['N87'] => 'offboard=revenue:0;path=a:0,b:_0',                          # Kharkov
+            ['S88'] => 'offboard=revenue:0;path=a:0,b:_0',                          # Sevastopol
+            ['T87'] => 'offboard=revenue:0;path=a:0,b:_0',                          # Sevastopol
+            ['Z1'] => 'offboard=revenue:0;city=revenue:0;city=revenue:0;path=a:0,b:_0', # Lisboa (2 station slots; RCP home)
+            ['AB87'] => 'offboard=revenue:0;path=a:0,b:_0', # Levant
+            ['AD1'] => 'offboard=revenue:0;path=a:0,b:_0',                          # North Africa & The Americas
+            ['AF5'] => 'offboard=revenue:0;path=a:0,b:_0',                          # Casablanca
             ['AF11'] => 'offboard=revenue:0;path=a:0,b:_0',                          # Melilla
             ['AF25'] => 'offboard=revenue:0;path=a:0,b:_0',                          # Alger
             ['AG40'] => 'offboard=revenue:0;path=a:0,b:_0',                          # Tunis

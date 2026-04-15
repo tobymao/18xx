@@ -362,8 +362,8 @@ module Engine
               {
                 type: 'description',
                 description: 'When merged into a major, the bank pays cash into the major\'s treasury '\
-                              'equal to the major\'s current share value at the time of merger. '\
-                              'The cash is never part of the minor\'s own treasury.',
+                             'equal to the major\'s current share value at the time of merger. '\
+                             'The cash is never part of the minor\'s own treasury.',
               },
             ],
           },
@@ -380,7 +380,7 @@ module Engine
               {
                 type: 'description',
                 description: 'All track upgrades cost only 1 tile point, including tiles with towns — '\
-                              'but not cities, grand cities, or metropolises.',
+                             'but not cities, grand cities, or metropolises.',
               },
             ],
           },
@@ -397,8 +397,8 @@ module Engine
               {
                 type: 'description',
                 description: 'At the start of each OR, the president may choose this minor\'s operating '\
-                              'position: first, last, or normal order. The choice is announced before '\
-                              'any other RR operates that OR.',
+                             'position: first, last, or normal order. The choice is announced before '\
+                             'any other RR operates that OR.',
               },
             ],
           },
@@ -415,10 +415,10 @@ module Engine
               {
                 type: 'description',
                 description: 'The president may place this minor\'s token in any non-metropolis, '\
-                              'non-red-zone city on the map (even unreachable). Trains run to or through '\
-                              'that city earn a +£20 bonus (Phase 2–4). At Phase 5 start, the +£20 token '\
-                              'is removed; the president may place a new token in the same or a different '\
-                              'eligible city for a +£40 bonus (Phase 5+). Placed during the lay track step.',
+                             'non-red-zone city on the map (even unreachable). Trains run to or through '\
+                             'that city earn a +£20 bonus (Phase 2–4). At Phase 5 start, the +£20 token '\
+                             'is removed; the president may place a new token in the same or a different '\
+                             'eligible city for a +£40 bonus (Phase 5+). Placed during the lay track step.',
               },
             ],
           },
@@ -435,9 +435,9 @@ module Engine
               {
                 type: 'description',
                 description: '33% discount on all blue terrain (water/coast) track construction costs '\
-                              '(multiply total cost by 0.67, round down to nearest £1). '\
-                              'Each OR may also spend 1 extra tile point to place a yellow tile '\
-                              'in a hex with a blue terrain cost.',
+                             '(multiply total cost by 0.67, round down to nearest £1). '\
+                             'Each OR may also spend 1 extra tile point to place a yellow tile '\
+                             'in a hex with a blue terrain cost.',
               },
             ],
           },
@@ -454,9 +454,9 @@ module Engine
               {
                 type: 'description',
                 description: '33% discount on all mountain/rough (green terrain) track construction costs '\
-                              '(multiply total cost by 0.67, round down to nearest £1). '\
-                              'Each OR may also spend 1 extra tile point to place a yellow tile '\
-                              'in a hex with a green terrain cost.',
+                             '(multiply total cost by 0.67, round down to nearest £1). '\
+                             'Each OR may also spend 1 extra tile point to place a yellow tile '\
+                             'in a hex with a green terrain cost.',
               },
             ],
           },
@@ -489,7 +489,7 @@ module Engine
               {
                 type: 'description',
                 description: 'Reduces the number of sea zones that count towards trains\' city limits '\
-                              'by 1 during Train Phases 1–6, and by 2 during Train Phases 7–8.',
+                             'by 1 during Train Phases 1–6, and by 2 during Train Phases 7–8.',
               },
             ],
           },
@@ -506,8 +506,8 @@ module Engine
               {
                 type: 'description',
                 description: '10% discount on the purchase price of all trains (including Pullman cars). '\
-                              'Minor M still receives the full £15 royalty on Pullman purchases '\
-                              'even when this discount applies.',
+                             'Minor M still receives the full £15 royalty on Pullman purchases '\
+                             'even when this discount applies.',
               },
             ],
           },
@@ -524,9 +524,9 @@ module Engine
               {
                 type: 'description',
                 description: 'Mail contract: at the start of each OR the bank pays directly to treasury '\
-                              '(not counted as train revenue): £20 (Phase 2), £40 (Phase 3–4), '\
-                              '£50 (Phase 5–6), £60 (Phase 7–8). '\
-                              'Available immediately for track or token placement that OR.',
+                             '(not counted as train revenue): £20 (Phase 2), £40 (Phase 3–4), '\
+                             '£50 (Phase 5–6), £60 (Phase 7–8). '\
+                             'Available immediately for track or token placement that OR.',
               },
             ],
           },
@@ -543,9 +543,9 @@ module Engine
               {
                 type: 'description',
                 description: '+1+1 marker: assigned to one train at the start of the run trains step each OR. '\
-                              'Increases that train\'s city limit and town count each by 1 '\
-                              '(e.g. a 2+2 runs as a 3+3). For D trains, the extra city does not double. '\
-                              'Does not affect Pullman car revenue calculation.',
+                             'Increases that train\'s city limit and town count each by 1 '\
+                             '(e.g. a 2+2 runs as a 3+3). For D trains, the extra city does not double. '\
+                             'Does not affect Pullman car revenue calculation.',
               },
             ],
           },
@@ -562,9 +562,9 @@ module Engine
               {
                 type: 'description',
                 description: 'Owns 10 Pullman cars. Receives one free Pullman at the start of Train Phase 4. '\
-                              'Other RRs may purchase a Pullman for £150; bank pays £15 royalty to Minor M '\
-                              'or its owning major (no royalty if purchased from the Open Market). '\
-                              'Minor J\'s 10% discount applies to the price but not to the royalty.',
+                             'Other RRs may purchase a Pullman for £150; bank pays £15 royalty to Minor M '\
+                             'or its owning major (no royalty if purchased from the Open Market). '\
+                             'Minor J\'s 10% discount applies to the price but not to the royalty.',
               },
             ],
           },
