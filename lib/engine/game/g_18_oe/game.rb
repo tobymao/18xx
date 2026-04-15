@@ -201,36 +201,36 @@ module Engine
         CORPORATIONS_TRACK_RIGHTS = {
           # United Kingdom
           'LNWR' => 'UK',
-          'GWR'  => 'UK',
+          'GWR' => 'UK',
           'GSWR' => 'UK',
           # France / Belgium
-          'PLM'  => 'FR',
+          'PLM' => 'FR',
           'MIDI' => 'FR',
-          'OU'   => 'FR',
-          'BEL'  => 'FR',
+          'OU' => 'FR',
+          'BEL' => 'FR',
           # Prussia / Holland / Switzerland
-          'BHB'  => 'PHS',
-          'POB'  => 'PHS',
-          'KSS'  => 'PHS',
-          'KBS'  => 'PHS',
+          'BHB' => 'PHS',
+          'POB' => 'PHS',
+          'KSS' => 'PHS',
+          'KBS' => 'PHS',
           # Austria-Hungary
-          'SB'   => 'AH',
-          'MAV'  => 'AH',
+          'SB' => 'AH',
+          'MAV' => 'AH',
           # Italy
           'SFAI' => 'IT',
-          'SFR'  => 'IT',
+          'SFR' => 'IT',
           # Spain / Portugal
-          'CHN'  => 'SP',
-          'MZA'  => 'SP',
-          'RCP'  => 'SP',
+          'CHN' => 'SP',
+          'MZA' => 'SP',
+          'RCP' => 'SP',
           # Russia
-          'MSP'  => 'RU',
-          'MKV'  => 'RU',
+          'MSP' => 'RU',
+          'MKV' => 'RU',
           'LRZD' => 'RU',
-          'WW'   => 'RU',
+          'WW' => 'RU',
           # Scandinavia
-          'DSJ'  => 'SC',
-          'BJV'  => 'SC',
+          'DSJ' => 'SC',
+          'BJV' => 'SC',
         }.freeze
 
         NATIONAL_REGION_HEXES = {
@@ -251,14 +251,14 @@ module Engine
         NATIONAL_REGION_HEXES_COMPLETE = false
 
         TRACK_RIGHTS_COST = {
-          'UK'  => 40,
+          'UK' => 40,
           'PHS' => 40,
-          'FR'  => 20,
-          'AH'  => 20,
-          'IT'  => 10,
-          'SP'  => 10,
-          'RU'  => 10,
-          'SC'  => 10,
+          'FR' => 20,
+          'AH' => 20,
+          'IT' => 10,
+          'SP' => 10,
+          'RU' => 10,
+          'SC' => 10,
         }.freeze
 
         MAX_FLOATED_REGIONALS = 18
