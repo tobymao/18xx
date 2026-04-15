@@ -8,11 +8,9 @@ module Engine
       module Step
         class Route < G1880::Step::Route
           def actions(entity)
-            regular_actions = super
-            return regular_actions if regular_actions.empty?
-            return regular_actions + ['choose'] if choosing_tender?(entity)
-
-            regular_actions
+            actions = super.dup
+            actions.append('choose') if !actions.empty? && choosing_tender?(entity)
+            actions
           end
 
           def choice_name
@@ -68,23 +66,20 @@ module Engine
           def attach_tender
             @round.tender_original_train = @round.tender_train.dup
 
-            if @round.tender_train.distance.is_a?(Numeric)
-              city_dist = @round.tender_train.distance
-              @round.tender_train.distance = [
-                { 'nodes' => %w[city offboard town], 'pay' => city_dist, 'visit' => city_dist },
-                { 'nodes' => ['town'], 'pay' => 1, 'visit' => 1 },
-              ]
-            else
-              town_part_index = @round.tender_train.distance.index { |n| n['nodes'] == ['town'] }
-              if town_part_index
-                new_distance = @round.tender_train.distance.map(&:dup)
-                new_distance[town_part_index]['pay'] += 1
-                new_distance[town_part_index]['visit'] += 1
-                @round.tender_train.distance = new_distance
-              else
-                @round.tender_train.distance = @round.tender_train.distance + [{ 'nodes' => ['town'], 'pay' => 1, 'visit' => 1 }]
-              end
-            end
+            distance = @round.tender_train.distance
+            distance = if distance.is_a?(Numeric)
+                         [{ 'nodes' => %w[city offboard town], 'pay' => distance, 'visit' => distance }]
+                       else
+                         distance.map(&:dup)
+                       end
+
+            distance << { 'nodes' => ['town'], 'pay' => 0, 'visit' => 0 } unless distance.any? { |n| n['nodes'] == ['town'] }
+
+            town_part = distance.find { |n| n['nodes'] == ['town'] }
+            town_part['pay'] += 1
+            town_part['visit'] += 1
+
+            @round.tender_train.distance = distance
 
             @round.tender_train.name = tender_name(@round.tender_train.name)
             @game.clear_graph
