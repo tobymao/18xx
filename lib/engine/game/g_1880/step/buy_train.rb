@@ -39,8 +39,7 @@ module Engine
 
           def pass!
             train = @game.depot.upcoming.first
-            return super unless train
-            return super if avoid_discarding_final_trains?(train)
+            return super if !train || avoid_discarding_final_trains?(train)
 
             discard_all_trains(train.name)
           end

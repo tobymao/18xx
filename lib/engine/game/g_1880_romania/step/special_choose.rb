@@ -8,7 +8,6 @@ module Engine
       module Step
         class SpecialChoose < Engine::Step::SpecialChoose
           def actions(entity)
-            return [] unless entity.company?
             return [] if entity != @game.banater && entity != @game.malaxa
             return [] unless @game.abilities(entity, :choose_ability)
             return [] if choices_ability(entity).empty?
