@@ -675,7 +675,7 @@ module Engine
             .select { |hex| region_hexes.include?(hex.coordinates) }
             .select { |hex| hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) } }
             .reject { |hex| metropolis_hex?(hex) }
-            .reject { |hex| self.class::MINOR_EXCLUDED_HOME_CITIES.include?(hex.coordinates) }
+            .reject { |hex| self.class::MINOR_EXCLUDED_HOME_CITIES.include?(hex.name.to_s) }
         end
 
         def metropolis_hex?(hex)
