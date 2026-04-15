@@ -13,13 +13,19 @@ module Engine
           end
 
           def buyable_trains(entity)
-            trains = super
+            track_type = entity.type == :minor ? :narrow : :broad
 
-            if entity.type == :minor
-              trains.select { |t| t.track_type == :narrow }
-            else
-              trains.select { |t| t.track_type == :broad }
+            if must_buy_train?(entity)
+              # Emergency buy: only depot/discard trains allowed (not from other companies),
+              # and only the cheapest of the correct track type.
+              available = @depot.depot_trains.select { |t| t.track_type == track_type }
+              cheapest_price = available.map { |t| t.price }.min
+              result = cheapest_price ? available.select { |t| t.price == cheapest_price } : []
+              return result
             end
+
+            # Normal buy: filter by track type.
+            return super.select { |t| t.track_type == track_type }
           end
 
           def buyable_train_variants(train, entity)
@@ -27,6 +33,12 @@ module Engine
             # 4n trains can downgrade to 4-1n.
             # Only the currently active variant (based on train.name) is buyable.
             return variants.select { |variant| variant[:name] == train.name } if train.variants.key?('4-1n')
+
+            # During emergency buy, only the cheapest variant is allowed.
+            if must_buy_train?(entity)
+              min_price = variants.map { |v| v[:price] }.min
+              return variants.select { |v| v[:price] == min_price }
+            end
 
             variants
           end
