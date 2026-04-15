@@ -261,7 +261,7 @@ module Engine
                      U22 U24 U26 U28 U30 U32 U34 U36 U38
                      V21 V23 V25 V27 V29 V31 V33 V35 V37
                      W22 W24 W26 W28 W30 W32 W34 W36 W38
-                     X25 X27 X29 X33 X35 X37 Y28 Z41],
+                     X25 X27 X29 X33 X35 X37 Y28],
           # Prussia / Holland / Switzerland
           'PHS' => %w[I64 J45 J47 J49 J63 J65 K40 K42 K44 K46 K48 K50 K54 K56 K58 K60 K62 K64
                       L37 L39 L41 L43 L45 L47 L49 L51 L53 L55 L57 L59 L61
@@ -283,7 +283,7 @@ module Engine
           # Italy
           'IT' => %w[U38 U40 U42 U44 U46 U48 V37 V39 V41 V43 V45 V47
                      W38 W40 W42 W44 W46 W48 X43 X45 X47 X49 Y44 Y46 Y48 Y50
-                     Z45 Z47 Z49 Z51 AA48 AA50 AA52 AA54
+                     Z41 Z45 Z47 Z49 Z51 AA48 AA50 AA52 AA54
                      AB39 AB41 AB51 AB53 AB55 AB57 AC38 AC40 AC54 AC56 AC58
                      AD39 AD55 AE52 AF49 AF51 AF53 AG50 AG52],
           # Spain / Portugal
@@ -313,6 +313,9 @@ module Engine
                      P73 P75 P77 P79 P81 P83 P85 P87 Q74 Q76 Q78 Q80 Q82 Q84 Q86
                      R75 R77 R79 R81 R83 R85 R87 S76 S78 S80 S82 S84 S86 T79 T81 U80],
         }.freeze
+
+        NATIONAL_REGION_HEXES_COMPLETE = true
+
 
         # Cities that sit on a national-zone border hex (hex listed in two zones).
         # All other cities belong unambiguously to one zone; only these two need an explicit override.
