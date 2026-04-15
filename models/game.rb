@@ -18,9 +18,7 @@ class Game < Base
       FROM games
       WHERE status = '%<status>s'
         AND (:titles IS NULL OR title = ANY(:titles))
-        AND (:mode IS NULL
-             OR (:mode = 'async' AND COALESCE((settings->>'is_async')::boolean, false))
-             OR (:mode = 'live' AND NOT COALESCE((settings->>'is_async')::boolean, false)))
+        AND (:mode IS NULL OR COALESCE((settings->>'is_async')::boolean, true) = (:mode = 'async'))
         AND NOT (status = 'new' AND COALESCE((settings->>'unlisted')::boolean, false))
       ORDER BY created_at DESC
       LIMIT #{QUERY_LIMIT}
