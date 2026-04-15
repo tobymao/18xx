@@ -14,6 +14,17 @@ module Engine
             true
           end
 
+          # Detect phase 4/6/8 start and trigger national formation queue.
+          def process_buy_train(action)
+            before_phase = @game.phase.name
+            super
+            after_phase = @game.phase.name
+
+            return unless before_phase != after_phase && %w[4 6 8].include?(after_phase)
+
+            @game.trigger_nationals_formation!(action.entity.owner)
+          end
+
           # Override buyable_trains to enforce:
           # (a) 2+2 obligation: only 2+2 available while corp has no trains and Phase < 4
           # (b) depot level gating: all trains at the cheapest level must sell out

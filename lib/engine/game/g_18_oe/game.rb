@@ -6,6 +6,7 @@ require_relative 'map'
 require_relative '../base'
 require_relative 'round/consolidation'
 require_relative 'step/consolidate'
+require_relative 'step/convert_to_national'
 
 module Engine
   module Game
@@ -15,7 +16,7 @@ module Engine
         include G18OE::Entities
         include G18OE::Map
         attr_accessor :minor_regional_order, :minor_available_regions, :minor_floated_regions, :regional_corps_floated,
-                      :consolidation_triggered, :consolidation_done
+                      :consolidation_triggered, :consolidation_done, :nationals_formation_queue
 
         MARKET = [
           ['', '110', '120C', '135', '150', '165', '180', '200', '225', '250', '280', '310', '350', '390', '440', '490', '550'],
@@ -632,6 +633,7 @@ module Engine
             .compact
           @minor_floated_regions = {}
           @regional_corps_floated = 0
+          @nationals_formation_queue = []
 
           corporations.each do |corp|
             corp.par_via_exchange = companies.find { |c| c.sym == corp.id } if corp.type == :minor
@@ -640,6 +642,161 @@ module Engine
 
         def ipo_name(_entity = nil)
           'Treasury'
+        end
+
+        # ── Nationals: formation trigger ────────────────────────────────────────
+
+        # Called from Step::BuyTrain when phase 4, 6, or 8 begins.
+        # Builds the formation queue starting with buyer_player, then all other
+        # players in seat order who own at least one major.
+        def trigger_nationals_formation!(buyer_player)
+          ordered = [@players.find { |p| p == buyer_player }] +
+                    @players.reject { |p| p == buyer_player }
+          eligible = ordered.select do |p|
+            corporations.any? { |c| c.type == :major && c.president?(p) }
+          end
+          return if eligible.empty?
+
+          @nationals_formation_queue = eligible
+          @log << '-- Event: Nationals may now form --'
+        end
+
+        # ── Nationals: conversion ───────────────────────────────────────────────
+
+        def convert_to_national(corporation)
+          @log << "#{corporation.name} converts to a National Railroad"
+
+          # 1. Cash → bank
+          if corporation.cash.positive?
+            @log << "  #{corporation.name} returns £#{corporation.cash} to bank"
+            corporation.spend(corporation.cash, @bank)
+          end
+
+          # 2. Treasury certs → Open Market (50% limit temporarily waived per rules)
+          # WORKAROUND WA-4: transfer_shares API uncertain; rescue on failure.
+          # To remove: verify correct transfer_shares signature in share_pool.rb,
+          # call it directly, and drop the rescue block.
+          treasury_shares = (corporation.shares_by_corporation[corporation] || []).dup
+          treasury_shares.each do |share|
+            begin # rubocop:disable Style/RedundantBegin
+              @share_pool.transfer_shares(share.to_bundle, @share_pool)
+            rescue StandardError => e
+              @log << "WARN: Could not transfer #{share.percent}% #{corporation.name} " \
+                      "share to open market: #{e.message}"
+            end
+          end
+
+          # 3. Remove all tokens from map
+          corporation.tokens.each do |token|
+            next unless token.city
+
+            token.city.remove_token!(token)
+            token.city = nil
+          end
+
+          # 4. Flip to national type
+          corporation.type = :national
+          @log << "  #{corporation.name} is now a National Railroad"
+
+          # 5. Enforce train limit — discard cheapest excess trains
+          # WORKAROUND WA-3: reclaim_train API not guaranteed; fall back to manual removal.
+          # To remove: confirm @depot.reclaim_train exists, drop respond_to? guard.
+          limit = @phase.train_limit(corporation)
+          while corporation.trains.length > limit
+            train = corporation.trains.min_by(&:price)
+            @log << "  #{corporation.name} discards #{train.name} (train limit #{limit})"
+            if @depot.respond_to?(:reclaim_train)
+              @depot.reclaim_train(train)
+            else
+              corporation.trains.delete(train)
+              train.owner = nil
+            end
+          end
+
+          # DEFERRED stubs:
+          # 1.3c — abandon merged minors (openpoints §1.3c)
+          # 1.3d — remove track rights / OE / private markers (openpoints §1.3d)
+        end
+
+        # ── Nationals: revenue ──────────────────────────────────────────────────
+
+        # Zone-based virtual-token revenue formula (openpoints §1.4).
+        # WORKAROUND WA-1: all zone cities/towns treated as linked (graph
+        # connectivity bypassed). To remove: build a national-aware graph with
+        # home_as_token: true, no_blocking: true, call connected_nodes, split
+        # linked vs unlinked, and apply the £0-penalty for unlinked capacity.
+        def national_revenue(entity)
+          region    = CORPORATIONS_TRACK_RIGHTS[entity.id] || @minor_floated_regions[entity.id]
+          zone_hexes = NATIONAL_REGION_HEXES[region] || []
+
+          # Capacity totals across all trains
+          city_capacity = entity.trains.sum do |t|
+            t.distance.find { |d| d['nodes'].include?('city') }&.dig('pay') || 0
+          end
+          town_capacity = entity.trains.sum do |t|
+            t.distance.find { |d| d['nodes'] == ['town'] }&.dig('pay') || 0
+          end
+
+          # WA-1: treat every zone city/town as linked
+          linked_cities = []
+          linked_towns  = []
+
+          zone_hexes.each do |hex_name|
+            hex = @hexes.find { |h| h.name == hex_name }
+            next unless hex
+
+            hex.tile.cities.each { |c| linked_cities << c.max_revenue }
+            hex.tile.towns.each  { |t| linked_towns  << t.max_revenue }
+          end
+
+          linked_cities.sort!.reverse!
+          linked_towns.sort!.reverse!
+
+          revenue = 0
+
+          # Fill city capacity: linked cities best-first, then £60 each for remainder
+          taken_cities = [city_capacity, linked_cities.size].min
+          revenue += linked_cities.first(taken_cities).sum
+          city_capacity -= taken_cities
+          revenue += city_capacity * 60 if city_capacity.positive?
+
+          # Fill town capacity: linked towns best-first, then £10 each for remainder
+          taken_towns = [town_capacity, linked_towns.size].min
+          revenue += linked_towns.first(taken_towns).sum
+          town_capacity -= taken_towns
+          revenue += town_capacity * 10 if town_capacity.positive?
+
+          # Inherent Pullman bonus: +£10 × level of highest non-rusted train (§1.5)
+          highest_level = entity.trains.reject(&:obsolete?).map { |t| train_level(t) }.max || 0
+          revenue += highest_level * 10
+
+          revenue
+        end
+
+        # Returns the numeric level of a train name (e.g. '4+4'→4, '4D'→4, '2+2'→2, '4'→4)
+        def train_level(train)
+          name = train.name
+          return name.to_i          if name.match?(/^\d+$/)
+          return Regexp.last_match(1).to_i if name.match?(/^(\d+)\+/)
+          return Regexp.last_match(1).to_i if name.match?(/^(\d+)D$/)
+
+          0
+        end
+
+        # ── Nationals: routing / terrain / token overrides ──────────────────────
+
+        # Nationals skip the Route step entirely; revenue is calculated in national_revenue.
+        def can_run_route?(entity)
+          return false if entity.respond_to?(:type) && entity.type == :national
+
+          super
+        end
+
+        # Nationals are exempt from all terrain costs (openpoints §1.7).
+        def tile_cost_with_discount(tile, hex, entity, spender, cost)
+          return 0 if entity.respond_to?(:type) && entity.type == :national
+
+          super
         end
 
         # True once MAX_FLOATED_REGIONALS have been floated and the 6 remaining
@@ -805,7 +962,7 @@ module Engine
             Engine::Step::Route,
             G18OE::Step::Dividend,
             G18OE::Step::BuyTrain,
-            # Convert step to do national conversions at 4/6/8?
+            G18OE::Step::ConvertToNational,
             Engine::Step::IssueShares,
           ], round_num: round_num)
         end

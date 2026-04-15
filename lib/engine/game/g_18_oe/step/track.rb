@@ -20,10 +20,12 @@ module Engine
           end
 
           def get_tile_lay(entity)
-            # 3 for minors and regionals, 6 for majors, 9 for nationals
+            # 9 for nationals, 6 for majors, 3 for minors and regionals
+            return 9 if entity.respond_to?(:type) && entity.type == :national
             return 3 if entity.total_shares == 2 || entity.total_shares == 4
             return 6 if entity.total_shares == 10
-            # return 9 if national
+
+            3 # fallback
           end
 
           def description
