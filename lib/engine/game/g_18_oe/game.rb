@@ -726,7 +726,7 @@ module Engine
         # home_as_token: true, no_blocking: true, call connected_nodes, split
         # linked vs unlinked, and apply the £0-penalty for unlinked capacity.
         def national_revenue(entity)
-          region    = CORPORATIONS_TRACK_RIGHTS[entity.id] || @minor_floated_regions[entity.id]
+          region = CORPORATIONS_TRACK_RIGHTS[entity.id] || @minor_floated_regions[entity.id]
           zone_hexes = NATIONAL_REGION_HEXES[region] || []
 
           # Capacity totals across all trains
@@ -776,7 +776,7 @@ module Engine
         # Returns the numeric level of a train name (e.g. '4+4'→4, '4D'→4, '2+2'→2, '4'→4)
         def train_level(train)
           name = train.name
-          return name.to_i          if name.match?(/^\d+$/)
+          return name.to_i if name.match?(/^\d+$/)
           return Regexp.last_match(1).to_i if name.match?(/^(\d+)\+/)
           return Regexp.last_match(1).to_i if name.match?(/^(\d+)D$/)
 
