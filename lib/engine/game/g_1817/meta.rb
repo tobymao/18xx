@@ -14,7 +14,10 @@ module Engine
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1817'
         GAME_LOCATION = 'NYSE, USA'
         GAME_PUBLISHER = :all_aboard_games
-        GAME_RULES_URL = 'https://cdn.shopify.com/s/files/1/0252/9371/7588/files/1817_Rules_v1.0_-_5_March_2015.pdf'
+        GAME_RULES_URL = {
+          'Rules' => 'https://cdn.shopify.com/s/files/1/0252/9371/7588/files/1817_Rules_v1.0_-_5_March_2015.pdf',
+          '1817: Volatility Rules' => 'https://boardgamegeek.com/filepage/233482/1817-volatility',
+        }.freeze
 
         PLAYER_RANGE = [3, 12].freeze
         OPTIONAL_RULES = [
