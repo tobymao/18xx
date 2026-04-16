@@ -22,9 +22,7 @@ module Engine
             trains = super
 
             # (a) 2+2 obligation window: only 2+2 purchasable
-            if entity.trains.empty? && @game.phase.name.to_i < 4
-              return trains.select { |t| t.name == '2+2' }
-            end
+            return trains.select { |t| t.name == '2+2' } if entity.trains.empty? && @game.phase.name.to_i < 4
 
             # (b) depot level gating: filter to cheapest depot level only
             depot_trains = trains.select(&:from_depot?)
