@@ -10,13 +10,6 @@ module View
       needs :user
 
       def render
-        div_props = {
-          style: {
-            display: 'grid',
-            grid: 'auto / repeat(auto-fill, minmax(17rem, 1fr))',
-            gap: '3rem 1.2rem',
-          },
-        }
         players = @game.player_entities
         if (i = players.map(&:name).rindex(@user&.dig(:name)))
           players = players.rotate(i)
@@ -56,9 +49,33 @@ module View
           *extra_bank,
         ].compact)
 
-        children.concat(bankrupt_players.map { |p| h(:div, [h(Player, player: p, game: @game)]) })
+        grid = h(:div, {
+                   style: {
+                     display: 'grid',
+                     grid: 'auto / repeat(auto-fill, minmax(17rem, 1fr))',
+                     gap: '3rem 1.2rem',
+                     flex: '1',
+                     minWidth: '0',
+                   },
+                 }, children)
 
-        h('div#entities', div_props, children)
+        return h('div#entities', grid) if bankrupt_players.empty?
+
+        bankrupt_cards = bankrupt_players.map do |p|
+          h(:div, { style: { zoom: '0.5' } }, [h(Player, player: p, game: @game)])
+        end
+
+        bankrupt_col = h(:div, {
+                           style: {
+                             display: 'flex',
+                             flexDirection: 'column',
+                             gap: '0.5rem',
+                             flexShrink: '0',
+                             paddingLeft: '0.5rem',
+                           },
+                         }, bankrupt_cards)
+
+        h('div#entities', { style: { display: 'flex', alignItems: 'flex-start' } }, [grid, bankrupt_col])
       end
     end
   end
