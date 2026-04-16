@@ -36,6 +36,9 @@ module Engine
             player.spend(player.cash, corp) if player.cash.positive?
             @game.close_corporation(corp)
 
+            # If bond repayment triggered EMR, post-close logic runs after EMR resolves
+            return if @game.closing_after_bond_repayment
+
             @game.reorder_corps
 
             # play continues if the player has any shares
