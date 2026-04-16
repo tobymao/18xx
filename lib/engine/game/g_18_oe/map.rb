@@ -363,7 +363,7 @@ module Engine
 
             # Towns — no terrain
             %w[H17 H29 J17 L29 N33 O24 P19 P29 P33 P37 R29 S34 T27 X35 X37 Z41
-               V5 V21 W18 X11 Z3 Z13 Z25 AA4 AB3 AC10 AC12 AC20 AD15
+               V5 W18 X11 Z3 Z13 Z25 AA4 AB3 AC10 AC12 AC20 AD15
                K60 K62 L43 M48 M56 P43 P61 Q56 Q72
                R53 R59 R67 S40 S68 T61 U56 U62 X55
                V45 V47 Y44 AA52 AB39 AB55
