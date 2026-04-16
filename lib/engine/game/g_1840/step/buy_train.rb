@@ -58,8 +58,10 @@ module Engine
 
           def cheapest_train_price(corporation)
             cheapest_train = buyable_trains(corporation).min_by(&:price)
-            cheapest_variant = buyable_train_variants(cheapest_train, corporation).first
-            cheapest_variant[:price]
+            return 0 unless cheapest_train
+
+            cheapest_variant = buyable_train_variants(cheapest_train, corporation).min_by { |v| v[:price] }
+            cheapest_variant ? cheapest_variant[:price] : 0
           end
 
           def process_buy_train(action)
