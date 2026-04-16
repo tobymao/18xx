@@ -93,8 +93,8 @@ module Engine
           'O5' => 'Freiburg',
           'O15' => 'München',
           'I3' => 'Köln',
-          'M13' => 'Ostbayern',
           'M15' => 'Ostbayern',
+          'M17' => 'Ostbayern',
         }.freeze
 
         HEXES = {
@@ -194,7 +194,7 @@ module Engine
           },
           yellow: {
             ['E19'] =>
-                     'city=revenue:30,loc:1;city=revenue:30,loc:3;path=a:1,b:_0;path=a:2,b:_1',
+                     'city=revenue:30,loc:1;city=revenue:30,loc:3;path=a:1,b:_0;path=a:2,b:_1;future_label=label:B,color:green',
             ['G3'] =>
             'city=revenue:0,loc:0;city=revenue:0,loc:4.5;label=XX;upgrade=cost:50',
             ['J6'] => 'city=revenue:0;city=revenue:0;label=XX;upgrade=cost:50',
