@@ -20,7 +20,7 @@ module Engine
             super
             after_phase = @game.phase.name
 
-            return unless before_phase != after_phase && %w[4 6 8].include?(after_phase)
+            return if before_phase == after_phase || !%w[4 6 8].include?(after_phase)
 
             @game.trigger_nationals_formation!(action.entity.owner)
           end
