@@ -32,14 +32,12 @@ module View
       def format_time(ts)
         return '' unless ts
 
-        Time.at(ts.to_i).strftime('%F %T')
+        t = Time.at(ts.to_i)
+        t > Time.now - 82_800 ? t.strftime('%T') : t.strftime('%F')
       end
 
       def info_row(label, value)
-        h(:div, [
-          h(:label, { style: { fontWeight: 'bold' } }, "#{label}: "),
-          h(:span, value.to_s),
-        ])
+        h(:p, "#{label}: #{value}")
       end
 
       def render_game_info
