@@ -20,10 +20,10 @@ module Engine
           def process_lay_tile(action)
             ability = abilities(action.entity)
             super
-            fix_ability_only_western(ability) if action.entity == @game.wlg_company && !@game.western_hex?(action.hex)
-          end
+            return unless action.entity == @game.wlg_company
+            return if @game.western_hex?(action.hex)
+            return unless ability
 
-          def fix_ability_only_western(ability)
             ability.hexes = @game.class::WEST_RIVER_HEXES
           end
         end
