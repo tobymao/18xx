@@ -314,8 +314,6 @@ module Engine
                      R75 R77 R79 R81 R83 R85 R87 S76 S78 S80 S82 S84 S86 T79 T81 U80],
         }.freeze
 
-        NATIONAL_REGION_HEXES_COMPLETE = true
-
         # Cities that sit on a national-zone border hex (hex listed in two zones).
         # All other cities belong unambiguously to one zone; only these two need an explicit override.
         CITY_NATIONAL_ZONE = {
@@ -657,38 +655,20 @@ module Engine
         end
 
         def hex_within_national_region?(entity, hex)
-          # TEMPORARY WORKAROUND: while NATIONAL_REGION_HEXES_COMPLETE is false,
-          # skip the zone filter and allow track placement anywhere on the map.
-          # Remove this branch once all 8 zone hex lists are defined and the
-          # constant is flipped to true (see home_token_locations for the same pattern).
-          return true unless self.class::NATIONAL_REGION_HEXES_COMPLETE
-
-          region = CORPORATIONS_TRACK_RIGHTS[entity.id] || @minor_floated_regions[entity.id]
-          hexes = NATIONAL_REGION_HEXES[region]
-          hexes&.include?(hex.name) || false
+          region = self.class::CORPORATIONS_TRACK_RIGHTS[entity.id] || @minor_floated_regions[entity.id]
+          hexes = self.class::NATIONAL_REGION_HEXES[region]
+          hexes&.include?(hex.coordinates) || false
         end
 
         def home_token_locations(corporation)
-          # if minor, choose non-metropolis hex
-          # if regional, starts on reserved hex
-
-          # TEMPORARY WORKAROUND: while NATIONAL_REGION_HEXES_COMPLETE is false, skip
-          # the zone filter and allow any non-metropolis tokenable city on the map.
-          # Remove this branch (and the constant) once all 8 zone hex lists are defined.
-          unless self.class::NATIONAL_REGION_HEXES_COMPLETE
-            return @hexes
-              .select { |hex| hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) } }
-              .reject { |hex| metropolis_hex?(hex) }
-          end
-
-          available_regions = NATIONAL_REGION_HEXES.select { |key, _value| @minor_available_regions.include?(key) }
+          available_regions = self.class::NATIONAL_REGION_HEXES.select { |key, _| @minor_available_regions.include?(key) }
           region_hexes = available_regions.values.flatten
 
           @hexes
-            .select { |hex| region_hexes.include?(hex.name.to_s) }
+            .select { |hex| region_hexes.include?(hex.coordinates) }
             .select { |hex| hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) } }
             .reject { |hex| metropolis_hex?(hex) }
-            .reject { |hex| self.class::MINOR_EXCLUDED_HOME_CITIES.include?(hex.name.to_s) }
+            .reject { |hex| self.class::MINOR_EXCLUDED_HOME_CITIES.include?(hex.coordinates) }
         end
 
         def metropolis_hex?(hex)
