@@ -49,17 +49,15 @@ module View
           *extra_bank,
         ].compact)
 
-        grid = h(:div, {
-                   style: {
-                     display: 'grid',
-                     grid: 'auto / repeat(auto-fill, minmax(17rem, 1fr))',
-                     gap: '3rem 1.2rem',
-                     flex: '1',
-                     minWidth: '0',
-                   },
-                 }, children)
+        grid_style = {
+          display: 'grid',
+          grid: 'auto / repeat(auto-fill, minmax(17rem, 1fr))',
+          gap: '3rem 1.2rem',
+        }
 
-        return h('div#entities', grid) if bankrupt_players.empty?
+        return h('div#entities', { style: grid_style }, children) if bankrupt_players.empty?
+
+        grid = h(:div, { style: grid_style.merge(flex: '1', minWidth: '0') }, children)
 
         bankrupt_cards = bankrupt_players.map do |p|
           h(:div, { style: { zoom: '0.5' } }, [h(Player, player: p, game: @game)])
