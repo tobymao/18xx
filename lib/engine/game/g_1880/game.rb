@@ -536,11 +536,7 @@ module Engine
           status = ["Building Permits: #{corporation.building_permits}"]
           status << ["Presidency: #{corporation.presidents_percent}%"]
           if corporation.floated?
-            status << if corporation.fully_funded
-                        ['Capitalization: Full', 'bold']
-                      else
-                        ['Capitalization: Half', nil]
-                      end
+          status << ["Capitalization: #{corporation.fully_funded ? 'Full' : 'Half'}"] if corporation.floated?
           end
           status
         end
