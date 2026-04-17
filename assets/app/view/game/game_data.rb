@@ -3,11 +3,13 @@
 # backtick_javascript: true
 
 require 'game_manager'
+require 'lib/profile_link'
 
 module View
   module Game
     class GameData < Snabberb::Component
       include GameManager
+      include Lib::ProfileLink
 
       needs :allow_clone, default: true
       needs :allow_delete, default: false
@@ -29,6 +31,27 @@ module View
         h(:div, props, children)
       end
 
+      def format_time(ts)
+        return '' unless ts
+
+        t = Time.at(ts.to_i)
+        t > Time.now - 82_800 ? t.strftime('%T') : t.strftime('%F')
+      end
+
+      def info_row(label, value)
+        h(:p, "#{label}: #{value}")
+      end
+
+      def render_game_info
+        user = @game_data['user']
+        [
+          info_row('Description', @game_data['description']),
+          h(:p, ['Host: ', user ? profile_link(user['id'], user['name']) : '']),
+          info_row('Created', format_time(@game_data['created_at'])),
+          info_row('Last Updated', format_time(@game_data['updated_at'])),
+        ]
+      end
+
       def render_game_data_buttons
         clone_game = lambda do
           @connection.unsubscribe(url(@game_data))
@@ -47,7 +70,6 @@ module View
         end
 
         buttons = [
-          h(:h3, 'Game Data'),
           h(:button, {
               on: { click: -> { store(:show_json, !@show_json) } },
               style: { width: '4.2rem' },
@@ -78,7 +100,7 @@ module View
 
         buttons.concat(render_random_seed)
 
-        h('div.margined', buttons)
+        h('div.margined', [h(:h3, 'Game Data')] + render_game_info + [h(:div, { style: { marginTop: '1rem' } }, buttons)])
       end
 
       def render_random_seed
