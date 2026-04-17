@@ -9,10 +9,8 @@ module Engine
         class HomeToken < Engine::Step::HomeToken
           def process_place_token(action)
             hex = action.city.hex
-            region = @game.class::CITY_NATIONAL_ZONE[hex.name] ||
-                     @game.class::NATIONAL_REGION_HEXES.find { |_, hexes| hexes.include?(hex.name) }&.first
-
-            raise GameError, "Region #{region} is not available" unless @game.minor_available_regions.include?(region)
+            region = @game.class::CITY_NATIONAL_ZONE[hex.coordinates] ||
+                     @game.class::NATIONAL_REGION_HEXES.find { |_, hexes| hexes.include?(hex.coordinates) }&.first
 
             token.price = @game.class::TRACK_RIGHTS_COST[region] || 0
             @game.minor_available_regions.delete(region)
