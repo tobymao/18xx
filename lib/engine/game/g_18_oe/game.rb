@@ -962,7 +962,6 @@ module Engine
             Engine::Step::Route,
             G18OE::Step::Dividend,
             G18OE::Step::BuyTrain,
-            G18OE::Step::ConvertToNational,
             Engine::Step::IssueShares,
           ], round_num: round_num)
         end
