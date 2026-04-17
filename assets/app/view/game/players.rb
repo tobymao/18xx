@@ -8,30 +8,31 @@ module View
       needs :game
 
       def render
-        props = {
-          style: { margin: '1rem 0 1.5rem 0' },
-        }
-
         all_players = @game.player_entities
         active_players = all_players.reject(&:bankrupt)
         bankrupt_players = all_players.select(&:bankrupt)
 
-        children = active_players.map { |p| h(Player, player: p, game: @game) }
-
-        unless bankrupt_players.empty?
-          bankrupt_col_props = {
-            style: {
-              display: 'inline-block',
-              verticalAlign: 'top',
-            },
-          }
-          bankrupt_children = bankrupt_players.map { |p| h(Player, player: p, game: @game, display: 'block') }
-          children << h(:div, bankrupt_col_props, bankrupt_children)
-        end
-
+        active_children = active_players.map { |p| h(Player, player: p, game: @game) }
         active_step = @game.round.active_step
-        children.unshift(h(Bank, game: @game)) if active_step.respond_to?(:seed_money) && active_step.seed_money
-        h('div.players', props, children.compact)
+        active_children.unshift(h(Bank, game: @game)) if active_step.respond_to?(:seed_money) && active_step.seed_money
+
+        outer_style = { margin: '1rem 0 1.5rem 0' }
+
+        return h('div.players', { style: outer_style }, active_children.compact) if bankrupt_players.empty?
+
+        bankrupt_cards = bankrupt_players.map { |p| h(:div, { style: { zoom: '0.5' } }, [h(Player, player: p, game: @game)]) }
+        bankrupt_col = h(:div, {
+                           style: {
+                             display: 'flex',
+                             flexDirection: 'column',
+                             gap: '0.5rem',
+                             flexShrink: '0',
+                             paddingLeft: '0.5rem',
+                           },
+                         }, bankrupt_cards)
+
+        h('div.players', { style: outer_style.merge(display: 'flex', alignItems: 'flex-start') },
+          [h(:div, { style: { flex: '1' } }, active_children.compact), bankrupt_col])
       end
     end
   end
