@@ -14,7 +14,7 @@ module Engine
             abilities: [{ type: 'shares', shares: 'SX_0' },
                         { type: 'no_buy' },
                         { type: 'close', when: 'bought_train', corporation: 'SX' }],
-            color: :red,
+            color: '#D63031',
           },
           {
             name: 'Ostbayrische Bahn',
@@ -28,33 +28,34 @@ module Engine
                 description: "Place a free track tile at m15, M17 at any time during the corporation's operations.",
                 owner_type: 'player',
                 hexes: %w[M15 M17],
-                tiles: %w[3 4 7 8 9 58],
+                tiles: %w[1 2 3 4 5 6 7 8 9 55 56 57 58],
                 free_tile_lay: true,
-                when: 'track_and_token',
+                when: 'owning_player_or_turn',
                 count: 2,
               },
               { type: 'shares', shares: 'BY_1' },
             ],
-            color: :turquoise,
+            color: '#3A9BDC',
+            text_color: 'black',
           },
           {
             name: 'Nürnberg-Fürth',
             sym: 'NF',
             value: 100,
             revenue: 5,
-            desc: 'Nürnberg-Fürth Bahn, Director of AG may lay token on L14 north or south',
+            desc: 'Nürnberg-Fürth Bahn, Director of any AG may lay token on L14 north or south',
             abilities: [{ type: 'shares', shares: 'BY_2' }, {
               type: 'token',
-              when: 'owning_corp_or_turn',
-              owner_type: 'corporation',
+              when: 'owning_player_or_turn',
+              owner_type: 'player',
               hexes: ['L14'],
-              city: 3,
               price: 0,
               teleport_price: 0,
               count: 1,
               extra_action: true,
             }],
-            color: :turquoise,
+            color: '#3A9BDC',
+            text_color: 'black',
           },
           {
             name: 'Hannoversche Bahn',
@@ -72,7 +73,8 @@ module Engine
                 from: 'ipo',
               },
             ],
-            color: :oegray,
+            color: 'black',
+            text_color: 'white',
           },
           {
             name: 'Pfalzbahnen',
@@ -86,23 +88,23 @@ module Engine
                 owner_type: 'player',
                 free_tile_lay: true,
                 hexes: ['L6'],
-                when: 'track_and_token',
+                when: 'owning_player_or_turn',
                 tiles: %w[210 211 212 213 214 215],
               },
               { type: 'shares', shares: 'BY_3' },
               {
                 type: 'token',
-                when: 'owning_corp_or_turn',
-                owner_type: 'corporation',
+                when: 'owning_player_or_turn',
+                owner_type: 'player',
                 hexes: ['L6'],
-                city: 3,
                 price: 0,
                 teleport_price: 0,
                 count: 1,
                 extra_action: true,
               },
             ],
-            color: :turquoise,
+            color: '#3A9BDC',
+            text_color: 'black',
           },
           {
             name: 'Braunschweigische Bahn',
@@ -119,7 +121,19 @@ module Engine
                 from: 'ipo',
               },
             ],
-            color: :oegray,
+            color: 'black',
+            text_color: 'white',
+          },
+          {
+            name: 'Bayerische Eisenbahn Direktor',
+            sym: 'BYD',
+            value: 184,
+            revenue: 0,
+            desc: 'Bayerische Eisenbahn Direktor - 20% share of Bayrische Eisenbahn',
+            abilities: [{ type: 'shares', shares: 'BY_0' },
+                        { type: 'no_buy' }],
+            color: '#3A9BDC',
+            text_color: 'black',
           },
         ].freeze
 
@@ -130,10 +144,13 @@ module Engine
             logo: '1835/BY',
             simple_logo: '1835/BY.alt',
             tokens: [0, 0, 0, 0, 0],
+            type: 'major',
             float_percent: 50,
+            max_ownership_percent: 100,
             shares: [20, 10, 10, 10, 10, 10, 10, 10, 10],
             coordinates: 'O15',
-            color: :turquoise,
+            color: '#3A9BDC',
+            text_color: 'black',
           },
           {
             sym: 'SX',
@@ -141,10 +158,13 @@ module Engine
             logo: '1835/SX',
             simple_logo: '1835/SX.alt',
             tokens: [0, 0, 0],
+            type: 'major',
             float_percent: 50,
+            max_ownership_percent: 100,
             shares: [20, 10, 10, 10, 10, 10, 10, 10, 10],
             coordinates: 'H16',
-            color: '#d81e3e',
+            color: '#D63031',
+            text_color: 'black',
           },
           {
             sym: 'BA',
@@ -152,11 +172,12 @@ module Engine
             logo: '1835/BA',
             simple_logo: '1835/BA.alt',
             tokens: [0, 0],
-            type: 'mid',
+            type: 'major',
             float_percent: 50,
+            max_ownership_percent: 100,
             shares: [20, 10, 10, 10, 10, 10, 10, 20],
             coordinates: 'L6',
-            color: '#7b352a',
+            color: '#8E5E41',
           },
           {
             sym: 'HE',
@@ -164,12 +185,13 @@ module Engine
             logo: '1835/HE',
             simple_logo: '1835/HE.alt',
             tokens: [0, 0],
-            type: 'mid',
+            type: 'major',
             float_percent: 50,
+            max_ownership_percent: 100,
             shares: [20, 10, 10, 10, 10, 10, 10, 20],
             last_cert: %w[HE_7],
             coordinates: 'J8',
-            color: :green,
+            color: '#4D9455',
           },
           {
             sym: 'WT',
@@ -178,12 +200,13 @@ module Engine
             simple_logo: '1835/WT.alt',
             tokens: [0, 0],
             float_percent: 50,
-            type: 'mid',
+            max_ownership_percent: 100,
+            type: 'major',
             shares: [20, 10, 10, 10, 10, 10, 10, 20],
             last_cert: ['WT_7'],
             coordinates: 'M9',
-            color: :yellow,
-            text_color: 'oegray',
+            color: '#F1D849',
+            text_color: 'black',
           },
           {
             sym: 'MS',
@@ -192,12 +215,14 @@ module Engine
             simple_logo: '1835/MS.alt',
             tokens: [0, 0],
             percent: 10,
-            type: 'low',
+            type: 'major',
             float_percent: 60,
+            max_ownership_percent: 100,
             shares: [20, 10, 20, 20, 10, 10, 10],
             # the shares order creates a 10 share company, but the first 3 sold papers are 20%
             coordinates: 'C13',
-            color: :violet,
+            color: '#8063A3',
+            text_color: 'black',
           },
           {
             sym: 'OL',
@@ -206,11 +231,12 @@ module Engine
             simple_logo: '1835/OL.alt',
             tokens: [0, 0],
             float_percent: 60,
-            type: 'low',
+            max_ownership_percent: 100,
+            type: 'major',
             shares: [20, 10, 20, 20, 10, 10, 10],
             # the shares order creates a 10 share company, but the first 3 sold papers are 20%
             coordinates: 'D6',
-            color: '#6e6966',
+            color: '#B2B2B2',
           },
 
           {
@@ -219,6 +245,8 @@ module Engine
             logo: '1835/PR',
             simple_logo: '1835/PR.alt',
             tokens: [0, 0, 0, 0, 0],
+            type: 'Prussian',
+            max_ownership_percent: 100,
             shares: [10, 10, 10, 10, 10, 10, 10, 10, 5, 5, 5, 5],
             # shares for minors and Privates should be reserved
             coordinates: 'E19',
@@ -228,10 +256,12 @@ module Engine
 
         MINORS = [
           {
-            sym: 'P1',
+            sym: 'M1',
             name: 'Bergisch Märkische Bahn',
             logo: '1835/PR',
             simple_logo: '1835/PR.alt',
+            value: 80,
+            type: 'minor',
             tokens: [0],
             abilities: [
               {
@@ -247,15 +277,18 @@ module Engine
             color: '#37383a',
           },
           {
-            sym: 'P2',
+            sym: 'M2',
             name: 'Berlin Potsdamer Bahn',
             logo: '1835/PR',
             simple_logo: '1835/PR.alt',
+            value: 170,
+            type: 'minor',
+            city: 0,
             tokens: [0],
             abilities: [
               {
                 type: 'exchange',
-                corporations: %w[PR_0x],
+                corporations: %w[PR_0],
                 owner_type: 'player',
                 when: ['Phase 2.3', 'Phase 2.4', 'Phase 3.1'],
                 # reserved papers perhaps a option
@@ -266,10 +299,12 @@ module Engine
             color: '#37383a',
           },
           {
-            sym: 'P3',
+            sym: 'M3',
             name: 'Magdeburger-Bahn',
             logo: '1835/PR',
             simple_logo: '1835/PR.alt',
+            value: 80,
+            type: 'minor',
             tokens: [0],
             abilities: [
               {
@@ -285,10 +320,12 @@ module Engine
             color: '#37383a',
           },
           {
-            sym: 'P4',
+            sym: 'M4',
             name: 'Köln-Mindener Bahn',
             logo: '1835/PR',
             simple_logo: '1835/PR.alt',
+            value: 160,
+            type: 'minor',
             tokens: [0],
             abilities: [
               {
@@ -304,10 +341,13 @@ module Engine
             color: '#37383a',
           },
           {
-            sym: 'P5',
+            sym: 'M5',
             name: 'Berlin Stettiner Bahn',
             logo: '1835/PR',
             simple_logo: '1835/PR.alt',
+            value: 80,
+            type: 'minor',
+            city: 1,
             tokens: [0],
             abilities: [
               {
@@ -323,15 +363,18 @@ module Engine
             color: '#37383a',
           },
           {
-            sym: 'P6',
+            sym: 'M6',
             name: 'Altona Kiel Bahn',
             logo: '1835/PR',
             simple_logo: '1835/PR.alt',
+            value: 80,
+            type: 'minor',
+            city: 1,
             tokens: [0],
             abilities: [
               {
                 type: 'exchange',
-                corporations: %w[PR_12],
+                corporations: %w[PR_8],
                 owner_type: 'player',
                 when: ['Phase 2.3', 'Phase 2.4', 'Phase 3.1'],
                 # reserved papers perhaps a option
@@ -341,6 +384,24 @@ module Engine
             coordinates: 'C11',
             color: '#37383a',
           },
+        ].freeze
+
+        # Start packet positions: [entity_symbol, row, column]
+        # Grid arrangement for draft system
+        START_PACKET = [
+          ['NF', 1, 1],
+          ['M1', 2, 1],
+          ['LD', 2, 2],
+          ['M2', 2, 3],
+          ['M3', 3, 1],
+          ['M4', 3, 2],
+          ['BYD', 3, 3],
+          ['BB', 3, 4],
+          ['HB', 4, 1],
+          ['M5', 4, 2],
+          ['M6', 4, 3],
+          ['OBB', 4, 4],
+          ['PB', 4, 5],
         ].freeze
       end
     end
