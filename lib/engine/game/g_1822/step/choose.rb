@@ -46,6 +46,11 @@ module Engine
             @company = @game.company_by_id(@game.class::COMPANY_DOUBLE_CASH)
             return nil if !@company || @company&.owner != entity
 
+            if @game.players.max_by(&:cash) == entity || entity.cash * 2 < @game.players.map(&:cash).sort[1]
+              @log << "Doubling #{entity.name}'s cash would not affect player order, skipping choice for #{@company.name}"
+              return nil
+            end
+
             @company
           end
         end
