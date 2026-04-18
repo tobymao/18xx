@@ -126,6 +126,7 @@ module Engine
                 distance: 3,
                 price: 130,
                 track_type: :narrow,
+                event_downgrade_variant: true,
               },
             ],
           },

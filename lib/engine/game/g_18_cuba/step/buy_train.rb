@@ -30,9 +30,12 @@ module Engine
 
           def buyable_train_variants(train, entity)
             variants = super
-            # 4n trains can downgrade to 4-1n.
-            # Only the currently active variant (based on train.name) is buyable.
-            return variants.select { |variant| variant[:name] == train.name } if train.variants.key?('4-1n')
+            # Downgrade train variants (e.g. 4n-1) are not player-chooseable; only the current one is buyable.
+            if train.variants.values.any? { |v| v[:event_downgrade_variant] }
+              return variants.select do |v|
+                       v[:name] == train.name
+                     end
+            end
 
             # During emergency buy, only the cheapest variant is allowed.
             if must_buy_train?(entity)
