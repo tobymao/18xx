@@ -38,7 +38,7 @@ module Engine
           end
 
           def can_buy_any_from_ipo?(entity)
-            return false unless @game.corporations.all?(&:ipoed)
+            return false unless @game.major_phase?
 
             super
           end
@@ -69,7 +69,7 @@ module Engine
 
           def can_convert?(entity)
             # are we in the major railroad phase?
-            return false unless @game.corporations.all?(&:ipoed)
+            return false unless @game.major_phase?
             # is the current entity a regional?
             return false unless entity.type == :regional
             # has any shares been sold?

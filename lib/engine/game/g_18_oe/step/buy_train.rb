@@ -7,13 +7,18 @@ module Engine
     module G18OE
       module Step
         class BuyTrain < Engine::Step::BuyTrain
-          def can_entity_buy_train?(_entity)
-            true
+          def can_entity_buy_train?(entity)
+            entity.corporation? && entity.type != :minor
           end
 
-          # This will also have logic for when you can buy trains
-          # Such as 3 trains being available after the first OR and after all minors/regionals have floated (major phase)
-          # And nationals getting rusted trains
+          def buyable_trains(entity)
+            trains = super
+            return trains.select { |t| t.name == '2+2' } if entity.trains.empty? && @game.phase.name.to_i < 4
+
+            trains
+          end
+
+          # TODO: Nationals claiming rusted trains for free (openpoints §1.9, §3.7) — deferred
         end
       end
     end
