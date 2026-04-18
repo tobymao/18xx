@@ -54,6 +54,7 @@ module Engine
             train_limit: { minor: 2, regional: 2, major: 4 },
             tiles: [:yellow],
             operating_rounds: 2,
+            status: ['train_obligation'],
           },
           {
             name: '3',
@@ -61,6 +62,7 @@ module Engine
             train_limit: { minor: 2, regional: 2, major: 4 },
             tiles: %i[yellow green],
             operating_rounds: 2,
+            status: ['train_obligation'],
           },
           {
             name: '4',
@@ -68,6 +70,7 @@ module Engine
             train_limit: { minor: 1, regional: 1, major: 3, national: 4 },
             tiles: %i[yellow green],
             operating_rounds: 2,
+            status: ['can_buy_trains_from_others'],
           },
           {
             name: '5',
@@ -75,6 +78,7 @@ module Engine
             train_limit: { minor: 1, regional: 1, major: 3, national: 4 },
             tiles: %i[yellow green brown],
             operating_rounds: 2,
+            status: ['can_buy_trains_from_others'],
           },
           {
             name: '6',
@@ -82,6 +86,7 @@ module Engine
             train_limit: { major: 2, national: 3 },
             tiles: %i[yellow green brown],
             operating_rounds: 2,
+            status: ['can_buy_trains_from_others'],
           },
           {
             name: '7',
@@ -89,6 +94,7 @@ module Engine
             train_limit: { major: 2, national: 3 },
             tiles: %i[yellow green brown gray],
             operating_rounds: 2,
+            status: ['can_buy_trains_from_others'],
           },
           {
             name: '8',
@@ -96,6 +102,7 @@ module Engine
             train_limit: { major: 2, national: 3 },
             tiles: %i[yellow green brown gray],
             operating_rounds: 2,
+            status: ['can_buy_trains_from_others'],
           },
         ].freeze
 
@@ -152,6 +159,7 @@ module Engine
               price: 475,
             }],
             num: 8,
+            events: [{ 'type' => 'consolidation_triggered' }],
           },
           # Level 6 — express (6) triggers Phase 6; local variant (6+6)
           {
@@ -618,16 +626,14 @@ module Engine
 
         def must_buy_train?(entity)
           return false unless entity.corporation?
-          return false if entity.trains.any?
-          # 2+2 obligation waived once Phase 4 starts
-          return false if @phase.name.to_i >= 4
+          return false unless entity.trains.empty?
+          return false unless @phase.status.include?('train_obligation')
 
           entity.floated?
         end
 
-        # Inter-corp train sales only allowed in Major Phase (Phase 4+)
         def can_buy_train_from_others?
-          @phase.name.to_i >= 4
+          @phase.status.include?('can_buy_trains_from_others')
         end
 
         # UP movement at end of SR: only for majors and nationals that are fully player-held
@@ -635,10 +641,8 @@ module Engine
           %i[major national].include?(corporation.type)
         end
 
-        # Set consolidation trigger at the end of the first OR set played under Phase 5+
-        def or_set_finished
-          super
-          @consolidation_triggered ||= (@phase.name.to_i >= 5)
+        def event_consolidation_triggered!
+          @consolidation_triggered = true
         end
 
         def next_round!
@@ -656,7 +660,6 @@ module Engine
           if @round.is_a?(Round::G18OE::Consolidation)
             @consolidation_done = true
             @turn += 1
-            or_set_finished
             @round = new_stock_round
             return
           end
