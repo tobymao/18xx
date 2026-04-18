@@ -241,6 +241,10 @@ module Engine
           'BJV' => 'SC',
         }.freeze
 
+        # Per-city zone override — takes precedence over NATIONAL_REGION_HEXES lookup.
+        # Populate when a city hex sits on a zone boundary or needs an explicit assignment.
+        CITY_NATIONAL_ZONE = {}.freeze
+
         NATIONAL_REGION_HEXES = {
           # United Kingdom / Ireland
           'UK' => %w[E24 E26 E28 F23 F25 F27 F29 G16 G18 G20 G24 G26 G28
@@ -683,6 +687,14 @@ module Engine
              OE18 OE26 OE27 OE28 OE29 OE30 OE37 OE38 OE39 OE40 OE41].include?(tile.name.to_s)
         end
 
+        def must_buy_train?(entity)
+          return false unless entity.trains.empty?
+          return false unless @phase.status.include?('train_obligation')
+
+          entity.floated?
+        end
+
+
         def can_buy_train_from_others?
           @phase.status.include?('can_buy_trains_from_others')
         end
@@ -706,6 +718,7 @@ module Engine
                 new_consolidation_round
               else
                 super
+                return
               end
             when Round::G18OE::Consolidation
               @consolidation_done = true
@@ -713,6 +726,7 @@ module Engine
               new_stock_round
             else
               super
+              return
             end
         end
 

@@ -11,11 +11,11 @@ module Engine
             entity.corporation? && entity.type != :minor
           end
 
-          def must_buy_train?(entity)
-            return false unless entity.trains.empty?
-            return false unless @game.phase.status.include?('train_obligation')
+          def buyable_trains(entity)
+            trains = super
+            return trains.select { |t| t.name == '2+2' } if entity.trains.empty? && @game.phase.name.to_i < 4
 
-            entity.floated?
+            trains
           end
 
           # TODO: Nationals claiming rusted trains for free (openpoints §1.9, §3.7) — deferred

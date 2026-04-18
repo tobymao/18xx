@@ -13,6 +13,16 @@ module Engine
         def name
           'Consolidation Round'
         end
+
+        def select_entities
+          @game.players.select do |p|
+            @game.corporations.any? do |c|
+              c.president?(p) &&
+                (%i[minor regional].include?(c.type) ||
+                  (c.type == :major && !c.floated?))
+            end
+          end
+        end
       end
     end
   end
