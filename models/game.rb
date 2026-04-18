@@ -35,9 +35,7 @@ class Game < Base
         ON g.id = ug.id
       WHERE g.status = '%<status>s'
         AND (:titles IS NULL OR g.title = ANY(:titles))
-        AND (:mode IS NULL
-             OR (:mode = 'async' AND COALESCE((g.settings->>'is_async')::boolean, false))
-             OR (:mode = 'live' AND NOT COALESCE((g.settings->>'is_async')::boolean, false)))
+        AND (:mode IS NULL OR COALESCE((g.settings->>'is_async')::boolean, true) = (:mode = 'async'))
         AND ug.id IS NULL
         AND NOT (g.status = 'new' AND COALESCE((settings->>'unlisted')::boolean, false))
       ORDER BY g.%<ordered_by>s DESC
