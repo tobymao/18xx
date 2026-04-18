@@ -406,7 +406,7 @@ module Engine
             ['AD9'] => 'city=revenue:0;upgrade=cost:30,terrain:mountain',
             ['D57'] => 'city=revenue:0;upgrade=cost:30,terrain:water',
             ['I50'] => 'city=revenue:0;label=Y;upgrade=cost:45,terrain:water',
-            ['AA82'] => 'city=revenue:0;upgrade=cost:45,terrain:water',
+            ['AA82'] => 'city=revenue:30;city=revenue:30;upgrade=cost:45,terrain:water;label=C',
             # Cities — pre-printed revenue
             ['U24'] => 'city=revenue:10',
             ['I20'] => 'city=revenue:10;path=a:4,b:_0',

@@ -11,6 +11,33 @@ module Engine
           DIVIDEND_TYPES = %i[payout half withhold].freeze
           include Engine::Step::MinorHalfPay
 
+          def actions(entity)
+            return [] unless entity == current_entity
+            return [] if entity.company?
+            # Nationals always get a dividend action even when revenue is 0 (payout £0
+            # is a valid action and must be explicitly taken to advance the OR).
+            return ACTIONS if entity.type == :national
+
+            return [] if total_revenue.zero?
+
+            ACTIONS
+          end
+
+          # WA-2 (permanent): inject national revenue here via current_entity rather
+          # than via game.routes_revenue which relies on current_operator being set.
+          def total_revenue
+            return @game.national_revenue(current_entity) if current_entity&.type == :national
+
+            super
+          end
+
+          # Nationals may only pay all revenue as dividends (no withhold, no split).
+          def dividend_types
+            return %i[payout] if current_entity&.type == :national
+
+            self.class::DIVIDEND_TYPES
+          end
+
           def half(entity, revenue)
             withheld = half_pay_withhold_amount(entity, revenue)
             { corporation: withheld, per_share: payout_per_share(entity, revenue - withheld) }

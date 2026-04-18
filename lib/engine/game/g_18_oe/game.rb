@@ -4,6 +4,9 @@ require_relative 'meta'
 require_relative 'entities'
 require_relative 'map'
 require_relative '../base'
+require_relative 'round/consolidation'
+require_relative 'step/consolidate'
+require_relative 'step/convert_to_national'
 
 module Engine
   module Game
@@ -12,7 +15,8 @@ module Engine
         include_meta(G18OE::Meta)
         include G18OE::Entities
         include G18OE::Map
-        attr_accessor :minor_regional_order, :minor_available_regions, :minor_floated_regions, :regional_corps_floated
+        attr_accessor :minor_regional_order, :minor_available_regions, :minor_floated_regions, :regional_corps_floated,
+                      :consolidation_triggered, :consolidation_done, :nationals_formation_queue
 
         MARKET = [
           ['', '110', '120C', '135', '150', '165', '180', '200', '225', '250', '280', '310', '350', '390', '440', '490', '550'],
@@ -51,6 +55,7 @@ module Engine
             train_limit: { minor: 2, regional: 2, major: 4 },
             tiles: [:yellow],
             operating_rounds: 2,
+            status: ['train_obligation'],
           },
           {
             name: '3',
@@ -58,6 +63,7 @@ module Engine
             train_limit: { minor: 2, regional: 2, major: 4 },
             tiles: %i[yellow green],
             operating_rounds: 2,
+            status: ['train_obligation'],
           },
           {
             name: '4',
@@ -65,6 +71,7 @@ module Engine
             train_limit: { minor: 1, regional: 1, major: 3, national: 4 },
             tiles: %i[yellow green],
             operating_rounds: 2,
+            status: ['can_buy_trains_from_others'],
           },
           {
             name: '5',
@@ -72,6 +79,7 @@ module Engine
             train_limit: { minor: 1, regional: 1, major: 3, national: 4 },
             tiles: %i[yellow green brown],
             operating_rounds: 2,
+            status: ['can_buy_trains_from_others'],
           },
           {
             name: '6',
@@ -79,6 +87,7 @@ module Engine
             train_limit: { major: 2, national: 3 },
             tiles: %i[yellow green brown],
             operating_rounds: 2,
+            status: ['can_buy_trains_from_others'],
           },
           {
             name: '7',
@@ -86,6 +95,7 @@ module Engine
             train_limit: { major: 2, national: 3 },
             tiles: %i[yellow green brown gray],
             operating_rounds: 2,
+            status: ['can_buy_trains_from_others'],
           },
           {
             name: '8',
@@ -93,6 +103,7 @@ module Engine
             train_limit: { major: 2, national: 3 },
             tiles: %i[yellow green brown gray],
             operating_rounds: 2,
+            status: ['can_buy_trains_from_others'],
           },
         ].freeze
 
@@ -149,6 +160,7 @@ module Engine
               price: 475,
             }],
             num: 8,
+            events: [{ 'type' => 'consolidation_triggered' }],
           },
           # Level 6 — express (6) triggers Phase 6; local variant (6+6)
           {
@@ -231,13 +243,94 @@ module Engine
         }.freeze
 
         NATIONAL_REGION_HEXES = {
-          'UK' => %w[D25 E24 E26 E28 F23 F25 F27 F29 G16 G18 G20 G24 G26 G28 H15 H17 H19 H21 H25 H27 H29 I14 I16 I18 I20 I26 I28
-                     J13 J15 J17 J19 J23 J25 J27 J29 K22 K24 K26 K28 K30 L23 L25 L27 L29 L31 M22 M24 M26 M28 M30],
-          'FR' => %w[N31 N33 N35 N37 O24 O28 O30 O32 O34 O36 O38 P19 P21 P23 P25 P27 P29 P31 P33 P35 P37 Q20 Q22 Q24 Q26 Q28 Q30
-                     Q32 Q34 Q36 Q38 R23 R25 R27 R29 R31 R33 R35 R37 R39 S24 S26 S28 S30 S32 S34 S36 S38 T23 T25 T27 T29 T31 T33
-                     T35 T37 U22 U24 U26 U28 U30 U32 U34 U36 U38 V21 V23 V25 V27 V29 V31 V33 V35 V37 W22 W24 W26 W28 W30 W32 W34
-                     W36 W38 X25 X27 X29 X33 X35 X37 Y28 Z41], # plus Alger
+          # United Kingdom / Ireland
+          'UK' => %w[E24 E26 E28 F23 F25 F27 F29 G16 G18 G20 G24 G26 G28
+                     H15 H17 H19 H21 H25 H27 H29 I14 I16 I18 I20 I26 I28
+                     J13 J15 J17 J19 J23 J25 J27 J29 K22 K24 K26 K28 K30
+                     L23 L25 L27 L29 L31 M22 M24 M26 M28 M30],
+          # Scandinavia (Sweden / Norway / Denmark)
+          'SC' => %w[A42 A44 A46 A48 A50 A52 B43 B45 B47 B49 B51 B53 B55 B57
+                     C42 C44 C46 C48 C50 C52 C54 C56 C58 D41 D43 D45 D47 D49 D51 D53 D55 D57
+                     E42 E44 E48 E50 E52 E54 E56 E58 F49 F51 F53 F55
+                     G44 G46 G50 G52 G54 G56 H43 H45 H47 H51 H53 H55 I44 I46 I48 I50 I52],
+          # France / Belgium
+          'FR' => %w[N31 N33 N35 N37 O24 O28 O30 O32 O34 O36 O38
+                     P19 P21 P23 P25 P27 P29 P31 P33 P35 P37
+                     Q20 Q22 Q24 Q26 Q28 Q30 Q32 Q34 Q36 Q38
+                     R23 R25 R27 R29 R31 R33 R35 R37 R39
+                     S24 S26 S28 S30 S32 S34 S36 S38 T23 T25 T27 T29 T31 T33 T35 T37
+                     U22 U24 U26 U28 U30 U32 U34 U36 U38
+                     V21 V23 V25 V27 V29 V31 V33 V35 V37
+                     W22 W24 W26 W28 W30 W32 W34 W36 W38
+                     X25 X27 X29 X33 X35 X37 Y28],
+          # Prussia / Holland / Switzerland
+          'PHS' => %w[I64 J45 J47 J49 J63 J65 K40 K42 K44 K46 K48 K50 K54 K56 K58 K60 K62 K64
+                      L37 L39 L41 L43 L45 L47 L49 L51 L53 L55 L57 L59 L61
+                      M34 M36 M38 M40 M42 M44 M46 M48 M50 M52 M54 M56 M58
+                      N37 N39 N41 N43 N45 N47 N49 N51 N53 N55 N57
+                      O38 O40 O42 O44 O46 O48 O50 O52 O54 O56 O58
+                      P39 P41 P43 P45 P47 P49 Q38 Q40 Q42 Q44 Q46 Q48 Q50
+                      R39 R41 R43 R45 R47 R49 R51 S38 S40 S42 S44 S46 S48
+                      T37 T39 T41 T43 U38 U40 U42],
+          # Austria-Hungary
+          'AH' => %w[O52 O54 P49 P51 P53 P55 P57 P59 P61 P63 P65 P67 P69 P71 P73
+                     Q50 Q52 Q54 Q56 Q58 Q60 Q62 Q64 Q66 Q68 Q70 Q72 Q74
+                     R51 R53 R55 R57 R59 R61 R63 R65 R67 R69 R71 R73
+                     S44 S46 S48 S50 S52 S54 S56 S58 S60 S62 S64 S66 S68 S70 S72 S74
+                     T45 T47 T49 T51 T53 T55 T57 T59 T61 T63 T65 T67 T69 T71 T73 T75
+                     U50 U52 U54 U56 U58 U60 U62 U64 U66 U68 U70 U72 U74
+                     V51 V53 V55 V57 V59 V61 V63 V65 V67 V69
+                     W54 W56 W58 W60 X55 X57 X59 X61 Y56 Y58 Y60 Y62],
+          # Italy
+          'IT' => %w[U38 U40 U42 U44 U46 U48 V37 V39 V41 V43 V45 V47
+                     W38 W40 W42 W44 W46 W48 X43 X45 X47 X49 Y44 Y46 Y48 Y50
+                     Z41 Z45 Z47 Z49 Z51 AA48 AA50 AA52 AA54
+                     AB39 AB41 AB51 AB53 AB55 AB57 AC38 AC40 AC54 AC56 AC58
+                     AD39 AD55 AE52 AF49 AF51 AF53 AG50 AG52],
+          # Spain / Portugal
+          'SP' => %w[U6 U8 U10 U12 V5 V7 V9 V11 V13 V15 V17 V19
+                     W6 W8 W10 W12 W14 W16 W18 W20 W22
+                     X5 X7 X9 X11 X13 X15 X17 X19 X21 X23 X25
+                     Y2 Y4 Y6 Y8 Y10 Y12 Y14 Y16 Y18 Y20 Y22 Y24 Y26 Y28
+                     Z3 Z5 Z7 Z9 Z11 Z13 Z15 Z17 Z19 Z21 Z23 Z25 Z27
+                     AA2 AA4 AA6 AA8 AA10 AA12 AA14 AA16 AA18 AA20 AA22
+                     AB1 AB3 AB5 AB7 AB9 AB11 AB13 AB15 AB17 AB19
+                     AC6 AC8 AC10 AC12 AC14 AC16 AC18 AC20
+                     AD5 AD7 AD9 AD11 AD13 AD15 AD17],
+          # Russia
+          'RU' => %w[A66 A68 A70 A72 A74 B63 B65 B67 B69 B71 B73 B75 B77 B79 B81
+                     C64 C66 C72 C74 C76 C78 C80 C82 D67 D69 D71 D73 D75 D77 D79 D81 D83 D85
+                     E66 E68 E70 E72 E74 E76 E78 E80 E82 E84 E86
+                     F69 F71 F73 F75 F77 F79 F81 F83 F85
+                     G64 G66 G68 G70 G72 G74 G76 G78 G80 G82 G84 G86
+                     H63 H65 H67 H69 H71 H73 H75 H77 H79 H81 H83 H85 H87
+                     I64 I66 I68 I70 I72 I74 I76 I78 I80 I82 I84 I86
+                     J67 J69 J71 J73 J75 J77 J79 J81 J83 J85 J87
+                     K64 K66 K68 K70 K72 K74 K76 K78 K80 K82 K84 K86
+                     L61 L63 L65 L67 L69 L71 L73 L75 L77 L79 L81 L83 L85 L87
+                     M58 M60 M62 M64 M66 M68 M70 M72 M74 M76 M78 M80 M82 M84 M86
+                     N59 N61 N63 N65 N67 N69 N71 N73 N75 N77 N79 N81 N83 N85
+                     O58 O60 O62 O64 O66 O68 O70 O72 O74 O76 O78 O80 O82 O84 O86
+                     P73 P75 P77 P79 P81 P83 P85 P87 Q74 Q76 Q78 Q80 Q82 Q84 Q86
+                     R75 R77 R79 R81 R83 R85 R87 S76 S78 S80 S82 S84 S86 T79 T81 U80],
         }.freeze
+
+        # Cities that sit on a national-zone border hex (hex listed in two zones).
+        # All other cities belong unambiguously to one zone; only these two need an explicit override.
+        CITY_NATIONAL_ZONE = {
+          'Q38' => 'FR',  # Nancy   — FR/PHS border hex
+          'O52' => 'PHS', # Dresden — PHS/AH border hex
+        }.freeze
+
+        # Cities excluded from minor home-token placement regardless of zone membership.
+        # These are Balkan / Ottoman / south-east European cities outside the concession
+        # railroad system. Most are already outside all zone hex lists; S76 (Jassy) is the
+        # only one currently inside a zone (RU) that requires active filtering.
+        # AA82 (Constantinople) is also excluded via metropolis_hex? but listed here for clarity.
+        MINOR_EXCLUDED_HOME_CITIES = %w[
+          S76 W64 W74 Y70
+          AA62 AB69 AD79 AE72 AA82
+        ].freeze
 
         TRACK_RIGHTS_COST = {
           'UK' => 40,
@@ -540,6 +633,7 @@ module Engine
             .compact
           @minor_floated_regions = {}
           @regional_corps_floated = 0
+          @nationals_formation_queue = []
 
           corporations.each do |corp|
             corp.par_via_exchange = companies.find { |c| c.sym == corp.id } if corp.type == :minor
@@ -550,27 +644,188 @@ module Engine
           'Treasury'
         end
 
+        # ── Nationals: formation trigger ────────────────────────────────────────
+
+        # Called from Step::BuyTrain when phase 4, 6, or 8 begins.
+        # Builds the formation queue starting with buyer_player, then all other
+        # players in seat order who own at least one major.
+        def trigger_nationals_formation!(buyer_player)
+          ordered = [@players.find { |p| p == buyer_player }] +
+                    @players.reject { |p| p == buyer_player }
+          eligible = ordered.select do |p|
+            corporations.any? { |c| c.type == :major && c.president?(p) }
+          end
+          return if eligible.empty?
+
+          @nationals_formation_queue = eligible
+          @log << '-- Event: Nationals may now form --'
+        end
+
+        # ── Nationals: conversion ───────────────────────────────────────────────
+
+        def convert_to_national(corporation)
+          @log << "#{corporation.name} converts to a National Railroad"
+
+          # 1. Cash → bank
+          if corporation.cash.positive?
+            @log << "  #{corporation.name} returns £#{corporation.cash} to bank"
+            corporation.spend(corporation.cash, @bank)
+          end
+
+          # 2. Treasury certs → Open Market (50% limit temporarily waived per rules)
+          # WORKAROUND WA-4: transfer_shares API uncertain; rescue on failure.
+          # To remove: verify correct transfer_shares signature in share_pool.rb,
+          # call it directly, and drop the rescue block.
+          treasury_shares = (corporation.shares_by_corporation[corporation] || []).dup
+          treasury_shares.each do |share|
+            begin # rubocop:disable Style/RedundantBegin
+              @share_pool.transfer_shares(share.to_bundle, @share_pool)
+            rescue StandardError => e
+              @log << "WARN: Could not transfer #{share.percent}% #{corporation.name} " \
+                      "share to open market: #{e.message}"
+            end
+          end
+
+          # 3. Remove all tokens from map
+          corporation.tokens.each do |token|
+            next unless token.city
+
+            token.city.remove_token!(token)
+            token.city = nil
+          end
+
+          # 4. Flip to national type
+          corporation.type = :national
+          @log << "  #{corporation.name} is now a National Railroad"
+
+          # 5. Enforce train limit — discard cheapest excess trains
+          # WORKAROUND WA-3: reclaim_train API not guaranteed; fall back to manual removal.
+          # To remove: confirm @depot.reclaim_train exists, drop respond_to? guard.
+          limit = @phase.train_limit(corporation)
+          while corporation.trains.length > limit
+            train = corporation.trains.min_by(&:price)
+            @log << "  #{corporation.name} discards #{train.name} (train limit #{limit})"
+            if @depot.respond_to?(:reclaim_train)
+              @depot.reclaim_train(train)
+            else
+              corporation.trains.delete(train)
+              train.owner = nil
+            end
+          end
+
+          # DEFERRED stubs:
+          # 1.3c — abandon merged minors (openpoints §1.3c)
+          # 1.3d — remove track rights / OE / private markers (openpoints §1.3d)
+        end
+
+        # ── Nationals: revenue ──────────────────────────────────────────────────
+
+        # Zone-based virtual-token revenue formula (openpoints §1.4).
+        # WORKAROUND WA-1: all zone cities/towns treated as linked (graph
+        # connectivity bypassed). To remove: build a national-aware graph with
+        # home_as_token: true, no_blocking: true, call connected_nodes, split
+        # linked vs unlinked, and apply the £0-penalty for unlinked capacity.
+        def national_revenue(entity)
+          region = CORPORATIONS_TRACK_RIGHTS[entity.id] || @minor_floated_regions[entity.id]
+          zone_hexes = NATIONAL_REGION_HEXES[region] || []
+
+          # Capacity totals across all trains
+          city_capacity = entity.trains.sum do |t|
+            t.distance.find { |d| d['nodes'].include?('city') }&.dig('pay') || 0
+          end
+          town_capacity = entity.trains.sum do |t|
+            t.distance.find { |d| d['nodes'] == ['town'] }&.dig('pay') || 0
+          end
+
+          # WA-1: treat every zone city/town as linked
+          linked_cities = []
+          linked_towns  = []
+
+          zone_hexes.each do |hex_name|
+            hex = @hexes.find { |h| h.name == hex_name }
+            next unless hex
+
+            hex.tile.cities.each { |c| linked_cities << c.max_revenue }
+            hex.tile.towns.each  { |t| linked_towns  << t.max_revenue }
+          end
+
+          linked_cities.sort!.reverse!
+          linked_towns.sort!.reverse!
+
+          revenue = 0
+
+          # Fill city capacity: linked cities best-first, then £60 each for remainder
+          taken_cities = [city_capacity, linked_cities.size].min
+          revenue += linked_cities.first(taken_cities).sum
+          city_capacity -= taken_cities
+          revenue += city_capacity * 60 if city_capacity.positive?
+
+          # Fill town capacity: linked towns best-first, then £10 each for remainder
+          taken_towns = [town_capacity, linked_towns.size].min
+          revenue += linked_towns.first(taken_towns).sum
+          town_capacity -= taken_towns
+          revenue += town_capacity * 10 if town_capacity.positive?
+
+          # Inherent Pullman bonus: +£10 × level of highest non-rusted train (§1.5)
+          highest_level = entity.trains.reject(&:obsolete?).map { |t| train_level(t) }.max || 0
+          revenue += highest_level * 10
+
+          revenue
+        end
+
+        # Returns the numeric level of a train name (e.g. '4+4'→4, '4D'→4, '2+2'→2, '4'→4)
+        def train_level(train)
+          name = train.name
+          return name.to_i if name.match?(/^\d+$/)
+          return Regexp.last_match(1).to_i if name.match?(/^(\d+)\+/)
+          return Regexp.last_match(1).to_i if name.match?(/^(\d+)D$/)
+
+          0
+        end
+
+        # ── Nationals: routing / terrain / token overrides ──────────────────────
+
+        # Nationals skip the Route step entirely; revenue is calculated in national_revenue.
+        def can_run_route?(entity)
+          return false if entity.respond_to?(:type) && entity.type == :national
+
+          super
+        end
+
+        # Nationals are exempt from all terrain costs (openpoints §1.7).
+        def tile_cost_with_discount(tile, hex, entity, spender, cost)
+          return 0 if entity.respond_to?(:type) && entity.type == :national
+
+          super
+        end
+
+        # True once MAX_FLOATED_REGIONALS have been floated and the 6 remaining
+        # unfloated regionals have been closed. This is the correct trigger for
+        # "Major Railroad Phase" entry: conversions and secondary-share purchases
+        # become available from this point on.
+        def major_phase?
+          @regional_corps_floated >= self.class::MAX_FLOATED_REGIONALS
+        end
+
         def operating_order
           @minor_regional_order + (@corporations.select(&:floated?) - @minor_regional_order).sort
         end
 
         def hex_within_national_region?(entity, hex)
-          region = CORPORATIONS_TRACK_RIGHTS[entity.id] || @minor_floated_regions[entity.id]
-          hexes = NATIONAL_REGION_HEXES[region]
-          hexes&.include?(hex.name) || false
+          region = self.class::CORPORATIONS_TRACK_RIGHTS[entity.id] || @minor_floated_regions[entity.id]
+          hexes = self.class::NATIONAL_REGION_HEXES[region]
+          hexes&.include?(hex.coordinates) || false
         end
 
         def home_token_locations(corporation)
-          # if minor, choose non-metropolis hex
-          # if regional, starts on reserved hex
-
-          available_regions = NATIONAL_REGION_HEXES.select { |key, _value| @minor_available_regions.include?(key) }
+          available_regions = self.class::NATIONAL_REGION_HEXES.select { |key, _| @minor_available_regions.include?(key) }
           region_hexes = available_regions.values.flatten
 
           @hexes
-            .select { |hex| region_hexes.include?(hex.name.to_s) }
+            .select { |hex| region_hexes.include?(hex.coordinates) }
             .select { |hex| hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) } }
             .reject { |hex| metropolis_hex?(hex) }
+            .reject { |hex| self.class::MINOR_EXCLUDED_HOME_CITIES.include?(hex.coordinates) }
         end
 
         def metropolis_hex?(hex)
@@ -583,11 +838,52 @@ module Engine
         end
 
         def must_buy_train?(entity)
-          # must buy the reserved 2+2, otherwise only majors must buy trains
-          # return unless entity.type == 'major'
-          return false if depot.depot_trains.first&.name != '2+2' && entity.type != :major
+          return false unless entity.corporation?
+          return false unless entity.trains.empty?
+          return false unless @phase.status.include?('train_obligation')
+
+          entity.floated?
+        end
+
+        def can_buy_train_from_others?
+          @phase.status.include?('can_buy_trains_from_others')
+        end
+
+        # UP movement at end of SR: only for majors and nationals that are fully player-held
+        def sold_out_increase?(corporation)
+          %i[major national].include?(corporation.type)
+        end
+
+        def event_consolidation_triggered!
+          @consolidation_triggered = true
+        end
+
+        def next_round!
+          # Insert consolidation round between OR set end and next SR (once only)
+          if @round.is_a?(Round::Operating) &&
+             @round.round_num >= @operating_rounds &&
+             @consolidation_triggered &&
+             !@consolidation_done
+            @log << '-- Consolidation Phase --'
+            @round = new_consolidation_round
+            return
+          end
+
+          # After consolidation round, proceed to SR
+          if @round.is_a?(Round::G18OE::Consolidation)
+            @consolidation_done = true
+            @turn += 1
+            @round = new_stock_round
+            return
+          end
 
           super
+        end
+
+        def new_consolidation_round
+          Round::G18OE::Consolidation.new(self, [
+            G18OE::Step::Consolidate,
+          ])
         end
 
         def upgrades_to_correct_label?(from, to)
@@ -666,7 +962,6 @@ module Engine
             Engine::Step::Route,
             G18OE::Step::Dividend,
             G18OE::Step::BuyTrain,
-            # Convert step to do national conversions at 4/6/8?
             Engine::Step::IssueShares,
           ], round_num: round_num)
         end
