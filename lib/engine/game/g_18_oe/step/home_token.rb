@@ -9,17 +9,14 @@ module Engine
         class HomeToken < Engine::Step::HomeToken
           def process_place_token(action)
             hex = action.city.hex
-            region = G18OE::Game::NATIONAL_REGION_HEXES.select { |_key, value| value.include?(hex.name.to_s) }.keys.first
+            region = @game.class::CITY_NATIONAL_ZONE[hex.name] ||
+                     @game.class::NATIONAL_REGION_HEXES.find { |_, hexes| hexes.include?(hex.name) }&.first
 
-            token.price = G18OE::Game::TRACK_RIGHTS_COST[region] || 0
+            raise GameError, "#{hex.name} is not in any track rights zone" unless region
+            raise GameError, "Region #{region} is not available" unless @game.minor_available_regions.include?(region)
 
-            # TEMPORARY WORKAROUND: region is nil when hex falls outside all defined zones
-            # (NATIONAL_REGION_HEXES_COMPLETE = false). Guard delete_at against nil index
-            # so placement in undefined zones doesn't raise. Remove guard once all 8 zone
-            # hex lists are complete and NATIONAL_REGION_HEXES_COMPLETE is flipped to true.
-            idx = @game.minor_available_regions.index(region)
-            @game.minor_available_regions.delete_at(idx) if idx
-
+            token.price = @game.class::TRACK_RIGHTS_COST[region] || 0
+            @game.minor_available_regions.delete(region)
             @game.minor_floated_regions[action.entity.id] = region
 
             super

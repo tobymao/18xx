@@ -15,20 +15,13 @@ module Engine
         end
 
         def select_entities
-          # Players who own at least one minor or regional corporation
           @game.players.select do |p|
-            p.shares.map(&:corporation).any? { |c| %i[minor regional].include?(c.type) }
+            @game.corporations.any? do |c|
+              c.president?(p) &&
+                (%i[minor regional].include?(c.type) ||
+                  (c.type == :major && !c.floated?))
+            end
           end
-        end
-
-        def next_entity!
-          return if @entity_index == @entities.size - 1
-
-          next_entity_index!
-        end
-
-        def finished?
-          @entity_index >= @entities.size || !active_step
         end
       end
     end
