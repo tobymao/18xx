@@ -241,6 +241,10 @@ module Engine
           'BJV' => 'SC',
         }.freeze
 
+        # Per-city zone override — takes precedence over NATIONAL_REGION_HEXES lookup.
+        # Populate when a city hex sits on a zone boundary or needs an explicit assignment.
+        CITY_NATIONAL_ZONE = {}.freeze
+
         NATIONAL_REGION_HEXES = {
           'UK' => %w[D25 E24 E26 E28 F23 F25 F27 F29 G16 G18 G20 G24 G26 G28 H15 H17 H19 H21 H25 H27 H29 I14 I16 I18 I20 I26 I28
                      J13 J15 J17 J19 J23 J25 J27 J29 K22 K24 K26 K28 K30 L23 L25 L27 L29 L31 M22 M24 M26 M28 M30],
@@ -625,7 +629,6 @@ module Engine
         end
 
         def must_buy_train?(entity)
-          return false unless entity.corporation?
           return false unless entity.trains.empty?
           return false unless @phase.status.include?('train_obligation')
 
@@ -643,28 +646,28 @@ module Engine
 
         def event_consolidation_triggered!
           @consolidation_triggered = true
+          @log << '-- Event: Consolidation phase triggered --'
         end
 
         def next_round!
-          # Insert consolidation round between OR set end and next SR (once only)
-          if @round.is_a?(Round::Operating) &&
-             @round.round_num >= @operating_rounds &&
-             @consolidation_triggered &&
-             !@consolidation_done
-            @log << '-- Consolidation Phase --'
-            @round = new_consolidation_round
-            return
-          end
-
-          # After consolidation round, proceed to SR
-          if @round.is_a?(Round::G18OE::Consolidation)
-            @consolidation_done = true
-            @turn += 1
-            @round = new_stock_round
-            return
-          end
-
-          super
+          @round =
+            case @round
+            when Engine::Round::Operating
+              if @consolidation_triggered && !@consolidation_done
+                @log << '-- Consolidation Phase --'
+                new_consolidation_round
+              else
+                super
+                return
+              end
+            when Round::G18OE::Consolidation
+              @consolidation_done = true
+              @turn += 1
+              new_stock_round
+            else
+              super
+              return
+            end
         end
 
         def new_consolidation_round
