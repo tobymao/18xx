@@ -11,6 +11,13 @@ module Engine
             entity.corporation? && entity.type != :minor
           end
 
+          def must_buy_train?(entity)
+            return false unless entity.trains.empty?
+            return false unless @game.phase.status.include?('train_obligation')
+
+            entity.floated?
+          end
+
           def buyable_trains(entity)
             trains = super
             return trains.select { |t| t.name == '2+2' } if entity.trains.empty? && @game.phase.name.to_i < 4

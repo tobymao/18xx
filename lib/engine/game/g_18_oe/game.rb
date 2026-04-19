@@ -687,14 +687,6 @@ module Engine
              OE18 OE26 OE27 OE28 OE29 OE30 OE37 OE38 OE39 OE40 OE41].include?(tile.name.to_s)
         end
 
-        def must_buy_train?(entity)
-          return false unless entity.trains.empty?
-          return false unless @phase.status.include?('train_obligation')
-
-          entity.floated?
-        end
-
-
         def can_buy_train_from_others?
           @phase.status.include?('can_buy_trains_from_others')
         end
@@ -718,7 +710,6 @@ module Engine
                 new_consolidation_round
               else
                 super
-                return
               end
             when Round::G18OE::Consolidation
               @consolidation_done = true
@@ -726,7 +717,6 @@ module Engine
               new_stock_round
             else
               super
-              return
             end
         end
 
