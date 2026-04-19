@@ -287,7 +287,7 @@ module Engine
           # Italy
           'IT' => %w[U38 U40 U42 U44 U46 U48 V37 V39 V41 V43 V45 V47
                      W38 W40 W42 W44 W46 W48 X43 X45 X47 X49 Y44 Y46 Y48 Y50
-                     Z41 Z45 Z47 Z49 Z51 AA48 AA50 AA52 AA54
+                     Z45 Z47 Z49 Z51 AA48 AA50 AA52 AA54
                      AB39 AB41 AB51 AB53 AB55 AB57 AC38 AC40 AC54 AC56 AC58
                      AD39 AD55 AE52 AF49 AF51 AF53 AG50 AG52],
           # Spain / Portugal
