@@ -13,7 +13,6 @@ module Engine
         def name
           'Consolidation Round'
         end
-
       end
     end
   end
