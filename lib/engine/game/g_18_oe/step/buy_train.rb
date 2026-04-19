@@ -18,14 +18,8 @@ module Engine
             entity.floated?
           end
 
-          def buyable_trains(entity)
-            trains = super
-            return trains.select { |t| t.name == '2+2' } if entity.trains.empty? && @game.phase.name.to_i < 4
-
-            trains
-          end
-
           # TODO: Nationals claiming rusted trains for free (openpoints §1.9, §3.7) — deferred
+          # TODO: Reserved 2+2 obligation window (openpoints §3.1) — deferred
         end
       end
     end
