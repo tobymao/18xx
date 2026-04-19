@@ -48,6 +48,19 @@ describe Engine::Game::G18RoyalGorge::Game do
       expect(game.round.stock?).to eq(false)
       expect(game.finished).to eq(true)
     end
+
+    it 'stock_market red zone overrides final_train end trigger' do
+      game = fixture_at_action(431, clear_cache: true)
+
+      expect(game.instance_variable_get(:@game_end_trigger)).to eq(%i[final_train one_more_full_or_set])
+      expect(game.instance_variable_get(:@final_turn)).to eq(5)
+
+      allow(game).to receive(:game_end_check_stock_market?).and_return(true)
+      game.send(:game_end_check)
+
+      expect(game.instance_variable_get(:@game_end_trigger)).to eq(%i[stock_market full_or])
+      expect(game.instance_variable_get(:@final_turn)).to eq(game.turn)
+    end
   end
 
   describe 'endgame_triggered_on_export' do
@@ -84,7 +97,8 @@ describe Engine::Game::G18RoyalGorge::Game do
       expect(game.turn_round_num).to eq([6, 2])
       expect(game.round.operating?).to eq(true)
       expect(game.round.stock?).to eq(false)
-      expect(game.game_ending_description).to eq('6x2-train was bought/exported : Game Ends at conclusion of OR 6.2')
+      # stock_market (red zone) overrides final_train trigger per rules p.18
+      expect(game.game_ending_description).to eq('Company hit max stock value : Game Ends at conclusion of OR 6.2')
     end
 
     it 'game over' do
