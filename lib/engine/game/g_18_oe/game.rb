@@ -265,7 +265,7 @@ module Engine
                      U22 U24 U26 U28 U30 U32 U34 U36 U38
                      V21 V23 V25 V27 V29 V31 V33 V35 V37
                      W22 W24 W26 W28 W30 W32 W34 W36 W38
-                     X25 X27 X29 X33 X35 X37 Y28],
+                     X25 X27 X29 X33 X35 X37 Y28 Z41],
           # Prussia / Holland / Switzerland
           'PHS' => %w[I64 J45 J47 J49 J63 J65 K40 K42 K44 K46 K48 K50 K54 K56 K58 K60 K62 K64
                       L37 L39 L41 L43 L45 L47 L49 L51 L53 L55 L57 L59 L61
