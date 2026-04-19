@@ -10,6 +10,8 @@ module Engine
   module Game
     module G1835
       class Game < Game::Base
+        attr_accessor :draft_finished
+
         include_meta(G1835::Meta)
         include G1835::Entities
         include G1835::Map
@@ -27,7 +29,7 @@ module Engine
                         red: '#d81e3e',
                         turquoise: '#00a993',
                         blue: '#0189d1',
-                        brown: '#7b352a')
+                        brown: '#7b352a',)
 
         CURRENCY_FORMAT_STR = '%sM'
         # game end current or, when the bank is empty
@@ -53,6 +55,8 @@ module Engine
         CAPITALIZATION = :incremental
 
         MUST_SELL_IN_BLOCKS = false
+
+        TOKEN_PLACEMENT_ON_TILE_LAY_ENTITY = :owner
 
         MARKET = [['',
                    '',
@@ -209,25 +213,68 @@ module Engine
         HOME_TOKEN_TIMING = :float
 
         def setup
-          corporations.each do |i|
-            @stock_market.set_par(i, @stock_market.par_prices.find do |p|
-                                       p.price == PAR_PRICES[i.id]
-                                     end)
-            i.ipoed = true
+          # Reserve Preußen shares to be exchanged for Vorpreußen and Privates
+          # Reserving the president share would be correct here, but that would make can_buy and process_buy_shares
+          # really complicated. Instead, the president share can be bought and will be swapped for a 10% share
+          # once PR floats.
+          corporation_by_id('PR').shares.last(8).each { |s| s.buyable = false }
+
+          corporation_by_id('BA').shares.last.double_cert = true
+          corporation_by_id('WT').shares.last.double_cert = true
+          corporation_by_id('HE').shares.last.double_cert = true
+          corporation_by_id('MS').shares[1].double_cert = true
+          corporation_by_id('MS').shares[2].double_cert = true
+          corporation_by_id('OL').shares[1].double_cert = true
+          corporation_by_id('OL').shares[2].double_cert = true
+
+          @draft_finished = false
+          @draft_round_num = 1
+
+          @corporations.select { |corp| corp.type == :major }.each do |corp|
+            @stock_market.set_par(corp, @stock_market.par_prices.find { |share_price| share_price.price == PAR_PRICES[corp.id] })
           end
+
+          corporation_by_id('BY').ipoed = true
+          corporation_by_id('SX').ipoed = true
+        end
+
+        def company_header(company)
+          return 'MINOR' if '123456'.include?(company.sym)
+          return 'SHARE' if company.sym == 'BY_D'
+
+          'PRIVATE COMPANY'
         end
 
         def init_round
           G1835::Round::Draft.new(self,
-                                  [G1835::Step::Draft],
-                                  reverse_order: true)
+                                  [G1835::Step::Draft])
+        end
+
+        def new_draft_round
+          G1835::Round::Draft.new(self,
+                                  [G1835::Step::Draft],)
+        end
+
+        def next_round!
+          return super if @draft_finished
+
+          clear_programmed_actions
+          @round =
+            case @round
+            when G1835::Round::Draft
+              reorder_players
+              new_operating_round(@draft_round_num)
+            when G1835::Round::Operating
+              @draft_round_num += 1
+              new_draft_round
+            end
         end
 
         def operating_round(round_num)
-          Engine::Round::Operating.new(self, [
+          G1835::Round::Operating.new(self, [
             Engine::Step::Bankrupt,
             Engine::Step::SpecialTrack,
-            Engine::Step::SpecialToken,
+            G1835::Step::SpecialToken,
             Engine::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
