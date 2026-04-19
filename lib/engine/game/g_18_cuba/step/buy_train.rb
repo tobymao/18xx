@@ -32,9 +32,9 @@ module Engine
             variants = super
             # Downgrade train variants (e.g. 4n-1) are not player-chooseable; only the current one is buyable.
             if train.variants.values.any? { |v| v[:event_downgrade_variant] }
-              return variants.select do |v|
-                       v[:name] == train.name
-                     end
+              result = variants.select { |v| v == train.variant }
+
+              return result
             end
 
             # During emergency buy, only the cheapest variant is allowed.
