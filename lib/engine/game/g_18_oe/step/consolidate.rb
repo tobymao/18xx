@@ -1,19 +1,17 @@
 # frozen_string_literal: true
 
-require_relative '../../../step/base'
+require_relative 'buy_sell_par_shares'
 
 module Engine
   module Game
     module G18OE
       module Step
-        class Consolidate < Engine::Step::Base
-          ACTIONS = [].freeze # merge/abandon actions to be added
-
+        class Consolidate < G18OE::Step::BuySellParShares
           def actions(entity)
             return [] unless entity == current_entity
             return [] if pending_corps(entity).empty?
 
-            ACTIONS
+            can_convert_any? ? ['convert'] : []
           end
 
           def description
@@ -22,6 +20,19 @@ module Engine
 
           def blocks?
             !pending_corps(current_entity).empty?
+          end
+
+          def can_convert?(entity)
+            return false unless entity.type == :regional
+            return false if @converted
+            return false unless entity.president?(current_entity)
+
+            true
+          end
+
+          def process_convert(action)
+            super
+            pass!
           end
 
           private
