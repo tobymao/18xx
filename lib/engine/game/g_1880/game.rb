@@ -585,8 +585,8 @@ module Engine
           tile_lays
         end
 
-        def upgrades_to_correct_label?(from, _to)
-          return true if from.color == :white && from.cities.size == 2
+        def upgrades_to_correct_label?(from, to)
+          return true if from.color == :white && from.cities.size == 2 && to.label.to_s == 'OO'
 
           super
         end
@@ -612,12 +612,6 @@ module Engine
 
         def player_card_minors(player)
           @minors.select { |m| m.owner == player }
-        end
-
-        def routes_revenue(routes)
-          revenue = super
-          revenue += stock_market_bonus(@round.current_operator) unless revenue.zero?
-          revenue
         end
 
         def revenue_for(route, stops)

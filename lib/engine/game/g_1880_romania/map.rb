@@ -308,9 +308,9 @@ module Engine
             # double city
             ['F16'] => 'city=revenue:0;city=revenue:0;upgrade=cost:30,terrain:mountain;'\
                        'border=edge:0,type:impassable,color:orange;border=edge:3,type:impassable,color:orange;'\
-                       'border=edge:4,type:impassable,color:orange;border=edge:5,type:impassable,color:orange;label=OO',
-            ['G23'] => 'city=revenue:0;city=revenue:0;upgrade=cost:10,terrain:water;icon=image:port;label=OO',
-            ['H16'] => 'city=revenue:0;city=revenue:0;label=OO',
+                       'border=edge:4,type:impassable,color:orange;border=edge:5,type:impassable,color:orange',
+            ['G23'] => 'city=revenue:0;city=revenue:0;upgrade=cost:10,terrain:water;icon=image:port',
+            ['H16'] => 'city=revenue:0;city=revenue:0',
             ['I17'] => 'city=revenue:20;city=revenue:20;path=a:1,b:_0;path=a:4,b:_1;label=B',
 
             # town and city
@@ -323,10 +323,10 @@ module Engine
 
             # double town and city
             ['B18'] => 'town=revenue:0;town=revenue:0;city=revenue:0;city=revenue:0;'\
-                       'border=edge:1,type:impassable,color:orange;label=OO',
+                       'border=edge:1,type:impassable,color:orange',
             ['H8'] => 'town=revenue:0;town=revenue:0;city=revenue:0;city=revenue:0;upgrade=cost:20,terrain:mountain;'\
                       'border=edge:1,type:impassable,color:orange;border=edge:2,type:impassable,color:orange;border=edge:3,'\
-                      'type:impassable,color:orange;label=OO',
+                      'type:impassable,color:orange',
 
           },
           gray: {

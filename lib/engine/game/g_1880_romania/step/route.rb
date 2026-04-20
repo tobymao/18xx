@@ -42,12 +42,6 @@ module Engine
           def process_run_routes(action)
             super
             detach_tender if @round.tender_train
-
-            bonus = @game.stock_market_bonus(action.entity)
-            return unless bonus.positive?
-
-            @round.extra_revenue = (@round.extra_revenue || 0) + bonus
-            @log << "#{action.entity.name} receives #{@game.format_currency(bonus)} stock market bonus"
           end
 
           private
@@ -82,7 +76,6 @@ module Engine
             @round.tender_train.distance = distance
 
             @round.tender_train.name = tender_name(@round.tender_train.name)
-            @game.clear_graph
           end
 
           def detach_tender
@@ -90,7 +83,6 @@ module Engine
             @round.tender_train.distance = @round.tender_original_train.distance
             @round.tender_original_train = nil
             @round.tender_train = nil
-            @game.clear_graph
           end
 
           def tender_name(name)

@@ -166,13 +166,6 @@ module Engine
           game_minors.map { |minor| G1880Romania::Minor.new(**minor) }
         end
 
-        def upgrades_to_correct_label?(from, to)
-          # B-labeled tiles are only for Bucuresti (I17)
-          return false if to.label.to_s == 'B' && from.label.to_s != 'B'
-
-          super
-        end
-
         def new_draft_round
           Engine::Round::Draft.new(self, [G1880Romania::Step::SimpleDraft], reverse_order: false)
         end
@@ -293,13 +286,6 @@ module Engine
           end
 
           clear_graph if removed
-        end
-
-        def routes_revenue(routes)
-          # Override to exclude stock_market_bonus from routes_revenue so the autorouter
-          # can compare route combinations fairly. The bonus is added in extra_revenue
-          # via the route step.
-          routes.sum(&:revenue)
         end
 
         def revenue_for(route, stops)
