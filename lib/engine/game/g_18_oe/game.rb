@@ -665,7 +665,10 @@ module Engine
         # "Major Railroad Phase" entry: conversions and secondary-share purchases
         # become available from this point on.
         def major_phase?
-          @regional_corps_floated >= self.class::MAX_FLOATED_REGIONALS
+          return false unless @regional_corps_floated >= self.class::MAX_FLOATED_REGIONALS
+
+          total_minors = corporations.count { |c| c.type == :minor }
+          @minor_floated_regions.size >= total_minors
         end
 
         def operating_order
