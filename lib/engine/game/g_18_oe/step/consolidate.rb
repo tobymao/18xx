@@ -38,7 +38,7 @@ module Engine
           private
 
           def pending_corps(entity)
-            @game.corporations.select { |c| %i[minor regional].include?(c.type) && c.president?(entity) }
+            @game.corporations.select { |c| c.type == :regional && c.president?(entity) }
           end
         end
       end
