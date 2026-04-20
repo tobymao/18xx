@@ -384,7 +384,7 @@ module Engine
                AC6 U6] => 'town=revenue:0;town=revenue:0',
             ['T37'] => 'town=revenue:0;town=revenue:0;upgrade=cost:45,terrain:mountain',
             # Cities — no label, no terrain
-            %w[ H21 J15 L25 Q26 Q38 R23 V27
+            %w[ F25 H21 J15 L25 Q26 Q38 R23 V27
                 C48 F49 L53 N49 J73 AD17
                 V17 W6 X13 Y20 AA20 AC8 AC16 AB27] => 'city=revenue:0',
             # Cities — no terrain (added station geometry)
@@ -414,7 +414,6 @@ module Engine
             ['M28'] => 'city=revenue:30;label=L;upgrade=cost:30,terrain:water;path=a:5,b:_0',
             ['X33'] => 'city=revenue:20;label=Y;path=a:_0,b:5',
 
-            ['F25'] => 'city=revenue:0;label=Y',
             ['Z27'] => 'city=revenue:0;label=Y',
             ['K46'] => 'city=revenue:0;label=Y',
             ['M50'] => 'city=revenue:0;label=B',
@@ -610,7 +609,7 @@ module Engine
             N17 O6 O8 O10 O12 O14 O16
           ].freeze,
           'North Atlantic Ocean' => %w[
-            K2 L1 L3 M2 M4 N3 O2 O4 P1 P3 Q2 Q4
+            K2 L1 L3 M2 M4 N1 N3 O2 O4 P1 P3 Q2 Q4
           ].freeze,
           'North Atlantic (Silver Coast)' => %w[
             R1 R3 S2 S4 T1 T3 T5 U2 U4 V1 V3 W2
@@ -634,7 +633,7 @@ module Engine
             H33 H35 I30 I32 I34 J31 J33 K32
           ].freeze,
           'Skagerrak' => %w[
-            A38 B37 B39 C38 C40 D37 D39 E38 E40 E46 F37 F39
+            A38 B37 B39 B43 C38 C40 D37 D39 E38 E40 E46 F37 F39
             F41 F43 F45 F47 G38 G40 G42 H49
           ].freeze,
           'German Bight' => %w[
@@ -650,14 +649,14 @@ module Engine
             D65 E62 E64 F61 F63 F65 F67
           ].freeze,
           'Strait of Gibraltar' => %w[
-            AC2 AC4 AD3 AE2 AE4 AE6 AE8 AE10 AF1 AF3 AF7 AF9
+            AC2 AC4 AD1 AD3 AE2 AE4 AE6 AE8 AE10 AF1 AF3 AF7 AF9
             AG2 AG4 AG6 AG8 AG10 AH1 AH3 AH5 AH7 AH9
           ].freeze,
           'Balearic Sea' => %w[
             AA24 AA26 AB21 AB23 AB25 AC22 AC24 AD19 AD21 AD23 AD25 AE12
             AE14 AE16 AE18 AE20 AE22 AE24 AF13 AF15 AF17 AF19 AF21 AF23
             AG12 AG14 AG16 AG18 AG20 AG22 AG24 AH11 AH13 AH15 AH17 AH19
-            AH21 AH23 AH25
+            AH21 AH23 AH25 AF25
           ].freeze,
           'Sea of Sardinia' => %w[
             X31 X39 Y30 Y32 Y34 Y36 Y38 Y40 Z29 Z31 Z33 Z35
@@ -672,7 +671,7 @@ module Engine
             AC46 AC48 AC50 AC52 AD41 AD43 AD45 AD47 AD49 AD51 AD53 AD57
             AD59 AE38 AE40 AE42 AE44 AE46 AE48 AE50 AE54 AE56 AE58 AF37
             AF39 AF41 AF43 AF45 AF47 AF55 AF57 AF59 AG42 AG44 AG46 AG48
-            AG54 AG56 AG58 AH41 AH43 AH45 AH47 AH49 AH51 AH53 AH55 AH57
+            AG40 AG54 AG56 AG58 AH41 AH43 AH45 AH47 AH49 AH51 AH53 AH55 AH57
             AH59
           ].freeze,
           'Adriatic Sea' => %w[
@@ -686,14 +685,14 @@ module Engine
             AH75
           ].freeze,
           'Levantine Sea' => %w[
-            AF79 AG78 AG80 AG82 AG84 AH77 AH79 AH81 AH83 AH85
+            AF79 AG78 AG80 AG82 AG84 AG88 AH77 AH79 AH81 AH83 AH85 AH87
           ].freeze,
           'Black Sea' => %w[
             V81 V83 V85 V87 W80 W82 W84 W86 X79 X81 X83 X85
             X87 Y80 Y82 Y84 Y86 Z81 Z83 Z85 Z87
           ].freeze,
           'Karkinitsky Bay' => %w[
-            T83 T85 U82 U84 U86
+            T83 T85 T87 U82 U84 U86
           ].freeze,
         }.freeze
       end
