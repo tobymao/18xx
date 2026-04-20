@@ -126,7 +126,8 @@ module Engine
             company = find_minor_company(corporation)
 
             @log << "#{entity.name} floats #{company.sym}"
-            @log << "Available track rights zones: #{@game.minor_available_regions}"
+            zones_display = @game.minor_available_regions.map { |zone, count| "#{zone}(#{count})" }.join(', ')
+            @log << "Available track rights zones: #{zones_display}"
 
             @game.stock_market.set_par(corporation, share_price)
             share = corporation.ipo_shares.first

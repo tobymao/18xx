@@ -15,7 +15,7 @@ module Engine
         include G18OE::Entities
         include G18OE::Map
         attr_accessor :minor_regional_order, :minor_available_regions, :minor_floated_regions, :regional_corps_floated,
-                      :consolidation_triggered, :consolidation_done
+                      :consolidation_triggered, :consolidation_done, :minor_asterisked_selected
 
         MARKET = [
           ['', '110', '120C', '135', '150', '165', '180', '200', '225', '250', '280', '310', '350', '390', '440', '490', '550'],
@@ -205,6 +205,22 @@ module Engine
             num: 8,
           },
         ].freeze
+
+        # 2 chits per zone; 16 total for 12 minors.
+        # Asterisked zones (UK/PHS/FR): 6 chits combined but capped at 4 selections —
+        # when the 4th is taken the remaining chits for those zones are removed from play.
+        MINOR_TRACK_RIGHTS_CHITS = {
+          'UK'  => 2,
+          'PHS' => 2,
+          'FR'  => 2,
+          'AH'  => 2,
+          'IT'  => 2,
+          'SP'  => 2,
+          'SC'  => 2,
+          'RU'  => 2,
+        }.freeze
+        ASTERISKED_ZONES     = %w[UK PHS FR].freeze
+        ASTERISKED_ZONES_CAP = 4
 
         CORPORATIONS_TRACK_RIGHTS = {
           # United Kingdom
@@ -630,13 +646,8 @@ module Engine
         def setup
           super
           @minor_regional_order = []
-          # Derive available regions from the regional corporations actually defined,
-          # using only zones present in CORPORATIONS_TRACK_RIGHTS. This is failsafe:
-          # zones not yet in NATIONAL_REGION_HEXES are simply skipped at token placement.
-          @minor_available_regions = corporations
-            .select { |c| c.type == :regional }
-            .map { |c| CORPORATIONS_TRACK_RIGHTS[c.id] }
-            .compact
+          @minor_available_regions  = self.class::MINOR_TRACK_RIGHTS_CHITS.transform_values(&:itself)
+          @minor_asterisked_selected = 0
           @minor_floated_regions = {}
           @regional_corps_floated = 0
 
