@@ -39,8 +39,8 @@ module Engine
             target = action.target
 
             ability = @game.abilities(company, :assign_corporation)
-            target.assign!(company.id)
             ability.use!
+            target.add_ability(Engine::Ability::Base.new(type: :tender, description: 'REMAR tender'))
             @game.log << "#{company.name} tender assigned to #{target.name}"
           end
         end

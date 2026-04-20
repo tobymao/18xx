@@ -49,7 +49,7 @@ module Engine
           def choosing_tender?(entity)
             !@round.tender_train &&
               entity.corporation? &&
-              entity.assigned?(@game.remar.id) &&
+              @game.abilities(entity, :tender) &&
               !tender_train_choices(entity).empty?
           end
 
