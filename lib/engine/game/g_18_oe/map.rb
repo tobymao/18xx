@@ -367,7 +367,7 @@ module Engine
             ['C72'] => 'border=edge:2,type:impassable;border=edge:3,type:impassable;upgrade=cost:30,terrain:water',
 
             # Towns — no terrain
-            %w[E44 H17 H29 J17 L29 N33 O24 P19 P29 P33 P37 R29 S34 T27 X35 X37 Z41
+            %w[E44 F53 H17 H29 J17 L29 N33 O24 P19 P29 P33 P37 R29 S34 T27 X35 X37 Z41
                V5 W18 X11 Z3 Z13 Z25 AA4 AB3 AC10 AC12 AC20 AD15
                K60 K62 L43 M48 M56 P43 P61 Q56 Q72
                R53 R59 R67 S40 S68 T61 U56 U62 X55
@@ -383,7 +383,7 @@ module Engine
             %w[L23 AD7] => 'town=revenue:0;upgrade=cost:45,terrain:water',
             # Double towns
             %w[J29 M26 W32
-               C58 F53 G46 H51 H55
+               C58 G46 H51 H55
                N41 Q46 U64 W46 AF53
                J77 P77
                AC6 U6] => 'town=revenue:0;town=revenue:0',
