@@ -241,10 +241,6 @@ module Engine
           'BJV' => 'SC',
         }.freeze
 
-        # Per-city zone override — takes precedence over NATIONAL_REGION_HEXES lookup.
-        # Populate when a city hex sits on a zone boundary or needs an explicit assignment.
-        CITY_NATIONAL_ZONE = {}.freeze
-
         NATIONAL_REGION_HEXES = {
           # United Kingdom / Ireland
           'UK' => %w[E24 E26 E28 F23 F25 F27 F29 G16 G18 G20 G24 G26 G28
