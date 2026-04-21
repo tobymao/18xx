@@ -48,7 +48,6 @@ describe Engine::Game::G18RoyalGorge::Game do
       expect(game.round.stock?).to eq(false)
       expect(game.finished).to eq(true)
     end
-
   end
 
   describe 'endgame_triggered_on_export_and_stock_market' do
