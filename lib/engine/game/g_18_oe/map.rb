@@ -511,7 +511,7 @@ module Engine
           yellow: {
             ['J25'] => 'city=revenue:30;label=Y;path=a:2,b:_0;path=a:_0,b:4',
             ['J27'] => 'city=revenue:20;upgrade=cost:30,terrain:mountain;path=a:1,b:_0;path=a:_0,b:4',
-            ['AE72'] => 'city=revenue:20;path=a:0,b:_0;path=a:5,b:_0',
+            ['AE72'] => 'city=revenue:20;path=a:2,b:_0;path=a:5,b:_0',
           },
           red: {
             ['D25'] => 'offboard=revenue:yellow_20|green_40|brown_50|gray_50;path=a:0,b:_0;path=a:5,b:_0',                              # Scottish Highlands
