@@ -8,7 +8,7 @@ module Engine
       module Step
         class BuyTrain < Engine::Step::BuyTrain
           def can_entity_buy_train?(entity)
-            entity.corporation? && entity.type != :minor
+            entity.corporation?
           end
 
           def must_buy_train?(entity)
