@@ -329,7 +329,12 @@ module Engine
             ['N31'] => 'city=revenue:20;label=Y;path=a:1,b:_0;border=edge:2,type:impassable',
             # Pyrenees
             ['V19'] => 'border=edge:4,type:impassable;upgrade=cost:30,terrain:mountain',
-            ['V21'] => 'town=revenue:0;border=edge:1,type:impassable',
+            ['V21'] => 'town=revenue:0;border=edge:1,type:impassable;border=edge:4,type:province,color:black;border=edge:3,type:province,color:black',
+            # FR/SP zone boundary — dashed black line along the Pyrenees (Atlantic→Mediterranean)
+            ['W22'] => 'upgrade=cost:120,terrain:mountain;border=edge:4,type:province,color:black;border=edge:3,type:province,color:black;border=edge:2,type:province,color:black',
+            ['W24'] => 'upgrade=cost:60,terrain:mountain;border=edge:3,type:province,color:black',
+            ['X27'] => 'upgrade=cost:60,terrain:mountain;border=edge:3,type:province,color:black',
+            ['Y28'] => 'upgrade=cost:45,terrain:mountain;border=edge:4,type:province,color:black;border=edge:3,type:province,color:black',
             # Kattegat / Danish straits
             ['K40'] => 'border=edge:4,type:impassable;upgrade=cost:60,terrain:water',
             ['K42'] => 'border=edge:1,type:impassable;upgrade=cost:30,terrain:water',
@@ -373,7 +378,7 @@ module Engine
             # Towns — mountain terrain
             %w[G24 I16 I26 U12 V15 AD13] => 'town=revenue:0;upgrade=cost:30,terrain:mountain',
             %w[E26 E28 J23] => 'town=revenue:0;upgrade=cost:45,terrain:mountain',
-            ['X25'] => 'town=revenue:0;upgrade=cost:60,terrain:mountain',
+            ['X25'] => 'town=revenue:0;upgrade=cost:60,terrain:mountain;border=edge:4,type:province,color:black;border=edge:3,type:province,color:black;border=edge:2,type:province,color:black',
             # Towns — water terrain
             %w[L23 AD7] => 'town=revenue:0;upgrade=cost:45,terrain:water',
             # Double towns
@@ -489,7 +494,7 @@ module Engine
                U30 U66 U74
                V9 V13 V29 V35 V65 V69
                W20 W36 W42 W44 W68 X7 X15 X47 X57 X61 X63 X67
-               Y6 Y28 Y48 Y62 Y68
+               Y6 Y48 Y62 Y68
                Z21 Z49 Z61 Z65 Z71
                AA10 AA12 AA18 AA50 AA64 AA72
                AB7 AB9 AB19 AB65 AB67 AC14 AC54 AD55 AD81 AD83 AE80 AF83] => 'upgrade=cost:45,terrain:mountain',
@@ -497,11 +502,11 @@ module Engine
                O54 R71 S52 S54 S72
                T49 T51 U36 U40 U42 U46
                U68 U70 V11 V31 V37 V67
-               W8 W24 W38 W66
-               X19 X27 Y8 Y10 Y12 Y60 Z67
+               W8 W38 W66
+               X19 Y8 Y10 Y12 Y60 Z67
                AA66 AA86
                AB15 AB85 AE82 AE84 AF51] => 'upgrade=cost:60,terrain:mountain',
-            %w[B45 T41 T43 T45 T47 U38 U44 W22 X23] => 'upgrade=cost:120,terrain:mountain',
+            %w[B45 T41 T43 T45 T47 U38 U44 X23] => 'upgrade=cost:120,terrain:mountain',
           },
           yellow: {
             ['J25'] => 'city=revenue:30;label=Y;path=a:2,b:_0;path=a:_0,b:4',
