@@ -374,7 +374,8 @@ module Engine
                V45 V47 Y44 AA52 AB39 AB55
                C64 D69 D75 D83 E70 F73 G84 H71 H85
                I66 I80 K68 L79 L87 N59 N65 N83 Q84
-               V73 W70 AA84 AC68 AC84 AG68 AF87] => 'town=revenue:0',
+               V73 W70 AA84 AC68 AC84 AG68 AF87
+               G46 H51 H55] => 'town=revenue:0',
             # Towns — mountain terrain
             %w[G24 I16 I26 U12 V15 AD13] => 'town=revenue:0;upgrade=cost:30,terrain:mountain',
             %w[E26 E28 J23] => 'town=revenue:0;upgrade=cost:45,terrain:mountain',
@@ -383,7 +384,7 @@ module Engine
             %w[L23 AD7] => 'town=revenue:0;upgrade=cost:45,terrain:water',
             # Double towns
             %w[J29 M26 W32
-               C58 G46 H51 H55
+               C58
                N41 Q46 U64 W46 AF53
                J77 P77
                AC6 U6] => 'town=revenue:0;town=revenue:0',
@@ -434,7 +435,7 @@ module Engine
             ['O80'] => 'city=revenue:0;label=Y',
             # Cities — water terrain
             ['AE68'] => 'town=revenue:0;upgrade=cost:30,terrain:water',
-            ['D41'] => 'town=revenue:0;town=revenue:0;upgrade=cost:45,terrain:water',
+            ['D41'] => 'town=revenue:0;upgrade=cost:45,terrain:water',
             ['D81'] => 'town=revenue:0;upgrade=cost:30,terrain:water',
             ['I52'] => 'city=revenue:0;upgrade=cost:45,terrain:water',
             ['J63'] => 'city=revenue:0;label=Y;upgrade=cost:30,terrain:water',
