@@ -418,7 +418,7 @@ module Engine
             ['I20'] => 'city=revenue:10',
             ['O28'] => 'city=revenue:10',
             ['M28'] => 'city=revenue:30;label=L;upgrade=cost:30,terrain:water',
-            ['X33'] => 'city=revenue:20;label=Y;path=a:_0,b:5',
+            ['X33'] => 'city=revenue:20;label=Y',
 
             ['Z27'] => 'city=revenue:0;label=Y',
             ['K46'] => 'city=revenue:0;label=Y',
