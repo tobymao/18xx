@@ -258,7 +258,6 @@ module Engine
           # Constantinople
           'AA82' => 'Constantinople',
           # Red Offboard Locations
-          'A40' => 'Norwegian Coast (to Narvik)',
           'A54' => 'North Sweden',
           'A56' => 'North Sweden',
           'B41' => 'Bergen',
@@ -516,7 +515,6 @@ module Engine
           },
           red: {
             ['D25'] => 'offboard=revenue:yellow_20|green_40|brown_50|gray_50;path=a:0,b:_0;path=a:5,b:_0',                              # Scottish Highlands
-            ['A40'] => 'offboard=revenue:yellow_30|green_60|brown_80|gray_120',                                                          # Norwegian Coast (to Narvik) — no path defined
             ['A54'] => 'offboard=revenue:yellow_30|green_50|brown_80|gray_100;path=a:1,b:_0;path=a:4,b:_0',                             # North Sweden
             ['A56'] => 'offboard=revenue:yellow_30|green_50|brown_80|gray_100;path=a:0,b:_0;path=a:1,b:_0;path=a:4,b:_0;path=a:5,b:_0', # North Sweden
             ['B41'] => 'offboard=revenue:yellow_30|green_60|brown_80|gray_120;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0',              # Bergen
@@ -541,7 +539,7 @@ module Engine
           blue: {
             %w[
               A2 A4 A6 A8 A10 A12 A14 A16 A18 A20 A22
-              A24 A26 A28 A30 A32 A34 A36 A38 A58 A60 A62 A64
+              A24 A26 A28 A30 A32 A34 A36 A38 A40 A58 A60 A62 A64
               B1 B3 B5 B7 B9
               B11 B13 B15 B17 B19 B21 B23 B25 B27 B29 B31 B33
               B35 B37 B39 B59 B61 C2 C4 C6 C8
@@ -639,7 +637,7 @@ module Engine
             H33 H35 I30 I32 I34 J31 J33 K32
           ].freeze,
           'Skagerrak' => %w[
-            A38 B37 B39 B43 C38 C40 D37 D39 E38 E40 E46 F37 F39
+            A38 A40 B37 B39 B43 C38 C40 D37 D39 E38 E40 E46 F37 F39
             F41 F43 F45 F47 G38 G40 G42 H49
           ].freeze,
           'German Bight' => %w[
