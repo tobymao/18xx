@@ -689,7 +689,7 @@ module Engine
         end
 
         def metropolis_hex?(hex)
-          %w[A56 B41 C74 F87 K26 M28 M50 Q30 R55 Y14 AA82 BB51].include?(hex.name.to_s)
+          %w[A56 B41 C74 F87 K26 M28 M50 Q30 R55 Y14 AA82 AB51].include?(hex.name.to_s)
         end
 
         def metropolis_tile?(tile)
@@ -747,6 +747,8 @@ module Engine
             to.label.to_s.include?('B')
           when 'AA82'
             to.label.to_s.include?('C')
+          when 'AB51'
+            to.label.to_s.include?('N')
           when 'Q30'
             to.label.to_s.include?('P')
           when 'C74'

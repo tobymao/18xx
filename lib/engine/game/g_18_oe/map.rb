@@ -264,7 +264,6 @@ module Engine
           'B83' => 'Arkhangelsk',
           'D25' => 'Scottish Highlands',
           'F87' => 'Moskva',
-          'G88' => 'Moskva',
           'N1' => 'New York',
           'N87' => 'Kharkov',
           'S88' => 'Sevastopol',
@@ -510,6 +509,9 @@ module Engine
             ['J27'] => 'city=revenue:20;upgrade=cost:30,terrain:mountain;path=a:1,b:_0;path=a:_0,b:4',
             ['AE72'] => 'city=revenue:20;path=a:1,b:_0;path=a:5,b:_0',
           },
+          gray: {
+            ['G88'] => 'path=a:0,b:2',                                                                                                     # Moskva approach
+          },
           red: {
             ['D25'] => 'offboard=revenue:yellow_20|green_40|brown_50|gray_50;path=a:0,b:_0;path=a:5,b:_0',                              # Scottish Highlands
             ['A54'] => 'offboard=revenue:yellow_30|green_50|brown_80|gray_100;path=a:1,b:_0;path=a:4,b:_0',                             # North Sweden
@@ -517,7 +519,6 @@ module Engine
             ['B41'] => 'offboard=revenue:yellow_30|green_60|brown_80|gray_120;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0',              # Bergen
             ['B83'] => 'offboard=revenue:yellow_30|green_50|brown_60|gray_60',                                                           # Arkhangelsk — no path defined
             ['F87'] => 'offboard=revenue:yellow_30|green_50|brown_80|gray_100;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:5,b:_0', # Moskva
-            ['G88'] => 'offboard=revenue:yellow_30|green_50|brown_80|gray_100;path=a:0,b:_0',                                           # Moskva
             ['N1'] => 'offboard=revenue:green_60|brown_100|gray_160;path=a:5,b:_0',                                                     # New York
             ['N87'] => 'offboard=revenue:yellow_30|green_40|brown_60|gray_80;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0',               # Kharkov
             ['S88'] => 'offboard=revenue:yellow_30|green_40|brown_60|gray_80;path=a:1,b:_0',                                            # Sevastopol
