@@ -58,6 +58,8 @@ module Engine
 
           def process_assign(action)
             return process_assign_rocket(action) if @game.forced_exchange_rocket?
+            return super if @game.abilities(action.entity, :assign_hexes)
+
             raise GameError, "#{current_entity.id} already has a D permit" if current_entity.building_permits&.include?('D')
 
             super

@@ -39,8 +39,12 @@ module Engine
 
           def president_percent_choices
             max_shares = (@parring[:entity].cash.to_f / @parring[:share_price].price).floor
-            max_percent = @parring[:corporation] == @game.bcr ? 20 : max_shares * @parring[:corporation].share_percent
+            max_percent = private_company_president_corp? ? 20 : max_shares * @parring[:corporation].share_percent
             { 20 => '20%', 30 => '30%', 40 => '40%' }.select { |k, _v| k <= max_percent }
+          end
+
+          def private_company_president_corp?
+            @parring[:corporation] == @game.bcr
           end
 
           def process_choose(action)
@@ -54,6 +58,10 @@ module Engine
             end
           end
 
+          def select_verb
+            'selects'
+          end
+
           def process_presidents_percent_choice(action)
             percent = action.choice
             unless president_percent_choices.include?(percent)
@@ -62,7 +70,7 @@ module Engine
               raise GameError, error_msg
             end
 
-            @log << "#{@parring[:entity].name} selects #{percent}% presidency share"
+            @log << "#{@parring[:entity].name} #{select_verb} #{percent}% presidency share"
             corporation = @parring[:corporation]
             if percent != corporation.presidents_percent
               num_to_remove = (percent - corporation.presidents_percent) / corporation.share_percent
@@ -75,7 +83,11 @@ module Engine
             permit_choices = @game.building_permit_choices(@parring[:corporation])
             return if permit_choices.size > 1
 
-            process_building_permit_choice(Action::Choose.new(@parring[:entity], permit_choices.first))
+            process_building_permit_choice(Action::Choose.new(@parring[:entity], choice: permit_choices.first))
+          end
+
+          def building_permit_log(permit)
+            "#{@parring[:entity].name} selects #{permit} building permit"
           end
 
           def process_building_permit_choice(action)
@@ -86,7 +98,7 @@ module Engine
               raise GameError, error_msg
             end
 
-            @log << "#{@parring[:entity].name} selects #{permit} building permit"
+            @log << building_permit_log(permit)
             @parring[:corporation].building_permits = action.choice
 
             @parring[:state] = :par_corporation

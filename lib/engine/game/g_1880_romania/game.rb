@@ -175,7 +175,7 @@ module Engine
         end
 
         def stock_round
-          G1880Romania::Round::Stock.new(self, [
+          G1880::Round::Stock.new(self, [
             Engine::Step::Exchange,
             G1880Romania::Step::SpecialChoose,
             G1880Romania::Step::BuySellParShares,

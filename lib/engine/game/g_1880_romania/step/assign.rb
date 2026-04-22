@@ -19,17 +19,9 @@ module Engine
           end
 
           def process_assign(action)
-            company = action.entity
-            target = action.target
+            return process_assign_remar(action) if action.entity == @game.remar
 
-            return process_assign_remar(action) if company == @game.remar
-            return super unless company == @game.danube_port
-
-            ability = @game.abilities(company, :assign_hexes)
-            ability.use!
-
-            target.assign!(company.id)
-            @log << "#{company.name} builds port on #{target.name}"
+            super
           end
 
           private
