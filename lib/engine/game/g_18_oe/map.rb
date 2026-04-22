@@ -519,7 +519,7 @@ module Engine
             ['A64'] => 'offboard=revenue:yellow_30|green_40|brown_60|gray_80;city=revenue:0,slots:2;path=a:0,b:_0;path=a:_0,b:1;path=a:_0,b:4',               # Finland
             ['B41'] => 'offboard=revenue:yellow_30|green_60|brown_80|gray_120;city=revenue:0,slots:2;path=a:1,b:_0;path=a:_0,b:3;path=a:_0,b:4', # Bergen
             ['B83'] => 'offboard=revenue:yellow_30|green_50|brown_60|gray_60',                                                           # Arkhangelsk — no path defined
-            ['F87'] => 'offboard=revenue:yellow_30|green_50|brown_80|gray_100;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:5,b:_0', # Moskva
+            ['F87'] => 'offboard=revenue:yellow_30|green_50|brown_80|gray_100;city=revenue:0,slots:3;path=a:0,b:_0;path=a:_0,b:1;path=a:_0,b:2;path=a:_0,b:5', # Moskva
             ['N1'] => 'offboard=revenue:green_60|brown_100|gray_160;path=a:5,b:_0',                                                     # New York
             ['N87'] => 'offboard=revenue:yellow_30|green_40|brown_60|gray_80;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0',               # Kharkov
             ['T87'] => 'offboard=revenue:yellow_30|green_40|brown_60|gray_80;path=a:1,b:_0',                                            # Sevastopol
