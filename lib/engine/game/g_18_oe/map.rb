@@ -266,7 +266,6 @@ module Engine
           'F87' => 'Moskva',
           'N1' => 'New York',
           'N87' => 'Kharkov',
-          'S88' => 'Sevastopol',
           'T87' => 'Sevastopol',
           'AB87' => 'Levant',
           'AD1' => 'North Africa & The Americas',
@@ -511,6 +510,7 @@ module Engine
           },
           gray: {
             ['G88'] => 'path=a:0,b:2',                                                                                                     # Moskva approach
+            ['S88'] => 'path=a:0,b:1',                                                                                                     # Sevastopol approach
           },
           red: {
             ['D25'] => 'offboard=revenue:yellow_20|green_40|brown_50|gray_50;path=a:0,b:_0;path=a:5,b:_0',                              # Scottish Highlands
@@ -521,7 +521,6 @@ module Engine
             ['F87'] => 'offboard=revenue:yellow_30|green_50|brown_80|gray_100;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:5,b:_0', # Moskva
             ['N1'] => 'offboard=revenue:green_60|brown_100|gray_160;path=a:5,b:_0',                                                     # New York
             ['N87'] => 'offboard=revenue:yellow_30|green_40|brown_60|gray_80;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0',               # Kharkov
-            ['S88'] => 'offboard=revenue:yellow_30|green_40|brown_60|gray_80;path=a:1,b:_0',                                            # Sevastopol
             ['T87'] => 'offboard=revenue:yellow_30|green_40|brown_60|gray_80;path=a:1,b:_0',                                            # Sevastopol
             ['Z1'] => 'offboard=revenue:yellow_30|green_40|brown_60|gray_80;city=revenue:0;city=revenue:0;path=a:3,b:_0;path=a:4,b:_0', # Lisboa (2 station slots; RCP home)
             ['AB87'] => 'offboard=revenue:yellow_30|green_50|brown_80|gray_120;path=a:1,b:_0;path=a:2,b:_0',                            # Levant
