@@ -263,7 +263,6 @@ module Engine
           'B41' => 'Bergen',
           'B83' => 'Arkhangelsk',
           'D25' => 'Scottish Highlands',
-          'E88' => 'Moskva',
           'F87' => 'Moskva',
           'G88' => 'Moskva',
           'N1' => 'New York',
@@ -277,7 +276,6 @@ module Engine
           'AF25' => 'Alger',
           'AG40' => 'Tunis',
           'AG88' => 'Alexandria & Suez',
-          'AH87' => 'Alexandria & Suez',
         }.freeze
 
         HEXES = {
@@ -519,7 +517,6 @@ module Engine
             ['A56'] => 'offboard=revenue:yellow_30|green_50|brown_80|gray_100;path=a:0,b:_0;path=a:1,b:_0;path=a:4,b:_0;path=a:5,b:_0', # North Sweden
             ['B41'] => 'offboard=revenue:yellow_30|green_60|brown_80|gray_120;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0',              # Bergen
             ['B83'] => 'offboard=revenue:yellow_30|green_50|brown_60|gray_60',                                                           # Arkhangelsk — no path defined
-            ['E88'] => 'offboard=revenue:yellow_30|green_50|brown_80|gray_100',                                                          # Moskva — no path defined
             ['F87'] => 'offboard=revenue:yellow_30|green_50|brown_80|gray_100;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:5,b:_0', # Moskva
             ['G88'] => 'offboard=revenue:yellow_30|green_50|brown_80|gray_100;path=a:0,b:_0',                                           # Moskva
             ['N1'] => 'offboard=revenue:green_60|brown_100|gray_160;path=a:5,b:_0',                                                     # New York
@@ -534,7 +531,6 @@ module Engine
             ['AF25'] => 'offboard=revenue:yellow_30|green_40|brown_60|gray_100;path=a:2,b:_0;path=a:3,b:_0',                            # Alger
             ['AG40'] => 'offboard=revenue:yellow_30|green_40|brown_50|gray_80;path=a:3,b:_0;path=a:4,b:_0',                             # Tunis
             ['AG88'] => 'offboard=revenue:green_50|brown_80|gray_120;path=a:1,b:_0',                                                    # Alexandria & Suez
-            ['AH87'] => 'offboard=revenue:green_50|brown_80|gray_120',                                                                  # Alexandria & Suez — no path defined
           },
           blue: {
             %w[
@@ -593,7 +589,7 @@ module Engine
               AH3 AH5 AH7 AH9 AH11 AH13 AH15 AH17 AH19 AH21 AH23 AH25
               AH27 AH29 AH31 AH33 AH35 AH37 AH39 AH41 AH43 AH45 AH47 AH49
               AH51 AH53 AH55 AH57 AH59 AH61 AH63 AH65 AH67 AH69 AH71 AH73
-              AH75 AH77 AH79 AH81 AH83 AH85
+              AH75 AH77 AH79 AH81 AH83 AH85 AH87
               ] => '',
           },
         }.freeze
@@ -689,7 +685,7 @@ module Engine
             AH75
           ].freeze,
           'Levantine Sea' => %w[
-            AF79 AG78 AG80 AG82 AG84 AG88 AH77 AH79 AH81 AH83 AH85 AH87
+            AF79 AG78 AG80 AG82 AG84 AG88 AH77 AH79 AH81 AH83 AH85
           ].freeze,
           'Black Sea' => %w[
             V81 V83 V85 V87 W80 W82 W84 W86 X79 X81 X83 X85
