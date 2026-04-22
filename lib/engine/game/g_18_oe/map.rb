@@ -509,28 +509,45 @@ module Engine
             ['AE72'] => 'city=revenue:20;path=a:1,b:_0;path=a:5,b:_0',
           },
           gray: {
-            ['A54'] => 'path=a:1,b:4',                                                                                                     # North Sweden approach
-            ['G88'] => 'path=a:0,b:2',                                                                                                     # Moskva approach
-            ['S88'] => 'path=a:0,b:1',                                                                                                     # Sevastopol approach
+            # North Sweden approach
+            ['A54'] => 'path=a:1,b:4',
+            # Moskva approach
+            ['G88'] => 'path=a:0,b:2',
+            # Sevastopol approach
+            ['S88'] => 'path=a:0,b:1',
           },
           red: {
-            ['D25'] => 'offboard=revenue:yellow_20|green_40|brown_50|gray_50;path=a:0,b:_0;path=a:5,b:_0',                              # Scottish Highlands
-            ['A56'] => 'offboard=revenue:yellow_30|green_50|brown_80|gray_100;city=revenue:0,slots:2;path=a:1,b:_0;path=a:_0,b:0;path=a:_0,b:4;path=a:_0,b:5', # North Sweden
-            ['A64'] => 'offboard=revenue:yellow_30|green_40|brown_60|gray_80;city=revenue:0,slots:2;path=a:0,b:_0;path=a:_0,b:1;path=a:_0,b:4',               # Finland
-            ['B41'] => 'offboard=revenue:yellow_30|green_60|brown_80|gray_120;city=revenue:0,slots:2;path=a:1,b:_0;path=a:_0,b:3;path=a:_0,b:4', # Bergen
-            ['B83'] => 'offboard=revenue:yellow_30|green_50|brown_60|gray_60',                                                           # Arkhangelsk — no path defined
-            ['F87'] => 'offboard=revenue:yellow_30|green_50|brown_80|gray_100;city=revenue:0,slots:3;path=a:0,b:_0;path=a:_0,b:1;path=a:_0,b:2;path=a:_0,b:5', # Moskva
-            ['N1'] => 'offboard=revenue:green_60|brown_100|gray_160;path=a:5,b:_0',                                                     # New York
-            ['N87'] => 'offboard=revenue:yellow_30|green_40|brown_60|gray_80;city=revenue:0,slots:2;path=a:0,b:_0;path=a:_0,b:1;path=a:_0,b:2',               # Kharkov
-            ['T87'] => 'offboard=revenue:yellow_30|green_40|brown_60|gray_80;city=revenue:0,slots:2;path=a:0,b:_0;path=a:_0,b:3',         # Sevastopol
-            ['Z1'] => 'offboard=revenue:yellow_30|green_40|brown_60|gray_80;city=revenue:0,slots:2;path=a:3,b:_0;path=a:_0,b:4', # Lisboa (2 station slots; RCP home)
-            ['AB87'] => 'offboard=revenue:yellow_30|green_50|brown_80|gray_120;path=a:1,b:_0;path=a:2,b:_0',                            # Levant
-            ['AD1'] => 'offboard=revenue:green_40|brown_80|gray_120;path=a:4,b:_0',                                                     # North Africa & The Americas
-            ['AF5'] => 'offboard=revenue:yellow_30|green_40|brown_60|gray_80;path=a:3,b:_0',                                            # Casablanca
-            ['AF11'] => 'offboard=revenue:yellow_30|green_40|brown_40|gray_40;path=a:4,b:_0',                                           # Melilla
-            ['AF25'] => 'offboard=revenue:yellow_30|green_40|brown_60|gray_100;path=a:2,b:_0;path=a:3,b:_0',                            # Alger
-            ['AG40'] => 'offboard=revenue:yellow_30|green_40|brown_50|gray_80;path=a:3,b:_0;path=a:4,b:_0',                             # Tunis
-            ['AG88'] => 'offboard=revenue:green_50|brown_80|gray_120;path=a:1,b:_0',                                                    # Alexandria & Suez
+            ['D25'] => 'offboard=revenue:yellow_20|green_40|brown_50|gray_50;path=a:0,b:_0;path=a:5,b:_0', # Scottish Highlands
+            # North Sweden
+            ['A56'] => 'offboard=revenue:yellow_30|green_50|brown_80|gray_100;' \
+                       'city=revenue:0,slots:2;path=a:1,b:_0;path=a:_0,b:0;path=a:_0,b:4;path=a:_0,b:5',
+            # Finland
+            ['A64'] => 'offboard=revenue:yellow_30|green_40|brown_60|gray_80;' \
+                       'city=revenue:0,slots:2;path=a:0,b:_0;path=a:_0,b:1;path=a:_0,b:4',
+            # Bergen
+            ['B41'] => 'offboard=revenue:yellow_30|green_60|brown_80|gray_120;' \
+                       'city=revenue:0,slots:2;path=a:1,b:_0;path=a:_0,b:3;path=a:_0,b:4',
+            ['B83'] => 'offboard=revenue:yellow_30|green_50|brown_60|gray_60', # Arkhangelsk — no path defined
+            # Moskva
+            ['F87'] => 'offboard=revenue:yellow_30|green_50|brown_80|gray_100;' \
+                       'city=revenue:0,slots:3;path=a:0,b:_0;path=a:_0,b:1;path=a:_0,b:2;path=a:_0,b:5',
+            ['N1'] => 'offboard=revenue:green_60|brown_100|gray_160;path=a:5,b:_0', # New York
+            # Kharkov
+            ['N87'] => 'offboard=revenue:yellow_30|green_40|brown_60|gray_80;' \
+                       'city=revenue:0,slots:2;path=a:0,b:_0;path=a:_0,b:1;path=a:_0,b:2',
+            # Sevastopol
+            ['T87'] => 'offboard=revenue:yellow_30|green_40|brown_60|gray_80;' \
+                       'city=revenue:0,slots:2;path=a:0,b:_0;path=a:_0,b:3',
+            # Lisboa (2 station slots; RCP home)
+            ['Z1'] => 'offboard=revenue:yellow_30|green_40|brown_60|gray_80;' \
+                      'city=revenue:0,slots:2;path=a:3,b:4',
+            ['AB87'] => 'offboard=revenue:yellow_30|green_50|brown_80|gray_120;path=a:1,b:_0;path=a:2,b:_0', # Levant
+            ['AD1'] => 'offboard=revenue:green_40|brown_80|gray_120;path=a:4,b:_0', # North Africa & The Americas
+            ['AF5'] => 'offboard=revenue:yellow_30|green_40|brown_60|gray_80;path=a:3,b:_0', # Casablanca
+            ['AF11'] => 'offboard=revenue:yellow_30|green_40|brown_40|gray_40;path=a:4,b:_0', # Melilla
+            ['AF25'] => 'offboard=revenue:yellow_30|green_40|brown_60|gray_100;path=a:2,b:_0;path=a:3,b:_0', # Alger
+            ['AG40'] => 'offboard=revenue:yellow_30|green_40|brown_50|gray_80;path=a:3,b:_0;path=a:4,b:_0', # Tunis
+            ['AG88'] => 'offboard=revenue:green_50|brown_80|gray_120;path=a:1,b:_0', # Alexandria & Suez
           },
           blue: {
             %w[

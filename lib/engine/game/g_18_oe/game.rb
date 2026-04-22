@@ -210,14 +210,14 @@ module Engine
         # Asterisked zones (UK/PHS/FR): 6 chits combined but capped at 4 selections —
         # when the 4th is taken the remaining chits for those zones are removed from play.
         MINOR_TRACK_RIGHTS_CHITS = {
-          'UK'  => 2,
+          'UK' => 2,
           'PHS' => 2,
-          'FR'  => 2,
-          'AH'  => 2,
-          'IT'  => 2,
-          'SP'  => 2,
-          'SC'  => 2,
-          'RU'  => 2,
+          'FR' => 2,
+          'AH' => 2,
+          'IT' => 2,
+          'SP' => 2,
+          'SC' => 2,
+          'RU' => 2,
         }.freeze
         ASTERISKED_ZONES     = %w[UK PHS FR].freeze
         ASTERISKED_ZONES_CAP = 4
@@ -331,7 +331,6 @@ module Engine
         }.freeze
 
         NATIONAL_REGION_HEXES_COMPLETE = true
-
 
         # Cities that sit on a national-zone border hex (hex listed in two zones).
         # All other cities belong unambiguously to one zone; only these two need an explicit override.
@@ -642,7 +641,7 @@ module Engine
         def setup
           super
           @minor_regional_order = []
-          @minor_available_regions  = self.class::MINOR_TRACK_RIGHTS_CHITS.transform_values(&:itself)
+          @minor_available_regions = self.class::MINOR_TRACK_RIGHTS_CHITS.transform_values(&:itself)
           @minor_asterisked_selected = 0
           @minor_floated_regions = {}
           @regional_corps_floated = 0
