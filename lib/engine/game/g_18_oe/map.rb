@@ -258,7 +258,6 @@ module Engine
           # Constantinople
           'AA82' => 'Constantinople',
           # Red Offboard Locations
-          'A54' => 'North Sweden',
           'A56' => 'North Sweden',
           'B41' => 'Bergen',
           'B83' => 'Arkhangelsk',
@@ -509,12 +508,12 @@ module Engine
             ['AE72'] => 'city=revenue:20;path=a:1,b:_0;path=a:5,b:_0',
           },
           gray: {
+            ['A54'] => 'path=a:1,b:4',                                                                                                     # North Sweden approach
             ['G88'] => 'path=a:0,b:2',                                                                                                     # Moskva approach
             ['S88'] => 'path=a:0,b:1',                                                                                                     # Sevastopol approach
           },
           red: {
             ['D25'] => 'offboard=revenue:yellow_20|green_40|brown_50|gray_50;path=a:0,b:_0;path=a:5,b:_0',                              # Scottish Highlands
-            ['A54'] => 'offboard=revenue:yellow_30|green_50|brown_80|gray_100;path=a:1,b:_0;path=a:4,b:_0',                             # North Sweden
             ['A56'] => 'offboard=revenue:yellow_30|green_50|brown_80|gray_100;path=a:0,b:_0;path=a:1,b:_0;path=a:4,b:_0;path=a:5,b:_0', # North Sweden
             ['B41'] => 'offboard=revenue:yellow_30|green_60|brown_80|gray_120;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0',              # Bergen
             ['B83'] => 'offboard=revenue:yellow_30|green_50|brown_60|gray_60',                                                           # Arkhangelsk — no path defined
