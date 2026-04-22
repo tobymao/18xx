@@ -342,7 +342,7 @@ module Engine
             ['AC56'] => 'border=edge:4,type:impassable',
             ['AC58'] => 'border=edge:1,type:impassable',
             # Skagerrak / Norwegian coast
-            ['I46'] => 'town=revenue:0;town=revenue:0;border=edge:5,type:impassable',
+            ['I46'] => 'town=revenue:0;border=edge:5,type:impassable',
             ['I48'] => 'border=edge:0,type:impassable;upgrade=cost:45,terrain:water',
             ['J47'] => 'border=edge:2,type:impassable;border=edge:3,type:impassable;' \
                        'border=edge:4,type:impassable;border=edge:5,type:impassable;upgrade=cost:60,terrain:water',
@@ -351,10 +351,10 @@ module Engine
             ['K48'] => 'border=edge:2,type:impassable;border=edge:3,type:impassable',
             ['K50'] => 'border=edge:2,type:impassable',
             # North Sea — Danish coast
-            ['D47'] => 'town=revenue:0;town=revenue:0;border=edge:4,type:impassable;border=edge:5,type:impassable',
+            ['D47'] => 'town=revenue:0;border=edge:4,type:impassable;border=edge:5,type:impassable',
             ['D49'] => 'border=edge:1,type:impassable',
-            ['D51'] => 'town=revenue:0;town=revenue:0;border=edge:5,type:impassable;upgrade=cost:30,terrain:water',
-            ['D53'] => 'town=revenue:0;town=revenue:0;border=edge:0,type:impassable;upgrade=cost:30,terrain:water',
+            ['D51'] => 'town=revenue:0;border=edge:5,type:impassable;upgrade=cost:30,terrain:water',
+            ['D53'] => 'town=revenue:0;border=edge:0,type:impassable;upgrade=cost:30,terrain:water',
             ['E52'] => 'border=edge:2,type:impassable;border=edge:3,type:impassable;upgrade=cost:45,terrain:water',
             # Baltic — Gulf of Bothnia entry
             ['C66'] => 'border=edge:5,type:impassable',
