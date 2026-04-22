@@ -326,12 +326,11 @@ module Engine
             ['N31'] => 'city=revenue:20;label=Y;border=edge:2,type:impassable',
             # Pyrenees
             ['V19'] => 'border=edge:4,type:impassable;upgrade=cost:30,terrain:mountain',
-            ['V21'] => 'town=revenue:0;border=edge:1,type:impassable;border=edge:4,type:province,color:black;border=edge:3,type:province,color:black',
-            # FR/SP zone boundary — dashed black line along the Pyrenees (Atlantic→Mediterranean)
-            ['W22'] => 'upgrade=cost:120,terrain:mountain;border=edge:4,type:province,color:black;border=edge:3,type:province,color:black;border=edge:2,type:province,color:black',
-            ['W24'] => 'upgrade=cost:60,terrain:mountain;border=edge:3,type:province,color:black',
-            ['X27'] => 'upgrade=cost:60,terrain:mountain;border=edge:3,type:province,color:black',
-            ['Y28'] => 'upgrade=cost:45,terrain:mountain;border=edge:4,type:province,color:black;border=edge:3,type:province,color:black',
+            ['V21'] => 'town=revenue:0;border=edge:1,type:impassable',
+            ['W22'] => 'upgrade=cost:120,terrain:mountain',
+            ['W24'] => 'upgrade=cost:60,terrain:mountain',
+            ['X27'] => 'upgrade=cost:60,terrain:mountain',
+            ['Y28'] => 'upgrade=cost:45,terrain:mountain',
             # Kattegat / Danish straits
             ['K40'] => 'border=edge:4,type:impassable;upgrade=cost:60,terrain:water',
             ['K42'] => 'border=edge:1,type:impassable;upgrade=cost:30,terrain:water',
@@ -376,7 +375,7 @@ module Engine
             # Towns — mountain terrain
             %w[G24 I16 I26 U12 V15 AD13] => 'town=revenue:0;upgrade=cost:30,terrain:mountain',
             %w[E26 E28 J23] => 'town=revenue:0;upgrade=cost:45,terrain:mountain',
-            ['X25'] => 'town=revenue:0;upgrade=cost:60,terrain:mountain;border=edge:4,type:province,color:black;border=edge:3,type:province,color:black;border=edge:2,type:province,color:black',
+            ['X25'] => 'town=revenue:0;upgrade=cost:60,terrain:mountain',
             # Towns — water terrain
             %w[L23 AD7] => 'town=revenue:0;upgrade=cost:45,terrain:water',
             # Double towns
