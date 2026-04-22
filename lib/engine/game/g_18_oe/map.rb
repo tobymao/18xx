@@ -259,6 +259,7 @@ module Engine
           'AA82' => 'Constantinople',
           # Red Offboard Locations
           'A56' => 'North Sweden',
+          'A64' => 'Finland',
           'B41' => 'Bergen',
           'B83' => 'Arkhangelsk',
           'D25' => 'Scottish Highlands',
@@ -514,14 +515,15 @@ module Engine
           },
           red: {
             ['D25'] => 'offboard=revenue:yellow_20|green_40|brown_50|gray_50;path=a:0,b:_0;path=a:5,b:_0',                              # Scottish Highlands
-            ['A56'] => 'offboard=revenue:yellow_30|green_50|brown_80|gray_100;path=a:0,b:_0;path=a:1,b:_0;path=a:4,b:_0;path=a:5,b:_0', # North Sweden
-            ['B41'] => 'offboard=revenue:yellow_30|green_60|brown_80|gray_120;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0',              # Bergen
+            ['A56'] => 'offboard=revenue:yellow_30|green_50|brown_80|gray_100;city=revenue:0,slots:2;path=a:1,b:_0;path=a:_0,b:0;path=a:_0,b:4;path=a:_0,b:5', # North Sweden
+            ['A64'] => 'offboard=revenue:yellow_30|green_40|brown_60|gray_80;city=revenue:0,slots:2;path=a:0,b:_0;path=a:_0,b:1;path=a:_0,b:4',               # Finland
+            ['B41'] => 'offboard=revenue:yellow_30|green_60|brown_80|gray_120;city=revenue:0,slots:2;path=a:1,b:_0;path=a:_0,b:3;path=a:_0,b:4', # Bergen
             ['B83'] => 'offboard=revenue:yellow_30|green_50|brown_60|gray_60',                                                           # Arkhangelsk — no path defined
             ['F87'] => 'offboard=revenue:yellow_30|green_50|brown_80|gray_100;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:5,b:_0', # Moskva
             ['N1'] => 'offboard=revenue:green_60|brown_100|gray_160;path=a:5,b:_0',                                                     # New York
             ['N87'] => 'offboard=revenue:yellow_30|green_40|brown_60|gray_80;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0',               # Kharkov
             ['T87'] => 'offboard=revenue:yellow_30|green_40|brown_60|gray_80;path=a:1,b:_0',                                            # Sevastopol
-            ['Z1'] => 'offboard=revenue:yellow_30|green_40|brown_60|gray_80;city=revenue:0;city=revenue:0;path=a:3,b:_0;path=a:4,b:_0', # Lisboa (2 station slots; RCP home)
+            ['Z1'] => 'offboard=revenue:yellow_30|green_40|brown_60|gray_80;city=revenue:0,slots:2;path=a:3,b:_0;path=a:_0,b:4', # Lisboa (2 station slots; RCP home)
             ['AB87'] => 'offboard=revenue:yellow_30|green_50|brown_80|gray_120;path=a:1,b:_0;path=a:2,b:_0',                            # Levant
             ['AD1'] => 'offboard=revenue:green_40|brown_80|gray_120;path=a:4,b:_0',                                                     # North Africa & The Americas
             ['AF5'] => 'offboard=revenue:yellow_30|green_40|brown_60|gray_80;path=a:3,b:_0',                                            # Casablanca
@@ -533,7 +535,7 @@ module Engine
           blue: {
             %w[
               A2 A4 A6 A8 A10 A12 A14 A16 A18 A20 A22
-              A24 A26 A28 A30 A32 A34 A36 A38 A40 A58 A60 A62 A64
+              A24 A26 A28 A30 A32 A34 A36 A38 A40 A58 A60 A62
               B1 B3 B5 B7 B9
               B11 B13 B15 B17 B19 B21 B23 B25 B27 B29 B31 B33
               B35 B37 B39 B59 B61 C2 C4 C6 C8
