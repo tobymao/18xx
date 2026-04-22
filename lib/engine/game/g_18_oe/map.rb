@@ -540,7 +540,7 @@ module Engine
                        'city=revenue:0,slots:2;path=a:0,b:_0;path=a:_0,b:3',
             # Lisboa (2 station slots; RCP home)
             ['Z1'] => 'offboard=revenue:yellow_30|green_40|brown_60|gray_80;' \
-                      'city=revenue:0,slots:2;path=a:3,b:4',
+                      'city=revenue:0,slots:2;path=a:3,b:_0;path=a:_0,b:4;path=a:3,b:4',
             ['AB87'] => 'offboard=revenue:yellow_30|green_50|brown_80|gray_120;path=a:1,b:_0;path=a:2,b:_0', # Levant
             ['AD1'] => 'offboard=revenue:green_40|brown_80|gray_120;path=a:4,b:_0', # North Africa & The Americas
             ['AF5'] => 'offboard=revenue:yellow_30|green_40|brown_60|gray_80;path=a:3,b:_0', # Casablanca
