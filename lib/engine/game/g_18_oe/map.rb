@@ -426,7 +426,7 @@ module Engine
             ['P53'] => 'city=revenue:0;label=Y',
             ['V41'] => 'city=revenue:0;label=Y',
             ['Z47'] => 'city=revenue:0;label=Y',
-            ['AB51'] => 'city=revenue:20;label=N;path=a:1,b:_0',
+            ['AB51'] => 'city=revenue:20;label=N',
             ['C74'] => 'city=revenue:0;label=S',
             ['M62'] => 'city=revenue:0;label=Y',
             ['O80'] => 'city=revenue:0;label=Y',
