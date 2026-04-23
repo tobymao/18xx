@@ -47,6 +47,7 @@ module View
         end
 
         buttons = [
+          h(:h3, 'Game Data'),
           h(:button, {
               on: { click: -> { store(:show_json, !@show_json) } },
               style: { width: '4.2rem' },
@@ -77,7 +78,7 @@ module View
 
         buttons.concat(render_random_seed)
 
-        h('div.margined', [h(:h3, 'Game Data'), h(:div, { style: { marginTop: '1rem' } }, buttons)])
+        h('div.margined', buttons)
       end
 
       def render_random_seed
