@@ -3,6 +3,7 @@
 require 'game_manager'
 require 'lib/storage'
 require 'view/game/game_data'
+require 'view/game/game_details'
 require 'view/game/notepad'
 require 'view/game/actionable'
 require 'view/game/auto_router_settings'
@@ -24,6 +25,7 @@ module View
           h(RenameHotseat),
           *render_tools,
           h(AutoRouterSettings),
+          h(GameDetails),
           h(GameData, actions: @game.raw_actions.map(&:to_h)),
           *help_links,
         ])
