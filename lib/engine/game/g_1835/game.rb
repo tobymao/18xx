@@ -219,13 +219,9 @@ module Engine
           # once PR floats.
           corporation_by_id('PR').shares.last(8).each { |s| s.buyable = false }
 
-          corporation_by_id('BA').shares.last.double_cert = true
-          corporation_by_id('WT').shares.last.double_cert = true
-          corporation_by_id('HE').shares.last.double_cert = true
-          corporation_by_id('MS').shares[1].double_cert = true
-          corporation_by_id('MS').shares[2].double_cert = true
-          corporation_by_id('OL').shares[1].double_cert = true
-          corporation_by_id('OL').shares[2].double_cert = true
+          @corporations.each do |corp|
+            corp.shares.reject(&:president).each { |share| share.double_cert = (share.percent == 20) }
+          end
 
           @draft_finished = false
           @draft_round_num = 1
@@ -264,14 +260,14 @@ module Engine
             when G1835::Round::Draft
               reorder_players
               new_operating_round(@draft_round_num)
-            when G1835::Round::Operating
+            when Engine::Round::Operating
               @draft_round_num += 1
               new_draft_round
             end
         end
 
         def operating_round(round_num)
-          G1835::Round::Operating.new(self, [
+          Engine::Round::Operating.new(self, [
             Engine::Step::Bankrupt,
             Engine::Step::SpecialTrack,
             G1835::Step::SpecialToken,
@@ -280,7 +276,7 @@ module Engine
             Engine::Step::Route,
             Engine::Step::Dividend,
             Engine::Step::DiscardTrain,
-            Engine::Step::BuyTrain,
+            G1835::Step::BuyTrain,
           ], round_num: round_num)
         end
       end

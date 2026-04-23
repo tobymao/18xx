@@ -6,7 +6,7 @@ module Engine
   module Game
     module G1835
       module Step
-        class Draft < Engine::Step::Base
+        class Draft < Engine::Step::SimpleDraft
           attr_reader :companies, :choices, :grouped_companies
 
           ACTIONS = %w[bid pass].freeze
@@ -33,26 +33,18 @@ module Engine
           end
 
           def may_purchase?(company)
+            return false unless company
+
             # in the vanilla draft a company can only be purchased if it is either in the top-most row or furthest to
             # the left in the second top-most row if the top-most row only has one company
-            false unless company
             company_row = company.auction_row
-            return true if company_row.zero?
-            return true if @tiered_companies[0...company_row].all?(&:empty?)
-            return false unless @tiered_companies[0...(company_row - 1)].all?(&:empty?)
-            return false unless @tiered_companies[company_row - 1].size == 1
+            first_row = @tiered_companies.index { |row| !row.empty? }
+            return true if company_row == first_row
 
-            @tiered_companies[company_row][0].sym == _company.sym
-          end
+            return false unless @tiered_companies[first_row].one?
+            return false unless company_row == first_row + 1
 
-          def may_choose?(_company)
-            false
-          end
-
-          def auctioning; end
-
-          def bids
-            {}
+            @tiered_companies[company_row].first == company
           end
 
           def visible?
@@ -72,8 +64,7 @@ module Engine
           end
 
           def finished?
-            @game.draft_finished = @companies.empty?
-            @companies.empty? || entities.all?(&:passed?)
+            @round.finished?
           end
 
           def actions(entity)
@@ -93,64 +84,44 @@ module Engine
             action_finalized
           end
 
-          def log_skip(entity)
-            @log << "#{entity.name} cannot afford any company and passes"
-          end
-
           def process_bid(action)
             company = action.company
             player = action.entity
             price = action.price
 
-            company.owner = player
-            player.companies << company
+            assign_company(company, player)
             player.spend(price, @game.bank)
-            @tiered_companies.each do |row|
-              next unless row.index(company)
-
-              row.delete(company)
-            end
-            @companies.delete(company)
+            remove_company(company)
 
             @log << "#{player.name} buys #{company.name} for #{@game.format_currency(price)}"
 
             @game.abilities(company, :shares) do |ability|
               ability.shares.each do |share|
-                # In case someone else already holds 30% of BY SharePool#transfer_shares needs a previous president for
-                # swapping the shares, thus we assign the buyer of the president share even if they immediately lose
-                # the presidency. Which is technically correct: The buyer becomes the first president and then players
-                # check whether there is someone else with more shares
-                if share.president && share.corporation.name == 'BY'
-                  share.corporation.owner = player
-                  @log << "#{player.name} becomes the president of #{share.corporation.name}"
-                end
-                @game.bank.spend(share.price, share.corporation)
-
-                # allow president change for SX when LD is being sold, but for BY only if the BY director has been sold,
-                # which might be during the current or any earlier action
-                allow_president_change = @companies.find { |c| c.sym == 'BY_D' }.nil? || share.corporation.id == 'SX'
-                @game.share_pool.transfer_shares(ShareBundle.new(share), player, allow_president_change: allow_president_change)
-
-                @game.place_home_token(share.corporation) if share.corporation.floated?
+                transfer_share(company, player, share)
               end
             end
 
-            company.close! if company.sym == 'BY_D'
-
-            corporation = @game.corporation_by_id(company.id)
-
-            if corporation && corporation.type == :minor
-              share = corporation.shares.first
-              @game.share_pool.transfer_shares(ShareBundle.new(share), player)
-              @game.bank.spend(price, corporation)
-              company.close!
-              @game.place_home_token(corporation)
-            end
+            minor = @game.minor_by_id(company.id)
+            float_minor(company, minor, player, price) if minor
 
             entities.each(&:unpass!)
             @round.last_to_act = player
             @round.next_entity_index!
             action_finalized
+          end
+
+          def assign_company(company, player)
+            company.owner = player
+            player.companies << company
+          end
+
+          def remove_company(company)
+            @tiered_companies.each do |row|
+              next unless row.include?(company)
+
+              row.delete(company)
+            end
+            @companies.delete(company)
           end
 
           def process_pass(action)
@@ -166,8 +137,8 @@ module Engine
             @round.next_entity_index!
           end
 
-          def committed_cash(_player, _show_hidden = false)
-            0
+          def may_choose?(_company)
+            false
           end
 
           def min_increment
@@ -178,22 +149,40 @@ module Engine
             false
           end
 
-          def min_bid(company)
-            return unless company
-
-            company.value
-          end
-
           def max_bid(player, _object)
             player.cash
           end
 
-          def max_place_bid(player, object)
-            max_bid(player, object)
+          private
+
+          def transfer_share(company, player, share)
+            if share.president && share.corporation.name == 'BY'
+              # In case someone else already holds 30% of BY SharePool#transfer_shares needs a previous president for
+              # swapping the shares, thus we assign the buyer of the president share even if they immediately lose
+              # the presidency. Which is technically correct: The buyer becomes the first president and then players
+              # check whether there is someone else with more shares
+              share.corporation.owner = player
+              @log << "#{player.name} becomes the president of #{share.corporation.name}"
+              company.close!
+            end
+
+            @game.bank.spend(share.price, share.corporation)
+
+            # allow president change for SX when LD is being sold, but for BY only if the BY director has been sold,
+            # which might be during the current or any earlier action
+            allow_president_change = share.president || !share.corporation.shares.first.president
+            @game.share_pool.transfer_shares(ShareBundle.new(share), player, allow_president_change: allow_president_change)
+
+            @game.place_home_token(share.corporation) if share.corporation.floated?
           end
 
-          def ipo_type(_entity)
-            nil
+          def float_minor(company, minor, player, price)
+            minor.owner = player
+            minor.float!
+            @game.bank.spend(price, minor)
+            company.close!
+            hex = @game.hex_by_id(minor.coordinates)
+            hex.tile.cities[minor.city || 0].place_token(minor, minor.next_token)
           end
         end
       end
