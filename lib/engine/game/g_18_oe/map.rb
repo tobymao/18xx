@@ -321,7 +321,7 @@ module Engine
             # Channel Islands
             ['M30'] => 'border=edge:3,type:impassable;border=edge:5,type:impassable;upgrade=cost:45,terrain:water',
             # Franco-Belgian border
-            ['N31'] => 'city=revenue:0;label=Y;border=edge:2,type:impassable',
+            ['N31'] => 'city=revenue:0;label=Y;border=edge:2,type:impassable;path=a:1,b:_0',
             # Pyrenees
             ['V19'] => 'border=edge:4,type:impassable;upgrade=cost:30,terrain:mountain',
             ['V21'] => 'town=revenue:0;border=edge:1,type:impassable',
@@ -404,12 +404,12 @@ module Engine
             ['U32'] => 'city=revenue:0;upgrade=cost:30,terrain:mountain',
             ['AD9'] => 'city=revenue:0;upgrade=cost:30,terrain:mountain',
             ['D57'] => 'city=revenue:0;upgrade=cost:30,terrain:water',
-            ['AA82'] => 'city=revenue:0;city=revenue:0;upgrade=cost:45,terrain:water;label=C',
+            ['AA82'] => 'city=revenue:0;city=revenue:0;upgrade=cost:45,terrain:water;label=C;path=a:2,b:_0',
             ['U24'] => 'city=revenue:0',
-            ['I20'] => 'city=revenue:0',
-            ['O28'] => 'city=revenue:0',
-            ['M28'] => 'city=revenue:0;label=L;upgrade=cost:30,terrain:water',
-            ['X33'] => 'city=revenue:0;label=Y',
+            ['I20'] => 'city=revenue:0;path=a:4,b:_0',
+            ['O28'] => 'city=revenue:0;path=a:1,b:_0',
+            ['M28'] => 'city=revenue:0;label=L;upgrade=cost:30,terrain:water;path=a:5,b:_0',
+            ['X33'] => 'city=revenue:0;label=Y;path=a:5,b:_0',
 
             ['Z27'] => 'city=revenue:0;label=Y',
             ['K46'] => 'city=revenue:0;label=Y',
@@ -563,10 +563,10 @@ module Engine
               E32 E34 E36 E38 E40 E46 E60 E62 E64 F1 F3 F5
               F7 F9 F11 F13 F15 F17 F19 F21 F31 F33 F35 F37
               F39 F41 F43 F45 F47 F57 F59 F61 F63 F65 F67 G0
-              G2 G4 G6 G8 G10 G12 G14 G22 G30 G32 G34 G36
+              G2 G4 G6 G8 G10 G12 G14 G30 G32 G34 G36
               G38 G40 G42 G48 G58 G60 G62 H1 H3 H5 H7 H9
               H11 H13 H23 H31 H33 H35 H37 H39 H41 H49 H57 H59
-              H61 I0 I2 I4 I6 I8 I10 I12 I22 I24 I30 I32
+              H61 I0 I2 I4 I6 I8 I10 I12 I30 I32
               I34 I36 I38 I40 I42 I54 I56 I58 I60 I62 J1
               J3 J5 J7 J9 J11 J21 J31 J33 J35 J37 J39 J41
               J43 J51 J53 J55 J57 J59 J61 K0 K2 K4 K6 K8
@@ -574,7 +574,7 @@ module Engine
               L1 L3 L5 L7 L9 L11 L13 L15 L17 L19 L21 L33
               L35 M0 M2 M4 M6 M8 M10 M12 M14 M16 M18 M20
               M32 N3 N5 N7 N9 N11 N13 N15 N17 N19 N21
-              N23 N25 N27 N29 O0 O2 O4 O6 O8 O10 O12 O14
+              N23 N27 O0 O2 O4 O6 O8 O10 O12 O14
               O16 O18 O20 O22 O26 P1 P3 P5 P7 P9 P11
               P13 P15 P17 Q0 Q2 Q4 Q6 Q8 Q10 Q12 Q14 Q16
               Q18 R1 R3 R5 R7 R9 R11 R13 R15 R17 R19
@@ -587,16 +587,16 @@ module Engine
               Y40 Y42 Y52 Y54 Y80 Y82 Y84 Y86 Y88 Z29 Z31 Z33
               Z35 Z37 Z39 Z43 Z53 Z55 Z57 Z59 Z81 Z83 Z85 Z87
               AA0 AA24 AA26 AA28 AA30 AA32 AA34 AA36 AA38 AA40 AA42 AA44
-              AA46 AA56 AA58 AA60 AA88 AB21 AB23 AB25 AB29 AB31 AB33 AB35
+              AA46 AA56 AA58 AA60 AA88 AB29 AB31 AB33 AB35
               AB37 AB43 AB45 AB47 AB49 AB59 AB61 AB73 AB75 AB79 AB81 AC0
               AC2 AC4 AC22 AC24 AC26 AC28 AC30 AC32 AC34 AC36 AC42 AC44
               AC46 AC48 AC50 AC52 AC60 AC62 AC70 AC72 AC74 AD3 AD19
               AD21 AD23 AD25 AD27 AD29 AD31 AD33 AD35 AD37 AD41 AD43 AD45
               AD47 AD49 AD51 AD53 AD57 AD59 AD61 AD63 AD73 AD75 AD77 AE0
-              AE2 AE4 AE6 AE8 AE10 AE12 AE14 AE16 AE18 AE20 AE22 AE24
+              AE2 AE4 AE8 AE10 AE14 AE16 AE18 AE20 AE22 AE24
               AE26 AE28 AE30 AE32 AE34 AE36 AE38 AE40 AE42 AE44 AE46 AE48
               AE50 AE54 AE56 AE58 AE60 AE62 AE64 AE66 AE74 AE76 AE78
-              AF1 AF3 AF7 AF9 AF13 AF15 AF17 AF19 AF21 AF23 AF27 AF29
+              AF1 AF3 AF7 AF9 AF15 AF17 AF19 AF21 AF23 AF27 AF29
               AF31 AF33 AF35 AF37 AF39 AF41 AF43 AF45 AF47 AF55 AF57 AF59
               AF61 AF63 AF65 AF71 AF73 AF75 AF77 AF79 AG0 AG2 AG4 AG6
               AG8 AG10 AG12 AG14 AG16 AG18 AG20 AG22 AG24 AG26 AG28 AG30
@@ -607,6 +607,18 @@ module Engine
               AH51 AH53 AH55 AH57 AH59 AH61 AH63 AH65 AH67 AH69 AH71 AH73
               AH75 AH77 AH79 AH81 AH83 AH85 AH87
               ] => '',
+            # Ferry routes (pre-printed track through sea hexes)
+            ['N29'] => 'path=a:4,b:2',
+            ['G22'] => 'path=a:0,b:4',
+            ['I22'] => 'path=a:1,b:5;path=a:1,b:4',
+            ['I24'] => 'path=a:1,b:5;path=a:1,b:4',
+            ['N25'] => 'path=a:0,b:3',
+            ['AE6'] => 'town=revenue:20;path=a:0,b:3',
+            ['AE12'] => 'path=a:3,b:0',
+            ['AF13'] => 'path=a:2,b:1',
+            ['AB21'] => 'path=a:2,b:4',
+            ['AB23'] => 'path=a:1,b:4',
+            ['AB25'] => 'path=a:1,b:4',
           },
         }.freeze
 
