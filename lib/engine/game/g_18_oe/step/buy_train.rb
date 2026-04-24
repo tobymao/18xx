@@ -20,18 +20,24 @@ module Engine
 
           def buyable_trains(entity)
             trains = super
-            return trains unless @game.phase.status.include?('train_obligation')
-            return trains if @game.fulfilled_train_obligation.include?(entity.id)
 
-            min = @game.depot.min_depot_train
-            trains.select { |t| t == min || t.from_depot? && t.price == min.price }
+            # Regional/Minor Phase: level 3+ trains blocked for all entities
+            return trains.select { |t| t.name == '2+2' } unless @game.major_phase?
+
+            # Obligation window in Major Phase: unfulfilled entity restricted to 2+2
+            if @game.phase.status.include?('train_obligation') &&
+               !@game.fulfilled_train_obligation.include?(entity.id)
+              min = @game.depot.min_depot_train
+              return min ? trains.select { |t| t.price == min.price } : []
+            end
+
+            trains
           end
 
           def process_buy_train(action)
+            in_obligation_window = @game.phase.status.include?('train_obligation')
             super
-            if @game.phase.status.include?('train_obligation')
-              @game.fulfilled_train_obligation.add(action.entity.id)
-            end
+            @game.fulfilled_train_obligation.add(action.entity.id) if in_obligation_window
           end
 
           # TODO: Nationals claiming rusted trains for free (openpoints §1.9, §3.7) — deferred
