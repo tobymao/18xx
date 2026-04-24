@@ -16,6 +16,7 @@ module Engine
         include G18OE::Map
         attr_accessor :minor_regional_order, :minor_available_regions, :minor_floated_regions, :regional_corps_floated,
                       :consolidation_triggered, :consolidation_done, :minor_asterisked_selected
+        attr_reader :fulfilled_train_obligation
 
         MARKET = [
           ['', '110', '120C', '135', '150', '165', '180', '200', '225', '250', '280', '310', '350', '390', '440', '490', '550'],
@@ -264,7 +265,7 @@ module Engine
                      J13 J15 J17 J19 J23 J25 J27 J29 K22 K24 K26 K28 K30
                      L23 L25 L27 L29 L31 M22 M24 M26 M28 M30],
           # Scandinavia (Sweden / Norway / Denmark)
-          'SC' => %w[A40 A42 A44 A46 A48 A50 A52 A54 A56 B41 B43 B45 B47 B49 B51 B53 B55 B57
+          'SC' => %w[A42 A44 A46 A48 A50 A52 A54 A56 B41 B43 B45 B47 B49 B51 B53 B55 B57
                      C42 C44 C46 C48 C50 C52 C54 C56 C58 D41 D43 D45 D47 D49 D51 D53 D55 D57
                      E42 E44 E48 E50 E52 E54 E56 E58 F49 F51 F53 F55
                      G44 G46 G50 G52 G54 G56 H43 H45 H47 H51 H53 H55 I44 I46 I48 I50 I52],
@@ -315,7 +316,7 @@ module Engine
           # Russia
           'RU' => %w[A64 A66 A68 A70 A72 A74 B63 B65 B67 B69 B71 B73 B75 B77 B79 B81 B83
                      C64 C66 C72 C74 C76 C78 C80 C82 D67 D69 D71 D73 D75 D77 D79 D81 D83 D85
-                     E66 E68 E70 E72 E74 E76 E78 E80 E82 E84 E86 E88
+                     E66 E68 E70 E72 E74 E76 E78 E80 E82 E84 E86
                      F69 F71 F73 F75 F77 F79 F81 F83 F85 F87
                      G64 G66 G68 G70 G72 G74 G76 G78 G80 G82 G84 G86 G88
                      H63 H65 H67 H69 H71 H73 H75 H77 H79 H81 H83 H85 H87
@@ -645,6 +646,7 @@ module Engine
           @minor_asterisked_selected = 0
           @minor_floated_regions = {}
           @regional_corps_floated = 0
+          @fulfilled_train_obligation = Set.new
 
           corporations.each do |corp|
             corp.par_via_exchange = companies.find { |c| c.sym == corp.id } if corp.type == :minor
