@@ -337,7 +337,6 @@ module Engine
             ['AC58'] => 'border=edge:1,type:impassable',
             # Skagerrak / Norwegian coast
             ['I46'] => 'town=revenue:0;border=edge:5,type:impassable',
-            ['I48'] => 'border=edge:0,type:impassable;upgrade=cost:45,terrain:water',
             ['J47'] => 'border=edge:2,type:impassable;border=edge:3,type:impassable;' \
                        'border=edge:4,type:impassable;border=edge:5,type:impassable;upgrade=cost:60,terrain:water',
             ['J49'] => 'border=edge:0,type:impassable;border=edge:1,type:impassable;' \
@@ -405,7 +404,6 @@ module Engine
             ['U32'] => 'city=revenue:0;upgrade=cost:30,terrain:mountain',
             ['AD9'] => 'city=revenue:0;upgrade=cost:30,terrain:mountain',
             ['D57'] => 'city=revenue:0;upgrade=cost:30,terrain:water',
-            ['I50'] => 'city=revenue:0;label=Y;upgrade=cost:45,terrain:water',
             ['AA82'] => 'city=revenue:20;city=revenue:20;upgrade=cost:45,terrain:water;label=C',
             # Cities — pre-printed revenue
             ['U24'] => 'city=revenue:10',
@@ -433,7 +431,6 @@ module Engine
             ['D81'] => 'town=revenue:0;upgrade=cost:30,terrain:water',
             ['I52'] => 'city=revenue:0;upgrade=cost:45,terrain:water',
             ['J63'] => 'city=revenue:0;label=Y;upgrade=cost:30,terrain:water',
-            ['L37'] => 'city=revenue:0;label=Y;upgrade=cost:45,terrain:water',
             ['L39'] => 'town=revenue:0;town=revenue:0;upgrade=cost:30,terrain:water',
             ['M36'] => 'city=revenue:0;upgrade=cost:30,terrain:water',
             ['M38'] => 'town=revenue:0;upgrade=cost:30,terrain:water',
@@ -504,6 +501,9 @@ module Engine
             %w[B45 T41 T43 T45 T47 U38 U44 X23] => 'upgrade=cost:120,terrain:mountain',
           },
           yellow: {
+            ['L37'] => 'city=revenue:30;label=Y;upgrade=cost:45,terrain:water;path=a:0,b:_0;path=a:_0,b:5',
+            ['I48'] => 'border=edge:0,type:impassable;upgrade=cost:45,terrain:water;path=a:2,b:4',
+            ['I50'] => 'city=revenue:0;label=Y;upgrade=cost:45,terrain:water;path=a:1,b:_0;path=a:_0,b:3',
             ['J25'] => 'city=revenue:30;label=Y;path=a:2,b:_0;path=a:_0,b:4',
             ['J27'] => 'city=revenue:20;upgrade=cost:30,terrain:mountain;path=a:1,b:_0;path=a:_0,b:4',
             ['AE72'] => 'city=revenue:20;path=a:1,b:_0;path=a:5,b:_0',
