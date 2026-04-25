@@ -662,14 +662,14 @@ module Engine
           ].freeze,
           'Skagerrak' => %w[
             A38 A40 B37 B39 B43 C38 C40 D37 D39 E38 E40 E46 F37 F39
-            F41 F43 F45 F47 G38 G40 G42 H49
+            F41 F43 F45 F47 G38 G40 G42 G48 H49
           ].freeze,
           'German Bight' => %w[
             H37 H39 H41 I36 I38 I40 I42 J35 J37 J39 J41 J43
             K34 K36 K38
           ].freeze,
           'Baltic Sea' => %w[
-            E60 F57 F59 G58 G60 H57 H59 H61 I54 I56 I58 I60
+            E60 F57 F59 G58 G60 G62 H57 H59 H61 I54 I56 I58 I60
             I62 J51 J53 J55 J57 J59 J61 K52
           ].freeze,
           'Gulf of Finland' => %w[
@@ -689,7 +689,7 @@ module Engine
           'Sea of Sardinia' => %w[
             X31 X39 Y30 Y32 Y34 Y36 Y38 Y40 Z29 Z31 Z33 Z35
             Z37 Z39 AA28 AA30 AA32 AA34 AA36 AA38 AA40 AB29 AB31 AB33
-            AB35 AB37 AC26 AC28 AC30 AC32 AC34 AC36 AD25 AD27 AD29 AD31
+            AB35 AB37 AC26 AC28 AC30 AC32 AC34 AC36 AD27 AD29 AD31
             AD33 AD35 AD37 AE26 AE28 AE30 AE32 AE34 AE36 AF27 AF29 AF31
             AF33 AF35 AG26 AG28 AG30 AG32 AG34 AG36 AG38 AH27 AH29 AH31
             AH33 AH35 AH37 AH39
@@ -707,8 +707,8 @@ module Engine
             AA58 AA60 AB59 AB61 AC60 AC62 AD61 AD63
           ].freeze,
           'Aegean Sea' => %w[
-            AB73 AB75 AB79 AB81 AC70 AC72 AC74 AD73 AD75 AD77 AE62 AE64
-            AE66 AE74 AE76 AE78 AF61 AF63 AF65 AF71 AF73 AF75 AF77 AG62
+            AB73 AB75 AB79 AB81 AC70 AC72 AC74 AD73 AD75 AD77 AE60 AE62 AE64
+            AE66 AE74 AE76 AE78 AF61 AF63 AF65 AF71 AF73 AF75 AF77 AG60 AG62
             AG64 AG66 AG72 AG74 AG76 AH61 AH63 AH65 AH67 AH69 AH71 AH73
             AH75
           ].freeze,
