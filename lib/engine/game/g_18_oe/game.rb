@@ -333,8 +333,6 @@ module Engine
                      R75 R77 R79 R81 R83 R85 R87 S76 S78 S80 S82 S84 S86 S88 T79 T81 T87 U80],
         }.freeze
 
-        NATIONAL_REGION_HEXES_COMPLETE = true
-
         # Cities that sit on a national-zone border hex (hex listed in two zones).
         # All other cities belong unambiguously to one zone; only these two need an explicit override.
         CITY_NATIONAL_ZONE = {
