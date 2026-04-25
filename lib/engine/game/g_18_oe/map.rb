@@ -644,11 +644,11 @@ module Engine
               AC50 AC52 AC62 AC70 AC72 AC74 AD3 AD19 AD21 AD23 AD29 AD31
               AD33 AD35 AD41 AD43 AD45 AD47 AD49 AD51 AD53 AD57 AD73 AD75
               AD77 AE0 AE2 AE4 AE8 AE14 AE16 AE18 AE20 AE22 AE28 AE30
-              AE32 AE34 AE40 AE42 AE44 AE46 AE48 AE50 AE54 AE56 AE58 AE66
+              AE32 AE34 AE40 AE42 AE44 AE46 AE48 AE50 AE54 AE56 AE66
               AE74 AE76 AF1 AF3 AF7 AF9 AF15 AF17 AF19 AF21 AF23 AF29
               AF31 AF33 AF41 AF43 AF45 AF47 AF55 AF57 AF63 AF65 AF71 AF73
               AF75 AG0 AG2 AG4 AG6 AG8 AG14 AG16 AG18 AG20 AG22 AG28
-              AG30 AG32 AG34 AG42 AG44 AG46 AG48 AG54 AG56 AG58 AG62 AG64
+              AG30 AG32 AG34 AG42 AG44 AG46 AG48 AG54 AG56 AG62 AG64
               AG66 AG72 AG74 AG80 AG82 AG84 AG86 AH1 AH3 AH5 AH7 AH13
               AH15 AH17 AH19 AH21 AH23 AH29 AH31 AH33 AH35 AH37 AH43 AH45
               AH47 AH49 AH51 AH53 AH55 AH57 AH63 AH65 AH67 AH69 AH71 AH73
@@ -704,7 +704,7 @@ module Engine
             ['AF37'] => 'border=edge:0,type:province;border=edge:1,type:province;' \
                         'border=edge:2,type:province;border=edge:5,type:province',
             ['AF39'] => 'border=edge:0,type:province',
-            ['AF59'] => 'border=edge:3,type:province;border=edge:4,type:province',
+            ['AF59'] => 'border=edge:3,type:province;border=edge:4,type:province;border=edge:5,type:province',
             ['AF61'] => 'border=edge:1,type:province',
             ['AF77'] => 'border=edge:4,type:province;border=edge:5,type:province',
             ['AF79'] => 'border=edge:1,type:province;border=edge:2,type:province',
