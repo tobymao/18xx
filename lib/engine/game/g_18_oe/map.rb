@@ -688,7 +688,7 @@ module Engine
             ['AD27'] => 'border=edge:1,type:province',
             ['AD37'] => 'border=edge:5,type:province',
             ['AD59'] => 'border=edge:3,type:province;border=edge:4,type:province;border=edge:5,type:province',
-            ['AD61'] => 'border=edge:1,type:province;border=edge:5,type:province',
+            ['AD61'] => 'border=edge:0,type:province;border=edge:1,type:province;border=edge:5,type:province',
             ['AD63'] => 'border=edge:0,type:province;border=edge:5,type:province',
             ['AE10'] => 'border=edge:4,type:province',
             ['AE24'] => 'border=edge:4,type:province',
