@@ -368,7 +368,7 @@ module Engine
             # Scotland — Highlands barrier
             ['F27'] => 'town=revenue:0;border=edge:0,type:impassable;border=edge:5,type:impassable',
             ['F29'] => 'border=edge:0,type:impassable',
-            ['G26'] => 'city=revenue:0;label=Y;upgrade=cost:30,terrain:mountain;border=edge:3,type:impassable',
+            ['G26'] => 'city=revenue:10;label=Y;upgrade=cost:30,terrain:mountain;border=edge:3,type:impassable',
             ['G28'] => 'border=edge:2,type:impassable;border=edge:3,type:impassable',
             # England — coastal/estuary
             ['L31'] => 'border=edge:0,type:impassable',
@@ -440,15 +440,17 @@ module Engine
             ['T37'] => 'town=revenue:0;town=revenue:0;upgrade=cost:45,terrain:mountain',
             # Cities — no label, no terrain
             %w[
-              F25 H21 J15 L25 Q26 Q38 R23 V27 C48 F49 L53 N49
+              F25 H21 J15 L25 Q26 Q38 R23 V27 F49 L53 N49
               J73 AD17 V17 W6 X13 Y20 AA20 AC8 AC16 AB27
             ] => 'city=revenue:0',
+            ['C48'] => 'city=revenue:10',
             # Cities — no terrain (added station geometry)
             %w[
               AA62 AB57 AB69 AC40 AD79 AF49 B67 D77 E56 G68 H47 H63
-              H87 I76 J69 K78 K86 M44 M68 S78 T53 T81 V39 V51
+              H87 I76 J69 K78 K86 M44 M68 S78 T53 T81 V51
               V55 W40 W64 Y70
             ] => 'city=revenue:0',
+            ['V39'] => 'city=revenue:30',
             # Cities — label Y
             ['U34'] => 'city=revenue:0;label=Y',
             ['N35'] => 'city=revenue:0;label=Y;upgrade=cost:30,terrain:water;' \
@@ -461,15 +463,15 @@ module Engine
             ['U32'] => 'city=revenue:0;upgrade=cost:30,terrain:mountain',
             ['AD9'] => 'city=revenue:0;upgrade=cost:30,terrain:mountain',
             ['D57'] => 'city=revenue:0;upgrade=cost:30,terrain:water',
-            ['AA82'] => 'city=revenue:0;city=revenue:0;upgrade=cost:45,terrain:water;label=C;path=a:2,b:_0',
-            ['U24'] => 'city=revenue:0',
-            ['I20'] => 'city=revenue:0;path=a:4,b:_0',
+            ['AA82'] => 'city=revenue:20;city=revenue:20;upgrade=cost:45,terrain:water;label=C;path=a:2,b:_0',
+            ['U24'] => 'city=revenue:10',
+            ['I20'] => 'city=revenue:10;path=a:4,b:_0',
             ['O28'] => 'city=revenue:0;path=a:1,b:_0',
-            ['M28'] => 'city=revenue:0;label=L;upgrade=cost:30,terrain:water;path=a:5,b:_0',
-            ['X33'] => 'city=revenue:0;label=Y;path=a:5,b:_0',
+            ['M28'] => 'city=revenue:30;label=L;upgrade=cost:30,terrain:water;path=a:5,b:_0',
+            ['X33'] => 'city=revenue:20;label=Y;path=a:5,b:_0',
 
-            ['Z27'] => 'city=revenue:0;label=Y',
-            ['K46'] => 'city=revenue:0;label=Y',
+            ['Z27'] => 'city=revenue:20;label=Y',
+            ['K46'] => 'city=revenue:20;label=Y',
             ['M50'] => 'city=revenue:0;label=B',
             ['R47'] => 'city=revenue:0;label=Y',
             ['R55'] => 'city=revenue:0;label=A',
@@ -477,8 +479,8 @@ module Engine
             ['P53'] => 'city=revenue:0;label=Y',
             ['V41'] => 'city=revenue:0;label=Y',
             ['Z47'] => 'city=revenue:0;label=Y',
-            ['AB51'] => 'city=revenue:0;label=N',
-            ['C74'] => 'city=revenue:0;label=S',
+            ['AB51'] => 'city=revenue:20;label=N',
+            ['C74'] => 'city=revenue:20;label=S',
             ['M62'] => 'city=revenue:0;label=Y',
             ['O80'] => 'city=revenue:0;label=Y',
             # Cities — water terrain
@@ -558,14 +560,14 @@ module Engine
             ] => 'upgrade=cost:120,terrain:mountain',
           },
           yellow: {
-            ['L37'] => 'city=revenue:0;label=Y;upgrade=cost:45,terrain:water;path=a:0,b:_0;path=a:_0,b:5',
+            ['L37'] => 'city=revenue:30;label=Y;upgrade=cost:45,terrain:water;path=a:0,b:_0;path=a:_0,b:5',
             ['I48'] => 'border=edge:0,type:impassable;upgrade=cost:45,terrain:water;path=a:2,b:4;' \
                        'border=edge:5,type:province',
-            ['I50'] => 'city=revenue:0;label=Y;upgrade=cost:45,terrain:water;path=a:1,b:_0;' \
+            ['I50'] => 'city=revenue:30;label=Y;upgrade=cost:45,terrain:water;path=a:1,b:_0;' \
                        'path=a:_0,b:3;border=edge:0,type:province',
-            ['J25'] => 'city=revenue:0;label=Y;path=a:2,b:_0;path=a:_0,b:4',
-            ['J27'] => 'city=revenue:0;upgrade=cost:30,terrain:mountain;path=a:1,b:_0;path=a:_0,b:4',
-            ['AE72'] => 'city=revenue:0;path=a:1,b:_0;path=a:5,b:_0',
+            ['J25'] => 'city=revenue:30;label=Y;path=a:2,b:_0;path=a:_0,b:4',
+            ['J27'] => 'city=revenue:20;upgrade=cost:30,terrain:mountain;path=a:1,b:_0;path=a:_0,b:4',
+            ['AE72'] => 'city=revenue:20;path=a:1,b:_0;path=a:5,b:_0',
           },
           gray: {
             # North Sweden approach
