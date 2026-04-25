@@ -49,11 +49,14 @@ module Engine
 
           def place_second_oo_token(tile, corp_name)
             corporation = @game.corporation_by_id(corp_name)
-            return unless corporation&.floated
+            return false unless corporation&.floated
 
             token = corporation.next_token
             city = tile.cities.reject(&:tokened?).first
-            city.place_token(corporation, token) if city.tokenable?(corporation, tokens: token)
+            return false unless city&.tokenable?(corporation, tokens: token)
+
+            city.place_token(corporation, token)
+            true
           end
 
           def swap_higher_value_oo_token(city, entity)
@@ -63,6 +66,7 @@ module Engine
           end
 
           def process_place_token(action)
+            city_was_tokened = action.city.tokened?
             super
             tile = action.city.tile
             other_corp =
@@ -70,10 +74,10 @@ module Engine
               when %w[NWR 235]
                 'SPD'
               when %w[SPD 235]
-                swap_higher_value_oo_token(action.city, action.entity)
+                swap_higher_value_oo_token(action.city, action.entity) if city_was_tokened
                 'NWR'
               when %w[EBR 235]
-                swap_higher_value_oo_token(action.city, action.entity)
+                swap_higher_value_oo_token(action.city, action.entity) if city_was_tokened
                 'EIR'
               when %w[EIR 235]
                 'EBR'
@@ -81,8 +85,7 @@ module Engine
 
             return unless other_corp
 
-            place_second_oo_token(tile, other_corp)
-            @round.pending_tokens.shift
+            @round.pending_tokens.shift if place_second_oo_token(tile, other_corp)
           end
 
           # Base code doesn't handle one token and one reservation on a OO tile
@@ -90,8 +93,12 @@ module Engine
           def replace_oo_reservations(tile)
             return unless tile.name == '235'
 
+            return if tile.reservations.empty?
+
             corp = tile.reservations.first
             city = tile.cities.reject(&:tokened?).first
+            return unless city
+
             city.add_reservation!(corp)
             tile.reservations.clear
           end
