@@ -572,25 +572,25 @@ module Engine
               S0 S2 S8 S10 S12 S14 S16 S18 S20 S22 T1 T3
               T9 T11 T13 T15 T17 T19 T21 T83 T85 U0 U2 U4
               U14 U16 U18 U20 U88 V1 V3 V49 W0 W2 W4 W50
-              W52 W80 W82 W84 W86 W88 X1 X3 X31 X51 X53 X79
-              X81 X83 X85 X87 Y0 Y30 Y32 Y34 Y36 Y38 Y52 Y54
-              Y80 Y82 Y84 Y86 Y88 Z29 Z31 Z33 Z35 Z37 Z39 Z43
-              Z53 Z55 Z57 Z59 Z81 Z83 Z85 Z87 AA0 AA24 AA30 AA32
-              AA34 AA36 AA38 AA44 AA46 AA56 AA58 AA60 AA88 AB29 AB31 AB33
-              AB35 AB37 AB43 AB45 AB47 AB49 AB59 AB61 AB73 AB75 AB79 AB81
-              AC0 AC2 AC4 AC22 AC28 AC30 AC32 AC34 AC36 AC42 AC44 AC46
-              AC48 AC50 AC52 AC62 AC70 AC72 AC74 AD3 AD19 AD21 AD23 AD29
-              AD31 AD33 AD35 AD41 AD43 AD45 AD47 AD49 AD51 AD53 AD57 AD73
-              AD75 AD77 AE0 AE2 AE4 AE8 AE14 AE16 AE18 AE20 AE22 AE28
-              AE30 AE32 AE34 AE40 AE42 AE44 AE46 AE48 AE50 AE54 AE56 AE58
-              AE66 AE74 AE76 AF1 AF3 AF7 AF9 AF15 AF17 AF19 AF21 AF23
-              AF29 AF31 AF33 AF41 AF43 AF45 AF47 AF55 AF57 AF63 AF65 AF71
-              AF73 AF75 AG0 AG2 AG4 AG6 AG8 AG14 AG16 AG18 AG20 AG22
-              AG28 AG30 AG32 AG34 AG42 AG44 AG46 AG48 AG54 AG56 AG58 AG62
-              AG64 AG66 AG72 AG74 AG80 AG82 AG84 AG86 AH1 AH3 AH5 AH7
-              AH13 AH15 AH17 AH19 AH21 AH23 AH29 AH31 AH33 AH35 AH37 AH43
-              AH45 AH47 AH49 AH51 AH53 AH55 AH57 AH63 AH65 AH67 AH69 AH71
-              AH73 AH79 AH81 AH83 AH85 AH87
+              W52 W80 W82 W84 W86 W88 X1 X3 X31 X39 X51 X53
+              X79 X81 X83 X85 X87 Y0 Y30 Y32 Y34 Y36 Y38 Y52
+              Y54 Y80 Y82 Y84 Y86 Y88 Z29 Z31 Z33 Z35 Z37 Z39
+              Z43 Z53 Z55 Z57 Z59 Z81 Z83 Z85 Z87 AA0 AA24 AA30
+              AA32 AA34 AA36 AA38 AA44 AA46 AA56 AA58 AA60 AA88 AB29 AB31
+              AB33 AB35 AB37 AB43 AB45 AB47 AB49 AB59 AB61 AB73 AB75 AB79
+              AB81 AC0 AC2 AC4 AC22 AC28 AC30 AC32 AC34 AC36 AC42 AC44
+              AC46 AC48 AC50 AC52 AC62 AC70 AC72 AC74 AD3 AD19 AD21 AD23
+              AD29 AD31 AD33 AD35 AD41 AD43 AD45 AD47 AD49 AD51 AD53 AD57
+              AD73 AD75 AD77 AE0 AE2 AE4 AE8 AE14 AE16 AE18 AE20 AE22
+              AE28 AE30 AE32 AE34 AE40 AE42 AE44 AE46 AE48 AE50 AE54 AE56
+              AE58 AE66 AE74 AE76 AF1 AF3 AF7 AF9 AF15 AF17 AF19 AF21
+              AF23 AF29 AF31 AF33 AF41 AF43 AF45 AF47 AF55 AF57 AF63 AF65
+              AF71 AF73 AF75 AG0 AG2 AG4 AG6 AG8 AG14 AG16 AG18 AG20
+              AG22 AG28 AG30 AG32 AG34 AG42 AG44 AG46 AG48 AG54 AG56 AG58
+              AG62 AG64 AG66 AG72 AG74 AG80 AG82 AG84 AG86 AH1 AH3 AH5
+              AH7 AH13 AH15 AH17 AH19 AH21 AH23 AH29 AH31 AH33 AH35 AH37
+              AH43 AH45 AH47 AH49 AH51 AH53 AH55 AH57 AH63 AH65 AH67 AH69
+              AH71 AH73 AH79 AH81 AH83 AH85 AH87
 
               ] => '',
             # Ferry routes (pre-printed track through sea hexes)
@@ -754,10 +754,9 @@ module Engine
             ['V83'] => 'border=edge:2,type:province;border=edge:3,type:province',
             ['V85'] => 'border=edge:2,type:province;border=edge:3,type:province',
             ['V87'] => 'border=edge:2,type:province',
-            ['X39'] => 'border=edge:4,type:province',
-            ['X41'] => 'border=edge:0,type:province;border=edge:1,type:province',
-            ['Y40'] => 'border=edge:3,type:province;border=edge:4,type:province',
-            ['Y42'] => 'border=edge:1,type:province',
+            ['X41'] => 'border=edge:5,type:province',
+            ['Y40'] => 'border=edge:4,type:province',
+            ['Y42'] => 'border=edge:1,type:province;border=edge:2,type:province',
           },
         }.freeze
 
@@ -832,9 +831,10 @@ module Engine
             AD33 AD35 AD37 AE26 AE28 AE30 AE32 AE34 AE36 AF27 AF29 AF31
             AF33 AF35 AG26 AG28 AG30 AG32 AG34 AG36 AG38 AH27 AH29 AH31
             AH33 AH35 AH37 AH39
+            X41
           ].freeze,
           'Tyrrhenian Sea' => %w[
-            X41 Y42 Z43 AA42 AA44 AA46 AB43 AB45 AB47 AB49 AC42 AC44
+            Y42 Z43 AA42 AA44 AA46 AB43 AB45 AB47 AB49 AC42 AC44
             AC46 AC48 AC50 AC52 AD41 AD43 AD45 AD47 AD49 AD51 AD53 AD57
             AD59 AE38 AE40 AE42 AE44 AE46 AE48 AE50 AE54 AE56 AE58 AF37
             AF39 AF41 AF43 AF45 AF47 AF55 AF57 AF59 AG42 AG44 AG46 AG48
