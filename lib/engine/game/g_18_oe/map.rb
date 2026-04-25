@@ -674,6 +674,7 @@ module Engine
             ['AE60'] => 'border=edge:0,type:province;border=edge:1,type:province;' \
                         'border=edge:2,type:province;border=edge:3,type:province',
             ['AG60'] => 'border=edge:0,type:province;border=edge:1,type:province;border=edge:2,type:province',
+            ['F63'] => 'border=edge:0,type:province',
             ['G62'] => 'border=edge:2,type:province;border=edge:3,type:province',
             ['A18'] => 'border=edge:4,type:province',
             ['A20'] => 'border=edge:0,type:province;border=edge:1,type:province',
