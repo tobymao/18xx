@@ -22,9 +22,9 @@ module View
       needs :show_log, default: true, store: true
 
       def render
-        children = [render_log_choices, render_log]
-
         @player = @game.player_by_id(@user['id']) if @user
+
+        children = [render_log_choices, render_log]
 
         key_event = lambda do |event|
           event = Native(event)
@@ -102,6 +102,10 @@ module View
         blank_action.created_at = @game.actions[0]&.created_at || Time.now
 
         last_action = nil
+        @last_entity = nil
+        @in_or_operation = false
+        @eft_corps = nil
+        @eft_companies = nil
 
         actions = @game.actions.to_h { |a| [a.id, a] }
 
@@ -164,14 +168,145 @@ module View
         h('div#chatlog', props, the_log)
       end
 
-      def render_log_for_action(log, action)
-        timestamp_props = {
-          style: {
-            fontSize: 'smaller',
-          },
-        }
-        message_props = { style: { margin: '0 0.2rem' } }
+      def ensure_eft_built
+        return if @eft_corps
 
+        historical = @game.actions.map(&:entity).uniq
+          .reject { |e| @game.players.include?(e) }
+          .select { |e| e.respond_to?(:id) }
+        @eft_corps = (@game.corporations + @game.minors + historical)
+          .uniq
+          .sort_by { |e| -[e.name.size, e.id.size].max }
+        @eft_companies = @game.companies
+          .sort_by { |e| -[e.name.size, e.id.size].max }
+      end
+
+      def entity_for_line(line, auctioning_lot = nil)
+        return nil unless line.is_a?(String)
+        return nil if line.start_with?('--')
+
+        # Build the corps list once per render (memoized). Include historical
+        # acting corps from actions so that entities removed mid-game
+        # (e.g. nationalized minors in 1861) are still recognised in the log.
+        ensure_eft_built
+
+        # Sort longest-first so e.g. "P10" is checked before "P1"
+        corps = @eft_corps
+        companies = @eft_companies
+
+        # When an auction lot is active, derive the canonical entity key for it
+        # so all log lines during that auction group together.
+        lot_key = lot_entity_key(auctioning_lot) if auctioning_lot
+
+        corp_in_line = lambda do |text|
+          corps.each do |e|
+            # Corporation#name == #id == sym; guard short IDs to avoid matching
+            # every line that contains the letter, e.g. corp 'E' in "Exemplar1..."
+            return e.id if e.id.size >= 2 && text.include?(e.id)
+            # Also match by full name for corps whose log text uses the long name
+            # rather than the short ID (e.g. 1866 minor nationals: "Sardinia Minor
+            # National" in bid lines, while the ID is just "SAR").
+            return e.id if e.name.size >= 4 && e.name != e.id && text.include?(e.name)
+          end
+          nil
+        end
+
+        # Like corp_in_line but also searches private companies — for player lines
+        # so "Player 1 bids on Tsarskoye Selo Railway" groups with other TSR auction lines
+        entity_in_line = lambda do |text|
+          result = corp_in_line.call(text)
+          return result if result
+
+          companies.each do |e|
+            return e.id if text.include?(e.name) || (e.id.size >= 2 && text.include?(e.id))
+          end
+          nil
+        end
+
+        # Corporation/minor at start of line.
+        # Require the next character to be a space (or end of string) so corp "1"
+        # does not match "1822CA is currently..." and corp "E" does not match
+        # "Exemplar1 receives...". Lines like "3's share price..." fall through
+        # to the catch-all which handles them via @last_entity.
+        corps.each do |e|
+          id = e.id
+          next unless line.start_with?(id)
+
+          next_char = line[id.size]
+          next if next_char && next_char != ' '
+
+          return id
+        end
+
+        # Player starts line.
+        # Without an active auction lot (subject-centric): group by the acting
+        # player. With an active lot (object-centric): all bids/passes group
+        # under the lot's canonical entity key.
+        @game.players.each do |player|
+          next unless line.start_with?(player.name)
+
+          unless auctioning_lot
+            # During an OR operation, player lines like "X receives $Y" are
+            # consequences of the corp's turn — keep them grouped under the corp.
+            return @last_entity if @in_or_operation && @last_entity && @game.players.none? { |p| p.name == @last_entity }
+
+            return player.name
+          end
+
+          return lot_key || entity_in_line.call(line) || @last_entity || player.name
+        end
+
+        # Private company starts line.
+        # With an active auction lot: company is the lot (or acting for the lot),
+        # so anchor to lot_key. Without a lot: company acts on behalf of the
+        # current entity — stay grouped rather than starting a new group.
+        companies.each do |e|
+          next if !line.start_with?(e.name) && !line.start_with?(e.id)
+
+          return @last_entity if @last_entity && !auctioning_lot
+
+          return lot_key || corp_in_line.call(line) || e.id
+        end
+
+        # Catch-all: unrecognised lines without an active lot stay grouped under
+        # the current entity rather than breaking the chain.
+        return @last_entity if @last_entity && !auctioning_lot
+
+        nil
+      end
+
+      def lot_entity_key(lot)
+        # Map an auctioning lot (Company or Corporation) to the canonical entity
+        # key used by the log grouping — the id of the matching corp/minor, or
+        # the company id as fallback. Lists must already be initialised.
+        @eft_corps.each do |e|
+          return e.id if e.name == lot.name || e.id == lot.id
+        end
+        @eft_companies.each do |e|
+          return e.id if e.name == lot.name || e.id == lot.id
+        end
+        lot.id
+      end
+
+      def player_for(entity)
+        return nil unless entity
+        return entity if @game.players.include?(entity)
+
+        if entity.respond_to?(:player)
+          found = entity.player
+          return found if @game.players.include?(found)
+        end
+
+        if entity.respond_to?(:owner)
+          owner = entity.owner
+          return owner if @game.players.include?(owner)
+          return player_for(owner) if owner && owner != entity
+        end
+
+        nil
+      end
+
+      def render_log_for_action(log, action)
         timestamp = "[#{Time.at(action.created_at || Time.now).strftime('%R')}] "
 
         click = lambda do
@@ -192,20 +327,45 @@ module View
             },
             on: { click: click },
           }
-          line_props[:style][:fontWeight] = 'bold' if line.is_a?(String) && line.start_with?('--')
+          is_banner = line.is_a?(String) && line.start_with?('--')
+          line_props[:style][:fontWeight] = 'bold' if is_banner
+
+          indent = false
 
           if line.is_a?(Engine::Action::Message)
             next [] if line.message.empty?
 
             line_props[:style][:fontWeight] = 'bold'
             line_props[:style][:marginTop] = '0.5em'
-
             sender = line.entity.name || 'Owner'
             line = "#{sender}: #{line.message}"
+          elsif is_banner
+            # Only reset grouping for round/entity changes; let phase changes,
+            # train rusts, and other mid-sequence events pass through silently.
+            if line.include?(' Round ')
+              @last_entity = nil
+              @in_or_operation = false
+            elsif line.include?(' operates ')
+              ensure_eft_built
+              operating_name = line.delete_prefix('-- ').delete_suffix(' --').split(' operates ').last
+              match = @eft_corps.find { |e| e.name == operating_name || e.id == operating_name }
+              @last_entity = match ? match.id : nil
+              @in_or_operation = true
+            end
+          else
+            line_entity = entity_for_line(line, entry.auctioning_lot)
+            indent = line_entity && line_entity == @last_entity
+            @last_entity = line_entity if line_entity
           end
 
-          h('div.chatline', line_props,
-            [h('span.timestamp', timestamp_props, timestamp), h('span.message', message_props, line)])
+          ts_props = { style: { fontSize: 'smaller' } }
+          msg_props = { style: { margin: '0 0.2rem' } }
+          msg_props[:style][:marginLeft] = '1.5rem' if indent
+
+          h('div.chatline', line_props, [
+            h('span.timestamp', ts_props, timestamp),
+            h('span.message', msg_props, line),
+          ])
         end
 
         if !action.is_a?(Engine::Action::Message) &&
@@ -214,7 +374,16 @@ module View
           action_log << render_action_buttons(action.id)
         end
 
-        h(:div, action_log)
+        h(:div, { attrs: { id: "action-#{action.id}" } }, action_log)
+      end
+
+      def last_player_action_id
+        return nil unless @player
+
+        @game.actions.reverse_each do |action|
+          return action.id if player_for(action.entity) == @player
+        end
+        nil
       end
 
       def render_action_buttons(action_id)
@@ -252,15 +421,30 @@ module View
       end
 
       def render_log_choices
+        left_buttons = [
+          h(:button,
+            {
+              style: { marginTop: '0' },
+              on: { click: -> { copy_log_transcript } },
+            },
+            'Copy Transcript 📋'),
+        ]
+
+        if @player && (last_id = last_player_action_id)
+          jump = lambda do
+            store(:selected_action_id, last_id)
+            `document.getElementById('action-' + #{last_id}).scrollIntoView({block: 'nearest'})`
+          end
+          left_buttons << h(:button,
+                            {
+                              style: { marginTop: '0' },
+                              on: { click: jump },
+                            },
+                            'My Last Move ↑')
+        end
+
         h(:div, { style: { marginBottom: '0.3rem', display: 'flex', justifyContent: 'space-between' } }, [
-          h(:div, { style: { textAlign: 'left' } }, [
-            h(:button,
-              {
-                style: { marginTop: '0' },
-                on: { click: -> { copy_log_transcript } },
-              },
-              'Copy Transcript 📋'),
-          ]),
+          h(:div, { style: { textAlign: 'left' } }, left_buttons),
           h(:div, { style: { textAlign: 'right' } }, [
             h(:button,
               {

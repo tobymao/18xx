@@ -99,6 +99,10 @@ module Engine
         active_auction { |company, _| company }
       end
 
+      def auctioning_lot
+        @auctioning
+      end
+
       def highest_bid(company)
         @bids[company].max_by(&:price)
       end

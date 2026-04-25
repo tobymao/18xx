@@ -8,12 +8,18 @@ module Engine
     end
 
     def <<(message)
-      message = Entry.new(message, @game.current_action_id) unless message.is_a?(Entry)
-      super(message)
+      entry = message.is_a?(Entry) ? message : Entry.new(message, @game.current_action_id)
+      begin
+        step = @game.active_step
+        entry.auctioning_lot = step.auctioning_lot if step.respond_to?(:auctioning_lot)
+      rescue StandardError
+        # active_step may raise during game initialization before a round exists
+      end
+      super(entry)
     end
 
     class Entry
-      attr_accessor :message, :action_id
+      attr_accessor :message, :action_id, :auctioning_lot
 
       def initialize(message, action_id)
         @message = message

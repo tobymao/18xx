@@ -1390,6 +1390,9 @@ module Engine
           @game_end_three_rounds = nil
           @game_end_triggered_corporation = nil
           @game_end_triggered_round = nil
+
+          auction_step = @round.steps.find { |s| s.is_a?(G1866::Step::SingleItemAuction) }
+          auction_step&.auction_log(auction_step.companies[0]) unless auction_step&.companies&.empty?
         end
 
         def setup_preround

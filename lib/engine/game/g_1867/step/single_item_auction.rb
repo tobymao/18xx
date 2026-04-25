@@ -88,6 +88,7 @@ module Engine
           def auction_entity_log(entity)
             @dutch_mode = false
             @declined_bids = []
+            @auctioning = entity
             @game.log << "#{entity.name} is up for auction, minimum bid is #{@game.format_currency(min_bid(entity))}"
             auction_entity(entity)
           end

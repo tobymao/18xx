@@ -67,8 +67,9 @@ module Engine
                               .join(', ')
             privates_left_str = "In alphabetical order, the following items remain to be auctioned: #{privates_left}."
             privates_left_str = 'Last one.' if privates_left.empty?
-            @game.log << "#{entity.name} is up for auction. #{privates_left_str}"
             @auction_start_entity = entities[entity_index]
+            @auctioning = entity
+            @game.log << "#{entity.name} is up for auction. #{privates_left_str}"
             auction_entity(entity)
           end
 
@@ -252,8 +253,6 @@ module Engine
           def setup
             setup_auction
             @companies = @game.companies.reject { |c| @game.stock_turn_token_company?(c) }
-
-            auction_log(@companies[0]) unless @companies.empty?
           end
 
           def show_stock_market?
@@ -301,6 +300,9 @@ module Engine
               player = winner.entity
               company = winner.company
               price = winner.price
+              @log << "#{player.name} wins the auction for #{company.name} with a bid of #{@game.format_currency(price)}"
+              player.spend(price, @game.bank) if price.positive?
+              @companies.delete(company)
               if @game.class::NATIONAL_COMPANIES.include?(company.id)
                 company.owner = player
                 player.companies << company
@@ -327,9 +329,6 @@ module Engine
                                             exchange: :free,
                                             exchange_price: share.price_per_share)
               end
-              player.spend(price, @game.bank) if price.positive?
-              @companies.delete(company)
-              @log << "#{player.name} wins the auction for #{company.name} with a bid of #{@game.format_currency(price)}"
             else
               remove_company(company)
             end

@@ -6,7 +6,7 @@ module Engine
       module Step
         # Code shared by both the Exchange and PrivateClosure steps.
         module PrivateExchange
-          def acquire_private(corporation, entity)
+          def acquire_private(corporation, entity, silent: false)
             player = entity.owner
 
             company = @game.private_company(entity)
@@ -18,7 +18,8 @@ module Engine
             player.companies.delete(company)
             company.owner = corporation
             corporation.companies << company
-            @log << "#{corporation.name} acquires #{company.name} from #{player.name}"
+            @log << "#{corporation.name} acquires #{company.name} from #{player.name}" unless silent
+            "#{corporation.name} acquires #{company.name} from #{player.name}"
           end
 
           def transfer_abilities(minor, company)

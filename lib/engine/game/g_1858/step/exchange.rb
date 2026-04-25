@@ -47,7 +47,10 @@ module Engine
           def exchange_for_presidency(bundle, corporation, minor, player)
             raise GameError, "#{corporation.name} cannot be parred" unless @game.can_par?(corporation, player)
 
-            acquire_private(corporation, minor)
+            # Close the minor early so its home hex is free for token placement,
+            # but suppress the log message until after after_par so the log order is:
+            # player exchanges → becomes president → corp floats → corp acquires.
+            acquire_log = acquire_private(corporation, minor, silent: true)
             share_price = @game.par_price(minor)
             @game.stock_market.set_par(corporation, share_price)
             @round.players_bought[player][corporation] += bundle.percent
@@ -60,6 +63,7 @@ module Engine
                        exchange_price: share_price.price,
                        silent: true)
             @game.after_par(corporation)
+            @log << acquire_log
           end
         end
       end

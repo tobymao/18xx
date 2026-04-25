@@ -20,6 +20,10 @@ module Engine
         actions
       end
 
+      def auctioning_lot
+        @lot_for_log || @auctioning
+      end
+
       def auctioning_company
         @auctioning
       end
@@ -69,8 +73,10 @@ module Engine
         if @auctioning
           @log << "#{player.name} bids #{@game.format_currency(price)} for #{entity.name}"
         else
+          @lot_for_log = entity
           @log << "#{player.name} auctions #{entity.name} for #{@game.format_currency(price)}"
           @game.place_home_token(entity) if (@game.class::HOME_TOKEN_TIMING == :par) && !entity.company?
+          @lot_for_log = nil
         end
         super(action)
 

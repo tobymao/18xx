@@ -22,6 +22,7 @@ module Engine
       end
 
       def process_pass(action)
+        flush_pending_auction_announcement
         entity = action.entity
 
         if auctioning
@@ -75,6 +76,7 @@ module Engine
       def round_state
         {
           companies_pending_par: [],
+          pending_auction_announcement: nil,
         }
       end
 
@@ -110,15 +112,24 @@ module Engine
       def resolve_bids_for_company(company)
         resolved = false
         is_new_auction = company != @auctioning
-        @auctioning = nil
         bids = @bids[company]
 
         if bids.one?
+          @auctioning = company
           accept_bid(bids.first)
+          @auctioning = nil
           resolved = true
         elsif can_auction?(company)
           @auctioning = company
-          @log << "#{@auctioning.name} goes up for auction" if is_new_auction
+          if is_new_auction
+            if @round.companies_pending_par.any?
+              @round.pending_auction_announcement = "#{company.name} goes up for auction"
+            else
+              @log << "#{company.name} goes up for auction"
+            end
+          end
+        else
+          @auctioning = nil
         end
 
         resolved
@@ -210,6 +221,7 @@ module Engine
       end
 
       def add_bid(bid)
+        flush_pending_auction_announcement
         super
         company = bid.company
         price = bid.price
@@ -218,6 +230,13 @@ module Engine
         @bidders[company] |= [entity]
 
         @log << "#{entity.name} bids #{@game.format_currency(price)} for #{bid.company.name}"
+      end
+
+      def flush_pending_auction_announcement
+        return unless @round.pending_auction_announcement
+
+        @log << @round.pending_auction_announcement
+        @round.pending_auction_announcement = nil
       end
     end
   end
