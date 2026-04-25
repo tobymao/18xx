@@ -784,6 +784,13 @@ module Engine
             .select { |bundle| @share_pool.fit_in_bank?(bundle) }
         end
 
+        def redeemable_shares(entity)
+          return [] if !entity.corporation? || entity.type != :major
+
+          bundles_for_corporation(@share_pool, entity)
+            .reject { |bundle| entity.cash < bundle.price }
+        end
+
         def value_for_dumpable(player, corporation)
           return 0 if corporation.type == :regional
 
