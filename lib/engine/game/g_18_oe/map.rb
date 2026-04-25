@@ -579,7 +579,7 @@ module Engine
               AA34 AA36 AA38 AA44 AA46 AA56 AA58 AA60 AA88 AB29 AB31 AB33
               AB35 AB37 AB43 AB45 AB47 AB49 AB59 AB61 AB73 AB75 AB79 AB81
               AC0 AC2 AC4 AC22 AC28 AC30 AC32 AC34 AC36 AC42 AC44 AC46
-              AC48 AC50 AC52 AC62 AC70 AC72 AC74 AD3 AD19 AD21 AD27 AD29
+              AC48 AC50 AC52 AC62 AC70 AC72 AC74 AD3 AD19 AD21 AD23 AD29
               AD31 AD33 AD35 AD41 AD43 AD45 AD47 AD49 AD51 AD53 AD57 AD73
               AD75 AD77 AE0 AE2 AE4 AE8 AE14 AE16 AE18 AE20 AE22 AE28
               AE30 AE32 AE34 AE40 AE42 AE44 AE46 AE48 AE50 AE54 AE56 AE58
@@ -618,17 +618,17 @@ module Engine
             ['AA28'] => 'border=edge:1,type:province',
             ['AA40'] => 'border=edge:4,type:province',
             ['AA42'] => 'border=edge:1,type:province',
-            ['AC24'] => 'border=edge:4,type:province;border=edge:5,type:province',
-            ['AC26'] => 'border=edge:1,type:province;border=edge:2,type:province',
+            ['AC24'] => 'border=edge:4,type:province',
+            ['AC26'] => 'border=edge:0,type:province;border=edge:1,type:province;border=edge:2,type:province',
             ['AC60'] => 'border=edge:0,type:province',
-            ['AD23'] => 'border=edge:4,type:province',
+            ['AD27'] => 'border=edge:1,type:province',
             ['AD37'] => 'border=edge:5,type:province',
             ['AD59'] => 'border=edge:3,type:province;border=edge:4,type:province',
             ['AD61'] => 'border=edge:1,type:province;border=edge:5,type:province',
             ['AD63'] => 'border=edge:0,type:province;border=edge:5,type:province',
             ['AE10'] => 'border=edge:4,type:province',
-            ['AE24'] => 'border=edge:3,type:province;border=edge:4,type:province',
-            ['AE26'] => 'border=edge:0,type:province;border=edge:1,type:province',
+            ['AE24'] => 'border=edge:4,type:province',
+            ['AE26'] => 'border=edge:0,type:province;border=edge:1,type:province;border=edge:2,type:province',
             ['AE36'] => 'border=edge:4,type:province;border=edge:5,type:province',
             ['AE38'] => 'border=edge:1,type:province;border=edge:2,type:province',
             ['AE62'] => 'border=edge:2,type:province;border=edge:3,type:province',
