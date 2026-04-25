@@ -669,6 +669,7 @@ module Engine
             ['AB25'] => 'path=a:1,b:4;border=edge:5,type:province',
             # Sea zone province borders
             ['AD25'] => 'border=edge:3,type:province;border=edge:4,type:province;border=edge:5,type:province',
+            ['AE58'] => 'border=edge:4,type:province',
             ['AE60'] => 'border=edge:0,type:province;border=edge:1,type:province;' \
                         'border=edge:2,type:province;border=edge:3,type:province',
             ['AG60'] => 'border=edge:0,type:province;border=edge:1,type:province;border=edge:2,type:province',
