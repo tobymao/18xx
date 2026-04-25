@@ -702,7 +702,7 @@ module Engine
             ['AF37'] => 'border=edge:0,type:province;border=edge:1,type:province;' \
                         'border=edge:2,type:province;border=edge:5,type:province',
             ['AF39'] => 'border=edge:0,type:province',
-            ['AF59'] => 'border=edge:4,type:province',
+            ['AF59'] => 'border=edge:3,type:province;border=edge:4,type:province',
             ['AF61'] => 'border=edge:1,type:province',
             ['AF77'] => 'border=edge:4,type:province;border=edge:5,type:province',
             ['AF79'] => 'border=edge:1,type:province;border=edge:2,type:province',
