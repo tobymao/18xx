@@ -373,9 +373,9 @@ module Engine
             ['L31'] => 'border=edge:0,type:impassable',
             # Channel Islands
             ['M30'] => 'border=edge:3,type:impassable;border=edge:5,type:impassable;' \
-                       'upgrade=cost:45,terrain:water;border=edge:5,type:province',
+                       'upgrade=cost:45,terrain:water',
             # Franco-Belgian border
-            ['N31'] => 'city=revenue:0;label=Y;border=edge:2,type:impassable;path=a:1,b:_0;border=edge:2,type:province',
+            ['N31'] => 'city=revenue:0;label=Y;border=edge:2,type:impassable;path=a:1,b:_0',
             # Pyrenees
             ['V19'] => 'border=edge:4,type:impassable;upgrade=cost:30,terrain:mountain;border=edge:4,type:province',
             ['V21'] => 'town=revenue:0;border=edge:1,type:impassable;border=edge:0,type:province;border=edge:1,type:province',
@@ -604,8 +604,8 @@ module Engine
             ['AD1'] => 'offboard=revenue:green_40|brown_80|gray_120;path=a:4,b:_0', # North Africa & The Americas
             ['AF5'] => 'offboard=revenue:yellow_30|green_40|brown_60|gray_80;path=a:3,b:_0', # Casablanca
             ['AF11'] => 'offboard=revenue:yellow_30|green_40|brown_40|gray_40;path=a:4,b:_0', # Melilla
-            ['AF25'] => 'offboard=revenue:yellow_30|green_40|brown_60|gray_100;path=a:2,b:_0;path=a:3,b:_0', # Alger
-            ['AG40'] => 'offboard=revenue:yellow_30|green_40|brown_50|gray_80;path=a:3,b:_0;path=a:4,b:_0', # Tunis
+            ['AF25'] => 'offboard=revenue:yellow_30|green_40|brown_60|gray_100;path=a:2,b:_0;path=a:3,b:_0;border=edge:3,type:province;border=edge:4,type:province;border=edge:5,type:province', # Alger
+            ['AG40'] => 'offboard=revenue:yellow_30|green_40|brown_50|gray_80;path=a:3,b:_0;path=a:4,b:_0;border=edge:0,type:province;border=edge:1,type:province', # Tunis
             ['AG88'] => 'offboard=revenue:green_50|brown_80|gray_120;path=a:1,b:_0', # Alexandria & Suez
           },
           blue: {
@@ -695,7 +695,6 @@ module Engine
             ['AE62'] => 'border=edge:2,type:province;border=edge:3,type:province',
             ['AE64'] => 'border=edge:2,type:province',
             ['AE78'] => 'border=edge:5,type:province',
-            ['AF25'] => 'border=edge:3,type:province;border=edge:4,type:province;border=edge:5,type:province',
             ['AF27'] => 'border=edge:1,type:province',
             ['AF35'] => 'border=edge:4,type:province',
             ['AF37'] => 'border=edge:0,type:province;border=edge:1,type:province;' \
@@ -711,7 +710,6 @@ module Engine
             ['AG26'] => 'border=edge:0,type:province;border=edge:1,type:province;border=edge:2,type:province',
             ['AG36'] => 'border=edge:3,type:province',
             ['AG38'] => 'border=edge:2,type:province;border=edge:3,type:province;border=edge:4,type:province',
-            ['AG40'] => 'border=edge:0,type:province;border=edge:1,type:province',
             ['AG76'] => 'border=edge:4,type:province;border=edge:5,type:province',
             ['AG78'] => 'border=edge:1,type:province;border=edge:2,type:province',
             ['AH11'] => 'border=edge:1,type:province;border=edge:2,type:province',
