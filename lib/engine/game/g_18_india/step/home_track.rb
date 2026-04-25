@@ -67,8 +67,34 @@ module Engine
 
           def process_place_token(action)
             city_was_tokened = action.city.tokened?
+
+            # When update_token! displaces both OO tokens to pending (old tile had no paths),
+            # tokens are queued in city order. Swap so action.entity's own token is first,
+            # ensuring it lands at action.city (the connected city chosen by the player).
+            if @round.pending_tokens.size >= 2
+              second = @round.pending_tokens[1]
+              if second && second[:hexes]&.include?(action.city.hex) &&
+                 second[:token].corporation == action.entity
+                @round.pending_tokens[0], @round.pending_tokens[1] =
+                  @round.pending_tokens[1], @round.pending_tokens[0]
+              end
+            end
+
             super
             tile = action.city.tile
+
+            # Auto-place partner token if it's still pending for same hex.
+            next_pending = @round.pending_tokens.first
+            if next_pending && next_pending[:hexes]&.include?(tile.hex)
+              partner_token = next_pending[:token]
+              city = tile.cities.reject(&:tokened?).first
+              if city
+                city.place_token(partner_token.corporation, partner_token)
+                @round.pending_tokens.shift
+              end
+              return
+            end
+
             other_corp =
               case [action.entity.name, tile.name]
               when %w[NWR 235]
