@@ -81,9 +81,9 @@ module Engine
           unless silent
             @log << if exchange_price
                       "#{name} exchanges #{exchange.name} and #{@game.format_currency(price)}"\
-                        " from #{from} for #{share_str}"
+                        " for #{share_str} from #{from}"
                     else
-                      "#{name} exchanges #{exchange.name} from #{from} for #{share_str}"
+                      "#{name} exchanges #{exchange.name} for #{share_str} from #{from}"
                     end
           end
         end
