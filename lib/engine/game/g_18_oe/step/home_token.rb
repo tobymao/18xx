@@ -8,10 +8,10 @@ module Engine
       module Step
         class HomeToken < Engine::Step::HomeToken
           def process_place_token(action)
-            if action.entity.type == :minor
-              hex = action.city.hex
-              region = @game.class::CITY_NATIONAL_ZONE[hex.coordinates] ||
+            hex = action.city.hex
+            region = @game.class::CITY_NATIONAL_ZONE[hex.coordinates] ||
                        @game.class::NATIONAL_REGION_HEXES.find { |_, hexes| hexes.include?(hex.coordinates) }&.first
+            if action.entity.type == :minor
 
               raise GameError, "Region #{region} is not available" unless @game.minor_available_regions.key?(region)
 
@@ -27,20 +27,16 @@ module Engine
                 end
               end
 
-              @game.minor_floated_regions[action.entity.id] = region
             else
-              hex = action.city.hex
               # Use explicit zone override for cities on border hexes (listed in two zones),
               # fall back to zone lookup for all unambiguous cities.
-              region = @game.class::CITY_NATIONAL_ZONE[hex.coordinates] ||
-                       @game.class::NATIONAL_REGION_HEXES.find { |_, hexes| hexes.include?(hex.coordinates) }&.first
 
               token.price = @game.class::TRACK_RIGHTS_COST[region] || 0
 
               @game.minor_available_regions.delete(region)
 
-              @game.minor_floated_regions[action.entity.id] = region
             end
+            @game.minor_floated_regions[action.entity.id] = region
 
             super
           end
