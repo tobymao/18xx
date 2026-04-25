@@ -625,7 +625,7 @@ module Engine
 
           timeline << 'Player Draft History'
           @players.each do |p|
-            timeline << "#{p.name}: #{p.draft_history.join(', ')}"
+            timeline << "#{p.name} (#{p.hand.size} cards in hand): #{p.draft_history.join(', ')}"
           end
 
           timeline
@@ -676,6 +676,10 @@ module Engine
 
         def show_hidden_hand?
           true
+        end
+
+        def player_card_rows(player)
+          [['Shares in hand', player.hand.size.to_s]]
         end
 
         def hand_companies_for_stock_round

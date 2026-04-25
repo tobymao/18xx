@@ -177,6 +177,11 @@ module View
           h(:td, 'Shares'),
           h('td.right', td_cert_props, (@game.all_corporations.sum { |c| c.minor? ? 0 : num_shares_of(@player, c) }).to_s),
         ])
+        if @game.respond_to?(:player_card_rows)
+          @game.player_card_rows(@player).each do |label, value|
+            trs << h(:tr, [h(:td, label), h('td.right', value)])
+          end
+        end
 
         priority_props = {
           attrs: { colspan: '2' },
