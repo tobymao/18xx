@@ -312,7 +312,8 @@ module Engine
             ['I44'] => 'border=edge:5,type:province',
             ['I66'] => 'town=revenue:0;border=edge:0,type:province',
             ['J45'] => 'border=edge:2,type:province;border=edge:3,type:province',
-            ['J65'] => 'upgrade=cost:30,terrain:water;border=edge:3,type:province;border=edge:4,type:province;border=edge:5,type:province',
+            ['J65'] => 'upgrade=cost:30,terrain:water;border=edge:3,type:province;' \
+                       'border=edge:4,type:province;border=edge:5,type:province',
             ['J67'] => 'border=edge:1,type:province',
             ['K62'] => 'town=revenue:0;border=edge:5,type:province',
             ['K66'] => 'upgrade=cost:30,terrain:water;border=edge:2,type:province',
@@ -350,7 +351,8 @@ module Engine
             ['S74'] => 'border=edge:3,type:province;border=edge:4,type:province',
             ['S76'] => 'city=revenue:0;border=edge:0,type:province;border=edge:1,type:province',
             ['T43'] => 'upgrade=cost:120,terrain:mountain;border=edge:4,type:province;border=edge:5,type:province',
-            ['T45'] => 'upgrade=cost:120,terrain:mountain;border=edge:0,type:province;border=edge:1,type:province;border=edge:5,type:province',
+            ['T45'] => 'upgrade=cost:120,terrain:mountain;border=edge:0,type:province;' \
+                       'border=edge:1,type:province;border=edge:5,type:province',
             ['T47'] => 'upgrade=cost:120,terrain:mountain;border=edge:0,type:province;border=edge:5,type:province',
             ['T49'] => 'upgrade=cost:60,terrain:mountain;border=edge:0,type:province',
             ['T75'] => 'upgrade=cost:45,terrain:water;border=edge:3,type:province',
@@ -370,7 +372,8 @@ module Engine
             # England — coastal/estuary
             ['L31'] => 'border=edge:0,type:impassable',
             # Channel Islands
-            ['M30'] => 'border=edge:3,type:impassable;border=edge:5,type:impassable;upgrade=cost:45,terrain:water;border=edge:5,type:province',
+            ['M30'] => 'border=edge:3,type:impassable;border=edge:5,type:impassable;' \
+                       'upgrade=cost:45,terrain:water;border=edge:5,type:province',
             # Franco-Belgian border
             ['N31'] => 'city=revenue:0;label=Y;border=edge:2,type:impassable;path=a:1,b:_0;border=edge:2,type:province',
             # Pyrenees
@@ -388,9 +391,11 @@ module Engine
             ['AC58'] => 'border=edge:1,type:impassable',
             # Skagerrak / Norwegian coast
             ['I46'] => 'town=revenue:0;border=edge:5,type:impassable;border=edge:0,type:province;border=edge:5,type:province',
-            ['J47'] => 'border=edge:2,type:impassable;border=edge:3,type:impassable;;border=edge:2,type:province;border=edge:3,type:province' \
+            ['J47'] => 'border=edge:2,type:impassable;border=edge:3,type:impassable;' \
+                       ';border=edge:2,type:province;border=edge:3,type:province' \
                        'border=edge:4,type:impassable;border=edge:5,type:impassable;upgrade=cost:60,terrain:water',
-            ['J49'] => 'border=edge:0,type:impassable;border=edge:1,type:impassable;;border=edge:2,type:province;border=edge:3,type:province' \
+            ['J49'] => 'border=edge:0,type:impassable;border=edge:1,type:impassable;' \
+                       ';border=edge:2,type:province;border=edge:3,type:province' \
                        'border=edge:5,type:impassable;upgrade=cost:60,terrain:water',
             ['K48'] => 'border=edge:2,type:impassable;border=edge:3,type:impassable',
             ['K50'] => 'border=edge:2,type:impassable',
@@ -446,7 +451,8 @@ module Engine
             ] => 'city=revenue:0',
             # Cities — label Y
             ['U34'] => 'city=revenue:0;label=Y',
-            ['N35'] => 'city=revenue:0;label=Y;upgrade=cost:30,terrain:water;border=edge:2,type:province;border=edge:3,type:province',
+            ['N35'] => 'city=revenue:0;label=Y;upgrade=cost:30,terrain:water;' \
+                       'border=edge:2,type:province;border=edge:3,type:province',
             # Cities — other labels
             ['K26'] => 'city=revenue:0;label=A',
             ['Q30'] => 'city=revenue:0;label=P',
@@ -553,8 +559,10 @@ module Engine
           },
           yellow: {
             ['L37'] => 'city=revenue:0;label=Y;upgrade=cost:45,terrain:water;path=a:0,b:_0;path=a:_0,b:5',
-            ['I48'] => 'border=edge:0,type:impassable;upgrade=cost:45,terrain:water;path=a:2,b:4;border=edge:0,type:province;border=edge:5,type:province',
-            ['I50'] => 'city=revenue:0;label=Y;upgrade=cost:45,terrain:water;path=a:1,b:_0;path=a:_0,b:3;border=edge:0,type:province',
+            ['I48'] => 'border=edge:0,type:impassable;upgrade=cost:45,terrain:water;path=a:2,b:4;' \
+                       'border=edge:0,type:province;border=edge:5,type:province',
+            ['I50'] => 'city=revenue:0;label=Y;upgrade=cost:45,terrain:water;path=a:1,b:_0;' \
+                       'path=a:_0,b:3;border=edge:0,type:province',
             ['J25'] => 'city=revenue:0;label=Y;path=a:2,b:_0;path=a:_0,b:4',
             ['J27'] => 'city=revenue:0;upgrade=cost:30,terrain:mountain;path=a:1,b:_0;path=a:_0,b:4',
             ['AE72'] => 'city=revenue:0;path=a:1,b:_0;path=a:5,b:_0',
