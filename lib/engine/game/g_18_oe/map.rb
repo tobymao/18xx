@@ -720,7 +720,7 @@ module Engine
             ['AH27'] => 'border=edge:1,type:province',
             ['AH39'] => 'border=edge:3,type:province;border=edge:4,type:province',
             ['AH41'] => 'border=edge:1,type:province',
-            ['AH59'] => 'border=edge:4,type:province',
+            ['AH59'] => 'border=edge:3,type:province;border=edge:4,type:province',
             ['AH61'] => 'border=edge:1,type:province',
             ['AH75'] => 'border=edge:4,type:province',
             ['AH77'] => 'border=edge:1,type:province;border=edge:2,type:province',
