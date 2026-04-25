@@ -752,7 +752,7 @@ module Engine
             ['F35'] => 'border=edge:4,type:province',
             ['F37'] => 'border=edge:0,type:province;border=edge:1,type:province;border=edge:2,type:province',
             ['F59'] => 'border=edge:4,type:province',
-            ['F61'] => 'border=edge:0,type:province;border=edge:1,type:province;border=edge:2,type:province',
+            ['F61'] => 'border=edge:0,type:province;border=edge:1,type:province;border=edge:2,type:province;border=edge:5,type:province',
             ['G36'] => 'border=edge:3,type:province;border=edge:4,type:province;border=edge:5,type:province',
             ['G38'] => 'border=edge:0,type:province;border=edge:1,type:province;border=edge:5,type:province',
             ['G40'] => 'border=edge:0,type:province;border=edge:5,type:province',
