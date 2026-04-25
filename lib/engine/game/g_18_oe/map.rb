@@ -333,6 +333,7 @@ module Engine
             ['O68'] => 'upgrade=cost:30,terrain:mountain;border=edge:0,type:province;border=edge:5,type:province',
             ['O70'] => 'border=edge:0,type:province;border=edge:5,type:province',
             ['O72'] => 'border=edge:0,type:province',
+            
             ['P37'] => 'town=revenue:0;border=edge:4,type:province',
             ['P39'] => 'border=edge:1,type:province',
             ['P51'] => 'border=edge:2,type:province',
@@ -559,7 +560,7 @@ module Engine
           yellow: {
             ['L37'] => 'city=revenue:0;label=Y;upgrade=cost:45,terrain:water;path=a:0,b:_0;path=a:_0,b:5',
             ['I48'] => 'border=edge:0,type:impassable;upgrade=cost:45,terrain:water;path=a:2,b:4;' \
-                       'border=edge:0,type:province;border=edge:5,type:province',
+                       'border=edge:5,type:province',
             ['I50'] => 'city=revenue:0;label=Y;upgrade=cost:45,terrain:water;path=a:1,b:_0;' \
                        'path=a:_0,b:3;border=edge:0,type:province',
             ['J25'] => 'city=revenue:0;label=Y;path=a:2,b:_0;path=a:_0,b:4',
