@@ -595,7 +595,8 @@ module Engine
 
         def reorder_corps
           just_moved = @moved_this_turn.uniq
-          @moved_this_turn = []
+          return unless just_moved.size > 1
+
           same_spot =
             @corporations
               .select(&:floated?)
