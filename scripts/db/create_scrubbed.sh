@@ -10,6 +10,8 @@ fi
 
 set -x
 
+docker compose exec rack echo "is this thing on?"
+
 # download and copy the real prod DB
 ./scripts/db/dump_prod.sh
 
