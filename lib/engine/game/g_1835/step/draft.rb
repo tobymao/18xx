@@ -17,7 +17,7 @@ module Engine
             # set up the tiered companies as 2d array that might contain empty arrays if the starting package was not
             # fully sold in a previous draft round. These empty arrays are important for may_purchase: companies in rows
             # after an empty row can only be purchased if all rows before are empty. If we were to only group_by
-            # auction_row, we might loose these empty rows.
+            # auction_row, we might lose these empty rows.
             @tiered_companies = Array.new(4) { [] }
             @companies.each do |company|
               @tiered_companies[company.auction_row] << company
