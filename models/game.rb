@@ -17,7 +17,8 @@ class Game < Base
       SELECT *
       FROM games
       WHERE status = '%<status>s'
-        AND (:title IS NULL OR :title = title)
+        AND (:titles IS NULL OR title = ANY(:titles))
+        AND (:mode IS NULL OR COALESCE((settings->>'is_async')::boolean, true) = (:mode = 'async'))
         AND NOT (status = 'new' AND COALESCE((settings->>'unlisted')::boolean, false))
       ORDER BY created_at DESC
       LIMIT #{QUERY_LIMIT}
@@ -33,7 +34,8 @@ class Game < Base
       LEFT JOIN user_games ug
         ON g.id = ug.id
       WHERE g.status = '%<status>s'
-        AND (:title IS NULL OR :title = g.title)
+        AND (:titles IS NULL OR g.title = ANY(:titles))
+        AND (:mode IS NULL OR COALESCE((g.settings->>'is_async')::boolean, true) = (:mode = 'async'))
         AND ug.id IS NULL
         AND NOT (g.status = 'new' AND COALESCE((settings->>'unlisted')::boolean, false))
       ORDER BY g.%<ordered_by>s DESC
@@ -91,7 +93,14 @@ class Game < Base
       }.transform_values { |v| v&.to_i || 0 }
 
       kwargs[:user_id] = user.id if user
-      kwargs[:title] = opts['title'] != '' ? opts['title'] : nil
+      kwargs[:titles] = opts['title']&.then do |t|
+        titles = Array(t).map(&:strip).reject(&:empty?)
+        next nil if titles.empty?
+
+        Sequel.pg_array(titles)
+      end
+      mode = opts['mode']&.strip
+      kwargs[:mode] = mode && !mode.empty? && %w[live async].include?(mode) ? mode : nil
       kwargs[:status] = %w[new active]
       kwargs[:limit] = 1000
       fetch(user ? LOGGED_IN_QUERY : LOGGED_OUT_QUERY, **kwargs).all.map(&:to_h)

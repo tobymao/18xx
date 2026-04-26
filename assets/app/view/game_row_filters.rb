@@ -12,40 +12,115 @@ module View
       return '' if url_search_params.unsupported
 
       title_elm = render_title(url_search_params)
+      mode_elm = render_mode(url_search_params)
 
       h('div#game_filters.game_row', { key: @header }, [
         h(:h2, 'Filters'),
         title_elm,
-        render_reset(title_elm),
+        mode_elm,
+        render_reset,
       ])
     end
 
     private
 
     def render_title(url_search_params)
-      selected_value = url_search_params['title']
-      game_options = [h(:option, { attrs: { value: '' } }, '(All titles)')]
+      selected_titles = url_search_params.get_all('title')
+
+      # Build lookup for display names
+      title_display = {}
       Engine::VISIBLE_GAMES_WITH_VARIANTS.sort_by(&:display_title).each do |meta|
-        value = meta.title
-        game_options << h(:option, { attrs: { value: value, selected: value == selected_value } }, meta.display_title)
+        title_display[meta.title] = meta.display_title
       end
-      title_change = lambda do |e|
-        title = e.JS['currentTarget'].JS['value']
-        url_search_params['title'] = title
+
+      # Dropdown options: exclude already-selected titles
+      game_options = [h(:option, { attrs: { value: '' } }, '(Add a title filter...)')]
+      title_display.each do |value, display|
+        next if selected_titles.include?(value)
+
+        game_options << h(:option, { attrs: { value: value } }, display)
+      end
+
+      on_select = lambda do |e|
+        target = e.JS['currentTarget']
+        title = target.JS['value']
+        return if title.empty?
+
+        new_titles = (selected_titles + [title]).uniq
+        url_search_params.set_array('title', new_titles)
         update_filters(url_search_params.to_query_string)
+        target.JS['value'] = ''
       end
-      attrs = {
-        on: { input: title_change },
-        style: { maxWidth: '90vw' },
-      }
-      h('select', attrs, game_options)
+
+      children = []
+
+      # Render chips for selected titles
+      unless selected_titles.empty?
+        chips = selected_titles.map do |t|
+          display = title_display[t] || t
+          on_remove = lambda do
+            new_titles = selected_titles.reject { |x| x == t }
+            url_search_params.set_array('title', new_titles)
+            update_filters(url_search_params.to_query_string)
+          end
+
+          h(:span, {
+              style: {
+                display: 'inline-flex',
+                alignItems: 'center',
+                background: '#4a4a4a',
+                color: '#fff',
+                borderRadius: '3px',
+                padding: '2px 6px',
+                margin: '2px',
+                fontSize: '0.9em',
+              },
+            }, [
+            h(:span, "\u{1F682} #{display}"),
+            h(:span, {
+                style: { marginLeft: '4px', cursor: 'pointer', fontWeight: 'bold' },
+                on: { click: on_remove },
+              }, "\u00d7"),
+          ])
+        end
+
+        children << h(:div, { style: { marginBottom: '4px' } }, chips)
+      end
+
+      children << h('select', { on: { input: on_select }, style: { maxWidth: '90vw' } }, game_options)
+
+      h(:div, children)
     end
 
-    def render_reset(title_elm)
+    def render_mode(url_search_params)
+      current = url_search_params['mode'] || ''
+      options = { 'All' => '', 'Live' => 'live', 'Async' => 'async' }
+      buttons = options.map do |label, value|
+        on_click = lambda do
+          url_search_params['mode'] = value
+          update_filters(url_search_params.to_query_string)
+        end
+        active = current == value
+        h(:button, {
+            style: {
+              padding: '4px 12px',
+              cursor: 'pointer',
+              background: active ? '#4a4a4a' : '#ddd',
+              color: active ? '#fff' : '#333',
+              border: '1px solid #888',
+              fontWeight: active ? 'bold' : 'normal',
+            },
+            on: { click: on_click },
+          }, label)
+      end
+
+      h(:div, { style: { display: 'flex', margin: '6px 0' } }, buttons)
+    end
+
+    def render_reset
       attrs = {
         on: {
           click: lambda do
-            Native(title_elm)&.elm&.value = ''
             update_filters('')
           end,
         },
