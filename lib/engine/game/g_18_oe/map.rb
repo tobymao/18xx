@@ -619,7 +619,7 @@ module Engine
               A28 A30 A32 A34 A40 B1 B3 B5 B7
               B9 B11 B13 B15 B17 B23 B25 B27 B29 B31 B33
               B59 B61 C0 C2 C4 C6 C8 C10 C12 C14 C16 C22
-              C24 C26 C28 C30 C32 C34 C40 C60 C62 C68 C70 D1
+              C24 C26 C28 C30 C32 C34 C40 C60 C68 C70 D1
               D3 D5 D7 D9 D11 D13 D15 D17 D23 D27 D29 D31
               D33 D39 D63 D65 E0 E2 E4 E6 E8 E10 E12 E14
               E16 E22 E30 E32 E34 E40 E46 E64 F1 F3 F5 F7
@@ -699,6 +699,7 @@ module Engine
             ['A58'] => 'path=a:1,b:4',
             ['A60'] => 'path=a:1,b:4',
             ['A62'] => 'path=a:1,b:4',
+            ['C62'] => 'path=a:0,b:4',
             # Sea zone province borders
             ['AD25'] => 'border=edge:3,type:province;border=edge:4,type:province;border=edge:5,type:province',
             ['AE58'] => 'border=edge:4,type:province',
@@ -771,8 +772,8 @@ module Engine
             ['D21'] => 'border=edge:1,type:province',
             ['D35'] => 'border=edge:4,type:province',
             ['D37'] => 'path=a:0,b:3;border=edge:0,type:province;border=edge:1,type:province;border=edge:2,type:province',
-            ['D59'] => 'border=edge:5,type:province',
-            ['D61'] => 'border=edge:0,type:province',
+            ['D59'] => 'path=a:1,b:4;border=edge:5,type:province',
+            ['D61'] => 'path=a:1,b:3;border=edge:0,type:province',
             ['E18'] => 'border=edge:4,type:province',
             ['E20'] => 'border=edge:0,type:province;border=edge:1,type:province;border=edge:2,type:province',
             ['E36'] => 'path=a:0,b:3;border=edge:3,type:province;border=edge:4,type:province;border=edge:5,type:province',
