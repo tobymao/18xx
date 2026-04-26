@@ -1,0 +1,8986 @@
+{
+  "id": 243370,
+  "description": "Everyone Welcome",
+  "user": {
+    "id": 1152,
+    "name": "JaxHammerHex"
+  },
+  "players": [
+    {
+      "id": 20977,
+      "name": "cow"
+    },
+    {
+      "id": 12074,
+      "name": "Mickel "
+    },
+    {
+      "id": 12351,
+      "name": "Blueblood"
+    },
+    {
+      "id": 2465,
+      "name": "reveler"
+    },
+    {
+      "id": 1152,
+      "name": "JaxHammerHex"
+    }
+  ],
+  "min_players": 5,
+  "max_players": 5,
+  "title": "18 India",
+  "settings": {
+    "seed": 1496683623,
+    "is_async": true,
+    "unlisted": false,
+    "auto_routing": false,
+    "player_order": null,
+    "optional_rules": []
+  },
+  "user_settings": null,
+  "status": "active",
+  "turn": 4,
+  "round": "Operating Round",
+  "acting": [
+    12351
+  ],
+  "result": {},
+  "actions": [
+    {
+      "type": "select_multiple_companies",
+      "entity": 20977,
+      "entity_type": "player",
+      "id": 1,
+      "created_at": 1771330635,
+      "companies": [
+        "NSR_1",
+        "NSR_3",
+        "NSR_5",
+        "GIPR_2",
+        "GIPR_1"
+      ]
+    },
+    {
+      "type": "select_multiple_companies",
+      "entity": 12074,
+      "entity_type": "player",
+      "id": 2,
+      "created_at": 1771333389,
+      "companies": [
+        "KGF_2",
+        "KGF_8",
+        "BR_6",
+        "NWR_3",
+        "NWR_1"
+      ]
+    },
+    {
+      "type": "select_multiple_companies",
+      "entity": 12351,
+      "entity_type": "player",
+      "id": 3,
+      "created_at": 1771364582,
+      "companies": [
+        "P2",
+        "KGF_5",
+        "NSR_4",
+        "BNR_6",
+        "P5"
+      ]
+    },
+    {
+      "type": "select_multiple_companies",
+      "entity": 2465,
+      "entity_type": "player",
+      "id": 4,
+      "created_at": 1771367185,
+      "companies": [
+        "SPD_3",
+        "SPD_8",
+        "BR_1",
+        "BR_8",
+        "P6"
+      ]
+    },
+    {
+      "type": "select_multiple_companies",
+      "entity": 1152,
+      "entity_type": "player",
+      "id": 6,
+      "created_at": 1771370671,
+      "companies": [
+        "NSR_8",
+        "MR_8",
+        "MR_6",
+        "MR_7",
+        "NCR_1"
+      ]
+    },
+    {
+      "type": "bid",
+      "entity": 1152,
+      "entity_type": "player",
+      "id": 7,
+      "created_at": 1771370776,
+      "company": "MR_0",
+      "price": 180
+    },
+    {
+      "type": "bid",
+      "entity": 2465,
+      "entity_type": "player",
+      "id": 8,
+      "created_at": 1771371170,
+      "company": "SPD_0",
+      "price": 134
+    },
+    {
+      "type": "bid",
+      "entity": 12351,
+      "entity_type": "player",
+      "id": 9,
+      "created_at": 1771372935,
+      "company": "NSR_0",
+      "price": 142
+    },
+    {
+      "type": "bid",
+      "entity": 12074,
+      "entity_type": "player",
+      "id": 10,
+      "created_at": 1771380349,
+      "company": "BR_0",
+      "price": 142
+    },
+    {
+      "type": "bid",
+      "entity": 20977,
+      "entity_type": "player",
+      "id": 11,
+      "created_at": 1771380872,
+      "company": "NCR_0",
+      "price": 180
+    },
+    {
+      "type": "bid",
+      "entity": 20977,
+      "entity_type": "player",
+      "id": 12,
+      "created_at": 1771380884,
+      "company": "NCR_8",
+      "price": 90
+    },
+    {
+      "type": "bid",
+      "entity": 12074,
+      "entity_type": "player",
+      "id": 13,
+      "created_at": 1771381641,
+      "company": "BR_7",
+      "price": 71
+    },
+    {
+      "type": "bid",
+      "entity": 12351,
+      "entity_type": "player",
+      "id": 14,
+      "created_at": 1771384723,
+      "company": "KGF_0",
+      "price": 128
+    },
+    {
+      "type": "bid",
+      "entity": 2465,
+      "entity_type": "player",
+      "id": 15,
+      "created_at": 1771384796,
+      "company": "TR_0",
+      "price": 142
+    },
+    {
+      "type": "bid",
+      "entity": 1152,
+      "entity_type": "player",
+      "id": 16,
+      "created_at": 1771386803,
+      "company": "BNR_0",
+      "price": 164
+    },
+    {
+      "type": "bid",
+      "entity": 20977,
+      "entity_type": "player",
+      "id": 17,
+      "created_at": 1771389140,
+      "company": "NCR_7",
+      "price": 90
+    },
+    {
+      "type": "bid",
+      "entity": 12074,
+      "entity_type": "player",
+      "id": 18,
+      "created_at": 1771417520,
+      "company": "NWR_0",
+      "price": 200
+    },
+    {
+      "type": "bid",
+      "entity": 12351,
+      "entity_type": "player",
+      "id": 19,
+      "created_at": 1771418202,
+      "company": "NSR_7",
+      "price": 71
+    },
+    {
+      "type": "bid",
+      "entity": 2465,
+      "entity_type": "player",
+      "id": 20,
+      "created_at": 1771418230,
+      "company": "TR_6",
+      "price": 71
+    },
+    {
+      "type": "bid",
+      "entity": 1152,
+      "entity_type": "player",
+      "id": 21,
+      "created_at": 1771421943,
+      "company": "KGF_7",
+      "price": 64
+    },
+    {
+      "type": "bid",
+      "entity": 20977,
+      "entity_type": "player",
+      "id": 22,
+      "created_at": 1771444298,
+      "company": "NCR_3",
+      "price": 90
+    },
+    {
+      "type": "bid",
+      "entity": 12074,
+      "entity_type": "player",
+      "id": 23,
+      "created_at": 1771445118,
+      "company": "BR_2",
+      "price": 71
+    },
+    {
+      "type": "bid",
+      "entity": 12351,
+      "entity_type": "player",
+      "id": 24,
+      "created_at": 1771446522,
+      "company": "KGF_3",
+      "price": 64
+    },
+    {
+      "type": "bid",
+      "entity": 2465,
+      "entity_type": "player",
+      "id": 25,
+      "created_at": 1771448324,
+      "company": "TR_2",
+      "price": 71
+    },
+    {
+      "type": "bid",
+      "entity": 1152,
+      "entity_type": "player",
+      "id": 26,
+      "created_at": 1771449750,
+      "company": "SPD_4",
+      "price": 67
+    },
+    {
+      "type": "bid",
+      "entity": 20977,
+      "entity_type": "player",
+      "id": 27,
+      "created_at": 1771466226,
+      "company": "GIPR_3",
+      "price": 112
+    },
+    {
+      "type": "bid",
+      "entity": 12074,
+      "entity_type": "player",
+      "id": 28,
+      "created_at": 1771468396,
+      "company": "NWR_7",
+      "price": 100
+    },
+    {
+      "type": "bid",
+      "entity": 12351,
+      "entity_type": "player",
+      "id": 29,
+      "created_at": 1771530369,
+      "company": "MR_5",
+      "price": 90
+    },
+    {
+      "type": "bid",
+      "entity": 2465,
+      "entity_type": "player",
+      "id": 30,
+      "created_at": 1771530758,
+      "company": "TR_3",
+      "price": 71
+    },
+    {
+      "type": "bid",
+      "entity": 1152,
+      "entity_type": "player",
+      "id": 31,
+      "created_at": 1771533790,
+      "company": "BNR_4",
+      "price": 82
+    },
+    {
+      "type": "bid",
+      "entity": 20977,
+      "entity_type": "player",
+      "id": 32,
+      "created_at": 1771533863,
+      "company": "GIPR_9",
+      "price": 112
+    },
+    {
+      "type": "bid",
+      "entity": 12074,
+      "entity_type": "player",
+      "id": 33,
+      "created_at": 1771537694,
+      "company": "GIPR_4",
+      "price": 112
+    },
+    {
+      "type": "bid",
+      "entity": 12351,
+      "entity_type": "player",
+      "id": 34,
+      "created_at": 1771540905,
+      "company": "MR_1",
+      "price": 90
+    },
+    {
+      "type": "bid",
+      "entity": 2465,
+      "entity_type": "player",
+      "id": 35,
+      "created_at": 1771542343,
+      "company": "BNR_5",
+      "price": 82
+    },
+    {
+      "type": "bid",
+      "entity": 1152,
+      "entity_type": "player",
+      "id": 36,
+      "created_at": 1771549901,
+      "company": "MR_2",
+      "price": 90
+    },
+    {
+      "type": "bid",
+      "entity": 20977,
+      "entity_type": "player",
+      "id": 37,
+      "created_at": 1771554909,
+      "company": "GIPR_5",
+      "price": 112
+    },
+    {
+      "type": "bid",
+      "entity": 12074,
+      "entity_type": "player",
+      "id": 38,
+      "created_at": 1771559233,
+      "company": "GIPR_0",
+      "price": 112
+    },
+    {
+      "type": "bid",
+      "entity": 12351,
+      "entity_type": "player",
+      "id": 39,
+      "created_at": 1771613911,
+      "company": "GIPR_6",
+      "price": 112
+    },
+    {
+      "type": "bid",
+      "entity": 2465,
+      "entity_type": "player",
+      "id": 40,
+      "created_at": 1771614201,
+      "company": "GIPR_7",
+      "price": 112
+    },
+    {
+      "type": "buy_company",
+      "entity": 1152,
+      "entity_type": "player",
+      "id": 41,
+      "created_at": 1771621680,
+      "company": "MR_0",
+      "price": 180
+    },
+    {
+      "type": "buy_company",
+      "entity": 1152,
+      "entity_type": "player",
+      "id": 42,
+      "created_at": 1771621714,
+      "company": "MR_7",
+      "price": 90
+    },
+    {
+      "type": "pass",
+      "entity": 1152,
+      "entity_type": "player",
+      "id": 43,
+      "created_at": 1771621723
+    },
+    {
+      "type": "buy_company",
+      "entity": 20977,
+      "entity_type": "player",
+      "id": 44,
+      "created_at": 1771624854,
+      "company": "NCR_0",
+      "price": 180
+    },
+    {
+      "type": "buy_company",
+      "entity": 20977,
+      "entity_type": "player",
+      "id": 45,
+      "created_at": 1771624856,
+      "company": "NCR_8",
+      "price": 90
+    },
+    {
+      "type": "buy_company",
+      "entity": 20977,
+      "entity_type": "player",
+      "id": 46,
+      "created_at": 1771624857,
+      "company": "NCR_7",
+      "price": 90
+    },
+    {
+      "type": "pass",
+      "entity": 20977,
+      "entity_type": "player",
+      "id": 47,
+      "created_at": 1771624893
+    },
+    {
+      "type": "buy_shares",
+      "entity": 12074,
+      "entity_type": "player",
+      "id": 48,
+      "created_at": 1771627170,
+      "shares": [
+        "BR_5"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "buy_company",
+      "entity": 12351,
+      "entity_type": "player",
+      "id": 49,
+      "created_at": 1771630779,
+      "company": "NSR_0",
+      "price": 142
+    },
+    {
+      "type": "buy_company",
+      "entity": 12351,
+      "entity_type": "player",
+      "id": 50,
+      "created_at": 1771630784,
+      "company": "NSR_7",
+      "price": 71
+    },
+    {
+      "type": "buy_company",
+      "entity": 12351,
+      "entity_type": "player",
+      "id": 51,
+      "created_at": 1771630786,
+      "company": "NSR_4",
+      "price": 71
+    },
+    {
+      "type": "buy_company",
+      "entity": 2465,
+      "entity_type": "player",
+      "id": 52,
+      "created_at": 1771631895,
+      "company": "TR_0",
+      "price": 142
+    },
+    {
+      "type": "place_token",
+      "entity": "TR",
+      "entity_type": "corporation",
+      "id": 53,
+      "created_at": 1771631902,
+      "city": "M10-0-3",
+      "slot": 0,
+      "tokener": "TR"
+    },
+    {
+      "type": "buy_company",
+      "entity": 2465,
+      "entity_type": "player",
+      "id": 54,
+      "created_at": 1771631908,
+      "company": "TR_6",
+      "price": 71
+    },
+    {
+      "type": "buy_company",
+      "entity": 2465,
+      "entity_type": "player",
+      "id": 55,
+      "created_at": 1771631911,
+      "company": "TR_2",
+      "price": 71
+    },
+    {
+      "type": "buy_company",
+      "entity": 2465,
+      "entity_type": "player",
+      "id": 56,
+      "created_at": 1771631913,
+      "company": "TR_3",
+      "price": 71
+    },
+    {
+      "type": "pass",
+      "entity": 1152,
+      "entity_type": "player",
+      "id": 57,
+      "user": 1152,
+      "created_at": 1771632923
+    },
+    {
+      "type": "undo",
+      "entity": 20977,
+      "action_id": 56,
+      "entity_type": "player",
+      "id": 58,
+      "user": 1152,
+      "created_at": 1771632928
+    },
+    {
+      "type": "pass",
+      "entity": 1152,
+      "entity_type": "player",
+      "id": 59,
+      "user": 1152,
+      "created_at": 1771633025
+    },
+    {
+      "type": "undo",
+      "entity": 20977,
+      "entity_type": "player",
+      "id": 60,
+      "user": 1152,
+      "created_at": 1771633028
+    },
+    {
+      "type": "buy_company",
+      "entity": 1152,
+      "entity_type": "player",
+      "id": 61,
+      "created_at": 1771633106,
+      "company": "NSR_8",
+      "price": 71
+    },
+    {
+      "type": "buy_company",
+      "entity": 20977,
+      "entity_type": "player",
+      "id": 62,
+      "created_at": 1771637902,
+      "company": "NSR_1",
+      "price": 71
+    },
+    {
+      "type": "pass",
+      "entity": 20977,
+      "entity_type": "player",
+      "id": 63,
+      "created_at": 1771637928
+    },
+    {
+      "type": "buy_company",
+      "entity": 12074,
+      "entity_type": "player",
+      "id": 64,
+      "created_at": 1771639836,
+      "company": "BR_0",
+      "price": 142
+    },
+    {
+      "type": "place_token",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 65,
+      "created_at": 1771639842,
+      "city": "D23-0-0",
+      "slot": 0,
+      "tokener": "BR"
+    },
+    {
+      "type": "buy_company",
+      "entity": 12074,
+      "entity_type": "player",
+      "id": 66,
+      "created_at": 1771639853,
+      "company": "BR_6",
+      "price": 71
+    },
+    {
+      "type": "buy_company",
+      "entity": 12074,
+      "entity_type": "player",
+      "id": 67,
+      "created_at": 1771639855,
+      "company": "BR_7",
+      "price": 71
+    },
+    {
+      "type": "buy_company",
+      "entity": 12074,
+      "entity_type": "player",
+      "id": 68,
+      "created_at": 1771639856,
+      "company": "BR_2",
+      "price": 71
+    },
+    {
+      "type": "buy_company",
+      "entity": 12351,
+      "entity_type": "player",
+      "id": 69,
+      "created_at": 1771652232,
+      "company": "P5",
+      "price": 115
+    },
+    {
+      "type": "buy_company",
+      "entity": 12351,
+      "entity_type": "player",
+      "id": 70,
+      "created_at": 1771652234,
+      "company": "P2",
+      "price": 35
+    },
+    {
+      "type": "program_share_pass",
+      "entity": 2465,
+      "entity_type": "player",
+      "id": 71,
+      "created_at": 1771682307,
+      "auto_actions": [
+        {
+          "type": "pass",
+          "entity": 2465,
+          "entity_type": "player",
+          "created_at": 1771682307
+        }
+      ],
+      "unconditional": false,
+      "indefinite": false
+    },
+    {
+      "type": "buy_company",
+      "entity": 1152,
+      "entity_type": "player",
+      "id": 72,
+      "created_at": 1771683751,
+      "auto_actions": [
+        {
+          "type": "program_disable",
+          "entity": 2465,
+          "entity_type": "player",
+          "created_at": 1771683769,
+          "reason": "Unknown action buy_company disabling for safety"
+        }
+      ],
+      "company": "NCR_1",
+      "price": 90
+    },
+    {
+      "type": "buy_company",
+      "entity": 2465,
+      "entity_type": "player",
+      "id": 73,
+      "created_at": 1771691822,
+      "company": "BR_8",
+      "price": 71
+    },
+    {
+      "type": "pass",
+      "entity": 2465,
+      "entity_type": "player",
+      "id": 74,
+      "created_at": 1771691830
+    },
+    {
+      "type": "lay_tile",
+      "entity": "MR",
+      "entity_type": "corporation",
+      "id": 75,
+      "created_at": 1771694113,
+      "hex": "J29",
+      "tile": "9-0",
+      "rotation": 2
+    },
+    {
+      "type": "lay_tile",
+      "entity": "MR",
+      "entity_type": "corporation",
+      "id": 76,
+      "created_at": 1771694116,
+      "hex": "I28",
+      "tile": "9-1",
+      "rotation": 2
+    },
+    {
+      "type": "lay_tile",
+      "entity": "MR",
+      "entity_type": "corporation",
+      "id": 77,
+      "created_at": 1771694119,
+      "hex": "H27",
+      "tile": "8-0",
+      "rotation": 3
+    },
+    {
+      "type": "lay_tile",
+      "entity": "MR",
+      "entity_type": "corporation",
+      "id": 78,
+      "created_at": 1771694131,
+      "hex": "H25",
+      "tile": "6-0",
+      "rotation": 0
+    },
+    {
+      "type": "buy_train",
+      "entity": "MR",
+      "entity_type": "corporation",
+      "id": 79,
+      "created_at": 1771694136,
+      "train": "2-0",
+      "price": 180,
+      "variant": "2"
+    },
+    {
+      "hex": "K14",
+      "tile": "6-1",
+      "type": "lay_tile",
+      "entity": "NCR",
+      "rotation": 2,
+      "entity_type": "corporation",
+      "id": 80,
+      "user": 20977,
+      "created_at": 1771703420
+    },
+    {
+      "hex": "L13",
+      "tile": "3-0",
+      "type": "lay_tile",
+      "entity": "NCR",
+      "rotation": 1,
+      "entity_type": "corporation",
+      "id": 81,
+      "user": 20977,
+      "created_at": 1771703432
+    },
+    {
+      "hex": "K12",
+      "tile": "IND3-0",
+      "type": "lay_tile",
+      "entity": "NCR",
+      "rotation": 1,
+      "entity_type": "corporation",
+      "id": 82,
+      "user": 20977,
+      "created_at": 1771703468
+    },
+    {
+      "hex": "J11",
+      "tile": "3-1",
+      "type": "lay_tile",
+      "entity": "NCR",
+      "rotation": 4,
+      "entity_type": "corporation",
+      "id": 83,
+      "user": 20977,
+      "created_at": 1771703474
+    },
+    {
+      "type": "buy_train",
+      "price": 180,
+      "train": "2-1",
+      "entity": "NCR",
+      "variant": "2",
+      "entity_type": "corporation",
+      "id": 84,
+      "user": 20977,
+      "created_at": 1771703478
+    },
+    {
+      "type": "buy_train",
+      "price": 180,
+      "train": "2-2",
+      "entity": "NCR",
+      "variant": "2",
+      "entity_type": "corporation",
+      "id": 85,
+      "user": 20977,
+      "created_at": 1771703480
+    },
+    {
+      "type": "undo",
+      "entity": "NSR",
+      "action_id": 79,
+      "entity_type": "corporation",
+      "id": 86,
+      "user": 20977,
+      "created_at": 1771703494
+    },
+    {
+      "hex": "K14",
+      "tile": "6-1",
+      "type": "lay_tile",
+      "entity": "NCR",
+      "rotation": 2,
+      "entity_type": "corporation",
+      "id": 87,
+      "user": 20977,
+      "created_at": 1771703505
+    },
+    {
+      "hex": "J13",
+      "tile": "7-0",
+      "type": "lay_tile",
+      "entity": "NCR",
+      "rotation": 4,
+      "entity_type": "corporation",
+      "id": 88,
+      "user": 20977,
+      "created_at": 1771703510
+    },
+    {
+      "type": "undo",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 89,
+      "user": 20977,
+      "created_at": 1771703521
+    },
+    {
+      "hex": "J13",
+      "tile": "8-1",
+      "type": "lay_tile",
+      "entity": "NCR",
+      "rotation": 3,
+      "entity_type": "corporation",
+      "id": 90,
+      "user": 20977,
+      "created_at": 1771703526
+    },
+    {
+      "hex": "J11",
+      "tile": "3-0",
+      "type": "lay_tile",
+      "entity": "NCR",
+      "rotation": 5,
+      "entity_type": "corporation",
+      "id": 91,
+      "user": 20977,
+      "created_at": 1771703530
+    },
+    {
+      "hex": "K12",
+      "tile": "IND2-0",
+      "type": "lay_tile",
+      "entity": "NCR",
+      "rotation": 1,
+      "entity_type": "corporation",
+      "id": 92,
+      "user": 20977,
+      "created_at": 1771703547
+    },
+    {
+      "type": "undo",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 93,
+      "user": 20977,
+      "created_at": 1771703573
+    },
+    {
+      "type": "undo",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 94,
+      "user": 20977,
+      "created_at": 1771703583
+    },
+    {
+      "type": "undo",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 95,
+      "user": 20977,
+      "created_at": 1771703584
+    },
+    {
+      "type": "undo",
+      "entity": "NCR",
+      "action_id": 79,
+      "entity_type": "corporation",
+      "id": 96,
+      "user": 20977,
+      "created_at": 1771703585
+    },
+    {
+      "type": "lay_tile",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 97,
+      "created_at": 1771703609,
+      "hex": "K14",
+      "tile": "6-1",
+      "rotation": 2
+    },
+    {
+      "type": "lay_tile",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 98,
+      "created_at": 1771703616,
+      "hex": "L13",
+      "tile": "3-0",
+      "rotation": 1
+    },
+    {
+      "hex": "K12",
+      "tile": "IND2-0",
+      "type": "lay_tile",
+      "entity": "NCR",
+      "rotation": 3,
+      "entity_type": "corporation",
+      "id": 99,
+      "user": 20977,
+      "created_at": 1771703656
+    },
+    {
+      "hex": "L11",
+      "tile": "9-2",
+      "type": "lay_tile",
+      "entity": "NCR",
+      "rotation": 1,
+      "entity_type": "corporation",
+      "id": 100,
+      "user": 20977,
+      "created_at": 1771703660
+    },
+    {
+      "type": "undo",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 101,
+      "user": 20977,
+      "created_at": 1771703705
+    },
+    {
+      "type": "undo",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 102,
+      "user": 20977,
+      "created_at": 1771703705
+    },
+    {
+      "hex": "K12",
+      "tile": "IND5-0",
+      "type": "lay_tile",
+      "entity": "NCR",
+      "rotation": 0,
+      "entity_type": "corporation",
+      "id": 103,
+      "user": 20977,
+      "created_at": 1771703713
+    },
+    {
+      "type": "undo",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 104,
+      "user": 20977,
+      "created_at": 1771703734
+    },
+    {
+      "hex": "K12",
+      "tile": "IND5-0",
+      "type": "lay_tile",
+      "entity": "NCR",
+      "rotation": 0,
+      "entity_type": "corporation",
+      "id": 105,
+      "user": 20977,
+      "created_at": 1771703782
+    },
+    {
+      "type": "undo",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 106,
+      "user": 20977,
+      "created_at": 1771703788
+    },
+    {
+      "type": "lay_tile",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 107,
+      "created_at": 1771703798,
+      "hex": "K12",
+      "tile": "IND5-0",
+      "rotation": 2
+    },
+    {
+      "type": "lay_tile",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 108,
+      "created_at": 1771703801,
+      "hex": "L11",
+      "tile": "9-2",
+      "rotation": 1
+    },
+    {
+      "type": "buy_train",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 109,
+      "created_at": 1771703805,
+      "train": "2-1",
+      "price": 180,
+      "variant": "2"
+    },
+    {
+      "type": "buy_train",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 110,
+      "created_at": 1771703806,
+      "train": "2-2",
+      "price": 180,
+      "variant": "2"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "NSR",
+      "entity_type": "corporation",
+      "id": 111,
+      "created_at": 1771713974,
+      "hex": "H25",
+      "tile": "15-0",
+      "rotation": 0
+    },
+    {
+      "type": "pass",
+      "entity": "NSR",
+      "entity_type": "corporation",
+      "id": 112,
+      "created_at": 1771714002
+    },
+    {
+      "type": "buy_train",
+      "entity": "NSR",
+      "entity_type": "corporation",
+      "id": 113,
+      "created_at": 1771714007,
+      "train": "2-3",
+      "price": 180,
+      "variant": "2"
+    },
+    {
+      "type": "pass",
+      "entity": "NSR",
+      "entity_type": "corporation",
+      "id": 114,
+      "created_at": 1771714017
+    },
+    {
+      "type": "corporate_buy_company",
+      "entity": "NSR",
+      "entity_type": "corporation",
+      "id": 115,
+      "created_at": 1771714059,
+      "company": "RB0",
+      "price": 100
+    },
+    {
+      "type": "lay_tile",
+      "entity": "TR",
+      "entity_type": "corporation",
+      "id": 116,
+      "created_at": 1771715208,
+      "hex": "N11",
+      "tile": "9-3",
+      "rotation": 2
+    },
+    {
+      "type": "lay_tile",
+      "entity": "TR",
+      "entity_type": "corporation",
+      "id": 117,
+      "created_at": 1771715211,
+      "hex": "O12",
+      "tile": "8-1",
+      "rotation": 2
+    },
+    {
+      "type": "lay_tile",
+      "entity": "TR",
+      "entity_type": "corporation",
+      "id": 118,
+      "created_at": 1771715214,
+      "hex": "P11",
+      "tile": "9-4",
+      "rotation": 1
+    },
+    {
+      "type": "lay_tile",
+      "entity": "TR",
+      "entity_type": "corporation",
+      "id": 119,
+      "created_at": 1771715237,
+      "hex": "Q12",
+      "tile": "9-5",
+      "rotation": 0
+    },
+    {
+      "type": "pass",
+      "entity": "TR",
+      "entity_type": "corporation",
+      "id": 120,
+      "created_at": 1771715251
+    },
+    {
+      "type": "buy_train",
+      "entity": "TR",
+      "entity_type": "corporation",
+      "id": 121,
+      "created_at": 1771715270,
+      "train": "2-4",
+      "price": 180,
+      "variant": "2"
+    },
+    {
+      "type": "pass",
+      "entity": "TR",
+      "entity_type": "corporation",
+      "id": 122,
+      "created_at": 1771715276
+    },
+    {
+      "type": "pass",
+      "entity": "TR",
+      "entity_type": "corporation",
+      "id": 123,
+      "created_at": 1771715290
+    },
+    {
+      "hex": "E22",
+      "tile": "IND3-0",
+      "type": "lay_tile",
+      "entity": "BR",
+      "rotation": 1,
+      "entity_type": "corporation",
+      "id": 124,
+      "user": 12074,
+      "created_at": 1771732466
+    },
+    {
+      "hex": "F23",
+      "tile": "4-0",
+      "type": "lay_tile",
+      "entity": "BR",
+      "rotation": 2,
+      "entity_type": "corporation",
+      "id": 125,
+      "user": 12074,
+      "created_at": 1771732469
+    },
+    {
+      "type": "undo",
+      "entity": "BR",
+      "action_id": 123,
+      "entity_type": "corporation",
+      "id": 126,
+      "user": 12074,
+      "created_at": 1771732537
+    },
+    {
+      "hex": "E22",
+      "tile": "IND3-0",
+      "type": "lay_tile",
+      "entity": "BR",
+      "rotation": 1,
+      "entity_type": "corporation",
+      "id": 127,
+      "user": 12074,
+      "created_at": 1771732593
+    },
+    {
+      "hex": "F23",
+      "tile": "4-0",
+      "type": "lay_tile",
+      "entity": "BR",
+      "rotation": 2,
+      "entity_type": "corporation",
+      "id": 128,
+      "user": 12074,
+      "created_at": 1771732595
+    },
+    {
+      "hex": "G24",
+      "tile": "9-6",
+      "type": "lay_tile",
+      "entity": "BR",
+      "rotation": 2,
+      "entity_type": "corporation",
+      "id": 129,
+      "user": 12074,
+      "created_at": 1771732599
+    },
+    {
+      "type": "undo",
+      "entity": "BR",
+      "action_id": 123,
+      "entity_type": "corporation",
+      "id": 130,
+      "user": 12074,
+      "created_at": 1771732628
+    },
+    {
+      "hex": "D25",
+      "tile": "8-2",
+      "type": "lay_tile",
+      "entity": "BR",
+      "rotation": 3,
+      "entity_type": "corporation",
+      "id": 131,
+      "user": 12074,
+      "created_at": 1771732639
+    },
+    {
+      "hex": "E26",
+      "tile": "8-3",
+      "type": "lay_tile",
+      "entity": "BR",
+      "rotation": 0,
+      "entity_type": "corporation",
+      "id": 132,
+      "user": 12074,
+      "created_at": 1771732641
+    },
+    {
+      "hex": "E28",
+      "tile": "9-6",
+      "type": "lay_tile",
+      "entity": "BR",
+      "rotation": 0,
+      "entity_type": "corporation",
+      "id": 133,
+      "user": 12074,
+      "created_at": 1771732644
+    },
+    {
+      "hex": "E30",
+      "tile": "58-0",
+      "type": "lay_tile",
+      "entity": "BR",
+      "rotation": 3,
+      "entity_type": "corporation",
+      "id": 134,
+      "user": 12074,
+      "created_at": 1771732648
+    },
+    {
+      "type": "undo",
+      "entity": "BR",
+      "action_id": 123,
+      "entity_type": "corporation",
+      "id": 135,
+      "user": 12074,
+      "created_at": 1771732673
+    },
+    {
+      "type": "lay_tile",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 136,
+      "created_at": 1771732858,
+      "hex": "D25",
+      "tile": "8-2",
+      "rotation": 3
+    },
+    {
+      "type": "lay_tile",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 137,
+      "created_at": 1771732860,
+      "hex": "E26",
+      "tile": "8-3",
+      "rotation": 0
+    },
+    {
+      "type": "lay_tile",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 138,
+      "created_at": 1771732864,
+      "hex": "E28",
+      "tile": "9-6",
+      "rotation": 0
+    },
+    {
+      "type": "lay_tile",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 139,
+      "created_at": 1771732867,
+      "hex": "E30",
+      "tile": "58-0",
+      "rotation": 3
+    },
+    {
+      "type": "buy_train",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 140,
+      "created_at": 1771732916,
+      "train": "2-5",
+      "price": 180,
+      "variant": "2"
+    },
+    {
+      "type": "pass",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 141,
+      "user": 12074,
+      "created_at": 1771732918
+    },
+    {
+      "type": "undo",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 142,
+      "user": 12074,
+      "created_at": 1771733046
+    },
+    {
+      "type": "pass",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 143,
+      "created_at": 1771733182
+    },
+    {
+      "type": "corporate_buy_company",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 144,
+      "created_at": 1771733187,
+      "company": "TR_1",
+      "price": 71
+    },
+    {
+      "hex": "J13",
+      "tile": "8-4",
+      "type": "lay_tile",
+      "entity": "NCR",
+      "rotation": 3,
+      "entity_type": "corporation",
+      "id": 145,
+      "user": 20977,
+      "created_at": 1771733212
+    },
+    {
+      "hex": "J11",
+      "tile": "3-1",
+      "type": "lay_tile",
+      "entity": "NCR",
+      "rotation": 5,
+      "entity_type": "corporation",
+      "id": 146,
+      "user": 20977,
+      "created_at": 1771733218
+    },
+    {
+      "hex": "K10",
+      "tile": "8-5",
+      "type": "lay_tile",
+      "entity": "NCR",
+      "rotation": 4,
+      "entity_type": "corporation",
+      "id": 147,
+      "user": 20977,
+      "created_at": 1771733222
+    },
+    {
+      "hex": "M12",
+      "tile": "8-6",
+      "type": "lay_tile",
+      "entity": "NCR",
+      "rotation": 3,
+      "entity_type": "corporation",
+      "id": 148,
+      "user": 20977,
+      "created_at": 1771733227
+    },
+    {
+      "type": "run_routes",
+      "entity": "NCR",
+      "routes": [
+        {
+          "hexes": [
+            "M10",
+            "K12",
+            "L13",
+            "K14"
+          ],
+          "nodes": [
+            "K12-0",
+            "M10-3",
+            "L13-0",
+            "K14-0"
+          ],
+          "train": "2-1",
+          "revenue": 80,
+          "connections": [
+            [
+              "K12",
+              "L11",
+              "M10"
+            ],
+            [
+              "L13",
+              "K12"
+            ],
+            [
+              "K14",
+              "L13"
+            ]
+          ],
+          "revenue_str": "M10-K12-L13-K14"
+        },
+        {
+          "hexes": [
+            "K14",
+            "J11",
+            "K12",
+            "M10"
+          ],
+          "nodes": [
+            "J11-0",
+            "K14-0",
+            "K12-1",
+            "M10-0"
+          ],
+          "train": "2-2",
+          "revenue": 70,
+          "connections": [
+            [
+              "J11",
+              "J13",
+              "K14"
+            ],
+            [
+              "K12",
+              "J11"
+            ],
+            [
+              "M10",
+              "L9",
+              "K10",
+              "K12"
+            ]
+          ],
+          "revenue_str": "K14-J11-K12-M10"
+        }
+      ],
+      "subsidy": 0,
+      "entity_type": "corporation",
+      "extra_revenue": 0,
+      "id": 149,
+      "user": 20977,
+      "created_at": 1771733278
+    },
+    {
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 150,
+      "user": 20977,
+      "created_at": 1771733299
+    },
+    {
+      "type": "sell_train",
+      "price": 180,
+      "train": "2-2",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 151,
+      "user": 20977,
+      "created_at": 1771733302
+    },
+    {
+      "type": "buy_train",
+      "price": 180,
+      "train": "2-2",
+      "entity": "NCR",
+      "variant": "2",
+      "entity_type": "corporation",
+      "id": 152,
+      "user": 20977,
+      "created_at": 1771733303
+    },
+    {
+      "type": "sell_train",
+      "price": 180,
+      "train": "2-1",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 153,
+      "user": 20977,
+      "created_at": 1771733310
+    },
+    {
+      "type": "undo",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 154,
+      "user": 20977,
+      "created_at": 1771733317
+    },
+    {
+      "type": "undo",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 155,
+      "user": 20977,
+      "created_at": 1771733318
+    },
+    {
+      "type": "undo",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 156,
+      "user": 20977,
+      "created_at": 1771733320
+    },
+    {
+      "type": "sell_train",
+      "price": 180,
+      "train": "2-2",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 157,
+      "user": 20977,
+      "created_at": 1771733320
+    },
+    {
+      "type": "sell_train",
+      "price": 180,
+      "train": "2-1",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 158,
+      "user": 20977,
+      "created_at": 1771733322
+    },
+    {
+      "type": "buy_train",
+      "price": 300,
+      "train": "3-0",
+      "entity": "NCR",
+      "variant": "3",
+      "entity_type": "corporation",
+      "id": 159,
+      "user": 20977,
+      "created_at": 1771733323
+    },
+    {
+      "type": "undo",
+      "entity": "NCR",
+      "action_id": 144,
+      "entity_type": "corporation",
+      "id": 160,
+      "user": 20977,
+      "created_at": 1771733487
+    },
+    {
+      "type": "lay_tile",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 161,
+      "created_at": 1771733496,
+      "hex": "J13",
+      "tile": "8-4",
+      "rotation": 3
+    },
+    {
+      "type": "lay_tile",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 162,
+      "created_at": 1771733500,
+      "hex": "J11",
+      "tile": "3-1",
+      "rotation": 5
+    },
+    {
+      "type": "lay_tile",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 163,
+      "created_at": 1771733504,
+      "hex": "K10",
+      "tile": "8-5",
+      "rotation": 4
+    },
+    {
+      "type": "lay_tile",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 164,
+      "created_at": 1771733510,
+      "hex": "M12",
+      "tile": "8-6",
+      "rotation": 3
+    },
+    {
+      "type": "run_routes",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 165,
+      "created_at": 1771733533,
+      "routes": [
+        {
+          "train": "2-1",
+          "connections": [
+            [
+              "L13",
+              "K14"
+            ],
+            [
+              "K12",
+              "L13"
+            ],
+            [
+              "M10",
+              "L11",
+              "K12"
+            ]
+          ],
+          "hexes": [
+            "K14",
+            "L13",
+            "K12",
+            "M10"
+          ],
+          "revenue": 80,
+          "revenue_str": "K14-L13-K12-M10",
+          "nodes": [
+            "L13-0",
+            "K14-0",
+            "K12-0",
+            "M10-3"
+          ]
+        },
+        {
+          "train": "2-2",
+          "connections": [
+            [
+              "K12",
+              "K10",
+              "L9",
+              "M10"
+            ],
+            [
+              "J11",
+              "K12"
+            ],
+            [
+              "K14",
+              "J13",
+              "J11"
+            ]
+          ],
+          "hexes": [
+            "M10",
+            "K12",
+            "J11",
+            "K14"
+          ],
+          "revenue": 70,
+          "revenue_str": "M10-K12-J11-K14",
+          "nodes": [
+            "K12-1",
+            "M10-0",
+            "J11-0",
+            "K14-0"
+          ]
+        }
+      ],
+      "extra_revenue": 0,
+      "subsidy": 0
+    },
+    {
+      "type": "dividend",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 166,
+      "created_at": 1771733535,
+      "kind": "withhold"
+    },
+    {
+      "type": "sell_train",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 167,
+      "created_at": 1771733539,
+      "train": "2-2",
+      "price": 180
+    },
+    {
+      "type": "buy_train",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 168,
+      "created_at": 1771733541,
+      "train": "3-0",
+      "price": 300,
+      "variant": "3"
+    },
+    {
+      "type": "sell_train",
+      "price": 180,
+      "train": "2-1",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 169,
+      "user": 20977,
+      "created_at": 1771733594
+    },
+    {
+      "type": "undo",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 170,
+      "user": 20977,
+      "created_at": 1771733609
+    },
+    {
+      "type": "pass",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 171,
+      "created_at": 1771733628
+    },
+    {
+      "hex": "J31",
+      "tile": "9-7",
+      "type": "lay_tile",
+      "entity": "MR",
+      "rotation": 1,
+      "entity_type": "corporation",
+      "id": 172,
+      "user": 1152,
+      "created_at": 1771739692
+    },
+    {
+      "type": "undo",
+      "entity": "MR",
+      "action_id": 171,
+      "entity_type": "corporation",
+      "id": 173,
+      "user": 1152,
+      "created_at": 1771739707
+    },
+    {
+      "hex": "J31",
+      "tile": "8-7",
+      "type": "lay_tile",
+      "entity": "MR",
+      "rotation": 4,
+      "entity_type": "corporation",
+      "id": 174,
+      "user": 1152,
+      "created_at": 1771739716
+    },
+    {
+      "hex": "J33",
+      "tile": "58-1",
+      "type": "lay_tile",
+      "entity": "MR",
+      "rotation": 1,
+      "entity_type": "corporation",
+      "id": 175,
+      "user": 1152,
+      "created_at": 1771739719
+    },
+    {
+      "hex": "I34",
+      "tile": "9-7",
+      "type": "lay_tile",
+      "entity": "MR",
+      "rotation": 1,
+      "entity_type": "corporation",
+      "id": 176,
+      "user": 1152,
+      "created_at": 1771739737
+    },
+    {
+      "hex": "H35",
+      "tile": "IND6-0",
+      "type": "lay_tile",
+      "entity": "MR",
+      "rotation": 2,
+      "entity_type": "corporation",
+      "id": 177,
+      "user": 1152,
+      "created_at": 1771739754
+    },
+    {
+      "city": "15-0-0",
+      "slot": 1,
+      "type": "place_token",
+      "entity": "MR",
+      "tokener": "MR",
+      "entity_type": "corporation",
+      "id": 178,
+      "user": 1152,
+      "created_at": 1771739761
+    },
+    {
+      "type": "undo",
+      "entity": "MR",
+      "action_id": 171,
+      "entity_type": "corporation",
+      "id": 179,
+      "user": 1152,
+      "created_at": 1771739817
+    },
+    {
+      "type": "lay_tile",
+      "entity": "MR",
+      "entity_type": "corporation",
+      "id": 180,
+      "created_at": 1771739852,
+      "hex": "G24",
+      "tile": "9-7",
+      "rotation": 2
+    },
+    {
+      "type": "lay_tile",
+      "entity": "MR",
+      "entity_type": "corporation",
+      "id": 181,
+      "created_at": 1771739855,
+      "hex": "F23",
+      "tile": "58-1",
+      "rotation": 5
+    },
+    {
+      "type": "lay_tile",
+      "entity": "MR",
+      "entity_type": "corporation",
+      "id": 182,
+      "created_at": 1771739859,
+      "hex": "E24",
+      "tile": "6-2",
+      "rotation": 2
+    },
+    {
+      "type": "pass",
+      "entity": "MR",
+      "entity_type": "corporation",
+      "id": 183,
+      "created_at": 1771739874
+    },
+    {
+      "type": "place_token",
+      "entity": "MR",
+      "entity_type": "corporation",
+      "id": 184,
+      "created_at": 1771739879,
+      "city": "D23-0-1",
+      "slot": 0,
+      "tokener": "MR"
+    },
+    {
+      "type": "run_routes",
+      "entity": "MR",
+      "entity_type": "corporation",
+      "id": 185,
+      "created_at": 1771739896,
+      "routes": [
+        {
+          "train": "2-0",
+          "connections": [
+            [
+              "K30",
+              "J29",
+              "I28",
+              "H27",
+              "H25"
+            ]
+          ],
+          "hexes": [
+            "H25",
+            "K30"
+          ],
+          "revenue": 90,
+          "revenue_str": "H25-K30 ?+10",
+          "nodes": [
+            "K30-0",
+            "H25-0"
+          ]
+        }
+      ],
+      "extra_revenue": 0,
+      "subsidy": 0
+    },
+    {
+      "type": "dividend",
+      "entity": "MR",
+      "entity_type": "corporation",
+      "id": 186,
+      "created_at": 1771739900,
+      "kind": "payout"
+    },
+    {
+      "type": "pass",
+      "entity": "MR",
+      "entity_type": "corporation",
+      "id": 187,
+      "created_at": 1771739910
+    },
+    {
+      "hex": "H25",
+      "tile": "611-0",
+      "type": "lay_tile",
+      "entity": "NSR",
+      "rotation": 0,
+      "entity_type": "corporation",
+      "id": 188,
+      "user": 12351,
+      "created_at": 1771770082
+    },
+    {
+      "type": "undo",
+      "entity": "NSR",
+      "entity_type": "corporation",
+      "id": 189,
+      "user": 12351,
+      "created_at": 1771770127
+    },
+    {
+      "type": "lay_tile",
+      "entity": "NSR",
+      "entity_type": "corporation",
+      "id": 190,
+      "created_at": 1771770153,
+      "hex": "H25",
+      "tile": "611-0",
+      "rotation": 0
+    },
+    {
+      "type": "place_token",
+      "entity": "P5",
+      "entity_type": "company",
+      "id": 191,
+      "created_at": 1771770237,
+      "city": "D3-0-0",
+      "slot": 0,
+      "tokener": "NSR"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "P2",
+      "entity_type": "company",
+      "id": 192,
+      "created_at": 1771770280,
+      "hex": "H23",
+      "tile": "9-8",
+      "rotation": 0
+    },
+    {
+      "type": "run_routes",
+      "entity": "NSR",
+      "entity_type": "corporation",
+      "id": 193,
+      "created_at": 1771770290,
+      "routes": [
+        {
+          "train": "2-3",
+          "connections": [
+            [
+              "H25",
+              "H27",
+              "I28",
+              "J29",
+              "K30"
+            ]
+          ],
+          "hexes": [
+            "K30",
+            "H25"
+          ],
+          "revenue": 110,
+          "revenue_str": "K30-H25 ?+20",
+          "nodes": [
+            "H25-0",
+            "K30-0"
+          ]
+        }
+      ],
+      "extra_revenue": 0,
+      "subsidy": 0
+    },
+    {
+      "type": "dividend",
+      "entity": "NSR",
+      "entity_type": "corporation",
+      "id": 194,
+      "created_at": 1771770295,
+      "kind": "payout"
+    },
+    {
+      "type": "sell_train",
+      "entity": "NSR",
+      "entity_type": "corporation",
+      "id": 195,
+      "created_at": 1771770300,
+      "train": "2-3",
+      "price": 180
+    },
+    {
+      "type": "buy_train",
+      "entity": "NSR",
+      "entity_type": "corporation",
+      "id": 196,
+      "created_at": 1771770302,
+      "train": "3-1",
+      "price": 300,
+      "variant": "3"
+    },
+    {
+      "type": "pass",
+      "entity": "NSR",
+      "entity_type": "corporation",
+      "id": 197,
+      "created_at": 1771770303
+    },
+    {
+      "type": "pass",
+      "entity": "NSR",
+      "entity_type": "corporation",
+      "id": 198,
+      "created_at": 1771770310
+    },
+    {
+      "type": "lay_tile",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 199,
+      "created_at": 1771775565,
+      "hex": "F31",
+      "tile": "8-7",
+      "rotation": 0
+    },
+    {
+      "type": "lay_tile",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 200,
+      "created_at": 1771775569,
+      "hex": "F33",
+      "tile": "8-8",
+      "rotation": 3
+    },
+    {
+      "type": "lay_tile",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 201,
+      "created_at": 1771775575,
+      "hex": "G34",
+      "tile": "4-0",
+      "rotation": 2
+    },
+    {
+      "hex": "H35",
+      "tile": "IND5-1",
+      "type": "lay_tile",
+      "entity": "BR",
+      "rotation": 1,
+      "entity_type": "corporation",
+      "id": 202,
+      "user": 12074,
+      "created_at": 1771775586
+    },
+    {
+      "city": "G36-0-0",
+      "slot": 1,
+      "type": "place_token",
+      "entity": "BR",
+      "tokener": "BR",
+      "entity_type": "corporation",
+      "id": 203,
+      "user": 12074,
+      "created_at": 1771775593
+    },
+    {
+      "type": "undo",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 204,
+      "user": 12074,
+      "created_at": 1771775652
+    },
+    {
+      "type": "undo",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 205,
+      "user": 12074,
+      "created_at": 1771775655
+    },
+    {
+      "type": "lay_tile",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 206,
+      "created_at": 1771775689,
+      "hex": "H35",
+      "tile": "IND3-0",
+      "rotation": 2
+    },
+    {
+      "type": "place_token",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 207,
+      "created_at": 1771775691,
+      "city": "G36-0-0",
+      "slot": 1,
+      "tokener": "BR"
+    },
+    {
+      "type": "run_routes",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 208,
+      "created_at": 1771775811,
+      "routes": [
+        {
+          "train": "2-5",
+          "connections": [
+            [
+              "E30",
+              "E28",
+              "E26",
+              "D25",
+              "D23"
+            ],
+            [
+              "E30",
+              "F31",
+              "F33",
+              "G34"
+            ],
+            [
+              "G34",
+              "H35"
+            ],
+            [
+              "H35",
+              "G36"
+            ]
+          ],
+          "hexes": [
+            "D23",
+            "E30",
+            "G34",
+            "H35",
+            "G36"
+          ],
+          "revenue": 130,
+          "revenue_str": "D23-E30-G34-H35-G36",
+          "nodes": [
+            "E30-0",
+            "D23-0",
+            "G34-0",
+            "H35-1",
+            "G36-0"
+          ]
+        }
+      ],
+      "extra_revenue": 0,
+      "subsidy": 0
+    },
+    {
+      "type": "dividend",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 209,
+      "created_at": 1771775813,
+      "kind": "payout"
+    },
+    {
+      "type": "buy_train",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 210,
+      "created_at": 1771775891,
+      "train": "2-2",
+      "price": 180,
+      "variant": "2"
+    },
+    {
+      "type": "pass",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 211,
+      "created_at": 1771775926
+    },
+    {
+      "type": "pass",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 212,
+      "created_at": 1771775932
+    },
+    {
+      "type": "lay_tile",
+      "entity": "TR",
+      "entity_type": "corporation",
+      "id": 213,
+      "created_at": 1771777072,
+      "hex": "Q14",
+      "tile": "8-9",
+      "rotation": 1
+    },
+    {
+      "type": "lay_tile",
+      "entity": "TR",
+      "entity_type": "corporation",
+      "id": 214,
+      "created_at": 1771777077,
+      "hex": "P15",
+      "tile": "7-0",
+      "rotation": 4
+    },
+    {
+      "type": "lay_tile",
+      "entity": "TR",
+      "entity_type": "corporation",
+      "id": 215,
+      "created_at": 1771777080,
+      "hex": "Q16",
+      "tile": "9-9",
+      "rotation": 2
+    },
+    {
+      "type": "lay_tile",
+      "entity": "TR",
+      "entity_type": "corporation",
+      "id": 216,
+      "created_at": 1771777087,
+      "hex": "Q18",
+      "tile": "9-10",
+      "rotation": 1
+    },
+    {
+      "type": "pass",
+      "entity": "TR",
+      "entity_type": "corporation",
+      "id": 217,
+      "created_at": 1771777100
+    },
+    {
+      "type": "run_routes",
+      "entity": "TR",
+      "entity_type": "corporation",
+      "id": 218,
+      "created_at": 1771777111,
+      "routes": [
+        {
+          "train": "2-4",
+          "connections": [
+            [
+              "M10",
+              "N11",
+              "O12",
+              "P11",
+              "Q10"
+            ]
+          ],
+          "hexes": [
+            "Q10",
+            "M10"
+          ],
+          "revenue": 70,
+          "revenue_str": "Q10-M10",
+          "nodes": [
+            "M10-3",
+            "Q10-0"
+          ]
+        }
+      ],
+      "extra_revenue": 0,
+      "subsidy": 0
+    },
+    {
+      "type": "dividend",
+      "entity": "TR",
+      "entity_type": "corporation",
+      "id": 219,
+      "created_at": 1771777116,
+      "kind": "payout"
+    },
+    {
+      "type": "sell_train",
+      "entity": "TR",
+      "entity_type": "corporation",
+      "id": 220,
+      "created_at": 1771777127,
+      "train": "2-4",
+      "price": 180
+    },
+    {
+      "type": "buy_train",
+      "entity": "TR",
+      "entity_type": "corporation",
+      "id": 221,
+      "created_at": 1771777129,
+      "train": "3-2",
+      "price": 300,
+      "variant": "3"
+    },
+    {
+      "type": "pass",
+      "entity": "TR",
+      "entity_type": "corporation",
+      "id": 222,
+      "created_at": 1771777133
+    },
+    {
+      "type": "pass",
+      "entity": "TR",
+      "entity_type": "corporation",
+      "id": 223,
+      "created_at": 1771777143
+    },
+    {
+      "type": "pass",
+      "entity": 20977,
+      "entity_type": "player",
+      "id": 224,
+      "created_at": 1771789315
+    },
+    {
+      "type": "pass",
+      "entity": 12074,
+      "entity_type": "player",
+      "id": 225,
+      "created_at": 1771790242
+    },
+    {
+      "type": "pass",
+      "entity": 12351,
+      "entity_type": "player",
+      "id": 226,
+      "created_at": 1771791843
+    },
+    {
+      "type": "pass",
+      "entity": 1152,
+      "entity_type": "player",
+      "id": 227,
+      "created_at": 1771819016
+    },
+    {
+      "type": "program_share_pass",
+      "entity": 2465,
+      "entity_type": "player",
+      "id": 228,
+      "created_at": 1771820765,
+      "auto_actions": [
+        {
+          "type": "pass",
+          "entity": 2465,
+          "entity_type": "player",
+          "created_at": 1771820765
+        }
+      ],
+      "unconditional": false,
+      "indefinite": false
+    },
+    {
+      "type": "buy_company",
+      "entity": 12074,
+      "entity_type": "player",
+      "id": 229,
+      "created_at": 1771820862,
+      "company": "NSR_6",
+      "price": 71
+    },
+    {
+      "type": "buy_company",
+      "price": 64,
+      "entity": 12351,
+      "company": "KGF_6",
+      "entity_type": "player",
+      "id": 230,
+      "user": 12351,
+      "created_at": 1771861179
+    },
+    {
+      "type": "undo",
+      "entity": 12351,
+      "entity_type": "player",
+      "id": 231,
+      "user": 12351,
+      "created_at": 1771861232
+    },
+    {
+      "type": "buy_company",
+      "entity": 12351,
+      "entity_type": "player",
+      "id": 232,
+      "created_at": 1771861243,
+      "company": "BNR_7",
+      "price": 82
+    },
+    {
+      "type": "pass",
+      "entity": 12351,
+      "entity_type": "player",
+      "id": 233,
+      "created_at": 1771861261,
+      "auto_actions": [
+        {
+          "type": "program_disable",
+          "entity": 2465,
+          "entity_type": "player",
+          "created_at": 1771861261,
+          "reason": "Unknown action buy_company disabling for safety"
+        }
+      ]
+    },
+    {
+      "type": "program_share_pass",
+      "entity": 2465,
+      "entity_type": "player",
+      "id": 234,
+      "created_at": 1771862222,
+      "auto_actions": [
+        {
+          "type": "pass",
+          "entity": 2465,
+          "entity_type": "player",
+          "created_at": 1771862222
+        }
+      ],
+      "unconditional": false,
+      "indefinite": false
+    },
+    {
+      "type": "buy_company",
+      "entity": 12351,
+      "entity_type": "player",
+      "id": 235,
+      "created_at": 1771862403,
+      "auto_actions": [
+        {
+          "type": "program_disable",
+          "entity": 2465,
+          "entity_type": "player",
+          "created_at": 1771862402,
+          "reason": "Unknown action buy_company disabling for safety"
+        }
+      ],
+      "company": "BNR_6",
+      "price": 82
+    },
+    {
+      "type": "pass",
+      "entity": 2465,
+      "entity_type": "player",
+      "id": 236,
+      "created_at": 1771863563
+    },
+    {
+      "type": "buy_company",
+      "entity": 12351,
+      "entity_type": "player",
+      "id": 237,
+      "created_at": 1771883750,
+      "company": "MR_5",
+      "price": 90
+    },
+    {
+      "type": "pass",
+      "entity": 12351,
+      "entity_type": "player",
+      "id": 238,
+      "created_at": 1771883755
+    },
+    {
+      "type": "program_share_pass",
+      "entity": 2465,
+      "entity_type": "player",
+      "id": 239,
+      "created_at": 1771885120,
+      "auto_actions": [
+        {
+          "type": "pass",
+          "entity": 2465,
+          "entity_type": "player",
+          "created_at": 1771885119
+        }
+      ],
+      "unconditional": false,
+      "indefinite": false
+    },
+    {
+      "hex": "N13",
+      "tile": "4-1",
+      "type": "lay_tile",
+      "entity": "NCR",
+      "rotation": 2,
+      "entity_type": "corporation",
+      "id": 240,
+      "user": 20977,
+      "created_at": 1771885883
+    },
+    {
+      "hex": "O14",
+      "tile": "8-10",
+      "type": "lay_tile",
+      "entity": "NCR",
+      "rotation": 0,
+      "entity_type": "corporation",
+      "id": 241,
+      "user": 20977,
+      "created_at": 1771885886
+    },
+    {
+      "hex": "O16",
+      "tile": "58-2",
+      "type": "lay_tile",
+      "entity": "NCR",
+      "rotation": 3,
+      "entity_type": "corporation",
+      "id": 242,
+      "user": 20977,
+      "created_at": 1771885888
+    },
+    {
+      "hex": "P17",
+      "tile": "235-0",
+      "type": "lay_tile",
+      "entity": "NCR",
+      "rotation": 2,
+      "entity_type": "corporation",
+      "id": 243,
+      "user": 20977,
+      "created_at": 1771885890
+    },
+    {
+      "type": "undo",
+      "entity": "NCR",
+      "action_id": 239,
+      "entity_type": "corporation",
+      "id": 244,
+      "user": 20977,
+      "created_at": 1771885969
+    },
+    {
+      "hex": "N13",
+      "tile": "58-2",
+      "type": "lay_tile",
+      "entity": "NCR",
+      "rotation": 0,
+      "entity_type": "corporation",
+      "id": 245,
+      "user": 20977,
+      "created_at": 1771885976
+    },
+    {
+      "hex": "N15",
+      "tile": "8-10",
+      "type": "lay_tile",
+      "entity": "NCR",
+      "rotation": 3,
+      "entity_type": "corporation",
+      "id": 246,
+      "user": 20977,
+      "created_at": 1771885979
+    },
+    {
+      "hex": "O16",
+      "tile": "4-1",
+      "type": "lay_tile",
+      "entity": "NCR",
+      "rotation": 2,
+      "entity_type": "corporation",
+      "id": 247,
+      "user": 20977,
+      "created_at": 1771885981
+    },
+    {
+      "hex": "P17",
+      "tile": "235-0",
+      "type": "lay_tile",
+      "entity": "NCR",
+      "rotation": 2,
+      "entity_type": "corporation",
+      "id": 248,
+      "user": 20977,
+      "created_at": 1771885982
+    },
+    {
+      "type": "undo",
+      "entity": "NCR",
+      "action_id": 239,
+      "entity_type": "corporation",
+      "id": 249,
+      "user": 20977,
+      "created_at": 1771885987
+    },
+    {
+      "type": "lay_tile",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 250,
+      "created_at": 1771885999,
+      "hex": "K14",
+      "tile": "14-0",
+      "rotation": 1
+    },
+    {
+      "type": "place_token",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 251,
+      "created_at": 1771886003,
+      "city": "M10-0-0",
+      "slot": 0,
+      "tokener": "NCR"
+    },
+    {
+      "type": "run_routes",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 252,
+      "created_at": 1771886015,
+      "routes": [
+        {
+          "train": "2-1",
+          "connections": [
+            [
+              "L13",
+              "K14"
+            ],
+            [
+              "K12",
+              "L13"
+            ],
+            [
+              "M10",
+              "L11",
+              "K12"
+            ]
+          ],
+          "hexes": [
+            "K14",
+            "L13",
+            "K12",
+            "M10"
+          ],
+          "revenue": 100,
+          "revenue_str": "K14-L13-K12-M10 ?+10",
+          "nodes": [
+            "L13-0",
+            "K14-0",
+            "K12-0",
+            "M10-3"
+          ]
+        },
+        {
+          "train": "3-0",
+          "connections": [
+            [
+              "J11",
+              "J13",
+              "K14"
+            ],
+            [
+              "K12",
+              "J11"
+            ],
+            [
+              "M10",
+              "L9",
+              "K10",
+              "K12"
+            ]
+          ],
+          "hexes": [
+            "K14",
+            "J11",
+            "K12",
+            "M10"
+          ],
+          "revenue": 90,
+          "revenue_str": "K14-J11-K12-M10 ?+10",
+          "nodes": [
+            "J11-0",
+            "K14-0",
+            "K12-1",
+            "M10-0"
+          ]
+        }
+      ],
+      "extra_revenue": 0,
+      "subsidy": 0
+    },
+    {
+      "type": "dividend",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 253,
+      "created_at": 1771886018,
+      "kind": "withhold"
+    },
+    {
+      "type": "sell_train",
+      "price": 300,
+      "train": "3-0",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 254,
+      "user": 20977,
+      "created_at": 1771886020
+    },
+    {
+      "type": "sell_train",
+      "price": 180,
+      "train": "2-1",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 255,
+      "user": 20977,
+      "created_at": 1771886022
+    },
+    {
+      "type": "undo",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 256,
+      "user": 20977,
+      "created_at": 1771886023
+    },
+    {
+      "type": "undo",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 257,
+      "user": 20977,
+      "created_at": 1771886024
+    },
+    {
+      "type": "sell_train",
+      "price": 300,
+      "train": "3-0",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 258,
+      "user": 20977,
+      "created_at": 1771886028
+    },
+    {
+      "type": "undo",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 259,
+      "user": 20977,
+      "created_at": 1771886048
+    },
+    {
+      "type": "sell_train",
+      "price": 180,
+      "train": "2-1",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 260,
+      "user": 20977,
+      "created_at": 1771886057
+    },
+    {
+      "type": "undo",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 261,
+      "user": 20977,
+      "created_at": 1771886066
+    },
+    {
+      "type": "pass",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 262,
+      "created_at": 1771886069
+    },
+    {
+      "type": "pass",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 263,
+      "created_at": 1771886116
+    },
+    {
+      "type": "undo",
+      "entity": "MR",
+      "entity_type": "corporation",
+      "id": 264,
+      "user": 20977,
+      "created_at": 1771886122
+    },
+    {
+      "type": "undo",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 265,
+      "user": 20977,
+      "created_at": 1771886126
+    },
+    {
+      "type": "undo",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 266,
+      "user": 20977,
+      "created_at": 1771886127
+    },
+    {
+      "type": "redo",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 267,
+      "user": 20977,
+      "created_at": 1771886133
+    },
+    {
+      "type": "redo",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 268,
+      "user": 20977,
+      "created_at": 1771886136
+    },
+    {
+      "type": "redo",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 269,
+      "user": 20977,
+      "created_at": 1771886136
+    },
+    {
+      "type": "lay_tile",
+      "entity": "MR",
+      "entity_type": "corporation",
+      "id": 270,
+      "created_at": 1771898088,
+      "hex": "J31",
+      "tile": "8-10",
+      "rotation": 4
+    },
+    {
+      "type": "lay_tile",
+      "entity": "MR",
+      "entity_type": "corporation",
+      "id": 271,
+      "created_at": 1771898101,
+      "hex": "J33",
+      "tile": "4-1",
+      "rotation": 0
+    },
+    {
+      "type": "lay_tile",
+      "entity": "MR",
+      "entity_type": "corporation",
+      "id": 272,
+      "created_at": 1771898103,
+      "hex": "J35",
+      "tile": "8-11",
+      "rotation": 1
+    },
+    {
+      "type": "lay_tile",
+      "entity": "MR",
+      "entity_type": "corporation",
+      "id": 273,
+      "created_at": 1771898106,
+      "hex": "I36",
+      "tile": "8-12",
+      "rotation": 2
+    },
+    {
+      "type": "place_token",
+      "entity": "MR",
+      "entity_type": "corporation",
+      "id": 274,
+      "created_at": 1771898120,
+      "city": "611-0-0",
+      "slot": 1,
+      "tokener": "MR"
+    },
+    {
+      "type": "run_routes",
+      "entity": "MR",
+      "entity_type": "corporation",
+      "id": 275,
+      "created_at": 1771898135,
+      "routes": [
+        {
+          "train": "2-0",
+          "connections": [
+            [
+              "K30",
+              "J29",
+              "I28",
+              "H27",
+              "H25"
+            ]
+          ],
+          "hexes": [
+            "K30",
+            "H25"
+          ],
+          "revenue": 110,
+          "revenue_str": "K30-H25 ?+20",
+          "nodes": [
+            "K30-0",
+            "H25-0"
+          ]
+        }
+      ],
+      "extra_revenue": 0,
+      "subsidy": 0
+    },
+    {
+      "type": "dividend",
+      "entity": "MR",
+      "entity_type": "corporation",
+      "id": 276,
+      "created_at": 1771898149,
+      "kind": "withhold"
+    },
+    {
+      "type": "sell_train",
+      "entity": "MR",
+      "entity_type": "corporation",
+      "id": 277,
+      "created_at": 1771898165,
+      "train": "2-0",
+      "price": 180
+    },
+    {
+      "type": "buy_train",
+      "entity": "MR",
+      "entity_type": "corporation",
+      "id": 278,
+      "created_at": 1771898167,
+      "train": "3-3",
+      "price": 300,
+      "variant": "3"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "BNR",
+      "entity_type": "corporation",
+      "id": 279,
+      "created_at": 1771899701,
+      "hex": "I20",
+      "tile": "6-0",
+      "rotation": 1
+    },
+    {
+      "type": "lay_tile",
+      "entity": "BNR",
+      "entity_type": "corporation",
+      "id": 280,
+      "created_at": 1771899704,
+      "hex": "H21",
+      "tile": "8-13",
+      "rotation": 4
+    },
+    {
+      "type": "pass",
+      "entity": "BNR",
+      "entity_type": "corporation",
+      "id": 281,
+      "created_at": 1771899717
+    },
+    {
+      "type": "buy_train",
+      "entity": "BNR",
+      "entity_type": "corporation",
+      "id": 282,
+      "created_at": 1771899722,
+      "train": "2-3",
+      "price": 180,
+      "variant": "2"
+    },
+    {
+      "type": "pass",
+      "entity": "BNR",
+      "entity_type": "corporation",
+      "id": 283,
+      "created_at": 1771899726
+    },
+    {
+      "type": "pass",
+      "entity": "BNR",
+      "entity_type": "corporation",
+      "id": 284,
+      "created_at": 1771899731
+    },
+    {
+      "type": "lay_tile",
+      "entity": "NSR",
+      "entity_type": "corporation",
+      "id": 285,
+      "created_at": 1771899744,
+      "hex": "H25",
+      "tile": "513-0",
+      "rotation": 0
+    },
+    {
+      "type": "run_routes",
+      "entity": "NSR",
+      "entity_type": "corporation",
+      "id": 286,
+      "created_at": 1771899764,
+      "routes": [
+        {
+          "train": "3-1",
+          "connections": [
+            [
+              "H25",
+              "H27",
+              "I28",
+              "J29",
+              "K30"
+            ],
+            [
+              "I20",
+              "H21",
+              "H23",
+              "H25"
+            ]
+          ],
+          "hexes": [
+            "K30",
+            "H25",
+            "I20"
+          ],
+          "revenue": 210,
+          "revenue_str": "K30-H25-I20 ?+40 C+40",
+          "nodes": [
+            "H25-0",
+            "K30-0",
+            "I20-0"
+          ]
+        }
+      ],
+      "extra_revenue": 0,
+      "subsidy": 0
+    },
+    {
+      "type": "dividend",
+      "entity": "NSR",
+      "entity_type": "corporation",
+      "id": 287,
+      "created_at": 1771899765,
+      "kind": "payout"
+    },
+    {
+      "type": "buy_train",
+      "entity": "NSR",
+      "entity_type": "corporation",
+      "id": 288,
+      "created_at": 1771899772,
+      "train": "2-3",
+      "price": 1
+    },
+    {
+      "type": "sell_train",
+      "entity": "NSR",
+      "entity_type": "corporation",
+      "id": 289,
+      "created_at": 1771899776,
+      "train": "2-3",
+      "price": 180
+    },
+    {
+      "type": "sell_train",
+      "entity": "NSR",
+      "entity_type": "corporation",
+      "id": 290,
+      "created_at": 1771899780,
+      "train": "3-1",
+      "price": 300
+    },
+    {
+      "type": "buy_train",
+      "entity": "NSR",
+      "entity_type": "corporation",
+      "id": 291,
+      "created_at": 1771899794,
+      "train": "4-0",
+      "price": 450,
+      "variant": "4E"
+    },
+    {
+      "type": "pass",
+      "entity": "NSR",
+      "entity_type": "corporation",
+      "id": 292,
+      "created_at": 1771899797
+    },
+    {
+      "type": "corporate_sell_company",
+      "entity": "NSR",
+      "entity_type": "corporation",
+      "id": 293,
+      "created_at": 1771899808,
+      "company": "RB0",
+      "price": 100
+    },
+    {
+      "type": "corporate_buy_company",
+      "entity": "NSR",
+      "entity_type": "corporation",
+      "id": 294,
+      "created_at": 1771899815,
+      "company": "KGF_6",
+      "price": 64
+    },
+    {
+      "type": "lay_tile",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 295,
+      "created_at": 1771907432,
+      "hex": "H37",
+      "tile": "7-1",
+      "rotation": 2
+    },
+    {
+      "type": "lay_tile",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 296,
+      "created_at": 1771907441,
+      "hex": "H33",
+      "tile": "9-11",
+      "rotation": 0
+    },
+    {
+      "hex": "H31",
+      "tile": "5-0",
+      "type": "lay_tile",
+      "entity": "BR",
+      "rotation": 5,
+      "entity_type": "corporation",
+      "id": 297,
+      "user": 12074,
+      "created_at": 1771907451
+    },
+    {
+      "hex": "I32",
+      "tile": "8-14",
+      "type": "lay_tile",
+      "entity": "BR",
+      "rotation": 0,
+      "entity_type": "corporation",
+      "id": 298,
+      "user": 12074,
+      "created_at": 1771907456
+    },
+    {
+      "type": "undo",
+      "entity": "BR",
+      "action_id": 296,
+      "entity_type": "corporation",
+      "id": 299,
+      "user": 12074,
+      "created_at": 1771907554
+    },
+    {
+      "type": "lay_tile",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 300,
+      "created_at": 1771907563,
+      "hex": "H31",
+      "tile": "5-0",
+      "rotation": 0
+    },
+    {
+      "type": "lay_tile",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 301,
+      "created_at": 1771907574,
+      "hex": "G32",
+      "tile": "8-14",
+      "rotation": 4
+    },
+    {
+      "type": "run_routes",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 302,
+      "created_at": 1771907602,
+      "routes": [
+        {
+          "train": "2-5",
+          "connections": [
+            [
+              "E30",
+              "E28",
+              "E26",
+              "D25",
+              "D23"
+            ],
+            [
+              "E30",
+              "F31",
+              "F33",
+              "G34"
+            ],
+            [
+              "G34",
+              "H35"
+            ],
+            [
+              "H35",
+              "G36"
+            ]
+          ],
+          "hexes": [
+            "D23",
+            "E30",
+            "G34",
+            "H35",
+            "G36"
+          ],
+          "revenue": 130,
+          "revenue_str": "D23-E30-G34-H35-G36",
+          "nodes": [
+            "E30-0",
+            "D23-0",
+            "G34-0",
+            "H35-1",
+            "G36-0"
+          ]
+        },
+        {
+          "train": "2-2",
+          "connections": [
+            [
+              "H35",
+              "H37",
+              "G36"
+            ],
+            [
+              "H35",
+              "H33",
+              "H31"
+            ]
+          ],
+          "hexes": [
+            "G36",
+            "H35",
+            "H31"
+          ],
+          "revenue": 80,
+          "revenue_str": "G36-H35-H31",
+          "nodes": [
+            "H35-0",
+            "G36-0",
+            "H31-0"
+          ]
+        }
+      ],
+      "extra_revenue": 0,
+      "subsidy": 0
+    },
+    {
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 303,
+      "user": 12074,
+      "created_at": 1771907618
+    },
+    {
+      "type": "undo",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 304,
+      "user": 12074,
+      "created_at": 1771907730
+    },
+    {
+      "type": "dividend",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 305,
+      "created_at": 1771907736,
+      "kind": "payout"
+    },
+    {
+      "type": "sell_train",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 306,
+      "created_at": 1771907864,
+      "train": "2-5",
+      "price": 180
+    },
+    {
+      "type": "sell_train",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 307,
+      "created_at": 1771907866,
+      "train": "2-2",
+      "price": 180
+    },
+    {
+      "type": "buy_train",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 308,
+      "created_at": 1771907871,
+      "train": "3-1",
+      "price": 300,
+      "variant": "3"
+    },
+    {
+      "type": "pass",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 309,
+      "created_at": 1771908026
+    },
+    {
+      "type": "pass",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 310,
+      "created_at": 1771908037
+    },
+    {
+      "hex": "O20",
+      "tile": "9-12",
+      "type": "lay_tile",
+      "entity": "TR",
+      "rotation": 1,
+      "entity_type": "corporation",
+      "id": 311,
+      "user": 2465,
+      "created_at": 1771934606
+    },
+    {
+      "hex": "N21",
+      "tile": "9-13",
+      "type": "lay_tile",
+      "entity": "TR",
+      "rotation": 1,
+      "entity_type": "corporation",
+      "id": 312,
+      "user": 2465,
+      "created_at": 1771934609
+    },
+    {
+      "hex": "M22",
+      "tile": "8-15",
+      "type": "lay_tile",
+      "entity": "TR",
+      "rotation": 4,
+      "entity_type": "corporation",
+      "id": 313,
+      "user": 2465,
+      "created_at": 1771934613
+    },
+    {
+      "type": "undo",
+      "entity": "TR",
+      "action_id": 310,
+      "entity_type": "corporation",
+      "id": 314,
+      "user": 2465,
+      "created_at": 1771934641
+    },
+    {
+      "type": "lay_tile",
+      "entity": "TR",
+      "entity_type": "corporation",
+      "id": 315,
+      "created_at": 1771934657,
+      "hex": "O20",
+      "tile": "9-12",
+      "rotation": 1
+    },
+    {
+      "type": "lay_tile",
+      "entity": "TR",
+      "entity_type": "corporation",
+      "id": 316,
+      "created_at": 1771934660,
+      "hex": "N21",
+      "tile": "9-13",
+      "rotation": 1
+    },
+    {
+      "type": "lay_tile",
+      "entity": "TR",
+      "entity_type": "corporation",
+      "id": 317,
+      "created_at": 1771934663,
+      "hex": "M22",
+      "tile": "8-15",
+      "rotation": 4
+    },
+    {
+      "type": "lay_tile",
+      "entity": "TR",
+      "entity_type": "corporation",
+      "id": 318,
+      "created_at": 1771934695,
+      "hex": "L23",
+      "tile": "58-2",
+      "rotation": 3
+    },
+    {
+      "type": "pass",
+      "entity": "TR",
+      "entity_type": "corporation",
+      "id": 319,
+      "created_at": 1771934702
+    },
+    {
+      "type": "run_routes",
+      "entity": "TR",
+      "entity_type": "corporation",
+      "id": 320,
+      "created_at": 1771934756,
+      "routes": [
+        {
+          "train": "3-2",
+          "connections": [
+            [
+              "L13",
+              "K14"
+            ],
+            [
+              "K12",
+              "L13"
+            ],
+            [
+              "M10",
+              "L11",
+              "K12"
+            ],
+            [
+              "M10",
+              "N11",
+              "O12",
+              "P11",
+              "Q10"
+            ]
+          ],
+          "hexes": [
+            "K14",
+            "L13",
+            "K12",
+            "M10",
+            "Q10"
+          ],
+          "revenue": 150,
+          "revenue_str": "K14-L13-K12-M10-Q10 ?+20",
+          "nodes": [
+            "L13-0",
+            "K14-0",
+            "K12-0",
+            "M10-3",
+            "Q10-0"
+          ]
+        }
+      ],
+      "extra_revenue": 0,
+      "subsidy": 0
+    },
+    {
+      "type": "dividend",
+      "entity": "TR",
+      "entity_type": "corporation",
+      "id": 321,
+      "created_at": 1771934774,
+      "kind": "payout"
+    },
+    {
+      "type": "pass",
+      "entity": "TR",
+      "entity_type": "corporation",
+      "id": 322,
+      "created_at": 1771934790
+    },
+    {
+      "hex": "N13",
+      "tile": "4-2",
+      "type": "lay_tile",
+      "entity": "NCR",
+      "rotation": 2,
+      "entity_type": "corporation",
+      "id": 323,
+      "user": 20977,
+      "created_at": 1771935449
+    },
+    {
+      "hex": "O14",
+      "tile": "8-16",
+      "type": "lay_tile",
+      "entity": "NCR",
+      "rotation": 0,
+      "entity_type": "corporation",
+      "id": 324,
+      "user": 20977,
+      "created_at": 1771935451
+    },
+    {
+      "hex": "O16",
+      "tile": "58-3",
+      "type": "lay_tile",
+      "entity": "NCR",
+      "rotation": 3,
+      "entity_type": "corporation",
+      "id": 325,
+      "user": 20977,
+      "created_at": 1771935452
+    },
+    {
+      "hex": "P17",
+      "tile": "235-0",
+      "type": "lay_tile",
+      "entity": "NCR",
+      "rotation": 2,
+      "entity_type": "corporation",
+      "id": 326,
+      "user": 20977,
+      "created_at": 1771935454
+    },
+    {
+      "type": "pass",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 327,
+      "user": 20977,
+      "created_at": 1771935469
+    },
+    {
+      "type": "run_routes",
+      "entity": "NCR",
+      "routes": [
+        {
+          "hexes": [
+            "K14",
+            "L13",
+            "K12",
+            "M10"
+          ],
+          "nodes": [
+            "L13-0",
+            "K14-0",
+            "K12-0",
+            "M10-3"
+          ],
+          "train": "2-1",
+          "revenue": 100,
+          "connections": [
+            [
+              "L13",
+              "K14"
+            ],
+            [
+              "K12",
+              "L13"
+            ],
+            [
+              "M10",
+              "L11",
+              "K12"
+            ]
+          ],
+          "revenue_str": "K14-L13-K12-M10 ?+10"
+        },
+        {
+          "hexes": [
+            "K14",
+            "J11",
+            "K12",
+            "M10"
+          ],
+          "nodes": [
+            "J11-0",
+            "K14-0",
+            "K12-1",
+            "M10-0"
+          ],
+          "train": "3-0",
+          "revenue": 90,
+          "connections": [
+            [
+              "J11",
+              "J13",
+              "K14"
+            ],
+            [
+              "K12",
+              "J11"
+            ],
+            [
+              "M10",
+              "L9",
+              "K10",
+              "K12"
+            ]
+          ],
+          "revenue_str": "K14-J11-K12-M10 ?+10"
+        }
+      ],
+      "subsidy": 0,
+      "entity_type": "corporation",
+      "extra_revenue": 0,
+      "id": 328,
+      "user": 20977,
+      "created_at": 1771935539
+    },
+    {
+      "kind": "withhold",
+      "type": "dividend",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 329,
+      "user": 20977,
+      "created_at": 1771935541
+    },
+    {
+      "type": "sell_train",
+      "price": 300,
+      "train": "3-0",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 330,
+      "user": 20977,
+      "created_at": 1771935542
+    },
+    {
+      "type": "sell_train",
+      "price": 180,
+      "train": "2-1",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 331,
+      "user": 20977,
+      "created_at": 1771935543
+    },
+    {
+      "type": "undo",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 332,
+      "user": 20977,
+      "created_at": 1771935547
+    },
+    {
+      "type": "undo",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 333,
+      "user": 20977,
+      "created_at": 1771935550
+    },
+    {
+      "type": "sell_train",
+      "price": 180,
+      "train": "2-1",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 334,
+      "user": 20977,
+      "created_at": 1771935552
+    },
+    {
+      "type": "undo",
+      "entity": "NCR",
+      "action_id": 322,
+      "entity_type": "corporation",
+      "id": 335,
+      "user": 20977,
+      "created_at": 1771935558
+    },
+    {
+      "type": "lay_tile",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 336,
+      "created_at": 1771935561,
+      "hex": "N13",
+      "tile": "4-2",
+      "rotation": 2
+    },
+    {
+      "type": "lay_tile",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 337,
+      "created_at": 1771935562,
+      "hex": "O14",
+      "tile": "8-16",
+      "rotation": 0
+    },
+    {
+      "type": "lay_tile",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 338,
+      "created_at": 1771935564,
+      "hex": "O16",
+      "tile": "58-3",
+      "rotation": 3
+    },
+    {
+      "type": "lay_tile",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 339,
+      "created_at": 1771935567,
+      "hex": "P17",
+      "tile": "235-0",
+      "rotation": 2
+    },
+    {
+      "type": "place_token",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 340,
+      "created_at": 1771935591,
+      "city": "235-0-0",
+      "slot": 0,
+      "tokener": "NCR"
+    },
+    {
+      "type": "run_routes",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 341,
+      "created_at": 1771935593,
+      "routes": [
+        {
+          "train": "2-1",
+          "connections": [
+            [
+              "L13",
+              "K14"
+            ],
+            [
+              "K12",
+              "L13"
+            ],
+            [
+              "M10",
+              "L11",
+              "K12"
+            ]
+          ],
+          "hexes": [
+            "K14",
+            "L13",
+            "K12",
+            "M10"
+          ],
+          "revenue": 100,
+          "revenue_str": "K14-L13-K12-M10 ?+10",
+          "nodes": [
+            "L13-0",
+            "K14-0",
+            "K12-0",
+            "M10-3"
+          ]
+        },
+        {
+          "train": "3-0",
+          "connections": [
+            [
+              "J11",
+              "J13",
+              "K14"
+            ],
+            [
+              "K12",
+              "J11"
+            ],
+            [
+              "M10",
+              "L9",
+              "K10",
+              "K12"
+            ]
+          ],
+          "hexes": [
+            "K14",
+            "J11",
+            "K12",
+            "M10"
+          ],
+          "revenue": 90,
+          "revenue_str": "K14-J11-K12-M10 ?+10",
+          "nodes": [
+            "J11-0",
+            "K14-0",
+            "K12-1",
+            "M10-0"
+          ]
+        }
+      ],
+      "extra_revenue": 0,
+      "subsidy": 0
+    },
+    {
+      "type": "dividend",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 342,
+      "created_at": 1771935595,
+      "kind": "withhold"
+    },
+    {
+      "type": "sell_train",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 343,
+      "created_at": 1771935637,
+      "train": "2-1",
+      "price": 180
+    },
+    {
+      "type": "buy_train",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 344,
+      "created_at": 1771935640,
+      "train": "4-1",
+      "price": 450,
+      "variant": "4E"
+    },
+    {
+      "type": "pass",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 345,
+      "created_at": 1771935663
+    },
+    {
+      "type": "lay_tile",
+      "entity": "NSR",
+      "entity_type": "corporation",
+      "id": 346,
+      "created_at": 1771937520,
+      "hex": "I20",
+      "tile": "619-0",
+      "rotation": 1
+    },
+    {
+      "type": "place_token",
+      "entity": "NSR",
+      "entity_type": "corporation",
+      "id": 347,
+      "created_at": 1771937556,
+      "city": "619-0-0",
+      "slot": 1,
+      "tokener": "NSR"
+    },
+    {
+      "type": "run_routes",
+      "entity": "NSR",
+      "entity_type": "corporation",
+      "id": 348,
+      "created_at": 1771937595,
+      "routes": [
+        {
+          "train": "4-0",
+          "connections": [
+            [
+              "H25",
+              "H27",
+              "I28",
+              "J29",
+              "K30"
+            ],
+            [
+              "F23",
+              "G24",
+              "H25"
+            ],
+            [
+              "E24",
+              "F23"
+            ],
+            [
+              "D23",
+              "E24"
+            ]
+          ],
+          "hexes": [
+            "K30",
+            "H25",
+            "F23",
+            "E24",
+            "D23"
+          ],
+          "revenue": 270,
+          "revenue_str": "K30-H25-F23-E24-D23 Gauge:1 ?+80",
+          "nodes": [
+            "H25-0",
+            "K30-0",
+            "F23-0",
+            "E24-0",
+            "D23-1"
+          ]
+        }
+      ],
+      "extra_revenue": 0,
+      "subsidy": 0
+    },
+    {
+      "type": "dividend",
+      "entity": "NSR",
+      "entity_type": "corporation",
+      "id": 349,
+      "created_at": 1771937597,
+      "kind": "payout"
+    },
+    {
+      "type": "pass",
+      "entity": "NSR",
+      "entity_type": "corporation",
+      "id": 350,
+      "created_at": 1771937604
+    },
+    {
+      "type": "pass",
+      "entity": "NSR",
+      "entity_type": "corporation",
+      "id": 351,
+      "created_at": 1771937612
+    },
+    {
+      "type": "lay_tile",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 352,
+      "created_at": 1771938210,
+      "hex": "H31",
+      "tile": "15-1",
+      "rotation": 0
+    },
+    {
+      "type": "run_routes",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 353,
+      "created_at": 1771938239,
+      "routes": [
+        {
+          "train": "3-1",
+          "connections": [
+            [
+              "H35",
+              "H33",
+              "H31"
+            ],
+            [
+              "G36",
+              "H37",
+              "H35"
+            ],
+            [
+              "H35",
+              "G36"
+            ],
+            [
+              "G34",
+              "H35"
+            ],
+            [
+              "E30",
+              "F31",
+              "F33",
+              "G34"
+            ],
+            [
+              "D23",
+              "D25",
+              "E26",
+              "E28",
+              "E30"
+            ]
+          ],
+          "hexes": [
+            "H31",
+            "H35",
+            "G36",
+            "H35",
+            "G34",
+            "E30",
+            "D23"
+          ],
+          "revenue": 200,
+          "revenue_str": "H31-H35-G36-H35-G34-E30-D23 ?+20",
+          "nodes": [
+            "H35-0",
+            "H31-0",
+            "G36-0",
+            "H35-1",
+            "G34-0",
+            "E30-0",
+            "D23-0"
+          ]
+        }
+      ],
+      "extra_revenue": 0,
+      "subsidy": 0
+    },
+    {
+      "type": "dividend",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 354,
+      "created_at": 1771938244,
+      "kind": "payout"
+    },
+    {
+      "type": "pass",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 355,
+      "created_at": 1771938357
+    },
+    {
+      "type": "pass",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 356,
+      "user": 12074,
+      "created_at": 1771938427
+    },
+    {
+      "type": "undo",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 357,
+      "user": 12074,
+      "created_at": 1771938443
+    },
+    {
+      "type": "pass",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 358,
+      "created_at": 1771938454
+    },
+    {
+      "type": "pass",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 359,
+      "created_at": 1771938490
+    },
+    {
+      "type": "lay_tile",
+      "entity": "MR",
+      "entity_type": "corporation",
+      "id": 360,
+      "created_at": 1771946173,
+      "hex": "I34",
+      "tile": "7-2",
+      "rotation": 1
+    },
+    {
+      "type": "pass",
+      "entity": "MR",
+      "entity_type": "corporation",
+      "id": 361,
+      "created_at": 1771946225
+    },
+    {
+      "type": "run_routes",
+      "entity": "MR",
+      "entity_type": "corporation",
+      "id": 362,
+      "created_at": 1771946260,
+      "routes": [
+        {
+          "train": "3-3",
+          "connections": [
+            [
+              "H25",
+              "H23",
+              "H21",
+              "I20"
+            ],
+            [
+              "K30",
+              "J29",
+              "I28",
+              "H27",
+              "H25"
+            ]
+          ],
+          "hexes": [
+            "I20",
+            "H25",
+            "K30"
+          ],
+          "revenue": 180,
+          "revenue_str": "I20-H25-K30 ?+40",
+          "nodes": [
+            "H25-0",
+            "I20-0",
+            "K30-0"
+          ]
+        }
+      ],
+      "extra_revenue": 0,
+      "subsidy": 0
+    },
+    {
+      "type": "dividend",
+      "entity": "MR",
+      "entity_type": "corporation",
+      "id": 363,
+      "created_at": 1771946263,
+      "kind": "payout"
+    },
+    {
+      "type": "pass",
+      "entity": "MR",
+      "entity_type": "corporation",
+      "id": 364,
+      "created_at": 1771946280
+    },
+    {
+      "hex": "P17",
+      "tile": "59-0",
+      "type": "lay_tile",
+      "entity": "TR",
+      "rotation": 0,
+      "entity_type": "corporation",
+      "id": 365,
+      "user": 2465,
+      "created_at": 1771947502
+    },
+    {
+      "city": "59-0-0",
+      "slot": 0,
+      "type": "place_token",
+      "entity": "TR",
+      "tokener": "TR",
+      "entity_type": "corporation",
+      "id": 366,
+      "user": 2465,
+      "created_at": 1771947543
+    },
+    {
+      "type": "undo",
+      "entity": "TR",
+      "action_id": 364,
+      "entity_type": "corporation",
+      "id": 367,
+      "user": 2465,
+      "created_at": 1771947560
+    },
+    {
+      "type": "lay_tile",
+      "entity": "TR",
+      "entity_type": "corporation",
+      "id": 368,
+      "created_at": 1771947581,
+      "hex": "K14",
+      "tile": "611-1",
+      "rotation": 1
+    },
+    {
+      "type": "run_routes",
+      "entity": "TR",
+      "entity_type": "corporation",
+      "id": 369,
+      "created_at": 1771947601,
+      "routes": [
+        {
+          "train": "3-2",
+          "connections": [
+            [
+              "M10",
+              "N11",
+              "O12",
+              "P11",
+              "Q10"
+            ],
+            [
+              "K12",
+              "L11",
+              "M10"
+            ],
+            [
+              "L13",
+              "K12"
+            ],
+            [
+              "K14",
+              "L13"
+            ]
+          ],
+          "hexes": [
+            "Q10",
+            "M10",
+            "K12",
+            "L13",
+            "K14"
+          ],
+          "revenue": 180,
+          "revenue_str": "Q10-M10-K12-L13-K14 ?+40",
+          "nodes": [
+            "M10-3",
+            "Q10-0",
+            "K12-0",
+            "L13-0",
+            "K14-0"
+          ]
+        }
+      ],
+      "extra_revenue": 0,
+      "subsidy": 0
+    },
+    {
+      "type": "dividend",
+      "entity": "TR",
+      "entity_type": "corporation",
+      "id": 370,
+      "created_at": 1771947605,
+      "kind": "withhold"
+    },
+    {
+      "type": "sell_train",
+      "entity": "TR",
+      "entity_type": "corporation",
+      "id": 371,
+      "created_at": 1771947619,
+      "train": "3-2",
+      "price": 300
+    },
+    {
+      "type": "buy_train",
+      "entity": "TR",
+      "entity_type": "corporation",
+      "id": 372,
+      "created_at": 1771947628,
+      "train": "4-2",
+      "price": 450,
+      "variant": "4E"
+    },
+    {
+      "type": "pass",
+      "entity": "TR",
+      "entity_type": "corporation",
+      "id": 373,
+      "created_at": 1771947631
+    },
+    {
+      "type": "lay_tile",
+      "entity": "BNR",
+      "entity_type": "corporation",
+      "id": 374,
+      "created_at": 1771956241,
+      "hex": "I18",
+      "tile": "8-17",
+      "rotation": 4
+    },
+    {
+      "type": "lay_tile",
+      "entity": "BNR",
+      "entity_type": "corporation",
+      "id": 375,
+      "created_at": 1771956249,
+      "hex": "J17",
+      "tile": "58-4",
+      "rotation": 1
+    },
+    {
+      "type": "lay_tile",
+      "entity": "BNR",
+      "entity_type": "corporation",
+      "id": 376,
+      "created_at": 1771956258,
+      "hex": "J15",
+      "tile": "8-18",
+      "rotation": 4
+    },
+    {
+      "hex": "L15",
+      "tile": "9-14",
+      "type": "lay_tile",
+      "entity": "BNR",
+      "rotation": 2,
+      "entity_type": "corporation",
+      "id": 377,
+      "user": 12351,
+      "created_at": 1771956268
+    },
+    {
+      "type": "undo",
+      "entity": "BNR",
+      "entity_type": "corporation",
+      "id": 378,
+      "user": 12351,
+      "created_at": 1771956283
+    },
+    {
+      "type": "lay_tile",
+      "entity": "BNR",
+      "entity_type": "corporation",
+      "id": 379,
+      "created_at": 1771956290,
+      "hex": "L15",
+      "tile": "8-19",
+      "rotation": 0
+    },
+    {
+      "type": "place_token",
+      "entity": "BNR",
+      "entity_type": "corporation",
+      "id": 380,
+      "created_at": 1771956313,
+      "city": "513-0-0",
+      "slot": 2,
+      "tokener": "BNR"
+    },
+    {
+      "type": "pass",
+      "entity": "BNR",
+      "entity_type": "corporation",
+      "id": 381,
+      "created_at": 1771956320
+    },
+    {
+      "type": "pass",
+      "entity": 20977,
+      "entity_type": "player",
+      "id": 382,
+      "created_at": 1771963893
+    },
+    {
+      "type": "pass",
+      "entity": 1152,
+      "entity_type": "player",
+      "id": 383,
+      "created_at": 1771970286
+    },
+    {
+      "type": "pass",
+      "entity": 2465,
+      "entity_type": "player",
+      "id": 384,
+      "created_at": 1771971176
+    },
+    {
+      "type": "pass",
+      "entity": 12074,
+      "entity_type": "player",
+      "id": 385,
+      "created_at": 1771974995
+    },
+    {
+      "type": "sell_shares",
+      "entity": 12351,
+      "entity_type": "player",
+      "id": 386,
+      "created_at": 1771975636,
+      "shares": [
+        "BNR_7",
+        "BNR_6"
+      ],
+      "percent": 20
+    },
+    {
+      "type": "pass",
+      "entity": 12351,
+      "entity_type": "player",
+      "id": 387,
+      "created_at": 1771975661
+    },
+    {
+      "type": "buy_company",
+      "entity": 20977,
+      "entity_type": "player",
+      "id": 388,
+      "created_at": 1772052582,
+      "company": "NCR_3",
+      "price": 90
+    },
+    {
+      "type": "buy_company",
+      "entity": 1152,
+      "entity_type": "player",
+      "id": 389,
+      "created_at": 1772057513,
+      "company": "MR_4",
+      "price": 90
+    },
+    {
+      "type": "buy_company",
+      "entity": 2465,
+      "entity_type": "player",
+      "id": 390,
+      "created_at": 1772059207,
+      "company": "BR_1",
+      "price": 71
+    },
+    {
+      "type": "buy_company",
+      "entity": 12074,
+      "entity_type": "player",
+      "id": 391,
+      "created_at": 1772070440,
+      "company": "NWR_5",
+      "price": 100
+    },
+    {
+      "type": "pass",
+      "entity": 12074,
+      "entity_type": "player",
+      "id": 392,
+      "created_at": 1772070576
+    },
+    {
+      "type": "buy_company",
+      "entity": 12351,
+      "entity_type": "player",
+      "id": 393,
+      "created_at": 1772073983,
+      "company": "KGF_0",
+      "price": 128
+    },
+    {
+      "type": "buy_company",
+      "entity": 12351,
+      "entity_type": "player",
+      "id": 394,
+      "created_at": 1772073985,
+      "company": "KGF_5",
+      "price": 64
+    },
+    {
+      "type": "buy_company",
+      "entity": 12351,
+      "entity_type": "player",
+      "id": 395,
+      "created_at": 1772073986,
+      "company": "KGF_3",
+      "price": 64
+    },
+    {
+      "type": "buy_company",
+      "entity": 1152,
+      "entity_type": "player",
+      "id": 396,
+      "created_at": 1772074416,
+      "company": "P4",
+      "price": 75
+    },
+    {
+      "type": "pass",
+      "entity": 2465,
+      "entity_type": "player",
+      "id": 397,
+      "created_at": 1772075296
+    },
+    {
+      "type": "buy_company",
+      "entity": 12074,
+      "entity_type": "player",
+      "id": 398,
+      "created_at": 1772082686,
+      "company": "NWR_8",
+      "price": 100
+    },
+    {
+      "type": "buy_company",
+      "entity": 12074,
+      "entity_type": "player",
+      "id": 399,
+      "created_at": 1772082782,
+      "company": "NWR_2",
+      "price": 100
+    },
+    {
+      "type": "buy_company",
+      "entity": 12351,
+      "entity_type": "player",
+      "id": 400,
+      "created_at": 1772132365,
+      "company": "NCR_5",
+      "price": 90
+    },
+    {
+      "type": "pass",
+      "entity": 2465,
+      "entity_type": "player",
+      "id": 401,
+      "created_at": 1772137719
+    },
+    {
+      "type": "lay_tile",
+      "entity": "NSR",
+      "entity_type": "corporation",
+      "id": 402,
+      "created_at": 1772143859,
+      "hex": "L17",
+      "tile": "9-14",
+      "rotation": 0
+    },
+    {
+      "type": "lay_tile",
+      "entity": "NSR",
+      "entity_type": "corporation",
+      "id": 403,
+      "created_at": 1772143861,
+      "hex": "L19",
+      "tile": "9-15",
+      "rotation": 0
+    },
+    {
+      "type": "lay_tile",
+      "entity": "NSR",
+      "entity_type": "corporation",
+      "id": 404,
+      "created_at": 1772143864,
+      "hex": "L21",
+      "tile": "9-16",
+      "rotation": 0
+    },
+    {
+      "type": "lay_tile",
+      "entity": "NSR",
+      "entity_type": "corporation",
+      "id": 405,
+      "created_at": 1772143872,
+      "hex": "R15",
+      "tile": "9-17",
+      "rotation": 0
+    },
+    {
+      "type": "run_routes",
+      "entity": "NSR",
+      "entity_type": "corporation",
+      "id": 406,
+      "created_at": 1772143905,
+      "routes": [
+        {
+          "train": "4-0",
+          "connections": [
+            [
+              "R17",
+              "Q16",
+              "P15",
+              "Q14",
+              "Q12",
+              "Q10"
+            ],
+            [
+              "P19",
+              "Q18",
+              "R17"
+            ],
+            [
+              "M24",
+              "M22",
+              "N21",
+              "O20",
+              "P19"
+            ],
+            [
+              "L23",
+              "M24"
+            ],
+            [
+              "K14",
+              "L15",
+              "L17",
+              "L19",
+              "L21",
+              "L23"
+            ],
+            [
+              "J17",
+              "J15",
+              "K14"
+            ],
+            [
+              "I20",
+              "I18",
+              "J17"
+            ],
+            [
+              "H25",
+              "H23",
+              "H21",
+              "I20"
+            ],
+            [
+              "F23",
+              "G24",
+              "H25"
+            ],
+            [
+              "E24",
+              "F23"
+            ],
+            [
+              "D23",
+              "E24"
+            ]
+          ],
+          "hexes": [
+            "Q10",
+            "R17",
+            "P19",
+            "M24",
+            "L23",
+            "K14",
+            "J17",
+            "I20",
+            "H25",
+            "F23",
+            "E24",
+            "D23"
+          ],
+          "revenue": 380,
+          "revenue_str": "Q10-R17-P19-M24-L23-K14-J17-I20-H25-F23-E24-D23 Gauge:5 ?+120 C+70",
+          "nodes": [
+            "R17-0",
+            "Q10-0",
+            "P19-0",
+            "M24-0",
+            "L23-0",
+            "K14-0",
+            "J17-0",
+            "I20-0",
+            "H25-0",
+            "F23-0",
+            "E24-0",
+            "D23-1"
+          ]
+        }
+      ],
+      "extra_revenue": 0,
+      "subsidy": 0
+    },
+    {
+      "type": "dividend",
+      "entity": "NSR",
+      "entity_type": "corporation",
+      "id": 407,
+      "created_at": 1772143909,
+      "kind": "withhold"
+    },
+    {
+      "type": "pass",
+      "entity": "NSR",
+      "entity_type": "corporation",
+      "id": 408,
+      "created_at": 1772143918
+    },
+    {
+      "type": "pass",
+      "entity": "NSR",
+      "entity_type": "corporation",
+      "id": 409,
+      "created_at": 1772143921
+    },
+    {
+      "type": "pass",
+      "entity": "NSR",
+      "entity_type": "corporation",
+      "id": 410,
+      "created_at": 1772143925
+    },
+    {
+      "type": "lay_tile",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 411,
+      "created_at": 1772153951,
+      "hex": "H31",
+      "tile": "611-2",
+      "rotation": 0
+    },
+    {
+      "type": "pass",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 412,
+      "created_at": 1772153972
+    },
+    {
+      "type": "run_routes",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 413,
+      "created_at": 1772154007,
+      "routes": [
+        {
+          "train": "3-1",
+          "connections": [
+            [
+              "H35",
+              "H33",
+              "H31"
+            ],
+            [
+              "G36",
+              "H37",
+              "H35"
+            ],
+            [
+              "H35",
+              "G36"
+            ],
+            [
+              "G34",
+              "H35"
+            ],
+            [
+              "E30",
+              "F31",
+              "F33",
+              "G34"
+            ],
+            [
+              "D23",
+              "D25",
+              "E26",
+              "E28",
+              "E30"
+            ]
+          ],
+          "hexes": [
+            "H31",
+            "H35",
+            "G36",
+            "H35",
+            "G34",
+            "E30",
+            "D23"
+          ],
+          "revenue": 230,
+          "revenue_str": "H31-H35-G36-H35-G34-E30-D23 ?+40",
+          "nodes": [
+            "H35-0",
+            "H31-0",
+            "G36-0",
+            "H35-1",
+            "G34-0",
+            "E30-0",
+            "D23-0"
+          ]
+        }
+      ],
+      "extra_revenue": 0,
+      "subsidy": 0
+    },
+    {
+      "type": "dividend",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 414,
+      "created_at": 1772154022,
+      "kind": "payout"
+    },
+    {
+      "type": "pass",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 415,
+      "created_at": 1772154027
+    },
+    {
+      "type": "pass",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 416,
+      "created_at": 1772154074
+    },
+    {
+      "type": "pass",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 417,
+      "created_at": 1772154126
+    },
+    {
+      "type": "lay_tile",
+      "entity": "MR",
+      "entity_type": "corporation",
+      "id": 418,
+      "created_at": 1772169290,
+      "hex": "H33",
+      "tile": "83-0",
+      "rotation": 0
+    },
+    {
+      "type": "run_routes",
+      "entity": "MR",
+      "entity_type": "corporation",
+      "id": 419,
+      "created_at": 1772169309,
+      "routes": [
+        {
+          "train": "3-3",
+          "connections": [
+            [
+              "H25",
+              "H23",
+              "H21",
+              "I20"
+            ],
+            [
+              "K30",
+              "J29",
+              "I28",
+              "H27",
+              "H25"
+            ]
+          ],
+          "hexes": [
+            "I20",
+            "H25",
+            "K30"
+          ],
+          "revenue": 180,
+          "revenue_str": "I20-H25-K30 ?+40",
+          "nodes": [
+            "H25-0",
+            "I20-0",
+            "K30-0"
+          ]
+        }
+      ],
+      "extra_revenue": 0,
+      "subsidy": 0
+    },
+    {
+      "type": "dividend",
+      "entity": "MR",
+      "entity_type": "corporation",
+      "id": 420,
+      "created_at": 1772169311,
+      "kind": "payout"
+    },
+    {
+      "type": "pass",
+      "entity": "MR",
+      "entity_type": "corporation",
+      "id": 421,
+      "created_at": 1772169314
+    },
+    {
+      "type": "corporate_buy_company",
+      "entity": "MR",
+      "entity_type": "corporation",
+      "id": 422,
+      "created_at": 1772169396,
+      "company": "P3",
+      "price": 60
+    },
+    {
+      "hex": "G8",
+      "tile": "235-1",
+      "type": "lay_tile",
+      "entity": "NWR",
+      "rotation": 2,
+      "entity_type": "corporation",
+      "id": 423,
+      "user": 12074,
+      "created_at": 1772198291
+    },
+    {
+      "city": "235-1-0",
+      "slot": 0,
+      "type": "place_token",
+      "entity": "NWR",
+      "tokener": "NWR",
+      "entity_type": "corporation",
+      "id": 424,
+      "user": 12074,
+      "created_at": 1772198294
+    },
+    {
+      "hex": "F7",
+      "tile": "8-20",
+      "type": "lay_tile",
+      "entity": "NWR",
+      "rotation": 3,
+      "entity_type": "corporation",
+      "id": 425,
+      "user": 12074,
+      "created_at": 1772198297
+    },
+    {
+      "hex": "F5",
+      "tile": "IND4-0",
+      "type": "lay_tile",
+      "entity": "NWR",
+      "rotation": 1,
+      "entity_type": "corporation",
+      "id": 426,
+      "user": 12074,
+      "created_at": 1772198323
+    },
+    {
+      "hex": "F3",
+      "tile": "9-18",
+      "type": "lay_tile",
+      "entity": "NWR",
+      "rotation": 0,
+      "entity_type": "corporation",
+      "id": 427,
+      "user": 12074,
+      "created_at": 1772198326
+    },
+    {
+      "type": "undo",
+      "entity": "NWR",
+      "action_id": 422,
+      "entity_type": "corporation",
+      "id": 428,
+      "user": 12074,
+      "created_at": 1772198393
+    },
+    {
+      "hex": "G8",
+      "tile": "235-1",
+      "type": "lay_tile",
+      "entity": "NWR",
+      "rotation": 3,
+      "entity_type": "corporation",
+      "id": 429,
+      "user": 12074,
+      "created_at": 1772198399
+    },
+    {
+      "city": "235-1-0",
+      "slot": 0,
+      "type": "place_token",
+      "entity": "NWR",
+      "tokener": "NWR",
+      "entity_type": "corporation",
+      "id": 430,
+      "user": 12074,
+      "created_at": 1772198402
+    },
+    {
+      "hex": "G6",
+      "tile": "58-5",
+      "type": "lay_tile",
+      "entity": "NWR",
+      "rotation": 0,
+      "entity_type": "corporation",
+      "id": 431,
+      "user": 12074,
+      "created_at": 1772198406
+    },
+    {
+      "hex": "F5",
+      "tile": "IND2-0",
+      "type": "lay_tile",
+      "entity": "NWR",
+      "rotation": 0,
+      "entity_type": "corporation",
+      "id": 432,
+      "user": 12074,
+      "created_at": 1772198442
+    },
+    {
+      "hex": "F3",
+      "tile": "9-18",
+      "type": "lay_tile",
+      "entity": "NWR",
+      "rotation": 0,
+      "entity_type": "corporation",
+      "id": 433,
+      "user": 12074,
+      "created_at": 1772198444
+    },
+    {
+      "type": "undo",
+      "entity": "NWR",
+      "action_id": 430,
+      "entity_type": "corporation",
+      "id": 434,
+      "user": 12074,
+      "created_at": 1772198461
+    },
+    {
+      "hex": "G6",
+      "tile": "58-5",
+      "type": "lay_tile",
+      "entity": "NWR",
+      "rotation": 0,
+      "entity_type": "corporation",
+      "id": 435,
+      "user": 12074,
+      "created_at": 1772198465
+    },
+    {
+      "hex": "F5",
+      "tile": "IND6-0",
+      "type": "lay_tile",
+      "entity": "NWR",
+      "rotation": 2,
+      "entity_type": "corporation",
+      "id": 436,
+      "user": 12074,
+      "created_at": 1772198491
+    },
+    {
+      "hex": "F3",
+      "tile": "9-18",
+      "type": "lay_tile",
+      "entity": "NWR",
+      "rotation": 0,
+      "entity_type": "corporation",
+      "id": 437,
+      "user": 12074,
+      "created_at": 1772198494
+    },
+    {
+      "type": "undo",
+      "entity": "NWR",
+      "action_id": 422,
+      "entity_type": "corporation",
+      "id": 438,
+      "user": 12074,
+      "created_at": 1772198533
+    },
+    {
+      "type": "lay_tile",
+      "entity": "NWR",
+      "entity_type": "corporation",
+      "id": 439,
+      "created_at": 1772198542,
+      "hex": "G8",
+      "tile": "235-1",
+      "rotation": 2
+    },
+    {
+      "type": "place_token",
+      "entity": "NWR",
+      "entity_type": "corporation",
+      "id": 440,
+      "created_at": 1772198544,
+      "city": "235-1-0",
+      "slot": 0,
+      "tokener": "NWR"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "NWR",
+      "entity_type": "corporation",
+      "id": 441,
+      "created_at": 1772198547,
+      "hex": "F7",
+      "tile": "8-20",
+      "rotation": 3
+    },
+    {
+      "type": "lay_tile",
+      "entity": "NWR",
+      "entity_type": "corporation",
+      "id": 442,
+      "created_at": 1772198555,
+      "hex": "F5",
+      "tile": "IND4-0",
+      "rotation": 1
+    },
+    {
+      "type": "lay_tile",
+      "entity": "NWR",
+      "entity_type": "corporation",
+      "id": 443,
+      "created_at": 1772198557,
+      "hex": "F3",
+      "tile": "9-18",
+      "rotation": 0
+    },
+    {
+      "type": "buy_train",
+      "price": 180,
+      "train": "2-4",
+      "entity": "NWR",
+      "variant": "2",
+      "entity_type": "corporation",
+      "id": 444,
+      "user": 12074,
+      "created_at": 1772198591
+    },
+    {
+      "type": "pass",
+      "entity": "NWR",
+      "entity_type": "corporation",
+      "id": 445,
+      "user": 12074,
+      "created_at": 1772198724
+    },
+    {
+      "type": "pass",
+      "entity": "NWR",
+      "entity_type": "corporation",
+      "id": 446,
+      "user": 12074,
+      "created_at": 1772198739
+    },
+    {
+      "type": "undo",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 447,
+      "user": 12074,
+      "created_at": 1772198745
+    },
+    {
+      "type": "undo",
+      "entity": "NWR",
+      "entity_type": "corporation",
+      "id": 448,
+      "user": 12074,
+      "created_at": 1772198746
+    },
+    {
+      "type": "undo",
+      "entity": "NWR",
+      "entity_type": "corporation",
+      "id": 449,
+      "user": 12074,
+      "created_at": 1772198889
+    },
+    {
+      "type": "buy_train",
+      "entity": "NWR",
+      "entity_type": "corporation",
+      "id": 450,
+      "created_at": 1772198895,
+      "train": "3-2",
+      "price": 300,
+      "variant": "3"
+    },
+    {
+      "hex": "P17",
+      "tile": "59-0",
+      "type": "lay_tile",
+      "entity": "NCR",
+      "rotation": 0,
+      "entity_type": "corporation",
+      "id": 451,
+      "user": 20977,
+      "created_at": 1772228652
+    },
+    {
+      "type": "pass",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 452,
+      "user": 20977,
+      "created_at": 1772228656
+    },
+    {
+      "type": "undo",
+      "entity": "NCR",
+      "action_id": 450,
+      "entity_type": "corporation",
+      "id": 453,
+      "user": 20977,
+      "created_at": 1772232661
+    },
+    {
+      "type": "lay_tile",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 454,
+      "created_at": 1772232667,
+      "hex": "K14",
+      "tile": "513-1",
+      "rotation": 0
+    },
+    {
+      "city": "R17-0-0",
+      "slot": 0,
+      "type": "place_token",
+      "entity": "NCR",
+      "tokener": "NCR",
+      "entity_type": "corporation",
+      "id": 455,
+      "user": 20977,
+      "created_at": 1772232670
+    },
+    {
+      "type": "undo",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 456,
+      "user": 20977,
+      "created_at": 1772232712
+    },
+    {
+      "type": "pass",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 457,
+      "created_at": 1772232714
+    },
+    {
+      "type": "run_routes",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 458,
+      "created_at": 1772232754,
+      "routes": [
+        {
+          "train": "3-0",
+          "connections": [
+            [
+              "L13",
+              "K14"
+            ],
+            [
+              "K12",
+              "L13"
+            ],
+            [
+              "M10",
+              "L11",
+              "K12"
+            ]
+          ],
+          "hexes": [
+            "K14",
+            "L13",
+            "K12",
+            "M10"
+          ],
+          "revenue": 160,
+          "revenue_str": "K14-L13-K12-M10 ?+40",
+          "nodes": [
+            "L13-0",
+            "K14-0",
+            "K12-0",
+            "M10-3"
+          ]
+        },
+        {
+          "train": "4-1",
+          "connections": [
+            [
+              "O16",
+              "P17"
+            ],
+            [
+              "N13",
+              "O14",
+              "O16"
+            ],
+            [
+              "M10",
+              "M12",
+              "N13"
+            ],
+            [
+              "K12",
+              "K10",
+              "L9",
+              "M10"
+            ],
+            [
+              "J11",
+              "K12"
+            ],
+            [
+              "K14",
+              "J13",
+              "J11"
+            ],
+            [
+              "L23",
+              "L21",
+              "L19",
+              "L17",
+              "L15",
+              "K14"
+            ],
+            [
+              "M24",
+              "L23"
+            ],
+            [
+              "P19",
+              "O20",
+              "N21",
+              "M22",
+              "M24"
+            ],
+            [
+              "R17",
+              "Q18",
+              "P19"
+            ],
+            [
+              "Q10",
+              "Q12",
+              "Q14",
+              "P15",
+              "Q16",
+              "R17"
+            ]
+          ],
+          "hexes": [
+            "P17",
+            "O16",
+            "N13",
+            "M10",
+            "K12",
+            "J11",
+            "K14",
+            "L23",
+            "M24",
+            "P19",
+            "R17",
+            "Q10"
+          ],
+          "revenue": 380,
+          "revenue_str": "P17-O16-N13-M10-K12-J11-K14-L23-M24-P19-R17-Q10 Gauge:3 ?+120 C+100",
+          "nodes": [
+            "O16-0",
+            "P17-0",
+            "N13-0",
+            "M10-0",
+            "K12-1",
+            "J11-0",
+            "K14-0",
+            "L23-0",
+            "M24-0",
+            "P19-0",
+            "R17-0",
+            "Q10-0"
+          ]
+        }
+      ],
+      "extra_revenue": 0,
+      "subsidy": 0
+    },
+    {
+      "type": "dividend",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 459,
+      "created_at": 1772232761,
+      "kind": "withhold"
+    },
+    {
+      "type": "sell_train",
+      "price": 300,
+      "train": "3-0",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 460,
+      "user": 20977,
+      "created_at": 1772232763
+    },
+    {
+      "type": "undo",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 461,
+      "user": 20977,
+      "created_at": 1772232771
+    },
+    {
+      "type": "sell_train",
+      "price": 300,
+      "train": "4-1",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 462,
+      "user": 20977,
+      "created_at": 1772232771
+    },
+    {
+      "type": "sell_train",
+      "price": 300,
+      "train": "3-0",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 463,
+      "user": 20977,
+      "created_at": 1772232778
+    },
+    {
+      "type": "undo",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 464,
+      "user": 20977,
+      "created_at": 1772232781
+    },
+    {
+      "type": "undo",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 465,
+      "user": 20977,
+      "created_at": 1772232782
+    },
+    {
+      "type": "sell_train",
+      "price": 300,
+      "train": "3-0",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 466,
+      "user": 20977,
+      "created_at": 1772232784
+    },
+    {
+      "type": "undo",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 467,
+      "user": 20977,
+      "created_at": 1772232793
+    },
+    {
+      "type": "sell_train",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 468,
+      "created_at": 1772232794,
+      "train": "4-1",
+      "price": 300
+    },
+    {
+      "type": "sell_train",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 469,
+      "created_at": 1772232795,
+      "train": "3-0",
+      "price": 300
+    },
+    {
+      "type": "buy_train",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 470,
+      "created_at": 1772232797,
+      "train": "4x3-0",
+      "price": 1100,
+      "variant": "4Ex3"
+    },
+    {
+      "type": "pass",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 471,
+      "created_at": 1772232812
+    },
+    {
+      "type": "corporate_buy_company",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 472,
+      "created_at": 1772232898,
+      "company": "RB1",
+      "price": 100
+    },
+    {
+      "type": "lay_tile",
+      "entity": "TR",
+      "entity_type": "corporation",
+      "id": 473,
+      "created_at": 1772234280,
+      "hex": "L25",
+      "tile": "9-19",
+      "rotation": 1
+    },
+    {
+      "type": "lay_tile",
+      "entity": "TR",
+      "entity_type": "corporation",
+      "id": 474,
+      "created_at": 1772234284,
+      "hex": "K26",
+      "tile": "8-21",
+      "rotation": 4
+    },
+    {
+      "type": "lay_tile",
+      "entity": "TR",
+      "entity_type": "corporation",
+      "id": 475,
+      "created_at": 1772234288,
+      "hex": "K28",
+      "tile": "9-20",
+      "rotation": 0
+    },
+    {
+      "type": "pass",
+      "entity": "TR",
+      "entity_type": "corporation",
+      "id": 476,
+      "created_at": 1772234293
+    },
+    {
+      "type": "run_routes",
+      "entity": "TR",
+      "entity_type": "corporation",
+      "id": 477,
+      "created_at": 1772234359,
+      "routes": [
+        {
+          "train": "4-2",
+          "connections": [
+            [
+              "Q10",
+              "P11",
+              "O12",
+              "N11",
+              "M10"
+            ],
+            [
+              "Q10",
+              "Q12",
+              "Q14",
+              "P15",
+              "Q16",
+              "R17"
+            ],
+            [
+              "R17",
+              "Q18",
+              "P19"
+            ],
+            [
+              "P19",
+              "O20",
+              "N21",
+              "M22",
+              "M24"
+            ],
+            [
+              "M24",
+              "L25",
+              "K26",
+              "K28",
+              "K30"
+            ],
+            [
+              "K30",
+              "J31",
+              "J33"
+            ],
+            [
+              "J33",
+              "J35",
+              "I36",
+              "H35"
+            ],
+            [
+              "H35",
+              "I34",
+              "H33",
+              "H35"
+            ],
+            [
+              "H35",
+              "H37",
+              "G36"
+            ],
+            [
+              "G36",
+              "H35"
+            ],
+            [
+              "H35",
+              "G34"
+            ],
+            [
+              "G34",
+              "F33",
+              "F31",
+              "E30"
+            ],
+            [
+              "E30",
+              "E28",
+              "E26",
+              "D25",
+              "D23"
+            ]
+          ],
+          "hexes": [
+            "M10",
+            "Q10",
+            "R17",
+            "P19",
+            "M24",
+            "K30",
+            "J33",
+            "H35",
+            "H35",
+            "G36",
+            "H35",
+            "G34",
+            "E30",
+            "D23"
+          ],
+          "revenue": 320,
+          "revenue_str": "M10-Q10-R17-P19-M24-K30-J33-H35-H35-G36-H35-G34-E30-D23 Gauge:2 R+70 C+70",
+          "nodes": [
+            "Q10-0",
+            "M10-3",
+            "R17-0",
+            "P19-0",
+            "M24-0",
+            "K30-0",
+            "J33-0",
+            "H35-2",
+            "H35-0",
+            "G36-0",
+            "H35-1",
+            "G34-0",
+            "E30-0",
+            "D23-0"
+          ]
+        }
+      ],
+      "extra_revenue": 0,
+      "subsidy": 0
+    },
+    {
+      "type": "dividend",
+      "entity": "TR",
+      "entity_type": "corporation",
+      "id": 478,
+      "created_at": 1772234387,
+      "kind": "payout"
+    },
+    {
+      "type": "pass",
+      "entity": "TR",
+      "entity_type": "corporation",
+      "id": 479,
+      "created_at": 1772234394
+    },
+    {
+      "type": "lay_tile",
+      "entity": "BNR",
+      "entity_type": "corporation",
+      "id": 480,
+      "created_at": 1772236627,
+      "hex": "G34",
+      "tile": "205-0",
+      "rotation": 2
+    },
+    {
+      "type": "pass",
+      "entity": "BNR",
+      "entity_type": "corporation",
+      "id": 481,
+      "created_at": 1772236634
+    },
+    {
+      "type": "lay_tile",
+      "entity": "KGF",
+      "entity_type": "corporation",
+      "id": 482,
+      "created_at": 1772236661,
+      "hex": "G34",
+      "tile": "611-3",
+      "rotation": 2
+    },
+    {
+      "type": "place_token",
+      "entity": "KGF",
+      "entity_type": "corporation",
+      "id": 483,
+      "created_at": 1772236674,
+      "city": "611-3-0",
+      "slot": 0,
+      "tokener": "KGF"
+    },
+    {
+      "type": "buy_train",
+      "entity": "KGF",
+      "entity_type": "corporation",
+      "id": 484,
+      "created_at": 1772236686,
+      "train": "2-4",
+      "price": 180,
+      "variant": "2"
+    },
+    {
+      "type": "pass",
+      "entity": "KGF",
+      "entity_type": "corporation",
+      "id": 485,
+      "created_at": 1772236718
+    },
+    {
+      "type": "corporate_buy_company",
+      "entity": "KGF",
+      "entity_type": "corporation",
+      "id": 486,
+      "created_at": 1772236728,
+      "company": "NWR_6",
+      "price": 100
+    },
+    {
+      "hex": "G32",
+      "tile": "83-1",
+      "type": "lay_tile",
+      "entity": "BR",
+      "rotation": 1,
+      "entity_type": "corporation",
+      "id": 487,
+      "user": 12074,
+      "created_at": 1772237186
+    },
+    {
+      "type": "pass",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 488,
+      "user": 12074,
+      "created_at": 1772237194
+    },
+    {
+      "type": "run_routes",
+      "entity": "BR",
+      "routes": [
+        {
+          "hexes": [
+            "D23",
+            "E30",
+            "G34",
+            "H35",
+            "G36"
+          ],
+          "nodes": [
+            "E30-0",
+            "D23-0",
+            "G34-0",
+            "H35-1",
+            "G36-0"
+          ],
+          "train": "3-1",
+          "revenue": 200,
+          "connections": [
+            [
+              "E30",
+              "E28",
+              "E26",
+              "D25",
+              "D23"
+            ],
+            [
+              "G34",
+              "F33",
+              "F31",
+              "E30"
+            ],
+            [
+              "H35",
+              "G34"
+            ],
+            [
+              "G36",
+              "H35"
+            ]
+          ],
+          "revenue_str": "D23-E30-G34-H35-G36 ?+40"
+        }
+      ],
+      "subsidy": 0,
+      "entity_type": "corporation",
+      "extra_revenue": 0,
+      "id": 489,
+      "user": 12074,
+      "created_at": 1772237242
+    },
+    {
+      "type": "undo",
+      "entity": "BR",
+      "action_id": 486,
+      "entity_type": "corporation",
+      "id": 490,
+      "user": 12074,
+      "created_at": 1772237392
+    },
+    {
+      "hex": "K30",
+      "edge": 1,
+      "type": "remove_border",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 491,
+      "user": 12074,
+      "created_at": 1772239502
+    },
+    {
+      "type": "undo",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 492,
+      "user": 12074,
+      "created_at": 1772239538
+    },
+    {
+      "hex": "E22",
+      "tile": "IND5-1",
+      "type": "lay_tile",
+      "entity": "BR",
+      "rotation": 0,
+      "entity_type": "corporation",
+      "id": 493,
+      "user": 12074,
+      "created_at": 1772239553
+    },
+    {
+      "hex": "E20",
+      "tile": "7-3",
+      "type": "lay_tile",
+      "entity": "BR",
+      "rotation": 0,
+      "entity_type": "corporation",
+      "id": 494,
+      "user": 12074,
+      "created_at": 1772239557
+    },
+    {
+      "type": "undo",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 495,
+      "user": 12074,
+      "created_at": 1772239573
+    },
+    {
+      "hex": "E20",
+      "tile": "8-22",
+      "type": "lay_tile",
+      "entity": "BR",
+      "rotation": 0,
+      "entity_type": "corporation",
+      "id": 496,
+      "user": 12074,
+      "created_at": 1772239578
+    },
+    {
+      "hex": "D19",
+      "tile": "58-5",
+      "type": "lay_tile",
+      "entity": "BR",
+      "rotation": 3,
+      "entity_type": "corporation",
+      "id": 497,
+      "user": 12074,
+      "created_at": 1772239581
+    },
+    {
+      "hex": "D17",
+      "tile": "57-0",
+      "type": "lay_tile",
+      "entity": "BR",
+      "rotation": 0,
+      "entity_type": "corporation",
+      "id": 498,
+      "user": 12074,
+      "created_at": 1772239587
+    },
+    {
+      "type": "undo",
+      "entity": "BR",
+      "action_id": 486,
+      "entity_type": "corporation",
+      "id": 499,
+      "user": 12074,
+      "created_at": 1772239604
+    },
+    {
+      "hex": "H33",
+      "tile": "544-0",
+      "type": "lay_tile",
+      "entity": "BR",
+      "rotation": 2,
+      "entity_type": "corporation",
+      "id": 500,
+      "user": 12074,
+      "created_at": 1772239624
+    },
+    {
+      "type": "undo",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 501,
+      "user": 12074,
+      "created_at": 1772239633
+    },
+    {
+      "type": "lay_tile",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 502,
+      "created_at": 1772239653,
+      "hex": "E30",
+      "tile": "143-0",
+      "rotation": 3
+    },
+    {
+      "type": "pass",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 503,
+      "created_at": 1772239686
+    },
+    {
+      "type": "run_routes",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 504,
+      "created_at": 1772239918,
+      "routes": [
+        {
+          "train": "3-1",
+          "connections": [
+            [
+              "H35",
+              "G36"
+            ],
+            [
+              "G34",
+              "H35"
+            ],
+            [
+              "E30",
+              "F31",
+              "F33",
+              "G34"
+            ],
+            [
+              "E30",
+              "E28",
+              "E26",
+              "D25",
+              "D23"
+            ]
+          ],
+          "hexes": [
+            "G36",
+            "H35",
+            "G34",
+            "E30",
+            "D23"
+          ],
+          "revenue": 200,
+          "revenue_str": "G36-H35-G34-E30-D23 ?+40",
+          "nodes": [
+            "H35-1",
+            "G36-0",
+            "G34-0",
+            "E30-0",
+            "D23-0"
+          ]
+        }
+      ],
+      "extra_revenue": 0,
+      "subsidy": 0
+    },
+    {
+      "type": "dividend",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 505,
+      "created_at": 1772239924,
+      "kind": "payout"
+    },
+    {
+      "type": "sell_train",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 506,
+      "created_at": 1772240224,
+      "train": "3-1",
+      "price": 300
+    },
+    {
+      "type": "buy_train",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 507,
+      "created_at": 1772240227,
+      "train": "4-1",
+      "price": 450,
+      "variant": "4E"
+    },
+    {
+      "type": "pass",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 508,
+      "created_at": 1772240268
+    },
+    {
+      "type": "pass",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 509,
+      "created_at": 1772240281
+    },
+    {
+      "hex": "K30",
+      "edge": 1,
+      "type": "remove_border",
+      "entity": "NSR",
+      "entity_type": "corporation",
+      "id": 510,
+      "user": 12351,
+      "created_at": 1772243364
+    },
+    {
+      "type": "undo",
+      "entity": "NSR",
+      "entity_type": "corporation",
+      "id": 511,
+      "user": 12351,
+      "created_at": 1772243370
+    },
+    {
+      "hex": "G26",
+      "tile": "8-22",
+      "type": "lay_tile",
+      "entity": "NSR",
+      "rotation": 4,
+      "entity_type": "corporation",
+      "id": 512,
+      "user": 12351,
+      "created_at": 1772243380
+    },
+    {
+      "type": "undo",
+      "entity": "NSR",
+      "entity_type": "corporation",
+      "id": 513,
+      "user": 12351,
+      "created_at": 1772243386
+    },
+    {
+      "type": "lay_tile",
+      "entity": "NSR",
+      "entity_type": "corporation",
+      "id": 514,
+      "created_at": 1772243393,
+      "hex": "H31",
+      "tile": "513-2",
+      "rotation": 0
+    },
+    {
+      "type": "run_routes",
+      "entity": "NSR",
+      "entity_type": "corporation",
+      "id": 515,
+      "created_at": 1772243428,
+      "routes": [
+        {
+          "train": "4-0",
+          "connections": [
+            [
+              "Q10",
+              "P11",
+              "O12",
+              "N11",
+              "M10"
+            ],
+            [
+              "R17",
+              "Q16",
+              "P15",
+              "Q14",
+              "Q12",
+              "Q10"
+            ],
+            [
+              "P19",
+              "Q18",
+              "R17"
+            ],
+            [
+              "M24",
+              "M22",
+              "N21",
+              "O20",
+              "P19"
+            ],
+            [
+              "L23",
+              "M24"
+            ],
+            [
+              "K14",
+              "L15",
+              "L17",
+              "L19",
+              "L21",
+              "L23"
+            ],
+            [
+              "J17",
+              "J15",
+              "K14"
+            ],
+            [
+              "I20",
+              "I18",
+              "J17"
+            ],
+            [
+              "H25",
+              "H23",
+              "H21",
+              "I20"
+            ],
+            [
+              "K30",
+              "J29",
+              "I28",
+              "H27",
+              "H25"
+            ],
+            [
+              "J33",
+              "J31",
+              "K30"
+            ],
+            [
+              "H35",
+              "I36",
+              "J35",
+              "J33"
+            ],
+            [
+              "H35",
+              "H33",
+              "I34",
+              "H35"
+            ],
+            [
+              "G36",
+              "H37",
+              "H35"
+            ],
+            [
+              "G34",
+              "G36"
+            ],
+            [
+              "E30",
+              "F31",
+              "F33",
+              "G34"
+            ],
+            [
+              "D23",
+              "D25",
+              "E26",
+              "E28",
+              "E30"
+            ]
+          ],
+          "hexes": [
+            "M10",
+            "Q10",
+            "R17",
+            "P19",
+            "M24",
+            "L23",
+            "K14",
+            "J17",
+            "I20",
+            "H25",
+            "K30",
+            "J33",
+            "H35",
+            "H35",
+            "G36",
+            "G34",
+            "E30",
+            "D23"
+          ],
+          "revenue": 640,
+          "revenue_str": "M10-Q10-R17-P19-M24-L23-K14-J17-I20-H25-K30-J33-H35-H35-G36-G34-E30-D23 Gauge:5 ?+120 R+70 C+240",
+          "nodes": [
+            "Q10-0",
+            "M10-3",
+            "R17-0",
+            "P19-0",
+            "M24-0",
+            "L23-0",
+            "K14-0",
+            "J17-0",
+            "I20-0",
+            "H25-0",
+            "K30-0",
+            "J33-0",
+            "H35-2",
+            "H35-0",
+            "G36-0",
+            "G34-0",
+            "E30-0",
+            "D23-0"
+          ]
+        }
+      ],
+      "extra_revenue": 0,
+      "subsidy": 0
+    },
+    {
+      "type": "dividend",
+      "entity": "NSR",
+      "entity_type": "corporation",
+      "id": 516,
+      "created_at": 1772243429,
+      "kind": "withhold"
+    },
+    {
+      "type": "buy_train",
+      "price": 800,
+      "train": "4x2-0",
+      "entity": "NSR",
+      "variant": "4Ex2",
+      "entity_type": "corporation",
+      "id": 517,
+      "user": 12351,
+      "created_at": 1772243435
+    },
+    {
+      "type": "undo",
+      "entity": "NSR",
+      "entity_type": "corporation",
+      "id": 518,
+      "user": 12351,
+      "created_at": 1772243441
+    },
+    {
+      "type": "sell_train",
+      "entity": "NSR",
+      "entity_type": "corporation",
+      "id": 519,
+      "created_at": 1772243445,
+      "train": "4-0",
+      "price": 300
+    },
+    {
+      "type": "buy_train",
+      "entity": "NSR",
+      "entity_type": "corporation",
+      "id": 520,
+      "created_at": 1772243446,
+      "train": "4x3-1",
+      "price": 1100,
+      "variant": "4Ex3"
+    },
+    {
+      "type": "pass",
+      "entity": "NSR",
+      "entity_type": "corporation",
+      "id": 521,
+      "created_at": 1772243449
+    },
+    {
+      "type": "pass",
+      "entity": "NSR",
+      "entity_type": "corporation",
+      "id": 522,
+      "created_at": 1772243455
+    },
+    {
+      "type": "corporate_buy_company",
+      "entity": "NSR",
+      "entity_type": "corporation",
+      "id": 523,
+      "created_at": 1772243479,
+      "company": "RB2",
+      "price": 100
+    },
+    {
+      "type": "lay_tile",
+      "entity": "MR",
+      "entity_type": "corporation",
+      "id": 524,
+      "created_at": 1772244443,
+      "hex": "H27",
+      "tile": "81-0",
+      "rotation": 1
+    },
+    {
+      "type": "pass",
+      "entity": "MR",
+      "entity_type": "corporation",
+      "id": 525,
+      "created_at": 1772244473
+    },
+    {
+      "type": "run_routes",
+      "entity": "MR",
+      "entity_type": "corporation",
+      "id": 526,
+      "created_at": 1772244480,
+      "routes": [
+        {
+          "train": "3-3",
+          "connections": [
+            [
+              "H25",
+              "H23",
+              "H21",
+              "I20"
+            ],
+            [
+              "K30",
+              "J29",
+              "I28",
+              "H27",
+              "H25"
+            ]
+          ],
+          "hexes": [
+            "I20",
+            "H25",
+            "K30"
+          ],
+          "revenue": 180,
+          "revenue_str": "I20-H25-K30 ?+40",
+          "nodes": [
+            "H25-0",
+            "I20-0",
+            "K30-0"
+          ]
+        }
+      ],
+      "extra_revenue": 0,
+      "subsidy": 0
+    },
+    {
+      "type": "dividend",
+      "entity": "MR",
+      "entity_type": "corporation",
+      "id": 527,
+      "created_at": 1772244485,
+      "kind": "payout"
+    },
+    {
+      "type": "pass",
+      "entity": "MR",
+      "entity_type": "corporation",
+      "id": 528,
+      "created_at": 1772244489
+    },
+    {
+      "type": "pass",
+      "entity": "MR",
+      "entity_type": "corporation",
+      "id": 529,
+      "created_at": 1772244499
+    },
+    {
+      "type": "lay_tile",
+      "entity": "TR",
+      "entity_type": "corporation",
+      "id": 530,
+      "created_at": 1772245446,
+      "hex": "D19",
+      "tile": "4-3",
+      "rotation": 0
+    },
+    {
+      "type": "lay_tile",
+      "entity": "TR",
+      "entity_type": "corporation",
+      "id": 531,
+      "created_at": 1772245449,
+      "hex": "D17",
+      "tile": "57-0",
+      "rotation": 0
+    },
+    {
+      "type": "lay_tile",
+      "entity": "TR",
+      "entity_type": "corporation",
+      "id": 532,
+      "created_at": 1772245456,
+      "hex": "D15",
+      "tile": "7-3",
+      "rotation": 0
+    },
+    {
+      "type": "lay_tile",
+      "entity": "TR",
+      "entity_type": "corporation",
+      "id": 533,
+      "created_at": 1772245459,
+      "hex": "C16",
+      "tile": "4-4",
+      "rotation": 1
+    },
+    {
+      "type": "run_routes",
+      "entity": "TR",
+      "entity_type": "corporation",
+      "id": 534,
+      "created_at": 1772245554,
+      "routes": [
+        {
+          "train": "4-2",
+          "connections": [
+            [
+              "Q10",
+              "P11",
+              "O12",
+              "N11",
+              "M10"
+            ],
+            [
+              "Q10",
+              "Q12",
+              "Q14",
+              "P15",
+              "Q16",
+              "R17"
+            ],
+            [
+              "R17",
+              "Q18",
+              "P19"
+            ],
+            [
+              "P19",
+              "O20",
+              "N21",
+              "M22",
+              "M24"
+            ],
+            [
+              "M24",
+              "L25",
+              "K26",
+              "K28",
+              "K30"
+            ],
+            [
+              "K30",
+              "J31",
+              "J33"
+            ],
+            [
+              "J33",
+              "J35",
+              "I36",
+              "H35"
+            ],
+            [
+              "H35",
+              "I34",
+              "H33",
+              "H31"
+            ],
+            [
+              "H31",
+              "G32",
+              "G34"
+            ],
+            [
+              "G34",
+              "F33",
+              "F31",
+              "E30"
+            ],
+            [
+              "E30",
+              "E28",
+              "E26",
+              "D25",
+              "D23"
+            ],
+            [
+              "D23",
+              "D21"
+            ],
+            [
+              "D21",
+              "D19"
+            ],
+            [
+              "D19",
+              "D17"
+            ]
+          ],
+          "hexes": [
+            "M10",
+            "Q10",
+            "R17",
+            "P19",
+            "M24",
+            "K30",
+            "J33",
+            "H35",
+            "H31",
+            "G34",
+            "E30",
+            "D23",
+            "D21",
+            "D19",
+            "D17"
+          ],
+          "revenue": 480,
+          "revenue_str": "M10-Q10-R17-P19-M24-K30-J33-H35-H31-G34-E30-D23-D21-D19-D17 Gauge:2 ?+160 R+70 C+70",
+          "nodes": [
+            "Q10-0",
+            "M10-3",
+            "R17-0",
+            "P19-0",
+            "M24-0",
+            "K30-0",
+            "J33-0",
+            "H35-2",
+            "H31-0",
+            "G34-0",
+            "E30-0",
+            "D23-0",
+            "D21-0",
+            "D19-0",
+            "D17-0"
+          ]
+        }
+      ],
+      "extra_revenue": 0,
+      "subsidy": 0
+    },
+    {
+      "type": "dividend",
+      "entity": "TR",
+      "entity_type": "corporation",
+      "id": 535,
+      "created_at": 1772245590,
+      "kind": "withhold"
+    },
+    {
+      "type": "sell_train",
+      "entity": "TR",
+      "entity_type": "corporation",
+      "id": 536,
+      "created_at": 1772245612,
+      "train": "4-2",
+      "price": 300
+    },
+    {
+      "type": "buy_train",
+      "entity": "TR",
+      "entity_type": "corporation",
+      "id": 537,
+      "created_at": 1772245618,
+      "train": "4x2-0",
+      "price": 800,
+      "variant": "4Ex2"
+    },
+    {
+      "type": "pass",
+      "entity": "TR",
+      "entity_type": "corporation",
+      "id": 538,
+      "created_at": 1772245628
+    },
+    {
+      "type": "lay_tile",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 539,
+      "created_at": 1772281019,
+      "hex": "P17",
+      "tile": "59-0",
+      "rotation": 0
+    },
+    {
+      "type": "place_token",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 540,
+      "created_at": 1772281026,
+      "city": "K30-0-0",
+      "slot": 1,
+      "tokener": "NCR"
+    },
+    {
+      "type": "run_routes",
+      "entity": "NCR",
+      "routes": [
+        {
+          "hexes": [
+            "P17",
+            "O16",
+            "N13",
+            "M10",
+            "K12",
+            "J11",
+            "K14",
+            "L23",
+            "M24",
+            "P19",
+            "R17",
+            "Q10"
+          ],
+          "nodes": [
+            "O16-0",
+            "P17-1",
+            "N13-0",
+            "M10-0",
+            "K12-1",
+            "J11-0",
+            "K14-0",
+            "L23-0",
+            "M24-0",
+            "P19-0",
+            "R17-0",
+            "Q10-0"
+          ],
+          "train": "4x3-0",
+          "revenue": 940,
+          "connections": [
+            [
+              "O16",
+              "P17"
+            ],
+            [
+              "N13",
+              "O14",
+              "O16"
+            ],
+            [
+              "M10",
+              "M12",
+              "N13"
+            ],
+            [
+              "K12",
+              "K10",
+              "L9",
+              "M10"
+            ],
+            [
+              "J11",
+              "K12"
+            ],
+            [
+              "K14",
+              "J13",
+              "J11"
+            ],
+            [
+              "K14",
+              "L15",
+              "L17",
+              "L19",
+              "L21",
+              "L23"
+            ],
+            [
+              "L23",
+              "M24"
+            ],
+            [
+              "M24",
+              "M22",
+              "N21",
+              "O20",
+              "P19"
+            ],
+            [
+              "P19",
+              "Q18",
+              "R17"
+            ],
+            [
+              "R17",
+              "Q16",
+              "P15",
+              "Q14",
+              "Q12",
+              "Q10"
+            ]
+          ],
+          "revenue_str": "P17-O16-N13-M10-K12-J11-K14-L23-M24-P19-R17-Q10 Gauge:3 ?+360 C+100"
+        }
+      ],
+      "subsidy": 0,
+      "entity_type": "corporation",
+      "extra_revenue": 0,
+      "id": 541,
+      "user": 20977,
+      "created_at": 1772281089
+    },
+    {
+      "kind": "payout",
+      "type": "dividend",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 542,
+      "user": 20977,
+      "created_at": 1772281090
+    },
+    {
+      "type": "pass",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 543,
+      "user": 20977,
+      "created_at": 1772281097
+    },
+    {
+      "type": "pass",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 544,
+      "user": 20977,
+      "created_at": 1772281100
+    },
+    {
+      "type": "choose",
+      "choice": "Convert to GIPR Share for ₹12",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 545,
+      "user": 20977,
+      "created_at": 1772281101
+    },
+    {
+      "type": "undo",
+      "entity": "NWR",
+      "entity_type": "corporation",
+      "id": 546,
+      "user": 20977,
+      "created_at": 1772281122
+    },
+    {
+      "type": "undo",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 547,
+      "user": 20977,
+      "created_at": 1772281122
+    },
+    {
+      "type": "undo",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 548,
+      "user": 20977,
+      "created_at": 1772281123
+    },
+    {
+      "type": "undo",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 549,
+      "user": 20977,
+      "created_at": 1772281124
+    },
+    {
+      "type": "undo",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 550,
+      "user": 20977,
+      "created_at": 1772281131
+    },
+    {
+      "type": "run_routes",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 551,
+      "created_at": 1772281222,
+      "routes": [
+        {
+          "train": "4x3-0",
+          "connections": [
+            [
+              "K12",
+              "K10",
+              "L9",
+              "M10"
+            ],
+            [
+              "J11",
+              "K12"
+            ],
+            [
+              "K14",
+              "J13",
+              "J11"
+            ],
+            [
+              "K14",
+              "L15",
+              "L17",
+              "L19",
+              "L21",
+              "L23"
+            ],
+            [
+              "L23",
+              "M24"
+            ],
+            [
+              "M24",
+              "L25",
+              "K26",
+              "K28",
+              "K30"
+            ],
+            [
+              "K30",
+              "J31",
+              "J33"
+            ],
+            [
+              "J33",
+              "J35",
+              "I36",
+              "H35"
+            ],
+            [
+              "H35",
+              "I34",
+              "H33",
+              "H35"
+            ],
+            [
+              "H35",
+              "H37",
+              "G36"
+            ],
+            [
+              "G36",
+              "G34"
+            ],
+            [
+              "G34",
+              "F33",
+              "F31",
+              "E30"
+            ],
+            [
+              "E30",
+              "E28",
+              "E26",
+              "D25",
+              "D23"
+            ],
+            [
+              "D23",
+              "D21"
+            ],
+            [
+              "D21",
+              "D19"
+            ],
+            [
+              "D19",
+              "D17"
+            ]
+          ],
+          "hexes": [
+            "M10",
+            "K12",
+            "J11",
+            "K14",
+            "L23",
+            "M24",
+            "K30",
+            "J33",
+            "H35",
+            "H35",
+            "G36",
+            "G34",
+            "E30",
+            "D23",
+            "D21",
+            "D19",
+            "D17"
+          ],
+          "revenue": 1090,
+          "revenue_str": "M10-K12-J11-K14-L23-M24-K30-J33-H35-H35-G36-G34-E30-D23-D21-D19-D17 Gauge:2 ?+480 R+70",
+          "nodes": [
+            "K12-1",
+            "M10-0",
+            "J11-0",
+            "K14-0",
+            "L23-0",
+            "M24-0",
+            "K30-0",
+            "J33-0",
+            "H35-2",
+            "H35-0",
+            "G36-0",
+            "G34-0",
+            "E30-0",
+            "D23-0",
+            "D21-0",
+            "D19-0",
+            "D17-0"
+          ]
+        }
+      ],
+      "extra_revenue": 0,
+      "subsidy": 0
+    },
+    {
+      "type": "dividend",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 552,
+      "created_at": 1772281223,
+      "kind": "payout"
+    },
+    {
+      "type": "pass",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 553,
+      "created_at": 1772281224
+    },
+    {
+      "type": "pass",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 554,
+      "created_at": 1772281225
+    },
+    {
+      "type": "choose",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 555,
+      "created_at": 1772281227,
+      "choice": "Convert to GIPR Share for ₹12"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "NWR",
+      "entity_type": "corporation",
+      "id": 556,
+      "created_at": 1772283249,
+      "hex": "G2",
+      "tile": "8-22",
+      "rotation": 0
+    },
+    {
+      "type": "lay_tile",
+      "entity": "NWR",
+      "entity_type": "corporation",
+      "id": 557,
+      "created_at": 1772283251,
+      "hex": "G4",
+      "tile": "8-23",
+      "rotation": 1
+    },
+    {
+      "type": "lay_tile",
+      "entity": "NWR",
+      "entity_type": "corporation",
+      "id": 558,
+      "created_at": 1772283258,
+      "hex": "E6",
+      "tile": "7-4",
+      "rotation": 3
+    },
+    {
+      "type": "lay_tile",
+      "entity": "NWR",
+      "entity_type": "corporation",
+      "id": 559,
+      "created_at": 1772283261,
+      "hex": "E4",
+      "tile": "58-5",
+      "rotation": 0
+    },
+    {
+      "type": "run_routes",
+      "entity": "NWR",
+      "entity_type": "corporation",
+      "id": 560,
+      "created_at": 1772283278,
+      "routes": [
+        {
+          "train": "3-2",
+          "connections": [
+            [
+              "E4",
+              "D3"
+            ],
+            [
+              "F5",
+              "E6",
+              "E4"
+            ],
+            [
+              "F1",
+              "G2",
+              "G4",
+              "F5"
+            ],
+            [
+              "F5",
+              "F3",
+              "F1"
+            ],
+            [
+              "G8",
+              "F7",
+              "F5"
+            ]
+          ],
+          "hexes": [
+            "D3",
+            "E4",
+            "F5",
+            "F1",
+            "F5",
+            "G8"
+          ],
+          "revenue": 140,
+          "revenue_str": "D3-E4-F5-F1-F5-G8 ?+10",
+          "nodes": [
+            "E4-0",
+            "D3-0",
+            "F5-2",
+            "F1-0",
+            "F5-0",
+            "G8-0"
+          ]
+        }
+      ],
+      "extra_revenue": 0,
+      "subsidy": 0
+    },
+    {
+      "type": "dividend",
+      "entity": "NWR",
+      "entity_type": "corporation",
+      "id": 561,
+      "created_at": 1772283281,
+      "kind": "payout"
+    },
+    {
+      "type": "pass",
+      "entity": "NWR",
+      "entity_type": "corporation",
+      "id": 562,
+      "created_at": 1772283346
+    },
+    {
+      "type": "corporate_buy_company",
+      "entity": "NWR",
+      "entity_type": "corporation",
+      "id": 563,
+      "created_at": 1772283388,
+      "company": "BR_3",
+      "price": 71
+    },
+    {
+      "type": "lay_tile",
+      "entity": "BNR",
+      "entity_type": "corporation",
+      "id": 564,
+      "created_at": 1772288747,
+      "hex": "P17",
+      "tile": "984-0",
+      "rotation": 5
+    },
+    {
+      "type": "pass",
+      "entity": "BNR",
+      "entity_type": "corporation",
+      "id": 565,
+      "created_at": 1772288753
+    },
+    {
+      "type": "remove_border",
+      "entity": "KGF",
+      "entity_type": "corporation",
+      "id": 566,
+      "created_at": 1772288772,
+      "hex": "K30",
+      "edge": 1
+    },
+    {
+      "type": "run_routes",
+      "entity": "KGF",
+      "entity_type": "corporation",
+      "id": 567,
+      "created_at": 1772288833,
+      "routes": [
+        {
+          "train": "2-4",
+          "connections": [
+            [
+              "J33",
+              "J31",
+              "K30"
+            ],
+            [
+              "H35",
+              "I36",
+              "J35",
+              "J33"
+            ],
+            [
+              "H31",
+              "H33",
+              "I34",
+              "H35"
+            ]
+          ],
+          "hexes": [
+            "K30",
+            "J33",
+            "H35",
+            "H31"
+          ],
+          "revenue": 170,
+          "revenue_str": "K30-J33-H35-H31 ?+40",
+          "nodes": [
+            "J33-0",
+            "K30-0",
+            "H35-2",
+            "H31-0"
+          ]
+        }
+      ],
+      "extra_revenue": 0,
+      "subsidy": 0
+    },
+    {
+      "type": "dividend",
+      "entity": "KGF",
+      "entity_type": "corporation",
+      "id": 568,
+      "created_at": 1772288835,
+      "kind": "payout"
+    },
+    {
+      "type": "pass",
+      "entity": "KGF",
+      "entity_type": "corporation",
+      "id": 569,
+      "created_at": 1772288838
+    },
+    {
+      "type": "pass",
+      "entity": "KGF",
+      "entity_type": "corporation",
+      "id": 570,
+      "created_at": 1772288841
+    },
+    {
+      "type": "pass",
+      "entity": 20977,
+      "entity_type": "player",
+      "id": 571,
+      "created_at": 1772309589
+    },
+    {
+      "type": "pass",
+      "entity": 2465,
+      "entity_type": "player",
+      "id": 572,
+      "created_at": 1772319461
+    },
+    {
+      "type": "pass",
+      "entity": 1152,
+      "entity_type": "player",
+      "id": 573,
+      "created_at": 1772321132
+    },
+    {
+      "type": "pass",
+      "entity": 12074,
+      "entity_type": "player",
+      "id": 574,
+      "created_at": 1772326872
+    },
+    {
+      "type": "sell_shares",
+      "entity": 12351,
+      "entity_type": "player",
+      "id": 575,
+      "created_at": 1772335125,
+      "shares": [
+        "MR_5"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "pass",
+      "entity": 12351,
+      "entity_type": "player",
+      "id": 576,
+      "created_at": 1772335126
+    },
+    {
+      "type": "buy_company",
+      "entity": 20977,
+      "entity_type": "player",
+      "id": 577,
+      "created_at": 1772335877,
+      "company": "NSR_3",
+      "price": 71
+    },
+    {
+      "type": "buy_company",
+      "entity": 20977,
+      "entity_type": "player",
+      "id": 578,
+      "created_at": 1772335878,
+      "company": "NSR_5",
+      "price": 71
+    },
+    {
+      "type": "buy_company",
+      "entity": 2465,
+      "entity_type": "player",
+      "id": 579,
+      "created_at": 1772369452,
+      "company": "P6",
+      "price": 150
+    },
+    {
+      "type": "buy_company",
+      "entity": 1152,
+      "entity_type": "player",
+      "id": 580,
+      "created_at": 1772374790,
+      "company": "MR_6",
+      "price": 90
+    },
+    {
+      "type": "buy_company",
+      "entity": 1152,
+      "entity_type": "player",
+      "id": 581,
+      "created_at": 1772374792,
+      "company": "MR_8",
+      "price": 90
+    },
+    {
+      "type": "buy_company",
+      "entity": 1152,
+      "entity_type": "player",
+      "id": 582,
+      "created_at": 1772374793,
+      "company": "MR_2",
+      "price": 90
+    },
+    {
+      "type": "buy_company",
+      "entity": 12074,
+      "entity_type": "player",
+      "id": 583,
+      "created_at": 1772375162,
+      "company": "NWR_0",
+      "price": 200
+    },
+    {
+      "type": "buy_company",
+      "entity": 12074,
+      "entity_type": "player",
+      "id": 584,
+      "created_at": 1772375164,
+      "company": "NWR_1",
+      "price": 100
+    },
+    {
+      "type": "program_share_pass",
+      "entity": 12074,
+      "entity_type": "player",
+      "id": 585,
+      "created_at": 1772375243,
+      "auto_actions": [
+        {
+          "type": "pass",
+          "entity": 12074,
+          "entity_type": "player",
+          "created_at": 1772375242
+        }
+      ],
+      "unconditional": false,
+      "indefinite": false
+    },
+    {
+      "type": "buy_company",
+      "entity": 12351,
+      "entity_type": "player",
+      "id": 586,
+      "created_at": 1772375514,
+      "company": "SPD_6",
+      "price": 67
+    },
+    {
+      "type": "buy_company",
+      "price": 71,
+      "entity": 12351,
+      "company": "TR_5",
+      "entity_type": "player",
+      "id": 587,
+      "user": 12351,
+      "created_at": 1772375517
+    },
+    {
+      "type": "undo",
+      "entity": 20977,
+      "entity_type": "player",
+      "id": 588,
+      "user": 12351,
+      "created_at": 1772375525
+    },
+    {
+      "type": "pass",
+      "entity": 12351,
+      "entity_type": "player",
+      "id": 589,
+      "created_at": 1772375528
+    },
+    {
+      "type": "buy_company",
+      "entity": 20977,
+      "entity_type": "player",
+      "id": 590,
+      "created_at": 1772395550,
+      "company": "TR_5",
+      "price": 71
+    },
+    {
+      "type": "buy_company",
+      "entity": 20977,
+      "entity_type": "player",
+      "id": 591,
+      "created_at": 1772395551,
+      "company": "NCR_2",
+      "price": 90
+    },
+    {
+      "type": "buy_shares",
+      "entity": 2465,
+      "entity_type": "player",
+      "id": 592,
+      "created_at": 1772401673,
+      "shares": [
+        "MR_5"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "buy_company",
+      "entity": 12351,
+      "entity_type": "player",
+      "id": 593,
+      "created_at": 1772406675,
+      "company": "NCR_4",
+      "price": 90
+    },
+    {
+      "type": "buy_company",
+      "entity": 12351,
+      "entity_type": "player",
+      "id": 594,
+      "created_at": 1772406676,
+      "company": "NSR_2",
+      "price": 71
+    },
+    {
+      "type": "buy_company",
+      "price": 100,
+      "entity": 20977,
+      "company": "NWR_4",
+      "entity_type": "player",
+      "id": 595,
+      "user": 20977,
+      "created_at": 1772406842
+    },
+    {
+      "type": "pass",
+      "entity": 20977,
+      "entity_type": "player",
+      "id": 596,
+      "user": 20977,
+      "created_at": 1772406858
+    },
+    {
+      "type": "undo",
+      "entity": 2465,
+      "entity_type": "player",
+      "id": 597,
+      "user": 20977,
+      "created_at": 1772406886
+    },
+    {
+      "type": "undo",
+      "entity": 20977,
+      "entity_type": "player",
+      "id": 598,
+      "user": 20977,
+      "created_at": 1772406899
+    },
+    {
+      "type": "buy_company",
+      "price": 112,
+      "entity": 20977,
+      "company": "GIPR_2",
+      "entity_type": "player",
+      "id": 599,
+      "user": 20977,
+      "created_at": 1772406922
+    },
+    {
+      "type": "buy_company",
+      "price": 112,
+      "entity": 20977,
+      "company": "GIPR_1",
+      "entity_type": "player",
+      "id": 600,
+      "user": 20977,
+      "created_at": 1772406923
+    },
+    {
+      "type": "pass",
+      "entity": 20977,
+      "entity_type": "player",
+      "id": 601,
+      "user": 20977,
+      "created_at": 1772406928
+    },
+    {
+      "type": "undo",
+      "entity": 2465,
+      "entity_type": "player",
+      "id": 602,
+      "user": 20977,
+      "created_at": 1772406941
+    },
+    {
+      "type": "undo",
+      "entity": 20977,
+      "entity_type": "player",
+      "id": 603,
+      "user": 20977,
+      "created_at": 1772406942
+    },
+    {
+      "type": "undo",
+      "entity": 20977,
+      "entity_type": "player",
+      "id": 604,
+      "user": 20977,
+      "created_at": 1772406944
+    },
+    {
+      "type": "buy_company",
+      "entity": 20977,
+      "entity_type": "player",
+      "id": 605,
+      "created_at": 1772407031,
+      "company": "GIPR_2",
+      "price": 112
+    },
+    {
+      "type": "buy_company",
+      "entity": 20977,
+      "entity_type": "player",
+      "id": 606,
+      "created_at": 1772407032,
+      "company": "GIPR_1",
+      "price": 112
+    },
+    {
+      "type": "pass",
+      "entity": 20977,
+      "entity_type": "player",
+      "id": 607,
+      "created_at": 1772407039
+    },
+    {
+      "type": "buy_company",
+      "entity": 2465,
+      "entity_type": "player",
+      "id": 608,
+      "created_at": 1772407109,
+      "company": "SPD_1",
+      "price": 67
+    },
+    {
+      "type": "buy_company",
+      "entity": 12351,
+      "entity_type": "player",
+      "id": 609,
+      "created_at": 1772410082,
+      "company": "TR_4",
+      "price": 71
+    },
+    {
+      "type": "buy_company",
+      "entity": 12351,
+      "entity_type": "player",
+      "id": 610,
+      "created_at": 1772410095,
+      "company": "P1",
+      "price": 25
+    },
+    {
+      "type": "buy_company",
+      "entity": 20977,
+      "entity_type": "player",
+      "id": 611,
+      "created_at": 1772410452,
+      "company": "BNR_8",
+      "price": 82
+    },
+    {
+      "hex": "B17",
+      "tile": "7-5",
+      "type": "lay_tile",
+      "entity": "BR",
+      "rotation": 3,
+      "entity_type": "corporation",
+      "id": 612,
+      "user": 12074,
+      "created_at": 1772411562
+    },
+    {
+      "hex": "B15",
+      "tile": "9-21",
+      "type": "lay_tile",
+      "entity": "BR",
+      "rotation": 0,
+      "entity_type": "corporation",
+      "id": 613,
+      "user": 12074,
+      "created_at": 1772411565
+    },
+    {
+      "hex": "B9",
+      "tile": "8-24",
+      "type": "lay_tile",
+      "entity": "BR",
+      "rotation": 4,
+      "entity_type": "corporation",
+      "id": 614,
+      "user": 12074,
+      "created_at": 1772411568
+    },
+    {
+      "type": "undo",
+      "entity": "BR",
+      "action_id": 611,
+      "entity_type": "corporation",
+      "id": 615,
+      "user": 12074,
+      "created_at": 1772411580
+    },
+    {
+      "hex": "B17",
+      "tile": "8-24",
+      "type": "lay_tile",
+      "entity": "BR",
+      "rotation": 2,
+      "entity_type": "corporation",
+      "id": 616,
+      "user": 12074,
+      "created_at": 1772411583
+    },
+    {
+      "hex": "B15",
+      "tile": "8-25",
+      "type": "lay_tile",
+      "entity": "BR",
+      "rotation": 1,
+      "entity_type": "corporation",
+      "id": 617,
+      "user": 12074,
+      "created_at": 1772411590
+    },
+    {
+      "hex": "B9",
+      "tile": "8-26",
+      "type": "lay_tile",
+      "entity": "BR",
+      "rotation": 4,
+      "entity_type": "corporation",
+      "id": 618,
+      "user": 12074,
+      "created_at": 1772411592
+    },
+    {
+      "hex": "C8",
+      "tile": "8-27",
+      "type": "lay_tile",
+      "entity": "BR",
+      "rotation": 1,
+      "entity_type": "corporation",
+      "id": 619,
+      "user": 12074,
+      "created_at": 1772411595
+    },
+    {
+      "type": "pass",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 620,
+      "user": 12074,
+      "created_at": 1772411602
+    },
+    {
+      "type": "undo",
+      "entity": "BR",
+      "action_id": 611,
+      "entity_type": "corporation",
+      "id": 621,
+      "user": 12074,
+      "created_at": 1772411716
+    },
+    {
+      "hex": "H29",
+      "tile": "8-24",
+      "type": "lay_tile",
+      "entity": "BR",
+      "rotation": 0,
+      "entity_type": "corporation",
+      "id": 622,
+      "user": 12074,
+      "created_at": 1772411721
+    },
+    {
+      "hex": "G28",
+      "tile": "7-5",
+      "type": "lay_tile",
+      "entity": "BR",
+      "rotation": 4,
+      "entity_type": "corporation",
+      "id": 623,
+      "user": 12074,
+      "created_at": 1772411724
+    },
+    {
+      "type": "pass",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 624,
+      "user": 12074,
+      "created_at": 1772411738
+    },
+    {
+      "type": "pass",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 625,
+      "user": 12074,
+      "created_at": 1772411752
+    },
+    {
+      "type": "undo",
+      "entity": "BR",
+      "action_id": 611,
+      "entity_type": "corporation",
+      "id": 626,
+      "user": 12074,
+      "created_at": 1772411783
+    },
+    {
+      "type": "lay_tile",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 627,
+      "created_at": 1772411788,
+      "hex": "B17",
+      "tile": "8-24",
+      "rotation": 2
+    },
+    {
+      "type": "lay_tile",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 628,
+      "created_at": 1772411790,
+      "hex": "B15",
+      "tile": "8-25",
+      "rotation": 1
+    },
+    {
+      "type": "lay_tile",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 629,
+      "created_at": 1772411796,
+      "hex": "B9",
+      "tile": "8-26",
+      "rotation": 4
+    },
+    {
+      "type": "lay_tile",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 630,
+      "created_at": 1772411799,
+      "hex": "C8",
+      "tile": "8-27",
+      "rotation": 1
+    },
+    {
+      "type": "pass",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 631,
+      "created_at": 1772411802
+    },
+    {
+      "type": "run_routes",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 632,
+      "created_at": 1772411866,
+      "routes": [
+        {
+          "train": "4-1",
+          "connections": [
+            [
+              "J33",
+              "J31",
+              "K30"
+            ],
+            [
+              "H35",
+              "I36",
+              "J35",
+              "J33"
+            ],
+            [
+              "H35",
+              "H33",
+              "I34",
+              "H35"
+            ],
+            [
+              "G36",
+              "H37",
+              "H35"
+            ],
+            [
+              "G34",
+              "G36"
+            ],
+            [
+              "E30",
+              "F31",
+              "F33",
+              "G34"
+            ],
+            [
+              "D23",
+              "D25",
+              "E26",
+              "E28",
+              "E30"
+            ],
+            [
+              "D21",
+              "D23"
+            ],
+            [
+              "D19",
+              "D21"
+            ],
+            [
+              "D17",
+              "D19"
+            ],
+            [
+              "D17",
+              "D15",
+              "C16"
+            ],
+            [
+              "C16",
+              "B17",
+              "A16"
+            ]
+          ],
+          "hexes": [
+            "K30",
+            "J33",
+            "H35",
+            "H35",
+            "G36",
+            "G34",
+            "E30",
+            "D23",
+            "D21",
+            "D19",
+            "D17",
+            "C16",
+            "A16"
+          ],
+          "revenue": 380,
+          "revenue_str": "K30-J33-H35-H35-G36-G34-E30-D23-D21-D19-D17-C16-A16 ?+80 R+80 C+30",
+          "nodes": [
+            "J33-0",
+            "K30-0",
+            "H35-2",
+            "H35-0",
+            "G36-0",
+            "G34-0",
+            "E30-0",
+            "D23-0",
+            "D21-0",
+            "D19-0",
+            "D17-0",
+            "C16-0",
+            "A16-0"
+          ]
+        }
+      ],
+      "extra_revenue": 0,
+      "subsidy": 0
+    },
+    {
+      "kind": "withhold",
+      "type": "dividend",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 633,
+      "user": 12074,
+      "created_at": 1772411919
+    },
+    {
+      "type": "sell_train",
+      "price": 300,
+      "train": "4-1",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 634,
+      "user": 12074,
+      "created_at": 1772411921
+    },
+    {
+      "type": "undo",
+      "entity": "BR",
+      "action_id": 632,
+      "entity_type": "corporation",
+      "id": 635,
+      "user": 12074,
+      "created_at": 1772411939
+    },
+    {
+      "type": "dividend",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 636,
+      "created_at": 1772412001,
+      "kind": "payout"
+    },
+    {
+      "type": "pass",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 637,
+      "created_at": 1772412059
+    },
+    {
+      "type": "pass",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 638,
+      "created_at": 1772412071
+    },
+    {
+      "type": "pass",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 639,
+      "user": 12074,
+      "created_at": 1772412356
+    },
+    {
+      "type": "undo",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 640,
+      "user": 12074,
+      "created_at": 1772412372
+    },
+    {
+      "type": "corporate_buy_company",
+      "entity": "BR",
+      "entity_type": "corporation",
+      "id": 641,
+      "created_at": 1772412375,
+      "company": "NWR_4",
+      "price": 100
+    },
+    {
+      "hex": "P17",
+      "tile": "IND1-0",
+      "type": "lay_tile",
+      "entity": "NCR",
+      "rotation": 4,
+      "entity_type": "corporation",
+      "id": 642,
+      "user": 20977,
+      "created_at": 1772418748
+    },
+    {
+      "type": "undo",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 643,
+      "user": 20977,
+      "created_at": 1772418773
+    },
+    {
+      "hex": "D5",
+      "tile": "8-28",
+      "type": "lay_tile",
+      "entity": "NCR",
+      "rotation": 1,
+      "entity_type": "corporation",
+      "id": 644,
+      "user": 20977,
+      "created_at": 1772418782
+    },
+    {
+      "type": "pass",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 645,
+      "user": 20977,
+      "created_at": 1772418789
+    },
+    {
+      "type": "undo",
+      "entity": "NCR",
+      "action_id": 641,
+      "entity_type": "corporation",
+      "id": 646,
+      "user": 20977,
+      "created_at": 1772418854
+    },
+    {
+      "type": "lay_tile",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 647,
+      "created_at": 1772418862,
+      "hex": "O18",
+      "tile": "7-5",
+      "rotation": 4
+    },
+    {
+      "type": "lay_tile",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 648,
+      "created_at": 1772418875,
+      "hex": "D5",
+      "tile": "8-28",
+      "rotation": 1
+    },
+    {
+      "type": "pass",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 649,
+      "created_at": 1772418882
+    },
+    {
+      "type": "run_routes",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 650,
+      "created_at": 1772418910,
+      "routes": [
+        {
+          "train": "4x3-0",
+          "connections": [
+            [
+              "R17",
+              "Q16",
+              "P15",
+              "Q14",
+              "Q12",
+              "Q10"
+            ],
+            [
+              "P19",
+              "Q18",
+              "R17"
+            ],
+            [
+              "P17",
+              "O18",
+              "P19"
+            ],
+            [
+              "O16",
+              "P17"
+            ],
+            [
+              "N13",
+              "O14",
+              "O16"
+            ],
+            [
+              "M10",
+              "M12",
+              "N13"
+            ],
+            [
+              "K12",
+              "K10",
+              "L9",
+              "M10"
+            ],
+            [
+              "J11",
+              "K12"
+            ],
+            [
+              "K14",
+              "J13",
+              "J11"
+            ],
+            [
+              "K14",
+              "L15",
+              "L17",
+              "L19",
+              "L21",
+              "L23"
+            ],
+            [
+              "L23",
+              "M24"
+            ],
+            [
+              "M24",
+              "L25",
+              "K26",
+              "K28",
+              "K30"
+            ],
+            [
+              "K30",
+              "J31",
+              "J33"
+            ],
+            [
+              "J33",
+              "J35",
+              "I36",
+              "H35"
+            ],
+            [
+              "H35",
+              "I34",
+              "H33",
+              "H35"
+            ],
+            [
+              "H35",
+              "H37",
+              "G36"
+            ],
+            [
+              "G36",
+              "G34"
+            ],
+            [
+              "G34",
+              "F33",
+              "F31",
+              "E30"
+            ],
+            [
+              "E30",
+              "E28",
+              "E26",
+              "D25",
+              "D23"
+            ],
+            [
+              "D23",
+              "D21"
+            ],
+            [
+              "D21",
+              "D19"
+            ],
+            [
+              "D19",
+              "D17"
+            ],
+            [
+              "D17",
+              "D15",
+              "C16"
+            ],
+            [
+              "C16",
+              "B17",
+              "A16"
+            ],
+            [
+              "A16",
+              "B15",
+              "B13",
+              "B11",
+              "B9",
+              "C8",
+              "C6"
+            ],
+            [
+              "C6",
+              "D5",
+              "D3"
+            ]
+          ],
+          "hexes": [
+            "Q10",
+            "R17",
+            "P19",
+            "P17",
+            "O16",
+            "N13",
+            "M10",
+            "K12",
+            "J11",
+            "K14",
+            "L23",
+            "M24",
+            "K30",
+            "J33",
+            "H35",
+            "H35",
+            "G36",
+            "G34",
+            "E30",
+            "D23",
+            "D21",
+            "D19",
+            "D17",
+            "C16",
+            "A16",
+            "C6",
+            "D3"
+          ],
+          "revenue": 1410,
+          "revenue_str": "Q10-R17-P19-P17-O16-N13-M10-K12-J11-K14-L23-M24-K30-J33-H35-H35-G36-G34-E30-D23-D21-D19-D17-C16-A16-C6-D3 Gauge:3 ?+480 R+230 C+100",
+          "nodes": [
+            "R17-0",
+            "Q10-0",
+            "P19-0",
+            "P17-1",
+            "O16-0",
+            "N13-0",
+            "M10-0",
+            "K12-1",
+            "J11-0",
+            "K14-0",
+            "L23-0",
+            "M24-0",
+            "K30-0",
+            "J33-0",
+            "H35-2",
+            "H35-0",
+            "G36-0",
+            "G34-0",
+            "E30-0",
+            "D23-0",
+            "D21-0",
+            "D19-0",
+            "D17-0",
+            "C16-0",
+            "A16-0",
+            "C6-0",
+            "D3-0"
+          ]
+        }
+      ],
+      "extra_revenue": 0,
+      "subsidy": 0
+    },
+    {
+      "type": "dividend",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 651,
+      "created_at": 1772418914,
+      "kind": "payout"
+    },
+    {
+      "type": "pass",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 652,
+      "created_at": 1772418924
+    },
+    {
+      "type": "pass",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 653,
+      "created_at": 1772418932
+    },
+    {
+      "type": "corporate_buy_company",
+      "entity": "NCR",
+      "entity_type": "corporation",
+      "id": 654,
+      "created_at": 1772418938,
+      "company": "GIPR_8",
+      "price": 112
+    },
+    {
+      "type": "place_token",
+      "entity": "GIPR",
+      "entity_type": "corporation",
+      "id": 655,
+      "created_at": 1772418953,
+      "city": "984-0-0",
+      "slot": 0,
+      "tokener": "GIPR"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "MR",
+      "entity_type": "corporation",
+      "id": 656,
+      "created_at": 1772420269,
+      "hex": "E22",
+      "tile": "IND2-0",
+      "rotation": 0
+    },
+    {
+      "type": "lay_tile",
+      "entity": "MR",
+      "entity_type": "corporation",
+      "id": 657,
+      "created_at": 1772420284,
+      "hex": "E20",
+      "tile": "8-29",
+      "rotation": 5
+    },
+    {
+      "type": "lay_tile",
+      "entity": "MR",
+      "entity_type": "corporation",
+      "id": 658,
+      "created_at": 1772420287,
+      "hex": "F21",
+      "tile": "9-21",
+      "rotation": 2
+    },
+    {
+      "type": "lay_tile",
+      "entity": "MR",
+      "entity_type": "corporation",
+      "id": 659,
+      "created_at": 1772420298,
+      "hex": "G22",
+      "tile": "8-30",
+      "rotation": 2
+    },
+    {
+      "type": "pass",
+      "entity": "MR",
+      "entity_type": "corporation",
+      "id": 660,
+      "created_at": 1772420302
+    },
+    {
+      "type": "run_routes",
+      "entity": "MR",
+      "entity_type": "corporation",
+      "id": 661,
+      "created_at": 1772420380,
+      "routes": [
+        {
+          "train": "3-3",
+          "connections": [
+            [
+              "H25",
+              "H27",
+              "I28",
+              "J29",
+              "K30"
+            ],
+            [
+              "I20",
+              "H21",
+              "H23",
+              "H25"
+            ]
+          ],
+          "hexes": [
+            "K30",
+            "H25",
+            "I20"
+          ],
+          "revenue": 180,
+          "revenue_str": "K30-H25-I20 ?+40",
+          "nodes": [
+            "H25-0",
+            "K30-0",
+            "I20-0"
+          ]
+        }
+      ],
+      "extra_revenue": 0,
+      "subsidy": 0
+    },
+    {
+      "type": "dividend",
+      "entity": "MR",
+      "entity_type": "corporation",
+      "id": 662,
+      "created_at": 1772420382,
+      "kind": "payout"
+    },
+    {
+      "type": "sell_train",
+      "entity": "MR",
+      "entity_type": "corporation",
+      "id": 663,
+      "created_at": 1772420401,
+      "train": "3-3",
+      "price": 300
+    },
+    {
+      "type": "buy_train",
+      "entity": "MR",
+      "entity_type": "corporation",
+      "id": 664,
+      "created_at": 1772420403,
+      "train": "4-0",
+      "price": 450,
+      "variant": "4E"
+    },
+    {
+      "type": "pass",
+      "entity": "MR",
+      "entity_type": "corporation",
+      "id": 665,
+      "created_at": 1772420416
+    },
+    {
+      "type": "pass",
+      "entity": "MR",
+      "entity_type": "corporation",
+      "id": 666,
+      "created_at": 1772420425
+    },
+    {
+      "type": "corporate_buy_company",
+      "entity": "MR",
+      "entity_type": "corporation",
+      "id": 667,
+      "created_at": 1772420435,
+      "company": "BNR_3",
+      "price": 82
+    },
+    {
+      "hex": "P17",
+      "tile": "IND1-0",
+      "type": "lay_tile",
+      "entity": "NSR",
+      "rotation": 4,
+      "entity_type": "corporation",
+      "id": 668,
+      "user": 12351,
+      "created_at": 1772428479
+    },
+    {
+      "type": "undo",
+      "entity": "NSR",
+      "entity_type": "corporation",
+      "id": 669,
+      "user": 12351,
+      "created_at": 1772428522
+    },
+    {
+      "type": "lay_tile",
+      "entity": "NSR",
+      "entity_type": "corporation",
+      "id": 670,
+      "created_at": 1772428537,
+      "hex": "G30",
+      "tile": "8-31",
+      "rotation": 3
+    },
+    {
+      "type": "lay_tile",
+      "entity": "NSR",
+      "entity_type": "corporation",
+      "id": 671,
+      "created_at": 1772428544,
+      "hex": "G28",
+      "tile": "8-32",
+      "rotation": 4
+    },
+    {
+      "type": "lay_tile",
+      "entity": "NSR",
+      "entity_type": "corporation",
+      "id": 672,
+      "created_at": 1772428568,
+      "hex": "R13",
+      "tile": "4-5",
+      "rotation": 0
+    },
+    {
+      "type": "lay_tile",
+      "entity": "NSR",
+      "entity_type": "corporation",
+      "id": 673,
+      "created_at": 1772428571,
+      "hex": "R11",
+      "tile": "8-33",
+      "rotation": 0
+    },
+    {
+      "type": "run_routes",
+      "entity": "NSR",
+      "entity_type": "corporation",
+      "id": 674,
+      "created_at": 1772428635,
+      "routes": [
+        {
+          "train": "4x3-1",
+          "connections": [
+            [
+              "Q10",
+              "P11",
+              "O12",
+              "N11",
+              "M10"
+            ],
+            [
+              "R17",
+              "Q16",
+              "P15",
+              "Q14",
+              "Q12",
+              "Q10"
+            ],
+            [
+              "P19",
+              "Q18",
+              "R17"
+            ],
+            [
+              "M24",
+              "M22",
+              "N21",
+              "O20",
+              "P19"
+            ],
+            [
+              "L23",
+              "M24"
+            ],
+            [
+              "K14",
+              "L15",
+              "L17",
+              "L19",
+              "L21",
+              "L23"
+            ],
+            [
+              "J17",
+              "J15",
+              "K14"
+            ],
+            [
+              "I20",
+              "I18",
+              "J17"
+            ],
+            [
+              "H25",
+              "H23",
+              "H21",
+              "I20"
+            ],
+            [
+              "H31",
+              "G30",
+              "G28",
+              "H27",
+              "H25"
+            ],
+            [
+              "H35",
+              "H33",
+              "H31"
+            ],
+            [
+              "G36",
+              "H37",
+              "H35"
+            ],
+            [
+              "G34",
+              "G36"
+            ],
+            [
+              "E30",
+              "F31",
+              "F33",
+              "G34"
+            ],
+            [
+              "D23",
+              "D25",
+              "E26",
+              "E28",
+              "E30"
+            ],
+            [
+              "D21",
+              "D23"
+            ],
+            [
+              "D19",
+              "D21"
+            ],
+            [
+              "D17",
+              "D19"
+            ],
+            [
+              "C16",
+              "D15",
+              "D17"
+            ],
+            [
+              "A16",
+              "B17",
+              "C16"
+            ],
+            [
+              "C6",
+              "C8",
+              "B9",
+              "B11",
+              "B13",
+              "B15",
+              "A16"
+            ],
+            [
+              "D3",
+              "D5",
+              "C6"
+            ],
+            [
+              "E4",
+              "D3"
+            ],
+            [
+              "F5",
+              "E6",
+              "E4"
+            ],
+            [
+              "F1",
+              "G2",
+              "G4",
+              "F5"
+            ],
+            [
+              "F5",
+              "F3",
+              "F1"
+            ],
+            [
+              "G8",
+              "F7",
+              "F5"
+            ]
+          ],
+          "hexes": [
+            "M10",
+            "Q10",
+            "R17",
+            "P19",
+            "M24",
+            "L23",
+            "K14",
+            "J17",
+            "I20",
+            "H25",
+            "H31",
+            "H35",
+            "G36",
+            "G34",
+            "E30",
+            "D23",
+            "D21",
+            "D19",
+            "D17",
+            "C16",
+            "A16",
+            "C6",
+            "D3",
+            "E4",
+            "F5",
+            "F1",
+            "F5",
+            "G8"
+          ],
+          "revenue": 1410,
+          "revenue_str": "M10-Q10-R17-P19-M24-L23-K14-J17-I20-H25-H31-H35-G36-G34-E30-D23-D21-D19-D17-C16-A16-C6-D3-E4-F5-F1-F5-G8 Gauge:4 ?+480 R+170 C+190",
+          "nodes": [
+            "Q10-0",
+            "M10-3",
+            "R17-0",
+            "P19-0",
+            "M24-0",
+            "L23-0",
+            "K14-0",
+            "J17-0",
+            "I20-0",
+            "H25-0",
+            "H31-0",
+            "H35-0",
+            "G36-0",
+            "G34-0",
+            "E30-0",
+            "D23-0",
+            "D21-0",
+            "D19-0",
+            "D17-0",
+            "C16-0",
+            "A16-0",
+            "C6-0",
+            "D3-0",
+            "E4-0",
+            "F5-2",
+            "F1-0",
+            "F5-0",
+            "G8-0"
+          ]
+        }
+      ],
+      "extra_revenue": 0,
+      "subsidy": 0
+    },
+    {
+      "type": "dividend",
+      "entity": "NSR",
+      "entity_type": "corporation",
+      "id": 675,
+      "created_at": 1772428636,
+      "kind": "payout"
+    },
+    {
+      "type": "pass",
+      "entity": "NSR",
+      "entity_type": "corporation",
+      "id": 676,
+      "created_at": 1772428637
+    },
+    {
+      "type": "pass",
+      "entity": "NSR",
+      "entity_type": "corporation",
+      "id": 677,
+      "created_at": 1772428642
+    },
+    {
+      "type": "corporate_buy_company",
+      "entity": "NSR",
+      "entity_type": "corporation",
+      "id": 678,
+      "created_at": 1772428658,
+      "company": "TR_8",
+      "price": 71
+    },
+    {
+      "hex": "K28",
+      "tile": "82-0",
+      "type": "lay_tile",
+      "entity": "TR",
+      "rotation": 0,
+      "entity_type": "corporation",
+      "id": 679,
+      "user": 2465,
+      "created_at": 1772428689
+    },
+    {
+      "type": "pass",
+      "entity": "TR",
+      "entity_type": "corporation",
+      "id": 680,
+      "user": 2465,
+      "created_at": 1772428722
+    },
+    {
+      "type": "undo",
+      "entity": "TR",
+      "action_id": 678,
+      "entity_type": "corporation",
+      "id": 681,
+      "user": 2465,
+      "created_at": 1772428857
+    },
+    {
+      "type": "lay_tile",
+      "entity": "TR",
+      "entity_type": "corporation",
+      "id": 682,
+      "created_at": 1772428861,
+      "hex": "I20",
+      "tile": "611-4",
+      "rotation": 1
+    },
+    {
+      "type": "pass",
+      "entity": "TR",
+      "entity_type": "corporation",
+      "id": 683,
+      "created_at": 1772428873
+    },
+    {
+      "type": "run_routes",
+      "entity": "TR",
+      "entity_type": "corporation",
+      "id": 684,
+      "created_at": 1772428897,
+      "routes": [
+        {
+          "train": "4x2-0",
+          "connections": [
+            [
+              "J17",
+              "I18",
+              "I20"
+            ],
+            [
+              "K14",
+              "J15",
+              "J17"
+            ],
+            [
+              "L23",
+              "L21",
+              "L19",
+              "L17",
+              "L15",
+              "K14"
+            ],
+            [
+              "M24",
+              "L23"
+            ],
+            [
+              "P19",
+              "O20",
+              "N21",
+              "M22",
+              "M24"
+            ],
+            [
+              "R17",
+              "Q18",
+              "P19"
+            ],
+            [
+              "R13",
+              "R15",
+              "R17"
+            ],
+            [
+              "Q10",
+              "R11",
+              "R13"
+            ],
+            [
+              "M10",
+              "N11",
+              "O12",
+              "P11",
+              "Q10"
+            ]
+          ],
+          "hexes": [
+            "I20",
+            "J17",
+            "K14",
+            "L23",
+            "M24",
+            "P19",
+            "R17",
+            "R13",
+            "Q10",
+            "M10"
+          ],
+          "revenue": 630,
+          "revenue_str": "I20-J17-K14-L23-M24-P19-R17-R13-Q10-M10 Gauge:3 ?+240 C+70",
+          "nodes": [
+            "J17-0",
+            "I20-0",
+            "K14-0",
+            "L23-0",
+            "M24-0",
+            "P19-0",
+            "R17-0",
+            "R13-0",
+            "Q10-0",
+            "M10-3"
+          ]
+        }
+      ],
+      "extra_revenue": 0,
+      "subsidy": 0
+    },
+    {
+      "type": "dividend",
+      "entity": "TR",
+      "entity_type": "corporation",
+      "id": 685,
+      "created_at": 1772428901,
+      "kind": "payout"
+    },
+    {
+      "type": "buy_train",
+      "price": 180,
+      "train": "2-0",
+      "entity": "TR",
+      "variant": "2",
+      "entity_type": "corporation",
+      "id": 686,
+      "user": 2465,
+      "created_at": 1772428905
+    },
+    {
+      "type": "undo",
+      "entity": "TR",
+      "entity_type": "corporation",
+      "id": 687,
+      "user": 2465,
+      "created_at": 1772428920
+    },
+    {
+      "type": "pass",
+      "entity": "TR",
+      "entity_type": "corporation",
+      "id": 688,
+      "created_at": 1772428921
+    },
+    {
+      "type": "corporate_buy_company",
+      "entity": "TR",
+      "entity_type": "corporation",
+      "id": 689,
+      "created_at": 1772428940,
+      "company": "SPD_2",
+      "price": 67
+    }
+  ],
+  "loaded": true,
+  "created_at": 1771283762,
+  "updated_at": 1773348339,
+  "finished_at": null
+}
