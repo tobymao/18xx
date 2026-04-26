@@ -57,10 +57,13 @@ module Engine
             else
               @game.log << "#{entity.name} declined to bid on #{@auctioning.name}"
               @declined_bids << entity
-              if @declined_bids.size == @active_bidders.size
+              if (@active_bidders - [entity]).empty?
+                @active_bidders.delete(entity)
                 remove(@auctioning)
                 @declined_bids = []
+                return
               end
+              remove_from_auction(entity)
             end
             resolve_bids
           end
