@@ -417,7 +417,7 @@ module Engine
         def form_sbb!
           @log << '-- Event: SBB forms --'
 
-          @stock_market.set_par(sbb, @stock_market.share_prices_with_types(%i[par_1]).first)
+          par_corporation(sbb, @stock_market.share_prices_with_types(%i[par_1]).first)
           sbb.floatable = true
           sbb.ipoed = true
           sbb.floated = true
