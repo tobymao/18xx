@@ -279,6 +279,36 @@ module Engine
             G1835::Step::BuyTrain,
           ], round_num: round_num)
         end
+
+        def revenue_for(route, stops)
+          super + brown_hamburg_tile_revenue(route)
+        end
+
+        def revenue_str(route)
+          str = super
+          str += " (#{format_currency(-10)} Hamburg ferry)" if uses_hamburg_ferry(route)
+          str
+        end
+
+        def hamburg_hex
+          @hamburg_hex ||= hex_by_id('C11')
+        end
+
+        def brown_hamburg_tile_revenue(route)
+          return 0 unless hamburg_hex.tile.color == :brown
+          return 0 unless route.hexes.include?(hamburg_hex)
+          return 60 unless uses_hamburg_ferry(route)
+
+          50
+        end
+
+        def uses_hamburg_ferry(route)
+          return false unless route.hexes.include?(hamburg_hex)
+
+          north_edge_used = route.paths.any? { |path| path.tile.hex == hamburg_hex && [2, 3, 4].intersect?(path.exits) }
+          south_edge_used = route.paths.any? { |path| path.tile.hex == hamburg_hex && [0, 1, 5].intersect?(path.exits) }
+          north_edge_used && south_edge_used
+        end
       end
     end
   end
