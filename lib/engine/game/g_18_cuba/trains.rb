@@ -36,6 +36,7 @@ module Engine
                 price: 230,
               },
             ],
+            events: [{ 'type' => 'sugar_cane_open_for_majors' }],
           },
           {
             name: '4',
@@ -139,6 +140,11 @@ module Engine
             discount: { '4n' => 130, '4-1n' => 65 },
           },
           ].freeze
+
+        def event_sugar_cane_open_for_majors!
+          @sugar_cane_open_for_majors = true
+          @log << '-- Event: Major corporations may now lay plain track on sugar cane hexes --'
+        end
 
         def event_downgrade_4n_trains!
           @log << '-- Event: 4n trains downgrade to 4-1n trains --'

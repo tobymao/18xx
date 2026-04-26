@@ -18,6 +18,16 @@ module Engine
 
         include DoubleSidedTiles
 
+        register_colors(red: '#d1232a',
+                        orange: '#f58121',
+                        black: '#110a0c',
+                        blue: '#025aaa',
+                        lightBlue: '#8dd7f6',
+                        yellow: '#ffe600',
+                        green: '#32763f',
+                        brightGreen: '#6ec037')
+        attr_reader :sugar_cane_open_for_majors
+
         TRACK_RESTRICTION = :permissive
         CURRENCY_FORMAT_STR = '$%s'
         HOME_TOKEN_TIMING = :operate
@@ -268,6 +278,23 @@ module Engine
           end
         end
 
+        def upgrades_to_correct_city_town?(from, to)
+          return true if sugar_cane_tile?(from) && @sugar_cane_open_for_majors && to.city_towns.empty?
+
+          super
+        end
+
+        def sugar_cane_hex?(hex)
+          SUGAR_CANE_HEXES.include?(hex.id)
+        end
+
+        def upgrade_cost(tile, hex, entity, spender)
+          # Minors lay on sugar cane hexes at no cost
+          return 0 if entity&.type == :minor && sugar_cane_hex?(hex)
+
+          super
+        end
+
         def tile_blocked_for_corp?(tile, corp, hex, for_selector: false)
           return false unless corp
 
@@ -279,6 +306,10 @@ module Engine
         end
 
         private
+
+        def sugar_cane_tile?(tile)
+          tile.towns.any?(&:hidden?)
+        end
 
         def tile_has_only_track_type?(tile, track_type)
           # Returns true if all paths on the tile are of the given track type
@@ -300,7 +331,13 @@ module Engine
         end
 
         def major_tile_blocked?(tile)
-          # Returns true if a yellow tile is illegal for a major: only pure broad tracks allowed on yellow
+          # Pure narrow tiles cannot be part of a major's route
+          return true if tile_has_only_track_type?(tile, :narrow)
+
+          # Mixed gauge city tiles (sugar mill, e.g. L66, L77) are only for minor home cities
+          return true if !tile.cities.empty? && tile.paths.any? { |p| p.track == :narrow }
+
+          # Yellow tiles must be pure broad for majors
           tile.color == :yellow && !tile_has_only_track_type?(tile, :broad)
         end
       end

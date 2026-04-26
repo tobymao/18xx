@@ -10,13 +10,17 @@ module Engine
         class Track < Engine::Step::Track
           def tracker_available_hex(entity, hex)
             # TODO: FC logic with fee payments
-            # TODO: upgrade logic ensure narrow track connect to narrow track and broad to broad
             corp = entity.corporation? ? entity : @game.current_entity
 
             # 18Cuba: minors cannot build cities except on their home hex
             return nil if corp.type == :minor &&
                           !hex.tile.cities.empty? &&
                           hex != corp.tokens.first.hex
+
+            # Majors may only lay on sugar cane hexes after the sugar_cane_open_for_majors event
+            return nil if corp.type == :major &&
+                          @game.sugar_cane_hex?(hex) &&
+                          !@game.sugar_cane_open_for_majors
 
             super
           end
@@ -27,6 +31,19 @@ module Engine
             super.reject do |tile|
               @game.tile_blocked_for_corp?(tile, corp, hex)
             end
+          end
+
+          def check_track_restrictions!(entity, old_tile, new_tile)
+            # City tiles: "It is not necessary that any of the new track is usable by the company."
+            return unless old_tile.cities.empty?
+
+            # Sugar cane (town) tiles: "A minor company may upgrade any sugar cane field tile."
+            # Majors are already blocked from pure narrow upgrades via major_tile_blocked?.
+            return unless old_tile.towns.empty?
+
+            # Plain track tiles: must extend the entity's route.
+            # graph_for_entity filters by gauge (narrow for minors, broad for majors).
+            super
           end
         end
       end
