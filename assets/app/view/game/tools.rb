@@ -25,8 +25,8 @@ module View
           h(RenameHotseat),
           *render_tools,
           h(AutoRouterSettings),
-          h(GameDetails),
           h(GameData, actions: @game.raw_actions.map(&:to_h)),
+          h(GameDetails),
           *help_links,
         ])
       end
