@@ -3306,6 +3306,10 @@ module Engine
         false
       end
 
+      def highlight_city_assignment?(_city)
+        false
+      end
+
       def show_value_of_companies?(entity)
         entity&.player?
       end

@@ -51,9 +51,9 @@ module Engine
           endgame: 'Game end at end of current operating round',
           max_price: 'Double jump if double revenue if stock price is at least 90 kr',
           multiple_buy: 'Can buy more than one share in the corporation per turn, redeem all shares at no cost',
-          no_cert_limit: 'Corporation shares do not count towards cert limit, redeem one shares at half cost (rounded down)',
+          no_cert_limit: 'Corporation shares do not count towards cert limit, redeem one share at half cost (rounded down)',
           par: 'Available par values',
-          unlimited: 'Corporation shares can be held above 60%, redeem all shares at half cost (rounded down)',
+          unlimited: 'Corporation shares can be held above 60%, redeem all shares at half cost (rounded down per share)',
         ).freeze
 
         # New track must be usable, or upgrade city value

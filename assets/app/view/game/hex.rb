@@ -193,6 +193,19 @@ module View
         case @role
         when :map
           if @actions.include?('assign')
+            step = @game.round.active_step(@entity)
+            if step.respond_to?(:needs_city_selection?) && @entity && step.needs_city_selection?(@entity, @hex)
+              # First click on Atlanta: dispatch action (logs message, sets pending state).
+              # Re-store selected_company before rAF fires so player can immediately click a city.
+              process_action(Engine::Action::Assign.new(@entity, target: @hex))
+              store(:selected_company, @entity, skip: true)
+              return
+            end
+
+            if step.respond_to?(:pending_city_selection?) && @entity && step.pending_city_selection?(@entity, @hex)
+              return # already pending; city slot clicks handle the city choice
+            end
+
             process_action(Engine::Action::Assign.new(@entity, target: @hex))
             return store(:selected_company, nil, skip: true)
           end
