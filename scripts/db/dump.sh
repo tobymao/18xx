@@ -1,10 +1,12 @@
 #!/bin/bash
-set -e
+set -ex
 
 # Create db.backup.gz, a copy of the current database. This can be run locally
 # or directly on prod.
 
 . scripts/db/load_env.sh
+
+docker compose exec rack echo "is this thing on?"
 
 if [ -z "${1}" ]; then
     DB_FILE=db.backup.gz

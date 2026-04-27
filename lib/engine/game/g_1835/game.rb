@@ -29,7 +29,7 @@ module Engine
                         red: '#d81e3e',
                         turquoise: '#00a993',
                         blue: '#0189d1',
-                        brown: '#7b352a',)
+                        brown: '#7b352a')
 
         CURRENCY_FORMAT_STR = '%sM'
         # game end current or, when the bank is empty
