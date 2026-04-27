@@ -531,14 +531,6 @@ module Engine
       # use to modify tiles based on optional rules
       def optional_tiles; end
 
-      def self.register_colors(colors)
-        colors.default_proc = proc do |_, key|
-          key
-        end
-
-        const_set(:COLORS, colors)
-      end
-
       def self.include_meta(meta_module)
         include meta_module
 

@@ -14,21 +14,6 @@ module Engine
         include G1835::Entities
         include G1835::Map
 
-        register_colors(black: '#37383a',
-                        seRed: '#f72d2d',
-                        bePurple: '#2d0047',
-                        peBlack: '#000',
-                        beBlue: '#c3deeb',
-                        heGreen: '#78c292',
-                        oegray: '#6e6966',
-                        weYellow: '#ebff45',
-                        beBrown: '#54230e',
-                        gray: '#6e6966',
-                        red: '#d81e3e',
-                        turquoise: '#00a993',
-                        blue: '#0189d1',
-                        brown: '#7b352a')
-
         CURRENCY_FORMAT_STR = '%sM'
         # game end current or, when the bank is empty
         GAME_END_CHECK = { bank: :current_or }.freeze
