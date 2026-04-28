@@ -34,6 +34,8 @@ module Engine
           end
 
           def check_track_restrictions!(entity, old_tile, new_tile)
+            return if @game.loading || !entity.operator?
+
             # City tiles: "It is not necessary that any of the new track is usable by the company."
             return unless old_tile.cities.empty?
 
@@ -41,9 +43,18 @@ module Engine
             # Majors are already blocked from pure narrow upgrades via major_tile_blocked?.
             return unless old_tile.towns.empty?
 
-            # Plain track tiles: must extend the entity's route.
-            # graph_for_entity filters by gauge (narrow for minors, broad for majors).
-            super
+            # Plain track: "may upgrade only if the [narrow/standard] gauge track is extended."
+            graph = @game.graph_for_entity(entity)
+            old_paths = old_tile.paths
+            used_new_track = old_paths.empty?
+
+            new_tile.paths.each do |np|
+              next unless graph.connected_paths(entity)[np]
+
+              used_new_track = true unless old_paths.find { |path| np <= path }
+            end
+
+            raise GameError, 'Must use new track' unless used_new_track
           end
         end
       end

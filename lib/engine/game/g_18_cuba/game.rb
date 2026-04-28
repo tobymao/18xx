@@ -301,7 +301,7 @@ module Engine
           if corp.type == :minor
             minor_tile_blocked?(tile, corp.tokens.first.hex, hex, for_selector: for_selector)
           else
-            major_tile_blocked?(tile)
+            major_tile_blocked?(tile, hex, for_selector: for_selector)
           end
         end
 
@@ -312,30 +312,40 @@ module Engine
         end
 
         def tile_has_only_track_type?(tile, track_type)
-          # Returns true if all paths on the tile are of the given track type
           tile.paths.all? { |path| path.track == track_type }
+        end
+
+        def mixed_gauge_city_tile?(tile)
+          tile && !tile.cities.empty? && tile.paths.any? { |p| p.track == :narrow }
         end
 
         def minor_tile_blocked?(tile, home_hex, current_hex, for_selector: false)
           # Determines if a tile is illegal for a minor:
           # - Tiles with only broad tracks are always illegal
           # - City tiles are illegal except on the minor's home hex
-          # - When `for_selector` is true, the home/city rule is ignored because the hex is unknown
+          # - On sugar cane hexes, only tiles with hidden towns are legal (no plain track)
+          # - When `for_selector` is true, the rules which require current_hex is ignored because the hex is unknown
           pure_broad = tile_has_only_track_type?(tile, :broad)
 
           return pure_broad if for_selector
-
           return pure_broad if current_hex == home_hex
+          return true if sugar_cane_hex?(current_hex) && tile.towns.empty?
 
           !tile.cities.empty? || pure_broad
         end
 
-        def major_tile_blocked?(tile)
+        def major_tile_blocked?(tile, hex = nil, for_selector: false)
           # Pure narrow tiles cannot be part of a major's route
           return true if tile_has_only_track_type?(tile, :narrow)
 
-          # Mixed gauge city tiles (sugar mill, e.g. L66, L77) are only for minor home cities
-          return true if !tile.cities.empty? && tile.paths.any? { |p| p.track == :narrow }
+          # Mixed gauge city tiles (sugar mill) are minor-only in yellow.
+          # In green/brown they are only allowed as upgrades from an existing sugar mill
+          # (e.g. L53 → L67, L67 → brown sugar mill); majors cannot place them on plain hexes.
+          if mixed_gauge_city_tile?(tile)
+            return true if tile.color == :yellow
+            return false if for_selector
+            return true unless mixed_gauge_city_tile?(hex&.tile)
+          end
 
           # Yellow tiles must be pure broad for majors
           tile.color == :yellow && !tile_has_only_track_type?(tile, :broad)
