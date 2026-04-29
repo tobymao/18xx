@@ -5,6 +5,8 @@ development.
 
 See [Developing on Windows](https://github.com/tobymao/18xx/wiki/Developing-For-18xx.games#developing-on-windows) to get setup on Windows
 
+See [`FirstSteps.md`](/FirstSteps.md) for core concepts
+
 ## Use a Github Codespace
 
 If you would like a repeatable build environment, click the `Code` button in the repo, click `Codespace` then the `plus sign` button to create [a new Codespace](https://github.com/features/codespaces).
