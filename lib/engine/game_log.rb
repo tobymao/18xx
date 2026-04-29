@@ -10,8 +10,8 @@ module Engine
     def <<(message)
       entry = message.is_a?(Entry) ? message : Entry.new(message, @game.current_action_id)
       begin
-        step = @game.round&.steps&.find { |s| s.active? && s.blocking? }
-        entry.auctioning_lot = step.auctioning_lot if step.respond_to?(:auctioning_lot)
+        step = @game.round&.steps&.find { |s| s.respond_to?(:auctioning_lot) && s.auctioning_lot }
+        entry.auctioning_lot = step.auctioning_lot if step
       rescue StandardError
         # may raise during game initialization before a round exists
       end
