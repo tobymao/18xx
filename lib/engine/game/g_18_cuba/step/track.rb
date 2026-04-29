@@ -20,7 +20,7 @@ module Engine
             # Majors may only lay on sugar cane hexes after the sugar_cane_open_for_majors event
             return nil if corp.type == :major &&
                           @game.sugar_cane_hex?(hex) &&
-                          !@game.sugar_cane_open_for_majors
+                          !@game.sugar_cane_open_for_majors?
 
             super
           end
@@ -51,7 +51,7 @@ module Engine
             new_tile.paths.each do |np|
               next unless graph.connected_paths(entity)[np]
 
-              used_new_track = true unless old_paths.find { |path| np <= path }
+              used_new_track = true unless old_paths.any? { |path| np <= path }
             end
 
             raise GameError, 'Must use new track' unless used_new_track

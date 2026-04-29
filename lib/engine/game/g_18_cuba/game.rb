@@ -26,7 +26,9 @@ module Engine
                         yellow: '#ffe600',
                         green: '#32763f',
                         brightGreen: '#6ec037')
-        attr_reader :sugar_cane_open_for_majors
+        def sugar_cane_open_for_majors?
+          @sugar_cane_open_for_majors
+        end
 
         TRACK_RESTRICTION = :permissive
         CURRENCY_FORMAT_STR = '$%s'
@@ -279,7 +281,7 @@ module Engine
         end
 
         def upgrades_to_correct_city_town?(from, to)
-          return true if sugar_cane_tile?(from) && @sugar_cane_open_for_majors && to.city_towns.empty?
+          return true if sugar_cane_tile?(from) && sugar_cane_open_for_majors? && to.city_towns.empty?
 
           super
         end
