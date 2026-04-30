@@ -281,7 +281,7 @@ module Engine
         end
 
         def revenue_for(route, stops)
-          super + brown_hamburg_tile_revenue(route)
+          super + (hamburg_ferry?(route) ? -10 : 0)
         end
 
         def revenue_str(route)
@@ -294,19 +294,9 @@ module Engine
           @hamburg_hex ||= hex_by_id('C11')
         end
 
-        def brown_hamburg_tile?(route)
-          hamburg_hex.tile.color == :brown && route.hexes.include?(hamburg_hex)
-        end
-
-        def brown_hamburg_tile_revenue(route)
-          return 0 unless brown_hamburg_tile?(route)
-          return 60 unless hamburg_ferry?(route)
-
-          50
-        end
-
         def hamburg_ferry?(route)
-          return false unless brown_hamburg_tile?(route)
+          return false unless hamburg_hex.tile.color == :brown
+          return false unless route.hexes.include?(hamburg_hex)
 
           north_edge_used = route.paths.any? { |path| path.tile.hex == hamburg_hex && [2, 3, 4].intersect?(path.exits) }
           south_edge_used = route.paths.any? { |path| path.tile.hex == hamburg_hex && [0, 1, 5].intersect?(path.exits) }
