@@ -761,6 +761,23 @@ module Engine
           corporation.spend(cost, @bank) if cost&.positive?
         end
 
+        # Override stock price movement according to 18OE rules
+        # - Minors & Regionals: no movement
+        # - Majors & Nationals:
+        #   * revenue >= share price -> move right
+        #   * revenue between 0 and share price -> no move
+        #   * revenue = 0 -> move left
+        def change_share_price(entity, revenue)
+          return if entity.type == :minor || entity.type == :regional
+
+          share_price = entity.share_price.price
+          if revenue >= share_price
+            @stock_market.move_right(entity)
+          elsif revenue.zero?
+            @stock_market.move_left(entity)
+          end
+        end
+
         def issuable_shares(entity)
           return [] if !entity.corporation? || entity.type != :major
 
