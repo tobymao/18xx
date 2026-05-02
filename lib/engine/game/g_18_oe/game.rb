@@ -208,6 +208,22 @@ module Engine
           },
         ].freeze
 
+        # 2 chits per zone; 16 total for 12 minors.
+        # Asterisked zones (UK/PHS/FR): 6 chits combined but capped at 4 selections —
+        # when the 4th is taken the remaining chits for those zones are removed from play.
+        MINOR_TRACK_RIGHTS_CHITS = {
+          'UK' => 2,
+          'PHS' => 2,
+          'FR' => 2,
+          'AH' => 2,
+          'IT' => 2,
+          'SP' => 2,
+          'SC' => 2,
+          'RU' => 2,
+        }.freeze
+        ASTERISKED_ZONES = %w[UK PHS FR].freeze
+        ASTERISKED_ZONES_CAP = 4
+
         CORPORATIONS_TRACK_RIGHTS = {
           # United Kingdom
           'LNWR' => 'UK',
@@ -625,13 +641,8 @@ module Engine
         def setup
           super
           @minor_regional_order = []
-          # Derive available regions from the regional corporations actually defined,
-          # using only zones present in CORPORATIONS_TRACK_RIGHTS. This is failsafe:
-          # zones not yet in NATIONAL_REGION_HEXES are simply skipped at token placement.
-          @minor_available_regions = corporations
-            .select { |c| c.type == :regional }
-            .map { |c| CORPORATIONS_TRACK_RIGHTS[c.id] }
-            .compact
+          @minor_available_regions = self.class::MINOR_TRACK_RIGHTS_CHITS.transform_values(&:itself)
+          @minor_asterisked_selected = 0
           @minor_floated_regions = {}
           @regional_corps_floated = 0
 
@@ -649,7 +660,10 @@ module Engine
         # "Major Railroad Phase" entry: conversions and secondary-share purchases
         # become available from this point on.
         def major_phase?
-          @regional_corps_floated >= self.class::MAX_FLOATED_REGIONALS
+          return false unless @regional_corps_floated >= self.class::MAX_FLOATED_REGIONALS
+
+          total_minors = corporations.count { |c| c.type == :minor }
+          @minor_floated_regions.size >= total_minors
         end
 
         def operating_order
@@ -662,12 +676,38 @@ module Engine
           hexes&.include?(hex.coordinates) || false
         end
 
+        def region_for_hex(hex)
+          self.class::CITY_NATIONAL_ZONE[hex.coordinates] ||
+            self.class::NATIONAL_REGION_HEXES.find { |_, hexes| hexes.include?(hex.coordinates) }&.first
+        end
+
+        def region_available?(region)
+          @minor_available_regions.key?(region)
+        end
+
+        def track_rights_cost(region)
+          self.class::TRACK_RIGHTS_COST[region] || 0
+        end
+
+        def claim_region!(region)
+          @minor_available_regions[region] -= 1
+          @minor_available_regions.delete(region) if @minor_available_regions[region].zero?
+
+          return unless self.class::ASTERISKED_ZONES.include?(region)
+
+          @minor_asterisked_selected += 1
+          return unless @minor_asterisked_selected >= self.class::ASTERISKED_ZONES_CAP
+
+          self.class::ASTERISKED_ZONES.each { |z| @minor_available_regions.delete(z) }
+        end
+
         def home_token_locations(corporation)
           available_regions = self.class::NATIONAL_REGION_HEXES.select { |key, _| @minor_available_regions.include?(key) }
           region_hexes = available_regions.values.flatten
 
           @hexes
             .select { |hex| region_hexes.include?(hex.coordinates) }
+            .reject { |hex| (z = self.class::CITY_NATIONAL_ZONE[hex.coordinates]) && !@minor_available_regions.key?(z) }
             .select { |hex| hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) } }
             .reject { |hex| metropolis_hex?(hex) }
             .reject { |hex| self.class::MINOR_EXCLUDED_HOME_CITIES.include?(hex.coordinates) }

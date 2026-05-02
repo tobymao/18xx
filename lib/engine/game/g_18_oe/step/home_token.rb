@@ -8,15 +8,16 @@ module Engine
       module Step
         class HomeToken < Engine::Step::HomeToken
           def process_place_token(action)
-            hex = action.city.hex
-            region = @game.class::CITY_NATIONAL_ZONE[hex.name] ||
-                     @game.class::NATIONAL_REGION_HEXES.find { |_, hexes| hexes.include?(hex.name) }&.first
+            if action.entity.type == :minor
+              hex = action.city.hex
+              region = @game.region_for_hex(hex)
 
-            raise GameError, "Region #{region} is not available" unless @game.minor_available_regions.include?(region)
+              raise GameError, "Region #{region} is not available" unless @game.region_available?(region)
 
-            token.price = @game.class::TRACK_RIGHTS_COST[region] || 0
-            @game.minor_available_regions.delete(region)
-            @game.minor_floated_regions[action.entity.id] = region
+              token.price = @game.track_rights_cost(region)
+              @game.claim_region!(region)
+              @game.minor_floated_regions[action.entity.id] = region
+            end
 
             super
           end
