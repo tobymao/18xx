@@ -15,7 +15,7 @@ module Engine
         include G18OE::Entities
         include G18OE::Map
         attr_accessor :minor_regional_order, :minor_available_regions, :minor_floated_regions, :regional_corps_floated,
-                      :consolidation_triggered, :consolidation_done
+                      :consolidation_triggered, :consolidation_done, :first_or_done
 
         MARKET = [
           ['', '110', '120C', '135', '150', '165', '180', '200', '225', '250', '280', '310', '350', '390', '440', '490', '550'],
@@ -114,7 +114,7 @@ module Engine
                        { 'nodes' => %w[city offboard town], 'pay' => 2, 'visit' => 2 }],
             price: 100,
             rusts_on: '4',
-            num: 35,
+            num: 30,
           },
           # Level 3 — green double-sided (3 / 3+3); rust at Level 6
           {
@@ -634,6 +634,8 @@ module Engine
             .compact
           @minor_floated_regions = {}
           @regional_corps_floated = 0
+          @fulfilled_train_obligation = Set.new
+          @first_or_done = false
 
           corporations.each do |corp|
             corp.par_via_exchange = companies.find { |c| c.sym == corp.id } if corp.type == :minor
@@ -650,6 +652,14 @@ module Engine
         # become available from this point on.
         def major_phase?
           @regional_corps_floated >= self.class::MAX_FLOATED_REGIONALS
+        end
+
+        def fulfilled_train_obligation?(entity)
+          @fulfilled_train_obligation.include?(entity.id)
+        end
+
+        def fulfill_train_obligation(entity)
+          @fulfilled_train_obligation.add(entity.id)
         end
 
         def operating_order
@@ -697,6 +707,8 @@ module Engine
         end
 
         def next_round!
+          # Rule 8.3/11.6: level 3 trains are blocked in OR1; track when first OR ends
+          @first_or_done ||= @round.is_a?(Engine::Round::Operating)
           @round =
             case @round
             when Engine::Round::Operating
