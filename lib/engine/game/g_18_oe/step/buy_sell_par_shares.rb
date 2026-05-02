@@ -30,6 +30,15 @@ module Engine
               return actions
             end
 
+            # Conversion completed: president may buy one IPO share of the new major then must pass
+            if @converted
+              actions = []
+              ipo_bundle = @converted.ipo_shares.first&.to_bundle
+              actions << 'buy_shares' if ipo_bundle && can_buy?(entity, ipo_bundle)
+              actions << 'pass'
+              return actions
+            end
+
             actions = []
             actions << 'buy_shares' if can_buy_any?(entity)
             actions << 'par' if can_ipo_any?(entity) || can_float_minor?(entity)
@@ -115,7 +124,7 @@ module Engine
               share = Share.new(corporation, owner: corporation.ipo_owner, percent: 10, index: 4 + index)
               corporation.ipo_owner.shares_by_corporation[corporation] << share
             end
-            corporation.share_holders.keys do |sh|
+            corporation.share_holders.each_key do |sh|
               corporation.share_holders[sh] = sh.shares_by_corporation[corporation].sum(&:percent)
             end
 
