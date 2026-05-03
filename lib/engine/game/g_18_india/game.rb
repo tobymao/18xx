@@ -1222,10 +1222,10 @@ module Engine
           %i[commodity_legend connection_legend]
         end
 
-        def connection_legend(_font_color, _yellow, green, _brown, _gray, _red, action_processor: nil)
+        def connection_legend(font_color, _yellow, green, _brown, _gray, _red, action_processor: nil)
           cell_style = {
             border: '1px solid',
-            color: 'black',
+            color: font_color,
             'font-weight': 'bold',
             'text-align': 'center',
             'vertical-align': 'middle',
@@ -1263,10 +1263,10 @@ module Engine
           ]
         end
 
-        def commodity_legend(_font_color, yellow, green, _brown, _gray, _red, action_processor: nil)
+        def commodity_legend(font_color, yellow, green, _brown, _gray, _red, action_processor: nil)
           cell_style = {
             border: '1px solid',
-            color: 'black',
+            color: font_color,
             'font-weight': 'bold',
             'text-align': 'center',
             'vertical-align': 'middle',
@@ -1281,7 +1281,7 @@ module Engine
                 margin: '0.5rem 0 0.5rem 0',
                 border: '1px solid',
                 borderCollapse: 'collapse',
-                color: 'black',
+                color: font_color,
                 'font-weight': 'bold',
                 'text-align': 'center',
                 'vertical-align': 'middle',
