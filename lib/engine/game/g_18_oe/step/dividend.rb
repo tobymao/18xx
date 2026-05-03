@@ -10,8 +10,8 @@ module Engine
         class Dividend < Engine::Step::Dividend
           include Engine::Step::HalfPay
 
-          def dividend_types(entity = current_entity)
-            case entity&.type
+          def dividend_types
+            case current_entity.type
             when :minor
               [:half]
             when :national
