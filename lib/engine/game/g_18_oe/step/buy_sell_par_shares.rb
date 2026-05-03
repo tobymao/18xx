@@ -8,10 +8,6 @@ module Engine
     module G18OE
       module Step
         class BuySellParShares < Engine::Step::BuySellParShares
-          def round_state
-            super.merge(minors_merged_into: [])
-          end
-
           def setup
             super
 
@@ -57,7 +53,6 @@ module Engine
             actions << 'buy_company' if !purchasable_companies(entity).empty? || !buyable_bank_owned_companies(entity).empty?
             actions << 'sell_shares' if can_sell_any?(entity)
             actions << 'convert' if can_convert_any?(entity)
-            actions << 'merge' if can_merge_any?(entity)
             actions << 'pass' if !can_float_minor?(entity) && !actions.empty?
             actions
           end
@@ -216,51 +211,6 @@ module Engine
             @game.sorted_corporations.reject { |c| (c.type == :minor && c.ipoed) }
           end
 
-          def can_merge_any?(_entity)
-            return false if @converting
-            return false unless @game.phase.status.include?('can_merge_minors')
-
-            !mergeable_entity.nil?
-          end
-
-          def mergeable_entity
-            return nil unless current_entity
-            return nil if eligible_merge_targets.empty?
-
-            @game.corporations.find do |corp|
-              corp.type == :minor && corp.floated? && corp.president?(current_entity)
-            end
-          end
-
-          def mergeable_entities
-            return [] unless mergeable_entity
-
-            eligible_merge_targets
-          end
-
-          def mergeable_type
-            :corporation
-          end
-
-          def merge_name(_entity = nil)
-            'Merge Minor'
-          end
-
-          def process_merge(action)
-            minor = action.entity
-            major = action.corporation
-
-            raise GameError, "#{minor.name} does not belong to #{current_entity.name}" unless
-              minor.president?(current_entity)
-            raise GameError, "#{major.name} already received a minor this SR" if
-              @round.minors_merged_into.include?(major)
-
-            @game.merge_minor!(minor, major)
-            @round.minors_merged_into << major
-            track_action(action, major)
-            pass!
-          end
-
           def process_sell_shares(action)
             super
             @sold = true
@@ -338,14 +288,6 @@ module Engine
           end
 
           private
-
-          def eligible_merge_targets
-            @game.corporations.select do |corp|
-              (corp.type == :major || corp.type == :national) &&
-                corp.floated? &&
-                !@round.minors_merged_into.include?(corp)
-            end
-          end
 
           def bought_corporation
             @round.current_actions.find { |x| x.is_a?(Action::BuyShares) }&.bundle&.corporation
