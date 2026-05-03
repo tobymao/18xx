@@ -94,6 +94,7 @@ module Engine
 
           def can_sell_order?
             return true if @converted
+
             super
           end
 
