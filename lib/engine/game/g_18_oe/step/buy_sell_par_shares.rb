@@ -169,6 +169,10 @@ module Engine
           end
 
           def help
+            if @converted && !@converted.president?(current_entity)
+              return "#{current_entity.name} must purchase one share of #{@converted.name} to become president."
+            end
+
             return super unless can_float_minor?(current_entity)
 
             zones_display = @game.minor_available_regions.map { |zone, count| "#{zone}(#{count})" }.join(', ')
@@ -353,8 +357,6 @@ module Engine
             @converted = corporation
             @converting = nil
             @log << "#{corporation.name} converts from regional to major"
-            @log << "#{current_entity.name} must buy a share to become president of #{corporation.name}" unless
-              corporation.president?(current_entity)
           end
         end
       end
