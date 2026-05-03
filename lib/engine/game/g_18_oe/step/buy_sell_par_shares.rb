@@ -8,11 +8,16 @@ module Engine
     module G18OE
       module Step
         class BuySellParShares < Engine::Step::BuySellParShares
+          def round_state
+            super.merge(minors_merged_into: [])
+          end
+
           def setup
             super
 
             @converting = nil
             @converted = nil
+            @trigger_is_president = nil
             @sold = false
           end
 
@@ -30,12 +35,19 @@ module Engine
               return actions
             end
 
-            # Conversion completed: president may buy one IPO share of the new major then must pass
             if @converted
               actions = []
-              ipo_bundle = @converted.ipo_shares.first&.to_bundle
-              actions << 'buy_shares' if ipo_bundle && can_buy?(entity, ipo_bundle)
-              actions << 'pass'
+              # §9.3 step 6: may sell shares of any RR except the newly floated major
+              actions << 'sell_shares' if can_sell_any?(entity)
+              # §9.3 step 7: buy one major IPO share
+              #   bought?=true  → pre-conversion buy (step 1) occurred → step 7 unavailable
+              #   bought?=false → no pre-buy → president: optional, non-president: mandatory
+              unless bought?
+                ipo_bundle = @converted.ipo_shares.first&.to_bundle
+                actions << 'buy_shares' if ipo_bundle && can_buy?(entity, ipo_bundle)
+              end
+              # Pass: president may always pass; non-president must complete step 7 first
+              actions << 'pass' if @trigger_is_president || bought?
               return actions
             end
 
@@ -45,6 +57,7 @@ module Engine
             actions << 'buy_company' if !purchasable_companies(entity).empty? || !buyable_bank_owned_companies(entity).empty?
             actions << 'sell_shares' if can_sell_any?(entity)
             actions << 'convert' if can_convert_any?(entity)
+            actions << 'merge' if can_merge_any?(entity)
             actions << 'pass' if !can_float_minor?(entity) && !actions.empty?
             actions
           end
@@ -62,16 +75,15 @@ module Engine
           end
 
           def can_buy?(entity, bundle)
+            # During conversion lock-in: only the new major's IPO is available.
             return false if @converted && bundle.corporation != @converted
 
-            # §9.3 pre-conversion optional buy: only valid while a conversion has been
-            # triggered (@converting). Only the president may buy one treasury share;
-            # the 50%-secondary holder cannot (they must complete conversion first).
+            # During pre-conversion window: restrict to the converting regional only.
+            # §9.3 step 1: president-only, one share max from the converting corp.
             if @converting
-              return false unless bundle.corporation == @converting
-              return false unless bundle.owner == bundle.corporation
-              return false unless @converting.president?(entity)
-              return false if bought_corporation == @converting
+              return false if bundle.corporation != @converting
+              return false unless bundle.corporation.president?(entity)
+              return false if bought_corporation == bundle.corporation
             end
 
             super
@@ -82,6 +94,11 @@ module Engine
             return false if bundle.corporation.type == :regional && bundle.presidents_share
             return false if bundle.corporation == @converted
 
+            super
+          end
+
+          def can_sell_order?
+            return true if @converted
             super
           end
 
@@ -103,38 +120,60 @@ module Engine
             return false unless corporation.type == :regional
             return false if @sold
             return false if @converted
-            return false if bought_corporation && bought_corporation != corporation
+            # Conversion is its own action: no conversion after a normal share purchase.
+            return false if bought?
 
-            unless corporation.president?(player)
-              return false unless corporation.share_holders[player] >= 50
-              return false if bought_corporation
-
-              new_share_price = @game.stock_market.find_share_price(corporation, %i[right right up])
-              return false unless @game.liquidity(player) >= new_share_price.price
-            end
-
-            true
+            # Any player owning ≥50% (president's share, or both 25% non-president
+            # shares) may trigger conversion.
+            corporation.president?(player) || corporation.share_holders[player] >= 50
           end
 
           def float_major(corporation)
-            shares = corporation.share_holders.keys.flat_map { |share| share.shares_of(corporation) }
-
-            shares.each { |share| share.percent = share.president ? 20 : 10 }
-            6.times do |index|
-              share = Share.new(corporation, owner: corporation.ipo_owner, percent: 10, index: 4 + index)
-              corporation.ipo_owner.shares_by_corporation[corporation] << share
+            # Step 1: Resize existing shares (50% president → 20%, 25% others → 10%)
+            @game.shares_for_corporation(corporation).each do |share|
+              share.percent = share.president ? 20 : 10
             end
+
+            # Step 2: Recompute share_holders percentages from the resized shares
             corporation.share_holders.each_key do |sh|
               corporation.share_holders[sh] = sh.shares_by_corporation[corporation].sum(&:percent)
             end
 
+            # Step 3: Locate the major par cell (right×2, up×1 from original par)
+            # Using original_par_price ensures correct placement even if the regional
+            # somehow moved before conversion.
+            target_price = @game.stock_market.find_relative_share_price(
+              corporation.original_par_price, corporation, %i[right right up]
+            )
+
+            # Step 4: Move stock market token to major par cell and update par_price.
+            # Directly calling move() avoids relying on three incremental moves from
+            # the current position (which can drift if price was ever touched).
+            @game.stock_market.move(corporation, target_price.coordinates)
+            corporation.par_price = target_price
+
+            # Step 5: Promote to major (do this after price moves so move logic
+            # doesn't see a half-converted corporation)
             corporation.type = :major
-            @game.stock_market.move_right(corporation)
-            @game.stock_market.move_right(corporation)
-            @game.stock_market.move_up(corporation)
+
+            # Step 6: Issue the 6 new 10% IPO shares.
+            # add_new_share registers each share in @_shares immediately, keeping
+            # the share cache consistent for all subsequent can_buy? checks.
+            6.times do |index|
+              share = Share.new(corporation, owner: corporation.ipo_owner, percent: 10, index: 4 + index)
+              @game.add_new_share(share)
+            end
+
             corporation.tokens.concat([40, 60, 60, 80, 80, 80].map { |price| Engine::Token.new(corporation, price: price) })
             @game.minor_regional_order -= [corporation]
-            @game.update_cache(:shares)
+          end
+
+          def help
+            return super unless can_float_minor?(current_entity)
+
+            zones_display = @game.minor_available_regions.map { |zone, count| "#{zone}(#{count})" }.join(', ')
+            "Available track rights zones: #{zones_display}. "\
+              'Home station placement determines which zone the minor receives.'
           end
 
           def float_minor(action)
@@ -144,7 +183,8 @@ module Engine
             company = find_minor_company(corporation)
 
             @log << "#{entity.name} floats #{company.sym}"
-            @log << "Available track rights zones: #{@game.minor_available_regions}"
+            zones_display = @game.minor_available_regions.map { |zone, count| "#{zone}(#{count})" }.join(', ')
+            @log << "Available track rights zones: #{zones_display}"
 
             @game.stock_market.set_par(corporation, share_price)
             share = corporation.ipo_shares.first
@@ -172,6 +212,51 @@ module Engine
             @game.sorted_corporations.reject { |c| (c.type == :minor && c.ipoed) }
           end
 
+          def can_merge_any?(_entity)
+            return false if @converting
+            return false unless @game.phase.status.include?('can_merge_minors')
+
+            !mergeable_entity.nil?
+          end
+
+          def mergeable_entity
+            return nil unless current_entity
+            return nil if eligible_merge_targets.empty?
+
+            @game.corporations.find do |corp|
+              corp.type == :minor && corp.floated? && corp.president?(current_entity)
+            end
+          end
+
+          def mergeable_entities
+            return [] unless mergeable_entity
+
+            eligible_merge_targets
+          end
+
+          def mergeable_type
+            :corporation
+          end
+
+          def merge_name(_entity = nil)
+            'Merge Minor'
+          end
+
+          def process_merge(action)
+            minor = action.entity
+            major = action.corporation
+
+            raise GameError, "#{minor.name} does not belong to #{current_entity.name}" unless
+              minor.president?(current_entity)
+            raise GameError, "#{major.name} already received a minor this SR" if
+              @round.minors_merged_into.include?(major)
+
+            @game.merge_minor!(minor, major)
+            @round.minors_merged_into << major
+            track_action(action, major)
+            pass!
+          end
+
           def process_sell_shares(action)
             super
             @sold = true
@@ -179,6 +264,7 @@ module Engine
 
           def process_convert(action)
             @converting = action.entity
+            @trigger_is_president = @converting.president?(current_entity)
             track_action(action, action.entity)
             @log << "#{current_entity.name} triggers conversion of #{action.entity.name}"
           end
@@ -218,15 +304,25 @@ module Engine
 
           def pass!
             if @converting
+              # complete_conversion sets @converted and clears @converting.
+              # Do NOT raise here: a non-president converter still needs to buy
+              # one share to become president before passing their final turn.
               complete_conversion
-              raise GameError, "Must become president of newly floated major #{@converted&.name}" if
-                @converted && !@converted.president?(current_entity)
-
               return
             end
 
-            raise GameError, "Must become president of newly floated major #{@converted&.name}" if
-              @converted && !@converted.president?(current_entity)
+            if @converted
+              # Player must be president before ending their turn.
+              raise GameError, "Must become president of newly floated major #{@converted&.name}" unless
+                @converted.president?(current_entity)
+
+              # Clear current_actions before calling super so the base pass! logic
+              # sees an "empty turn" and calls entity.pass! (marking the player as
+              # done) rather than entity.unpass! (which would give them another
+              # full SR turn for having done Convert+BuyShares this turn).
+              @round.current_actions.clear
+              @converted = nil
+            end
 
             super
           end
@@ -238,6 +334,14 @@ module Engine
           end
 
           private
+
+          def eligible_merge_targets
+            @game.corporations.select do |corp|
+              (corp.type == :major || corp.type == :national) &&
+                corp.floated? &&
+                !@round.minors_merged_into.include?(corp)
+            end
+          end
 
           def bought_corporation
             @round.current_actions.find { |x| x.is_a?(Action::BuyShares) }&.bundle&.corporation
