@@ -644,14 +644,7 @@ module Engine
 
         def available_trains
           index = [@cr_counter - 1, 0].max
-          trains = TRAIN_ORDER[index]
-
-          # Per rules VIII.5.3: if all Y and O trains are exhausted during CR1
-          # (the first tram-buying moment), R trains become available at 500
-          y_o_exhausted = @depot.upcoming.none? { |t| %w[Y1 O1].include?(t.name) }
-          trains = (trains + ['R1']).uniq if @cr_counter == 1 && y_o_exhausted
-
-          trains
+          TRAIN_ORDER[index]
         end
 
         def remove_obsolete_trains
