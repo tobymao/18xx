@@ -377,6 +377,8 @@ module Engine
 
         def randomize_subsidies
           randomized_subsidies = @subsidies.sort_by { rand }.take(SUBSIDIZED_HEXES.size)
+          excluded = @subsidies - randomized_subsidies
+          @log << "Removing: #{excluded.map { |s| s['name'] }.join(', ')}" if excluded.any?
           @subsidies_by_hex = {}
           SUBSIDIZED_HEXES.zip(randomized_subsidies).each do |hex_id, subsidy|
             hex = hex_by_id(hex_id)
