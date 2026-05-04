@@ -22,6 +22,7 @@ module Engine
       def initialize(game, steps, **opts)
         @game = game
         @log = game.log
+        @game.log.indent_group = nil
         @entity_index = 0
         @round_num = opts[:round_num] || 1
         @entities = select_entities
@@ -92,11 +93,13 @@ module Engine
         raise GameError, "No step found for action #{type} at #{action.id}: #{action.to_h}" unless step
 
         step.acted = true
+        @game.log.indent_group = indent_group_for_action(action)
         step.send("process_#{action.type}", action)
 
         @at_start = false
 
         after_process_before_skip(action)
+        @game.log.indent_group = @entities[@entity_index]&.id&.to_s
         skip_steps
         clear_cache!
         after_process(action)
@@ -216,6 +219,11 @@ module Engine
       end
 
       def highest_bid(_entity); end
+
+      def indent_group_for_action(action)
+        act = action.entity
+        (act&.company? ? act.owner : act)&.id&.to_s
+      end
 
       private
 
