@@ -22,9 +22,9 @@ module View
       needs :show_log, default: true, store: true
 
       def render
-        children = [render_log_choices, render_log]
-
         @player = @game.player_by_id(@user['id']) if @user
+
+        children = [render_log_choices, render_log]
 
         key_event = lambda do |event|
           event = Native(event)
@@ -164,6 +164,24 @@ module View
         h('div#chatlog', props, the_log)
       end
 
+      def player_for(entity)
+        return nil unless entity
+        return entity if @game.players.include?(entity)
+
+        if entity.respond_to?(:player)
+          found = entity.player
+          return found if @game.players.include?(found)
+        end
+
+        if entity.respond_to?(:owner)
+          owner = entity.owner
+          return owner if @game.players.include?(owner)
+          return player_for(owner) if owner && owner != entity
+        end
+
+        nil
+      end
+
       def render_log_for_action(log, action)
         timestamp_props = {
           style: {
@@ -214,7 +232,16 @@ module View
           action_log << render_action_buttons(action.id)
         end
 
-        h(:div, action_log)
+        h(:div, { attrs: { id: "action-#{action.id}" } }, action_log)
+      end
+
+      def last_player_action_id
+        return nil unless @player
+
+        @game.actions.reverse_each do |action|
+          return action.id if player_for(action.entity) == @player
+        end
+        nil
       end
 
       def render_action_buttons(action_id)
@@ -252,15 +279,30 @@ module View
       end
 
       def render_log_choices
+        left_buttons = [
+          h(:button,
+            {
+              style: { marginTop: '0' },
+              on: { click: -> { copy_log_transcript } },
+            },
+            'Copy Transcript 📋'),
+        ]
+
+        if @player && (last_id = last_player_action_id)
+          jump = lambda do
+            store(:selected_action_id, last_id)
+            `document.getElementById('action-' + #{last_id}).scrollIntoView({block: 'nearest'})`
+          end
+          left_buttons << h(:button,
+                            {
+                              style: { marginTop: '0' },
+                              on: { click: jump },
+                            },
+                            'My Last Move ↑')
+        end
+
         h(:div, { style: { marginBottom: '0.3rem', display: 'flex', justifyContent: 'space-between' } }, [
-          h(:div, { style: { textAlign: 'left' } }, [
-            h(:button,
-              {
-                style: { marginTop: '0' },
-                on: { click: -> { copy_log_transcript } },
-              },
-              'Copy Transcript 📋'),
-          ]),
+          h(:div, { style: { textAlign: 'left' } }, left_buttons),
           h(:div, { style: { textAlign: 'right' } }, [
             h(:button,
               {
