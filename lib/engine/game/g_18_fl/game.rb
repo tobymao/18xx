@@ -312,7 +312,7 @@ module Engine
         # 5 => 10 share conversion logic
         def event_forced_conversions!
           @log << '-- Event: All 5 share corporations must convert to 10 share corporations immediately --'
-          @corporations.select { |c| c.type == :five_share }.each { |c| convert(c, funding: c.share_price) }
+          @corporations.select { |c| c.type == :five_share }.each { |c| convert(c, funding: c.floated?) }
         end
 
         def process_convert(action)
