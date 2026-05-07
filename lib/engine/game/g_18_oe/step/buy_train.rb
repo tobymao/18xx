@@ -19,12 +19,12 @@ module Engine
             trains = super
             return trains unless @game.train_obligation_active?
 
-            unless @game.fulfilled_train_obligation?(entity)
-              trains.select { |t| t.name == '2+2' }
-            else
+            if @game.fulfilled_train_obligation?(entity)
               return [] unless @game.non_starter_trains_available?
 
               trains.reject { |t| t.name == '2+2' }
+            else
+              trains.select { |t| t.name == '2+2' }
             end
           end
 
