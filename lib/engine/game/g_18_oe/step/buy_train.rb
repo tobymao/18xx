@@ -22,8 +22,7 @@ module Engine
             if !@game.fulfilled_train_obligation?(entity)
               trains.select { |t| t.name == '2+2' }
             else
-              # Rules 8.3 & 11.6: level 3+ requires Major Phase AND OR1 to have ended
-              return [] if !@game.major_phase? || !@game.first_or_done
+              return [] unless @game.non_starter_trains_available?
 
               trains.reject { |t| t.name == '2+2' }
             end

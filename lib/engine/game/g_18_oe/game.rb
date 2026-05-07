@@ -662,6 +662,10 @@ module Engine
           @fulfilled_train_obligation.add(entity.id)
         end
 
+        def non_starter_trains_available?
+          major_phase? && first_or_done
+        end
+
         def operating_order
           @minor_regional_order + @corporations.select { |c| %i[major national].include?(c.type) }.sort
         end
