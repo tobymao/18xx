@@ -13,7 +13,7 @@ module Engine
 
             @converting = nil
             @converted = nil
-            @trigger_is_president = nil
+
             @sold = false
           end
 
@@ -194,7 +194,6 @@ module Engine
 
           def process_convert(action)
             @converting = action.entity
-            @trigger_is_president = @converting.president?(current_entity)
             track_action(action, action.entity)
             @log << "#{current_entity.name} triggers conversion of #{action.entity.name}"
           end
@@ -234,18 +233,11 @@ module Engine
 
           def pass!
             if @converting
-              # complete_conversion sets @converted and clears @converting.
-              # Do NOT raise here: a non-president converter still needs to buy
-              # one share to become president before passing their final turn.
               complete_conversion
               return
             end
 
             if @converted
-              # Player must be president before ending their turn.
-              raise GameError, "Must become president of newly floated major #{@converted&.name}" unless
-                @converted.president?(current_entity)
-
               # Clear current_actions before calling super so the base pass! logic
               # sees an "empty turn" and calls entity.pass! (marking the player as
               # done) rather than entity.unpass! (which would give them another
@@ -280,7 +272,7 @@ module Engine
               ipo_bundle = @converted.ipo_shares.first&.to_bundle
               actions << 'buy_shares' if ipo_bundle && can_buy?(entity, ipo_bundle)
             end
-            actions << 'pass' if @trigger_is_president || bought?
+            actions << 'pass' if @converted.president?(entity)
             actions
           end
 
