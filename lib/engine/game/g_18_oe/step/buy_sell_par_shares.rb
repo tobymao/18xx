@@ -132,7 +132,7 @@ module Engine
             # Step 6: Issue the 6 new 10% IPO shares.
             # add_new_share registers each share in @_shares immediately, keeping
             # the share cache consistent for all subsequent can_buy? checks.
-            6.times do |index|
+            @game.class::CONVERSION_NEW_SHARES.times do |index|
               share = Share.new(corporation, owner: corporation.ipo_owner, percent: 10, index: 4 + index)
               @game.add_new_share(share)
             end

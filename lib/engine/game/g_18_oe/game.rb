@@ -345,6 +345,7 @@ module Engine
         }.freeze
 
         MAX_FLOATED_REGIONALS = 18
+        CONVERSION_NEW_SHARES = 6
 
         # still need green+ OE specific track tiles
         TILES = {
