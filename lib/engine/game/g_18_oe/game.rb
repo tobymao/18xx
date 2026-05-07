@@ -700,6 +700,10 @@ module Engine
           @phase.status.include?('can_buy_trains_from_others')
         end
 
+        def train_obligation_active?
+          phase.status.include?('train_obligation')
+        end
+
         # UP movement at end of SR: only for majors and nationals that are fully player-held
         def sold_out_increase?(corporation)
           %i[major national].include?(corporation.type)

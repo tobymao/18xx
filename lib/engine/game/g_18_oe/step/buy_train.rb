@@ -17,9 +17,9 @@ module Engine
 
           def buyable_trains(entity)
             trains = super
-            return trains unless @game.phase.status.include?('train_obligation')
+            return trains unless @game.train_obligation_active?
 
-            if !@game.fulfilled_train_obligation?(entity)
+            unless @game.fulfilled_train_obligation?(entity)
               trains.select { |t| t.name == '2+2' }
             else
               return [] unless @game.non_starter_trains_available?
