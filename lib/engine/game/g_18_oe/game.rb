@@ -655,7 +655,7 @@ module Engine
         end
 
         def fulfilled_train_obligation?(entity)
-          @fulfilled_train_obligation.include?(entity.id)
+          !phase.status.include?('train_obligation') || @fulfilled_train_obligation.include?(entity.id)
         end
 
         def fulfill_train_obligation(entity)

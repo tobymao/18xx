@@ -12,15 +12,7 @@ module Engine
           end
 
           def must_buy_train?(entity)
-            # During 2+2 reservation window: unfulfilled floated entities must buy
-            if @game.phase.status.include?('train_obligation')
-              return false if @game.fulfilled_train_obligation?(entity)
-
-              return entity.floated?
-            end
-
-            # Only majors must own a train outside the obligation window (§11.6); insolvency: §3.2 TBD
-            entity.floated? && entity.trains.empty? && entity.type == :major
+            entity.floated? && entity.trains.empty? && (!@game.fulfilled_train_obligation?(entity) || entity.type == :major)
           end
 
           def buyable_trains(entity)
