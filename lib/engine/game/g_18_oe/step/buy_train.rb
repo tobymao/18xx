@@ -8,8 +8,6 @@ module Engine
       module Step
         class BuyTrain < Engine::Step::BuyTrain
           def can_entity_buy_train?(entity)
-            return true if entity.player? && entity == current_entity&.owner
-
             entity.corporation?
           end
 
