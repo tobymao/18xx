@@ -689,7 +689,8 @@ module Engine
           self.class::TRACK_RIGHTS_COST[region] || 0
         end
 
-        def claim_region!(region)
+        def claim_region!(entity, region)
+          @minor_floated_regions[entity.id] = region
           @minor_available_regions[region] -= 1
           @minor_available_regions.delete(region) if @minor_available_regions[region].zero?
 
