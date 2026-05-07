@@ -662,7 +662,7 @@ module Engine
           @fulfilled_train_obligation.add(entity.id)
         end
 
-        def non_starter_trains_available
+        def non_starter_trains_available?
           major_phase? && first_or_done
         end
 

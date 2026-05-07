@@ -22,7 +22,7 @@ module Engine
             if !@game.fulfilled_train_obligation?(entity)
               trains.select { |t| t.name == '2+2' }
             else
-              return [] unless @game.non_starter_trains_available
+              return [] unless @game.non_starter_trains_available?
 
               trains.reject { |t| t.name == '2+2' }
             end
