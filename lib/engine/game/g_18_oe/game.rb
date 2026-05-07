@@ -711,11 +711,10 @@ module Engine
         end
 
         def next_round!
-          # Rule 8.3/11.6: level 3 trains are blocked in OR1; track when first OR ends
-          @first_or_done ||= @round.is_a?(Engine::Round::Operating)
           @round =
             case @round
             when Engine::Round::Operating
+              @first_or_done = true # Rule 8.3/11.6: level 3+ trains unblocked after first OR
               if @consolidation_triggered && !@consolidation_done
                 @log << '-- Consolidation Phase --'
                 new_consolidation_round
