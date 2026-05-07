@@ -21,31 +21,8 @@ module Engine
             return corporation_actions(entity) if entity.corporation?
             return [] unless entity == current_entity
             return ['sell_shares'] if must_sell?(entity)
-
-            # Conversion triggered: president may buy one treasury share then must pass
-            if @converting
-              actions = []
-              ipo_bundle = @converting.ipo_shares.first&.to_bundle
-              actions << 'buy_shares' if ipo_bundle && can_buy?(entity, ipo_bundle)
-              actions << 'pass'
-              return actions
-            end
-
-            if @converted
-              actions = []
-              # §9.3 step 6: may sell shares of any RR except the newly floated major
-              actions << 'sell_shares' if can_sell_any?(entity)
-              # §9.3 step 7: buy one major IPO share
-              #   bought?=true  → pre-conversion buy (step 1) occurred → step 7 unavailable
-              #   bought?=false → no pre-buy → president: optional, non-president: mandatory
-              unless bought?
-                ipo_bundle = @converted.ipo_shares.first&.to_bundle
-                actions << 'buy_shares' if ipo_bundle && can_buy?(entity, ipo_bundle)
-              end
-              # Pass: president may always pass; non-president must complete step 7 first
-              actions << 'pass' if @trigger_is_president || bought?
-              return actions
-            end
+            return converting_actions(entity) if @converting
+            return converted_actions(entity) if @converted
 
             actions = []
             actions << 'buy_shares' if can_buy_any?(entity)
@@ -289,6 +266,25 @@ module Engine
           end
 
           private
+
+          def converting_actions(entity)
+            actions = []
+            ipo_bundle = @converting.ipo_shares.first&.to_bundle
+            actions << 'buy_shares' if ipo_bundle && can_buy?(entity, ipo_bundle)
+            actions << 'pass'
+            actions
+          end
+
+          def converted_actions(entity)
+            actions = []
+            actions << 'sell_shares' if can_sell_any?(entity)
+            unless bought?
+              ipo_bundle = @converted.ipo_shares.first&.to_bundle
+              actions << 'buy_shares' if ipo_bundle && can_buy?(entity, ipo_bundle)
+            end
+            actions << 'pass' if @trigger_is_president || bought?
+            actions
+          end
 
           def bought_corporation
             @round.current_actions.find { |x| x.is_a?(Action::BuyShares) }&.bundle&.corporation
