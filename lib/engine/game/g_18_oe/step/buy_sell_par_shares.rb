@@ -148,7 +148,6 @@ module Engine
 
             return super unless can_float_minor?(current_entity)
 
-            zones_display = @game.minor_available_regions.map { |zone, count| "#{zone}(#{count})" }.join(', ')
             "Available track rights zones: #{zones_display}. "\
               'Home station placement determines which zone the minor receives.'
           end
@@ -160,7 +159,6 @@ module Engine
             company = find_minor_company(corporation)
 
             @log << "#{entity.name} floats #{company.sym}"
-            zones_display = @game.minor_available_regions.map { |zone, count| "#{zone}(#{count})" }.join(', ')
             @log << "Available track rights zones: #{zones_display}"
 
             @game.stock_market.set_par(corporation, share_price)
@@ -284,6 +282,10 @@ module Engine
             end
             actions << 'pass' if @trigger_is_president || bought?
             actions
+          end
+
+          def zones_display
+            @game.minor_available_regions.map { |zone, count| "#{zone}(#{count})" }.join(', ')
           end
 
           def bought_corporation
