@@ -423,7 +423,7 @@ module Engine
         added_cities = [0, new_ctedges.size - old_ctedges.size].max
         multi_city_upgrade = tile.cities.size > 1 && hex.tile.cities.size > 1
 
-        all_new_exits_valid = new_exits.all? { |edge| hex_neighbor_valid?(entity, hex, edge) }
+        all_new_exits_valid = new_exits.all? { |edge| hex_neighbor_exists?(entity, hex, edge) }
         return false unless all_new_exits_valid
 
         neighbors = hex_neighbors(entity, hex) || []
@@ -449,7 +449,7 @@ module Engine
         true
       end
 
-      def hex_neighbor_valid?(_entity, hex, edge)
+      def hex_neighbor_exists?(_entity, hex, edge)
         hex.neighbors[edge]
       end
 

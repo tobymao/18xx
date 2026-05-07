@@ -22,7 +22,7 @@ module Engine
           entity.owner == @game.consortiu&.owner
         end
 
-        def hex_neighbor_valid?(entity, hex, edge)
+        def hex_neighbor_exists?(entity, hex, edge)
           can_ignore_borders?(entity) ? hex.all_neighbors[edge] : super
         end
       end

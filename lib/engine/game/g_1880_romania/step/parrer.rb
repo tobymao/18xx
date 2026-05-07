@@ -5,8 +5,8 @@ module Engine
     module G1880Romania
       module Step
         module Parrer
-          def private_company_president_corp?
-            @parring[:corporation] == @game.tr
+          def private_company_president_corp?(corporation)
+            corporation == @game.tr
           end
 
           def select_verb

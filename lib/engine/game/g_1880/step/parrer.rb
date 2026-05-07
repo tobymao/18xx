@@ -38,13 +38,14 @@ module Engine
           end
 
           def president_percent_choices
+            corporation = @parring[:corporation]
             max_shares = (@parring[:entity].cash.to_f / @parring[:share_price].price).floor
-            max_percent = private_company_president_corp? ? 20 : max_shares * @parring[:corporation].share_percent
+            max_percent = private_company_president_corp?(corporation) ? 20 : max_shares * corporation.share_percent
             { 20 => '20%', 30 => '30%', 40 => '40%' }.select { |k, _v| k <= max_percent }
           end
 
-          def private_company_president_corp?
-            @parring[:corporation] == @game.bcr
+          def private_company_president_corp?(corporation)
+            corporation == @game.bcr
           end
 
           def process_choose(action)
