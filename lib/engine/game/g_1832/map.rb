@@ -83,8 +83,9 @@ module Engine
           '190' => {
             'count' => 1,
             'color' => 'green',
-            'code' => 'city=revenue:40;city=revenue:40;city=revenue:40;path=a:1,b:_0;path=a:4,b:_0;path=a:0,b:_1;path=a:3,b:_1'\
-                      'path=a:2,b:_2;path=a:5,b:_2;label=Atl',
+            'code' => 'city=revenue:40,loc:2;city=revenue:40,loc:0;city=revenue:40,loc:4;'\
+                      'path=a:3,b:_1;path=a:0,b:_1;path=a:5,b:_0;path=a:2,b:_0;'\
+                      'path=a:4,b:_2;path=a:1,b:_2;label=A',
           },
 
           # brown
@@ -105,12 +106,13 @@ module Engine
           '191' => {
             'count' => 1,
             'color' => 'brown',
-            'code' => 'city=revenue:40,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;label=S',
+            'code' => 'city=revenue:60,slots:4;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;'\
+                      'path=a:5,b:_0;label=A',
           },
           '193' => {
             'count' => 1,
             'color' => 'brown',
-            'code' => 'city=revenue:60,slots:4;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
+            'code' => 'city=revenue:40,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;label=S',
           },
           '611' => {
             'count' => 2,
@@ -154,7 +156,7 @@ module Engine
                        'icon=image:port,sticky:1,loc:0.5;icon=image:1832/FECR_key_west,loc:2.5',
           },
           yellow: {
-            ['F10'] => 'city=revenue:20;city=revenue:20;city=revenue:20;path=a:4,b:_0;path=a:0,b:_1;path=a:2,b:_2;label=Atl;',
+            ['F10'] => 'city=revenue:20;city=revenue:20;city=revenue:20;path=a:4,b:_0;path=a:0,b:_1;path=a:2,b:_2;label=A;',
           },
           gray: {
             ['B14'] => 'city=revenue:yellow_40|brown_60;path=a:0,b:_0;path=a:1,b:_0;path=a:4,b:_0;path=a:5,b:_0',

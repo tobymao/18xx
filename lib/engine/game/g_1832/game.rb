@@ -30,9 +30,26 @@ module Engine
 
         CLOSED_CORP_TRAINS_REMOVED = false
 
+        CURRENCY_FORMAT_STR = '$%s'
+        BANK_CASH = 12_000
+        CAPITALIZATION = :full
+        FLOAT_PERCENT = 60
+
+        SOUTHERN_BANK_STARTING_CASH = {
+          2 => 1200,
+          3 => 800,
+          4 => 600,
+          5 => 480,
+          6 => 400,
+          7 => 343,
+        }.freeze
+
+        STANDARD_GAME_END_CHECK = { bankrupt: :immediate, bank: :full_or }.freeze
+        FINISH_ON_400_GAME_END_CHECK = { bankrupt: :immediate, bank: :full_or, stock_market: :immediate }.freeze
+
         IPO_RESERVED_NAME = 'Treasury'
 
-        BOOMTOWN_HEXES = %w[D8 F14 G9 G9 H6 L14].freeze
+        BOOMTOWN_HEXES = %w[D8 F14 G9 G11 H6 L14].freeze
         MIAMI_HEX = 'N16'
 
         TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }].freeze
@@ -57,10 +74,8 @@ module Engine
           self.class::TILE_LAYS
         end
 
-        def system?(corporation)
-          return false unless corporation
-
-          corporation.type == :system
+        def system?(entity)
+          entity.corporation? && entity.type == :system
         end
 
         ASSIGNMENT_TOKENS = {
@@ -71,6 +86,7 @@ module Engine
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
           'companies_buyable' => ['Companies become buyable', 'All companies may now be bought in by corporation'],
+          'final_merger_chance' => ['Final Merger Chance', 'Last opportunity for mergers and takeovers'],
           'remove_tokens' => ['Remove Tokens', 'Remove private company tokens'],
           'remove_key_west_token' => ['Remove Key West Token', 'FECR loses the Key West']
         ).freeze
@@ -122,7 +138,7 @@ module Engine
         end
 
         def init_stock_market
-          G1870::StockMarket.new(self.class::MARKET, self.class::CERT_LIMIT_TYPES,
+          G1870::StockMarket.new(game_market, self.class::CERT_LIMIT_TYPES,
                                  multiple_buy_types: self.class::MULTIPLE_BUY_TYPES)
         end
 
@@ -145,6 +161,46 @@ module Engine
           @tile_142 ||= @all_tiles.find { |t| t.name == '142' }
           @tile_143 ||= @all_tiles.find { |t| t.name == '143' }
           @tile_144 ||= @all_tiles.find { |t| t.name == '144' }
+        end
+
+        def option_diesels?
+          @optional_rules&.include?(:diesels)
+        end
+
+        def option_southern_bank?
+          @optional_rules&.include?(:southern_bank)
+        end
+
+        def option_finish_on_400?
+          @optional_rules&.include?(:finish_on_400)
+        end
+
+        def game_trains
+          self.class::EARLY_TRAINS + (option_diesels? ? DIESEL_LATE_TRAINS : STANDARD_LATE_TRAINS)
+        end
+
+        def game_phases
+          self.class::EARLY_PHASES + (option_diesels? ? DIESEL_LATE_PHASES : STANDARD_LATE_PHASES)
+        end
+
+        def game_companies
+          return self.class::STANDARD_COMPANIES unless option_southern_bank?
+
+          companies = self.class::STANDARD_COMPANIES.dup
+          companies.insert(4, self.class::SOUTHERN_BANK_COMPANY)
+          companies
+        end
+
+        def game_market
+          if option_finish_on_400?
+            [FINISH_ON_400_TOP_LINE] + REST_OF_MARKET
+          else
+            [STANDARD_TOP_LINE] + REST_OF_MARKET
+          end
+        end
+
+        def game_end_check_values
+          option_finish_on_400? ? FINISH_ON_400_GAME_END_CHECK : STANDARD_GAME_END_CHECK
         end
 
         def available_programmed_actions

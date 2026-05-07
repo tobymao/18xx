@@ -4,7 +4,7 @@ module Engine
   module Game
     module G1832
       module Phases
-        PHASES = [
+        EARLY_PHASES = [
           {
             name: '2',
             train_limit: 4,
@@ -25,7 +25,7 @@ module Engine
             train_limit: 3,
             tiles: %i[yellow green],
             operating_rounds: 2,
-            status: %w[can_buy_companies],
+            status: %w[can_buy_companies mergers_allowed],
           },
           {
             name: '5',
@@ -33,7 +33,11 @@ module Engine
             train_limit: 2,
             tiles: %i[yellow green brown],
             operating_rounds: 3,
+            status: %w[mergers_allowed],
           },
+        ].freeze
+
+        STANDARD_LATE_PHASES = [
           {
             name: '6',
             on: '6',
@@ -62,7 +66,24 @@ module Engine
             tiles: %i[yellow green brown],
             operating_rounds: 3,
           },
-].freeze
+        ].freeze
+
+        DIESEL_LATE_PHASES = [
+          {
+            name: '6',
+            on: '6',
+            train_limit: 2,
+            tiles: %i[yellow green brown],
+            operating_rounds: 3,
+          },
+          {
+            name: 'D',
+            on: 'D',
+            train_limit: 2,
+            tiles: %i[yellow green brown],
+            operating_rounds: 3,
+          },
+        ].freeze
       end
     end
   end

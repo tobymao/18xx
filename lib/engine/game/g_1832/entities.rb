@@ -94,7 +94,7 @@ module Engine
           },
           {
             sym: 'GRR',
-            name: 'Georgia Railraod',
+            name: 'Georgia Railroad',
             logo: '1832/GRR',
             simple_logo: '1832/GRR.alt',
             tokens: [0, 40],
@@ -211,7 +211,7 @@ module Engine
           },
         ].freeze
 
-        COMPANIES = [
+        STANDARD_COMPANIES = [
           {
             name: 'Carolina Stagecoach Company',
             sym: 'P1',
@@ -289,6 +289,8 @@ module Engine
               owner_type: 'player',
               corporations: 'any',
               from: 'ipo',
+              when: 'stock_round',
+              count: 1,
             },
                         { type: 'no_buy' }],
             color: nil,
@@ -325,6 +327,22 @@ module Engine
             color: nil,
           },
         ].freeze
+
+        SOUTHERN_BANK_COMPANY = {
+          name: 'Southern Bank',
+          sym: 'P6',
+          value: 100,
+          revenue: 10,
+          desc: 'Enables mortgage financing. The owning corporation may mortgage one train or placed '\
+                'token; the mortgage value is set at half-to-double that asset\'s value. The corporation '\
+                'pays 10% interest per OR at the start of its operating turn (nothing if it cannot pay). '\
+                'The mortgage may be repaid for half-to-full asset value. Only one mortgage may be '\
+                'outstanding at a time. Does not pay $10 revenue unless a mortgage is outstanding. '\
+                'Does not close at first 5-train. Cannot be sold after the first 6-train. '\
+                'Worth face value ($100) at game end.',
+          abilities: [],
+          color: nil,
+        }.freeze
       end
     end
   end
