@@ -83,6 +83,15 @@ module View
           children << render_boom if @city&.boom
           children << render_slot_icon if @city&.slot_icons&.[](@slot_index)
           children << h(Token, token: @token, radius: radius, game: @game) if @token
+          if @game&.highlight_city_assignment?(@city)
+            children << h(:circle, attrs: {
+                            r: @radius + 5,
+                            fill: 'none',
+                            stroke: '#d4af37',
+                            'stroke-width': 3,
+                            'stroke-dasharray': 6,
+                          })
+          end
 
           props = {
             on: { click: ->(event) { on_click(event) } },
@@ -151,6 +160,15 @@ module View
           entity = @selected_company || step.current_entity
 
           return unless step.available_hex(entity, @tile.hex)
+
+          assign_step = @game.round.step_for(entity, 'assign')
+          if assign_step.respond_to?(:available_city) && assign_step&.available_city(entity, @city, @tile.hex)
+            event.JS.stopPropagation
+            city_index = @tile.cities.index(@city)
+            process_action(Engine::Action::Assign.new(entity, target: @tile.hex, city: city_index))
+            store(:selected_company, nil, skip: true)
+            return
+          end
 
           remove_token_step = @game.round.step_for(entity, 'remove_token')
           place_token_step = @game.round.step_for(entity, 'place_token')

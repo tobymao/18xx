@@ -767,7 +767,7 @@ module Engine
 
             routes.each do |route|
               route.stops.each do |stop|
-                if (company = all_hexes[stop.hex.id])
+                if (company = all_hexes[stop.hex.id]) && !stop.hex.assigned?('bridge')
                   warnings << "Using #{company.name} on #{stop.hex.id} will improve revenue"
                 end
               end

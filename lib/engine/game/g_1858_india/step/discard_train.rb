@@ -8,7 +8,7 @@ module Engine
       module Step
         class DiscardTrain < G1858::Step::DiscardTrain
           def trains(corporation)
-            super.reject { |train| @game.mail_train?(train) }
+            super.reject { |train| @game.pullman?(train) }
           end
         end
       end

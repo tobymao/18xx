@@ -13,6 +13,7 @@ module View
     include GameManager
     include Lib::Settings
     include Lib::WhatsThis::AutoRoute
+    include Lib::WhatsThis::EngineV2
     include Lib::ProfileLink
 
     needs :user
@@ -242,6 +243,7 @@ module View
       if @gdata['status'] == 'new'
         children << h(:div, [h(:i, 'Invite only game')]) if @gdata.dig('settings', 'unlisted')
         children << h(:div, [h(:i, ['Auto Routing', auto_route_whats_this])]) if @gdata.dig('settings', 'auto_routing')
+        children << h(:div, [h(:i, ['Engine V2', engine_v2_whats_this])]) if @gdata.dig('settings', 'use_engine_v2')
       end
       children << h(:div, [h(:strong, 'Description: '), @gdata['description']]) unless @gdata['description'].empty?
 
@@ -257,14 +259,17 @@ module View
           render_time_or_date('created_at'),
         ])
       elsif %w[finished archived].include?(@gdata['status'])
-        r_elm = @gdata['result'].sort_by { |_, v| -v }.map.with_index do |(id, score), index|
-          id = id.to_i
-          player = players.find { |p| p['id'] == id }
+        result_entries = @gdata['result'].sort_by { |_, v| -v }
+        scoring_players = result_entries.filter_map do |id, score|
+          player = players.find { |p| p['id'] == id.to_i }
+          [player, score] if player
+        end
+        r_elm = scoring_players.map.with_index do |(player, score), index|
           player_props = { attrs: { title: player['name'] } }
           h(:span, player_props, [
             profile_link(player['id'], player['name'].truncate),
             " #{score}",
-            index == players.size - 1 ? '' : ', ',
+            index == scoring_players.size - 1 ? '' : ', ',
           ])
         end
 
@@ -289,13 +294,15 @@ module View
     end
 
     def render_broken
-      button = h(:div, [if @gdata['mode'] == 'hotseat'
-                          if @confirm_delete != @gdata['id']
-                            render_button('Delete', -> { store(:confirm_delete, @gdata['id']) })
-                          else
-                            render_button('Confirm', -> { delete_game(@gdata) })
-                          end
-                        end])
+      button_inner =
+        if @gdata['mode'] == 'hotseat'
+          if @confirm_delete != @gdata['id']
+            render_button('Delete', -> { store(:confirm_delete, @gdata['id']) })
+          else
+            render_button('Confirm', -> { delete_game(@gdata) })
+          end
+        end
+      button = h(:div, button_inner ? [button_inner] : [])
 
       header_props = {
         style: {

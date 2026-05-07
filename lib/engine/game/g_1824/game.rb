@@ -52,8 +52,8 @@ module Engine
         MUST_SELL_IN_BLOCKS = false
 
         EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
-        EBUY_FROM_OTHERS = :always
-        EBUY_SELL_MORE_THAN_NEEDED = true
+        EBUY_FROM_OTHERS = :value # Rule VII.12, bullet 9
+        EBUY_SELL_MORE_THAN_NEEDED = false
         EBUY_SELL_MORE_THAN_NEEDED_SETS_PURCHASE_MIN = true
         EBUY_CAN_TAKE_PLAYER_LOAN = true
         MUST_BUY_TRAIN = :always
@@ -218,7 +218,7 @@ module Engine
           tie_breaker |= @players
 
           president_factors = president_candidates.to_h do |player, percent|
-            [[percent, tie_breaker.index(player), player == current_president ? 1 : 0], player]
+            [[percent, -1 * tie_breaker.index(player)], player]
           end
           president = president_factors[president_factors.keys.max]
           return if current_president == president
@@ -384,6 +384,15 @@ module Engine
 
         def ipo_reserved_name(_entity = nil)
           'Reserved'
+        end
+
+        def can_dump?(_entity, bundle)
+          super && within_bank_limit(bundle)
+        end
+
+        def within_bank_limit(bundle)
+          # 3+ player 1824 has a bank limit of 50% when selling, and no bank pool.
+          (bundle.corporation.num_ipo_shares * 10) + bundle.percent <= 50
         end
 
         def sd_minors
@@ -676,6 +685,12 @@ module Engine
           return if staatsbahn?(corporation) && corporation.placed_tokens.any?
 
           super
+        end
+
+        # 1837 uses a black token, we want to have a gray one
+        def blocking_token
+          @blocker ||= Corporation.new(sym: 'B', name: '', logo: '1824/blocking', tokens: [])
+          Token.new(@blocker)
         end
 
         # 1837 use as special functionality for token graphs so we need to use base functionality

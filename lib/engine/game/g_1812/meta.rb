@@ -13,7 +13,7 @@ module Engine
 
         GAME_SUBTITLE = 'The Cradle Of Steam Railways'
         GAME_DESIGNER = 'Ian D. Wilson'
-        GAME_LOCATION = 'North-East England'
+        GAME_LOCATION = 'North Eastern England'
         GAME_PUBLISHER = :golden_spike
         GAME_RULES_URL = 'https://drive.google.com/file/d/0B1SWz2pNe2eAZUY2UHNvUFNxUGc/view?usp=sharing&resourcekey=0-D5kk65ZoyT-dR6hSKAmggQ'
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1812'

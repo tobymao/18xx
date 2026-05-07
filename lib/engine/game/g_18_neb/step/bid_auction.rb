@@ -152,6 +152,13 @@ module Engine
           def max_bid(player, company)
             player.cash - committed_cash(player) + current_bid_amount(player, company)
           end
+
+          def current_bid_amount(player, company)
+            # Cash is only committed to an auction if the player has made the
+            # currently winning bid. Return zero if they have been outbid.
+            bid = highest_bid(company)
+            bid&.entity == player ? bid.price : 0
+          end
         end
       end
     end

@@ -28,7 +28,7 @@ module Engine
           '6E' => 3,
           '7E' => 20,
           '5D' => 10,
-          'Mail' => 4,
+          'Pullman' => 4,
         }.freeze
 
         PHASE4_TRAINS_RUST = 7 # 6H/3M trains rust after the seventh grey train is bought.
@@ -71,7 +71,15 @@ module Engine
 
         def game_trains
           unless @game_trains
-            @game_trains = super.map(&:dup)
+            # Need to make a deep(ish) copy of the train definitions, to avoid
+            # any changes here leaking back into the base 1858 game.
+            @game_trains = super.map do |traindef|
+              train = traindef.dup
+              train[:events] = traindef[:events].map(&:dup) if traindef[:events]
+              train[:variants] = traindef[:variants].map(&:dup) if traindef[:variants]
+              train
+            end
+
             # Add the 1M variant to the 2H train.
             @game_trains.first[:variants] =
               [
@@ -81,23 +89,21 @@ module Engine
                   distance: [{ 'nodes' => %w[city offboard], 'pay' => 1, 'visit' => 1 },
                              { 'nodes' => %w[town], 'pay' => 99, 'visit' => 99 }],
                   track_type: :narrow,
-                  price: 70,
+                  price: 80,
                 },
               ]
-            # 2M trains are more expensive than in base 1858.
-            @game_trains[1][:variants] =
-              [
-                {
-                  name: '2M',
-                  distance: [{ 'nodes' => %w[city offboard], 'pay' => 2, 'visit' => 2 },
-                             { 'nodes' => %w[town], 'pay' => 99, 'visit' => 99 }],
-                  track_type: :narrow,
-                  price: 140,
-                },
-              ]
+
+            # M trains are more expensive than in base 1858.
+            @game_trains[1][:variants].first[:price] = 160 # 2M
+            @game_trains[2][:variants].first[:price] = 240 # 3M
+            @game_trains[3][:variants].first[:price] = 500 # 4M
+            @game_trains[4][:variants].first[:price] = 650 # 5M
+            @game_trains[5][:variants].first[:price] = 800 # 6M
+
+            # This variant adds mail trains.
             @game_trains <<
               {
-                name: 'Mail',
+                name: 'Pullman',
                 distance: [{ 'nodes' => %w[city offboard], 'pay' => 7, 'visit' => 7 },
                            { 'nodes' => %w[town], 'pay' => 0, 'visit' => 99 }],
                 track_type: :broad,
@@ -112,32 +118,32 @@ module Engine
           TRAIN_COUNTS[train[:name]]
         end
 
-        def mail_train?(train)
-          train.name == 'Mail'
+        def pullman?(train)
+          train.name == 'Pullman'
         end
 
-        def owns_mail_train?(corporation)
-          corporation.trains.any? { |train| mail_train?(train) }
+        def owns_pullman?(corporation)
+          corporation.trains.any? { |train| pullman?(train) }
         end
 
         def trainless?(corporation)
-          # For emergency money raising, a mail train on its own doesn't stop
+          # For emergency money raising, a Pullman on its own doesn't stop
           # a public company from issuing shares.
-          corporation.trains.none? { |train| !mail_train?(train) }
+          corporation.trains.none? { |train| !pullman?(train) }
         end
 
         def num_corp_trains(corporation)
-          # Mail trains don't count towards train limit.
-          corporation.trains.count { |train| !mail_train?(train) }
+          # Pullmans don't count towards train limit.
+          corporation.trains.count { |train| !pullman?(train) }
         end
 
         def route_trains(entity)
-          # Don't show mail trains in the route selector.
-          entity.runnable_trains.reject { |train| mail_train?(train) }
+          # Don't show Pullmans in the route selector.
+          entity.runnable_trains.reject { |train| pullman?(train) }
         end
 
         def revenue_for(route, stops)
-          super + mail_bonus(route, stops)
+          super + pullman_bonus(route, stops)
         end
 
         def game_phases
@@ -272,9 +278,9 @@ module Engine
           corp
         end
 
-        def mail_bonus(route, stops)
+        def pullman_bonus(route, stops)
           train = route.train
-          return 0 unless @round.mail_trains[train.owner] == train
+          return 0 unless @round.pullmans[train.owner] == train
 
           stop_bonus = (train.multiplier || 1) * (train.obsolete ? 5 : 10)
           stop_bonus * stops.count { |stop| stop.city? || stop.offboard? }

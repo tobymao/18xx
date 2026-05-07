@@ -24,7 +24,24 @@ module Engine
 
         PLAYER_RANGE = [3, 6].freeze
 
-        OPTIONAL_RULES = [].freeze
+        OPTIONAL_RULES = [
+          {
+            sym: :quick_start_a,
+            short_name: 'Quick start, set A',
+            desc: 'The yellow private companies are given to players in ' \
+                  'randomly assigned batches, instead of being auctioned.',
+            players: (3..6).to_a,
+          },
+          {
+            sym: :quick_start_b,
+            short_name: 'Quick start, set B',
+            desc: 'Different sets of private companies for five players ' \
+                  'in the quick start variant.',
+            players: (3..6).to_a,
+          },
+        ].freeze
+
+        MUTEX_RULES = [%i[quick_start_a quick_start_b]].freeze
       end
     end
   end

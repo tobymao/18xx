@@ -9,6 +9,12 @@ module Engine
       module Step
         class SpecialTrack < Engine::Step::SpecialTrack
           include LayTileCheck
+
+          def process_lay_tile(action)
+            owner = action.entity.owner
+            super
+            owner.goal_reached!(:destination) if @game.check_for_destination_connection(owner)
+          end
         end
       end
     end

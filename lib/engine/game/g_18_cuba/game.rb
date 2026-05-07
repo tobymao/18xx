@@ -5,6 +5,7 @@ require_relative 'map'
 require_relative 'meta'
 require_relative '../base'
 require_relative '../double_sided_tiles'
+require_relative 'trains'
 
 module Engine
   module Game
@@ -13,6 +14,7 @@ module Engine
         include_meta(G18Cuba::Meta)
         include Entities
         include Map
+        include Trains
 
         include DoubleSidedTiles
 
@@ -26,6 +28,7 @@ module Engine
                         brightGreen: '#6ec037')
         TRACK_RESTRICTION = :permissive
         CURRENCY_FORMAT_STR = '$%s'
+        HOME_TOKEN_TIMING = :operate
 
         BANK_CASH = 10_000
 
@@ -37,15 +40,6 @@ module Engine
           %w[50 55 60 65 70p 75p 80p 85p 90p 95p 100p 105 110 115 120 126 192 198 144
              151 158 172 180 188 196 204 013 222 231 240 250 260 275 290 300],
         ].freeze
-
-        # Currently variants 2p medium, 3p short setup. Further variant support to be added later.
-        TRAIN_FOR_PLAYER_COUNT = {
-          2 => { '2': 5, '3': 4, '4': 2, '5': 3, '6': 3, '8': 4, '2n': 7, '3n': 5, '4n': 4, '5n': 5 },
-          3 => { '2': 7, '3': 5, '4': 3, '5': 3, '6': 3, '8': 6, '2n': 5, '3n': 5, '4n': 3, '5n': 4 },
-          4 => { '2': 9, '3': 7, '4': 4, '5': 3, '6': 3, '8': 8, '2n': 7, '3n': 6, '4n': 4, '5n': 5 },
-          5 => { '2': 10, '3': 8, '4': 5, '5': 3, '6': 3, '8': 10, '2n': 9, '3n': 7, '4n': 5, '5n': 6 },
-          6 => { '2': 10, '3': 9, '4': 5, '5': 3, '6': 3, '8': 12, '2n': 10, '3n': 8, '4n': 6, '5n': 7 },
-        }.freeze
 
         PHASES = [{ name: '2', train_limit: 4, tiles: [:yellow], operating_rounds: 1 },
                   {
@@ -84,116 +78,6 @@ module Engine
                     operating_rounds: 3,
                   }].freeze
 
-        TRAINS = [
-                  # Regular Trains
-                  {
-                    name: '2',
-                    distance: 2,
-                    price: 100,
-                    track_type: :broad,
-                    rusts_on: '4',
-                  },
-                  {
-                    name: '3',
-                    distance: 3,
-                    price: 200,
-                    track_type: :broad,
-                    rusts_on: '6',
-                    variants: [
-                      {
-                        name: '3+',
-                        distance: 3,
-                        track_type: :broad,
-                        price: 230,
-                      },
-                    ],
-                  },
-                  {
-                    name: '4',
-                    distance: 4,
-                    price: 300,
-                    track_type: :broad,
-                    rusts_on: '8',
-                    variants: [
-                      {
-                        name: '4+',
-                        distance: 4,
-                        track_type: :broad,
-                        price: 340,
-                      },
-                    ],
-                  },
-                  {
-                    name: '5',
-                    distance: 5,
-                    price: 500,
-                    track_type: :broad,
-                    variants: [
-                      {
-                        name: '5+',
-                        distance: 5,
-                        track_type: :broad,
-                        price: 550,
-                      },
-                    ],
-                  },
-                  {
-                    name: '6',
-                    distance: 6,
-                    price: 600,
-                    track_type: :broad,
-                    variants: [
-                      {
-                        name: '6+',
-                        distance: 6,
-                        track_type: :broad,
-                        price: 660,
-                      },
-                    ],
-                  },
-                  {
-                    name: '8',
-                    distance: 8,
-                    price: 700,
-                    track_type: :broad,
-                    variants: [
-                      {
-                        name: '4D',
-                        distance: 4,
-                        track_type: :broad,
-                        price: 800,
-                      },
-                    ],
-                  },
-                  # Narrow Gauge Trains
-                  {
-                    name: '2n',
-                    distance: 2,
-                    price: 80,
-                    track_type: :narrow,
-                    rusts_on: '4',
-                  },
-                  {
-                    name: '3n',
-                    distance: 3,
-                    price: 160,
-                    track_type: :narrow,
-                    rusts_on: '6',
-                  },
-                  {
-                    name: '4n',
-                    distance: 4,
-                    price: 260,
-                    track_type: :narrow,
-                  },
-                  {
-                    name: '5n',
-                    distance: 5,
-                    price: 380,
-                    track_type: :narrow,
-                  },
-                  ].freeze
-
         def operating_round(round_num)
           Round::Operating.new(self, [
             Engine::Step::Bankrupt,
@@ -202,12 +86,12 @@ module Engine
             Engine::Step::SpecialToken,
             Engine::Step::BuyCompany,
             Engine::Step::HomeToken,
-            Engine::Step::Track,
+            G18Cuba::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
             G18Cuba::Step::Dividend,
             Engine::Step::DiscardTrain,
-            Engine::Step::BuyTrain,
+            G18Cuba::Step::BuyTrain,
             [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
@@ -229,7 +113,7 @@ module Engine
           case company.type
           when :concession
             'CONCESSION'
-          when :commissioner
+          when :commission
             'COMMISSIONER'
           else
             raise "Unknown company type: #{company.type}"
@@ -250,6 +134,30 @@ module Engine
           initialize_tile_opposites!
           @unused_tiles = []
           @sugar_cubes = {}
+          @minor_graph = Graph.new(self, skip_track: :broad)
+        end
+
+        def init_graph
+          Graph.new(self, skip_track: :narrow)
+        end
+
+        def graph_for_entity(entity)
+          return @graph unless entity&.type == :minor
+
+          @minor_graph ||= Graph.new(self, skip_track: :broad)
+        end
+
+        def clear_graph
+          @minor_graph.clear
+          super
+        end
+
+        def clear_graph_for_entity(entity)
+          if entity&.type == :minor
+            @minor_graph.clear
+          else
+            super
+          end
         end
 
         def init_tile_groups
@@ -264,9 +172,25 @@ module Engine
           Engine::Round::Draft.new(self, [G18Cuba::Step::SimpleDraft], reverse_order: false)
         end
 
+        def stock_round
+          Round::Stock.new(self, [
+            Engine::Step::HomeToken,
+            G18Cuba::Step::BuySellParShares,
+          ])
+        end
+
         def close_unopened_minors
           @corporations.each { |c| c.close! if c.type == :minor && !c.floated? }
           @log << 'Unopened minors close'
+        end
+
+        def can_par?(corporation, entity)
+          # FC cannot be parred
+          # Minors can only be parred by players with a concession to exchange
+          return false if corporation.type == :state
+          return super unless corporation.type == :minor
+
+          entity.companies.any? { |c| abilities(c, :exchange) }
         end
 
         def next_round!
@@ -297,6 +221,29 @@ module Engine
             end
         end
 
+        def home_token_locations(corporation)
+          # TODO: FEC home token, especifically corner case to be added with no available token -> use cheater token
+          return super unless corporation.type == :minor
+
+          hexes.select do |hex|
+            # no token allowed on Y and H cities
+            next false if hex.tile.labels.any? { |l| %w[Y H].include?(l.to_s) }
+
+            hex.tile.cities.any? do |city|
+              next false unless city.tokenable?(corporation, free: true)
+
+              # no other minor may already be here
+              city.tokens.none? { |t| t&.corporation&.type == :minor }
+            end
+          end
+        end
+
+        def token_cost_override(entity, city, token)
+          return 0 if (entity.type == :minor || entity.sym == 'FEC') && (token == entity.tokens.first)
+
+          super
+        end
+
         def sugar_production(corporation, total_revenue)
           return if total_revenue.zero? || corporation.type != :minor
 
@@ -318,6 +265,51 @@ module Engine
 
           @sugar_cubes.clear
           @log << 'All remaining sugar cubes are removed at the end of the Operating Round.'
+        end
+
+        def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
+          corp = selected_company || @round&.current_entity&.corporation
+
+          super.reject do |t|
+            # Hex not available for selector, therefore passing nil and ignoring home hex check for minors
+            tile_blocked_for_corp?(t, corp, nil, for_selector: true)
+          end
+        end
+
+        def tile_blocked_for_corp?(tile, corp, hex, for_selector: false)
+          return false unless corp
+
+          if corp.type == :minor
+            minor_tile_blocked?(tile, corp.tokens.first.hex, hex, for_selector: for_selector)
+          else
+            major_tile_blocked?(tile)
+          end
+        end
+
+        private
+
+        def tile_has_only_track_type?(tile, track_type)
+          # Returns true if all paths on the tile are of the given track type
+          tile.paths.all? { |path| path.track == track_type }
+        end
+
+        def minor_tile_blocked?(tile, home_hex, current_hex, for_selector: false)
+          # Determines if a tile is illegal for a minor:
+          # - Tiles with only broad tracks are always illegal
+          # - City tiles are illegal except on the minor's home hex
+          # - When `for_selector` is true, the home/city rule is ignored because the hex is unknown
+          pure_broad = tile_has_only_track_type?(tile, :broad)
+
+          return pure_broad if for_selector
+
+          return pure_broad if current_hex == home_hex
+
+          !tile.cities.empty? || pure_broad
+        end
+
+        def major_tile_blocked?(tile)
+          # Returns true if a yellow tile is illegal for a major: only pure broad tracks allowed on yellow
+          tile.color == :yellow && !tile_has_only_track_type?(tile, :broad)
         end
       end
     end

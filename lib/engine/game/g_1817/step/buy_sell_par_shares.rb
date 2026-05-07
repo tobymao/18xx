@@ -17,7 +17,7 @@ module Engine
           MAX_BID = 400
 
           def actions(entity)
-            return corporate_actions(entity) if !entity.player? && entity.owned_by?(current_entity)
+            return corporate_actions(entity) if !entity.player? && entity.owned_by?(current_entity) && !must_sell?(current_entity)
 
             return [] unless entity.player?
 
