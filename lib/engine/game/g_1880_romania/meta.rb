@@ -19,6 +19,15 @@ module Engine
         GAME_TITLE = '1880 Romania'
 
         PLAYER_RANGE = [3, 6].freeze
+
+        GAME_VARIANTS = [
+          {
+            sym: :transilvania,
+            name: 'Transilvania',
+            title: '1880 Romania Transilvania',
+            desc: 'Alternate map for 2 players, shorter game',
+          },
+        ].freeze
       end
     end
   end
