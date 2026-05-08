@@ -10,7 +10,7 @@ module Engine
           ACTIONS_WITH_PASS = %w[assign pass].freeze
           def actions(entity)
             return [] if entity.player? || current_entity.minor?
-            return [] unless @game.abilities(entity, :assign_corporation)
+            return [] if !@game.abilities(entity, :assign_corporation) && !@game.abilities(entity, :assign_hexes)
 
             return ACTIONS if @game.forced_exchange_rocket? && entity == @game.rocket
             return ACTIONS_WITH_PASS if p5_block?
@@ -44,7 +44,7 @@ module Engine
           def help
             return super unless @game.forced_exchange_rocket?
 
-            'Owner of Rocket of China must choose one of their corporations to receive the next 4 train from the depot at no cost'
+            "#{@game.rocket.owner.name} must choose one of their corporations to receive the next train from the depot at no cost"
           end
 
           def blocks?
@@ -58,6 +58,8 @@ module Engine
 
           def process_assign(action)
             return process_assign_rocket(action) if @game.forced_exchange_rocket?
+            return super if @game.abilities(action.entity, :assign_hexes)
+
             raise GameError, "#{current_entity.id} already has a D permit" if current_entity.building_permits&.include?('D')
 
             super
