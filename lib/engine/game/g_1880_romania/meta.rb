@@ -28,7 +28,6 @@ module Engine
             desc: 'Alternate map for 2 players, shorter game',
           },
         ].freeze
-
       end
     end
   end

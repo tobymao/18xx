@@ -63,24 +63,24 @@ module Engine
         end
 
         def game_trains
-          unless @transilvania_trains
-            @transilvania_trains = super.map(&:dup)
-            trains_2, trains_2p2, trains_3, trains_3p3, trains_4, trains_4p4, trains_6, trains_6e, trains_8, trains_8e, trains_2R = @transilvania_trains
-            trains_2[:num] = 6
-            trains_2p2[:num] = 3
-            trains_3[:num] = 3
-            trains_3p3[:num] = 2
-            trains_3p3[:events] = [{ 'type' => 'communist_takeover' }]
-            trains_4[:num] = 2
-            trains_4p4[:num] = 2
-            trains_6[:num] = 2
-            trains_6e[:num] = 1
-            trains_6e[:events] = [{ 'type' => 'signal_end_game', 'when' => 1 }]
-            trains_8[:num] = 'unlimited'
-            trains_8e[:num] = 0
-            trains_2R[:num] = 0
+          unless @train_games
+            @train_games = super.map(&:dup)
+            t_2, t_2p2, t_3, t_3p3, t_4, t_4p4, t_6, t_6e, t_8, t_8e, t_2r = @train_games
+            t_2[:num] = 6
+            t_2p2[:num] = 3
+            t_3[:num] = 3
+            t_3p3[:num] = 2
+            t_3p3[:events] = [{ 'type' => 'communist_takeover' }]
+            t_4[:num] = 2
+            t_4p4[:num] = 2
+            t_6[:num] = 2
+            t_6e[:num] = 1
+            t_6e[:events] = [{ 'type' => 'signal_end_game', 'when' => 1 }]
+            t_8[:num] = 'unlimited'
+            t_8e[:num] = 0
+            t_2r[:num] = 0
           end
-          @transilvania_trains
+          @train_games
         end
 
         def par_chart
