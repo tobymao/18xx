@@ -9,7 +9,7 @@ module Engine
       include Helper::Type
 
       attr_reader :entity
-      attr_accessor :id, :user, :created_at, :auto_actions
+      attr_accessor :id, :user, :created_at, :auto_actions, :step
 
       # Array<Symbol> - initialize's keyword arguments that don't have a default
       # value; if any given values are nil, raise an ActionError in `from_h()`
@@ -26,6 +26,7 @@ module Engine
         obj.user = h['user'] if entity.player && h['user'] != entity.player&.id
         obj.created_at = h['created_at'] || Time.now
         obj.auto_actions = (h['auto_actions'] || []).map { |auto_h| Base.action_from_h(auto_h, game) }
+        obj.step = h['step']
         obj
       end
 
@@ -75,6 +76,7 @@ module Engine
           'user' => @user,
           'created_at' => @created_at.to_i,
           'auto_actions' => @auto_actions.empty? ? nil : @auto_actions.map(&:to_h),
+          'step' => @step,
           **args_to_h,
         }.reject { |_, v| v.nil? }
       end
