@@ -17,30 +17,19 @@ module Engine
         # a and b are vertices of the hex. 0 represents the bottom one and then you go clockwise
         # The sign tells if the partition should be drawn a little bit before or after the vertex,
         # but doesn't have any impact on the game
-        # -1 is a special value representing the hex center
         a, b = [a, b].minmax
-        if a.start_with?('-')
-          @a = a.to_i
-          @a_sign = 0
-        else
-          @a = a[0].to_i
-          @a_sign = SIGN[a[1]]
-        end
+        @a = a[0].to_i
+        @a_sign = SIGN[a[1]]
         @b = b[0].to_i
         @b_sign = SIGN[b[1]]
 
-        @type = type&.to_sym
+        @type = type
         # If restrict==inner, only allow paths between a and b. If outer, only between b and a
         @restrict = restrict
         @blockers = []
 
-        if @a == -1
-          @inner = []
-          @outer = []
-        else
-          @inner = (restrict == 'outer' ? [] : (@a..(@b - 1)).to_a)
-          @outer = (restrict == 'inner' ? [] : (0..5).to_a - (@a..(@b - 1)).to_a)
-        end
+        @inner = (restrict == 'outer' ? [] : (@a..(@b - 1)).to_a)
+        @outer = (restrict == 'inner' ? [] : (0..5).to_a - (@a..(@b - 1)).to_a)
       end
 
       def add_blocker!(private_company)
