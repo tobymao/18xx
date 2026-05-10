@@ -363,7 +363,8 @@ module Engine
             ['X63'] => 'upgrade=cost:45,terrain:hill;border=edge:0,type:province;border=edge:1,type:province',
             ['Y62'] => 'upgrade=cost:45,terrain:hill;border=edge:0,type:province;border=edge:3,type:province;' \
                        'border=edge:5,type:province',
-            ['Y64'] => 'town=revenue:0;upgrade=cost:45,terrain:hill;partition=a:-1,b:2,type:province;partition=a:-1,b:1,type:province',
+            ['Y64'] => 'town=revenue:0;upgrade=cost:45,terrain:hill;partition=a:-1,b:2,type:province;' \
+                       'partition=a:-1,b:1,type:province',
             ['Z61'] => 'upgrade=cost:45,terrain:hill;border=edge:3,type:province',
             ['Z63'] => 'upgrade=cost:30,terrain:hill;border=edge:2,type:province',
             ['Y60'] => 'partition=a:-1,b:0,type:province;partition=a:-1,b:5,type:province;upgrade=cost:45,terrain:mountain',
