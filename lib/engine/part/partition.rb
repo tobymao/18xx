@@ -14,15 +14,13 @@ module Engine
       }.freeze
 
       def initialize(a, b, type, restrict)
-        # a and b are vertices of the hex. 0 represents the bottom one and then you go clockwise
-        # The sign tells if the partition should be drawn a little bit before or after the vertex,
-        # but doesn't have any impact on the game
-        # -1 is a special value representing the hex center -
-        # used by 18OE
+        # Vertices: 0 = hex centre (city 0 convention); 1-6 = corners clockwise from bottom-right.
+        # Sign suffix (e.g. '1+') shifts the draw position only — no routing effect.
         a, b = [a, b].minmax
-        @a = a.to_i
+        # DSL 0 (centre) → internal -1; DSL 1-6 (corners) → internal 0-5
+        @a = a == '0' ? -1 : a.to_i - 1
         @a_sign = @a.negative? ? 0 : SIGN[a[1]]
-        @b = b[0].to_i
+        @b = b.to_i - 1
         @b_sign = SIGN[b[1]]
 
         @type = type&.to_sym
