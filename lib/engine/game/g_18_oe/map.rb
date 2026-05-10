@@ -925,7 +925,8 @@ module Engine
             ['K4'] => 'border=edge:0,type:province;border=edge:1,type:province',
             ['L3'] => 'border=edge:3,type:province;border=edge:4,type:province',
             ['L33'] => 'border=edge:2,type:province;border=edge:3,type:province',
-            ['L35'] => 'junction;path=a:5,b:_0,terminal:1;path=a:4,b:_0,terminal:1;border=edge:2,type:province;border=edge:3,type:province',
+            ['L35'] => 'junction;path=a:5,b:_0,terminal:1;path=a:4,b:_0,terminal:1;' \
+                       'border=edge:2,type:province;border=edge:3,type:province',
             ['L5'] => 'border=edge:0,type:province;border=edge:1,type:province',
             ['M18'] => 'border=edge:5,type:province',
             ['M20'] => 'border=edge:0,type:province;border=edge:5,type:province',
@@ -940,7 +941,8 @@ module Engine
             ['O12'] => 'border=edge:0,type:province;border=edge:5,type:province',
             ['O14'] => 'border=edge:0,type:province;border=edge:5,type:province',
             ['O16'] => 'border=edge:0,type:province;border=edge:4,type:province;border=edge:5,type:province',
-            ['O18'] => 'junction;path=a:5,b:_0,terminal:1;border=edge:0,type:province;border=edge:1,type:province;border=edge:2,type:province',
+            ['O18'] => 'junction;path=a:5,b:_0,terminal:1;border=edge:0,type:province;' \
+                       'border=edge:1,type:province;border=edge:2,type:province',
             ['O4'] => 'border=edge:3,type:province;border=edge:4,type:province;border=edge:5,type:province',
             ['O6'] => 'border=edge:0,type:province;border=edge:1,type:province;border=edge:5,type:province',
             ['O8'] => 'border=edge:0,type:province;border=edge:5,type:province',
