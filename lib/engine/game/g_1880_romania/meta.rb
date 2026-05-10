@@ -27,6 +27,12 @@ module Engine
             title: '1880 Romania Transilvania',
             desc: 'Alternate map for 2 players, shorter game',
           },
+          {
+            sym: :regatul,
+            name: 'Regatul României',
+            title: '1880 Regatul României (Kingdom of Romania)',
+            desc: 'Alternate map for 2-3 players',
+          },
         ].freeze
       end
     end
