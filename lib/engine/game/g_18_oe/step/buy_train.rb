@@ -7,10 +7,6 @@ module Engine
     module G18OE
       module Step
         class BuyTrain < Engine::Step::BuyTrain
-          def can_entity_buy_train?(entity)
-            entity.corporation?
-          end
-
           def must_buy_train?(entity)
             entity.floated? && entity.trains.empty? && (!@game.fulfilled_train_obligation?(entity) || entity.type == :major)
           end

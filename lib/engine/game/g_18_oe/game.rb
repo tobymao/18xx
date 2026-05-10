@@ -15,7 +15,7 @@ module Engine
         include G18OE::Entities
         include G18OE::Map
         attr_accessor :minor_regional_order, :minor_available_regions, :minor_floated_regions, :regional_corps_floated,
-                      :consolidation_triggered, :consolidation_done, :first_or_done
+                      :consolidation_triggered, :consolidation_done
 
         MARKET = [
           ['', '110', '120C', '135', '150', '165', '180', '200', '225', '250', '280', '310', '350', '390', '440', '490', '550'],
@@ -663,7 +663,7 @@ module Engine
         end
 
         def non_starter_trains_available?
-          major_phase? && first_or_done
+          major_phase? && @first_or_done
         end
 
         def operating_order
