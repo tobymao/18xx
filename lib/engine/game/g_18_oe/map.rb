@@ -385,8 +385,7 @@ module Engine
             ['R49'] => 'border=edge:5,type:province;border=edge:2,type:province',
             ['R73'] => 'border=edge:4,type:province',
             ['R75'] => 'border=edge:0,type:province;border=edge:1,type:province',
-            ['S74'] => 'border=edge:3,type:province;border=edge:4,type:province',
-            ['S76'] => 'city=revenue:0;border=edge:0,type:province;border=edge:1,type:province',
+            ['S76'] => 'city=revenue:0',
             ['T43'] => 'upgrade=cost:120,terrain:mountain;border=edge:4,type:province;border=edge:5,type:province;' \
                        'border=edge:3,type:province',
             ['T45'] => 'upgrade=cost:120,terrain:mountain;' \
@@ -394,7 +393,7 @@ module Engine
             ['T47'] => 'upgrade=cost:120,terrain:mountain;' \
                        'partition=a:-1,b:0,type:province;partition=a:-1,b:5,type:province',
             ['T49'] => 'upgrade=cost:60,terrain:mountain;border=edge:0,type:province',
-            ['T75'] => 'upgrade=cost:45,terrain:river;border=edge:3,type:province',
+            ['T75'] => 'upgrade=cost:45,terrain:river',
             ['U44'] => 'upgrade=cost:120,terrain:mountain;border=edge:2,type:province;' \
                        'partition=a:-1,b:3,type:province;partition=a:-1,b:5,type:province',
             ['U48'] => 'border=edge:3,type:province;border=edge:4,type:province',
@@ -455,8 +454,7 @@ module Engine
             ['B75'] => 'border=edge:4,type:impassable',
             ['B77'] => 'border=edge:1,type:impassable;upgrade=cost:45,terrain:river',
             ['C72'] => 'border=edge:2,type:impassable;border=edge:3,type:impassable;upgrade=cost:30,terrain:water',
-
-            # Towns — no terrain
+              # Towns — no terrain
             %w[
               E44 F53 H17 H29 J17 L29 O24 P29 P33 R29 S34
               T27 Z41 V5 W18 X11 Z3 Z13 Z25 AA4 AB3
@@ -613,6 +611,8 @@ module Engine
             %w[
               B45 T41
             ] => 'upgrade=cost:120,terrain:mountain',
+             #manually changes
+            ['S74'] => '',
           },
           yellow: {
             ['L37'] => 'city=revenue:30;label=Y;upgrade=cost:45,terrain:river;path=a:0,b:_0;' \
