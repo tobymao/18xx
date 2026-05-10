@@ -12,7 +12,7 @@ module Engine
 
         DEPENDS_ON = '1880 Romania'
 
-        DEV_STAGE = :prealpha
+        DEV_STAGE = :alpha
 
         GAME_IS_VARIANT_OF = G1880Romania::Meta
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1880-Romania-Transilvania-map'.freeze
