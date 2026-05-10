@@ -5,6 +5,7 @@ require_relative '../base'
 require_relative 'map'
 require_relative 'entities'
 require_relative '../../round/operating'
+require_relative '../cities_plus_towns_route_distance_str'
 
 module Engine
   module Game
@@ -13,23 +14,9 @@ module Engine
         attr_accessor :draft_finished
 
         include_meta(G1835::Meta)
+        include CitiesPlusTownsRouteDistanceStr
         include G1835::Entities
         include G1835::Map
-
-        register_colors(black: '#37383a',
-                        seRed: '#f72d2d',
-                        bePurple: '#2d0047',
-                        peBlack: '#000',
-                        beBlue: '#c3deeb',
-                        heGreen: '#78c292',
-                        oegray: '#6e6966',
-                        weYellow: '#ebff45',
-                        beBrown: '#54230e',
-                        gray: '#6e6966',
-                        red: '#d81e3e',
-                        turquoise: '#00a993',
-                        blue: '#0189d1',
-                        brown: '#7b352a')
 
         CURRENCY_FORMAT_STR = '%sM'
         # game end current or, when the bank is empty
@@ -59,66 +46,10 @@ module Engine
 
         TOKEN_PLACEMENT_ON_TILE_LAY_ENTITY = :owner
 
-        MARKET = [['',
-                   '',
-                   '',
-                   '',
-                   '132',
-                   '148',
-                   '166',
-                   '186',
-                   '208',
-                   '232',
-                   '258',
-                   '286',
-                   '316',
-                   '348',
-                   '382',
-                   '418'],
-                  ['',
-                   '',
-                   '98',
-                   '108',
-                   '120',
-                   '134',
-                   '150',
-                   '168',
-                   '188',
-                   '210',
-                   '234',
-                   '260',
-                   '288',
-                   '318',
-                   '350',
-                   '384'],
-                  %w[82
-                     86
-                     92p
-                     100
-                     110
-                     122
-                     136
-                     152
-                     170
-                     190
-                     212
-                     236
-                     262
-                     290
-                     320],
-                  %w[78
-                     84p
-                     88p
-                     94
-                     102
-                     112
-                     124
-                     138
-                     154p
-                     172
-                     192
-                     214],
-                  %w[72 80p 86 90 96 104 114 126 140],
+        MARKET = [['', '', '', ''] + %w[132 148 166 186 208 232 258 286 316 348 382 418],
+                  ['', ''] + %w[98 108 120 134 150 168 188 210 234 260 288 318 350 384],
+                  %w[82 86 92p 100 110 122 136 152 170 190 212 236 262 290 320],
+                  %w[78 84p 88p 94 102 112 124 138 154p 172 192 214], %w[72 80p 86 90 96 104 114 126 140],
                   %w[64 74 82 88 92 98 106],
                   %w[54 66 76 84 90]].freeze
 
@@ -169,7 +100,7 @@ module Engine
             name: '3.1',
             on: '5',
             train_limit: { prussian: 3, major: 2 },
-            tiles: %i[yellow green],
+            tiles: %i[yellow green brown],
             operating_rounds: 3,
             events: { close_companies: true },
           },
@@ -196,16 +127,21 @@ module Engine
           },
         ].freeze
 
+        def self.plus_train_distance(distance)
+          [{ 'nodes' => ['town'], 'pay' => distance, 'visit' => distance },
+           { 'nodes' => %w[city offboard town], 'pay' => distance, 'visit' => distance }]
+        end
+
         TRAINS = [{ name: '2', distance: 2, price: 80, rusts_on: '4', num: 9 },
-                  { name: '2+2', distance: 2, price: 120, rusts_on: '4+4', num: 4 },
+                  { name: '2+2', distance: plus_train_distance(2), price: 120, rusts_on: '4+4', num: 4 },
                   { name: '3', distance: 3, price: 180, rusts_on: '6', num: 4 },
-                  { name: '3+3', distance: 3, price: 270, rusts_on: '6+6', num: 3 },
+                  { name: '3+3', distance: plus_train_distance(3), price: 270, rusts_on: '6+6', num: 3 },
                   { name: '4', distance: 4, price: 360, num: 3 },
-                  { name: '4+4', distance: 4, price: 440, num: 1 },
+                  { name: '4+4', distance: plus_train_distance(4), price: 440, num: 1 },
                   { name: '5', distance: 5, price: 500, num: 2 },
-                  { name: '5+5', distance: 5, price: 600, num: 1 },
+                  { name: '5+5', distance: plus_train_distance(5), price: 600, num: 1 },
                   { name: '6', distance: 6, price: 600, num: 2 },
-                  { name: '6+6', distance: 6, price: 720, num: 4 }].freeze
+                  { name: '6+6', distance: plus_train_distance(6), price: 720, num: 4 }].freeze
 
         LAYOUT = :pointy
 
@@ -326,6 +262,29 @@ module Engine
           ipoed, others = corporations.partition(&:ipoed)
           floated, not_floated = ipoed.partition(&:floated)
           floated.sort + not_floated + others
+        end
+
+        def revenue_for(route, stops)
+          super + (hamburg_ferry?(route) ? -10 : 0)
+        end
+
+        def revenue_str(route)
+          str = super
+          str += " (#{format_currency(-10)} Hamburg ferry)" if hamburg_ferry?(route)
+          str
+        end
+
+        def hamburg_hex
+          @hamburg_hex ||= hex_by_id('C11')
+        end
+
+        def hamburg_ferry?(route)
+          return false unless hamburg_hex.tile.color == :brown
+          return false unless route.hexes.include?(hamburg_hex)
+
+          north_edge_used = route.paths.any? { |path| path.tile.hex == hamburg_hex && [2, 3, 4].intersect?(path.exits) }
+          south_edge_used = route.paths.any? { |path| path.tile.hex == hamburg_hex && [0, 1, 5].intersect?(path.exits) }
+          north_edge_used && south_edge_used
         end
       end
     end

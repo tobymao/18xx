@@ -74,6 +74,7 @@ module Engine
       wood_18: {
         name: '18Wood',
         url: 'https://www.etsy.com/shop/18WOOD',
+        hidden: true,
       },
       zman_games: {
         name: 'Z-MAN Games',
