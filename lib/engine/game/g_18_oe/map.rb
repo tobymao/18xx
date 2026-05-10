@@ -320,8 +320,7 @@ module Engine
             ['O54'] => 'upgrade=cost:60,terrain:mountain;partition=a:-1,b:1,type:province;partition=a:-1,b:5,type:province',
             ['P49'] => 'partition=a:-1,b:0,type:province;partition=a:-1,b:2,type:province;' \
                        'border=edge:3,type:province;border=edge:2,type:province',
-            ['Q50'] => 'upgrade=cost:30,terrain:water;partition=a:-1,b:2,type:province;partition=a:-1,b:5,type:province;' \
-                       'border=edge:0,type:province',
+            ['Q50'] => 'upgrade=cost:30,terrain:water;partition=a:-1,b:2,type:province;partition=a:-1,b:5,type:province', 
             ['R51'] => 'upgrade=cost:45,terrain:hill;partition=a:-1,b:1,type:province;partition=a:-1,b:3,type:province',
             ['S44'] => 'upgrade=cost:45,terrain:hill;partition=a:-1,b:1,type:province;partition=a:-1,b:5,type:province;' \
                        'border=edge:0,type:province',
@@ -361,7 +360,7 @@ module Engine
             ['N33'] => 'town=revenue:0;border=edge:3,type:province',
             ['N57'] => 'border=edge:4,type:province',
             ['N59'] => 'town=revenue:0;border=edge:1,type:province',
-            ['O50'] => 'upgrade=cost:30,terrain:hill;border=edge:5,type:province',
+            ['O50'] => 'upgrade=cost:30,terrain:hill;border=edge:5,type:province;border=edge:0,type:province',
             ['O56'] => 'city=revenue:0;border=edge:0,type:province;border=edge:5,type:province',
             ['O60'] => 'border=edge:0,type:province;border=edge:5,type:province',
             ['O62'] => 'upgrade=cost:45,terrain:hill;border=edge:0,type:province;border=edge:5,type:province',
@@ -383,7 +382,7 @@ module Engine
             ['P69'] => 'city=revenue:0;border=edge:2,type:province;border=edge:3,type:province',
             ['P71'] => 'border=edge:2,type:province;border=edge:3,type:province',
             ['Q48'] => 'border=edge:5,type:province',
-            ['R49'] => 'border=edge:5,type:province',
+            ['R49'] => 'border=edge:5,type:province;border=edge:2,type:province',
             ['R73'] => 'border=edge:4,type:province',
             ['R75'] => 'border=edge:0,type:province;border=edge:1,type:province',
             ['S74'] => 'border=edge:3,type:province;border=edge:4,type:province',
