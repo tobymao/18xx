@@ -20,7 +20,7 @@ module Engine
 
               trains.reject { |t| t.name == '2+2' }
             else
-              trains.select { |t| t.name == '2+2' }
+              trains.select { |t| t.name == '2+2' && t.from_depot? }
             end
           end
 

@@ -70,7 +70,7 @@ module Engine
             train_limit: { minor: 1, regional: 1, major: 3, national: 4 },
             tiles: %i[yellow green],
             operating_rounds: 2,
-            status: ['can_buy_trains_from_others'],
+            status: [],
           },
           {
             name: '5',
@@ -78,7 +78,7 @@ module Engine
             train_limit: { minor: 1, regional: 1, major: 3, national: 4 },
             tiles: %i[yellow green brown],
             operating_rounds: 2,
-            status: ['can_buy_trains_from_others'],
+            status: [],
           },
           {
             name: '6',
@@ -86,7 +86,7 @@ module Engine
             train_limit: { major: 2, national: 3 },
             tiles: %i[yellow green brown],
             operating_rounds: 2,
-            status: ['can_buy_trains_from_others'],
+            status: [],
           },
           {
             name: '7',
@@ -94,7 +94,7 @@ module Engine
             train_limit: { major: 2, national: 3 },
             tiles: %i[yellow green brown gray],
             operating_rounds: 2,
-            status: ['can_buy_trains_from_others'],
+            status: [],
           },
           {
             name: '8',
@@ -102,7 +102,7 @@ module Engine
             train_limit: { major: 2, national: 3 },
             tiles: %i[yellow green brown gray],
             operating_rounds: 2,
-            status: ['can_buy_trains_from_others'],
+            status: [],
           },
         ].freeze
 
@@ -697,7 +697,7 @@ module Engine
         end
 
         def can_buy_train_from_others?
-          @phase.status.include?('can_buy_trains_from_others')
+          major_phase?
         end
 
         def train_obligation_active?
