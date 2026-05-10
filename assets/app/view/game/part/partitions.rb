@@ -29,7 +29,7 @@ module View
 
         def color(partition)
           color =
-            case partition.type&.to_sym
+            case partition.type
             when nil
               @tile.color
             when :mountain
@@ -55,7 +55,7 @@ module View
           children = []
 
           @tile.partitions.each do |partition|
-            next if !%i[divider province].include?(partition.type&.to_sym) && partition.blockers.none? do |blocker|
+            next if !%i[divider province].include?(partition.type) && partition.blockers.none? do |blocker|
               !@game || @game&.abilities(blocker, :blocks_partition)&.blocks?(partition.type)
             end
 
@@ -96,7 +96,7 @@ module View
                             d: d,
                             stroke: color(partition),
                             'stroke-width': '8',
-                            'stroke-dasharray': partition.type&.to_sym == :province ? '20 20' : 'none',
+                            'stroke-dasharray': partition.type == :province ? '20 20' : 'none',
                           })
           end
 
