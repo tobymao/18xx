@@ -296,9 +296,9 @@ module Engine
               Q36 Q42 Q44 Q54 Q58 Q66 Q76 Q78 Q80 Q82
               Q86 R25 R27 R31 R33 R35 R37 R41 R43 R45 R57 R63
               R65 R77 R79 R81 R83 R85 S24 S26 S28 S30 S32 S36
-              S56 S58 S64 S66 S80 S82 T25 T29 T31 T35 T55 T57
+              S56 S58 S64 S66 S74 S80 S82 T25 T29 T31 T35 T55 T57
               T59 T63 T65 U8 U22 U26 U28 U54 U58 U60 V7 V23
-              V25 V33 V43 V53 V57 V59 V61 V63 V71 V75 W10 W12
+              V25 V33 V43 V53 V57 V59 V61 V75 W10 W12
               W14 W16 W26 W28 W30 W34 W48 W56 W58 W60 W62 W72
               W78 X5 X9 X17 X21 X29 X43 X49 X75 X77 Y2 Y4
               Y16 Y18 Y22 Y24 Y46 Y50 Y56 Y58 Y72 Y74 Y76 Z5
@@ -345,6 +345,23 @@ module Engine
             ['U42'] => 'upgrade=cost:60,terrain:mountain;partition=a:-1,b:2,type:province;partition=a:-1,b:4,type:province',
             # AH/IT intra-hex
             ['U46'] => 'upgrade=cost:60,terrain:mountain;partition=a:-1,b:4,type:province;partition=a:-1,b:1,type:province',
+            #AH Southeast border
+            ['Z61'] => 'upgrade=cost:45,terrain:hill;partition=a:-1,b:0,type:province;partition=a:-1,b:5,type:province',
+            ['U72'] => 'town=revenue:0;upgrade=cost:45,terrain:hill;border=edge:0,type:province;border=edge:5,type:province',
+            ['V73'] => 'town=revenue:0;border=edge:2,type:province',
+            ['V71'] => 'border=edge:2,type:province;border=edge:3,type:province',
+            ['U70'] => 'upgrade=cost:60,terrain:mountain;border=edge:5,type:province',
+            ['V63'] => 'border=edge:5,type:province;border=edge:0,type:province',
+            ['V65'] => 'upgrade=cost:45,terrain:hill;border=edge:5,type:province;border=edge:0,type:province',
+            ['V67'] => 'upgrade=cost:60,terrain:mountain;border=edge:5,type:province;border=edge:0,type:province',
+            ['W64'] => 'city=revenue:0;border=edge:2,type:province;border=edge:3,type:province',
+            ['W66'] => 'border=edge:2,type:province;border=edge:3,type:province',
+
+
+
+
+
+            
             ['I44'] => 'border=edge:5,type:province',
             ['I66'] => 'town=revenue:0;border=edge:0,type:province',
             ['J45'] => 'border=edge:2,type:province;border=edge:3,type:province',
@@ -384,7 +401,7 @@ module Engine
             ['Q48'] => 'border=edge:5,type:province',
             ['R49'] => 'border=edge:5,type:province;border=edge:2,type:province',
             ['R73'] => 'border=edge:4,type:province',
-            ['R75'] => 'border=edge:0,type:province;border=edge:1,type:province',
+            ['R75'] => 'border=edge:1,type:province',
             ['S76'] => 'city=revenue:0',
             ['T43'] => 'upgrade=cost:120,terrain:mountain;border=edge:4,type:province;border=edge:5,type:province;' \
                        'border=edge:3,type:province',
@@ -461,7 +478,7 @@ module Engine
               AC10 AC12 AC20 AD15 L43 M48 M56 P43 Q56 Q72 R53
               R59 R67 S40 S68 T61 U56 U62 X55 V45 Y44 AA52
               AB55 D69 D75 D83 E70 F73 G84 H71 H85 I80
-              K68 L79 L87 N65 N83 Q84 V73 W70 AA84 AC68 AC84 AG68
+              K68 L79 L87 N65 N83 Q84 W70 AA84 AC68 AC84 AG68
               AF87 H51
             ] => 'town=revenue:0',
             # Towns — port icon
@@ -495,7 +512,7 @@ module Engine
             %w[
               AA62 AB57 AB69 AC40 AF49 B67 D77 E56 G68 H47 H63
               H87 I76 J69 K78 K86 M44 M68 S78 T53 T81 V51
-              V55 W64 Y70
+              V55 Y70
             ] => 'city=revenue:0',
             # Cities — port icon
             %w[AD17 F25 H21 L25 R23 W40] => 'city=revenue:0;icon=image:port,sticky:1',
@@ -520,7 +537,6 @@ module Engine
             ['AD79'] => 'city=revenue:0;path=a:1,b:_0;icon=image:port,sticky:1',
             ['M28'] => 'city=revenue:30;label=L;upgrade=cost:30,terrain:water;path=a:5,b:_0;icon=image:port,sticky:1',
             ['X33'] => 'city=revenue:20;label=Y;path=a:5,b:_0;icon=image:port,sticky:1',
-
             ['Z27'] => 'city=revenue:20;label=Y;path=a:0,b:_0;icon=image:port,sticky:1',
             ['K46'] => 'city=revenue:20;label=Y;icon=image:port,sticky:1',
             ['M50'] => 'city=revenue:0;label=B',
@@ -566,7 +582,6 @@ module Engine
             ['T39'] => 'town=revenue:0;upgrade=cost:120,terrain:mountain',
             ['T69'] => 'city=revenue:0;upgrade=cost:30,terrain:hill',
             ['U52'] => 'town=revenue:0;upgrade=cost:45,terrain:hill',
-            ['U72'] => 'town=revenue:0;upgrade=cost:45,terrain:hill',
             ['X45'] => 'city=revenue:0;label=Y;upgrade=cost:45,terrain:hill',
             ['X59'] => 'town=revenue:0;upgrade=cost:30,terrain:hill',
             ['Y64'] => 'town=revenue:0;upgrade=cost:45,terrain:hill',
@@ -598,21 +613,19 @@ module Engine
             %w[
               A48 A50 A52 N45 O42 O44 Q60 Q62 Q64 Q68 R61
               R69 T67 T71 T73 U30 U66 U74 V9 V13
-              V29 V35 V65 V69 W36 W42 W44 W68 X7 X15 X47 X57
-              X61 X63 X67 Y6 Y48 Y62 Y68 Z21 Z49 Z61 Z65 Z71
+              V29 V35 V69 W36 W42 W44 W68 X7 X15 X47 X57
+              X61 X63 X67 Y6 Y48 Y62 Y68 Z21 Z49 Z65 Z71
               AA10 AA12 AA18 AA50 AA64 AA72 AB7 AB9 AB19 AB65 AB67 AC14
               AC54 AD55 AD81 AD83 AE80 AF83
             ] => 'upgrade=cost:45,terrain:hill',
             %w[
               A44 A46 C44 D43 R71 S52 S54 S72 T51 U36
-              U68 U70 V11 V31 V67 W8 W66 X19 Y8
+              U68 V11 V31 W8 W66 X19 Y8
               Y10 Y12 Y60 Z67 AA66 AA86 AB15 AB85 AE82 AE84 AF51
             ] => 'upgrade=cost:60,terrain:mountain',
             %w[
               B45 T41
             ] => 'upgrade=cost:120,terrain:mountain',
-             #manually changes
-            ['S74'] => '',
           },
           yellow: {
             ['L37'] => 'city=revenue:30;label=Y;upgrade=cost:45,terrain:river;path=a:0,b:_0;' \
