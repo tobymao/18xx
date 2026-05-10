@@ -20,13 +20,8 @@ module Engine
         # -1 is a special value representing the hex center -
         # used by 18OE
         a, b = [a, b].minmax
-        if a.start_with?('-')
-          @a = a.to_i
-          @a_sign = 0
-        else
-          @a = a[0].to_i
-          @a_sign = SIGN[a[1]]
-        end
+        @a = a.to_i
+        @a_sign = @a.negative? ? 0 : SIGN[a[1]]
         @b = b[0].to_i
         @b_sign = SIGN[b[1]]
 
@@ -35,13 +30,8 @@ module Engine
         @restrict = restrict
         @blockers = []
 
-        if @a == -1
-          @inner = []
-          @outer = []
-        else
-          @inner = (restrict == 'outer' ? [] : (@a..(@b - 1)).to_a)
-          @outer = (restrict == 'inner' ? [] : (0..5).to_a - (@a..(@b - 1)).to_a)
-        end
+        @inner = (@a.negative? || restrict == 'outer') ? [] : (@a..(@b - 1)).to_a
+        @outer = (@a.negative? || restrict == 'inner') ? [] : (0..5).to_a - (@a..(@b - 1)).to_a
       end
 
       def add_blocker!(private_company)
