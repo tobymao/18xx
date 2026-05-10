@@ -290,7 +290,7 @@ module Engine
               K76 K80 K82 K84 L27 L41 L45 L47 L49 L51 L55 L57
               L61 L65 L67 L73 L81 L83 L85 M22 M24 M40 M42 M46
               M52 M54 M58 M64 M66 M70 M82 M84 M86 N37 N43 N47
-              N51 N53 N55 N61 N63 N67 N85 O30 O32 O34 O36 O38
+              N51 N53 N55 N61 N63 N67 N85 O30 O32 O34 O36
               O48 O58 O74 O76 O78 O84 O86 P21 P23 P25 P27 P31
               P35 P47 P49 P73 P75 P79 P81 Q22 Q24 Q28 Q32 Q34
               Q36 Q42 Q44 Q48 Q54 Q58 Q66 Q74 Q76 Q78 Q80 Q82
@@ -309,6 +309,7 @@ module Engine
             ] => '',
 
             # National zone province borders
+            ['O38'] => 'partition=a:-1,b:3,type:province;partition=a:-1,b:0,type:province',
             ['I44'] => 'border=edge:5,type:province',
             ['I66'] => 'town=revenue:0;border=edge:0,type:province',
             ['J45'] => 'border=edge:2,type:province;border=edge:3,type:province',

@@ -29,7 +29,7 @@ module View
 
         def color(partition)
           color =
-            case partition.type
+            case partition.type&.to_sym
             when nil
               @tile.color
             when :mountain
@@ -40,6 +40,8 @@ module View
               :red
             when :divider
               :black
+            when :province
+              :orange
             end
 
           setting_for(color)
@@ -53,12 +55,16 @@ module View
           children = []
 
           @tile.partitions.each do |partition|
-            next if partition.type != :divider && partition.blockers.none? do |blocker|
+            next if !%i[divider province].include?(partition.type&.to_sym) && partition.blockers.none? do |blocker|
               !@game || @game&.abilities(blocker, :blocks_partition)&.blocks?(partition.type)
             end
 
             a_control = VERTICES[(partition.a + partition.a_sign) % 6]
-            vertex_a = convex_combination(VERTICES[partition.a], a_control)
+            vertex_a = if partition.a == -1
+                          VERTICES[-1]
+                        else
+                          convex_combination(VERTICES[partition.a], a_control)
+                        end
             b_control = VERTICES[(partition.b + partition.b_sign) % 6]
             vertex_b = convex_combination(VERTICES[partition.b], b_control)
 
@@ -90,6 +96,7 @@ module View
                             d: d,
                             stroke: color(partition),
                             'stroke-width': '8',
+                            'stroke-dasharray': partition.type&.to_sym == :province ? '20 20' : 'none',
                           })
           end
 
