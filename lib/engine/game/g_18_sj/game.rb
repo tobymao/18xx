@@ -16,20 +16,6 @@ module Engine
         attr_reader :edelsward
         attr_accessor :requisition_turn
 
-        register_colors(
-          black: '#0a0a0a', # STJ
-          brightGreen: '#7bb137', # UGJ
-          brown: '#7b352a', # BJ
-          green: '#237333', # SWB
-          lavender: '#baa4cb', # SNJ
-          olive: '#808000', # TGOJ (not right)
-          orange: '#f48221', # MOJ
-          red: '#d81e3e', # OSJ
-          violet: '#4d2674', # OKJ
-          white: '#ffffff', # KFJr
-          yellow: '#FFF500' # MYJ
-        )
-
         CURRENCY_FORMAT_STR = '%s kr'
 
         BANK_CASH = 10_000

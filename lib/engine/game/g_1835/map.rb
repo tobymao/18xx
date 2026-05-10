@@ -194,7 +194,8 @@ module Engine
           },
           yellow: {
             ['E19'] =>
-                     'city=revenue:30,loc:1;city=revenue:30,loc:3;path=a:1,b:_0;path=a:2,b:_1;future_label=label:B,color:green',
+            'city=revenue:30,loc:1,groups:Berlin;city=revenue:30,loc:3,groups:Berlin;path=a:1,b:_0;path=a:2,b:_1;'\
+            'future_label=label:B,color:green',
             ['G3'] =>
             'city=revenue:0,loc:0;city=revenue:0,loc:4.5;label=XX;upgrade=cost:50',
             ['J6'] => 'city=revenue:0;city=revenue:0;label=XX;upgrade=cost:50',
@@ -203,7 +204,7 @@ module Engine
           green: {
             ['C11'] =>
             'city=revenue:40;path=a:0,b:_0;city=revenue:40;path=a:2,b:_1;'\
-            'city=revenue=40;path=a:4,b:_2;path=a:3,b:_2;label=HH',
+            'city=revenue:40;path=a:4,b:_2;path=a:3,b:_2;label=HH',
             ['J8'] =>
             'city=revenue:40,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0;upgrade=cost:50;label=Y',
             ['L14'] =>

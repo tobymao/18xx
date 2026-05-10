@@ -14,27 +14,6 @@ module Engine
         attr_reader :foreign_investor, :company_deck, :company_highlight, :company_level, :company_synergies,
                     :cost_level, :cost_table, :offering
 
-        register_colors(black: '#16190e',
-                        blue: '#0189d1',
-                        brown: '#7b352a',
-                        gray: '#7c7b8c',
-                        green: '#3c7b5c',
-                        olive: '#808000',
-                        lightGreen: '#009a54ff',
-                        lightBlue: '#4cb5d2',
-                        lightishBlue: '#0097df',
-                        teal: '#009595',
-                        orange: '#d75500',
-                        magenta: '#d30869',
-                        purple: '#772282',
-                        red: '#ef4223',
-                        rose: '#b7274c',
-                        coral: '#f3716d',
-                        white: '#fff36b',
-                        navy: '#000080',
-                        cream: '#fffdd0',
-                        yellow: '#ffdea8')
-
         CURRENCY_FORMAT_STR = '$%s'
         BANK_CASH = 10_000
         STARTING_CASH = { 2 => 30, 3 => 30, 4 => 30, 5 => 30, 6 => 25 }.freeze

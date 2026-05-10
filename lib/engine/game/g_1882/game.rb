@@ -13,13 +13,6 @@ module Engine
         include Entities
         include Map
 
-        register_colors(green: '#237333',
-                        gray: '#9a9a9d',
-                        red: '#d81e3e',
-                        blue: '#0189d1',
-                        yellow: '#FFF500',
-                        brown: '#7b352a')
-
         CORPORATIONS_WITHOUT_NEUTRAL = %w[CPR CN].freeze
 
         CURRENCY_FORMAT_STR = '$%s'

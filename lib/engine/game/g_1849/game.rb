@@ -18,14 +18,6 @@ module Engine
         include Entities
         include Map
         include InterestOnLoans
-        register_colors(black: '#000000',
-                        orange: '#f48221',
-                        brightGreen: '#76a042',
-                        red: '#ff0000',
-                        turquoise: '#00a993',
-                        blue: '#0189d1',
-                        brown: '#7b352a',
-                        goldenrod: '#f9b231')
 
         CURRENCY_FORMAT_STR = 'L.%s'
 

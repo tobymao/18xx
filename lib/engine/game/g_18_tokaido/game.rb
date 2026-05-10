@@ -23,13 +23,6 @@ module Engine
 
         include CompanyPriceUpToFace
 
-        register_colors(green: '#237333',
-                        red: '#d81e3e',
-                        blue: '#0189d1',
-                        yellow: '#FFF500',
-                        orange: '#f48221',
-                        brown: '#7b352a')
-
         attr_reader :drafted_companies
 
         CURRENCY_FORMAT_STR = '¥%s'

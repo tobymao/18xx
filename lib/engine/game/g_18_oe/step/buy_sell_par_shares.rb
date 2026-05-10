@@ -119,6 +119,14 @@ module Engine
             @game.update_cache(:shares)
           end
 
+          def help
+            return super unless can_float_minor?(current_entity)
+
+            zones_display = @game.minor_available_regions.map { |zone, count| "#{zone}(#{count})" }.join(', ')
+            "Available track rights zones: #{zones_display}. "\
+              'Home station placement determines which zone the minor receives.'
+          end
+
           def float_minor(action)
             share_price = action.share_price
             corporation = action.corporation
@@ -126,7 +134,6 @@ module Engine
             company = find_minor_company(corporation)
 
             @log << "#{entity.name} floats #{company.sym}"
-            @log << "Available track rights zones: #{@game.minor_available_regions}"
 
             @game.stock_market.set_par(corporation, share_price)
             share = corporation.ipo_shares.first

@@ -15,16 +15,6 @@ module Engine
         include Entities
         include CompanyPriceUpToFace
 
-        register_colors(red: '#d1232a',
-                        orange: '#f58121',
-                        black: '#110a0c',
-                        blue: '#025aaa',
-                        purple: '#A79ECD',
-                        lightBlue: '#8dd7f6',
-                        yellow: '#ffe600',
-                        green: '#32763f',
-                        brightGreen: '#6ec037')
-
         TRACK_RESTRICTION = :permissive
         SELL_BUY_ORDER = :sell_buy
         CURRENCY_FORMAT_STR = '%s'
