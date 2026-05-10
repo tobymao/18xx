@@ -320,7 +320,7 @@ module Engine
             ['O54'] => 'upgrade=cost:60,terrain:mountain;partition=a:-1,b:1,type:province;partition=a:-1,b:5,type:province',
             ['P49'] => 'partition=a:-1,b:0,type:province;partition=a:-1,b:2,type:province;' \
                        'border=edge:3,type:province;border=edge:2,type:province',
-            ['Q50'] => 'upgrade=cost:30,terrain:water;partition=a:-1,b:2,type:province;partition=a:-1,b:5,type:province',
+            ['Q50'] => 'upgrade=cost:30,terrain:water;partition=a:-1,b:2,type:province;partition=a:-1,b:5,type:province', 
             ['R51'] => 'upgrade=cost:45,terrain:hill;partition=a:-1,b:1,type:province;partition=a:-1,b:3,type:province',
             ['S44'] => 'upgrade=cost:45,terrain:hill;partition=a:-1,b:1,type:province;partition=a:-1,b:5,type:province;' \
                        'border=edge:0,type:province',
@@ -345,7 +345,7 @@ module Engine
             ['U42'] => 'upgrade=cost:60,terrain:mountain;partition=a:-1,b:2,type:province;partition=a:-1,b:4,type:province',
             # AH/IT intra-hex
             ['U46'] => 'upgrade=cost:60,terrain:mountain;partition=a:-1,b:4,type:province;partition=a:-1,b:1,type:province',
-            # AH Southeast border
+            #AH Southeast border
 
             ['U72'] => 'town=revenue:0;upgrade=cost:45,terrain:hill;border=edge:0,type:province;border=edge:5,type:province',
             ['V73'] => 'town=revenue:0;border=edge:2,type:province',
@@ -357,10 +357,12 @@ module Engine
             ['W64'] => 'city=revenue:0;border=edge:2,type:province;border=edge:3,type:province',
             ['W66'] => 'upgrade=cost:60,terrain:mountain;border=edge:2,type:province;border=edge:3,type:province',
             ['W60'] => 'border=edge:4,type:province',
-            ['W62'] => 'border=edge:0,type:province;border=edge:1,type:province;border=edge:2,type:province;border=edge:3,type:province',
+            ['W62'] => 'border=edge:0,type:province;border=edge:1,type:province;border=edge:2,type:province;' \
+                       'border=edge:3,type:province',
             ['X61'] => 'upgrade=cost:45,terrain:hill;border=edge:3,type:province;border=edge:4,type:province',
             ['X63'] => 'upgrade=cost:45,terrain:hill;border=edge:0,type:province;border=edge:1,type:province',
-            ['Y62'] => 'upgrade=cost:45,terrain:hill;border=edge:0,type:province;border=edge:3,type:province;border=edge:5,type:province',
+            ['Y62'] => 'upgrade=cost:45,terrain:hill;border=edge:0,type:province;border=edge:3,type:province;' \
+                       'border=edge:5,type:province',
             ['Y64'] => 'town=revenue:0;upgrade=cost:45,terrain:hill;partition=a:-1,b:2,type:province;partition=a:-1,b:1,type:province',
             ['Z61'] => 'upgrade=cost:45,terrain:hill;border=edge:3,type:province',
             ['Z63'] => 'upgrade=cost:30,terrain:hill;border=edge:2,type:province',
@@ -369,7 +371,6 @@ module Engine
             ['U74'] => 'upgrade=cost:45,terrain:hill;partition=a:-1,b:1,type:province;partition=a:-1,b:4,type:province',
             ['T75'] => 'upgrade=cost:45,terrain:river;partition=a:-1,b:0,type:province;partition=a:-1,b:2,type:province',
             ['S74'] => 'partition=a:-1,b:0,type:province;partition=a:-1,b:2,type:province;border=edge:2,type:province',
-
             ['I44'] => 'border=edge:5,type:province',
             ['I66'] => 'town=revenue:0;border=edge:0,type:province',
             ['J45'] => 'border=edge:2,type:province;border=edge:3,type:province',
@@ -477,7 +478,7 @@ module Engine
             ['B75'] => 'border=edge:4,type:impassable',
             ['B77'] => 'border=edge:1,type:impassable;upgrade=cost:45,terrain:river',
             ['C72'] => 'border=edge:2,type:impassable;border=edge:3,type:impassable;upgrade=cost:30,terrain:water',
-            # Towns — no terrain
+              # Towns — no terrain
             %w[
               E44 F53 H17 H29 J17 L29 O24 P29 P33 R29 S34
               T27 Z41 V5 W18 X11 Z3 Z13 Z25 AA4 AB3
