@@ -344,7 +344,7 @@ module Engine
                        'partition=a:-1,b:0,type:province',
             ['U40'] => 'upgrade=cost:60,terrain:mountain;partition=a:-1,b:2,type:province;partition=a:-1,b:4,type:province',
             ['U42'] => 'upgrade=cost:60,terrain:mountain;partition=a:-1,b:2,type:province;partition=a:-1,b:4,type:province',
-            #AH/IT intra-hex
+            # AH/IT intra-hex
             ['U46'] => 'upgrade=cost:60,terrain:mountain;partition=a:-1,b:4,type:province;partition=a:-1,b:1,type:province',
             ['I44'] => 'border=edge:5,type:province',
             ['I66'] => 'town=revenue:0;border=edge:0,type:province',
@@ -393,7 +393,7 @@ module Engine
             ['T45'] => 'upgrade=cost:120,terrain:mountain;' \
                        'border=edge:1,type:province',
             ['T47'] => 'upgrade=cost:120,terrain:mountain;' \
-                       'partition=a:-1,b:0,type:province;partition=a:-1,b:5,type:province',      
+                       'partition=a:-1,b:0,type:province;partition=a:-1,b:5,type:province',
             ['T49'] => 'upgrade=cost:60,terrain:mountain;border=edge:0,type:province',
             ['T75'] => 'upgrade=cost:45,terrain:river;border=edge:3,type:province',
             ['U44'] => 'upgrade=cost:120,terrain:mountain;border=edge:2,type:province;' \
