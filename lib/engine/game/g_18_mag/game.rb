@@ -1734,7 +1734,7 @@ module Engine
               ] => 'border=edge:3,type:impassable',
               [
                 'F9',
-              ] => 'partition=a:2,b:5,type:water',
+              ] => 'partition=a:1,b:4,type:water',
               %w[
                 C10
                 D15
@@ -1839,7 +1839,7 @@ module Engine
               ] => 'upgrade=cost:30,terrain:water',
               %w[
                 D5
-              ] => 'partition=a:2,b:5,type:water',
+              ] => 'partition=a:1,b:4,type:water',
               %w[
                 B11
                 C4
