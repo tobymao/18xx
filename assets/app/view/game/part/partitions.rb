@@ -61,10 +61,10 @@ module View
 
             a_control = VERTICES[(partition.a + partition.a_sign) % 6]
             vertex_a = if partition.a == -1
-                          VERTICES[-1]
-                        else
-                          convex_combination(VERTICES[partition.a], a_control)
-                        end
+                         VERTICES[-1]
+                       else
+                         convex_combination(VERTICES[partition.a], a_control)
+                       end
             b_control = VERTICES[(partition.b + partition.b_sign) % 6]
             vertex_b = convex_combination(VERTICES[partition.b], b_control)
 

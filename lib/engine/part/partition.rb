@@ -17,7 +17,7 @@ module Engine
         # a and b are vertices of the hex. 0 represents the bottom one and then you go clockwise
         # The sign tells if the partition should be drawn a little bit before or after the vertex,
         # but doesn't have any impact on the game
-        # -1 is a special value representing the hex center - 
+        # -1 is a special value representing the hex center -
         # used by 18OE
         a, b = [a, b].minmax
         if a.start_with?('-')
