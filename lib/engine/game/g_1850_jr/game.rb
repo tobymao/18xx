@@ -13,11 +13,6 @@ module Engine
         include Entities
         include Map
 
-        register_colors(orange: '#f58121',
-                        black: '#110a0c',
-                        blue: '#025aaa',
-                        yellow: '#ffe600',
-                        green: '#32763f')
         TRACK_RESTRICTION = :permissive
         SELL_BUY_ORDER = :sell_buy_sell
         TILE_RESERVATION_BLOCKS_OTHERS = :always

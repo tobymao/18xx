@@ -13,27 +13,6 @@ module Engine
         include Entities
         include Map
 
-        register_colors(black: '#16190e',
-                        blue: '#0189d1',
-                        brown: '#7b352a',
-                        gray: '#7c7b8c',
-                        green: '#3c7b5c',
-                        olive: '#808000',
-                        lightGreen: '#009a54ff',
-                        lightBlue: '#4cb5d2',
-                        lightishBlue: '#0097df',
-                        teal: '#009595',
-                        orange: '#d75500',
-                        magenta: '#d30869',
-                        purple: '#772282',
-                        red: '#ef4223',
-                        rose: '#b7274c',
-                        coral: '#f3716d',
-                        white: '#fff36b',
-                        navy: '#000080',
-                        cream: '#fffdd0',
-                        yellow: '#ffdea8')
-
         CURRENCY_FORMAT_STR = '$%s'
         BANK_CASH = 12_000
         CERT_LIMIT = { 3 => 20, 4 => 16, 5 => 13 }.freeze

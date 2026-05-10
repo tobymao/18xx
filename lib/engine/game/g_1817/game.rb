@@ -15,27 +15,6 @@ module Engine
         include G1817::Entities
         include G1817::Map
 
-        register_colors(black: '#16190e',
-                        blue: '#165633',
-                        brightGreen: '#0a884b',
-                        brown: '#984573',
-                        gold: '#904098',
-                        gray: '#984d2d',
-                        green: '#bedb86',
-                        lavender: '#e96f2c',
-                        lightBlue: '#bedef3',
-                        lightBrown: '#bec8cc',
-                        lime: '#00afad',
-                        navy: '#003d84',
-                        natural: '#e31f21',
-                        orange: '#f2a847',
-                        pink: '#ee3e80',
-                        red: '#ef4223',
-                        turquoise: '#0095da',
-                        violet: '#e48329',
-                        white: '#fff36b',
-                        yellow: '#ffdea8')
-
         CURRENCY_FORMAT_STR = '$%s'
 
         BANK_CASH = 99_999
