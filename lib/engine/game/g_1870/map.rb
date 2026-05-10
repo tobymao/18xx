@@ -120,32 +120,32 @@ module Engine
             %w[A10 B13 H3] => 'town=revenue:0;upgrade=cost:40,terrain:water',
             %w[I10 E20] =>
                    'town=revenue:0;town=revenue:0;upgrade=cost:60,terrain:water',
-            ['B17'] => 'upgrade=cost:40,terrain:river;partition=a:0-,b:2+,type:water',
-            ['E18'] => 'upgrade=cost:60,terrain:river;partition=a:3-,b:5+,type:water',
-            ['F19'] => 'upgrade=cost:60,terrain:river;partition=a:1-,b:3-,type:water',
+            ['B17'] => 'upgrade=cost:40,terrain:river;partition=a:1-,b:3+,type:water',
+            ['E18'] => 'upgrade=cost:60,terrain:river;partition=a:4-,b:6+,type:water',
+            ['F19'] => 'upgrade=cost:60,terrain:river;partition=a:2-,b:4-,type:water',
             %w[G18 I16] =>
-                   'upgrade=cost:60,terrain:river;partition=a:1-,b:3+,type:water',
-            ['J15'] => 'upgrade=cost:60,terrain:river;partition=a:0+,b:3+,type:water',
-            ['L13'] => 'upgrade=cost:80,terrain:river;partition=a:0-,b:4-,type:water',
-            ['N15'] => 'upgrade=cost:80,terrain:river;partition=a:2+,b:5+,type:water',
-            ['O16'] => 'upgrade=cost:100,terrain:river;partition=a:3-,b:4+,type:water',
+                   'upgrade=cost:60,terrain:river;partition=a:2-,b:4+,type:water',
+            ['J15'] => 'upgrade=cost:60,terrain:river;partition=a:1+,b:4+,type:water',
+            ['L13'] => 'upgrade=cost:80,terrain:river;partition=a:1-,b:5-,type:water',
+            ['N15'] => 'upgrade=cost:80,terrain:river;partition=a:3+,b:6+,type:water',
+            ['O16'] => 'upgrade=cost:100,terrain:river;partition=a:4-,b:5+,type:water',
             ['O18'] =>
-                   'upgrade=cost:100,terrain:river;partition=a:0-,b:2-,type:water;border=edge:3,type:impassable',
+                   'upgrade=cost:100,terrain:river;partition=a:1-,b:3-,type:water;border=edge:3,type:impassable',
             ['C18'] =>
-                   'city=revenue:0;upgrade=cost:40,terrain:river;partition=a:0+,b:2+,type:water,restrict:inner;'\
+                   'city=revenue:0;upgrade=cost:40,terrain:river;partition=a:1+,b:3+,type:water,restrict:inner;'\
                    'future_label=label:P,color:brown',
             ['M14'] =>
                    'city=revenue:0;upgrade=cost:80,terrain:river;icon=image:port,sticky:1;'\
-                   'partition=a:0-,b:2+,type:water,restrict:outer',
+                   'partition=a:1-,b:3+,type:water,restrict:outer',
             ['H17'] =>
                    'city=revenue:0;upgrade=cost:60,terrain:river;icon=image:port,sticky:1;'\
-                   'partition=a:1-,b:3+,type:water,restrict:outer',
+                   'partition=a:2-,b:4+,type:water,restrict:outer',
             ['D17'] =>
-                   'town=revenue:0;upgrade=cost:40,terrain:river;partition=a:4-,b:5+,type:water,restrict:outer',
+                   'town=revenue:0;upgrade=cost:40,terrain:river;partition=a:5-,b:6+,type:water,restrict:outer',
             ['K14'] =>
-                   'town=revenue:0;upgrade=cost:80,terrain:river;partition=a:0+,b:4-,type:water,restrict:outer',
+                   'town=revenue:0;upgrade=cost:80,terrain:river;partition=a:1+,b:5-,type:water,restrict:outer',
             ['A16'] =>
-                   'town=revenue:0;town=revenue:0;upgrade=cost:40,terrain:river;partition=a:0-,b:3,type:water,restrict:inner',
+                   'town=revenue:0;town=revenue:0;upgrade=cost:40,terrain:river;partition=a:1-,b:4,type:water,restrict:inner',
             ['O2'] => 'upgrade=cost:60,terrain:lake',
             %w[O4 O6 N9 N11 N13] => 'upgrade=cost:80,terrain:lake',
             ['N19'] =>

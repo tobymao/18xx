@@ -190,7 +190,7 @@ module Engine
                        'path=a:0,b:_0,terminal:1;path=a:5,b:_0,terminal:1;border=edge:1;border=edge:4',
             %w[A21] => 'offboard=revenue:yellow_30|green_40|brown_60|gray_80,hide:1;path=a:0,b:_0,terminal:1;' \
                        'offboard=revenue:yellow_10|green_20|brown_40|gray_60,hide:1;path=a:5,b:_1,terminal:1;' \
-                       'border=edge:1;border=edge:4;partition=a:0,b:3,type:divider',
+                       'border=edge:1;border=edge:4;partition=a:1,b:4,type:divider',
             %w[A23] => 'offboard=revenue:yellow_10|green_20|brown_40|gray_60,groups:Burlington;' \
                        'path=a:0,b:_0,terminal:1;path=a:5,b:_0,terminal:1;border=edge:1',
             %w[A25] => 'offboard=revenue:yellow_10|green_20|brown_30|gray_40,groups:Montpelier,hide:1;' \

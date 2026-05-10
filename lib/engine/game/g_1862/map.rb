@@ -505,7 +505,7 @@ module Engine
             F1
             ] => 'offboard=revenue:white_80|gray_90|purple_100,groups:North0,hide:1;path=a:1,b:_0;'\
                  'offboard=revenue:white_80|gray_90|purple_100,groups:North1,hide:1;path=a:0,b:_1;'\
-                 'partition=a:1,b:4,type:divider;border=edge:2;border=edge:5',
+                 'partition=a:2,b:5,type:divider;border=edge:2;border=edge:5',
             %w[
             C2
             ] => 'offboard=revenue:white_80|gray_90|purple_100,groups:North;path=a:0,b:_0;'\
@@ -521,7 +521,7 @@ module Engine
             I6
             ] => 'offboard=revenue:white_80|gray_100|purple_120,groups:NorthEast,hide:1;path=a:2,b:_0;'\
                  'offboard=revenue:white_60|gray_90|purple_120,groups:East,hide:1;path=a:1,b:_1;'\
-                 'partition=a:2,b:5,type:divider;border=edge:3;border=edge:0',
+                 'partition=a:3,b:6,type:divider;border=edge:3;border=edge:0',
             %w[
             I8
             ] => 'offboard=revenue:white_60|gray_90|purple_120,groups:East;path=a:2,b:_0;'\
@@ -542,7 +542,7 @@ module Engine
             G14
             ] => 'offboard=revenue:white_70|gray_100|purple_130,groups:Denmark,hide:1;path=a:3,b:_0;'\
                  'offboard=revenue:white_70|gray_100|purple_130,groups:Holland,hide:1;path=a:2,b:_1;'\
-                 'border=edge:4;border=edge:1;partition=a:3,b:0,type:divider',
+                 'border=edge:4;border=edge:1;partition=a:4,b:1,type:divider',
             %w[
             F15
             ] => 'offboard=revenue:white_70|gray_100|purple_130,groups:Holland;path=a:3,b:_0;'\
@@ -565,7 +565,7 @@ module Engine
             A8
             ] => 'offboard=revenue:white_40|gray_90|purple_140,groups:Midlands,hide:1;path=a:4,b:_0;'\
                  'offboard=revenue:white_70|gray_100|purple_120,groups:West,hide:1;path=a:5,b:_1;'\
-                 'border=edge:0;border=edge:3;partition=a:2,b:5,type:divider',
+                 'border=edge:0;border=edge:3;partition=a:3,b:6,type:divider',
             %w[
             A10
             ] => 'offboard=revenue:white_70|gray_100|purple_120,groups:West;path=a:4,b:_0;path=a:5,b:_0;'\
@@ -574,7 +574,7 @@ module Engine
             A12
             ] => 'offboard=revenue:white_100|gray_150|purple_200,groups:London,hide:1;path=a:5,b:_0;'\
                  'offboard=revenue:white_70|gray_100|purple_120,groups:West,hide:1;path=a:4,b:_1;'\
-                 'border=edge:0;border=edge:3;partition=a:2,b:5,type:divider',
+                 'border=edge:0;border=edge:3;partition=a:3,b:6,type:divider',
             %w[
             A14
             ] => 'offboard=revenue:white_100|gray_150|purple_200,groups:London,hide:1;path=a:4,b:_0;'\

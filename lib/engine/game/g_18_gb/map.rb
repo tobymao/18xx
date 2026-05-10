@@ -364,7 +364,7 @@ module Engine
             ['I0'] => 'offboard=revenue:yellow_10|blue_30|gray_50;path=a:0,b:_0;icon=image:18_gb/north',
             ['J17'] => 'offboard=revenue:yellow_20|blue_40|gray_50,hide:1;path=a:3,b:_0;'\
                        'offboard=revenue:yellow_20|blue_20|gray_20,hide:1;path=a:0,b:_1;'\
-                       'border=edge:5;border=edge:4;partition=a:2,b:5,type:divider',
+                       'border=edge:5;border=edge:4;partition=a:3,b:6,type:divider',
             ['J27'] => 'offboard=revenue:yellow_10|blue_20|gray_30;path=a:2,b:_0;path=a:3,b:_0;icon=image:18_gb/south;' \
                        'icon=image:18_gb/east',
             ['K0'] => 'offboard=revenue:yellow_30|blue_40|gray_50;path=a:0,b:_0;path=a:5,b:_0;icon=image:18_gb/north;' \
@@ -440,7 +440,7 @@ module Engine
             ['I0'] => 'offboard=revenue:yellow_10|blue_30|gray_50;path=a:0,b:_0;icon=image:18_gb/north',
             ['J17'] => 'offboard=revenue:yellow_20|blue_40|gray_50,hide:1;path=a:3,b:_0;'\
                        'offboard=revenue:yellow_20|blue_20|gray_20,hide:1;path=a:0,b:_1;'\
-                       'border=edge:5;border=edge:4;partition=a:2,b:5,type:divider',
+                       'border=edge:5;border=edge:4;partition=a:3,b:6,type:divider',
             ['J27'] => 'offboard=revenue:yellow_10|blue_20|gray_30;path=a:2,b:_0;path=a:3,b:_0;icon=image:18_gb/south;' \
                        'icon=image:18_gb/east',
             ['K0'] => 'offboard=revenue:yellow_30|blue_40|gray_50;path=a:0,b:_0;path=a:5,b:_0;icon=image:18_gb/north;' \
@@ -514,7 +514,7 @@ module Engine
                        'icon=image:18_gb/north',
             ['J17'] => 'offboard=revenue:yellow_20|blue_40|gray_50,hide:1;path=a:3,b:_0;'\
                        'offboard=revenue:yellow_20|blue_20|gray_20,hide:1;path=a:0,b:_1;'\
-                       'border=edge:5;border=edge:4;partition=a:2,b:5,type:divider',
+                       'border=edge:5;border=edge:4;partition=a:3,b:6,type:divider',
             ['J27'] => 'offboard=revenue:yellow_10|blue_20|gray_30;path=a:2,b:_0;path=a:3,b:_0;icon=image:18_gb/south;' \
                        'icon=image:18_gb/east',
             ['K16'] => 'offboard=revenue:yellow_20|blue_40|gray_50;border=edge:1',
