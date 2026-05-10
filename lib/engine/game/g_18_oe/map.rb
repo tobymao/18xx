@@ -355,17 +355,17 @@ module Engine
             ['V65'] => 'upgrade=cost:45,terrain:hill;border=edge:5,type:province;border=edge:0,type:province',
             ['V67'] => 'upgrade=cost:60,terrain:mountain;border=edge:5,type:province;border=edge:0,type:province',
             ['W64'] => 'city=revenue:0;border=edge:2,type:province;border=edge:3,type:province',
-            ['W66'] => 'border=edge:2,type:province;border=edge:3,type:province',
+            ['W66'] => 'upgrade=cost:60,terrain:mountain;border=edge:2,type:province;border=edge:3,type:province',
 
           ['W60'] => 'border=edge:4,type:province',
           ['W62'] => 'border=edge:0,type:province;border=edge:1,type:province;border=edge:2,type:province;border=edge:3,type:province',
           ['X61'] => 'upgrade=cost:45,terrain:hill;border=edge:3,type:province;border=edge:4,type:province',
-          ['X63'] => 'upgrade=cost:45,terrain:hill;border=edge:0,type:province;border=edge:4,type:province',
+          ['X63'] => 'upgrade=cost:45,terrain:hill;border=edge:0,type:province;border=edge:1,type:province',
           ['Y62'] => 'upgrade=cost:45,terrain:hill;border=edge:0,type:province;border=edge:3,type:province;border=edge:5,type:province',
-            ['Y64'] => 'town=revenue:0;upgrade=cost:45,terrain:hill;border=edge:0,type:province',
-            ['Z61'] => 'upgrade=cost:45,terrain:hill;partition=a:-1,b:0,type:province;partition=a:-1,b:5,type:province;border=edge:3,type:province',
+            ['Y64'] => 'town=revenue:0;upgrade=cost:45,terrain:hill;partition=a:-1,b:2,type:province;partition=a:-1,b:1,type:province',
+            ['Z61'] => 'upgrade=cost:45,terrain:hill;border=edge:3,type:province',
             ['Z63'] => 'upgrade=cost:30,terrain:hill;border=edge:2,type:province',
-
+            ['Y60'] => 'partition=a:-1,b:0,type:province;partition=a:-1,b:5,type:province;upgrade=cost:45,terrain:mountain',
 
             
             ['I44'] => 'border=edge:5,type:province',
@@ -625,8 +625,8 @@ module Engine
             ] => 'upgrade=cost:45,terrain:hill',
             %w[
               A44 A46 C44 D43 R71 S52 S54 S72 T51 U36
-              U68 V11 V31 W8 W66 X19 Y8
-              Y10 Y12 Y60 Z67 AA66 AA86 AB15 AB85 AE82 AE84 AF51
+              U68 V11 V31 W8 X19 Y8
+              Y10 Y12 Z67 AA66 AA86 AB15 AB85 AE82 AE84 AF51
             ] => 'upgrade=cost:60,terrain:mountain',
             %w[
               B45 T41
