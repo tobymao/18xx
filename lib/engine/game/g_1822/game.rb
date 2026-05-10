@@ -14,18 +14,6 @@ module Engine
         include G1822::Entities
         include G1822::Map
 
-        register_colors(lnwrBlack: '#000',
-                        gwrGreen: '#165016',
-                        lbscrYellow: '#cccc00',
-                        secrOrange: '#ff7f2a',
-                        crBlue: '#5555ff',
-                        mrRed: '#ff2a2a',
-                        lyrPurple: '#5a2ca0',
-                        nbrBrown: '#a05a2c',
-                        swrGray: '#999999',
-                        nerGreen: '#aade87',
-                        black: '#000',
-                        white: '#ffffff')
         PRIVATE_RED = '#FF7276'
         PRIVATE_GREEN = '#90EE90'
         PRIVATE_BLUE = '#89CFF0'
