@@ -7,6 +7,8 @@ module Engine
         class BuySellParShares < Engine::Step::BuySellParShares
           def process_buy_shares(action)
             if action.bundle.owner.player?
+              raise GameError, 'Cannot nationalize this corporation' unless can_buy?(action.entity, action.bundle)
+
               action.bundle.share_price = nationalization_price(action.bundle.corporation.share_price.price)
             end
             super
