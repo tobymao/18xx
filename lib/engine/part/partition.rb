@@ -14,13 +14,13 @@ module Engine
       }.freeze
 
       def initialize(a, b, type, restrict)
-        # Vertices: 0 = hex centre (city 0 convention); 1-6 = corners clockwise from bottom-right.
-        # Sign suffix (e.g. '1+') shifts the draw position only — no routing effect.
+        # Vertices 0-5 are hex corners clockwise from bottom-right.
+        # -1 is the hex centre (used by 18OE province borders); a.to_i handles it naturally.
+        # Sign suffix (e.g. '0+') shifts draw position only — no routing effect.
         a, b = [a, b].minmax
-        # DSL 0 (centre) → internal -1; DSL 1-6 (corners) → internal 0-5
-        @a = a == '0' ? -1 : a.to_i - 1
+        @a = a.to_i
         @a_sign = @a.negative? ? 0 : SIGN[a[1]]
-        @b = b.to_i - 1
+        @b = b[0].to_i
         @b_sign = SIGN[b[1]]
 
         @type = type&.to_sym
