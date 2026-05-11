@@ -48,7 +48,7 @@ module Engine
             # Hex reachability is already enforced by tracker_available_hex.
             old_paths = old_tile.paths
             raise GameError, 'Must use new track' if !old_paths.empty? &&
-                                                      new_tile.paths.none? { |np| old_paths.none? { |op| np <= op } }
+                                                      new_tile.paths.all? { |np| old_paths.any? { |op| np <= op } }
           end
         end
       end
