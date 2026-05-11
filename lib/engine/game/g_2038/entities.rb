@@ -26,9 +26,9 @@ module Engine
                 corporations: ['AL'],
                 owner_type: 'player',
                 from: 'market',
-                when: ['Phase 3', 'Phase 4'],
+                when: %w[3 4],
               },
-          ],
+            ],
             color: 'white',
           },
           {
@@ -44,9 +44,9 @@ module Engine
                 corporations: ['AL'],
                 owner_type: 'player',
                 from: 'market',
-                when: ['Phase 3', 'Phase 4'],
+                when: %w[3 4],
               },
-          ],
+            ],
             color: 'white',
           },
           {
@@ -62,9 +62,9 @@ module Engine
                 corporations: ['AL'],
                 owner_type: 'player',
                 from: 'market',
-                when: ['Phase 3', 'Phase 4'],
+                when: %w[3 4],
               },
-          ],
+            ],
             color: 'white',
           },
           {
@@ -80,14 +80,14 @@ module Engine
                 corporations: ['AL'],
                 owner_type: 'player',
                 from: 'market',
-                when: ['Phase 3', 'Phase 4'],
+                when: %w[3 4],
               },
-          ],
+            ],
             color: 'white',
           },
           {
             name: 'Torch',
-            sym: 'TT',
+            sym: 'TH',
             value: 100,
             revenue: 0,
             desc: 'May form a Growth Corporation OR join the Asteroid League for 1 share.',
@@ -98,9 +98,9 @@ module Engine
                 corporations: ['AL'],
                 owner_type: 'player',
                 from: 'market',
-                when: ['Phase 3', 'Phase 4'],
+                when: %w[3 4],
               },
-          ],
+            ],
             color: 'white',
           },
           {
@@ -116,9 +116,9 @@ module Engine
                 corporations: ['AL'],
                 owner_type: 'player',
                 from: 'market',
-                when: ['Phase 3', 'Phase 4'],
+                when: %w[3 4],
               },
-          ],
+            ],
             color: 'white',
           },
           {
@@ -126,17 +126,11 @@ module Engine
             sym: 'TS',
             value: 120,
             revenue: 5,
-            desc: 'Buyer recieves a TSI Share.  If owned by a corporation, may place 1 free Base on ANY'\
+            desc: 'Buyer receives a TSI Share. If owned by a corporation, may place 1 free Base on ANY'\
                   ' explored and unclaimed tile.',
             abilities: [
               { type: 'shares', shares: 'TSI_3' },
-              {
-                type: 'tile_lay',
-                owner_type: 'corporation',
-                tiles: ['1'],
-                when: 'owning_corp_or_turn',
-                count: 1,
-              },
+              # TODO Phase 10: replace with custom base-placement ability (owning_corp_or_turn, free, anywhere)
             ],
             color: nil,
           },
@@ -145,17 +139,11 @@ module Engine
             sym: 'VA',
             value: 140,
             revenue: 10,
-            desc: 'Buyer recieves a TSI Share.  If owned by a corporation, may place 1 free'\
+            desc: 'Buyer receives a TSI Share. If owned by a corporation, may place 1 free'\
                   ' Refueling Station within range.',
             abilities: [
               { type: 'shares', shares: 'TSI_2' },
-              {
-                type: 'tile_lay',
-                owner_type: 'corporation',
-                tiles: ['2'],
-                when: 'owning_corp_or_turn',
-                count: 1,
-              },
+              # TODO Phase 10: replace with custom refueling-station ability (owning_corp_or_turn, free, in range)
             ],
             color: nil,
           },
@@ -164,16 +152,10 @@ module Engine
             sym: 'RS',
             value: 160,
             revenue: 15,
-            desc: 'Buyer recieves a TSI Share.  If owned by a corporation, may place 1 free Claim within range.',
+            desc: 'Buyer receives a TSI Share. If owned by a corporation, may place 1 free Claim within range.',
             abilities: [
               { type: 'shares', shares: 'TSI_1' },
-              {
-                type: 'tile_lay',
-                owner_type: 'corporation',
-                tiles: ['3'],
-                when: 'owning_corp_or_turn',
-                count: 1,
-              },
+              # TODO Phase 10: replace with custom claim ability (owning_corp_or_turn, free, in range)
             ],
             color: nil,
           },
@@ -182,7 +164,7 @@ module Engine
             sym: 'ST',
             value: 180,
             revenue: 20,
-            desc: "Buyer recieves TSI president's Share and flies probe if TSI isn't active.  May not be owned"\
+            desc: "Buyer receives TSI president's Share and flies probe if TSI isn't active. May not be owned"\
                   ' by a corporation. Remove from the game after TSI buys a spaceship.',
             abilities: [
               { type: 'shares', shares: 'TSI_0' },
@@ -196,15 +178,15 @@ module Engine
             sym: 'AE',
             value: 180,
             revenue: 30,
-            desc: "Forms Asteroid League, receiving its President's certificate.  May not be bought by a"\
-                  ' corporation.  Remove from the game after AL aquires a spaceship.',
+            desc: "Forms Asteroid League, receiving its President's certificate. May not be bought by a"\
+                  ' corporation. Remove from the game after AL acquires a spaceship.',
             abilities: [
               { type: 'close', when: 'bought_train', corporation: 'AL' },
               { type: 'no_buy' },
               {
                 type: 'shares',
                 shares: 'AL_0',
-                when: ['Phase 3', 'Phase 4'],
+                when: %w[3 4],
               },
             ],
             color: nil,
@@ -218,7 +200,7 @@ module Engine
             value: 100,
             coordinates: 'G7',
             logo: '18_eu/1',
-            tokens: [60, 100],
+            tokens: [0],
             color: 'black',
             text_color: 'white',
             abilities: [
@@ -234,9 +216,9 @@ module Engine
             sym: 'IF',
             name: 'Ice Finder',
             value: 100,
-            coordinates: 'G7',
+            coordinates: 'M13',
             logo: '18_eu/2',
-            tokens: [60, 100],
+            tokens: [0],
             color: 'black',
             text_color: 'white',
             abilities: [
@@ -254,7 +236,7 @@ module Engine
             value: 100,
             coordinates: 'D14',
             logo: '18_eu/3',
-            tokens: [60, 100],
+            tokens: [0],
             color: 'black',
             text_color: 'white',
             abilities: [
@@ -272,7 +254,7 @@ module Engine
             value: 100,
             coordinates: 'M5',
             logo: '18_eu/4',
-            tokens: [60, 100],
+            tokens: [0],
             color: 'black',
             text_color: 'white',
             abilities: [
@@ -285,12 +267,12 @@ module Engine
             ],
           },
           {
-            sym: 'TT',
+            sym: 'TH',
             name: 'Torch',
             value: 100,
             coordinates: 'B6',
             logo: '18_eu/5',
-            tokens: [60, 100],
+            tokens: [0],
             color: 'black',
             text_color: 'white',
             abilities: [
@@ -308,7 +290,7 @@ module Engine
             value: 100,
             coordinates: 'H14',
             logo: '18_eu/6',
-            tokens: [60, 100],
+            tokens: [0],
             color: 'black',
             text_color: 'white',
             abilities: [
@@ -326,7 +308,7 @@ module Engine
           { float_percent: 50 }
         end
 
-        # TODO: corp logos
+        # TODO: replace placeholder logos with 2038-specific corp logos
         CORPORATIONS = [
           {
             sym: 'TSI',
@@ -336,7 +318,7 @@ module Engine
             tokens: [60, 100, 60, 100, 60, 100, 60, 100, 60, 100],
             coordinates: 'K9',
             color: '#40b1b9',
-            type: 'group_a',
+            type: :group_a,
           },
           {
             sym: 'RU',
@@ -346,7 +328,7 @@ module Engine
             tokens: [0, 100, 0, 100, 0, 100, 0, 100, 0, 100, 0, 100],
             coordinates: 'D8',
             color: '#d57e59',
-            type: 'group_a',
+            type: :group_a,
           },
           {
             sym: 'VP',
@@ -354,9 +336,9 @@ module Engine
             logo: '1830/NYC',
             simple_logo: '1830/NYC.alt',
             tokens: [60, 100, 60, 100, 60],
-            coordinates: 'J1',
-            color: :'#3eb75b',
-            type: 'group_b',
+            coordinates: 'J2',
+            color: '#3eb75b',
+            type: :group_b,
           },
           {
             sym: 'LE',
@@ -366,7 +348,7 @@ module Engine
             tokens: [60, 100, 60, 100, 60, 100, 60, 100, 60],
             coordinates: 'O1',
             color: '#fefc5d',
-            type: 'group_b',
+            type: :group_b,
           },
           {
             sym: 'MM',
@@ -376,7 +358,7 @@ module Engine
             tokens: [60, 100, 60, 100, 60, 100],
             coordinates: 'A1',
             color: '#f66936',
-            type: 'group_b',
+            type: :group_b,
           },
           {
             sym: 'OPC',
@@ -385,9 +367,9 @@ module Engine
             simple_logo: '1830/CO.alt',
             tokens: [60, 100, 60, 100, 60, 100, 60],
             coordinates: 'J18',
-            color: :'#cc4f8c',
+            color: '#cc4f8c',
             text_color: 'black',
-            type: 'group_c',
+            type: :group_c,
           },
           {
             sym: 'RCC',
@@ -396,9 +378,9 @@ module Engine
             simple_logo: '1830/ERIE.alt',
             tokens: [60, 100, 60, 100, 60, 100, 60, 100],
             coordinates: 'F18',
-            color: :'#f8b34b',
+            color: '#f8b34b',
             text_color: 'black',
-            type: 'group_c',
+            type: :group_c,
           },
           {
             sym: 'AL',
@@ -407,8 +389,8 @@ module Engine
             simple_logo: '1830/NYNH.alt',
             tokens: [60, 75, 100, 60, 75, 100, 60, 75, 100, 60, 75, 100, 60, 75, 100],
             coordinates: 'H10',
-            color: :'#fa3d58',
-            type: 'groupD',
+            color: '#fa3d58',
+            type: :group_d,
           },
         ].freeze
       end

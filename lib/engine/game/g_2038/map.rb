@@ -69,98 +69,13 @@ module Engine
                       'path=a:1,b:_0;path=a:1,b:_1;path=a:2,b:_0;path=a:2,b:_1;path=a:3,b:_0;path=a:3,b:_1;'\
                       'path=a:4,b:_0;path=a:4,b:_1;path=a:5,b:_0;path=a:5,b:_1;label=N/N',
           },
-          # TODO: Fill in the rest of these once confirmed (also note that all these lanes should probably be double)
-          '2010' =>
-          {
-            'count' => 2,
-            'color' => 'yellow',
-            'code' => 'town=revenue:yellow_30|gray_60;town=revenue:20;town=revenue:20;path=a:1,b:_0;path=a:2,b:_0;'\
-                      'path=a:4,b:_1;path=a:5,b:_1;path=a:0,b:_2;path=a:3,b:_2',
-          },
-          '2011' =>
-          {
-            'count' => 1,
-            'color' => 'yellow',
-            'code' => 'city=revenue:yellow_30|gray_60,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;'\
-                      'path=a:5,b:_0;label=I',
-          },
-          '2012' =>
-          {
-            'count' => 1,
-            'color' => 'yellow',
-            'code' => 'city=revenue:80,slots:4;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;'\
-                      'path=a:5,b:_0;label=I',
-          },
-          '2013' =>
-          {
-            'count' => 1,
-            'color' => 'yellow',
-            'code' => 'city=revenue:80,slots:4;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;'\
-                      'path=a:5,b:_0;label=I',
-          },
-          '2014' =>
-          {
-            'count' => 1,
-            'color' => 'yellow',
-            'code' => 'city=revenue:80,slots:4;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;'\
-                      'path=a:5,b:_0;label=I',
-          },
-          '2015' =>
-          {
-            'count' => 1,
-            'color' => 'yellow',
-            'code' => 'city=revenue:80,slots:4;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;'\
-                      'path=a:5,b:_0;label=I',
-          },
-          '2016' =>
-          {
-            'count' => 1,
-            'color' => 'yellow',
-            'code' => 'city=revenue:80,slots:4;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;'\
-                      'path=a:5,b:_0;label=I',
-          },
-          '2017' =>
-          {
-            'count' => 1,
-            'color' => 'yellow',
-            'code' => 'city=revenue:80,slots:4;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;'\
-                      'path=a:5,b:_0;label=I',
-          },
-          '2018' =>
-          {
-            'count' => 1,
-            'color' => 'yellow',
-            'code' => 'city=revenue:80,slots:4;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;'\
-                      'path=a:5,b:_0;label=I',
-          },
-          '2019' =>
-          {
-            'count' => 1,
-            'color' => 'yellow',
-            'code' => 'city=revenue:80,slots:4;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;'\
-                      'path=a:5,b:_0;label=I',
-          },
-          '2020' =>
-          {
-            'count' => 1,
-            'color' => 'yellow',
-            'code' => 'city=revenue:80,slots:4;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;'\
-                      'path=a:5,b:_0;label=I',
-          },
-          '2021' =>
-          {
-            'count' => 1,
-            'color' => 'yellow',
-            'code' => 'city=revenue:80,slots:4;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;'\
-                      'path=a:5,b:_0;label=I',
-          },
-          '2022' =>
-          {
-            'count' => 1,
-            'color' => 'yellow',
-            'code' => 'city=revenue:80,slots:4;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;'\
-                      'path=a:5,b:_0;label=I',
-          },
+          # TODO: Tiles 2010–2022 must be defined from physical game components.
+          # Each entry needs correct ore type label (N/I/R or combinations),
+          # count from the physical tile manifest, and revenue values matching
+          # the unclaimed (green phase) and claimed (brown phase) values on the card.
+          # Tiles 2001–2009 above can be used as a template for the code format.
+          # Also needed: a gray "base tile" (explored hex with base marker placed;
+          # no mines, no revenue — just the token slot). See ROADMAP Phase 1b.
         }.freeze
 
         LOCATION_NAMES = {
@@ -172,7 +87,7 @@ module Engine
           'G7' => 'Fast Buck',
           'H14' => 'Lucky',
           'J2' => 'VP',
-          'J18' => 'OCP',
+          'J18' => 'OPC',
           'K9' => 'TSI',
           'M5' => 'Ore Crusher',
           'M13' => 'Ice Finder',

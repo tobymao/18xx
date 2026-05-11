@@ -4,6 +4,11 @@ require_relative 'meta'
 require_relative 'map'
 require_relative 'entities'
 require_relative '../base'
+require_relative 'round/operating'
+require_relative 'step/waterfall_auction'
+require_relative 'step/buy_train'
+require_relative 'step/dividend'
+require_relative 'step/route'
 
 module Engine
   module Game
@@ -12,6 +17,7 @@ module Engine
         include_meta(G2038::Meta)
         include Map
         include Entities
+
 
         TRACK_RESTRICTION = :permissive
         SELL_BUY_ORDER = :sell_buy
@@ -48,6 +54,16 @@ module Engine
           par_2: :blue,
         )
 
+        # Independents operate in this fixed order each OR (rules section 6.1).
+        MINOR_OPERATING_ORDER = %w[FB IF DH OC TH LY].freeze
+
+        # Ore type display colors used by the route selector UI.
+        ORE_COLORS = {
+          N: '#888888',
+          I: '#4499cc',
+          R: '#9944cc',
+        }.freeze
+
         PHASES = [
           {
             name: '1',
@@ -57,7 +73,7 @@ module Engine
           },
           {
             name: '2',
-            on: '4dc3',
+            on: '4/3',
             train_limit: 4,
             tiles: %i[yellow],
             operating_rounds: 2,
@@ -65,7 +81,7 @@ module Engine
           },
           {
             name: '3',
-            on: '5dc4',
+            on: '5/4',
             train_limit: 3,
             tiles: %i[yellow],
             operating_rounds: 2,
@@ -73,119 +89,135 @@ module Engine
           },
           {
             name: '4',
-            on: '6d5c',
+            on: '6/5',
             train_limit: 3,
             tiles: %i[yellow gray],
             operating_rounds: 2,
           },
           {
             name: '5',
-            on: '7d6c',
+            on: '7/6',
             train_limit: 3,
             tiles: %i[yellow gray],
             operating_rounds: 2,
           },
           {
             name: '6',
-            on: '9d7c',
+            on: '9/7',
             train_limit: 2,
             tiles: %i[yellow gray],
             operating_rounds: 2,
           },
         ].freeze
 
+        # Spaceship names are movement/cargo_holds (e.g. '3/2' = 3 MP, 2 cargo holds).
+        # cargo_holds: stored in Train#@opts; accessible via cargo_holds_for_train.
+        # rusts_on: for Phase III trains (5/4, 7/3) deferred to Phase 6 — verify against rules chart.
         TRAINS = [
           {
             name: 'probe',
             distance: 4,
+            cargo_holds: 0,
             price: 1,
-            rusts_on: %w[4dc3 6d2c],
+            rusts_on: %w[4/3 6/2],
             num: 1,
           },
           {
-            name: '3dc2',
+            name: '3/2',
             distance: 3,
+            cargo_holds: 2,
             price: 100,
-            rusts_on: %w[5dc4 7d3c],
+            rusts_on: %w[5/4 7/3],
             num: 10,
             variants: [
               {
-                name: '5dc1',
-                rusts_on: %w[5dc4 7d3c],
+                name: '5/1',
                 distance: 5,
+                cargo_holds: 1,
                 price: 100,
+                rusts_on: %w[5/4 7/3],
               },
             ],
           },
           {
-            name: '4dc3',
+            name: '4/3',
             distance: 4,
+            cargo_holds: 3,
             price: 200,
-            rusts_on: %w[7d6c 9d5c],
+            rusts_on: %w[7/6 9/5],
             num: 10,
             variants: [
               {
-                name: '6d2c',
-                rusts_on: %w[7d6c 9d5c],
+                name: '6/2',
                 distance: 6,
+                cargo_holds: 2,
                 price: 175,
+                rusts_on: %w[7/6 9/5],
               },
             ],
           },
           {
-            name: '5dc4',
+            name: '5/4',
             distance: 5,
+            cargo_holds: 4,
             price: 325,
-            rusts_on: 'D',
+            rusts_on: 'D', # TODO Phase 6: verify against rules obsolescence chart
             num: 6,
             variants: [
               {
-                name: '7d3c',
+                name: '7/3',
                 distance: 7,
+                cargo_holds: 3,
                 price: 275,
+                rusts_on: 'D', # TODO Phase 6: verify against rules obsolescence chart
               },
             ],
             events: [{ 'type' => 'asteroid_league_can_form' }],
           },
           {
-            name: '6d5c',
+            name: '6/5',
             distance: 6,
+            cargo_holds: 5,
             price: 450,
             num: 5,
             variants: [
               {
-                name: '8d4c',
+                name: '8/4',
                 distance: 8,
+                cargo_holds: 4,
                 price: 400,
               },
             ],
             events: [{ 'type' => 'close_companies' }],
           },
           {
-            name: '7d6c',
+            name: '7/6',
             distance: 7,
+            cargo_holds: 6,
             price: 600,
             num: 2,
             variants: [
               {
-                name: '9d5c',
+                name: '9/5',
                 distance: 9,
+                cargo_holds: 5,
                 price: 550,
               },
             ],
           },
           {
-            name: '9d7c',
+            name: '9/7',
             distance: 9,
+            cargo_holds: 7,
             price: 950,
             num: 9,
             discount: {
-              '5dc4' => 700,
-              '7d3c' => 700,
-              '6d5c' => 700,
-              '8d4c' => 700,
-              '7d6c' => 700,
-              '9d5c' => 700,
+              '5/4' => 700,
+              '7/3' => 700,
+              '6/5' => 700,
+              '8/4' => 700,
+              '7/6' => 700,
+              '9/5' => 700,
             },
           },
         ].freeze
@@ -196,8 +228,28 @@ module Engine
           'group_c_corps_available' => ['Group C Corporations become available'],
         ).freeze
 
-        def bank_starting_cash
-          optional_short_game ? 4_000 : BANK_CASH
+        attr_reader :mine_state
+        attr_accessor :explored_this_run
+
+        def setup
+          @mine_state = {}
+          @explored_this_run = nil
+
+          @al_corporation = corporation_by_id('AL')
+          @al_corporation.capitalization = :incremental
+          @corporations.reject! { |c| c.id == 'AL' }
+
+          return if optional_variant_start_pack
+
+          @available_corp_group = :group_a
+
+          @corporations, @b_group_corporations = @corporations.partition do |corporation|
+            corporation.type == :group_a
+          end
+
+          @b_group_corporations, @c_group_corporations = @b_group_corporations.partition do |corporation|
+            corporation.type == :group_b
+          end
         end
 
         def new_auction_round
@@ -207,6 +259,17 @@ module Engine
           ])
         end
 
+        def new_operating_round(round_num = 1)
+          G2038::Round::Operating.new(self, [
+            Engine::Step::Bankrupt,
+            Engine::Step::DiscardTrain,
+            G2038::Step::Route,
+            G2038::Step::Dividend,
+            G2038::Step::BuyTrain,
+            Engine::Step::BuyCompany,
+          ], round_num: round_num)
+        end
+
         def next_round!
           @round =
             case @round
@@ -214,7 +277,7 @@ module Engine
               @operating_rounds = @phase.operating_rounds
               reorder_players
               new_operating_round
-            when Engine::Round::Operating
+            when G2038::Round::Operating
               if @round.round_num < @operating_rounds
                 or_round_finished
                 new_operating_round(@round.round_num + 1)
@@ -231,28 +294,110 @@ module Engine
             end
         end
 
-        def setup
-          @al_corporation = corporation_by_id('AL')
-          @al_corporation.capitalization = :incremental
-
-          @corporations.reject! { |c| c.id == 'AL' }
-
-          return if optional_variant_start_pack
-
-          @available_corp_group = :group_a
-
-          @corporations, @b_group_corporations = @corporations.partition do |corporation|
-            corporation.type == :group_a
+        # Independents in fixed order, then floated corps descending by price
+        # (top-to-bottom within the same price box).
+        def operating_order
+          minors = MINOR_OPERATING_ORDER.filter_map { |id| minor_by_id(id) }
+          corps = @corporations.select(&:floated?).sort do |a, b|
+            if a.share_price.price != b.share_price.price
+              b.share_price.price <=> a.share_price.price
+            else
+              a.share_price.coordinates <=> b.share_price.coordinates
+            end
           end
+          minors + corps
+        end
 
-          @b_group_corporations, @c_group_corporations = @b_group_corporations.partition do |corporation|
-            corporation.type == :group_b
+        # Reset Used Mine markers at the end of every OR.
+        def or_round_finished
+          @mine_state.each_value do |state|
+            state[:mines].each { |mine| mine[:used] = false }
           end
         end
 
+        # ---------------------------------------------------------------------------
+        # Mine / exploration methods (Phase 4–5)
+        # ---------------------------------------------------------------------------
+
+        # Called by Step::Route when a spaceship enters an unexplored blue hex.
+        # TODO Phase 4h: draw a random tile from the asteroid tile bag, place it on
+        # the hex, and populate @mine_state[hex_id] with the tile's mine data.
+        def explore_hex!(hex_id)
+          @log << "#{hex_id} explored"
+        end
+
+        # Returns the number of cargo holds for a spaceship (parses from name).
+        # The probe has 0 cargo holds and is excluded from normal routing.
+        def cargo_holds_for_train(train)
+          return 0 if train.name == 'probe'
+
+          train.name.split('/').last.to_i
+        end
+
+        # Returns the trains available for route-running (excludes the probe).
+        def route_trains(entity)
+          entity.trains.reject { |t| t.name == 'probe' }
+        end
+
+        # Revenue value for picking up a specific mine, based on claim ownership.
+        def pickup_value(entity, hex_id, mine_idx)
+          mine = mine_state.dig(hex_id, :mines, mine_idx)
+          return 0 unless mine
+
+          mine[:owner] == entity.id ? mine[:claimed] : mine[:unclaimed]
+        end
+
+        # Returns all mines along the route that are eligible for pickup by entity,
+        # excluding already-picked, used, and inaccessible claimed mines.
+        def pickable_stops(route, existing_pickups)
+          entity = route.corporation
+          picked_set = existing_pickups.to_set
+
+          route.hexes.flat_map do |hex|
+            state = mine_state[hex.id]
+            next [] unless state
+
+            state[:mines].each_with_index.filter_map do |mine, idx|
+              key = [hex.id, idx]
+              next if mine[:used]
+              next if picked_set.include?(key)
+              next if mine[:owner] && mine[:owner] != entity.id
+
+              { hex: hex, mine_idx: idx, ore: mine[:ore],
+                value: pickup_value(entity, hex.id, idx) }
+            end
+          end
+        end
+
+        # Marks the confirmed pickups on a route as used for the remainder of the OR.
+        def mark_mines_used!(route)
+          return unless route.respond_to?(:pickups)
+
+          route.pickups.each do |hex_id, mine_idx|
+            mine_state.dig(hex_id, :mines, mine_idx)&.store(:used, true)
+          end
+        end
+
+        # TODO Phase 4a/4b: enforce hex count ≤ movement points and pickup count ≤ cargo holds.
+        def check_distance(route, _entity)
+        end
+
+        # TODO Phase 4c: validate route starts at one of the company's bases
+        # and ends at a base or transshipment point.
+        def check_connected(route, _entity)
+        end
+
+        # Formats a route as a hex-ID path string for the game log.
+        def revenue_str(route)
+          route.hexes.map(&:id).join(' → ')
+        end
+
+        # ---------------------------------------------------------------------------
+        # Corporation group events
+        # ---------------------------------------------------------------------------
+
         def event_group_b_corps_available!
           @log << 'Group B corporations are now available'
-
           @corporations.concat(@b_group_corporations)
           @b_group_corporations = []
           @available_corp_group = :group_b
@@ -260,7 +405,6 @@ module Engine
 
         def event_group_c_corps_available!
           @log << 'Group C corporations are now available'
-
           @corporations.concat(@c_group_corporations)
           @c_group_corporations = []
           @available_corp_group = :group_c
@@ -277,12 +421,7 @@ module Engine
 
         def company_header(company)
           is_minor = @minors.find { |m| m.id == company.id }
-
-          if is_minor
-            'INDEPENDENT COMPANY'
-          else
-            'PRIVATE COMPANY'
-          end
+          is_minor ? 'INDEPENDENT COMPANY' : 'PRIVATE COMPANY'
         end
 
         def after_par(corporation)
@@ -314,6 +453,10 @@ module Engine
               end
             end
           end
+        end
+
+        def bank_starting_cash
+          optional_short_game ? 4_000 : BANK_CASH
         end
 
         def optional_short_game
