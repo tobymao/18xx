@@ -679,7 +679,7 @@ module Engine
         end
 
         def player_card_rows(player)
-          [['Shares in hand', player.hand.size.to_s]]
+          { 'Hand size' => player.hand.size.to_s }
         end
 
         def hand_companies_for_stock_round
