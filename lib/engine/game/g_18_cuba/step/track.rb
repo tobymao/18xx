@@ -43,18 +43,12 @@ module Engine
             # Majors are already blocked from pure narrow upgrades via major_tile_blocked?.
             return unless old_tile.towns.empty?
 
-            # Plain track: "may upgrade only if the [narrow/standard] gauge track is extended."
-            graph = @game.graph_for_entity(entity)
+            # Plain track: the gauge track must be extended, but new track need not be reachable
+            # ("it is not necessary that any of the new track is usable by the company").
+            # Hex reachability is already enforced by tracker_available_hex.
             old_paths = old_tile.paths
-            used_new_track = old_paths.empty?
-
-            new_tile.paths.each do |np|
-              next unless graph.connected_paths(entity)[np]
-
-              used_new_track = true unless old_paths.any? { |path| np <= path }
-            end
-
-            raise GameError, 'Must use new track' unless used_new_track
+            raise GameError, 'Must use new track' unless old_paths.empty? ||
+                                                         new_tile.paths.any? { |np| old_paths.none? { |op| np <= op } }
           end
         end
       end
