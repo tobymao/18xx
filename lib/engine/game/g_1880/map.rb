@@ -115,24 +115,9 @@ module Engine
             'color' => 'brown',
             'code' => 'town=revenue:20;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
           },
-          '8872' =>
-          {
-            'count' => 2,
-            'color' => 'brown',
-            'code' => 'city=revenue:50,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;label=OO',
-          },
-          '8873' =>
-          {
-            'count' => 2,
-            'color' => 'brown',
-            'code' => 'city=revenue:50,slots:2;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=OO',
-          },
-          '8874' =>
-          {
-            'count' => 2,
-            'color' => 'brown',
-            'code' => 'city=revenue:50,slots:2;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:5,b:_0;label=OO',
-          },
+          '8872' => 2,
+          '8873' => 2,
+          '8874' => 2,
           '8875' =>
           {
             'count' => 1,
