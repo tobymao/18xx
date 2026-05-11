@@ -1,0 +1,63 @@
+# 2038: Tycoons of the Asteroid Belt - Feature Checklist
+
+## 1. GAME SETUP & CORE ENGINE
+- [ ] Support for 3–6 players.
+- [ ] Game Mode Toggle: 
+    - [ ] Full Game: Standard bank/ship counts.
+    - [ ] Short Game: Remove $6,000 from bank; remove two Phase II ships; set TSI par to $88.
+- [ ] Bank Management: Real-time tracking of total capital; trigger game end when depleted.
+- [ ] Turn Order: 18xx standard (clockwise from last actor in SR).
+
+## 2. INITIAL AUCTION PHASE
+- [ ] Sequential bidding on Companies 0 through 11.
+- [ ] Bid Logic: 
+    - [ ] Minimum $5 increments.
+    - [ ] "Pending Cash": Lock bid money so it cannot be spent elsewhere during auction.
+- [ ] Multi-bid resolution: Clockwise auction for contested items.
+- [ ] Capitalization: 
+    - [ ] $100 base to Independent treasury.
+    - [ ] +50% of any bid amount over $100 (rounded down) to treasury.
+
+## 3. OPERATING ROUND (OR) MECHANICS
+- [ ] OR Sequence: 
+    1. Private Income 
+    2. Independent Operations (Numerical)
+    3. Corporation Operations (Stock Price)
+- [ ] Exploration System:
+    - [ ] Ship Movement Point (MP) deduction.
+    - [ ] Spend +1 MP to place random asteroid tile on empty hex.
+    - [ ] Automatic $10 exploration bonus to operating company.
+- [ ] Mining & Revenue:
+    - [ ] Ore differentiation: Nickel (N), Ice (I), Rare (R).
+    - [ ] Claim Logic: Toggle high/low payout values based on "Claim" ownership.
+    - [ ] Mine State Tracking: "Used Mine" status reset at end of OR.
+- [ ] Financial Options:
+    - [ ] Pay Full (Price +1 Right).
+    - [ ] Pay Half (Price 0 - Growth Corps only).
+    - [ ] Withhold (Price -1 Left).
+
+## 4. STOCK ROUND (SR) MECHANICS
+- [ ] Player Actions: Sell any amount -> Buy 1 certificate.
+- [ ] Limits: 60% per player; certificate limit check based on player count.
+- [ ] Market Logic:
+    - [ ] Price drop on sale (once per turn).
+    - [ ] Presidency transfers (highest share count).
+- [ ] Company Launch:
+    - [ ] Public: Set Par ($67-$100); 10x Par capital on 50% sold.
+    - [ ] Growth: Conversion from Independent; starts at $10; capitalizes per share sold.
+
+## 5. PURCHASING & COMPONENTS
+- [ ] Ships:
+    - [ ] Buy from Bank (Fixed) or Company (Negotiated).
+    - [ ] Phase Triggers: Obsolescence logic for older ship types.
+    - [ ] Mandatory Ship Check: President personal contribution on treasury failure.
+- [ ] Improvements:
+    - [ ] Bases ($50): New route start nodes.
+    - [ ] Refueling Stations ($50): +3 MP.
+    - [ ] Claims ($60/$100): Value multipliers for mines.
+
+## 6. SPECIAL RULES & END GAME
+- [ ] Pilots: Independent owners provide specific ship bonuses (e.g., +20 for Rare).
+- [ ] The Asteroid League: Phase III/IV automated merger of remaining Independents.
+- [ ] Bankruptcy Trigger: Immediate game end if President cannot fund a ship.
+- [ ] Scoring: Sum of Cash + Stock Value + Private Bid Values.
