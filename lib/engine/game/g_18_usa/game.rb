@@ -372,13 +372,15 @@ module Engine
             'Placing a track and the resource token from the Resource Subsidy is a free extra ' \
             'track lay in addition to the normal track placements.'
 
-          @log << "Resource subsidy includes #{resources.join(', ')}"
+          @resource_subsidy_resources = resources.join(', ')
         end
 
         def randomize_subsidies
-          randomized_subsidies = @subsidies.sort_by { rand }.take(SUBSIDIZED_HEXES.size)
-          excluded = @subsidies - randomized_subsidies
-          @log << "Removing: #{excluded.map { |s| s['name'] }.join(', ')}" if excluded.any?
+          shuffled = @subsidies.sort_by { rand }
+          randomized_subsidies = shuffled.take(SUBSIDIZED_HEXES.size)
+          excluded = shuffled.drop(SUBSIDIZED_HEXES.size)
+          @log << "Resource subsidy includes #{@resource_subsidy_resources}" unless excluded.any? { |s| s[:id] == 'S16' }
+          @log << "Removing: #{excluded.map { |s| s[:name] }.join(', ')}" unless excluded.empty?
           @subsidies_by_hex = {}
           SUBSIDIZED_HEXES.zip(randomized_subsidies).each do |hex_id, subsidy|
             hex = hex_by_id(hex_id)
