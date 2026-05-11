@@ -18,14 +18,6 @@ module Engine
 
         include DoubleSidedTiles
 
-        register_colors(red: '#d1232a',
-                        orange: '#f58121',
-                        black: '#110a0c',
-                        blue: '#025aaa',
-                        lightBlue: '#8dd7f6',
-                        yellow: '#ffe600',
-                        green: '#32763f',
-                        brightGreen: '#6ec037')
         def sugar_cane_open_for_majors?
           @sugar_cane_open_for_majors
         end
