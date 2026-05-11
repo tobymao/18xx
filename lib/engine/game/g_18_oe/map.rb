@@ -694,48 +694,48 @@ module Engine
           },
           blue: {
             %w[
-              A0 A2 A4 A6 A8 A10 A12 A14 A16 A22 A24 A26
-              A28 A30 A32 A34 A40 B1 B3 B5 B7
-              B9 B11 B13 B15 B17 B23 B25 B27 B29 B31 B33
-              B59 B61 C0 C2 C4 C6 C8 C10 C12 C14 C16 C22
-              C24 C26 C28 C30 C32 C34 C40 C60 C68 C70 D1
-              D3 D5 D7 D9 D11 D13 D15 D17 D23 D27 D29 D31
-              D33 D39 D63 D65 E0 E2 E4 E6 E8 E10 E12 E14
-              E16 E22 E30 E32 E34 E40 E46 E64 F1 F3 F5 F7
-              F9 F11 F13 F15 F17 F31 F33 F39 F41 F43 F45 F47
-              F57 F65 F67 G0 G2 G4 G6 G8 G10 G12 G14
-              G48 G58 H1 H3 H5 H7 H9 H11 H13
-              H23 H31 H33 H49 H59 H61 I0 I2 I4 I6 I8
-              I10 I12 I30 I32 I38 I40 I42 I54 I56 I60 I62
-              J5 J7 J9 J11 J21 J31 J37 J39 J41 J43 J51 J53
-              J55 J57 J61 K6 K8 K10 K12 K14 K16 K18 K20
-              K38 K52 L1 L7 L9 L11 L13 L15 L17 L19 L21 M0
-              M2 M8 M10 M12 M14 M16 M32 N7 N9 N11 N13 N15
-              N23 N27 O0 O2 O20 O22 O26 P1 Q0 Q8 Q10 Q12
-              Q14 Q16 Q18 R7 R9 R11 R13 R15 R17 R19 R21 S0
-              S2 S8 S10 S12 S14 S16 S18 S20 S22 T1 T3 T9
-              T11 T13 T15 T17 T19 T21 T83 T85 U0 U2 U4 U14
-              U16 U18 U20 V1 V3 V49 W0 W2 W4 W50 W52 W80
-              W82 W84 W86 W88 X1 X3 X31 X39 X51 X53 X81
-              X83 X85 X87 Y0 Y30 Y32 Y34 Y36 Y52 Y54
-              Y82 Y84 Y86 Y88 Z29 Z31 Z33 Z35 Z37 Z39 Z43 Z53
-              Z55 Z57 Z59 Z83 Z85 Z87 AA0 AA24 AA30 AA32 AA34
-              AA36 AA38 AA56 AA58 AA60 AA88 AB29 AB31 AB33 AB35
-              AB37 AB43 AB45 AB47 AB49 AB73 AB75 AB79 AB81 AC0
-              AC2 AC4 AC22 AC28 AC30 AC32 AC34 AC36 AC42 AC44 AC46 AC48
-              AC50 AC52 AC70 AC72 AC74 AD3 AD19 AD21 AD23 AD29 AD31
-              AD33 AD35 AD41 AD43 AD45 AD47 AD49 AD51 AD53 AD57 AD73
-              AE0 AE2 AE4 AE8 AE14 AE16 AE18 AE20 AE22 AE28 AE30
-              AE32 AE34 AE40 AE42 AE44 AE46 AE48 AE50 AE56
-              AE76 AF1 AF3 AF7 AF9 AF15 AF17 AF19 AF21 AF23 AF29
-              AF31 AF33 AF41 AF43 AF45 AF47 AF55 AF57 AF63 AF65 AF71
-              AF75 AG0 AG2 AG4 AG6 AG8 AG14 AG16 AG18 AG20 AG22 AG28
-              AG30 AG32 AG34 AG54 AG56 AG62 AG64
-              AG66 AG72 AG74 AG80 AG82 AG84 AG86 AH1 AH3 AH5 AH7 AH13
-              AH15 AH17 AH19 AH21 AH23 AH29 AH31 AH33 AH35 AH37 AH43 AH45
-              AH47 AH49 AH51 AH53 AH55 AH57 AH63 AH65 AH67 AH69 AH71 AH73
-              AH79 AH81 AH83 AH85 AH87
-              ] => '',
+            A0 A2 A4 A6 A8 A10 A12 A14 A16 A22 A24 A26
+            A28 A30 A32 A34 A40 B1 B3 B5 B7
+            B9 B11 B13 B15 B17 B23 B25 B27 B29 B31 B33
+            B61 C0 C2 C4 C6 C8 C10 C12 C14 C16 C22
+            C24 C26 C28 C30 C32 C34 C40 C60 C70 D1
+            D3 D5 D7 D9 D11 D13 D15 D17 D23 D27 D29 D31
+            D33 D39 D63 D65 E0 E2 E4 E6 E8 E10 E12 E14
+            E16 E22 E30 E32 E34 E46 E64 F1 F3 F5 F7
+            F9 F11 F13 F15 F17 F31 F33 F39 F41 F45 F47
+            F57 F65 G0 G2 G4 G6 G8 G10 G12 G14
+            G58 H1 H3 H5 H7 H9 H11 H13
+            H23 H31 H33 H49 H59 H61 I0 I2 I4 I6 I8
+            I10 I12 I32 I38 I40 I42 I54 I56 I60 I62
+            J5 J7 J9 J11 J31 J37 J39 J41 J43 J53
+            J55 J57 K6 K8 K10 K12 K14 K18 K20
+            K38 L1 L7 L9 L11 L13 L15 L17 L19 L21 M0
+            M2 M8 M10 M12 M14 M16 M32 N7 N9 N11 N13 N15
+            N23 N27 O0 O2 O22 P1 Q0 Q8 Q10 Q12
+            Q14 Q16 Q18 R7 R9 R11 R13 R15 R17 R19 S0
+            S2 S8 S10 S12 S14 S16 S18 S20 S22 T1 T3 T9
+            T11 T13 T15 T17 T19 T21 T85 U0 U2
+            U18 U20 V1 V3 W0 W2 W4 W50 W52 W80
+            W82 W84 W86 W88 X1 X3 X31 X39 X51 X53 X81
+            X83 X85 X87 Y0 Y30 Y32 Y34 Y36 Y52 Y54
+            Y82 Y84 Y86 Y88 Z29 Z31 Z33 Z35 Z37 Z39 Z43 Z53
+            Z55 Z57 Z59 Z85 Z87 AA0 AA24 AA30 AA32 AA34
+            AA36 AA38 AA56 AA58 AA88 AB29 AB31 AB33 AB35
+            AB37 AB43 AB45 AB47 AB73 AB75 AB79 AC0
+            AC2 AC22 AC30 AC32 AC34 AC36 AC42 AC44 AC46 AC48
+            AC50 AC52 AC72 AC74 AD3 AD21 AD23 AD29 AD31
+            AD33 AD35 AD43 AD45 AD47 AD49 AD51 AD53 AD57 AD73
+            AE0 AE2 AE4 AE14 AE16 AE18 AE20 AE22 AE28 AE30
+            AE32 AE34 AE40 AE42 AE44 AE46 AE48 AE56
+            AE76 AF1 AF3 AF7 AF9 AF15 AF17 AF19 AF21 AF23 AF29
+            AF31 AF33 AF41 AF43 AF45 AF55 AF57 AF63 AF65
+            AF75 AG0 AG2 AG4 AG6 AG8 AG14 AG16 AG18 AG20 AG22 AG28
+            AG30 AG32 AG34 AG54 AG56 AG62 AG64
+            AG66 AG72 AG74 AG80 AG82 AG84 AG86 AH1 AH3 AH5 AH7 AH13
+            AH15 AH17 AH19 AH21 AH23 AH29 AH31 AH33 AH35 AH37 AH43 AH45
+            AH47 AH49 AH51 AH53 AH55 AH57 AH63 AH65 AH67 AH71 AH73
+            AH79 AH81 AH83 AH85 AH87
+            ] => '',
             # Ferry routes (pre-printed track through sea hexes)
             ['N29'] => 'path=a:4,b:2',
             ['G22'] => 'path=a:0,b:4;border=edge:2,type:province',
@@ -756,6 +756,41 @@ module Engine
             ['AG44'] => 'path=a:4,b:1',
             ['AG46'] => 'path=a:4,b:1',
             ['AG48'] => 'path=a:4,b:1;path=a:3,b:1',
+            ['AB49'] => 'junction;path=a:4,b:_0,terminal:1',
+            # Port stubs — sea-side connectors for port-to-port routes
+            ['AE50'] => 'junction;path=a:0,b:_0,terminal:1',
+            ['AF47'] => 'junction;path=a:4,b:_0,terminal:1',
+            ['V49'] => 'junction;path=a:1,b:_0,terminal:1;path=a:4,b:_0,terminal:1',
+            ['AA60'] => 'junction;path=a:4,b:_0,terminal:1',
+            ['AH69'] => 'junction;path=a:2,b:_0,terminal:1',
+            ['AF71'] => 'junction;path=a:3,b:_0,terminal:1',
+            ['AC70'] => 'junction;path=a:2,b:_0,terminal:1',
+            ['AB81'] => 'junction;path=a:3,b:_0,terminal:1',
+            ['Z83'] => 'junction;path=a:0,b:_0,terminal:1',
+            ['T83'] => 'junction;path=a:1,b:_0,terminal:1',
+            ['J61'] => 'junction;path=a:4,b:_0,terminal:1;path=a:0,b:_0,terminal:1',
+            ['K52'] => 'junction;path=a:5,b:_0,terminal:1',
+            ['J51'] => 'junction;path=a:2,b:_0,terminal:1;path=a:3,b:_0,terminal:1',
+            ['G48'] => 'junction;path=a:0,b:_0,terminal:1;path=a:1,b:_0,terminal:1;path=a:3,b:_0,terminal:1',
+            ['B59'] => 'junction;path=a:0,b:_0,terminal:1',
+            ['C68'] => 'junction;path=a:2,b:_0,terminal:1',
+            ['F67'] => 'junction;path=a:5,b:_0,terminal:1',
+            ['J21'] => 'junction;path=a:2,b:_0,terminal:1',
+            ['I30'] => 'junction;path=a:2,b:_0,terminal:1',
+            ['K16'] => 'junction;path=a:2,b:_0,terminal:1',
+            ['U4'] => 'junction;path=a:4,b:_0,terminal:1;path=a:5,b:_0,terminal:1',
+            ['U14'] => 'junction;path=a:1,b:_0,terminal:1',
+            ['U16'] => 'junction;path=a:5,b:_0,terminal:1',
+            ['R21'] => 'junction;path=a:4,b:_0,terminal:1',
+            ['O20'] => 'junction;path=a:0,b:_0,terminal:1',
+            ['O26'] => 'junction;path=a:1,b:_0,terminal:1;path=a:4,b:_0,terminal:1',
+            ['F43'] => 'junction;path=a:3,b:_0,terminal:1',
+            ['E40'] => 'junction;path=a:3,b:_0,terminal:1',
+            ['AC4'] => 'junction;path=a:4,b:_0,terminal:1',
+            ['AE8'] => 'junction;path=a:2,b:_0,terminal:1;path=a:3,b:_0,terminal:1',
+            ['AD19'] => 'junction;path=a:1,b:_0,terminal:1',
+            ['AC28'] => 'junction;path=a:2,b:_0,terminal:1',
+            ['AD41'] => 'junction;path=a:1,b:_0,terminal:1',
             ['AB59'] => 'path=a:1,b:4',
             ['AB61'] => 'path=a:1,b:5',
             ['AC62'] => 'path=a:2,b:5',
@@ -890,7 +925,8 @@ module Engine
             ['K4'] => 'border=edge:0,type:province;border=edge:1,type:province',
             ['L3'] => 'border=edge:3,type:province;border=edge:4,type:province',
             ['L33'] => 'border=edge:2,type:province;border=edge:3,type:province',
-            ['L35'] => 'border=edge:2,type:province;border=edge:3,type:province',
+            ['L35'] => 'junction;path=a:5,b:_0,terminal:1;path=a:4,b:_0,terminal:1;' \
+                       'border=edge:2,type:province;border=edge:3,type:province',
             ['L5'] => 'border=edge:0,type:province;border=edge:1,type:province',
             ['M18'] => 'border=edge:5,type:province',
             ['M20'] => 'border=edge:0,type:province;border=edge:5,type:province',
@@ -905,14 +941,15 @@ module Engine
             ['O12'] => 'border=edge:0,type:province;border=edge:5,type:province',
             ['O14'] => 'border=edge:0,type:province;border=edge:5,type:province',
             ['O16'] => 'border=edge:0,type:province;border=edge:4,type:province;border=edge:5,type:province',
-            ['O18'] => 'border=edge:0,type:province;border=edge:1,type:province;border=edge:2,type:province',
+            ['O18'] => 'junction;path=a:5,b:_0,terminal:1;border=edge:0,type:province;' \
+                       'border=edge:1,type:province;border=edge:2,type:province',
             ['O4'] => 'border=edge:3,type:province;border=edge:4,type:province;border=edge:5,type:province',
             ['O6'] => 'border=edge:0,type:province;border=edge:1,type:province;border=edge:5,type:province',
             ['O8'] => 'border=edge:0,type:province;border=edge:5,type:province',
             ['P11'] => 'border=edge:2,type:province;border=edge:3,type:province',
             ['P13'] => 'border=edge:2,type:province;border=edge:3,type:province',
             ['P15'] => 'border=edge:2,type:province;border=edge:3,type:province',
-            ['P17'] => 'border=edge:2,type:province;border=edge:3,type:province',
+            ['P17'] => 'junction;path=a:4,b:_0,terminal:1;border=edge:2,type:province;border=edge:3,type:province',
             ['P3'] => 'border=edge:4,type:province',
             ['P5'] => 'border=edge:0,type:province;border=edge:1,type:province;' \
                       'border=edge:2,type:province;border=edge:3,type:province',

@@ -15,28 +15,6 @@ module Engine
         include Entities
         include Map
 
-        register_colors(black: '#37383a',
-                        orange: '#f48221',
-                        brightGreen: '#76a042',
-
-                        bbgPink: '#ffd9eb',
-                        caRed: '#f72d2d',
-                        cprPink: '#c474bc',
-                        cvPurple: '#2d0047',
-                        cgrBlack: '#000',
-                        lpsBlue: '#c3deeb',
-                        gtGreen: '#78c292',
-                        gwGray: '#6e6966',
-                        tgbOrange: '#c94d00',
-                        thbYellow: '#ebff45',
-                        wgbBlue: '#494d99',
-                        wrBrown: '#54230e',
-
-                        red: '#d81e3e',
-                        turquoise: '#00a993',
-                        blue: '#0189d1',
-                        brown: '#7b352a')
-
         CURRENCY_FORMAT_STR = '$%s'
 
         BANK_CASH = 12_000

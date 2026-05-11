@@ -13,11 +13,6 @@ module Engine
         attr_accessor :passers_first_stock_round, :agv_mergable, :agv_auto_found, :hgk_mergable, :hgk_auto_found,
                       :potential_discard_trains, :fdsd_to_close
 
-        register_colors(
-          gray70: '#B3B3B3',
-          gray50: '#7F7F7F'
-        )
-
         CURRENCY_FORMAT_STR = '%sM'
 
         BANK_CASH = 7200
