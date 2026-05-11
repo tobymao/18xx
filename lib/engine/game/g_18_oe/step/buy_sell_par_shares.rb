@@ -29,7 +29,6 @@ module Engine
             actions << 'par' if can_ipo_any?(entity) || can_float_minor?(entity)
             actions << 'buy_company' if !purchasable_companies(entity).empty? || !buyable_bank_owned_companies(entity).empty?
             actions << 'sell_shares' if can_sell_any?(entity)
-            actions << 'convert' if can_convert_any?(entity)
             actions << 'pass' if !can_float_minor?(entity) && !actions.empty?
             actions
           end
