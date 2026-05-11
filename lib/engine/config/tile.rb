@@ -358,7 +358,10 @@ module Engine
         '218' => 'city=revenue:40,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=X',
         '219' => 'city=revenue:40,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:5,b:_0;label=X',
         '220' => 'city=revenue:60,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=B',
-        '221' => 'city=revenue:60,slots:2,loc:3;city=revenue:60,loc:0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:1,b:_1;path=a:0,b:_1;path=a:5,b:_1;path=a:_0,b:_1;label=H',
+        # The brown Hamburg tile in 1835 has a revenue of 50 or 60 depending on whether the ferry is used or not.
+        # The first revenue is rendered slightly off-brown so that it is visible to the players, but
+        # revenue_center#route_base_revenue will always return 60. The ferry fee is then deducted in the 1835 specific code
+        '221' => 'city=revenue:#cb7743_50|brown_60,slots:3;path=a:_0,b:0;path=a:_0,b:1;path=a:_0,b:2;path=a:_0,b:3;path=a:_0,b:4;path=a:_0,b:5;label=HH',
         '239' => 'city=revenue:60,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;label=K',
         '448' => 'city=revenue:40,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0',
         '449' => 'city=revenue:40,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0',

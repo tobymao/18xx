@@ -19,10 +19,6 @@ module Engine
         attr_accessor :draft_deck, :ipo_pool, :unclaimed_commodities, :gauge_change_markers, :jewlery_hex
         attr_reader :ipo_rows
 
-        register_colors(brown: '#a05a2c',
-                        white: '#000000',
-                        purple: '#5a2ca0')
-
         BANKRUPTCY_ALLOWED = false
         BANK_CASH = 9_000
         CURRENCY_FORMAT_STR = '₹%s'
