@@ -49,7 +49,7 @@ module Engine
             distance: [{ 'nodes' => %w[city offboard], 'pay' => 8, 'visit' => 8 },
                        { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
             price: 800,
-            num: 5,
+            num: 'unlimited',
           },
         ].freeze
       end
