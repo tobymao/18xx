@@ -27,6 +27,7 @@ module Engine
         MULTIPLE_BUY_ONLY_FROM_MARKET = true
         MUST_SELL_IN_BLOCKS = true
         EBUY_FROM_OTHERS = :never
+        ALWAYS_SHOW_PAR_PRICE = true
 
         CLOSED_CORP_TRAINS_REMOVED = false
 
