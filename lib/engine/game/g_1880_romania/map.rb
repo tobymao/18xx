@@ -8,16 +8,16 @@ module Engine
 
         TILES = {
           # yellow
-          '5' => 4,
+          '5' => 5,
           '6' => 7,
-          '7' => 4,
+          '7' => 5,
           '8' => 13,
-          '9' => 12,
+          '9' => 13,
           '57' => 6,
           '235' => 3,
           '401' => 2,
           '447' => 2,
-          '8850' => 3,
+          '8850' => 4,
           '8851' => 7,
           '8852' => 7,
           '8854' => 1,
@@ -85,7 +85,7 @@ module Engine
           '8865' => 1,
           '8866' => 3,
           '887' => 5,
-          '888' => 5,
+          '888' => 3,
           'L141' =>
             {
               'count' => 1,
@@ -114,10 +114,10 @@ module Engine
           '63' => 6,
           '70' => 1,
           '497' => 2,
-          '611' => 3,
+          '611' => 2,
           '8871' => 2,
           '8872' => 3,
-          '8874' => 3,
+          '8873' => 3,
           'L150' =>
             {
               'count' => 1,
@@ -139,15 +139,6 @@ module Engine
               'color' => 'gray',
               'code' => 'city=revenue:80,slots:4;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
                         'path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=B',
-            },
-
-          # red
-          'Sib' =>
-            {
-              'count' => 1,
-              'color' => 'red',
-              'code' => 'city=revenue:yellow_20|green_30|brown_40|gray_50;path=a:0,b:_0,terminal:1;'\
-                        'path=a:1,b:_0,terminal:1;label=S',
             },
         }.freeze
 
@@ -315,7 +306,7 @@ module Engine
 
             # town and city
             %w[B10 C9 H12] => 'town=revenue:0;city=revenue:0',
-            ['F10'] => 'town=revenue:0;city=revenue:0;upgrade=cost:10,terrain:mountain;'\
+            ['F10'] => 'town=revenue:0;city=revenue:0;upgrade=cost:20,terrain:mountain;'\
                        'border=edge:5,type:impassable,color:orange',
             ['F20'] => 'town=revenue:0;city=revenue:0;upgrade=cost:30,terrain:mountain',
             ['G5'] => 'town=revenue:0;city=revenue:0;upgrade=cost:40,terrain:mountain',

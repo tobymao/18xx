@@ -20,7 +20,7 @@ module Engine
 
         STARTING_CASH = { 3 => 600, 4 => 480, 5 => 400, 6 => 340 }.freeze
 
-        TRAINS_NOT_TRIGGERING_SR = %w[2P 8 8E].freeze
+        TRAINS_NOT_TRIGGERING_SR = %w[2R 8 8E].freeze
 
         ASSIGNMENT_TOKENS = G1880::Game::ASSIGNMENT_TOKENS.merge(
           'P4' => '/icons/1880_romania/danube_bonus.svg'
@@ -129,7 +129,7 @@ module Engine
                     name: '6',
                     distance: 6,
                     price: 600,
-                    num: 5,
+                    num: 3,
                     events: [{ 'type' => 'float_60' },
                              { 'type' => 'token_cost_doubled' },
                              { 'type' => 'permit_d' }],
@@ -138,8 +138,8 @@ module Engine
                     name: '6E',
                     distance: [{ 'nodes' => %w[city offboard town], 'pay' => 6, 'visit' => 99 }],
                     price: 700,
-                    num: 5,
-                    events: [{ 'type' => 'signal_end_game', 'when' => 5 }],
+                    num: 2,
+                    events: [{ 'type' => 'signal_end_game', 'when' => 2 }],
                   },
                   {
                     name: '8',
@@ -151,9 +151,9 @@ module Engine
                     name: '8E',
                     distance: [{ 'nodes' => %w[city offboard town], 'pay' => 8, 'visit' => 99 }],
                     price: 900,
-                    num: 2,
+                    num: 10,
                   },
-                  { name: '2P', distance: 2, price: 250, num: 10, available_on: 'C2' }].freeze
+                  { name: '2R', distance: 2, price: 250, num: 10, available_on: 'C2' }].freeze
 
         EVENTS_TEXT = G1880::Game::EVENTS_TEXT.merge(
           'signal_end_game' => ['Signal End Game', 'Game ends 3 ORs after purchase/export of last 6E train']

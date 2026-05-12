@@ -70,7 +70,7 @@ module Engine
             train_limit: { minor: 1, regional: 1, major: 3, national: 4 },
             tiles: %i[yellow green],
             operating_rounds: 2,
-            status: ['can_buy_trains_from_others'],
+            status: [],
           },
           {
             name: '5',
@@ -78,7 +78,7 @@ module Engine
             train_limit: { minor: 1, regional: 1, major: 3, national: 4 },
             tiles: %i[yellow green brown],
             operating_rounds: 2,
-            status: ['can_buy_trains_from_others'],
+            status: [],
           },
           {
             name: '6',
@@ -86,7 +86,7 @@ module Engine
             train_limit: { major: 2, national: 3 },
             tiles: %i[yellow green brown],
             operating_rounds: 2,
-            status: ['can_buy_trains_from_others'],
+            status: [],
           },
           {
             name: '7',
@@ -94,7 +94,7 @@ module Engine
             train_limit: { major: 2, national: 3 },
             tiles: %i[yellow green brown gray],
             operating_rounds: 2,
-            status: ['can_buy_trains_from_others'],
+            status: [],
           },
           {
             name: '8',
@@ -102,7 +102,7 @@ module Engine
             train_limit: { major: 2, national: 3 },
             tiles: %i[yellow green brown gray],
             operating_rounds: 2,
-            status: ['can_buy_trains_from_others'],
+            status: [],
           },
         ].freeze
 
@@ -114,7 +114,7 @@ module Engine
                        { 'nodes' => %w[city offboard town], 'pay' => 2, 'visit' => 2 }],
             price: 100,
             rusts_on: '4',
-            num: 35,
+            num: 30,
           },
           # Level 3 — green double-sided (3 / 3+3); rust at Level 6
           {
@@ -361,6 +361,7 @@ module Engine
         }.freeze
 
         MAX_FLOATED_REGIONALS = 18
+        CONVERSION_NEW_SHARES = 6
 
         # still need green+ OE specific track tiles
         TILES = {
@@ -645,6 +646,8 @@ module Engine
           @minor_asterisked_selected = 0
           @minor_floated_regions = {}
           @regional_corps_floated = 0
+          @fulfilled_train_obligation = Set.new
+          @first_or_done = false
 
           corporations.each do |corp|
             corp.par_via_exchange = companies.find { |c| c.sym == corp.id } if corp.type == :minor
@@ -664,6 +667,18 @@ module Engine
 
           total_minors = corporations.count { |c| c.type == :minor }
           @minor_floated_regions.size >= total_minors
+        end
+
+        def fulfilled_train_obligation?(entity)
+          !phase.status.include?('train_obligation') || @fulfilled_train_obligation.include?(entity.id)
+        end
+
+        def fulfill_train_obligation!(entity)
+          @fulfilled_train_obligation.add(entity.id)
+        end
+
+        def non_starter_trains_available?
+          major_phase? && @first_or_done
         end
 
         def operating_order
@@ -724,7 +739,11 @@ module Engine
         end
 
         def can_buy_train_from_others?
-          @phase.status.include?('can_buy_trains_from_others')
+          major_phase?
+        end
+
+        def train_obligation_active?
+          phase.status.include?('train_obligation')
         end
 
         # UP movement at end of SR: only for majors and nationals that are fully player-held
@@ -741,6 +760,7 @@ module Engine
           @round =
             case @round
             when Engine::Round::Operating
+              @first_or_done = true # Rule 8.3/11.6: level 3+ trains unblocked after first OR
               if @consolidation_triggered && !@consolidation_done
                 @log << '-- Consolidation Phase --'
                 new_consolidation_round
@@ -802,12 +822,6 @@ module Engine
           corporation.spend(cost, @bank) if cost&.positive?
         end
 
-        # Override stock price movement according to 18OE rules
-        # - Minors & Regionals: no movement
-        # - Majors & Nationals:
-        #   * revenue >= share price -> move right
-        #   * revenue between 0 and share price -> no move
-        #   * revenue = 0 -> move left
         def change_share_price(entity, revenue)
           return if entity.type == :minor || entity.type == :regional
 
@@ -819,11 +833,26 @@ module Engine
           end
         end
 
+        def add_new_share(share)
+          owner = share.owner
+          corporation = share.corporation
+          corporation.share_holders[owner] += share.percent if owner
+          owner.shares_by_corporation[corporation] << share
+          @_shares[share.id] = share
+        end
+
         def issuable_shares(entity)
           return [] if !entity.corporation? || entity.type != :major
 
           bundles_for_corporation(entity, entity)
             .select { |bundle| @share_pool.fit_in_bank?(bundle) }
+        end
+
+        def redeemable_shares(entity)
+          return [] if !entity.corporation? || entity.type != :major
+
+          bundles_for_corporation(@share_pool, entity)
+            .reject { |bundle| entity.cash < bundle.price }
         end
 
         def value_for_dumpable(player, corporation)

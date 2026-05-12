@@ -1218,10 +1218,10 @@ module Engine
           %i[commodity_legend connection_legend]
         end
 
-        def connection_legend(_font_color, _yellow, green, _brown, _gray, _red, action_processor: nil)
+        def connection_legend(font_color, _yellow, green, _brown, _gray, _red, action_processor: nil)
           cell_style = {
             border: '1px solid',
-            color: 'black',
+            color: font_color,
             'font-weight': 'bold',
             'text-align': 'center',
             'vertical-align': 'middle',
@@ -1238,7 +1238,10 @@ module Engine
               },
             },
             [
-              { text: 'Connection Bonus', props: { attrs: { colspan: 10 }, style: { **cell_style, backgroundColor: green } } },
+              {
+                text: 'Connection Bonus',
+                props: { attrs: { colspan: 10 }, style: { **cell_style, backgroundColor: green, color: 'black' } },
+              },
             ],
             [
               { text: 'Delhi (G8) ⟷ Kocchi (G36)', props: { style: cell_style } },
@@ -1259,16 +1262,17 @@ module Engine
           ]
         end
 
-        def commodity_legend(_font_color, yellow, green, _brown, _gray, _red, action_processor: nil)
+        def commodity_legend(font_color, yellow, green, _brown, _gray, _red, action_processor: nil)
           cell_style = {
             border: '1px solid',
-            color: 'black',
+            color: font_color,
             'font-weight': 'bold',
             'text-align': 'center',
             'vertical-align': 'middle',
             width: '35px',
             height: '25px',
           }
+          yellow_cell_style = { **cell_style, backgroundColor: yellow, color: 'black' }
 
           [
             # table-wide props
@@ -1277,7 +1281,7 @@ module Engine
                 margin: '0.5rem 0 0.5rem 0',
                 border: '1px solid',
                 borderCollapse: 'collapse',
-                color: 'black',
+                color: font_color,
                 'font-weight': 'bold',
                 'text-align': 'center',
                 'vertical-align': 'middle',
@@ -1287,21 +1291,21 @@ module Engine
             [
               {
                 text: 'Commodity Delivery Bonus',
-                props: { style: { backgroundColor: green }, attrs: { colspan: 11 } },
+                props: { style: { backgroundColor: green, color: 'black' }, attrs: { colspan: 11 } },
               },
             ],
             [
-              { text: 'Destination', props: { style: { **cell_style, backgroundColor: yellow } } },
-              { text: 'Hex', props: { style: { **cell_style, backgroundColor: yellow } } },
-              { image: '/icons/18_india/cotton.svg', props: { style: { **cell_style, backgroundColor: yellow } } },
-              { image: '/icons/18_india/gold.svg', props: { style: { **cell_style, backgroundColor: yellow } } },
-              { image: '/icons/18_india/jewlery.svg', props: { style: { **cell_style, backgroundColor: yellow } } },
-              { image: '/icons/18_india/oil.svg', props: { style: { **cell_style, backgroundColor: yellow } } },
-              { image: '/icons/18_india/opium.svg', props: { style: { **cell_style, backgroundColor: yellow } } },
-              { image: '/icons/18_india/ore.svg', props: { style: { **cell_style, backgroundColor: yellow } } },
-              { image: '/icons/18_india/rice.svg', props: { style: { **cell_style, backgroundColor: yellow } } },
-              { image: '/icons/18_india/spices.svg', props: { style: { **cell_style, backgroundColor: yellow } } },
-              { image: '/icons/18_india/tea.svg', props: { style: { **cell_style, backgroundColor: yellow } } },
+              { text: 'Destination', props: { style: yellow_cell_style } },
+              { text: 'Hex', props: { style: yellow_cell_style } },
+              { image: '/icons/18_india/cotton.svg', props: { style: yellow_cell_style } },
+              { image: '/icons/18_india/gold.svg', props: { style: yellow_cell_style } },
+              { image: '/icons/18_india/jewlery.svg', props: { style: yellow_cell_style } },
+              { image: '/icons/18_india/oil.svg', props: { style: yellow_cell_style } },
+              { image: '/icons/18_india/opium.svg', props: { style: yellow_cell_style } },
+              { image: '/icons/18_india/ore.svg', props: { style: yellow_cell_style } },
+              { image: '/icons/18_india/rice.svg', props: { style: yellow_cell_style } },
+              { image: '/icons/18_india/spices.svg', props: { style: yellow_cell_style } },
+              { image: '/icons/18_india/tea.svg', props: { style: yellow_cell_style } },
             ],
             [
               { text: 'Chennai', props: { style: cell_style } },
