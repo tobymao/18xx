@@ -56,6 +56,7 @@ module Engine
         SELL_MOVEMENT = :down_block
         STARTING_CASH = { 3 => 580, 4 => 480 }.freeze
         TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, cost: 20, upgrade: false }].freeze
+        AUTOFLOAT_FROM_MARKET_SHARES = true
 
         # This allows us to add in privates to the cert count ourselves, without
         # the PEIR shares later on
