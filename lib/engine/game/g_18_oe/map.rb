@@ -382,7 +382,7 @@ module Engine
             ['S78'] => 'city=revenue:0;border=edge:0,type:province',
             ['S76'] => 'city=revenue:0;partition=a:-1,b:3,type:province;partition=a:-1,b:5,type:province',
             ['R75'] => 'border=edge:1,type:province;partition=a:-1,b:2,type:province;partition=a:-1,b:5,type:province',
-            #Other
+            # Other
             ['I44'] => 'border=edge:5,type:province',
             ['I66'] => 'town=revenue:0;border=edge:0,type:province',
             ['J45'] => 'border=edge:2,type:province;border=edge:3,type:province',
@@ -612,7 +612,7 @@ module Engine
             ] => 'upgrade=cost:30,terrain:water',
             %w[
               A72 A74 C42 C76 E50 E54 E72 G44 K44 N81 O82 Q20
-             U76 V79 AB71 AE52
+              U76 V79 AB71 AE52
             ] => 'upgrade=cost:45,terrain:river',
             %w[
               B81 C82 T23 AB77 AC76 AD71 AG70
@@ -672,7 +672,7 @@ module Engine
             ['B41'] => 'city=revenue:yellow_30|green_60|brown_80|gray_120,slots:2;' \
                        'path=a:1,b:_0;path=a:_0,b:3;path=a:_0,b:4;' \
                        'icon=image:port,sticky:1',
-            ['B83'] => 'offboard=revenue:yellow_30|green_50|brown_60|gray_60;path=a:1,b:_0;path=a:0,b:_0;',
+            ['B83'] => 'offboard=revenue:yellow_30|green_50|brown_60|gray_60;path=a:1,b:_0;path=a:0,b:_0;', # Arkhangelsk — no path defined
             # Moskva
             ['F87'] => 'city=revenue:yellow_30|green_50|brown_80|gray_100,slots:3;' \
                        'path=a:0,b:_0;path=a:_0,b:1;path=a:_0,b:2;path=a:_0,b:5',
