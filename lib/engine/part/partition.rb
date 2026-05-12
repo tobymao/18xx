@@ -14,22 +14,22 @@ module Engine
       }.freeze
 
       def initialize(a, b, type, restrict)
-        # Vertices 0-5 are hex corners clockwise from bottom-right.
-        # -1 is the hex centre (used by 18OE province borders); a.to_i handles it naturally.
-        # Sign suffix (e.g. '0+') shifts draw position only — no routing effect.
+        # a and b are vertices of the hex. 0 represents the bottom one and then you go clockwise
+        # The sign tells if the partition should be drawn a little bit before or after the vertex,
+        # but doesn't have any impact on the game
         a, b = [a, b].minmax
-        @a = a.to_i
-        @a_sign = @a.negative? ? 0 : SIGN[a[1]]
+        @a = a[0].to_i
+        @a_sign = SIGN[a[1]]
         @b = b[0].to_i
         @b_sign = SIGN[b[1]]
 
-        @type = type&.to_sym
+        @type = type
         # If restrict==inner, only allow paths between a and b. If outer, only between b and a
         @restrict = restrict
         @blockers = []
 
-        @inner = @a.negative? || restrict == 'outer' ? [] : (@a..(@b - 1)).to_a
-        @outer = @a.negative? || restrict == 'inner' ? [] : (0..5).to_a - (@a..(@b - 1)).to_a
+        @inner = (restrict == 'outer' ? [] : (@a..(@b - 1)).to_a)
+        @outer = (restrict == 'inner' ? [] : (0..5).to_a - (@a..(@b - 1)).to_a)
       end
 
       def add_blocker!(private_company)
