@@ -156,7 +156,7 @@ module Engine
           },
           {
             name: 'D',
-            num: 20,
+            num: 'unlimited',
             distance: 99,
             price: 1000,
             variants: [

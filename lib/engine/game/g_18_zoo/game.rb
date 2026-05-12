@@ -126,7 +126,7 @@ module Engine
             distance: 4,
             multiplier: 2,
             price: 47,
-            num: 99,
+            num: 'unlimited',
             events: [{ 'type' => 'new_train' }, { 'type' => 'rust_own_3s_4s' }],
             variants: [
               {

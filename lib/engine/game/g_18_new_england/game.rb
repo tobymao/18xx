@@ -170,7 +170,7 @@ module Engine
             name: '8E',
             distance: 8,
             price: 800,
-            num: 20,
+            num: 'unlimited',
           },
         ].freeze
 

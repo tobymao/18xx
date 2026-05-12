@@ -101,13 +101,13 @@ module Engine
             name: '6',
             distance: 6,
             price: 600,
-            num: 20,
+            num: 'unlimited',
           },
           {
             name: '4D',
             distance: 999,
             price: 1100,
-            num: 20,
+            num: 'unlimited',
           },
         ].freeze
 
