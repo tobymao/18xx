@@ -77,7 +77,7 @@ module Engine
           },
           red: {
             ['D2'] => 'city=revenue:yellow_20|green_30|brown_50|gray_70;path=a:4,b:_0,terminal:1;path=a:5,b:_0,terminal:1',
-            ['B8'] => 'city=revenue:yellow_20|green_30|brown_50|gray_70;path=a:3,b:_0,terminal:1;path=a:4,b:_0,terminal:1',
+            ['B8'] => 'city=revenue:yellow_20|green_30|brown_40|gray_60;path=a:3,b:_0,terminal:1;path=a:4,b:_0,terminal:1',
             ['Q1'] => 'city=revenue:yellow_30|green_40|brown_50|gray_60;path=a:0,b:_0,terminal:1',
             ['K7'] => 'offboard=revenue:yellow_10|green_20|brown_40|gray_50,hide:1,groups:Istanbul;'\
                       'path=a:3,b:_0,terminal:1;border=edge:4',

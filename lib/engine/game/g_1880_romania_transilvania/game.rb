@@ -65,7 +65,7 @@ module Engine
         def game_trains
           unless @train_games
             @train_games = super.map(&:dup)
-            t_2, t_2p2, t_3, t_3p3, t_4, t_4p4, t_6, t_6e, t_8, t_8e, t_2r = @train_games
+            t_2, t_2p2, t_3, t_3p3, t_4, t_4p4, t_6, t_6e, t_8, t_8e, t_2p = @train_games
             t_2[:num] = 6
             t_2p2[:num] = 3
             t_3[:num] = 3
@@ -76,9 +76,9 @@ module Engine
             t_6[:num] = 2
             t_6e[:num] = 1
             t_6e[:events] = [{ 'type' => 'signal_end_game', 'when' => 1 }]
-            t_8[:num] = 'unlimited'
-            t_8e[:num] = 0
-            t_2r[:num] = 0
+            t_8[:num] = 1
+            t_8e[:num] = 'unlimited'
+            t_2p[:num] = 6
           end
           @train_games
         end
@@ -134,7 +134,7 @@ module Engine
         end
 
         # Not used in this variant
-        def trans_siberian_bonusd(_)
+        def trans_siberian_bonus?(_)
           false
         end
       end
