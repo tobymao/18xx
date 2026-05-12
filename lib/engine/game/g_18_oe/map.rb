@@ -373,8 +373,10 @@ module Engine
             ['T75'] => 'upgrade=cost:45,terrain:river;partition=a:-1,b:0,type:province;partition=a:-1,b:2,type:province',
             ['S74'] => 'partition=a:-1,b:0,type:province;partition=a:-1,b:2,type:province;border=edge:2,type:province',
             # RU South border
-            ['U78'] => 'town=revenue:0;upgrade=cost:45,terrain:river;partition=a:-1,b:3,type:province;partition=a:-1,b:5,type:province',
-            ['U80'] => 'town=revenue:0;upgrade=cost:45,terrain:river;partition=a:-1,b:1,type:province;partition=a:-1,b:5,type:province',
+            ['U78'] => 'town=revenue:0;upgrade=cost:45,terrain:river;partition=a:-1,b:3,type:province;' \
+                       'partition=a:-1,b:5,type:province',
+            ['U80'] => 'town=revenue:0;upgrade=cost:45,terrain:river;partition=a:-1,b:1,type:province;' \
+                       'partition=a:-1,b:5,type:province',
             ['T79'] => 'upgrade=cost:45,terrain:river;border=edge:1,type:province',
             ['T77'] => 'upgrade=cost:45,terrain:river;border=edge:3,type:province;border=edge:4,type:province',
             ['S78'] => 'city=revenue:0;border=edge:0,type:province',
