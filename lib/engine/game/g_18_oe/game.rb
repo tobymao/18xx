@@ -361,6 +361,7 @@ module Engine
         }.freeze
 
         MAX_FLOATED_REGIONALS = 18
+        CONVERSION_NEW_SHARES = 6
 
         # still need green+ OE specific track tiles
         TILES = {
@@ -821,12 +822,6 @@ module Engine
           corporation.spend(cost, @bank) if cost&.positive?
         end
 
-        # Override stock price movement according to 18OE rules
-        # - Minors & Regionals: no movement
-        # - Majors & Nationals:
-        #   * revenue >= share price -> move right
-        #   * revenue between 0 and share price -> no move
-        #   * revenue = 0 -> move left
         def change_share_price(entity, revenue)
           return if entity.type == :minor || entity.type == :regional
 
@@ -838,11 +833,26 @@ module Engine
           end
         end
 
+        def add_new_share(share)
+          owner = share.owner
+          corporation = share.corporation
+          corporation.share_holders[owner] += share.percent if owner
+          owner.shares_by_corporation[corporation] << share
+          @_shares[share.id] = share
+        end
+
         def issuable_shares(entity)
           return [] if !entity.corporation? || entity.type != :major
 
           bundles_for_corporation(entity, entity)
             .select { |bundle| @share_pool.fit_in_bank?(bundle) }
+        end
+
+        def redeemable_shares(entity)
+          return [] if !entity.corporation? || entity.type != :major
+
+          bundles_for_corporation(@share_pool, entity)
+            .reject { |bundle| entity.cash < bundle.price }
         end
 
         def value_for_dumpable(player, corporation)
