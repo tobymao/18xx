@@ -15,7 +15,7 @@ module Engine
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1880-Romania'
         GAME_LOCATION = 'Romania'
         GAME_PUBLISHER = :lonny_games
-        GAME_RULES_URL = ''
+        GAME_RULES_URL = 'https://www.lonnygames.com/downloads/'
         GAME_TITLE = '1880 Romania'
 
         PLAYER_RANGE = [3, 6].freeze
