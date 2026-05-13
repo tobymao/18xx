@@ -42,6 +42,7 @@ module Engine
         CAPITALIZATION = :incremental
 
         MUST_SELL_IN_BLOCKS = false
+        BUY_SHARE_FROM_OTHER_PLAYER = true
 
         TOKEN_PLACEMENT_ON_TILE_LAY_ENTITY = :owner
 
@@ -148,6 +149,8 @@ module Engine
 
         HOME_TOKEN_TIMING = :float
 
+        CORPORATION_BLOCKS = [%w[BY SX], %w[BA WT HE PR], %w[MS OL]].freeze
+
         def setup
           # Reserve Preußen shares to be exchanged for Vorpreußen and Privates
           # Reserving the president share would be correct here, but that would make can_buy and process_buy_shares
@@ -168,6 +171,8 @@ module Engine
 
           corporation_by_id('BY').ipoed = true
           corporation_by_id('SX').ipoed = true
+
+          @corporation_blocks = CORPORATION_BLOCKS.map { |block| block.map { |c| corporation_by_id(c) } }
         end
 
         def company_header(company)
@@ -214,6 +219,50 @@ module Engine
             Engine::Step::DiscardTrain,
             G1835::Step::BuyTrain,
           ], round_num: round_num)
+        end
+
+        def stock_round
+          Engine::Round::Stock.new(self, [
+            G1835::Step::BuySellParShares,
+          ])
+        end
+
+        def maybe_ipo_next_block(corporation)
+          block = @corporation_blocks.find { |corporation_block| corporation_block.include?(corporation) }
+          all_in_block_sold = block.all? { |corp| corp.shares.select(&:buyable).empty? }
+          return unless all_in_block_sold
+          return if block == @corporation_blocks.last
+
+          next_block = @corporation_blocks[@corporation_blocks.index(block) + 1]
+          @log << 'All shares of the current block have been sold.'\
+                  " The next block is now available, starting with #{next_block.first.name}"
+          next_block.each { |corp_to_ipo| corp_to_ipo.ipoed = true }
+        end
+
+        def cert_limit(player = nil)
+          return @cert_limit unless player
+
+          @cert_limit + @corporations.count { |corporation| corporation.type == :major && player.percent_of(corporation) >= 80 }
+        end
+
+        def corporation_available?(corp)
+          return !corporation_by_id('BA').shares.first&.president if corp == corporation_by_id('PR')
+
+          block = @corporation_blocks.find { |corporation_block| corporation_block.include?(corp) }
+          index_in_block = block.index(corp)
+          return true if index_in_block.zero?
+
+          block[index_in_block - 1].floated?
+        end
+
+        def can_par?(_corporation, _parrer)
+          false
+        end
+
+        def sorted_corporations
+          ipoed, others = corporations.partition(&:ipoed)
+          floated, not_floated = ipoed.partition(&:floated)
+          floated.sort + not_floated + others
         end
 
         def revenue_for(route, stops)

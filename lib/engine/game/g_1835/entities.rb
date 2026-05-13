@@ -281,6 +281,18 @@ module Engine
             color: :green,
           },
           {
+            sym: 'PR',
+            name: 'Preußische Eisenbahn',
+            type: 'major',
+            logo: '1835/PR',
+            simple_logo: '1835/PR.alt',
+            tokens: [0, 0, 0, 0, 0],
+            floatable: false,
+            max_ownership_percent: 100,
+            shares: [10, 10, 10, 10, 10, 10, 10, 10, 5, 5, 5, 5],
+            color: '#37383a',
+          },
+          {
             sym: 'MS',
             name: 'Eisenbahn Mecklenburg Schwerin',
             type: 'major',
@@ -313,18 +325,6 @@ module Engine
             fraction_shares: false,
             coordinates: 'D6',
             color: '#6e6966',
-          },
-          {
-            sym: 'PR',
-            name: 'Preußische Eisenbahn',
-            type: 'major',
-            logo: '1835/PR',
-            simple_logo: '1835/PR.alt',
-            tokens: [0, 0, 0, 0, 0],
-            floatable: false,
-            max_ownership_percent: 100,
-            shares: [10, 10, 10, 10, 10, 10, 10, 10, 5, 5, 5, 5],
-            color: '#37383a',
           },
         ].freeze
 
