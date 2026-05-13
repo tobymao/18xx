@@ -12,7 +12,6 @@ module Engine
           '5' => 3,
           '6' => 3,
           '8' => 2,
-          '10' => 20,
           '1g' => 6,
           '2g' => 5,
           '3g' => 4,
@@ -71,6 +70,7 @@ module Engine
             name: '10',
             distance: 10,
             price: 1000,
+            num: 'unlimited',
             discount: { '8' => 400 },
           },
           {
