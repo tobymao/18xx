@@ -67,7 +67,7 @@ module View
             vertex_b = if partition.len
                          va = VERTICES[partition.a]
                          vb = VERTICES[partition.b]
-                         va.zip(vb).map { |ai, bi| ai + partition.len * (bi - ai) }
+                         va.zip(vb).map { |ai, bi| ai + (partition.len * (bi - ai)) }
                        else
                          b_control = VERTICES[(partition.b + partition.b_sign) % 6]
                          convex_combination(VERTICES[partition.b], b_control)
