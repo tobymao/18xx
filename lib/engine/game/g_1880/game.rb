@@ -234,7 +234,7 @@ module Engine
                     price: 900,
                     num: 2,
                   },
-                  { name: '10', distance: 10, price: 1000, num: 10 },
+                  { name: '10', distance: 10, price: 1000, num: 'unlimited' },
                   { name: '2P', distance: 2, price: 250, num: 10, available_on: 'C2' }].freeze
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
