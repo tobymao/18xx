@@ -58,16 +58,16 @@ module View
               !@game || @game&.abilities(blocker, :blocks_partition)&.blocks?(partition.type)
             end
 
-            vertex_a = if partition.len
+            vertex_a = if partition.length
                          VERTICES[partition.a]
                        else
                          a_control = VERTICES[(partition.a + partition.a_sign) % 6]
                          convex_combination(VERTICES[partition.a], a_control)
                        end
-            vertex_b = if partition.len
+            vertex_b = if partition.length
                          va = VERTICES[partition.a]
                          vb = VERTICES[partition.b]
-                         va.zip(vb).map { |ai, bi| ai + (partition.len * (bi - ai)) }
+                         va.zip(vb).map { |ai, bi| ai + (partition.length * (bi - ai)) }
                        else
                          b_control = VERTICES[(partition.b + partition.b_sign) % 6]
                          convex_combination(VERTICES[partition.b], b_control)
