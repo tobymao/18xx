@@ -16,7 +16,6 @@ module View
         needs :user, default: nil, store: true
 
         VERTICES = {
-          -1 => [0, 0],
           0 => [Lib::Hex::X_M_R, Lib::Hex::Y_B],
           1 => [Lib::Hex::X_M_L, Lib::Hex::Y_B],
           2 => [Lib::Hex::X_L, Lib::Hex::Y_M],
@@ -59,14 +58,20 @@ module View
               !@game || @game&.abilities(blocker, :blocks_partition)&.blocks?(partition.type)
             end
 
-            vertex_a = if partition.a.negative?
+            vertex_a = if partition.len
                          VERTICES[partition.a]
                        else
                          a_control = VERTICES[(partition.a + partition.a_sign) % 6]
                          convex_combination(VERTICES[partition.a], a_control)
                        end
-            b_control = VERTICES[(partition.b + partition.b_sign) % 6]
-            vertex_b = convex_combination(VERTICES[partition.b], b_control)
+            vertex_b = if partition.len
+                         va = VERTICES[partition.a]
+                         vb = VERTICES[partition.b]
+                         va.zip(vb).map { |ai, bi| ai + partition.len * (bi - ai) }
+                       else
+                         b_control = VERTICES[(partition.b + partition.b_sign) % 6]
+                         convex_combination(VERTICES[partition.b], b_control)
+                       end
 
             da = if partition.a_sign.nonzero?
                    VERTICES[partition.a].map { |x| x * (1 - ((1 - COEFFICIENT) * 2)) } # cos(30) = 1/2
