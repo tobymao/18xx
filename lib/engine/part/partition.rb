@@ -23,10 +23,10 @@ module Engine
         @b = b[0].to_i
         @b_sign = SIGN[b[1]]
 
-        @type = type
+        @type = type&.to_sym
         # If restrict==inner, only allow paths between a and b. If outer, only between b and a
         @restrict = restrict
-        @length = length
+        @length = length&.to_f
         @blockers = []
 
         @inner = (restrict == 'outer' ? [] : (@a..(@b - 1)).to_a)
