@@ -37,6 +37,8 @@ module Engine
         MUST_SELL_IN_BLOCKS = false
         HOME_TOKEN_TIMING = :float
         TILE_UPGRADES_MUST_USE_MAX_EXITS = [:cities].freeze
+        # §11.6.4/11.6.5: no player-bankruptcy game-end; force-buy converts major or suspends minor
+        GAME_END_CHECK = { bank: :full_or }.freeze
 
         STOCKMARKET_COLORS = {
           par: :blue,
