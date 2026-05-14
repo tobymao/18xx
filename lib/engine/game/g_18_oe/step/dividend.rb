@@ -35,6 +35,7 @@ module Engine
 
             { share_direction: :right, share_times: 1 }
           end
+
           def dividend_types
             case current_entity.type
             when :minor
