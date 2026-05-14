@@ -772,7 +772,6 @@ module Engine
           cost
         end
 
-
         # UP movement at end of SR: only for majors and nationals that are fully player-held
         def sold_out_increase?(corporation)
           %i[major national].include?(corporation.type)
