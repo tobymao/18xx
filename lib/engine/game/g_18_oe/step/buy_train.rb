@@ -15,8 +15,8 @@ module Engine
             trains = super
 
             # Level 8 trains only available after 4th level-7 purchase (§11.6)
-            if level8_available?
-              if trains.none? { |t| t.name == '8+8' }
+            if @game.level8_train_available?
+              unless trains.any? { |t| t.name == '8+8' }
                 lvl8 = @game.depot.upcoming.find { |t| t.name == '8+8' }
                 trains = trains + [lvl8] if lvl8
               end
@@ -41,14 +41,6 @@ module Engine
           end
 
           # TODO: Nationals claiming rusted trains for free (openpoints §1.9, §3.7) — deferred
-
-          private
-
-          def level8_available?
-            level7_remaining = @game.depot.upcoming.count { |t| t.name == '7+7' }
-            level7_total = @game.depot.trains.count { |t| %w[7+7 4D].include?(t.name) }
-            level7_total - level7_remaining >= 4
-          end
         end
       end
     end
