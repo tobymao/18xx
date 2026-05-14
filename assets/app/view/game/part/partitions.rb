@@ -34,6 +34,8 @@ module View
               @tile.color
             when :mountain
               :brown
+            when :province
+              :orange
             when :water
               :blue
             when :impassable
@@ -53,7 +55,7 @@ module View
           children = []
 
           @tile.partitions.each do |partition|
-            next if partition.type != :divider && partition.blockers.none? do |blocker|
+            next if partition.type != :divider && partition.type != :province && partition.blockers.none? do |blocker|
               !@game || @game&.abilities(blocker, :blocks_partition)&.blocks?(partition.type)
             end
 
@@ -61,6 +63,8 @@ module View
             vertex_a = convex_combination(VERTICES[partition.a], a_control)
             b_control = VERTICES[(partition.b + partition.b_sign) % 6]
             vertex_b = convex_combination(VERTICES[partition.b], b_control)
+
+            vertex_b = vertex_a.zip(vertex_b).map { |a, b| a + (partition.length * (b - a)) } if partition.length
 
             da = if partition.a_sign.nonzero?
                    VERTICES[partition.a].map { |x| x * (1 - ((1 - COEFFICIENT) * 2)) } # cos(30) = 1/2
@@ -86,11 +90,9 @@ module View
 
             d = "M #{vertex_a.join(' ')} C #{da}#{magnet_str} #{db}, #{vertex_b.join(' ')}"
 
-            children << h(:path, attrs: {
-                            d: d,
-                            stroke: color(partition),
-                            'stroke-width': '8',
-                          })
+            attrs = { d: d, stroke: color(partition), 'stroke-width': '8' }
+            attrs[:'stroke-dasharray'] = '20 20' if partition.type == :province
+            children << h(:path, attrs: attrs)
           end
 
           h(:g, children)

@@ -186,7 +186,8 @@ module Engine
       when 'stub'
         Part::Stub.new(params['edge'].to_i)
       when 'partition'
-        Part::Partition.new(params['a'], params['b'], params['type'], params['restrict'])
+        Part::Partition.new(params['a'], params['b'], params['type'], params['restrict'],
+                            length: params['length'])
       when 'frame'
         Part::Frame.new(params['color'], params['color2'])
       when 'stripes'
