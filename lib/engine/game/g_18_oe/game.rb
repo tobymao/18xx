@@ -225,6 +225,8 @@ module Engine
         ASTERISKED_ZONES = %w[UK PHS FR].freeze
         ASTERISKED_ZONES_CAP = 4
 
+        ZONE_DISCOUNT_ZONES = %w[SP IT SC RU].freeze
+
         CORPORATIONS_TRACK_RIGHTS = {
           # United Kingdom
           'LNWR' => 'UK',
@@ -747,6 +749,30 @@ module Engine
           phase.status.include?('train_obligation')
         end
 
+        def upgrade_cost(old_tile, hex, entity, spender)
+          base_cost = old_tile.upgrades.sum(&:cost)
+          return super if base_cost.zero?
+
+          entity_zone = entity_track_rights_zone(entity)
+          hex_zone = region_for_hex(hex)
+          zone_match = hex_zone && entity_zone == hex_zone &&
+                       self.class::ZONE_DISCOUNT_ZONES.include?(hex_zone)
+
+          return super unless zone_match
+
+          # §11.1.5: 20% zone discount; E/F terrain ability on matching terrain augments to 50%
+          ef_ability = terrain_discount_ability(entity, old_tile)
+          rate = ef_ability ? Rational(1, 2) : Rational(1, 5)
+          cost = (base_cost * (1 - rate)).floor
+          discount = base_cost - cost
+          if discount.positive?
+            label = ef_ability ? "#{(rate * 100).to_i}% zone+#{ef_ability.owner.name}" : '20% zone'
+            @log << "#{spender.name} receives a #{label} discount of #{format_currency(discount)}"
+          end
+          cost
+        end
+
+
         # UP movement at end of SR: only for majors and nationals that are fully player-held
         def sold_out_increase?(corporation)
           %i[major national].include?(corporation.type)
@@ -863,7 +889,7 @@ module Engine
         end
 
         def stock_round
-          G18OE::Round::Stock.new(self, [
+          Round::G18OE::Stock.new(self, [
             Engine::Step::DiscardTrain,
             G18OE::Step::HomeToken,
             G18OE::Step::BuySellParShares,
@@ -890,6 +916,22 @@ module Engine
             # Convert step to do national conversions at 4/6/8?
             G18OE::Step::IssueShares,
           ], round_num: round_num)
+        end
+
+        private
+
+        def entity_track_rights_zone(entity)
+          resolved = entity.corporation? ? entity : entity.owner
+          return nil unless resolved&.corporation?
+
+          self.class::CORPORATIONS_TRACK_RIGHTS[resolved.id] || @minor_floated_regions[resolved.id]
+        end
+
+        def terrain_discount_ability(entity, tile)
+          resolved = entity.corporation? ? entity : entity.owner
+          return nil unless resolved&.corporation?
+
+          resolved.all_abilities.find { |a| a.type == :tile_discount && a.terrain && a.discounts_tile?(tile) }
         end
       end
     end
