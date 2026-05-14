@@ -888,7 +888,7 @@ module Engine
             G18OE::Step::Dividend,
             G18OE::Step::BuyTrain,
             # Convert step to do national conversions at 4/6/8?
-            Engine::Step::IssueShares,
+            G18OE::Step::IssueShares,
           ], round_num: round_num)
         end
       end
