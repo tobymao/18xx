@@ -40,7 +40,7 @@ module Engine
 
           def process_place_token(action)
             super
-            @game.graph.clear
+            @game.clear_no_blocking_graph
           end
 
           def pay_token_cost(entity, cost, city)
