@@ -910,6 +910,7 @@ module Engine
 
       def transition_to_next_round!
         store_player_info
+        @log.indent_group = nil
         next_round!
         return if @finished
 
