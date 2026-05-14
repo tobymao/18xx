@@ -18,7 +18,7 @@ module Engine
             if @game.level8_train_available?
               unless trains.any? { |t| t.name == '8+8' }
                 lvl8 = @game.depot.upcoming.find { |t| t.name == '8+8' }
-                trains = trains + [lvl8] if lvl8
+                trains += [lvl8] if lvl8
               end
             else
               trains = trains.reject { |t| t.name == '8+8' }
