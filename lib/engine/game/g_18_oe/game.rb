@@ -37,8 +37,10 @@ module Engine
         MUST_SELL_IN_BLOCKS = false
         HOME_TOKEN_TIMING = :float
         TILE_UPGRADES_MUST_USE_MAX_EXITS = [:cities].freeze
-        # §11.6.4/11.6.5: no player-bankruptcy game-end; force-buy converts major or suspends minor
-        GAME_END_CHECK = { bank: :full_or }.freeze
+        # §13: bank-break ends at current OR; level-8 purchase ends at one_more_full_or_set
+        GAME_END_CHECK = { bank: :current_or, final_phase: :one_more_full_or_set }.freeze
+        # Physical game includes 20×£5,000 notes set aside at setup; injected when first level-8 bought
+        REMAINDER_CASH = 100_000
 
         STOCKMARKET_COLORS = {
           par: :blue,
@@ -195,6 +197,7 @@ module Engine
             num: 17,
           },
           # Level 8 — gray double-sided (8+8 / 5D); permanent
+          # NOTE: purchase of the FIRST level-8 triggers game end (§13)
           {
             name: '8+8',
             distance: [{ 'nodes' => ['town'], 'pay' => 8, 'visit' => 99 },
@@ -207,6 +210,7 @@ module Engine
               price: 1000,
             }],
             num: 11,
+            events: [{ 'type' => 'level8_train_purchased' }],
           },
         ].freeze
 
@@ -746,6 +750,20 @@ module Engine
 
         def train_obligation_active?
           phase.status.include?('train_obligation')
+        end
+
+        def game_end_check_final_phase?
+          @level8_train_purchased
+        end
+
+        def event_level8_train_purchased!
+          return if @level8_train_purchased
+
+          @level8_train_purchased = true
+          remainder = self.class::REMAINDER_CASH
+          @bank.instance_variable_set(:@cash, @bank.cash + remainder)
+          @log << "-- Event: First level 8 train purchased --"
+          @log << "#{format_currency(remainder)} remainder cash added to bank (§13)"
         end
 
         # UP movement at end of SR: only for majors and nationals that are fully player-held
