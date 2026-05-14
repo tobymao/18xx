@@ -724,8 +724,9 @@ module Engine
           @no_blocking_graph.reachable_hexes(entity).include?(hex_by_id(entity.destination))
         end
 
-        def clear_no_blocking_graph
-          @no_blocking_graph = nil
+        def clear_graph_for_entity(entity)
+          super
+          @no_blocking_graph&.clear
         end
 
         def check_offboard_goal(entity, routes)
@@ -898,7 +899,6 @@ module Engine
             super
           end
           clear_graph_for_entity(corporation)
-          clear_no_blocking_graph
           corporation.goal_reached!(:destination) if check_for_destination_connection(corporation)
         end
 
