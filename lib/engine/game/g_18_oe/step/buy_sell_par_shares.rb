@@ -219,9 +219,11 @@ module Engine
           end
 
           def get_par_prices(entity, corp)
-            return super unless corp.type == :minor
+            prices = @game.stock_market.par_prices
+            return prices if corp.type == :minor
+            return prices.select { |p| p.price * 2 <= available_cash(entity) } if corp.type == :regional
 
-            @game.stock_market.par_prices
+            super
           end
 
           def check_legal_buy(entity, shares, exchange: nil, swap: nil, allow_president_change: true)
