@@ -4,7 +4,6 @@ require_relative 'meta'
 require_relative '../g_1880/game'
 require_relative 'map'
 require_relative 'entities'
-require_relative 'minor'
 
 module Engine
   module Game
@@ -160,7 +159,7 @@ module Engine
         ).freeze
 
         def init_minors
-          game_minors.map { |minor| G1880Romania::Minor.new(**minor) }
+          game_minors.map { |minor| G1880::Minor.new(**minor) }
         end
 
         def new_draft_round
