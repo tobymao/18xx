@@ -5,6 +5,7 @@ require_relative 'entities'
 require_relative 'map'
 require_relative '../base'
 require_relative 'round/consolidation'
+require_relative 'round/stock'
 require_relative 'step/consolidate'
 
 module Engine
@@ -862,7 +863,7 @@ module Engine
         end
 
         def stock_round
-          Round::Stock.new(self, [
+          G18OE::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
             G18OE::Step::HomeToken,
             G18OE::Step::BuySellParShares,
