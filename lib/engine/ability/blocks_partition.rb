@@ -8,7 +8,7 @@ module Engine
       attr_reader :partition_type
 
       def setup(partition_type:)
-        @partition_type = partition_type&.to_sym
+        @partition_type = partition_type
       end
 
       def blocks?(partition_type)
