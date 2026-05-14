@@ -16,6 +16,7 @@ module View
         needs :user, default: nil, store: true
 
         VERTICES = {
+          -1 => [0, 0],
           0 => [Lib::Hex::X_M_R, Lib::Hex::Y_B],
           1 => [Lib::Hex::X_M_L, Lib::Hex::Y_B],
           2 => [Lib::Hex::X_L, Lib::Hex::Y_M],
@@ -27,14 +28,14 @@ module View
         COEFFICIENT = 0.8
 
         def color(partition)
-          return '#FF8C00' if partition.type == :province
-
           color =
             case partition.type
             when nil
               @tile.color
             when :mountain
               :brown
+            when :province
+              :orange
             when :water
               :blue
             when :impassable
@@ -58,20 +59,12 @@ module View
               !@game || @game&.abilities(blocker, :blocks_partition)&.blocks?(partition.type)
             end
 
-            vertex_a = if partition.length
-                         VERTICES[partition.a]
-                       else
-                         a_control = VERTICES[(partition.a + partition.a_sign) % 6]
-                         convex_combination(VERTICES[partition.a], a_control)
-                       end
-            vertex_b = if partition.length
-                         va = VERTICES[partition.a]
-                         vb = VERTICES[partition.b]
-                         va.zip(vb).map { |ai, bi| ai + (partition.length * (bi - ai)) }
-                       else
-                         b_control = VERTICES[(partition.b + partition.b_sign) % 6]
-                         convex_combination(VERTICES[partition.b], b_control)
-                       end
+            a_control = VERTICES[(partition.a + partition.a_sign) % 6]
+            vertex_a = convex_combination(VERTICES[partition.a], a_control)
+            b_control = VERTICES[(partition.b + partition.b_sign) % 6]
+            vertex_b = convex_combination(VERTICES[partition.b], b_control)
+
+            vertex_b = vertex_a.zip(vertex_b).map { |a, b| a + (partition.length * (b - a)) } if partition.length
 
             da = if partition.a_sign.nonzero?
                    VERTICES[partition.a].map { |x| x * (1 - ((1 - COEFFICIENT) * 2)) } # cos(30) = 1/2
