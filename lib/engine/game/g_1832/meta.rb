@@ -8,27 +8,47 @@ module Engine
       module Meta
         include Game::Meta
 
+        DEV_STAGE = :prealpha
         DEPENDS_ON = '1850'
 
-        DEV_STAGE = :prealpha
-
-        GAME_DESIGNER = 'Bill Dixon'
+        GAME_SUBTITLE = 'The South'
+        GAME_DESIGNER = 'W. R. Dixon'
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1832'
-        GAME_LOCATION = 'Southern States, USA'
-        PUBLISHER = :golden_spike
+        GAME_LOCATION = 'The American South'
+        GAME_PUBLISHER = :golden_spike
         GAME_RULES_URL = 'https://drive.google.com/file/d/1LQCQbf4r5isUuPqK6mILUz89iNwK0ARx/view?usp=sharing'
 
-        PLAYER_RANGE = [3, 7].freeze
+        PLAYER_RANGE = [2, 7].freeze
         OPTIONAL_RULES = [
           {
-            sym: :game_end_on_400_stock_price,
-            short_name: 'End game if stock price hits 400',
-            desc: 'Game will end after the operating turn of a company with share value of 400',
+            sym: :finish_on_400,
+            short_name: '$400 Finish',
+            desc: 'Game ends immediately when any corporation\'s share price reaches $400.',
           },
           {
-            sym: :diesel_trains,
-            short_name: 'Use 1830-style diesels',
-            desc: 'Instead of 8, 10, and 12 trains — use Diesels',
+            sym: :diesels,
+            short_name: 'Diesels',
+            desc: '8- and 10-trains are removed. 12-trains become 1830-style Diesels available '\
+                  'after the first 6-train. A train may be traded in on a Diesel for a $300 credit. '\
+                  '5-trains are permanent.',
+          },
+          {
+            sym: :southern_bank,
+            short_name: 'Southern Bank',
+            desc: 'Adds P6, the Southern Bank private company. Starting capital increases to '\
+                  '$2400 divided by the number of players. This private currently does not do '\
+                  'anything special except give revenue of $10 per round.',
+          },
+          {
+            sym: :historical_order,
+            short_name: 'Historical Order',
+            desc: 'Corporations must start in historical order. A corporation\'s 6th share may not '\
+                  'be purchased until all predecessor corporations have sold 6 shares.',
+          },
+          {
+            sym: :no_mergers,
+            short_name: 'No Mergers',
+            desc: 'Disables all merger rules.',
           },
         ].freeze
       end
