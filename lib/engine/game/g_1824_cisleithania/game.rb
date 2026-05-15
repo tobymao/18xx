@@ -77,12 +77,9 @@ module Engine
           @game_trains
         end
 
-        def num_trains_map
-          if two_player?
-            self.class::TRAIN_COUNT_2P_CISLETHANIA.freeze
-          else
-            self.class::TRAIN_COUNT_3P_CISLETHANIA.freeze
-          end
+        def num_trains(train)
+          counts = two_player? ? TRAIN_COUNT_2P_CISLETHANIA : TRAIN_COUNT_3P_CISLETHANIA
+          counts[train[:name]] || super
         end
 
         def game_corporations

@@ -122,20 +122,8 @@ module Engine
           self.class::TRAINS.dup.deep_freeze
         end
 
-        # Modified base version as the number of trains vary between player count and variant
-        def init_train_handler
-          train_count_map = num_trains_map
-          trains = game_trains.flat_map do |train|
-            Array.new(train_count_map[train[:name]]) do |index|
-              Train.new(**train, index: index)
-            end
-          end
-
-          G1824::Depot.new(trains, self)
-        end
-
-        def num_trains_map
-          self.class::TRAIN_COUNT_STANDARD
+        def num_trains(train)
+          TRAIN_COUNT_STANDARD[train[:name]] || super
         end
 
         def init_companies(players)
