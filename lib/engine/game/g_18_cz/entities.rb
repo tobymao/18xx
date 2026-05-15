@@ -307,7 +307,7 @@ module Engine
               name: '5j',
               distance: 5,
               price: 350,
-              num: 30,
+              num: 'unlimited',
               variants: [
                 {
                   name: '5+5j',
