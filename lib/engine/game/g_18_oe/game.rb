@@ -648,10 +648,33 @@ module Engine
           @regional_corps_floated = 0
           @fulfilled_train_obligation = Set.new
           @first_or_done = false
+          @krasnaya_strela_train = nil
 
           corporations.each do |corp|
             corp.par_via_exchange = companies.find { |c| c.sym == corp.id } if corp.type == :minor
           end
+        end
+
+        def revenue_for(route, stops)
+          base = super
+          return base unless d_train?(route.train)
+
+          # §11.6 — D-trains double all city and red-zone (offboard) revenue
+          doublers = stops.select { |s| s.city? || s.offboard? }
+          doubling_bonus = doublers.sum { |s| s.route_revenue(route.phase, route.train) }
+
+          # §15.7 — Krasnaya Strela: the extra city on a D-train does not double;
+          # player may choose any city — optimal choice is always the lowest-value stop
+          if @krasnaya_strela_train == route.train
+            min_rev = doublers.map { |s| s.route_revenue(route.phase, route.train) }.min || 0
+            doubling_bonus -= min_rev
+          end
+
+          base + doubling_bonus
+        end
+
+        def d_train?(train)
+          %w[4D 5D].include?(train.name)
         end
 
         def ipo_name(_entity = nil)
