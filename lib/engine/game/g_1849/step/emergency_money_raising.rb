@@ -17,8 +17,9 @@ module Engine
             @active_entity = nil if @active_entity != cash_crisis_entity
             if !@active_entity && current == entity
               @active_entity = entity
+              reason = @game.closing_after_bond_repayment ? 'bond repayment' : 'loan interest'
               @game.log << "#{@active_entity.name} enters #{description} and owes"\
-                           " the bank #{@game.format_currency(needed_cash(@active_entity))} in loan interest"
+                           " the bank #{@game.format_currency(needed_cash(@active_entity))} in #{reason}"
             end
 
             actions = []
@@ -78,6 +79,7 @@ module Engine
             payee.spend(amount, debtor)
             @game.log << "#{payee.name} pays off #{debtor.name}'s debt of #{@game.format_currency(amount)}"
             @active_entity = nil
+            @game.complete_deferred_close
           end
 
           def process_sell_shares(action)
@@ -85,6 +87,7 @@ module Engine
             return if @active_entity.cash.negative?
 
             @active_entity = nil
+            @game.complete_deferred_close
           end
 
           # needed for bonds variant

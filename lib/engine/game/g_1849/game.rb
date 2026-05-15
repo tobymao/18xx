@@ -254,7 +254,7 @@ module Engine
         IFT_BUFFER = 3
 
         attr_accessor :swap_choice_player, :swap_location, :swap_other_player, :swap_corporation,
-                      :loan_choice_player,
+                      :loan_choice_player, :closing_after_bond_repayment,
                       :old_operating_order, :moved_this_turn,
                       :e_token_sold, :e_tokens_enabled, :issue_bonds_enabled, :buy_tokens_enabled
 
@@ -439,6 +439,17 @@ module Engine
         end
 
         def close_corporation(corporation, quiet: false)
+          president = corporation.owner
+          bond_shortfall = 0
+
+          if bonds? && corporation.loans.any?
+            bond_shortfall = repay_bond_on_close!(corporation)
+            if corporation.cash.negative?
+              self.closing_after_bond_repayment = { corp: corporation, quiet: quiet, player: president }
+              return
+            end
+            corporation.loans.clear
+          end
           remove_rsa_abilities(corporation)
           super
           corporation = reset_corporation(corporation)
@@ -455,6 +466,64 @@ module Engine
           end
           corporation.next_to_par = true if @corporations[index - 1].floated?
           update_garibaldi
+
+          self.loan_choice_player = president if bond_shortfall.positive? && president&.shares&.empty?
+        end
+
+        # Returns the unpaid amount (0 if fully repaid or EMR was triggered)
+        def repay_bond_on_close!(corporation)
+          owed = loan_value
+          @log << "#{corporation.name} must repay its outstanding bond of #{format_currency(owed)}"
+
+          corp_pays = [corporation.cash, owed].min
+          corporation.spend(corp_pays, bank) if corp_pays.positive?
+          remaining = owed - corp_pays
+          return 0 if remaining.zero?
+
+          president = corporation.owner
+          pres_pays = [president.cash, remaining].min
+          if pres_pays.positive?
+            @log << "#{president.name} contributes #{format_currency(pres_pays)} towards bond repayment"
+            president.spend(pres_pays, bank)
+            remaining -= pres_pays
+          end
+          return 0 if remaining.zero?
+
+          # If the president cannot raise enough to cover the remainder, sell all
+          # legally sellable shares (affecting share prices), give proceeds to the
+          # bank, and return the shortfall; the caller will offer the loan choice
+          if liquidity(president, emergency: true) < remaining
+            @log << "#{president.name} does not have enough liquidity to cover the bond shortfall"
+            @log << "#{president.name} sells all legally sellable shares, and is bankrupt"
+            president.shares_by_corporation(sorted: true).each do |c, _|
+              next unless (bundle = sellable_bundles(president, c).max_by(&:price))
+
+              price_before = bundle.shares.first.price
+              sell_shares_and_change_price(bundle)
+              moved_this_turn << bundle.corporation if price_before != bundle.shares.first.price
+            end
+            # president.cash is 0 after pres_pays; all cash here is from share sales
+            proceeds = president.cash
+            president.spend(proceeds, bank) if proceeds.positive?
+            return remaining - proceeds
+          end
+
+          @log << "#{corporation.name} still owes #{format_currency(remaining)} - emergency money raising required"
+          corporation.spend(remaining, bank, check_cash: false)
+          0
+        end
+
+        def complete_deferred_close
+          pending = closing_after_bond_repayment
+          return unless pending
+
+          corp = pending[:corp]
+          player = pending[:player]
+          corp.loans.clear
+          close_corporation(corp, quiet: pending[:quiet])
+          self.closing_after_bond_repayment = nil
+          reorder_corps
+          self.loan_choice_player = player if player&.shares&.empty?
         end
 
         def float_str(entity)
