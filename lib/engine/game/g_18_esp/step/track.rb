@@ -38,11 +38,6 @@ module Engine
             @round.opened_mountain_pass = false
           end
 
-          def process_place_token(action)
-            super
-            @game.graph.clear
-          end
-
           def pay_token_cost(entity, cost, city)
             return super if !@game.mountain_pass_token_hex?(city.hex) || city.tokens.compact.size == 1
 

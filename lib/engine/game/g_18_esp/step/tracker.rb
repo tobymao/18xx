@@ -34,9 +34,6 @@ module Engine
             hex.tile.cities.first.delete_token!(mz_token)
             hex.tile.cities.first.exchange_token(mz_token, extra_slot: true)
           end
-          # clear graphs
-          @game.graph.clear
-
           action.entity.goal_reached!(:destination) if @game.check_for_destination_connection(action.entity)
         end
 
