@@ -256,7 +256,7 @@ module Engine
             name: '8',
             distance: 8,
             price: 800,
-            num: 30,
+            num: 'unlimited',
             variants: [
                       {
                         name: '6+8',
