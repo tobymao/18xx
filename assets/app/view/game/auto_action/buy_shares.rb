@@ -174,8 +174,12 @@ module View
           )
         end
 
+        def float_from_market
+          @game.class::AUTOFLOAT_FROM_MARKET_SHARES
+        end
+
         def conditions
-          return ['float', false] if @settings['float']
+          return ['float', float_from_market] if @settings['float']
           return [@settings['buy_ipo'].to_i, false] if @settings['ipo']
           return [@settings['buy_market'].to_i, true] if @settings['market']
 
