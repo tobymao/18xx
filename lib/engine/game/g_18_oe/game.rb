@@ -5,7 +5,6 @@ require_relative 'entities'
 require_relative 'map'
 require_relative '../base'
 require_relative 'round/consolidation'
-require_relative 'round/stock'
 require_relative 'step/consolidate'
 
 module Engine
@@ -225,7 +224,9 @@ module Engine
         ASTERISKED_ZONES = %w[UK PHS FR].freeze
         ASTERISKED_ZONES_CAP = 4
 
-        ZONE_DISCOUNT_ZONES = %w[SP IT SC RU].freeze
+        ZONE_DISCOUNT_ZONES         = %w[SP IT SC RU].freeze
+        ZONE_DISCOUNT_RATE          = Rational(1, 5).freeze # 20% §11.1.5
+        ZONE_TERRAIN_DISCOUNT_RATE  = Rational(1, 2).freeze # 50% §11.1.5
 
         CORPORATIONS_TRACK_RIGHTS = {
           # United Kingdom
@@ -749,8 +750,8 @@ module Engine
           phase.status.include?('train_obligation')
         end
 
-        def upgrade_cost(old_tile, hex, entity, spender)
-          base_cost = old_tile.upgrades.sum(&:cost)
+        def upgrade_cost(tile, hex, entity, spender)
+          base_cost = tile.upgrades.sum(&:cost)
           return super if base_cost.zero?
 
           entity_zone = entity_track_rights_zone(entity)
@@ -761,12 +762,13 @@ module Engine
           return super unless zone_match
 
           # §11.1.5: 20% zone discount; E/F terrain ability on matching terrain augments to 50%
-          ef_ability = terrain_discount_ability(entity, old_tile)
-          rate = ef_ability ? Rational(1, 2) : Rational(1, 5)
+          ef_ability = terrain_discount_ability(entity, tile)
+          rate = ef_ability ? self.class::ZONE_TERRAIN_DISCOUNT_RATE : self.class::ZONE_DISCOUNT_RATE
           cost = (base_cost * (1 - rate)).floor
           discount = base_cost - cost
           if discount.positive?
-            label = ef_ability ? "#{(rate * 100).to_i}% zone+#{ef_ability.owner.name}" : '20% zone'
+            pct = (rate * 100).to_i
+            label = ef_ability ? "#{pct}% zone+#{ef_ability.owner.name}" : "#{pct}% zone"
             @log << "#{spender.name} receives a #{label} discount of #{format_currency(discount)}"
           end
           cost
@@ -888,7 +890,7 @@ module Engine
         end
 
         def stock_round
-          Round::G18OE::Stock.new(self, [
+          Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
             G18OE::Step::HomeToken,
             G18OE::Step::BuySellParShares,
@@ -920,17 +922,22 @@ module Engine
         private
 
         def entity_track_rights_zone(entity)
-          resolved = entity.corporation? ? entity : entity.owner
-          return nil unless resolved&.corporation?
+          resolved = resolve_corporation(entity)
+          return nil unless resolved
 
           self.class::CORPORATIONS_TRACK_RIGHTS[resolved.id] || @minor_floated_regions[resolved.id]
         end
 
         def terrain_discount_ability(entity, tile)
-          resolved = entity.corporation? ? entity : entity.owner
-          return nil unless resolved&.corporation?
+          resolved = resolve_corporation(entity)
+          return nil unless resolved
 
           resolved.all_abilities.find { |a| a.type == :tile_discount && a.terrain && a.discounts_tile?(tile) }
+        end
+
+        def resolve_corporation(entity)
+          resolved = entity.corporation? ? entity : entity.owner
+          resolved&.corporation? ? resolved : nil
         end
       end
     end
