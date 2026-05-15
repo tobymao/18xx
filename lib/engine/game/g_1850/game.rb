@@ -21,6 +21,7 @@ module Engine
         CORPORATE_BUY_SHARE_ALLOW_BUY_FROM_PRESIDENT = true
         MULTIPLE_BUY_ONLY_FROM_MARKET = true
         EBUY_FROM_OTHERS = :never
+        ALWAYS_SHOW_PAR_PRICE = true
 
         CERT_LIMIT = {
           2 => { 9 => 24, 8 => 21 },

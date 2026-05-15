@@ -20,6 +20,8 @@ module Engine
 
         BANK_CASH = 12_000
 
+        ALWAYS_SHOW_PAR_PRICE = true
+
         CERT_LIMIT = {
           2 => { 10 => 28, 9 => 24 },
           3 => { 10 => 20, 9 => 17 },

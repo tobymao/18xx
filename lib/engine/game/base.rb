@@ -188,6 +188,9 @@ module Engine
 
       CAPITALIZATION = :full
 
+      # In some games, it's relevant to know the par price of a corporation even after the IPO sells out
+      ALWAYS_SHOW_PAR_PRICE = false
+
       # Must sell all shares of a company in one action per turn
       MUST_SELL_IN_BLOCKS = false
 
