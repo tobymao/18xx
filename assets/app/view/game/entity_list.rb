@@ -43,7 +43,7 @@ module View
 
           style = entity_props[:style]
 
-          if @acting_entity == entity || @round.can_act?(entity)
+          if @acting_entity == entity
             style[:textDecoration] = 'underline'
             style[:fontSize] = '1.1rem'
             style[:fontWeight] = 'bold'

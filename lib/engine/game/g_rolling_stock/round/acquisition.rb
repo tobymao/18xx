@@ -32,10 +32,6 @@ module Engine
           def finished?
             @game.finished || @entities.all?(&:passed?)
           end
-
-          def can_act?(player)
-            active_step&.active_entities&.include?(player)
-          end
         end
       end
     end
