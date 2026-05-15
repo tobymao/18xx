@@ -220,10 +220,14 @@ module Engine
 
           def get_par_prices(entity, corp)
             prices = @game.stock_market.par_prices
-            return prices if corp.type == :minor
-            return prices.select { |p| p.price * 2 <= available_cash(entity) } if corp.type == :regional
-
-            super
+            case corp.type
+            when :minor
+              prices
+            when :regional
+              prices.select { |p| p.price * 2 <= available_cash(entity) }
+            else
+              super
+            end
           end
 
           def check_legal_buy(entity, shares, exchange: nil, swap: nil, allow_president_change: true)
