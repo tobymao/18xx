@@ -62,23 +62,20 @@ module Engine
             if president_pool_overcap_buy?(entity, bundle)
               corp = bundle.corporation
               return !bought? &&
-                     available_cash(entity) >= bundle.price * 2 &&
+                     available_cash(entity) >= modify_purchase_price(bundle) &&
                      (!corp.counts_for_limit || @game.num_certs(entity) < @game.cert_limit(entity))
             end
 
             super
           end
 
-          def process_buy_shares(action)
-            if president_pool_overcap_buy?(action.entity, action.bundle)
-              price = action.bundle.price * 2
-              @log << "#{action.entity.name} pays #{@game.format_currency(price)} "\
-                      "(2× market) for #{action.bundle.corporation.name} pool share above 60%"
-              buy_shares(action.entity, action.bundle, exchange_price: price)
-              track_action(action, action.bundle.corporation)
-            else
-              super
-            end
+          def modify_purchase_price(bundle)
+            # bundle.share_price is set when replaying an action that already carries the
+            # adjusted price — skip doubling to avoid charging 4×.
+            return bundle.price if bundle.share_price
+            return bundle.price * 2 if president_pool_overcap_buy?(current_entity, bundle)
+
+            super
           end
 
           def can_sell?(entity, bundle)
