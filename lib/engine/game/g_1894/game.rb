@@ -146,7 +146,7 @@ module Engine
                     name: 'D',
                     distance: 999,
                     price: 800,
-                    num: 22,
+                    num: 'unlimited',
                     events: [{ 'type' => 'last_or_set_triggered' }],
                     discount: { '5+1' => 200, '6' => 300, '7' => 350 },
                   }].freeze

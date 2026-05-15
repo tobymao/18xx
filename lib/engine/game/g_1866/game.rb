@@ -362,6 +362,7 @@ module Engine
               },
             ],
             price: 1000,
+            num: 'unlimited',
             variants: [
               {
                 name: '6E',
@@ -427,7 +428,6 @@ module Engine
               '5' => 5,
               '6' => 3,
               '8' => 2,
-              '10' => 20,
               'INF' => 18,
               'P' => 5,
               'H' => 5,
@@ -473,7 +473,6 @@ module Engine
               '5' => 3,
               '6' => 2,
               '8' => 2,
-              '10' => 20,
               'INF' => 10,
               'P' => 3,
               'H' => 3,
@@ -516,7 +515,6 @@ module Engine
               '5' => 3,
               '6' => 2,
               '8' => 2,
-              '10' => 20,
               'INF' => 15,
               'P' => 3,
               'H' => 3,
@@ -558,7 +556,6 @@ module Engine
               '5' => 3,
               '6' => 2,
               '8' => 2,
-              '10' => 20,
               'INF' => 10,
               'P' => 3,
               'H' => 3,
@@ -1161,7 +1158,7 @@ module Engine
         end
 
         def num_trains(train)
-          @scenario['train_count'][train[:name]]
+          @scenario['train_count'][train[:name]] || super
         end
 
         def operating_order

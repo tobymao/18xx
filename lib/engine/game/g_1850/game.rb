@@ -118,7 +118,7 @@ module Engine
           },
           { name: '8', distance: 8, price: 800, num: 3 },
           { name: '10', distance: 10, price: 950, num: 2 },
-          { name: '12', distance: 12, price: 1100, num: 12 },
+          { name: '12', distance: 12, price: 1100, num: 'unlimited' },
         ].freeze
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(

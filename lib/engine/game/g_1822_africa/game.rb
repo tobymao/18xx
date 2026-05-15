@@ -306,7 +306,7 @@ module Engine
           {
             name: '6/E',
             distance: 6,
-            num: 99,
+            num: 'unlimited',
             price: 400,
             events: [
               {

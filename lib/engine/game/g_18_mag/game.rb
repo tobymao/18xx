@@ -1562,13 +1562,13 @@ module Engine
               name: '2',
               distance: 2,
               price: 80,
-              num: 25,
+              num: 'unlimited',
             },
             {
               name: '3',
               distance: 3,
               price: 120,
-              num: 25,
+              num: 'unlimited',
               events: [
                 { 'type' => 'first_three' },
               ],
@@ -1577,7 +1577,7 @@ module Engine
               name: '4',
               distance: 4,
               price: 200,
-              num: 25,
+              num: 'unlimited',
               events: [
                 { 'type' => 'first_four' },
               ],
@@ -1586,7 +1586,7 @@ module Engine
               name: '6',
               distance: 6,
               price: 320,
-              num: 25,
+              num: 'unlimited',
               events: [
                 { 'type' => 'first_six' },
               ],

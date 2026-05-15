@@ -386,7 +386,7 @@ module Engine
               name: 'H',
               distance: 99,
               price: 800,
-              num: 99,
+              num: 'unlimited',
               variants: [
                 {
                   name: '9F',

@@ -67,7 +67,7 @@ module Engine
           {
             name: '7',
             distance: 7,
-            num: 20,
+            num: 'unlimited',
             price: 750,
             variants: [
               {
