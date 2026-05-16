@@ -60,6 +60,23 @@ module Engine
             super
           end
 
+          def can_gain?(entity, bundle, exchange: false)
+            # §10.2: president buying own pool shares is allowed above the holding cap.
+            # Bypass holding_ok?; all other checks (bought?, cash, cert limit) run via super.
+            if bundle&.owner&.share_pool? && bundle.corporation.president?(entity)
+              corp = bundle.corporation
+              return !corp.counts_for_limit || exchange || @game.num_certs(entity) < @game.cert_limit(entity)
+            end
+
+            super
+          end
+
+          def modify_purchase_price(bundle)
+            return bundle.corporation.share_price.price * 2 if president_pool_overcap_buy?(current_entity, bundle)
+
+            super
+          end
+
           def can_sell?(entity, bundle)
             return false unless bundle
             return false if bundle.corporation.type == :regional
@@ -286,6 +303,16 @@ module Engine
 
           def bought_corporation
             @round.current_actions.find { |x| x.is_a?(Action::BuyShares) }&.bundle&.corporation
+          end
+
+          def president_pool_overcap_buy?(entity, bundle)
+            return false unless bundle&.owner&.share_pool?
+
+            corp = bundle.corporation
+            return false unless %i[major national].include?(corp.type)
+            return false unless corp.president?(entity)
+
+            entity.common_percent_of(corp) >= 60
           end
 
           def complete_conversion
