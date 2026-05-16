@@ -57,21 +57,23 @@ module Engine
               return false if bought_corporation == bundle.corporation
             end
 
-            # §10.2: president may buy own pool shares above 60% cap at 2× price.
-            # Bypass holding_ok? check but still enforce bought?, cash, and cert limit.
-            if president_pool_overcap_buy?(entity, bundle)
+            super
+          end
+
+          def can_gain?(entity, bundle, exchange: false)
+            # §10.2: president buying own pool shares is allowed above the holding cap.
+            # Bypass holding_ok?; all other checks (bought?, cash, cert limit) run via super.
+            if bundle&.owner&.share_pool? && bundle.corporation.president?(entity)
               corp = bundle.corporation
-              return !bought? &&
-                     available_cash(entity) >= modify_purchase_price(bundle) &&
-                     (!corp.counts_for_limit || @game.num_certs(entity) < @game.cert_limit(entity))
+              return !corp.counts_for_limit || exchange || @game.num_certs(entity) < @game.cert_limit(entity)
             end
 
             super
           end
 
           def modify_purchase_price(bundle)
-            # bundle.share_price is set when replaying an action that already carries the
-            # adjusted price — skip doubling to avoid charging 4×.
+            # On replay, bundle.share_price is set to the already-adjusted price from the
+            # stored action — returning bundle.price * 2 here would charge 4×.
             return bundle.price if bundle.share_price
             return bundle.price * 2 if president_pool_overcap_buy?(current_entity, bundle)
 
