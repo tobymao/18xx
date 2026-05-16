@@ -462,7 +462,7 @@ module Engine
             ['M30'] => 'border=edge:3,type:impassable;border=edge:5,type:impassable;' \
                        'upgrade=cost:45,terrain:river',
             # Franco-Belgian border
-            ['N31'] => 'city=revenue:10;label=Y;border=edge:2,type:impassable;path=a:1,b:_0',
+            ['N31'] => 'city=revenue:20;label=Y;border=edge:2,type:impassable;path=a:1,b:_0',
             # Pyrenees
             ['V19'] => 'border=edge:4,type:impassable;upgrade=cost:30,terrain:hill',
             ['V21'] => 'town=revenue:0;border=edge:1,type:impassable;border=edge:0,type:province',
