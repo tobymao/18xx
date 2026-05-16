@@ -44,7 +44,7 @@ module Engine
             if winning_bid
               [@active_bidders[(@active_bidders.index(winning_bid.entity) + 1) % @active_bidders.size]]
             else
-              [@active_bidders.reject { |e| @declined_bids.include?(e) }&.first]
+              [@active_bidders.first]
             end
           end
 
@@ -56,11 +56,12 @@ module Engine
               pass_auction(entity)
             else
               @game.log << "#{entity.name} declined to bid on #{@auctioning.name}"
-              @declined_bids << entity
-              if @declined_bids.size == @active_bidders.size
+              if @active_bidders.one?
+                @active_bidders.delete(entity)
                 remove(@auctioning)
-                @declined_bids = []
+                return
               end
+              remove_from_auction(entity)
             end
             resolve_bids
           end
@@ -74,7 +75,6 @@ module Engine
           end
 
           def process_bid(action)
-            @declined_bids = []
             add_bid(action)
           end
 
@@ -94,7 +94,6 @@ module Engine
           end
 
           def auction_entity_log(entity)
-            @declined_bids = []
             @game.log << "#{entity.name} is up for auction, minimum bid is #{@game.format_currency(min_bid(entity))}"
             auction_entity(entity)
           end
