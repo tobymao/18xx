@@ -37,11 +37,22 @@ module Engine
         MUST_SELL_IN_BLOCKS = false
         HOME_TOKEN_TIMING = :float
         TILE_UPGRADES_MUST_USE_MAX_EXITS = [:cities].freeze
+        # §13: bank-break ends at current OR; level-8 purchase ends at one_more_full_or_set
+        GAME_END_CHECK = { bank: :current_or, final_phase: :one_more_full_or_set }.freeze
+        # Physical game includes 20×£5,000 notes set aside at setup; injected when first level-8 bought
+        REMAINDER_CASH = 100_000
 
         STOCKMARKET_COLORS = {
           par: :blue,
           convert_range: :red,
         }.freeze
+
+        EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+          'remainder_cash_added' => [
+            'Remainder Cash Added',
+            '£100,000 remainder cash injected into bank; game ends after one more full OR set (§13)',
+          ]
+        ).freeze
 
         MARKET_TEXT = {
           par: 'Regional par values',
@@ -193,6 +204,7 @@ module Engine
             num: 17,
           },
           # Level 8 — gray double-sided (8+8 / 5D); permanent
+          # NOTE: purchase of the FIRST level-8 triggers game end (§13)
           {
             name: '8+8',
             distance: [{ 'nodes' => ['town'], 'pay' => 8, 'visit' => 99 },
@@ -205,6 +217,8 @@ module Engine
               price: 1000,
             }],
             num: 11,
+            available_on: '7+7',
+            events: [{ 'type' => 'remainder_cash_added' }],
           },
         ].freeze
 
@@ -744,6 +758,23 @@ module Engine
 
         def train_obligation_active?
           phase.status.include?('train_obligation')
+        end
+
+        def level8_train_available?
+          return false if phase.name.to_i < 7
+          return true if phase.name.to_i == 8
+
+          next_train = @depot.upcoming.first
+          next_train.index >= 4 || next_train.name != '7+7'
+        end
+
+        def event_remainder_cash_added!
+          return if @remainder_cash_added
+
+          @remainder_cash_added = true
+          remainder = self.class::REMAINDER_CASH
+          @bank.receive(remainder)
+          @log << "-- Event: #{format_currency(remainder)} remainder cash added to bank (§13) --"
         end
 
         # UP movement at end of SR: only for majors and nationals that are fully player-held

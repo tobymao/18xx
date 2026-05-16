@@ -13,6 +13,10 @@ module Engine
 
           def buyable_trains(entity)
             trains = super
+
+            # Level 8 trains visible via available_on:'7+7' but gated until 4th L7 purchase (§11.6)
+            trains = trains.reject { |t| t.name == '8+8' } unless @game.level8_train_available?
+
             return trains unless @game.train_obligation_active?
 
             if @game.fulfilled_train_obligation?(entity)
