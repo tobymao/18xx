@@ -47,6 +47,13 @@ module Engine
           convert_range: :red,
         }.freeze
 
+        EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+          'remainder_cash_added' => [
+            'Remainder Cash Added',
+            '£100,000 remainder cash injected into bank; game ends after one more full OR set (§13)',
+          ]
+        ).freeze
+
         MARKET_TEXT = {
           par: 'Regional par values',
           convert_range: 'Major par values',
@@ -211,7 +218,7 @@ module Engine
             }],
             num: 11,
             available_on: '7+7',
-            events: [{ 'type' => 'level8_train_purchased' }],
+            events: [{ 'type' => 'remainder_cash_added' }],
           },
         ].freeze
 
@@ -754,18 +761,20 @@ module Engine
         end
 
         def level8_train_available?
-          level7_remaining = depot.upcoming.count { |t| t.name == '7+7' }
-          level7_total = depot.trains.count { |t| %w[7+7 4D].include?(t.name) }
-          level7_total - level7_remaining >= 4
+          return false if phase.name.to_i < 7
+          return true if phase.name.to_i == 8
+
+          next_train = @depot.upcoming.first
+          next_train.index >= 4 || next_train.name != '7+7'
         end
 
-        def event_level8_train_purchased!
-          return if @level8_train_purchased
+        def event_remainder_cash_added!
+          return if @remainder_cash_added
 
-          @level8_train_purchased = true
+          @remainder_cash_added = true
           remainder = self.class::REMAINDER_CASH
-          @bank.instance_variable_set(:@cash, @bank.cash + remainder)
-          @log << "-- Event: First level 8 train purchased; #{format_currency(remainder)} remainder cash added to bank (§13) --"
+          @bank.receive(remainder)
+          @log << "-- Event: #{format_currency(remainder)} remainder cash added to bank (§13) --"
         end
 
         # UP movement at end of SR: only for majors and nationals that are fully player-held

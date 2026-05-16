@@ -30,6 +30,10 @@ module Engine
       break!
     end
 
+    def receive(cash)
+      @cash += cash
+    end
+
     def break!
       @log << '-- The bank has broken --' unless @broken
       @broken = true
