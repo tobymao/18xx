@@ -72,10 +72,7 @@ module Engine
           end
 
           def modify_purchase_price(bundle)
-            # On replay, bundle.share_price is set to the already-adjusted price from the
-            # stored action — returning bundle.price * 2 here would charge 4×.
-            return bundle.price if bundle.share_price
-            return bundle.price * 2 if president_pool_overcap_buy?(current_entity, bundle)
+            return bundle.corporation.share_price.price * 2 if president_pool_overcap_buy?(current_entity, bundle)
 
             super
           end
