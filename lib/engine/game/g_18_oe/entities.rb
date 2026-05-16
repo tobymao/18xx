@@ -443,24 +443,9 @@ module Engine
             abilities: [
               {
                 type: 'description',
-                description: '33% discount on all blue terrain (water/coast) track construction costs '\
-                             '(multiply total cost by 0.67, round down to nearest £1). '\
-                             'Each OR may also spend 1 extra tile point to place a yellow tile '\
-                             'in a hex with a blue terrain cost.',
-              },
-              {
-                type: 'tile_discount',
-                terrain: 'water',
-                discount: 0, # augments zone discount to 50% when zone match; 0 prevents base engine applying its own discount
-                owner_type: 'corporation',
-              },
-              {
-                type: 'tile_lay',
-                tiles: [],
-                when: 'track',
-                count_per_or: 1,
-                owner_type: 'corporation',
-                consume_tile_lay: false,
+                description: 'Augments the zone terrain discount from 20% to 50% for water/coast '\
+                             'track construction in the owning RR\'s zone (§11.1.5). '\
+                             'Extra tile point for matching terrain: not yet implemented (BUG-034).',
               },
             ],
           },
@@ -478,24 +463,9 @@ module Engine
             abilities: [
               {
                 type: 'description',
-                description: '33% discount on all mountain/rough (green terrain) track construction costs '\
-                             '(multiply total cost by 0.67, round down to nearest £1). '\
-                             'Each OR may also spend 1 extra tile point to place a yellow tile '\
-                             'in a hex with a green terrain cost.',
-              },
-              {
-                type: 'tile_discount',
-                terrain: 'mountain',
-                discount: 0, # augments zone discount to 50% when zone match; 0 prevents base engine applying its own discount
-                owner_type: 'corporation',
-              },
-              {
-                type: 'tile_lay',
-                tiles: [],
-                when: 'track',
-                count_per_or: 1,
-                owner_type: 'corporation',
-                consume_tile_lay: false,
+                description: 'Augments the zone terrain discount from 20% to 50% for mountain/rough '\
+                             'track construction in the owning RR\'s zone (§11.1.5). '\
+                             'Extra tile point for matching terrain: not yet implemented (BUG-034).',
               },
             ],
           },

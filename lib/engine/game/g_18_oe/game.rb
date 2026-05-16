@@ -225,8 +225,9 @@ module Engine
         ASTERISKED_ZONES_CAP = 4
 
         ZONE_DISCOUNT_ZONES         = %w[SP IT SC RU].freeze
-        ZONE_DISCOUNT_RATE          = Rational(1, 5).freeze # 20% §11.1.5
-        ZONE_TERRAIN_DISCOUNT_RATE  = Rational(1, 2).freeze # 50% §11.1.5
+        ZONE_DISCOUNT_RATE          = 0.2 # 20% §11.1.5
+        ZONE_TERRAIN_DISCOUNT_RATE  = 0.5 # 50% §11.1.5; E/F augment zone discount to this rate
+        EF_TERRAIN_AUGMENT          = { 'E' => :water, 'F' => :mountain }.freeze
 
         CORPORATIONS_TRACK_RIGHTS = {
           # United Kingdom
@@ -761,14 +762,14 @@ module Engine
 
           return super unless zone_match
 
-          # §11.1.5: 20% zone discount; E/F terrain ability on matching terrain augments to 50%
-          ef_ability = terrain_discount_ability(entity, tile)
-          rate = ef_ability ? self.class::ZONE_TERRAIN_DISCOUNT_RATE : self.class::ZONE_DISCOUNT_RATE
+          # §11.1.5: 20% zone discount; E/F augment to 50% when terrain matches
+          ef_corp = terrain_augmented_by?(entity, tile)
+          rate = ef_corp ? self.class::ZONE_TERRAIN_DISCOUNT_RATE : self.class::ZONE_DISCOUNT_RATE
           cost = (base_cost * (1 - rate)).floor
           discount = base_cost - cost
           if discount.positive?
             pct = (rate * 100).to_i
-            label = ef_ability ? "#{pct}% zone+#{ef_ability.owner.name}" : "#{pct}% zone"
+            label = ef_corp ? "#{pct}% zone+#{ef_corp.name}" : "#{pct}% zone"
             @log << "#{spender.name} receives a #{label} discount of #{format_currency(discount)}"
           end
           cost
@@ -922,20 +923,21 @@ module Engine
         private
 
         def entity_track_rights_zone(entity)
-          resolved = resolve_corporation(entity)
-          return nil unless resolved
+          corp = owning_corporation(entity)
+          return nil unless corp
 
-          self.class::CORPORATIONS_TRACK_RIGHTS[resolved.id] || @minor_floated_regions[resolved.id]
+          self.class::CORPORATIONS_TRACK_RIGHTS[corp.id] || @minor_floated_regions[corp.id]
         end
 
-        def terrain_discount_ability(entity, tile)
-          resolved = resolve_corporation(entity)
-          return nil unless resolved
+        def terrain_augmented_by?(entity, tile)
+          corp = owning_corporation(entity)
+          return nil unless corp
 
-          resolved.all_abilities.find { |a| a.type == :tile_discount && a.terrain && a.discounts_tile?(tile) }
+          terrain = self.class::EF_TERRAIN_AUGMENT[corp.id]
+          terrain && tile.terrain.include?(terrain) ? corp : nil
         end
 
-        def resolve_corporation(entity)
+        def owning_corporation(entity)
           resolved = entity.corporation? ? entity : entity.owner
           resolved&.corporation? ? resolved : nil
         end
