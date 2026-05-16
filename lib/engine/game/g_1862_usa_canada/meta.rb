@@ -10,7 +10,7 @@ module Engine
 
         DEV_STAGE = :prealpha
 
-        GAME_TITLE = '1862 USA Canada'
+        GAME_TITLE = '1862 USA Canada 2025 Version'
         GAME_SUBTITLE = 'The First Transcontinental Railroad'
         GAME_DESIGNER = 'Helmut Ohley'
         GAME_LOCATION = 'North America'

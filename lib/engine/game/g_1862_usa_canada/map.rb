@@ -333,7 +333,7 @@ module Engine
             # New Orleans: 120° CW from original (edges 5→1, 0→2)
             ['K19'] => 'city=revenue:20;path=a:1,b:_0;path=a:2,b:_0;label=NO',
             # Sacramento: city 0=WP (→edge 5), city 1=CPR (→edge 0); 120° CCW from photo
-            ['G3'] => 'city=revenue:0;city=revenue:0;path=a:4,b:_0;path=a:5,b:_1;label=S',
+            ['G3'] => 'city=revenue:20;city=revenue:20;path=a:4,b:_0;path=a:5,b:_1;label=S',
             # New York: city 0=NYC (NE→E29, W→F26), city 1=NYH (E→F30, SW→G27)
             ['F28'] => 'city=revenue:20;city=revenue:20;path=a:0,b:_0;path=a:4,b:_0;path=a:1,b:_1;path=a:3,b:_1;label=NY',
           },

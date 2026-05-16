@@ -354,26 +354,6 @@ module Engine
         # Bonus markers (Bonusplättchen)
         # ---------------------------------------------------------------------------
 
-        # Called from routes_revenue to include permanent bonus revenue in totals.
-        # Pure calculation — no side effects.
-        def corp_bonus_revenue(corporation, routes)
-          return 0 unless (bonuses = CORP_BONUSES[corporation.id])
-
-          home_hex = corporation.coordinates
-          bonuses.each_with_index.sum do |bonus, i|
-            state = @bonus_state[[corporation.id, i]]
-            case state
-            when :unactivated
-              # Would this bonus activate? Include its value in the display.
-              would_activate?(bonus, routes, home_hex) ? bonus[:route_bonus] : 0
-            when :permanent
-              bonus_on_route?(bonus, routes) ? bonus[:route_bonus] : 0
-            else
-              0
-            end
-          end
-        end
-
         # Called from our Dividend step before super to permanently record activations.
         # FIXME: should offer cash-vs-permanent choice; auto-chooses permanent for now.
         def activate_new_bonuses!(corporation, routes)
@@ -382,7 +362,7 @@ module Engine
           home_hex = corporation.coordinates
           bonuses.each_with_index do |bonus, i|
             next unless @bonus_state[[corporation.id, i]] == :unactivated
-            next unless would_activate?(bonus, routes, home_hex)
+            next unless routes.any? { |r| would_activate?(bonus, r, home_hex) }
 
             @bonus_state[[corporation.id, i]] = :permanent
             @log << "#{corporation.name} activates #{bonus[:name]} bonus " \
@@ -390,12 +370,9 @@ module Engine
           end
         end
 
-        def routes_revenue(routes)
-          return 0 if routes.empty?
-
-          base = super
-          corp = routes.first.train.owner
-          base + corp_bonus_revenue(corp, routes) + slc_route_bonus(corp, routes)
+        # Bonuses are per-route in revenue_for so the route display matches the payout.
+        def revenue_for(route, stops)
+          super + slc_revenue_for(route, stops) + corp_bonus_revenue_for(route, stops)
         end
 
         # Called from dividend step (before super) each time a corporation runs routes.
@@ -438,27 +415,36 @@ module Engine
           end
         end
 
-        def slc_route_bonus(corporation, routes)
-          return 0 unless SLC_CORPS.include?(corporation.id)
-          return 0 unless routes.any? { |r| r.visited_stops.any? { |s| s.hex.id == SLC_HEX } }
+        def slc_revenue_for(route, stops)
+          corp = route.train.owner
+          return 0 unless SLC_CORPS.include?(corp.id)
+          return 0 unless stops.any? { |s| s.hex.id == SLC_HEX }
 
           soc = company_by_id('SOC')
           soc && !soc.closed? ? SLC_ROUTE_BONUS_SOC : SLC_ROUTE_BONUS
         end
 
-        def would_activate?(bonus, routes, home_hex)
-          bonus[:hexes].any? do |hex_id|
-            routes.any? do |route|
-              ids = route.visited_stops.map { |s| s.hex.id }
-              ids.include?(hex_id) && ids.include?(home_hex)
-            end
+        def corp_bonus_revenue_for(route, stops)
+          corp = route.train.owner
+          return 0 unless (bonuses = CORP_BONUSES[corp.id])
+
+          home_hex = corp.coordinates
+          stop_ids = stops.map { |s| s.hex.id }
+          bonuses.each_with_index.sum do |bonus, i|
+            state = @bonus_state[[corp.id, i]]
+            next 0 if state == :cash
+
+            on_route = bonus[:hexes].any? { |h| stop_ids.include?(h) }
+            next 0 unless on_route
+            next 0 if state == :unactivated && !stop_ids.include?(home_hex)
+
+            bonus[:route_bonus]
           end
         end
 
-        def bonus_on_route?(bonus, routes)
-          bonus[:hexes].any? do |hex_id|
-            routes.any? { |r| r.visited_stops.any? { |s| s.hex.id == hex_id } }
-          end
+        def would_activate?(bonus, route, home_hex)
+          stop_ids = route.visited_stops.map { |s| s.hex.id }
+          bonus[:hexes].any? { |h| stop_ids.include?(h) } && stop_ids.include?(home_hex)
         end
 
         public
@@ -510,6 +496,23 @@ module Engine
           super
           check_group_unlock!(corporation)
           close_private_on_float!(corporation)
+        end
+
+        # Base after_par sums all shares in a :shares ability without filtering by corporation.
+        # SOC holds [CPR_1, UP_1]; without this override CPR is overpaid (for UP_1 too)
+        # and UP receives nothing for its pre-sold share.
+        def after_par(corporation)
+          if corporation.capitalization == :incremental
+            all_companies_with_ability(:shares) do |company, ability|
+              corp_shares = ability.shares.select { |s| s.corporation == corporation }
+              next if corp_shares.empty?
+
+              amount = corp_shares.sum { |share| corporation.par_price.price * share.num_shares }
+              @bank.spend(amount, corporation)
+              @log << "#{corporation.name} receives #{format_currency(amount)} from #{company.name}"
+            end
+          end
+          close_companies_on_event!(corporation, 'par')
         end
 
         def check_group_unlock!(corporation)
@@ -602,6 +605,13 @@ module Engine
         # ---------------------------------------------------------------------------
         def init_round
           new_auction_round
+        end
+
+        def new_auction_round
+          Round::Auction.new(self, [
+            G1862UsaCanada::Step::CompanyPendingPar,
+            Engine::Step::WaterfallAuction,
+          ])
         end
 
         def stock_round
