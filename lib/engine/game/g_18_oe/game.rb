@@ -822,17 +822,6 @@ module Engine
           corporation.spend(cost, @bank) if cost&.positive?
         end
 
-        def change_share_price(entity, revenue)
-          return if entity.type == :minor || entity.type == :regional
-
-          share_price = entity.share_price.price
-          if revenue >= share_price
-            @stock_market.move_right(entity)
-          elsif revenue.zero?
-            @stock_market.move_left(entity)
-          end
-        end
-
         def add_new_share(share)
           owner = share.owner
           corporation = share.corporation

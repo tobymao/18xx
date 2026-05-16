@@ -28,6 +28,14 @@ module Engine
             process_dividend(Action::Dividend.new(current_entity, kind: kind))
           end
 
+          def share_price_change(entity, revenue)
+            return {} if %i[minor regional].include?(entity.type)
+            return { share_direction: :left, share_times: 1 } if revenue.zero?
+            return {} if revenue < entity.share_price.price
+
+            { share_direction: :right, share_times: 1 }
+          end
+
           def dividend_types
             case current_entity.type
             when :minor
