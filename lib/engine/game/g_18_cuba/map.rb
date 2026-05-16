@@ -422,6 +422,8 @@ module Engine
         }.freeze
 
         FC_HEX = %w[B9 B11 C14 D15 D19 E22 G24].freeze
+        SUGAR_CANE_HEXES = %w[D1 C2 E2 D5 D11 B13 C16 C18 E16 E18 G22 H21 D21 F29 G28
+                              D9 G20 F27 F19 E26].freeze
 
         LAYOUT = :pointy
       end
