@@ -31,6 +31,53 @@ module Engine
       expect(described_class::SELL_BUY_ORDER).to eq(:sell_buy)
     end
 
+    describe 'private close triggers' do
+      let(:soc)  { game.companies.find { |c| c.sym == 'SOC' } }
+      let(:nhsc) { game.companies.find { |c| c.sym == 'NHSC' } }
+      let(:psc)  { game.companies.find { |c| c.sym == 'PSC' } }
+      let(:fny)  { game.companies.find { |c| c.sym == 'FNY' } }
+      let(:cpr)  { game.corporation_by_id('CPR') }
+      let(:up)   { game.corporation_by_id('UP') }
+      let(:nyh)  { game.corporation_by_id('NYH') }
+      let(:wp)   { game.corporation_by_id('WP') }
+      let(:nyc)  { game.corporation_by_id('NYC') }
+
+      it 'SOC closes when CPR floats' do
+        game.on_corporation_floated!(cpr)
+        expect(soc.closed?).to be true
+      end
+
+      it 'SOC closes when UP floats' do
+        game.on_corporation_floated!(up)
+        expect(soc.closed?).to be true
+      end
+
+      it 'NHSC closes when NYH floats' do
+        game.on_corporation_floated!(nyh)
+        expect(nhsc.closed?).to be true
+      end
+
+      it 'SOC does not close when NYH floats' do
+        game.on_corporation_floated!(nyh)
+        expect(soc.closed?).to be false
+      end
+
+      it 'PSC closes on first WP payout' do
+        game.on_first_payout!(wp)
+        expect(psc.closed?).to be true
+      end
+
+      it 'FNY closes on first NYC payout' do
+        game.on_first_payout!(nyc)
+        expect(fny.closed?).to be true
+      end
+
+      it 'FNY does not close when WP pays first dividend' do
+        game.on_first_payout!(wp)
+        expect(fny.closed?).to be false
+      end
+    end
+
     describe 'GHU token discount' do
       let(:ghu) { game.companies.find { |c| c.sym == 'GHU' } }
 
