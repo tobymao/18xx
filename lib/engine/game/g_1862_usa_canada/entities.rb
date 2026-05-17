@@ -52,7 +52,7 @@ module Engine
                 type: 'token',
                 hexes: [],
                 discount: 80,
-                owner_type: 'corporation',
+                owner_type: 'player',
               },
             ],
             color: nil,

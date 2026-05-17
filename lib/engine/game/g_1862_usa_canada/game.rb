@@ -6,6 +6,8 @@ require_relative 'meta'
 require_relative 'entities'
 require_relative 'map'
 require_relative '../base'
+require_relative 'step/buy_sell_par_shares'
+require_relative 'step/token'
 
 module Engine
   module Game
@@ -337,7 +339,7 @@ module Engine
             Engine::Step::DiscardTrain,
             Engine::Step::Exchange,
             Engine::Step::SpecialTrack,
-            Engine::Step::BuySellParShares,
+            G1862UsaCanada::Step::BuySellParShares,
           ])
         end
 
@@ -348,7 +350,7 @@ module Engine
             Engine::Step::SpecialTrack,
             Engine::Step::HomeToken,
             Engine::Step::Track,
-            Engine::Step::Token,
+            G1862UsaCanada::Step::Token,
             Engine::Step::Route,
             Engine::Step::Dividend,
             Engine::Step::DiscardTrain,
