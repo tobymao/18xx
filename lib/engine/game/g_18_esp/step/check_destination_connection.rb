@@ -24,8 +24,11 @@ module Engine
             'Check destination connection'
           end
 
-          # Old fixtures have no destination_connection sub-action stored; the
-          # direct calls in tracker/home_token still handle loading correctly.
+          # During loading, auto_actions returns [] (performance win) — without this
+          # guard the round would hang because no destination_connection action is
+          # emitted at runtime. New saves carry the action in the log and run through
+          # process_destination_connection; pre-PR-2 saves are state-corrected by
+          # Game#backfill_destination_connections! after replay finishes.
           def blocking?
             return false if @game.loading
 
