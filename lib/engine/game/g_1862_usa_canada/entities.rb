@@ -276,7 +276,7 @@ module Engine
             max_ownership_percent: 100,
             tokens: [0, 40],
             coordinates: 'B14',
-            color: '#ADD8E6',
+            color: '#add8e6',
             text_color: 'black',
           },
           {
