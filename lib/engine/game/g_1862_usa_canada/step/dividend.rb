@@ -11,6 +11,7 @@ module Engine
             entity = action.entity
             first_time = entity.operating_history.none? { |_, info| info.dividend.kind.to_sym == :payout }
             @game.activate_new_bonuses!(entity, routes)
+            @game.check_golden_spike!(entity, routes)
             super
             @game.on_first_payout!(entity) if first_time && action.kind.to_sym == :payout
           end
