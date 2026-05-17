@@ -17,7 +17,9 @@ module Engine
         # a and b are vertices of the hex. 0 represents the bottom one and then you go clockwise
         # The sign tells if the partition should be drawn a little bit before or after the vertex,
         # but doesn't have any impact on the game.
-        a, b = [a, b].minmax
+        # When length is set, 'a' is the explicit draw anchor — minmax is skipped so the
+        # DSL author controls which end the line starts from.
+        a, b = [a, b].minmax unless length
         @a = a[0].to_i
         @a_sign = SIGN[a[1]]
         @b = b[0].to_i
@@ -29,8 +31,9 @@ module Engine
         @length = length&.to_f
         @blockers = []
 
-        @inner = (restrict == 'outer' ? [] : (@a..(@b - 1)).to_a)
-        @outer = (restrict == 'inner' ? [] : (0..5).to_a - (@a..(@b - 1)).to_a)
+        a_lo, b_hi = [@a, @b].minmax
+        @inner = (restrict == 'outer' ? [] : (a_lo..(b_hi - 1)).to_a)
+        @outer = (restrict == 'inner' ? [] : (0..5).to_a - (a_lo..(b_hi - 1)).to_a)
       end
 
       def add_blocker!(private_company)
