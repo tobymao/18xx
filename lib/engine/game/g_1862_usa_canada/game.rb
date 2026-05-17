@@ -163,7 +163,7 @@ module Engine
             rusts_on: '4',
             num: 7,
             variants: [
-              { name: '2E', distance: [{ nodes: %w[city offboard town], pay: 2, visit: 999 }], price: 150 },
+              { name: '2E', distance: [{ 'nodes' => %w[city offboard town], 'pay' => 2, 'visit' => 999 }], price: 150 },
             ],
           },
           {
@@ -173,7 +173,7 @@ module Engine
             rusts_on: '6',
             num: 6,
             variants: [
-              { name: '3E', distance: [{ nodes: %w[city offboard town], pay: 3, visit: 999 }], price: 300 },
+              { name: '3E', distance: [{ 'nodes' => %w[city offboard town], 'pay' => 3, 'visit' => 999 }], price: 300 },
             ],
           },
           {
@@ -183,7 +183,7 @@ module Engine
             rusts_on: '8',
             num: 5,
             variants: [
-              { name: '4E', distance: [{ nodes: %w[city offboard town], pay: 4, visit: 999 }], price: 400 },
+              { name: '4E', distance: [{ 'nodes' => %w[city offboard town], 'pay' => 4, 'visit' => 999 }], price: 400 },
             ],
           },
           {
@@ -192,7 +192,7 @@ module Engine
             price: 550,
             num: 4,
             variants: [
-              { name: '5E', distance: [{ nodes: %w[city offboard town], pay: 5, visit: 999 }], price: 700 },
+              { name: '5E', distance: [{ 'nodes' => %w[city offboard town], 'pay' => 5, 'visit' => 999 }], price: 700 },
             ],
           },
           {
@@ -201,7 +201,7 @@ module Engine
             price: 650,
             num: 3,
             variants: [
-              { name: '6E', distance: [{ nodes: %w[city offboard town], pay: 6, visit: 999 }], price: 800 },
+              { name: '6E', distance: [{ 'nodes' => %w[city offboard town], 'pay' => 6, 'visit' => 999 }], price: 800 },
             ],
           },
           {
@@ -210,7 +210,7 @@ module Engine
             price: 750,
             num: 2,
             variants: [
-              { name: '7E', distance: [{ nodes: %w[city offboard town], pay: 7, visit: 999 }], price: 900 },
+              { name: '7E', distance: [{ 'nodes' => %w[city offboard town], 'pay' => 7, 'visit' => 999 }], price: 900 },
             ],
           },
           { name: '8', distance: 999, price: 900, num: 20 },
