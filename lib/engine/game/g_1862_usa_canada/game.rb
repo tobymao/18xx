@@ -298,6 +298,64 @@ module Engine
           end
           @slc_connected = {}
           @slc_bonus_paid = false
+          @corp_bonds    = {}  # corp_id => Integer (outstanding bond amount)
+          @buyback_done  = {}  # corp_id => player entity (director who triggered buyback)
+        end
+
+        # ---------------------------------------------------------------------------
+        # Bond (Schuldschein) state helpers.
+        # One buyback per corporation — ever. Director cannot sell shares while the
+        # bond is active. Outstanding bond at game end is the director's personal
+        # liability (deducted from cash score — see game-end step, PR 10b).
+        # The "Share Buy Back" penalty cert is tracked in @buyback_done and adds 1
+        # to the director's certificate count for the rest of the game.
+        # ---------------------------------------------------------------------------
+
+        def bond?(corporation)
+          bond_amount(corporation).positive?
+        end
+
+        def bond_amount(corporation)
+          @corp_bonds[corporation.id] || 0
+        end
+
+        def buyback_done?(corporation)
+          @buyback_done.key?(corporation.id)
+        end
+
+        # Bond = 50 % of full market capitalisation (10 × market price),
+        # rounded up to the nearest $100.
+        def buyback_bond_amount(corporation)
+          (corporation.share_price.price * 5).ceil(-2)
+        end
+
+        # Records the bond without executing cert transformation (PR 10b).
+        # Safe to call only once per corporation — subsequent calls are no-ops.
+        def record_bond!(corporation)
+          return if buyback_done?(corporation)
+
+          amount   = buyback_bond_amount(corporation)
+          director = corporation.owner
+          @corp_bonds[corporation.id]   = amount
+          @buyback_done[corporation.id] = director
+          @log << "#{corporation.name} executes share buyback — " \
+                  "#{director.name} takes #{format_currency(amount)} bond (Schuldschein)"
+        end
+
+        # Full repayment only; no-op if corp cash is insufficient.
+        def repay_bond!(corporation)
+          owed = bond_amount(corporation)
+          return unless owed.positive?
+          return unless corporation.cash >= owed
+
+          corporation.spend(owed, @bank)
+          @corp_bonds[corporation.id] = 0
+          @log << "#{corporation.name} repays #{format_currency(owed)} bond"
+        end
+
+        # Include the "Share Buy Back" penalty cert in the director's cert count.
+        def num_certs(entity)
+          super + (@buyback_done || {}).values.count { |director| director == entity }
         end
 
         # ---------------------------------------------------------------------------

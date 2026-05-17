@@ -15,10 +15,23 @@ module Engine
             super
           end
 
+          # Director of a corporation with an active bond may not sell its shares.
+          def can_sell?(entity, bundle)
+            return false if director_bond_blocks_sale?(entity, bundle)
+
+            super
+          end
+
           private
 
           def nyh_par_prices
             [@game.stock_market.par_prices.find { |p| p.price == 100 }].compact
+          end
+
+          def director_bond_blocks_sale?(entity, bundle)
+            return false unless bundle
+
+            bundle.corporation.president?(entity) && @game.bond?(bundle.corporation)
           end
         end
       end
