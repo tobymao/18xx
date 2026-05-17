@@ -268,10 +268,16 @@ module Engine
             # ── Blank upgradeable hexes ──────────────────────────────────────
             %w[
               A11 A13 A17 A19 A21 A23 A25 A27 B12 B16 B18
-              B22 B24 B26 C13 C15 C17 C19 C21 C23 C25 C27
-              D4 D14 D20 D24 E19 E27 F22
+              B22 B24 B26 C13 C15 C17 C23 C25 C27
+              D4 D14 D24 E19 F22
               F24 G15 G21 H14 H16 H18 H22 I25 J14 J22 K13 K23
             ] => '',
+
+            # ── Impassable borders (Great Lakes / Quebec area) ────────────────
+            ['C19'] => 'border=edge:4,type:impassable;border=edge:5,type:impassable',
+            ['C21'] => 'border=edge:0,type:impassable;border=edge:1,type:impassable',
+            ['D20'] => 'border=edge:2,type:impassable;border=edge:3,type:impassable',
+            ['E27'] => 'border=edge:2,type:impassable;border=edge:3,type:impassable',
 
             # ── Mountain terrain ($80) ───────────────────────────────────────
             %w[
@@ -294,7 +300,8 @@ module Engine
             %w[G19 J18] => 'town=revenue:0;upgrade=cost:40,terrain:river',
 
             # ── Plain cities ─────────────────────────────────────────────────
-            %w[A7 B10 B14 C29 D16 D26 E11 G11 G23 G27 H10 I15 I23 J6 J10 J16 J20 K15] => 'city=revenue:0',
+            %w[A7 B10 B14 C29 D16 E11 G11 G23 G27 H10 I15 I23 J6 J10 J16 J20 K15] => 'city=revenue:0',
+            ['D26'] => 'city=revenue:0;border=edge:5,type:impassable', # Ottawa — impassable border to E27
 
             # ── Towns ────────────────────────────────────────────────────────
             %w[C5 B20 D10 D18 E5 E29 F8 H6 H26 I9 I17 I21 J8 K17] => 'town=revenue:0',
@@ -303,7 +310,7 @@ module Engine
             ['B2'] => 'city=revenue:0;label=V', # Vancouver
             ['C3'] => 'city=revenue:0', # Seattle (ORN home)
             ['D2'] => 'city=revenue:0;label=P', # Portland
-            ['D28'] => 'city=revenue:10;path=a:2,b:_0;label=M', # Montreal (CP home)
+            ['D28'] => 'city=revenue:10;path=a:2,b:_0;label=M;border=edge:0,type:impassable', # Montreal (CP home)
             ['F14'] => 'city=revenue:10;path=a:1,b:_0', # Omaha (UP home)
             ['I5'] => 'city=revenue:0;label=L', # Los Angeles
             # SLC pre-printed white tile — transcontinental junction
