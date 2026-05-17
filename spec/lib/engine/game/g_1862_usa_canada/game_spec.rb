@@ -176,14 +176,14 @@ module Engine
       end
     end
 
+    def stub_route(*hex_ids)
+      stops = hex_ids.map { |id| double('Stop', hex: double('Hex', id: id)) }
+      double('Route', visited_stops: stops)
+    end
+
     describe 'bonus markers' do
       let(:cp)  { game.corporation_by_id('CP') }
       let(:nyc) { game.corporation_by_id('NYC') }
-
-      def stub_route(*hex_ids)
-        stops = hex_ids.map { |id| double('Stop', hex: double('Hex', id: id)) }
-        double('Route', visited_stops: stops)
-      end
 
       it 'initialises all bonus states to :unactivated' do
         described_class::CORP_BONUSES.each do |sym, bonuses|
@@ -229,6 +229,77 @@ module Engine
         game.activate_new_bonuses!(cp, [route])
         game.activate_new_bonuses!(cp, [route])
         expect(game.instance_variable_get(:@bonus_state)[['CP', 0]]).to eq(:permanent)
+      end
+    end
+
+    describe 'SLC transcontinental bonus + Golden Spike' do
+      let(:cpr) { game.corporation_by_id('CPR') }
+      let(:up)  { game.corporation_by_id('UP') }
+      let(:nyc) { game.corporation_by_id('NYC') }
+      let(:slc_hex) { described_class::SLC_HEX }
+      let(:soc) { game.companies.find { |c| c.sym == 'SOC' } }
+
+      it 'initialises @slc_connected as empty hash' do
+        expect(game.instance_variable_get(:@slc_connected)).to eq({})
+      end
+
+      it 'initialises @slc_bonus_paid as false' do
+        expect(game.instance_variable_get(:@slc_bonus_paid)).to be false
+      end
+
+      it 'SLC bonus is 0 for non-SLC corp' do
+        route = stub_route(slc_hex)
+        expect(game.send(:slc_route_bonus, nyc, [route])).to eq(0)
+      end
+
+      it 'SLC bonus is 0 when route does not visit SLC hex' do
+        route = stub_route('F14', 'K19')
+        expect(game.send(:slc_route_bonus, cpr, [route])).to eq(0)
+      end
+
+      it 'SLC bonus is 15 while SOC is open' do
+        route = stub_route(slc_hex)
+        expect(game.send(:slc_route_bonus, cpr, [route])).to eq(15)
+      end
+
+      it 'SLC bonus is 30 after SOC closes' do
+        soc.close!
+        route = stub_route(slc_hex)
+        expect(game.send(:slc_route_bonus, cpr, [route])).to eq(30)
+      end
+
+      it 'SLC bonus applies to UP as well' do
+        soc.close!
+        route = stub_route(slc_hex)
+        expect(game.send(:slc_route_bonus, up, [route])).to eq(30)
+      end
+
+      it 'check_golden_spike! marks CPR as connected' do
+        game.check_golden_spike!(cpr, [stub_route(slc_hex)])
+        expect(game.instance_variable_get(:@slc_connected)['CPR']).to be true
+      end
+
+      it 'Golden Spike does not fire when only CPR connects' do
+        game.check_golden_spike!(cpr, [stub_route(slc_hex)])
+        expect(game.instance_variable_get(:@slc_bonus_paid)).to be false
+      end
+
+      it 'Golden Spike fires when both CPR and UP connect' do
+        game.check_golden_spike!(cpr, [stub_route(slc_hex)])
+        game.check_golden_spike!(up, [stub_route(slc_hex)])
+        expect(game.instance_variable_get(:@slc_bonus_paid)).to be true
+      end
+
+      it 'check_golden_spike! is idempotent for already-connected corp' do
+        game.check_golden_spike!(cpr, [stub_route(slc_hex)])
+        log_size = game.log.size
+        game.check_golden_spike!(cpr, [stub_route(slc_hex)])
+        expect(game.log.size).to eq(log_size)
+      end
+
+      it 'non-SLC corp does not mark connection' do
+        game.check_golden_spike!(nyc, [stub_route(slc_hex)])
+        expect(game.instance_variable_get(:@slc_connected)).to eq({})
       end
     end
 
