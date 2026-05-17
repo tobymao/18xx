@@ -31,6 +31,39 @@ module Engine
       expect(described_class::SELL_BUY_ORDER).to eq(:sell_buy)
     end
 
+    describe 'GHU token discount' do
+      let(:ghu) { game.companies.find { |c| c.sym == 'GHU' } }
+
+      it 'GHU ability has player owner_type' do
+        ability = ghu.abilities.find { |a| a.type == :tile_discount }
+        expect(ability.owner_type).to eq(:player)
+      end
+
+      it 'GHU discount is $80' do
+        ability = ghu.abilities.find { |a| a.type == :tile_discount }
+        expect(ability.discount).to eq(80)
+      end
+    end
+
+    describe 'NYH par price restriction' do
+      let(:nyh) { game.corporation_by_id('NYH') }
+      let(:step) { game.stock_round.active_step }
+
+      it 'NYH par is restricted to $100' do
+        game.companies.each { |c| c.owner = game.players.first }
+        prices = step.get_par_prices(game.players.first, nyh).map(&:price)
+        expect(prices).to eq([100])
+      end
+
+      it 'other corps have multiple par prices available' do
+        game.companies.each { |c| c.owner = game.players.first }
+        [game.corporation_by_id('NYC'), game.corporation_by_id('CP')].each do |corp|
+          prices = step.get_par_prices(game.players.first, corp)
+          expect(prices.size).to be > 1
+        end
+      end
+    end
+
     describe 'tile-lay budget' do
       it 'phase 2: single yellow tile only' do
         lays = game.tile_lays(game.corporations.first)

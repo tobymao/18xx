@@ -52,7 +52,7 @@ module Engine
                 type: 'tile_discount',
                 discount: 80,
                 terrain: 'station',
-                owner_type: 'corporation',
+                owner_type: 'player',
               },
             ],
             color: nil,
