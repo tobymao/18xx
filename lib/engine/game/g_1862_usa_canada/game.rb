@@ -17,9 +17,9 @@ module Engine
 
         # ---------------------------------------------------------------------------
         # Corporation groups — unlocked progressively.
-        # Group 1 available from game start.
-        # Group 2 unlocks when ALL Group 1 companies have floated.
-        # Group 3 unlocks when ALL Group 2 companies have floated.
+        # Group 1 available when ALL private companies have been sold.
+        # Group 2 unlocks when ALL Group 1 IPO shares have been sold.
+        # Group 3 unlocks when ALL Group 2 corporations have floated.
         #
         # Director share sizes by group (from rulebook):
         #   Group 1 (NYH, NYC, CP):       30% Director + 7×10%
@@ -217,6 +217,32 @@ module Engine
         ].freeze
 
         GAME_END_CHECK = { bank: :current_round, stock_market: :current_round }.freeze
+
+        # ---------------------------------------------------------------------------
+        # Corporation group unlock logic.
+        # ---------------------------------------------------------------------------
+        def corp_group(corporation)
+          CORP_GROUPS.find { |_, syms| syms.include?(corporation.id) }&.first
+        end
+
+        def all_privates_sold?
+          @companies.all? { |c| c.owner&.player? || c.closed? }
+        end
+
+        def group_available?(group_num)
+          case group_num
+          when 1 then all_privates_sold?
+          when 2 then CORP_GROUPS[1].all? { |sym| corporation_by_id(sym).num_ipo_shares.zero? }
+          when 3 then CORP_GROUPS[2].all? { |sym| corporation_by_id(sym).floated? }
+          else true
+          end
+        end
+
+        def can_par?(corporation, parrer)
+          return false unless super
+
+          group_available?(corp_group(corporation))
+        end
 
         # ---------------------------------------------------------------------------
         # Round definitions — engine defaults only; custom steps added in later PRs.
