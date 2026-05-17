@@ -24,6 +24,14 @@ module Engine
             'Check destination connection'
           end
 
+          # Old fixtures have no destination_connection sub-action stored; the
+          # direct calls in tracker/home_token still handle loading correctly.
+          def blocking?
+            return false if @game.loading
+
+            super
+          end
+
           # Overridden to be a no-op: prevents force_next_entity! from skipping
           # this step before it has had a chance to fire its auto_action.
           def pass!; end
