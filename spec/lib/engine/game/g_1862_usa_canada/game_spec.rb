@@ -30,5 +30,38 @@ module Engine
     it 'uses sell_buy order' do
       expect(described_class::SELL_BUY_ORDER).to eq(:sell_buy)
     end
+
+    describe 'corporation group unlock' do
+      let(:nyh) { game.corporation_by_id('NYH') }
+      let(:nyc) { game.corporation_by_id('NYC') }
+      let(:cp)  { game.corporation_by_id('CP') }
+      let(:cpr) { game.corporation_by_id('CPR') }
+      let(:np)  { game.corporation_by_id('NP') }
+
+      it 'Group 1 is locked while privates are unsold' do
+        expect(game.can_par?(nyh, nil)).to be false
+      end
+
+      it 'Group 1 unlocks when all privates are sold' do
+        game.companies.each { |c| c.owner = game.players.first }
+        expect(game.can_par?(nyh, nil)).to be true
+      end
+
+      it 'Group 2 is locked even after all privates are sold' do
+        game.companies.each { |c| c.owner = game.players.first }
+        expect(game.can_par?(cpr, nil)).to be false
+      end
+
+      it 'Group 2 unlocks when all Group 1 IPO shares are sold' do
+        game.companies.each { |c| c.owner = game.players.first }
+        [nyh, nyc, cp].each { |corp| allow(corp).to receive(:num_ipo_shares).and_return(0) }
+        expect(game.can_par?(cpr, nil)).to be true
+      end
+
+      it 'Group 3 is locked while any Group 2 corp is unfloated' do
+        game.companies.each { |c| c.owner = game.players.first }
+        expect(game.can_par?(np, nil)).to be false
+      end
+    end
   end
 end
