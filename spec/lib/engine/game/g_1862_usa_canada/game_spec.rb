@@ -31,6 +31,28 @@ module Engine
       expect(described_class::SELL_BUY_ORDER).to eq(:sell_buy)
     end
 
+    describe 'tile-lay budget' do
+      it 'phase 2: single yellow tile only' do
+        lays = game.tile_lays(game.corporations.first)
+        expect(lays.size).to eq(1)
+        expect(lays.first[:upgrade]).to be false
+      end
+
+      it 'phase 3+: two entries, second blocked after upgrade' do
+        game.phase.next!
+        lays = game.tile_lays(game.corporations.first)
+        expect(lays.size).to eq(2)
+        expect(lays.first[:upgrade]).to be true
+        expect(lays.last[:lay]).to eq(:not_if_upgraded)
+        expect(lays.last[:upgrade]).to be false
+      end
+
+      it 'phase 3 status includes two_tile_lays flag' do
+        game.phase.next!
+        expect(game.phase.status).to include('two_tile_lays')
+      end
+    end
+
     describe 'E-train variants' do
       it 'every base train 2–7 has exactly one E-train variant' do
         base_trains = game.depot.trains.map(&:name).uniq.reject { |n| n == '8' }
