@@ -7,6 +7,7 @@ require_relative 'entities'
 require_relative 'map'
 require_relative '../base'
 require_relative 'step/buy_sell_par_shares'
+require_relative 'step/dividend'
 require_relative 'step/token'
 
 module Engine
@@ -283,6 +284,45 @@ module Engine
         GAME_END_CHECK = { bank: :current_round, stock_market: :current_round }.freeze
 
         # ---------------------------------------------------------------------------
+        # Private company close triggers.
+        # SOC closes when CPR or UP floats.
+        # NHSC closes when NYH floats.
+        # PSC closes when WP pays its first dividend (via on_first_payout!).
+        # FNY closes when NYC pays its first dividend (via on_first_payout!).
+        # TOR closes automatically via closed_when_used_up on its tile_lay ability.
+        # ---------------------------------------------------------------------------
+        def float_corporation(corporation)
+          super
+          on_corporation_floated!(corporation)
+        end
+
+        def on_corporation_floated!(corporation)
+          case corporation.id
+          when 'CPR', 'UP'
+            close_private_if_open!('SOC', "#{corporation.name} floats")
+          when 'NYH'
+            close_private_if_open!('NHSC', "#{corporation.name} floats")
+          end
+        end
+
+        def on_first_payout!(corporation)
+          case corporation.id
+          when 'WP'
+            close_private_if_open!('PSC', "#{corporation.name} pays first dividend")
+          when 'NYC'
+            close_private_if_open!('FNY', "#{corporation.name} pays first dividend")
+          end
+        end
+
+        def close_private_if_open!(sym, reason)
+          company = companies.find { |c| c.sym == sym && !c.closed? }
+          return unless company
+
+          company.close!
+          @log << "#{company.name} closes (#{reason})"
+        end
+
+        # ---------------------------------------------------------------------------
         # Tile-lay budget override.
         # ---------------------------------------------------------------------------
         def tile_lays(_entity)
@@ -348,7 +388,7 @@ module Engine
             Engine::Step::Track,
             G1862UsaCanada::Step::Token,
             Engine::Step::Route,
-            Engine::Step::Dividend,
+            G1862UsaCanada::Step::Dividend,
             Engine::Step::DiscardTrain,
             Engine::Step::BuyTrain,
           ], round_num: round_num)
