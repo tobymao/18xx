@@ -359,6 +359,77 @@ module Engine
         end
 
         # ---------------------------------------------------------------------------
+        # Share buyback cert transformation (PR 10b).
+        # All outstanding certs are halved:
+        #   20% → 10%,  10% → 5%,  30% → split into 10% + 5%
+        # A non-reissuable 50% treasury cert is created.
+        # share_percent drops to 5 and price_multiplier to 0.5 so prices scale
+        # proportionally (a 5% cert costs half of the current market price).
+        # Safe to call only once — guarded by buyback_done?.
+        # ---------------------------------------------------------------------------
+        def halve_shares!(corporation)
+          return if corporation.shares_of(corporation).any? { |s| s.percent == 50 && !s.buyable }
+
+          all_shares = @_shares.values.select { |s| s.corporation == corporation }
+          corporation.share_holders.clear
+
+          next_idx = all_shares.map(&:index).max + 1
+          split_certs = []
+
+          all_shares.each do |share|
+            if share.percent == 30
+              share.percent = 10
+              extra = Share.new(corporation, owner: share.owner, percent: 5, index: next_idx)
+              next_idx += 1
+              split_certs << extra
+            else
+              share.percent /= 2 # 20→10, 10→5
+            end
+            corporation.share_holders[share.owner] += share.percent
+          end
+
+          split_certs.each do |cert|
+            cert.owner.shares_by_corporation[corporation] << cert
+            corporation.share_holders[cert.owner] += cert.percent
+            @_shares[cert.id] = cert
+          end
+
+          corporation.forced_share_percent = 5
+          corporation.instance_variable_set(:@price_multiplier, 0.5)
+
+          treasury_cert = Share.new(corporation, owner: corporation, percent: 50, index: next_idx)
+          treasury_cert.buyable = false
+          treasury_cert.counts_for_limit = false
+          corporation.share_holders[corporation] += 50
+          corporation.shares_by_corporation[corporation] << treasury_cert
+          @_shares[treasury_cert.id] = treasury_cert
+
+          update_cache(:shares)
+          @log << "#{corporation.name}: all certs halved; 50% treasury cert created (non-reissuable)"
+        end
+
+        # At game end: outstanding bonds become the issuing director's personal
+        # liability — deducted from their score via player.penalty.
+        def end_game!(reason = nil)
+          apply_bond_penalties!
+          super
+        end
+
+        def apply_bond_penalties!
+          @corp_bonds.each do |corp_id, amount|
+            next unless amount.positive?
+
+            director = @buyback_done[corp_id]
+            next unless director.respond_to?(:penalty)
+
+            director.penalty = (director.penalty || 0) + amount
+            corp = corporation_by_id(corp_id)
+            @log << "#{director.name} owes #{format_currency(amount)} bond on #{corp.name} " \
+                    '(deducted from final score)'
+          end
+        end
+
+        # ---------------------------------------------------------------------------
         # Bonus markers (Bonusplättchen) — revenue and activation.
         # A bonus activates when a corp's route passes through BOTH its home hex AND
         # the bonus target hex in the same OR turn.
