@@ -284,6 +284,67 @@ module Engine
         GAME_END_CHECK = { bank: :current_round, stock_market: :current_round }.freeze
 
         # ---------------------------------------------------------------------------
+        # Bonus state initialisation.
+        # @bonus_state: { [corp_sym, bonus_index] => :unactivated | :permanent | :cash }
+        # :unactivated — bonus not yet earned.
+        # :permanent   — director chose to keep as recurring per-OR revenue.
+        # :cash        — director chose the one-time cash payout (not yet implemented;
+        #                auto-selects :permanent for now — FIXME).
+        # ---------------------------------------------------------------------------
+        def setup
+          @bonus_state = {}
+          CORP_BONUSES.each do |sym, bonuses|
+            bonuses.each_index { |i| @bonus_state[[sym, i]] = :unactivated }
+          end
+        end
+
+        # ---------------------------------------------------------------------------
+        # Bonus markers (Bonusplättchen) — revenue and activation.
+        # A bonus activates when a corp's route passes through BOTH its home hex AND
+        # the bonus target hex in the same OR turn.
+        # ---------------------------------------------------------------------------
+
+        # Pure calculation — called by routes_revenue and during route display.
+        def corp_bonus_revenue(corporation, routes)
+          return 0 unless (bonuses = CORP_BONUSES[corporation.id])
+
+          home = corporation.coordinates
+          bonuses.each_with_index.sum do |bonus, i|
+            case @bonus_state[[corporation.id, i]]
+            when :unactivated
+              would_activate?(bonus, routes, home) ? bonus[:route_bonus] : 0
+            when :permanent
+              bonus_on_route?(bonus, routes) ? bonus[:route_bonus] : 0
+            else
+              0
+            end
+          end
+        end
+
+        # Called from Step::Dividend before super — commits any newly earned bonuses.
+        # FIXME: should offer cash-vs-permanent choice; auto-selects :permanent for now.
+        def activate_new_bonuses!(corporation, routes)
+          return unless (bonuses = CORP_BONUSES[corporation.id])
+
+          home = corporation.coordinates
+          bonuses.each_with_index do |bonus, i|
+            next unless @bonus_state[[corporation.id, i]] == :unactivated
+            next unless would_activate?(bonus, routes, home)
+
+            @bonus_state[[corporation.id, i]] = :permanent
+            @log << "#{corporation.name} activates #{bonus[:name]} connection bonus " \
+                    "(permanent +#{format_currency(bonus[:route_bonus])} per OR)"
+          end
+        end
+
+        def routes_revenue(routes)
+          return super if routes.empty?
+
+          corp = routes.first.train.owner
+          super + corp_bonus_revenue(corp, routes)
+        end
+
+        # ---------------------------------------------------------------------------
         # Private company close triggers.
         # SOC closes when CPR or UP floats.
         # NHSC closes when NYH floats.
@@ -392,6 +453,23 @@ module Engine
             Engine::Step::DiscardTrain,
             Engine::Step::BuyTrain,
           ], round_num: round_num)
+        end
+
+        private
+
+        def would_activate?(bonus, routes, home)
+          bonus[:hexes].any? do |hex_id|
+            routes.any? do |route|
+              ids = route.visited_stops.map { |s| s.hex.id }
+              ids.include?(hex_id) && ids.include?(home)
+            end
+          end
+        end
+
+        def bonus_on_route?(bonus, routes)
+          bonus[:hexes].any? do |hex_id|
+            routes.any? { |r| r.visited_stops.any? { |s| s.hex.id == hex_id } }
+          end
         end
       end
     end

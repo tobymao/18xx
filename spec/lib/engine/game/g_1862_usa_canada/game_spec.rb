@@ -176,6 +176,62 @@ module Engine
       end
     end
 
+    describe 'bonus markers' do
+      let(:cp)  { game.corporation_by_id('CP') }
+      let(:nyc) { game.corporation_by_id('NYC') }
+
+      def stub_route(*hex_ids)
+        stops = hex_ids.map { |id| double('Stop', hex: double('Hex', id: id)) }
+        double('Route', visited_stops: stops)
+      end
+
+      it 'initialises all bonus states to :unactivated' do
+        described_class::CORP_BONUSES.each do |sym, bonuses|
+          bonuses.each_index do |i|
+            expect(game.instance_variable_get(:@bonus_state)[[sym, i]]).to eq(:unactivated)
+          end
+        end
+      end
+
+      it 'corp_bonus_revenue returns 0 with empty routes' do
+        expect(game.corp_bonus_revenue(cp, [])).to eq(0)
+      end
+
+      it 'corp_bonus_revenue returns 0 for corp without CORP_BONUSES entry' do
+        expect(game.corp_bonus_revenue(nyc, [])).to eq(0)
+      end
+
+      it 'corp_bonus_revenue includes bonus when route visits home AND bonus hex' do
+        route = stub_route(cp.coordinates, 'E25')
+        expect(game.corp_bonus_revenue(cp, [route])).to eq(30)
+      end
+
+      it 'corp_bonus_revenue returns 0 when route misses home hex' do
+        route = stub_route('E25', 'F20')
+        expect(game.corp_bonus_revenue(cp, [route])).to eq(0)
+      end
+
+      it 'activate_new_bonuses! transitions state to :permanent' do
+        route = stub_route(cp.coordinates, 'E25')
+        game.activate_new_bonuses!(cp, [route])
+        expect(game.instance_variable_get(:@bonus_state)[['CP', 0]]).to eq(:permanent)
+      end
+
+      it 'permanent bonus applies without home hex on route' do
+        route = stub_route(cp.coordinates, 'E25')
+        game.activate_new_bonuses!(cp, [route])
+        route2 = stub_route('E25', 'F20')
+        expect(game.corp_bonus_revenue(cp, [route2])).to eq(30)
+      end
+
+      it 'activate_new_bonuses! is idempotent — does not re-activate' do
+        route = stub_route(cp.coordinates, 'E25')
+        game.activate_new_bonuses!(cp, [route])
+        game.activate_new_bonuses!(cp, [route])
+        expect(game.instance_variable_get(:@bonus_state)[['CP', 0]]).to eq(:permanent)
+      end
+    end
+
     describe 'home token timing' do
       it 'uses :operate timing' do
         expect(described_class::HOME_TOKEN_TIMING).to eq(:operate)
