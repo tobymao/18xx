@@ -137,7 +137,7 @@ module Engine
         # FIXME: verify exact operating_rounds count per phase from rulebook.
         # ---------------------------------------------------------------------------
         PHASES = [
-          { name: '2', train_limit: 4, tiles: [:yellow],                    operating_rounds: 1 },
+          { name: '2',          train_limit: 4, tiles: [:yellow],           operating_rounds: 1 },
           { name: '3', on: '3', train_limit: 4, tiles: %i[yellow green],    operating_rounds: 2 },
           { name: '4', on: '4', train_limit: 3, tiles: %i[yellow green],    operating_rounds: 2 },
           { name: '5', on: '5', train_limit: 2, tiles: %i[yellow green brown], operating_rounds: 3 },
@@ -213,7 +213,7 @@ module Engine
               { name: '7E', distance: [{ nodes: %w[city offboard town], pay: 7, visit: 999 }], price: 900 },
             ],
           },
-          { name: '8', distance: 999, price: 900, num: 20 },
+          { name: '8', distance: 999, price: 900, num: 'unlimited' },
         ].freeze
 
         GAME_END_CHECK = { bank: :current_round, stock_market: :current_round }.freeze

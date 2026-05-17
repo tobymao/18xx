@@ -31,7 +31,7 @@ module Engine
                 type: 'tile_lay',
                 owner_type: 'player',
                 hexes: ['E25'],
-                tiles: ['GS_TOR'],
+                tiles: ['TOR'],
                 when: %w[owning_player_sr_turn owning_player_or_turn or_between_turns],
                 count: 1,
                 free: true,
@@ -45,13 +45,13 @@ module Engine
             sym: 'GHU',
             value: 75,
             revenue: 15,
-            desc: 'The owning corporation\'s director may place a station token for $80 '\
+            desc: "The owning corporation's director may place a station token for $80 " \
                   'less than the normal cost (minimum $0).',
             abilities: [
               {
-                type: 'tile_discount',
+                type: 'token',
+                hexes: [],
                 discount: 80,
-                terrain: 'station',
                 owner_type: 'corporation',
               },
             ],
