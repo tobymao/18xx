@@ -219,6 +219,18 @@ module Engine
         GAME_END_CHECK = { bank: :current_round, stock_market: :current_round }.freeze
 
         # ---------------------------------------------------------------------------
+        # Home token — placed automatically at start of corp's first OR turn.
+        # Base place_home_token calls city.place_token directly (bypasses step
+        # layer) so clear_graph_for_entity is never called. Override to flush the
+        # graph cache immediately, otherwise the corp sees zero connected hexes
+        # and cannot lay track on the same turn.
+        # ---------------------------------------------------------------------------
+        def place_home_token(corporation)
+          super
+          clear_graph_for_entity(corporation)
+        end
+
+        # ---------------------------------------------------------------------------
         # Corporation group unlock logic.
         # ---------------------------------------------------------------------------
         def corp_group(corporation)

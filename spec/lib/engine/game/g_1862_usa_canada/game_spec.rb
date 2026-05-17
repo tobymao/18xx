@@ -31,6 +31,19 @@ module Engine
       expect(described_class::SELL_BUY_ORDER).to eq(:sell_buy)
     end
 
+    describe 'home token timing' do
+      it 'uses :operate timing' do
+        expect(described_class::HOME_TOKEN_TIMING).to eq(:operate)
+      end
+
+      it 'clears the graph after placing the home token' do
+        corp = game.corporations.first
+        graph = game.send(:graph_for_entity, corp)
+        expect(graph).to receive(:clear).at_least(:once)
+        game.place_home_token(corp)
+      end
+    end
+
     describe 'corporation group unlock' do
       let(:nyh) { game.corporation_by_id('NYH') }
       let(:nyc) { game.corporation_by_id('NYC') }
