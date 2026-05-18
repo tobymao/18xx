@@ -803,7 +803,7 @@ module Engine
           @remainder_cash_added = true
           remainder = self.class::REMAINDER_CASH
           @bank.receive(remainder)
-          @log << "-- Event: #{format_currency(remainder)} remainder cash added to bank; game ends after one more full OR set --"
+          @log << "-- Event: #{format_currency(remainder)} remainder cash added to bank; game ends after one more full OR set (sooner if bank breaks) --"
         end
 
         # UP movement at end of SR: only for majors and nationals that are fully player-held
