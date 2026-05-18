@@ -80,16 +80,30 @@ module Engine
         }.freeze
 
         # ---------------------------------------------------------------------------
-        # SLC (Salt Lake City) transcontinental bonus.
-        # CPR and UP each earn a per-OR route bonus when route passes through SLC.
-        # When BOTH connect through SLC for the first time the "Golden Spike" fires.
-        # FIXME: GOLDEN_SPIKE_SHAREHOLDER_BONUS amount unconfirmed from rulebook.
+        # SLC (Salt Lake City) transcontinental bonus — CPR and UP only.
+        #
+        # First SLC connection (per company, one-time):
+        #   When CPR or UP first runs a route through G9, every 10% share pays
+        #   SLC_FIRST_CONNECTION_BONUS from the bank to its holder.
+        #
+        # Golden Spike (once, when both have connected through SLC):
+        #   Per-OR route bonus increases from SLC_ROUTE_BONUS to SLC_ROUTE_BONUS_SPIKE.
+        #
+        # Transcontinental route (per company, one-time):
+        #   First time CPR or UP runs a route visiting BOTH G3 (Sacramento) and F14
+        #   (Omaha) in a single route, that corporation's stock moves one step right.
+        #
+        # First permanent train from bank (per company, one-time):
+        #   First purchase of a non-rusting train (5/5E/6/6E/7/7E/8) from the bank
+        #   moves that corporation's stock one step right.
         # ---------------------------------------------------------------------------
         SLC_HEX                        = 'G9'.freeze
         SLC_CORPS                      = %w[CPR UP].freeze
         SLC_ROUTE_BONUS                = 30
         SLC_ROUTE_BONUS_SOC            = 15
-        GOLDEN_SPIKE_SHAREHOLDER_BONUS = 50 # FIXME: amount unconfirmed from rulebook
+        SLC_ROUTE_BONUS_SPIKE          = 50
+        SLC_FIRST_CONNECTION_BONUS     = 20
+        SLC_TRANSCONTINENTAL_ENDPOINTS = %w[G3 F14].freeze
 
         CURRENCY_FORMAT_STR = '$%s'
 
@@ -304,8 +318,10 @@ module Engine
           CORP_BONUSES.each do |sym, bonuses|
             bonuses.each_index { |i| @bonus_state[[sym, i]] = :unactivated }
           end
-          @slc_connected = {}
-          @slc_bonus_paid = false
+          @slc_connected        = {}
+          @slc_bonus_paid       = false
+          @transcontinental_done = {}
+          @first_perm_train_done = {}
           @corp_bonds    = {}  # corp_id => Integer (outstanding bond amount)
           @buyback_done  = {}  # corp_id => player entity (director who triggered buyback)
         end
@@ -485,25 +501,52 @@ module Engine
 
         # ---------------------------------------------------------------------------
         # SLC transcontinental bonus + Golden Spike event.
-        # CPR and UP each earn a per-OR bonus whenever their route passes through SLC.
-        # The first time both corps have connected through SLC the Golden Spike fires:
-        # a one-time shareholder bonus is paid from the bank and both stocks advance.
-        # ---------------------------------------------------------------------------
-
         # Called from Step::Dividend before super each time a corporation runs routes.
+        # ---------------------------------------------------------------------------
         def check_golden_spike!(corporation, routes)
           return unless SLC_CORPS.include?(corporation.id)
-          return if @slc_connected[corporation.id]
           return unless routes.any? { |r| r.visited_stops.any? { |s| s.hex.id == SLC_HEX } }
 
-          @slc_connected[corporation.id] = true
-          @log << "#{corporation.name} reaches Salt Lake City — transcontinental route active"
+          unless @slc_connected[corporation.id]
+            @slc_connected[corporation.id] = true
+            slc_first_connection_payout!(corporation)
+          end
 
-          return unless SLC_CORPS.all? { |sym| @slc_connected[sym] }
           return if @slc_bonus_paid
+          return unless SLC_CORPS.all? { |sym| @slc_connected[sym] }
 
           @slc_bonus_paid = true
           golden_spike_event!
+        end
+
+        def check_transcontinental_route!(corporation, routes)
+          return unless SLC_CORPS.include?(corporation.id)
+          return if @transcontinental_done[corporation.id]
+
+          endpoints = self.class::SLC_TRANSCONTINENTAL_ENDPOINTS
+          return unless routes.any? do |r|
+            visited = r.visited_stops.map { |s| s.hex.id }
+            endpoints.all? { |hex| visited.include?(hex) }
+          end
+
+          @transcontinental_done[corporation.id] = true
+          @stock_market.move_right(corporation)
+          @log << "#{corporation.name} completes Sacramento–Omaha route — " \
+                  "stock advances to #{format_currency(corporation.share_price.price)}"
+        end
+
+        def buy_train(operator, train, price = nil)
+          from_bank = train.owner.is_a?(Engine::Depot)
+          super
+          return unless SLC_CORPS.include?(operator.id)
+          return unless from_bank
+          return unless train.rusts_on.nil?
+          return if @first_perm_train_done[operator.id]
+
+          @first_perm_train_done[operator.id] = true
+          @stock_market.move_right(operator)
+          @log << "#{operator.name} buys first permanent train — " \
+                  "stock advances to #{format_currency(operator.share_price.price)}"
         end
 
         # ---------------------------------------------------------------------------
@@ -622,29 +665,27 @@ module Engine
         def slc_route_bonus(corporation, routes)
           return 0 unless SLC_CORPS.include?(corporation.id)
           return 0 unless routes.any? { |r| r.visited_stops.any? { |s| s.hex.id == SLC_HEX } }
+          return SLC_ROUTE_BONUS_SPIKE if @slc_bonus_paid
 
           soc = company_by_id('SOC')
           soc && !soc.closed? ? SLC_ROUTE_BONUS_SOC : SLC_ROUTE_BONUS
         end
 
-        def golden_spike_event!
-          @log << '-- GOLDEN SPIKE! Transcontinental railroad complete --'
-          SLC_CORPS.each do |sym|
-            corp = corporation_by_id(sym)
-            next unless corp&.floated?
+        def slc_first_connection_payout!(corporation)
+          @log << "#{corporation.name} reaches Salt Lake City for the first time!"
+          corporation.share_holders.each do |entity, percent|
+            next unless entity.player?
 
-            corp.share_holders.each do |entity, percent|
-              next unless entity.player?
-
-              bonus = (percent / 10) * GOLDEN_SPIKE_SHAREHOLDER_BONUS
-              @bank.spend(bonus, entity)
-              @log << "#{entity.name} receives #{format_currency(bonus)} Golden Spike bonus " \
-                      "(#{percent}% #{corp.name})"
-            end
-
-            @stock_market.move_up(corp)
-            @log << "#{corp.name} stock advances to #{format_currency(corp.share_price.price)}"
+            bonus = (percent / 10) * SLC_FIRST_CONNECTION_BONUS
+            @bank.spend(bonus, entity)
+            @log << "#{entity.name} receives #{format_currency(bonus)} " \
+                    "(#{percent}% #{corporation.name})"
           end
+        end
+
+        def golden_spike_event!
+          @log << '-- GOLDEN SPIKE! Both transcontinental routes complete --'
+          @log << "Salt Lake City route bonus increases to #{format_currency(SLC_ROUTE_BONUS_SPIKE)} per OR"
         end
 
         def would_activate?(bonus, routes, home)
