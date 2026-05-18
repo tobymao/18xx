@@ -123,8 +123,8 @@ module Engine
         ].freeze
 
         MARKET_TEXT = Base::MARKET_TEXT.merge(
-          'par' => 'Valid par price',
-          'end_game' => 'Stock price reaches this cell; game ends after current OR set'
+          par: 'Valid par price',
+          endgame: 'Stock price reaches this cell; game ends after current OR set'
         ).freeze
 
         STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(
