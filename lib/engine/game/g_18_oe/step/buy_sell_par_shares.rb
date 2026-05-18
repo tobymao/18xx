@@ -64,8 +64,7 @@ module Engine
             # §10.2: president buying own pool shares is allowed above the holding cap.
             # Bypass holding_ok?; all other checks (bought?, cash, cert limit) run via super.
             if bundle&.owner&.share_pool? && bundle.corporation.president?(entity)
-              corp = bundle.corporation
-              return !corp.counts_for_limit || exchange || @game.num_certs(entity) < @game.cert_limit(entity)
+              return !bundle.corporation.counts_for_limit || exchange || @game.num_certs(entity) < @game.cert_limit(entity)
             end
 
             super
