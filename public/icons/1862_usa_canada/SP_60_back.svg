@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <rect x="4" y="4" width="92" height="92" rx="12" fill="white" stroke="#76a042" stroke-width="6"/>
+  <text x="50" y="50" text-anchor="middle" font-family="sans-serif" font-size="34" font-weight="bold" fill="#76a042">+60</text>
+  <text x="50" y="76" text-anchor="middle" font-family="sans-serif" font-size="20" font-weight="bold" fill="#76a042">/OR</text>
+</svg>

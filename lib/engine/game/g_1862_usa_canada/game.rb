@@ -7,6 +7,7 @@ require_relative 'entities'
 require_relative 'map'
 require_relative '../base'
 require_relative 'step/buy_sell_par_shares'
+require_relative 'step/choose_bonus'
 require_relative 'step/dividend'
 require_relative 'step/token'
 
@@ -306,15 +307,17 @@ module Engine
         GAME_END_CHECK = { bank: :full_or, stock_market: :full_or }.freeze
 
         # ---------------------------------------------------------------------------
-        # Bonus state initialisation.
+        # Bonus state.
         # @bonus_state: { [corp_sym, bonus_index] => :unactivated | :permanent | :cash }
-        # :unactivated — bonus not yet earned.
-        # :permanent   — director chose to keep as recurring per-OR revenue.
-        # :cash        — director chose the one-time cash payout (not yet implemented;
-        #                auto-selects :permanent for now — FIXME).
+        # @bonus_hex:   { [corp_sym, bonus_index] => hex_id } — set for multi-hex permanent
+        #               bonuses (VPSL); nil/missing means use any hex in bonus[:hexes].
+        # Activation and choice are handled by Step::ChooseBonus (before Dividend).
         # ---------------------------------------------------------------------------
+        attr_reader :bonus_state, :bonus_hex
+
         def setup
           @bonus_state = {}
+          @bonus_hex   = {}
           CORP_BONUSES.each do |sym, bonuses|
             bonuses.each_index { |i| @bonus_state[[sym, i]] = :unactivated }
           end
@@ -470,28 +473,59 @@ module Engine
             when :unactivated
               would_activate?(bonus, routes, home) ? bonus[:route_bonus] : 0
             when :permanent
-              bonus_on_route?(bonus, routes) ? bonus[:route_bonus] : 0
+              permanent_on_route?(corporation.id, i, bonus, routes) ? bonus[:route_bonus] : 0
             else
               0
             end
           end
         end
 
-        # Called from Step::Dividend before super — commits any newly earned bonuses.
-        # FIXME: should offer cash-vs-permanent choice; auto-selects :permanent for now.
-        def activate_new_bonuses!(corporation, routes)
-          return unless (bonuses = CORP_BONUSES[corporation.id])
+        # Returns [bonus, idx, triggered_hex_id] for each unactivated bonus whose
+        # activation condition is met by the current routes. Called by Step::ChooseBonus.
+        def pending_bonus_activations(entity, routes)
+          return [] if routes.empty?
 
-          home = corporation.coordinates
-          bonuses.each_with_index do |bonus, i|
-            next unless @bonus_state[[corporation.id, i]] == :unactivated
+          bonuses = CORP_BONUSES[entity.id]
+          return [] unless bonuses
+
+          home = entity.coordinates
+          bonuses.each_with_index.filter_map do |bonus, idx|
+            next unless @bonus_state[[entity.id, idx]] == :unactivated
             next unless would_activate?(bonus, routes, home)
 
-            @bonus_state[[corporation.id, i]] = :permanent
-            @log << "#{corporation.name} activates #{bonus[:name]} connection bonus " \
-                    "(permanent +#{format_currency(bonus[:route_bonus])} per OR)"
+            triggered_hex = bonus[:hexes].find do |hex_id|
+              routes.any? { |r| r.visited_stops.any? { |s| s.hex.id == hex_id } }
+            end
+            [bonus, idx, triggered_hex]
           end
         end
+
+        # Flip the front-side icon to back-side (permanent) or remove it (cash).
+        # anchor_hex_id: the specific hex to place the back-side icon on (VPSL);
+        # nil falls back to bonus[:hexes].first for single-hex bonuses.
+        def update_bonus_icon!(corp_id, idx, new_state, anchor_hex_id = nil)
+          bonus     = CORP_BONUSES[corp_id][idx]
+          icon_name = "bonus_#{corp_id}_#{idx}"
+          bonus[:hexes].each do |hex_id|
+            hex = hex_by_id(hex_id)
+            next unless hex
+
+            hex.original_tile.icons.reject! { |i| i.name == icon_name }
+          end
+          return unless new_state == :permanent
+
+          target = anchor_hex_id || bonus[:hexes].first
+          hex    = hex_by_id(target)
+          return unless hex
+
+          back = "1862_usa_canada/#{corp_id}_#{bonus[:route_bonus]}_back"
+          hex.original_tile.icons << Part::Icon.new(back, "#{icon_name}_back", true)
+        end
+
+        # Called from Step::Dividend — by the time this runs, Step::ChooseBonus has
+        # already resolved every pending activation. This is a no-op in normal flow;
+        # kept so the dividend step call remains valid if the step list is modified.
+        def activate_new_bonuses!(_corporation, _routes); end
 
         def routes_revenue(routes)
           return super if routes.empty?
@@ -655,6 +689,7 @@ module Engine
             Engine::Step::Track,
             G1862UsaCanada::Step::Token,
             Engine::Step::Route,
+            G1862UsaCanada::Step::ChooseBonus,
             G1862UsaCanada::Step::Dividend,
             Engine::Step::DiscardTrain,
             Engine::Step::BuyTrain,
@@ -716,6 +751,14 @@ module Engine
           bonus[:hexes].any? do |hex_id|
             routes.any? { |r| r.visited_stops.any? { |s| s.hex.id == hex_id } }
           end
+        end
+
+        # For permanent bonuses: check the stored anchor hex (VPSL) or any hex
+        # in bonus[:hexes] (single-hex targets). No home hex required.
+        def permanent_on_route?(corp_id, idx, bonus, routes)
+          anchor = @bonus_hex[[corp_id, idx]]
+          hexes  = anchor ? [anchor] : bonus[:hexes]
+          hexes.any? { |hid| routes.any? { |r| r.visited_stops.any? { |s| s.hex.id == hid } } }
         end
       end
     end
