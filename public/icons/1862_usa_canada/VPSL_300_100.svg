@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- CP=#d88e39  NYH=#d1232a  NYC=#110a0c — 3 equal 120° segments from top -->
+  <path d="M 50,50 L 50,3 A 47,47 0 0,1 90.7,73.5 Z" fill="#d88e39"/>
+  <path d="M 50,50 L 90.7,73.5 A 47,47 0 0,1 9.3,73.5 Z" fill="#d1232a"/>
+  <path d="M 50,50 L 9.3,73.5 A 47,47 0 0,1 50,3 Z" fill="#110a0c"/>
+  <line x1="50" y1="50" x2="50" y2="3" stroke="white" stroke-width="2"/>
+  <line x1="50" y1="50" x2="90.7" y2="73.5" stroke="white" stroke-width="2"/>
+  <line x1="50" y1="50" x2="9.3" y2="73.5" stroke="white" stroke-width="2"/>
+  <circle cx="50" cy="50" r="47" fill="none" stroke="white" stroke-width="3"/>
+  <!-- centre label -->
+  <circle cx="50" cy="50" r="24" fill="white" fill-opacity="0.9"/>
+  <text x="50" y="47" text-anchor="middle" font-family="sans-serif" font-size="16" font-weight="bold" fill="#333">300</text>
+  <text x="50" y="63" text-anchor="middle" font-family="sans-serif" font-size="16" font-weight="bold" fill="#333">+100</text>
+</svg>
