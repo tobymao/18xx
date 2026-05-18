@@ -691,13 +691,13 @@ module Engine
 
         def place_bonus_icons
           CORP_BONUSES.each do |corp_id, bonuses|
-            bonuses.each do |bonus|
-              icon = "1862_usa_canada/#{corp_id}_#{bonus[:cash]}_#{bonus[:route_bonus]}"
+            bonuses.each_with_index do |bonus, idx|
+              icon = "1862_usa_canada/#{corp_id}_#{bonus[:cash]}"
               bonus[:hexes].each do |hex_id|
                 hex = hex_by_id(hex_id)
                 next unless hex
 
-                hex.original_tile.icons << Part::Icon.new(icon, "bonus_#{corp_id}_#{bonus[:cash]}", true)
+                hex.original_tile.icons << Part::Icon.new(icon, "bonus_#{corp_id}_#{idx}", true)
               end
             end
           end
