@@ -301,6 +301,155 @@ module Engine
         game.check_golden_spike!(nyc, [stub_route(slc_hex)])
         expect(game.instance_variable_get(:@slc_connected)).to eq({})
       end
+
+      it 'SLC route bonus is 50 after Golden Spike fires' do
+        game.instance_variable_set(:@slc_bonus_paid, true)
+        soc.close!
+        route = stub_route(slc_hex)
+        expect(game.send(:slc_route_bonus, cpr, [route])).to eq(50)
+      end
+
+      it 'SLC route bonus spike overrides SOC reduction' do
+        game.instance_variable_set(:@slc_bonus_paid, true)
+        route = stub_route(slc_hex)
+        expect(game.send(:slc_route_bonus, cpr, [route])).to eq(50)
+      end
+
+      it 'initialises @transcontinental_done as empty hash' do
+        expect(game.instance_variable_get(:@transcontinental_done)).to eq({})
+      end
+
+      it 'initialises @first_perm_train_done as empty hash' do
+        expect(game.instance_variable_get(:@first_perm_train_done)).to eq({})
+      end
+    end
+
+    describe 'SLC first-connection payout' do
+      let(:cpr)   { game.corporation_by_id('CPR') }
+      let(:alice) { game.players[0] }
+      let(:bob)   { game.players[1] }
+
+      before do
+        allow(cpr).to receive(:share_holders).and_return({ alice => 20, bob => 10 })
+      end
+
+      it 'pays $40 to a 20% shareholder and $20 to a 10% shareholder' do
+        alice_before = alice.cash
+        bob_before   = bob.cash
+        game.send(:slc_first_connection_payout!, cpr)
+        expect(alice.cash).to eq(alice_before + 40)
+        expect(bob.cash).to eq(bob_before + 20)
+      end
+
+      it 'deducts total payout from bank' do
+        bank_before = game.bank.cash
+        game.send(:slc_first_connection_payout!, cpr)
+        expect(game.bank.cash).to eq(bank_before - 60)
+      end
+
+      it 'logs a message for each paying shareholder' do
+        game.send(:slc_first_connection_payout!, cpr)
+        combined = game.log.last(3).map(&:message).join(' ')
+        expect(combined).to include('Alice')
+        expect(combined).to include('Bob')
+      end
+    end
+
+    describe 'transcontinental route stock move' do
+      let(:cpr) { game.corporation_by_id('CPR') }
+      let(:up)  { game.corporation_by_id('UP') }
+      let(:nyc) { game.corporation_by_id('NYC') }
+
+      before do
+        cpr.share_price = game.stock_market.par_prices.first
+        up.share_price  = game.stock_market.par_prices.first
+        allow(game.stock_market).to receive(:move_right)
+      end
+
+      it 'marks CPR done when route visits both G3 and F14' do
+        game.check_transcontinental_route!(cpr, [stub_route('G3', 'F14')])
+        expect(game.instance_variable_get(:@transcontinental_done)['CPR']).to be true
+      end
+
+      it 'marks UP done when route visits both G3 and F14' do
+        game.check_transcontinental_route!(up, [stub_route('G3', 'F14')])
+        expect(game.instance_variable_get(:@transcontinental_done)['UP']).to be true
+      end
+
+      it 'moves CPR stock right on first transcontinental run' do
+        expect(game.stock_market).to receive(:move_right).with(cpr)
+        game.check_transcontinental_route!(cpr, [stub_route('G3', 'F14')])
+      end
+
+      it 'does not trigger when only Sacramento is on route' do
+        game.check_transcontinental_route!(cpr, [stub_route('G3', 'G9')])
+        expect(game.instance_variable_get(:@transcontinental_done)['CPR']).to be_nil
+      end
+
+      it 'does not trigger when only Omaha is on route' do
+        game.check_transcontinental_route!(cpr, [stub_route('F14', 'G9')])
+        expect(game.instance_variable_get(:@transcontinental_done)['CPR']).to be_nil
+      end
+
+      it 'is idempotent — second qualifying route does not move stock again' do
+        game.check_transcontinental_route!(cpr, [stub_route('G3', 'F14')])
+        expect(game.stock_market).not_to receive(:move_right).with(cpr)
+        game.check_transcontinental_route!(cpr, [stub_route('G3', 'F14')])
+      end
+
+      it 'does nothing for non-SLC corp' do
+        game.check_transcontinental_route!(nyc, [stub_route('G3', 'F14')])
+        expect(game.instance_variable_get(:@transcontinental_done)['NYC']).to be_nil
+      end
+    end
+
+    describe 'first permanent train stock move' do
+      let(:cpr) { game.corporation_by_id('CPR') }
+      let(:up)  { game.corporation_by_id('UP') }
+      let(:nyc) { game.corporation_by_id('NYC') }
+      let(:perm_trains) { game.depot.trains.select { |t| t.rusts_on.nil? } }
+      let(:rust_train)  { game.depot.trains.find { |t| t.rusts_on } }
+
+      before do
+        cpr.share_price = game.stock_market.par_prices.first
+        up.share_price  = game.stock_market.par_prices.first
+        nyc.share_price = game.stock_market.par_prices.first
+        allow(game.stock_market).to receive(:move_right)
+      end
+
+      it 'sets @first_perm_train_done for CPR after first permanent train from bank' do
+        game.buy_train(cpr, perm_trains.first, :free)
+        expect(game.instance_variable_get(:@first_perm_train_done)['CPR']).to be true
+      end
+
+      it 'moves CPR stock right on first permanent train purchase from bank' do
+        expect(game.stock_market).to receive(:move_right).with(cpr)
+        game.buy_train(cpr, perm_trains.first, :free)
+      end
+
+      it 'is idempotent — second permanent train does not move stock again' do
+        skip 'need at least two permanent trains in depot' if perm_trains.size < 2
+        game.buy_train(cpr, perm_trains[0], :free)
+        expect(game.stock_market).not_to receive(:move_right).with(cpr)
+        game.buy_train(cpr, perm_trains[1], :free)
+      end
+
+      it 'does not move stock for non-SLC corp buying permanent train' do
+        expect(game.stock_market).not_to receive(:move_right).with(nyc)
+        game.buy_train(nyc, perm_trains.first, :free)
+      end
+
+      it 'does not move stock when CPR buys a rusting train from bank' do
+        expect(game.stock_market).not_to receive(:move_right).with(cpr)
+        game.buy_train(cpr, rust_train, :free)
+      end
+
+      it 'does not move stock when CPR buys permanent train from another corp' do
+        game.buy_train(up, perm_trains.first, :free)
+        game.instance_variable_set(:@first_perm_train_done, {})
+        expect(game.stock_market).not_to receive(:move_right).with(cpr)
+        game.buy_train(cpr, perm_trains.first, :free)
+      end
     end
 
     describe 'bond (Schuldschein) state' do
