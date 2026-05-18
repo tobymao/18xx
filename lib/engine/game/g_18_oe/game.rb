@@ -224,6 +224,11 @@ module Engine
         ASTERISKED_ZONES = %w[UK PHS FR].freeze
         ASTERISKED_ZONES_CAP = 4
 
+        ZONE_DISCOUNT_ZONES         = %w[SP IT SC RU].freeze
+        ZONE_DISCOUNT_RATE          = 0.2 # 20% §11.1.5
+        ZONE_TERRAIN_DISCOUNT_RATE  = 0.5 # 50% §11.1.5; E/F augment zone discount to this rate
+        EF_TERRAIN_AUGMENT          = { 'E' => :water, 'F' => :mountain }.freeze
+
         CORPORATIONS_TRACK_RIGHTS = {
           # United Kingdom
           'LNWR' => 'UK',
@@ -746,6 +751,30 @@ module Engine
           phase.status.include?('train_obligation')
         end
 
+        def upgrade_cost(tile, hex, entity, spender)
+          base_cost = tile.upgrades.sum(&:cost)
+          return super if base_cost.zero?
+
+          entity_zone = entity_track_rights_zone(entity)
+          hex_zone = region_for_hex(hex)
+          zone_match = hex_zone && entity_zone == hex_zone &&
+                       self.class::ZONE_DISCOUNT_ZONES.include?(hex_zone)
+
+          return super unless zone_match
+
+          # §11.1.5: 20% zone discount; E/F augment to 50% when terrain matches
+          ef_corp = terrain_augmented_by?(entity, tile)
+          rate = ef_corp ? self.class::ZONE_TERRAIN_DISCOUNT_RATE : self.class::ZONE_DISCOUNT_RATE
+          cost = (base_cost * (1 - rate)).floor
+          discount = base_cost - cost
+          if discount.positive?
+            pct = (rate * 100).to_i
+            label = ef_corp ? "#{pct}% zone+#{ef_corp.name}" : "#{pct}% zone"
+            @log << "#{spender.name} receives a #{label} discount of #{format_currency(discount)}"
+          end
+          cost
+        end
+
         # UP movement at end of SR: only for majors and nationals that are fully player-held
         def sold_out_increase?(corporation)
           %i[major national].include?(corporation.type)
@@ -876,8 +905,30 @@ module Engine
             G18OE::Step::Dividend,
             G18OE::Step::BuyTrain,
             # Convert step to do national conversions at 4/6/8?
-            Engine::Step::IssueShares,
+            G18OE::Step::IssueShares,
           ], round_num: round_num)
+        end
+
+        private
+
+        def entity_track_rights_zone(entity)
+          corp = owning_corporation(entity)
+          return nil unless corp
+
+          self.class::CORPORATIONS_TRACK_RIGHTS[corp.id] || @minor_floated_regions[corp.id]
+        end
+
+        def terrain_augmented_by?(entity, tile)
+          corp = owning_corporation(entity)
+          return nil unless corp
+
+          terrain = self.class::EF_TERRAIN_AUGMENT[corp.id]
+          terrain && tile.terrain.include?(terrain) ? corp : nil
+        end
+
+        def owning_corporation(entity)
+          resolved = entity.corporation? ? entity : entity.owner
+          resolved&.corporation? ? resolved : nil
         end
       end
     end
