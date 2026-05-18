@@ -324,6 +324,7 @@ module Engine
           @first_perm_train_done = {}
           @corp_bonds    = {}  # corp_id => Integer (outstanding bond amount)
           @buyback_done  = {}  # corp_id => player entity (director who triggered buyback)
+          place_bonus_icons
         end
 
         # ---------------------------------------------------------------------------
@@ -686,6 +687,20 @@ module Engine
         def golden_spike_event!
           @log << '-- GOLDEN SPIKE! Both transcontinental routes complete --'
           @log << "Salt Lake City route bonus increases to #{format_currency(SLC_ROUTE_BONUS_SPIKE)} per OR"
+        end
+
+        def place_bonus_icons
+          CORP_BONUSES.each do |corp_id, bonuses|
+            bonuses.each do |bonus|
+              icon = "1862_usa_canada/#{corp_id}_#{bonus[:cash]}_#{bonus[:route_bonus]}"
+              bonus[:hexes].each do |hex_id|
+                hex = hex_by_id(hex_id)
+                next unless hex
+
+                hex.original_tile.icons << Part::Icon.new(icon, "bonus_#{corp_id}_#{bonus[:cash]}", true)
+              end
+            end
+          end
         end
 
         def would_activate?(bonus, routes, home)
