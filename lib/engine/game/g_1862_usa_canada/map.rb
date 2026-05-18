@@ -49,9 +49,9 @@ module Engine
           'F30' => 'Boston',
           # Southwest
           'I9' => 'Phoenix',
+          'H10' => 'Santa Fe',
           'J8' => 'Tucson',
-          'J10' => 'Santa Fe',
-          'H10' => 'Phoenix',
+          'J10' => 'El Paso',
           # South Central
           'I15' => 'Oklahoma City',
           'J16' => 'Dallas',
