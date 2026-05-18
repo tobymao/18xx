@@ -129,7 +129,7 @@ module Engine
 
         STOCKMARKET_COLORS = Base::STOCKMARKET_COLORS.merge(
           par: :yellow,
-          end_game: :orange
+          endgame: :orange
         ).freeze
 
         # ---------------------------------------------------------------------------
@@ -216,7 +216,7 @@ module Engine
           { name: '8', distance: 999, price: 900, num: 'unlimited' },
         ].freeze
 
-        GAME_END_CHECK = { bank: :current_round, stock_market: :current_round }.freeze
+        GAME_END_CHECK = { bank: :full_or, stock_market: :full_or }.freeze
 
         # ---------------------------------------------------------------------------
         # Round definitions — engine defaults only; custom steps added in later PRs.
