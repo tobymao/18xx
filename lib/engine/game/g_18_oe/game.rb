@@ -204,7 +204,7 @@ module Engine
             num: 17,
           },
           # Level 8 — gray double-sided (8+8 / 5D); permanent
-          # NOTE: purchase of the FIRST level-8 triggers game end (§13)
+          # NOTE: purchase of the FIRST level-8 triggers game end
           {
             name: '8+8',
             distance: [{ 'nodes' => ['town'], 'pay' => 8, 'visit' => 99 },
@@ -803,7 +803,7 @@ module Engine
           @remainder_cash_added = true
           remainder = self.class::REMAINDER_CASH
           @bank.receive(remainder)
-          @log << "-- Event: #{format_currency(remainder)} remainder cash added to bank (§13) --"
+          @log << "-- Event: #{format_currency(remainder)} remainder cash added to bank; game ends after one more full OR set --"
         end
 
         # UP movement at end of SR: only for majors and nationals that are fully player-held
