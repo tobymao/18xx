@@ -37,7 +37,7 @@ module Engine
         MUST_SELL_IN_BLOCKS = false
         HOME_TOKEN_TIMING = :float
         TILE_UPGRADES_MUST_USE_MAX_EXITS = [:cities].freeze
-        # §13: bank-break ends at current OR; level-8 purchase ends at one_more_full_or_set
+        # bank-break ends current OR; first level-8 purchase ends after one more full OR set
         GAME_END_CHECK = { bank: :current_or, final_phase: :one_more_full_or_set }.freeze
         # Physical game includes 20×£5,000 notes set aside at setup; injected when first level-8 bought
         REMAINDER_CASH = 100_000
@@ -50,7 +50,7 @@ module Engine
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
           'remainder_cash_added' => [
             'Remainder Cash Added',
-            '£100,000 remainder cash injected into bank; game ends after one more full OR set (§13)',
+            '£100,000 remainder cash injected into bank; game ends after one more full OR set',
           ]
         ).freeze
 
