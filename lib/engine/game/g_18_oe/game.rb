@@ -802,7 +802,7 @@ module Engine
 
           @remainder_cash_added = true
           remainder = self.class::REMAINDER_CASH
-          @bank.receive(remainder)
+          @bank.add_cash(remainder)
           @log << "-- Event: #{format_currency(remainder)} remainder cash added to bank; game ends after one more full OR set (sooner if bank breaks) --"
         end
 

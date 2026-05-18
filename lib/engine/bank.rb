@@ -30,7 +30,7 @@ module Engine
       break!
     end
 
-    def receive(cash)
+    def add_cash(cash)
       @cash += cash
     end
 
