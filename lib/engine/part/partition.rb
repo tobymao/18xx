@@ -17,7 +17,6 @@ module Engine
         # a and b are vertices of the hex. 0 represents the bottom one and then you go clockwise
         # The sign tells if the partition should be drawn a little bit before or after the vertex,
         # but doesn't have any impact on the game.
-        a, b = [a, b].minmax unless length
         @a = a[0].to_i
         @a_sign = SIGN[a[1]]
         @b = b[0].to_i
