@@ -39,9 +39,8 @@ module Engine
               discount: 20,
               terrain: 'mountain',
               exact_match: false,
-              owner_type: 'player',
               when: 'owning_player_track',
-              description: 'Discount of L20 for each hex with mountain terrain costs',
+              description: 'L20 discount on mountain terrain costs',
             }],
           },
           {
