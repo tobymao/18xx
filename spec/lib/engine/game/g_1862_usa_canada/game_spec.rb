@@ -201,34 +201,33 @@ module Engine
         expect(game.corp_bonus_revenue(nyc, [])).to eq(0)
       end
 
-      it 'corp_bonus_revenue includes bonus when route visits home AND bonus hex' do
+      it 'corp_bonus_revenue returns 0 for :unactivated bonus (ChooseBonus pending)' do
+        route = stub_route(cp.coordinates, 'E25')
+        expect(game.corp_bonus_revenue(cp, [route])).to eq(0)
+      end
+
+      it 'corp_bonus_revenue returns 0 when route misses bonus hex' do
+        game.instance_variable_get(:@bonus_state)[['CP', 0]] = :permanent
+        route = stub_route('F28', 'F20')
+        expect(game.corp_bonus_revenue(cp, [route])).to eq(0)
+      end
+
+      it 'corp_bonus_revenue includes bonus after state is set to :permanent' do
+        game.instance_variable_get(:@bonus_state)[['CP', 0]] = :permanent
         route = stub_route(cp.coordinates, 'E25')
         expect(game.corp_bonus_revenue(cp, [route])).to eq(30)
       end
 
-      it 'corp_bonus_revenue returns 0 when route misses home hex' do
-        route = stub_route('E25', 'F20')
-        expect(game.corp_bonus_revenue(cp, [route])).to eq(0)
-      end
-
-      it 'activate_new_bonuses! transitions state to :permanent' do
-        route = stub_route(cp.coordinates, 'E25')
-        game.activate_new_bonuses!(cp, [route])
-        expect(game.instance_variable_get(:@bonus_state)[['CP', 0]]).to eq(:permanent)
-      end
-
       it 'permanent bonus applies without home hex on route' do
-        route = stub_route(cp.coordinates, 'E25')
-        game.activate_new_bonuses!(cp, [route])
-        route2 = stub_route('E25', 'F20')
-        expect(game.corp_bonus_revenue(cp, [route2])).to eq(30)
+        game.instance_variable_get(:@bonus_state)[['CP', 0]] = :permanent
+        route = stub_route('E25', 'F20')
+        expect(game.corp_bonus_revenue(cp, [route])).to eq(30)
       end
 
-      it 'activate_new_bonuses! is idempotent — does not re-activate' do
+      it 'corp_bonus_revenue returns 0 for :cash bonus state' do
+        game.instance_variable_get(:@bonus_state)[['CP', 0]] = :cash
         route = stub_route(cp.coordinates, 'E25')
-        game.activate_new_bonuses!(cp, [route])
-        game.activate_new_bonuses!(cp, [route])
-        expect(game.instance_variable_get(:@bonus_state)[['CP', 0]]).to eq(:permanent)
+        expect(game.corp_bonus_revenue(cp, [route])).to eq(0)
       end
     end
 
@@ -717,6 +716,188 @@ module Engine
           game.repay_bond!(cpr)
           game.apply_bond_penalties!
           expect(player.penalty).to eq(0)
+        end
+      end
+    end
+
+    # ── Step::ChooseBonus ──────────────────────────────────────────────────────
+    # Verified via browser test 2026-05-19: NYC connects to Chicago (F20) for
+    # the first time in OR5. Route shows base revenue only ($40, no pre-empted
+    # bonus). ChooseBonus prompt appears after confirming route.
+    # Choosing 'permanent' sets bonus to :permanent and adds $60 to OR revenue.
+    # Choosing 'cash' sets bonus to :cash and pays $200 cash to NYC immediately.
+    #
+    # Action sequence reproduced from local game #21 (seed 42, 3 players).
+    # OR1–OR3: NYC lays straight track F26/F24/F22. OR4: buys 2-train.
+    # OR5: runs F28→F26→F24→F22→F20, then chooses bonus.
+    describe 'Step::ChooseBonus — NYC first connection to Chicago' do
+      CHOOSE_BONUS_ACTIONS = [
+        { 'type' => 'bid',        'price' => 20,  'entity' => 1, 'company' => 'BOM',  'entity_type' => 'player',      'id' => 1 },
+        { 'type' => 'bid',        'price' => 50,  'entity' => 2, 'company' => 'TOR',  'entity_type' => 'player',      'id' => 2 },
+        { 'type' => 'bid',        'price' => 75,  'entity' => 3, 'company' => 'GHU',  'entity_type' => 'player',      'id' => 3 },
+        { 'type' => 'bid',        'price' => 100, 'entity' => 1, 'company' => 'RMC',  'entity_type' => 'player',      'id' => 4 },
+        { 'type' => 'bid',        'price' => 140, 'entity' => 2, 'company' => 'PSC',  'entity_type' => 'player',      'id' => 5 },
+        { 'type' => 'bid',        'price' => 180, 'entity' => 3, 'company' => 'FNY',  'entity_type' => 'player',      'id' => 6 },
+        { 'type' => 'bid',        'price' => 220, 'entity' => 1, 'company' => 'SOC',  'entity_type' => 'player',      'id' => 7 },
+        { 'type' => 'bid',        'price' => 270, 'entity' => 2, 'company' => 'NHSC', 'entity_type' => 'player',      'id' => 8 },
+        { 'type' => 'par',                        'entity' => 2, 'corporation' => 'NYH', 'entity_type' => 'player',   'share_price' => '100,0,4', 'id' => 9 },
+        { 'type' => 'par',                        'entity' => 3, 'corporation' => 'NYC', 'entity_type' => 'player',   'share_price' => '70,5,4',  'id' => 10 },
+        { 'type' => 'pass',                        'entity' => 1, 'entity_type' => 'player',      'id' => 11 },
+        { 'type' => 'pass',                        'entity' => 2, 'entity_type' => 'player',      'id' => 12 },
+        { 'type' => 'buy_shares',                  'entity' => 3, 'shares' => ['NYC_2'], 'percent' => 10, 'entity_type' => 'player', 'id' => 13 },
+        { 'type' => 'pass',                        'entity' => 1, 'entity_type' => 'player',      'id' => 14 },
+        { 'type' => 'pass',                        'entity' => 2, 'entity_type' => 'player',      'id' => 15 },
+        { 'type' => 'buy_shares',                  'entity' => 3, 'shares' => ['NYC_3'], 'percent' => 10, 'entity_type' => 'player', 'id' => 16 },
+        { 'type' => 'pass',                        'entity' => 1, 'entity_type' => 'player',      'id' => 17 },
+        { 'type' => 'pass',                        'entity' => 2, 'entity_type' => 'player',      'id' => 18 },
+        { 'type' => 'buy_shares',                  'entity' => 3, 'shares' => ['NYC_4'], 'percent' => 10, 'entity_type' => 'player', 'id' => 19 },
+        { 'type' => 'pass',                        'entity' => 1, 'entity_type' => 'player',      'id' => 20 },
+        { 'type' => 'pass',                        'entity' => 2, 'entity_type' => 'player',      'id' => 21 },
+        { 'type' => 'pass',                        'entity' => 3, 'entity_type' => 'player',      'id' => 22 },
+        { 'type' => 'lay_tile', 'hex' => 'F26', 'tile' => '9-0', 'rotation' => 1, 'entity' => 'NYC', 'entity_type' => 'corporation', 'id' => 23 },
+        { 'type' => 'pass',                        'entity' => 'NYC', 'entity_type' => 'corporation', 'id' => 24 },
+        { 'type' => 'pass',                        'entity' => 1,     'entity_type' => 'player',      'id' => 25 },
+        { 'type' => 'pass',                        'entity' => 2,     'entity_type' => 'player',      'id' => 26 },
+        { 'type' => 'pass',                        'entity' => 3,     'entity_type' => 'player',      'id' => 27 },
+        { 'type' => 'lay_tile', 'hex' => 'F24', 'tile' => '9-1', 'rotation' => 1, 'entity' => 'NYC', 'entity_type' => 'corporation', 'id' => 28 },
+        { 'type' => 'pass',                        'entity' => 'NYC', 'entity_type' => 'corporation', 'id' => 29 },
+        { 'type' => 'pass',                        'entity' => 1,     'entity_type' => 'player',      'id' => 30 },
+        { 'type' => 'pass',                        'entity' => 2,     'entity_type' => 'player',      'id' => 31 },
+        { 'type' => 'pass',                        'entity' => 3,     'entity_type' => 'player',      'id' => 32 },
+        { 'type' => 'lay_tile', 'hex' => 'F22', 'tile' => '9-2', 'rotation' => 1, 'entity' => 'NYC', 'entity_type' => 'corporation', 'id' => 33 },
+        { 'type' => 'pass',                        'entity' => 'NYC', 'entity_type' => 'corporation', 'id' => 34 },
+        { 'type' => 'pass',                        'entity' => 1,     'entity_type' => 'player',      'id' => 35 },
+        { 'type' => 'pass',                        'entity' => 2,     'entity_type' => 'player',      'id' => 36 },
+        { 'type' => 'pass',                        'entity' => 3,     'entity_type' => 'player',      'id' => 37 },
+        { 'type' => 'pass',                        'entity' => 'NYC', 'entity_type' => 'corporation', 'id' => 38 },
+        { 'type' => 'buy_train', 'price' => 100, 'train' => '2-0', 'entity' => 'NYC', 'entity_type' => 'corporation', 'id' => 39 },
+        { 'type' => 'pass',                        'entity' => 'NYC', 'entity_type' => 'corporation', 'id' => 40 },
+        { 'type' => 'pass',                        'entity' => 1,     'entity_type' => 'player',      'id' => 41 },
+        { 'type' => 'pass',                        'entity' => 2,     'entity_type' => 'player',      'id' => 42 },
+        { 'type' => 'pass',                        'entity' => 3,     'entity_type' => 'player',      'id' => 43 },
+        { 'type' => 'pass',                        'entity' => 'NYC', 'entity_type' => 'corporation', 'id' => 44 },
+      ].freeze
+
+      ROUTE_ACTION = {
+        'type' => 'run_routes', 'entity' => 'NYC', 'entity_type' => 'corporation',
+        'subsidy' => 0, 'extra_revenue' => 0,
+        'routes' => [{ 'hexes' => %w[F20 F28], 'nodes' => %w[F28-0 F20-0], 'train' => '2-0',
+                       'revenue' => 40, 'connections' => [%w[F28 F26 F24 F22 F20]],
+                       'revenue_str' => 'F20-F28' }],
+        'id' => 45,
+      }.freeze
+
+      def load_game_to(n_actions)
+        g = Game::G1862UsaCanada::Game.new({ 1 => 'Player 1', 2 => 'Player 2', 3 => 'Player 3' }, id: 21, actions: [])
+        CHOOSE_BONUS_ACTIONS.first(n_actions).each { |a| g.process_action(a) }
+        g
+      end
+
+      context 'before NYC runs routes (OR5, Track step passed)' do
+        subject(:g) { load_game_to(44) }
+
+        it 'NYC has a 2-train' do
+          expect(g.corporation_by_id('NYC').trains.map(&:name)).to eq(['2'])
+        end
+
+        it 'Chicago (F20) is reachable from NYC network' do
+          nyc = g.corporation_by_id('NYC')
+          expect(g.graph_for_entity(nyc).connected_hexes(nyc)).to include(g.hex_by_id('F20'))
+        end
+
+        it 'Chicago bonus is still unactivated' do
+          expect(g.bonus_state[['NYC', 1]]).to eq(:unactivated)
+        end
+
+        it 'no pending bonus activations without routes' do
+          nyc = g.corporation_by_id('NYC')
+          expect(g.pending_bonus_activations(nyc, [])).to be_empty
+        end
+
+        it 'corp_bonus_revenue is 0 for unactivated Chicago bonus (no pre-empted bonus)' do
+          nyc = g.corporation_by_id('NYC')
+          route = stub_route('F28', 'F20')
+          expect(g.corp_bonus_revenue(nyc, [route])).to eq(0)
+        end
+      end
+
+      context 'after NYC runs F28→F20 (ChooseBonus pending)' do
+        subject(:g) do
+          gg = load_game_to(44)
+          gg.process_action(ROUTE_ACTION)
+          gg
+        end
+
+        it 'Chicago bonus activation is pending' do
+          nyc = g.corporation_by_id('NYC')
+          activations = g.pending_bonus_activations(nyc, g.round.routes)
+          expect(activations).not_to be_empty
+          expect(activations.first[0][:name]).to eq('Chicago')
+        end
+
+        it 'ChooseBonus step is active' do
+          choose_step = g.round.steps.find { |s| s.is_a?(Game::G1862UsaCanada::Step::ChooseBonus) }
+          nyc = g.corporation_by_id('NYC')
+          expect(choose_step.actions(nyc)).to include('choose')
+        end
+
+        it 'choice offers cash ($200) and permanent (+$60/OR)' do
+          choose_step = g.round.steps.find { |s| s.is_a?(Game::G1862UsaCanada::Step::ChooseBonus) }
+          choices = choose_step.choices
+          expect(choices.keys).to contain_exactly('cash', 'permanent')
+          expect(choices['cash']).to include('200')
+          expect(choices['permanent']).to include('60')
+        end
+      end
+
+      context 'choosing permanent' do
+        subject(:g) do
+          gg = load_game_to(44)
+          gg.process_action(ROUTE_ACTION)
+          gg.process_action({ 'type' => 'choose', 'choice' => 'permanent',
+                               'entity' => 'NYC', 'entity_type' => 'corporation', 'id' => 46 })
+          gg
+        end
+
+        it 'bonus state is :permanent' do
+          expect(g.bonus_state[['NYC', 1]]).to eq(:permanent)
+        end
+
+        it 'subsequent corp_bonus_revenue is +$60 from Chicago bonus' do
+          nyc = g.corporation_by_id('NYC')
+          route = stub_route('F28', 'F20')
+          expect(g.corp_bonus_revenue(nyc, [route])).to eq(60)
+        end
+      end
+
+      context 'choosing cash' do
+        subject(:g) do
+          gg = load_game_to(44)
+          gg.process_action(ROUTE_ACTION)
+          gg
+        end
+
+        it 'pays $200 cash to NYC treasury immediately' do
+          nyc = g.corporation_by_id('NYC')
+          cash_before = nyc.cash
+          g.process_action({ 'type' => 'choose', 'choice' => 'cash',
+                              'entity' => 'NYC', 'entity_type' => 'corporation', 'id' => 46 })
+          expect(nyc.cash).to eq(cash_before + 200)
+        end
+
+        it 'bonus state is :cash (no further route bonus)' do
+          nyc = g.corporation_by_id('NYC')
+          g.process_action({ 'type' => 'choose', 'choice' => 'cash',
+                              'entity' => 'NYC', 'entity_type' => 'corporation', 'id' => 46 })
+          expect(g.bonus_state[['NYC', 1]]).to eq(:cash)
+        end
+
+        it 'subsequent corp_bonus_revenue is 0 after cash choice' do
+          nyc = g.corporation_by_id('NYC')
+          g.process_action({ 'type' => 'choose', 'choice' => 'cash',
+                              'entity' => 'NYC', 'entity_type' => 'corporation', 'id' => 46 })
+          route = stub_route('F28', 'F20')
+          expect(g.corp_bonus_revenue(nyc, [route])).to eq(0)
         end
       end
     end
