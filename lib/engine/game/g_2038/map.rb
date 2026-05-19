@@ -89,8 +89,8 @@ module Engine
 
         HEXES = {
           gray40: {
-            %w[A13 D2 O11] => 'city=revenue:yellow_30|gray_60;path=a:5,b:_0;path=a:0,b:_0',
-            %w[H10 H18] => 'city=revenue:yellow_20|gray_70;path=a:5,b:_0;path=a:0,b:_0',
+            %w[A13 D2 H10 O11] => 'city=revenue:yellow_30|gray_60;path=a:5,b:_0;path=a:0,b:_0',
+            %w[H18] => 'city=revenue:yellow_20|gray_70;path=a:5,b:_0;path=a:0,b:_0',
           },
           gray: { %w[A1 B6 D8 D14 F18 G7 H14 J2 J18 K9 M5 M13 O1] => '' },
           blue: {
