@@ -720,9 +720,13 @@ module Engine
           return false unless entity&.corporation?
           return true if entity.destination_connected?
 
-          graph = Graph.new(self, no_blocking: true)
-          graph.compute(entity)
-          graph.reachable_hexes(entity).include?(hex_by_id(entity.destination))
+          @no_blocking_graph ||= Graph.new(self, no_blocking: true)
+          @no_blocking_graph.reachable_hexes(entity).include?(hex_by_id(entity.destination))
+        end
+
+        def clear_graph_for_entity(entity)
+          super
+          @no_blocking_graph&.clear
         end
 
         def check_offboard_goal(entity, routes)
@@ -1073,7 +1077,7 @@ module Engine
         def opening_new_mountain_pass(entity, p4_ability = false)
           return {} unless entity
 
-          @graph.clear
+          @graph.clear unless @loading
           openable_passes = @graph.connected_hexes(entity).keys.select do |hex|
             mountain_pass_token_hex?(hex)
           end
