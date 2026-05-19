@@ -471,7 +471,7 @@ module Engine
           bonuses.each_with_index.sum do |bonus, i|
             case @bonus_state[[corporation.id, i]]
             when :unactivated
-              would_activate?(bonus, routes, home) ? bonus[:route_bonus] : 0
+              0 # ChooseBonus fires before Dividend; bonus applied after player's choice
             when :permanent
               permanent_on_route?(corporation.id, i, bonus, routes) ? bonus[:route_bonus] : 0
             else
@@ -483,7 +483,7 @@ module Engine
         # Returns [bonus, idx, triggered_hex_id] for each unactivated bonus whose
         # activation condition is met by the current routes. Called by Step::ChooseBonus.
         def pending_bonus_activations(entity, routes)
-          return [] if routes.empty?
+          return [] if routes.nil? || routes.empty?
 
           bonuses = CORP_BONUSES[entity.id]
           return [] unless bonuses

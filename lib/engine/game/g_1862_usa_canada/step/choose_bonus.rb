@@ -66,7 +66,7 @@ module Engine
           private
 
           def pending_for(entity)
-            @game.pending_bonus_activations(entity, @round.routes)
+            @game.pending_bonus_activations(entity, @round.routes || [])
           end
         end
       end

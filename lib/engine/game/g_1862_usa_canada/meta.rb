@@ -15,7 +15,7 @@ module Engine
         GAME_SUBTITLE = 'The First Transcontinental Railroad'
         GAME_DESIGNER = 'Helmut Ohley'
         GAME_LOCATION = 'North America'
-        GAME_PUBLISHER = 'Self published by Helmut Ohley'
+        GAME_PUBLISHER = :self_published
         GAME_RULES_URL = nil
         GAME_INFO_URL = 'https://boardgamegeek.com/boardgame/382673/1862-usa-and-canada'
 
