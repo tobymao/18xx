@@ -6,16 +6,14 @@ require 'spec_helper'
 # Any deviation signals that a refactor step (Issue #12579) changed the behaviour,
 # intentionally or not.
 #
-# Values captured with Engine::Game.load(data, strict: false) at commit bc6657312.
-# AVT and TBF reach their destination not via goal_reached!(:destination) but through
-# the full-cap mechanism (game.rb ~line 589), hence goals=0.
+# Values captured at commit bc6657312. AVT and TBF reach their destination not via
+# goal_reached!(:destination) but through the full-cap mechanism (game.rb ~line 589),
+# hence goals=0.
 
 describe Engine::Game::G18ESP::Game do
   describe '18ESP_game_end_second_eight' do
-    subject(:game) do
-      data = JSON.parse(File.read("#{FIXTURES_DIR}/18ESP/18ESP_game_end_second_eight.json"))
-      Engine::Game.load(data, strict: false).tap(&:maybe_raise!)
-    end
+    # 1334 = total action count for this fixture; loads the complete game.
+    let(:game) { fixture_at_action(1334) }
 
     it 'replays without exceptions' do
       expect(game.exception).to be_nil

@@ -9,39 +9,38 @@ module Engine
         class CheckDestinationConnection < Engine::Step::Base
           ACTIONS = %w[destination_connection].freeze
 
-          def actions(_entity)
+          def actions(entity)
+            return [] if @game.loading
+            return [] unless new_destination_connection?(entity)
+
             ACTIONS
           end
 
           def auto_actions(entity)
-            return [] unless entity&.corporation?
+            return [] if @game.loading
+            return [] unless new_destination_connection?(entity)
 
-            connected = @game.check_for_destination_connection(entity) ? [entity] : []
-            [Engine::Action::DestinationConnection.new(entity, corporations: connected)]
+            [Engine::Action::DestinationConnection.new(entity, corporations: [entity])]
           end
 
           def description
             'Check destination connection'
           end
 
-          # During loading, auto_actions returns [] (performance win) — without this
-          # guard the round would hang because no destination_connection action is
-          # emitted at runtime. New saves carry the action in the log and run through
-          # process_destination_connection; pre-PR-2 saves are state-corrected by
-          # Game#backfill_destination_connections! after replay finishes.
-          def blocking?
-            return false if @game.loading
-
-            super
-          end
-
-          # Overridden to be a no-op: prevents force_next_entity! from skipping
-          # this step before it has had a chance to fire its auto_action.
+          # Step is not player-passable; @passed is set in process_destination_connection
           def pass!; end
 
           def process_destination_connection(action)
-            action.corporations.each { |c| c.goal_reached!(:destination) }
+            action.corporations.first.goal_reached!(:destination)
             @passed = true
+          end
+
+          private
+
+          def new_destination_connection?(entity)
+            entity&.corporation? &&
+              !entity.destination_connected? &&
+              @game.check_for_destination_connection(entity)
           end
         end
       end
