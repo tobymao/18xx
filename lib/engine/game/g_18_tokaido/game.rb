@@ -112,7 +112,6 @@ module Engine
             name: 'D',
             distance: 999,
             price: 900,
-            num: 'unlimited',
             available_on: '6',
             events: [{ 'type' => 'signal_end_game' }],
             discount: { '4' => 200, '5' => 200, '6' => 200 },
@@ -231,8 +230,8 @@ module Engine
             3
           when '6'
             limited_express ? 2 : 3
-          else
-            super
+          when 'D'
+            20
           end
         end
 

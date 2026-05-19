@@ -169,7 +169,6 @@ module Engine
             distance: [{ 'nodes' => %w[city offboard], 'pay' => 7, 'visit' => 7 },
                        { 'nodes' => %w[town], 'pay' => 0, 'visit' => 99 }],
             track_type: :broad,
-            num: 'unlimited',
             price: 800,
             variants: [
               {
@@ -186,7 +185,6 @@ module Engine
             distance: [{ 'nodes' => %w[city offboard], 'pay' => 5, 'visit' => 5 },
                        { 'nodes' => %w[town], 'pay' => 0, 'visit' => 99 }],
             track_type: :broad,
-            num: 'unlimited',
             price: 1_100,
             multiplier: 2,
             available_on: '7',
@@ -204,6 +202,8 @@ module Engine
           '6H' => 4,
           '5E' => 3,
           '6E' => 2,
+          '7E' => 16,
+          '5D' => 8,
         }.freeze
 
         TRAIN_COUNTS_2P = {
@@ -212,11 +212,12 @@ module Engine
           '6H' => 3,
           '5E' => 2,
           '6E' => 2,
+          '7E' => 16,
+          '5D' => 8,
         }.freeze
 
         def num_trains(train)
-          counts = two_player? ? TRAIN_COUNTS_2P : TRAIN_COUNTS_NORMAL
-          counts[train[:name]] || super
+          two_player? ? TRAIN_COUNTS_2P[train[:name]] : TRAIN_COUNTS_NORMAL[train[:name]]
         end
 
         def phase4_train_trigger

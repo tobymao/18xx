@@ -108,16 +108,15 @@ module Engine
           @private_closure_round = :next
         end
 
-        TRAINS = G1858::Trains::TRAINS
-          .reject { |train| train[:name] == '7E' }
-          .map { |train| train[:name] == '6E' ? train.merge(num: 'unlimited') : train }
-          .freeze
+        TRAINS = G1858::Trains::TRAINS.reject { |train| train[:name] == '7E' }
 
         TRAIN_COUNTS = {
           '2H' => 4,
           '4H' => 3,
           '6H' => 3,
           '5E' => 2,
+          '6E' => 10,
+          '5D' => 5,
         }.freeze
         GREY_TRAINS = %w[6E 5M 5D].freeze
 
@@ -144,7 +143,7 @@ module Engine
         end
 
         def num_trains(train)
-          TRAIN_COUNTS[train[:name]] || super
+          TRAIN_COUNTS[train[:name]]
         end
 
         PHASE4_TRAINS_OBSOLETE = 2 # 6H/3M trains wounded after second grey train is bought.

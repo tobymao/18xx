@@ -26,6 +26,8 @@ module Engine
           '6H' => 5,
           '5E' => 4,
           '6E' => 3,
+          '7E' => 20,
+          '5D' => 10,
           'Pullman' => 4,
         }.freeze
 
@@ -113,7 +115,7 @@ module Engine
         end
 
         def num_trains(train)
-          TRAIN_COUNTS[train[:name]] || super
+          TRAIN_COUNTS[train[:name]]
         end
 
         def pullman?(train)
