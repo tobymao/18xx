@@ -19,6 +19,7 @@ module Engine
         include Entities
 
 
+        TILE_TYPE = :lawson
         TRACK_RESTRICTION = :permissive
         SELL_BUY_ORDER = :sell_buy
         SELL_AFTER = :p_any_operate

@@ -4,179 +4,71 @@ module Engine
   module Game
     module G2038
       module Map
+        # Shared path segments for tile code strings.
+        # SP6: all 6 edges → junction(_0) + city(_1); used by single-mine tiles.
+        # DP6: all 6 edges → junction(_0) + city1(_1) + city2(_2); used by double-mine tiles.
+        SP6 = 'path=a:0,b:_0;path=a:0,b:_1;path=a:1,b:_0;path=a:1,b:_1;path=a:2,b:_0;path=a:2,b:_1;'\
+              'path=a:3,b:_0;path=a:3,b:_1;path=a:4,b:_0;path=a:4,b:_1;path=a:5,b:_0;path=a:5,b:_1'
+        DP6 = 'path=a:0,b:_0;path=a:0,b:_1;path=a:0,b:_2;path=a:1,b:_0;path=a:1,b:_1;path=a:1,b:_2;'\
+              'path=a:2,b:_0;path=a:2,b:_1;path=a:2,b:_2;path=a:3,b:_0;path=a:3,b:_1;path=a:3,b:_2;'\
+              'path=a:4,b:_0;path=a:4,b:_1;path=a:4,b:_2;path=a:5,b:_0;path=a:5,b:_1;path=a:5,b:_2'
+
         TILES = {
-          '2001' =>
-          {
-            'count' => 12,
-            'color' => 'yellow',
-            'code' => 'city=revenue:green_10|brown_50;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
-                      'path=a:4,b:_0;path=a:5,b:_0;label=N',
-          },
-          '2002' =>
-          {
-            'count' => 12,
-            'color' => 'yellow',
-            'code' => 'city=revenue:green_20|brown_60;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
-                      'path=a:4,b:_0;path=a:5,b:_0;label=N',
-          },
-          '2003' =>
-          {
-            'count' => 2,
-            'color' => 'yellow',
-            'code' => 'city=revenue:green_30|brown_40;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
-                      'path=a:4,b:_0;path=a:5,b:_0;label=I',
-          },
-          '2004' =>
-          {
-            'count' => 4,
-            'color' => 'yellow',
-            'code' => 'city=revenue:green_40|brown_50;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
-                      'path=a:4,b:_0;path=a:5,b:_0;label=I',
-          },
-          '2005' =>
-          {
-            'count' => 8,
-            'color' => 'yellow',
-            'code' => 'city=revenue:green_50|brown_60;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
-                      'path=a:4,b:_0;path=a:5,b:_0;label=I',
-          },
-          '2006' =>
-          {
-            'count' => 2,
-            'color' => 'yellow',
-            'code' => 'city=revenue:green_20|brown_50;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
-                      'path=a:4,b:_0;path=a:5,b:_0;label=R',
-          },
-          '2007' =>
-          {
-            'count' => 4,
-            'color' => 'yellow',
-            'code' => 'city=revenue:green_30|brown_60;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
-                      'path=a:4,b:_0;path=a:5,b:_0;label=R',
-          },
-          '2008' =>
-          {
-            'count' => 6,
-            'color' => 'yellow',
-            'code' => 'city=revenue:green_40|brown_70;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
-                      'path=a:4,b:_0;path=a:5,b:_0;label=R',
-          },
-          # N/N double-mine tiles (NdNm ascending, then NdNd)
-          '2009' =>
-          {
-            'count' => 12,
-            'color' => 'yellow',
-            'code' => 'city=revenue:green_20|brown_60;city=revenue:green_10|brown_50;path=a:0,b:_0;path=a:0,b:_1;'\
-                      'path=a:1,b:_0;path=a:1,b:_1;path=a:2,b:_0;path=a:2,b:_1;path=a:3,b:_0;path=a:3,b:_1;'\
-                      'path=a:4,b:_0;path=a:4,b:_1;path=a:5,b:_0;path=a:5,b:_1;label=N/N',
-          },
-          '2010' =>
-          {
-            'count' => 8,
-            'color' => 'yellow',
-            'code' => 'city=revenue:green_20|brown_60;city=revenue:green_20|brown_60;path=a:0,b:_0;path=a:0,b:_1;'\
-                      'path=a:1,b:_0;path=a:1,b:_1;path=a:2,b:_0;path=a:2,b:_1;path=a:3,b:_0;path=a:3,b:_1;'\
-                      'path=a:4,b:_0;path=a:4,b:_1;path=a:5,b:_0;path=a:5,b:_1;label=N/N',
-          },
-          # I/N double-mine tiles (ascending: I-light first, then I-medium; N-medium before N-dark)
-          '2011' =>
-          {
-            'count' => 6,
-            'color' => 'yellow',
-            'code' => 'city=revenue:green_30|brown_40;city=revenue:green_10|brown_50;path=a:0,b:_0;path=a:0,b:_1;'\
-                      'path=a:1,b:_0;path=a:1,b:_1;path=a:2,b:_0;path=a:2,b:_1;path=a:3,b:_0;path=a:3,b:_1;'\
-                      'path=a:4,b:_0;path=a:4,b:_1;path=a:5,b:_0;path=a:5,b:_1;label=I/N',
-          },
-          '2012' =>
-          {
-            'count' => 4,
-            'color' => 'yellow',
-            'code' => 'city=revenue:green_30|brown_40;city=revenue:green_20|brown_60;path=a:0,b:_0;path=a:0,b:_1;'\
-                      'path=a:1,b:_0;path=a:1,b:_1;path=a:2,b:_0;path=a:2,b:_1;path=a:3,b:_0;path=a:3,b:_1;'\
-                      'path=a:4,b:_0;path=a:4,b:_1;path=a:5,b:_0;path=a:5,b:_1;label=I/N',
-          },
-          '2013' =>
-          {
-            'count' => 4,
-            'color' => 'yellow',
-            'code' => 'city=revenue:green_40|brown_50;city=revenue:green_10|brown_50;path=a:0,b:_0;path=a:0,b:_1;'\
-                      'path=a:1,b:_0;path=a:1,b:_1;path=a:2,b:_0;path=a:2,b:_1;path=a:3,b:_0;path=a:3,b:_1;'\
-                      'path=a:4,b:_0;path=a:4,b:_1;path=a:5,b:_0;path=a:5,b:_1;label=I/N',
-          },
-          '2014' =>
-          {
-            'count' => 4,
-            'color' => 'yellow',
-            'code' => 'city=revenue:green_40|brown_50;city=revenue:green_20|brown_60;path=a:0,b:_0;path=a:0,b:_1;'\
-                      'path=a:1,b:_0;path=a:1,b:_1;path=a:2,b:_0;path=a:2,b:_1;path=a:3,b:_0;path=a:3,b:_1;'\
-                      'path=a:4,b:_0;path=a:4,b:_1;path=a:5,b:_0;path=a:5,b:_1;label=I/N',
-          },
-          # R/N double-mine tiles (ascending: R-light first, then R-medium; N-medium before N-dark)
-          '2015' =>
-          {
-            'count' => 4,
-            'color' => 'yellow',
-            'code' => 'city=revenue:green_20|brown_50;city=revenue:green_10|brown_50;path=a:0,b:_0;path=a:0,b:_1;'\
-                      'path=a:1,b:_0;path=a:1,b:_1;path=a:2,b:_0;path=a:2,b:_1;path=a:3,b:_0;path=a:3,b:_1;'\
-                      'path=a:4,b:_0;path=a:4,b:_1;path=a:5,b:_0;path=a:5,b:_1;label=R/N',
-          },
-          '2016' =>
-          {
-            'count' => 2,
-            'color' => 'yellow',
-            'code' => 'city=revenue:green_20|brown_50;city=revenue:green_20|brown_60;path=a:0,b:_0;path=a:0,b:_1;'\
-                      'path=a:1,b:_0;path=a:1,b:_1;path=a:2,b:_0;path=a:2,b:_1;path=a:3,b:_0;path=a:3,b:_1;'\
-                      'path=a:4,b:_0;path=a:4,b:_1;path=a:5,b:_0;path=a:5,b:_1;label=R/N',
-          },
-          '2017' =>
-          {
-            'count' => 2,
-            'color' => 'yellow',
-            'code' => 'city=revenue:green_30|brown_60;city=revenue:green_10|brown_50;path=a:0,b:_0;path=a:0,b:_1;'\
-                      'path=a:1,b:_0;path=a:1,b:_1;path=a:2,b:_0;path=a:2,b:_1;path=a:3,b:_0;path=a:3,b:_1;'\
-                      'path=a:4,b:_0;path=a:4,b:_1;path=a:5,b:_0;path=a:5,b:_1;label=R/N',
-          },
-          '2018' =>
-          {
-            'count' => 2,
-            'color' => 'yellow',
-            'code' => 'city=revenue:green_30|brown_60;city=revenue:green_20|brown_60;path=a:0,b:_0;path=a:0,b:_1;'\
-                      'path=a:1,b:_0;path=a:1,b:_1;path=a:2,b:_0;path=a:2,b:_1;path=a:3,b:_0;path=a:3,b:_1;'\
-                      'path=a:4,b:_0;path=a:4,b:_1;path=a:5,b:_0;path=a:5,b:_1;label=R/N',
-          },
-          # R/I double-mine tiles (ascending: R-light first, then R-medium; I-light before I-medium)
-          '2019' =>
-          {
-            'count' => 2,
-            'color' => 'yellow',
-            'code' => 'city=revenue:green_20|brown_50;city=revenue:green_30|brown_40;path=a:0,b:_0;path=a:0,b:_1;'\
-                      'path=a:1,b:_0;path=a:1,b:_1;path=a:2,b:_0;path=a:2,b:_1;path=a:3,b:_0;path=a:3,b:_1;'\
-                      'path=a:4,b:_0;path=a:4,b:_1;path=a:5,b:_0;path=a:5,b:_1;label=R/I',
-          },
-          '2020' =>
-          {
-            'count' => 2,
-            'color' => 'yellow',
-            'code' => 'city=revenue:green_20|brown_50;city=revenue:green_40|brown_50;path=a:0,b:_0;path=a:0,b:_1;'\
-                      'path=a:1,b:_0;path=a:1,b:_1;path=a:2,b:_0;path=a:2,b:_1;path=a:3,b:_0;path=a:3,b:_1;'\
-                      'path=a:4,b:_0;path=a:4,b:_1;path=a:5,b:_0;path=a:5,b:_1;label=R/I',
-          },
-          '2021' =>
-          {
-            'count' => 2,
-            'color' => 'yellow',
-            'code' => 'city=revenue:green_30|brown_60;city=revenue:green_30|brown_40;path=a:0,b:_0;path=a:0,b:_1;'\
-                      'path=a:1,b:_0;path=a:1,b:_1;path=a:2,b:_0;path=a:2,b:_1;path=a:3,b:_0;path=a:3,b:_1;'\
-                      'path=a:4,b:_0;path=a:4,b:_1;path=a:5,b:_0;path=a:5,b:_1;label=R/I',
-          },
-          '2022' =>
-          {
-            'count' => 2,
-            'color' => 'yellow',
-            'code' => 'city=revenue:green_30|brown_60;city=revenue:green_40|brown_50;path=a:0,b:_0;path=a:0,b:_1;'\
-                      'path=a:1,b:_0;path=a:1,b:_1;path=a:2,b:_0;path=a:2,b:_1;path=a:3,b:_0;path=a:3,b:_1;'\
-                      'path=a:4,b:_0;path=a:4,b:_1;path=a:5,b:_0;path=a:5,b:_1;label=R/I',
-          },
+          # Single-mine N tiles
+          '2001' => { 'count' => 12, 'color' => 'yellow',
+                      'code' => "junction;city=revenue:green_10|brown_50;#{SP6};label=N" },
+          '2002' => { 'count' => 12, 'color' => 'yellow',
+                      'code' => "junction;city=revenue:green_20|brown_60;#{SP6};label=N" },
+          # Single-mine I tiles
+          '2003' => { 'count' => 2,  'color' => 'yellow',
+                      'code' => "junction;city=revenue:green_30|brown_40;#{SP6};label=I" },
+          '2004' => { 'count' => 4,  'color' => 'yellow',
+                      'code' => "junction;city=revenue:green_40|brown_50;#{SP6};label=I" },
+          '2005' => { 'count' => 8,  'color' => 'yellow',
+                      'code' => "junction;city=revenue:green_50|brown_60;#{SP6};label=I" },
+          # Single-mine R tiles
+          '2006' => { 'count' => 2,  'color' => 'yellow',
+                      'code' => "junction;city=revenue:green_20|brown_50;#{SP6};label=R" },
+          '2007' => { 'count' => 4,  'color' => 'yellow',
+                      'code' => "junction;city=revenue:green_30|brown_60;#{SP6};label=R" },
+          '2008' => { 'count' => 6,  'color' => 'yellow',
+                      'code' => "junction;city=revenue:green_40|brown_70;#{SP6};label=R" },
+          # N/N double-mine tiles (NdNm first, then NdNd)
+          '2009' => { 'count' => 12, 'color' => 'yellow',
+                      'code' => "junction;city=revenue:green_20|brown_60;city=revenue:green_10|brown_50;#{DP6};label=N/N" },
+          '2010' => { 'count' => 8,  'color' => 'yellow',
+                      'code' => "junction;city=revenue:green_20|brown_60;city=revenue:green_20|brown_60;#{DP6};label=N/N" },
+          # I/N double-mine tiles
+          '2011' => { 'count' => 6,  'color' => 'yellow',
+                      'code' => "junction;city=revenue:green_30|brown_40;city=revenue:green_10|brown_50;#{DP6};label=I/N" },
+          '2012' => { 'count' => 4,  'color' => 'yellow',
+                      'code' => "junction;city=revenue:green_30|brown_40;city=revenue:green_20|brown_60;#{DP6};label=I/N" },
+          '2013' => { 'count' => 4,  'color' => 'yellow',
+                      'code' => "junction;city=revenue:green_40|brown_50;city=revenue:green_10|brown_50;#{DP6};label=I/N" },
+          '2014' => { 'count' => 4,  'color' => 'yellow',
+                      'code' => "junction;city=revenue:green_40|brown_50;city=revenue:green_20|brown_60;#{DP6};label=I/N" },
+          # R/N double-mine tiles
+          '2015' => { 'count' => 4,  'color' => 'yellow',
+                      'code' => "junction;city=revenue:green_20|brown_50;city=revenue:green_10|brown_50;#{DP6};label=R/N" },
+          '2016' => { 'count' => 2,  'color' => 'yellow',
+                      'code' => "junction;city=revenue:green_20|brown_50;city=revenue:green_20|brown_60;#{DP6};label=R/N" },
+          '2017' => { 'count' => 2,  'color' => 'yellow',
+                      'code' => "junction;city=revenue:green_30|brown_60;city=revenue:green_10|brown_50;#{DP6};label=R/N" },
+          '2018' => { 'count' => 2,  'color' => 'yellow',
+                      'code' => "junction;city=revenue:green_30|brown_60;city=revenue:green_20|brown_60;#{DP6};label=R/N" },
+          # R/I double-mine tiles
+          '2019' => { 'count' => 2,  'color' => 'yellow',
+                      'code' => "junction;city=revenue:green_20|brown_50;city=revenue:green_30|brown_40;#{DP6};label=R/I" },
+          '2020' => { 'count' => 2,  'color' => 'yellow',
+                      'code' => "junction;city=revenue:green_20|brown_50;city=revenue:green_40|brown_50;#{DP6};label=R/I" },
+          '2021' => { 'count' => 2,  'color' => 'yellow',
+                      'code' => "junction;city=revenue:green_30|brown_60;city=revenue:green_30|brown_40;#{DP6};label=R/I" },
+          '2022' => { 'count' => 2,  'color' => 'yellow',
+                      'code' => "junction;city=revenue:green_30|brown_60;city=revenue:green_40|brown_50;#{DP6};label=R/I" },
+          # Gray base tile — placed when a corporation establishes a base on an explored asteroid.
+          # The city slot holds the base token; revenue is tracked via corporation base mechanics.
+          '2023' => { 'count' => 40, 'color' => 'gray',
+                      'code' => "junction;city=revenue:0;#{SP6}" },
         }.freeze
 
         LOCATION_NAMES = {
@@ -210,7 +102,9 @@ module Engine
                 J6 J8 J10 J12 J14 J16 K3 K5 K7 K11 K13 K15 K17 L2 L4
                 L6 L8 L10 L12 L14 L16 M1 M3 M7 M9 M11 M15 N2 N4 N6 N8
                 N10 N12 N14 O3 O5 O7 O9 O13
-            ] => '',
+            ] => 'junction;path=a:0,b:_0,track:invisible;path=a:1,b:_0,track:invisible;'\
+                 'path=a:2,b:_0,track:invisible;path=a:3,b:_0,track:invisible;'\
+                 'path=a:4,b:_0,track:invisible;path=a:5,b:_0,track:invisible',
           },
         }.freeze
 
