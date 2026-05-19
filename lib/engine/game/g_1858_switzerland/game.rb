@@ -109,7 +109,6 @@ module Engine
         end
 
         TRAINS = G1858::Trains::TRAINS.reject { |train| train[:name] == '7E' }
-
         TRAIN_COUNTS = {
           '2H' => 4,
           '4H' => 3,
