@@ -56,26 +56,127 @@ module Engine
           },
           '2008' =>
           {
-            'count' => 7,
+            'count' => 6,
             'color' => 'yellow',
             'code' => 'city=revenue:green_40|brown_70;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
                       'path=a:4,b:_0;path=a:5,b:_0;label=R',
           },
+          # N/N double-mine tiles (NdNm ascending, then NdNd)
           '2009' =>
           {
-            'count' => 7,
+            'count' => 12,
+            'color' => 'yellow',
+            'code' => 'city=revenue:green_20|brown_60;city=revenue:green_10|brown_50;path=a:0,b:_0;path=a:0,b:_1;'\
+                      'path=a:1,b:_0;path=a:1,b:_1;path=a:2,b:_0;path=a:2,b:_1;path=a:3,b:_0;path=a:3,b:_1;'\
+                      'path=a:4,b:_0;path=a:4,b:_1;path=a:5,b:_0;path=a:5,b:_1;label=N/N',
+          },
+          '2010' =>
+          {
+            'count' => 8,
             'color' => 'yellow',
             'code' => 'city=revenue:green_20|brown_60;city=revenue:green_20|brown_60;path=a:0,b:_0;path=a:0,b:_1;'\
                       'path=a:1,b:_0;path=a:1,b:_1;path=a:2,b:_0;path=a:2,b:_1;path=a:3,b:_0;path=a:3,b:_1;'\
                       'path=a:4,b:_0;path=a:4,b:_1;path=a:5,b:_0;path=a:5,b:_1;label=N/N',
           },
-          # TODO: Tiles 2010–2022 must be defined from physical game components.
-          # Each entry needs correct ore type label (N/I/R or combinations),
-          # count from the physical tile manifest, and revenue values matching
-          # the unclaimed (green phase) and claimed (brown phase) values on the card.
-          # Tiles 2001–2009 above can be used as a template for the code format.
-          # Also needed: a gray "base tile" (explored hex with base marker placed;
-          # no mines, no revenue — just the token slot). See ROADMAP Phase 1b.
+          # I/N double-mine tiles (ascending: I-light first, then I-medium; N-medium before N-dark)
+          '2011' =>
+          {
+            'count' => 6,
+            'color' => 'yellow',
+            'code' => 'city=revenue:green_30|brown_40;city=revenue:green_10|brown_50;path=a:0,b:_0;path=a:0,b:_1;'\
+                      'path=a:1,b:_0;path=a:1,b:_1;path=a:2,b:_0;path=a:2,b:_1;path=a:3,b:_0;path=a:3,b:_1;'\
+                      'path=a:4,b:_0;path=a:4,b:_1;path=a:5,b:_0;path=a:5,b:_1;label=I/N',
+          },
+          '2012' =>
+          {
+            'count' => 4,
+            'color' => 'yellow',
+            'code' => 'city=revenue:green_30|brown_40;city=revenue:green_20|brown_60;path=a:0,b:_0;path=a:0,b:_1;'\
+                      'path=a:1,b:_0;path=a:1,b:_1;path=a:2,b:_0;path=a:2,b:_1;path=a:3,b:_0;path=a:3,b:_1;'\
+                      'path=a:4,b:_0;path=a:4,b:_1;path=a:5,b:_0;path=a:5,b:_1;label=I/N',
+          },
+          '2013' =>
+          {
+            'count' => 4,
+            'color' => 'yellow',
+            'code' => 'city=revenue:green_40|brown_50;city=revenue:green_10|brown_50;path=a:0,b:_0;path=a:0,b:_1;'\
+                      'path=a:1,b:_0;path=a:1,b:_1;path=a:2,b:_0;path=a:2,b:_1;path=a:3,b:_0;path=a:3,b:_1;'\
+                      'path=a:4,b:_0;path=a:4,b:_1;path=a:5,b:_0;path=a:5,b:_1;label=I/N',
+          },
+          '2014' =>
+          {
+            'count' => 4,
+            'color' => 'yellow',
+            'code' => 'city=revenue:green_40|brown_50;city=revenue:green_20|brown_60;path=a:0,b:_0;path=a:0,b:_1;'\
+                      'path=a:1,b:_0;path=a:1,b:_1;path=a:2,b:_0;path=a:2,b:_1;path=a:3,b:_0;path=a:3,b:_1;'\
+                      'path=a:4,b:_0;path=a:4,b:_1;path=a:5,b:_0;path=a:5,b:_1;label=I/N',
+          },
+          # R/N double-mine tiles (ascending: R-light first, then R-medium; N-medium before N-dark)
+          '2015' =>
+          {
+            'count' => 4,
+            'color' => 'yellow',
+            'code' => 'city=revenue:green_20|brown_50;city=revenue:green_10|brown_50;path=a:0,b:_0;path=a:0,b:_1;'\
+                      'path=a:1,b:_0;path=a:1,b:_1;path=a:2,b:_0;path=a:2,b:_1;path=a:3,b:_0;path=a:3,b:_1;'\
+                      'path=a:4,b:_0;path=a:4,b:_1;path=a:5,b:_0;path=a:5,b:_1;label=R/N',
+          },
+          '2016' =>
+          {
+            'count' => 2,
+            'color' => 'yellow',
+            'code' => 'city=revenue:green_20|brown_50;city=revenue:green_20|brown_60;path=a:0,b:_0;path=a:0,b:_1;'\
+                      'path=a:1,b:_0;path=a:1,b:_1;path=a:2,b:_0;path=a:2,b:_1;path=a:3,b:_0;path=a:3,b:_1;'\
+                      'path=a:4,b:_0;path=a:4,b:_1;path=a:5,b:_0;path=a:5,b:_1;label=R/N',
+          },
+          '2017' =>
+          {
+            'count' => 2,
+            'color' => 'yellow',
+            'code' => 'city=revenue:green_30|brown_60;city=revenue:green_10|brown_50;path=a:0,b:_0;path=a:0,b:_1;'\
+                      'path=a:1,b:_0;path=a:1,b:_1;path=a:2,b:_0;path=a:2,b:_1;path=a:3,b:_0;path=a:3,b:_1;'\
+                      'path=a:4,b:_0;path=a:4,b:_1;path=a:5,b:_0;path=a:5,b:_1;label=R/N',
+          },
+          '2018' =>
+          {
+            'count' => 2,
+            'color' => 'yellow',
+            'code' => 'city=revenue:green_30|brown_60;city=revenue:green_20|brown_60;path=a:0,b:_0;path=a:0,b:_1;'\
+                      'path=a:1,b:_0;path=a:1,b:_1;path=a:2,b:_0;path=a:2,b:_1;path=a:3,b:_0;path=a:3,b:_1;'\
+                      'path=a:4,b:_0;path=a:4,b:_1;path=a:5,b:_0;path=a:5,b:_1;label=R/N',
+          },
+          # R/I double-mine tiles (ascending: R-light first, then R-medium; I-light before I-medium)
+          '2019' =>
+          {
+            'count' => 2,
+            'color' => 'yellow',
+            'code' => 'city=revenue:green_20|brown_50;city=revenue:green_30|brown_40;path=a:0,b:_0;path=a:0,b:_1;'\
+                      'path=a:1,b:_0;path=a:1,b:_1;path=a:2,b:_0;path=a:2,b:_1;path=a:3,b:_0;path=a:3,b:_1;'\
+                      'path=a:4,b:_0;path=a:4,b:_1;path=a:5,b:_0;path=a:5,b:_1;label=R/I',
+          },
+          '2020' =>
+          {
+            'count' => 2,
+            'color' => 'yellow',
+            'code' => 'city=revenue:green_20|brown_50;city=revenue:green_40|brown_50;path=a:0,b:_0;path=a:0,b:_1;'\
+                      'path=a:1,b:_0;path=a:1,b:_1;path=a:2,b:_0;path=a:2,b:_1;path=a:3,b:_0;path=a:3,b:_1;'\
+                      'path=a:4,b:_0;path=a:4,b:_1;path=a:5,b:_0;path=a:5,b:_1;label=R/I',
+          },
+          '2021' =>
+          {
+            'count' => 2,
+            'color' => 'yellow',
+            'code' => 'city=revenue:green_30|brown_60;city=revenue:green_30|brown_40;path=a:0,b:_0;path=a:0,b:_1;'\
+                      'path=a:1,b:_0;path=a:1,b:_1;path=a:2,b:_0;path=a:2,b:_1;path=a:3,b:_0;path=a:3,b:_1;'\
+                      'path=a:4,b:_0;path=a:4,b:_1;path=a:5,b:_0;path=a:5,b:_1;label=R/I',
+          },
+          '2022' =>
+          {
+            'count' => 2,
+            'color' => 'yellow',
+            'code' => 'city=revenue:green_30|brown_60;city=revenue:green_40|brown_50;path=a:0,b:_0;path=a:0,b:_1;'\
+                      'path=a:1,b:_0;path=a:1,b:_1;path=a:2,b:_0;path=a:2,b:_1;path=a:3,b:_0;path=a:3,b:_1;'\
+                      'path=a:4,b:_0;path=a:4,b:_1;path=a:5,b:_0;path=a:5,b:_1;label=R/I',
+          },
         }.freeze
 
         LOCATION_NAMES = {
