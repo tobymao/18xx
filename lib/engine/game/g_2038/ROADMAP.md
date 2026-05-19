@@ -55,12 +55,13 @@ g_2038/
 ### 1b. Fix `map.rb`
 - [x] Fix LOCATION_NAMES typo: `'J18' => 'OCP'` → `'J18' => 'OPC'`
 - [x] Ice Finder LOCATION_NAMES entry was already correct at M13 — the bug was only in the MINORS coordinates (fixed in 1a)
+- [x] Revise asteroid tile definitions (2001–2022) to correctly model N/I/R labels, ore shade system (N: 2 shades, I/R: 3 shades), and unclaimed/claimed revenue values from physical tile counts
+- [x] Verify double-mine tile structure — `city=;city=` with DP6 paths connecting all 6 edges to junction + both cities
+- [x] Define base tile 2023 (gray, count=40) — junction + revenue:0 city; placed when a corp establishes a base
+- [x] Add Lawson junction track to all mine tiles via SP6/DP6 path constants; set `TILE_TYPE = :lawson` in game.rb
+- [x] Add invisible-track junction paths to all blue unexplored hexes (pre-printed in HEXES, not in TILES)
 - [ ] Verify all remaining LOCATION_NAMES coordinates are correct
-- [ ] Revise asteroid tile definitions (2001–2022) to correctly model N/I/R labels and unclaimed/claimed revenue values
-- [ ] Verify double-mine tile (2009) `city=;city=` structure is correct
-- [ ] Define a "base tile" (gray side of explored hex: base marker + refueling slot, no track)
-- [ ] Confirm all blue unexplored hexes are listed and have blank content
-- [ ] Add mechanism to track which hexes have been explored
+- [ ] Add mechanism to track which hexes have been explored (deferred to Phase 5)
 
 ### 1c. Fix spaceship train data model
 - [x] **Naming convention:** Spaceships are now named `movement/cargo_holds` (e.g. `'3/2'`, `'5/1'`) matching the physical spaceship cards. `distance:` holds movement points; `cargo_holds:` is the custom field for max mine pickups. All phase `on:` triggers, `rusts_on:` arrays, and `discount:` keys updated to match.
@@ -255,6 +256,20 @@ Reference: `g_1835/step/form_prussian.rb` and `step/merge_to_prussian.rb`.
   - [ ] Assets held in company/corporation treasuries do not count for players
   - [ ] AL shares count at AL's current stock price
   - [ ] Implement "spreadsheet" mode for final OR (see Let's Play! Figure 10)
+
+---
+
+## Phase 12: Frontend Artwork — Asteroid Mine Tile Rendering
+
+**Goal:** Give mine tiles 2001–2022 the visual appearance of the physical game tiles.
+
+Physical description: a grayish-purple asteroid with craters in the foreground, on a dark purplish-black starfield with small pinpoints of light in white, red, and blue.
+
+- [ ] **12a. Create game-specific SVG tile renderer** — add `assets/app/view/game/g_2038/` and create a custom tile rendering component that overrides the default solid-color fill for tiles with IDs 2001–2022
+- [ ] **12b. Starfield background layer** — dark purplish-black fill (`#1a0a20` or similar) with randomly seeded but deterministic pinpoints of light in white, red, and blue; use tile ID as RNG seed so the same tile always looks the same
+- [ ] **12c. Asteroid foreground layer** — grayish-purple irregular blob (`#8a7a9a` or similar) with crater markings (small filled circles with dark ring) rendered in SVG
+- [ ] **12d. Overlay mine data readably** — ensure N/I/R label, revenue values, and double-mine second city are still clearly legible over the artwork
+- [ ] **12e. Base tile (2023)** — solid dark gray fill is fine; no starfield needed since this represents a developed asteroid
 
 ---
 
