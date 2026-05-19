@@ -48,9 +48,9 @@ end
 
 def game_ids_1880_romania
   Game.where(
-    title: '1880 Romania',
-    status: %w[active finished],
-    Sequel.pg_jsonb_op(:settings).has_key?('pin') => false
+    :title => '1880 Romania',
+    :status => %w[active finished],
+    Sequel.pg_jsonb_op(:settings).key?('pin') => false
   ).select_map(:id)
 end
 
