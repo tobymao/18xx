@@ -322,7 +322,13 @@ module Engine
 
         # Called by Step::Route when a spaceship enters an unexplored blue hex.
         # TODO Phase 4h: draw a random tile from the asteroid tile bag, place it on
-        # the hex, and populate @mine_state[hex_id] with the tile's mine data.
+        # the hex, then populate @mine_state[hex_id] from the placed tile:
+        #   tile.cities.each_with_index do |city, idx|
+        #     mines << { ore: label_to_ore(tile), idx: idx,
+        #                unclaimed: city.revenue[:unclaimed],
+        #                claimed:   city.revenue[:claimed],
+        #                owner: nil, used: false }
+        #   end
         def explore_hex!(hex_id)
           @log << "#{hex_id} explored"
         end
