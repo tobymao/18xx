@@ -229,6 +229,46 @@ module Engine
         route = stub_route(cp.coordinates, 'E25')
         expect(game.corp_bonus_revenue(cp, [route])).to eq(0)
       end
+
+      describe 'update_bonus_icon! — VPSL multi-hex (B2/C1/G3/I5)' do
+        let(:vpsl_hexes) { %w[B2 C1 G3 I5].map { |id| [id, game.hex_by_id(id)] }.to_h }
+        let(:nyc_icon)   { 'bonus_NYC_2' }
+
+        it 'front-side icons present on all 4 VPSL hexes initially' do
+          vpsl_hexes.each do |id, hex|
+            expect(hex.original_tile.icons.map(&:name)).to include(nyc_icon),
+              "expected #{nyc_icon} on #{id}"
+          end
+        end
+
+        it ':permanent at G3 — removes front from all 4, places back on G3 only' do
+          game.update_bonus_icon!('NYC', 2, :permanent, 'G3')
+          expect(vpsl_hexes['G3'].original_tile.icons.map(&:name)).to include('bonus_NYC_2_back')
+          %w[B2 C1 I5].each do |id|
+            expect(vpsl_hexes[id].original_tile.icons.map(&:name)).not_to include(nyc_icon),
+              "expected no front icon on #{id}"
+            expect(vpsl_hexes[id].original_tile.icons.map(&:name)).not_to include('bonus_NYC_2_back')
+          end
+        end
+
+        it ':permanent at B2 — removes front from all 4, places back on B2 only' do
+          game.update_bonus_icon!('NYC', 2, :permanent, 'B2')
+          expect(vpsl_hexes['B2'].original_tile.icons.map(&:name)).to include('bonus_NYC_2_back')
+          %w[C1 G3 I5].each do |id|
+            expect(vpsl_hexes[id].original_tile.icons.map(&:name)).not_to include(nyc_icon)
+            expect(vpsl_hexes[id].original_tile.icons.map(&:name)).not_to include('bonus_NYC_2_back')
+          end
+        end
+
+        it ':cash removes front-side icons from all 4 VPSL hexes, no back icon placed' do
+          game.update_bonus_icon!('NYC', 2, :cash)
+          vpsl_hexes.each do |id, hex|
+            expect(hex.original_tile.icons.map(&:name)).not_to include(nyc_icon),
+              "expected no front icon on #{id} after :cash"
+            expect(hex.original_tile.icons.map(&:name)).not_to include('bonus_NYC_2_back')
+          end
+        end
+      end
     end
 
     describe 'SLC transcontinental bonus + Golden Spike' do
