@@ -140,7 +140,7 @@ g_2038/
   - [ ] Whether there is a Used Mine marker on each mine this OR
   - [ ] Recommendation: store in a `@mine_state` hash on game object; override `revenue_for_stop` to look up dynamically
 - [ ] **5b. Claims**:
-  - [ ] Cost $60 for first claim per round, $100 for second (AL may place 3: $60/$75/$100)
+  - [ ] Cost $60 for first claim per round, $100 for second; RU's first claim each round is free (i.e. $0/$100); AL may place 3: $60/$75/$100
   - [ ] Must be within range of at least one of the company's spaceships
   - [ ] Mark the mine as claimed by that company
   - [ ] Claims are permanent; cannot be removed or transferred
@@ -153,7 +153,7 @@ g_2038/
   - [ ] Only one base may be placed per round per company
 - [ ] **5d. Refueling stations**:
   - [ ] Cost $50 (exceptions per corp — see Company and Corporation Summary)
-  - [ ] Must be placed at a base hex (one refueling station per base)
+  - [ ] Must be placed at **any** base within range of the placing corporation's spaceships — the base does not need to belong to the placing corporation (rule 7.42); whichever corporation places a refueling station at a base first owns it
   - [ ] Grants +3 MP (capped at ship's max) to ships of the owning company
   - [ ] Only one refueling station per base
 

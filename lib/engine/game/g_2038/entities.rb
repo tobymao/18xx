@@ -221,6 +221,7 @@ module Engine
             tokens: [0],
             color: 'black',
             text_color: 'white',
+            delivery_bonus: :I,
             abilities: [
               {
                 type: 'exchange',
@@ -239,6 +240,7 @@ module Engine
             tokens: [0],
             color: 'black',
             text_color: 'white',
+            delivery_bonus: :R,
             abilities: [
               {
                 type: 'exchange',
@@ -257,6 +259,7 @@ module Engine
             tokens: [0],
             color: 'black',
             text_color: 'white',
+            delivery_bonus: :N,
             abilities: [
               {
                 type: 'exchange',
@@ -329,6 +332,7 @@ module Engine
             tokens: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             bases: [50],
             stations: [50],
+            claim_costs: [0, 100],
             coordinates: 'D8',
             color: '#d57e59',
             type: :group_a,
@@ -341,6 +345,7 @@ module Engine
             tokens: [0, 0, 0, 0, 0],
             bases: [50, 50, 50],
             stations: [25, 25, 25, 25],
+            delivery_bonus: :R,
             coordinates: 'J2',
             color: '#3eb75b',
             type: :group_b,
@@ -353,6 +358,7 @@ module Engine
             tokens: [0, 0, 0, 0, 0, 0, 0, 0, 0],
             bases: [50],
             stations: [50, 50],
+            delivery_bonus: :N,
             coordinates: 'O1',
             color: '#fefc5d',
             type: :group_b,
@@ -365,6 +371,7 @@ module Engine
             tokens: [0, 0, 0, 0, 0, 0],
             bases: [25, 25, 25],
             stations: [50, 50, 50],
+            delivery_bonus: :I,
             coordinates: 'A1',
             color: '#f66936',
             type: :group_b,
@@ -377,6 +384,7 @@ module Engine
             tokens: [0, 0, 0, 0, 0, 0, 0],
             bases: [50, 50],
             stations: [0, 50, 50],
+            delivery_bonus: :N,
             coordinates: 'J18',
             color: '#cc4f8c',
             text_color: 'black',
@@ -390,6 +398,7 @@ module Engine
             tokens: [0, 0, 0, 0, 0, 0, 0, 0],
             bases: [50, 50],
             stations: [50, 50],
+            delivery_bonus: :N,
             coordinates: 'F18',
             color: '#f8b34b',
             text_color: 'black',
@@ -403,6 +412,7 @@ module Engine
             tokens: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             bases: [50, 50, 50, 50, 50, 50, 50],
             stations: [50, 50, 50, 50],
+            claim_costs: [60, 75, 100],
             coordinates: 'H10',
             color: '#fa3d58',
             type: :group_d,
