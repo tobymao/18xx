@@ -335,8 +335,8 @@ module Engine
 
           yellow: {
 
-            # Chicago: exits E (→F22), W (→F18), SW (→G19)
-            ['F20'] => 'city=revenue:20;path=a:4,b:_0;path=a:1,b:_0;path=a:0,b:_0;label=C',
+            # Chicago: exits W (→F18), SW (→G19)
+            ['F20'] => 'city=revenue:20;path=a:3,b:_0;path=a:4,b:_0;label=C',
             # New Orleans: 120° CW from original (edges 5→1, 0→2)
             ['K19'] => 'city=revenue:20;path=a:1,b:_0;path=a:2,b:_0;label=NO',
             # Sacramento: city 0=WP (→edge 5), city 1=CPR (→edge 0); 120° CCW from photo
