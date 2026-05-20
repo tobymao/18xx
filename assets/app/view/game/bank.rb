@@ -31,12 +31,10 @@ module View
 
         trs = []
         interest_change = (@game.interest_change if @game.respond_to?(:interest_change))
-        if @game.game_end_check_values.include?(:bank)
-          trs << h(:tr, [
-            h(:td, 'Cash'),
-            h('td.right', @game.format_currency(@game.bank_cash)),
-          ])
-        end
+        trs << h(:tr, [
+          h(:td, 'Cash'),
+          h('td.right', @game.unlimited_bank? ? '∞' : @game.format_currency(@game.bank_cash)),
+        ])
         if (rate = @game.interest_rate)
           trs << h(:tr, [
             h(:td, 'Interest per Loan'),
