@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <circle cx="100" cy="100" r="100" fill="#40b1b9"/>
+  <text x="100" y="124" text-anchor="middle" font-weight="700" font-size="80" font-family="Arial" fill="#fff" textLength="140" lengthAdjust="spacingAndGlyphs">TSI</text>
+</svg>
