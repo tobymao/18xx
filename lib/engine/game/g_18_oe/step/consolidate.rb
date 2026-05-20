@@ -11,7 +11,7 @@ module Engine
             return [] unless entity == current_entity
             return [] if pending_corps(entity).empty?
 
-            can_convert_any? ? ['convert'] : []
+            regional_convertible? ? ['convert'] : []
           end
 
           def description
@@ -20,6 +20,10 @@ module Engine
 
           def blocks?
             !pending_corps(current_entity).empty?
+          end
+
+          def regional_convertible?
+            pending_corps(current_entity).any? { |corp| can_convert?(corp) }
           end
 
           def can_convert?(entity)
