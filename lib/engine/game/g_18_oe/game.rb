@@ -763,6 +763,10 @@ module Engine
              OE18 OE26 OE27 OE28 OE29 OE30 OE37 OE38 OE39 OE40 OE41].include?(tile.name.to_s)
         end
 
+        def tile_point_budget(entity)
+          self.class::TILE_POINT_BUDGET[entity.type] || 0
+        end
+
         def can_buy_train_from_others?
           major_phase?
         end

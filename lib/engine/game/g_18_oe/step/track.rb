@@ -20,7 +20,7 @@ module Engine
           end
 
           def get_tile_lay(entity)
-            @game.class::TILE_POINT_BUDGET[entity.type] || 0
+            @game.tile_point_budget(entity)
           end
 
           def description
