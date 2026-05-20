@@ -145,7 +145,7 @@ module Engine
               price: 225,
               rusts_on: '6',
             }],
-            num: 24,
+            num: 20,
           },
           # Level 4 — green double-sided (4 / 4+4); rust at Level 8
           {
@@ -161,7 +161,7 @@ module Engine
               price: 350,
               rusts_on: '8+8',
             }],
-            num: 14,
+            num: 10,
           },
           # Level 5 — brown double-sided (5 / 5+5); permanent
           {
@@ -175,7 +175,7 @@ module Engine
                          { 'nodes' => %w[city offboard town], 'pay' => 5, 'visit' => 5 }],
               price: 475,
             }],
-            num: 11,
+            num: 8,
             events: [{ 'type' => 'consolidation_triggered' }],
           },
           # Level 6 — brown double-sided (6 / 6+6); permanent
@@ -190,7 +190,7 @@ module Engine
                          { 'nodes' => %w[city offboard town], 'pay' => 6, 'visit' => 6 }],
               price: 600,
             }],
-            num: 9,
+            num: 6,
           },
           # Level 7 — gray double-sided (7+7 / 4D); permanent
           # NOTE: Level 8 trains become available only after the 4th Level 7 purchase
@@ -205,7 +205,7 @@ module Engine
                          { 'nodes' => %w[city offboard], 'pay' => 4, 'visit' => 99 }],
               price: 850,
             }],
-            num: 17,
+            num: 14,
           },
           # Level 8 — gray double-sided (8+8 / 5D); permanent
           # NOTE: purchase of the FIRST level-8 triggers game end
@@ -220,7 +220,7 @@ module Engine
                          { 'nodes' => %w[city offboard], 'pay' => 5, 'visit' => 99 }],
               price: 1000,
             }],
-            num: 11,
+            num: 8,
             available_on: '7+7',
             events: [{ 'type' => 'remainder_cash_added' }],
           },
@@ -707,7 +707,7 @@ module Engine
         end
 
         def operating_order
-          @minor_regional_order + @corporations.select { |c| %i[major national].include?(c.type) }.sort
+          @minor_regional_order + @corporations.select { |c| %i[major national].include?(c.type) && c.floated? }.sort
         end
 
         def hex_within_national_region?(entity, hex)
