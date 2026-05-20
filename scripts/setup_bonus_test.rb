@@ -3,8 +3,21 @@
 # Setup script: 1862 USA & Canada — ChooseBonus browser test
 #
 # Creates a 3-player game and drives it to the point where NYC is in its OR
-# turn with a 2-train and track connecting F28→F26→F24→F22→F20 (Chicago).
-# The user then draws the route in the browser to trigger the ChooseBonus prompt.
+# turn with a 2E-train and track connecting:
+#   F28 (NYC home) → F26 → F24 → F22 → G21 → G19 (St. Louis, town) → F20 (Chicago)
+#
+# Train: 2E (express — pays 2 nodes, visits unlimited).
+#   Paying nodes: F28 (city $70) + F20 (city $20) = $90 revenue.
+#   G19 (town $0) is visited but pays nothing.
+#   Both home hex F28 and bonus hex F20 are in the route → ChooseBonus triggers.
+#
+# Edge numbering: 0=SW, 1=W, 2=NW, 3=NE, 4=E, 5=SE  (even-column hexes, row F)
+# Tile plan:
+#   F26 — tile 9 rot 1  (W edge 1 ↔ E edge 4, hill $40)
+#   F24 — tile 9 rot 1  (W edge 1 ↔ E edge 4, free)
+#   F22 — tile 8 rot 4  (SW edge 0 ↔ E edge 4, medium curve, free)
+#   G21 — tile 8 rot 1  (W edge 1 ↔ NE edge 3, medium curve, free)
+#   G19 — tile 3 rot 3  (NE edge 3 ↔ E edge 4, sharp town curve, river $40)
 #
 # Run inside the container:
 #   docker compose exec rack ruby scripts/setup_bonus_test.rb
@@ -31,7 +44,6 @@ rescue StandardError => e
   User.first(name: name)
 end
 
-# Process one action hash through the engine and persist it.
 def act!(game_db, action_h)
   actions = game_db.actions(reload: true).map(&:to_h)
   engine  = Engine::Game.load(game_db, actions: actions)
@@ -51,54 +63,64 @@ def act!(game_db, action_h)
   engine
 end
 
-# Convenience: build a pass action. Detects corp vs player by string type.
 def pass_h(entity_id)
   type = entity_id.is_a?(String) ? 'corporation' : 'player'
   { 'type' => 'pass', 'entity' => entity_id, 'entity_type' => type }
 end
 
-# Buy the first available IPO share of a corporation for a player.
-def buy_ipo_share(game_db, player_id, corp_id)
-  e    = Engine::Game.load(game_db, actions: game_db.actions(reload: true).map(&:to_h))
-  corp = e.corporation_by_id(corp_id)
-  share = corp.ipo_shares.first
-  raise "No IPO shares left for #{corp_id}" unless share
+# Try each tile name × each rotation; return [rot, tile_id, tile_name] on first success.
+def find_rotation(game_db, corp_id, hex_id, *tile_names)
+  tile_names.each do |tile_name|
+    6.times do |rot|
+      actions = game_db.actions(reload: true).map(&:to_h)
+      engine  = Engine::Game.load(game_db, actions: actions)
+      hex     = engine.hex_by_id(hex_id)
+      tile    = engine.tiles.find { |t| t.name == tile_name && !t.hex }
+      next unless tile && hex
 
-  act!(game_db, {
-    'type'        => 'buy_shares',
-    'entity'      => player_id,
-    'entity_type' => 'player',
-    'shares'      => [share.id],
-  })
-end
-
-# Try all 6 rotations for a tile on a hex; return rotation that succeeds or nil.
-def find_rotation(game_db, corp_id, hex_id, tile_name)
-  6.times do |rot|
-    actions = game_db.actions(reload: true).map(&:to_h)
-    engine  = Engine::Game.load(game_db, actions: actions)
-    hex     = engine.hex_by_id(hex_id)
-    tile    = engine.tiles.find { |t| t.name == tile_name && !t.hex }
-    next unless tile && hex
-
-    action_h = {
-      'type'        => 'lay_tile',
-      'entity'      => corp_id,
-      'entity_type' => 'corporation',
-      'hex'         => hex_id,
-      'tile'        => tile.id,
-      'rotation'    => rot,
-    }
-    engine.process_action(action_h)
-    return [rot, tile.id] unless engine.exception
-  rescue StandardError
-    next
+      action_h = {
+        'type'        => 'lay_tile',
+        'entity'      => corp_id,
+        'entity_type' => 'corporation',
+        'hex'         => hex_id,
+        'tile'        => tile.id,
+        'rotation'    => rot,
+      }
+      engine.process_action(action_h)
+      return [rot, tile.id, tile_name] unless engine.exception
+    rescue StandardError
+      next
+    end
   end
   nil
 end
 
-# ── create players ────────────────────────────────────────────────────────────
-martin = User[1] # neutronc — must exist
+def skip_corp_turn(game_db)
+  15.times do
+    e = Engine::Game.load(game_db, actions: game_db.actions(reload: true).map(&:to_h))
+    break unless e.round.is_a?(Engine::Round::Operating)
+    break if e.active_step.nil?
+
+    act!(game_db, pass_h(e.current_entity.id.to_s))
+  rescue StandardError
+    break
+  end
+end
+
+def drain_sr(game_db)
+  80.times do
+    e = Engine::Game.load(game_db, actions: game_db.actions(reload: true).map(&:to_h))
+    break unless e.round.is_a?(Engine::Round::Stock)
+    break if e.active_step.nil?
+
+    act!(game_db, pass_h(e.current_entity.id))
+  rescue StandardError
+    break
+  end
+end
+
+# ── players ───────────────────────────────────────────────────────────────────
+martin = User[1]
 alice  = find_or_create_user('Alice', 'alice@1862test.local')
 bob    = find_or_create_user('Bob',   'bob@1862test.local')
 players = [martin, alice, bob]
@@ -122,72 +144,52 @@ game_db = Game.create(
 players.each { |u| GameUser.create(game: game_db, user: u) }
 puts "Created game ##{game_db.id}"
 
-# Peek at initial engine to get entity IDs
 engine = Engine::Game.load(game_db, actions: [])
-p1 = engine.players[0].id   # martin (neutronc)
-p2 = engine.players[1].id   # alice
-p3 = engine.players[2].id   # bob
-puts "Engine player IDs: #{[p1, p2, p3].inspect}"
+p1 = engine.players[0].id
+p2 = engine.players[1].id
+p3 = engine.players[2].id
+puts "Player IDs: #{[p1, p2, p3].inspect}"
 
 # ── auction round ─────────────────────────────────────────────────────────────
-puts "\n=== Auction Round ==="
+puts "\n=== Auction ==="
 companies = engine.companies.sort_by(&:min_bid)
-player_cycle = [p1, p2, p3].cycle
+cycle = [p1, p2, p3].cycle
 companies.each do |c|
-  pid = player_cycle.next
-  act!(game_db, {
-    'type'        => 'bid',
-    'entity'      => pid,
-    'entity_type' => 'player',
-    'company'     => c.sym,
-    'price'       => c.min_bid,
-  })
+  pid = cycle.next
+  act!(game_db, { 'type' => 'bid', 'entity' => pid, 'entity_type' => 'player',
+                  'company' => c.sym, 'price' => c.min_bid })
   puts "  #{pid} buys #{c.sym} for #{c.min_bid}"
 end
 
-# ── Alice forced to par NYH at $100 (NHSC — 8th private → p2) ────────────────
-puts "\n=== CompanyPendingPar: par NYH at 100 ==="
-act!(game_db, {
-  'type'        => 'par',
-  'entity'      => p2,
-  'entity_type' => 'player',
-  'corporation' => 'NYH',
-  'share_price' => '100,0,4',
-})
+# ── CompanyPendingPar: NHSC forces NYH par ────────────────────────────────────
+puts "\n=== CompanyPendingPar: NYH par at 100 ==="
+act!(game_db, { 'type' => 'par', 'entity' => p2, 'entity_type' => 'player',
+                'corporation' => 'NYH', 'share_price' => '100,0,4' })
 puts "  NYH parred at 100"
 
-# ── stock round ───────────────────────────────────────────────────────────────
-puts "\n=== Stock Round ==="
-# Budget analysis:
-#   p3 (Bob)  = $750 - GHU($75) - FNY($180) = $495 available
-#   NYC at $70 par: director cert 30%=$210 + 3×10%=3×$70=$210 = $420 total → fits in $495 ✓
-#   NYC floats at 60% (30%+30%); bank pays NYC full IPO proceeds = $420 corp cash
-#   2-train costs $100 → buyable from $420 corp treasury ✓
-# State machine: p3 (Bob) pars NYC at $70, buys 3×10%; everyone else passes.
-nyc_director = p3  # Bob(3)
-nyc_par_id   = '70,5,4'
-nyc_bought   = 0
-
-40.times do
+# ── stock round: Bob pars NYC at $70, buys 3×10% to float ────────────────────
+# Full capitalisation: 10 shares × $70 = $700 treasury
+# Cost: director 30% ($210) + 3×10% ($210) = $420 out of Bob's ~$495 budget
+puts "\n=== SR: par and float NYC at $70 ==="
+nyc_bought = 0
+60.times do
   e = Engine::Game.load(game_db, actions: game_db.actions(reload: true).map(&:to_h))
   break if e.round.is_a?(Engine::Round::Operating)
   break unless e.round.is_a?(Engine::Round::Stock)
 
-  cid  = e.current_entity.id
-  name = e.current_entity.name
-  nyc  = e.corporation_by_id('NYC')
+  cid = e.current_entity.id
+  nyc = e.corporation_by_id('NYC')
 
-  if cid == nyc_director
+  if cid == p3
     if nyc.par_price.nil?
       act!(game_db, { 'type' => 'par', 'entity' => cid, 'entity_type' => 'player',
-                      'corporation' => 'NYC', 'share_price' => nyc_par_id })
-      puts "  #{name} pars NYC at 70"
+                      'corporation' => 'NYC', 'share_price' => '70,5,4' })
+      puts "  Bob pars NYC at 70"
     elsif nyc_bought < 3
-      share = nyc.ipo_shares.first
       act!(game_db, { 'type' => 'buy_shares', 'entity' => cid, 'entity_type' => 'player',
-                      'shares' => [share.id] })
+                      'shares' => [nyc.ipo_shares.first.id] })
       nyc_bought += 1
-      puts "  #{name} buys NYC 10% (#{nyc_bought}/3)"
+      puts "  Bob buys NYC 10% (#{nyc_bought}/3)"
     else
       act!(game_db, pass_h(cid))
     end
@@ -195,52 +197,23 @@ nyc_bought   = 0
     act!(game_db, pass_h(cid))
   end
 end
-puts "  → Entered OR"
+puts "  → entered OR (NYC treasury: $700)"
 
-# ── operating rounds ──────────────────────────────────────────────────────────
-# Phase 2 has 1 OR per SR, so the flow is SR1→OR1→SR2→OR2→SR3→OR3→SR4→OR4.
-# NYC lays: F26 (OR1), F24 (OR2), F22 (OR3), then buys a 2-train in OR4.
-
-def skip_corp_turn(game_db)
-  15.times do
-    e = Engine::Game.load(game_db, actions: game_db.actions(reload: true).map(&:to_h))
-    break unless e.round.is_a?(Engine::Round::Operating)
-    break if e.active_step.nil?
-
-    entity = e.current_entity
-    act!(game_db, pass_h(entity.id.to_s))
-  rescue StandardError
-    break
-  end
-end
-
-# Drain a stock round: everyone passes until we exit SR or hit OR.
-def drain_sr(game_db)
-  50.times do
-    e = Engine::Game.load(game_db, actions: game_db.actions(reload: true).map(&:to_h))
-    break unless e.round.is_a?(Engine::Round::Stock)
-    break if e.active_step.nil?
-
-    act!(game_db, pass_h(e.current_entity.id))
-  rescue StandardError
-    break
-  end
-end
-
+# ── tile-laying ORs 1-5 ───────────────────────────────────────────────────────
+# One yellow tile per OR (phase 2).  Terrain: F26 hill $40, G19 river $40.
 tile_plan = [
-  ['F26', '9'],   # OR 1 — straight track edge4(F28)↔edge1(F24), $40 hill cost
-  ['F24', '9'],   # OR 2
-  ['F22', '9'],   # OR 3
+  ['F26', %w[9 8]],
+  ['F24', %w[9 8]],
+  ['F22', %w[8 2]],
+  ['G21', %w[8 2]],
+  ['G19', %w[3 4 58]],
 ]
 
-tile_plan.each_with_index do |(hex_id, tile_name), or_idx|
-  puts "\n=== OR #{or_idx + 1} ==="
-
-  # Phase 2: 1 OR/SR, so there's a stock round before each OR except the first.
+tile_plan.each_with_index do |(hex_id, candidates), or_idx|
+  puts "\n=== OR #{or_idx + 1} — lay tile at #{hex_id} ==="
   drain_sr(game_db)
 
-  # Skip non-NYC corp turns until NYC comes up
-  10.times do
+  20.times do
     e = Engine::Game.load(game_db, actions: game_db.actions(reload: true).map(&:to_h))
     break if e.current_entity&.name == 'NYC'
     break unless e.round.is_a?(Engine::Round::Operating)
@@ -248,35 +221,15 @@ tile_plan.each_with_index do |(hex_id, tile_name), or_idx|
     skip_corp_turn(game_db)
   end
 
-  # Find valid rotation for the tile
-  rot, tile_id = find_rotation(game_db, 'NYC', hex_id, tile_name)
-  if rot
-    act!(game_db, {
-      'type'        => 'lay_tile',
-      'entity'      => 'NYC',
-      'entity_type' => 'corporation',
-      'hex'         => hex_id,
-      'tile'        => tile_id,
-      'rotation'    => rot,
-    })
-    puts "  NYC lays #{tile_name}(#{tile_id}) at #{hex_id} rotation #{rot}"
-  else
-    puts "  WARNING: could not lay #{tile_name} at #{hex_id}, trying alternate tile..."
-    %w[7 8 9].each do |alt|
-      r, alt_tile_id = find_rotation(game_db, 'NYC', hex_id, alt)
-      if r
-        act!(game_db, {
-          'type' => 'lay_tile', 'entity' => 'NYC', 'entity_type' => 'corporation',
-          'hex' => hex_id, 'tile' => alt_tile_id, 'rotation' => r,
-        })
-        puts "  NYC lays #{alt}(#{alt_tile_id}) at #{hex_id} rotation #{r}"
-        break
-      end
-    end
-  end
+  result = find_rotation(game_db, 'NYC', hex_id, *candidates)
+  raise "ERROR: could not lay tile at #{hex_id} with candidates #{candidates.inspect}" unless result
 
-  # NYC passes remaining steps (route/dividend/train)
-  10.times do
+  rot, tile_id, tile_name = result
+  act!(game_db, { 'type' => 'lay_tile', 'entity' => 'NYC', 'entity_type' => 'corporation',
+                  'hex' => hex_id, 'tile' => tile_id, 'rotation' => rot })
+  puts "  NYC lays tile #{tile_name}(#{tile_id}) at #{hex_id} rotation #{rot}"
+
+  15.times do
     e = Engine::Game.load(game_db, actions: game_db.actions(reload: true).map(&:to_h))
     break if e.current_entity&.name != 'NYC'
     break unless e.round.is_a?(Engine::Round::Operating)
@@ -286,8 +239,7 @@ tile_plan.each_with_index do |(hex_id, tile_name), or_idx|
     break
   end
 
-  # Skip remaining corps
-  20.times do
+  30.times do
     e = Engine::Game.load(game_db, actions: game_db.actions(reload: true).map(&:to_h))
     break unless e.round.is_a?(Engine::Round::Operating)
     break if e.current_entity&.name == 'NYC'
@@ -296,12 +248,12 @@ tile_plan.each_with_index do |(hex_id, tile_name), or_idx|
   end
 end
 
-# ── OR 4: NYC buys 2-train, completes turn, then OR 5 stops at Route step ─────
-puts "\n=== OR 4 — buy 2-train ==="
-
+# ── OR 6: buy 2E-train ────────────────────────────────────────────────────────
+# 2E pays 2 nodes (city/town), visits unlimited. F28+F20 are the paying nodes.
+# G19 (town $0) is visited on the path but pays nothing — bonus still triggers.
+puts "\n=== OR 6 — buy 2E-train ==="
 drain_sr(game_db)
 
-# Skip to NYC's turn
 20.times do
   e = Engine::Game.load(game_db, actions: game_db.actions(reload: true).map(&:to_h))
   break if e.current_entity&.name == 'NYC'
@@ -310,29 +262,20 @@ drain_sr(game_db)
   skip_corp_turn(game_db)
 end
 
-# Pass the track step
 e = Engine::Game.load(game_db, actions: game_db.actions(reload: true).map(&:to_h))
-if e.active_step.is_a?(Engine::Step::Track)
+if e.current_entity&.name == 'NYC' && e.active_step.is_a?(Engine::Step::Track)
   act!(game_db, pass_h('NYC'))
-  e = Engine::Game.load(game_db, actions: game_db.actions(reload: true).map(&:to_h))
 end
 
-# Buy 2-train — NYC has no train yet so BuyTrain accepts after Route auto-passes
-if e.active_step.is_a?(Engine::Step::BuyTrain) ||
-   e.round.steps.any? { |s| s.is_a?(Engine::Step::BuyTrain) && s.actions(e.current_entity).include?('buy_train') }
-  train = e.depot.upcoming.first
-  act!(game_db, {
-    'type'        => 'buy_train',
-    'entity'      => 'NYC',
-    'entity_type' => 'corporation',
-    'train'       => train.id,
-    'price'       => train.price,
-  })
-  puts "  NYC bought #{train.name}-train"
-end
+e = Engine::Game.load(game_db, actions: game_db.actions(reload: true).map(&:to_h))
+train = e.depot.upcoming.find { |t| t.name == '2' }
+raise 'No 2-train available in depot!' unless train
 
-# Pass NYC's remaining steps (BuyTrain → end turn)
-10.times do
+act!(game_db, { 'type' => 'buy_train', 'entity' => 'NYC', 'entity_type' => 'corporation',
+                'train' => train.id, 'price' => 150, 'variant' => '2E' })
+puts "  NYC bought 2E-train for $150"
+
+15.times do
   e = Engine::Game.load(game_db, actions: game_db.actions(reload: true).map(&:to_h))
   break if e.current_entity&.name != 'NYC'
   break unless e.round.is_a?(Engine::Round::Operating)
@@ -342,8 +285,7 @@ rescue StandardError
   break
 end
 
-# Skip remaining OR4 corps
-20.times do
+30.times do
   e = Engine::Game.load(game_db, actions: game_db.actions(reload: true).map(&:to_h))
   break unless e.round.is_a?(Engine::Round::Operating)
   break if e.current_entity&.name == 'NYC'
@@ -351,12 +293,11 @@ end
   skip_corp_turn(game_db)
 end
 
-# ── OR 5: NYC has 2-train — stop at Route step for browser test ───────────────
-puts "\n=== OR 5 — stop at Route step (user draws F28→F20 in browser) ==="
-
+# ── OR 7: stop at Route step ──────────────────────────────────────────────────
+# Phase 3 has 2 ORs/SR; OR7 is the first OR after SR7.
+puts "\n=== OR 7 — stop at Route step ==="
 drain_sr(game_db)
 
-# Skip to NYC's turn
 20.times do
   e = Engine::Game.load(game_db, actions: game_db.actions(reload: true).map(&:to_h))
   break if e.current_entity&.name == 'NYC'
@@ -365,22 +306,25 @@ drain_sr(game_db)
   skip_corp_turn(game_db)
 end
 
-# Pass NYC's Track step so the user lands directly at Route
 e = Engine::Game.load(game_db, actions: game_db.actions(reload: true).map(&:to_h))
 if e.current_entity&.name == 'NYC' && e.active_step.is_a?(Engine::Step::Track)
   act!(game_db, pass_h('NYC'))
-  puts "  Passed NYC Track step — at Route now"
+  puts "  Passed Track step — NYC now at Route"
 end
 
-# ── final status ─────────────────────────────────────────────────────────────
+# ── finalize ──────────────────────────────────────────────────────────────────
 game_db.update(status: 'active')
 e = Engine::Game.load(game_db, actions: game_db.actions(reload: true).map(&:to_h))
+nyc = e.corporation_by_id('NYC')
 puts "\n#{'=' * 60}"
 puts "Game ##{game_db.id} ready!"
 puts "URL: http://localhost:9292/game/#{game_db.id}"
 puts "State: #{e.round.class.name.split('::').last}, entity=#{e.current_entity&.name}"
 puts "Active step: #{e.active_step&.class&.name&.split('::')&.last}"
+puts "NYC treasury: $#{nyc.cash}  trains: #{nyc.trains.map(&:name).inspect}"
 puts "\nBROWSER TEST:"
-puts "  Login as neutronc / password"
-puts "  NYC is operating — draw a route from F28 (New York) to F20 (Chicago)"
-puts "  ChooseBonus prompt should appear: \$200 cash OR +\$60/OR permanent"
+puts "  1. Login as neutronc / password, open game ##{game_db.id}"
+puts "  2. NYC is operating with a 2E-train — draw a route:"
+puts "       F28 (New York) → F26 → F24 → F22 → G21 → G19 (St. Louis) → F20 (Chicago)"
+puts "  3. 2E visits all 3 nodes; pays F28($70) + F20($20) = $90 (G19 $0)"
+puts "  4. ChooseBonus prompt should appear: \$200 cash OR +\$60/OR permanent"
