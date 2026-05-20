@@ -259,17 +259,27 @@ Reference: `g_1835/step/form_prussian.rb` and `step/merge_to_prussian.rb`.
 
 ---
 
-## Phase 12: Frontend Artwork — Asteroid Mine Tile Rendering
+## Phase 12: Frontend Artwork — Corporation Token Photography
+
+**Goal:** Replace the SVG text logos with photographic images of the actual physical counter artwork for the final release.
+
+- [ ] **12a. Photograph each counter** — high-res photos of the physical TSI, RU, VP, LE, MM, OPC, RCC, and AL counters; crop to the token face and export as square PNG or SVG-embedded image
+- [ ] **12b. Replace SVG placeholders** — update `public/logos/g_2038/{CORP}.svg` with the photographic version; keep the `.alt.svg` as the simplified text circle (it renders too small for photos to be legible)
+- [ ] **12c. Verify rendering** — check token display on the map, in the stock market panel, and on the entity cards at various zoom levels
+
+---
+
+## Phase 13: Frontend Artwork — Asteroid Mine Tile Rendering
 
 **Goal:** Give mine tiles 2001–2022 the visual appearance of the physical game tiles.
 
 Physical description: a grayish-purple asteroid with craters in the foreground, on a dark purplish-black starfield with small pinpoints of light in white, red, and blue.
 
-- [ ] **12a. Create game-specific SVG tile renderer** — add `assets/app/view/game/g_2038/` and create a custom tile rendering component that overrides the default solid-color fill for tiles with IDs 2001–2022
-- [ ] **12b. Starfield background layer** — dark purplish-black fill (`#1a0a20` or similar) with randomly seeded but deterministic pinpoints of light in white, red, and blue; use tile ID as RNG seed so the same tile always looks the same
-- [ ] **12c. Asteroid foreground layer** — grayish-purple irregular blob (`#8a7a9a` or similar) with crater markings (small filled circles with dark ring) rendered in SVG
-- [ ] **12d. Overlay mine data readably** — ensure N/I/R label, revenue values, and double-mine second city are still clearly legible over the artwork
-- [ ] **12e. Base tile (2023)** — solid dark gray fill is fine; no starfield needed since this represents a developed asteroid
+- [ ] **13a. Create game-specific SVG tile renderer** — add `assets/app/view/game/g_2038/` and create a custom tile rendering component that overrides the default solid-color fill for tiles with IDs 2001–2022
+- [ ] **13b. Starfield background layer** — dark purplish-black fill (`#1a0a20` or similar) with randomly seeded but deterministic pinpoints of light in white, red, and blue; use tile ID as RNG seed so the same tile always looks the same
+- [ ] **13c. Asteroid foreground layer** — grayish-purple irregular blob (`#8a7a9a` or similar) with crater markings (small filled circles with dark ring) rendered in SVG
+- [ ] **13d. Overlay mine data readably** — ensure N/I/R label, revenue values, and double-mine second city are still clearly legible over the artwork
+- [ ] **13e. Base tile (2023)** — solid dark gray fill is fine; no starfield needed since this represents a developed asteroid
 
 ---
 
