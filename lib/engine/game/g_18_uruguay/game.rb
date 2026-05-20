@@ -49,7 +49,7 @@ module Engine
         SELL_BUY_ORDER = :sell_buy
         SELL_AFTER = :p_any_operate
         TILE_RESERVATION_BLOCKS_OTHERS = true
-        CURRENCY_FORMAT_STR = '$U%d'
+        CURRENCY_FORMAT_STR = '$%d'
         HOME_TOKEN_TIMING = :float
 
         MUST_BUY_TRAIN = :always
