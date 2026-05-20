@@ -7,11 +7,12 @@ module Engine
     module G18OE
       module Step
         class Consolidate < G18OE::Step::BuySellParShares
+          CONVERT_ACTIONS = ['convert'].freeze
+
           def actions(entity)
-            return [] unless entity == current_entity
             return [] if pending_corps(entity).empty?
 
-            regional_convertible? ? ['convert'] : []
+            regional_convertible?(entity) ? CONVERT_ACTIONS : []
           end
 
           def description
@@ -22,14 +23,13 @@ module Engine
             !pending_corps(current_entity).empty?
           end
 
-          def regional_convertible?
-            pending_corps(current_entity).any? { |corp| can_convert?(corp) }
+          def regional_convertible?(entity)
+            pending_corps(entity).any? { |corp| can_convert?(corp) }
           end
 
           def can_convert?(entity)
             return false unless entity.type == :regional
             return false if @converted
-            return false unless entity.president?(current_entity)
 
             true
           end
