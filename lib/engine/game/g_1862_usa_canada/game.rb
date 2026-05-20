@@ -494,7 +494,7 @@ module Engine
             next unless would_activate?(bonus, routes, home)
 
             triggered_hex = bonus[:hexes].find do |hex_id|
-              routes.any? { |r| r.visited_stops.any? { |s| s.hex.id == hex_id } }
+              routes.any? { |r| route_hex_ids(r).include?(hex_id) }
             end
             [bonus, idx, triggered_hex]
           end
@@ -741,7 +741,7 @@ module Engine
         def would_activate?(bonus, routes, home)
           bonus[:hexes].any? do |hex_id|
             routes.any? do |route|
-              ids = route.visited_stops.map { |s| s.hex.id }
+              ids = route_hex_ids(route)
               ids.include?(hex_id) && ids.include?(home)
             end
           end
@@ -749,7 +749,7 @@ module Engine
 
         def bonus_on_route?(bonus, routes)
           bonus[:hexes].any? do |hex_id|
-            routes.any? { |r| r.visited_stops.any? { |s| s.hex.id == hex_id } }
+            routes.any? { |r| route_hex_ids(r).include?(hex_id) }
           end
         end
 
@@ -758,7 +758,17 @@ module Engine
         def permanent_on_route?(corp_id, idx, bonus, routes)
           anchor = @bonus_hex[[corp_id, idx]]
           hexes  = anchor ? [anchor] : bonus[:hexes]
-          hexes.any? { |hid| routes.any? { |r| r.visited_stops.any? { |s| s.hex.id == hid } } }
+          hexes.any? { |hid| routes.any? { |r| route_hex_ids(r).include?(hid) } }
+        end
+
+        # visited_stops is lazy and never computed for deserialized routes
+        # (Route#revenue short-circuits when @revenue is pre-set from JSON).
+        # Fall back to connection_hexes which is always populated from the action.
+        def route_hex_ids(route)
+          stops = route.visited_stops
+          return stops.map { |s| s.hex.id } unless stops.empty?
+
+          route.connection_hexes&.flatten || []
         end
       end
     end

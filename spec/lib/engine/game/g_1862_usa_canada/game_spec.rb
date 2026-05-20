@@ -762,14 +762,15 @@ module Engine
 
     # ── Step::ChooseBonus ──────────────────────────────────────────────────────
     # Verified via browser test 2026-05-19: NYC connects to Chicago (F20) for
-    # the first time in OR5. Route shows base revenue only ($40, no pre-empted
+    # the first time in OR7. Route shows base revenue only ($90, no pre-empted
     # bonus). ChooseBonus prompt appears after confirming route.
     # Choosing 'permanent' sets bonus to :permanent and adds $60 to OR revenue.
     # Choosing 'cash' sets bonus to :cash and pays $200 cash to NYC immediately.
     #
     # Action sequence reproduced from local game #21 (seed 42, 3 players).
-    # OR1–OR3: NYC lays straight track F26/F24/F22. OR4: buys 2-train.
-    # OR5: runs F28→F26→F24→F22→F20, then chooses bonus.
+    # OR1–OR5: NYC lays track F26/F24/F22/G21/G19. OR6: buys 2E-train.
+    # OR7: runs F28→F26→F24→F22→G21→G19→F20 (2E pays F28+F20=$90), then chooses bonus.
+    # Chicago F20 exits SW(→G19) and W(→F18) only; route must pass through G19.
     describe 'Step::ChooseBonus — NYC first connection to Chicago' do
       CHOOSE_BONUS_ACTIONS = [
         { 'type' => 'bid',        'price' => 20,  'entity' => 1, 'company' => 'BOM',  'entity_type' => 'player',      'id' => 1 },
@@ -794,37 +795,54 @@ module Engine
         { 'type' => 'pass',                        'entity' => 1, 'entity_type' => 'player',      'id' => 20 },
         { 'type' => 'pass',                        'entity' => 2, 'entity_type' => 'player',      'id' => 21 },
         { 'type' => 'pass',                        'entity' => 3, 'entity_type' => 'player',      'id' => 22 },
+        # OR1: lay F26 (tile9 rot1 — W↔E straight, hill $40)
         { 'type' => 'lay_tile', 'hex' => 'F26', 'tile' => '9-0', 'rotation' => 1, 'entity' => 'NYC', 'entity_type' => 'corporation', 'id' => 23 },
         { 'type' => 'pass',                        'entity' => 'NYC', 'entity_type' => 'corporation', 'id' => 24 },
         { 'type' => 'pass',                        'entity' => 1,     'entity_type' => 'player',      'id' => 25 },
         { 'type' => 'pass',                        'entity' => 2,     'entity_type' => 'player',      'id' => 26 },
         { 'type' => 'pass',                        'entity' => 3,     'entity_type' => 'player',      'id' => 27 },
+        # OR2: lay F24 (tile9 rot1 — W↔E straight)
         { 'type' => 'lay_tile', 'hex' => 'F24', 'tile' => '9-1', 'rotation' => 1, 'entity' => 'NYC', 'entity_type' => 'corporation', 'id' => 28 },
         { 'type' => 'pass',                        'entity' => 'NYC', 'entity_type' => 'corporation', 'id' => 29 },
         { 'type' => 'pass',                        'entity' => 1,     'entity_type' => 'player',      'id' => 30 },
         { 'type' => 'pass',                        'entity' => 2,     'entity_type' => 'player',      'id' => 31 },
         { 'type' => 'pass',                        'entity' => 3,     'entity_type' => 'player',      'id' => 32 },
-        { 'type' => 'lay_tile', 'hex' => 'F22', 'tile' => '9-2', 'rotation' => 1, 'entity' => 'NYC', 'entity_type' => 'corporation', 'id' => 33 },
+        # OR3: lay F22 (tile8 rot4 — SW↔E medium curve)
+        { 'type' => 'lay_tile', 'hex' => 'F22', 'tile' => '8-0', 'rotation' => 4, 'entity' => 'NYC', 'entity_type' => 'corporation', 'id' => 33 },
         { 'type' => 'pass',                        'entity' => 'NYC', 'entity_type' => 'corporation', 'id' => 34 },
         { 'type' => 'pass',                        'entity' => 1,     'entity_type' => 'player',      'id' => 35 },
         { 'type' => 'pass',                        'entity' => 2,     'entity_type' => 'player',      'id' => 36 },
         { 'type' => 'pass',                        'entity' => 3,     'entity_type' => 'player',      'id' => 37 },
-        { 'type' => 'pass',                        'entity' => 'NYC', 'entity_type' => 'corporation', 'id' => 38 },
-        { 'type' => 'buy_train', 'price' => 100, 'train' => '2-0', 'entity' => 'NYC', 'entity_type' => 'corporation', 'id' => 39 },
-        { 'type' => 'pass',                        'entity' => 'NYC', 'entity_type' => 'corporation', 'id' => 40 },
-        { 'type' => 'pass',                        'entity' => 1,     'entity_type' => 'player',      'id' => 41 },
-        { 'type' => 'pass',                        'entity' => 2,     'entity_type' => 'player',      'id' => 42 },
-        { 'type' => 'pass',                        'entity' => 3,     'entity_type' => 'player',      'id' => 43 },
+        # OR4: lay G21 (tile8 rot1 — W↔NE medium curve)
+        { 'type' => 'lay_tile', 'hex' => 'G21', 'tile' => '8-1', 'rotation' => 1, 'entity' => 'NYC', 'entity_type' => 'corporation', 'id' => 38 },
+        { 'type' => 'pass',                        'entity' => 'NYC', 'entity_type' => 'corporation', 'id' => 39 },
+        { 'type' => 'pass',                        'entity' => 1,     'entity_type' => 'player',      'id' => 40 },
+        { 'type' => 'pass',                        'entity' => 2,     'entity_type' => 'player',      'id' => 41 },
+        { 'type' => 'pass',                        'entity' => 3,     'entity_type' => 'player',      'id' => 42 },
+        # OR5: lay G19 (tile3 rot3 — NE↔E sharp town curve, river $40)
+        { 'type' => 'lay_tile', 'hex' => 'G19', 'tile' => '3-0', 'rotation' => 3, 'entity' => 'NYC', 'entity_type' => 'corporation', 'id' => 43 },
         { 'type' => 'pass',                        'entity' => 'NYC', 'entity_type' => 'corporation', 'id' => 44 },
+        { 'type' => 'pass',                        'entity' => 1,     'entity_type' => 'player',      'id' => 45 },
+        { 'type' => 'pass',                        'entity' => 2,     'entity_type' => 'player',      'id' => 46 },
+        { 'type' => 'pass',                        'entity' => 3,     'entity_type' => 'player',      'id' => 47 },
+        # OR6: buy 2E-train ($150; visits unlimited, pays top 2 nodes)
+        { 'type' => 'pass',                        'entity' => 'NYC', 'entity_type' => 'corporation', 'id' => 48 },
+        { 'type' => 'buy_train', 'price' => 150, 'train' => '2-0', 'variant' => '2E', 'entity' => 'NYC', 'entity_type' => 'corporation', 'id' => 49 },
+        { 'type' => 'pass',                        'entity' => 'NYC', 'entity_type' => 'corporation', 'id' => 50 },
+        { 'type' => 'pass',                        'entity' => 1,     'entity_type' => 'player',      'id' => 51 },
+        { 'type' => 'pass',                        'entity' => 2,     'entity_type' => 'player',      'id' => 52 },
+        { 'type' => 'pass',                        'entity' => 3,     'entity_type' => 'player',      'id' => 53 },
+        # OR7: pass Track step — NYC proceeds to Route step
+        { 'type' => 'pass',                        'entity' => 'NYC', 'entity_type' => 'corporation', 'id' => 54 },
       ].freeze
 
       ROUTE_ACTION = {
         'type' => 'run_routes', 'entity' => 'NYC', 'entity_type' => 'corporation',
         'subsidy' => 0, 'extra_revenue' => 0,
-        'routes' => [{ 'hexes' => %w[F20 F28], 'nodes' => %w[F28-0 F20-0], 'train' => '2-0',
-                       'revenue' => 40, 'connections' => [%w[F28 F26 F24 F22 F20]],
-                       'revenue_str' => 'F20-F28' }],
-        'id' => 45,
+        'routes' => [{ 'hexes' => %w[F20 G19 F28], 'nodes' => %w[F28-0 G19-0 F20-0], 'train' => '2-0',
+                       'revenue' => 90, 'connections' => [%w[F28 F26 F24 F22 G21 G19 F20]],
+                       'revenue_str' => 'F20(20)-G19(10)-F28(70)' }],
+        'id' => 55,
       }.freeze
 
       def load_game_to(n_actions)
@@ -833,11 +851,11 @@ module Engine
         g
       end
 
-      context 'before NYC runs routes (OR5, Track step passed)' do
-        subject(:g) { load_game_to(44) }
+      context 'before NYC runs routes (OR7, Track step passed)' do
+        subject(:g) { load_game_to(54) }
 
-        it 'NYC has a 2-train' do
-          expect(g.corporation_by_id('NYC').trains.map(&:name)).to eq(['2'])
+        it 'NYC has a 2E-train' do
+          expect(g.corporation_by_id('NYC').trains.map(&:name)).to eq(['2E'])
         end
 
         it 'Chicago (F20) is reachable from NYC network' do
@@ -863,7 +881,7 @@ module Engine
 
       context 'after NYC runs F28→F20 (ChooseBonus pending)' do
         subject(:g) do
-          gg = load_game_to(44)
+          gg = load_game_to(54)
           gg.process_action(ROUTE_ACTION)
           gg
         end
@@ -892,10 +910,10 @@ module Engine
 
       context 'choosing permanent' do
         subject(:g) do
-          gg = load_game_to(44)
+          gg = load_game_to(54)
           gg.process_action(ROUTE_ACTION)
           gg.process_action({ 'type' => 'choose', 'choice' => 'permanent',
-                               'entity' => 'NYC', 'entity_type' => 'corporation', 'id' => 46 })
+                               'entity' => 'NYC', 'entity_type' => 'corporation', 'id' => 56 })
           gg
         end
 
@@ -912,7 +930,7 @@ module Engine
 
       context 'choosing cash' do
         subject(:g) do
-          gg = load_game_to(44)
+          gg = load_game_to(54)
           gg.process_action(ROUTE_ACTION)
           gg
         end
@@ -921,21 +939,21 @@ module Engine
           nyc = g.corporation_by_id('NYC')
           cash_before = nyc.cash
           g.process_action({ 'type' => 'choose', 'choice' => 'cash',
-                              'entity' => 'NYC', 'entity_type' => 'corporation', 'id' => 46 })
+                              'entity' => 'NYC', 'entity_type' => 'corporation', 'id' => 56 })
           expect(nyc.cash).to eq(cash_before + 200)
         end
 
         it 'bonus state is :cash (no further route bonus)' do
           nyc = g.corporation_by_id('NYC')
           g.process_action({ 'type' => 'choose', 'choice' => 'cash',
-                              'entity' => 'NYC', 'entity_type' => 'corporation', 'id' => 46 })
+                              'entity' => 'NYC', 'entity_type' => 'corporation', 'id' => 56 })
           expect(g.bonus_state[['NYC', 1]]).to eq(:cash)
         end
 
         it 'subsequent corp_bonus_revenue is 0 after cash choice' do
           nyc = g.corporation_by_id('NYC')
           g.process_action({ 'type' => 'choose', 'choice' => 'cash',
-                              'entity' => 'NYC', 'entity_type' => 'corporation', 'id' => 46 })
+                              'entity' => 'NYC', 'entity_type' => 'corporation', 'id' => 56 })
           route = stub_route('F28', 'F20')
           expect(g.corp_bonus_revenue(nyc, [route])).to eq(0)
         end
