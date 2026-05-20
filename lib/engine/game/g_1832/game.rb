@@ -20,7 +20,7 @@ module Engine
         include G1832::Phases
         include G1832::Trains
 
-        attr_accessor :sell_queue, :reissued, :coal_token_counter, :coal_company_sold_or_closed
+        attr_accessor :sell_queue, :reissued, :coal_token_counter, :coal_company_sold_or_closed, :p4_invested_in
 
         CORPORATION_CLASS = G1832::Corporation
         CORPORATE_BUY_SHARE_ALLOW_BUY_FROM_PRESIDENT = true
@@ -101,7 +101,7 @@ module Engine
                                                      'The West Virginia Coalfields private company can be bought in for '\
                                                      'up to face value from the owning player'],
         ).merge(
-          'companies_buyable' => ['Companies become buyable', 'All companies may now be bought in by corporation'],
+          'companies_buyable' => ['Companies become buyable', 'All companies may now be bought in by corporations'],
         )
 
         def new_auction_round
@@ -114,6 +114,7 @@ module Engine
         def stock_round
           G1870::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
+            G1832::Step::Exchange,
             G1832::Step::BuySellParShares,
             G1850::Step::PriceProtection,
           ])
@@ -122,14 +123,14 @@ module Engine
         def operating_round(round_num)
           Engine::Round::Operating.new(self, [
             Engine::Step::Bankrupt,
-            Engine::Step::Exchange,
+            G1832::Step::Exchange,
             G1832::Step::BuyCompany,
             G1832::Step::Assign,
             G1870::Step::SpecialTrack,
             G1832::Step::Track,
             G1832::Step::Token,
             Engine::Step::Route,
-            G1870::Step::Dividend,
+            G1832::Step::Dividend,
             Engine::Step::DiscardTrain,
             G1870::Step::BuyTrain,
             [G1832::Step::BuyCompany, { blocks: true }],
@@ -150,6 +151,8 @@ module Engine
           @sell_queue = []
           @reissued = {}
           @coal_token_counter = 5
+          @miami_first_run = false
+          @p4_invested_in = nil
 
           coal_company.max_price = coal_company.value
 
@@ -291,6 +294,10 @@ module Engine
           super
         end
 
+        def london_company
+          @london_company ||= company_by_id('P4')
+        end
+
         def coal_company
           @coal_company ||= company_by_id('P5')
         end
@@ -313,6 +320,20 @@ module Engine
           end
 
           revenue += (route.corporation.assigned?('P3') ? 20 : 10) if stops.any? { |stop| stop.hex.assigned?('P3') }
+
+          # Miami first-run rule: worth $0 the first time any corporation runs there
+          miami_stops = stops.select { |stop| stop.hex.id == self.class::MIAMI_HEX }
+          if !@miami_first_run && miami_stops.any?
+            @miami_first_run = true
+            miami_stops.each { |stop| revenue -= stop.route_revenue(route.phase, route.train) }
+          end
+
+          # Key West bonus: FEC earns +$50 when running to Miami with token placed (phases 3-7)
+          if route.corporation == fec_corporation &&
+             route.corporation.key_west_placed &&
+             miami_stops.any?
+            revenue += 50
+          end
 
           revenue
         end
