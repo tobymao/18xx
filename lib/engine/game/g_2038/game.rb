@@ -58,6 +58,10 @@ module Engine
         # Independents operate in this fixed order each OR (rules section 6.1).
         MINOR_OPERATING_ORDER = %w[FB IF DH OC TH LY].freeze
 
+        # Display order for the Entities tab: operating order for minors,
+        # then corporations in group order (A→B→C→D).
+        ENTITY_DISPLAY_ORDER = %w[FB IF DH OC TH LY TSI RU VP LE MM OPC RCC AL].freeze
+
         # Ore type display colors used by the route selector UI.
         ORE_COLORS = {
           N: '#888888',
@@ -293,6 +297,10 @@ module Engine
               reorder_players
               new_stock_round
             end
+        end
+
+        def bank_sort(entities)
+          entities.sort_by { |e| ENTITY_DISPLAY_ORDER.index(e.id) || ENTITY_DISPLAY_ORDER.size }
         end
 
         # Independents in fixed order, then floated corps descending by price
