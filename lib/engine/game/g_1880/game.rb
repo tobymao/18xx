@@ -55,7 +55,7 @@ module Engine
           'P5' => '/icons/1880/D.svg',
         }.freeze
 
-        TRAINS_NOT_TRIGGERING_SR = %w[2P 8E 10].freeze
+        TRAINS_NOT_TRIGGERING_SR = %w[2R 8E 10].freeze
 
         GAME_END_REASONS_TEXT = {
           final_train: 'Last 8 train sold',
@@ -235,7 +235,7 @@ module Engine
                     num: 2,
                   },
                   { name: '10', distance: 10, price: 1000, num: 10 },
-                  { name: '2P', distance: 2, price: 250, num: 10, available_on: 'C2' }].freeze
+                  { name: '2R', distance: 2, price: 250, num: 10, available_on: 'C2' }].freeze
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
           'float_30' => ['30% to Float', "Corporation's President must own 30% or corporation sold out to float"],
@@ -766,7 +766,7 @@ module Engine
         end
 
         def must_buy_train?(entity)
-          entity.trains.reject { |t| t.name == '2P' }.empty?
+          entity.trains.reject { |t| t.name == '2R' }.empty?
         end
 
         def additional_ending_after_text

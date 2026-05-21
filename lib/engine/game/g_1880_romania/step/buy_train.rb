@@ -8,7 +8,7 @@ module Engine
       module Step
         class BuyTrain < G1880::Step::BuyTrain
           def avoid_discarding_final_trains?(train)
-            (train.name == '8' && train.index == 1) || %w[8E 2P].include?(train.name) || !discard_trains?
+            (train.name == '8' && train.index == 1) || %w[8E 2R].include?(train.name) || !discard_trains?
           end
         end
       end
