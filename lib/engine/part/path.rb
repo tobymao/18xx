@@ -10,7 +10,7 @@ module Engine
       attr_accessor :ignore_gauge_walk, :ignore_gauge_compare
 
       LANES = [[1, 0].freeze, [1, 0].freeze].freeze
-      MATCHES_BROAD = %i[broad dual invisible].freeze
+      MATCHES_BROAD = %i[broad dual].freeze
       MATCHES_NARROW = %i[narrow dual].freeze
       LANE_INDEX = 1
       LANE_WIDTH = 0
@@ -89,8 +89,6 @@ module Engine
           MATCHES_NARROW.include?(other_track)
         when :dual
           dual_ok || other_track == :dual
-        when :invisible
-          true
         end
       end
 
