@@ -18,7 +18,6 @@ module Engine
         include Map
         include Entities
 
-
         TILE_TYPE = :lawson
         TRACK_RESTRICTION = :permissive
         SELL_BUY_ORDER = :sell_buy

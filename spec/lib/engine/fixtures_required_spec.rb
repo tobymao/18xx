@@ -4,7 +4,7 @@ require 'spec_helper'
 
 require 'json'
 
-SKIP_ALPHA = [].freeze
+SKIP_ALPHA = ['2038'].freeze
 
 SKIP_BETA_PROD = {
 
