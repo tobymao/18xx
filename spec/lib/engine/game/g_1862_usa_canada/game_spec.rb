@@ -553,6 +553,7 @@ module Engine
 
       it 'repay_bond! is a no-op when corp cash is insufficient' do
         game.record_bond!(cpr)
+        cpr.instance_variable_set(:@cash, 0) # corp spent bond proceeds; can't repay yet
         game.repay_bond!(cpr)
         expect(game.bond?(cpr)).to be true
       end

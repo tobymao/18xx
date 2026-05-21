@@ -9,6 +9,8 @@ require_relative '../base'
 require_relative 'step/buy_sell_par_shares'
 require_relative 'step/choose_bonus'
 require_relative 'step/dividend'
+require_relative 'step/repay_bond'
+require_relative 'step/stock_buyback'
 require_relative 'step/token'
 
 module Engine
@@ -357,17 +359,34 @@ module Engine
           (corporation.share_price.price * 5).ceil(-2)
         end
 
-        # Records the bond without executing cert transformation (PR 10b).
+        # Funds the corporation for the buyback and records the bond liability.
         # Safe to call only once per corporation — subsequent calls are no-ops.
         def record_bond!(corporation)
           return if buyback_done?(corporation)
 
           amount   = buyback_bond_amount(corporation)
           director = corporation.owner
+          @bank.spend(amount, corporation)
           @corp_bonds[corporation.id]   = amount
           @buyback_done[corporation.id] = director
-          @log << "#{corporation.name} executes share buyback — " \
-                  "#{director.name} takes #{format_currency(amount)} bond (Schuldschein)"
+          @log << "#{corporation.name} takes #{format_currency(amount)} bond (Schuldschein) — " \
+                  "#{director.name} receives −1 cert limit marker (permanent)"
+        end
+
+        # Pays each shareholder 50% of the current market price per cert-unit,
+        # then halves all certs. Called by Step::StockBuyback after record_bond!.
+        def execute_buyback_payout!(corporation)
+          half_price = corporation.share_price.price / 2
+          corporation.share_holders.each do |entity, percent|
+            next if entity == corporation
+            next if percent.zero?
+
+            payment = (percent / 10) * half_price
+            corporation.spend(payment, entity)
+            @log << "#{entity.name} receives #{format_currency(payment)} " \
+                    "(#{percent}% → halved certs)"
+          end
+          halve_shares!(corporation)
         end
 
         # Full repayment only; no-op if corp cash is insufficient.
@@ -684,6 +703,7 @@ module Engine
           Round::Operating.new(self, [
             Engine::Step::Bankrupt,
             Engine::Step::Exchange,
+            G1862UsaCanada::Step::StockBuyback,
             Engine::Step::SpecialTrack,
             Engine::Step::HomeToken,
             Engine::Step::Track,
@@ -691,6 +711,7 @@ module Engine
             Engine::Step::Route,
             G1862UsaCanada::Step::ChooseBonus,
             G1862UsaCanada::Step::Dividend,
+            G1862UsaCanada::Step::RepayBond,
             Engine::Step::DiscardTrain,
             Engine::Step::BuyTrain,
           ], round_num: round_num)
