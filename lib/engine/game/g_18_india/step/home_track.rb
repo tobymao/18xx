@@ -49,14 +49,14 @@ module Engine
 
           def place_second_oo_token(tile, corp_name)
             corporation = @game.corporation_by_id(corp_name)
-            return false unless corporation&.floated
+            return unless corporation&.floated
 
             token = corporation.next_token
             city = tile.cities.reject(&:tokened?).first
-            return false unless city&.tokenable?(corporation, tokens: token)
+            return unless city&.tokenable?(corporation, tokens: token)
 
             city.place_token(corporation, token)
-            true
+            @round.pending_tokens.shift
           end
 
           def swap_higher_value_oo_token(city, entity)
@@ -68,28 +68,19 @@ module Engine
           def process_place_token(action)
             city_was_tokened = action.city.tokened?
 
-            # When update_token! displaces both OO tokens to pending (old tile had no paths),
-            # tokens are queued in city order. Swap so action.entity's own token is first,
-            # ensuring it lands at action.city (the connected city chosen by the player).
-            if @round.pending_tokens.size >= 2
-              second = @round.pending_tokens[1]
-              if second && second[:hexes]&.include?(action.city.hex) &&
-                 second[:token].corporation == action.entity
-                @round.pending_tokens[0], @round.pending_tokens[1] =
-                  @round.pending_tokens[1], @round.pending_tokens[0]
-              end
-            end
+            # Both OO tokens displaced to pending queue in city order; reverse so
+            # action.entity's token is first and lands at the player-chosen city.
+            @round.pending_tokens.reverse! if @round.pending_tokens.last[:token].corporation == action.entity
 
             super
             tile = action.city.tile
 
-            # Auto-place partner token if it's still pending for same hex.
+            # If partner token is still pending for this hex (displaced scenario), auto-place it.
             next_pending = @round.pending_tokens.first
             if next_pending && next_pending[:hexes]&.include?(tile.hex)
-              partner_token = next_pending[:token]
               city = tile.cities.reject(&:tokened?).first
               if city
-                city.place_token(partner_token.corporation, partner_token)
+                city.place_token(next_pending[:token].corporation, next_pending[:token])
                 @round.pending_tokens.shift
               end
               return
@@ -109,9 +100,7 @@ module Engine
                 'EBR'
               end
 
-            return unless other_corp
-
-            @round.pending_tokens.shift if place_second_oo_token(tile, other_corp)
+            place_second_oo_token(tile, other_corp) if other_corp
           end
 
           # Base code doesn't handle one token and one reservation on a OO tile
