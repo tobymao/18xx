@@ -40,6 +40,11 @@ module View
             width: 6,
             dash: '9 3',
           },
+          invisible: {
+            color: 'none',
+            width: 0,
+            dash: '0',
+          },
         }.freeze
 
         # width here is added to track width
@@ -87,6 +92,9 @@ module View
           },
           dual: {
             width: 8,
+          },
+          invisible: {
+            width: 0,
           },
         }.freeze
 
