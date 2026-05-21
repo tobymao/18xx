@@ -93,6 +93,8 @@ module Engine
             %w[H18] => 'city=revenue:yellow_20|gray_70;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
           },
           gray: { %w[A1 B6 D8 D14 F18 G7 H14 J2 J18 K9 M5 M13 O1] => '' },
+          # TODO Phase 4: unexplored hexes need junction+path entries once routing is implemented.
+          # track:invisible is not a valid engine track type; revisit at Phase 4 with a supported approach.
           blue: {
             %w[
                 A3 A5 A7 A9 A11 B2 B4 B8 B10 B12 B14 C1 C3 C5 C7 C9
@@ -102,9 +104,7 @@ module Engine
                 J6 J8 J10 J12 J14 J16 K3 K5 K7 K11 K13 K15 K17 L2 L4
                 L6 L8 L10 L12 L14 L16 M1 M3 M7 M9 M11 M15 N2 N4 N6 N8
                 N10 N12 N14 O3 O5 O7 O9 O13
-            ] => 'junction;path=a:0,b:_0,track:invisible;path=a:1,b:_0,track:invisible;'\
-                 'path=a:2,b:_0,track:invisible;path=a:3,b:_0,track:invisible;'\
-                 'path=a:4,b:_0,track:invisible;path=a:5,b:_0,track:invisible',
+            ] => '',
           },
         }.freeze
 
