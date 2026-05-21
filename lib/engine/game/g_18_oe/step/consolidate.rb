@@ -10,6 +10,7 @@ module Engine
           CONVERT_ACTIONS = ['convert'].freeze
 
           def actions(entity)
+            return [] unless entity == current_entity
             return [] if pending_corps(entity).empty?
 
             regional_convertible?(entity) ? CONVERT_ACTIONS : []
@@ -28,10 +29,7 @@ module Engine
           end
 
           def can_convert?(entity)
-            return false unless entity.type == :regional
-            return false if @converted
-
-            true
+            entity.type == :regional && !@converted
           end
 
           def process_convert(action)
