@@ -10,15 +10,22 @@ module Engine
           ACTIONS = %w[destination_connection].freeze
 
           def actions(entity)
-            return [] if @game.loading
-            return [] unless new_destination_connection?(entity)
+            return [] if @game.replaying? && @game.legacy_destination_format?
+
+            if @game.replaying?
+              return [] unless entity&.corporation?
+              return [] if entity.destination_connected?
+
+              return ACTIONS
+            end
+            return [] unless @game.new_destination_connection?(entity)
 
             ACTIONS
           end
 
           def auto_actions(entity)
-            return [] if @game.loading
-            return [] unless new_destination_connection?(entity)
+            return [] if @game.replaying?
+            return [] unless @game.new_destination_connection?(entity)
 
             [Engine::Action::DestinationConnection.new(entity, corporations: [entity])]
           end
@@ -27,20 +34,13 @@ module Engine
             'Check destination connection'
           end
 
-          # Step is not player-passable; @passed is set in process_destination_connection
           def pass!; end
+
+          def log_skip(_entity); end
 
           def process_destination_connection(action)
             action.corporations.first.goal_reached!(:destination)
             @passed = true
-          end
-
-          private
-
-          def new_destination_connection?(entity)
-            entity&.corporation? &&
-              !entity.destination_connected? &&
-              @game.check_for_destination_connection(entity)
           end
         end
       end

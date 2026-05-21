@@ -21,6 +21,10 @@ module Engine
 
         attr_accessor :combined_trains, :luxury_carriages
 
+        def replaying?
+          @loading || @strict
+        end
+
         CURRENCY_FORMAT_STR = '₧%d'
 
         BANK_CASH = 99_999
@@ -321,8 +325,9 @@ module Engine
         end
 
         def operating_round(round_num)
-          G18ESP::Round::Operating.new(self, [
+          Engine::Round::Operating.new(self, [
             Engine::Step::Bankrupt,
+            G18ESP::Step::CheckDestinationConnection,
             Engine::Step::Assign,
             Engine::Step::Exchange,
             Engine::Step::SpecialToken,
@@ -716,12 +721,30 @@ module Engine
           routes.sum(&:subsidy)
         end
 
+        # True if no destination_connection entry exists in the log (save before performance optimization).
+        def legacy_destination_format?
+          return @legacy_destination_format unless @legacy_destination_format.nil?
+
+          @legacy_destination_format = (@filtered_actions || []).none? do |a|
+            next false unless a
+
+            a['type'] == 'destination_connection' ||
+              Array(a['auto_actions']).any? { |sub| sub&.dig('type') == 'destination_connection' }
+          end
+        end
+
         def check_for_destination_connection(entity)
           return false unless entity&.corporation?
           return true if entity.destination_connected?
 
           @no_blocking_graph ||= Graph.new(self, no_blocking: true)
           @no_blocking_graph.reachable_hexes(entity).include?(hex_by_id(entity.destination))
+        end
+
+        def new_destination_connection?(entity)
+          entity&.corporation? &&
+            !entity.destination_connected? &&
+            check_for_destination_connection(entity)
         end
 
         def clear_graph_for_entity(entity)
@@ -899,7 +922,6 @@ module Engine
             super
           end
           clear_graph_for_entity(corporation)
-          corporation.goal_reached!(:destination) if check_for_destination_connection(corporation)
         end
 
         def rust_trains!(train, _entity)
@@ -981,7 +1003,7 @@ module Engine
               @operating_rounds = @phase.operating_rounds
               reorder_players
               new_operating_round
-            when Round::Operating
+            when Engine::Round::Operating
               or_round_finished
               skip_pre_final_or = game_end_check_second_eight? && !final_ors?
               if @round.round_num < @operating_rounds && !skip_pre_final_or
@@ -1004,7 +1026,7 @@ module Engine
         end
 
         def final_ors?
-          @turn == @final_turn && @round.is_a?(Round::Operating)
+          @turn == @final_turn && @round.is_a?(Engine::Round::Operating)
         end
 
         def holder_for_corporation(_entity)

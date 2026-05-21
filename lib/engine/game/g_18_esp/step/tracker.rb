@@ -34,7 +34,13 @@ module Engine
             hex.tile.cities.first.delete_token!(mz_token)
             hex.tile.cities.first.exchange_token(mz_token, extra_slot: true)
           end
-          action.entity.goal_reached!(:destination) if @game.check_for_destination_connection(action.entity)
+          # Legacy saves have no destination_connection action; bridge the payout here.
+          if @game.replaying? && @game.legacy_destination_format? &&
+             @game.check_for_destination_connection(action.entity)
+            action.entity.goal_reached!(:destination)
+          end
+          # clear graphs
+          @game.graph.clear
         end
 
         def extra_cost(tile, tile_lay, hex)

@@ -7,6 +7,7 @@ module Engine
   module Game
     module G18ESP
       module Step
+        # Emits destination_connection inline (not via CDC) so token-buy cash arrives before the same-turn spend.
         class Track < Engine::Step::TrackAndToken
           include Engine::Game::G18ESP::Tracker
 
@@ -20,6 +21,8 @@ module Engine
               actions << 'choose'
             end
             actions << 'place_token' if can_place_token?(entity)
+            actions << 'destination_connection' if !@game.replaying? && @acted &&
+                                                   @game.new_destination_connection?(entity)
             actions << 'pass' if actions.any?
             actions
           end
@@ -36,6 +39,23 @@ module Engine
             super
             @tokened = false
             @round.opened_mountain_pass = false
+          end
+
+          def auto_actions(entity)
+            return [] if @game.replaying?
+            return [] unless @acted
+            return [] unless @game.new_destination_connection?(entity)
+
+            [Engine::Action::DestinationConnection.new(entity, corporations: [entity])]
+          end
+
+          def process_destination_connection(action)
+            action.corporations.first.goal_reached!(:destination)
+          end
+
+          def process_place_token(action)
+            super
+            @game.graph.clear
           end
 
           def pay_token_cost(entity, cost, city)
