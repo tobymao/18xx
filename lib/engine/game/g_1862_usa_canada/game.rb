@@ -405,6 +405,16 @@ module Engine
           super + (@buyback_done || {}).values.count { |director| director == entity }
         end
 
+        def monopoly_threshold
+          60
+        end
+
+        # Fee per newly-over-threshold 10%-cert = 20% of par (face) value.
+        def monopoly_fee(share)
+          par = share.corporation.par_price&.price || 0
+          (par * 0.2).ceil
+        end
+
         # ---------------------------------------------------------------------------
         # Share buyback cert transformation (PR 10b).
         # All outstanding certs are halved:
