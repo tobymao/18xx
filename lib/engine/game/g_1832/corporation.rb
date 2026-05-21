@@ -7,6 +7,10 @@ module Engine
     module G1832
       class Corporation < Engine::Corporation
         attr_accessor :coal_token
+
+        def system?
+          type == :system
+        end
       end
     end
   end

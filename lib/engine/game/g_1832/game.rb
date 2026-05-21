@@ -69,13 +69,9 @@ module Engine
         STARTING_CASH = { 2 => 1050, 3 => 700, 4 => 525, 5 => 420, 6 => 350, 7 => 300 }.freeze
 
         def tile_lays(entity)
-          return self.class::SYSTEM_TILE_LAYS if system?(entity)
+          return self.class::SYSTEM_TILE_LAYS if entity.system?
 
           self.class::TILE_LAYS
-        end
-
-        def system?(entity)
-          entity.corporation? && entity.type == :system
         end
 
         ASSIGNMENT_TOKENS = {
@@ -215,7 +211,7 @@ module Engine
         end
 
         def corps_available_for_systems
-          @corporations.select { |c| c.operated? && c.type != :system }
+          @corporations.select { |c| c.operated? && !c.system? }
         end
 
         def event_companies_buyable!
@@ -289,7 +285,7 @@ module Engine
         end
 
         def can_par?(corporation, parrer)
-          return false if corporation.type == :system
+          return false if corporation.system?
 
           super
         end
