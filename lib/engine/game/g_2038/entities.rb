@@ -18,16 +18,13 @@ module Engine
             sym: 'FB',
             value: 100,
             revenue: 0,
-            desc: 'May form a Growth Corporation OR join the Asteroid League for 1 share.',
+            desc: 'May form a Growth Corporation OR join the Asteroid League for 1 share.'\
+                  ' Earns $15/round into company treasury.',
+            # TODO Phase 7: add custom ability type for $15/round treasury income
+            # TODO Phase 2: remove exchange ability; private transfers immediately to minor FB at purchase.
+            #   The merge into AL is handled by the minor's own mechanics (Phase 9), not this private.
             abilities: [
               { type: 'no_buy' },
-              {
-                type: 'exchange',
-                corporations: ['AL'],
-                owner_type: 'player',
-                from: 'market',
-                when: %w[3 4],
-              },
             ],
             color: 'white',
           },
@@ -36,16 +33,13 @@ module Engine
             sym: 'IF',
             value: 100,
             revenue: 0,
-            desc: 'May form a Growth Corporation OR join the Asteroid League for 1 share.',
+            desc: 'May form a Growth Corporation OR join the Asteroid League for 1 share.'\
+                  ' $10 bonus per Ice ore delivered. Must draw a second tile if first drawn has no Ice mines.',
+            delivery_bonus: :I,
+            # TODO Phase 7: add custom ability type for second-tile-draw-if-no-ice exploration rule
+            # TODO Phase 2: remove exchange ability; private transfers immediately to minor IF at purchase.
             abilities: [
               { type: 'no_buy' },
-              {
-                type: 'exchange',
-                corporations: ['AL'],
-                owner_type: 'player',
-                from: 'market',
-                when: %w[3 4],
-              },
             ],
             color: 'white',
           },
@@ -54,16 +48,13 @@ module Engine
             sym: 'DH',
             value: 100,
             revenue: 0,
-            desc: 'May form a Growth Corporation OR join the Asteroid League for 1 share.',
+            desc: 'May form a Growth Corporation OR join the Asteroid League for 1 share.'\
+                  ' $10 bonus per Rare ore delivered. Must draw a second tile if first drawn has no Rare mines.',
+            delivery_bonus: :R,
+            # TODO Phase 7: add custom ability type for second-tile-draw-if-no-rare exploration rule
+            # TODO Phase 2: remove exchange ability; private transfers immediately to minor DH at purchase.
             abilities: [
               { type: 'no_buy' },
-              {
-                type: 'exchange',
-                corporations: ['AL'],
-                owner_type: 'player',
-                from: 'market',
-                when: %w[3 4],
-              },
             ],
             color: 'white',
           },
@@ -72,16 +63,12 @@ module Engine
             sym: 'OC',
             value: 100,
             revenue: 0,
-            desc: 'May form a Growth Corporation OR join the Asteroid League for 1 share.',
+            desc: 'May form a Growth Corporation OR join the Asteroid League for 1 share.'\
+                  ' $10 bonus per Nickel ore delivered.',
+            delivery_bonus: :N,
+            # TODO Phase 2: remove exchange ability; private transfers immediately to minor OC at purchase.
             abilities: [
               { type: 'no_buy' },
-              {
-                type: 'exchange',
-                corporations: ['AL'],
-                owner_type: 'player',
-                from: 'market',
-                when: %w[3 4],
-              },
             ],
             color: 'white',
           },
@@ -90,16 +77,12 @@ module Engine
             sym: 'TH',
             value: 100,
             revenue: 0,
-            desc: 'May form a Growth Corporation OR join the Asteroid League for 1 share.',
+            desc: 'May form a Growth Corporation OR join the Asteroid League for 1 share.'\
+                  ' All spaceships operated by this company get +1 movement point.',
+            # TODO Phase 7: add custom ability type for +1 MP bonus
+            # TODO Phase 2: remove exchange ability; private transfers immediately to minor TH at purchase.
             abilities: [
               { type: 'no_buy' },
-              {
-                type: 'exchange',
-                corporations: ['AL'],
-                owner_type: 'player',
-                from: 'market',
-                when: %w[3 4],
-              },
             ],
             color: 'white',
           },
@@ -108,16 +91,12 @@ module Engine
             sym: 'LY',
             value: 100,
             revenue: 0,
-            desc: 'May form a Growth Corporation OR join the Asteroid League for 1 share.',
+            desc: 'May form a Growth Corporation OR join the Asteroid League for 1 share.'\
+                  ' When exploring, draw 2 tiles and choose which to place (discard the other).',
+            # TODO Phase 7: add custom ability type for draw-2-choose-1 exploration rule
+            # TODO Phase 2: remove exchange ability; private transfers immediately to minor LY at purchase.
             abilities: [
               { type: 'no_buy' },
-              {
-                type: 'exchange',
-                corporations: ['AL'],
-                owner_type: 'player',
-                from: 'market',
-                when: %w[3 4],
-              },
             ],
             color: 'white',
           },
@@ -221,7 +200,6 @@ module Engine
             tokens: [0],
             color: 'black',
             text_color: 'white',
-            delivery_bonus: :I,
             abilities: [
               {
                 type: 'exchange',
@@ -240,7 +218,6 @@ module Engine
             tokens: [0],
             color: 'black',
             text_color: 'white',
-            delivery_bonus: :R,
             abilities: [
               {
                 type: 'exchange',
@@ -259,7 +236,6 @@ module Engine
             tokens: [0],
             color: 'black',
             text_color: 'white',
-            delivery_bonus: :N,
             abilities: [
               {
                 type: 'exchange',

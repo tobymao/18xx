@@ -81,6 +81,7 @@ g_2038/
 - [ ] **2c. AE certificate timing** — AE is sold in Phase 1 but grants the AL president cert only in Phase 3/4. Add a hook at Phase 3 start that gives AE's owner the AL president certificate (AL must already exist in `@corporations` via `event_asteroid_league_can_form!`).
 - [ ] **2d. All-pass resolution** — verify that `all_passed!` → `round_end_auction_complete` correctly resolves all pending bids on independents before transitioning to the stock round.
 - [ ] **2e. Auction ordering** — confirm companies are auctioned in order "0" through "11" (PI, then TS/VA/RS/ST/AE as privates, then FB/IF/DH/OC/TH/LY as independents)
+- [ ] **2f. Private 1–6 immediate transfer to minor** — when a player purchases any of the six independent privates (FB/IF/DH/OC/TH/LY), that private immediately transfers from the player to its corresponding minor company (same sym). The player receives the minor's operating rights as normal; the private becomes an asset of the minor, not a personal holding. This makes the private the durable carrier of the special ability: whatever entity owns the private at any point in time has the ability. Implementation note: the `exchange` ability currently on these six COMPANIES entries (for AL share exchange with `owner_type: 'player'`) is wrong under this model — the player will never hold the private long enough to trigger it. Those exchange ability entries should be removed from COMPANIES; the merge into AL is handled by the minor's own mechanics (Phase 9).
 
 ---
 
@@ -174,13 +175,15 @@ g_2038/
 
 **Goal:** Wire up each independent's unique ability.
 
-- [ ] **Fast Buck (FB)** — $15/round added to its treasury (like a private company income; already partially modeled)
-- [ ] **Ice Finder (IF)** — $10 bonus per Ice ore delivered; must draw a second tile when exploring if the first tile drawn has no Ice mines
-- [ ] **Drill Hound (DH)** — $10 bonus per Rare ore delivered; must draw a second tile when exploring if the first tile drawn has no Rare mines
-- [ ] **Ore Crusher (OC)** — $10 bonus per Nickel ore delivered
-- [ ] **Torch (TH)** — all Torch spaceships get +1 movement point
-- [ ] **Lucky (LY)** — draws 2 tiles when exploring a hex, then chooses which to place (discard the other)
-- [ ] **Pilot bonuses** — when an independent forms a Growth Corporation or merges into the AL, its pilot certificate transfers to the new corporation and provides the same bonuses to one assigned spaceship per OR
+**Ability ownership model:** Each special ability is modeled as a data field or custom ability type on the *private company* (COMPANIES 1–6), not on the minor. The private immediately transfers to its corresponding minor at purchase (Phase 2f), so the game determines who has the ability by looking at who currently owns the private — the minor, a growth corporation, or the AL. No additional transfer logic is needed at formation/merge time; the private moves with other assets automatically.
+
+- [ ] **Fast Buck (FB)** — $15/round added to the owning entity's treasury; implement as a custom private company income step (not a standard `revenue:` — FB already has `revenue: 0` so base payout is a no-op)
+- [ ] **Ice Finder (IF)** — `delivery_bonus: :I` already on COMPANIES IF; additionally, when the owning entity's ship explores, if the first drawn tile has no Ice mines, it must draw and place a second tile
+- [ ] **Drill Hound (DH)** — `delivery_bonus: :R` already on COMPANIES DH; additionally, when exploring, if the first drawn tile has no Rare mines, must draw and place a second tile
+- [ ] **Ore Crusher (OC)** — `delivery_bonus: :N` already on COMPANIES OC; no exploration modifier
+- [ ] **Torch (TH)** — all spaceships operated by the owning entity get +1 movement point
+- [ ] **Lucky (LY)** — when the owning entity's ship explores, draw 2 tiles and choose which to place (discard the other face-down out of the game)
+- [ ] **Pilot certificate** — the private company itself serves as the "pilot certificate"; its presence in the owning entity's asset list is what grants the ability to one assigned spaceship per OR. No separate pilot cert object is needed.
 
 ---
 
@@ -194,12 +197,11 @@ Reference: `g_1835/step/form_prussian.rb` and `game.rb::merge_entity_to_prussian
 - [ ] **8b. Create `step/form_growth_corporation.rb`** — handles the conversion sequence:
   - [ ] Player selects an available Growth Corporation president's certificate (20%)
   - [ ] Independent's spaceship(s) transfer to new Growth Corp
-  - [ ] Independent's base, claims, and remaining cash transfer to new Growth Corp
+  - [ ] Independent's base, claims, remaining cash, and **private company (1–6)** transfer to new Growth Corp
   - [ ] Independent's certificate replaced by Growth Corp president's certificate
   - [ ] Growth Corp starts with stock price $10, par $67
   - [ ] Growth Corp is immediately active
-  - [ ] Pilot certificate transfers to Growth Corp (placed in corp until Phase 5)
-  - [ ] Independent is removed from the game
+  - [ ] Independent is removed from the game; the private company remains in the Growth Corp's asset list and continues to grant its ability
 - [ ] **8c. Corporation group unlocking** — Groups unlock when all corps of the previous group have been launched (already in `after_par` in game.rb; verify logic):
   - Group A: TSI, RU (available from start)
   - Group B: VP, LE, MM (unlock when all Group A launched)
@@ -223,9 +225,8 @@ Reference: `g_1835/step/form_prussian.rb` and `step/merge_to_prussian.rb`.
 - [ ] **9c. Voluntary mergers** — in clockwise order after AL forms, each independent may merge:
   - [ ] Owner receives ½ of independent's treasury cash (rounded down)
   - [ ] Owner receives 1 AL share (10%)
-  - [ ] Independent's spaceship(s), base, and claims transfer to AL
-  - [ ] Pilot certificate transfers to AL
-  - [ ] Independent is removed from the game
+  - [ ] Independent's spaceship(s), base, claims, and **private company (1–6)** transfer to AL
+  - [ ] Independent is removed from the game; the private company remains in AL's asset list and continues to grant its ability
 - [ ] **9d. Create `step/merge_into_league.rb`** — handles the sequential merge offers per clockwise player order
 - [ ] **9e. Mandatory merger at Phase 5** — any independent still operating at the start of Phase 5 must join the AL; enforce this
 - [ ] **9f. Mandatory merger on bankruptcy** — an independent that cannot buy a required spaceship (7.39) must merge into the AL
