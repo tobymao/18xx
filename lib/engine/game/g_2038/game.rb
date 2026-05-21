@@ -166,7 +166,7 @@ module Engine
             distance: 5,
             cargo_holds: 4,
             price: 325,
-            rusts_on: 'D', # TODO Phase 6: verify against rules obsolescence chart
+            rusts_on: 'D', # TODO: Phase 6: verify against rules obsolescence chart
             num: 6,
             variants: [
               {
@@ -174,7 +174,7 @@ module Engine
                 distance: 7,
                 cargo_holds: 3,
                 price: 275,
-                rusts_on: 'D', # TODO Phase 6: verify against rules obsolescence chart
+                rusts_on: 'D', # TODO: Phase 6: verify against rules obsolescence chart
               },
             ],
             events: [{ 'type' => 'asteroid_league_can_form' }],
@@ -378,8 +378,12 @@ module Engine
               next if picked_set.include?(key)
               next if mine[:owner] && mine[:owner] != entity.id
 
-              { hex: hex, mine_idx: idx, ore: mine[:ore],
-                value: pickup_value(entity, hex.id, idx) }
+              {
+                hex: hex,
+                mine_idx: idx,
+                ore: mine[:ore],
+                value: pickup_value(entity, hex.id, idx),
+              }
             end
           end
         end
@@ -393,14 +397,12 @@ module Engine
           end
         end
 
-        # TODO Phase 4a/4b: enforce hex count ≤ movement points and pickup count ≤ cargo holds.
-        def check_distance(route, _entity)
-        end
+        # TODO: Phase 4a/4b: enforce hex count ≤ movement points and pickup count ≤ cargo holds.
+        def check_distance(route, _entity); end
 
-        # TODO Phase 4c: validate route starts at one of the company's bases
+        # TODO: Phase 4c: validate route starts at one of the company's bases
         # and ends at a base or transshipment point.
-        def check_connected(route, _entity)
-        end
+        def check_connected(route, _entity); end
 
         # Formats a route as a hex-ID path string for the game log.
         def revenue_str(route)

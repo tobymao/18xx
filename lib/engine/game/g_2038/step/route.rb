@@ -29,7 +29,7 @@ module Engine
             explored = []
             action.routes.each do |route|
               route.hexes.each do |hex|
-                next unless @game.mine_state[hex.id].nil? && hex.tile.color == :blue
+                next if !@game.mine_state[hex.id].nil? || hex.tile.color != :blue
 
                 @game.explore_hex!(hex.id)
                 explored << hex.id

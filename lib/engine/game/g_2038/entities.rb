@@ -20,7 +20,7 @@ module Engine
             revenue: 0,
             desc: 'May form a Growth Corporation OR join the Asteroid League for 1 share.'\
                   ' Earns $15/round into company treasury.',
-            # TODO Phase 7: add custom ability type for $15/round treasury income
+            # TODO: Phase 7: add custom ability type for $15/round treasury income
             # TODO Phase 2: remove exchange ability; private transfers immediately to minor FB at purchase.
             #   The merge into AL is handled by the minor's own mechanics (Phase 9), not this private.
             abilities: [
@@ -36,7 +36,7 @@ module Engine
             desc: 'May form a Growth Corporation OR join the Asteroid League for 1 share.'\
                   ' $10 bonus per Ice ore delivered. Must draw a second tile if first drawn has no Ice mines.',
             delivery_bonus: :I,
-            # TODO Phase 7: add custom ability type for second-tile-draw-if-no-ice exploration rule
+            # TODO: Phase 7: add custom ability type for second-tile-draw-if-no-ice exploration rule
             # TODO Phase 2: remove exchange ability; private transfers immediately to minor IF at purchase.
             abilities: [
               { type: 'no_buy' },
@@ -51,7 +51,7 @@ module Engine
             desc: 'May form a Growth Corporation OR join the Asteroid League for 1 share.'\
                   ' $10 bonus per Rare ore delivered. Must draw a second tile if first drawn has no Rare mines.',
             delivery_bonus: :R,
-            # TODO Phase 7: add custom ability type for second-tile-draw-if-no-rare exploration rule
+            # TODO: Phase 7: add custom ability type for second-tile-draw-if-no-rare exploration rule
             # TODO Phase 2: remove exchange ability; private transfers immediately to minor DH at purchase.
             abilities: [
               { type: 'no_buy' },
@@ -66,7 +66,7 @@ module Engine
             desc: 'May form a Growth Corporation OR join the Asteroid League for 1 share.'\
                   ' $10 bonus per Nickel ore delivered.',
             delivery_bonus: :N,
-            # TODO Phase 2: remove exchange ability; private transfers immediately to minor OC at purchase.
+            # TODO: Phase 2: remove exchange ability; private transfers immediately to minor OC at purchase.
             abilities: [
               { type: 'no_buy' },
             ],
@@ -79,7 +79,7 @@ module Engine
             revenue: 0,
             desc: 'May form a Growth Corporation OR join the Asteroid League for 1 share.'\
                   ' All spaceships operated by this company get +1 movement point.',
-            # TODO Phase 7: add custom ability type for +1 MP bonus
+            # TODO: Phase 7: add custom ability type for +1 MP bonus
             # TODO Phase 2: remove exchange ability; private transfers immediately to minor TH at purchase.
             abilities: [
               { type: 'no_buy' },
@@ -93,7 +93,7 @@ module Engine
             revenue: 0,
             desc: 'May form a Growth Corporation OR join the Asteroid League for 1 share.'\
                   ' When exploring, draw 2 tiles and choose which to place (discard the other).',
-            # TODO Phase 7: add custom ability type for draw-2-choose-1 exploration rule
+            # TODO: Phase 7: add custom ability type for draw-2-choose-1 exploration rule
             # TODO Phase 2: remove exchange ability; private transfers immediately to minor LY at purchase.
             abilities: [
               { type: 'no_buy' },
@@ -109,7 +109,7 @@ module Engine
                   ' explored and unclaimed tile.',
             abilities: [
               { type: 'shares', shares: 'TSI_3' },
-              # TODO Phase 10: replace with custom base-placement ability (owning_corp_or_turn, free, anywhere)
+              # TODO: Phase 10: replace with custom base-placement ability (owning_corp_or_turn, free, anywhere)
             ],
             color: '#40b1b9',
           },
@@ -122,7 +122,7 @@ module Engine
                   ' Refueling Station within range.',
             abilities: [
               { type: 'shares', shares: 'TSI_2' },
-              # TODO Phase 10: replace with custom refueling-station ability (owning_corp_or_turn, free, in range)
+              # TODO: Phase 10: replace with custom refueling-station ability (owning_corp_or_turn, free, in range)
             ],
             color: '#40b1b9',
           },
@@ -134,7 +134,7 @@ module Engine
             desc: 'Buyer receives a TSI Share. If owned by a corporation, may place 1 free Claim within range.',
             abilities: [
               { type: 'shares', shares: 'TSI_1' },
-              # TODO Phase 10: replace with custom claim ability (owning_corp_or_turn, free, in range)
+              # TODO: Phase 10: replace with custom claim ability (owning_corp_or_turn, free, in range)
             ],
             color: '#40b1b9',
           },

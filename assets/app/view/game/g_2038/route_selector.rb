@@ -116,7 +116,6 @@ module View
           end
 
           lock_at = @g2038_lock_at
-          picked_set = (@g2038_pickups || []).to_set
 
           hex_spans = hexes.map.with_index do |hex, i|
             locked = lock_at && i < lock_at
