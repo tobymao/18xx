@@ -44,15 +44,6 @@ module Engine
 
         include MapGotlandCustomization
 
-        register_colors(red: '#d1232a',
-                        orange: '#f58121',
-                        black: '#110a0c',
-                        blue: '#025aaa',
-                        lightBlue: '#8dd7f6',
-                        yellow: '#ffe600',
-                        green: '#32763f',
-                        brightGreen: '#6ec037')
-
         MARKET_2D = [
           %w[75
              80
@@ -295,6 +286,7 @@ module Engine
         TILE_UPGRADES_MUST_USE_MAX_EXITS = [].freeze
         DISCARDED_TRAINS = :remove
         REMOVE_UNUSED_RESERVATIONS = false
+        CERT_LIMIT_INCLUDES_PRIVATES = true
 
         def find_map_name
           optional_rules&.find { |r| r.to_s.include?('map_') }&.to_s&.delete_prefix('map_')&.downcase

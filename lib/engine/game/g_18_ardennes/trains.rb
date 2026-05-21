@@ -79,7 +79,7 @@ module Engine
           },
           {
             name: '6',
-            num: 30,
+            num: 'unlimited',
             distance: [{ 'nodes' => %w[city], 'pay' => 6, 'visit' => 6 },
                        { 'nodes' => %w[offboard], 'pay' => 2, 'visit' => 2 },
                        { 'nodes' => %w[town], 'pay' => 99, 'visit' => 99 }],

@@ -4,6 +4,7 @@ require_relative '../g_1817/game'
 require_relative 'meta'
 require_relative 'map'
 require_relative 'entities'
+require_relative '../stubs_are_restricted'
 
 module Engine
   module Game
@@ -12,6 +13,7 @@ module Engine
         include_meta(G18USA::Meta)
         include G18USA::Entities
         include G18USA::Map
+        include StubsAreRestricted
 
         attr_accessor :pending_rusting_event, :p8_hexes
         attr_reader :jump_graph, :subsidies_by_hex, :recently_floated, :plain_yellow_city_tiles, :plain_green_city_tiles,
@@ -157,10 +159,10 @@ module Engine
                     name: '8',
                     distance: 8,
                     price: 1100,
-                    num: 40,
+                    num: 'unlimited',
                     events: [{ 'type' => 'signal_end_game' }],
                   },
-                  { name: 'P', distance: 0, price: 200, available_on: '5', num: 20 }].freeze
+                  { name: 'P', distance: 0, price: 200, available_on: '5', num: 'unlimited' }].freeze
 
         def game_trains
           return seventeen_trains if @optional_rules.include?(:seventeen_trains)
@@ -370,11 +372,15 @@ module Engine
             'Placing a track and the resource token from the Resource Subsidy is a free extra ' \
             'track lay in addition to the normal track placements.'
 
-          @log << "Resource subsidy includes #{resources.join(', ')}"
+          @resource_subsidy_resources = resources.join(', ')
         end
 
         def randomize_subsidies
-          randomized_subsidies = @subsidies.sort_by { rand }.take(SUBSIDIZED_HEXES.size)
+          shuffled = @subsidies.sort_by { rand }
+          randomized_subsidies = shuffled.take(SUBSIDIZED_HEXES.size)
+          excluded = shuffled.drop(SUBSIDIZED_HEXES.size)
+          @log << "Resource subsidy includes #{@resource_subsidy_resources}" unless excluded.any? { |s| s[:id] == 'S16' }
+          @log << "Removing: #{excluded.map { |s| s[:name] }.join(', ')}" unless excluded.empty?
           @subsidies_by_hex = {}
           SUBSIDIZED_HEXES.zip(randomized_subsidies).each do |hex_id, subsidy|
             hex = hex_by_id(hex_id)

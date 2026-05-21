@@ -30,6 +30,10 @@ module Engine
       break!
     end
 
+    def add_cash(cash)
+      @cash += cash
+    end
+
     def break!
       @log << '-- The bank has broken --' unless @broken
       @broken = true

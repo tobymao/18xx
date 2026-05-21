@@ -18,16 +18,6 @@ module Engine
         include Map
         include StubsAreRestricted
 
-        register_colors(red: '#ff0000',
-                        pink: '#ff7fed',
-                        orange: '#ff6a00',
-                        green: '#00830e',
-                        blue: '#0026ff',
-                        black: '#727272',
-                        lightBlue: '#b8ffff',
-                        brown: '#644c00',
-                        purple: '#832e9a')
-
         attr_reader :drafted_companies, :parred_corporations
         attr_accessor :dump_token, :rj_token, :use_che_discount
 

@@ -25,7 +25,7 @@ module Engine
           },
         ].freeze
 
-        PLAYER_RANGE = [3, 7].freeze
+        PLAYER_RANGE = [2, 7].freeze
       end
     end
   end

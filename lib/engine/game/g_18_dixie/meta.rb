@@ -13,7 +13,7 @@ module Engine
         GAME_SUBTITLE = 'The Railroads Come to the Deep South'
         GAME_DESIGNER = 'Mark Derrick'
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18Dixie'
-        GAME_LOCATION = 'USA South'
+        GAME_LOCATION = 'Southern USA'
         GAME_PUBLISHER = :golden_spike
         GAME_RULES_URL = 'https://18xx.games' # TODO: Make a stable rules link
 

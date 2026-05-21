@@ -86,19 +86,19 @@ module Engine
         end
 
         def game_corporations
-          corporations = CORPORATIONS.dup
+          corporations = CORPORATIONS.map(&:dup)
 
           return corporations if two_player?
 
           # Rule XI.1: Move home location for UG1, and reserve only 20% share of UG
           corporations.map! do |m|
-            case m['sym']
+            case m[:sym]
             when 'UG1'
-              m['coordinates'] = 'G12'
-              m['city'] = 0
+              m[:coordinates] = 'G12'
+              m[:city] = 0
             when 'UG'
-              m['ipo_shares'] = [10, 10, 10, 10, 10, 10, 10, 10]
-              m['reserved_shares'] = [20]
+              m[:ipo_shares] = [10, 10, 10, 10, 10, 10, 10, 10]
+              m[:reserved_shares] = [20]
             end
 
             m
@@ -223,6 +223,12 @@ module Engine
 
           # Used in two-player game when construction company should be closed
           @close_construction_company_when_first_5_sold = false
+        end
+
+        def within_bank_limit(bundle)
+          # 3+ player 1824 has a bank limit of 50% when selling, and no bank pool.
+          # 2-player 1824 has a bank pool, and no limit for sales (except presidency).
+          two_player? || super
         end
 
         def event_close_construction_railways!

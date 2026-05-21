@@ -15,10 +15,15 @@ module Engine
 
           def buyable_trains(entity)
             trains = super
-            trains.reject! { |t| @game.mail_train?(t) } unless can_buy_mail_train?(entity)
+            trains.reject! { |t| @game.pullman?(t) } unless can_buy_pullman?(entity)
             return trains unless at_train_limit?(entity)
 
-            trains.select { |train| @game.mail_train?(train) }
+            trains.select { |train| @game.pullman?(train) }
+          end
+
+          def other_trains(entity)
+            # Pullman trains cannot be bought across.
+            super.reject { |train| @game.pullman?(train) }
           end
 
           def process_buy_company(action)
@@ -44,12 +49,12 @@ module Engine
 
           private
 
-          def can_buy_mail_train?(entity)
-            !@game.owns_mail_train?(entity)
+          def can_buy_pullman?(entity)
+            !@game.owns_pullman?(entity)
           end
 
           def room?(entity, _shell = nil)
-            super || !@game.owns_mail_train?(entity)
+            super || !@game.owns_pullman?(entity)
           end
 
           def at_train_limit?(entity)

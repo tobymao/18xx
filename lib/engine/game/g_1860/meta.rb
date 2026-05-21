@@ -13,7 +13,7 @@ module Engine
         GAME_SUBTITLE = 'Railways on the Isle of Wight'
         GAME_DESIGNER = 'Mike Hutton'
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1860'
-        GAME_LOCATION = 'Isle of Wight'
+        GAME_LOCATION = 'Isle of Wight, England'
         GAME_PUBLISHER = :all_aboard_games
         GAME_RULES_URL = 'https://boardgamegeek.com/filepage/238952/third-edition-rules'
 

@@ -58,7 +58,7 @@ module Engine
           end
 
           def finish_round_text
-            'First SR is finished - any unsold Pre-State Railways, Coal Railways, or Montain Railways are removed from the game'
+            'First SR is finished - any unsold Pre-State Railways, Coal Railways, or Mountain Railways are removed from the game'
           end
 
           def finish_round

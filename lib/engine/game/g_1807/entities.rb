@@ -1008,6 +1008,18 @@ module Engine
           [summary, unipoed]
         end
 
+        def major?(corporation)
+          corporation.type == :public
+        end
+
+        def minor?(corporation)
+          corporation.type == :minor
+        end
+
+        def system?(corporation)
+          corporation.type == :system
+        end
+
         def maximum_loans(entity)
           case entity.type
           when :minor

@@ -15,13 +15,6 @@ module Engine
         include Map
         include Entities
 
-        register_colors(brightGreen: '#c2ce33',
-                        beige: '#e5d19e',
-                        lightBlue: '#1EA2D6',
-                        mintGreen: '#B1CEC7',
-                        yellow: '#ffe600',
-                        lightRed: '#F3B1B3')
-
         CURRENCY_FORMAT_STR = '%s K'
 
         BANK_CASH = 99_999

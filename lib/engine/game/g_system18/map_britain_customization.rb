@@ -510,6 +510,7 @@ module Engine
           redef_const(:TILE_UPGRADES_MUST_USE_MAX_EXITS, %i[unlabeled_cities])
           redef_const(:TILE_LAYS, [{ lay: true, upgrade: true, cost: 0 }, { lay_replaced: :if_green_upgraded }])
           redef_const(:REMOVE_UNUSED_RESERVATIONS, true)
+          redef_const(:CERT_LIMIT_INCLUDES_PRIVATES, false)
         end
 
         def map_britain_setup

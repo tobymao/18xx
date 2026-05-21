@@ -42,6 +42,16 @@ module Engine
             pass!
           end
 
+          def auto_actions(entity)
+            return nil unless find_company(entity)
+
+            choice_inconsequential = @game.players.max_by(&:cash) == entity || entity.cash * 2 < @game.players.map(&:cash).sort[1]
+            return nil unless choice_inconsequential
+
+            @log << "Doubling #{entity.name}'s cash would not affect player order, skipping choice for #{@company.name}"
+            [Engine::Action::Pass.new(entity)]
+          end
+
           def find_company(entity)
             @company = @game.company_by_id(@game.class::COMPANY_DOUBLE_CASH)
             return nil if !@company || @company&.owner != entity

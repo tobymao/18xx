@@ -475,6 +475,12 @@ module Engine
           end
         end
 
+        # A string describing the token location: 'city-name (coordinates)'.
+        def token_location(token)
+          hex = london_cities.include?(token.city) ? london_small : token.city.hex
+          "#{hex.location_name} (#{token.hex.coordinates})"
+        end
+
         # Bonus revenues are shown on the map as detached offboard areas.
         # These are their locations.
         BONUS_REVENUE_HEXES = {

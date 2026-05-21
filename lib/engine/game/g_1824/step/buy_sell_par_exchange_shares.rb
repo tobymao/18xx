@@ -110,7 +110,10 @@ module Engine
             company = action.entity
             bundle = action.bundle
             bundle.share_price = 0
-            buy_shares(company.owner, bundle, exchange: company)
+
+            # If a corporation has not been parred, an MR exchange cannot result in a presidency change. See rule IV.4.1 bullet 6.
+            buy_shares(company.owner, bundle, exchange: company, allow_president_change: !bundle.corporation.par_price.nil?)
+
             company.close!
 
             # Exchange is treated as a Buy, and no more actions allowed as Sell-Buy

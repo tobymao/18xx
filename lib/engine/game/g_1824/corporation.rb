@@ -43,7 +43,7 @@ module Engine
         def floated?
           return false unless @floatable
 
-          @floated ||= (percent_to_float <= 0)
+          @floated ||= (percent_to_float <= 0 && !@par_price.nil? && @presidents_share&.owned_by_player?)
         end
 
         def float!
@@ -122,6 +122,14 @@ module Engine
           player_share_holders.reject { |_, p| p < 20 }.empty?
         end
 
+        # Need to cover the case where a unassociated regional railway has reached floating without being parred
+        def floatable
+          return false unless super
+          return true unless @type == :major
+
+          !@par_price.nil?
+        end
+
         private
 
         def do_unreserve_one_share!(president_share = false)
@@ -130,8 +138,8 @@ module Engine
 
           a_share.buyable = true
 
-          # Do adjust capitalization capital as a 10% or 20% share is unreserved
-          @capitalization_share_count -= president_share ? 2 : 1
+          # Do increase capitalization capital as a 10% or 20% share is unreserved
+          @capitalization_share_count += president_share ? 2 : 1
         end
       end
     end

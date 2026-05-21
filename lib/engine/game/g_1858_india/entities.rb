@@ -1488,6 +1488,45 @@ module Engine
           'JB' => 29,
           'HB' => 30,
         }.freeze
+
+        QUICK_START_PACKETS_A = {
+          3 => [
+            { cost: 640, companies: %w[HH PB AC BS AB CPC DS] },
+            { cost: 635, companies: %w[MA TN AD BT NA DA AJ] },
+            { cost: 610, companies: %w[ML LA C MB KK MK LP LC] },
+          ],
+          4 => [
+            { cost: 475, companies: %w[HH PB DS AC DA] },
+            { cost: 480, companies: %w[MA TN C LC MB LP] },
+            { cost: 455, companies: %w[ML LA AD KK MK] },
+            { cost: 490, companies: %w[BT NA BS AB CPC AJ] },
+          ],
+          5 => [
+            { cost: 375, companies: %w[HH PB DS AC] },
+            { cost: 395, companies: %w[MA TN C AJ MK] },
+            { cost: 355, companies: %w[ML LA AD LP] },
+            { cost: 385, companies: %w[BT NA CPC LC MB] },
+            { cost: 390, companies: %w[BS AB DA KK] },
+          ],
+          6 => [
+            { cost: 320, companies: %w[HH PB AC] },
+            { cost: 320, companies: %w[MA TN AD] },
+            { cost: 300, companies: %w[ML LA C MB] },
+            { cost: 320, companies: %w[BT NA DA AJ] },
+            { cost: 325, companies: %w[BS AB CPC DS] },
+            { cost: 315, companies: %w[KK MK LP LC] },
+          ],
+        }.freeze
+
+        QUICK_START_PACKETS_B = QUICK_START_PACKETS_A.merge({
+          5 => [
+            { cost: 390, companies: %w[HH PB LP AD] },
+            { cost: 365, companies: %w[MA TN C CPC] },
+            { cost: 360, companies: %w[ML LA AC LC] },
+            { cost: 395, companies: %w[BT NA KK MK MB] },
+            { cost: 390, companies: %w[BS AB DA AJ DS] },
+          ],
+        }.freeze)
       end
     end
   end

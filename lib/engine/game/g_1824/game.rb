@@ -52,8 +52,8 @@ module Engine
         MUST_SELL_IN_BLOCKS = false
 
         EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
-        EBUY_FROM_OTHERS = :always
-        EBUY_SELL_MORE_THAN_NEEDED = true
+        EBUY_FROM_OTHERS = :value # Rule VII.12, bullet 9
+        EBUY_SELL_MORE_THAN_NEEDED = false
         EBUY_SELL_MORE_THAN_NEEDED_SETS_PURCHASE_MIN = true
         EBUY_CAN_TAKE_PLAYER_LOAN = true
         MUST_BUY_TRAIN = :always
@@ -63,7 +63,7 @@ module Engine
 
         EVENTS_TEXT = Base::EVENTS_TEXT.dup.merge(
           'buy_across' => ['Buy Across', 'Trains can be bought between companies'],
-          'close_mountain_railways' => ['Mountain Railways Close', 'Any still open Montain railways are exchanged or closed'],
+          'close_mountain_railways' => ['Mountain Railways Close', 'Any still open Mountain railways are exchanged or closed'],
           'sd_formation' => ['SD formation', 'SD forms at the end of the OR'],
           'exchange_coal_companies' => ['Coal Companies Exchange', 'All remaining coal companies are exchanged'],
           'ug_formation' => ['UG formation', 'UG forms at the end of the OR'],
@@ -215,19 +215,19 @@ module Engine
             return
           end
 
-          @players.each do |p|
-            tie_breaker << p unless tie_breaker.include?(p)
-          end
+          tie_breaker |= @players
 
           president_factors = president_candidates.to_h do |player, percent|
-            [[percent, tie_breaker.index(player) || -1, player == current_president ? 1 : 0], player]
+            [[percent, -1 * tie_breaker.index(player)], player]
           end
           president = president_factors[president_factors.keys.max]
-          return unless current_president != president
+          return if current_president == president
 
           @log << "#{president.name} becomes the president of #{national.name}"
-          @share_pool.change_president(national.presidents_share, current_president, president)
           national.owner = president
+          return if national.presidents_share.owner == president
+
+          @share_pool.change_president(national.presidents_share, national.presidents_share.owner, president)
         end
 
         # Similar to 1837
@@ -282,7 +282,6 @@ module Engine
         def operating_round(round_num)
           G1824::Round::Operating.new(self, [
             G1824::Step::KkTokenChoice,
-            G1837::Step::Bankrupt,
             G1824::Step::DiscardTrain,
             G1824::Step::ForcedMountainRailwayExchange,
             Engine::Step::SpecialTrack,
@@ -387,6 +386,15 @@ module Engine
           'Reserved'
         end
 
+        def can_dump?(_entity, bundle)
+          super && within_bank_limit(bundle)
+        end
+
+        def within_bank_limit(bundle)
+          # 3+ player 1824 has a bank limit of 50% when selling, and no bank pool.
+          (bundle.corporation.num_ipo_shares * 10) + bundle.percent <= 50
+        end
+
         def sd_minors
           @sd_minors ||= %w[SD1 SD2 SD3].map { |id| corporation_by_id(id) }.reject(&:closed?)
         end
@@ -458,6 +466,15 @@ module Engine
         def get_associated_regional_railway(minor)
           exchange_ability = minor.all_abilities.find { |abil| abil.type == :exchange }
           corporation_by_id(exchange_ability.corporations.first)
+        end
+
+        def regional_railway_with_active_association?(regional)
+          @corporations.any? do |corp|
+            next false unless coal_railway?(corp)
+            next false if corp.closed?
+
+            get_associated_regional_railway(corp) == regional
+          end
         end
 
         def coal_railway_exchangable?
@@ -545,7 +562,7 @@ module Engine
           coal_minor_exchange_order
         end
 
-        # Changed log text compared to 1837
+        # 1824 version
         def exchange_coal_minor(minor)
           target = exchange_target(minor)
           @log << "#{minor.id} exchanged for the president's share of #{target.id}"
@@ -618,13 +635,10 @@ module Engine
           owner = minor.owner
           num_shares = coal_minor?(minor) || minor.id.end_with?('1') ? 2 : 1
 
-          share = corporation.shares.find { |s| !s.buyable && s.percent == num_shares * 10 }
+          share = corporation.reserved_shares.find { |s| s.percent == num_shares * 10 }
           @log << "#{owner.name} receives #{num_shares} share#{num_shares > 1 ? 's' : ''} of #{corporation.name}"
           share.buyable = true
-
-          # 1824 fix. We explicitly set allow_president_change to true here as we otherwise get a strange
-          # behavior when presidency decided for nationals. Might need revisiting.
-          @share_pool.transfer_shares(share.to_bundle, owner, allow_president_change: true)
+          @share_pool.transfer_shares(ShareBundle.new([share]), owner, allow_president_change: allow_president_change)
 
           if @round.respond_to?(:non_paying_shares) && operated_this_round?(minor)
             @round.non_paying_shares[owner][corporation] += num_shares
@@ -673,6 +687,12 @@ module Engine
           super
         end
 
+        # 1837 uses a black token, we want to have a gray one
+        def blocking_token
+          @blocker ||= Corporation.new(sym: 'B', name: '', logo: '1824/blocking', tokens: [])
+          Token.new(@blocker)
+        end
+
         # 1837 use as special functionality for token graphs so we need to use base functionality
         def token_graph_for_entity(_entity)
           @graph
@@ -718,20 +738,18 @@ module Engine
           return super unless entity.corporation
 
           case entity.id
-          when 'BK', 'MS', 'CL', 'SB'
+          when 'BH', 'BK', 'MS', 'CL', 'SB' # Need all regionals here although some might not be associated with a coal railway
             needed = entity.percent_to_float
             if needed.positive?
-              need_exchange = entity.floatable ? '' : ' + exchange '
+              need_exchange = entity.floatable || !regional_railway_with_active_association?(entity) ? '' : ' + exchange '
               "#{entity.percent_to_float}%#{need_exchange} to float"
-            else
+            elsif regional_railway_with_active_association?(entity)
               'Exchange to float'
+            else # An unassociated regional that has reached 50%+ by MR exchanges
+              'Par to float'
             end
-          when 'UG'
-            'UG formation to float'
-          when 'KK'
-            'KK formation to float'
-          when 'SD'
-            'SD formation to float'
+          when 'UG', 'KK', 'SD'
+            "#{entity.id} formation to float"
           else
             super
           end
@@ -776,6 +794,10 @@ module Engine
             end
           token = Engine::Token.new(national, price: price)
           national.tokens.unshift(token)
+        end
+
+        def can_go_bankrupt?(_entity, _corporation)
+          false
         end
 
         private

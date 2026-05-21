@@ -4,7 +4,6 @@ module Engine
   module Game
     module G18Texas
       module Map
-        # rubocop:disable Layout/LineLength
         TILES = {
           '5' => 4,
           '6' => 4,
@@ -56,15 +55,8 @@ module Engine
             'color' => 'green',
             'code' => 'city=revenue:40,slots:2;label=Y;path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0',
           },
-          '512' =>
-          {
-            'count' => 1,
-            'color' => 'gray',
-            'code' => 'city=revenue:60,slots:3;label=Y;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
-          },
+          '512' => 1,
         }.freeze
-        # rubocop:enable Layout/LineLength
-
         LOCATION_NAMES = {
           'A12' => 'Oklahoma City',
           'A18' => 'Little Rock',

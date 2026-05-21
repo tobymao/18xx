@@ -16,20 +16,6 @@ module Engine
         attr_reader :edelsward
         attr_accessor :requisition_turn
 
-        register_colors(
-          black: '#0a0a0a', # STJ
-          brightGreen: '#7bb137', # UGJ
-          brown: '#7b352a', # BJ
-          green: '#237333', # SWB
-          lavender: '#baa4cb', # SNJ
-          olive: '#808000', # TGOJ (not right)
-          orange: '#f48221', # MOJ
-          red: '#d81e3e', # OSJ
-          violet: '#4d2674', # OKJ
-          white: '#ffffff', # KFJr
-          yellow: '#FFF500' # MYJ
-        )
-
         CURRENCY_FORMAT_STR = '%s kr'
 
         BANK_CASH = 10_000
@@ -51,9 +37,9 @@ module Engine
           endgame: 'Game end at end of current operating round',
           max_price: 'Double jump if double revenue if stock price is at least 90 kr',
           multiple_buy: 'Can buy more than one share in the corporation per turn, redeem all shares at no cost',
-          no_cert_limit: 'Corporation shares do not count towards cert limit, redeem one shares at half cost (rounded down)',
+          no_cert_limit: 'Corporation shares do not count towards cert limit, redeem one share at half cost (rounded down)',
           par: 'Available par values',
-          unlimited: 'Corporation shares can be held above 60%, redeem all shares at half cost (rounded down)',
+          unlimited: 'Corporation shares can be held above 60%, redeem all shares at half cost (rounded down per share)',
         ).freeze
 
         # New track must be usable, or upgrade city value

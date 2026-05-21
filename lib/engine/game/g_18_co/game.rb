@@ -16,17 +16,6 @@ module Engine
 
         attr_accessor :presidents_choice
 
-        register_colors(green: '#237333',
-                        red: '#d81e3e',
-                        blue: '#0189d1',
-                        lightBlue: '#a2dced',
-                        yellow: '#FFF500',
-                        orange: '#f48221',
-                        brown: '#7b352a',
-                        black: '#000000',
-                        pink: '#FF0099',
-                        purple: '#9900FF',
-                        white: '#FFFFFF')
         CURRENCY_FORMAT_STR = '$%s'
 
         BANK_CASH = 10_000
@@ -1392,8 +1381,12 @@ module Engine
             next if corporation.ipoed
 
             tile = hex_by_id(corporation.coordinates).tile
-            city = tile.cities[corporation.city || 0]
-            city.remove_reservation!(corporation)
+            # When E15 tile is upgraded - the cities array on the tile has 2 elements rather than 3.
+            # The positions of reservations rearrange
+            # It's safer to just iterate over all cities than to rely on original positions.
+            tile.cities.each do |city|
+              city.remove_reservation!(corporation)
+            end
           end
         end
 

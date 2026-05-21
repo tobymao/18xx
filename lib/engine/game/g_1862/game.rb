@@ -33,14 +33,6 @@ module Engine
 
         attr_accessor :chartered, :base_tiles, :deferred_rust, :skip_round, :permits, :lner, :london_nodes
 
-        register_colors(black: '#000000',
-                        orange: '#f48221',
-                        brightGreen: '#76a042',
-                        red: '#ff0000',
-                        turquoise: '#00a993',
-                        blue: '#0189d1',
-                        brown: '#7b352a')
-
         CURRENCY_FORMAT_STR = '£%s'
 
         BANK_CASH = 15_000

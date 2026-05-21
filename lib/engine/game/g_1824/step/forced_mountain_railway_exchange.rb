@@ -78,7 +78,13 @@ module Engine
             bundle = action.bundle
 
             bundle.share_price = 0
-            @game.share_pool.buy_shares(player, bundle, exchange: company, exchange_price: 0)
+            @game.share_pool.buy_shares(
+              player,
+              bundle,
+              exchange: company,
+              exchange_price: 0,
+              allow_president_change: !bundle.corporation.par_price.nil?
+            )
             company.close!
             @game.forced_mountain_railway_exchange.shift
           end

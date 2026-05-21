@@ -12,7 +12,7 @@ module Engine
 
         GAME_TITLE = '18JP-T'
         GAME_SUBTITLE = 'Railroading in Japan'
-        GAME_LOCATION = 'Greater Tokyo'
+        GAME_LOCATION = 'Greater Tokyo, Japan'
         GAME_DESIGNER = 'Toryo Hojo'
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18JPT'
         GAME_PUBLISHER = :loserdogs

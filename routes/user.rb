@@ -16,19 +16,12 @@ class Api
 
         # POST '/api/user/'
         r.is do
-          params = {
-            name: r.params['name']&.strip,
-            email: r.params['email'],
-            password: r.params['password'],
-            settings: {
-              notifications: r.params['notifications'],
-              webhook: r.params['webhook'],
-              webhook_url: r.params['webhook_url'],
-              webhook_user_id: r.params['webhook_user_id'],
-            },
-          }.reject { |_, v| v.empty? }
+          user = User.new
+          user.password = r.params['password'] unless r.params['password']&.strip&.empty?
+          user.update_settings(r.params)
+          user.save
 
-          login_user(User.create(params))
+          login_user(user)
         end
 
         # POST '/api/user/forgot'
@@ -69,10 +62,36 @@ class Api
 
         # POST '/api/user/edit'
         r.post 'edit' do
+          not_authorized! unless user
+
+          if r.params['new_password'] && !r.params['new_password'].strip.empty?
+            current_pw = r.params['current_password'].to_s
+            new_pw     = r.params['new_password'].to_s
+            confirm_pw = r.params['new_password_confirmation'].to_s
+
+            halt(400, 'Current password is required') if current_pw.empty?
+            halt(400, 'New password and confirmation do not match') if new_pw != confirm_pw
+
+            halt(401, 'Current password is incorrect') unless Argon2::Password.verify_password(current_pw, user.password)
+
+            user.password = new_pw
+          end
+
           user.update_settings(r.params)
           user.save
+
           MessageBus.publish('/test_notification', user.id) if r.params['test_webhook_notification']
-          user.to_h(for_user: true)
+
+          response = { user: user.to_h(for_user: true) }
+
+          if r.params['new_password'] && !r.params['new_password'].strip.empty?
+            response[:flash_opts] = {
+              message: 'Password successfully changed',
+              color: 'lightgreen',
+            }
+          end
+
+          response
         end
 
         # POST '/api/user/logout'

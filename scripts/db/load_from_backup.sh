@@ -9,6 +9,8 @@ if [ $(hostname) = "18xxgames" ]; then
     exit 1
 fi
 
+docker compose exec rack echo "is this thing on?"
+
 . scripts/db/load_env.sh
 
 if [ -z "${1}" ]; then
