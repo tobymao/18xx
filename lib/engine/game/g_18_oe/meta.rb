@@ -12,7 +12,7 @@ module Engine
 
         GAME_DESIGNER = 'Edward T. Sindelar'
         GAME_PUBLISHER = :DICE
-        GAME_INFO_URL = 'http://www.designsice.com/18OE.html'
+        GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18OE'
         GAME_LOCATION = 'Europe'
         GAME_RULES_URL = 'http://www.designsice.com/files/18OE%20Rulebook.pdf'
         GAME_TITLE = '18OE'
