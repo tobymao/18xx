@@ -254,7 +254,7 @@ module Engine
         end
 
         def new_auction_round
-          Round::Auction.new(self, [
+          Engine::Round::Auction.new(self, [
             Engine::Step::CompanyPendingPar,
             G2038::Step::WaterfallAuction,
           ])

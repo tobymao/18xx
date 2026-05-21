@@ -111,7 +111,7 @@ module Engine
               { type: 'shares', shares: 'TSI_3' },
               # TODO Phase 10: replace with custom base-placement ability (owning_corp_or_turn, free, anywhere)
             ],
-            color: nil,
+            color: '#40b1b9',
           },
           {
             name: 'Vacuum Associates',
@@ -124,7 +124,7 @@ module Engine
               { type: 'shares', shares: 'TSI_2' },
               # TODO Phase 10: replace with custom refueling-station ability (owning_corp_or_turn, free, in range)
             ],
-            color: nil,
+            color: '#40b1b9',
           },
           {
             name: 'Robot Smelters, Inc.',
@@ -136,7 +136,7 @@ module Engine
               { type: 'shares', shares: 'TSI_1' },
               # TODO Phase 10: replace with custom claim ability (owning_corp_or_turn, free, in range)
             ],
-            color: nil,
+            color: '#40b1b9',
           },
           {
             name: 'Space Transportation Co.',
@@ -150,7 +150,7 @@ module Engine
               { type: 'no_buy' },
               { type: 'close', when: 'bought_train', corporation: 'TSI' },
             ],
-            color: nil,
+            color: '#40b1b9',
           },
           {
             name: 'Asteroid Export Co.',
@@ -168,7 +168,7 @@ module Engine
                 when: %w[3 4],
               },
             ],
-            color: nil,
+            color: '#fa3d58',
           },
         ].freeze
 
