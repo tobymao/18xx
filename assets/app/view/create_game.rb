@@ -805,6 +805,8 @@ module View
 
       min_elm.value = min_val
       max_elm.value = max_val
+    end
+
     def render_engine_v2
       render_input(
         'Use Engine V2 (experimental)',
