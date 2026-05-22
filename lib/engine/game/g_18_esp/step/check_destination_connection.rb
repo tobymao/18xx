@@ -34,6 +34,12 @@ module Engine
             'Check destination connection'
           end
 
+          def blocking?
+            return false if @game.replaying?
+
+            super
+          end
+
           def pass!; end
 
           def log_skip(_entity); end

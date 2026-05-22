@@ -1090,6 +1090,7 @@ module Engine
 
           @opened_mountain_passes << pass_hax.id
           pass_tile.cities.first.remove_tokens!
+          @graph.clear
 
           entity_name = p4_ability ? "#{entity.name} (#{p4.name})" : entity.name
 
@@ -1099,7 +1100,6 @@ module Engine
         def opening_new_mountain_pass(entity, p4_ability = false)
           return {} unless entity
 
-          @graph.clear unless @loading
           openable_passes = @graph.connected_hexes(entity).keys.select do |hex|
             mountain_pass_token_hex?(hex)
           end
