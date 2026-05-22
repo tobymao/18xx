@@ -158,6 +158,10 @@ module Engine
           'signal_end_game' => ['Signal End Game', 'Game ends 3 ORs after purchase/export of last 6E train']
         ).freeze
 
+        GAME_END_REASONS_TEXT = {
+          final_train: 'Last 6E train sold',
+        }.freeze
+
         def init_minors
           game_minors.map { |minor| G1880::Minor.new(**minor) }
         end
