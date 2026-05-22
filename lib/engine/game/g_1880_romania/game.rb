@@ -343,6 +343,10 @@ module Engine
           stops.any? { |stop| stop.hex.assigned?(danube_port.id) } && route.corporation.owner == danube_port.owner
         end
 
+        def ferry_hexes
+          []
+        end
+
         # This game's Electroputere S.A. private company's forced train exchange is identical to the forced exchange for the
         # Rocket of China in 1880, so we can reuse that logic here rather than recoding the whole thing.
         def forced_exchange_rocket?
