@@ -91,6 +91,10 @@ module Engine
         company && company == @companies.first
       end
 
+      def programmable_buy_price?
+        false
+      end
+
       def committed_cash(player, _show_hidden = false)
         bids_for_player(player).sum(&:price)
       end

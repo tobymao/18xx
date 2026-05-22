@@ -6,16 +6,19 @@ module View
   module Game
     module AutoAction
       class AuctionBid < Base
-        needs :bid_target, store: true, default: nil
-
         def name
           "Auto bid in Auction Round#{' (Enabled)' if @settings}"
         end
 
         def description
-          'Automatically bid, buy or pass in the auction round. '\
-            'Bids increase by the minimum increment. '\
-            'Buys only when the current price matches your specified price.'
+          if step.programmable_buy_price?
+            'Automatically bid, buy or pass in the auction round. '\
+              'Bids increase by the minimum increment. '\
+              'Buys only when the current price matches your specified price.'
+          else
+            'Automatically bid or pass in the auction round. '\
+              'Bids increase by the minimum increment.'
+          end
         end
 
         def render
@@ -23,13 +26,18 @@ module View
 
           form = {}
 
-          children = [h(:h3, name), h(:p, description), h(:div, [render_entity_selector(form)])]
+          children = [h(:h3, name), h(:p, description)]
+
+          unless selected
+            children << h('p.italic', 'No entity currently up for auction.')
+            return children
+          end
 
           children << h(Corporation, corporation: selected) if selected&.corporation? || selected&.minor?
           children << h(Company, company: selected) if selected&.company?
 
           children << h(:div, [render_enable_maximum_bid(form), render_maximum_bid(form)])
-          children << h(:div, [render_enable_buy_price(form), render_buy_price(form)])
+          children << h(:div, [render_enable_buy_price(form), render_buy_price(form)]) if step.programmable_buy_price?
           children << h(:div, [render_auto_pass(form)])
 
           subchildren = [render_button(@settings ? 'Update' : 'Enable') { enable(form) }]
@@ -37,20 +45,6 @@ module View
           children << h(:div, subchildren)
 
           children
-        end
-
-        def render_entity_selector(form)
-          bid_target_change = lambda do
-            target = Native(form[:bid_target]).elm&.value
-            bid_target = @game.corporation_by_id(target) || @game.company_by_id(target) || @game.minor_by_id(target)
-            store(:bid_target, bid_target)
-          end
-
-          render_input('Bid Target',
-                       id: 'bid_target',
-                       el: 'select',
-                       on: { input: bid_target_change },
-                       children: values, inputs: form)
         end
 
         def render_enable_maximum_bid(form)
@@ -77,7 +71,8 @@ module View
                          value: value,
                          step: step.min_increment,
                          min: step.min_bid(selected),
-                       })
+                       }.compact,
+                       input_style: { width: '4.25rem' })
         end
 
         def render_enable_buy_price(form)
@@ -112,38 +107,30 @@ module View
 
         def render_auto_pass(form)
           checked = selected == @settings&.bid_target ? !!@settings&.auto_pass_after : false
+          label = step.programmable_buy_price? ? 'Pass after max bid reached / buy price impossible' \
+                                               : 'Pass after max bid reached'
 
-          render_checkbox('Pass after max bid reached / buy price impossible  ',
-                          'auto_pass_after',
-                          form,
-                          checked)
+          render_checkbox(label, 'auto_pass_after', form, checked)
         end
 
         def enable(form)
           @settings = params(form)
 
-          bid_target = @game.corporation_by_id(@settings['bid_target']) ||
-                        @game.company_by_id(@settings['bid_target']) ||
-                        @game.minor_by_id(@settings['bid_target'])
-
-          checked = @settings['enable_buy_price'] || @settings['enable_maximum_bid'] || @settings['auto_pass_after']
+          checked = (step.programmable_buy_price? && @settings['enable_buy_price']) ||
+                    @settings['enable_maximum_bid'] || @settings['auto_pass_after']
           return unless checked
 
           process_action(
             Engine::Action::ProgramAuctionBid.new(
               @sender,
-              bid_target: bid_target,
+              bid_target: selected,
               enable_maximum_bid: @settings['enable_maximum_bid'],
-              maximum_bid: @settings['maximum_bid'],
+              maximum_bid: @settings['maximum_bid'] || 0,
               enable_buy_price: @settings['enable_buy_price'],
-              buy_price: @settings['buy_price'],
+              buy_price: @settings['buy_price'] || 0,
               auto_pass_after: @settings['auto_pass_after'],
             )
           )
-        end
-
-        def available_targets
-          step.available
         end
 
         def step
@@ -151,15 +138,7 @@ module View
         end
 
         def selected
-          @bid_target || @settings&.bid_target || available_targets.first
-        end
-
-        def values
-          available_targets.map do |entity|
-            attrs = { value: entity.id }
-            attrs[:selected] = true if selected == entity
-            h(:option, { attrs: attrs }, entity.name)
-          end
+          step.auctioning || @settings&.bid_target
         end
       end
     end
