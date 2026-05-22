@@ -240,6 +240,11 @@ module Engine
       end
 
       def pay_tile_cost!(entity_or_entities, tile, rotation, hex, spender, cost, _extra_cost)
+        if cost.negative?
+          cost = 0
+          @log << "Discounts exceed cost for tile lay, so cost reduced to zero for #{spender.name}."
+        end
+
         # entity_or_entities is an array when combining private company abilities
         entities = Array(entity_or_entities)
         entity, *_combo_entities = entities
