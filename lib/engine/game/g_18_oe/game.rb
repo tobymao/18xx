@@ -15,7 +15,7 @@ module Engine
         include G18OE::Entities
         include G18OE::Map
         attr_accessor :minor_regional_order, :minor_available_regions, :minor_floated_regions, :regional_corps_floated,
-                      :consolidation_triggered, :consolidation_done
+                      :consolidation_triggered, :consolidation_complete
 
         MARKET = [
           ['', '110', '120C', '135', '150', '165', '180', '200', '225', '250', '280', '310', '350', '390', '440', '490', '550'],
@@ -48,6 +48,10 @@ module Engine
         }.freeze
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+          'consolidation_triggered' => [
+            'Consolidation Round',
+            'Consolidation round follows at end of current OR set; minors and regionals must merge or be abandoned',
+          ],
           'remainder_cash_added' => [
             'Remainder Cash Added',
             '£100,000 remainder cash injected into bank; game ends after one more full OR set',
@@ -141,7 +145,7 @@ module Engine
               price: 225,
               rusts_on: '6',
             }],
-            num: 24,
+            num: 20,
           },
           # Level 4 — green double-sided (4 / 4+4); rust at Level 8
           {
@@ -157,7 +161,7 @@ module Engine
               price: 350,
               rusts_on: '8+8',
             }],
-            num: 14,
+            num: 10,
           },
           # Level 5 — brown double-sided (5 / 5+5); permanent
           {
@@ -171,7 +175,7 @@ module Engine
                          { 'nodes' => %w[city offboard town], 'pay' => 5, 'visit' => 5 }],
               price: 475,
             }],
-            num: 11,
+            num: 8,
             events: [{ 'type' => 'consolidation_triggered' }],
           },
           # Level 6 — brown double-sided (6 / 6+6); permanent
@@ -186,7 +190,7 @@ module Engine
                          { 'nodes' => %w[city offboard town], 'pay' => 6, 'visit' => 6 }],
               price: 600,
             }],
-            num: 9,
+            num: 6,
           },
           # Level 7 — gray double-sided (7+7 / 4D); permanent
           # NOTE: Level 8 trains become available only after the 4th Level 7 purchase
@@ -201,7 +205,7 @@ module Engine
                          { 'nodes' => %w[city offboard], 'pay' => 4, 'visit' => 99 }],
               price: 850,
             }],
-            num: 17,
+            num: 14,
           },
           # Level 8 — gray double-sided (8+8 / 5D); permanent
           # NOTE: purchase of the FIRST level-8 triggers game end
@@ -216,7 +220,7 @@ module Engine
                          { 'nodes' => %w[city offboard], 'pay' => 5, 'visit' => 99 }],
               price: 1000,
             }],
-            num: 11,
+            num: 8,
             available_on: '7+7',
             events: [{ 'type' => 'remainder_cash_added' }],
           },
@@ -241,6 +245,8 @@ module Engine
         ZONE_DISCOUNT_ZONES         = %w[SP IT SC RU].freeze
         ZONE_DISCOUNT_RATE          = 0.2 # 20% §11.1.5
         ZONE_TERRAIN_DISCOUNT_RATE  = 0.5 # 50% §11.1.5; E/F augment zone discount to this rate
+        TILE_POINT_BUDGET = { minor: 3, regional: 3, major: 6, national: 9 }.freeze
+        MINOR_MAX_TREASURY = 180
         EF_TERRAIN_AUGMENT          = { 'E' => :water, 'F' => :mountain }.freeze
 
         CORPORATIONS_TRACK_RIGHTS = {
@@ -666,7 +672,7 @@ module Engine
           @minor_floated_regions = {}
           @regional_corps_floated = 0
           @fulfilled_train_obligation = Set.new
-          @first_or_done = false
+          @first_or_complete = false
 
           corporations.each do |corp|
             corp.par_via_exchange = companies.find { |c| c.sym == corp.id } if corp.type == :minor
@@ -697,11 +703,11 @@ module Engine
         end
 
         def non_starter_trains_available?
-          major_phase? && @first_or_done
+          major_phase? && @first_or_complete
         end
 
         def operating_order
-          @minor_regional_order + @corporations.select { |c| %i[major national].include?(c.type) }.sort
+          @minor_regional_order + @corporations.select { |c| %i[major national].include?(c.type) && c.floated? }.sort
         end
 
         def hex_within_national_region?(entity, hex)
@@ -749,12 +755,16 @@ module Engine
         end
 
         def metropolis_hex?(hex)
-          %w[A56 B41 C74 F87 K26 M28 M50 Q30 R55 Y14 AA82 AB51].include?(hex.name.to_s)
+          %w[A56 B41 C74 F87 K26 M28 M50 Q30 R55 Y14 AA82 AB51].include?(hex.coordinates)
         end
 
         def metropolis_tile?(tile)
           %w[OE4 OE5 OE6 OE7 OE8 OE12 OE13 OE14 OE15 OE16 OE17
              OE18 OE26 OE27 OE28 OE29 OE30 OE37 OE38 OE39 OE40 OE41].include?(tile.name.to_s)
+        end
+
+        def tile_point_budget(entity)
+          self.class::TILE_POINT_BUDGET[entity.type] || 0
         end
 
         def can_buy_train_from_others?
@@ -821,15 +831,24 @@ module Engine
           @round =
             case @round
             when Engine::Round::Operating
-              @first_or_done = true # Rule 8.3/11.6: level 3+ trains unblocked after first OR
-              if @consolidation_triggered && !@consolidation_done
+              @first_or_complete = true # Rule 8.3/11.6: level 3+ trains unblocked after first OR
+              if @round.round_num < @operating_rounds
+                or_round_finished
+                new_operating_round(@round.round_num + 1)
+              elsif @consolidation_triggered && !@consolidation_complete
+                @turn += 1
+                or_round_finished
+                or_set_finished
                 @log << '-- Consolidation Phase --'
                 new_consolidation_round
               else
-                super
+                @turn += 1
+                or_round_finished
+                or_set_finished
+                new_stock_round
               end
             when Round::G18OE::Consolidation
-              @consolidation_done = true
+              @consolidation_complete = true
               @turn += 1
               new_stock_round
             else
@@ -847,7 +866,7 @@ module Engine
           return true if from.label == to.label
           return false if from.label && !to.label
 
-          case from.hex.name
+          case from.hex.coordinates
           when 'K26', 'Y14', 'R55'
             to.label.to_s.include?('A')
           when 'M50'
