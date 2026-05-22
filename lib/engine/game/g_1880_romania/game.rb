@@ -284,12 +284,6 @@ module Engine
           clear_graph if removed
         end
 
-        def stop_type(stop)
-          return 'town' if %w[J26 H26].include?(stop.hex.id)
-
-          super
-        end
-
         def revenue_for(route, stops)
           revenue = super
           revenue += 10 if danube_port_bonus?(route, stops)

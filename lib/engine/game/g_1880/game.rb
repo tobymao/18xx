@@ -615,6 +615,12 @@ module Engine
           @minors.select { |m| m.owner == player }
         end
 
+        def stop_type(stop)
+          return 'town' if stop.hex.tile.color == :blue
+
+          super
+        end
+
         def revenue_for(route, stops)
           revenue = super
           revenue -= 10 * (route.all_hexes & ferry_hexes).size unless route.corporation.owner == ferry_company.owner
