@@ -89,6 +89,10 @@ module Engine
       def auto_bid_on_empty?(_entity, program)
         program.enable_buy_price
       end
+
+      def programmable_buy_price?
+        true
+      end
     end
   end
 end
