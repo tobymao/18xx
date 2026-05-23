@@ -33,6 +33,11 @@ module View
             return children
           end
 
+          if step.respond_to?(:auction_participant?) && !step.auction_participant?(@sender)
+            children << h('p.italic', 'You do not have a bid in this auction.')
+            return children
+          end
+
           children << h(Corporation, corporation: selected) if selected&.corporation? || selected&.minor?
           children << h(Company, company: selected) if selected&.company?
 
@@ -107,8 +112,11 @@ module View
 
         def render_auto_pass(form)
           checked = selected == @settings&.bid_target ? !!@settings&.auto_pass_after : false
-          label = step.programmable_buy_price? ? 'Pass after max bid reached / buy price impossible' \
-                                               : 'Pass after max bid reached'
+          label = if step.programmable_buy_price?
+                    'Pass after max bid reached / buy price impossible'
+                  else
+                    'Pass after max bid reached'
+                  end
 
           render_checkbox(label, 'auto_pass_after', form, checked)
         end
