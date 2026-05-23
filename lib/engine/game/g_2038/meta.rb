@@ -8,7 +8,7 @@ module Engine
       module Meta
         include Game::Meta
 
-        DEV_STAGE = :alpha
+        DEV_STAGE = :pre_alpha
 
         GAME_DESIGNER = 'James Hlavaty, Thomas Lehmann'
         GAME_LOCATION = 'Outer Space'
