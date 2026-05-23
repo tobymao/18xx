@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <circle cx="100" cy="100" r="100" fill="#fa3d58"/>
+  <text x="100" y="82" text-anchor="middle" font-weight="700" font-size="48" font-family="Arial" fill="#fff" textLength="150" lengthAdjust="spacingAndGlyphs">Asteroid</text>
+  <text x="100" y="148" text-anchor="middle" font-weight="700" font-size="48" font-family="Arial" fill="#fff" textLength="130" lengthAdjust="spacingAndGlyphs">League</text>
+</svg>
