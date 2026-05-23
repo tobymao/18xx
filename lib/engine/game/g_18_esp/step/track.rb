@@ -21,7 +21,7 @@ module Engine
               actions << 'choose'
             end
             actions << 'place_token' if can_place_token?(entity)
-            actions << 'destination_connection' if !@game.replaying? && @acted &&
+            actions << 'destination_connection' if !@game.loading && @acted &&
                                                    @game.new_destination_connection?(entity)
             actions << 'pass' if actions.any?
             actions
@@ -42,7 +42,7 @@ module Engine
           end
 
           def auto_actions(entity)
-            return [] if @game.replaying?
+            return [] if @game.loading
             return [] unless @acted
             return [] unless @game.new_destination_connection?(entity)
 

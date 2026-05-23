@@ -11,29 +11,15 @@ describe Engine::Game::G18ESP::Game do
     let(:step) { game.round.steps.find { |s| s.is_a?(Engine::Game::G18ESP::Step::Track) } }
     let(:sfva) { game.corporation_by_id('SFVA') }
 
-    before { allow(game).to receive(:replaying?).and_return(false) }
+    before { allow(game).to receive(:loading).and_return(false) }
 
     describe 'Track#auto_actions' do
-      context 'when replaying? is true' do
-        before { allow(game).to receive(:replaying?).and_return(true) }
+      context 'when loading is true' do
+        before { allow(game).to receive(:loading).and_return(true) }
 
-        it 'returns [] regardless of destination state — covers both loading and strict mode' do
+        it 'returns [] regardless of destination state' do
           step.instance_variable_set(:@acted, true)
           allow(sfva).to receive(:destination_connected?).and_return(false)
-          expect(step.auto_actions(sfva)).to eq([])
-        end
-      end
-
-      context 'when strict-mode replay (via @strict, not @loading)' do
-        # replaying? is NOT stubbed here — the real method (@loading || @strict) must fire.
-        before { allow(game).to receive(:replaying?).and_call_original }
-
-        it 'returns [] when strict mode triggers replaying? via @strict instead of @loading' do
-          game.instance_variable_set(:@loading, false)
-          game.instance_variable_set(:@strict, true)
-          step.instance_variable_set(:@acted, true)
-          allow(sfva).to receive(:destination_connected?).and_return(false)
-          allow(game).to receive(:check_for_destination_connection).with(sfva).and_return(true)
           expect(step.auto_actions(sfva)).to eq([])
         end
       end
@@ -82,24 +68,11 @@ describe Engine::Game::G18ESP::Game do
         step.instance_variable_set(:@acted, true)
       end
 
-      context 'when replaying? is true' do
-        before { allow(game).to receive(:replaying?).and_return(true) }
+      context 'when loading is true' do
+        before { allow(game).to receive(:loading).and_return(true) }
 
-        it 'does not include destination_connection — covers both loading and strict mode' do
+        it 'does not include destination_connection' do
           allow(sfva).to receive(:destination_connected?).and_return(false)
-          expect(step.actions(sfva)).not_to include('destination_connection')
-        end
-      end
-
-      context 'when strict-mode replay (via @strict, not @loading)' do
-        # replaying? is NOT stubbed here — the real method (@loading || @strict) must fire.
-        before { allow(game).to receive(:replaying?).and_call_original }
-
-        it 'does not include destination_connection when strict mode triggers replaying? via @strict' do
-          game.instance_variable_set(:@loading, false)
-          game.instance_variable_set(:@strict, true)
-          allow(sfva).to receive(:destination_connected?).and_return(false)
-          allow(game).to receive(:check_for_destination_connection).with(sfva).and_return(true)
           expect(step.actions(sfva)).not_to include('destination_connection')
         end
       end

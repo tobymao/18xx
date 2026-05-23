@@ -17,13 +17,9 @@ module Engine
         include CitiesPlusTownsRouteDistanceStr
         include DoubleSidedTiles
 
-        attr_reader :can_acquire_minors
+        attr_reader :can_acquire_minors, :strict
 
         attr_accessor :combined_trains, :luxury_carriages
-
-        def replaying?
-          @loading || @strict
-        end
 
         CURRENCY_FORMAT_STR = '₧%d'
 
@@ -719,18 +715,6 @@ module Engine
 
         def routes_subsidy(routes)
           routes.sum(&:subsidy)
-        end
-
-        # True if no destination_connection entry exists in the log (save before performance optimization).
-        def legacy_destination_format?
-          return @legacy_destination_format unless @legacy_destination_format.nil?
-
-          @legacy_destination_format = (@filtered_actions || []).none? do |a|
-            next false unless a
-
-            a['type'] == 'destination_connection' ||
-              Array(a['auto_actions']).any? { |sub| sub&.dig('type') == 'destination_connection' }
-          end
         end
 
         def check_for_destination_connection(entity)

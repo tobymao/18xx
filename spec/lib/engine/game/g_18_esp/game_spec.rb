@@ -12,50 +12,8 @@ require 'spec_helper'
 
 describe Engine::Game::G18ESP::Game do
   describe '18ESP_game_end_second_eight' do
-    # 1334 = total action count for this fixture; loads the complete game.
-    let(:game) { fixture_at_action(1334) }
-
-    describe '#replaying?' do
-      it 'is true when game is loading (normal replay)' do
-        g = fixture_at_action(1, clear_cache: true)
-        g.instance_variable_set(:@loading, true)
-        expect(g.replaying?).to be true
-      end
-
-      it 'is true when game is in strict mode (validate_auto_actions)' do
-        # fixture_at_action loads with strict: true, so @strict is already true.
-        g = fixture_at_action(1)
-        expect(g.loading).to be false
-        expect(g.replaying?).to be true
-      end
-
-      it 'is false during live play' do
-        g = fixture_at_action(1, clear_cache: true)
-        g.instance_variable_set(:@strict, false)
-        expect(g.loading).to be false
-        expect(g.replaying?).to be false
-      end
-    end
-
-    describe 'legacy_destination_format? detection' do
-      it 'is true for a pre-#12579 save (no destination_connection actions in log)' do
-        expect(game.legacy_destination_format?).to be true
-      end
-
-      it 'is false when @filtered_actions contains a destination_connection sub-action' do
-        # Synthetic sub-action injection requires direct @filtered_actions manipulation;
-        # use a fresh instance (clear_cache: true) to avoid polluting the fixture cache.
-        g = fixture_at_action(1, clear_cache: true)
-        g.instance_variable_set(:@filtered_actions, [
-          {
-            'type' => 'lay_tile',
-            'auto_actions' => [{ 'type' => 'destination_connection' }],
-          },
-        ])
-        g.instance_variable_set(:@legacy_destination_format, nil)
-        expect(g.legacy_destination_format?).to be false
-      end
-    end
+    # 1335 = total action count for this fixture; loads the complete game.
+    let(:game) { fixture_at_action(1335) }
 
     it 'replays without exceptions' do
       expect(game.exception).to be_nil

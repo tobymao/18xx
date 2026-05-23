@@ -10,9 +10,9 @@ module Engine
           ACTIONS = %w[destination_connection].freeze
 
           def actions(entity)
-            return [] if @game.replaying? && @game.legacy_destination_format?
+            return [] unless entity == current_entity
 
-            if @game.replaying?
+            if @game.loading
               return [] unless entity&.corporation?
               return [] if entity.destination_connected?
 
@@ -24,7 +24,7 @@ module Engine
           end
 
           def auto_actions(entity)
-            return [] if @game.replaying?
+            return [] if @game.loading
             return [] unless @game.new_destination_connection?(entity)
 
             [Engine::Action::DestinationConnection.new(entity, corporations: [entity])]
@@ -35,7 +35,7 @@ module Engine
           end
 
           def blocking?
-            return false if @game.replaying?
+            return false if @game.loading || @game.strict
 
             super
           end
