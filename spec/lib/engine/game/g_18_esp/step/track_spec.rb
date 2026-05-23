@@ -6,8 +6,8 @@ require 'spec_helper'
 # so this spec must be rooted at the Game class rather than the Step class.
 describe Engine::Game::G18ESP::Game do
   describe '18ESP_game_end_second_eight' do
-    # at_action 106: SFVA floated, not yet destination_connected — same anchor as CDC spec.
-    let(:game) { fixture_at_action(106) }
+    # at_action 96: SFVA operating (place_token done), not yet destination_connected — same anchor as CDC spec.
+    let(:game) { fixture_at_action(96) }
     let(:step) { game.round.steps.find { |s| s.is_a?(Engine::Game::G18ESP::Step::Track) } }
     let(:sfva) { game.corporation_by_id('SFVA') }
 
@@ -64,7 +64,6 @@ describe Engine::Game::G18ESP::Game do
 
     describe 'Track#actions' do
       before do
-        allow(game.round).to receive(:current_entity).and_return(sfva)
         step.instance_variable_set(:@acted, true)
       end
 

@@ -7,10 +7,10 @@ require 'spec_helper'
 describe Engine::Game::G18ESP::Game do
   describe '18ESP_game_end_second_eight' do
     describe Engine::Game::G18ESP::Step::CheckDestinationConnection do
-      # at_action 106: SFVA is floated, goals_reached_counter=0, destination_connected=false.
-      # Action 107 is the first action that causes SFVA to reach its destination, so 106
+      # at_action 96: SFVA is operating (place_token done), destination_connected=false.
+      # Action 97 is the lay_tile that completes SFVA's destination route, so 96
       # is the latest point where destination logic can be exercised without state mutation.
-      let(:game) { fixture_at_action(106) }
+      let(:game) { fixture_at_action(96) }
       let(:sfva) { game.corporation_by_id('SFVA') }
 
       def stub_live_play
@@ -22,8 +22,6 @@ describe Engine::Game::G18ESP::Game do
       end
 
       describe '#actions' do
-        before { allow(game.round).to receive(:current_entity).and_return(sfva) }
-
         context 'live play' do
           before { stub_live_play }
 
