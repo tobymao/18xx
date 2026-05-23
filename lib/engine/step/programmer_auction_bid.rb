@@ -91,7 +91,7 @@ module Engine
       end
 
       def programmable_buy_price?
-        true
+        false
       end
     end
   end

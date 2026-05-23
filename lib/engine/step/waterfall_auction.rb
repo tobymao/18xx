@@ -91,8 +91,10 @@ module Engine
         company && company == @companies.first
       end
 
-      def programmable_buy_price?
-        false
+      def auction_participant?(player)
+        return true unless auctioning
+
+        current_bid_amount(player, auctioning).positive?
       end
 
       def committed_cash(player, _show_hidden = false)
