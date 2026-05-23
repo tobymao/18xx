@@ -24,7 +24,7 @@ module View
             display: 'inline-block',
             padding: '0 2px 2px 0',
             borderRadius: '5px',
-            marginBottom: '2px',
+            marginTop: '8px',
           },
         }
 
