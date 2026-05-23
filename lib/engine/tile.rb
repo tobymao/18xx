@@ -146,6 +146,7 @@ module Engine
                               loc: params['loc'],
                               boom: params['boom'],
                               style: params['style'],
+                              size: params['size'],
                               to_city: params['to_city'])
         cache << town
         town
