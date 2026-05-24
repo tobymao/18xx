@@ -16,18 +16,6 @@ module Engine
 
         STARTING_CASH = { 2 => 350 }.freeze
 
-        GAME_END_REASONS_TEXT = {
-          final_train: '6E train sold or exported',
-        }.freeze
-
-        GAME_END_REASONS_TIMING_TEXT = {
-          one_more_full_or_set: '3 ORs ending with the Corporation that triggered game end',
-        }.freeze
-
-        GAME_END_DESCRIPTION_REASON_MAP_TEXT = {
-          final_train: '6E train was sold or exported',
-        }.freeze
-
         def game_companies
           companies = COMPANIES.map(&:dup)
           kept_companies = %w[P1 P3 P5 P8]
@@ -65,9 +53,9 @@ module Engine
         def game_trains
           unless @train_games
             @train_games = super.map(&:dup)
-            t_2, t_2p2, t_3, t_3p3, t_4, t_4p4, t_6, t_6e, t_8, t_8e, t_2p = @train_games
+            t_2, t_2r2, t_3, t_3p3, t_4, t_4p4, t_6, t_6e, t_8, t_8e, t_2r = @train_games
             t_2[:num] = 6
-            t_2p2[:num] = 3
+            t_2r2[:num] = 3
             t_3[:num] = 3
             t_3p3[:num] = 2
             t_3p3[:events] = [{ 'type' => 'communist_takeover' }]
@@ -78,7 +66,7 @@ module Engine
             t_6e[:events] = [{ 'type' => 'signal_end_game', 'when' => 1 }]
             t_8[:num] = 1
             t_8e[:num] = 'unlimited'
-            t_2p[:num] = 6
+            t_2r[:num] = 6
           end
           @train_games
         end
@@ -88,54 +76,35 @@ module Engine
             share_prices.sort_by { |sp| -sp.price }.to_h { |sp| [sp, [nil, nil]] }
         end
 
-        def dummy_company
+        def setup
+          super
+
           @dummy ||= Company.new(
             name: 'Dummy Company',
             sym: 'DUMMY',
             value: 0,
           )
           @dummy.close!
-          @dummy
         end
 
         # P2 not used in this variant
         def consortiu
-          dummy_company
+          @dummy
         end
 
         # P4 not used in this variant
         def danube_port
-          dummy_company
-        end
-
-        # Base P5 not used in this variant
-        def p5
-          dummy_company
+          @dummy
         end
 
         # P6 not used in this variant
         def malaxa
-          dummy_company
+          @dummy
         end
 
-        # P7 not used in this variant, but base game still tries to check P7 company
+        # P7 not used in this variant
         def rocket
-          dummy_company
-        end
-
-        # Not used in this variant
-        def ferry_company
-          dummy_company
-        end
-
-        # Not used in this variant
-        def taiwan_company
-          dummy_company
-        end
-
-        # Not used in this variant
-        def trans_siberian_bonus?(_)
-          false
+          @dummy
         end
       end
     end
