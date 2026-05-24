@@ -1748,9 +1748,11 @@ module Engine
         end
 
         discount = abilities.sum { |a| a.discounts_tile?(tile) ? a.discount : 0 }
+        sum_cost = tile.upgrades.sum(&:cost)
+        discount = [sum_cost, discount].min # In case discount exceeds total cost
         log_cost_discount(spender, abilities, discount)
 
-        tile.upgrades.sum(&:cost) - discount
+        sum_cost - discount
       end
 
       def tile_cost_with_discount(_tile, hex, entity, spender, cost)
