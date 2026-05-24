@@ -20,7 +20,7 @@ module View
         REVENUE_DISPLACEMENT = 42
         REVENUE_EDGE_DISPLACEMENT = 25
         REVENUE_ANGLE = -60
-        DOUBLE_DOT_OFFSET = 12
+        TWO_DOT_OFFSET = 12
 
         REVENUE_REGIONS = {
           flat: [9, 16],
@@ -115,16 +115,17 @@ module View
 
           children = []
 
-          if @town.size > 1
+          case @town.size
+          when 2
             children << h(:ellipse, attrs: {
                             transform: translate.to_s,
-                            rx: DOUBLE_DOT_OFFSET + radius + 4,
+                            rx: TWO_DOT_OFFSET + radius + 4,
                             ry: radius + 3,
                             fill: 'white',
                             stroke: @color,
                             'stroke-width': 2,
                           })
-            [-DOUBLE_DOT_OFFSET, DOUBLE_DOT_OFFSET].each do |dx|
+            [-TWO_DOT_OFFSET, TWO_DOT_OFFSET].each do |dx|
               children << h(:circle, attrs: {
                               transform: "#{translate} translate(#{dx} 0)",
                               r: radius,
@@ -133,8 +134,10 @@ module View
                               'stroke-width': 4,
                             })
             end
-            children.concat(render_revenue_double) if @show_revenue
-          else
+            if @show_revenue && !(rendered = render_revenue_size2).empty?
+              children.concat(rendered)
+            end
+          when 1
             children << h(:circle, attrs: {
                             transform: translate.to_s,
                             r: radius,
@@ -146,13 +149,15 @@ module View
             if @show_revenue && (rendered = render_revenue)
               children << rendered
             end
+          else
+            raise NotImplementedError, "Unsupported town size: #{@town.size}"
           end
 
           children << h(HitBox, click: -> { touch_node(@town) }, transform: translate) unless @town.solo?
           h(:g, { key: "#{@town.id}-d" }, children)
         end
 
-        def render_revenue_double
+        def render_revenue_size2
           revenues = @town.uniq_revenues
           return [] if revenues.size > 1
 
