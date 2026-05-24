@@ -46,16 +46,12 @@ module Engine
             # Gauge-appropriate track must be extended.
             old_paths = old_tile.paths
             corp = entity.corporation? ? entity : @game.current_entity
+            added_paths = new_tile.paths.reject { |np| old_paths.any? { |op| np <= op } }
 
-            case corp.type
-            when :major
-              raise GameError, 'Standard gauge track must be extended' unless new_tile.paths.any? do |np|
-                np.track != :narrow && old_paths.none? { |op| np <= op }
-              end
+            if corp.type == :major
+              raise GameError, 'Standard gauge track must be extended' unless added_paths.any? { |np| np.track != :narrow }
             else
-              raise GameError, 'Narrow gauge track must be extended' unless new_tile.paths.any? do |np|
-                np.track != :broad && old_paths.none? { |op| np <= op }
-              end
+              raise GameError, 'Narrow gauge track must be extended' unless added_paths.any? { |np| np.track != :broad }
             end
           end
         end
