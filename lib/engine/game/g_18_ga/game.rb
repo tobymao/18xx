@@ -111,7 +111,7 @@ module Engine
           token = acl.find_token_by_type
           place_home_token(acl)
           token.status = :flipped
-          @log << "#{acl.name} token is placed to block routing through Jacksonville (J12)"
+          @log << "#{acl.name}'s home token is placed to block routing through Jacksonville (J12)"
         end
 
         def tile_lays(entity)
@@ -157,7 +157,7 @@ module Engine
           return unless corporation.name == 'ACL'
 
           corporation.tokens.first.status = nil
-          @log << "#{corporation.name} home token (J12) is flipped right-side up"
+          @log << "#{corporation.name}'s home token (J12) is flipped right-side up"
         end
 
         def upgrades_to?(from, to, _special = false, selected_company: nil)
