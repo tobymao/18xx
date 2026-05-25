@@ -35,7 +35,7 @@ module Engine
           end
 
           def blocking?
-            return false if @game.loading || @game.strict
+            return false if @game.loading
 
             super
           end
