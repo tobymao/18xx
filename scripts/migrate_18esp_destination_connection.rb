@@ -163,7 +163,7 @@ end
 
 def migrate_db_actions(game_record, dry_run: false)
   puts "\nGame #{game_record.id}"
-  data     = JSON.parse(JSON.generate(game_record.to_h(include_actions: true)))
+  data     = game_record.to_h(include_actions: true).transform_keys(&:to_s)
   migrated = migrate_data(data)
 
   unless migrated
