@@ -105,6 +105,13 @@ module Engine
           @free_2_train = train_by_id('2-5')
           @free_2_train.buyable = false
           buy_train(neutral, @free_2_train, :free)
+
+          # Jacksonville (J12) is blocked by default, this places a flipped ACL token to block it until ACL floats.
+          acl = corporation_by_id('ACL')
+          token = acl.find_token_by_type
+          place_home_token(acl)
+          token.status = :flipped
+          @log << "#{acl.name} token is placed to block routing through Jacksonville (J12)"
         end
 
         def tile_lays(entity)
@@ -146,6 +153,11 @@ module Engine
           @recently_floated << corporation
 
           super
+
+          return unless corporation.name == 'ACL'
+
+          corporation.tokens.first.status = nil
+          @log << "#{corporation.name} home token (J12) is flipped right-side up"
         end
 
         def upgrades_to?(from, to, _special = false, selected_company: nil)
