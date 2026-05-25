@@ -224,9 +224,9 @@ module Engine
         def corp_groups
           @corp_groups ||= CORP_GROUPS.transform_values { |sym| corporation_by_id(sym) }
         end
-        
+
         def corp_group(corporation)
-          corp_groups.find { |_, corps| corps.include?(corporation) }&.first
+          corp_groups.find { |_, corps| corps.include?(corporation) }.first
         end
 
         def all_privates_sold?
@@ -237,7 +237,7 @@ module Engine
           case group_num
           when 1 then all_privates_sold?
           when 2 then corp_groups[1].all? { |corp| corp.num_ipo_shares.zero? }
-          when 3 then corp_groups[2].all? { |corp| corp.floated? }
+          when 3 then corp_groups[2].all?(&:floated?)
           else true
           end
         end
