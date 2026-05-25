@@ -222,7 +222,7 @@ module Engine
         # Corporation group unlock logic.
         # ---------------------------------------------------------------------------
         def corp_groups
-          @corp_groups ||= CORP_GROUPS.transform_values { |sym| corporation_by_id(sym) }
+          @corp_groups ||= CORP_GROUPS.transform_values { |syms| syms.map { |s| corporation_by_id(s) } }
         end
 
         def corp_group(corporation)
