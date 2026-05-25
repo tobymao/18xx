@@ -18,7 +18,7 @@ module Engine
 
           def opening_mountain_pass?(entity)
             corp = entity.owner
-            return false unless corp&.corporation?
+            return false unless corp.corporation?
 
             !@game.opening_new_mountain_pass(corp).empty?
           end
@@ -28,7 +28,6 @@ module Engine
           end
 
           def process_choose_ability(action)
-            @game.consume_mountain_pass_hint!(action.entity)
             corp = action.entity.owner
             @game.open_mountain_pass(corp, action.choice, true)
             @game.graph_for_entity(corp).clear
