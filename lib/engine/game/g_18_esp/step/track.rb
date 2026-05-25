@@ -17,10 +17,19 @@ module Engine
 
             actions = []
             actions << 'lay_tile' if can_lay_tile?(entity)
-            if opening_mountain_pass?(entity) && @game.phase.status.include?('mountain_pass') && !@round.opened_mountain_pass
-              actions << 'choose'
-            end
             actions << 'place_token' if can_place_token?(entity)
+
+            if @game.phase.status.include?('mountain_pass') &&
+               !@round.opened_mountain_pass &&
+               entity.type != :minor
+              if @game.loading && !actions.empty?
+                # Step already blocking — skip graph, use pre-scan hint
+                actions << 'choose' if @game.future_mountain_pass_choose?(entity)
+              elsif !@game.opening_new_mountain_pass(entity).empty?
+                actions << 'choose'
+              end
+            end
+
             actions << 'destination_connection' if !@game.loading && @acted &&
                                                    @game.new_destination_connection?(entity)
             actions << 'pass' if actions.any?
@@ -83,6 +92,7 @@ module Engine
           end
 
           def process_choose(action)
+            @game.consume_mountain_pass_hint!(action.entity)
             @game.open_mountain_pass(action.entity, action.choice)
             @game.graph_for_entity(action.entity).clear
             @round.opened_mountain_pass = true

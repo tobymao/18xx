@@ -397,6 +397,22 @@ module Engine
             hex_by_id(hex).tile.cities.first.exchange_token(block_token)
           end
           remove_extra_corporation_destination_icons if core
+          @loading_mp_remaining = Hash.new(0)
+        end
+
+        # Pre-scan the full action list so the Track step can short-circuit
+        # @graph.connected_hexes during loading without building the route graph.
+        def initialize_actions(actions, at_action: nil)
+          precompute_mountain_pass_hints(actions)
+          super
+        end
+
+        def future_mountain_pass_choose?(entity)
+          @loading_mp_remaining[entity.id].positive?
+        end
+
+        def consume_mountain_pass_hint!(entity)
+          @loading_mp_remaining[entity.id] -= 1 if future_mountain_pass_choose?(entity)
         end
 
         def setup_corporations
@@ -1361,6 +1377,18 @@ module Engine
           return unless (@luxury_carriages['bank']).positive?
 
           ['Tenders', (@luxury_carriages['bank']).to_s]
+        end
+
+        private
+
+        def precompute_mountain_pass_hints(actions)
+          @loading_mp_remaining = Hash.new(0)
+          actions.each do |action|
+            next unless %w[choose choose_ability].include?(action['type'])
+            next unless MOUNTAIN_PASS_TOKEN_HEXES.include?(action['choice'])
+
+            @loading_mp_remaining[action['entity']] += 1
+          end
         end
       end
     end
