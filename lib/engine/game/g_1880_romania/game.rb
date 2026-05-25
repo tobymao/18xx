@@ -155,7 +155,9 @@ module Engine
                   { name: '2R', distance: 2, price: 250, num: 10, available_on: 'C2' }].freeze
 
         EVENTS_TEXT = G1880::Game::EVENTS_TEXT.merge(
-          'signal_end_game' => ['Signal End Game', 'Game ends 3 ORs after purchase/export of last 6E train']
+          'signal_end_game' => ['Signal End Game', 'Game ends 3 ORs after purchase/export of last 6E train'],
+          'open_borders' => ['Open Borders', 'Borders are opened, owner of P2 Consorţiu still receives payment for crossings'],
+          'remove_borders' => ['Remove Borders', 'Borders are removed entirely'],
         ).freeze
 
         GAME_END_REASONS_TEXT = {

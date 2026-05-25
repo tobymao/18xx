@@ -20,8 +20,36 @@ module Engine
           entity.owner == @game.consortiu&.owner
         end
 
+        def hex_neighbors(entity, hex)
+          result = super
+          return result unless can_ignore_borders?(entity)
+
+          connected = @game.graph_for_entity(entity).connected_hexes(entity)
+
+          extra_edges = (0..5).filter_map do |edge|
+            border = hex.tile.borders.find { |b| b.edge == edge && b.type == :impassable }
+            next unless border
+
+            neighbor = hex.all_neighbors[edge]
+            next unless neighbor
+
+            # The neighbor must already be connected AND must have track pointing back at us
+            inv_edge = Engine::Hex.invert(edge)
+            next unless connected[neighbor]&.include?(inv_edge)
+
+            edge
+          end
+
+          return result if extra_edges.empty?
+
+          (Array(result) + extra_edges).uniq
+        end
+
         def hex_neighbor_exists?(entity, hex, edge)
-          can_ignore_borders?(entity) ? hex.all_neighbors[edge] : super
+          return super unless can_ignore_borders?(entity)
+
+          border = hex.tile.borders.find { |b| b.edge == edge && b.type == :impassable }
+          border ? hex.all_neighbors[edge] : super
         end
       end
     end
