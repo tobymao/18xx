@@ -795,7 +795,7 @@ module Engine
         { 'type' => 'buy_shares',                  'entity' => 3, 'shares' => ['NYC_4'], 'percent' => 10, 'entity_type' => 'player', 'id' => 19 },
         { 'type' => 'pass',                        'entity' => 1, 'entity_type' => 'player',      'id' => 20 },
         { 'type' => 'pass',                        'entity' => 2, 'entity_type' => 'player',      'id' => 21 },
-        { 'type' => 'pass',                        'entity' => 3, 'entity_type' => 'player',      'id' => 22 },
+        # SR1 ends automatically — Bob has no cash for more shares after monopoly fee; no explicit pass needed
         # OR1: lay F26 (tile9 rot1 — W↔E straight, hill $40)
         { 'type' => 'lay_tile', 'hex' => 'F26', 'tile' => '9-0', 'rotation' => 1, 'entity' => 'NYC', 'entity_type' => 'corporation', 'id' => 23 },
         { 'type' => 'pass',                        'entity' => 'NYC', 'entity_type' => 'corporation', 'id' => 24 },

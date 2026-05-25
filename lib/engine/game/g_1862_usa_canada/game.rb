@@ -697,6 +697,12 @@ module Engine
           group_available?(corp_group(corporation))
         end
 
+        def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil, movement: nil)
+          effective_percent = bundle.percent - (swap&.percent || 0)
+          movement ||= effective_percent >= 10 ? :down_block : :none
+          super(bundle, allow_president_change: allow_president_change, swap: swap, movement: movement)
+        end
+
         # ---------------------------------------------------------------------------
         # Round definitions — engine defaults only; custom steps added in later PRs.
         # ---------------------------------------------------------------------------
