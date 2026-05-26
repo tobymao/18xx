@@ -143,10 +143,14 @@ module Engine
           end
 
           def get_par_prices_with_help(entity, _corp, extra_cash: 0)
+            available_cash = entity.cash + extra_cash
+
+            available_cash += @game.union_bank.cash if entity == @game.company_by_id('UB')&.owner && !@round.bank_bought
+
             @game
               .stock_market
               .par_prices
-              .select { |p| p.price * 2 <= entity.cash + extra_cash }
+              .select { |p| p.price * 2 <= available_cash }
           end
 
           # On Prince Edward Island we par from the market
@@ -189,7 +193,20 @@ module Engine
           # Ditto
           def can_ipo_any?(entity)
             !bought? && @game.corporations.any? do |c|
-              @game.can_par?(c, entity) && can_buy?(entity, @game.share_by_id("#{c.name}_0")&.to_bundle)
+              next false unless @game.can_par?(c, entity)
+
+              bundle = @game.share_by_id("#{c.name}_0")&.to_bundle
+              next false unless bundle
+
+              # Check if entity can par directly
+              next true if can_buy?(entity, bundle)
+
+              # Check if entity can par with UB as the purchase target
+              if entity == @game.company_by_id('UB')&.owner && !@round.bank_bought
+                can_buy?(@game.union_bank, bundle)
+              else
+                false
+              end
             end
           end
 
