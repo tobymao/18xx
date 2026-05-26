@@ -17,9 +17,12 @@ module View
 
     needs :user
     needs :refreshing, default: nil, store: true
+    needs :hide_full_games, default: false, store: true
 
     def render
-      your_games, other_games = @games.partition { |game| user_in_game?(@user, game) || user_owns_game?(@user, game) }
+      your_games, other_games = @games.partition do |game|
+        user_in_game?(@user, game) || user_owns_game?(@user, game)
+      end
 
       children = [
         h(Welcome),
@@ -45,9 +48,32 @@ module View
         .map { |k| Lib::Storage[k] }
         .sort_by { |gd| [-(gd[:updated_at] || now), gd[:id]] }
 
+      new_games = grouped['new']&.sort_by { |g| -g['created_at'] }
+      new_games = new_games&.reject { |g| full_game?(g) } if @hide_full_games
+
       render_row(children, 'Your Games', your_games, :personal) if @user
       render_row(children, 'Hotseat Games', hotseat, :hotseat) if hotseat.any?
-      render_row(children, 'New Games', grouped['new']&.sort_by { |g| -g['created_at'] }, :new) if @user
+      hide_full_checkbox = h('label', { style: { marginLeft: '1rem' } }, [
+        h('input', {
+            attrs: { type: 'checkbox', id: 'hide_full_games_checkbox' },
+            hook: {
+              insert: ->(_vnode) { `document.getElementById('hide_full_games_checkbox').checked = #{@hide_full_games}` },
+              update: lambda { |_old_vnode, _vnode|
+                        `document.getElementById('hide_full_games_checkbox').checked = #{@hide_full_games}`
+                      },
+            },
+            on: { change: ->(e) { store(:hide_full_games, e.JS[:target].JS[:checked]) } },
+          }),
+        ' Hide Full Games',
+      ])
+
+      if @user
+        if new_games&.any?
+          render_row(children, 'New Games', new_games, :new, header_extra: hide_full_checkbox)
+        else
+          children << h('div', [h(:h2, 'New Games'), hide_full_checkbox])
+        end
+      end
       render_row(children, 'Active Games', grouped['active']&.sort_by { |g| -g['updated_at'] }, :active)
       render_row(children, 'Finished Games', grouped['finished']&.sort_by { |g| -g['finished_at'] }, :finished)
       render_filter_row(children)
@@ -88,7 +114,7 @@ module View
       store(:refreshing, timeout, skip: true)
     end
 
-    def render_row(children, header, games, type)
+    def render_row(children, header, games, type, header_extra: nil)
       return unless games&.any?
 
       children << h(
@@ -97,7 +123,12 @@ module View
         game_row_games: games,
         type: type,
         user: @user,
+        header_extra: header_extra,
       )
+    end
+
+    def full_game?(game)
+      game['players'].size >= game['max_players']
     end
 
     def render_filter_row(children)

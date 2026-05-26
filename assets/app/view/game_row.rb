@@ -9,6 +9,7 @@ module View
     include GameManager
 
     needs :header
+    needs :header_extra, default: nil
     needs :game_row_games
     needs :user
     needs :type
@@ -27,6 +28,7 @@ module View
 
     def render_header(header)
       children = [h(:h2, header)]
+      children << @header_extra if @header_extra
       p = url_search_params[@type].to_i
       @offset = @type == :hotseat ? (p * @limit) : 0
       if p.positive?
