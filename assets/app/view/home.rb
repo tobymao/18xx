@@ -20,9 +20,7 @@ module View
     needs :hide_full_games, default: false, store: true
 
     def render
-      your_games, other_games = @games.partition do |game|
-        user_in_game?(@user, game) || user_owns_game?(@user, game)
-      end
+      your_games, other_games = @games.partition { |game| user_in_game?(@user, game) || user_owns_game?(@user, game) }
 
       children = [
         h(Welcome),
