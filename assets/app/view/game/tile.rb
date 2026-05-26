@@ -82,6 +82,7 @@ module View
         large, normal = @tile.icons.partition(&:large)
         render_tile_parts_by_loc(Part::Icons, parts: normal).each { |i| children << i }
         children << render_tile_part(Part::Cities, show_revenue: !render_revenue) unless @tile.cities.empty?
+
         children << render_tile_part(Part::Towns, routes: @routes, show_revenue: !render_revenue) unless @tile.towns.empty?
 
         borders = render_tile_part(Part::Borders) if @tile.borders.any?(&:type)
