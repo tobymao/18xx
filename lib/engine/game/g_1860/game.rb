@@ -1017,7 +1017,7 @@ module Engine
         end
 
         def loaner_new_rules?(route)
-          loaner?(route) && !option_original_insolvency? && !option_simplified_insolvency?
+          loaner?(route) && !option_original_insolvency?
         end
 
         def loaner_orig_rules?(route)
