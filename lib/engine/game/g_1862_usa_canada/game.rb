@@ -45,7 +45,7 @@ module Engine
           'CP' => [
             { hexes: %w[E25],          cash: 100, route_bonus: 30,  name: 'Toronto'     },
             { hexes: %w[B20],          cash: 200, route_bonus: 60,  name: 'Thunder Bay' },
-            { hexes: %w[B2 C1 G3 I5], cash: 300, route_bonus: 100, name: 'V/P/S/L' },
+            { hexes: %w[B2 D2 G3 I5], cash: 300, route_bonus: 100, name: 'V/P/S/L' },
           ],
           'NYH' => [
             { hexes: %w[F20],          cash: 100, route_bonus: 30,  name: 'Chicago'     },
@@ -59,13 +59,13 @@ module Engine
             { hexes: %w[J10],          cash: 200, route_bonus: 60,  name: 'El Paso'     },
           ],
           'ATS' => [
-            { hexes: %w[B2 C1 G3 I5], cash: 200, route_bonus: 60, name: 'V/P/S/L' },
+            { hexes: %w[B2 D2 G3 I5], cash: 200, route_bonus: 60, name: 'V/P/S/L' },
           ],
           'NP' => [
             { hexes: %w[F20], cash: 100, route_bonus: 30, name: 'Chicago' },
           ],
           'CN' => [
-            { hexes: %w[B2 C1 G3 I5], cash: 100, route_bonus: 30, name: 'V/P/S/L' },
+            { hexes: %w[B2 D2 G3 I5], cash: 100, route_bonus: 30, name: 'V/P/S/L' },
             { hexes: %w[B10], cash: 200, route_bonus: 60, name: 'Regina' },
           ],
           # FIXME: TP El Paso bonus amount unconfirmed from rulebook — entry omitted until confirmed
