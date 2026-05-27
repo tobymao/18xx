@@ -783,14 +783,33 @@ module Engine
           gipr.share_holders[entity] += new_gipr_share.percent
           entity.spend(railroad_bond_convert_cost, @bank) if railroad_bond_convert_cost.positive? # Pay conversion cost
           @bank.spend(bond.value, gipr) # Bank pays GIPR $100
-          @log << "#{entity.name} converts a Railrod Bond to a GIPR Share for #{format_currency(railroad_bond_convert_cost)}"
+          @log << "#{entity.name} converts a Railroad Bond to a GIPR Share for #{format_currency(railroad_bond_convert_cost)}"
           @log << "The Bank pays GIPR #{format_currency(bond.value)}"
-          # Check if if there is new Manager for GIPR
-          check_manager_change(entity, gipr) if entity.player?
+          return unless entity.player?
+
+          if gipr.owner.nil?
+            gipr.make_manager(entity)
+          else
+            check_manager_change(entity, gipr)
+          end
+        end
+
+        # Bond shares bypass the IPO, so the standard floated? check (which tracks IPO owner holdings)
+        # never fires for bond-only conversions. Check share_holders directly instead.
+        def check_gipr_float
+          return if gipr.floated?
+          return unless gipr.floatable
+
+          non_ipo_pct = gipr.share_holders.sum { |holder, pct| holder == gipr.ipo_owner ? 0 : pct }
+          return unless non_ipo_pct >= gipr.float_percent
+
+          gipr.floated = true
+          float_corporation(gipr)
         end
 
         def check_manager_change(entity, corporation)
-          return unless entity.percent_of(corporation) > gipr.owner.percent_of(corporation)
+          return unless corporation.owner
+          return unless entity.percent_of(corporation) > corporation.owner.percent_of(corporation)
 
           @share_pool.change_president(corporation.presidents_share, corporation.owner, entity)
           corporation.owner = entity
