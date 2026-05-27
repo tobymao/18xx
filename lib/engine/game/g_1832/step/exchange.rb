@@ -11,11 +11,11 @@ module Engine
       module Step
         class Exchange < Engine::Step::Exchange
           def can_gain?(entity, bundle, exchange: false)
-            if exchange && entity == @game.london_company&.owner
-              return false unless @game.p4_invested_in.nil?
+            if exchange && entity == @game.london_company.owner
+              return false if @game.p4_invested_in
               return false if bought?
-              return false unless bundle.corporation.ipoed
               return false if bundle.corporation.operated?
+              return false unless bundle.corporation.ipoed
             end
             super
           end
@@ -24,9 +24,9 @@ module Engine
             return super unless entity == @game.london_company
 
             return false unless entity.owner == @round.current_entity
-            return false unless @game.p4_invested_in.nil?
+            return false unless @game.sell_queue.empty?
+            return false if @game.p4_invested_in
             return false if bought?
-            return false if @game.sell_queue.any?
 
             ability = @game.abilities(entity, :exchange)
             return false unless ability
@@ -57,25 +57,22 @@ module Engine
             ability = @game.abilities(company, :exchange)
             buy_shares(company.owner, bundle, exchange: company)
             ability&.use!
-            @round.current_actions << action if @round.respond_to?(:current_actions)
-            @round.players_history[company.owner][bundle.corporation] << action if @round.respond_to?(:players_history)
 
-            if company == @game.london_company
-              @game.p4_invested_in = bundle.corporation
-              @game.log << "#{company.name} invests in #{bundle.corporation.name}; closes after first dividend"
-            else
-              company.close!
+            if @round.stock?
+              @round.current_actions << action
+              @round.players_history[company.owner][bundle.corporation] << action[:players_history]
             end
+
+            @game.p4_invested_in = bundle.corporation
+            @game.log << "#{company.name} invests in #{bundle.corporation.name}; closes after first dividend"
           end
 
           private
 
           def bought?
-            return false unless @round.respond_to?(:current_actions)
+            return false unless @round.stock?
 
-            @round.current_actions.any? do |x|
-              x.is_a?(Action::BuyShares) || x.is_a?(Action::Par) || x.is_a?(Action::BuyCompany)
-            end
+            @round.current_actions.any? { |action| BuySellParShares::PURCHASE_ACTIONS.include?(action.class) }
           end
         end
       end

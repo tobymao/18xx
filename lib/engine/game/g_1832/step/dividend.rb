@@ -10,11 +10,22 @@ module Engine
         # right on full dividend, left on withhold, no movement on half or $0 declared.
         class Dividend < G1870::Step::Dividend
           def process_dividend(action)
-            super
+            mark_miami_first_run_complete!
             close_london_investment!(action)
+            super
           end
 
           private
+
+          def mark_miami_first_run_complete!
+            return unless @game.miami_first_run
+
+            ran_miami = @round.routes.any? do |route|
+              route.stops.any? { |stop| stop.hex.id == @game.class::MIAMI_HEX }
+            end
+
+            @game.miami_first_run = false if ran_miami
+          end
 
           def close_london_investment!(action)
             return if action.kind == 'withhold'
