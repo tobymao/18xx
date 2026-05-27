@@ -438,19 +438,19 @@ module Engine
             {
               'count' => 4,
               'color' => 'yellow',
-              'code' => 'town=revenue:10;town=revenue:10;path=a:0,b:_0;path=a:_0,b:_1;path=a:_1,b:3',
+              'code' => 'town=revenue:10,size:2;path=a:0,b:_0;path=a:3,b:_0',
             },
           'OE2' =>
             {
               'count' => 6,
               'color' => 'yellow',
-              'code' => 'town=revenue:10;town=revenue:10;path=a:0,b:_0;path=a:_0,b:_1;path=a:_1,b:2',
+              'code' => 'town=revenue:10,size:2;path=a:0,b:_0;path=a:2,b:_0',
             },
           'OE3' =>
             {
               'count' => 2,
               'color' => 'yellow',
-              'code' => 'town=revenue:10;town=revenue:10;path=a:0,b:_0;path=a:_0,b:_1;path=a:_1,b:1',
+              'code' => 'town=revenue:10,size:2;path=a:0,b:_0;path=a:1,b:_0',
             },
           'OE4' =>
             {
