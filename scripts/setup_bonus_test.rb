@@ -55,10 +55,10 @@ def act!(game_db, action_h)
 
   next_id = (game_db.actions(reload: true).map(&:action_id).max || 0) + 1
   Action.create(
-    game_id:   game_db.id,
-    user_id:   game_db.user_id,
+    game_id: game_db.id,
+    user_id: game_db.user_id,
     action_id: next_id,
-    action:    raw.merge('id' => next_id),
+    action: raw.merge('id' => next_id),
   )
   engine
 end
@@ -76,15 +76,15 @@ def find_rotation(game_db, corp_id, hex_id, *tile_names)
       engine  = Engine::Game.load(game_db, actions: actions)
       hex     = engine.hex_by_id(hex_id)
       tile    = engine.tiles.find { |t| t.name == tile_name && !t.hex }
-      next unless tile && hex
+      next if tile.nil? || hex.nil?
 
       action_h = {
-        'type'        => 'lay_tile',
-        'entity'      => corp_id,
+        'type' => 'lay_tile',
+        'entity' => corp_id,
         'entity_type' => 'corporation',
-        'hex'         => hex_id,
-        'tile'        => tile.id,
-        'rotation'    => rot,
+        'hex' => hex_id,
+        'tile' => tile.id,
+        'rotation' => rot,
       }
       engine.process_action(action_h)
       return [rot, tile.id, tile_name] unless engine.exception
@@ -128,18 +128,18 @@ puts "Players: #{players.map { |u| "#{u.name}(#{u.id})" }.join(', ')}"
 
 # ── create game ───────────────────────────────────────────────────────────────
 game_db = Game.create(
-  user_id:     martin.id,
-  title:       '1862 USA & Canada',
+  user_id: martin.id,
+  title: '1862 USA & Canada',
   description: '',
   min_players: 3,
   max_players: 3,
   settings: {
-    seed:         42,
+    seed: 42,
     player_order: players.map(&:id),
     auto_routing: false,
   },
   status: 'new',
-  round:  'Unstarted',
+  round: 'Unstarted',
 )
 players.each { |u| GameUser.create(game: game_db, user: u) }
 puts "Created game ##{game_db.id}"
@@ -156,16 +156,26 @@ companies = engine.companies.sort_by(&:min_bid)
 cycle = [p1, p2, p3].cycle
 companies.each do |c|
   pid = cycle.next
-  act!(game_db, { 'type' => 'bid', 'entity' => pid, 'entity_type' => 'player',
-                  'company' => c.sym, 'price' => c.min_bid })
+  act!(game_db, {
+         'type' => 'bid',
+         'entity' => pid,
+         'entity_type' => 'player',
+         'company' => c.sym,
+         'price' => c.min_bid,
+       })
   puts "  #{pid} buys #{c.sym} for #{c.min_bid}"
 end
 
 # ── CompanyPendingPar: NHSC forces NYH par ────────────────────────────────────
 puts "\n=== CompanyPendingPar: NYH par at 100 ==="
-act!(game_db, { 'type' => 'par', 'entity' => p2, 'entity_type' => 'player',
-                'corporation' => 'NYH', 'share_price' => '100,0,4' })
-puts "  NYH parred at 100"
+act!(game_db, {
+       'type' => 'par',
+       'entity' => p2,
+       'entity_type' => 'player',
+       'corporation' => 'NYH',
+       'share_price' => '100,0,4',
+     })
+puts '  NYH parred at 100'
 
 # ── stock round: Bob pars NYC at $70, buys 3×10% to float ────────────────────
 # Full capitalisation: 10 shares × $70 = $700 treasury
@@ -182,12 +192,21 @@ nyc_bought = 0
 
   if cid == p3
     if nyc.par_price.nil?
-      act!(game_db, { 'type' => 'par', 'entity' => cid, 'entity_type' => 'player',
-                      'corporation' => 'NYC', 'share_price' => '70,5,4' })
-      puts "  Bob pars NYC at 70"
+      act!(game_db, {
+             'type' => 'par',
+             'entity' => cid,
+             'entity_type' => 'player',
+             'corporation' => 'NYC',
+             'share_price' => '70,5,4',
+           })
+      puts '  Bob pars NYC at 70'
     elsif nyc_bought < 3
-      act!(game_db, { 'type' => 'buy_shares', 'entity' => cid, 'entity_type' => 'player',
-                      'shares' => [nyc.ipo_shares.first.id] })
+      act!(game_db, {
+             'type' => 'buy_shares',
+             'entity' => cid,
+             'entity_type' => 'player',
+             'shares' => [nyc.ipo_shares.first.id],
+           })
       nyc_bought += 1
       puts "  Bob buys NYC 10% (#{nyc_bought}/3)"
     else
@@ -197,7 +216,7 @@ nyc_bought = 0
     act!(game_db, pass_h(cid))
   end
 end
-puts "  → entered OR (NYC treasury: $700)"
+puts '  → entered OR (NYC treasury: $700)'
 
 # ── tile-laying ORs 1-5 ───────────────────────────────────────────────────────
 # One yellow tile per OR (phase 2).  Terrain: F26 hill $40, G19 river $40.
@@ -225,8 +244,14 @@ tile_plan.each_with_index do |(hex_id, candidates), or_idx|
   raise "ERROR: could not lay tile at #{hex_id} with candidates #{candidates.inspect}" unless result
 
   rot, tile_id, tile_name = result
-  act!(game_db, { 'type' => 'lay_tile', 'entity' => 'NYC', 'entity_type' => 'corporation',
-                  'hex' => hex_id, 'tile' => tile_id, 'rotation' => rot })
+  act!(game_db, {
+         'type' => 'lay_tile',
+         'entity' => 'NYC',
+         'entity_type' => 'corporation',
+         'hex' => hex_id,
+         'tile' => tile_id,
+         'rotation' => rot,
+       })
   puts "  NYC lays tile #{tile_name}(#{tile_id}) at #{hex_id} rotation #{rot}"
 
   15.times do
@@ -263,17 +288,21 @@ drain_sr(game_db)
 end
 
 e = Engine::Game.load(game_db, actions: game_db.actions(reload: true).map(&:to_h))
-if e.current_entity&.name == 'NYC' && e.active_step.is_a?(Engine::Step::Track)
-  act!(game_db, pass_h('NYC'))
-end
+act!(game_db, pass_h('NYC')) if e.current_entity&.name == 'NYC' && e.active_step.is_a?(Engine::Step::Track)
 
 e = Engine::Game.load(game_db, actions: game_db.actions(reload: true).map(&:to_h))
 train = e.depot.upcoming.find { |t| t.name == '2' }
 raise 'No 2-train available in depot!' unless train
 
-act!(game_db, { 'type' => 'buy_train', 'entity' => 'NYC', 'entity_type' => 'corporation',
-                'train' => train.id, 'price' => 150, 'variant' => '2E' })
-puts "  NYC bought 2E-train for $150"
+act!(game_db, {
+       'type' => 'buy_train',
+       'entity' => 'NYC',
+       'entity_type' => 'corporation',
+       'train' => train.id,
+       'price' => 150,
+       'variant' => '2E',
+     })
+puts '  NYC bought 2E-train for $150'
 
 15.times do
   e = Engine::Game.load(game_db, actions: game_db.actions(reload: true).map(&:to_h))
@@ -309,7 +338,7 @@ end
 e = Engine::Game.load(game_db, actions: game_db.actions(reload: true).map(&:to_h))
 if e.current_entity&.name == 'NYC' && e.active_step.is_a?(Engine::Step::Track)
   act!(game_db, pass_h('NYC'))
-  puts "  Passed Track step — NYC now at Route"
+  puts '  Passed Track step — NYC now at Route'
 end
 
 # ── finalize ──────────────────────────────────────────────────────────────────
@@ -324,7 +353,7 @@ puts "Active step: #{e.active_step&.class&.name&.split('::')&.last}"
 puts "NYC treasury: $#{nyc.cash}  trains: #{nyc.trains.map(&:name).inspect}"
 puts "\nBROWSER TEST:"
 puts "  1. Login as neutronc / password, open game ##{game_db.id}"
-puts "  2. NYC is operating with a 2E-train — draw a route:"
-puts "       F28 (New York) → F26 → F24 → F22 → G21 → G19 (St. Louis) → F20 (Chicago)"
-puts "  3. 2E visits all 3 nodes; pays F28($70) + F20($20) = $90 (G19 $0)"
+puts '  2. NYC is operating with a 2E-train — draw a route:'
+puts '       F28 (New York) → F26 → F24 → F22 → G21 → G19 (St. Louis) → F20 (Chicago)'
+puts '  3. 2E visits all 3 nodes; pays F28($70) + F20($20) = $90 (G19 $0)'
 puts "  4. ChooseBonus prompt should appear: \$200 cash OR +\$60/OR permanent"
