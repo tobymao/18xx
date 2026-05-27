@@ -57,7 +57,7 @@ module Engine
             else
               @game.log << "#{entity.name} declined to bid on #{@auctioning.name}"
               if @active_bidders.one?
-                @active_bidders.delete(entity)
+                @active_bidders.clear
                 remove(@auctioning)
                 return
               end
