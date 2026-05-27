@@ -110,13 +110,17 @@ module Engine
               @round.laid_yellow_hexes << action.hex
             end
             super
-            move_oo_reservations(action) unless @round.pending_tokens.empty? # Pending token due to Yellow OO tile
+            move_oo_reservations(action) if action.tile.color == :yellow && action.tile.label.to_s == 'OO'
             @round.next_empty_hexes = calculate_railhead_hexes unless @game.loading
           end
 
-          # Base code doesn't handle one token and a reservation in first city on OO tile
-          # Moves a reservation from city to hex to allow any of the two cities to be tokened
-          # Reservation to be moved back to empty city after token is placed (See HomeTrack < HomeToken)
+          # When an OO tile is laid, hex.lay migrates any city-level reservations to the
+          # corresponding cities of the new tile. Lifting those to tile level serves two purposes:
+          # (1) If a token is placed in a reserved city during the same action, the city reservation
+          # would point at an occupied slot, causing the reserved corp to fail silently on float.
+          # (2) If neither OO corp has floated, their city reservations remain on the new tile's
+          # cities; without this lift, each corp auto-places in its designated city on float rather
+          # than getting an interactive choice via pending_tokens.
           def move_oo_reservations(action)
             tile = action.tile
             cities = tile.cities

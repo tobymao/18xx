@@ -16,7 +16,7 @@ module Engine
 
             actions = []
             actions << 'place_token' if any_open_cities?
-            actions << 'lay_tile' if any_town_hex?
+            actions << 'lay_tile' if any_town_hex? && entity.name == 'GIPR'
 
             actions
           end
@@ -47,75 +47,15 @@ module Engine
             @round.pending_tokens.shift
           end
 
-          def place_second_oo_token(tile, corp_name)
-            corporation = @game.corporation_by_id(corp_name)
-            return unless corporation&.floated
+          def auto_actions(entity)
+            return unless (pending = pending_token)
+            return unless pending[:hexes]&.one?
 
-            token = corporation.next_token
-            city = tile.cities.reject(&:tokened?).first
-            return unless city&.tokenable?(corporation, tokens: token)
+            hex = pending[:hexes].first
+            cities = hex.tile.cities.reject(&:tokened?)
+            return unless cities.one?
 
-            city.place_token(corporation, token)
-            @round.pending_tokens.shift
-          end
-
-          def swap_higher_value_oo_token(city, entity)
-            old_token = city.tokens.first
-            old_token.remove!
-            city.exchange_token(entity.find_token_by_type)
-          end
-
-          def process_place_token(action)
-            city_was_tokened = action.city.tokened?
-
-            # Both OO tokens displaced to pending queue in city order; reverse so
-            # action.entity's token is first and lands at the player-chosen city.
-            @round.pending_tokens.reverse! if @round.pending_tokens.last[:token].corporation == action.entity
-
-            super
-            tile = action.city.tile
-
-            # If partner token is still pending for this hex (displaced scenario), auto-place it.
-            next_pending = @round.pending_tokens.first
-            if next_pending && next_pending[:hexes]&.include?(tile.hex)
-              city = tile.cities.reject(&:tokened?).first
-              if city
-                city.place_token(next_pending[:token].corporation, next_pending[:token])
-                @round.pending_tokens.shift
-              end
-              return
-            end
-
-            other_corp =
-              case [action.entity.name, tile.name]
-              when %w[NWR 235]
-                'SPD'
-              when %w[SPD 235]
-                swap_higher_value_oo_token(action.city, action.entity) if city_was_tokened
-                'NWR'
-              when %w[EBR 235]
-                swap_higher_value_oo_token(action.city, action.entity) if city_was_tokened
-                'EIR'
-              when %w[EIR 235]
-                'EBR'
-              end
-
-            place_second_oo_token(tile, other_corp) if other_corp
-          end
-
-          # Base code doesn't handle one token and one reservation on a OO tile
-          # Moves a reservation from hex to untoken city
-          def replace_oo_reservations(tile)
-            return unless tile.name == '235'
-
-            return if tile.reservations.empty?
-
-            corp = tile.reservations.first
-            city = tile.cities.reject(&:tokened?).first
-            return unless city
-
-            city.add_reservation!(corp)
-            tile.reservations.clear
+            [Engine::Action::PlaceToken.new(entity, city: cities.first, token: pending[:token])]
           end
 
           def hex_neighbors(_entity, hex)
