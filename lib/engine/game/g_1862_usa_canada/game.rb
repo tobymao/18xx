@@ -238,7 +238,7 @@ module Engine
           when 1 then all_privates_sold?
           when 2 then corp_groups[1].all? { |corp| corp.num_ipo_shares.zero? }
           when 3 then corp_groups[2].all?(&:floated?)
-          else true
+          else raise GameError, "Unknown corporation group #{group_num}"
           end
         end
 
