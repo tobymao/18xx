@@ -48,21 +48,21 @@ module Engine
           'CP' => [
             { hexes: %w[E25],          cash: 100, route_bonus: 30,  name: 'Toronto'     },
             { hexes: %w[B20],          cash: 200, route_bonus: 60,  name: 'Thunder Bay' },
-            { hexes: %w[B2 C1 G3 I5], cash: 300, route_bonus: 100, name: 'V/P/S/L' },
+            { hexes: %w[B2 D2 G3 I5], cash: 300, route_bonus: 100, name: 'V/P/S/L' },
           ],
           'NYH' => [
             { hexes: %w[F20],          cash: 100, route_bonus: 30,  name: 'Chicago'     },
             { hexes: %w[K19],          cash: 200, route_bonus: 60,  name: 'New Orleans' },
-            { hexes: %w[B2 C1 G3 I5], cash: 300, route_bonus: 100, name: 'V/P/S/L' },
+            { hexes: %w[B2 D2 G3 I5], cash: 300, route_bonus: 100, name: 'V/P/S/L' },
           ],
           'NYC' => [
             { hexes: %w[D28],          cash: 100, route_bonus: 30,  name: 'Montreal'    },
             { hexes: %w[F20],          cash: 200, route_bonus: 60,  name: 'Chicago'     },
-            { hexes: %w[B2 C1 G3 I5], cash: 300, route_bonus: 100, name: 'V/P/S/L' },
+            { hexes: %w[B2 D2 G3 I5], cash: 300, route_bonus: 100, name: 'V/P/S/L' },
           ],
           'SP' => [
             { hexes: %w[J10], cash: 100, route_bonus: 30, name: 'El Paso' },
-            { hexes: %w[B2 C1 G3 I5], cash: 200, route_bonus: 60, name: 'V/P/S/L' },
+            { hexes: %w[B2 D2 G3 I5], cash: 200, route_bonus: 60, name: 'V/P/S/L' },
           ],
           'ATS' => [
             { hexes: %w[K19],          cash: 100, route_bonus: 30,  name: 'New Orleans' },
@@ -70,15 +70,15 @@ module Engine
           ],
           'NP' => [
             { hexes: %w[F20],          cash: 100, route_bonus: 30,  name: 'Chicago'     },
-            { hexes: %w[B2 C1 G3 I5], cash: 200, route_bonus: 60, name: 'V/P/S/L' },
+            { hexes: %w[B2 D2 G3 I5], cash: 200, route_bonus: 60, name: 'V/P/S/L' },
           ],
           'TP' => [
             { hexes: %w[J10], cash: 100, route_bonus: 30, name: 'El Paso' },
-            { hexes: %w[B2 C1 G3 I5], cash: 200, route_bonus: 60, name: 'V/P/S/L' },
+            { hexes: %w[B2 D2 G3 I5], cash: 200, route_bonus: 60, name: 'V/P/S/L' },
           ],
           'CN' => [
             { hexes: %w[B10], cash: 100, route_bonus: 30, name: 'Regina' },
-            { hexes: %w[B2 C1 G3 I5], cash: 200, route_bonus: 60, name: 'V/P/S/L' },
+            { hexes: %w[B2 D2 G3 I5], cash: 200, route_bonus: 60, name: 'V/P/S/L' },
           ],
         }.freeze
 

@@ -230,8 +230,8 @@ module Engine
         expect(game.corp_bonus_revenue(cp, [route])).to eq(0)
       end
 
-      describe 'update_bonus_icon! — VPSL multi-hex (B2/C1/G3/I5)' do
-        let(:vpsl_hexes) { %w[B2 C1 G3 I5].to_h { |id| [id, game.hex_by_id(id)] } }
+      describe 'update_bonus_icon! — VPSL multi-hex (B2/D2/G3/I5)' do
+        let(:vpsl_hexes) { %w[B2 D2 G3 I5].to_h { |id| [id, game.hex_by_id(id)] } }
         let(:nyc_icon)   { 'bonus_NYC_2' }
 
         it 'front-side icons present on all 4 VPSL hexes initially' do
@@ -244,7 +244,7 @@ module Engine
         it ':permanent at G3 — removes front from all 4, places back on G3 only' do
           game.update_bonus_icon!('NYC', 2, :permanent, 'G3')
           expect(vpsl_hexes['G3'].original_tile.icons.map(&:name)).to include('bonus_NYC_2_back')
-          %w[B2 C1 I5].each do |id|
+          %w[B2 D2 I5].each do |id|
             expect(vpsl_hexes[id].original_tile.icons.map(&:name)).not_to include(nyc_icon),
                                                                           "expected no front icon on #{id}"
             expect(vpsl_hexes[id].original_tile.icons.map(&:name)).not_to include('bonus_NYC_2_back')
@@ -254,7 +254,7 @@ module Engine
         it ':permanent at B2 — removes front from all 4, places back on B2 only' do
           game.update_bonus_icon!('NYC', 2, :permanent, 'B2')
           expect(vpsl_hexes['B2'].original_tile.icons.map(&:name)).to include('bonus_NYC_2_back')
-          %w[C1 G3 I5].each do |id|
+          %w[D2 G3 I5].each do |id|
             expect(vpsl_hexes[id].original_tile.icons.map(&:name)).not_to include(nyc_icon)
             expect(vpsl_hexes[id].original_tile.icons.map(&:name)).not_to include('bonus_NYC_2_back')
           end
