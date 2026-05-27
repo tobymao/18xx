@@ -496,15 +496,12 @@ module Engine
         def corp_bonus_revenue(corporation, routes)
           return 0 unless (bonuses = CORP_BONUSES[corporation.id])
 
-          home = corporation.coordinates
           bonuses.each_with_index.sum do |bonus, i|
             case @bonus_state[[corporation.id, i]]
-            when :unactivated
-              0 # ChooseBonus fires before Dividend; bonus applied after player's choice
             when :permanent
               permanent_on_route?(corporation.id, i, bonus, routes) ? bonus[:route_bonus] : 0
             else
-              0
+              0 # unactivated or pending choice — ChooseBonus fires before Dividend
             end
           end
         end
