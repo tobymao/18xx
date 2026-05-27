@@ -401,8 +401,16 @@ module Engine
         }.freeze
 
         TILES = {
-          '3' => 14,
-          '4' => 25,
+          '3' => {
+            'count' => 14,
+            'color' => 'yellow',
+            'code' => 'town=revenue:10,style:dot,loc:center;path=a:0,b:_0;path=a:_0,b:1',
+          },
+          '4' => {
+            'count' => 25,
+            'color' => 'yellow',
+            'code' => 'town=revenue:10,style:dot,loc:center;path=a:0,b:_0;path=a:_0,b:3',
+          },
           '5' => 15,
           '6' => 25,
           '7' => 14,
@@ -411,7 +419,11 @@ module Engine
           '12' => 10,
           '13' => 8,
           '57' => 19,
-          '58' => 25,
+          '58' => {
+            'count' => 25,
+            'color' => 'yellow',
+            'code' => 'town=revenue:10,style:dot,loc:center;path=a:0,b:_0;path=a:_0,b:2',
+          },
           '80' => 5,
           '81' => 5,
           '82' => 20,
