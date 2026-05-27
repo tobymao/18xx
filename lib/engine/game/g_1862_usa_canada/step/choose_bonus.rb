@@ -31,7 +31,7 @@ module Engine
           def choices
             bonus, = pending_for(current_entity).first
             {
-              'cash'      => "Cash — #{@game.format_currency(bonus[:cash])} to corporation treasury",
+              'cash' => "Cash — #{@game.format_currency(bonus[:cash])} to corporation treasury",
               'permanent' => "Permanent — +#{@game.format_currency(bonus[:route_bonus])} route bonus per OR",
             }
           end
