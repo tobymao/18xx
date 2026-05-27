@@ -561,7 +561,7 @@ module Engine
             {
               'count' => 3,
               'color' => 'brown',
-              'code' => 'town=revenue:10,size:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:5,b:_0',
+              'code' => 'town=revenue:10,size:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;path=a:5,b:_0',
             },
           'OE21' =>
             {
