@@ -16,7 +16,7 @@ module Engine
 
             actions = []
             actions << 'place_token' if any_open_cities?
-            actions << 'lay_tile' if any_town_hex? && entity.name == 'GIPR'
+            actions << 'lay_tile' if any_town_hex? && entity == @game.gipr
 
             actions
           end
