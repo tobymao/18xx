@@ -451,9 +451,9 @@ module Engine
           bond_shortfall = 0
 
           if bonds? && corporation.loans.any?
-            bond_shortfall = repay_bond_on_close!(corporation)
+            bond_shortfall = leftover_bond_balance_on_close!(corporation)
             if corporation.cash.negative?
-              self.closing_after_bond_repayment = { corp: corporation, quiet: quiet, player: president }
+              @closing_after_bond_repayment = { corp: corporation, quiet: quiet, player: president }
               return
             end
             corporation.loans.clear
@@ -475,11 +475,11 @@ module Engine
           corporation.next_to_par = true if @corporations[index - 1].floated?
           update_garibaldi
 
-          self.loan_choice_player = president if bond_shortfall.positive? && president&.shares&.empty?
+          @loan_choice_player = president if bond_shortfall.positive? && president&.shares&.empty?
         end
 
         # Returns the unpaid amount (0 if fully repaid or EMR was triggered)
-        def repay_bond_on_close!(corporation)
+        def leftover_bond_balance_on_close!(corporation)
           owed = loan_value
           @log << "#{corporation.name} must repay its outstanding bond of #{format_currency(owed)}"
 
@@ -529,9 +529,9 @@ module Engine
           player = pending[:player]
           corp.loans.clear
           close_corporation(corp, quiet: pending[:quiet])
-          self.closing_after_bond_repayment = nil
+          @closing_after_bond_repayment = nil
           reorder_corps
-          self.loan_choice_player = player if player&.shares&.empty?
+          @loan_choice_player = player if player&.shares&.empty?
         end
 
         def float_str(entity)
