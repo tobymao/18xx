@@ -50,7 +50,7 @@ describe Engine::Game::G18RoyalGorge::Game do
     end
   end
 
-  describe 'endgame_triggered_on_export' do
+  describe 'endgame_triggered_on_export_and_stock_market' do
     it 'endgame has not been triggered before last train rank is exported' do
       game = fixture_at_action(544)
 
@@ -84,12 +84,38 @@ describe Engine::Game::G18RoyalGorge::Game do
       expect(game.turn_round_num).to eq([6, 2])
       expect(game.round.operating?).to eq(true)
       expect(game.round.stock?).to eq(false)
-      expect(game.game_ending_description).to eq('6x2-train was bought/exported : Game Ends at conclusion of OR 6.2')
+      expect(game.game_ending_description).to eq('Company hit max stock value : Game Ends at conclusion of OR 6.2')
     end
 
     it 'game over' do
       game = fixture_at_action(589)
 
+      expect(game.finished).to eq(true)
+    end
+  end
+
+  describe 'endgame_market_trigger_overrides_export_trigger' do
+    it 'game will end after next complete set of ORs after last train rank is bought' do
+      game = fixture_at_action(486)
+
+      expect(game.turn_round_num).to eq([4, 1])
+      expect(game.round.operating?).to eq(true)
+      expect(game.game_ending_description).to eq('6x2-train was bought/exported : Game Ends at conclusion of OR 5.2')
+    end
+
+    it 'stock_market red zone overrides final_train end trigger and shortens the game' do
+      game = fixture_at_action(535)
+
+      expect(game.turn_round_num).to eq([4, 2])
+      expect(game.round.operating?).to eq(true)
+      expect(game.game_ending_description).to eq('Company hit max stock value : Game Ends at conclusion of OR 4.2')
+    end
+
+    it 'game over' do
+      game = fixture_at_action(549)
+
+      expect(game.turn_round_num).to eq([4, 2])
+      expect(game.round.operating?).to eq(true)
       expect(game.finished).to eq(true)
     end
   end
@@ -123,7 +149,7 @@ describe Engine::Game::G18RoyalGorge::Game do
     end
   end
 
-  describe 'endgame_shorter_triggered_on_export' do
+  describe 'endgame_shorter_triggered_on_export_and_stock_market' do
     it 'endgame has not been triggered before last train rank is exported' do
       game = fixture_at_action(544)
 

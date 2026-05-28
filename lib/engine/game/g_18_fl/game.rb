@@ -16,14 +16,6 @@ module Engine
         include Entities
         include Map
 
-        register_colors(black: '#37383a',
-                        orange: '#f48221',
-                        brightGreen: '#76a042',
-                        red: '#d81e3e',
-                        turquoise: '#00a993',
-                        blue: '#0189d1',
-                        brown: '#7b352a')
-
         CURRENCY_FORMAT_STR = '$%s'
 
         BANK_CASH = 8000
@@ -312,7 +304,7 @@ module Engine
         # 5 => 10 share conversion logic
         def event_forced_conversions!
           @log << '-- Event: All 5 share corporations must convert to 10 share corporations immediately --'
-          @corporations.select { |c| c.type == :five_share }.each { |c| convert(c, funding: c.share_price) }
+          @corporations.select { |c| c.type == :five_share }.each { |c| convert(c, funding: c.floated?) }
         end
 
         def process_convert(action)

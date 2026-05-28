@@ -37,28 +37,12 @@ module Engine
               operating_rounds: 1,
             },
             {
-              name: "2'",
-              on: "2'",
-              train_limit: 4,
-              tiles: [:yellow],
-              status: %w[escrow facing_3],
-              operating_rounds: 1,
-            },
-            {
               name: '3',
               on: '3',
               train_limit: 4,
               tiles: %i[yellow green],
               operating_rounds: 2,
               status: %w[escrow facing_3 can_buy_companies],
-            },
-            {
-              name: "3'",
-              on: "3'",
-              train_limit: 4,
-              tiles: %i[yellow green],
-              operating_rounds: 2,
-              status: %w[escrow facing_4 can_buy_companies],
             },
             {
               name: '4',
@@ -69,27 +53,11 @@ module Engine
               status: %w[escrow facing_4 can_buy_companies],
             },
             {
-              name: "4'",
-              on: "4'",
-              train_limit: 3,
-              tiles: %i[yellow green],
-              operating_rounds: 2,
-              status: %w[incremental facing_5 can_buy_companies],
-            },
-            {
               name: '5',
               on: '5',
               train_limit: 2,
               tiles: %i[yellow green brown],
               status: %w[incremental facing_5],
-              operating_rounds: 3,
-            },
-            {
-              name: "5'",
-              on: "5'",
-              train_limit: 2,
-              tiles: %i[yellow green brown],
-              status: %w[fullcap facing_6],
               operating_rounds: 3,
             },
             {
@@ -117,44 +85,46 @@ module Engine
               operating_rounds: 3,
             },
           ]
-          diesel_variant? ? phase_list.reject! { |p| p[:name] == '8' } : phase_list.reject! { |p| p[:name] == 'D' }
+          excluded = diesel_variant? ? '8' : 'D'
+          phase_list.reject! { |phase| phase[:name] == excluded }
           phase_list
         end
 
         def game_trains
           train_list = [
-            { name: '2', distance: 2, price: 100, rusts_on: '4', num: 4 },
-            { name: "2'", distance: 2, price: 100, rusts_on: '4', num: 1 },
-            { name: '3', distance: 3, price: 225, rusts_on: '6', num: 3 },
-            { name: "3'", distance: 3, price: 225, rusts_on: '6', num: 1 },
+            {
+              name: '2',
+              distance: 2,
+              price: 100,
+              rusts_on: '4',
+              num: 5,
+              events: [{ 'type' => 'change_float', 'when' => 5, 'hidden' => true }],
+            },
+            {
+              name: '3',
+              distance: 3,
+              price: 225,
+              rusts_on: '6',
+              num: 4,
+              events: [{ 'type' => 'change_float', 'when' => 4, 'hidden' => true }],
+            },
             {
               name: '4',
               distance: 4,
               price: 350,
               rusts_on: @optional_rules&.include?(:diesel_variant) ? 'D' : '8',
-              num: 2,
-            },
-            {
-              name: "4'",
-              distance: 4,
-              price: 350,
-              rusts_on: @optional_rules&.include?(:diesel_variant) ? 'D' : '8',
-              num: 1,
-              events: [{ 'type' => 'no_more_escrow_corps' }],
+              num: 3,
+              events: [{ 'type' => 'no_more_escrow_corps', 'when' => 3 },
+                       { 'type' => 'change_float', 'when' => 3, 'hidden' => true }],
             },
             {
               name: '5',
               distance: 5,
               price: 550,
-              num: 1,
-              events: [{ 'type' => 'close_companies' }],
-            },
-            {
-              name: "5'",
-              distance: 5,
-              price: 550,
-              num: 1,
-              events: [{ 'type' => 'no_more_incremental_corps' }],
+              num: 2,
+              events: [{ 'type' => 'close_companies' },
+                       { 'type' => 'no_more_incremental_corps', 'when' => 2 },
+                       { 'type' => 'change_float', 'when' => 2, 'hidden' => true }],
             },
             {
               name: '6',
@@ -169,7 +139,7 @@ module Engine
               price: 1000,
               num: 5,
               available_on: '6',
-              discount: { '4' => 350, "4'" => 350, '5' => 350, "5'" => 350, '6' => 350 },
+              discount: { '4' => 350, '5' => 350, '6' => 350 },
             },
             {
               name: 'D',
@@ -177,10 +147,11 @@ module Engine
               price: 1100,
               num: 22,
               available_on: '6',
-              discount: { '4' => 350, "4'" => 350, '5' => 350, "5'" => 350, '6' => 350 },
+              discount: { '4' => 350, '5' => 350, '6' => 350 },
             },
           ]
-          diesel_variant? ? train_list.reject! { |t| t[:name] == '8' } : train_list.reject! { |t| t[:name] == 'D' }
+          excluded = diesel_variant? ? '8' : 'D'
+          train_list.reject! { |train| train[:name] == excluded }
           train_list
         end
 
@@ -274,6 +245,9 @@ module Engine
           national.destinated!
           national.add_ability(self.class::NATIONAL_IMMOBILE_SHARE_PRICE_ABILITY)
           national.add_ability(self.class::NATIONAL_FORCED_WITHHOLD_ABILITY)
+
+          @percent_to_operate = 20
+          @capitalization = :escrow
         end
 
         def stock_round

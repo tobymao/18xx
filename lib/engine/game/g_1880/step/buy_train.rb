@@ -14,7 +14,7 @@ module Engine
           end
 
           def bought_trains?(action)
-            @round.bought_trains || (action.train.owner == @game.depot && action.train.name != '2P')
+            @round.bought_trains || (action.train.owner == @game.depot && action.train.name != '2R')
           end
 
           def pass_if_cannot_buy_train?(_entity)
@@ -38,11 +38,14 @@ module Engine
           end
 
           def pass!
-            train_name = @game.depot.upcoming.first.name
-            train_index = @game.depot.upcoming.first.index
-            return super if (train_name == '8E' && train_index == 1) || %w[10 2P].include?(train_name) || !discard_trains?
+            train = @game.depot.upcoming.first
+            return super if !train || avoid_discarding_final_trains?(train)
 
-            discard_all_trains(train_name)
+            discard_all_trains(train.name)
+          end
+
+          def avoid_discarding_final_trains?(train)
+            (train.name == '8E' && train.index == 1) || %w[10 2R].include?(train.name) || !discard_trains?
           end
 
           def discard_trains?
@@ -64,8 +67,8 @@ module Engine
 
           def buyable_trains(entity)
             trains_to_buy = super
-            trains_to_buy.reject! { |t| t.name == '2P' } unless can_buy_restored2?(entity)
-            trains_to_buy.reject! { |t| t.name == '2P' && t.from_depot? } unless can_buy_restored2_from_depot?(entity)
+            trains_to_buy.reject! { |t| t.name == '2R' } unless can_buy_restored2?(entity)
+            trains_to_buy.reject! { |t| t.name == '2R' && t.from_depot? } unless can_buy_restored2_from_depot?(entity)
             # Can't buy trains from other corporations until train 3
             return trains_to_buy if @game.can_cross_buy?
 
@@ -73,7 +76,7 @@ module Engine
           end
 
           def owns_restored2?(entity)
-            entity.trains.find { |t| t.name == '2P' }
+            entity.trains.find { |t| t.name == '2R' }
           end
 
           def can_buy_restored2?(entity)
@@ -87,7 +90,7 @@ module Engine
           end
 
           def restored2_train
-            @depot.depot_trains.find { |t| t.name == '2P' }
+            @depot.depot_trains.find { |t| t.name == '2R' }
           end
         end
       end

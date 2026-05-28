@@ -13,7 +13,7 @@ module Engine
 
         GAME_DESIGNER = 'Michael Carter, Anthony Fryer, & Nick Neylon'
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18Hiawatha'
-        GAME_LOCATION = 'Midwest USA'
+        GAME_LOCATION = 'Midwestern USA'
         GAME_TITLE = '18 Hiawatha'
         GAME_RULES_URL = 'https://boardgamegeek.com/filepage/279677/18-hiawatha-rules-from-mainline-issue-1'
         GAME_ISSUE_LABEL = '18Hiawatha'

@@ -185,7 +185,8 @@ class Api
       end
 
       r.get do
-        { games: Game.home_games(user, **r.params) }
+        params = Rack::Utils.parse_query(r.query_string)
+        { games: Game.home_games(user, **params) }
       end
 
       # POST '/api/game[/*]'
@@ -207,6 +208,7 @@ class Api
               unlisted: r.params['unlisted'],
               optional_rules: r.params['optional_rules'],
               auto_routing: r.params['auto_routing'],
+              use_engine_v2: r.params['use_engine_v2'],
               is_async: r.params['async'],
             },
             title: title,

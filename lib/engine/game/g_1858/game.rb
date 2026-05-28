@@ -73,9 +73,9 @@ module Engine
 
         def option_quick_start_packets
           if optional_rules.include?(:quick_start_b)
-            QUICK_START_PACKETS_B
+            self.class::QUICK_START_PACKETS_B
           else
-            QUICK_START_PACKETS_A
+            self.class::QUICK_START_PACKETS_A
           end
         end
 

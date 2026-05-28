@@ -15,7 +15,6 @@ module Engine
           def process_par(action)
             super
 
-            @game.moved_this_turn << action.corporation
             @log << "#{action.entity.name} may buy up to two additional shares."
           end
 
@@ -25,7 +24,7 @@ module Engine
             return unless price_before != action.bundle.shares.first.price
 
             @game.moved_this_turn << action.bundle.corporation
-            @moved_any = true
+            @game.reorder_corps
           end
 
           def pass!
@@ -34,12 +33,10 @@ module Engine
               @round.pass_order |= [current_entity]
               current_entity.pass!
             else
-              @game.reorder_corps if @moved_any
               @round.pass_order.delete(current_entity)
               current_entity.unpass!
             end
             @game.old_operating_order = @game.corporations.sort
-            @moved_any = false
           end
 
           def get_par_prices(entity, _corp)

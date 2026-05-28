@@ -14,18 +14,6 @@ module Engine
         include G1822::Entities
         include G1822::Map
 
-        register_colors(lnwrBlack: '#000',
-                        gwrGreen: '#165016',
-                        lbscrYellow: '#cccc00',
-                        secrOrange: '#ff7f2a',
-                        crBlue: '#5555ff',
-                        mrRed: '#ff2a2a',
-                        lyrPurple: '#5a2ca0',
-                        nbrBrown: '#a05a2c',
-                        swrGray: '#999999',
-                        nerGreen: '#aade87',
-                        black: '#000',
-                        white: '#ffffff')
         PRIVATE_RED = '#FF7276'
         PRIVATE_GREEN = '#90EE90'
         PRIVATE_BLUE = '#89CFF0'
@@ -2088,6 +2076,12 @@ module Engine
                 token.price = self.class::TOKEN_PRICE
               end
             end
+
+            next unless corp_tokens_with_count.any? { |_, tc| tc.last > 1 }
+
+            # A token has been removed. Make sure we don't have an extra slot
+            # that was created for the destination token.
+            remove_cheater_slot!(city)
           end
         end
 
@@ -2237,6 +2231,21 @@ module Engine
           dest_hex = hex_by_id(corporation.destination_coordinates)
 
           "Destination: #{dest_hex.location_name} (#{dest_hex.name})"
+        end
+
+        # TODO: move this to City class
+        # If a city has had a slot added to accommodate a cheater token, and
+        # there is now an empty and unreserved slot in the city, move the
+        # cheater token to the empty slot and remove the extra slot.
+        def remove_cheater_slot!(city)
+          return unless city.slots > city.normal_slots
+
+          empty_slot = city.tokens.zip(city.reservations).index(&:none?)
+          return unless empty_slot
+
+          raise GameError, 'Cheater token not found' unless city.tokens.last.cheater
+
+          city.tokens[empty_slot] = city.tokens.pop
         end
 
         def setup_exchange_tokens

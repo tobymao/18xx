@@ -15,6 +15,16 @@ module Engine
 
             ACTIONS
           end
+
+          def process_run_routes(action)
+            super
+
+            bonus = @game.stock_market_bonus(action.entity)
+            return unless bonus.positive?
+
+            @round.extra_revenue = (@round.extra_revenue || 0) + bonus
+            @log << "#{action.entity.name} receives an additional #{@game.format_currency(bonus)} stock market bonus"
+          end
         end
       end
     end

@@ -55,7 +55,7 @@ module Engine
           'P5' => '/icons/1880/D.svg',
         }.freeze
 
-        TRAINS_NOT_TRIGGERING_SR = %w[2P 8E 10].freeze
+        TRAINS_NOT_TRIGGERING_SR = %w[2R 8E 10].freeze
 
         GAME_END_REASONS_TEXT = {
           final_train: 'Last 8 train sold',
@@ -235,7 +235,7 @@ module Engine
                     num: 2,
                   },
                   { name: '10', distance: 10, price: 1000, num: 10 },
-                  { name: '2P', distance: 2, price: 250, num: 10, available_on: 'C2' }].freeze
+                  { name: '2R', distance: 2, price: 250, num: 10, available_on: 'C2' }].freeze
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
           'float_30' => ['30% to Float', "Corporation's President must own 30% or corporation sold out to float"],
@@ -340,7 +340,7 @@ module Engine
         end
 
         def event_signal_end_game!
-          @log << "-- Event: #{EVENTS_TEXT['signal_end_game'][1]} --"
+          @log << "-- Event: #{self.class::EVENTS_TEXT['signal_end_game'][1]} --"
           @end_game_triggered = true
           @final_operating_rounds = @round.round_num + 3
           game_end_check
@@ -357,8 +357,8 @@ module Engine
           player_corps = @corporations.select { |c| c.owner == rocket.owner }
 
           if player_corps.empty?
-            @log << "Rocket of China's owner, #{rocket.owner} owns no corporations. '\
-                    'The rocket is exchanged for a 4 train, train is discarded."
+            @log << "#{rocket.name}'s owner, #{rocket.owner}, owns no corporations. "\
+                    "#{rocket.name} is closed, and its associated train is discarded."
             rocket.close!
             @depot.export!
           else
@@ -535,6 +535,7 @@ module Engine
 
           status = ["Building Permits: #{corporation.building_permits}"]
           status << ["Presidency: #{corporation.presidents_percent}%"]
+          status << ["Capitalization: #{corporation.fully_funded ? 'Full' : 'Half'}"] if corporation.floated?
           status
         end
 
@@ -585,8 +586,8 @@ module Engine
           tile_lays
         end
 
-        def upgrades_to_correct_label?(from, _to)
-          return true if from.color == :white && from.cities.size == 2
+        def upgrades_to_correct_label?(from, to)
+          return true if from.color == :white && from.cities.size == 2 && to.label.to_s == 'OO'
 
           super
         end
@@ -614,10 +615,10 @@ module Engine
           @minors.select { |m| m.owner == player }
         end
 
-        def routes_revenue(routes)
-          revenue = super
-          revenue += stock_market_bonus(@round.current_operator) unless revenue.zero?
-          revenue
+        def stop_type(stop)
+          return 'town' if stop.hex.tile.color == :blue
+
+          super
         end
 
         def revenue_for(route, stops)
@@ -771,7 +772,7 @@ module Engine
         end
 
         def must_buy_train?(entity)
-          entity.trains.reject { |t| t.name == '2P' }.empty?
+          entity.trains.reject { |t| t.name == '2R' }.empty?
         end
 
         def additional_ending_after_text
@@ -779,7 +780,7 @@ module Engine
         end
 
         def trains_not_triggering_sr?(train_name)
-          TRAINS_NOT_TRIGGERING_SR.include?(train_name)
+          self.class::TRAINS_NOT_TRIGGERING_SR.include?(train_name)
         end
 
         def forced_exchange_rocket?

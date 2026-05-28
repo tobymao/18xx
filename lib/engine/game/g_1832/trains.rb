@@ -4,7 +4,7 @@ module Engine
   module Game
     module G1832
       module Trains
-        TRAINS = [
+        EARLY_TRAINS = [
           {
             name: '2',
             distance: 2,
@@ -40,8 +40,11 @@ module Engine
             distance: 6,
             price: 630,
             num: 3,
-            events: [{ 'type' => 'remove_tokens' }],
+            events: [{ 'type' => 'final_merger_chance' }, { 'type' => 'remove_tokens' }],
           },
+        ].freeze
+
+        STANDARD_LATE_TRAINS = [
           {
             name: '8',
             distance: 8,
@@ -59,7 +62,19 @@ module Engine
             name: '12',
             distance: 12,
             price: 1100,
-            num: 99,
+            num: 'unlimited',
+          },
+        ].freeze
+
+        DIESEL_LATE_TRAINS = [
+          {
+            name: 'D',
+            distance: 999,
+            price: 1100,
+            num: 'unlimited',
+            available_on: '6',
+            discount: { '4' => 300, '5' => 300, '6' => 300 },
+            events: [{ 'type' => 'remove_key_west_token' }],
           },
         ].freeze
       end

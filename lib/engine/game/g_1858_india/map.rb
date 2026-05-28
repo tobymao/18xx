@@ -37,7 +37,7 @@ module Engine
           'G16' => 'Allahabad',
           'G18' => 'Benares',
           'G20' => 'Patna',
-          'G22' => 'Bhagaipur',
+          'G22' => 'Bhagalpur',
           'H7' => 'Ahmadabad',
           'H11' => 'Bhopal',
           'H13' => 'Jubbulpore',
@@ -707,7 +707,10 @@ module Engine
                     'city=revenue:0;' \
                     'border=type:province,edge:2;' \
                     'icon=image:1858_india/TN,sticky:1;',
-            %w[Q10 Q12 R11] =>
+            %w[Q10] =>
+                    'town=revenue:0;' \
+                    'upgrade=cost:40,terrain:mountain;',
+            %w[Q12 R11] =>
                     'town=revenue:0;',
           },
 

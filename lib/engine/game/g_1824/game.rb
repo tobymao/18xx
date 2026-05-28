@@ -52,8 +52,8 @@ module Engine
         MUST_SELL_IN_BLOCKS = false
 
         EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
-        EBUY_FROM_OTHERS = :always
-        EBUY_SELL_MORE_THAN_NEEDED = true
+        EBUY_FROM_OTHERS = :value # Rule VII.12, bullet 9
+        EBUY_SELL_MORE_THAN_NEEDED = false
         EBUY_SELL_MORE_THAN_NEEDED_SETS_PURCHASE_MIN = true
         EBUY_CAN_TAKE_PLAYER_LOAN = true
         MUST_BUY_TRAIN = :always
@@ -384,6 +384,15 @@ module Engine
 
         def ipo_reserved_name(_entity = nil)
           'Reserved'
+        end
+
+        def can_dump?(_entity, bundle)
+          super && within_bank_limit(bundle)
+        end
+
+        def within_bank_limit(bundle)
+          # 3+ player 1824 has a bank limit of 50% when selling, and no bank pool.
+          (bundle.corporation.num_ipo_shares * 10) + bundle.percent <= 50
         end
 
         def sd_minors

@@ -184,6 +184,10 @@ stackprof --d3-flamegraph stackprof.dump >stackprof.html
 stackprof stackprof.dump
 ```
 
+#### Formatting
+
+Run `docker compose exec rack rake rubocop` to ensure the code is formatted properly and `docker compose exec rack bundle exec rubocop -A` to let the formatter fix auto-correctable issues with your code.
+
 #### Testing a Game Migration
 
 Once a game has been made available on the website, bugs may be found where the solutions requires breaking active gamestates due to missing or added required actions. If the action is known to always need removal, or the additional action needed able to be determined computationally, we can automate this fix. This assumes you have a fixture/json file locally you want to fix.

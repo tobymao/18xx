@@ -133,7 +133,7 @@ module Engine
           stock_market: 'Company hit max stock value',
           final_train: '6x2-train was bought/exported',
         }.freeze
-        GAME_END_TIMING_PRIORITY = %i[immediate one_more_full_or_set full_or].freeze
+        GAME_END_TIMING_PRIORITY = %i[immediate full_or one_more_full_or_set].freeze
 
         def ipo_name(_entity = nil)
           'Treasury'

@@ -248,6 +248,7 @@ module Engine
         def map_poland_constants
           redef_const(:CURRENCY_FORMAT_STR, 'zł%s')
           redef_const(:STATUS_TEXT, { 'local_tokens' => ['Local Tokens', 'Can only token in home country'] })
+          redef_const(:CERT_LIMIT_INCLUDES_PRIVATES, false)
         end
 
         def map_poland_company_header(_company)

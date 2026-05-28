@@ -85,6 +85,21 @@ game config/code:
       specified, a line matching the tile's color is drawn on top of the edge's
       normal black line so that two adjacent tiles appear joined.
     - **cost** - integer - cost to cross for mountain/water borders
+- **partition** - draws a line across the interior of a hex
+    - **a** - *required* - integer (0–5) - anchor vertex; the line starts here at
+      the full hex corner
+    - **b** - *required* - integer (0–5) - target vertex; the line travels toward
+      this corner
+    - **type** - `mountain`/`water`/`impassable`/`divider`/`province` - visual
+      style and routing restriction. `province` renders as an orange dashed line
+      and always displays (no blocker company required).
+    - **restrict** - `inner`/`outer` - restricts routing to one side of the
+      partition line
+    - **length** - float (default `1.0`) - how far to travel from vertex `a`
+      toward vertex `b`. `length:1` reaches vertex `b` (full line); `length:0.5`
+      stops halfway. When `length` is specified, `a` is always the anchor and
+      the vertices are not reordered. On opposite vertices, `length:0.5` lands
+      at the hex centre. Example: `partition=a:3,b:0,type:province,length:0.5`
 - **junction** - the center point of a Lawson-style tile
 - **icon**
     - **image** - *required* - name of image, will be rendered with file at

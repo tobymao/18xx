@@ -19,14 +19,6 @@ module Engine
         attr_reader :corporation_power, :final_gauge, :north_hexes, :power_progress, :south_hexes,
                     :tile_groups
 
-        register_colors(green: '#237333',
-                        red: '#d81e3e',
-                        blue: '#0189d1',
-                        lightBlue: '#a2dced',
-                        yellow: '#FFF500',
-                        orange: '#f48221',
-                        brown: '#7b352a')
-
         CERT_LIMIT = {
           2 => 24,
           3 => 20,

@@ -11,7 +11,7 @@ module Engine
         DEV_STAGE = :production
 
         GAME_DESIGNER = 'Helmut Ohley'
-        GAME_LOCATION = 'The Netherlands'
+        GAME_LOCATION = 'Netherlands'
         GAME_RULES_URL = 'http://ohley.de/18nl/1830NLSummaryofrules.pdf'
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/18NL'
 

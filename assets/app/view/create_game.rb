@@ -11,6 +11,7 @@ module View
     include GameManager
     include Lib::Settings
     include Lib::WhatsThis::AutoRoute
+    include Lib::WhatsThis::EngineV2
 
     needs :mode, default: :multi, store: true
     needs :flash_opts, default: {}, store: true
@@ -99,6 +100,7 @@ module View
           end
 
           inputs << render_random_seed
+          inputs << render_engine_v2 if should_render_engine_v2?
           inputs << render_optional if should_render_optional?
           inputs << render_game_info
         end
@@ -455,6 +457,7 @@ module View
           title: game_params[:title],
         }
         game_data[:settings][:seed] = game_params[:seed] if game_params[:seed]
+        game_data[:settings][:use_engine_v2] = game_params[:use_engine_v2] if game_params[:use_engine_v2]
 
       when :json
         begin
@@ -710,6 +713,23 @@ module View
     def update_player_range(meta)
       title = meta.title
       @min_p[title], @max_p[title] = meta::PLAYER_RANGE
+    end
+
+    def render_engine_v2
+      render_input(
+        'Use Engine V2 (experimental)',
+        id: 'use_engine_v2',
+        type: :checkbox,
+        container_style: { paddingLeft: '0.5rem' },
+        attrs: { checked: false },
+        siblings: [engine_v2_whats_this],
+      )
+    end
+
+    def should_render_engine_v2?
+      # for now, only available locally for any contributors
+      # https://github.com/tobymao/18xx/issues/12193
+      !@production
     end
   end
 end

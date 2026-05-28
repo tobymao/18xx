@@ -27,12 +27,23 @@ module Lib
         @native&.get(key)
       end
 
+      def get_all(key)
+        return [] if @unsupported
+
+        @native.getAll(key)
+      end
+
       def []=(key, value)
         if !value || value.to_s.empty?
           @native&.delete(key)
         else
           @native&.set(key, value)
         end
+      end
+
+      def set_array(key, values)
+        @native.delete(key)
+        values.each { |v| @native.append(key, v) }
       end
 
       def to_query_string

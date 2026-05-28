@@ -18,14 +18,10 @@ module Engine
 
         include DoubleSidedTiles
 
-        register_colors(red: '#d1232a',
-                        orange: '#f58121',
-                        black: '#110a0c',
-                        blue: '#025aaa',
-                        lightBlue: '#8dd7f6',
-                        yellow: '#ffe600',
-                        green: '#32763f',
-                        brightGreen: '#6ec037')
+        def sugar_cane_open_for_majors?
+          @sugar_cane_open_for_majors
+        end
+
         TRACK_RESTRICTION = :permissive
         CURRENCY_FORMAT_STR = '$%s'
         HOME_TOKEN_TIMING = :operate
@@ -86,12 +82,12 @@ module Engine
             Engine::Step::SpecialToken,
             Engine::Step::BuyCompany,
             Engine::Step::HomeToken,
-            Engine::Step::Track,
+            G18Cuba::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
             G18Cuba::Step::Dividend,
             Engine::Step::DiscardTrain,
-            Engine::Step::BuyTrain,
+            G18Cuba::Step::BuyTrain,
             [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
@@ -134,6 +130,30 @@ module Engine
           initialize_tile_opposites!
           @unused_tiles = []
           @sugar_cubes = {}
+          @minor_graph = Graph.new(self, skip_track: :broad)
+        end
+
+        def init_graph
+          Graph.new(self, skip_track: :narrow)
+        end
+
+        def graph_for_entity(entity)
+          return @graph unless entity&.type == :minor
+
+          @minor_graph ||= Graph.new(self, skip_track: :broad)
+        end
+
+        def clear_graph
+          @minor_graph.clear
+          super
+        end
+
+        def clear_graph_for_entity(entity)
+          if entity&.type == :minor
+            @minor_graph.clear
+          else
+            super
+          end
         end
 
         def init_tile_groups
@@ -241,6 +261,88 @@ module Engine
 
           @sugar_cubes.clear
           @log << 'All remaining sugar cubes are removed at the end of the Operating Round.'
+        end
+
+        def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
+          corp = selected_company || @round&.current_entity&.corporation
+
+          super.reject do |t|
+            # Hex not available for selector, therefore passing nil and ignoring home hex check for minors
+            tile_blocked_for_corp?(t, corp, nil, for_selector: true)
+          end
+        end
+
+        def upgrades_to_correct_city_town?(from, to)
+          return true if sugar_cane_tile?(from) && sugar_cane_open_for_majors? && to.city_towns.empty?
+
+          super
+        end
+
+        def sugar_cane_hex?(hex)
+          SUGAR_CANE_HEXES.include?(hex.id)
+        end
+
+        def upgrade_cost(tile, hex, entity, spender)
+          # Minors lay on sugar cane hexes at no cost
+          return 0 if entity&.type == :minor && sugar_cane_hex?(hex)
+
+          super
+        end
+
+        def tile_blocked_for_corp?(tile, corp, hex, for_selector: false)
+          return false unless corp
+
+          if corp.type == :minor
+            minor_tile_blocked?(tile, corp.tokens.first.hex, hex, for_selector: for_selector)
+          else
+            major_tile_blocked?(tile, hex, for_selector: for_selector)
+          end
+        end
+
+        private
+
+        def sugar_cane_tile?(tile)
+          tile.towns.any?(&:hidden?)
+        end
+
+        def tile_has_only_track_type?(tile, track_type)
+          tile.paths.all? { |path| path.track == track_type }
+        end
+
+        def mixed_gauge_city_tile?(tile)
+          tile && !tile.cities.empty? && tile.paths.any? { |p| p.track == :narrow }
+        end
+
+        def minor_tile_blocked?(tile, home_hex, current_hex, for_selector: false)
+          # Determines if a tile is illegal for a minor:
+          # - Tiles with only broad tracks are always illegal
+          # - City tiles are illegal except on the minor's home hex
+          # - On sugar cane hexes, only tiles with hidden towns are legal (no plain track)
+          # - When `for_selector` is true, the rules which require current_hex is ignored because the hex is unknown
+          pure_broad = tile_has_only_track_type?(tile, :broad)
+
+          return pure_broad if for_selector
+          return pure_broad if current_hex == home_hex
+          return true if sugar_cane_hex?(current_hex) && tile.towns.empty?
+
+          !tile.cities.empty? || pure_broad
+        end
+
+        def major_tile_blocked?(tile, hex = nil, for_selector: false)
+          # Pure narrow tiles cannot be part of a major's route
+          return true if tile_has_only_track_type?(tile, :narrow)
+
+          # Mixed gauge city tiles (sugar mill) are minor-only in yellow.
+          # In green/brown they are only allowed as upgrades from an existing sugar mill
+          # (e.g. L53 → L67, L67 → brown sugar mill); majors cannot place them on plain hexes.
+          if mixed_gauge_city_tile?(tile)
+            return true if tile.color == :yellow
+            return false if for_selector
+            return true unless mixed_gauge_city_tile?(hex&.tile)
+          end
+
+          # Yellow tiles must be pure broad for majors
+          tile.color == :yellow && !tile_has_only_track_type?(tile, :broad)
         end
       end
     end

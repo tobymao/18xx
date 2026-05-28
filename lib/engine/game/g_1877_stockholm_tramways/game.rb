@@ -24,8 +24,6 @@ module Engine
 
         attr_accessor :sl
 
-        register_colors(black: '#000000')
-
         CURRENCY_FORMAT_STR = '%skr'
 
         BANK_CASH = 99_999
