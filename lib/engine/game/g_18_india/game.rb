@@ -508,7 +508,7 @@ module Engine
             G18India::Step::Assign, # used by P6
             G18India::Step::SpecialChoose, # Used by P4
             G18India::Step::SpecialTrack, # used by P2 & P3 (track lay & track upgrade)
-            Engine::Step::SpecialToken, # use for P5
+            G18India::Step::SpecialToken, # use for P5 (Danish EIC)
             G18India::Step::Track,
             G18India::Step::Token,
             G18India::Step::Route,
