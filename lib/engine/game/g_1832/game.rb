@@ -80,8 +80,8 @@ module Engine
 
         ASSIGNMENT_TOKENS = {
           'boomtown' => '/icons/1832/boomtown_token.svg',
-          'P2' => '/icons/1846/sc_token.svg',
-          'P3' => '/icons/1832/cotton_token.svg',
+          'P2' => '/icons/1832/cotton_token.svg',
+          'P3' => '/icons/1832/port_token.svg',
         }.freeze
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
