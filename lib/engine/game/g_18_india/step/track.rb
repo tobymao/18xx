@@ -24,9 +24,9 @@ module Engine
               return actions
             end
 
-            # Tile laid but company special-track abilities are still usable: stay
+            # Tile laid but P2/P3 could still create a token connection: stay
             # blocking so the player can use them before the token window closes.
-            return %w[pass] if special_track_ability_available?(entity)
+            return %w[pass] if needs_special_track_for_token?(entity)
 
             []
           end
@@ -111,9 +111,9 @@ module Engine
 
           # Added multiple yellow tile check and Yellow OO reservation check.
           # Does not delegate to super so we can control the pass! condition:
-          # if the entity still has company tile-lay abilities (P2/P3) we stay
-          # blocking, giving the player a chance to use them before the token
-          # window closes (fixes #11362).
+          # if the entity still has company tile-lay abilities (P2/P3) AND the
+          # token step would otherwise be skipped, we stay blocking so the
+          # player can use P2/P3 to create station access (fixes #11362).
           def process_lay_tile(action)
             if action.tile.color == :yellow
               raise GameError, 'New yellow tiles must extend path from railhead and previously laid tiles' \
@@ -124,7 +124,7 @@ module Engine
             lay_tile_action(action)
             move_oo_reservations(action) unless @round.pending_tokens.empty? # Pending token due to Yellow OO tile
             @round.next_empty_hexes = calculate_railhead_hexes unless @game.loading
-            pass! if !can_lay_tile?(action.entity) && !special_track_ability_available?(action.entity)
+            pass! if !can_lay_tile?(action.entity) && !needs_special_track_for_token?(action.entity)
           end
 
           # Base code doesn't handle one token and a reservation in first city on OO tile
@@ -165,12 +165,33 @@ module Engine
 
           private
 
-          # True when the entity owns a company with an active tile-lay ability
-          # (P2 Portuguese EIC or P3 Dutch EIC). Used to keep the Track step
-          # blocking after the normal tile lay so those abilities can still be
-          # used before the token window closes.
+          # True only when all three conditions hold:
+          #   (a) the entity or its owning player has an active tile-lay ability
+          #       (P2 Portuguese EIC or P3 Dutch EIC) — checked for both
+          #       corporation-owned and player-owned privates;
+          #   (b) the Token step would currently be skipped (no accessible
+          #       station) — if a token can already be placed, Track can
+          #       auto-pass normally so the existing "Skip (Token)" pass is not
+          #       stolen by Track; and
+          #   (c) the railhead still has reachable empty hexes — if the
+          #       network is hemmed in, P2 cannot help either.
+          def needs_special_track_for_token?(entity)
+            return false unless special_track_ability_available?(entity)
+            return false unless @round.next_empty_hexes&.any?
+
+            token_step = @round.steps.find { |s| s.is_a?(Engine::Step::Token) && s.active? }
+            return false unless token_step
+
+            !token_step.can_place_token?(entity)
+          end
+
+          # True when the entity (or its owning player) has an unused tile-lay
+          # ability. P2/P3 may be corporation-owned or still player-owned.
           def special_track_ability_available?(entity)
-            entity.companies.any? { |c| @game.abilities(c, :tile_lay) }
+            player = entity.owner
+            companies = entity.companies
+            companies += player.companies if player.respond_to?(:companies)
+            companies.any? { |c| @game.abilities(c, :tile_lay) }
           end
         end
       end
