@@ -124,7 +124,7 @@ module Engine
             lay_tile_action(action)
             move_oo_reservations(action) unless @round.pending_tokens.empty? # Pending token due to Yellow OO tile
             @round.next_empty_hexes = calculate_railhead_hexes unless @game.loading
-            pass! unless can_lay_tile?(action.entity) || special_track_ability_available?(action.entity)
+            pass! if !can_lay_tile?(action.entity) && !special_track_ability_available?(action.entity)
           end
 
           # Base code doesn't handle one token and a reservation in first city on OO tile
