@@ -649,6 +649,24 @@ module Engine
           @log << "#{company.name} closes (#{reason})"
         end
 
+        # TOR is placed on a preprinted gray hex, bypassing normal color progression
+        # and phase gating — both overrides apply only to this one special tile.
+        def upgrades_to_correct_color?(from, to, selected_company: nil)
+          return true if to.name == 'TOR'
+
+          super
+        end
+
+        def tile_valid_for_phase?(tile, hex: nil, phase_color_cache: nil)
+          return true if tile.name == 'TOR'
+
+          super
+        end
+
+        def status_str(corporation)
+          "#{corporation.presidents_percent}% President's Share"
+        end
+
         # ---------------------------------------------------------------------------
         # Tile-lay budget override.
         # ---------------------------------------------------------------------------
