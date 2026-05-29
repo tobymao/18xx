@@ -169,15 +169,23 @@ module Engine
           #   (a) the entity or its owning player has an active tile-lay ability
           #       (P2 Portuguese EIC or P3 Dutch EIC) — checked for both
           #       corporation-owned and player-owned privates;
-          #   (b) the Token step would currently be skipped (no accessible
+          #   (b) the entity's connected network has usable target hexes:
+          #       P2 (lay_count > 0) needs a white hex; P3 (upgrade_count > 0)
+          #       needs a yellow/green/brown hex to upgrade;
+          #   (c) the Token step would currently be skipped (no accessible
           #       station) — if a token can already be placed, Track can
           #       auto-pass normally so the existing "Skip (Token)" pass is not
-          #       stolen by Track; and
-          #   (c) the railhead still has reachable empty hexes — if the
-          #       network is hemmed in, P2 cannot help either.
+          #       stolen by Track.
           def needs_special_track_for_token?(entity)
-            return false unless special_track_ability_available?(entity)
-            return false unless @round.next_empty_hexes&.any?
+            abilities = special_tile_lay_abilities(entity)
+            return false if abilities.empty?
+
+            connected = @game.graph.connected_hexes(entity).keys
+            yellow_ok = abilities.any? { |a| a.lay_count&.positive? } &&
+                        connected.any? { |h| h.tile.color == :white }
+            upgrade_ok = abilities.any? { |a| a.upgrade_count&.positive? } &&
+                         connected.any? { |h| %i[yellow green brown].include?(h.tile.color) }
+            return false if !yellow_ok && !upgrade_ok
 
             token_step = @round.steps.find { |s| s.is_a?(Engine::Step::Token) && s.active? }
             return false unless token_step
@@ -185,13 +193,13 @@ module Engine
             !token_step.can_place_token?(entity)
           end
 
-          # True when the entity (or its owning player) has an unused tile-lay
-          # ability. P2/P3 may be corporation-owned or still player-owned.
-          def special_track_ability_available?(entity)
+          # Returns all active tile-lay abilities for the entity or its owning player.
+          # P2/P3 may be corporation-owned or still player-owned.
+          def special_tile_lay_abilities(entity)
             player = entity.owner
             companies = entity.companies
             companies += player.companies if player.respond_to?(:companies)
-            companies.any? { |c| @game.abilities(c, :tile_lay) }
+            companies.filter_map { |c| @game.abilities(c, :tile_lay) }
           end
         end
       end
