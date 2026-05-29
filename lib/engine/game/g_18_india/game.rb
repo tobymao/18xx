@@ -1031,8 +1031,8 @@ module Engine
           variable_city_stops.count * [max_non_variable_value, 0].max * train_multiplier
         end
 
-        def connection_bonus(route, _stops)
-          visited_location_names = route.visited_stops.map { |stop| stop.tile.location_name }.compact
+        def connection_bonus(_route, stops)
+          visited_location_names = stops.map { |stop| stop.tile.location_name }.compact
           return 0 if visited_location_names.count < 2
 
           # Delhi, Kochi => 100 [G8, G36]
