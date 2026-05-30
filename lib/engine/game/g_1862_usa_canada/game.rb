@@ -72,10 +72,6 @@ module Engine
             { hexes: %w[F20],          cash: 100, route_bonus: 30,  name: 'Chicago'     },
             { hexes: %w[B2 D2 G3 I5], cash: 200, route_bonus: 60, name: 'V/P/S/L' },
           ],
-          'TP' => [
-            { hexes: %w[J10], cash: 100, route_bonus: 30, name: 'El Paso' },
-            { hexes: %w[B2 D2 G3 I5], cash: 200, route_bonus: 60, name: 'V/P/S/L' },
-          ],
           'CN' => [
             { hexes: %w[B10], cash: 100, route_bonus: 30, name: 'Regina' },
             { hexes: %w[B2 D2 G3 I5], cash: 200, route_bonus: 60, name: 'V/P/S/L' },
@@ -176,15 +172,14 @@ module Engine
         ).freeze
 
         # ---------------------------------------------------------------------------
-        # Phases
-        # FIXME: verify exact operating_rounds count per phase from rulebook.
+        # Phases — 2 operating rounds per SR throughout.
         # ---------------------------------------------------------------------------
         PHASES = [
           {
             name: '2',
             train_limit: 4,
             tiles: [:yellow],
-            operating_rounds: 1,
+            operating_rounds: 2,
           },
           {
             name: '3',
@@ -207,7 +202,7 @@ module Engine
             on: '5',
             train_limit: 2,
             tiles: %i[yellow green brown],
-            operating_rounds: 3,
+            operating_rounds: 2,
             status: ['two_tile_lays'],
           },
           {
@@ -215,7 +210,7 @@ module Engine
             on: '6',
             train_limit: 2,
             tiles: %i[yellow green brown],
-            operating_rounds: 3,
+            operating_rounds: 2,
             status: ['two_tile_lays'],
           },
           {
@@ -223,7 +218,7 @@ module Engine
             on: '7',
             train_limit: 2,
             tiles: %i[yellow green brown gray],
-            operating_rounds: 3,
+            operating_rounds: 2,
             status: ['two_tile_lays'],
           },
           {
@@ -231,7 +226,7 @@ module Engine
             on: '8',
             train_limit: 2,
             tiles: %i[yellow green brown gray],
-            operating_rounds: 3,
+            operating_rounds: 2,
             status: ['two_tile_lays'],
           },
         ].freeze
