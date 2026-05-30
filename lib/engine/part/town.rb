@@ -33,8 +33,6 @@ module Engine
       # in the center or it is in the center and has less than two exits and
       # less than three paths
       def rect?
-        return false if @size > 1
-
         @style ? (@style == :rect) : (!paths.empty? && paths.size < 3)
       end
 
