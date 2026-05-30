@@ -17,9 +17,9 @@ module Engine
 
         # ---------------------------------------------------------------------------
         # Corporation groups — unlocked progressively.
-        # Group 1 available from game start.
-        # Group 2 unlocks when ALL Group 1 companies have floated.
-        # Group 3 unlocks when ALL Group 2 companies have floated.
+        # Group 1 available when ALL private companies have been sold.
+        # Group 2 unlocks when ALL Group 1 IPO shares have been sold.
+        # Group 3 unlocks when ALL Group 2 corporations have floated.
         #
         # Director share sizes by group (from rulebook):
         #   Group 1 (NYH, NYC, CP):       30% Director + 7×10%
@@ -217,6 +217,36 @@ module Engine
         ].freeze
 
         GAME_END_CHECK = { bank: :full_or, stock_market: :full_or }.freeze
+
+        # ---------------------------------------------------------------------------
+        # Corporation group unlock logic.
+        # ---------------------------------------------------------------------------
+        def corp_groups
+          @corp_groups ||= CORP_GROUPS.transform_values { |syms| syms.map { |s| corporation_by_id(s) } }
+        end
+
+        def corp_group(corporation)
+          corp_groups.find { |_, corps| corps.include?(corporation) }.first
+        end
+
+        def all_privates_sold?
+          @companies.all? { |c| c.owner&.player? || c.closed? }
+        end
+
+        def group_available?(group_num)
+          case group_num
+          when 1 then all_privates_sold?
+          when 2 then corp_groups[1].all? { |corp| corp.num_ipo_shares.zero? }
+          when 3 then corp_groups[2].all?(&:floated?)
+          else raise GameError, "Unknown corporation group #{group_num}"
+          end
+        end
+
+        def can_par?(corporation, parrer)
+          return false unless super
+
+          group_available?(corp_group(corporation))
+        end
 
         # ---------------------------------------------------------------------------
         # Round definitions — engine defaults only; custom steps added in later PRs.
