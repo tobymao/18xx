@@ -150,7 +150,7 @@ module Engine
                 price: 600,
               },
             ],
-            num: 7,
+            num: 'unlimited',
             events: [{ 'type' => 'hurricane' }],
           },
         ].freeze
