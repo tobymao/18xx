@@ -188,7 +188,9 @@ module Engine
 
       CAPITALIZATION = :full
 
-      # In some games, it's relevant to know the par price of a corporation even after the IPO sells out
+      # In some games, it's relevant to know the par price of a corporation even after the IPO sells out.
+      # Setting this to true will make the IPO row always appear on the corporation charter.
+      # If false then this row will be omitted when there are no IPO shares remaining.
       ALWAYS_SHOW_PAR_PRICE = false
 
       # Must sell all shares of a company in one action per turn
