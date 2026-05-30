@@ -771,6 +771,14 @@ module Engine
           @log << "Salt Lake City route bonus increases to #{format_currency(SLC_ROUTE_BONUS_SPIKE)} per OR"
         end
 
+        # V/P/S/L bonus hexes (B2, D2, G3, I5) each receive icons from 6 corps.
+        # Six icons in one row overflows the hex or lands on adjacent-hex boundaries.
+        # Fix: split into two groups of 3 pinned to the right side of the hex.
+        #   Upper group (CP/NYH/NYC): '3.5' → PP_WIDE_UPPER_RIGHT_CORNER (x:52, y:-25)
+        #   Lower group (SP/NP/CN):   '4.5' → PP_WIDE_BOTTOM_RIGHT_CORNER (x:52, y:+25)
+        VPSL_HEXES        = %w[B2 D2 G3 I5].freeze
+        VPSL_UPPER_CORPS  = %w[CP NYH NYC].freeze
+
         def place_bonus_icons
           CORP_BONUSES.each do |corp_id, bonuses|
             bonuses.each_with_index do |bonus, idx|
@@ -779,10 +787,17 @@ module Engine
                 hex = hex_by_id(hex_id)
                 next unless hex
 
-                hex.original_tile.icons << Part::Icon.new(icon, "bonus_#{corp_id}_#{idx}", true)
+                loc = vpsl_bonus_icon_loc(hex_id, corp_id)
+                hex.original_tile.icons << Part::Icon.new(icon, "bonus_#{corp_id}_#{idx}", true, nil, true, loc: loc)
               end
             end
           end
+        end
+
+        def vpsl_bonus_icon_loc(hex_id, corp_id)
+          return unless self.class::VPSL_HEXES.include?(hex_id)
+
+          self.class::VPSL_UPPER_CORPS.include?(corp_id) ? '3.5' : '4.5'
         end
 
         def would_activate?(bonus, routes, home)
