@@ -922,7 +922,7 @@ module Engine
 
         def upgrades_to_correct_label?(from, to)
           chain = self.class::METROPOLIS_UPGRADE_CHAINS[from.hex&.coordinates]
-          return (chain[chain.index(from.name) + 1] == to.name) if chain&.include?(from.name)
+          return (chain[chain.find_index(from.name) + 1] == to.name) if chain&.include?(from.name)
 
           super
         end
