@@ -153,16 +153,7 @@ module View
             raise NotImplementedError, "Unsupported town size: #{@town.size}"
           end
 
-          unless @town.solo?
-            if @town.size > 1
-              [-TWO_DOT_OFFSET, TWO_DOT_OFFSET].each do |dx|
-                children << h(HitBox, click: -> { touch_node(@town) },
-                               transform: "#{translate} translate(#{dx} 0)", r: 18)
-              end
-            else
-              children << h(HitBox, click: -> { touch_node(@town) }, transform: translate)
-            end
-          end
+          children << h(HitBox, click: -> { touch_node(@town) }, transform: translate) unless @town.solo?
           h(:g, { key: "#{@town.id}-d" }, children)
         end
 
