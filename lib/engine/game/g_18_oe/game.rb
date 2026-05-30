@@ -450,19 +450,19 @@ module Engine
             {
               'count' => 4,
               'color' => 'yellow',
-              'code' => 'town=revenue:10;town=revenue:10;path=a:0,b:_0;path=a:3,b:_0;path=a:_0,b:_1;path=a:0,b:_1;path=a:3,b:_1',
+              'code' => 'town=revenue:10,size:2;path=a:0,b:_0;path=a:3,b:_0',
             },
           'OE2' =>
             {
               'count' => 6,
               'color' => 'yellow',
-              'code' => 'town=revenue:10;town=revenue:10;path=a:0,b:_0;path=a:2,b:_0;path=a:_0,b:_1;path=a:0,b:_1;path=a:2,b:_1',
+              'code' => 'town=revenue:10,size:2;path=a:0,b:_0;path=a:2,b:_0',
             },
           'OE3' =>
             {
               'count' => 2,
               'color' => 'yellow',
-              'code' => 'town=revenue:10;town=revenue:10;path=a:0,b:_0;path=a:1,b:_0;path=a:_0,b:_1;path=a:0,b:_1;path=a:1,b:_1',
+              'code' => 'town=revenue:10,size:2;path=a:0,b:_0;path=a:1,b:_0',
             },
           'OE4' =>
             {
@@ -498,25 +498,19 @@ module Engine
             {
               'count' => 3,
               'color' => 'green',
-              'code' => 'town=revenue:10;town=revenue:10;' \
-                        'path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:5,b:_0;path=a:_0,b:_1;' \
-                        'path=a:0,b:_1;path=a:2,b:_1;path=a:3,b:_1;path=a:5,b:_1',
+              'code' => 'town=revenue:10,size:2;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:5,b:_0',
             },
           'OE10' =>
             {
               'count' => 3,
               'color' => 'green',
-              'code' => 'town=revenue:10;town=revenue:10;' \
-                        'path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:5,b:_0;path=a:_0,b:_1;' \
-                        'path=a:1,b:_1;path=a:2,b:_1;path=a:3,b:_1;path=a:5,b:_1',
+              'code' => 'town=revenue:10,size:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:5,b:_0',
             },
           'OE11' =>
             {
               'count' => 3,
               'color' => 'green',
-              'code' => 'town=revenue:10;town=revenue:10;' \
-                        'path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:_0,b:_1;' \
-                        'path=a:0,b:_1;path=a:2,b:_1;path=a:3,b:_1;path=a:4,b:_1',
+              'code' => 'town=revenue:10,size:2;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
             },
           'OE12' =>
             {
@@ -567,25 +561,20 @@ module Engine
             {
               'count' => 3,
               'color' => 'brown',
-              'code' => 'town=revenue:10;town=revenue:10;' \
-                        'path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;path=a:5,b:_0;path=a:_0,b:_1;' \
-                        'path=a:0,b:_1;path=a:1,b:_1;path=a:2,b:_1;path=a:4,b:_1;path=a:5,b:_1',
+              'code' => 'town=revenue:10,size:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:5,b:_0',
             },
           'OE21' =>
             {
               'count' => 2,
               'color' => 'brown',
-              'code' => 'town=revenue:10;town=revenue:10;' \
-                        'path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:5,b:_0;path=a:_0,b:_1;' \
-                        'path=a:0,b:_1;path=a:1,b:_1;path=a:2,b:_1;path=a:3,b:_1;path=a:5,b:_1',
+              'code' => 'town=revenue:10,size:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:5,b:_0',
             },
           'OE22' =>
             {
               'count' => 6,
               'color' => 'brown',
-              'code' => 'town=revenue:10;town=revenue:10;' \
-                        'path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;path=a:_0,b:_1;' \
-                        'path=a:0,b:_1;path=a:1,b:_1;path=a:2,b:_1;path=a:3,b:_1;path=a:4,b:_1;path=a:5,b:_1',
+              'code' => 'town=revenue:10,size:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;' \
+                        'path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
             },
           'OE23' =>
             {
@@ -864,36 +853,8 @@ module Engine
           cost
         end
 
-        def check_overlap(routes)
-          tracks = {}
-
-          check = lambda do |key|
-            raise GameError, "Route cannot reuse track on #{key[0].id}" if tracks[key]
-
-            tracks[key] = true
-          end
-
-          routes.each do |route|
-            route.paths.each do |path|
-              a = path.a
-              b = path.b
-
-              check.call([path.hex, a.num, path.lanes[0][1]]) if a.edge?
-              check.call([path.hex, b.num, path.lanes[1][1]]) if b.edge?
-
-              if b.edge? && a.town? && (nedge = a.tile.preferred_city_town_edges[a]) && nedge != b.num
-                check.call([path.hex, a, path.lanes[0][1]])
-              end
-              if a.edge? && b.town? && (nedge = b.tile.preferred_city_town_edges[b]) && nedge != a.num
-                check.call([path.hex, b, path.lanes[1][1]])
-              end
-
-              # §11.3.8: multiple trains independently score all towns at double-town junction tiles
-              next if path.nodes.size > 1 && path.nodes.all?(&:town?)
-
-              check.call([path.hex, path]) if path.nodes.size > 1
-            end
-          end
+        def revenue_stops(route)
+          super.flat_map { |stop| stop.town? && stop.size > 1 ? Array.new(stop.size, stop) : [stop] }
         end
 
         def level8_train_available?
