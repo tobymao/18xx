@@ -1803,7 +1803,7 @@ module Engine
               float_percent: 50,
               float_excludes_market: true,
               sym: 'kk',
-              name: 'kk Staatsbahn',
+              name: 'kaiserliche und königliche Staatsbahn',
               logo: '18_cz/kk',
               simple_logo: '18_cz/kk.alt',
               max_ownership_percent: 60,
