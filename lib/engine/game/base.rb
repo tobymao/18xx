@@ -1560,7 +1560,7 @@ module Engine
         # Stops use the first available slot, so for each stop in this case
         # we'll try to put it in a town slot if possible and then
         # in a city/town/offboard slot.
-        distance = distance.sort_by { |types, _| types.size }
+        distance = distance.sort_by { |h| h['nodes'].size }
 
         max_num_stops = [distance.sum { |h| h['pay'].to_i }, visits.size].min
 
@@ -1742,29 +1742,29 @@ module Engine
 
       def upgrade_cost(tile, hex, entity, spender)
         entity = entity.owner if !entity.corporation? && entity.owner&.corporation?
-        ability = entity.all_abilities.find do |a|
+        abilities = entity.all_abilities.select do |a|
           a.type == :tile_discount &&
             (!a.hexes || a.hexes.include?(hex.name))
         end
 
-        discount = ability&.discounts_tile?(tile) ? ability.discount : 0
-        log_cost_discount(spender, ability, discount)
+        discount = abilities.sum { |a| a.discounts_tile?(tile) ? a.discount : 0 }
+        log_cost_discount(spender, abilities, discount)
 
         tile.upgrades.sum(&:cost) - discount
       end
 
       def tile_cost_with_discount(_tile, hex, entity, spender, cost)
         entity = entity.owner if !entity.corporation? && entity.owner&.corporation?
-        ability = entity.all_abilities.find do |a|
+        abilities = entity.all_abilities.select do |a|
           a.type == :tile_discount &&
             !a.terrain &&
             (!a.hexes || a.hexes.include?(hex.name))
         end
 
-        return cost unless ability
+        return cost if abilities.empty?
 
-        discount = [cost, ability.discount].min
-        log_cost_discount(spender, ability, discount)
+        discount = [cost, abilities.sum(&:discount)].min
+        log_cost_discount(spender, abilities, discount)
 
         cost - discount
       end

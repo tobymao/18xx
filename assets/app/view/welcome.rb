@@ -18,6 +18,8 @@ module View
       message = <<~MESSAGE
         <p><a href="https://github.com/tobymao/18xx/wiki/1880-Romania">1880 Romania</a> is now in alpha.</p>
 
+        <p><a href="https://github.com/tobymao/18xx/wiki/1824">1824</a> is now in beta.</p>
+
         <p>Report bugs and make feature requests <a href='https://github.com/tobymao/18xx/issues'>on GitHub</a>.</p>
       MESSAGE
 

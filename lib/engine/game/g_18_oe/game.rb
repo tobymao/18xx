@@ -15,7 +15,7 @@ module Engine
         include G18OE::Entities
         include G18OE::Map
         attr_accessor :minor_regional_order, :minor_available_regions, :minor_floated_regions, :regional_corps_floated,
-                      :consolidation_triggered, :consolidation_done
+                      :consolidation_triggered, :consolidation_complete
 
         MARKET = [
           ['', '110', '120C', '135', '150', '165', '180', '200', '225', '250', '280', '310', '350', '390', '440', '490', '550'],
@@ -37,11 +37,26 @@ module Engine
         MUST_SELL_IN_BLOCKS = false
         HOME_TOKEN_TIMING = :float
         TILE_UPGRADES_MUST_USE_MAX_EXITS = [:cities].freeze
+        # bank-break ends current OR; first level-8 purchase ends after one more full OR set
+        GAME_END_CHECK = { bank: :current_or, final_phase: :one_more_full_or_set }.freeze
+        # Physical game includes 20×£5,000 notes set aside at setup; injected when first level-8 bought
+        REMAINDER_CASH = 100_000
 
         STOCKMARKET_COLORS = {
           par: :blue,
           convert_range: :red,
         }.freeze
+
+        EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+          'consolidation_triggered' => [
+            'Consolidation Round',
+            'Consolidation round follows at end of current OR set; minors and regionals must merge or be abandoned',
+          ],
+          'remainder_cash_added' => [
+            'Remainder Cash Added',
+            '£100,000 remainder cash injected into bank; game ends after one more full OR set',
+          ]
+        ).freeze
 
         MARKET_TEXT = {
           par: 'Regional par values',
@@ -70,7 +85,7 @@ module Engine
             train_limit: { minor: 1, regional: 1, major: 3, national: 4 },
             tiles: %i[yellow green],
             operating_rounds: 2,
-            status: ['can_buy_trains_from_others'],
+            status: [],
           },
           {
             name: '5',
@@ -78,7 +93,7 @@ module Engine
             train_limit: { minor: 1, regional: 1, major: 3, national: 4 },
             tiles: %i[yellow green brown],
             operating_rounds: 2,
-            status: ['can_buy_trains_from_others'],
+            status: [],
           },
           {
             name: '6',
@@ -86,7 +101,7 @@ module Engine
             train_limit: { major: 2, national: 3 },
             tiles: %i[yellow green brown],
             operating_rounds: 2,
-            status: ['can_buy_trains_from_others'],
+            status: [],
           },
           {
             name: '7',
@@ -94,7 +109,7 @@ module Engine
             train_limit: { major: 2, national: 3 },
             tiles: %i[yellow green brown gray],
             operating_rounds: 2,
-            status: ['can_buy_trains_from_others'],
+            status: [],
           },
           {
             name: '8',
@@ -102,7 +117,7 @@ module Engine
             train_limit: { major: 2, national: 3 },
             tiles: %i[yellow green brown gray],
             operating_rounds: 2,
-            status: ['can_buy_trains_from_others'],
+            status: [],
           },
         ].freeze
 
@@ -114,7 +129,7 @@ module Engine
                        { 'nodes' => %w[city offboard town], 'pay' => 2, 'visit' => 2 }],
             price: 100,
             rusts_on: '4',
-            num: 35,
+            num: 30,
           },
           # Level 3 — green double-sided (3 / 3+3); rust at Level 6
           {
@@ -130,7 +145,7 @@ module Engine
               price: 225,
               rusts_on: '6',
             }],
-            num: 24,
+            num: 20,
           },
           # Level 4 — green double-sided (4 / 4+4); rust at Level 8
           {
@@ -146,7 +161,7 @@ module Engine
               price: 350,
               rusts_on: '8+8',
             }],
-            num: 14,
+            num: 10,
           },
           # Level 5 — brown double-sided (5 / 5+5); permanent
           {
@@ -160,7 +175,7 @@ module Engine
                          { 'nodes' => %w[city offboard town], 'pay' => 5, 'visit' => 5 }],
               price: 475,
             }],
-            num: 11,
+            num: 8,
             events: [{ 'type' => 'consolidation_triggered' }],
           },
           # Level 6 — brown double-sided (6 / 6+6); permanent
@@ -175,7 +190,7 @@ module Engine
                          { 'nodes' => %w[city offboard town], 'pay' => 6, 'visit' => 6 }],
               price: 600,
             }],
-            num: 9,
+            num: 6,
           },
           # Level 7 — gray double-sided (7+7 / 4D); permanent
           # NOTE: Level 8 trains become available only after the 4th Level 7 purchase
@@ -190,9 +205,10 @@ module Engine
                          { 'nodes' => %w[city offboard], 'pay' => 4, 'visit' => 99 }],
               price: 850,
             }],
-            num: 17,
+            num: 14,
           },
           # Level 8 — gray double-sided (8+8 / 5D); permanent
+          # NOTE: purchase of the FIRST level-8 triggers game end
           {
             name: '8+8',
             distance: [{ 'nodes' => ['town'], 'pay' => 8, 'visit' => 99 },
@@ -204,7 +220,9 @@ module Engine
                          { 'nodes' => %w[city offboard], 'pay' => 5, 'visit' => 99 }],
               price: 1000,
             }],
-            num: 11,
+            num: 8,
+            available_on: '7+7',
+            events: [{ 'type' => 'remainder_cash_added' }],
           },
         ].freeze
 
@@ -223,6 +241,13 @@ module Engine
         }.freeze
         ASTERISKED_ZONES = %w[UK PHS FR].freeze
         ASTERISKED_ZONES_CAP = 4
+
+        ZONE_DISCOUNT_ZONES         = %w[SP IT SC RU].freeze
+        ZONE_DISCOUNT_RATE          = 0.2 # 20% §11.1.5
+        ZONE_TERRAIN_DISCOUNT_RATE  = 0.5 # 50% §11.1.5; E/F augment zone discount to this rate
+        TILE_POINT_BUDGET = { minor: 3, regional: 3, major: 6, national: 9 }.freeze
+        MINOR_MAX_TREASURY = 180
+        EF_TERRAIN_AUGMENT          = { 'E' => :water, 'F' => :mountain }.freeze
 
         CORPORATIONS_TRACK_RIGHTS = {
           # United Kingdom
@@ -361,6 +386,7 @@ module Engine
         }.freeze
 
         MAX_FLOATED_REGIONALS = 18
+        CONVERSION_NEW_SHARES = 6
 
         # still need green+ OE specific track tiles
         TILES = {
@@ -645,6 +671,8 @@ module Engine
           @minor_asterisked_selected = 0
           @minor_floated_regions = {}
           @regional_corps_floated = 0
+          @fulfilled_train_obligation = Set.new
+          @first_or_complete = false
 
           corporations.each do |corp|
             corp.par_via_exchange = companies.find { |c| c.sym == corp.id } if corp.type == :minor
@@ -666,8 +694,20 @@ module Engine
           @minor_floated_regions.size >= total_minors
         end
 
+        def fulfilled_train_obligation?(entity)
+          !phase.status.include?('train_obligation') || @fulfilled_train_obligation.include?(entity.id)
+        end
+
+        def fulfill_train_obligation!(entity)
+          @fulfilled_train_obligation.add(entity.id)
+        end
+
+        def non_starter_trains_available?
+          major_phase? && @first_or_complete
+        end
+
         def operating_order
-          @minor_regional_order + @corporations.select { |c| %i[major national].include?(c.type) }.sort
+          @minor_regional_order + @corporations.select { |c| %i[major national].include?(c.type) && c.floated? }.sort
         end
 
         def hex_within_national_region?(entity, hex)
@@ -715,7 +755,7 @@ module Engine
         end
 
         def metropolis_hex?(hex)
-          %w[A56 B41 C74 F87 K26 M28 M50 Q30 R55 Y14 AA82 AB51].include?(hex.name.to_s)
+          %w[A56 B41 C74 F87 K26 M28 M50 Q30 R55 Y14 AA82 AB51].include?(hex.coordinates)
         end
 
         def metropolis_tile?(tile)
@@ -723,8 +763,58 @@ module Engine
              OE18 OE26 OE27 OE28 OE29 OE30 OE37 OE38 OE39 OE40 OE41].include?(tile.name.to_s)
         end
 
+        def tile_point_budget(entity)
+          self.class::TILE_POINT_BUDGET[entity.type] || 0
+        end
+
         def can_buy_train_from_others?
-          @phase.status.include?('can_buy_trains_from_others')
+          major_phase?
+        end
+
+        def train_obligation_active?
+          phase.status.include?('train_obligation')
+        end
+
+        def upgrade_cost(tile, hex, entity, spender)
+          base_cost = tile.upgrades.sum(&:cost)
+          return super if base_cost.zero?
+
+          entity_zone = entity_track_rights_zone(entity)
+          hex_zone = region_for_hex(hex)
+          zone_match = hex_zone && entity_zone == hex_zone &&
+                       self.class::ZONE_DISCOUNT_ZONES.include?(hex_zone)
+
+          return super unless zone_match
+
+          # §11.1.5: 20% zone discount; E/F augment to 50% when terrain matches
+          ef_corp = terrain_augmented_by?(entity, tile)
+          rate = ef_corp ? self.class::ZONE_TERRAIN_DISCOUNT_RATE : self.class::ZONE_DISCOUNT_RATE
+          cost = (base_cost * (1 - rate)).floor
+          discount = base_cost - cost
+          if discount.positive?
+            pct = (rate * 100).to_i
+            label = ef_corp ? "#{pct}% zone+#{ef_corp.name}" : "#{pct}% zone"
+            @log << "#{spender.name} receives a #{label} discount of #{format_currency(discount)}"
+          end
+          cost
+        end
+
+        def level8_train_available?
+          return false if phase.name.to_i < 7
+          return true if phase.name.to_i == 8
+
+          next_train = @depot.upcoming.first
+          next_train.index >= 4 || next_train.name != '7+7'
+        end
+
+        def event_remainder_cash_added!
+          return if @remainder_cash_added
+
+          @remainder_cash_added = true
+          remainder = self.class::REMAINDER_CASH
+          @bank.add_cash(remainder)
+          @log << "-- Event: #{format_currency(remainder)} remainder cash added to bank;" \
+                  ' game ends after one more full OR set (sooner if bank breaks) --'
         end
 
         # UP movement at end of SR: only for majors and nationals that are fully player-held
@@ -741,14 +831,24 @@ module Engine
           @round =
             case @round
             when Engine::Round::Operating
-              if @consolidation_triggered && !@consolidation_done
+              @first_or_complete = true # Rule 8.3/11.6: level 3+ trains unblocked after first OR
+              if @round.round_num < @operating_rounds
+                or_round_finished
+                new_operating_round(@round.round_num + 1)
+              elsif @consolidation_triggered && !@consolidation_complete
+                @turn += 1
+                or_round_finished
+                or_set_finished
                 @log << '-- Consolidation Phase --'
                 new_consolidation_round
               else
-                super
+                @turn += 1
+                or_round_finished
+                or_set_finished
+                new_stock_round
               end
             when Round::G18OE::Consolidation
-              @consolidation_done = true
+              @consolidation_complete = true
               @turn += 1
               new_stock_round
             else
@@ -766,7 +866,7 @@ module Engine
           return true if from.label == to.label
           return false if from.label && !to.label
 
-          case from.hex.name
+          case from.hex.coordinates
           when 'K26', 'Y14', 'R55'
             to.label.to_s.include?('A')
           when 'M50'
@@ -802,21 +902,12 @@ module Engine
           corporation.spend(cost, @bank) if cost&.positive?
         end
 
-        # Override stock price movement according to 18OE rules
-        # - Minors & Regionals: no movement
-        # - Majors & Nationals:
-        #   * revenue >= share price -> move right
-        #   * revenue between 0 and share price -> no move
-        #   * revenue = 0 -> move left
-        def change_share_price(entity, revenue)
-          return if entity.type == :minor || entity.type == :regional
-
-          share_price = entity.share_price.price
-          if revenue >= share_price
-            @stock_market.move_right(entity)
-          elsif revenue.zero?
-            @stock_market.move_left(entity)
-          end
+        def add_new_share(share)
+          owner = share.owner
+          corporation = share.corporation
+          corporation.share_holders[owner] += share.percent if owner
+          owner.shares_by_corporation[corporation] << share
+          @_shares[share.id] = share
         end
 
         def issuable_shares(entity)
@@ -824,6 +915,13 @@ module Engine
 
           bundles_for_corporation(entity, entity)
             .select { |bundle| @share_pool.fit_in_bank?(bundle) }
+        end
+
+        def redeemable_shares(entity)
+          return [] if !entity.corporation? || entity.type != :major
+
+          bundles_for_corporation(@share_pool, entity)
+            .reject { |bundle| entity.cash < bundle.price }
         end
 
         def value_for_dumpable(player, corporation)
@@ -858,8 +956,30 @@ module Engine
             G18OE::Step::Dividend,
             G18OE::Step::BuyTrain,
             # Convert step to do national conversions at 4/6/8?
-            Engine::Step::IssueShares,
+            G18OE::Step::IssueShares,
           ], round_num: round_num)
+        end
+
+        private
+
+        def entity_track_rights_zone(entity)
+          corp = owning_corporation(entity)
+          return nil unless corp
+
+          self.class::CORPORATIONS_TRACK_RIGHTS[corp.id] || @minor_floated_regions[corp.id]
+        end
+
+        def terrain_augmented_by?(entity, tile)
+          corp = owning_corporation(entity)
+          return nil unless corp
+
+          terrain = self.class::EF_TERRAIN_AUGMENT[corp.id]
+          terrain && tile.terrain.include?(terrain) ? corp : nil
+        end
+
+        def owning_corporation(entity)
+          resolved = entity.corporation? ? entity : entity.owner
+          resolved&.corporation? ? resolved : nil
         end
       end
     end

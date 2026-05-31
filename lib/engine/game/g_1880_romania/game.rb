@@ -4,7 +4,6 @@ require_relative 'meta'
 require_relative '../g_1880/game'
 require_relative 'map'
 require_relative 'entities'
-require_relative 'minor'
 
 module Engine
   module Game
@@ -159,8 +158,12 @@ module Engine
           'signal_end_game' => ['Signal End Game', 'Game ends 3 ORs after purchase/export of last 6E train']
         ).freeze
 
+        GAME_END_REASONS_TEXT = {
+          final_train: 'Last 6E train sold',
+        }.freeze
+
         def init_minors
-          game_minors.map { |minor| G1880Romania::Minor.new(**minor) }
+          game_minors.map { |minor| G1880::Minor.new(**minor) }
         end
 
         def new_draft_round
@@ -342,6 +345,10 @@ module Engine
 
         def danube_port_bonus?(route, stops = route.stops)
           stops.any? { |stop| stop.hex.assigned?(danube_port.id) } && route.corporation.owner == danube_port.owner
+        end
+
+        def ferry_hexes
+          []
         end
 
         # This game's Electroputere S.A. private company's forced train exchange is identical to the forced exchange for the

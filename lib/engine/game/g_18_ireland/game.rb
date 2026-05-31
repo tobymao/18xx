@@ -185,7 +185,7 @@ module Engine
           },
           {
             name: 'D',
-            num: 29, # 7 majors @ 2, 15 minors @ 1
+            num: 'unlimited',
             distance: 99,
             price: 770,
             discount: {
