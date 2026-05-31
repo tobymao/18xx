@@ -82,7 +82,7 @@ module View
         end
         @hexes.compact!
 
-        children = [render_map, h(MapZoom, map_zoom: map_zoom)]
+        children = [render_map]
 
         if current_entity && @tile_selector
           left = (@tile_selector.x + map_x) * @scale
@@ -150,7 +150,7 @@ module View
           },
         }
 
-        map_elements = [h(:div, props, children), h(MapControls)]
+        map_elements = [h(MapZoom, map_zoom: map_zoom), h(:div, props, children), h(MapControls)]
         map_elements << h(MapLegend, game: @game) if @game.show_map_legend? && !@game.show_map_legend_on_left?
 
         h(:div, { style: { marginBottom: '1rem' } }, map_elements)
