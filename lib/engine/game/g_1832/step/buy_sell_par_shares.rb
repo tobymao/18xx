@@ -8,7 +8,7 @@ module Engine
       module Step
         class BuySellParShares < G1870::Step::BuySellParShares
           def visible_corporations
-            @game.sorted_corporations.reject { |item| item.system? unless item.floated? }
+            @game.sorted_corporations.reject { |item| item.type == :system unless item.floated? }
           end
         end
       end
