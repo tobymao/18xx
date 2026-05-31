@@ -150,7 +150,7 @@ module Engine
                     name: '8E',
                     distance: [{ 'nodes' => %w[city offboard town], 'pay' => 8, 'visit' => 99 }],
                     price: 900,
-                    num: 10,
+                    num: 'unlimited',
                   },
                   { name: '2R', distance: 2, price: 250, num: 10, available_on: 'C2' }].freeze
 

@@ -194,7 +194,7 @@ module Engine
           },
           {
             name: '5+4',
-            num: 20,
+            num: 'unlimited',
             distance: [
               { 'nodes' => %w[town], 'pay' => 4, 'visit' => 4 },
               { 'nodes' => %w[town city offboard], 'pay' => 5, 'visit' => 5 },
@@ -235,7 +235,7 @@ module Engine
           },
           {
             name: '4G',
-            num: 20,
+            num: 'unlimited',
             distance: [
               { 'nodes' => %w[town], 'pay' => 99, 'visit' => 99 },
               { 'nodes' => %w[city offboard], 'pay' => 5, 'visit' => 5 },

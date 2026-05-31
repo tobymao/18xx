@@ -302,7 +302,7 @@ module Engine
             distance: [{ 'nodes' => %w[city offboard], 'pay' => 8, 'visit' => 8 },
                        { 'nodes' => ['town'], 'pay' => 99, 'visit' => 99 }],
             price: 800,
-            num: 20,
+            num: 'unlimited',
             variants: [
               {
                 name: 'D',
@@ -318,7 +318,7 @@ module Engine
             distance: [{ 'nodes' => %w[city offboard], 'pay' => 2, 'visit' => 99 },
                        { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
             price: 200,
-            num: 10,
+            num: 'unlimited',
             available_on: '5',
           },
         ].freeze
@@ -815,7 +815,7 @@ module Engine
 
         def init_train_handler
           trains = game_trains.flat_map do |train|
-            Array.new((train[:num] || num_trains(train))) do |index|
+            Array.new(num_trains(train)) do |index|
               Train.new(**train, index: index)
             end
           end

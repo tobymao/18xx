@@ -43,14 +43,15 @@ module Engine
           {
             name: '8',
             distance: 8,
-            num: 6,
+            num: 'unlimited',
             price: 900,
-          },
-          {
-            name: '8Ox',
-            distance: 8,
-            num: 5,
-            price: 1200,
+            variants: [
+              {
+                name: '8Ox',
+                distance: 8,
+                price: 1200,
+              },
+            ],
           },
           {
             name: '1+',
