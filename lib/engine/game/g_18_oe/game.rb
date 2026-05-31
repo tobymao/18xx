@@ -931,6 +931,14 @@ module Engine
           super
         end
 
+        def upgrades_to_correct_city_town?(from, to)
+          from_double = from.towns.any? { |t| t.size > 1 }
+          to_double   = to.towns.any? { |t| t.size > 1 }
+          return false if from_double != to_double
+
+          super
+        end
+
         def company_becomes_minor?(company)
           corp = @corporations.find { |c| c.name == company.sym }
           return false unless corp
