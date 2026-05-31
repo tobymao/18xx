@@ -31,6 +31,8 @@ module Engine
 
         STARTING_CASH = { 3 => 860, 4 => 650, 5 => 520, 6 => 440 }.freeze
 
+        ALWAYS_SHOW_PAR_PRICE = true
+
         NORTH_CORPS = %w[FdSB FdLR CFEA CFLG SFVA FdC].freeze
 
         TRACK_RESTRICTION = :permissive
