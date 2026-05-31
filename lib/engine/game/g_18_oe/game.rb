@@ -853,6 +853,10 @@ module Engine
           cost
         end
 
+        def visited_stops(route)
+          super.flat_map { |stop| stop.town? && stop.size > 1 ? Array.new(stop.size, stop) : [stop] }
+        end
+
         def revenue_stops(route)
           super.flat_map { |stop| stop.town? && stop.size > 1 ? Array.new(stop.size, stop) : [stop] }
         end
