@@ -41,7 +41,7 @@ module Engine
 
         CURRENCY_FORMAT_STR = 'A%s'
 
-        BANK_CASH = 99_999
+        BANK_CASH = :unlimited
 
         MARKET = [
           %w[40 50p 60xp 70xp 80xp 95m 115 140 170 205 250 300 350e 400e],

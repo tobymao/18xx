@@ -15,7 +15,7 @@ module Engine
         attr_reader :tile_groups, :unused_tiles, :sik, :skev, :ldsteg, :mavag, :raba, :snw, :gc, :ciwl, :terrain_tokens
 
         CURRENCY_FORMAT_STR = '%s Ft'
-        BANK_CASH = 100_000
+        BANK_CASH = :unlimited
         CERT_LIMIT = {
           2 => 10,
           3 => 18,

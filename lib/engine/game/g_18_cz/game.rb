@@ -17,7 +17,7 @@ module Engine
 
         CURRENCY_FORMAT_STR = '%s K'
 
-        BANK_CASH = 99_999
+        BANK_CASH = :unlimited
 
         CERT_LIMIT = { 2 => 14, 3 => 14, 4 => 12, 5 => 10, 6 => 9 }.freeze
 

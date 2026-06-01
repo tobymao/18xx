@@ -19,7 +19,7 @@ module Engine
         SELL_BUY_ORDER = :sell_buy
         CURRENCY_FORMAT_STR = '%s'
 
-        BANK_CASH = 99_999
+        BANK_CASH = :unlimited
 
         CERT_LIMIT = { 2 => 18, 3 => 16, 4 => 14, 5 => 13, 6 => 12 }.freeze
 

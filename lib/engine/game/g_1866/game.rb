@@ -36,7 +36,7 @@ module Engine
 
         BANKRUPTCY_ALLOWED = false
         CURRENCY_FORMAT_STR = '£%s'
-        BANK_CASH = 99_999
+        BANK_CASH = :unlimited
 
         CAPITALIZATION = :incremental
 

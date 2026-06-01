@@ -39,7 +39,7 @@ module Engine
 
         BANKRUPTCY_ENDS_GAME_AFTER = :one
 
-        BANK_CASH = 999_000
+        BANK_CASH = :unlimited
 
         CLOSED_CORP_RESERVATIONS_REMOVED = false
 
