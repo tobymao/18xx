@@ -26,7 +26,7 @@ module Engine
         # bankrupt is allowed, player leaves game
         BANKRUPTCY_ALLOWED = true
 
-        BANK_CASH = 120_00
+        BANK_CASH = 12_000
         PAR_PRICES = {
           'PR' => 154,
           'BY' => 92,
@@ -241,7 +241,7 @@ module Engine
             Engine::Step::HomeToken,
             Engine::Step::Token,
             Engine::Step::Route,
-            G1835::Step::Dividend,
+            Engine::Step::Dividend,
             G1835::Step::BuyTrain,
           ], round_num: round_num)
         end
@@ -420,7 +420,6 @@ module Engine
         end
 
         def close_minor!(minor)
-          # minors.delete(minor)
           minor.tokens.each(&:remove!)
           minor.close!
         end
