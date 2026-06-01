@@ -194,6 +194,9 @@ module Engine
           @can_buy_trains = false
         end
 
+        def can_buy_trains
+          @can_buy_trains
+        end
         def company_header(company)
           return 'MINOR' if '123456'.include?(company.sym)
           return 'SHARE' if company.sym == 'BY_D'
