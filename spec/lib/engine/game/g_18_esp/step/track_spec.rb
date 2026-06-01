@@ -130,7 +130,7 @@ describe Engine::Game::G18ESP::Game do
     # during strict loading. goal_reached! releases a blocked token.
     # Bug: without graph clear in CDC, can_token? returns stale false,
     # Track gets skipped, and place_token is lost.
-    let(:game) { fixture_at_action(669) }
+    let(:game) { fixture_at_action(665) }
     let(:step) { game.round.steps.find { |s| s.is_a?(Engine::Game::G18ESP::Step::Track) } }
     let(:avt) { game.corporation_by_id('AVT') }
 
