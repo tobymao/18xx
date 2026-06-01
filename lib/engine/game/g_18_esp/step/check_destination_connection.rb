@@ -45,7 +45,14 @@ module Engine
           def log_skip(_entity); end
 
           def process_destination_connection(action)
-            action.corporations.first.goal_reached!(:destination)
+            corp = action.corporations.first
+            corp.goal_reached!(:destination)
+            @game.clear_graph_for_entity(corp)
+            # Track may have been skipped by skip_steps because can_token? was
+            # false while the token was still blocked.  Now that goal_reached!
+            # released it, reactivate Track so place_token remains available.
+            track_step = @round.steps.find { |s| s.is_a?(Engine::Game::G18ESP::Step::Track) }
+            track_step&.reactivate_for_token!
             @passed = true
           end
         end

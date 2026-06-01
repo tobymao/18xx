@@ -90,7 +90,7 @@ def inject_destination_connections(data)
   prev_entity      = nil
   pending_dc_corps = Set.new
 
-  filtered_actions.each_with_index do |action_hash, idx|
+  filtered_actions.each do |action_hash|
     entity_id = action_hash['entity']
     entity    = game.corporation_by_id(entity_id)
     new_turn  = (entity_id != prev_entity)
@@ -124,42 +124,12 @@ def inject_destination_connections(data)
     # Post-action check for own-connection via tile lay or token placement.
     if TILE_ACTIONS.include?(action_hash['type'])
       if check_connection_as_strict?(game, entity)
-        # Look-ahead: if the very next action is a place_token from the same
-        # entity, emit DC as a standalone action BETWEEN the two rather than as
-        # an auto_action.  An auto_action DC triggers skip_steps via a stale
-        # graph cache which hides the newly-freed token, causing Track to mark
-        # itself passed and blocking the subsequent place_token.
-        next_action = filtered_actions[idx + 1]
-
-        if next_action && next_action['type'] == 'place_token' && next_action['entity'] == entity_id
-          user_id = entity.owner&.id || default_user
-          entity.goal_reached!(:destination)
-          dc_count += 1
-          puts "  #{entity_id}: standalone mid-turn (between #{action_hash['id']} and #{next_action['id']})"
-
-          # Cross-corp check still runs before we bail out of the normal path.
-          game.corporations.each do |corp|
-            next if corp == entity
-            next if corp.destination_connected?
-            next if pending_dc_corps.include?(corp.id)
-            next unless check_connection_as_strict?(game, corp)
-
-            pending_dc_corps.add(corp.id)
-            puts "  #{corp.id}: cross-corp pending (#{entity_id} #{action_hash['type']} #{action_hash['id']})"
-          end
-
-          result << action_hash
-          result << dc_standalone_action_hash(entity_id, result.length + 1, user_id)
-          prev_entity = entity_id
-          next
-        else
-          action_hash['auto_actions'] ||= []
-          # DC must be first so CDC processes it before any pass auto_action.
-          action_hash['auto_actions'].unshift(dc_auto_action_hash(entity_id))
-          entity.goal_reached!(:destination)
-          dc_count += 1
-          puts "  #{entity_id}: nested auto_action on #{action_hash['type']} #{action_hash['id']}"
-        end
+        action_hash['auto_actions'] ||= []
+        # DC must be first so CDC processes it before any pass auto_action.
+        action_hash['auto_actions'].unshift(dc_auto_action_hash(entity_id))
+        entity.goal_reached!(:destination)
+        dc_count += 1
+        puts "  #{entity_id}: nested auto_action on #{action_hash['type']} #{action_hash['id']}"
       end
 
       # Cross-corp: another corp's destination may now be reachable.

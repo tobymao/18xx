@@ -50,7 +50,9 @@ module Engine
           end
 
           def process_destination_connection(action)
-            action.corporations.first.goal_reached!(:destination)
+            corp = action.corporations.first
+            corp.goal_reached!(:destination)
+            @game.clear_graph_for_entity(corp)
           end
 
           def process_place_token(action)
@@ -86,6 +88,10 @@ module Engine
             @game.open_mountain_pass(action.entity, action.choice)
             @game.graph_for_entity(action.entity).clear
             @round.opened_mountain_pass = true
+          end
+
+          def reactivate_for_token!
+            @passed = false unless @tokened
           end
 
           def skip!
