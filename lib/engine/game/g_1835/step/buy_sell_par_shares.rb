@@ -11,8 +11,9 @@ module Engine
 
               action.bundle.share_price = nationalization_price(action.bundle.corporation.share_price.price)
             end
+            owner = action.bundle.owner
             super
-            @game.maybe_ipo_next_block(action.bundle.corporation)
+            @game.maybe_ipo_next_block(action.bundle.corporation) unless owner == @game.share_pool
           end
 
           def can_buy?(entity, bundle)
@@ -25,9 +26,14 @@ module Engine
             end
 
             return false unless super
+            return true if bundle.owner == @game.share_pool
 
             # ensure 20% shares of BA, WT and HE cannot be bought before all 10% shares are gone
-            bundle.shares.first == bundle.corporation.shares.first
+            return bundle.shares.first == bundle.corporation.shares.first unless bundle.corporation == @game.prussian
+
+            # Ignore the order for PR: We cannot use the same logic we use for the other corporations, because the very first
+            # share - the president - is reserved. If we used the same logic, no PR share could  ever be bought
+            true
           end
 
           def allow_president_change?(corporation)
