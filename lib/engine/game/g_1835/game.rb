@@ -13,7 +13,7 @@ module Engine
     module G1835
       class Game < Game::Base
         attr_accessor :draft_finished, :pr_can_form, :conversion_choice_during_or
-        attr_reader :preussen_may_float
+        attr_reader :preussen_may_float, :can_buy_trains
 
         include_meta(G1835::Meta)
         include CitiesPlusTownsRouteDistanceStr
@@ -194,9 +194,6 @@ module Engine
           @can_buy_trains = false
         end
 
-        def can_buy_trains
-          @can_buy_trains
-        end
         def company_header(company)
           return 'MINOR' if '123456'.include?(company.sym)
           return 'SHARE' if company.sym == 'BY_D'
