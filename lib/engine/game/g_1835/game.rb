@@ -336,10 +336,6 @@ module Engine
           @prussian_companies ||= %w[BB HB].map { |id| company_by_id(id) }
         end
 
-        def can_cross_buy?
-          @can_cross_buy
-        end
-
         def event_can_buy_trains!
           @log << "-- Event: #{EVENTS_TEXT['can_buy_trains'][1]} --"
           @can_buy_trains = true
