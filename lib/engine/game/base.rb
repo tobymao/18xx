@@ -2550,7 +2550,7 @@ module Engine
       end
 
       def init_bank_kwargs
-        { check: !unlimited_bank? && game_end_check_values.include?(:bank) }
+        { check: game_end_check_values.include?(:bank) }
       end
 
       def unlimited_bank?

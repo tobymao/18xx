@@ -33,7 +33,7 @@ module View
         interest_change = (@game.interest_change if @game.respond_to?(:interest_change))
         trs << h(:tr, [
           h(:td, 'Cash'),
-          h('td.right', @game.unlimited_bank? ? '∞' : @game.format_currency(@game.bank_cash)),
+          h('td.right', @game.unlimited_bank? ? 'Unlimited' : @game.format_currency(@game.bank_cash)),
         ])
         if (rate = @game.interest_rate)
           trs << h(:tr, [
