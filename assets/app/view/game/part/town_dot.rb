@@ -116,45 +116,56 @@ module View
           children = []
 
           case @town.size
-          when 2
-            children << h(:ellipse, attrs: {
-                            transform: translate.to_s,
-                            rx: TWO_DOT_OFFSET + radius + 4,
-                            ry: radius + 3,
-                            fill: 'white',
-                            stroke: @color,
-                            'stroke-width': 2,
-                          })
-            [-TWO_DOT_OFFSET, TWO_DOT_OFFSET].each do |dx|
-              children << h(:circle, attrs: {
-                              transform: "#{translate} translate(#{dx} 0)",
-                              r: radius,
-                              fill: fill,
-                              stroke: stroke,
-                              'stroke-width': 4,
-                            })
-            end
-            if @show_revenue && !(rendered = render_revenue_size2).empty?
-              children.concat(rendered)
-            end
-          when 1
-            children << h(:circle, attrs: {
-                            transform: translate.to_s,
-                            r: radius,
-                            fill: fill,
-                            stroke: stroke,
-                            'stroke-width': 4,
-                          })
-            children << render_boom if @town.boom
-            if @show_revenue && (rendered = render_revenue)
-              children << rendered
-            end
-          else
-            raise NotImplementedError, "Unsupported town size: #{@town.size}"
+          when 2 then children.concat(render_double_town(radius, fill, stroke))
+          when 1 then children.concat(render_single_town(radius, fill, stroke))
+          else raise NotImplementedError, "Unsupported town size: #{@town.size}"
           end
 
           children << h(HitBox, click: -> { touch_node(@town) }, transform: translate) unless @town.solo?
           h(:g, { key: "#{@town.id}-d" }, children)
+        end
+
+        def render_double_town(radius, fill, stroke)
+          result = []
+          result << h(:ellipse, attrs: {
+                        transform: translate.to_s,
+                        rx: TWO_DOT_OFFSET + radius + 4,
+                        ry: radius + 3,
+                        fill: 'white',
+                        stroke: @color,
+                        'stroke-width': 2,
+                      })
+          [-TWO_DOT_OFFSET, TWO_DOT_OFFSET].each do |dx|
+            result << h(:circle, attrs: {
+                          transform: "#{translate} translate(#{dx} 0)",
+                          r: radius,
+                          fill: fill,
+                          stroke: stroke,
+                          'stroke-width': 4,
+                        })
+          end
+          if @show_revenue
+            rev = render_revenue_size2
+            result.concat(rev) unless rev.empty?
+          end
+          result
+        end
+
+        def render_single_town(radius, fill, stroke)
+          result = []
+          result << h(:circle, attrs: {
+                        transform: translate.to_s,
+                        r: radius,
+                        fill: fill,
+                        stroke: stroke,
+                        'stroke-width': 4,
+                      })
+          result << render_boom if @town.boom
+          if @show_revenue
+            rev = render_revenue
+            result << rev if rev
+          end
+          result
         end
 
         def render_revenue_size2
