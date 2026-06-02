@@ -215,7 +215,7 @@ module Engine
             Engine::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
-            Engine::Step::Dividend,
+            G1835::Step::Dividend,
             Engine::Step::DiscardTrain,
             G1835::Step::BuyTrain,
           ], round_num: round_num)
