@@ -13,7 +13,7 @@ module Engine
     module G1835
       class Game < Game::Base
         attr_accessor :draft_finished, :pr_can_form, :conversion_choice_during_or
-        attr_reader :preussen_may_float, :can_buy_trains
+        attr_reader :preussen_may_float
 
         include_meta(G1835::Meta)
         include CitiesPlusTownsRouteDistanceStr
@@ -135,7 +135,7 @@ module Engine
 
         TRAINS = [{ name: '2', distance: 2, price: 80, rusts_on: '4', num: 9 },
                   { name: '2+2', distance: plus_train_distance(2), price: 120, rusts_on: '4+4', num: 4 },
-                  { name: '3', distance: 3, price: 180, rusts_on: '6', num: 4, events: [{ 'type' => 'can_buy_trains' }] },
+                  { name: '3', distance: 3, price: 180, rusts_on: '6', num: 4 },
                   { name: '3+3', distance: plus_train_distance(3), price: 270, rusts_on: '6+6', num: 3 },
                   { name: '4', distance: 4, price: 360, num: 3, events: [{ 'type' => 'pr_can_form' }] },
                   { name: '4+4', distance: plus_train_distance(4), price: 440, num: 1, events: [{ 'type' => 'pr_must_form' }] },
@@ -151,7 +151,6 @@ module Engine
                   { name: '6+6', distance: plus_train_distance(6), price: 720, num: 4 }].freeze
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
-          'can_buy_trains' => ['Buy trains', 'Corporations can buy trains from other corporations'],
           'pr_can_form' => ['Optional Preußen Formation', 'Preußen can choose to form now or at beginning of SR/OR'],
           'pr_must_form' => ['Preußen Formation', 'Preußen forms immediately'],
           'forced_pr_exchange' => ['Forced Preußen exchange',
@@ -170,8 +169,8 @@ module Engine
         TWO_YELLOW = [{ lay: true, upgrade: false }, { lay: true, upgrade: false }].freeze
 
         def setup
-          corporation_by_id('PR').shares.last(7).each { |s| s.buyable = false }
-          corporation_by_id('PR').shares.first.buyable = false
+          prussian.shares.last(7).each { |s| s.buyable = false }
+          prussian.shares.first.buyable = false
 
           @corporations.each do |corp|
             corp.shares.reject(&:president).each { |share| share.double_cert = (share.percent == 20) }
@@ -190,8 +189,6 @@ module Engine
           corporation_by_id('SX').ipoed = true
 
           @corporation_blocks = CORPORATION_BLOCKS.map { |block| block.map { |c| corporation_by_id(c) } }
-
-          @can_buy_trains = false
         end
 
         def company_header(company)
@@ -278,7 +275,7 @@ module Engine
         end
 
         def corporation_available?(corp)
-          return !corporation_by_id('BA').shares.first&.president if corp == corporation_by_id('PR')
+          return !corporation_by_id('BA').shares.first&.president if corp == prussian
 
           block = @corporation_blocks.find { |corporation_block| corporation_block.include?(corp) }
           index_in_block = block.index(corp)
@@ -320,6 +317,21 @@ module Engine
           north_edge_used && south_edge_used
         end
 
+        def payout_companies
+          @conversion_choice_during_or = false
+          # omit paying out companies if any Prussian conversion could happen. Payout is then handled by MinorExchange
+          # after all choices have been made
+          super unless any_conversion_choice_available?
+        end
+
+        def any_conversion_choice_available?
+          # Owner of 2 has the choice to form the PR
+          return true if @pr_can_form && !prussian.floated?
+
+          # PR has already been formed and not all minors/companies have been converted yet
+          prussian.floated? && !prussian_exchangeables.reject(&:closed?).empty?
+        end
+
         def prussian
           @pr ||= corporation_by_id('PR')
         end
@@ -334,11 +346,6 @@ module Engine
 
         def prussian_companies
           @prussian_companies ||= %w[BB HB].map { |id| company_by_id(id) }
-        end
-
-        def event_can_buy_trains!
-          @log << "-- Event: #{EVENTS_TEXT['can_buy_trains'][1]} --"
-          @can_buy_trains = true
         end
 
         def event_pr_can_form!
