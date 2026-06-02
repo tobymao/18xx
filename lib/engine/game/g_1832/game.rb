@@ -350,7 +350,7 @@ module Engine
         def miami_revenue(route, stops)
           revenue = 0
 
-          miami_stop = stops.find { |stop| stop.hex.id == MIAMI_HEX_ID }
+          miami_stop = stops.find { |stop| stop.hex == miami_hex }
           revenue -= miami_stop.route_revenue(route.phase, route.train) if miami_stop && miami_scores_zero?
 
           # Key West bonus: FECR earns +$50 when running to Miami with token placed (phases 3-7)
