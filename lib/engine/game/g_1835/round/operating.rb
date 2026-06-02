@@ -6,6 +6,11 @@ module Engine
     module G1835
       module Round
         class Operating < Engine::Round::Operating
+          def setup
+            @game.conversion_choice_during_or = false
+            super
+          end
+
           def pending_tokens
             @pending_tokens ||= []
           end

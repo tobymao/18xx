@@ -318,7 +318,6 @@ module Engine
         end
 
         def payout_companies
-          @conversion_choice_during_or = false
           # omit paying out companies if any Prussian conversion could happen. Payout is then handled by MinorExchange
           # after all choices have been made
           super unless any_conversion_choice_available?
