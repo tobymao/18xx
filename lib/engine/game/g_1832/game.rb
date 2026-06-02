@@ -344,7 +344,7 @@ module Engine
 
         # Miami first-run rule: worth $0 the first time any corporation runs there prior to phase 5
         def miami_scores_zero?
-          phase.status.include?('first_miami_run_is_zero') && @miami_first_run
+          phase.status.include?('first_miami_run_is_zero') && !@miami_has_been_run
         end
 
         def miami_revenue(route, stops)
