@@ -131,7 +131,7 @@ module Engine
             name: '10H',
             distance: 10,
             price: 700,
-            num: 32,
+            num: 'unlimited',
             events: [{ 'type' => 'sl_trigger' }],
           },
         ].freeze

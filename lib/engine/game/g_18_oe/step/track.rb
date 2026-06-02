@@ -16,14 +16,11 @@ module Engine
             points_available = get_tile_lay(entity) - @points_used
             return false unless points_available.positive?
 
-            entity.tokens.any?
+            !entity.tokens.empty?
           end
 
           def get_tile_lay(entity)
-            # 3 for minors and regionals, 6 for majors, 9 for nationals
-            return 3 if entity.total_shares == 2 || entity.total_shares == 4
-            return 6 if entity.total_shares == 10
-            # return 9 if national
+            @game.tile_point_budget(entity)
           end
 
           def description

@@ -17,8 +17,6 @@ module Engine
         end
 
         def can_ignore_borders?(entity)
-          return false unless entity&.corporation?
-
           entity.owner == @game.consortiu&.owner
         end
 

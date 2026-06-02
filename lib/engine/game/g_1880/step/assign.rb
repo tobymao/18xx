@@ -9,7 +9,8 @@ module Engine
         class Assign < Engine::Step::Assign
           ACTIONS_WITH_PASS = %w[assign pass].freeze
           def actions(entity)
-            return [] if entity.player? || current_entity.minor?
+            return [] if entity.player?
+            return [] if current_entity.minor? && @game.abilities(entity, :assign_corporation)
             return [] if !@game.abilities(entity, :assign_corporation) && !@game.abilities(entity, :assign_hexes)
 
             return ACTIONS if @game.forced_exchange_rocket? && entity == @game.rocket

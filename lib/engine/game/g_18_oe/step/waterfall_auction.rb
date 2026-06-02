@@ -27,8 +27,8 @@ module Engine
             super
             return unless @game.company_becomes_minor?(company)
 
-            price = 180 if price > 180
-            @game.bank.spend(price, @game.corporations.find { |minor| minor.name == company.sym })
+            treasury_amount = [price, @game.class::MINOR_MAX_TREASURY].min
+            @game.bank.spend(treasury_amount, @game.corporations.find { |minor| minor.name == company.sym })
           end
         end
       end

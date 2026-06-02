@@ -358,6 +358,7 @@ module Engine
             shares: [100],
             float_percent: 100,
             max_ownership_percent: 100,
+            color: '#666666',
             abilities: [
               {
                 type: 'description',
@@ -376,6 +377,8 @@ module Engine
             shares: [100],
             float_percent: 100,
             max_ownership_percent: 100,
+            color: '#F08080',
+            text_color: 'black',
             abilities: [
               {
                 type: 'description',
@@ -393,6 +396,8 @@ module Engine
             shares: [100],
             float_percent: 100,
             max_ownership_percent: 100,
+            color: '#66CDAA',
+            text_color: 'black',
             abilities: [
               {
                 type: 'description',
@@ -411,6 +416,8 @@ module Engine
             shares: [100],
             float_percent: 100,
             max_ownership_percent: 100,
+            color: '#3CB371',
+            text_color: 'black',
             abilities: [
               {
                 type: 'description',
@@ -431,13 +438,14 @@ module Engine
             shares: [100],
             float_percent: 100,
             max_ownership_percent: 100,
+            color: '#6495ED',
+            text_color: 'black',
             abilities: [
               {
                 type: 'description',
-                description: '33% discount on all blue terrain (water/coast) track construction costs '\
-                             '(multiply total cost by 0.67, round down to nearest £1). '\
-                             'Each OR may also spend 1 extra tile point to place a yellow tile '\
-                             'in a hex with a blue terrain cost.',
+                description: 'Augments the zone terrain discount from 20% to 50% for water/coast '\
+                             'track construction in the owning RR\'s zone (§11.1.5). '\
+                             'Extra tile point for matching terrain: not yet implemented (BUG-034).',
               },
             ],
           },
@@ -449,14 +457,15 @@ module Engine
             type: 'minor',
             shares: [100],
             float_percent: 100,
+            color: '#888888',
+            text_color: 'black',
             max_ownership_percent: 100,
             abilities: [
               {
                 type: 'description',
-                description: '33% discount on all mountain/rough (green terrain) track construction costs '\
-                             '(multiply total cost by 0.67, round down to nearest £1). '\
-                             'Each OR may also spend 1 extra tile point to place a yellow tile '\
-                             'in a hex with a green terrain cost.',
+                description: 'Augments the zone terrain discount from 20% to 50% for mountain/rough '\
+                             'track construction in the owning RR\'s zone (§11.1.5). '\
+                             'Extra tile point for matching terrain: not yet implemented (BUG-034).',
               },
             ],
           },
@@ -468,6 +477,8 @@ module Engine
             type: 'minor',
             shares: [100],
             float_percent: 100,
+            color: '#9370DB',
+            text_color: 'black',
             max_ownership_percent: 100,
             abilities: [
               {
@@ -485,6 +496,8 @@ module Engine
             shares: [100],
             float_percent: 100,
             max_ownership_percent: 100,
+            color: '#5F9EA0',
+            text_color: 'black',
             abilities: [
               {
                 type: 'description',
@@ -502,6 +515,8 @@ module Engine
             shares: [100],
             float_percent: 100,
             max_ownership_percent: 100,
+            color: '#aaaaaa',
+            text_color: 'black',
             abilities: [
               {
                 type: 'description',
@@ -520,6 +535,7 @@ module Engine
             shares: [100],
             float_percent: 100,
             max_ownership_percent: 100,
+            color: '#CD5C5C',
             abilities: [
               {
                 type: 'description',
@@ -539,6 +555,8 @@ module Engine
             shares: [100],
             float_percent: 100,
             max_ownership_percent: 100,
+            color: '#FA8072',
+            text_color: 'black',
             abilities: [
               {
                 type: 'description',
@@ -558,6 +576,8 @@ module Engine
             shares: [100],
             float_percent: 100,
             max_ownership_percent: 100,
+            color: '#87CEFA',
+            text_color: 'black',
             abilities: [
               {
                 type: 'description',
@@ -581,7 +601,7 @@ module Engine
             float_percent: 50,
             max_ownership_percent: 100,
             coordinates: 'J27',
-            color: :black,
+            color: '#333333',
             always_market_price: true,
           },
           {
@@ -594,7 +614,7 @@ module Engine
             float_percent: 50,
             max_ownership_percent: 100,
             coordinates: 'L25',
-            color: :red,
+            color: '#8B0000',
             always_market_price: true,
           },
           {
@@ -607,7 +627,7 @@ module Engine
             float_percent: 50,
             max_ownership_percent: 100,
             coordinates: 'I20',
-            color: :blue,
+            color: '#000080',
             always_market_price: true,
           },
           # -----------------------------------------------------------------------
@@ -623,7 +643,7 @@ module Engine
             float_percent: 50,
             max_ownership_percent: 100,
             coordinates: 'U34',
-            color: :purple,
+            color: '#4B0082',
             always_market_price: true,
           },
           {
@@ -636,7 +656,7 @@ module Engine
             float_percent: 50,
             max_ownership_percent: 100,
             coordinates: 'U24',
-            color: :blue,
+            color: '#0000CD',
             always_market_price: true,
           },
           {
@@ -649,7 +669,7 @@ module Engine
             float_percent: 50,
             max_ownership_percent: 100,
             coordinates: 'Q26',
-            color: :orange,
+            color: '#FF4500',
             always_market_price: true,
           },
           {
@@ -662,7 +682,7 @@ module Engine
             float_percent: 50,
             max_ownership_percent: 100,
             coordinates: 'N35',
-            color: :green,
+            color: '#555555',
             always_market_price: true,
           },
           # -----------------------------------------------------------------------
@@ -678,7 +698,7 @@ module Engine
             float_percent: 50,
             max_ownership_percent: 100,
             coordinates: 'K46',
-            color: :blue,
+            color: '#666666',
             always_market_price: true,
           },
           {
@@ -691,7 +711,7 @@ module Engine
             float_percent: 50,
             max_ownership_percent: 100,
             coordinates: 'L53',
-            color: :green,
+            color: '#8B4513',
             always_market_price: true,
           },
           {
@@ -704,7 +724,7 @@ module Engine
             float_percent: 50,
             max_ownership_percent: 100,
             coordinates: 'N49',
-            color: :green,
+            color: '#228B22',
             always_market_price: true,
           },
           {
@@ -717,7 +737,7 @@ module Engine
             float_percent: 50,
             max_ownership_percent: 100,
             coordinates: 'R47',
-            color: :lightblue,
+            color: '#4682B4',
             always_market_price: true,
           },
           # -----------------------------------------------------------------------
@@ -733,7 +753,7 @@ module Engine
             float_percent: 50,
             max_ownership_percent: 100,
             coordinates: 'R55',
-            color: :orange,
+            color: '#DC143C',
             always_market_price: true,
           },
           {
@@ -746,7 +766,7 @@ module Engine
             float_percent: 50,
             max_ownership_percent: 100,
             coordinates: 'S60',
-            color: :black,
+            color: '#222222',
             always_market_price: true,
           },
           # -----------------------------------------------------------------------
@@ -762,7 +782,7 @@ module Engine
             float_percent: 50,
             max_ownership_percent: 100,
             coordinates: 'V41',
-            color: :tan,
+            color: '#654321',
             always_market_price: true,
           },
           {
@@ -775,7 +795,7 @@ module Engine
             float_percent: 50,
             max_ownership_percent: 100,
             coordinates: 'Z47',
-            color: :green,
+            color: '#2E8B57',
             always_market_price: true,
           },
           # -----------------------------------------------------------------------
@@ -791,7 +811,7 @@ module Engine
             float_percent: 50,
             max_ownership_percent: 100,
             coordinates: 'Z27',
-            color: :green,
+            color: '#A0522D',
             always_market_price: true,
           },
           {
@@ -804,7 +824,8 @@ module Engine
             float_percent: 50,
             max_ownership_percent: 100,
             coordinates: 'AD17',
-            color: :yellow,
+            color: '#FFD700',
+            text_color: 'black',
             always_market_price: true,
           },
           {
@@ -817,7 +838,7 @@ module Engine
             float_percent: 50,
             max_ownership_percent: 100,
             coordinates: 'Z1',
-            color: :green,
+            color: '#006400',
             always_market_price: true,
           },
           # -----------------------------------------------------------------------
@@ -833,7 +854,7 @@ module Engine
             float_percent: 50,
             max_ownership_percent: 100,
             coordinates: 'C74',
-            color: :red,
+            color: '#B22222',
             always_market_price: true,
           },
           {
@@ -846,7 +867,7 @@ module Engine
             float_percent: 50,
             max_ownership_percent: 100,
             coordinates: 'O80',
-            color: :red,
+            color: '#D2691E',
             always_market_price: true,
           },
           {
@@ -859,7 +880,7 @@ module Engine
             float_percent: 50,
             max_ownership_percent: 100,
             coordinates: 'J73',
-            color: :purple,
+            color: '#800080',
             always_market_price: true,
           },
           {
@@ -872,7 +893,7 @@ module Engine
             float_percent: 50,
             max_ownership_percent: 100,
             coordinates: 'M62',
-            color: :lightblue,
+            color: '#1E90FF',
             always_market_price: true,
           },
           # -----------------------------------------------------------------------
@@ -888,7 +909,7 @@ module Engine
             float_percent: 50,
             max_ownership_percent: 100,
             coordinates: 'I50',
-            color: :gray,
+            color: '#444444',
             always_market_price: true,
           },
           {
@@ -901,7 +922,8 @@ module Engine
             float_percent: 50,
             max_ownership_percent: 100,
             coordinates: 'F49',
-            color: :brown,
+            color: '#FFFACD',
+            text_color: 'black',
             always_market_price: true,
           },
         ].freeze

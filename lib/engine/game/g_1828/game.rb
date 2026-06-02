@@ -253,7 +253,7 @@ module Engine
                     name: 'D',
                     distance: 999,
                     price: 900,
-                    num: 20,
+                    num: 'unlimited',
                     events: [{ 'type' => 'remove_corporations' }],
                   }].freeze
 

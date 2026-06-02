@@ -201,7 +201,7 @@ module Engine
             distance: [{ 'nodes' => %w[city offboard], 'pay' => 9, 'visit' => 9 },
                        { 'nodes' => %w[town halt], 'pay' => 5, 'visit' => 99 }],
             price: 800,
-            num: 16,
+            num: 'unlimited',
             events: [{ 'type' => 'southern_forms' }],
           },
         ].freeze

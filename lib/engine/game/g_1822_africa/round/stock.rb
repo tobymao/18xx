@@ -29,8 +29,8 @@ module Engine
           def finish_round
             float_minors = []
             minor_count = 0
-            remove_l_count = 0
-            remove_minor = nil
+            bidless_minors = []
+            first_bidbox_minor = nil
             concession_to_remove = nil
 
             @game.bidbox.each_with_index do |company, index|
@@ -38,8 +38,8 @@ module Engine
                 if (bid = highest_bid(company))
                   float_minors << [bid, index]
                 else
-                  remove_l_count += 1
-                  remove_minor = company if index.zero?
+                  bidless_minors << company
+                  first_bidbox_minor = company if index.zero?
                 end
                 minor_count += 1
               elsif (bid = highest_bid(company))
@@ -55,13 +55,14 @@ module Engine
               float_minor(arr[0])
             end
 
-            current_bidbox_items = @game.bidbox
+            # Every minor with no bids exports a L/2 train. The minor at bidbox position 0 additionally
+            # removes a non-L train and is closed. All other bid-less minors are also closed per rules.
+            remove_l_trains(bidless_minors.size) if !bidless_minors.empty? && @game.depot.upcoming.first.name == 'L'
+            remove_minor_and_first_train(first_bidbox_minor) if first_bidbox_minor
+            (bidless_minors - [first_bidbox_minor]).each { |company| close_minor(company) }
 
-            # Every minor with no bids will export a L/2 train. If no bid on first minors an additional
-            # train will be exported, additionally the minor is also removed from the game.
-            # This will procced the whole game
-            remove_l_trains(remove_l_count) if remove_l_count.positive? && @game.depot.upcoming.first.name == 'L'
-            remove_minor_and_first_train(remove_minor) if remove_minor
+            # Snapshot taken after all minor removals to avoid stale references in clear_bidboxes
+            current_bidbox_items = @game.bidbox
 
             # Remove all if nothing was purchased, or just concession from first bidbox
             if @game.nothing_sold_in_sr?
@@ -78,6 +79,8 @@ module Engine
             @game.add_interest_player_loans! if round_num == 2
           end
 
+          private
+
           def clear_bidboxes(bidbox_items)
             @game.log << 'No bids were made, items in all bid boxes will be removed from the game'
 
@@ -91,6 +94,14 @@ module Engine
 
               close_company(company)
             end
+          end
+
+          def close_minor(company)
+            @game.log << "No bids on minor #{company.id}, it is removed from the game"
+            minor = @game.find_corporation(company)
+            @game.close_corporation(minor)
+            company.close!
+            @game.companies.delete(company)
           end
 
           def close_company(company)

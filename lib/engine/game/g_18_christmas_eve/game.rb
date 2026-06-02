@@ -80,7 +80,7 @@ module Engine
             name: 'D',
             distance: 999,
             price: 900,
-            num: 20,
+            num: 'unlimited',
             available_on: '6',
             discount: { '4' => 200, '5' => 200, '6' => 200 },
             events: [{ 'type' => 'd_trigger' }],

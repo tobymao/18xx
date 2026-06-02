@@ -47,8 +47,28 @@ module Engine
             @game.scrap_train(action.train, action.entity)
           end
 
+          def can_buy_train?(entity = nil, _shell = nil)
+            entity ||= current_entity
+            return false unless buyable_depot_trains?(entity)
+
+            super
+          end
+
           def must_buy_train?(entity)
+            return false unless buyable_depot_trains?(entity)
+
             scrappable_trains(entity).size.zero?
+          end
+
+          def log_skip(entity)
+            if !entity.minor? && entity.type != :city &&
+               scrappable_trains(entity).empty? &&
+               !buyable_depot_trains?(entity)
+              @log << "#{entity.name}'s obligation to own a tram is temporarily lifted, because no trams are available."
+              return
+            end
+
+            super
           end
 
           def must_take_player_loan?(corporation)
@@ -72,6 +92,12 @@ module Engine
           end
 
           def check_for_cheapest_train(train); end
+
+          private
+
+          def buyable_depot_trains?(entity)
+            @depot.depot_trains.any? { |t| !buyable_train_variants(t, entity).empty? }
+          end
         end
       end
     end

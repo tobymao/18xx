@@ -161,7 +161,7 @@ module Engine
                     name: 'D',
                     distance: 999,
                     price: 1100,
-                    num: 20,
+                    num: 'unlimited',
                     available_on: '6',
                     discount: { '4' => 300, '5' => 300, '6' => 300 },
                   }].freeze
@@ -203,6 +203,7 @@ module Engine
         end
 
         def num_trains(train)
+          return super if train[:num] == 'unlimited'
           return train[:num] unless train[:name] == '6'
 
           optional_6_train ? 3 : 2

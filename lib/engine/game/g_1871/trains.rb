@@ -78,7 +78,7 @@ module Engine
             name: 'D',
             distance: 999,
             price: 600,
-            num: 20,
+            num: 'unlimited',
           },
         ].freeze
       end

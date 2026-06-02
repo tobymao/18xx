@@ -37,7 +37,7 @@ module Engine
           'G16' => 'Allahabad',
           'G18' => 'Benares',
           'G20' => 'Patna',
-          'G22' => 'Bhagaipur',
+          'G22' => 'Bhagalpur',
           'H7' => 'Ahmadabad',
           'H11' => 'Bhopal',
           'H13' => 'Jubbulpore',
