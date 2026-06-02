@@ -8,7 +8,7 @@ module Engine
       module Step
         class Token < Engine::Step::Token
           def actions(entity)
-            return super unless miami_token_ability(entity)
+            return super unless can_place_miami_token?(entity)
 
             super | %w[choose pass]
           end
@@ -32,27 +32,32 @@ module Engine
           end
 
           def place_miami_token(corporation)
+            raise GameError, 'Cannot place Miami token' unless can_place_miami_token?(corporation)
+
+            @game.place_miami_token
+
             ability = miami_token_ability(corporation)
-            return unless ability
-            return unless corporation.cash >= ability.cost
-
-            miami_hex_id = @game.class::MIAMI_HEX
-            hex = @game.hex_by_id(miami_hex_id)
-            hex.tile.icons.reject! { |icon| icon.name == 'FECR_key_west' }
-            hex.assign!(corporation)
-
             ability.use!
+
             corporation.spend(ability.cost, @game.bank)
             @log << "#{corporation.name} places the Key West token on #{hex.name} for #{@game.format_currency(ability.cost)}"
           end
 
           def miami_token_ability(entity)
-            return nil if @game.miami_token_placed?
-            return nil unless entity.corporation?
-            return nil unless @game.phase.status.include?('can_place_miami_token')
+            entity.all_abilities.find { |a| a.type == :assign_hexes && a.hexes == [@game.MIAMI_HEX_ID] }
+          end
 
-            miami_hex_id = @game.class::MIAMI_HEX
-            entity.all_abilities.find { |a| a.type == :assign_hexes && a.hexes == [miami_hex_id] }
+          def can_place_miami_token?(entity)
+            return false if @game.miami_token_placed?
+            return false unless entity == @game.fecr_corp
+            return false unless @game.phase.status.include?('can_place_miami_token')
+
+            ability = miami_token_ability(entity)
+            return false unless ability
+
+            return false unless corporation.cash >= ability.cost
+
+            true
           end
         end
       end

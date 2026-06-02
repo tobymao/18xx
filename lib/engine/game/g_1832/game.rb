@@ -20,7 +20,8 @@ module Engine
         include G1832::Phases
         include G1832::Trains
 
-        attr_accessor :sell_queue, :reissued, :coal_token_counter, :coal_company_sold_or_closed, :p4_invested_in, :miami_first_run
+        attr_accessor :sell_queue, :reissued, :coal_token_counter, :coal_company_sold_or_closed, :p4_invested_in,
+                      :miami_has_been_run
 
         CORPORATION_CLASS = G1832::Corporation
         CORPORATE_BUY_SHARE_ALLOW_BUY_FROM_PRESIDENT = true
@@ -50,8 +51,8 @@ module Engine
         IPO_RESERVED_NAME = 'Treasury'
 
         BOOMTOWN_HEXES = %w[D8 F14 G9 G11 H6 L14].freeze
-        MIAMI_HEX = 'N16'
-        MIAMI_HEX_COMPANY = 'FECR'
+        MIAMI_HEX_ID = 'N16'
+        FECR_COMPANY_ID = 'FECR'
 
         TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }].freeze
         SYSTEM_TILE_LAYS = [{ lay: true, upgrade: true },
@@ -151,7 +152,7 @@ module Engine
           @sell_queue = []
           @reissued = {}
           @coal_token_counter = 5
-          @miami_first_run = true
+          @miami_has_been_run = false
           @p4_invested_in = nil
 
           coal_company.max_price = coal_company.value
@@ -306,6 +307,14 @@ module Engine
           @coal_hex ||= hex_by_id('B14')
         end
 
+        def miami_hex
+          @miami_hex ||= hex_by_id(MIAMI_HEX_ID)
+        end
+
+        def fecr_corp
+          @fecr_corp ||= corporation_by_id(FECR_COMPANY_ID)
+        end
+
         def cotton_bonus(route, stops)
           cotton = 'P2'
 
@@ -341,12 +350,11 @@ module Engine
         def miami_revenue(route, stops)
           revenue = 0
 
-          miami_stop = stops.find { |stop| stop.hex.id == MIAMI_HEX }
+          miami_stop = stops.find { |stop| stop.hex.id == MIAMI_HEX_ID }
           revenue -= miami_stop.route_revenue(route.phase, route.train) if miami_stop && miami_scores_zero?
 
-          # Key West bonus: FEC earns +$50 when running to Miami with token placed (phases 3-7)
-          fec_corporation = corporation_by_id(MIAMI_HEX_COMPANY)
-          revenue += 50 if route.corporation == fec_corporation && miami_token_placed? && miami_stop
+          # Key West bonus: FECR earns +$50 when running to Miami with token placed (phases 3-7)
+          revenue += 50 if route.corporation == fecr_corp && miami_token_placed? && miami_stop
 
           revenue
         end
@@ -359,10 +367,19 @@ module Engine
         end
 
         def miami_token_placed?
-          @miami_hex ||= hex_by_id(self.class::MIAMI_HEX)
-          @fecr_corp ||= corporation_by_id(MIAMI_HEX_COMPANY)
+          miami_hex.assigned?(fecr_corp)
+        end
 
-          @miami_hex.assigned?(@fecr_corp)
+        def place_miami_token
+          miami_hex.tile.icons.reject! { |icon| icon.name == 'FECR_key_west' }
+          miami_hex.assign!(fecr_corp)
+        end
+
+        def event_remove_key_west_token!
+          return unless miami_token_placed?
+
+          miami_hex.remove_assignment!(fecr_corp)
+          @log << "-- Event: #{fecr_corp.name} loses Key West token --"
         end
 
         def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil, movement: nil)

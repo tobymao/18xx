@@ -18,13 +18,13 @@ module Engine
           private
 
           def mark_miami_first_run_complete!
-            return unless @game.miami_first_run
+            return if @game.miami_has_been_run
 
             ran_miami = @round.routes.any? do |route|
               route.stops.any? { |stop| stop.hex.id == @game.class::MIAMI_HEX }
             end
 
-            @game.miami_first_run = false if ran_miami
+            @game.miami_has_been_run = true if ran_miami
           end
 
           def close_london_investment!(action)
