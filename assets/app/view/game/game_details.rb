@@ -20,6 +20,9 @@ module View
         return '' unless ts
 
         t = Time.at(ts.to_i)
+        # Fallback for non-unix timestamps (e.g. used for hotseat games)
+        return ts.to_s if t.year < 2000
+
         t > Time.now - 82_800 ? t.strftime('%T') : t.strftime('%F')
       end
 
@@ -27,14 +30,22 @@ module View
         h(:p, "#{label}: #{value}")
       end
 
+      def host_display(user)
+        return '' unless user
+        return h(:span, user['name']) unless user['id'].to_i.positive?
+
+        profile_link(user['id'], user['name'])
+      end
+
       def render_game_info
         user = @game_data['user']
+        desc = @game_data['description']
         [
-          info_row('Description', @game_data['description']),
-          h(:p, ['Host: ', user ? profile_link(user['id'], user['name']) : '']),
+          (info_row('Description', desc) unless desc.to_s.empty?),
+          h(:p, ['Host: ', host_display(user)]),
           info_row('Created', format_time(@game_data['created_at'])),
           info_row('Last Updated', format_time(@game_data['updated_at'])),
-        ]
+        ].compact
       end
     end
   end
