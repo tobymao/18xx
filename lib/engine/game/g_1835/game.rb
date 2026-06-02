@@ -287,6 +287,10 @@ module Engine
           south_edge_used = route.paths.any? { |path| path.tile.hex == hamburg_hex && [0, 1, 5].intersect?(path.exits) }
           north_edge_used && south_edge_used
         end
+
+        def share_flags(shares)
+          'h' * shares.count { |share| share.percent == 5 }
+        end
       end
     end
   end
