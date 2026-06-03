@@ -9,9 +9,10 @@ module Engine
 
       def initialize(revenue, **opts)
         super
+        # Town#rect? reads @size directly; must be 2 so rect? returns false
         @size = 2
-        @town_a = Town.new(revenue, **opts)
-        @town_b = Town.new(revenue, **opts)
+        @town_a = Town.new(revenue, **opts.merge(size: nil))
+        @town_b = Town.new(revenue, **opts.merge(size: nil))
         @sub_stops = [@town_a, @town_b].freeze
       end
 
@@ -78,7 +79,11 @@ module Engine
           end
         end
 
-        visited.delete(self) if converging_path
+        if converging_path
+          visited.delete(self)
+          visited.delete(@town_a)
+          visited.delete(@town_b)
+        end
       end
     end
   end
