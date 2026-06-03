@@ -79,11 +79,11 @@ module Engine
           end
         end
 
-        if converging_path
-          visited.delete(self)
-          visited.delete(@town_a)
-          visited.delete(@town_b)
-        end
+        return unless converging_path
+
+        visited.delete(self)
+        visited.delete(@town_a)
+        visited.delete(@town_b)
       end
     end
   end
