@@ -24,7 +24,8 @@ scripts/ @michaeljb
 lib/engine/game/g_1825* @roseundy
 lib/engine/game/g_1841* @roseundy
 lib/engine/game/g_1860* @roseundy
-lib/engine/game/g_1862* @roseundy
+lib/engine/game/g_1862.rb @roseundy
+lib/engine/game/g_1862/* @roseundy
 lib/engine/game/g_1873* @roseundy
 lib/engine/game/g_1888* @roseundy
 lib/engine/game/g_18_carolinas* @roseundy
@@ -49,6 +50,7 @@ lib/engine/game/g_18_rhl* @perwestling
 lib/engine/game/g_18_sj* @perwestling
 lib/engine/game/g_18_tn* @perwestling
 lib/engine/game/g_1824* @perwestling
+lib/engine/game/g_1862_solo* @perwestling
 lib/engine/game/g_1893* @perwestling
 
 lib/engine/game/g_1807* @ollybh
