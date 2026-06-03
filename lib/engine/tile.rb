@@ -137,17 +137,18 @@ module Engine
         cache << pass
         pass
       when 'town'
-        town = Part::Town.new(params['revenue'],
-                              groups: params['groups'],
-                              hide: params['hide'],
-                              visit_cost: params['visit_cost'],
-                              route: params['route'],
-                              format: params['format'],
-                              loc: params['loc'],
-                              boom: params['boom'],
-                              style: params['style'],
-                              size: params['size'],
-                              to_city: params['to_city'])
+        klass = params['size'].to_i > 1 ? Part::DoubleTown : Part::Town
+        town = klass.new(params['revenue'],
+                         groups: params['groups'],
+                         hide: params['hide'],
+                         visit_cost: params['visit_cost'],
+                         route: params['route'],
+                         format: params['format'],
+                         loc: params['loc'],
+                         boom: params['boom'],
+                         style: params['style'],
+                         size: params['size'],
+                         to_city: params['to_city'])
         cache << town
         town
       when 'halt'
