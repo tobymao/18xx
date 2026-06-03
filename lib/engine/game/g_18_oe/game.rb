@@ -853,14 +853,6 @@ module Engine
           cost
         end
 
-        def visited_stops(route)
-          super.flat_map { |stop| stop.town? && stop.size > 1 ? Array.new(stop.size, stop) : [stop] }
-        end
-
-        def revenue_stops(route)
-          super.flat_map { |stop| stop.town? && stop.size > 1 ? Array.new(stop.size, stop) : [stop] }
-        end
-
         def level8_train_available?
           return false if phase.name.to_i < 7
           return true if phase.name.to_i == 8
