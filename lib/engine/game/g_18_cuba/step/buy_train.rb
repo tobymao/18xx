@@ -46,21 +46,15 @@ module Engine
           def check_for_cheapest_train(train)
             return if @game.wagon?(train)
 
-            track_type = track_type_for(current_entity)
-            candidates = (@depot.depot_trains + @depot.discarded)
-                           .reject { |t| @game.wagon?(t) || t.track_type != track_type }
-            cheapest = candidates.min_by(&:price)
-            return super unless cheapest
-
+            cheapest = cheapest_available_train_for(current_entity)
+            return unless cheapest
             return if names_of_cheapest_variants(cheapest).include?(train.name)
 
             raise GameError, "Cannot purchase #{train.name} train: cheaper train available (#{cheapest.name})"
           end
 
           def needed_cash(entity)
-            candidates = (@depot.depot_trains + @depot.discarded)
-                           .select { |t| t.track_type == track_type_for(entity) && !@game.wagon?(t) }
-            candidates.map(&:price).min || 0
+            cheapest_available_train_for(entity)&.price || 0
           end
 
           def ebuy_president_can_contribute?(corporation)
@@ -118,6 +112,13 @@ module Engine
           end
 
           private
+
+          def cheapest_available_train_for(entity)
+            track_type = track_type_for(entity)
+            (@depot.depot_trains + @depot.discarded)
+              .reject { |t| @game.wagon?(t) || t.track_type != track_type }
+              .min_by(&:price)
+          end
 
           def track_type_for(entity)
             corp = entity.respond_to?(:type) ? entity : @current_entity
