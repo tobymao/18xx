@@ -177,7 +177,7 @@ module Engine
           # - 1 buys the train that triggers the conversion and
           # - neither it nor the prussian companies HB and BB (since they paid out their revenue) are converted
           def pr_should_operate_this_or?
-            no_prussian_company_or_minor_1_converted = !@round.converted.intersect?(@game.prussian_companies + [minor_1]))
+            no_prussian_company_or_minor_1_converted = !@round.converted.intersect?(@game.prussian_companies + [minor_1])
             minor_1_bought_triggering_train = minor_1 == @round.entities[@round.entity_index]
             no_prussian_company_or_minor_1_converted && minor_1_bought_triggering_train
           end
