@@ -26,6 +26,9 @@ module Engine
         CURRENCY_FORMAT_STR = '$%s'
         HOME_TOKEN_TIMING = :operate
 
+        EBUY_FROM_OTHERS = :never
+        EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = true
+
         BANK_CASH = 10_000
 
         CERT_LIMIT = { 2 => 35, 3 => 30, 4 => 20, 5 => 17, 6 => 15 }.freeze
@@ -74,6 +77,13 @@ module Engine
                     operating_rounds: 3,
                   }].freeze
 
+        def operating_order
+          # Minors operate before majors per game rules.
+          floated = @corporations.select(&:floated?)
+          minors, majors = floated.partition { |c| c.type == :minor }
+          minors.sort_by { |c| minor_operating_sort_key(c) } + majors.sort
+        end
+
         def operating_round(round_num)
           Round::Operating.new(self, [
             Engine::Step::Bankrupt,
@@ -84,9 +94,9 @@ module Engine
             Engine::Step::HomeToken,
             G18Cuba::Step::Track,
             Engine::Step::Token,
-            Engine::Step::Route,
+            G18Cuba::Step::Route,
             G18Cuba::Step::Dividend,
-            Engine::Step::DiscardTrain,
+            G18Cuba::Step::DiscardTrain,
             G18Cuba::Step::BuyTrain,
             [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
@@ -122,6 +132,42 @@ module Engine
 
         def concessions
           @concessions ||= @companies.select { |c| c.type == :concession }
+        end
+
+        def skip_route_track_type(train)
+          # Wagons cannot run routes independently; only regular trains enforce track type.
+          return if wagon?(train)
+
+          opposite_gauge(train.track_type)
+        end
+
+        def check_other(route)
+          # Regular trains cannot cross to the opposite gauge.
+          return if wagon?(route.train)
+
+          track_type = route.train.track_type
+          wrong_track = opposite_gauge(track_type)
+          return if route.chains.none? { |c| c[:paths].any? { |p| p.track == wrong_track } }
+
+          raise GameError, "#{track_type.to_s.capitalize} gauge train cannot run on #{wrong_track} gauge track"
+        end
+
+        def route_trains(entity)
+          # Wagons are not runnable trains; they attach to trains rather than running independently.
+          super.reject { |t| wagon?(t) }
+        end
+
+        def crowded_corps
+          corporations.select { |c| excess_axes(c).value?(true) }
+        end
+
+        def must_buy_train?(entity)
+          # Bankruptcy only triggers when a correctly-gauged train actually exists;
+          # the engine's bankrupt path handles the cash shortfall separately.
+          return false unless num_corp_trains(entity).zero?
+
+          track_type = entity.type == :minor ? :narrow : :broad
+          (depot.depot_trains + depot.discarded).any? { |t| !wagon?(t) && t.track_type == track_type }
         end
 
         def setup
@@ -240,6 +286,19 @@ module Engine
           super
         end
 
+        def check_distance(route, visits, train = nil)
+          # Wagons allow one extra stop to reach a harbor beyond the train's normal distance.
+          train ||= route.train
+          return super unless @round&.wagon_for_train&.key?(train)
+          return super unless train.distance.is_a?(Numeric)
+
+          total = visits.sum(&:visit_cost)
+          return super if total <= train.distance
+
+          raise RouteTooLong, 'Wagon harbor extension requires a harbor at the route end' unless visits.any?(&:offboard?)
+          raise RouteTooLong, 'Wagon may only extend a route by one harbor stop' if total > train.distance + 1
+        end
+
         def sugar_production(corporation, total_revenue)
           return if total_revenue.zero? || corporation.type != :minor
 
@@ -261,6 +320,16 @@ module Engine
 
           @sugar_cubes.clear
           @log << 'All remaining sugar cubes are removed at the end of the Operating Round.'
+        end
+
+        def check_route_combination(routes)
+          # Each wagon must deliver to a distinct harbor.
+          super
+          wagon_routes = routes.select { |r| @round.wagon_for_train[r.train] }
+          return if wagon_routes.size <= 1
+
+          harbors = wagon_routes.map { |r| r.visited_stops.find(&:offboard?)&.hex&.id }.compact
+          raise GameError, 'Each wagon train must run to a different harbor' if harbors.uniq.size != harbors.size
         end
 
         def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
@@ -300,6 +369,12 @@ module Engine
         end
 
         private
+
+        def minor_operating_sort_key(corp)
+          # Order by share price, then market position, then name.
+          sp = corp.share_price
+          [sp&.price || 0, sp&.corporations&.find_index(corp) || 0, corp.name]
+        end
 
         def sugar_cane_tile?(tile)
           tile.towns.any?(&:hidden?)
