@@ -287,7 +287,9 @@ module Engine
         end
 
         def check_distance(route, visits, train = nil)
-          # Wagons allow one extra stop to reach a harbor beyond the train's normal distance.
+          # TODO: wagon_for_train is always empty until the follow-up PR populates it.
+          # The guards below never fire yet; they ship here so the validation logic
+          # is co-located with the route.rb stub.
           train ||= route.train
           return super unless @round&.wagon_for_train&.key?(train)
           return super unless train.distance.is_a?(Numeric)
@@ -323,7 +325,7 @@ module Engine
         end
 
         def check_route_combination(routes)
-          # Each wagon must deliver to a distinct harbor.
+          # TODO: wagon_for_train is always empty until the follow-up PR populates it.
           super
           wagon_routes = routes.select { |r| @round.wagon_for_train[r.train] }
           return if wagon_routes.size <= 1

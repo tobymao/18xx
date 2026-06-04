@@ -52,12 +52,9 @@ module Engine
             cheapest = candidates.min_by(&:price)
             return super unless cheapest
 
-            cheapest_names = names_of_cheapest_variants(cheapest)
-            return if cheapest_names.include?(train.name)
-            return unless @game.class::EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST
+            return if names_of_cheapest_variants(cheapest).include?(train.name)
 
-            raise GameError, "Cannot purchase #{train.name} train: cheaper train available (#{cheapest.name})" if
-              @game.class::EBUY_FROM_OTHERS == :never || train.from_depot?
+            raise GameError, "Cannot purchase #{train.name} train: cheaper train available (#{cheapest.name})"
           end
 
           def needed_cash(entity)
@@ -123,7 +120,8 @@ module Engine
           private
 
           def track_type_for(entity)
-            entity.type == :minor ? :narrow : :broad
+            corp = entity.respond_to?(:type) ? entity : @current_entity
+            corp.type == :minor ? :narrow : :broad
           end
         end
       end

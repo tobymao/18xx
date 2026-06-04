@@ -7,6 +7,13 @@ module Engine
         WAGONS = %w[1w 2w 3w].freeze
         MINOR_TRAIN_LIMIT = 2
 
+        EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+          'sugar_cane_open_for_majors' => ['Sugar cane open for majors',
+                                           'Major corporations may now lay plain track on sugar cane hexes'],
+          'downgrade_4n_trains' => ['4n trains downgrade',
+                                    '4n trains downgrade to 4-1n trains'],
+        ).freeze
+
         def train_limit(entity)
           return MINOR_TRAIN_LIMIT if entity.type == :minor
 
