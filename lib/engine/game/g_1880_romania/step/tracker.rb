@@ -21,12 +21,15 @@ module Engine
         end
 
         def hex_neighbors(entity, hex)
-          result = super
-          return result unless can_ignore_borders?(entity)
+          connected_edges = super
+          return connected_edges unless can_ignore_borders?(entity)
 
           connected = @game.graph_for_entity(entity).connected_hexes(entity)
 
-          extra_edges = (0..5).filter_map do |edge|
+          borders = hex.tile.borders.select { |b| b.type == :impassable }
+
+          extra_edges = borders.filter_map do |border|
+            edge = border.edge
             border = hex.tile.borders.find { |b| b.edge == edge && b.type == :impassable }
             next unless border
 
@@ -40,16 +43,17 @@ module Engine
             edge
           end
 
-          return result if extra_edges.empty?
+          return connected_edges if extra_edges.empty?
 
-          (Array(result) + extra_edges).uniq
+          Array(connected_edges) | extra_edges
         end
 
         def hex_neighbor_exists?(entity, hex, edge)
           return super unless can_ignore_borders?(entity)
 
-          border = hex.tile.borders.find { |b| b.edge == edge && b.type == :impassable }
-          border ? hex.all_neighbors[edge] : super
+          return super if hex.tile.borders.none? { |b| b.edge == edge && b.type == :impassable }
+
+          hex.all_neighbors[edge]
         end
       end
     end
