@@ -192,6 +192,26 @@ module Engine
               @game.can_par?(c, entity) && can_buy?(entity, @game.share_by_id("#{c.name}_0")&.to_bundle)
             end
           end
+
+          # handle auto-floating, since we can only buy from market
+          def activate_program_buy_shares(entity, program)
+            program.from_market = true
+
+            unless program.corporation.ipoed
+              return [Action::ProgramDisable.new(entity,
+                                                reason: "#{program.corporation.name} has not been started yet")]
+            end
+
+            # If we've already bought this turn, we need to insert a pass, or super
+            # tries to buy an additional share, which disables the program
+            if bought?
+              available = actions(entity)
+              return [Action::Pass.new(entity)] if available.include?('pass')
+              return
+            end
+
+            super
+          end
         end
       end
     end

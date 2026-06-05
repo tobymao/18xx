@@ -429,7 +429,6 @@ module Engine
       # If true, will possibly need to handle incompatable programmed actions
       # (e.g. ProgramSharePass and ProgramBuyShares)
       ALLOW_MULTIPLE_PROGRAMS = false
-      AUTOFLOAT_FROM_MARKET_SHARES = false # if true, allow corporations to use "until float" autobuy for market purchases
 
       CACHABLE = [
         %i[players player],
