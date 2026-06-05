@@ -265,6 +265,11 @@ module Engine
           floated.sort + not_floated + others
         end
 
+        def upgrade_ignore_num_cities(from)
+          # Two stations in Berlin get merged into one with three spots
+          from.hex.id == 'E19' && from.color == :yellow
+        end
+
         def revenue_for(route, stops)
           super + (hamburg_ferry?(route) ? -10 : 0)
         end
