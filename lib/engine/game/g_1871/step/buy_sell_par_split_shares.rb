@@ -199,7 +199,7 @@ module Engine
 
             unless program.corporation.ipoed
               return [Action::ProgramDisable.new(entity,
-                                                reason: "#{program.corporation.name} has not been started yet")]
+                                                 reason: "#{program.corporation.name} has not been started yet")]
             end
 
             # If we've already bought this turn, we need to insert a pass, or super
@@ -207,6 +207,7 @@ module Engine
             if bought?
               available = actions(entity)
               return [Action::Pass.new(entity)] if available.include?('pass')
+
               return
             end
 
