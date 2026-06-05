@@ -133,17 +133,79 @@ module Engine
         ).freeze
 
         # ---------------------------------------------------------------------------
+        # Tile-lay budget — phase-gated.
+        # Phase 2:   1 yellow tile only.
+        # Phase 3+:  2 yellow tiles OR 1 upgrade (no mixing).
+        # ---------------------------------------------------------------------------
+        YELLOW_TILE_LAY = [{ lay: true, upgrade: false }].freeze
+        TWO_TILE_LAYS = [
+          { lay: true, upgrade: true },
+          { lay: :not_if_upgraded, upgrade: false },
+        ].freeze
+
+        STATUS_TEXT = Base::STATUS_TEXT.merge(
+          'two_tile_lays' => ['Two tile lays', 'Corporations may lay 2 yellow tiles OR 1 upgrade tile per OR']
+        ).freeze
+
+        # ---------------------------------------------------------------------------
         # Phases
         # FIXME: verify exact operating_rounds count per phase from rulebook.
         # ---------------------------------------------------------------------------
         PHASES = [
-          { name: '2',          train_limit: 4, tiles: [:yellow],           operating_rounds: 1 },
-          { name: '3', on: '3', train_limit: 4, tiles: %i[yellow green],    operating_rounds: 2 },
-          { name: '4', on: '4', train_limit: 3, tiles: %i[yellow green],    operating_rounds: 2 },
-          { name: '5', on: '5', train_limit: 2, tiles: %i[yellow green brown], operating_rounds: 3 },
-          { name: '6', on: '6', train_limit: 2, tiles: %i[yellow green brown], operating_rounds: 3 },
-          { name: '7', on: '7', train_limit: 2, tiles: %i[yellow green brown gray], operating_rounds: 3 },
-          { name: '8', on: '8', train_limit: 2, tiles: %i[yellow green brown gray], operating_rounds: 3 },
+          {
+            name: '2',
+            train_limit: 4,
+            tiles: [:yellow],
+            operating_rounds: 1,
+          },
+          {
+            name: '3',
+            on: '3',
+            train_limit: 4,
+            tiles: %i[yellow green],
+            operating_rounds: 2,
+            status: ['two_tile_lays'],
+          },
+          {
+            name: '4',
+            on: '4',
+            train_limit: 3,
+            tiles: %i[yellow green],
+            operating_rounds: 2,
+            status: ['two_tile_lays'],
+          },
+          {
+            name: '5',
+            on: '5',
+            train_limit: 2,
+            tiles: %i[yellow green brown],
+            operating_rounds: 3,
+            status: ['two_tile_lays'],
+          },
+          {
+            name: '6',
+            on: '6',
+            train_limit: 2,
+            tiles: %i[yellow green brown],
+            operating_rounds: 3,
+            status: ['two_tile_lays'],
+          },
+          {
+            name: '7',
+            on: '7',
+            train_limit: 2,
+            tiles: %i[yellow green brown gray],
+            operating_rounds: 3,
+            status: ['two_tile_lays'],
+          },
+          {
+            name: '8',
+            on: '8',
+            train_limit: 2,
+            tiles: %i[yellow green brown gray],
+            operating_rounds: 3,
+            status: ['two_tile_lays'],
+          },
         ].freeze
 
         # ---------------------------------------------------------------------------
@@ -163,7 +225,7 @@ module Engine
             rusts_on: '4',
             num: 7,
             variants: [
-              { name: '2E', distance: [{ nodes: %w[city offboard town], pay: 2, visit: 999 }], price: 150 },
+              { name: '2E', distance: [{ 'nodes' => %w[city offboard town], 'pay' => 2, 'visit' => 999 }], price: 150 },
             ],
           },
           {
@@ -173,7 +235,7 @@ module Engine
             rusts_on: '6',
             num: 6,
             variants: [
-              { name: '3E', distance: [{ nodes: %w[city offboard town], pay: 3, visit: 999 }], price: 300 },
+              { name: '3E', distance: [{ 'nodes' => %w[city offboard town], 'pay' => 3, 'visit' => 999 }], price: 300 },
             ],
           },
           {
@@ -183,7 +245,7 @@ module Engine
             rusts_on: '8',
             num: 5,
             variants: [
-              { name: '4E', distance: [{ nodes: %w[city offboard town], pay: 4, visit: 999 }], price: 400 },
+              { name: '4E', distance: [{ 'nodes' => %w[city offboard town], 'pay' => 4, 'visit' => 999 }], price: 400 },
             ],
           },
           {
@@ -192,7 +254,7 @@ module Engine
             price: 550,
             num: 4,
             variants: [
-              { name: '5E', distance: [{ nodes: %w[city offboard town], pay: 5, visit: 999 }], price: 700 },
+              { name: '5E', distance: [{ 'nodes' => %w[city offboard town], 'pay' => 5, 'visit' => 999 }], price: 700 },
             ],
           },
           {
@@ -201,7 +263,7 @@ module Engine
             price: 650,
             num: 3,
             variants: [
-              { name: '6E', distance: [{ nodes: %w[city offboard town], pay: 6, visit: 999 }], price: 800 },
+              { name: '6E', distance: [{ 'nodes' => %w[city offboard town], 'pay' => 6, 'visit' => 999 }], price: 800 },
             ],
           },
           {
@@ -210,13 +272,32 @@ module Engine
             price: 750,
             num: 2,
             variants: [
-              { name: '7E', distance: [{ nodes: %w[city offboard town], pay: 7, visit: 999 }], price: 900 },
+              { name: '7E', distance: [{ 'nodes' => %w[city offboard town], 'pay' => 7, 'visit' => 999 }], price: 900 },
             ],
           },
           { name: '8', distance: 999, price: 900, num: 'unlimited' },
         ].freeze
 
         GAME_END_CHECK = { bank: :full_or, stock_market: :full_or }.freeze
+
+        # ---------------------------------------------------------------------------
+        # Tile-lay budget override.
+        # ---------------------------------------------------------------------------
+        def tile_lays(_entity)
+          @phase.status.include?('two_tile_lays') ? self.class::TWO_TILE_LAYS : self.class::YELLOW_TILE_LAY
+        end
+
+        # ---------------------------------------------------------------------------
+        # Home token — placed automatically at start of corp's first OR turn.
+        # Base place_home_token calls city.place_token directly (bypasses step
+        # layer) so clear_graph_for_entity is never called. Override to flush the
+        # graph cache immediately, otherwise the corp sees zero connected hexes
+        # and cannot lay track on the same turn.
+        # ---------------------------------------------------------------------------
+        def place_home_token(corporation)
+          super
+          clear_graph_for_entity(corporation)
+        end
 
         # ---------------------------------------------------------------------------
         # Corporation group unlock logic.
