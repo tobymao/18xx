@@ -442,6 +442,10 @@ module Engine
           exchange_share.buyable = true
           @share_pool.transfer_shares(ShareBundle.new(exchange_share), owner, allow_president_change: allow_president_change)
         end
+
+        def share_flags(shares)
+          'h' * shares.count { |share| share.percent == 5 }
+        end
       end
     end
   end
