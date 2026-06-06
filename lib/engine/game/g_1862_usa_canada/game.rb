@@ -44,7 +44,7 @@ module Engine
           'CP' => [
             { hexes: %w[E25],          cash: 100, route_bonus: 30,  name: 'Toronto'     },
             { hexes: %w[B20],          cash: 200, route_bonus: 60,  name: 'Thunder Bay' },
-            { hexes: %w[B2 C1 G3 I5], cash: 300, route_bonus: 100, name: 'V/P/S/L' },
+            { hexes: %w[B2 D2 G3 I5], cash: 300, route_bonus: 100, name: 'V/P/S/L' },
           ],
           'NYH' => [
             { hexes: %w[F20],          cash: 100, route_bonus: 30,  name: 'Chicago'     },
@@ -58,13 +58,13 @@ module Engine
             { hexes: %w[J10],          cash: 200, route_bonus: 60,  name: 'El Paso'     },
           ],
           'ATS' => [
-            { hexes: %w[B2 C1 G3 I5], cash: 200, route_bonus: 60, name: 'V/P/S/L' },
+            { hexes: %w[B2 D2 G3 I5], cash: 200, route_bonus: 60, name: 'V/P/S/L' },
           ],
           'NP' => [
             { hexes: %w[F20], cash: 100, route_bonus: 30, name: 'Chicago' },
           ],
           'CN' => [
-            { hexes: %w[B2 C1 G3 I5], cash: 100, route_bonus: 30, name: 'V/P/S/L' },
+            { hexes: %w[B2 D2 G3 I5], cash: 100, route_bonus: 30, name: 'V/P/S/L' },
             { hexes: %w[B10], cash: 200, route_bonus: 60, name: 'Regina' },
           ],
           # FIXME: TP El Paso bonus amount unconfirmed from rulebook — entry omitted until confirmed
@@ -286,6 +286,92 @@ module Engine
         GAME_END_CHECK = { bank: :full_or, stock_market: :full_or }.freeze
 
         # ---------------------------------------------------------------------------
+        # Bonus state initialisation.
+        # @bonus_state: { [corp_sym, bonus_index] => :unactivated | :permanent | :cash }
+        # :unactivated — bonus not yet earned.
+        # :permanent   — director chose to keep as recurring per-OR revenue.
+        # :cash        — director chose the one-time cash payout (not yet implemented;
+        #                auto-selects :permanent for now — FIXME).
+        # ---------------------------------------------------------------------------
+        def setup
+          @bonus_state = {}
+          CORP_BONUSES.each do |sym, bonuses|
+            bonuses.each_index { |i| @bonus_state[[sym, i]] = :unactivated }
+          end
+          @slc_connected = {}
+          @slc_bonus_paid = false
+        end
+
+        # ---------------------------------------------------------------------------
+        # Bonus markers (Bonusplättchen) — revenue and activation.
+        # A bonus activates when a corp's route passes through BOTH its home hex AND
+        # the bonus target hex in the same OR turn.
+        # ---------------------------------------------------------------------------
+
+        # Pure calculation — called by routes_revenue and during route display.
+        def corp_bonus_revenue(corporation, routes)
+          return 0 unless (bonuses = CORP_BONUSES[corporation.id])
+
+          home = corporation.coordinates
+          bonuses.each_with_index.sum do |bonus, i|
+            case @bonus_state[[corporation.id, i]]
+            when :unactivated
+              would_activate?(bonus, routes, home) ? bonus[:route_bonus] : 0
+            when :permanent
+              bonus_on_route?(bonus, routes) ? bonus[:route_bonus] : 0
+            else
+              0
+            end
+          end
+        end
+
+        # Called from Step::Dividend before super — commits any newly earned bonuses.
+        # FIXME: should offer cash-vs-permanent choice; auto-selects :permanent for now.
+        def activate_new_bonuses!(corporation, routes)
+          return unless (bonuses = CORP_BONUSES[corporation.id])
+
+          home = corporation.coordinates
+          bonuses.each_with_index do |bonus, i|
+            next unless @bonus_state[[corporation.id, i]] == :unactivated
+            next unless would_activate?(bonus, routes, home)
+
+            @bonus_state[[corporation.id, i]] = :permanent
+            @log << "#{corporation.name} activates #{bonus[:name]} connection bonus " \
+                    "(permanent +#{format_currency(bonus[:route_bonus])} per OR)"
+          end
+        end
+
+        def routes_revenue(routes)
+          return super if routes.empty?
+
+          corp = routes.first.train.owner
+          super + corp_bonus_revenue(corp, routes) + slc_route_bonus(corp, routes)
+        end
+
+        # ---------------------------------------------------------------------------
+        # SLC transcontinental bonus + Golden Spike event.
+        # CPR and UP each earn a per-OR bonus whenever their route passes through SLC.
+        # The first time both corps have connected through SLC the Golden Spike fires:
+        # a one-time shareholder bonus is paid from the bank and both stocks advance.
+        # ---------------------------------------------------------------------------
+
+        # Called from Step::Dividend before super each time a corporation runs routes.
+        def check_golden_spike!(corporation, routes)
+          return unless SLC_CORPS.include?(corporation.id)
+          return if @slc_connected[corporation.id]
+          return unless routes.any? { |r| r.visited_stops.any? { |s| s.hex.id == SLC_HEX } }
+
+          @slc_connected[corporation.id] = true
+          @log << "#{corporation.name} reaches Salt Lake City — transcontinental route active"
+
+          return unless SLC_CORPS.all? { |sym| @slc_connected[sym] }
+          return if @slc_bonus_paid
+
+          @slc_bonus_paid = true
+          golden_spike_event!
+        end
+
+        # ---------------------------------------------------------------------------
         # Private company close triggers.
         # SOC closes when CPR or UP floats.
         # NHSC closes when NYH floats.
@@ -359,7 +445,7 @@ module Engine
           when 1 then all_privates_sold?
           when 2 then corp_groups[1].all? { |corp| corp.num_ipo_shares.zero? }
           when 3 then corp_groups[2].all?(&:floated?)
-          else raise GameError, "Unknown corporation group #{group_num}"
+          else true
           end
         end
 
@@ -394,6 +480,51 @@ module Engine
             Engine::Step::DiscardTrain,
             Engine::Step::BuyTrain,
           ], round_num: round_num)
+        end
+
+        private
+
+        def slc_route_bonus(corporation, routes)
+          return 0 unless SLC_CORPS.include?(corporation.id)
+          return 0 unless routes.any? { |r| r.visited_stops.any? { |s| s.hex.id == SLC_HEX } }
+
+          soc = company_by_id('SOC')
+          soc && !soc.closed? ? SLC_ROUTE_BONUS_SOC : SLC_ROUTE_BONUS
+        end
+
+        def golden_spike_event!
+          @log << '-- GOLDEN SPIKE! Transcontinental railroad complete --'
+          SLC_CORPS.each do |sym|
+            corp = corporation_by_id(sym)
+            next unless corp&.floated?
+
+            corp.share_holders.each do |entity, percent|
+              next unless entity.player?
+
+              bonus = (percent / 10) * GOLDEN_SPIKE_SHAREHOLDER_BONUS
+              @bank.spend(bonus, entity)
+              @log << "#{entity.name} receives #{format_currency(bonus)} Golden Spike bonus " \
+                      "(#{percent}% #{corp.name})"
+            end
+
+            @stock_market.move_up(corp)
+            @log << "#{corp.name} stock advances to #{format_currency(corp.share_price.price)}"
+          end
+        end
+
+        def would_activate?(bonus, routes, home)
+          bonus[:hexes].any? do |hex_id|
+            routes.any? do |route|
+              ids = route.visited_stops.map { |s| s.hex.id }
+              ids.include?(hex_id) && ids.include?(home)
+            end
+          end
+        end
+
+        def bonus_on_route?(bonus, routes)
+          bonus[:hexes].any? do |hex_id|
+            routes.any? { |r| r.visited_stops.any? { |s| s.hex.id == hex_id } }
+          end
         end
       end
     end
