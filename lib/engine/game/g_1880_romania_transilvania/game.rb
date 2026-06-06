@@ -53,9 +53,10 @@ module Engine
         def game_trains
           unless @train_games
             @train_games = super.map(&:dup)
-            t_2, t_2r2, t_3, t_3p3, t_4, t_4p4, t_6, t_6e, t_8, t_8e, t_2r = @train_games
+            t_2, t_2p2, t_3, t_3p3, t_4, t_4p4, t_6, t_6e, t_8, t_8e, t_2r = @train_games
             t_2[:num] = 6
-            t_2r2[:num] = 3
+            t_2p2[:num] = 3
+            t_2p2[:events] = []
             t_3[:num] = 3
             t_3p3[:num] = 2
             t_3p3[:events] = [{ 'type' => 'communist_takeover' }]
