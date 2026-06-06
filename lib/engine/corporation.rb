@@ -78,6 +78,7 @@ module Engine
       @reservation_color = opts[:reservation_color]
       @price_percent = opts[:price_percent] || @second_share&.percent || (@presidents_share.percent / 2)
       @price_multiplier = (@second_share&.percent || (@presidents_share.percent / 2)) / @price_percent
+      @forced_share_percent = opts[:@forced_share_percent]
       @treasury_as_holding = opts[:treasury_as_holding] || false
       @corporation_can_ipo = opts[:corporation_can_ipo]
 
