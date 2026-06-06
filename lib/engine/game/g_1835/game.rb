@@ -48,6 +48,8 @@ module Engine
 
         TOKEN_PLACEMENT_ON_TILE_LAY_ENTITY = :owner
 
+        EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
+
         MARKET = [['', '', '', ''] + %w[132 148 166 186 208 232 258 286 316 348 382 418],
                   ['', ''] + %w[98 108 120 134 150 168 188 210 234 260 288 318 350 384],
                   %w[82 86 92p 100 110 122 136 152 170 190 212 236 262 290 320],
@@ -75,6 +77,7 @@ module Engine
             on: '3',
             train_limit: { minor: 2, major: 4 },
             tiles: %i[yellow green],
+            status: ['can_buy_trains'],
             operating_rounds: 2,
           },
           {
@@ -82,6 +85,7 @@ module Engine
             on: '3+3',
             train_limit: { major: 4, minor: 2 },
             tiles: %i[yellow green],
+            status: ['can_buy_trains'],
             operating_rounds: 2,
           },
           {
@@ -89,6 +93,7 @@ module Engine
             on: '4',
             train_limit: { prussian: 4, major: 3, minor: 1 },
             tiles: %i[yellow green],
+            status: ['can_buy_trains'],
             operating_rounds: 2,
           },
           {
@@ -96,6 +101,7 @@ module Engine
             on: '4+4',
             train_limit: { prussian: 4, major: 3, minor: 1 },
             tiles: %i[yellow green],
+            status: ['can_buy_trains'],
             operating_rounds: 2,
           },
           {
@@ -103,6 +109,7 @@ module Engine
             on: '5',
             train_limit: { prussian: 3, major: 2 },
             tiles: %i[yellow green brown],
+            status: ['can_buy_trains'],
             operating_rounds: 3,
           },
           {
@@ -110,6 +117,7 @@ module Engine
             on: '5+5',
             train_limit: { prussian: 3, major: 2 },
             tiles: %i[yellow green brown],
+            status: ['can_buy_trains'],
             operating_rounds: 3,
           },
           {
@@ -117,6 +125,7 @@ module Engine
             on: '6',
             train_limit: { prussian: 3, major: 2 },
             tiles: %i[yellow green brown],
+            status: ['can_buy_trains'],
             operating_rounds: 3,
           },
           {
@@ -124,6 +133,7 @@ module Engine
             on: '6+6',
             train_limit: { prussian: 3, major: 2 },
             tiles: %i[yellow green brown],
+            status: ['can_buy_trains'],
             operating_rounds: 3,
           },
         ].freeze
