@@ -240,7 +240,7 @@ module Engine
             Engine::Step::HomeToken,
             Engine::Step::Token,
             Engine::Step::Route,
-            Engine::Step::Dividend,
+            G1835::Step::Dividend,
             G1835::Step::BuyTrain,
           ], round_num: round_num)
         end
