@@ -165,8 +165,8 @@ module Engine
 
         CORPORATION_BLOCKS = [%w[BY SX], %w[BA WT HE PR], %w[MS OL]].freeze
 
-        YELLOW_OR_UPGRADE = [{ lay: true, upgrade: true }].freeze
-        TWO_YELLOW = [{ lay: true, upgrade: false }, { lay: true, upgrade: false }].freeze
+        LAY_OR_UPGRADE = [{ lay: true, upgrade: true }].freeze
+        TWO_LAYS = [{ lay: true, upgrade: false }, { lay: true, upgrade: false }].freeze
 
         def setup
           prussian.shares.last(7).each { |s| s.buyable = false }
@@ -317,6 +317,12 @@ module Engine
           north_edge_used = route.paths.any? { |path| path.tile.hex == hamburg_hex && [2, 3, 4].intersect?(path.exits) }
           south_edge_used = route.paths.any? { |path| path.tile.hex == hamburg_hex && [0, 1, 5].intersect?(path.exits) }
           north_edge_used && south_edge_used
+        end
+
+        def tile_lays(entity)
+          return TWO_LAYS if entity.type == :major && @phase.name.to_i < 2
+
+          LAY_OR_UPGRADE
         end
 
         def payout_companies
