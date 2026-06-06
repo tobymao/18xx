@@ -4,6 +4,7 @@ require_relative 'meta'
 require_relative '../base'
 require_relative 'map'
 require_relative 'entities'
+require_relative 'share_pool'
 require_relative '../../round/operating'
 require_relative '../cities_plus_towns_route_distance_str'
 
@@ -11,7 +12,8 @@ module Engine
   module Game
     module G1835
       class Game < Game::Base
-        attr_accessor :draft_finished
+        attr_accessor :draft_finished, :pr_can_form, :conversion_choice_during_or
+        attr_reader :preussen_may_float
 
         include_meta(G1835::Meta)
         include CitiesPlusTownsRouteDistanceStr
@@ -102,7 +104,6 @@ module Engine
             train_limit: { prussian: 3, major: 2 },
             tiles: %i[yellow green brown],
             operating_rounds: 3,
-            events: { close_companies: true },
           },
           {
             name: '3.2',
@@ -136,12 +137,25 @@ module Engine
                   { name: '2+2', distance: plus_train_distance(2), price: 120, rusts_on: '4+4', num: 4 },
                   { name: '3', distance: 3, price: 180, rusts_on: '6', num: 4 },
                   { name: '3+3', distance: plus_train_distance(3), price: 270, rusts_on: '6+6', num: 3 },
-                  { name: '4', distance: 4, price: 360, num: 3 },
-                  { name: '4+4', distance: plus_train_distance(4), price: 440, num: 1 },
-                  { name: '5', distance: 5, price: 500, num: 2 },
+                  { name: '4', distance: 4, price: 360, num: 3, events: [{ 'type' => 'pr_can_form' }] },
+                  { name: '4+4', distance: plus_train_distance(4), price: 440, num: 1, events: [{ 'type' => 'pr_must_form' }] },
+                  {
+                    name: '5',
+                    distance: 5,
+                    price: 500,
+                    num: 2,
+                    events: [{ 'type' => 'forced_pr_exchange' }, { 'type' => 'close_companies' }],
+                  },
                   { name: '5+5', distance: plus_train_distance(5), price: 600, num: 1 },
                   { name: '6', distance: 6, price: 600, num: 2 },
                   { name: '6+6', distance: plus_train_distance(6), price: 720, num: 4 }].freeze
+
+        EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+          'pr_can_form' => ['Optional Preußen Formation', 'Preußen can choose to form now or at beginning of SR/OR'],
+          'pr_must_form' => ['Preußen Formation', 'Preußen forms immediately'],
+          'forced_pr_exchange' => ['Forced Preußen exchange',
+                                   'Remaining Preußen privates and minors will be exchanged for Preußen shares']
+        ).freeze
 
         LAYOUT = :pointy
 
@@ -151,19 +165,21 @@ module Engine
 
         CORPORATION_BLOCKS = [%w[BY SX], %w[BA WT HE PR], %w[MS OL]].freeze
 
+        YELLOW_OR_UPGRADE = [{ lay: true, upgrade: true }].freeze
+        TWO_YELLOW = [{ lay: true, upgrade: false }, { lay: true, upgrade: false }].freeze
+
         def setup
-          # Reserve Preußen shares to be exchanged for Vorpreußen and Privates
-          # Reserving the president share would be correct here, but that would make can_buy and process_buy_shares
-          # really complicated. Instead, the president share can be bought and will be swapped for a 10% share
-          # once PR floats.
-          corporation_by_id('PR').shares.last(8).each { |s| s.buyable = false }
+          prussian.shares.last(7).each { |s| s.buyable = false }
+          prussian.shares.first.buyable = false
 
           @corporations.each do |corp|
             corp.shares.reject(&:president).each { |share| share.double_cert = (share.percent == 20) }
           end
 
           @draft_finished = false
+
           @draft_round_num = 1
+          @preussen_may_float = false
 
           @corporations.select { |corp| corp.type == :major }.each do |corp|
             @stock_market.set_par(corp, @stock_market.par_prices.find { |share_price| share_price.price == PAR_PRICES[corp.id] })
@@ -171,6 +187,8 @@ module Engine
 
           corporation_by_id('BY').ipoed = true
           corporation_by_id('SX').ipoed = true
+          corporation_by_id('MS').forced_share_percent = 10
+          corporation_by_id('OL').forced_share_percent = 10
 
           @corporation_blocks = CORPORATION_BLOCKS.map { |block| block.map { |c| corporation_by_id(c) } }
         end
@@ -180,6 +198,10 @@ module Engine
           return 'SHARE' if company.sym == 'BY_D'
 
           'PRIVATE COMPANY'
+        end
+
+        def init_share_pool
+          G1835::SharePool.new(self)
         end
 
         def init_round
@@ -201,30 +223,39 @@ module Engine
             when G1835::Round::Draft
               reorder_players
               new_operating_round(@draft_round_num)
-            when Engine::Round::Operating
+            when G1835::Round::Operating
               @draft_round_num += 1
               new_draft_round
             end
         end
 
         def operating_round(round_num)
-          Engine::Round::Operating.new(self, [
+          G1835::Round::Operating.new(self, [
             Engine::Step::Bankrupt,
+            G1835::Step::MinorExchange,
+            Engine::Step::DiscardTrain,
             Engine::Step::SpecialTrack,
             G1835::Step::SpecialToken,
             Engine::Step::Track,
+            Engine::Step::HomeToken,
             Engine::Step::Token,
             Engine::Step::Route,
             G1835::Step::Dividend,
-            Engine::Step::DiscardTrain,
             G1835::Step::BuyTrain,
           ], round_num: round_num)
         end
 
         def stock_round
           Engine::Round::Stock.new(self, [
+            G1835::Step::MinorExchange,
             G1835::Step::BuySellParShares,
           ])
+        end
+
+        def bundles_for_corporation(share_holder, corporation, shares: nil)
+          return super if share_holder.player? && corporation.type == :major
+
+          []
         end
 
         def maybe_ipo_next_block(corporation)
@@ -246,7 +277,7 @@ module Engine
         end
 
         def corporation_available?(corp)
-          return !corporation_by_id('BA').shares.first&.president if corp == corporation_by_id('PR')
+          return !corporation_by_id('BA').shares.first&.president if corp == prussian
 
           block = @corporation_blocks.find { |corporation_block| corporation_block.include?(corp) }
           index_in_block = block.index(corp)
@@ -286,6 +317,130 @@ module Engine
           north_edge_used = route.paths.any? { |path| path.tile.hex == hamburg_hex && [2, 3, 4].intersect?(path.exits) }
           south_edge_used = route.paths.any? { |path| path.tile.hex == hamburg_hex && [0, 1, 5].intersect?(path.exits) }
           north_edge_used && south_edge_used
+        end
+
+        def payout_companies
+          # omit paying out companies if any Prussian conversion could happen. Payout is then handled by MinorExchange
+          # after all choices have been made
+          super unless any_conversion_choice_available?
+        end
+
+        def any_conversion_choice_available?
+          # Owner of 2 has the choice to form the PR
+          return true if @pr_can_form && !prussian.floated?
+
+          # PR has already been formed and not all minors/companies have been converted yet
+          prussian.floated? && !prussian_exchangeables.reject(&:closed?).empty?
+        end
+
+        def prussian
+          @pr ||= corporation_by_id('PR')
+        end
+
+        def berlin_potsdamer_bahn
+          @berlin_potsdamer_bahn ||= minor_by_id('2')
+        end
+
+        def prussian_exchangeables
+          @prussian_exchangeables ||= minors + prussian_companies
+        end
+
+        def prussian_companies
+          @prussian_companies ||= %w[BB HB].map { |id| company_by_id(id) }
+        end
+
+        def event_pr_can_form!
+          @log << "-- Event: #{EVENTS_TEXT['pr_can_form'][1]} --"
+          @pr_can_form = true
+          @conversion_choice_during_or = true
+        end
+
+        def event_pr_must_form!
+          return if berlin_potsdamer_bahn.closed?
+
+          @log << "-- Event: #{EVENTS_TEXT['pr_must_form'][1]} --"
+          form_prussian!
+        end
+
+        def event_forced_pr_exchange!
+          @log << "-- Event: #{EVENTS_TEXT['forced_pr_exchange'][1]} --"
+          minors.reject(&:closed?).each do |minor|
+            merge_minor!(minor)
+          end
+          prussian_companies.reject(&:closed?).each do |company|
+            merge_company!(company)
+          end
+        end
+
+        def form_prussian!
+          @log << "#{prussian.id} forms"
+          prussian.floatable = true
+          prussian.floated = true
+
+          merge_minor!(berlin_potsdamer_bahn)
+        end
+
+        def merge_company!(company, allow_president_change: true)
+          exchange_prussian_share(allow_president_change, 10, company.owner)
+          company.close!
+        end
+
+        def merge_minor!(minor, allow_president_change: true)
+          @log << "#{minor.name} merges into #{prussian.name}"
+
+          owner = minor.owner
+          exchange_share_percentage = %w[2 4].include?(minor.id) ? 10 : 5
+
+          exchange_prussian_share(allow_president_change, exchange_share_percentage, owner, president: minor.id == '2')
+
+          if minor.cash.positive?
+            @log << "#{prussian.name} receives #{format_currency(minor.cash)} from #{minor.name}'s treasury"
+            minor.spend(minor.cash, prussian)
+          end
+
+          unless minor.trains.empty?
+            trains_str = "#{minor.trains.map(&:name).join(', ')} train#{minor.trains.size > 1 ? 's' : ''}"
+            @log << "#{prussian.name} receives #{trains_str}"
+            minor.trains.dup.each { |t| buy_train(prussian, t, :free) }
+          end
+
+          # Preußen already has a token in Berlin and the rules forbid having more than one token per hex
+          unless minor.id == '5'
+            token = minor.tokens.first
+
+            # make sure the first token (= home token) gets used or other methods might behave unexpectedly later, e.g.
+            # "maybe_place_home_token" called when buying shares
+            new_token = minor.id == '2' ? prussian.tokens.first : Token.new(prussian)
+            prussian.tokens << new_token
+
+            token.swap!(new_token, check_tokenable: false)
+
+            @log << "#{prussian.name} receives token (#{new_token.used ? new_token.city.hex.id : 'charter'})"
+          end
+
+          close_minor!(minor)
+
+          graph.clear_graph_for(prussian)
+        end
+
+        def close_minor!(minor)
+          minor.tokens.each(&:remove!)
+          minor.close!
+        end
+
+        def exchange_prussian_share(allow_president_change, exchange_share_percentage, owner, president: false)
+          @log << "#{owner.name} receives a #{exchange_share_percentage}% share of #{prussian.name}"
+          exchange_share = if president
+                             prussian.shares.first
+                           else
+                             prussian.reserved_shares.find do |share|
+                               share.percent == exchange_share_percentage
+                             end
+                           end
+          raise GameError, 'Preußen director not owned by Preußen anymore' if president && !exchange_share.president
+
+          exchange_share.buyable = true
+          @share_pool.transfer_shares(ShareBundle.new(exchange_share), owner, allow_president_change: allow_president_change)
         end
       end
     end

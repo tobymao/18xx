@@ -20,7 +20,8 @@ module Engine
         include G1832::Phases
         include G1832::Trains
 
-        attr_accessor :sell_queue, :reissued, :coal_token_counter, :coal_company_sold_or_closed
+        attr_accessor :sell_queue, :reissued, :coal_token_counter, :coal_company_sold_or_closed, :p4_invested_in,
+                      :miami_has_been_run
 
         CORPORATION_CLASS = G1832::Corporation
         CORPORATE_BUY_SHARE_ALLOW_BUY_FROM_PRESIDENT = true
@@ -51,7 +52,8 @@ module Engine
         IPO_RESERVED_NAME = 'Treasury'
 
         BOOMTOWN_HEXES = %w[D8 F14 G9 G11 H6 L14].freeze
-        MIAMI_HEX = 'N16'
+        MIAMI_HEX_ID = 'N16'
+        FECR_COMPANY_ID = 'FECR'
 
         TILE_LAYS = [{ lay: true, upgrade: true }, { lay: :not_if_upgraded, upgrade: false }].freeze
         SYSTEM_TILE_LAYS = [{ lay: true, upgrade: true },
@@ -81,8 +83,8 @@ module Engine
 
         ASSIGNMENT_TOKENS = {
           'boomtown' => '/icons/1832/boomtown_token.svg',
-          'P2' => '/icons/1846/sc_token.svg',
-          'P3' => '/icons/1832/cotton_token.svg',
+          'P2' => '/icons/1832/cotton_token.svg',
+          'P3' => '/icons/1832/port_token.svg',
         }.freeze
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
@@ -101,8 +103,7 @@ module Engine
                                                      'Companies can be bought between players',
                                                      'The West Virginia Coalfields private company can be bought in for '\
                                                      'up to face value from the owning player'],
-        ).merge(
-          'companies_buyable' => ['Companies become buyable', 'All companies may now be bought in by corporation'],
+          'can_buy_companies' => ['Companies become buyable', 'All companies may now be bought in by corporations'],
         )
 
         def new_auction_round
@@ -115,6 +116,7 @@ module Engine
         def stock_round
           G1870::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
+            G1832::Step::Exchange,
             G1832::Step::BuySellParShares,
             G1850::Step::PriceProtection,
           ])
@@ -123,14 +125,14 @@ module Engine
         def operating_round(round_num)
           Engine::Round::Operating.new(self, [
             Engine::Step::Bankrupt,
-            Engine::Step::Exchange,
+            G1832::Step::Exchange,
             G1832::Step::BuyCompany,
             G1832::Step::Assign,
             G1870::Step::SpecialTrack,
             G1832::Step::Track,
             G1832::Step::Token,
             Engine::Step::Route,
-            G1870::Step::Dividend,
+            G1832::Step::Dividend,
             Engine::Step::DiscardTrain,
             G1870::Step::BuyTrain,
             [G1832::Step::BuyCompany, { blocks: true }],
@@ -151,6 +153,8 @@ module Engine
           @sell_queue = []
           @reissued = {}
           @coal_token_counter = 5
+          @miami_has_been_run = false
+          @p4_invested_in = nil
 
           coal_company.max_price = coal_company.value
 
@@ -268,11 +272,11 @@ module Engine
         end
 
         def port_company
-          @port_company ||= company_by_id('P2')
+          @port_company ||= company_by_id('P3')
         end
 
         def cotton_company
-          @cotton_company ||= company_by_id('P3')
+          @cotton_company ||= company_by_id('P2')
         end
 
         def highlight_city_assignment?(city)
@@ -292,6 +296,10 @@ module Engine
           super
         end
 
+        def london_company
+          @london_company ||= company_by_id('P4')
+        end
+
         def coal_company
           @coal_company ||= company_by_id('P5')
         end
@@ -300,22 +308,79 @@ module Engine
           @coal_hex ||= hex_by_id('B14')
         end
 
-        def revenue_for(route, stops)
-          revenue = super
+        def miami_hex
+          @miami_hex ||= hex_by_id(MIAMI_HEX_ID)
+        end
 
+        def fecr_corp
+          @fecr_corp ||= corporation_by_id(FECR_COMPANY_ID)
+        end
+
+        def cotton_bonus(route, stops)
           cotton = 'P2'
-          if route.corporation.assigned?(cotton) && stops.any? do |stop|
-               next false unless stop.hex.assigned?(cotton)
 
-               city_index = stop.hex.assignments[cotton]
-               city_index.is_a?(Integer) ? stop.hex.tile.cities.index(stop) == city_index : true
-             end
-            revenue += 10
+          return 0 unless route.corporation.assigned?(cotton)
+
+          stops.each do |stop|
+            next unless stop.hex.assigned?(cotton)
+
+            city_index = stop.hex.assignments[cotton]
+            next unless stop.hex.tile.cities.index(stop) == city_index
+
+            return 10
           end
 
-          revenue += (route.corporation.assigned?('P3') ? 20 : 10) if stops.any? { |stop| stop.hex.assigned?('P3') }
+          0
+        end
+
+        def atlantic_shipping_bonus(route, stops)
+          revenue = route.corporation.assigned?('P3') ? 20 : 10
+
+          found = stops.any? do |stop|
+            stop.hex.assigned?('P3')
+          end
+
+          found ? revenue : 0
+        end
+
+        # Miami first-run rule: worth $0 the first time any corporation runs there prior to phase 5
+        def miami_scores_zero?
+          phase.status.include?('first_miami_run_is_zero') && !@miami_has_been_run
+        end
+
+        def miami_revenue(route, stops)
+          revenue = 0
+
+          miami_stop = stops.find { |stop| stop.hex == miami_hex }
+          revenue -= miami_stop.route_revenue(route.phase, route.train) if miami_stop && miami_scores_zero?
+
+          # Key West bonus: FECR earns +$50 when running to Miami with token placed (phases 3-7)
+          revenue += 50 if route.corporation == fecr_corp && miami_token_placed? && miami_stop
 
           revenue
+        end
+
+        def revenue_for(route, stops)
+          super +
+            cotton_bonus(route, stops) +
+            atlantic_shipping_bonus(route, stops) +
+            miami_revenue(route, stops)
+        end
+
+        def miami_token_placed?
+          miami_hex.assigned?(fecr_corp)
+        end
+
+        def place_miami_token
+          miami_hex.tile.icons.reject! { |icon| icon.name == 'FECR_key_west' }
+          miami_hex.assign!(fecr_corp)
+        end
+
+        def event_remove_key_west_token!
+          return unless miami_token_placed?
+
+          miami_hex.remove_assignment!(fecr_corp)
+          @log << "-- Event: #{fecr_corp.name} loses Key West token --"
         end
 
         def sell_shares_and_change_price(bundle, allow_president_change: true, swap: nil, movement: nil)

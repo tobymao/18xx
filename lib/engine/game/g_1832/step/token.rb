@@ -32,29 +32,32 @@ module Engine
           end
 
           def place_miami_token(corporation)
-            return unless can_place_miami_token?(corporation)
+            raise GameError, 'Cannot place Miami token' unless can_place_miami_token?(corporation)
 
-            hex = @game.hex_by_id(MIAMI_HEX)
-            abilities = Array(@game.abilities(corporation, :assign_hexes))
-            ability = abilities.find { |a| a.hexes.includes?(MIAMI_HEX) }
+            @game.place_miami_token
 
-            hex.tile.icons.reject! { |icon| icon.name == 'FECR_key_west' }
-            hex.assign!(corporation)
+            ability = miami_token_ability(corporation)
             ability.use!
+
             corporation.spend(ability.cost, @game.bank)
             @log << "#{corporation.name} places the Key West token on #{hex.name} for #{@game.format_currency(ability.cost)}"
           end
 
-          def skip!
-            pass!
+          def miami_token_ability(entity)
+            entity.all_abilities.find { |a| a.type == :assign_hexes && a.hexes == [@game.MIAMI_HEX_ID] }
           end
 
           def can_place_miami_token?(entity)
-            return false if entity.cash < 100
-            return false unless (3..6).cover?(@game.phase.name.to_i)
+            return false if @game.miami_token_placed?
+            return false unless entity == @game.fecr_corp
+            return false unless @game.phase.status.include?('can_place_miami_token')
 
-            abilities = Array(@game.abilities(entity, :assign_hexes))
-            abilities.any? { |ability| ability.hexes.includes?(MIAMI_HEX) }
+            ability = miami_token_ability(entity)
+            return false unless ability
+
+            return false unless corporation.cash >= ability.cost
+
+            true
           end
         end
       end

@@ -102,11 +102,8 @@ module Engine
                   'first 5T is purchased by any corporation.',
             abilities: [
               {
-                type: 'exchange',
-                corporations: %w[PR_2],
-                owner_type: 'player',
-                when: ['Phase 2.3', 'Phase 2.4', 'Phase 3.1'],
-                from: 'ipo',
+                type: 'close',
+                on_phase: 'never',
               },
             ],
             auction_row: 2,
@@ -122,11 +119,8 @@ module Engine
                   'purchased by any corporation.',
             abilities: [
               {
-                type: 'exchange',
-                corporations: %w[PR_1],
-                owner_type: 'player',
-                when: ['Phase 2.3', 'Phase 2.4', 'Phase 3.1'],
-                from: 'ipo',
+                type: 'close',
+                on_phase: 'never',
               },
             ],
             auction_row: 3,
@@ -304,7 +298,6 @@ module Engine
             max_ownership_percent: 100,
             shares: [20, 20, 20, 10, 10, 10, 10],
             price_percent: 20,
-            forced_share_percent: 10,
             fraction_shares: false,
             coordinates: 'C13',
             color: :violet,
@@ -321,7 +314,6 @@ module Engine
             max_ownership_percent: 100,
             shares: [20, 20, 20, 10, 10, 10, 10],
             price_percent: 20,
-            forced_share_percent: 10,
             fraction_shares: false,
             coordinates: 'D6',
             color: '#6e6966',
