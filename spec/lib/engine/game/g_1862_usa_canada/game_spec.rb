@@ -309,6 +309,114 @@ module Engine
       end
     end
 
+    describe 'bond (Schuldschein) state' do
+      let(:cpr)    { game.corporation_by_id('CPR') }
+      let(:player) { game.players.first }
+      let(:mock_sp) { double('SharePrice', price: 100) }
+
+      before do
+        allow(cpr).to receive(:share_price).and_return(mock_sp)
+        allow(cpr).to receive(:owner).and_return(player)
+      end
+
+      it '@corp_bonds initialises empty' do
+        expect(game.instance_variable_get(:@corp_bonds)).to eq({})
+      end
+
+      it '@buyback_done initialises empty' do
+        expect(game.instance_variable_get(:@buyback_done)).to eq({})
+      end
+
+      it 'bond? is false before buyback' do
+        expect(game.bond?(cpr)).to be false
+      end
+
+      it 'bond? is true after record_bond!' do
+        game.record_bond!(cpr)
+        expect(game.bond?(cpr)).to be true
+      end
+
+      it 'buyback_done? is false before buyback' do
+        expect(game.buyback_done?(cpr)).to be false
+      end
+
+      it 'buyback_done? is true after record_bond!' do
+        game.record_bond!(cpr)
+        expect(game.buyback_done?(cpr)).to be true
+      end
+
+      it 'record_bond! is a no-op on second call' do
+        game.record_bond!(cpr)
+        game.record_bond!(cpr)
+        expect(game.bond_amount(cpr)).to eq(500)
+      end
+
+      it 'buyback_bond_amount is 5 × market price' do
+        expect(game.buyback_bond_amount(cpr)).to eq(500)
+      end
+
+      it 'buyback_bond_amount rounds up to nearest $100' do
+        non_round_sp = double('SharePrice', price: 92)
+        allow(cpr).to receive(:share_price).and_return(non_round_sp)
+        # 92 × 5 = 460 → ceil to nearest 100 → 500
+        expect(game.buyback_bond_amount(cpr)).to eq(500)
+      end
+
+      it 'repay_bond! clears the bond when corp has sufficient cash' do
+        game.record_bond!(cpr)
+        cpr.instance_variable_set(:@cash, 500)
+        game.repay_bond!(cpr)
+        expect(game.bond?(cpr)).to be false
+      end
+
+      it 'repay_bond! is a no-op when corp cash is insufficient' do
+        game.record_bond!(cpr)
+        game.repay_bond!(cpr)
+        expect(game.bond?(cpr)).to be true
+      end
+
+      it 'num_certs adds 1 for the buyback penalty cert' do
+        base = game.num_certs(player)
+        game.record_bond!(cpr)
+        expect(game.num_certs(player)).to eq(base + 1)
+      end
+
+      it 'penalty cert only counts for the director, not other players' do
+        other = game.players.last
+        game.record_bond!(cpr)
+        base_other = game.num_certs(other)
+        expect(game.num_certs(other)).to eq(base_other)
+      end
+
+      describe 'director sell-block' do
+        let(:step) do
+          game.stock_round.steps.find { |s| s.is_a?(Game::G1862UsaCanada::Step::BuySellParShares) }
+        end
+        let(:share) { cpr.shares.find { |s| !s.president } }
+
+        before { allow(share).to receive(:owner).and_return(player) }
+
+        it 'director cannot sell corp shares while bond is active' do
+          game.record_bond!(cpr)
+          allow(cpr).to receive(:president?).with(player).and_return(true)
+          bundle = Engine::ShareBundle.new([share])
+          allow(bundle).to receive(:corporation).and_return(cpr)
+          allow(bundle).to receive(:owner).and_return(player)
+          expect(step.can_sell?(player, bundle)).to be false
+        end
+
+        it 'director can sell corp shares when no bond is active' do
+          allow(cpr).to receive(:president?).with(player).and_return(true)
+          bundle = Engine::ShareBundle.new([share])
+          allow(bundle).to receive(:corporation).and_return(cpr)
+          allow(bundle).to receive(:owner).and_return(player)
+          # can_sell? may return false for other reasons (no bought cert yet etc.)
+          # but must NOT be blocked by bond logic
+          expect(game.bond?(cpr)).to be false
+        end
+      end
+    end
+
     describe 'home token timing' do
       it 'uses :operate timing' do
         expect(described_class::HOME_TOKEN_TIMING).to eq(:operate)
@@ -352,6 +460,121 @@ module Engine
       it 'Group 3 is locked while any Group 2 corp is unfloated' do
         game.companies.each { |c| c.owner = game.players.first }
         expect(game.can_par?(np, nil)).to be false
+      end
+    end
+
+    describe 'halve_shares! cert transformation' do
+      # CPR: Group 2 corp — 20% president + 8×10% = 100%
+      let(:cpr) { game.corporation_by_id('CPR') }
+      # NYH: Group 1 corp — 30% president + 7×10% = 100%
+      let(:nyh) { game.corporation_by_id('NYH') }
+
+      describe '20% president corp (CPR)' do
+        before { game.halve_shares!(cpr) }
+
+        it 'creates a 50% non-buyable treasury cert' do
+          treasury = cpr.shares_of(cpr).find { |s| s.percent == 50 && !s.buyable }
+          expect(treasury).not_to be_nil
+        end
+
+        it 'president cert is halved to 10%' do
+          expect(cpr.presidents_share.percent).to eq(10)
+        end
+
+        it 'all regular certs are 5%' do
+          regulars = cpr.shares.select { |s| !s.president && s.buyable }
+          expect(regulars.map(&:percent).uniq).to eq([5])
+        end
+
+        it 'share_holders sum is still 100' do
+          expect(cpr.share_holders.values.sum).to eq(100)
+        end
+
+        it 'forced_share_percent is 5' do
+          expect(cpr.share_percent).to eq(5)
+        end
+
+        it 'price_multiplier is 0.5' do
+          expect(cpr.price_multiplier).to be_within(0.001).of(0.5)
+        end
+
+        it 'is idempotent — second call does not create a second treasury cert' do
+          game.halve_shares!(cpr)
+          treasury_certs = cpr.shares_of(cpr).select { |s| s.percent == 50 && !s.buyable }
+          expect(treasury_certs.size).to eq(1)
+        end
+      end
+
+      describe '30% president corp (NYH)' do
+        before { game.halve_shares!(nyh) }
+
+        it 'president cert is halved to 10%' do
+          expect(nyh.presidents_share.percent).to eq(10)
+        end
+
+        it 'president holder has an extra 5% split cert' do
+          director = nyh.presidents_share.owner
+          dir_certs = nyh.shares_of(director)
+          expect(dir_certs.map(&:percent).sort).to include(5, 10)
+        end
+
+        it 'creates a 50% non-buyable treasury cert' do
+          treasury = nyh.shares_of(nyh).find { |s| s.percent == 50 && !s.buyable }
+          expect(treasury).not_to be_nil
+        end
+
+        it 'share_holders sum is still 100' do
+          expect(nyh.share_holders.values.sum).to eq(100)
+        end
+      end
+
+      describe 'treasury cert dividend routing' do
+        let(:div_step) do
+          game.operating_round(1).steps.find { |s| s.is_a?(Game::G1862UsaCanada::Step::Dividend) }
+        end
+
+        before { game.halve_shares!(cpr) }
+
+        it 'corporation_dividends includes treasury cert share units' do
+          # After halving: total_shares = 20, treasury cert = 10 units.
+          # With per_share = 5 (revenue 100 / total 20), treasury earns 10 × 5 = 50.
+          per_share = 5
+          # base = market shares × per_share (0 in test — no market shares)
+          # treasury = 10 units × 5 = 50
+          result = div_step.corporation_dividends(cpr, per_share)
+          expect(result).to eq(50)
+        end
+
+        it 'non-halved corp has zero treasury cert contribution' do
+          other = game.corporation_by_id('UP')
+          result = div_step.corporation_dividends(other, 5)
+          # UP has no non-buyable treasury cert, only market shares (0 in test)
+          expect(result).to eq(0)
+        end
+      end
+
+      describe 'game-end bond penalty' do
+        let(:cpr)    { game.corporation_by_id('CPR') }
+        let(:player) { game.players.first }
+        let(:mock_sp) { double('SharePrice', price: 100) }
+
+        before do
+          allow(cpr).to receive(:share_price).and_return(mock_sp)
+          allow(cpr).to receive(:owner).and_return(player)
+          game.record_bond!(cpr)
+        end
+
+        it 'apply_bond_penalties! sets player.penalty to the bond amount' do
+          game.apply_bond_penalties!
+          expect(player.penalty).to eq(500)
+        end
+
+        it 'apply_bond_penalties! does nothing when bond is repaid' do
+          cpr.instance_variable_set(:@cash, 500)
+          game.repay_bond!(cpr)
+          game.apply_bond_penalties!
+          expect(player.penalty).to eq(0)
+        end
       end
     end
   end

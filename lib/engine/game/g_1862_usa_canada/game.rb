@@ -300,6 +300,135 @@ module Engine
           end
           @slc_connected = {}
           @slc_bonus_paid = false
+          @corp_bonds    = {}  # corp_id => Integer (outstanding bond amount)
+          @buyback_done  = {}  # corp_id => player entity (director who triggered buyback)
+        end
+
+        # ---------------------------------------------------------------------------
+        # Bond (Schuldschein) state helpers.
+        # One buyback per corporation — ever. Director cannot sell shares while the
+        # bond is active. Outstanding bond at game end is the director's personal
+        # liability (deducted from cash score — see game-end step, PR 10b).
+        # The "Share Buy Back" penalty cert is tracked in @buyback_done and adds 1
+        # to the director's certificate count for the rest of the game.
+        # ---------------------------------------------------------------------------
+
+        def bond?(corporation)
+          bond_amount(corporation).positive?
+        end
+
+        def bond_amount(corporation)
+          @corp_bonds[corporation.id] || 0
+        end
+
+        def buyback_done?(corporation)
+          @buyback_done.key?(corporation.id)
+        end
+
+        # Bond = 50 % of full market capitalisation (10 × market price),
+        # rounded up to the nearest $100.
+        def buyback_bond_amount(corporation)
+          (corporation.share_price.price * 5).ceil(-2)
+        end
+
+        # Records the bond without executing cert transformation (PR 10b).
+        # Safe to call only once per corporation — subsequent calls are no-ops.
+        def record_bond!(corporation)
+          return if buyback_done?(corporation)
+
+          amount   = buyback_bond_amount(corporation)
+          director = corporation.owner
+          @corp_bonds[corporation.id]   = amount
+          @buyback_done[corporation.id] = director
+          @log << "#{corporation.name} executes share buyback — " \
+                  "#{director.name} takes #{format_currency(amount)} bond (Schuldschein)"
+        end
+
+        # Full repayment only; no-op if corp cash is insufficient.
+        def repay_bond!(corporation)
+          owed = bond_amount(corporation)
+          return unless owed.positive?
+          return unless corporation.cash >= owed
+
+          corporation.spend(owed, @bank)
+          @corp_bonds[corporation.id] = 0
+          @log << "#{corporation.name} repays #{format_currency(owed)} bond"
+        end
+
+        # Include the "Share Buy Back" penalty cert in the director's cert count.
+        def num_certs(entity)
+          super + (@buyback_done || {}).values.count { |director| director == entity }
+        end
+
+        # ---------------------------------------------------------------------------
+        # Share buyback cert transformation (PR 10b).
+        # All outstanding certs are halved:
+        #   20% → 10%,  10% → 5%,  30% → split into 10% + 5%
+        # A non-reissuable 50% treasury cert is created.
+        # share_percent drops to 5 and price_multiplier to 0.5 so prices scale
+        # proportionally (a 5% cert costs half of the current market price).
+        # Safe to call only once — guarded by buyback_done?.
+        # ---------------------------------------------------------------------------
+        def halve_shares!(corporation)
+          return if corporation.shares_of(corporation).any? { |s| s.percent == 50 && !s.buyable }
+
+          all_shares = @_shares.values.select { |s| s.corporation == corporation }
+          corporation.share_holders.clear
+
+          next_idx = all_shares.map(&:index).max + 1
+          split_certs = []
+
+          all_shares.each do |share|
+            if share.percent == 30
+              share.percent = 10
+              extra = Share.new(corporation, owner: share.owner, percent: 5, index: next_idx)
+              next_idx += 1
+              split_certs << extra
+            else
+              share.percent /= 2 # 20→10, 10→5
+            end
+            corporation.share_holders[share.owner] += share.percent
+          end
+
+          split_certs.each do |cert|
+            cert.owner.shares_by_corporation[corporation] << cert
+            corporation.share_holders[cert.owner] += cert.percent
+            @_shares[cert.id] = cert
+          end
+
+          corporation.forced_share_percent = 5
+          corporation.instance_variable_set(:@price_multiplier, 0.5)
+
+          treasury_cert = Share.new(corporation, owner: corporation, percent: 50, index: next_idx)
+          treasury_cert.buyable = false
+          treasury_cert.counts_for_limit = false
+          corporation.share_holders[corporation] += 50
+          corporation.shares_by_corporation[corporation] << treasury_cert
+          @_shares[treasury_cert.id] = treasury_cert
+
+          update_cache(:shares)
+          @log << "#{corporation.name}: all certs halved; 50% treasury cert created (non-reissuable)"
+        end
+
+        # At game end: outstanding bonds become the issuing director's personal
+        # liability — deducted from their score via player.penalty.
+        def end_game!(reason = nil)
+          apply_bond_penalties!
+          super
+        end
+
+        def apply_bond_penalties!
+          @corp_bonds.each do |corp_id, amount|
+            next unless amount.positive?
+
+            director = @buyback_done[corp_id]
+            next unless director.respond_to?(:penalty)
+
+            director.penalty = (director.penalty || 0) + amount
+            corp = corporation_by_id(corp_id)
+            @log << "#{director.name} owes #{format_currency(amount)} bond on #{corp.name} " \
+                    '(deducted from final score)'
+          end
         end
 
         # ---------------------------------------------------------------------------
@@ -428,12 +557,8 @@ module Engine
         # ---------------------------------------------------------------------------
         # Corporation group unlock logic.
         # ---------------------------------------------------------------------------
-        def corp_groups
-          @corp_groups ||= CORP_GROUPS.transform_values { |syms| syms.map { |s| corporation_by_id(s) } }
-        end
-
         def corp_group(corporation)
-          corp_groups.find { |_, corps| corps.include?(corporation) }.first
+          CORP_GROUPS.find { |_, syms| syms.include?(corporation.id) }&.first
         end
 
         def all_privates_sold?
