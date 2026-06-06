@@ -45,12 +45,42 @@ module Engine
           '207' => 2,
           '208' => 2,
           '209' => 1,
-          '210' => 1,
-          '211' => 1,
-          '212' => 1,
-          '213' => 1,
-          '214' => 1,
-          '215' => 1,
+          '210' => {
+            'count' => 1,
+            'color' => 'green',
+            'code' => 'city=revenue:30;city=revenue:30;path=a:0,b:_0;path=a:3,b:_0;path=a:5,b:_1;path=a:4,b:_1;label=XX;'\
+                      'future_label=label:X,color:brown',
+          },
+          '211' => {
+            'count' => 1,
+            'color' => 'green',
+            'code' => 'city=revenue:30;city=revenue:30;path=a:2,b:_0;path=a:3,b:_0;path=a:0,b:_1;path=a:1,b:_1;label=XX;'\
+                      'future_label=label:X,color:brown',
+          },
+          '212' => {
+            'count' => 1,
+            'color' => 'green',
+            'code' => 'city=revenue:30;city=revenue:30;path=a:2,b:_0;path=a:3,b:_0;path=a:0,b:_1;path=a:5,b:_1;label=XX;'\
+                      'future_label=label:X,color:brown',
+          },
+          '213' => {
+            'count' => 1,
+            'color' => 'green',
+            'code' => 'city=revenue:30;city=revenue:30;path=a:2,b:_0;path=a:3,b:_0;path=a:0,b:_1;path=a:4,b:_1;label=XX;'\
+                      'future_label=label:X,color:brown',
+          },
+          '214' => {
+            'count' => 1,
+            'color' => 'green',
+            'code' => 'city=revenue:30;city=revenue:30;path=a:4,b:_0;path=a:3,b:_0;path=a:0,b:_1;path=a:2,b:_1;label=XX;'\
+                      'future_label=label:X,color:brown',
+          },
+          '215' => {
+            'count' => 1,
+            'color' => 'green',
+            'code' => 'city=revenue:30;city=revenue:30;path=a:1,b:_0;path=a:3,b:_0;path=a:0,b:_1;path=a:4,b:_1;label=XX;'\
+                      'future_label=label:X,color:brown',
+          },
           '39' => 1,
           '40' => 1,
           '41' => 2,
