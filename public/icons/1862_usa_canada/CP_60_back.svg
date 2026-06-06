@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <rect x="4" y="4" width="92" height="92" rx="12" fill="#d88e39" stroke="white" stroke-width="3"/>
+  <text x="50" y="38" text-anchor="middle" font-family="sans-serif" font-size="22" font-weight="bold" fill="black">CP</text>
+  <text x="50" y="68" text-anchor="middle" font-family="sans-serif" font-size="26" font-weight="bold" fill="black">+60</text>
+  <text x="50" y="88" text-anchor="middle" font-family="sans-serif" font-size="16" font-weight="bold" fill="black">/OR</text>
+</svg>
