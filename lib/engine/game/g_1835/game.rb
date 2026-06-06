@@ -265,12 +265,6 @@ module Engine
           floated.sort + not_floated + others
         end
 
-        def upgrades_to_correct_label?(from, to)
-          return to.label&.to_s == 'X' if from.color == :green && from.label&.to_s == 'XX'
-
-          super
-        end
-
         def revenue_for(route, stops)
           super + (hamburg_ferry?(route) ? -10 : 0)
         end
