@@ -15,6 +15,21 @@ module Engine
 
             @game.stock_market.par_prices.select { |p| p.price == 100 && entity.cash >= p.price * 3 }
           end
+
+          # Director of a corporation with an active bond may not sell its shares.
+          def can_sell?(entity, bundle)
+            return false if director_bond_blocks_sale?(entity, bundle)
+
+            super
+          end
+
+          private
+
+          def director_bond_blocks_sale?(entity, bundle)
+            return false unless bundle
+
+            bundle.corporation.president?(entity) && @game.bond?(bundle.corporation)
+          end
         end
       end
     end
