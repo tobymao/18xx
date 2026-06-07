@@ -287,6 +287,8 @@ module View
             chatbar.selectionStart = chatbar.value.length
             event.preventDefault
           end
+        when 'p'
+          button_click('last_move')
         when '-', '0', '+' # + on qwertz
           button_click('zoom' + key)
         when 'Home', 'End', 'ArrowLeft', 'ArrowRight'

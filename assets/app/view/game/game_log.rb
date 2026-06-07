@@ -165,21 +165,11 @@ module View
       end
 
       def player_for(entity)
-        return nil unless entity
-        return entity if @game.players.include?(entity)
-
-        if entity.respond_to?(:player)
-          found = entity.player
-          return found if @game.players.include?(found)
+        if entity&.player?
+          entity
+        elsif (owner = entity&.owner)
+          owner.player? ? owner : player_for(owner)
         end
-
-        if entity.respond_to?(:owner)
-          owner = entity.owner
-          return owner if @game.players.include?(owner)
-          return player_for(owner) if owner && owner != entity
-        end
-
-        nil
       end
 
       def render_log_for_action(log, action)
@@ -235,13 +225,10 @@ module View
         h(:div, { attrs: { id: "action-#{action.id}" } }, action_log)
       end
 
-      def last_player_action_id
-        return nil unless @player
+      def player_action_ids
+        return [] unless @player
 
-        @game.actions.reverse_each do |action|
-          return action.id if player_for(action.entity) == @player
-        end
-        nil
+        @game.actions.filter_map { |action| action.id if player_for(action.entity) == @player }
       end
 
       def render_action_buttons(action_id)
@@ -288,13 +275,19 @@ module View
             'Copy Transcript 📋'),
         ]
 
-        if @player && (last_id = last_player_action_id)
+        if @player && !(ids = player_action_ids).empty?
           jump = lambda do
-            store(:selected_action_id, last_id)
-            `document.getElementById('action-' + #{last_id}).scrollIntoView({block: 'nearest'})`
+            target_id = if @selected_action_id && (idx = ids.index(@selected_action_id))
+                          ids[(idx - 1) % ids.size]
+                        else
+                          ids.last
+                        end
+            store(:selected_action_id, target_id)
+            `document.getElementById('action-' + #{target_id}).scrollIntoView({block: 'nearest'})`
           end
-          left_buttons << h(:button,
+          left_buttons << h('button#last_move',
                             {
+                              attrs: { title: 'hotkey: p' },
                               style: { marginTop: '0' },
                               on: { click: jump },
                             },
