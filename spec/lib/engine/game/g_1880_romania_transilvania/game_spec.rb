@@ -198,7 +198,7 @@ module Engine
 
       it 'has Istanbul offboard with correct revenue' do
         hexes = Game::G1880RomaniaTransilvania::Map::HEXES
-        expect(hexes[:red][['K7']]).to include("offboard=revenue:yellow_10|green_20|brown_40|gray_50,hide:1,groups:Istanbul")
+        expect(hexes[:red][['K7']]).to include('offboard=revenue:yellow_10|green_20|brown_40|gray_50,hide:1,groups:Istanbul')
       end
     end
   end
