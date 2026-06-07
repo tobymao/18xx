@@ -291,7 +291,7 @@ module View
                               style: { marginTop: '0' },
                               on: { click: jump },
                             },
-                            'My Last Move ↑')
+                            ['My ', h(:u, 'P'), 'revious Move'])
         end
 
         h(:div, { style: { marginBottom: '0.3rem', display: 'flex', justifyContent: 'space-between' } }, [
