@@ -335,6 +335,10 @@ module Engine
           super unless any_conversion_choice_available?
         end
 
+        def can_buy_train_from_others?
+          @phase.status.include?('can_buy_trains')
+        end
+
         def any_conversion_choice_available?
           # Owner of 2 has the choice to form the PR
           return true if @pr_can_form && !prussian.floated?
