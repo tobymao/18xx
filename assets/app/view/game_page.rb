@@ -252,6 +252,13 @@ module View
         end
       elsif event.getModifierState('Shift')
         button_click('zoom+') if key == '+' # + on qwerty
+        if key == 'ArrowLeft'
+          button_click('my_prev')
+          event.preventDefault
+        elsif key == 'ArrowRight'
+          button_click('my_next')
+          event.preventDefault
+        end
       else
         case key
         when 'g'
@@ -287,8 +294,6 @@ module View
             chatbar.selectionStart = chatbar.value.length
             event.preventDefault
           end
-        when 'p'
-          button_click('last_move')
         when '-', '0', '+' # + on qwertz
           button_click('zoom' + key)
         when 'Home', 'End', 'ArrowLeft', 'ArrowRight'

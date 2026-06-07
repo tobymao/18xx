@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# backtick_javascript: true
+
 require 'lib/params'
 require 'view/link'
 require 'view/game/actionable'
@@ -49,16 +51,70 @@ module View
           divs << history_link('>|', 'Current Action', nil, { gridColumnStart: '7', **style_extra }, true, 'End')
         end
 
+        if (ids = player_action_ids) && !ids.empty?
+          prev_jump = lambda do
+            target_id = if @selected_action_id && (idx = ids.index(@selected_action_id))
+                          ids[(idx - 1) % ids.size]
+                        else
+                          ids.last
+                        end
+            store(:selected_action_id, target_id)
+            `document.getElementById('action-' + #{target_id}).scrollIntoView({block: 'nearest'})`
+          end
+
+          next_jump = lambda do
+            target_id = if @selected_action_id && (idx = ids.index(@selected_action_id))
+                          ids[(idx + 1) % ids.size]
+                        else
+                          ids.first
+                        end
+            store(:selected_action_id, target_id)
+            `document.getElementById('action-' + #{target_id}).scrollIntoView({block: 'nearest'})`
+          end
+
+          btn_style = { padding: '0.2rem 0.5rem', width: '100%' }
+          divs << h(:button,
+                    {
+                      attrs: { id: 'my_prev', title: 'My previous action – hotkey: Shift+←' },
+                      style: { gridColumnStart: '8', **btn_style },
+                      on: { click: prev_jump },
+                    },
+                    'My <')
+          divs << h(:button,
+                    {
+                      attrs: { id: 'my_next', title: 'My next action – hotkey: Shift+→' },
+                      style: { gridColumnStart: '9', **btn_style },
+                      on: { click: next_jump },
+                    },
+                    'My >')
+        end
+
         props = {
           style: {
             display: 'grid',
-            grid: '1fr / 4.2rem repeat(6, minmax(2rem, 2.5rem))',
+            grid: '1fr / 4.2rem repeat(8, minmax(2rem, 2.5rem))',
             justifyItems: 'center',
             gap: '0 0.5rem',
           },
         }
 
         h(:div, props, divs)
+      end
+
+      def player_for(entity)
+        if entity&.player?
+          entity
+        elsif (owner = entity&.owner)
+          owner.player? ? owner : player_for(owner)
+        end
+      end
+
+      def player_action_ids
+        return [] unless @user
+        player = @game.player_by_id(@user['id'])
+        return [] unless player
+
+        @game.actions.filter_map { |action| action.id if player_for(action.entity) == player }
       end
     end
   end

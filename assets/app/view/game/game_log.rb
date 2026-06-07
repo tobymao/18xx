@@ -164,14 +164,6 @@ module View
         h('div#chatlog', props, the_log)
       end
 
-      def player_for(entity)
-        if entity&.player?
-          entity
-        elsif (owner = entity&.owner)
-          owner.player? ? owner : player_for(owner)
-        end
-      end
-
       def render_log_for_action(log, action)
         timestamp_props = {
           style: {
@@ -225,12 +217,6 @@ module View
         h(:div, { attrs: { id: "action-#{action.id}" } }, action_log)
       end
 
-      def player_action_ids
-        return [] unless @player
-
-        @game.actions.filter_map { |action| action.id if player_for(action.entity) == @player }
-      end
-
       def render_action_buttons(action_id)
         rewind_action = lambda do
           process_action(Engine::Action::Undo.new(@game.current_entity, action_id: action_id))
@@ -274,25 +260,6 @@ module View
             },
             'Copy Transcript 📋'),
         ]
-
-        if @player && !(ids = player_action_ids).empty?
-          jump = lambda do
-            target_id = if @selected_action_id && (idx = ids.index(@selected_action_id))
-                          ids[(idx - 1) % ids.size]
-                        else
-                          ids.last
-                        end
-            store(:selected_action_id, target_id)
-            `document.getElementById('action-' + #{target_id}).scrollIntoView({block: 'nearest'})`
-          end
-          left_buttons << h('button#last_move',
-                            {
-                              attrs: { title: 'hotkey: p' },
-                              style: { marginTop: '0' },
-                              on: { click: jump },
-                            },
-                            ['My ', h(:u, 'P'), 'revious Move'])
-        end
 
         h(:div, { style: { marginBottom: '0.3rem', display: 'flex', justifyContent: 'space-between' } }, [
           h(:div, { style: { textAlign: 'left' } }, left_buttons),
