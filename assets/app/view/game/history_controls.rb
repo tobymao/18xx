@@ -103,9 +103,11 @@ module View
       def player_action_ids
         return [] unless @user
 
-        user_id = @user['id']
+        player = @game.player_by_id(@user['id'])
+        return [] unless player
+
         @game_data['actions'].filter_map do |action|
-          action['id'] if action['user'] == user_id && action['type'] != 'message'
+          action['id'] if action['entity_type'] == 'player' && action['entity'] == player.id
         end
       end
     end
