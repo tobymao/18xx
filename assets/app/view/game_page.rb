@@ -252,10 +252,11 @@ module View
         end
       elsif event.getModifierState('Shift')
         button_click('zoom+') if key == '+' # + on qwerty
-        if key == 'ArrowLeft'
+        case key
+        when 'ArrowLeft'
           button_click('my_prev')
           event.preventDefault
-        elsif key == 'ArrowRight'
+        when 'ArrowRight'
           button_click('my_next')
           event.preventDefault
         end
