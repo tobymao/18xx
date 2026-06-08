@@ -72,7 +72,7 @@ module View
             `document.getElementById('action-' + #{target_id}).scrollIntoView({block: 'nearest'})`
           end
 
-          btn_style = { padding: '0.2rem 0.5rem', width: '100%' }
+          btn_style = { margin: '0', padding: '0.2rem 0.5rem', width: '100%' }
           divs << h(:button,
                     {
                       attrs: { id: 'my_prev', title: 'My previous action – hotkey: Shift+←' },
