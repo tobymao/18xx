@@ -143,6 +143,29 @@ module Engine
       game.round.process_action(Engine::Action::Bid.new(game.current_entity, price: company.value, company: company))
     end
 
+    describe 'stock market metadata' do
+      let(:stock_market) { StockMarket.new(described_class::MARKET, []) }
+
+      it 'stores the appreciation threshold and dividend in each share price' do
+        stock_market.market.each_with_index do |row, row_index|
+          row.each_with_index do |share_price, column_index|
+            expect(share_price.info).to eq(
+              appreciation: described_class::STOCKMARKET_THRESHOLD[row_index][column_index],
+              dividend: described_class::STOCKMARKET_GAIN[row_index][column_index],
+              president: row_index.zero? ? described_class::STOCKMARKET_OWNER_GAIN[column_index] || 0 : 0
+            )
+          end
+        end
+      end
+
+      it 'preserves the stock market prices and types' do
+        expect(stock_market.market.first.map(&:price)).to eq([7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 20, 24])
+        expect(stock_market.market.first[3].types).to eq([:safe_par])
+        expect(stock_market.market.first.last.types).to eq([:endgame])
+        expect(stock_market.market[1][1].types).to eq([:par_1])
+      end
+    end
+
     describe 'starting values' do
       max_players = { map_b: 5, map_c: 5, map_d: 5, map_e: 5, map_f: 5 }
       game_by_variant = {

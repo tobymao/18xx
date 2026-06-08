@@ -82,6 +82,17 @@ module View
         width: "#{WIDTH_TOTAL - (2 * PAD) - (2 * BORDER)}px",
       }.freeze
 
+      PRICE_STYLE_2D_INFO = {
+        display: 'flex',
+        justifyContent: 'space-between',
+        fontSize: '65%',
+        lineHeight: '1',
+        position: 'absolute',
+        bottom: "#{PAD}px",
+        left: "#{PAD}px",
+        right: "#{PAD}px",
+      }.freeze
+
       def box_style_1d
         {
           position: 'relative',
@@ -399,6 +410,8 @@ module View
       end
 
       def grid_2d
+        has_price_info = @game.stock_market.market.flatten.compact.any?(&:info)
+
         # Need to peek at row below to know if sitting on ledge.
         @game.stock_market.market.push([]).each_cons(2).each_with_index.map do |rows, row_i|
           row_prices, next_row = rows
@@ -424,20 +437,44 @@ module View
                 arrow = ''
               end
 
+              if has_price_info && !arrow.empty?
+                align.delete(:bottom)
+                align[:top] = "#{PRICE_HEIGHT}px"
+              end
+
               first_price = false
 
-              h(:div, { style: cell_style(@box_style_2d, price.types) }, [
+              elements = [
                 h('div.xsmall_font', price.price),
                 h(:div, tokens),
                 h(:div, { style: { color: '#00000060', position: 'absolute', 'font-size': '170%' }.merge(align) }, arrow),
-              ])
+                render_2d_price_info(price.info),
+              ].compact
+
+              h(:div, { style: cell_style(has_price_info ? @box_style_2d_with_info : @box_style_2d, price.types) },
+                elements)
             else
-              h(:div, { style: @space_style_2d }, '')
+              h(:div, { style: has_price_info ? @space_style_2d_with_info : @space_style_2d }, '')
             end
           end
 
           h(:div, { style: { width: 'max-content' } }, row)
         end
+      end
+
+      def render_2d_price_info(info)
+        return unless info
+        return h(:div, { style: PRICE_STYLE_2D_INFO }, info) unless info.is_a?(Hash)
+
+        appreciation = info[:appreciation].zero? ? 'END' : info[:appreciation]
+        dividend = info[:dividend].to_s
+        dividend += "+#{info[:president]}" if info[:president].positive?
+        label = "Appreciation threshold: #{appreciation}; dividend per share: #{dividend}"
+
+        h(:div, { attrs: { title: label }, style: PRICE_STYLE_2D_INFO }, [
+          h(:span, appreciation),
+          h(:span, dividend),
+        ])
       end
 
       def logo_for_user(entity)
@@ -459,6 +496,14 @@ module View
 
         # For cells with prices
         @box_style_2d = @space_style_2d.merge(
+          border: "solid #{BORDER}px rgba(0,0,0,0.2)",
+          color: color_for(:font2),
+        )
+        @space_style_2d_with_info = @space_style_2d.merge(
+          width: "#{WIDTH_TOTAL + PRICE_HEIGHT - (2 * PAD) - (2 * BORDER)}px",
+          height: "#{HEIGHT_TOTAL + PRICE_HEIGHT - (2 * PAD) - (2 * BORDER)}px",
+        )
+        @box_style_2d_with_info = @space_style_2d_with_info.merge(
           border: "solid #{BORDER}px rgba(0,0,0,0.2)",
           color: color_for(:font2),
         )
