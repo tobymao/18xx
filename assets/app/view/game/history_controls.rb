@@ -100,20 +100,13 @@ module View
         h(:div, props, divs)
       end
 
-      def player_for(entity)
-        if entity&.player?
-          entity
-        elsif (owner = entity&.owner)
-          owner.player? ? owner : player_for(owner)
-        end
-      end
-
       def player_action_ids
         return [] unless @user
-        player = @game.player_by_id(@user['id'])
-        return [] unless player
 
-        @game.actions.filter_map { |action| action.id if player_for(action.entity) == player }
+        user_id = @user['id']
+        @game_data['actions'].filter_map do |action|
+          action['id'] if action['user'] == user_id && action['type'] != 'message'
+        end
       end
     end
   end
