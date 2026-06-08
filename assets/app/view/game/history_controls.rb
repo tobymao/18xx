@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-# backtick_javascript: true
-
 require 'lib/params'
 require 'view/link'
 require 'view/game/actionable'
@@ -52,35 +50,42 @@ module View
         end
 
         if (ids = player_action_ids) && !ids.empty?
-          cur_idx = @selected_action_id && ids.index(@selected_action_id)
-          prev_id = cur_idx ? ids[(cur_idx - 1) % ids.size] : ids.last
-          next_id = cur_idx ? ids[(cur_idx + 1) % ids.size] : ids.first
+          current_pos = cursor || @game.last_game_action_id
+          prev_id = ids.select { |id| id < current_pos }.last
+          next_id = ids.find { |id| id > current_pos }
+          link_style = { margin: '0', textDecoration: 'none', **style_extra }
 
-          prev_jump = lambda do
-            store(:selected_action_id, prev_id)
-            `document.getElementById('action-' + #{prev_id}).scrollIntoView({block: 'nearest'})`
+          if prev_id
+            prev_route = Lib::Params.add(@app_route, 'action', prev_id)
+            divs << h(Link, {
+              href: prev_route,
+              click: lambda {
+                store(:round_history, @game.round_history, skip: true) unless @round_history
+                store(:app_route, prev_route)
+                clear_ui_state
+              },
+              title: 'My previous action – hotkey: Shift+←',
+              children: 'My <',
+              style: { gridColumnStart: '8', **link_style },
+              class: '#my_prev.button_link',
+            })
           end
 
-          next_jump = lambda do
-            store(:selected_action_id, next_id)
-            `document.getElementById('action-' + #{next_id}).scrollIntoView({block: 'nearest'})`
+          if next_id
+            next_route = Lib::Params.add(@app_route, 'action', next_id)
+            divs << h(Link, {
+              href: next_route,
+              click: lambda {
+                store(:round_history, @game.round_history, skip: true) unless @round_history
+                store(:app_route, next_route)
+                clear_ui_state
+              },
+              title: 'My next action – hotkey: Shift+→',
+              children: 'My >',
+              style: { gridColumnStart: '9', **link_style },
+              class: '#my_next.button_link',
+            })
           end
-
-          btn_style = { margin: '0', padding: '0.2rem 0.5rem', width: '100%' }
-          divs << h(:button,
-                    {
-                      attrs: { id: 'my_prev', title: "My previous action: ##{prev_id} – hotkey: Shift+←" },
-                      style: { gridColumnStart: '8', **btn_style },
-                      on: { click: prev_jump },
-                    },
-                    'My <')
-          divs << h(:button,
-                    {
-                      attrs: { id: 'my_next', title: "My next action: ##{next_id} – hotkey: Shift+→" },
-                      style: { gridColumnStart: '9', **btn_style },
-                      on: { click: next_jump },
-                    },
-                    'My >')
         end
 
         props = {
