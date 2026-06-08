@@ -437,6 +437,14 @@ module Engine
         [3].each { |index| expect(game.corporation_available?(game.corporations[index])).to be_truthy }
         [1, 2].each { |index| expect(game.corporation_available?(game.corporations[index])).to be_falsy }
       end
+
+      it 'shows the timeline when no unopened corporation follows the purchasable family' do
+        game.corporations.each { |corporation| corporation.ipoed = true }
+        game.instance_variable_set(:@near_families_purchasable, [{ id: corporation.id }])
+
+        expect(game.timeline).to be_an(Array)
+        expect(game.timeline).not_to include(/NEARBY FAMILY/)
+      end
     end
   end
 end
