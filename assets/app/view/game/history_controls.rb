@@ -52,37 +52,31 @@ module View
         end
 
         if (ids = player_action_ids) && !ids.empty?
+          cur_idx = @selected_action_id && ids.index(@selected_action_id)
+          prev_id = cur_idx ? ids[(cur_idx - 1) % ids.size] : ids.last
+          next_id = cur_idx ? ids[(cur_idx + 1) % ids.size] : ids.first
+
           prev_jump = lambda do
-            target_id = if @selected_action_id && (idx = ids.index(@selected_action_id))
-                          ids[(idx - 1) % ids.size]
-                        else
-                          ids.last
-                        end
-            store(:selected_action_id, target_id)
-            `document.getElementById('action-' + #{target_id}).scrollIntoView({block: 'nearest'})`
+            store(:selected_action_id, prev_id)
+            `document.getElementById('action-' + #{prev_id}).scrollIntoView({block: 'nearest'})`
           end
 
           next_jump = lambda do
-            target_id = if @selected_action_id && (idx = ids.index(@selected_action_id))
-                          ids[(idx + 1) % ids.size]
-                        else
-                          ids.first
-                        end
-            store(:selected_action_id, target_id)
-            `document.getElementById('action-' + #{target_id}).scrollIntoView({block: 'nearest'})`
+            store(:selected_action_id, next_id)
+            `document.getElementById('action-' + #{next_id}).scrollIntoView({block: 'nearest'})`
           end
 
           btn_style = { margin: '0', padding: '0.2rem 0.5rem', width: '100%' }
           divs << h(:button,
                     {
-                      attrs: { id: 'my_prev', title: 'My previous action – hotkey: Shift+←' },
+                      attrs: { id: 'my_prev', title: "My previous action: ##{prev_id} – hotkey: Shift+←" },
                       style: { gridColumnStart: '8', **btn_style },
                       on: { click: prev_jump },
                     },
                     'My <')
           divs << h(:button,
                     {
-                      attrs: { id: 'my_next', title: 'My next action – hotkey: Shift+→' },
+                      attrs: { id: 'my_next', title: "My next action: ##{next_id} – hotkey: Shift+→" },
                       style: { gridColumnStart: '9', **btn_style },
                       on: { click: next_jump },
                     },
