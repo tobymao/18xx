@@ -100,29 +100,23 @@ module View
         h(:div, props, divs)
       end
 
-      def player_for(entity)
-        if entity&.player?
-          entity
-        elsif (owner = entity&.owner)
-          owner.player? ? owner : player_for(owner)
-        end
-      end
-
       def player_action_ids
         return [] unless @user
 
         player = @game.player_by_id(@user['id'])
         return [] unless player
 
-        controlled_ids = @game.corporations
-                              .select { |c| player_for(c) == player }
-                              .map(&:id)
-                              .to_set
-        controlled_ids << player.id
+        player_corp_ids = @game.corporations
+                               .select { |c| c.owner&.id == player.id }
+                               .map(&:id)
 
         @game_data['actions'].filter_map do |action|
           next if action['type'] == 'message'
-          action['id'] if controlled_ids.include?(action['entity'])
+          if action['entity_type'] == 'player'
+            action['id'] if action['entity'] == player.id
+          elsif action['entity_type'] == 'corporation'
+            action['id'] if player_corp_ids.include?(action['entity'])
+          end
         end
       end
     end
