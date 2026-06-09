@@ -114,6 +114,24 @@ module View
           }, label)
       end
 
+      hide_full_active = url_search_params['hide_full'] == 'true'
+      on_hide_full_click = lambda do
+        url_search_params['hide_full'] = hide_full_active ? '' : 'true'
+        update_filters(url_search_params.to_query_string)
+      end
+      buttons << h(:button, {
+                     attrs: { title: 'Hides new games that are already at their maximum player count' },
+                     style: {
+                       padding: '4px 12px',
+                       cursor: 'pointer',
+                       background: hide_full_active ? '#4a4a4a' : '#ddd',
+                       color: hide_full_active ? '#fff' : '#333',
+                       border: '1px solid #888',
+                       fontWeight: hide_full_active ? 'bold' : 'normal',
+                     },
+                     on: { click: on_hide_full_click },
+                   }, 'Hide Full')
+
       truncate_active = url_search_params['truncate_desc'] == 'true'
       on_truncate_click = lambda do
         url_search_params['truncate_desc'] = truncate_active ? '' : 'true'

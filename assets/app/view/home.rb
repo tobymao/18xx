@@ -5,6 +5,7 @@
 require 'game_manager'
 require 'lib/settings'
 require 'lib/storage'
+require 'lib/params'
 require 'view/chat'
 require 'view/game_row'
 require 'view/game_row_filters'
@@ -45,9 +46,15 @@ module View
         .map { |k| Lib::Storage[k] }
         .sort_by { |gd| [-(gd[:updated_at] || now), gd[:id]] }
 
+      url_search_params = Lib::Params::URLSearchParams.new
+      new_games = grouped['new']&.sort_by { |g| -g['created_at'] }
+      if !url_search_params.unsupported && url_search_params['hide_full'] == 'true'
+        new_games = new_games&.reject { |g| g['players'].size >= g['max_players'] }
+      end
+
       render_row(children, 'Your Games', your_games, :personal) if @user
       render_row(children, 'Hotseat Games', hotseat, :hotseat) if hotseat.any?
-      render_row(children, 'New Games', grouped['new']&.sort_by { |g| -g['created_at'] }, :new) if @user
+      render_row(children, 'New Games', new_games, :new) if @user
       render_row(children, 'Active Games', grouped['active']&.sort_by { |g| -g['updated_at'] }, :active)
       render_row(children, 'Finished Games', grouped['finished']&.sort_by { |g| -g['finished_at'] }, :finished)
       render_filter_row(children)
