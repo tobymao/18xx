@@ -114,6 +114,24 @@ module View
           }, label)
       end
 
+      truncate_active = url_search_params['truncate_desc'] == 'true'
+      on_truncate_click = lambda do
+        url_search_params['truncate_desc'] = truncate_active ? '' : 'true'
+        update_filters(url_search_params.to_query_string)
+      end
+      buttons << h(:button, {
+                     attrs: { title: 'Truncates all game descriptions to 120 characters' },
+                     style: {
+                       padding: '4px 12px',
+                       cursor: 'pointer',
+                       background: truncate_active ? '#4a4a4a' : '#ddd',
+                       color: truncate_active ? '#fff' : '#333',
+                       border: '1px solid #888',
+                       fontWeight: truncate_active ? 'bold' : 'normal',
+                     },
+                     on: { click: on_truncate_click },
+                   }, 'Short Desc.')
+
       h(:div, { style: { display: 'flex', margin: '6px 0' } }, buttons)
     end
 

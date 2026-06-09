@@ -249,24 +249,10 @@ module View
       end
       unless @gdata['description'].empty?
         desc = @gdata['description']
-        if desc.length > DESCRIPTION_TRUNCATE_LENGTH
-          expanded = @expanded_descriptions[@gdata['id']]
-          toggle = lambda do
-            store(:expanded_descriptions, @expanded_descriptions.merge(@gdata['id'] => !expanded), skip: false)
-          end
-          toggle_props = {
-            style: { marginLeft: '0.4rem', fontSize: '0.85em', cursor: 'pointer', textDecoration: 'underline' },
-            on: { click: toggle },
-          }
-          displayed = expanded ? desc : "#{desc[0...DESCRIPTION_TRUNCATE_LENGTH]}…"
-          children << h(:div, [
-            h(:strong, 'Description: '),
-            displayed,
-            h(:span, toggle_props, expanded ? 'Show less' : 'Show more'),
-          ])
-        else
-          children << h(:div, [h(:strong, 'Description: '), desc])
-        end
+        url_search_params = Lib::Params::URLSearchParams.new
+        truncate = !url_search_params.unsupported && url_search_params['truncate_desc'] == 'true'
+        displayed = truncate && desc.length > DESCRIPTION_TRUNCATE_LENGTH ? "#{desc[0...DESCRIPTION_TRUNCATE_LENGTH]}…" : desc
+        children << h(:div, [h(:strong, 'Description: '), displayed])
       end
 
       optional = render_optional_rules
