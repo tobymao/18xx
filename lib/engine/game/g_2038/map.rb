@@ -156,7 +156,7 @@ module Engine
           # Gray base tile - placed when a corporation establishes a base on an explored asteroid.
           # The city slot holds the base token; revenue is tracked via corporation base mechanics.
           '2023' => {
-            'count' => 40,
+            'count' => 'unlimited',
             'color' => 'gray',
             'code' => "junction;city=revenue:0;#{SP6}",
           },
