@@ -21,7 +21,7 @@ module Engine
         include G1832::Trains
 
         attr_accessor :sell_queue, :reissued, :coal_token_counter, :coal_company_sold_or_closed, :p4_invested_in,
-                      :miami_has_been_run
+                      :miami_has_been_run, :mid_or_resume_entities
 
         CORPORATION_CLASS = G1832::Corporation
         CORPORATE_BUY_SHARE_ALLOW_BUY_FROM_PRESIDENT = true
@@ -155,6 +155,14 @@ module Engine
           @coal_token_counter = 5
           @miami_has_been_run = false
           @p4_invested_in = nil
+          @final_merger_triggered = false
+          @recently_floated = []
+          @vice_president_certs = {}
+          @mid_or_remaining_entities = nil
+          @mid_or_operated_corps = nil
+          @mid_or_formed_systems = {}
+          @mid_or_original_round_num = nil
+          @mid_or_resume_entities = nil
 
           coal_company.max_price = coal_company.value
 
@@ -234,6 +242,22 @@ module Engine
         def event_close_remaining_companies!
           @log << '-- Event: All remaining private companies close --'
           @companies.each(&:close!)
+        end
+
+        def event_final_merger_chance!
+          @log << '-- Event: Final merger and takeover opportunity --'
+          @final_merger_triggered = true
+        end
+
+        def final_merger_triggered?
+          @final_merger_triggered
+        end
+
+        def save_mid_or_state(remaining, operated, round_num)
+          @mid_or_remaining_entities = remaining
+          @mid_or_original_round_num = round_num
+          @mid_or_operated_corps = operated.map(&:id)
+          @final_merger_triggered = false
         end
 
         # can't run to or through the West Virginia Coalfied hex (B14) without a coal token
@@ -461,6 +485,453 @@ module Engine
           end
 
           @skip_paths
+        end
+
+        def max_reissue_200?
+          true
+        end
+
+        def mergers_allowed?
+          !option_no_mergers? && @phase.status.include?('mergers_allowed')
+        end
+
+        def option_no_mergers?
+          @optional_rules&.include?(:no_mergers)
+        end
+
+        def init_starting_cash(players, bank)
+          cash = option_southern_bank? ? self.class::SOUTHERN_BANK_STARTING_CASH : self.class::STARTING_CASH
+          players.each do |player|
+            bank.spend(cash[players.size], player)
+          end
+        end
+
+        def next_round!
+          @round =
+            case @round
+            when Engine::Round::Stock
+              @operating_rounds = @phase.operating_rounds
+              reorder_players
+              if mergers_allowed? && !no_mergers_variant?
+                new_merger_round
+              else
+                new_operating_round
+              end
+            when G1832::Round::Merger
+              if @mid_or_remaining_entities
+                resume_operating_round
+              else
+                new_operating_round
+              end
+            when Engine::Round::Operating
+              if @mid_or_remaining_entities
+                new_merger_round
+              elsif @round.round_num < @operating_rounds
+                or_round_finished
+                new_operating_round(@round.round_num + 1)
+              else
+                @turn += 1
+                or_round_finished
+                or_set_finished
+                new_stock_round
+              end
+            when init_round.class
+              init_round_finished
+              reorder_players
+              new_stock_round
+            end
+        end
+
+        def new_merger_round
+          @log << "-- #{round_description('Merger and Takeover')} --"
+          @mid_or_formed_systems = {}
+          G1832::Round::Merger.new(self, [
+            G1832::Step::Merge,
+            G1832::Step::SellSharesForTakeover,
+            Engine::Step::DiscardTrain,
+          ])
+        end
+
+        def merge_corporations
+          @corporations.select { |c| !c.system? && c.floated? }
+        end
+
+        # §11.6.7: Systems hold twice the normal train limit.
+        def train_limit(entity)
+          super * (entity.system? ? 2 : 1)
+        end
+
+        def southern_bank_company
+          @southern_bank_company ||= company_by_id('P6')
+        end
+
+        # ── Merger helpers ────────────────────────────────────────────
+
+        def available_systems
+          @corporations.select { |c| c.system? && !c.floated? }
+        end
+
+        # True if any player holds ≥40% combined across both corporations.
+        def can_form_system?(corp1, corp2)
+          return false if available_systems.empty?
+
+          @players.any? do |p|
+            p.shares_of(corp1).sum(&:percent) + p.shares_of(corp2).sum(&:percent) >= 40
+          end
+        end
+
+        # BFS-based connectivity: are corp_a and corp_b reachable from each other via laid track?
+        # Iterative to avoid JS call-stack overflow from the recursive Graph walk on large boards.
+        def corps_connected?(corp_a, corp_b)
+          hexes_b = network_hexes(corp_b)
+          return false if hexes_b.empty?
+
+          hexes_a = network_hexes(corp_a)
+          return false if hexes_a.empty?
+
+          # Hash for O(1) membership test — avoid to_set (requires 'set' in Opal)
+          hexes_b_lookup = hexes_b.each_with_object({}) { |h, acc| acc[h] = true }
+
+          visited = {}
+          queue = hexes_a
+          until queue.empty?
+            hex = queue.shift
+            next if visited[hex]
+
+            visited[hex] = true
+            return true if hexes_b_lookup.key?(hex)
+
+            hex.neighbors.each do |edge, neighbor|
+              next if visited[neighbor]
+              next unless hex_is_connected(hex, edge, neighbor)
+
+              queue << neighbor
+            end
+          end
+          false
+        end
+
+        def hex_is_connected(hex, edge, neighbor)
+          hex.tile.paths.any? { |p| p.exits.include?(edge) } &&
+            neighbor.tile.paths.any? { |p| p.exits.include?(hex.invert(edge)) }
+        end
+
+        # ── System formation (§11.6) ──────────────────────────────────
+
+        def perform_system_formation(corp1, corp2, system)
+          @log << "#{corp1.name} and #{corp2.name} form #{system.name}"
+
+          # 1. Set par & share price (average of two, rounded to nearest, capped at $275 per §11.6.3)
+          # TODO(beta): implement full diagonal-placement algorithm per §11.6.3
+          new_sp = merger_determine_merged_share_price(corp1, corp2)
+          raise GameError, 'Cannot determine system share price' unless new_sp
+
+          stock_market.set_par(system, new_sp)
+          system.ipoed = true
+
+          # 2. Convert both component president certs into 10% VP certs of the system.
+          # Each stays with whoever held the component presidency.
+          merger_convert_presidencies_to_vp_certs(corp1, corp2, system)
+
+          # 3. Exchange all remaining outstanding component shares 1:1 for system 5% shares
+          merger_convert_regular_shares(corp1, corp2, system)
+
+          # 4. President = player holding the largest system share percentage
+          president = merger_find_president(system)
+
+          # 5. Form the 20% president cert: president surrenders VP certs first, then regular
+          # shares, until 20% is covered. Surrendered shares go to the bank.
+          merger_form_president_cert(system, president)
+
+          # 6. Transfer cash, trains, companies to system
+          transfer_all_assets(corp1, system)
+          transfer_all_assets(corp2, system)
+
+          # 7. Replace map tokens (remove duplicates, assign remainder to system)
+          transfer_tokens(corp1, system)
+          transfer_tokens(corp2, system)
+
+          # 8. Close component companies (force_next_entity! suppressed in merger round)
+          system.system_shells = [corp1.id, corp2.id]
+          [corp1, corp2].each { |corp| close_corporation(corp) }
+
+          system.floated = true
+          clear_token_graph_for_entity(system)
+          @mid_or_formed_systems[system.id] = system
+          @log << "#{system.name} formed at #{format_currency(new_sp.price)}"
+        end
+
+        # ── Takeover (§11.7) ─────────────────────────────────────────
+
+        def perform_takeover(buyer, target)
+          @log << "#{buyer.name} takes over #{target.name}"
+
+          target_mkt = target.share_price.price
+          total_cost = takeover_cost(target)
+
+          # Build player payment map (needed to pay players their market price)
+          player_payments = Hash.new(0)
+          @players.each do |player|
+            player.shares_of(target).each do |s|
+              player_payments[player] += (s.percent.to_f / 10 * target_mkt).round
+            end
+          end
+
+          # President contributes cash if buyer can't cover the full cost
+          if buyer.cash < total_cost
+            needed    = total_cost - buyer.cash
+            president = buyer.owner
+            if president.cash < needed
+              raise GameError, "#{president.name} cannot fund the takeover (needs #{format_currency(needed)})"
+            end
+
+            president.spend(needed, buyer)
+            @log << "#{president.name} contributes #{format_currency(needed)} to fund takeover"
+          end
+
+          # Pay players for their shares
+          player_payments.each do |player, amount|
+            buyer.spend(amount, player) if amount.positive?
+          end
+
+          # Remainder goes to bank (pool + IPO shares)
+          bank_cost = total_cost - player_payments.values.sum
+          buyer.spend(bank_cost, @bank) if bank_cost.positive?
+
+          @log << "#{buyer.name} pays #{format_currency(total_cost)} to acquire #{target.name}"
+
+          transfer_all_assets(target, buyer)
+
+          # Replace map tokens (remove duplicates)
+          transfer_tokens(target, buyer, true)
+
+          close_corporation(target)
+
+          # §11.7: cert limit moves one column right per shell removed.
+          # close_corporation already applied one step; systems (2 shells) need a second.
+          tighten_cert_limit_by_one if target.system?
+          clear_token_graph_for_entity(buyer)
+        end
+
+        private
+
+        def merger_determine_merged_share_price(corp1, corp2)
+          avg = [(corp1.share_price.price + corp2.share_price.price) / 2.0, 275].min
+          all_prices = stock_market.market.flatten.compact.map(&:price).sort.uniq
+          nearest = all_prices.min_by { |p| [(p - avg).abs, -p] }
+          stock_market.market.flatten.compact.find { |sp| sp.price == nearest }
+        end
+
+        def merger_convert_presidencies_to_vp_certs(corp1, corp2, system)
+          vp_certs = []
+          [corp1, corp2].each do |corp|
+            holder = corp.share_holders.keys.find { |h| h.player? && h.shares_of(corp).any?(&:president) }
+            next unless holder
+
+            share = holder.shares_of(corp).find(&:president)
+            holder.shares_by_corporation[corp].delete(share)
+            corp.share_holders[holder] -= share.percent
+
+            share.percent /= 2 # 20% → 10%
+            share.instance_variable_set(:@corporation, system)
+            share.instance_variable_set(:@president, false)
+
+            system.share_holders[holder] += share.percent
+            holder.shares_by_corporation[system] << share
+
+            vp_certs << share
+            (@vice_president_certs[system] ||= []) << share
+            @log << "#{holder.name} receives VP certificate (10%) in #{system.name}"
+          end
+        end
+
+        def merger_convert_regular_shares(corp1, corp2, system)
+          system_reg = system.shares.reject(&:president).select { |s| s.owner == system }
+          @log << "There are #{system_reg.count} system shares available"
+          sys_idx = 0
+          [corp1, corp2].each do |corp|
+            corp.share_holders.dup.each do |holder, _|
+              next if holder == corp
+
+              holder.shares_of(corp).dup.each do |share|
+                next if vp_certs.include?(share)
+                next unless sys_idx < system_reg.size
+
+                share.transfer(@bank)
+                @log << "#{holder.name} receives a regular #{system_reg[sys_idx].percent}% share in exchange for a component one"
+                system_reg[sys_idx].transfer(holder)
+                sys_idx += 1
+              end
+            end
+          end
+        end
+
+        def merger_find_president(system)
+          system.owner = @players.max_by { |p| p.percent_of(system) }
+          @log << "#{system.owner.name} is the system owner with #{system.owner.percent_of(system)}%"
+
+          system.owner
+        end
+
+        def merger_form_president_cert(system, president)
+          system_pres = system.shares.find(&:president)
+          pct_needed = system_pres.percent
+          to_surrender = []
+
+          vp_certs.select { |v| v.owner == president }.each do |vp|
+            break unless pct_needed.positive?
+
+            to_surrender << vp
+            pct_needed -= vp.percent
+            @log << "#{vp.owner.name} is surrendering a VP cert and needs to surrender an additional #{pct_needed}%"
+          end
+
+          if pct_needed.positive?
+            president.shares_of(system).reject(&:president).sort_by(&:percent).each do |share|
+              break unless pct_needed.positive?
+
+              to_surrender << share
+              pct_needed -= share.percent
+              @log << "#{share.owner.name} surrenders a #{share.percent}% cert; #{pct_needed}% still needed"
+            end
+          end
+
+          to_surrender.each { |s| s.transfer(@bank) }
+          system_pres.transfer(president)
+
+          @log << "#{president.name} becomes president of #{system.name}"
+        end
+
+        def transfer_all_assets(from_corp, to_corp)
+          from_corp.spend(from_corp.cash, to_corp) if from_corp.cash.positive?
+          transfer(:trains, from_corp, to_corp)
+          transfer(:companies, from_corp, to_corp)
+          transfer_coal_token(from_corp, to_corp)
+        end
+
+        def takeover_cost(target)
+          target_par = target.par_price&.price || target.share_price.price
+          target_mkt = target.share_price.price
+
+          cost = 0
+          target.shares.select { |s| s.owner == target }.each do |s|
+            cost += (s.percent.to_f / 10 * target_par).round
+          end
+
+          @share_pool.shares_of(target).each do |s|
+            cost += (s.percent.to_f / 10 * target_mkt).round
+          end
+
+          @players.each do |player|
+            player.shares_of(target).each do |s|
+              cost += (s.percent.to_f / 10 * target_mkt).round
+            end
+          end
+
+          cost
+        end
+
+        def can_afford_takeover?(buyer, target)
+          president = buyer.owner
+          cost = takeover_cost(target)
+          # Compute president's max liquidity directly: avoids sellable_bundles →
+          # active_step recursion that occurs during merger-round blocking? checks.
+          president_liquidity = president.cash + president.shares.sum do |s|
+            next 0 unless (price = s.corporation.share_price&.price)
+
+            (s.percent.to_f / 10.0 * price).floor
+          end
+          buyer.cash + president_liquidity >= cost
+        end
+
+        def transfer_coal_token(from_corp, to_corp)
+          coal_count = [from_corp.coal_token, to_corp.coal_token].count(&:itself)
+          return if coal_count.zero?
+
+          if coal_count == 2
+            @coal_token_counter += 1
+            from_corp.coal_token = false
+            @log << "#{to_corp.name} has duplicate Coal tokens; one returned. #{@coal_token_counter} Coal tokens remaining."
+          end
+
+          to_corp.coal_token = true
+        end
+
+        def transfer_tokens(_from_corp, to_corp, takeover = false)
+          to_corp_cities = to_corp.tokens.select(&:city).each_with_object({}) { |t, h| h[t.city] = true }
+          corp.tokens.select(&:city).each do |token|
+            city = token.city
+            if to_corp_cities.key?(city)
+              token.remove!
+              to_corp.tokens << Engine::Token.new(to_corp, price: 100) unless takeover
+              @log << "Duplicate token in #{city.hex.id} returned to #{to_corp.name}'s charter"
+            else
+              to_corp_cities[city] = true
+              new_tok = to_corp.next_token
+              new_tok ||= Engine::Token.new(to_corp, price: 100).tap { |t| to_corp.tokens << t }
+              token.remove!
+              city.place_token(to_corp, new_tok, check_tokenable: false)
+            end
+          end
+        end
+
+        # Tighten the cert limit as if one additional corporation had been removed,
+        # without actually removing anything from @corporations.
+        def tighten_cert_limit_by_one
+          player_count = @players.size
+          limit_table = self.class::CERT_LIMIT[player_count]
+          return unless limit_table.is_a?(Hash)
+
+          virtual_size = @corporations.size - 1
+          tighter = limit_table.reject { |k, _| k.to_i < virtual_size }.min_by(&:first)&.last
+          @cert_limit = tighter if tighter
+        end
+
+        # Returns an Array of hexes forming corp's network: placed-token hexes,
+        # or home hex(es) if no tokens are on the map yet.
+        # Uses only Array/Hash — no filter_map or to_set (not reliably in Opal).
+        def network_hexes(corp)
+          placed = corp.placed_tokens.map(&:hex).compact.uniq
+          return placed unless placed.empty?
+
+          Array(corp.coordinates).map { |coord| hex_by_id(coord) }.compact
+        end
+
+        # Resume the OR that was interrupted mid-round by the 6-train merger trigger.
+        # Inserts newly formed systems (§11.6) whose component corps had not yet
+        # operated, ordered by share price descending.
+        def resume_operating_round
+          operated_ids = @mid_or_operated_corps || []
+          remaining = @mid_or_remaining_entities.reject(&:closed?)
+
+          new_systems = @mid_or_formed_systems.values.select do |sys|
+            !sys.closed? && sys.system_shells.none? { |id| operated_ids.include?(id) }
+          end
+          new_systems.sort_by { |s| [-s.share_price.price, s.id] }.each do |system|
+            idx = remaining.find_index { |e| (e.share_price&.price || 0) < system.share_price.price }
+            remaining.insert(idx || remaining.size, system)
+          end
+
+          round_num = @mid_or_original_round_num
+          @mid_or_remaining_entities = nil
+          @mid_or_operated_corps = nil
+          @mid_or_formed_systems = {}
+          @mid_or_original_round_num = nil
+
+          if remaining.empty?
+            # The 6-train was bought by the last entity; OR was already complete.
+            or_round_finished
+            if round_num < @operating_rounds
+              new_operating_round(round_num + 1)
+            else
+              @turn += 1
+              or_set_finished
+              new_stock_round
+            end
+          else
+            @mid_or_resume_entities = remaining
+            operating_round(round_num)
+          end
         end
       end
     end
