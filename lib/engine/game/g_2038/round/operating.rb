@@ -8,9 +8,6 @@ module Engine
       module Round
         class Operating < Engine::Round::Operating
           def setup
-            # Pays all private company revenues to their owners (PI, TS, VA, RS, ST, AE).
-            # Fast Buck has revenue: 0 so it is skipped by payout_companies; its $15
-            # treasury income is handled separately below.
             super
             pay_fast_buck_treasury
           end

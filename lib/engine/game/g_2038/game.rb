@@ -52,14 +52,7 @@ module Engine
           par_2: :blue,
         )
 
-        MINOR_OPERATING_ORDER = %w[FB IF DH OC TH LY].freeze
         ENTITY_DISPLAY_ORDER = %w[FB IF DH OC TH LY TSI RU VP LE MM OPC RCC AL].freeze
-
-        ORE_COLORS = {
-          N: '#888888',
-          I: '#4499cc',
-          R: '#9944cc',
-        }.freeze
 
         PHASES = [
           {
@@ -271,18 +264,6 @@ module Engine
 
         def bank_sort(entities)
           entities.sort_by { |e| ENTITY_DISPLAY_ORDER.index(e.id) || ENTITY_DISPLAY_ORDER.size }
-        end
-
-        def operating_order
-          minors = MINOR_OPERATING_ORDER.filter_map { |id| minor_by_id(id) }
-          corps = @corporations.select(&:floated?).sort do |a, b|
-            if a.share_price.price != b.share_price.price
-              b.share_price.price <=> a.share_price.price
-            else
-              a.share_price.coordinates <=> b.share_price.coordinates
-            end
-          end
-          minors + corps
         end
 
         def setup
