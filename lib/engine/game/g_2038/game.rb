@@ -8,6 +8,7 @@ require_relative 'round/operating'
 require_relative 'step/waterfall_auction'
 require_relative 'step/buy_train'
 require_relative 'step/dividend'
+require_relative 'step/route'
 
 module Engine
   module Game
@@ -16,6 +17,8 @@ module Engine
         include_meta(G2038::Meta)
         include Map
         include Entities
+
+        attr_reader :mine_state
 
         TILE_TYPE = :lawson
         TRACK_RESTRICTION = :permissive
@@ -241,6 +244,7 @@ module Engine
           G2038::Round::Operating.new(self, [
             Engine::Step::Bankrupt,
             Engine::Step::DiscardTrain,
+            G2038::Step::Route,
             G2038::Step::Dividend,
             G2038::Step::BuyTrain,
             Engine::Step::BuyCompany,
@@ -287,7 +291,73 @@ module Engine
           minors + corps
         end
 
+        def or_round_finished
+          @mine_state.each_value do |state|
+            state[:mines].each { |mine| mine[:used] = false }
+          end
+        end
+
+        def cargo_holds_for_train(train)
+          return 0 if train.name == 'probe'
+
+          train.name.split('/').last.to_i
+        end
+
+        def route_trains(entity)
+          entity.trains.reject { |t| t.name == 'probe' }
+        end
+
+        def revenue_str(route)
+          route.hexes.map(&:id).join(' - ')
+        end
+
+        # TODO: enforce hex count <= movement points and pickup count <= cargo holds
+        def check_distance(route, _entity); end
+
+        # TODO: validate route starts at a base and ends at a base or transshipment point
+        def check_connected(route, _entity); end
+
+        def explore_hex!(hex_id)
+          @mine_state[hex_id] ||= { mines: [] }
+          @log << "#{hex_id} explored"
+        end
+
+        def pickup_value(entity, hex_id, mine_idx)
+          mine = @mine_state.dig(hex_id, :mines, mine_idx)
+          return 0 unless mine
+
+          mine[:owner] == entity.id ? mine[:claimed] : mine[:unclaimed]
+        end
+
+        def pickable_stops(route, existing_pickups)
+          entity = route.corporation
+          picked_set = existing_pickups.to_set
+
+          route.hexes.flat_map do |hex|
+            state = @mine_state[hex.id]
+            next [] unless state
+
+            state[:mines].each_with_index.filter_map do |mine, idx|
+              key = [hex.id, idx]
+              next if mine[:used]
+              next if picked_set.include?(key)
+              next if mine[:owner] && mine[:owner] != entity.id
+
+              { hex: hex, mine_idx: idx, ore: mine[:ore], value: pickup_value(entity, hex.id, idx) }
+            end
+          end
+        end
+
+        def mark_mines_used!(route)
+          return unless route.respond_to?(:pickups)
+
+          route.pickups.each do |hex_id, mine_idx|
+            @mine_state.dig(hex_id, :mines, mine_idx)&.store(:used, true)
+          end
+        end
+
         def setup
+          @mine_state = {}
           @al_corporation = corporation_by_id('AL')
           @al_corporation.capitalization = :incremental
 
