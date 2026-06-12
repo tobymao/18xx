@@ -4,162 +4,161 @@ module Engine
   module Game
     module G2038
       module Map
+        # Shared path segments for tile code strings.
+        # SP6: all 6 edges - junction(_0) + city(_1); used by single-mine tiles.
+        # DP6: all 6 edges - junction(_0) + city1(_1) + city2(_2); used by double-mine tiles.
+        SP6 = 'path=a:0,b:_0;path=a:0,b:_1;path=a:1,b:_0;path=a:1,b:_1;path=a:2,b:_0;path=a:2,b:_1;'\
+              'path=a:3,b:_0;path=a:3,b:_1;path=a:4,b:_0;path=a:4,b:_1;path=a:5,b:_0;path=a:5,b:_1'
+        DP6 = 'path=a:0,b:_0;path=a:0,b:_1;path=a:0,b:_2;path=a:1,b:_0;path=a:1,b:_1;path=a:1,b:_2;'\
+              'path=a:2,b:_0;path=a:2,b:_1;path=a:2,b:_2;path=a:3,b:_0;path=a:3,b:_1;path=a:3,b:_2;'\
+              'path=a:4,b:_0;path=a:4,b:_1;path=a:4,b:_2;path=a:5,b:_0;path=a:5,b:_1;path=a:5,b:_2'
+
         TILES = {
-          '2001' =>
-          {
+          # Single-mine N tiles
+          '2001' => {
             'count' => 12,
-            'color' => 'yellow',
-            'code' => 'city=revenue:green_10|brown_50;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
-                      'path=a:4,b:_0;path=a:5,b:_0;label=N',
+            'color' => 'gray',
+            # real revenue: unclaimed 10, claimed 50
+            'code' => "junction;city=revenue:42;#{SP6};label=N",
           },
-          '2002' =>
-          {
+          '2002' => {
             'count' => 12,
-            'color' => 'yellow',
-            'code' => 'city=revenue:green_20|brown_60;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
-                      'path=a:4,b:_0;path=a:5,b:_0;label=N',
+            'color' => 'gray',
+            # real revenue: unclaimed 20, claimed 60
+            'code' => "junction;city=revenue:42;#{SP6};label=N",
           },
-          '2003' =>
-          {
+          # Single-mine I tiles
+          '2003' => {
             'count' => 2,
-            'color' => 'yellow',
-            'code' => 'city=revenue:green_30|brown_40;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
-                      'path=a:4,b:_0;path=a:5,b:_0;label=I',
+            'color' => 'gray',
+            # real revenue: unclaimed 30, claimed 40
+            'code' => "junction;city=revenue:42;#{SP6};label=I",
           },
-          '2004' =>
-          {
+          '2004' => {
             'count' => 4,
-            'color' => 'yellow',
-            'code' => 'city=revenue:green_40|brown_50;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
-                      'path=a:4,b:_0;path=a:5,b:_0;label=I',
+            'color' => 'gray',
+            # real revenue: unclaimed 40, claimed 50
+            'code' => "junction;city=revenue:42;#{SP6};label=I",
           },
-          '2005' =>
-          {
+          '2005' => {
             'count' => 8,
-            'color' => 'yellow',
-            'code' => 'city=revenue:green_50|brown_60;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
-                      'path=a:4,b:_0;path=a:5,b:_0;label=I',
+            'color' => 'gray',
+            # real revenue: unclaimed 50, claimed 60
+            'code' => "junction;city=revenue:42;#{SP6};label=I",
           },
-          '2006' =>
-          {
+          # Single-mine R tiles
+          '2006' => {
             'count' => 2,
-            'color' => 'yellow',
-            'code' => 'city=revenue:green_20|brown_50;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
-                      'path=a:4,b:_0;path=a:5,b:_0;label=R',
+            'color' => 'gray',
+            # real revenue: unclaimed 20, claimed 50
+            'code' => "junction;city=revenue:42;#{SP6};label=R",
           },
-          '2007' =>
-          {
+          '2007' => {
             'count' => 4,
-            'color' => 'yellow',
-            'code' => 'city=revenue:green_30|brown_60;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
-                      'path=a:4,b:_0;path=a:5,b:_0;label=R',
+            'color' => 'gray',
+            # real revenue: unclaimed 30, claimed 60
+            'code' => "junction;city=revenue:42;#{SP6};label=R",
           },
-          '2008' =>
-          {
-            'count' => 7,
-            'color' => 'yellow',
-            'code' => 'city=revenue:green_40|brown_70;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
-                      'path=a:4,b:_0;path=a:5,b:_0;label=R',
+          '2008' => {
+            'count' => 6,
+            'color' => 'gray',
+            # real revenue: unclaimed 40, claimed 70
+            'code' => "junction;city=revenue:42;#{SP6};label=R",
           },
-          '2009' =>
-          {
-            'count' => 7,
-            'color' => 'yellow',
-            'code' => 'city=revenue:green_20|brown_60;city=revenue:green_20|brown_60;path=a:0,b:_0;path=a:0,b:_1;'\
-                      'path=a:1,b:_0;path=a:1,b:_1;path=a:2,b:_0;path=a:2,b:_1;path=a:3,b:_0;path=a:3,b:_1;'\
-                      'path=a:4,b:_0;path=a:4,b:_1;path=a:5,b:_0;path=a:5,b:_1;label=N/N',
+          # N/N double-mine tiles (NdNm first, then NdNd)
+          '2009' => {
+            'count' => 12,
+            'color' => 'gray',
+            # real revenue: city1 unclaimed 20/claimed 60, city2 unclaimed 10/claimed 50
+            'code' => "junction;city=revenue:42;city=revenue:42;#{DP6};label=N/N",
           },
-          # TODO: Fill in the rest of these once confirmed (also note that all these lanes should probably be double)
-          '2010' =>
-          {
+          '2010' => {
+            'count' => 8,
+            'color' => 'gray',
+            # real revenue: city1 unclaimed 20/claimed 60, city2 unclaimed 20/claimed 60
+            'code' => "junction;city=revenue:42;city=revenue:42;#{DP6};label=N/N",
+          },
+          # I/N double-mine tiles
+          '2011' => {
+            'count' => 6,
+            'color' => 'gray',
+            # real revenue: city1 unclaimed 30/claimed 40, city2 unclaimed 10/claimed 50
+            'code' => "junction;city=revenue:42;city=revenue:42;#{DP6};label=I/N",
+          },
+          '2012' => {
+            'count' => 4,
+            'color' => 'gray',
+            # real revenue: city1 unclaimed 30/claimed 40, city2 unclaimed 20/claimed 60
+            'code' => "junction;city=revenue:42;city=revenue:42;#{DP6};label=I/N",
+          },
+          '2013' => {
+            'count' => 4,
+            'color' => 'gray',
+            # real revenue: city1 unclaimed 40/claimed 50, city2 unclaimed 10/claimed 50
+            'code' => "junction;city=revenue:42;city=revenue:42;#{DP6};label=I/N",
+          },
+          '2014' => {
+            'count' => 4,
+            'color' => 'gray',
+            # real revenue: city1 unclaimed 40/claimed 50, city2 unclaimed 20/claimed 60
+            'code' => "junction;city=revenue:42;city=revenue:42;#{DP6};label=I/N",
+          },
+          # R/N double-mine tiles
+          '2015' => {
+            'count' => 4,
+            'color' => 'gray',
+            # real revenue: city1 unclaimed 20/claimed 50, city2 unclaimed 10/claimed 50
+            'code' => "junction;city=revenue:42;city=revenue:42;#{DP6};label=R/N",
+          },
+          '2016' => {
             'count' => 2,
-            'color' => 'yellow',
-            'code' => 'town=revenue:yellow_30|gray_60;town=revenue:20;town=revenue:20;path=a:1,b:_0;path=a:2,b:_0;'\
-                      'path=a:4,b:_1;path=a:5,b:_1;path=a:0,b:_2;path=a:3,b:_2',
+            'color' => 'gray',
+            # real revenue: city1 unclaimed 20/claimed 50, city2 unclaimed 20/claimed 60
+            'code' => "junction;city=revenue:42;city=revenue:42;#{DP6};label=R/N",
           },
-          '2011' =>
-          {
-            'count' => 1,
-            'color' => 'yellow',
-            'code' => 'city=revenue:yellow_30|gray_60,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;'\
-                      'path=a:5,b:_0;label=I',
+          '2017' => {
+            'count' => 2,
+            'color' => 'gray',
+            # real revenue: city1 unclaimed 30/claimed 60, city2 unclaimed 10/claimed 50
+            'code' => "junction;city=revenue:42;city=revenue:42;#{DP6};label=R/N",
           },
-          '2012' =>
-          {
-            'count' => 1,
-            'color' => 'yellow',
-            'code' => 'city=revenue:80,slots:4;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;'\
-                      'path=a:5,b:_0;label=I',
+          '2018' => {
+            'count' => 2,
+            'color' => 'gray',
+            # real revenue: city1 unclaimed 30/claimed 60, city2 unclaimed 20/claimed 60
+            'code' => "junction;city=revenue:42;city=revenue:42;#{DP6};label=R/N",
           },
-          '2013' =>
-          {
-            'count' => 1,
-            'color' => 'yellow',
-            'code' => 'city=revenue:80,slots:4;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;'\
-                      'path=a:5,b:_0;label=I',
+          # R/I double-mine tiles
+          '2019' => {
+            'count' => 2,
+            'color' => 'gray',
+            # real revenue: city1 unclaimed 20/claimed 50, city2 unclaimed 30/claimed 40
+            'code' => "junction;city=revenue:42;city=revenue:42;#{DP6};label=R/I",
           },
-          '2014' =>
-          {
-            'count' => 1,
-            'color' => 'yellow',
-            'code' => 'city=revenue:80,slots:4;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;'\
-                      'path=a:5,b:_0;label=I',
+          '2020' => {
+            'count' => 2,
+            'color' => 'gray',
+            # real revenue: city1 unclaimed 20/claimed 50, city2 unclaimed 40/claimed 50
+            'code' => "junction;city=revenue:42;city=revenue:42;#{DP6};label=R/I",
           },
-          '2015' =>
-          {
-            'count' => 1,
-            'color' => 'yellow',
-            'code' => 'city=revenue:80,slots:4;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;'\
-                      'path=a:5,b:_0;label=I',
+          '2021' => {
+            'count' => 2,
+            'color' => 'gray',
+            # real revenue: city1 unclaimed 30/claimed 60, city2 unclaimed 30/claimed 40
+            'code' => "junction;city=revenue:42;city=revenue:42;#{DP6};label=R/I",
           },
-          '2016' =>
-          {
-            'count' => 1,
-            'color' => 'yellow',
-            'code' => 'city=revenue:80,slots:4;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;'\
-                      'path=a:5,b:_0;label=I',
+          '2022' => {
+            'count' => 2,
+            'color' => 'gray',
+            # real revenue: city1 unclaimed 30/claimed 60, city2 unclaimed 40/claimed 50
+            'code' => "junction;city=revenue:42;city=revenue:42;#{DP6};label=R/I",
           },
-          '2017' =>
-          {
-            'count' => 1,
-            'color' => 'yellow',
-            'code' => 'city=revenue:80,slots:4;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;'\
-                      'path=a:5,b:_0;label=I',
-          },
-          '2018' =>
-          {
-            'count' => 1,
-            'color' => 'yellow',
-            'code' => 'city=revenue:80,slots:4;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;'\
-                      'path=a:5,b:_0;label=I',
-          },
-          '2019' =>
-          {
-            'count' => 1,
-            'color' => 'yellow',
-            'code' => 'city=revenue:80,slots:4;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;'\
-                      'path=a:5,b:_0;label=I',
-          },
-          '2020' =>
-          {
-            'count' => 1,
-            'color' => 'yellow',
-            'code' => 'city=revenue:80,slots:4;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;'\
-                      'path=a:5,b:_0;label=I',
-          },
-          '2021' =>
-          {
-            'count' => 1,
-            'color' => 'yellow',
-            'code' => 'city=revenue:80,slots:4;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;'\
-                      'path=a:5,b:_0;label=I',
-          },
-          '2022' =>
-          {
-            'count' => 1,
-            'color' => 'yellow',
-            'code' => 'city=revenue:80,slots:4;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:4,b:_0;'\
-                      'path=a:5,b:_0;label=I',
+          # Gray base tile - placed when a corporation establishes a base on an explored asteroid.
+          # The city slot holds the base token; revenue is tracked via corporation base mechanics.
+          '2023' => {
+            'count' => 'unlimited',
+            'color' => 'gray',
+            'code' => "junction;city=revenue:0;#{SP6}",
           },
         }.freeze
 
@@ -172,7 +171,7 @@ module Engine
           'G7' => 'Fast Buck',
           'H14' => 'Lucky',
           'J2' => 'VP',
-          'J18' => 'OCP',
+          'J18' => 'OPC',
           'K9' => 'TSI',
           'M5' => 'Ore Crusher',
           'M13' => 'Ice Finder',
@@ -181,8 +180,11 @@ module Engine
 
         HEXES = {
           gray40: {
-            %w[A13 D2 O11] => 'city=revenue:yellow_30|gray_60;path=a:5,b:_0;path=a:0,b:_0',
-            %w[H10 H18] => 'city=revenue:yellow_20|gray_70;path=a:5,b:_0;path=a:0,b:_0',
+            %w[A13 D2 H10
+               O11] => 'city=revenue:yellow_30|gray_60;'\
+                       'path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
+            %w[H18] => 'city=revenue:yellow_20|gray_70;'\
+                       'path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
           },
           gray: { %w[A1 B6 D8 D14 F18 G7 H14 J2 J18 K9 M5 M13 O1] => '' },
           blue: {
