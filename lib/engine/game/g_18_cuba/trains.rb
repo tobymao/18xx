@@ -5,7 +5,6 @@ module Engine
     module G18Cuba
       module Trains
         WAGONS = %w[1w 2w 3w].freeze
-        MINOR_TRAIN_LIMIT = 2
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
           'sugar_cane_open_for_majors' => ['Sugar cane open for majors',
@@ -13,12 +12,6 @@ module Engine
           'downgrade_4n_trains' => ['4n trains downgrade',
                                     '4n trains downgrade to 4-1n trains'],
         ).freeze
-
-        def train_limit(entity)
-          return MINOR_TRAIN_LIMIT if entity.type == :minor
-
-          super
-        end
 
         # Wagons attach to trains rather than running independently.
         def wagon?(train)
@@ -33,7 +26,12 @@ module Engine
           entity.trains.count { |t| !wagon?(t) }
         end
 
-        def excess_axes(corporation)
+        # The gauge of regular train an entity may run/buy: minors narrow, majors broad.
+        def gauge_for(entity)
+          entity.type == :minor ? :narrow : :broad
+        end
+
+        def train_limit_overflow(corporation)
           lim = train_limit(corporation)
           { trains: num_corp_trains(corporation) > lim, wagons: num_wagons(corporation) > lim }
         end
@@ -186,6 +184,7 @@ module Engine
             ],
           },
           {
+            # TODO: switch to num: 'unlimited' once #12722 merges (see PHASES below).
             name: '8',
             distance: 8,
             price: 700,
@@ -201,7 +200,7 @@ module Engine
             ],
           },
           # Sugar Cane Wagons — distance indicates cube capacity
-          { name: '1w', distance: 1, price: 40,  available_on: '2', rusts_on: '6' },
+          { name: '1w', distance: 1, price: 40,  available_on: '2', rusts_on: '3w' },
           { name: '2w', distance: 2, price: 80,  available_on: '4' },
           { name: '3w', distance: 3, price: 150, available_on: '6' },
           # Narrow Gauge Trains

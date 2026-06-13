@@ -8,7 +8,7 @@ module Engine
       module Step
         class DiscardTrain < Engine::Step::DiscardTrain
           def trains(corporation)
-            excess = @game.excess_axes(corporation)
+            excess = @game.train_limit_overflow(corporation)
             corporation.trains.select { |t| @game.wagon?(t) ? excess[:wagons] : excess[:trains] }
           end
         end

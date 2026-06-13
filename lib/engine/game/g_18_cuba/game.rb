@@ -29,6 +29,8 @@ module Engine
         EBUY_FROM_OTHERS = :never
         EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = true
 
+        DEPOT_CLASS = G18Cuba::Depot
+
         BANK_CASH = 10_000
 
         CERT_LIMIT = { 2 => 35, 3 => 30, 4 => 20, 5 => 17, 6 => 15 }.freeze
@@ -40,40 +42,50 @@ module Engine
              151 158 172 180 188 196 204 013 222 231 240 250 260 275 290 300],
         ].freeze
 
-        PHASES = [{ name: '2', train_limit: 4, tiles: [:yellow], operating_rounds: 1 },
+        STATUS_TEXT = Base::STATUS_TEXT.merge(
+          'cross_company_trains' => ['Cross-company train purchases',
+                                     'Corporations may buy trains from each other'],
+        ).freeze
+
+        PHASES = [{ name: '2', train_limit: { minor: 2, major: 4 }, tiles: [:yellow], operating_rounds: 1 },
                   {
                     name: '3',
                     on: '3',
-                    train_limit: 4,
+                    train_limit: { minor: 2, major: 4 },
                     tiles: %i[yellow green],
+                    status: ['cross_company_trains'],
                     operating_rounds: 2,
                   },
                   {
                     name: '4',
                     on: '4',
-                    train_limit: 3,
+                    train_limit: { minor: 2, major: 3 },
                     tiles: %i[yellow green],
+                    status: ['cross_company_trains'],
                     operating_rounds: 2,
                   },
                   {
                     name: '5',
                     on: '5',
-                    train_limit: 2,
+                    train_limit: { minor: 2, major: 2 },
                     tiles: %i[yellow green brown],
+                    status: ['cross_company_trains'],
                     operating_rounds: 3,
                   },
                   {
                     name: '6',
                     on: '6',
-                    train_limit: 2,
+                    train_limit: { minor: 2, major: 2 },
                     tiles: %i[yellow green brown],
+                    status: ['cross_company_trains'],
                     operating_rounds: 3,
                   },
                   {
                     name: '8',
                     on: '8',
-                    train_limit: 2,
+                    train_limit: { minor: 2, major: 2 },
                     tiles: %i[yellow green brown gray],
+                    status: ['cross_company_trains'],
                     operating_rounds: 3,
                   }].freeze
 
@@ -158,16 +170,24 @@ module Engine
         end
 
         def crowded_corps
-          corporations.select { |c| excess_axes(c).value?(true) }
+          # TODO: FC logic - train limit
+          corporations.select { |c| train_limit_overflow(c).value?(true) }
+        end
+
+        # A corp owning only wagons is still trainless (wagons don't count as trains).
+        def trainless?(corporation)
+          num_corp_trains(corporation).zero?
         end
 
         def must_buy_train?(entity)
-          # Bankruptcy only triggers when a correctly-gauged train actually exists;
-          # the engine's bankrupt path handles the cash shortfall separately.
-          return false unless num_corp_trains(entity).zero?
+          # Bankruptcy only triggers when a correctly-gauged train actually exists
+          trainless?(entity) &&
+            depot.depot_trains.any? { |t| !wagon?(t) && t.track_type == gauge_for(entity) }
+        end
 
-          track_type = entity.type == :minor ? :narrow : :broad
-          (depot.depot_trains + depot.discarded).any? { |t| !wagon?(t) && t.track_type == track_type }
+        # Per rule VII.12: cross-company train purchases unlock once the first 3/3+ train is sold (phase 3+).
+        def can_buy_train_from_others?
+          @phase.status.include?('cross_company_trains')
         end
 
         def setup
@@ -330,7 +350,7 @@ module Engine
           wagon_routes = routes.select { |r| @round.wagon_for_train[r.train] }
           return if wagon_routes.size <= 1
 
-          harbors = wagon_routes.map { |r| r.visited_stops.find(&:offboard?)&.hex&.id }.compact
+          harbors = wagon_routes.map { |r| r.visited_stops.find(&:offboard?)&.hex }.compact
           raise GameError, 'Each wagon train must run to a different harbor' if harbors.uniq.size != harbors.size
         end
 
@@ -375,7 +395,7 @@ module Engine
         def minor_operating_sort_key(corp)
           # Order by share price, then market position, then name.
           sp = corp.share_price
-          [sp&.price || 0, sp&.corporations&.find_index(corp) || 0, corp.name]
+          [sp&.price || 0, sp&.corporations&.index(corp) || 0, corp.name]
         end
 
         def sugar_cane_tile?(tile)
