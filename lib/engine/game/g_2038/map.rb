@@ -5,8 +5,10 @@ module Engine
     module G2038
       module Map
         # Shared path segments for tile code strings.
+        # BX6: all 6 edges - junction(_0) only; used by unexplored blue hexes.
         # SP6: all 6 edges - junction(_0) + city(_1); used by single-mine tiles.
         # DP6: all 6 edges - junction(_0) + city1(_1) + city2(_2); used by double-mine tiles.
+        BX6 = 'path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0'
         SP6 = 'path=a:0,b:_0;path=a:0,b:_1;path=a:1,b:_0;path=a:1,b:_1;path=a:2,b:_0;path=a:2,b:_1;'\
               'path=a:3,b:_0;path=a:3,b:_1;path=a:4,b:_0;path=a:4,b:_1;path=a:5,b:_0;path=a:5,b:_1'
         DP6 = 'path=a:0,b:_0;path=a:0,b:_1;path=a:0,b:_2;path=a:1,b:_0;path=a:1,b:_1;path=a:1,b:_2;'\
@@ -186,7 +188,7 @@ module Engine
             %w[H18] => 'city=revenue:yellow_20|gray_70;'\
                        'path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0',
           },
-          gray: { %w[A1 B6 D8 D14 F18 G7 H14 J2 J18 K9 M5 M13 O1] => '' },
+          gray: { %w[A1 B6 D8 D14 F18 G7 H14 J2 J18 K9 M5 M13 O1] => "junction;city=revenue:0;#{SP6}" },
           blue: {
             %w[
                 A3 A5 A7 A9 A11 B2 B4 B8 B10 B12 B14 C1 C3 C5 C7 C9
@@ -196,7 +198,7 @@ module Engine
                 J6 J8 J10 J12 J14 J16 K3 K5 K7 K11 K13 K15 K17 L2 L4
                 L6 L8 L10 L12 L14 L16 M1 M3 M7 M9 M11 M15 N2 N4 N6 N8
                 N10 N12 N14 O3 O5 O7 O9 O13
-            ] => '',
+            ] => "junction;#{BX6}",
           },
         }.freeze
 

@@ -32,8 +32,6 @@ module Engine
 
         STARTING_CASH = { 3 => 600, 4 => 450, 5 => 360, 6 => 300 }.freeze
 
-        HOME_TOKEN_TIMING = :never
-
         MARKET = [
           %w[71 80 90 101 113 126 140 155 171 188 206 225 245 266 288 311 335 360 386 413 441 470 500],
           %w[62 70 79 89 100p 112 125x 139 154 170 187 205 224 244 265 287 310 334 359 385 412 440 469],
@@ -58,6 +56,7 @@ module Engine
 
         MINOR_OPERATING_ORDER = %w[FB IF DH OC TH LY].freeze
         ENTITY_DISPLAY_ORDER = %w[FB IF DH OC TH LY TSI RU VP LE MM OPC RCC AL].freeze
+        HIDE_TILE_TRACK = true
 
         ORE_COLORS = {
           N: '#888888',
@@ -304,7 +303,15 @@ module Engine
         end
 
         def route_trains(entity)
-          entity.trains.reject { |t| t.name == 'probe' }
+          entity.runnable_trains
+        end
+
+        def can_run_route?(entity)
+          route_trains(entity).any?
+        end
+
+        def skip_route_track_type(_train)
+          :broad
         end
 
         def revenue_str(route)
@@ -358,6 +365,14 @@ module Engine
 
         def setup
           @mine_state = {}
+
+          # The probe is never sold from the Depot. TSI operates it once floated;
+          # until then it is operated by the owner of the TS private.
+          # TODO: allow the TS private owner to run the probe before TSI floats.
+          @probe = depot.upcoming.find { |t| t.name == 'probe' }
+          depot.remove_train(@probe)
+          @probe.buyable = false
+
           @al_corporation = corporation_by_id('AL')
           @al_corporation.capitalization = :incremental
 
@@ -374,6 +389,14 @@ module Engine
           @b_group_corporations, @c_group_corporations = @b_group_corporations.partition do |corporation|
             corporation.type == :group_b
           end
+        end
+
+        def float_corporation(corporation)
+          super
+          return unless corporation.id == 'TSI'
+
+          buy_train(corporation, @probe, :free)
+          @log << "#{corporation.name} receives the probe"
         end
 
         def event_group_b_corps_available!
