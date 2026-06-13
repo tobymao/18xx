@@ -81,8 +81,8 @@ module Engine
                     operating_rounds: 3,
                   },
                   {
-                    name: '8',
-                    on: '8',
+                    name: '8+',
+                    on: '8+',
                     train_limit: { minor: 2, major: 2 },
                     tiles: %i[yellow green brown gray],
                     status: ['cross_company_trains'],

@@ -23,11 +23,6 @@ module Engine
             trains.select { |t| @game.wagon?(t) }
           end
 
-          # Wagons cannot be bought across companies.
-          def other_trains(entity)
-            super.reject { |t| @game.wagon?(t) }
-          end
-
           # Pure variant filter: aged lock, emergency cheapest, gauge match.
           def buyable_train_variants(train, entity)
             variants = super
