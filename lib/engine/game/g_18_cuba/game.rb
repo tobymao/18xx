@@ -171,7 +171,7 @@ module Engine
 
         def crowded_corps
           # TODO: FC logic - train limit
-          corporations.select { |c| train_limit_overflow(c).value?(true) }
+          @crowded_corps ||= corporations.select { |c| train_limit_overflow(c).value?(true) }
         end
 
         # A corp owning only wagons is still trainless (wagons don't count as trains).
