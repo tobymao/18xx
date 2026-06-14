@@ -63,6 +63,7 @@ module Engine
             on: '2',
             train_limit: { minor: 2, major: 4 },
             tiles: [:yellow],
+            status: ['two_tile_lays'],
             operating_rounds: 1,
           },
           {
@@ -70,6 +71,7 @@ module Engine
             on: '2+2',
             train_limit: { minor: 2, major: 4 },
             tiles: [:yellow],
+            status: ['two_tile_lays'],
             operating_rounds: 1,
           },
           {
@@ -77,7 +79,7 @@ module Engine
             on: '3',
             train_limit: { minor: 2, major: 4 },
             tiles: %i[yellow green],
-            status: ['can_buy_trains'],
+            status: %w[can_buy_trains lay_or_upgrade],
             operating_rounds: 2,
           },
           {
@@ -85,7 +87,7 @@ module Engine
             on: '3+3',
             train_limit: { major: 4, minor: 2 },
             tiles: %i[yellow green],
-            status: ['can_buy_trains'],
+            status: %w[can_buy_trains lay_or_upgrade],
             operating_rounds: 2,
           },
           {
@@ -93,7 +95,7 @@ module Engine
             on: '4',
             train_limit: { prussian: 4, major: 3, minor: 1 },
             tiles: %i[yellow green],
-            status: ['can_buy_trains'],
+            status: %w[can_buy_trains lay_or_upgrade],
             operating_rounds: 2,
           },
           {
@@ -101,7 +103,7 @@ module Engine
             on: '4+4',
             train_limit: { prussian: 4, major: 3, minor: 1 },
             tiles: %i[yellow green],
-            status: ['can_buy_trains'],
+            status: %w[can_buy_trains lay_or_upgrade],
             operating_rounds: 2,
           },
           {
@@ -109,7 +111,7 @@ module Engine
             on: '5',
             train_limit: { prussian: 3, major: 2 },
             tiles: %i[yellow green brown],
-            status: ['can_buy_trains'],
+            status: %w[can_buy_trains lay_or_upgrade],
             operating_rounds: 3,
           },
           {
@@ -117,7 +119,7 @@ module Engine
             on: '5+5',
             train_limit: { prussian: 3, major: 2 },
             tiles: %i[yellow green brown],
-            status: ['can_buy_trains'],
+            status: %w[can_buy_trains lay_or_upgrade],
             operating_rounds: 3,
           },
           {
@@ -125,7 +127,7 @@ module Engine
             on: '6',
             train_limit: { prussian: 3, major: 2 },
             tiles: %i[yellow green brown],
-            status: ['can_buy_trains'],
+            status: %w[can_buy_trains lay_or_upgrade],
             operating_rounds: 3,
           },
           {
@@ -133,7 +135,7 @@ module Engine
             on: '6+6',
             train_limit: { prussian: 3, major: 2 },
             tiles: %i[yellow green brown],
-            status: ['can_buy_trains'],
+            status: %w[can_buy_trains lay_or_upgrade],
             operating_rounds: 3,
           },
         ].freeze
@@ -168,7 +170,9 @@ module Engine
         ).freeze
 
         STATUS_TEXT = Base::STATUS_TEXT.merge(
-          'can_buy_trains' => ['Buy trains', 'Can buy trains from other corporations']
+          'can_buy_trains' => ['Buy trains', 'Can buy trains from other corporations'],
+          'two_tile_lays' => ['Two tile lays', 'Major corporations may lay 2 yellow tiles, minor corporations lay 1 yellow tile'],
+          'lay_or_upgrade' => ['Lay or upgrade', 'Corporations may lay 1 tile or upgrade 1 tile']
         ).freeze
 
         LAYOUT = :pointy
@@ -179,8 +183,8 @@ module Engine
 
         CORPORATION_BLOCKS = [%w[BY SX], %w[BA WT HE PR], %w[MS OL]].freeze
 
-        YELLOW_OR_UPGRADE = [{ lay: true, upgrade: true }].freeze
-        TWO_YELLOW = [{ lay: true, upgrade: false }, { lay: true, upgrade: false }].freeze
+        LAY_OR_UPGRADE = [{ lay: true, upgrade: true }].freeze
+        TWO_LAYS = [{ lay: true, upgrade: false }, { lay: true, upgrade: false }].freeze
 
         def setup
           prussian.shares.last(7).each { |s| s.buyable = false }
@@ -331,6 +335,12 @@ module Engine
           north_edge_used = route.paths.any? { |path| path.tile.hex == hamburg_hex && [2, 3, 4].intersect?(path.exits) }
           south_edge_used = route.paths.any? { |path| path.tile.hex == hamburg_hex && [0, 1, 5].intersect?(path.exits) }
           north_edge_used && south_edge_used
+        end
+
+        def tile_lays(entity)
+          return TWO_LAYS if entity.type == :major && @phase.status.include?('two_tile_lays')
+
+          LAY_OR_UPGRADE
         end
 
         def payout_companies

@@ -31,6 +31,12 @@ class Api
               user_ids = [game.user_id]
               force = true
               publish_turn(user_ids, game, r.base_url, type, force)
+            elsif users.size == game.min_players - 1
+              # Generate a message to the game owner
+              type = 'Minimum player count reached'
+              user_ids = [game.user_id]
+              force = true
+              publish_turn(user_ids, game, r.base_url, type, force)
             end
 
             GameUser.create(game: game, user: user)
