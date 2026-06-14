@@ -96,7 +96,7 @@ module View
         needs :game, default: nil
 
         def render
-          @hide_tile_track = @game&.class::HIDE_TILE_TRACK
+          @hide_tile_track = @game&.class&.const_defined?(:HIDE_TILE_TRACK) && @game.class::HIDE_TILE_TRACK
           # each route has an "entry" in this array; each "entry" is an array of
           # the paths on that route that are also on this tile
           #
