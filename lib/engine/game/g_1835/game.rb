@@ -167,6 +167,10 @@ module Engine
                                    'Remaining Preußen privates and minors will be exchanged for Preußen shares']
         ).freeze
 
+        STATUS_TEXT = Base::STATUS_TEXT.merge(
+          'can_buy_trains' => ['Buy trains', 'Can buy trains from other corporations']
+        ).freeze
+
         LAYOUT = :pointy
 
         SELL_MOVEMENT = :down_block
