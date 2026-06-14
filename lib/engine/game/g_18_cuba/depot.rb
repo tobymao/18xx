@@ -13,6 +13,7 @@ module Engine
         def min_depot_train
           current_entity = @game.round.current_entity
           return super unless current_entity
+          # super's global min is only read under president_may_contribute? (trainless), so the fallback is safe.
           return super unless @game.trainless?(current_entity)
 
           gauge = @game.gauge_for(current_entity)

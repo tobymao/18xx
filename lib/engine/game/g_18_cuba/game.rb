@@ -43,8 +43,7 @@ module Engine
         ].freeze
 
         STATUS_TEXT = Base::STATUS_TEXT.merge(
-          'can_buy_trains' => ['Cross-company train purchases',
-                               'Corporations may buy trains from each other'],
+          'can_buy_trains' => ['Buy trains', 'Can buy trains from other corporations'],
         ).freeze
 
         PHASES = [{ name: '2', train_limit: { minor: 2, major: 4 }, tiles: [:yellow], operating_rounds: 1 },
@@ -180,7 +179,7 @@ module Engine
         end
 
         def must_buy_train?(entity)
-          # Bankruptcy only triggers when a correctly-gauged train actually exists
+          # Require a buy only when a gauge-matching non-wagon train exists in the depot — else nothing is legally buyable.
           trainless?(entity) &&
             depot.depot_trains.any? { |t| !wagon?(t) && t.track_type == gauge_for(entity) }
         end

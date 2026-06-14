@@ -69,6 +69,7 @@ module Engine
             super
           end
 
+          # Skip aged downgrade variants and over-priced plus variants when locating the cheapest.
           def names_of_cheapest_variants(train)
             buyable = train.variants.reject { |_, v| v[:event_downgrade_variant] || v[:price] > train.price }
             return [train.name] if buyable.empty?
