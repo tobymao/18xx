@@ -179,16 +179,15 @@ module Engine
             expect(step.names_of_cheapest_variants(four_n)).to eq(['4-1n'])
           end
 
-          describe '#must_buy_at_face_value?' do
-            it 'is true for wagons (rule VII.12)' do
-              wagon = depot_train('1w')
-              expect(step.must_buy_at_face_value?(wagon, major)).to be(true)
+          describe '#spend_minmax' do
+            it 'forces face value for a wagon bought from another company (rule VII.12)' do
+              wagon = give_train(minor, '1w')
+              expect(step.spend_minmax(major, wagon)).to eq([wagon.price, wagon.price])
             end
 
-            it 'is false for standard trains' do
-              # Owned by another corp: depot trains never reach this check (from_depot? guards it).
+            it 'leaves a standard train negotiable' do
               train2 = give_train(minor, '2')
-              expect(step.must_buy_at_face_value?(train2, major)).to be(false)
+              expect(step.spend_minmax(major, train2)).not_to eq([train2.price, train2.price])
             end
           end
         end
@@ -198,14 +197,14 @@ module Engine
         # ─────────────────────────────────────────────────────────────────────
 
         describe '#can_buy_train_from_others?' do
-          it 'is false while the cross_company_trains status is absent (phase 2)' do
-            expect(game.phase.status).not_to include('cross_company_trains')
+          it 'is false while the can_buy_trains status is absent (phase 2)' do
+            expect(game.phase.status).not_to include('can_buy_trains')
             expect(game.can_buy_train_from_others?).to be(false)
           end
 
-          it 'is true once the cross_company_trains status is active (phase 3+)' do
+          it 'is true once the can_buy_trains status is active (phase 3+)' do
             advance_to_phase('3')
-            expect(game.phase.status).to include('cross_company_trains')
+            expect(game.phase.status).to include('can_buy_trains')
             expect(game.can_buy_train_from_others?).to be(true)
           end
         end

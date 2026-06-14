@@ -43,8 +43,8 @@ module Engine
         ].freeze
 
         STATUS_TEXT = Base::STATUS_TEXT.merge(
-          'cross_company_trains' => ['Cross-company train purchases',
-                                     'Corporations may buy trains from each other'],
+          'can_buy_trains' => ['Cross-company train purchases',
+                               'Corporations may buy trains from each other'],
         ).freeze
 
         PHASES = [{ name: '2', train_limit: { minor: 2, major: 4 }, tiles: [:yellow], operating_rounds: 1 },
@@ -53,7 +53,7 @@ module Engine
                     on: '3',
                     train_limit: { minor: 2, major: 4 },
                     tiles: %i[yellow green],
-                    status: ['cross_company_trains'],
+                    status: ['can_buy_trains'],
                     operating_rounds: 2,
                   },
                   {
@@ -61,7 +61,7 @@ module Engine
                     on: '4',
                     train_limit: { minor: 2, major: 3 },
                     tiles: %i[yellow green],
-                    status: ['cross_company_trains'],
+                    status: ['can_buy_trains'],
                     operating_rounds: 2,
                   },
                   {
@@ -69,7 +69,7 @@ module Engine
                     on: '5',
                     train_limit: { minor: 2, major: 2 },
                     tiles: %i[yellow green brown],
-                    status: ['cross_company_trains'],
+                    status: ['can_buy_trains'],
                     operating_rounds: 3,
                   },
                   {
@@ -77,7 +77,7 @@ module Engine
                     on: '6',
                     train_limit: { minor: 2, major: 2 },
                     tiles: %i[yellow green brown],
-                    status: ['cross_company_trains'],
+                    status: ['can_buy_trains'],
                     operating_rounds: 3,
                   },
                   {
@@ -85,7 +85,7 @@ module Engine
                     on: '8+',
                     train_limit: { minor: 2, major: 2 },
                     tiles: %i[yellow green brown gray],
-                    status: ['cross_company_trains'],
+                    status: ['can_buy_trains'],
                     operating_rounds: 3,
                   }].freeze
 
@@ -187,7 +187,7 @@ module Engine
 
         # Per rule VII.12: cross-company train purchases unlock once the first 3/3+ train is sold (phase 3+).
         def can_buy_train_from_others?
-          @phase.status.include?('cross_company_trains')
+          @phase.status.include?('can_buy_trains')
         end
 
         def setup

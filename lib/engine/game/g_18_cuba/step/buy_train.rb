@@ -31,7 +31,8 @@ module Engine
               variants = variants.select { |v| v == train.variant }
             end
 
-            if entity.cash < @depot.min_depot_price
+            # EMR only when the corp has no train and can't afford the cheapest depot one.
+            if must_buy_train?(entity) && entity.cash < @depot.min_depot_price
               min_price = variants.map { |v| v[:price] }.min
               variants = variants.select { |v| v[:price] == min_price }
             end
@@ -46,9 +47,11 @@ module Engine
             super || can_buy_wagon?(entity)
           end
 
-          # Per rule VII.12: wagons bought cross-company must be paid at face value; standard trains stay negotiable.
-          def must_buy_at_face_value?(train, entity)
-            @game.wagon?(train) || super
+          # Per rule VII.12: wagons bought from another company must be paid at face value (1824/1844 pattern).
+          def spend_minmax(entity, train)
+            return [train.price, train.price] if @game.wagon?(train) && train.owner&.corporation?
+
+            super
           end
 
           def discountable_trains_allowed?(entity)
