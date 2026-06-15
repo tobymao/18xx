@@ -29,14 +29,6 @@ module Engine
             ability.use!
           end
 
-          def process_choose(action)
-            return unless action.choice == 'Buy Mesabi Token'
-
-            ability = abilities(@game.wlg_company)
-            track_step.buy_mesabi_token(@game.wlg_company.owner)
-            ability.use!
-          end
-
           def can_use_special_track?(entity)
             @round.steps.find { |step| step.is_a?(Track) }.acted || entity == @game.river_company
           end
