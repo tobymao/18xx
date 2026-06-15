@@ -134,6 +134,7 @@ module Engine
                 distance: 2,
                 multiplier: 2,
                 price: 37,
+                num: 'unlimited',
               },
             ],
           },

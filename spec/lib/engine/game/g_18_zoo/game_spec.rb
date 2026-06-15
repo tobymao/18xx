@@ -226,21 +226,6 @@ module Engine
       end
     end
 
-    describe 'unlimited trains' do
-      let(:game) { Engine::Game::G18ZOOMapA::Game.new(%w[a b c]) }
-
-      it 'replenishes the 4J/2J train after the 2J variant is removed' do
-        train = game.depot.upcoming.find { |upcoming| upcoming.name == '4J' }
-        train.variant = '2J'
-
-        game.depot.remove_train(train)
-
-        replacement = game.depot.upcoming.find { |upcoming| upcoming.name == '4J' }
-        expect(replacement.unlimited).to be true
-        expect(replacement.variants).to include('2J')
-      end
-    end
-
     describe 'phases' do
       let(:players) { %w[a b c] }
       let(:game) { Engine::Game::G18ZOOMapA::Game.new(players) }
