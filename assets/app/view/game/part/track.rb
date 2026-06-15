@@ -93,7 +93,7 @@ module View
         needs :tile
         needs :region_use
         needs :routes
-        needs :game, default: nil
+        needs :game, store: true, default: nil
 
         def render
           @hide_tile_track = @game&.class&.const_defined?(:HIDE_TILE_TRACK) && @game.class::HIDE_TILE_TRACK
