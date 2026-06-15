@@ -27,13 +27,6 @@ module Engine
             @round.bank_bought = true if action.purchase_for == @game.union_bank
           end
 
-          def can_buy_for(entity)
-            return [] unless entity == @game.company_by_id('UB').owner
-            return [] if @round.bank_bought
-
-            [@game.union_bank]
-          end
-
           # This makes sure we don't auto pass if the player is allowed to
           # exchange a share
           def can_exchange_any?(entity)
@@ -145,7 +138,8 @@ module Engine
           def get_par_prices_with_help(entity, _corp, extra_cash: 0)
             available_cash = entity.cash + extra_cash
 
-            available_cash += @game.union_bank.cash if entity == @game.company_by_id('UB')&.owner && !@round.bank_bought
+            # UB can borrow from its owner to par corporations (Fixes #10461)
+            available_cash += @game.union_bank.cash if union_bank_owner_can_help?(entity)
 
             @game
               .stock_market
@@ -202,11 +196,7 @@ module Engine
               next true if can_buy?(entity, bundle)
 
               # Check if entity can par with UB as the purchase target
-              if entity == @game.company_by_id('UB')&.owner && !@round.bank_bought
-                can_buy?(@game.union_bank, bundle)
-              else
-                false
-              end
+              can_buy?(@game.union_bank, bundle) if union_bank_owner_can_help?(entity)
             end
           end
 
@@ -214,6 +204,10 @@ module Engine
           def activate_program_buy_shares(entity, program)
             program.from_market = true
             super
+          end
+
+          def union_bank_owner_can_help?(entity)
+            entity == @game.company_by_id('UB')&.owner && !@round.bank_bought
           end
         end
       end
