@@ -110,23 +110,17 @@ module Engine
               @round.laid_yellow_hexes << action.hex
             end
             super
-            move_oo_reservations(action) if action.tile.color == :yellow && action.tile.label.to_s == 'OO'
+            transfer_oo_pending_to_layer(action) if action.tile.color == :yellow && action.tile.label.to_s == 'OO'
             @round.next_empty_hexes = calculate_railhead_hexes unless @game.loading
           end
 
-          # When an OO tile is laid, hex.lay migrates any city-level reservations to the
-          # corresponding cities of the new tile. Lifting those to tile level serves two purposes:
-          # (1) If a token is placed in a reserved city during the same action, the city reservation
-          # would point at an occupied slot, causing the reserved corp to fail silently on float.
-          # (2) If neither OO corp has floated, their city reservations remain on the new tile's
-          # cities; without this lift, each corp auto-places in its designated city on float rather
-          # than getting an interactive choice via pending_tokens.
-          def move_oo_reservations(action)
-            tile = action.tile
-            cities = tile.cities
-            reservations = cities.flat_map(&:reservations).compact + tile.reservations
-            tile.reservations = reservations.uniq
-            cities.each(&:remove_all_reservations!)
+          def transfer_oo_pending_to_layer(action)
+            @round.pending_tokens.each do |entry|
+              next unless entry[:hexes]&.include?(action.hex)
+              next unless @game.oo_corporation?(entry[:entity])
+
+              entry[:entity] = action.entity
+            end
           end
 
           # Bypass some Step::Tracker tests for Town to City upgrade: maintain exits, and check new exits are valid

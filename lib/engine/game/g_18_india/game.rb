@@ -730,12 +730,31 @@ module Engine
           open_city_hexes + town_to_green_city_hexes
         end
 
+        def oo_corporation?(corporation)
+          %w[G8 P17].include?(corporation.coordinates)
+        end
+
         def place_home_token(corporation)
+          if oo_corporation?(corporation)
+            return if corporation.tokens.first&.used
+            return if @round.pending_tokens.any? { |p| p[:entity] == corporation }
+
+            hex = hex_by_id(corporation.coordinates)
+            @log << "#{corporation.name} must choose city for home token"
+            @round.pending_tokens << {
+              entity: corporation,
+              hexes: [hex],
+              token: corporation.find_token_by_type,
+            }
+            @round.clear_cache!
+            return
+          end
+
           return super unless corporation.name == 'GIPR'
-          # If a corp has laid it's first token assume it's their home token
+          # If a corp has laid its first token assume it's their home token
           return if corporation.tokens.first&.used
 
-          # slect which hex to place home token
+          # select which hex to place home token
           @log << "#{corporation.name} (#{corporation.owner.name}) must choose Open City or Town tile for home location"
           hexes = home_token_locations(corporation)
 
