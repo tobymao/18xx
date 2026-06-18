@@ -128,6 +128,27 @@ module View
           },
         ].freeze
 
+        # Bottom-first ordering for named tiles (e.g. white OO starting hex) where the
+        # location name occupies the upper/center area and would cover top positions.
+        NAMED_MULTI_CITY_LOCATIONS = [
+          P_BOTTOM_LEFT_CORNER[:flat],
+          # bottom right corner
+          {
+            region_weights: { BOTTOM_RIGHT_CORNER => 1.0, [21] => 0.5 },
+            x: 30,
+            y: 65,
+          },
+          # bottom center
+          {
+            region_weights: { [21] => 1.0, [20, 22] => 0.5 },
+            x: 0,
+            y: 60,
+          },
+          P_LEFT_CORNER[:flat],
+          P_RIGHT_CORNER[:flat],
+          *MULTI_CITY_LOCATIONS,
+        ].freeze
+
         POINTY_MULTI_CITY_LOCATIONS = [
           # top center
           {
@@ -183,7 +204,7 @@ module View
               [SINGLE_CITY_ONE_SLOT[layout], SINGLE_CITY_ONE_SLOT_RIGHT[layout]]
             end
           elsif @tile.city_towns.size > 1 && layout == :flat
-            MULTI_CITY_LOCATIONS
+            @tile.location_name ? NAMED_MULTI_CITY_LOCATIONS : MULTI_CITY_LOCATIONS
           elsif @tile.city_towns.size > 1
             POINTY_MULTI_CITY_LOCATIONS
           elsif layout == :flat

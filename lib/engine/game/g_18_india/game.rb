@@ -492,10 +492,8 @@ module Engine
         end
 
         def stock_round
-          # Test if home token step resolves issues of placing token when company floats
           Engine::Round::Stock.new(self, [
             G18India::Step::HomeTrack, # for GIPR Home Track / Token
-            Engine::Step::HomeToken,
             G18India::Step::SellOnceThenBuyCerts,
           ])
         end
@@ -503,7 +501,6 @@ module Engine
         def operating_round(round_num)
           Engine::Round::Operating.new(self, [
             G18India::Step::HomeTrack, # for GIPR Home Track / Token
-            Engine::Step::HomeToken,
             G18India::Step::ExchangeToken, # for GIPR Exchange Tokens
             G18India::Step::Assign, # used by P6
             G18India::Step::SpecialChoose, # Used by P4
@@ -737,16 +734,25 @@ module Engine
         def place_home_token(corporation)
           if oo_corporation?(corporation)
             return if corporation.tokens.first&.used
-            return if @round.pending_tokens.any? { |p| p[:entity] == corporation }
 
             hex = hex_by_id(corporation.coordinates)
-            @log << "#{corporation.name} must choose city for home token"
-            @round.pending_tokens << {
-              entity: corporation,
-              hexes: [hex],
-              token: corporation.find_token_by_type,
-            }
-            @round.clear_cache!
+            tile = hex.tile
+
+            if tile.paths.empty?
+              # White OO tile: place directly; update_token! handles reassignment when yellow tile is laid
+              city = tile.cities.find { |c| !c.tokened? }
+              return unless city
+
+              @log << "#{corporation.name} places a token on #{hex.name}"
+              city.place_token(corporation, corporation.find_token_by_type, free: true)
+            else
+              # Yellow OO tile already laid: player must choose city
+              return if @round.pending_tokens.any? { |p| p[:entity] == corporation }
+
+              @log << "#{corporation.name} must choose city for home token"
+              @round.pending_tokens << { entity: corporation, hexes: [hex], token: corporation.find_token_by_type }
+              @round.clear_cache!
+            end
             return
           end
 

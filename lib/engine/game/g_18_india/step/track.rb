@@ -110,17 +110,28 @@ module Engine
               @round.laid_yellow_hexes << action.hex
             end
             super
-            transfer_oo_pending_to_layer(action) if action.tile.color == :yellow && action.tile.label.to_s == 'OO'
             @round.next_empty_hexes = calculate_railhead_hexes unless @game.loading
           end
 
-          def transfer_oo_pending_to_layer(action)
-            @round.pending_tokens.each do |entry|
-              next unless entry[:hexes]&.include?(action.hex)
-              next unless @game.oo_corporation?(entry[:entity])
+          def update_token!(action, entity, tile, old_tile)
+            cities = tile.cities
+            return super if !old_tile.paths.empty? || tile.paths.empty? || cities.size <= 1
 
-              entry[:entity] = action.entity
+            tokens = cities.flat_map(&:tokens).compact
+            return super if tokens.empty?
+
+            actor = entity.company? ? entity.owner : entity
+            tokens.each do |token|
+              @round.pending_tokens << { entity: actor, hexes: [action.hex], token: token }
+              token.remove!
             end
+
+            @log << if tokens.one?
+                      "#{actor.name} must choose city for #{tokens.first.corporation.name} token"
+                    else
+                      "Place #{tokens.first.corporation.name} token; " \
+                        "#{tokens.last.corporation.name} token will be placed in the other city"
+                    end
           end
 
           # Bypass some Step::Tracker tests for Town to City upgrade: maintain exits, and check new exits are valid

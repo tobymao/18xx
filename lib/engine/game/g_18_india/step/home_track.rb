@@ -11,6 +11,20 @@ module Engine
           include Engine::Step::Tracker
           ACTIONS = %w[lay_tile place_token].freeze
 
+          def round_state
+            super.merge(pending_tokens: [])
+          end
+
+          def pending_token
+            @round.pending_tokens&.find do |entry|
+              corp = entry[:entity]
+              next true unless @game.oo_corporation?(corp)
+
+              hex = entry[:hexes]&.first
+              hex && !hex.tile.paths.empty?
+            end || {}
+          end
+
           def actions(entity)
             return [] unless entity == pending_entity
 
@@ -22,6 +36,14 @@ module Engine
           end
 
           def any_open_cities?
+            entry = pending_token
+            corp = entry[:entity]
+            token_corp = entry[:token]&.corporation
+            if @game.oo_corporation?(corp) || @game.oo_corporation?(token_corp)
+              hex = entry[:hexes]&.first
+              return hex && !hex.tile.paths.empty?
+            end
+
             !@game.open_city_hexes.empty?
           end
 
@@ -30,21 +52,27 @@ module Engine
           end
 
           def description
-            "Lay home token in open city or upgrade town for #{pending_entity.name}"
+            corp = token&.corporation
+            if corp && pending_entity != corp
+              "Place #{corp.name} token"
+            else
+              "Lay home token in open city or upgrade town for #{pending_entity.name}"
+            end
           end
 
           def process_lay_tile(action)
+            entry = pending_token
             lay_tile(action)
 
             place_token(
               action.entity,
               action.tile.cities[0],
-              token,
+              entry[:token],
               connected: false,
               extra_action: true
             )
 
-            @round.pending_tokens.shift
+            @round.pending_tokens.delete(entry)
           end
 
           def auto_actions(entity)
