@@ -451,20 +451,20 @@ module View
     def submit
       case @type
       when :signup
-        return unless check_webhook_credentials
+        return unless webhook_credentials_valid?
 
         create_user(params)
       when :login
         login(params)
       when :profile
-        return unless check_webhook_credentials
+        return unless webhook_credentials_valid?
 
         edit_user(params)
         `setTimeout(function() { location.reload() }, 1000)`
       end
     end
 
-    def check_webhook_credentials
+    def webhook_credentials_valid?
       if slack_id_invalid?
         store(:flash_opts,
               'Your Slack User ID looks incorrect. See the Learn About Notifications link.')
