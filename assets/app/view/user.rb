@@ -445,16 +445,61 @@ module View
       delete_user
     end
 
+    SLACK_MEMBER_ID = /\A[UW][A-Z0-9]{7,}\z/
+    DISCORD_USER_ID = /\A\d{17,19}\z/
+
     def submit
       case @type
       when :signup
+        return unless check_webhook_credentials
+
         create_user(params)
       when :login
         login(params)
       when :profile
+        return unless check_webhook_credentials
+
         edit_user(params)
         `setTimeout(function() { location.reload() }, 1000)`
       end
+    end
+
+    def check_webhook_credentials
+      if slack_id_invalid?
+        store(:flash_opts,
+              'Your Slack User ID looks incorrect. See the Learn About Notifications link.')
+        return false
+      elsif discord_id_invalid?
+        store(:flash_opts,
+              'Your Discord User ID looks incorrect. See the Learn About Notifications link.')
+        return false
+      end
+
+      true
+    end
+
+    def slack_id_invalid?
+      return false unless slack_webhook?
+
+      id = input_elm(:webhook_user_id).value.to_s
+      !id.empty? && id !~ SLACK_MEMBER_ID
+    end
+
+    def slack_webhook?
+      return true if @webhook.to_s == 'slack'
+      return false unless @inputs[:webhook_url]
+
+      input_elm(:webhook_url).value.to_s.include?('slack')
+    end
+
+    def discord_id_invalid?
+      return false unless @webhook.to_s == 'custom'
+
+      url = input_elm(:webhook_url)&.value.to_s
+      return false unless url.include?('discord')
+
+      id = input_elm(:webhook_user_id)&.value.to_s
+      !id.empty? && id !~ DISCORD_USER_ID
     end
 
     def render_default_game_options
