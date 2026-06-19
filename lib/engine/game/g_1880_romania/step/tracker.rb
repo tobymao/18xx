@@ -21,31 +21,22 @@ module Engine
         end
 
         def hex_neighbors(entity, hex)
-          connected_edges = super
+          connected_edges = Array(super)
           return connected_edges unless can_ignore_borders?(entity)
 
-          connected = @game.graph_for_entity(entity).connected_hexes(entity)
+          hex.tile.borders.each do |border|
+            next unless border.type == :impassable
 
-          borders = hex.tile.borders.select { |b| b.type == :impassable }
-
-          extra_edges = borders.filter_map do |border|
-            edge = border.edge
-            border = hex.tile.borders.find { |b| b.edge == edge && b.type == :impassable }
-            next unless border
-
-            neighbor = hex.all_neighbors[edge]
+            neighbor = hex.all_neighbors[border.edge]
             next unless neighbor
 
-            # The neighbor must already be connected AND must have track pointing back at us
-            inv_edge = Engine::Hex.invert(edge)
-            next unless connected[neighbor]&.include?(inv_edge)
+            inv_edge = Engine::Hex.invert(border.edge)
+            next if neighbor.paths[inv_edge].empty?
 
-            edge
+            connected_edges |= [border.edge]
           end
 
-          return connected_edges if extra_edges.empty?
-
-          Array(connected_edges) | extra_edges
+          connected_edges
         end
 
         def hex_neighbor_exists?(entity, hex, edge)
