@@ -318,10 +318,10 @@ module Engine
           route.hexes.map(&:id).join(' - ')
         end
 
-        # TODO: enforce hex count <= movement points and pickup count <= cargo holds
+        # TODO: Phase 4 — enforce hex count <= movement points and pickup count <= cargo holds
         def check_distance(route, _entity); end
 
-        # TODO: validate route starts at a base and ends at a base or transshipment point
+        # TODO: Phase 4 — validate route starts at a base and ends at a base or transshipment point
         def check_connected(route, _entity); end
 
         def explore_hex!(hex_id)
