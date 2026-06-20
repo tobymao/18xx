@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>18xx Hex Map Editor</title>
+<style>
+  :root { --bg:#1e1f22; --panel:#2b2d31; --ink:#e6e6e6; --line:#555; }
+  * { box-sizing: border-box; }
+  body { margin:0; font:14px/1.4 system-ui, sans-serif; background:var(--bg); color:var(--ink); display:flex; height:100vh; }
+  #side { width:320px; flex:0 0 320px; background:var(--panel); padding:14px; overflow:auto; border-right:1px solid var(--line); }
+  #stage { flex:1; overflow:auto; }
+  h1 { font-size:16px; margin:0 0 12px; }
+  h2 { font-size:13px; text-transform:uppercase; letter-spacing:.05em; color:#9aa; margin:18px 0 6px; }
+  label { display:block; margin:6px 0 2px; color:#bcc; }
+  input[type=number] { width:70px; background:#1b1c1f; color:var(--ink); border:1px solid var(--line); border-radius:4px; padding:4px 6px; }
+  button { background:#3a3d44; color:var(--ink); border:1px solid var(--line); border-radius:5px; padding:6px 10px; cursor:pointer; margin:3px 3px 3px 0; }
+  button:hover { background:#474b54; }
+  button.active { outline:2px solid #4ea1ff; }
+  .swatch { display:inline-block; width:14px; height:14px; border:1px solid #000; vertical-align:-2px; margin-right:6px; border-radius:3px; }
+  textarea { width:100%; height:90px; background:#1b1c1f; color:var(--ink); border:1px solid var(--line); border-radius:4px; font:12px/1.4 ui-monospace, monospace; padding:6px; }
+  .row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+  .hint { color:#889; font-size:12px; margin:6px 0; }
+  polygon.hex { cursor:pointer; stroke:#333; stroke-width:1; }
+  text.coord { font:9px ui-monospace, monospace; fill:#0008; pointer-events:none; user-select:none; }
+  pre#out { white-space:pre; }
+</style>
+</head>
+<body>
+<div id="side">
+  <h1>18xx Hex Map Editor</h1>
+  <div class="hint">Click or drag to paint. Right-click drags to erase. Flat-top double-coordinate grid (x=letter, y=number−1).</div>
+
+  <h2>Paint tool</h2>
+  <div class="row" id="palette"></div>
+
+  <h2>Grid bounds</h2>
+  <div class="row">
+    <div><label>Cols (A…)</label><input type="number" id="cols" value="14" min="1" max="52"></div>
+    <div><label>Rows (1…)</label><input type="number" id="rows" value="24" min="1" max="40"></div>
+  </div>
+  <div class="row">
+    <label><input type="checkbox" id="showCoords" checked> show coordinates</label>
+  </div>
+  <button id="regen">Rebuild grid</button>
+  <button id="clear">Clear paint</button>
+
+  <h2>Load coordinates</h2>
+  <label>white hexes</label>
+  <textarea id="loadWhite"></textarea>
+  <label>blue hexes</label>
+  <textarea id="loadBlue"></textarea>
+  <button id="load">Load into grid</button>
+  <button id="loadSeattle">Reset to 20 Seattle</button>
+
+  <h2>Export → map.rb</h2>
+  <button id="gen">Generate Ruby</button>
+  <button id="copy">Copy</button>
+  <pre id="out"></pre>
+</div>
+<div id="stage"><svg id="svg" xmlns="http://www.w3.org/2000/svg"></svg></div>
+
+<script>
+const SVG = "http://www.w3.org/2000/svg";
+const SIZE = 28;
+const W = 2 * SIZE;                 // flat-top hex width
+const H = Math.sqrt(3) * SIZE;      // flat-top hex height
+const MARGIN = SIZE + 6;
+
+// Letter <-> index, matching Engine::Hex::LETTERS (A..Z, AA..AZ)
+const LETTERS = [];
+for (let c = 65; c <= 90; c++) LETTERS.push(String.fromCharCode(c));
+for (let c = 65; c <= 90; c++) LETTERS.push("A" + String.fromCharCode(c));
+function letterToX(l) { return LETTERS.indexOf(l); }
+
+const COLORS = {
+  empty: { fill: "transparent", label: "erase / empty" },
+  white: { fill: "#fdfdf6", label: "white" },
+  blue:  { fill: "#7fd3ff", label: "blue" },
+};
+let tool = "white";
+
+// state: Map "C4" -> color key (only painted ones stored)
+const painted = new Map();
+let cells = []; // {coord, x, y, cx, cy, el}
+
+function hexPoints(cx, cy) {
+  let p = [];
+  for (let i = 0; i < 6; i++) {
+    const a = Math.PI / 180 * (60 * i); // flat-top: vertices at 0,60,...
+    p.push((cx + SIZE * Math.cos(a)).toFixed(2) + "," + (cy + SIZE * Math.sin(a)).toFixed(2));
+  }
+  return p.join(" ");
+}
+
+function buildPalette() {
+  const pal = document.getElementById("palette");
+  pal.innerHTML = "";
+  for (const key of Object.keys(COLORS)) {
+    const b = document.createElement("button");
+    b.innerHTML = '<span class="swatch" style="background:' + (COLORS[key].fill === "transparent" ? "#222" : COLORS[key].fill) + '"></span>' + COLORS[key].label;
+    b.className = key === tool ? "active" : "";
+    b.onclick = () => { tool = key; buildPalette(); };
+    pal.appendChild(b);
+  }
+}
+
+function buildGrid() {
+  const svg = document.getElementById("svg");
+  svg.innerHTML = "";
+  cells = [];
+  const cols = +document.getElementById("cols").value;
+  const rows = +document.getElementById("rows").value;
+  const showCoords = document.getElementById("showCoords").checked;
+  let maxX = 0, maxY = 0;
+
+  for (let xi = 0; xi < cols; xi++) {
+    for (let num = 1; num <= rows; num++) {
+      const y = num - 1;
+      if ((xi + y) % 2 !== 0) continue; // parity that defines the interlocking grid
+      const coord = LETTERS[xi] + num;
+      const cx = MARGIN + xi * 1.5 * SIZE;
+      const cy = MARGIN + y * (H / 2);
+      maxX = Math.max(maxX, cx); maxY = Math.max(maxY, cy);
+
+      const poly = document.createElementNS(SVG, "polygon");
+      poly.setAttribute("points", hexPoints(cx, cy));
+      poly.setAttribute("class", "hex");
+      poly.dataset.coord = coord;
+      paintEl(poly, painted.get(coord) || "empty");
+      svg.appendChild(poly);
+
+      if (showCoords) {
+        const t = document.createElementNS(SVG, "text");
+        t.setAttribute("class", "coord");
+        t.setAttribute("x", cx); t.setAttribute("y", cy + 3);
+        t.setAttribute("text-anchor", "middle");
+        t.textContent = coord;
+        svg.appendChild(t);
+      }
+      cells.push({ coord, el: poly });
+    }
+  }
+  svg.setAttribute("width", maxX + MARGIN);
+  svg.setAttribute("height", maxY + MARGIN);
+}
+
+function paintEl(el, colorKey) {
+  el.setAttribute("fill", colorKey === "empty" ? "#26282c" : COLORS[colorKey].fill);
+}
+
+function apply(coord, el) {
+  if (tool === "empty") painted.delete(coord); else painted.set(coord, tool);
+  paintEl(el, tool);
+}
+
+// drag painting
+let dragging = false, eraseDrag = false;
+document.getElementById("svg").addEventListener("mousedown", e => {
+  if (e.target.classList.contains("hex")) {
+    e.preventDefault();
+    dragging = true; eraseDrag = (e.button === 2);
+    const prevTool = tool;
+    if (eraseDrag) tool = "empty";
+    apply(e.target.dataset.coord, e.target);
+    if (eraseDrag) tool = prevTool;
+  }
+});
+document.getElementById("svg").addEventListener("mousemove", e => {
+  if (!dragging || !e.target.classList.contains("hex")) return;
+  const prevTool = tool;
+  if (eraseDrag) tool = "empty";
+  apply(e.target.dataset.coord, e.target);
+  if (eraseDrag) tool = prevTool;
+});
+window.addEventListener("mouseup", () => dragging = false);
+document.getElementById("svg").addEventListener("contextmenu", e => e.preventDefault());
+
+// sort coords by column letter then numeric row
+function sortCoords(arr) {
+  return arr.slice().sort((a, b) => {
+    const la = a.match(/[A-Z]+/)[0], lb = b.match(/[A-Z]+/)[0];
+    if (la !== lb) return letterToX(la) - letterToX(lb);
+    return parseInt(a) - parseInt(b);
+  });
+}
+
+function wrap(coords) {
+  if (!coords.length) return "";
+  const lines = [];
+  for (let i = 0; i < coords.length; i += 10) lines.push("            " + coords.slice(i, i + 10).join(" "));
+  return "          %w[\n" + lines.join("\n") + "\n] => '',";
+}
+
+function generate() {
+  const byColor = { white: [], blue: [] };
+  for (const [coord, c] of painted) if (byColor[c]) byColor[c].push(coord);
+  let out = "";
+  for (const color of ["white", "blue"]) {
+    const block = wrap(sortCoords(byColor[color]));
+    out += color + ": {\n" + (block ? block + "\n" : "") + "          },\n";
+  }
+  document.getElementById("out").textContent = out;
+  document.getElementById("loadWhite").value = sortCoords(byColor.white).join(" ");
+  document.getElementById("loadBlue").value = sortCoords(byColor.blue).join(" ");
+}
+
+function loadFromText() {
+  painted.clear();
+  for (const w of (document.getElementById("loadWhite").value.match(/[A-Z]+\d+/g) || [])) painted.set(w, "white");
+  for (const b of (document.getElementById("loadBlue").value.match(/[A-Z]+\d+/g) || [])) painted.set(b, "blue");
+  buildGrid();
+}
+
+const SEATTLE_WHITE = `C4 C8 C12 C16 C20 C22 D3 D7 D21 E4 E8 E18 F3 F5 F9 F13 F15 F17 F19 F21
+G4 G6 G10 G14 G18 G20 G22 H3 H5 H7 H9 H11 H13 H15 H17 H19 H21 I4 I6 I8
+I10 I12 I14 I16 I18 I20 I22 J3 J5 J19 J21 K4 K6 K20 K22 L3 L5 L19 L21 M4
+M6 M8 M10 M12 M14 M16 M18 M20 M22 C18 E14 E16 G8 D11 J7 J13 K8 L7 L13 C14 D13`;
+const SEATTLE_BLUE = `B13 E14 D13 C12 B11 A10`;
+
+function loadSeattle() {
+  document.getElementById("loadWhite").value = SEATTLE_WHITE.replace(/\s+/g, " ").trim();
+  document.getElementById("loadBlue").value = SEATTLE_BLUE.replace(/\s+/g, " ").trim();
+  loadFromText();
+}
+
+document.getElementById("regen").onclick = buildGrid;
+document.getElementById("clear").onclick = () => { painted.clear(); buildGrid(); };
+document.getElementById("load").onclick = loadFromText;
+document.getElementById("loadSeattle").onclick = loadSeattle;
+document.getElementById("gen").onclick = generate;
+document.getElementById("copy").onclick = () => navigator.clipboard.writeText(document.getElementById("out").textContent);
+document.getElementById("showCoords").onclick = buildGrid;
+
+buildPalette();
+loadSeattle();
+</script>
+</body>
+</html>

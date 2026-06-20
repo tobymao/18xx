@@ -89,7 +89,7 @@ class Api < Roda
   ].freeze
 
   ROUTES_WITH_GAME_TITLES = %w[
-     map market fixture
+     map map_editor market fixture
   ].freeze
 
   Dir['./routes/*'].each { |file| require file }
@@ -129,7 +129,7 @@ class Api < Roda
     end
 
     r.on ROUTES_WITH_GAME_TITLES do
-      render(titles: request.path.split('/')[2].split('+'))
+      render(titles: request.path.split('/')[2]&.split('+') || [])
     end
 
     r.on 'profile' do
