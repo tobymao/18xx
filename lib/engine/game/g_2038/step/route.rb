@@ -16,12 +16,15 @@ module Engine
 
           def process_run_routes(action)
             entity = action.entity
+            # Standard Round::Operating handoff — Engine::Step::Dividend reads these
+            # to calculate revenue and trigger ran_train company closures.
             @round.routes = action.routes
             @round.extra_revenue = action.extra_revenue
 
             action.routes.each do |route|
               route.hexes.each do |hex|
-                next if !@game.mine_state[hex.id].nil? || hex.tile.color != :blue
+                # Only unexplored blue (space) hexes need explore_hex!
+                next if @game.mine_state[hex.id] || hex.tile.color != :blue
 
                 @game.explore_hex!(hex.id)
               end
