@@ -146,13 +146,13 @@ module Engine
     describe 'stock market metadata' do
       let(:stock_market) { StockMarket.new(described_class::MARKET, []) }
 
-      it 'stores the appreciation threshold and dividend in each share price' do
+      it 'stores the appreciation threshold and dividend as price info' do
         stock_market.market.each_with_index do |row, row_index|
           row.each_with_index do |share_price, column_index|
+            threshold = described_class::STOCKMARKET_THRESHOLD[row_index][column_index]
+
             expect(share_price.info).to eq(
-              appreciation: described_class::STOCKMARKET_THRESHOLD[row_index][column_index],
-              dividend: described_class::STOCKMARKET_GAIN[row_index][column_index],
-              president: row_index.zero? ? described_class::STOCKMARKET_OWNER_GAIN[column_index] || 0 : 0
+              "#{threshold.zero? ? 'END' : threshold}, #{described_class::STOCKMARKET_GAIN[row_index][column_index]}"
             )
           end
         end

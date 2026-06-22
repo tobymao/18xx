@@ -54,16 +54,12 @@ module Engine
         ].map.with_index do |row, row_index|
           row.map.with_index do |code, column_index|
             match = code.match(/(\d*)([a-zA-Z]*)/)
-            president = row_index.zero? ? STOCKMARKET_OWNER_GAIN[column_index] || 0 : 0
+            threshold = STOCKMARKET_THRESHOLD[row_index][column_index]
 
             {
               price: match[1].to_i,
               types: match[2].chars.map { |char| Engine::SharePrice::TYPE_MAP[char] },
-              info: {
-                appreciation: STOCKMARKET_THRESHOLD[row_index][column_index],
-                dividend: STOCKMARKET_GAIN[row_index][column_index],
-                president: president,
-              },
+              info: "#{threshold.zero? ? 'END' : threshold}, #{STOCKMARKET_GAIN[row_index][column_index]}",
             }
           end
         end.freeze
