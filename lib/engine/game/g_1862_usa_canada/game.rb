@@ -83,6 +83,9 @@ module Engine
         SLC_ROUTE_BONUS_SOC            = 15
         GOLDEN_SPIKE_SHAREHOLDER_BONUS = 50 # FIXME: amount unconfirmed from rulebook
 
+        CLOSE_ON_FLOATED         = { 'CPR' => 'SOC', 'UP' => 'SOC', 'NYH' => 'NHSC' }.freeze
+        CLOSE_ON_FIRST_DIVIDEND  = { 'WP' => 'PSC', 'NYC' => 'FNY' }.freeze
+
         CURRENCY_FORMAT_STR = '$%s'
 
         BANK_CASH = 12_000
@@ -297,21 +300,17 @@ module Engine
         end
 
         def on_corporation_floated!(corporation)
-          case corporation.id
-          when 'CPR', 'UP'
-            close_private_if_open!('SOC', "#{corporation.name} floats")
-          when 'NYH'
-            close_private_if_open!('NHSC', "#{corporation.name} floats")
-          end
+          sym = CLOSE_ON_FLOATED[corporation.id]
+          return unless sym
+
+          close_private_if_open!(sym, "#{corporation.name} floats")
         end
 
         def on_first_payout!(corporation)
-          case corporation.id
-          when 'WP'
-            close_private_if_open!('PSC', "#{corporation.name} pays first dividend")
-          when 'NYC'
-            close_private_if_open!('FNY', "#{corporation.name} pays first dividend")
-          end
+          sym = CLOSE_ON_FIRST_DIVIDEND[corporation.id]
+          return unless sym
+
+          close_private_if_open!(sym, "#{corporation.name} pays first dividend")
         end
 
         def close_private_if_open!(sym, reason)
