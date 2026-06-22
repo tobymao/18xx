@@ -445,8 +445,14 @@ module View
       delete_user
     end
 
-    SLACK_MEMBER_ID = /\A[UW][A-Z0-9]{7,}\z/
-    DISCORD_USER_ID = /\A\d{17,19}\z/
+    WEBHOOK_CHECKS = {
+      # Slack member IDs start with U (or W), never a username.
+      # https://docs.slack.dev/messaging/formatting-message-text/
+      slack: { match: 'slack', id_regexp: /\A[UW][A-Z0-9]{7,}\z/ },
+      # Discord IDs are numeric, currently 17-19 digits.
+      # https://discord.com/developers/docs/reference#snowflakes
+      discord: { match: 'discord', id_regexp: /\A\d{17,19}\z/ },
+    }.freeze
 
     def submit
       case @type
@@ -462,44 +468,6 @@ module View
         edit_user(params)
         `setTimeout(function() { location.reload() }, 1000)`
       end
-    end
-
-    def webhook_credentials_valid?
-      if slack_id_invalid?
-        store(:flash_opts,
-              'Your Slack User ID looks incorrect. See the Learn About Notifications link.')
-        return false
-      elsif discord_id_invalid?
-        store(:flash_opts,
-              'Your Discord User ID looks incorrect. See the Learn About Notifications link.')
-        return false
-      end
-
-      true
-    end
-
-    def slack_id_invalid?
-      return false unless slack_webhook?
-
-      id = input_elm(:webhook_user_id).value.to_s
-      !id.empty? && id !~ SLACK_MEMBER_ID
-    end
-
-    def slack_webhook?
-      return true if @webhook.to_s == 'slack'
-      return false unless @inputs[:webhook_url]
-
-      input_elm(:webhook_url).value.to_s.include?('slack')
-    end
-
-    def discord_id_invalid?
-      return false unless @webhook.to_s == 'custom'
-
-      url = input_elm(:webhook_url)&.value.to_s
-      return false unless url.include?('discord')
-
-      id = input_elm(:webhook_user_id)&.value.to_s
-      !id.empty? && id !~ DISCORD_USER_ID
     end
 
     def render_default_game_options
@@ -568,6 +536,36 @@ module View
 
     def password_change_attempted?(p)
       (p[:new_password] || p['new_password']).to_s.strip != ''
+    end
+
+    private
+
+    def webhook_credentials_valid?
+      WEBHOOK_CHECKS.each do |service, check|
+        next if webhook_id_valid?(service, check)
+
+        store(:flash_opts, "Your #{service.to_s.capitalize} User ID looks incorrect. See the Learn About Notifications link.")
+        return false
+      end
+
+      true
+    end
+
+    def webhook_id_valid?(service, check)
+      return true unless webhook?(service, check[:match])
+
+      id = input_elm(:webhook_user_id).value.to_s
+      id.empty? || id.match?(check[:id_regexp])
+    end
+
+    def webhook?(service, match)
+      @webhook.to_s == service.to_s || custom_webhook_url.include?(match)
+    end
+
+    def custom_webhook_url
+      return '' if @webhook.to_s != 'custom' || !@inputs[:webhook_url]
+
+      input_elm(:webhook_url).value.to_s
     end
   end
 end
