@@ -154,7 +154,7 @@ module Engine
 
           super
 
-          return unless corporation.name == 'ACL'
+          return unless corporation.id == 'ACL'
 
           corporation.tokens.first.status = nil
           @log << "#{corporation.name}'s home token (J12) is flipped right-side up"
