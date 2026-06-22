@@ -59,7 +59,7 @@ module Engine
             {
               price: match[1].to_i,
               types: match[2].chars.map { |char| Engine::SharePrice::TYPE_MAP[char] },
-              info: "#{threshold.zero? ? 'END' : threshold}, #{STOCKMARKET_GAIN[row_index][column_index]}",
+              info: [threshold.zero? ? 'END' : threshold, STOCKMARKET_GAIN[row_index][column_index]],
             }
           end
         end.freeze

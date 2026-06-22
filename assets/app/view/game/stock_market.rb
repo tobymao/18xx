@@ -46,6 +46,8 @@ module View
 
       # 2D markets
       HEIGHT_TOTAL = 50
+      WIDTH_TOTAL_2D_INFO = 65
+      HEIGHT_TOTAL_2D_INFO = 65
       TOKEN_PAD = 3                               # left/right padding of tokens within box
       BOX_WIDTH = WIDTH_TOTAL - (2 * BORDER)
       LEFT_MARGIN = TOKEN_PAD                     # left edge of leftmost token
@@ -413,11 +415,11 @@ module View
 
               # first cell on left, not on bottom row, has price in cell below
               if first_price && !next_row.empty? && next_row[col_i]
-                align = { left: 0, bottom: 0 }
+                align = { left: '-5px', bottom: 0 }
                 arrow = '⭣'
               # last cell on right, not top row
               elsif !row_i.zero? && @game.stock_market.right_ledge?([row_i, col_i])
-                align = { right: 0, top: 0 }
+                align = { right: '-5px', top: 0 }
                 arrow = '⭡'
               else
                 align = {}
@@ -425,12 +427,23 @@ module View
               end
 
               first_price = false
+              price_info = price.info
+              price_info_left_style = @price_info_left_style_2d.merge(
+                left: if arrow.empty?
+                        "#{PAD}px"
+                      elsif arrow == '⭡'
+                        "#{PAD}px"
+                      else
+                        '16px'
+                      end
+              )
 
               cell_elements = [
                 h('div.xsmall_font', price.price),
                 h(:div, tokens),
                 h(:div, { style: { color: '#00000060', position: 'absolute', 'font-size': '170%' }.merge(align) }, arrow),
-                price.info ? h(:div, { style: PRICE_STYLE_INFO }, price.info) : nil,
+                price_info ? h('div.xsmall_font', { style: price_info_left_style }, price_info[0]) : nil,
+                price_info ? h('div.xsmall_font', { style: @price_info_right_style_2d }, price_info[1]) : nil,
               ].compact
 
               h(:div, { style: cell_style(@box_style_2d, price.types) }, cell_elements)
@@ -448,16 +461,30 @@ module View
       end
 
       def render
+        has_price_info = @game.stock_market.market.any? { |row| row.any? { |price| price&.info } }
+        width_total_2d = has_price_info ? WIDTH_TOTAL_2D_INFO : WIDTH_TOTAL
+        height_total_2d = has_price_info ? HEIGHT_TOTAL_2D_INFO : HEIGHT_TOTAL
+
         # For locations in the grid with no cells
         @space_style_2d = {
           position: 'relative',
           display: 'inline-block',
           padding: "#{PAD}px",
-          width: "#{WIDTH_TOTAL - (2 * PAD) - (2 * BORDER)}px",
-          height: "#{HEIGHT_TOTAL - (2 * PAD) - (2 * BORDER)}px",
+          width: "#{width_total_2d - (2 * PAD) - (2 * BORDER)}px",
+          height: "#{height_total_2d - (2 * PAD) - (2 * BORDER)}px",
           border: "solid #{BORDER}px rgba(0,0,0,0)",
           margin: '0',
           verticalAlign: 'top',
+        }
+        @price_info_left_style_2d = {
+          position: 'absolute',
+          bottom: "#{PAD}px",
+        }
+        @price_info_right_style_2d = {
+          position: 'absolute',
+          right: "#{PAD}px",
+          bottom: "#{PAD}px",
+          textAlign: 'right',
         }
 
         # For cells with prices

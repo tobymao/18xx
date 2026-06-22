@@ -152,7 +152,7 @@ module Engine
             threshold = described_class::STOCKMARKET_THRESHOLD[row_index][column_index]
 
             expect(share_price.info).to eq(
-              "#{threshold.zero? ? 'END' : threshold}, #{described_class::STOCKMARKET_GAIN[row_index][column_index]}"
+              [threshold.zero? ? 'END' : threshold, described_class::STOCKMARKET_GAIN[row_index][column_index]]
             )
           end
         end
