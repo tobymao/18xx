@@ -42,17 +42,24 @@ module Engine
           },
           {
             name: 'Bahnhoflizenz',
-            sym: 'GHU',
+            sym: 'BHL',
             value: 75,
             revenue: 15,
-            desc: "The owning corporation's director may place a station token for $80 " \
-                  'less than the normal cost (minimum $0).',
+            desc: 'The owning player\'s corporation may place a station token in any city '\
+                  'reachable from one of its existing tokens (no train-length limit), even '\
+                  'if no token space is available. Normal token cost applies. One-time use.',
             abilities: [
               {
                 type: 'token',
-                hexes: [],
-                discount: 80,
                 owner_type: 'player',
+                when: 'owning_player_token',
+                cheater: true,
+                connected: true,
+                from_owner: true,
+                price: 0,
+                count: 1,
+                closed_when_used_up: true,
+                hexes: [],
               },
             ],
             color: nil,

@@ -78,17 +78,23 @@ module Engine
       end
     end
 
-    describe 'GHU token discount' do
-      let(:ghu) { game.companies.find { |c| c.sym == 'GHU' } }
+    describe 'BHL (Bahnhoflizenz) token placement' do
+      let(:bhl) { game.companies.find { |c| c.sym == 'BHL' } }
 
-      it 'GHU ability has player owner_type' do
-        ability = ghu.abilities.find { |a| a.type == :token }
+      it 'BHL ability has player owner_type' do
+        ability = bhl.abilities.find { |a| a.type == :token }
         expect(ability.owner_type).to eq(:player)
       end
 
-      it 'GHU discount is $80' do
-        ability = ghu.abilities.find { |a| a.type == :token }
-        expect(ability.discount).to eq(80)
+      it 'BHL ability uses cheater slot' do
+        ability = bhl.abilities.find { |a| a.type == :token }
+        expect(ability.cheater).to be true
+      end
+
+      it 'BHL ability is one-time use' do
+        ability = bhl.abilities.find { |a| a.type == :token }
+        expect(ability.count).to eq(1)
+        expect(ability.closed_when_used_up).to be true
       end
     end
 
