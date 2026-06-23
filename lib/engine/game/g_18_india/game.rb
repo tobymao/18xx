@@ -732,44 +732,45 @@ module Engine
         end
 
         def place_home_token(corporation)
-          if oo_corporation?(corporation)
-            return if corporation.tokens.first&.used
-
-            hex = hex_by_id(corporation.coordinates)
-            tile = hex.tile
-
-            if tile.paths.empty?
-              # White OO tile: place directly; update_token! handles reassignment when yellow tile is laid
-              city = tile.cities.find { |c| !c.tokened? }
-              return unless city
-
-              @log << "#{corporation.name} places a token on #{hex.name}"
-              city.place_token(corporation, corporation.find_token_by_type, free: true)
-            else
-              # Yellow OO tile already laid: player must choose city
-              return if @round.pending_tokens.any? { |p| p[:entity] == corporation }
-
-              @log << "#{corporation.name} must choose city for home token"
-              @round.pending_tokens << { entity: corporation, hexes: [hex], token: corporation.find_token_by_type }
-              @round.clear_cache!
-            end
-            return
-          end
-
-          return super unless corporation.name == 'GIPR'
-          # If a corp has laid its first token assume it's their home token
           return if corporation.tokens.first&.used
 
-          # select which hex to place home token
-          @log << "#{corporation.name} (#{corporation.owner.name}) must choose Open City or Town tile for home location"
-          hexes = home_token_locations(corporation)
+          if oo_corporation?(corporation)
+            place_oo_home_token(corporation)
+          elsif corporation.name == 'GIPR'
+            place_gipr_home_token(corporation)
+          else
+            super
+          end
+        end
 
+        def place_oo_home_token(corporation)
+          hex = hex_by_id(corporation.coordinates)
+          tile = hex.tile
+
+          if tile.paths.empty?
+            # White OO tile: place directly; update_token! handles reassignment when yellow tile is laid
+            city = tile.cities.find { |c| !c.tokened? }
+            raise GameError, "#{corporation.name} has no open city slot at #{hex.name}" unless city
+
+            @log << "#{corporation.name} places a token on #{hex.name}"
+            city.place_token(corporation, corporation.find_token_by_type, free: true)
+          else
+            # Yellow OO tile already laid: player must choose city
+            return if @round.pending_tokens.any? { |p| p[:entity] == corporation }
+
+            @log << "#{corporation.name} must choose city for home token"
+            @round.pending_tokens << { entity: corporation, hexes: [hex], token: corporation.find_token_by_type }
+            @round.clear_cache!
+          end
+        end
+
+        def place_gipr_home_token(corporation)
+          @log << "#{corporation.name} (#{corporation.owner.name}) must choose Open City or Town tile for home location"
           @round.pending_tokens << {
             entity: corporation,
-            hexes: hexes,
+            hexes: home_token_locations(corporation),
             token: corporation.find_token_by_type,
           }
-
           @round.clear_cache!
         end
 

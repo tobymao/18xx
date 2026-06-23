@@ -20,8 +20,7 @@ module Engine
               corp = entry[:entity]
               next true unless @game.oo_corporation?(corp)
 
-              hex = entry[:hexes]&.first
-              hex && !hex.tile.paths.empty?
+              oo_on_yellow_tile?(entry)
             end || {}
           end
 
@@ -39,12 +38,14 @@ module Engine
             entry = pending_token
             corp = entry[:entity]
             token_corp = entry[:token]&.corporation
-            if @game.oo_corporation?(corp) || @game.oo_corporation?(token_corp)
-              hex = entry[:hexes]&.first
-              return hex && !hex.tile.paths.empty?
-            end
+            return oo_on_yellow_tile?(entry) if @game.oo_corporation?(corp) || @game.oo_corporation?(token_corp)
 
             !@game.open_city_hexes.empty?
+          end
+
+          def oo_on_yellow_tile?(entry)
+            hex = entry[:hexes]&.first
+            hex && !hex.tile.paths.empty?
           end
 
           def any_town_hex?
