@@ -426,14 +426,13 @@ module View
 
               first_price = false
 
-              cell_elements = [
-                h('div.xsmall_font', price.price),
-                h(:div, tokens),
-                h(:div, { style: { color: '#00000060', position: 'absolute', 'font-size': '170%' }.merge(align) }, arrow),
-                price.info ? h(:div, { style: PRICE_STYLE_INFO }, price.info) : nil,
-              ].compact
-
-              h(:div, { style: cell_style(@box_style_2d, price.types) }, cell_elements)
+              h(:div, { style: cell_style(@box_style_2d, price.types) },
+                [
+                  h('div.xsmall_font', price.price),
+                  h(:div, tokens),
+                  h(:div, { style: { color: '#00000060', position: 'absolute', 'font-size': '170%' }.merge(align) }, arrow),
+                  price.info ? h(:div, { style: PRICE_STYLE_INFO }, price.info) : nil,
+                ].compact)
             else
               h(:div, { style: @space_style_2d }, '')
             end
