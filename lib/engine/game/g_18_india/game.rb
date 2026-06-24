@@ -766,8 +766,35 @@ module Engine
           super
         end
 
+        # When a non-cheater token is placed in one Nepal city, move TR's tile-level
+        # reservation to a city-level reservation on the other Nepal city.  This protects
+        # TR's slot so that even a subsequent cheater token cannot consume it (the cheater
+        # machinery expands the city into a new slot instead of taking the reserved one).
+        def protect_tr_home_reservation(city, cheater: false)
+          return if cheater
+
+          tile = city.tile
+          return unless tr
+          return unless tile.reservations.include?(tr)
+
+          other_city = tile.cities.find { |c| c != city }
+          return unless other_city
+          return if other_city.reserved_by?(tr)
+
+          tile.reservations.delete(tr)
+          other_city.add_reservation!(tr, 0)
+          hex = other_city.tile.hex
+          hex_desc = hex.location_name ? "#{hex.location_name} (#{hex.id})" : hex.id
+          @log << "#{tr.name} home token slot reserved at #{hex_desc}"
+          @round.clear_cache!
+        end
+
         def gipr
           @gipr ||= @corporations.find { |corp| corp.name == 'GIPR' }
+        end
+
+        def tr
+          @tr ||= @corporations.find { |corp| corp.name == 'TR' }
         end
 
         def gipr_may_operate?
