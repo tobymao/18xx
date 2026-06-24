@@ -12,7 +12,7 @@ hotseat01 & hotseat02 were removed due to illegal tile lays
  * p1 is used
  hotseat05
  * for testing of token powers
- POSC_fix
+ POSC_port_token_assign
  * 3p game
  * POSC port token placed on Jacksonville (B23) via assign_hexes
  * verifies port token hex assignment works correctly
