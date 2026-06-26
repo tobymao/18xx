@@ -8,7 +8,6 @@ require_relative 'map'
 require_relative '../base'
 require_relative 'step/buy_sell_par_shares'
 require_relative 'step/dividend'
-require_relative 'step/token'
 
 module Engine
   module Game
@@ -389,7 +388,7 @@ module Engine
             Engine::Step::SpecialTrack,
             Engine::Step::HomeToken,
             Engine::Step::Track,
-            G1862UsaCanada::Step::Token,
+            Engine::Step::Token,
             Engine::Step::Route,
             G1862UsaCanada::Step::Dividend,
             Engine::Step::DiscardTrain,
