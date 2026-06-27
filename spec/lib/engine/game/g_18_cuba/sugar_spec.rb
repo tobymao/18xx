@@ -55,7 +55,7 @@ module Engine
           let(:wagon_train) { give_train(minor, '4') } # regular broad train, distance 4
           let(:wagon) { depot_train('1w') }
 
-          it 'zeroes a harbor only when a loaded wagon train uses the +1 extension' do
+          it 'zeroes the +1-extended harbor for any attached wagon, regardless of cubes' do
             wt = wagon_train
             # @round after Game.new is an Auction round without wagon_for_train; inject a minimal stand-in.
             game.instance_variable_set(:@round, double(wagon_for_train: { wt.id => wagon }))
@@ -68,16 +68,15 @@ module Engine
             extended = [harbor] + Array.new(4) { double(visit_cost: 1) } # sum 5 > distance 4
             in_range = [harbor] + Array.new(3) { double(visit_cost: 1) } # sum 4 == distance 4
 
-            # delivering + extended route -> harbor revenue is returned (so it nets 0)
+            # +1 extension, empty wagon -> extended harbor revenue is returned (so it nets 0)
+            expect(game.send(:extended_harbor_revenue, route, extended)).to eq(10)
+
+            # loading a cube does not change it -> no exploit, no deadlock
             game.attach_cube_to_train(wt, minor)
             expect(game.send(:extended_harbor_revenue, route, extended)).to eq(10)
 
-            # delivering but within range (no extension) -> harbor counts full
+            # within the train's distance (no extension) -> harbor counts full
             expect(game.send(:extended_harbor_revenue, route, in_range)).to eq(0)
-
-            # extended route but empty wagon -> nothing zeroed (rule: zero only when delivering)
-            game.unload_cubes(wt)
-            expect(game.send(:extended_harbor_revenue, route, extended)).to eq(0)
           end
         end
       end

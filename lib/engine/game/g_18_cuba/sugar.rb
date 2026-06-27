@@ -16,7 +16,7 @@ module Engine
 
         def sugar_setup
           @sugar_cubes = {}
-          reset_cubes_on_train!
+          reset_cubes_on_train
         end
 
         def sugar_cane_open_for_majors?
@@ -120,17 +120,16 @@ module Engine
 
         private
 
-        def reset_cubes_on_train!
+        def reset_cubes_on_train
           @cubes_on_train = {}
         end
 
         def extended_harbor_revenue(route, stops)
           return 0 unless @round.wagon_for_train.key?(route.train.id)
-          return 0 unless train_with_cubes?(route.train)
           return 0 unless route.train.distance.is_a?(Numeric)
           return 0 unless stops.sum(&:visit_cost) > route.train.distance
 
-          # The wagon-extended harbor scores zero only when delivering (rule VII.10).
+          # The wagon-extended harbor scores zero (rule VII.10); with two harbors zero the cheaper.
           # TODO: .min nulls the wrong harbor once harbor values differ (Isla de Tesoros 20/40);
           # today all harbors are 10, so .min is correct. Belongs in the Isla follow-up PR.
           stops.select { |s| harbor?(s) }.map { |s| s.route_revenue(route.phase, route.train) }.min || 0

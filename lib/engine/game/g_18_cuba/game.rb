@@ -331,7 +331,6 @@ module Engine
           # A wagon may extend a route by exactly one extra stop, only to a harbor (rule VII.10).
           train ||= route.train
           return super unless @round.wagon_for_train.key?(train.id)
-          return super unless train_with_cubes?(train)
           return super unless train.distance.is_a?(Numeric)
 
           total = visits.sum(&:visit_cost)
@@ -343,7 +342,7 @@ module Engine
 
         def or_round_finished
           # For the moment reset sugar cubes, handling for FC to be implemented later
-          reset_cubes_on_train!
+          reset_cubes_on_train
           return if @sugar_cubes.values.none?(&:positive?)
 
           @sugar_cubes.each { |corp, cubes| update_sugar_cube_icons(corp, 0) if cubes.positive? }
