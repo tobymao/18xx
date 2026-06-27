@@ -6,6 +6,7 @@ require_relative 'meta'
 require_relative '../base'
 require_relative '../double_sided_tiles'
 require_relative 'trains'
+require_relative 'sugar'
 
 module Engine
   module Game
@@ -15,12 +16,9 @@ module Engine
         include Entities
         include Map
         include Trains
+        include Sugar
 
         include DoubleSidedTiles
-
-        def sugar_cane_open_for_majors?
-          @sugar_cane_open_for_majors
-        end
 
         TRACK_RESTRICTION = :permissive
         CURRENCY_FORMAT_STR = '$%s'
@@ -153,6 +151,14 @@ module Engine
         end
 
         def check_other(route)
+          # A cube-carrying wagon train must run to a harbor, and only load mills on its route (rule VII.10).
+          if train_with_cubes?(route.train)
+            raise GameError, 'A wagon carrying sugar cubes must run to a harbor' if route.visited_stops.none? { |s| harbor?(s) }
+
+            mills = mill_corps_on_route(route)
+            raise GameError, 'Sugar mill is not on the route' unless cubes_on_train(route.train).all? { |c| mills.include?(c) }
+          end
+
           # Regular trains cannot cross to the opposite gauge.
           return if wagon?(route.train)
 
@@ -194,7 +200,7 @@ module Engine
           @tile_groups = init_tile_groups
           initialize_tile_opposites!
           @unused_tiles = []
-          @sugar_cubes = {}
+          sugar_setup
           @minor_graph = Graph.new(self, skip_track: :broad)
         end
 
@@ -305,51 +311,54 @@ module Engine
           super
         end
 
+        def revenue_for(route, stops)
+          revenue = super
+          revenue -= extended_harbor_revenue(route, stops)
+          revenue + wagon_cube_bonus(route)
+        end
+
+        def revenue_str(route)
+          bonus = wagon_cube_bonus(route)
+          return super if bonus.zero?
+
+          # Append the wagon's sugar-cube delivery value, which is not part of the base route revenue.
+          "#{super} + #{format_currency(bonus)} (wagon)"
+        end
+
         def check_distance(route, visits, train = nil)
-          # TODO: wagon_for_train is always empty until the follow-up PR populates it.
-          # The guards below never fire yet; they ship here so the validation logic
-          # is co-located with the route.rb stub.
+          # Record the live route per train so the Route step can offer cube loading (like 18Uruguay).
+          @round.current_routes[route.train.id] = route
+          # A wagon may extend a route by exactly one extra stop, only to a harbor (rule VII.10).
           train ||= route.train
-          return super unless @round&.wagon_for_train&.key?(train)
+          return super unless @round.wagon_for_train.key?(train.id)
+          return super unless train_with_cubes?(train)
           return super unless train.distance.is_a?(Numeric)
 
           total = visits.sum(&:visit_cost)
           return super if total <= train.distance
 
-          raise RouteTooLong, 'Wagon harbor extension requires a harbor at the route end' unless visits.any?(&:offboard?)
+          raise RouteTooLong, 'Wagon harbor extension requires a harbor at the route end' unless visits.any? { |s| harbor?(s) }
           raise RouteTooLong, 'Wagon may only extend a route by one harbor stop' if total > train.distance + 1
-        end
-
-        def sugar_production(corporation, total_revenue)
-          return if total_revenue.zero? || corporation.type != :minor
-
-          sugar_cubes = case total_revenue
-                        when 0..29 then 0
-                        when 30..79 then 1
-                        when 80..150 then 2
-                        else 3
-                        end
-
-          @sugar_cubes[corporation] = sugar_cubes
-          @log << "#{corporation.name} produces #{sugar_cubes} sugar cube(s) "\
-                  "from #{format_currency(total_revenue)} revenue."
         end
 
         def or_round_finished
           # For the moment reset sugar cubes, handling for FC to be implemented later
+          reset_cubes_on_train!
           return if @sugar_cubes.values.none?(&:positive?)
 
+          @sugar_cubes.each { |corp, cubes| update_sugar_cube_icons(corp, 0) if cubes.positive? }
           @sugar_cubes.clear
           @log << 'All remaining sugar cubes are removed at the end of the Operating Round.'
         end
 
         def check_route_combination(routes)
-          # TODO: wagon_for_train is always empty until the follow-up PR populates it.
+          # Each delivering wagon train must deliver to a different harbor (rule VII.10).
+          # Filter on delivering, not merely attached: empty wagons don't compete for a harbor delivery.
           super
-          wagon_routes = routes.select { |r| @round.wagon_for_train[r.train] }
-          return if wagon_routes.size <= 1
+          delivering_routes = routes.select { |r| train_with_cubes?(r.train) }
+          return if delivering_routes.size <= 1
 
-          harbors = wagon_routes.map { |r| r.visited_stops.find(&:offboard?)&.hex }.compact
+          harbors = delivering_routes.map { |r| r.visited_stops.find { |s| harbor?(s) }&.hex }.compact
           raise GameError, 'Each wagon train must run to a different harbor' if harbors.uniq.size != harbors.size
         end
 
@@ -366,10 +375,6 @@ module Engine
           return true if sugar_cane_tile?(from) && sugar_cane_open_for_majors? && to.city_towns.empty?
 
           super
-        end
-
-        def sugar_cane_hex?(hex)
-          SUGAR_CANE_HEXES.include?(hex.id)
         end
 
         def upgrade_cost(tile, hex, entity, spender)
@@ -395,10 +400,6 @@ module Engine
           # Order by share price, then market position, then name.
           sp = corp.share_price
           [sp&.price || 0, sp&.corporations&.index(corp) || 0, corp.name]
-        end
-
-        def sugar_cane_tile?(tile)
-          tile.towns.any?(&:hidden?)
         end
 
         def tile_has_only_track_type?(tile, track_type)
