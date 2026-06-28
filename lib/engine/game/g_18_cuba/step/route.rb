@@ -112,26 +112,30 @@ module Engine
           # "Load sugar from <mill>" per on-route mill while spare capacity remains.
           def cube_choices(entity)
             result = {}
-            entity.trains.each do |train|
-              next unless @round.wagon_for_train.key?(train.id)
 
+            wagon_trains_at_harbor = entity.trains.select do |train|
+              @round.wagon_for_train.key?(train.id) &&
+                @round.current_routes[train.id]&.visited_stops&.any? { |s| @game.harbor?(s) }
+            end
+
+            wagon_trains_at_harbor.select { |train| @game.train_with_cubes?(train) }.each do |train|
+              result[{ 'type' => 'unload', 'train' => train.id }] = "Unload sugar from #{train.name}"
+            end
+
+            trains_with_spare = wagon_trains_at_harbor.select do |train|
+              @game.cubes_on_train(train).size < @game.wagon_capacity(train)
+            end
+
+            trains_with_spare.each do |train|
               route = @round.current_routes[train.id]
-              next unless route&.visited_stops&.any? { |s| @game.harbor?(s) }
-
-              if @game.train_with_cubes?(train)
-                result[{ 'type' => 'unload', 'train' => train.id }] = "Unload sugar from #{train.name}"
-              end
-
-              spare = @game.wagon_capacity(train) - @game.cubes_on_train(train).size
-              next unless spare.positive?
-
               @game.mill_corps_on_route(route).each do |corp|
                 next unless @game.unclaimed_cubes(corp).positive?
 
-                key = { 'type' => 'load', 'train' => train.id, 'corp' => corp.id }
-                result[key] = "Load sugar from #{corp.name} onto #{train.name}"
+                result[{ 'type' => 'load', 'train' => train.id, 'corp' => corp.id }] =
+                  "Load sugar from #{corp.name} onto #{train.name}"
               end
             end
+
             result
           end
         end
