@@ -103,13 +103,25 @@ class Game < Base
       kwargs[:mode] = mode && !mode.empty? && %w[live async].include?(mode) ? mode : nil
       kwargs[:status] = %w[new active]
       kwargs[:limit] = 1000
-      fetch(user ? LOGGED_IN_QUERY : LOGGED_OUT_QUERY, **kwargs).all.map(&:to_h)
+      to_h_safe(fetch(user ? LOGGED_IN_QUERY : LOGGED_OUT_QUERY, **kwargs).all)
     end
   end
 
   def self.profile_games(user)
     Bus.cache("profile_games:#{user.id}", ttl: 60) do
-      fetch(USER_QUERY, { user_id: user.id, status: %w[new active archived finished], limit: 100 }).all.map(&:to_h)
+      games = fetch(USER_QUERY, { user_id: user.id, status: %w[new active archived finished], limit: 100 })
+              .all
+              .reject { |g| g.status == 'new' && g.settings['unlisted'] }
+      to_h_safe(games)
+    end
+  end
+
+  def self.to_h_safe(games)
+    games.filter_map do |game|
+      game.to_h
+    rescue StandardError => e
+      warn "Skipping unloadable game #{game.id}: #{e}"
+      nil
     end
   end
 

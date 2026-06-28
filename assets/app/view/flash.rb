@@ -14,6 +14,11 @@ module View
       @flash_opts = { message: @flash_opts } if @flash_opts.is_a?(String)
       return h(:div) unless @flash_opts&.any?
 
+      # flash_opts may be set client-side (symbol keys) or seeded by the server
+      # through needs (string keys), so read both forms.
+      message = @flash_opts[:message] || @flash_opts['message']
+      color = @flash_opts[:color] || @flash_opts['color']
+
       `setTimeout(function() { self['$store']('flash_opts', Opal.hash()) }, 3000)`
 
       props = {
@@ -27,13 +32,13 @@ module View
           width: '100%',
           zIndex: '10000',
           textAlign: 'center',
-          backgroundColor: @flash_opts[:color] || 'salmon',
+          backgroundColor: color || 'salmon',
           color: 'black',
         },
         on: { click: -> { store(:flash_opts, {}) } },
       }
 
-      h(:div, props, @flash_opts[:message])
+      h(:div, props, message)
     end
   end
 end

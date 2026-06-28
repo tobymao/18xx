@@ -11,6 +11,7 @@ require 'lib/params'
 require 'lib/settings'
 require 'lib/storage'
 require 'view/about'
+require 'view/admin'
 require 'view/create_game'
 require 'view/game_card_page'
 require 'view/home'
@@ -82,6 +83,8 @@ class App < Snabberb::Component
         h(View::User, profile: @profile, type: :profile, user: @user)
       when /about/
         h(View::About)
+      when /admin/
+        h(View::Admin)
       when /tiles/
         h(View::TilesPage, route: @app_route, connection: @connection)
       when /map/

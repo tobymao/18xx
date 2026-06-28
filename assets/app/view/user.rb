@@ -111,7 +111,8 @@ module View
           render_button('Reset to Defaults') { reset_settings },
           render_button('Logout', { style: { display: 'block', margin: '1rem 0' } }) { logout },
           render_button('Delete Account and All Data', { style: { margin: '0 0.5rem 0 0' } }) { delete },
-          render_input('Type DELETE to confirm', id: :confirm, type: :confirm, input_style: { width: '5rem' }),
+          render_input('Type your password to confirm', id: :confirm, type: :password,
+                       input_style: { width: '12rem' }, attrs: { autocomplete: 'current-password' }),
         ]),
       ]
 
@@ -169,6 +170,7 @@ module View
         render_input('Password', id: :password, type: :password, attrs: { autocomplete: 'current-password' }),
         h(:div, { style: { marginBottom: '1rem' } }, [render_button('Login') { submit }]),
         h(:a, { attrs: { href: '/forgot' } }, 'Forgot Password'),
+        h(:div, { style: { marginTop: '1rem' } }, [render_button('Resend verification email') { resend_verification(params) }]),
       ]
 
       [render_form(title, inputs)]
@@ -440,9 +442,10 @@ module View
     end
 
     def delete
-      return store(:flash_opts, 'Confirmation not correct') if input_elm(:confirm).value != 'DELETE'
+      password = input_elm(:confirm).value
+      return store(:flash_opts, 'Password required') if password.empty?
 
-      delete_user
+      delete_user(password)
     end
 
     def submit

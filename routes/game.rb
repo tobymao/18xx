@@ -64,6 +64,10 @@ class Api
           # POST '/api/game/<game_id>/action'
           r.is 'action' do
             halt(400, 'Archived games cannot be changed.') if game.status == 'archived'
+            # An unstarted game can only be started by its owner via /start. Without
+            # this, any joined player could start it (and flip status to 'active')
+            # just by posting an action such as a chat message.
+            halt(400, 'Game has not started') if game.status == 'new'
 
             acting, action = nil
 
@@ -203,19 +207,25 @@ class Api
         r.is do
           title = r.params['title']
 
+          seed = r.params['seed']
+          if seed
+            seed = Integer(seed, exception: false)
+            halt(400, 'Invalid seed') unless seed
+          end
+
           params = {
             user: user,
             description: r.params['description'],
             min_players: r.params['min_players'],
             max_players: r.params['max_players'],
             settings: {
-              seed: (r.params['seed'] || Random.new_seed) % (2**31),
+              seed: (seed || Random.new_seed) % (2**31),
               player_order: r.params['player_order'],
-              unlisted: r.params['unlisted'],
+              unlisted: bool_setting(r.params['unlisted']),
               optional_rules: r.params['optional_rules'],
               auto_routing: r.params['auto_routing'],
               use_engine_v2: r.params['use_engine_v2'],
-              is_async: r.params['async'],
+              is_async: bool_setting(r.params['async']),
             },
             title: title,
             round: 'Unstarted',
@@ -231,6 +241,12 @@ class Api
 
   def actions_h(game)
     game.actions(reload: true).map(&:to_h)
+  end
+
+  def bool_setting(value)
+    return if value.nil?
+
+    [true, 'true'].include?(value)
   end
 
   def set_game_state(game, engine, users)
