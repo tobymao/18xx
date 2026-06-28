@@ -111,7 +111,8 @@ module View
           render_button('Reset to Defaults') { reset_settings },
           render_button('Logout', { style: { display: 'block', margin: '1rem 0' } }) { logout },
           render_button('Delete Account and All Data', { style: { margin: '0 0.5rem 0 0' } }) { delete },
-          render_input('Type your password to confirm', id: :confirm, type: :password,
+          render_input('Type your password to confirm',
+                       id: :confirm, type: :password,
                        input_style: { width: '12rem' }, attrs: { autocomplete: 'current-password' }),
         ]),
       ]
