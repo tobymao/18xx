@@ -93,8 +93,10 @@ module View
         needs :tile
         needs :region_use
         needs :routes
+        needs :game, store: true, default: nil
 
         def render
+          @hide_tile_track = @game&.class&.const_defined?(:HIDE_TILE_TRACK) && @game.class::HIDE_TILE_TRACK
           # each route has an "entry" in this array; each "entry" is an array of
           # the paths on that route that are also on this tile
           #
@@ -123,6 +125,8 @@ module View
           pass1 = []
           pass2 = []
           sorted.each do |path, index|
+            next if @hide_tile_track && index.nil?
+
             props = {
               color: value_for_index(index, :color, path.track),
               width: width_for_index(path, index, path_indexes),

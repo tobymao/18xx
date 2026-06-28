@@ -4,6 +4,11 @@ require_relative 'meta'
 require_relative 'map'
 require_relative 'entities'
 require_relative '../base'
+require_relative 'round/operating'
+require_relative 'step/waterfall_auction'
+require_relative 'step/buy_train'
+require_relative 'step/dividend'
+require_relative 'step/route'
 
 module Engine
   module Game
@@ -12,6 +17,8 @@ module Engine
         include_meta(G2038::Meta)
         include Map
         include Entities
+
+        attr_reader :mine_state
 
         TILE_TYPE = :lawson
         TRACK_RESTRICTION = :permissive
@@ -24,8 +31,6 @@ module Engine
         CERT_LIMIT = { 3 => 22, 4 => 16, 5 => 13, 6 => 11 }.freeze
 
         STARTING_CASH = { 3 => 600, 4 => 450, 5 => 360, 6 => 300 }.freeze
-
-        HOME_TOKEN_TIMING = :never
 
         MARKET = [
           %w[71 80 90 101 113 126 140 155 171 188 206 225 245 266 288 311 335 360 386 413 441 470 500],
@@ -51,6 +56,7 @@ module Engine
 
         MINOR_OPERATING_ORDER = %w[FB IF DH OC TH LY].freeze
         ENTITY_DISPLAY_ORDER = %w[FB IF DH OC TH LY TSI RU VP LE MM OPC RCC AL].freeze
+        HIDE_TILE_TRACK = true
 
         ORE_COLORS = {
           N: '#888888',
@@ -233,6 +239,17 @@ module Engine
           ])
         end
 
+        def new_operating_round(round_num = 1)
+          G2038::Round::Operating.new(self, [
+            Engine::Step::Bankrupt,
+            Engine::Step::DiscardTrain,
+            G2038::Step::Route,
+            G2038::Step::Dividend,
+            G2038::Step::BuyTrain,
+            Engine::Step::BuyCompany,
+          ], round_num: round_num)
+        end
+
         def next_round!
           @round =
             case @round
@@ -240,7 +257,7 @@ module Engine
               @operating_rounds = @phase.operating_rounds
               reorder_players
               new_operating_round
-            when Engine::Round::Operating
+            when G2038::Round::Operating
               if @round.round_num < @operating_rounds
                 or_round_finished
                 new_operating_round(@round.round_num + 1)
@@ -257,7 +274,105 @@ module Engine
             end
         end
 
+        def bank_sort(entities)
+          entities.sort_by { |e| ENTITY_DISPLAY_ORDER.index(e.id) || ENTITY_DISPLAY_ORDER.size }
+        end
+
+        def operating_order
+          minors = MINOR_OPERATING_ORDER.filter_map { |id| minor_by_id(id) }
+          corps = @corporations.select(&:floated?).sort do |a, b|
+            if a.share_price.price != b.share_price.price
+              b.share_price.price <=> a.share_price.price
+            else
+              a.share_price.coordinates <=> b.share_price.coordinates
+            end
+          end
+          minors + corps
+        end
+
+        def or_round_finished
+          @mine_state.each_value do |state|
+            state[:mines].each { |mine| mine[:used] = false }
+          end
+        end
+
+        def cargo_holds_for_train(train)
+          return 0 if train.name == 'probe'
+
+          train.name.split('/').last.to_i
+        end
+
+        def route_trains(entity)
+          entity.runnable_trains
+        end
+
+        def can_run_route?(entity)
+          route_trains(entity).any?
+        end
+
+        def skip_route_track_type(_train)
+          :broad
+        end
+
+        def revenue_str(route)
+          route.hexes.map(&:id).join(' - ')
+        end
+
+        # TODO: Phase 4 — enforce hex count <= movement points and pickup count <= cargo holds
+        def check_distance(route, _entity); end
+
+        # TODO: Phase 4 — validate route starts at a base and ends at a base or transshipment point
+        def check_connected(route, _entity); end
+
+        def explore_hex!(hex_id)
+          @mine_state[hex_id] ||= { mines: [] }
+          @log << "#{hex_id} explored"
+        end
+
+        def pickup_value(entity, hex_id, mine_idx)
+          mine = @mine_state.dig(hex_id, :mines, mine_idx)
+          return 0 unless mine
+
+          mine[:owner] == entity.id ? mine[:claimed] : mine[:unclaimed]
+        end
+
+        def pickable_stops(route, existing_pickups)
+          entity = route.corporation
+          picked_set = existing_pickups.to_set
+
+          route.hexes.flat_map do |hex|
+            state = @mine_state[hex.id]
+            next [] unless state
+
+            state[:mines].each_with_index.filter_map do |mine, idx|
+              key = [hex.id, idx]
+              next if mine[:used]
+              next if picked_set.include?(key)
+              next if mine[:owner] && mine[:owner] != entity.id
+
+              { hex: hex, mine_idx: idx, ore: mine[:ore], value: pickup_value(entity, hex.id, idx) }
+            end
+          end
+        end
+
+        def mark_mines_used!(route)
+          return unless route.respond_to?(:pickups)
+
+          route.pickups.each do |hex_id, mine_idx|
+            @mine_state.dig(hex_id, :mines, mine_idx)&.store(:used, true)
+          end
+        end
+
         def setup
+          @mine_state = {}
+
+          # The probe is never sold from the Depot. TSI operates it once floated;
+          # until then it is operated by the owner of the TS private.
+          # TODO: allow the TS private owner to run the probe before TSI floats.
+          @probe = depot.upcoming.find { |t| t.name == 'probe' }
+          depot.remove_train(@probe)
+          @probe.buyable = false
+
           @al_corporation = corporation_by_id('AL')
           @al_corporation.capitalization = :incremental
 
@@ -274,6 +389,14 @@ module Engine
           @b_group_corporations, @c_group_corporations = @b_group_corporations.partition do |corporation|
             corporation.type == :group_b
           end
+        end
+
+        def float_corporation(corporation)
+          super
+          return unless corporation.id == 'TSI'
+
+          buy_train(corporation, @probe, :free)
+          @log << "#{corporation.name} receives the probe"
         end
 
         def event_group_b_corps_available!
@@ -303,12 +426,7 @@ module Engine
 
         def company_header(company)
           is_minor = @minors.find { |m| m.id == company.id }
-
-          if is_minor
-            'INDEPENDENT COMPANY'
-          else
-            'PRIVATE COMPANY'
-          end
+          is_minor ? 'INDEPENDENT COMPANY' : 'PRIVATE COMPANY'
         end
 
         def after_par(corporation)
