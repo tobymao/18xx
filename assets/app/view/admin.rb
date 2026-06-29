@@ -119,7 +119,7 @@ module View
       title = h(:h2, { style: { margin: '1.5rem 0 0.5rem' } }, 'Active bans')
       return h(:div, [title, h(:p, 'No active bans.')]) if @admin_bans.empty?
 
-      last_page = (@admin_bans.size - 1) / BANS_PER_PAGE
+      last_page = ((@admin_bans.size - 1) / BANS_PER_PAGE).floor
       page = [[@admin_bans_page, 0].max, last_page].min
       offset = page * BANS_PER_PAGE
 
