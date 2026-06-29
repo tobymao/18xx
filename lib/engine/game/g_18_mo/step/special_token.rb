@@ -32,8 +32,12 @@ module Engine
           def available_hex(entity, hex)
             ability = ability(entity)
             return unless ability
-            return @game.token_graph_for_entity(entity.owner).reachable_hexes(entity.owner)[hex] if
-              ability.type == :token && ability.hexes.empty?
+
+            if ability.type == :token && ability.hexes.empty?
+              return true if entity.owner.all_abilities.any? { |a| a.type == :token && a.hexes.include?(hex.id) }
+
+              return @game.token_graph_for_entity(entity.owner).reachable_hexes(entity.owner)[hex]
+            end
 
             super
           end
@@ -42,7 +46,7 @@ module Engine
             return super unless entity&.company?
 
             @game.abilities(entity, :token) do |ability, _|
-              next if ability.owner_type == 'corporation'
+              next if ability.owner_type == 'corporation' && !ability.discount
 
               return ability
             end
