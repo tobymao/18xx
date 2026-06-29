@@ -9,7 +9,10 @@ module View
 
     needs :admin_bans, default: [], store: true
     needs :admin_bans_loaded, default: false, store: true
+    needs :admin_bans_page, default: 0, store: true
     needs :admin_lookup, default: nil, store: true
+
+    BANS_PER_PAGE = 20
 
     def render_content
       return h(:div, 'Admin access required.') unless @user&.dig('settings', 'admin')
@@ -116,12 +119,17 @@ module View
       title = h(:h2, { style: { margin: '1.5rem 0 0.5rem' } }, 'Active bans')
       return h(:div, [title, h(:p, 'No active bans.')]) if @admin_bans.empty?
 
-      rows = @admin_bans.map do |ban|
+      last_page = (@admin_bans.size - 1) / BANS_PER_PAGE
+      page = [[@admin_bans_page, 0].max, last_page].min
+      offset = page * BANS_PER_PAGE
+
+      rows = @admin_bans.slice(offset, BANS_PER_PAGE).map do |ban|
         h(:tr, [
           h(:td, ban['user_name'] || ''),
           h(:td, ban['ip'] || ''),
           h(:td, ban['reason'] || ''),
           h(:td, ban['created_by'] || ''),
+          h(:td, render_time(ban['created_at'])),
           h(:td, [render_button('Remove') { remove(ban['id']) }]),
         ])
       end
@@ -134,11 +142,30 @@ module View
             h(:th, 'IP'),
             h(:th, 'Reason'),
             h(:th, 'By'),
+            h(:th, 'Date'),
             h(:th, ''),
           ])]),
           h(:tbody, rows),
         ]),
+        render_pagination(page, last_page),
       ])
+    end
+
+    def render_time(ts)
+      return '' unless ts
+
+      Time.at(ts).strftime('%F %T')
+    end
+
+    def render_pagination(page, last_page)
+      return '' if last_page.zero?
+
+      controls = []
+      controls << render_button('Prev') { store(:admin_bans_page, page - 1) } if page.positive?
+      controls << h(:span, { style: { margin: '0 0.5rem' } }, "Page #{page + 1} of #{last_page + 1}")
+      controls << render_button('Next') { store(:admin_bans_page, page + 1) } if page < last_page
+
+      h(:div, { style: { marginTop: '0.5rem' } }, controls)
     end
 
     def render_add_ban

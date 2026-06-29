@@ -8,7 +8,7 @@ class Api
 
       # GET '/api/admin/bans'
       r.get 'bans' do
-        { bans: Ban.order(:id).map(&:to_h) }
+        { bans: Ban.order(Sequel.desc(:id)).map(&:to_h) }
       end
 
       r.post do
@@ -69,15 +69,15 @@ class Api
             Ban.create(ip: ip, reason: reason, created_by: user.id) unless Ban.banned_ip?(ip)
           end
 
-          { bans: Ban.order(:id).map(&:to_h) }
+          { bans: Ban.order(Sequel.desc(:id)).map(&:to_h) }
         rescue Sequel::UniqueConstraintViolation, Sequel::ValidationFailed
-          { bans: Ban.order(:id).map(&:to_h) }
+          { bans: Ban.order(Sequel.desc(:id)).map(&:to_h) }
         end
 
         # POST '/api/admin/bans/<id>/remove'
         r.is 'bans', Integer, 'remove' do |id|
           Ban[id]&.destroy
-          { bans: Ban.order(:id).map(&:to_h) }
+          { bans: Ban.order(Sequel.desc(:id)).map(&:to_h) }
         end
       end
     end
