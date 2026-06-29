@@ -59,9 +59,15 @@ module View
       h(:div, { style: { margin: '1rem 0', padding: '0.75rem', border: '1px solid gray', borderRadius: '4px' } }, [
         h(:p, { style: { margin: '0 0 0.25rem' } }, "Name: #{found['name']}"),
         h(:p, { style: { margin: '0 0 0.5rem' } }, "Email: #{found['email']}"),
+        text_field('Reason (optional)', :reason, @lookup_inputs),
         ban_action(found['banned'], 'Ban user + all IPs') { ban_user(found) },
         render_ips(found['ips'] || []),
       ])
+    end
+
+    # Reason entered on the lookup screen, applied to whichever ban button is clicked.
+    def lookup_reason
+      params(@lookup_inputs)[:reason].to_s
     end
 
     # A "Banned" badge if the target is already banned, otherwise a ban button.
@@ -79,7 +85,7 @@ module View
         h(:div, { style: { marginTop: '0.5rem' } }, [
           h(:div, [
             h(:span, { style: { marginRight: '0.5rem' } }, "IP: #{ip}"),
-            ban_action(entry['banned'], 'Ban IP') { create_ban(ip: ip) },
+            ban_action(entry['banned'], 'Ban IP') { create_ban(ip: ip, reason: lookup_reason) },
           ]),
           render_others(entry['others'] || []),
         ])
@@ -93,7 +99,7 @@ module View
       rows = others.map do |other|
         h(:div, { style: { marginTop: '0.25rem' } }, [
           h(:span, { style: { marginRight: '0.5rem' } }, other['name']),
-          ban_action(other['banned'], 'Ban account') { create_ban(name: other['name']) },
+          ban_action(other['banned'], 'Ban account') { create_ban(name: other['name'], reason: lookup_reason) },
         ])
       end
 
@@ -151,7 +157,7 @@ module View
     end
 
     def ban_user(found)
-      create_ban(name: found['name'], ips: (found['ips'] || []).map { |entry| entry['ip'] })
+      create_ban(name: found['name'], ips: (found['ips'] || []).map { |entry| entry['ip'] }, reason: lookup_reason)
     end
 
     def create_ban(name: '', ip: '', ips: [], reason: '')
