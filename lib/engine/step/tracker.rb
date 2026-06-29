@@ -493,6 +493,7 @@ module Engine
         (@game.companies + @game.minors + @game.corporations).each do |company|
           next if company.closed? || company == entity
           next unless (ability = @game.abilities(company, :blocks_hexes))
+          next if Array(ability).all? { |a| !a.blocks_owning_player } && entity.owner == company.owner
 
           return ability if @game.hex_blocked_by_ability?(entity, ability, hex)
         end
