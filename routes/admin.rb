@@ -26,15 +26,25 @@ class Api
               others_by_ip[ip] << uid
             end
           end
-          names = User.where(id: others_by_ip.values.flatten.uniq).select_hash(:id, :name)
+          other_ids = others_by_ip.values.flatten.uniq
+          names = User.where(id: other_ids).select_hash(:id, :name)
+          banned_user_ids = Ban.where(user_id: [found.id, *other_ids]).select_map(:user_id)
+          banned_ips = ips.empty? ? [] : Ban.where(ip: ips).select_map(:ip)
 
           {
             user: {
               id: found.id,
               name: found.name,
               email: found.email,
+              banned: banned_user_ids.include?(found.id),
               ips: ips.map do |ip|
-                { ip: ip, others: others_by_ip[ip].uniq.map { |uid| { id: uid, name: names[uid] } } }
+                {
+                  ip: ip,
+                  banned: banned_ips.include?(ip),
+                  others: others_by_ip[ip].uniq.map do |uid|
+                    { id: uid, name: names[uid], banned: banned_user_ids.include?(uid) }
+                  end,
+                }
               end,
             },
           }

@@ -1,25 +1,28 @@
 # frozen_string_literal: true
 
 require 'user_manager'
+require 'view/form'
 
 module View
-  class Admin < Snabberb::Component
+  class Admin < Form
     include UserManager
 
     needs :admin_bans, default: [], store: true
     needs :admin_bans_loaded, default: false, store: true
     needs :admin_lookup, default: nil, store: true
 
-    def render
+    def render_content
       return h(:div, 'Admin access required.') unless @user&.dig('settings', 'admin')
 
       load_bans unless @admin_bans_loaded
 
-      h(:div, [
-        h(:h2, 'Ban Management'),
+      @lookup_inputs = {}
+      @ban_inputs = {}
+
+      h(:div, { style: { maxWidth: '36rem' } }, [
         render_lookup,
         render_bans,
-        render_form,
+        render_add_ban,
       ])
     end
 
@@ -30,37 +33,53 @@ module View
       end
     end
 
+    def text_field(label, id, inputs)
+      render_input(
+        label,
+        id: id,
+        inputs: inputs,
+        label_style: { display: 'block', marginBottom: '0.25rem' },
+        input_style: { width: '100%' },
+        container_style: { marginBottom: '0.75rem' },
+      )
+    end
+
     def render_lookup
-      @lookup_input = h(:input, attrs: { placeholder: 'Username' })
-
-      children = [
-        h(:h3, 'Look up user'),
-        h(:div, [@lookup_input]),
-        h(:button, { on: { click: -> { lookup } } }, 'Search'),
+      inputs = [
+        text_field('Username or email', :name, @lookup_inputs),
+        render_button('Search') { lookup },
       ]
+      inputs << render_lookup_result if @admin_lookup
 
-      if @admin_lookup
-        found = @admin_lookup
-        children << h(:div, [
-          h(:p, "Name: #{found['name']}"),
-          h(:p, "Email: #{found['email']}"),
-          h(:button, { on: { click: -> { ban_user(found) } } }, 'Ban user + IP(s)'),
-          render_ips(found['ips'] || []),
-        ])
-      end
+      render_form('Look up user', inputs, on_submit: -> { lookup })
+    end
 
-      h(:div, children)
+    def render_lookup_result
+      found = @admin_lookup
+      h(:div, { style: { margin: '1rem 0', padding: '0.75rem', border: '1px solid gray', borderRadius: '4px' } }, [
+        h(:p, { style: { margin: '0 0 0.25rem' } }, "Name: #{found['name']}"),
+        h(:p, { style: { margin: '0 0 0.5rem' } }, "Email: #{found['email']}"),
+        ban_action(found['banned'], 'Ban user + all IPs') { ban_user(found) },
+        render_ips(found['ips'] || []),
+      ])
+    end
+
+    # A "Banned" badge if the target is already banned, otherwise a ban button.
+    def ban_action(banned, label, &block)
+      return h(:span, { style: { color: 'red', fontWeight: 'bold' } }, 'Banned') if banned
+
+      render_button(label, &block)
     end
 
     def render_ips(ips)
-      return h(:p, 'No known IPs.') if ips.empty?
+      return h(:p, { style: { marginTop: '0.75rem' } }, 'No known IPs.') if ips.empty?
 
-      h(:div, ips.map do |entry|
+      h(:div, { style: { marginTop: '0.75rem' } }, ips.map do |entry|
         ip = entry['ip']
         h(:div, { style: { marginTop: '0.5rem' } }, [
           h(:div, [
-            h(:span, "IP: #{ip} "),
-            h(:button, { on: { click: -> { create_ban(ip: ip) } } }, 'Ban IP'),
+            h(:span, { style: { marginRight: '0.5rem' } }, "IP: #{ip}"),
+            ban_action(entry['banned'], 'Ban IP') { create_ban(ip: ip) },
           ]),
           render_others(entry['others'] || []),
         ])
@@ -68,26 +87,28 @@ module View
     end
 
     def render_others(others)
-      return h(:div, { style: { marginLeft: '1rem' } }, 'No other accounts on this IP.') if others.empty?
+      style = { marginLeft: '1rem', marginTop: '0.25rem' }
+      return h(:div, { style: style }, 'No other accounts on this IP.') if others.empty?
 
       rows = others.map do |other|
-        h(:div, [
-          h(:span, "#{other['name']} "),
-          h(:button, { on: { click: -> { create_ban(name: other['name']) } } }, 'Ban account'),
+        h(:div, { style: { marginTop: '0.25rem' } }, [
+          h(:span, { style: { marginRight: '0.5rem' } }, other['name']),
+          ban_action(other['banned'], 'Ban account') { create_ban(name: other['name']) },
         ])
       end
 
-      h(:div, { style: { marginLeft: '1rem' } }, [h(:div, 'Other accounts on this IP:')] + rows)
+      h(:div, { style: style }, [h(:div, 'Other accounts on this IP:')] + rows)
     end
 
     def lookup
-      @connection.safe_post('/admin/lookup', name: Native(@lookup_input).elm.value) do |data|
+      @connection.safe_post('/admin/lookup', name: params(@lookup_inputs)[:name]) do |data|
         store(:admin_lookup, data['user'], skip: false)
       end
     end
 
     def render_bans
-      return h(:p, 'No active bans.') if @admin_bans.empty?
+      title = h(:h2, { style: { margin: '1.5rem 0 0.5rem' } }, 'Active bans')
+      return h(:div, [title, h(:p, 'No active bans.')]) if @admin_bans.empty?
 
       rows = @admin_bans.map do |ban|
         h(:tr, [
@@ -95,42 +116,38 @@ module View
           h(:td, ban['ip'] || ''),
           h(:td, ban['reason'] || ''),
           h(:td, ban['created_by'] || ''),
-          h(:td, [h(:button, { on: { click: -> { remove(ban['id']) } } }, 'Remove')]),
+          h(:td, [render_button('Remove') { remove(ban['id']) }]),
         ])
       end
 
-      h(:table, [
-        h(:thead, [h(:tr, [
-          h(:th, 'Account'),
-          h(:th, 'IP'),
-          h(:th, 'Reason'),
-          h(:th, 'By'),
-          h(:th, ''),
-        ])]),
-        h(:tbody, rows),
+      h(:div, [
+        title,
+        h(:table, [
+          h(:thead, [h(:tr, [
+            h(:th, 'Account'),
+            h(:th, 'IP'),
+            h(:th, 'Reason'),
+            h(:th, 'By'),
+            h(:th, ''),
+          ])]),
+          h(:tbody, rows),
+        ]),
       ])
     end
 
-    def render_form
-      @name_input = h(:input, attrs: { placeholder: 'Username or email' })
-      @ip_input = h(:input, attrs: { placeholder: 'IP address' })
-      @reason_input = h(:input, attrs: { placeholder: 'Reason' })
-
-      h(:div, [
-        h(:h3, 'Add ban'),
-        h(:div, [@name_input]),
-        h(:div, [@ip_input]),
-        h(:div, [@reason_input]),
-        h(:button, { on: { click: -> { submit } } }, 'Add ban'),
-      ])
+    def render_add_ban
+      inputs = [
+        text_field('Username or email', :ban_name, @ban_inputs),
+        text_field('IP address', :ban_ip, @ban_inputs),
+        text_field('Reason', :ban_reason, @ban_inputs),
+        render_button('Add ban') { submit },
+      ]
+      render_form('Add ban', inputs, on_submit: -> { submit })
     end
 
     def submit
-      create_ban(
-        name: Native(@name_input).elm.value,
-        ip: Native(@ip_input).elm.value,
-        reason: Native(@reason_input).elm.value,
-      )
+      values = params(@ban_inputs)
+      create_ban(name: values[:ban_name], ip: values[:ban_ip], reason: values[:ban_reason])
     end
 
     def ban_user(found)
@@ -139,7 +156,16 @@ module View
 
     def create_ban(name: '', ip: '', ips: [], reason: '')
       @connection.safe_post('/admin/bans', name: name, ip: ip, ips: ips, reason: reason) do |data|
-        store(:admin_bans, data['bans'], skip: false)
+        # Defer the re-render to refresh_lookup when a lookup is on screen, so the
+        # bans table and the looked-up user's ban status update together.
+        store(:admin_bans, data['bans'], skip: @admin_lookup ? true : false)
+        refresh_lookup if @admin_lookup
+      end
+    end
+
+    def refresh_lookup
+      @connection.safe_post('/admin/lookup', name: @admin_lookup['name']) do |data|
+        store(:admin_lookup, data['user'], skip: false)
       end
     end
 
