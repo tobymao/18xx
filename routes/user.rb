@@ -23,6 +23,9 @@ class Api
         # POST '/api/user/'
         r.is do
           halt(403, 'Access denied') if Ban.banned_ip?(request.ip)
+          if DisposableEmail.blocked?(r.params['email'])
+            halt(400, 'Disposable email addresses are not allowed. Please use a permanent email address.')
+          end
 
           user = User.new
           user.password = r.params['password'] unless r.params['password']&.strip&.empty?
