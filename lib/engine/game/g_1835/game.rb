@@ -50,6 +50,8 @@ module Engine
 
         EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
 
+        MUST_BUY_TRAIN = :always
+
         MARKET = [['', '', '', ''] + %w[132 148 166 186 208 232 258 286 316 348 382 418],
                   ['', ''] + %w[98 108 120 134 150 168 188 210 234 260 288 318 350 384],
                   %w[82 86 92p 100 110 122 136 152 170 190 212 236 262 290 320],
@@ -473,6 +475,12 @@ module Engine
 
         def share_flags(shares)
           'h' * shares.count { |share| share.percent == 5 }
+        end
+
+        def must_buy_train?(entity)
+          return false if entity.minor?
+
+          super
         end
       end
     end
