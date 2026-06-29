@@ -476,12 +476,6 @@ module Engine
         def share_flags(shares)
           'h' * shares.count { |share| share.percent == 5 }
         end
-
-        def must_buy_train?(entity)
-          return false if entity.minor?
-
-          super
-        end
       end
     end
   end
