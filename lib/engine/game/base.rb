@@ -2550,12 +2550,18 @@ module Engine
       end
 
       def bank_starting_cash
+        return 0 if unlimited_bank?
+
         cash = self.class::BANK_CASH
         cash.is_a?(Hash) ? cash[players.size] : cash
       end
 
       def init_bank_kwargs
         { check: game_end_check_values.include?(:bank) }
+      end
+
+      def unlimited_bank?
+        self.class::BANK_CASH == :unlimited
       end
 
       def spenders

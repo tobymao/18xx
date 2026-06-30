@@ -26,7 +26,7 @@ module Engine
 
         CURRENCY_FORMAT_STR = '%skr'
 
-        BANK_CASH = 99_999
+        BANK_CASH = :unlimited
 
         CERT_LIMIT = {
           3 => 16,
