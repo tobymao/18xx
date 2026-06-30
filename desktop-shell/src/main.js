@@ -1,3 +1,5 @@
+// File: desktop-shell/src/main.js
+
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 const fs = require('fs');
@@ -48,3 +50,25 @@ ipcMain.handle('get-game-state', async () => {
         return { error: `Failed to read game state: ${error.message}` };
     }
 });
+
+// --- START FIX ---
+// Watch the current_game_state.json file for live changes
+const targetStateFile = path.join(__dirname, 'current_game_state.json');
+
+fs.watch(targetStateFile, (eventType) => {
+    if (eventType === 'change') {
+        try {
+            const rawData = fs.readFileSync(targetStateFile, 'utf8');
+            const gameState = JSON.parse(rawData);
+            
+            Object.values(windows).forEach((win) => {
+                if (!win.isDestroyed()) {
+                    win.webContents.send('game-state-update', gameState);
+                }
+            });
+        } catch (error) {
+            // Prevent temporary read/write collision crashes from stopping the app
+        }
+    }
+});
+// --- END FIX ---
