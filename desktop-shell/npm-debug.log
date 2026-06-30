@@ -1,0 +1,2958 @@
+0 info it worked if it ends with ok
+1 verbose cli [ '/Users/bleeck/opt/anaconda3/bin/node',
+1 verbose cli   '/Users/bleeck/opt/anaconda3/bin/npm',
+1 verbose cli   'install',
+1 verbose cli   'electron',
+1 verbose cli   '--save-dev' ]
+2 info using npm@3.10.10
+3 info using node@v6.13.1
+4 silly loadCurrentTree Starting
+5 silly install loadCurrentTree
+6 silly install readLocalPackageData
+7 silly fetchPackageMetaData electron
+8 silly fetchNamedPackageData electron
+9 silly mapToRegistry name electron
+10 silly mapToRegistry using default registry
+11 silly mapToRegistry registry https://registry.npmjs.org/
+12 silly mapToRegistry data Result {
+12 silly mapToRegistry   raw: 'electron',
+12 silly mapToRegistry   scope: null,
+12 silly mapToRegistry   escapedName: 'electron',
+12 silly mapToRegistry   name: 'electron',
+12 silly mapToRegistry   rawSpec: '',
+12 silly mapToRegistry   spec: 'latest',
+12 silly mapToRegistry   type: 'tag' }
+13 silly mapToRegistry uri https://registry.npmjs.org/electron
+14 verbose request uri https://registry.npmjs.org/electron
+15 verbose request no auth needed
+16 info attempt registry request try #1 at 3:28:17 PM
+17 verbose request id 07326258190315e3
+18 http request GET https://registry.npmjs.org/electron
+19 http 200 https://registry.npmjs.org/electron
+20 verbose headers { date: 'Tue, 30 Jun 2026 14:28:17 GMT',
+20 verbose headers   'content-type': 'application/json',
+20 verbose headers   'transfer-encoding': 'chunked',
+20 verbose headers   connection: 'keep-alive',
+20 verbose headers   'set-cookie': [ '_cfuvid=DVLwYcoNoagxfAWGtgL80hQlo1Xpu4AQQs.rBEzk3Kk-1782829697.6199846-1.0.1.1-dO0pdoIkdaDvRgKIz8wTatHVIvx8Xl9cszXtigCUyi4; HttpOnly; SameSite=None; Secure; Path=/; Domain=npmjs.org' ],
+20 verbose headers   'cf-ray': 'a13ddb4a1dc434ed-LHR',
+20 verbose headers   'cf-cache-status': 'HIT',
+20 verbose headers   'access-control-allow-origin': '*',
+20 verbose headers   age: '68',
+20 verbose headers   'cache-control': 'public, max-age=300',
+20 verbose headers   vary: 'accept-encoding, accept',
+20 verbose headers   'last-modified': 'Mon, 29 Jun 2026 12:09:50 GMT',
+20 verbose headers   server: 'cloudflare',
+20 verbose headers   etag: 'W/"dd8e196cc657f24eec1ddd79b51f3cf2"',
+20 verbose headers   'content-encoding': 'gzip' }
+21 silly get cb [ 200,
+21 silly get   { date: 'Tue, 30 Jun 2026 14:28:17 GMT',
+21 silly get     'content-type': 'application/json',
+21 silly get     'transfer-encoding': 'chunked',
+21 silly get     connection: 'keep-alive',
+21 silly get     'set-cookie': [ '_cfuvid=DVLwYcoNoagxfAWGtgL80hQlo1Xpu4AQQs.rBEzk3Kk-1782829697.6199846-1.0.1.1-dO0pdoIkdaDvRgKIz8wTatHVIvx8Xl9cszXtigCUyi4; HttpOnly; SameSite=None; Secure; Path=/; Domain=npmjs.org' ],
+21 silly get     'cf-ray': 'a13ddb4a1dc434ed-LHR',
+21 silly get     'cf-cache-status': 'HIT',
+21 silly get     'access-control-allow-origin': '*',
+21 silly get     age: '68',
+21 silly get     'cache-control': 'public, max-age=300',
+21 silly get     vary: 'accept-encoding, accept',
+21 silly get     'last-modified': 'Mon, 29 Jun 2026 12:09:50 GMT',
+21 silly get     server: 'cloudflare',
+21 silly get     etag: 'W/"dd8e196cc657f24eec1ddd79b51f3cf2"',
+21 silly get     'content-encoding': 'gzip' } ]
+22 verbose get saving electron to /Users/bleeck/.npm/registry.npmjs.org/electron/.cache.json
+23 verbose correctMkdir /Users/bleeck/.npm correctMkdir not in flight; initializing
+24 verbose makeDirectory /Users/bleeck/.npm creation not in flight; initializing
+25 silly makeDirectory /Users/bleeck/.npm uid: 502 gid: 20
+26 silly install normalizeTree
+27 silly loadCurrentTree Finishing
+28 silly loadIdealTree Starting
+29 silly install loadIdealTree
+30 silly cloneCurrentTree Starting
+31 silly install cloneCurrentTreeToIdealTree
+32 silly cloneCurrentTree Finishing
+33 silly loadShrinkwrap Starting
+34 silly install loadShrinkwrap
+35 silly loadShrinkwrap Finishing
+36 silly loadAllDepsIntoIdealTree Starting
+37 silly install loadAllDepsIntoIdealTree
+38 silly resolveWithNewModule electron@42.5.1 checking installable status
+39 silly cache add args [ 'electron', null ]
+40 verbose cache add spec electron
+41 silly cache add parsed spec Result {
+41 silly cache add   raw: 'electron',
+41 silly cache add   scope: null,
+41 silly cache add   escapedName: 'electron',
+41 silly cache add   name: 'electron',
+41 silly cache add   rawSpec: '',
+41 silly cache add   spec: 'latest',
+41 silly cache add   type: 'tag' }
+42 silly addNamed electron@latest
+43 verbose addNamed "latest" is being treated as a dist-tag for electron
+44 info addNameTag [ 'electron', 'latest' ]
+45 silly mapToRegistry name electron
+46 silly mapToRegistry using default registry
+47 silly mapToRegistry registry https://registry.npmjs.org/
+48 silly mapToRegistry data Result {
+48 silly mapToRegistry   raw: 'electron',
+48 silly mapToRegistry   scope: null,
+48 silly mapToRegistry   escapedName: 'electron',
+48 silly mapToRegistry   name: 'electron',
+48 silly mapToRegistry   rawSpec: '',
+48 silly mapToRegistry   spec: 'latest',
+48 silly mapToRegistry   type: 'tag' }
+49 silly mapToRegistry uri https://registry.npmjs.org/electron
+50 verbose addNameTag registry:https://registry.npmjs.org/electron not in flight; fetching
+51 verbose get https://registry.npmjs.org/electron not expired, no request
+52 silly addNameTag next cb for electron with tag latest
+53 silly addNamed electron@42.5.1
+54 verbose addNamed "42.5.1" is a plain semver version for electron
+55 silly mapToRegistry name electron
+56 silly mapToRegistry using default registry
+57 silly mapToRegistry registry https://registry.npmjs.org/
+58 silly mapToRegistry data Result {
+58 silly mapToRegistry   raw: 'electron',
+58 silly mapToRegistry   scope: null,
+58 silly mapToRegistry   escapedName: 'electron',
+58 silly mapToRegistry   name: 'electron',
+58 silly mapToRegistry   rawSpec: '',
+58 silly mapToRegistry   spec: 'latest',
+58 silly mapToRegistry   type: 'tag' }
+59 silly mapToRegistry uri https://registry.npmjs.org/electron
+60 verbose addRemoteTarball https://registry.npmjs.org/electron/-/electron-42.5.1.tgz not in flight; adding
+61 verbose addRemoteTarball [ 'https://registry.npmjs.org/electron/-/electron-42.5.1.tgz',
+61 verbose addRemoteTarball   'ca6c6119c119b818c145c7e838c3484e36c35b05' ]
+62 info retry fetch attempt 1 at 3:28:17 PM
+63 info attempt registry request try #1 at 3:28:17 PM
+64 http fetch GET https://registry.npmjs.org/electron/-/electron-42.5.1.tgz
+65 http fetch 200 https://registry.npmjs.org/electron/-/electron-42.5.1.tgz
+66 silly fetchAndShaCheck shasum ca6c6119c119b818c145c7e838c3484e36c35b05
+67 verbose addTmpTarball /var/folders/3t/r__v5btd4bs750hqz1x8tlsr0000gp/T/npm-17147-184728d3/registry.npmjs.org/electron/-/electron-42.5.1.tgz not in flight; adding
+68 verbose addTmpTarball already have metadata; skipping unpack for electron@42.5.1
+69 verbose correctMkdir /Users/bleeck/.npm correctMkdir not in flight; initializing
+70 silly cache afterAdd electron@42.5.1
+71 verbose afterAdd /Users/bleeck/.npm/electron/42.5.1/package/package.json not in flight; writing
+72 verbose correctMkdir /Users/bleeck/.npm correctMkdir not in flight; initializing
+73 verbose afterAdd /Users/bleeck/.npm/electron/42.5.1/package/package.json written
+74 silly fetchNamedPackageData @types/node
+75 silly mapToRegistry name @types/node
+76 silly mapToRegistry scope (from package name) @types
+77 verbose mapToRegistry no registry URL found in name for scope @types
+78 silly mapToRegistry using default registry
+79 silly mapToRegistry registry https://registry.npmjs.org/
+80 silly mapToRegistry data Result {
+80 silly mapToRegistry   raw: '@types/node',
+80 silly mapToRegistry   scope: '@types',
+80 silly mapToRegistry   escapedName: '@types%2fnode',
+80 silly mapToRegistry   name: '@types/node',
+80 silly mapToRegistry   rawSpec: '',
+80 silly mapToRegistry   spec: 'latest',
+80 silly mapToRegistry   type: 'tag' }
+81 silly mapToRegistry uri https://registry.npmjs.org/@types%2fnode
+82 silly fetchNamedPackageData @electron/get
+83 silly mapToRegistry name @electron/get
+84 silly mapToRegistry scope (from package name) @electron
+85 verbose mapToRegistry no registry URL found in name for scope @electron
+86 silly mapToRegistry using default registry
+87 silly mapToRegistry registry https://registry.npmjs.org/
+88 silly mapToRegistry data Result {
+88 silly mapToRegistry   raw: '@electron/get',
+88 silly mapToRegistry   scope: '@electron',
+88 silly mapToRegistry   escapedName: '@electron%2fget',
+88 silly mapToRegistry   name: '@electron/get',
+88 silly mapToRegistry   rawSpec: '',
+88 silly mapToRegistry   spec: 'latest',
+88 silly mapToRegistry   type: 'tag' }
+89 silly mapToRegistry uri https://registry.npmjs.org/@electron%2fget
+90 silly fetchNamedPackageData @electron-internal/extract-zip
+91 silly mapToRegistry name @electron-internal/extract-zip
+92 silly mapToRegistry scope (from package name) @electron-internal
+93 verbose mapToRegistry no registry URL found in name for scope @electron-internal
+94 silly mapToRegistry using default registry
+95 silly mapToRegistry registry https://registry.npmjs.org/
+96 silly mapToRegistry data Result {
+96 silly mapToRegistry   raw: '@electron-internal/extract-zip',
+96 silly mapToRegistry   scope: '@electron-internal',
+96 silly mapToRegistry   escapedName: '@electron-internal%2fextract-zip',
+96 silly mapToRegistry   name: '@electron-internal/extract-zip',
+96 silly mapToRegistry   rawSpec: '',
+96 silly mapToRegistry   spec: 'latest',
+96 silly mapToRegistry   type: 'tag' }
+97 silly mapToRegistry uri https://registry.npmjs.org/@electron-internal%2fextract-zip
+98 verbose request uri https://registry.npmjs.org/@types%2fnode
+99 verbose request no auth needed
+100 info attempt registry request try #1 at 3:28:17 PM
+101 http request GET https://registry.npmjs.org/@types%2fnode
+102 verbose request uri https://registry.npmjs.org/@electron%2fget
+103 verbose request no auth needed
+104 info attempt registry request try #1 at 3:28:17 PM
+105 http request GET https://registry.npmjs.org/@electron%2fget
+106 verbose request uri https://registry.npmjs.org/@electron-internal%2fextract-zip
+107 verbose request no auth needed
+108 info attempt registry request try #1 at 3:28:17 PM
+109 http request GET https://registry.npmjs.org/@electron-internal%2fextract-zip
+110 http 200 https://registry.npmjs.org/@electron-internal%2fextract-zip
+111 verbose headers { date: 'Tue, 30 Jun 2026 14:28:18 GMT',
+111 verbose headers   'content-type': 'application/json',
+111 verbose headers   'transfer-encoding': 'chunked',
+111 verbose headers   connection: 'keep-alive',
+111 verbose headers   'set-cookie': [ '_cfuvid=hX7tuBihlOrpZgINurvlEuY4wRkGp1Lfz4Ai7ed6e2I-1782829698.0282161-1.0.1.1-6F55byjPunMEUlvFGp472I3jhe4DqUDP7m1mJDlYd6k; HttpOnly; SameSite=None; Secure; Path=/; Domain=npmjs.org' ],
+111 verbose headers   'cf-ray': 'a13ddb4caf1cf668-LHR',
+111 verbose headers   'cf-cache-status': 'HIT',
+111 verbose headers   'access-control-allow-origin': '*',
+111 verbose headers   age: '29',
+111 verbose headers   'cache-control': 'public, max-age=300',
+111 verbose headers   vary: 'accept-encoding, accept',
+111 verbose headers   'last-modified': 'Tue, 23 Jun 2026 22:43:18 GMT',
+111 verbose headers   server: 'cloudflare',
+111 verbose headers   etag: 'W/"a7f1db124cf07298190d8880a445379a"',
+111 verbose headers   'content-encoding': 'gzip' }
+112 silly get cb [ 200,
+112 silly get   { date: 'Tue, 30 Jun 2026 14:28:18 GMT',
+112 silly get     'content-type': 'application/json',
+112 silly get     'transfer-encoding': 'chunked',
+112 silly get     connection: 'keep-alive',
+112 silly get     'set-cookie': [ '_cfuvid=hX7tuBihlOrpZgINurvlEuY4wRkGp1Lfz4Ai7ed6e2I-1782829698.0282161-1.0.1.1-6F55byjPunMEUlvFGp472I3jhe4DqUDP7m1mJDlYd6k; HttpOnly; SameSite=None; Secure; Path=/; Domain=npmjs.org' ],
+112 silly get     'cf-ray': 'a13ddb4caf1cf668-LHR',
+112 silly get     'cf-cache-status': 'HIT',
+112 silly get     'access-control-allow-origin': '*',
+112 silly get     age: '29',
+112 silly get     'cache-control': 'public, max-age=300',
+112 silly get     vary: 'accept-encoding, accept',
+112 silly get     'last-modified': 'Tue, 23 Jun 2026 22:43:18 GMT',
+112 silly get     server: 'cloudflare',
+112 silly get     etag: 'W/"a7f1db124cf07298190d8880a445379a"',
+112 silly get     'content-encoding': 'gzip' } ]
+113 verbose get saving @electron-internal/extract-zip to /Users/bleeck/.npm/registry.npmjs.org/_40electron-internal_252fextract-zip/.cache.json
+114 verbose correctMkdir /Users/bleeck/.npm correctMkdir not in flight; initializing
+115 http 200 https://registry.npmjs.org/@electron%2fget
+116 verbose headers { date: 'Tue, 30 Jun 2026 14:28:18 GMT',
+116 verbose headers   'content-type': 'application/json',
+116 verbose headers   'transfer-encoding': 'chunked',
+116 verbose headers   connection: 'keep-alive',
+116 verbose headers   'set-cookie': [ '_cfuvid=DahmNHt7XRocRWIH3iA5dn4fdM65K7IAL1VHAfJIjzg-1782829698.0274935-1.0.1.1-EYx2yAtJTmtHvpOuqmnbupMczK20Bs2DtaYqIJSILng; HttpOnly; SameSite=None; Secure; Path=/; Domain=npmjs.org' ],
+116 verbose headers   'cf-ray': 'a13ddb4cafcced06-LHR',
+116 verbose headers   'cf-cache-status': 'HIT',
+116 verbose headers   'access-control-allow-origin': '*',
+116 verbose headers   age: '177',
+116 verbose headers   'cache-control': 'public, max-age=300',
+116 verbose headers   vary: 'accept-encoding, accept',
+116 verbose headers   'last-modified': 'Wed, 22 Apr 2026 01:09:03 GMT',
+116 verbose headers   server: 'cloudflare',
+116 verbose headers   etag: 'W/"b8bf1193380656b503a66fe23e0750e1"',
+116 verbose headers   'content-encoding': 'gzip' }
+117 silly get cb [ 200,
+117 silly get   { date: 'Tue, 30 Jun 2026 14:28:18 GMT',
+117 silly get     'content-type': 'application/json',
+117 silly get     'transfer-encoding': 'chunked',
+117 silly get     connection: 'keep-alive',
+117 silly get     'set-cookie': [ '_cfuvid=DahmNHt7XRocRWIH3iA5dn4fdM65K7IAL1VHAfJIjzg-1782829698.0274935-1.0.1.1-EYx2yAtJTmtHvpOuqmnbupMczK20Bs2DtaYqIJSILng; HttpOnly; SameSite=None; Secure; Path=/; Domain=npmjs.org' ],
+117 silly get     'cf-ray': 'a13ddb4cafcced06-LHR',
+117 silly get     'cf-cache-status': 'HIT',
+117 silly get     'access-control-allow-origin': '*',
+117 silly get     age: '177',
+117 silly get     'cache-control': 'public, max-age=300',
+117 silly get     vary: 'accept-encoding, accept',
+117 silly get     'last-modified': 'Wed, 22 Apr 2026 01:09:03 GMT',
+117 silly get     server: 'cloudflare',
+117 silly get     etag: 'W/"b8bf1193380656b503a66fe23e0750e1"',
+117 silly get     'content-encoding': 'gzip' } ]
+118 verbose get saving @electron/get to /Users/bleeck/.npm/registry.npmjs.org/_40electron_252fget/.cache.json
+119 verbose correctMkdir /Users/bleeck/.npm correctMkdir not in flight; initializing
+120 silly resolveWithNewModule @electron-internal/extract-zip@1.0.4 checking installable status
+121 silly cache add args [ '@electron-internal/extract-zip@^1.0.1', null ]
+122 verbose cache add spec @electron-internal/extract-zip@^1.0.1
+123 silly cache add parsed spec Result {
+123 silly cache add   raw: '@electron-internal/extract-zip@^1.0.1',
+123 silly cache add   scope: '@electron-internal',
+123 silly cache add   escapedName: '@electron-internal%2fextract-zip',
+123 silly cache add   name: '@electron-internal/extract-zip',
+123 silly cache add   rawSpec: '^1.0.1',
+123 silly cache add   spec: '>=1.0.1 <2.0.0',
+123 silly cache add   type: 'range' }
+124 silly addNamed @electron-internal/extract-zip@>=1.0.1 <2.0.0
+125 verbose addNamed ">=1.0.1 <2.0.0" is a valid semver range for @electron-internal/extract-zip
+126 silly addNameRange { name: '@electron-internal/extract-zip',
+126 silly addNameRange   range: '>=1.0.1 <2.0.0',
+126 silly addNameRange   hasData: false }
+127 silly mapToRegistry name @electron-internal/extract-zip
+128 silly mapToRegistry scope (from package name) @electron-internal
+129 verbose mapToRegistry no registry URL found in name for scope @electron-internal
+130 silly mapToRegistry using default registry
+131 silly mapToRegistry registry https://registry.npmjs.org/
+132 silly mapToRegistry data Result {
+132 silly mapToRegistry   raw: '@electron-internal/extract-zip',
+132 silly mapToRegistry   scope: '@electron-internal',
+132 silly mapToRegistry   escapedName: '@electron-internal%2fextract-zip',
+132 silly mapToRegistry   name: '@electron-internal/extract-zip',
+132 silly mapToRegistry   rawSpec: '',
+132 silly mapToRegistry   spec: 'latest',
+132 silly mapToRegistry   type: 'tag' }
+133 silly mapToRegistry uri https://registry.npmjs.org/@electron-internal%2fextract-zip
+134 verbose addNameRange registry:https://registry.npmjs.org/@electron-internal%2fextract-zip not in flight; fetching
+135 verbose get https://registry.npmjs.org/@electron-internal%2fextract-zip not expired, no request
+136 silly addNameRange number 2 { name: '@electron-internal/extract-zip',
+136 silly addNameRange   range: '>=1.0.1 <2.0.0',
+136 silly addNameRange   hasData: true }
+137 silly addNameRange versions [ '@electron-internal/extract-zip',
+137 silly addNameRange   [ '0.0.0', '1.0.1', '1.0.2', '1.0.3', '1.0.4' ] ]
+138 silly addNamed @electron-internal/extract-zip@1.0.4
+139 verbose addNamed "1.0.4" is a plain semver version for @electron-internal/extract-zip
+140 silly mapToRegistry name @electron-internal/extract-zip
+141 silly mapToRegistry scope (from package name) @electron-internal
+142 verbose mapToRegistry no registry URL found in name for scope @electron-internal
+143 silly mapToRegistry using default registry
+144 silly mapToRegistry registry https://registry.npmjs.org/
+145 silly mapToRegistry data Result {
+145 silly mapToRegistry   raw: '@electron-internal/extract-zip',
+145 silly mapToRegistry   scope: '@electron-internal',
+145 silly mapToRegistry   escapedName: '@electron-internal%2fextract-zip',
+145 silly mapToRegistry   name: '@electron-internal/extract-zip',
+145 silly mapToRegistry   rawSpec: '',
+145 silly mapToRegistry   spec: 'latest',
+145 silly mapToRegistry   type: 'tag' }
+146 silly mapToRegistry uri https://registry.npmjs.org/@electron-internal%2fextract-zip
+147 verbose addRemoteTarball https://registry.npmjs.org/@electron-internal/extract-zip/-/extract-zip-1.0.4.tgz not in flight; adding
+148 verbose addRemoteTarball [ 'https://registry.npmjs.org/@electron-internal/extract-zip/-/extract-zip-1.0.4.tgz',
+148 verbose addRemoteTarball   '00b2c5cbd49fdc074d3ebf8dfef3c7b7b72eb46d' ]
+149 silly resolveWithNewModule @electron/get@5.0.0 checking installable status
+150 silly cache add args [ '@electron/get@^5.0.0', null ]
+151 verbose cache add spec @electron/get@^5.0.0
+152 silly cache add parsed spec Result {
+152 silly cache add   raw: '@electron/get@^5.0.0',
+152 silly cache add   scope: '@electron',
+152 silly cache add   escapedName: '@electron%2fget',
+152 silly cache add   name: '@electron/get',
+152 silly cache add   rawSpec: '^5.0.0',
+152 silly cache add   spec: '>=5.0.0 <6.0.0',
+152 silly cache add   type: 'range' }
+153 silly addNamed @electron/get@>=5.0.0 <6.0.0
+154 verbose addNamed ">=5.0.0 <6.0.0" is a valid semver range for @electron/get
+155 silly addNameRange { name: '@electron/get',
+155 silly addNameRange   range: '>=5.0.0 <6.0.0',
+155 silly addNameRange   hasData: false }
+156 silly mapToRegistry name @electron/get
+157 silly mapToRegistry scope (from package name) @electron
+158 verbose mapToRegistry no registry URL found in name for scope @electron
+159 silly mapToRegistry using default registry
+160 silly mapToRegistry registry https://registry.npmjs.org/
+161 silly mapToRegistry data Result {
+161 silly mapToRegistry   raw: '@electron/get',
+161 silly mapToRegistry   scope: '@electron',
+161 silly mapToRegistry   escapedName: '@electron%2fget',
+161 silly mapToRegistry   name: '@electron/get',
+161 silly mapToRegistry   rawSpec: '',
+161 silly mapToRegistry   spec: 'latest',
+161 silly mapToRegistry   type: 'tag' }
+162 silly mapToRegistry uri https://registry.npmjs.org/@electron%2fget
+163 verbose addNameRange registry:https://registry.npmjs.org/@electron%2fget not in flight; fetching
+164 verbose get https://registry.npmjs.org/@electron%2fget not expired, no request
+165 silly addNameRange number 2 { name: '@electron/get', range: '>=5.0.0 <6.0.0', hasData: true }
+166 silly addNameRange versions [ '@electron/get',
+166 silly addNameRange   [ '1.0.0',
+166 silly addNameRange     '1.0.1',
+166 silly addNameRange     '1.0.2',
+166 silly addNameRange     '1.0.3',
+166 silly addNameRange     '1.1.0',
+166 silly addNameRange     '1.1.1',
+166 silly addNameRange     '1.2.0',
+166 silly addNameRange     '1.3.0',
+166 silly addNameRange     '1.3.1',
+166 silly addNameRange     '1.3.2',
+166 silly addNameRange     '1.3.3',
+166 silly addNameRange     '1.4.0',
+166 silly addNameRange     '1.5.0',
+166 silly addNameRange     '1.6.0',
+166 silly addNameRange     '1.7.0',
+166 silly addNameRange     '1.7.1',
+166 silly addNameRange     '1.7.2',
+166 silly addNameRange     '1.7.3',
+166 silly addNameRange     '1.7.4',
+166 silly addNameRange     '1.7.5',
+166 silly addNameRange     '1.7.6',
+166 silly addNameRange     '1.8.0',
+166 silly addNameRange     '1.9.0',
+166 silly addNameRange     '1.10.0',
+166 silly addNameRange     '1.12.0',
+166 silly addNameRange     '1.12.2',
+166 silly addNameRange     '1.12.3',
+166 silly addNameRange     '1.12.4',
+166 silly addNameRange     '1.13.0',
+166 silly addNameRange     '1.13.1',
+166 silly addNameRange     '1.14.0',
+166 silly addNameRange     '1.14.1',
+166 silly addNameRange     '2.0.0',
+166 silly addNameRange     '2.0.1',
+166 silly addNameRange     '2.0.2',
+166 silly addNameRange     '2.0.3',
+166 silly addNameRange     '3.0.0',
+166 silly addNameRange     '3.1.0',
+166 silly addNameRange     '4.0.0',
+166 silly addNameRange     '4.0.1',
+166 silly addNameRange     '4.0.2',
+166 silly addNameRange     '4.0.3',
+166 silly addNameRange     '5.0.0' ] ]
+167 silly addNamed @electron/get@5.0.0
+168 verbose addNamed "5.0.0" is a plain semver version for @electron/get
+169 silly mapToRegistry name @electron/get
+170 silly mapToRegistry scope (from package name) @electron
+171 verbose mapToRegistry no registry URL found in name for scope @electron
+172 silly mapToRegistry using default registry
+173 silly mapToRegistry registry https://registry.npmjs.org/
+174 silly mapToRegistry data Result {
+174 silly mapToRegistry   raw: '@electron/get',
+174 silly mapToRegistry   scope: '@electron',
+174 silly mapToRegistry   escapedName: '@electron%2fget',
+174 silly mapToRegistry   name: '@electron/get',
+174 silly mapToRegistry   rawSpec: '',
+174 silly mapToRegistry   spec: 'latest',
+174 silly mapToRegistry   type: 'tag' }
+175 silly mapToRegistry uri https://registry.npmjs.org/@electron%2fget
+176 verbose addRemoteTarball https://registry.npmjs.org/@electron/get/-/get-5.0.0.tgz not in flight; adding
+177 verbose addRemoteTarball [ 'https://registry.npmjs.org/@electron/get/-/get-5.0.0.tgz',
+177 verbose addRemoteTarball   '3c7ec0e26480ce51a487d54c8a10233460531021' ]
+178 info retry fetch attempt 1 at 3:28:18 PM
+179 info attempt registry request try #1 at 3:28:18 PM
+180 http fetch GET https://registry.npmjs.org/@electron-internal/extract-zip/-/extract-zip-1.0.4.tgz
+181 info retry fetch attempt 1 at 3:28:18 PM
+182 info attempt registry request try #1 at 3:28:18 PM
+183 http fetch GET https://registry.npmjs.org/@electron/get/-/get-5.0.0.tgz
+184 http fetch 200 https://registry.npmjs.org/@electron-internal/extract-zip/-/extract-zip-1.0.4.tgz
+185 http fetch 200 https://registry.npmjs.org/@electron/get/-/get-5.0.0.tgz
+186 silly fetchAndShaCheck shasum 3c7ec0e26480ce51a487d54c8a10233460531021
+187 verbose addTmpTarball /var/folders/3t/r__v5btd4bs750hqz1x8tlsr0000gp/T/npm-17147-184728d3/registry.npmjs.org/_40electron/get/-/get-5.0.0.tgz not in flight; adding
+188 verbose addTmpTarball already have metadata; skipping unpack for @electron/get@5.0.0
+189 verbose correctMkdir /Users/bleeck/.npm correctMkdir not in flight; initializing
+190 silly cache afterAdd @electron/get@5.0.0
+191 verbose afterAdd /Users/bleeck/.npm/@electron/get/5.0.0/package/package.json not in flight; writing
+192 verbose correctMkdir /Users/bleeck/.npm correctMkdir not in flight; initializing
+193 verbose afterAdd /Users/bleeck/.npm/@electron/get/5.0.0/package/package.json written
+194 silly fetchAndShaCheck shasum 00b2c5cbd49fdc074d3ebf8dfef3c7b7b72eb46d
+195 verbose addTmpTarball /var/folders/3t/r__v5btd4bs750hqz1x8tlsr0000gp/T/npm-17147-184728d3/registry.npmjs.org/_40electron-internal/extract-zip/-/extract-zip-1.0.4.tgz not in flight; adding
+196 verbose addTmpTarball already have metadata; skipping unpack for @electron-internal/extract-zip@1.0.4
+197 verbose correctMkdir /Users/bleeck/.npm correctMkdir not in flight; initializing
+198 silly cache afterAdd @electron-internal/extract-zip@1.0.4
+199 verbose afterAdd /Users/bleeck/.npm/@electron-internal/extract-zip/1.0.4/package/package.json not in flight; writing
+200 verbose correctMkdir /Users/bleeck/.npm correctMkdir not in flight; initializing
+201 verbose afterAdd /Users/bleeck/.npm/@electron-internal/extract-zip/1.0.4/package/package.json written
+202 http 200 https://registry.npmjs.org/@types%2fnode
+203 verbose headers { date: 'Tue, 30 Jun 2026 14:28:18 GMT',
+203 verbose headers   'content-type': 'application/json',
+203 verbose headers   'transfer-encoding': 'chunked',
+203 verbose headers   connection: 'keep-alive',
+203 verbose headers   'set-cookie': [ '_cfuvid=a7V2IVTE8zZ7b_MAV5S9nAmb1sX4Zatnc05MEegJ_yY-1782829698.0132422-1.0.1.1-U_Jyh2ep4hduaVWh4P8kfh0xhoHFD3eH4wk25L8KB4c; HttpOnly; SameSite=None; Secure; Path=/; Domain=npmjs.org' ],
+203 verbose headers   'cf-ray': 'a13ddb4c9d5934ed-LHR',
+203 verbose headers   'cf-cache-status': 'HIT',
+203 verbose headers   'access-control-allow-origin': '*',
+203 verbose headers   age: '170',
+203 verbose headers   'cache-control': 'public, max-age=300',
+203 verbose headers   vary: 'accept-encoding, accept',
+203 verbose headers   'last-modified': 'Wed, 24 Jun 2026 20:33:12 GMT',
+203 verbose headers   server: 'cloudflare',
+203 verbose headers   etag: 'W/"6bf57631a69bf3f67b2710e5af279314"',
+203 verbose headers   'content-encoding': 'gzip' }
+204 silly get cb [ 200,
+204 silly get   { date: 'Tue, 30 Jun 2026 14:28:18 GMT',
+204 silly get     'content-type': 'application/json',
+204 silly get     'transfer-encoding': 'chunked',
+204 silly get     connection: 'keep-alive',
+204 silly get     'set-cookie': [ '_cfuvid=a7V2IVTE8zZ7b_MAV5S9nAmb1sX4Zatnc05MEegJ_yY-1782829698.0132422-1.0.1.1-U_Jyh2ep4hduaVWh4P8kfh0xhoHFD3eH4wk25L8KB4c; HttpOnly; SameSite=None; Secure; Path=/; Domain=npmjs.org' ],
+204 silly get     'cf-ray': 'a13ddb4c9d5934ed-LHR',
+204 silly get     'cf-cache-status': 'HIT',
+204 silly get     'access-control-allow-origin': '*',
+204 silly get     age: '170',
+204 silly get     'cache-control': 'public, max-age=300',
+204 silly get     vary: 'accept-encoding, accept',
+204 silly get     'last-modified': 'Wed, 24 Jun 2026 20:33:12 GMT',
+204 silly get     server: 'cloudflare',
+204 silly get     etag: 'W/"6bf57631a69bf3f67b2710e5af279314"',
+204 silly get     'content-encoding': 'gzip' } ]
+205 verbose get saving @types/node to /Users/bleeck/.npm/registry.npmjs.org/_40types_252fnode/.cache.json
+206 verbose correctMkdir /Users/bleeck/.npm correctMkdir not in flight; initializing
+207 silly resolveWithNewModule @types/node@24.13.2 checking installable status
+208 silly cache add args [ '@types/node@^24.9.0', null ]
+209 verbose cache add spec @types/node@^24.9.0
+210 silly cache add parsed spec Result {
+210 silly cache add   raw: '@types/node@^24.9.0',
+210 silly cache add   scope: '@types',
+210 silly cache add   escapedName: '@types%2fnode',
+210 silly cache add   name: '@types/node',
+210 silly cache add   rawSpec: '^24.9.0',
+210 silly cache add   spec: '>=24.9.0 <25.0.0',
+210 silly cache add   type: 'range' }
+211 silly addNamed @types/node@>=24.9.0 <25.0.0
+212 verbose addNamed ">=24.9.0 <25.0.0" is a valid semver range for @types/node
+213 silly addNameRange { name: '@types/node',
+213 silly addNameRange   range: '>=24.9.0 <25.0.0',
+213 silly addNameRange   hasData: false }
+214 silly mapToRegistry name @types/node
+215 silly mapToRegistry scope (from package name) @types
+216 verbose mapToRegistry no registry URL found in name for scope @types
+217 silly mapToRegistry using default registry
+218 silly mapToRegistry registry https://registry.npmjs.org/
+219 silly mapToRegistry data Result {
+219 silly mapToRegistry   raw: '@types/node',
+219 silly mapToRegistry   scope: '@types',
+219 silly mapToRegistry   escapedName: '@types%2fnode',
+219 silly mapToRegistry   name: '@types/node',
+219 silly mapToRegistry   rawSpec: '',
+219 silly mapToRegistry   spec: 'latest',
+219 silly mapToRegistry   type: 'tag' }
+220 silly mapToRegistry uri https://registry.npmjs.org/@types%2fnode
+221 verbose addNameRange registry:https://registry.npmjs.org/@types%2fnode not in flight; fetching
+222 verbose get https://registry.npmjs.org/@types%2fnode not expired, no request
+223 silly addNameRange number 2 { name: '@types/node', range: '>=24.9.0 <25.0.0', hasData: true }
+224 silly addNameRange versions [ '@types/node',
+224 silly addNameRange   [ '4.0.15-alpha',
+224 silly addNameRange     '4.0.16-alpha',
+224 silly addNameRange     '4.0.21-alpha',
+224 silly addNameRange     '4.0.22-alpha',
+224 silly addNameRange     '4.0.23-alpha',
+224 silly addNameRange     '4.0.24-alpha',
+224 silly addNameRange     '4.0.25-alpha',
+224 silly addNameRange     '4.0.26-alpha',
+224 silly addNameRange     '4.0.27-alpha',
+224 silly addNameRange     '4.0.28-alpha',
+224 silly addNameRange     '4.0.29',
+224 silly addNameRange     '4.0.30',
+224 silly addNameRange     '6.0.31',
+224 silly addNameRange     '6.0.32',
+224 silly addNameRange     '6.0.33',
+224 silly addNameRange     '6.0.34',
+224 silly addNameRange     '6.0.35',
+224 silly addNameRange     '6.0.36',
+224 silly addNameRange     '6.0.37',
+224 silly addNameRange     '6.0.38',
+224 silly addNameRange     '6.0.39',
+224 silly addNameRange     '6.0.40',
+224 silly addNameRange     '6.0.41',
+224 silly addNameRange     '6.0.42',
+224 silly addNameRange     '6.0.43',
+224 silly addNameRange     '6.0.44',
+224 silly addNameRange     '6.0.45',
+224 silly addNameRange     '6.0.46',
+224 silly addNameRange     '6.0.47',
+224 silly addNameRange     '6.0.48',
+224 silly addNameRange     '6.0.49',
+224 silly addNameRange     '6.0.50',
+224 silly addNameRange     '6.0.51',
+224 silly addNameRange     '0.0.0',
+224 silly addNameRange     '0.0.1',
+224 silly addNameRange     '0.0.2',
+224 silly addNameRange     '0.0.3',
+224 silly addNameRange     '6.0.52',
+224 silly addNameRange     '6.0.53',
+224 silly addNameRange     '6.0.54',
+224 silly addNameRange     '6.0.55',
+224 silly addNameRange     '6.0.56',
+224 silly addNameRange     '6.0.57',
+224 silly addNameRange     '6.0.58',
+224 silly addNameRange     '6.0.59',
+224 silly addNameRange     '4.2.0',
+224 silly addNameRange     '0.12.0',
+224 silly addNameRange     '7.0.0',
+224 silly addNameRange     '6.0.60',
+224 silly addNameRange     '7.0.1',
+224 silly addNameRange     '6.0.61',
+224 silly addNameRange     '7.0.2',
+224 silly addNameRange     '7.0.3',
+224 silly addNameRange     '7.0.4',
+224 silly addNameRange     '4.2.1',
+224 silly addNameRange     '6.0.62',
+224 silly addNameRange     '7.0.5',
+224 silly addNameRange     '6.0.63',
+224 silly addNameRange     '4.2.2',
+224 silly addNameRange     '0.12.1',
+224 silly addNameRange     '4.2.3',
+224 silly addNameRange     '6.0.64',
+224 silly addNameRange     '7.0.6',
+224 silly addNameRange     '6.0.65',
+224 silly addNameRange     '7.0.7',
+224 silly addNameRange     '7.0.8',
+224 silly addNameRange     '4.2.4',
+224 silly addNameRange     '0.12.2',
+224 silly addNameRange     '6.0.66',
+224 silly addNameRange     '7.0.9',
+224 silly addNameRange     '7.0.10',
+224 silly addNameRange     '7.0.11',
+224 silly addNameRange     '6.0.67',
+224 silly addNameRange     '6.0.68',
+224 silly addNameRange     '7.0.12',
+224 silly addNameRange     '4.2.5',
+224 silly addNameRange     '0.12.3',
+224 silly addNameRange     '6.0.69',
+224 silly addNameRange     '0.12.4',
+224 silly addNameRange     '4.2.6',
+224 silly addNameRange     '6.0.70',
+224 silly addNameRange     '7.0.13',
+224 silly addNameRange     '7.0.14',
+224 silly addNameRange     '6.0.71',
+224 silly addNameRange     '7.0.15',
+224 silly addNameRange     '4.2.7',
+224 silly addNameRange     '6.0.72',
+224 silly addNameRange     '7.0.16',
+224 silly addNameRange     '7.0.17',
+224 silly addNameRange     '7.0.18',
+224 silly addNameRange     '4.2.8',
+224 silly addNameRange     '6.0.73',
+224 silly addNameRange     '7.0.19',
+224 silly addNameRange     '7.0.20',
+224 silly addNameRange     '7.0.21',
+224 silly addNameRange     '7.0.22',
+224 silly addNameRange     '6.0.74',
+224 silly addNameRange     '7.0.23',
+224 silly addNameRange     '7.0.24',
+224 silly addNameRange     '6.0.75',
+224 silly addNameRange     ... 2249 more items ] ]
+225 silly addNamed @types/node@24.13.2
+226 verbose addNamed "24.13.2" is a plain semver version for @types/node
+227 silly mapToRegistry name @types/node
+228 silly mapToRegistry scope (from package name) @types
+229 verbose mapToRegistry no registry URL found in name for scope @types
+230 silly mapToRegistry using default registry
+231 silly mapToRegistry registry https://registry.npmjs.org/
+232 silly mapToRegistry data Result {
+232 silly mapToRegistry   raw: '@types/node',
+232 silly mapToRegistry   scope: '@types',
+232 silly mapToRegistry   escapedName: '@types%2fnode',
+232 silly mapToRegistry   name: '@types/node',
+232 silly mapToRegistry   rawSpec: '',
+232 silly mapToRegistry   spec: 'latest',
+232 silly mapToRegistry   type: 'tag' }
+233 silly mapToRegistry uri https://registry.npmjs.org/@types%2fnode
+234 verbose addRemoteTarball https://registry.npmjs.org/@types/node/-/node-24.13.2.tgz not in flight; adding
+235 verbose addRemoteTarball [ 'https://registry.npmjs.org/@types/node/-/node-24.13.2.tgz',
+235 verbose addRemoteTarball   '3b9b280a7055128359f125eb1067d9a190f39854' ]
+236 info retry fetch attempt 1 at 3:28:18 PM
+237 info attempt registry request try #1 at 3:28:18 PM
+238 http fetch GET https://registry.npmjs.org/@types/node/-/node-24.13.2.tgz
+239 http fetch 200 https://registry.npmjs.org/@types/node/-/node-24.13.2.tgz
+240 silly fetchAndShaCheck shasum 3b9b280a7055128359f125eb1067d9a190f39854
+241 verbose addTmpTarball /var/folders/3t/r__v5btd4bs750hqz1x8tlsr0000gp/T/npm-17147-184728d3/registry.npmjs.org/_40types/node/-/node-24.13.2.tgz not in flight; adding
+242 verbose addTmpTarball already have metadata; skipping unpack for @types/node@24.13.2
+243 verbose correctMkdir /Users/bleeck/.npm correctMkdir not in flight; initializing
+244 silly cache afterAdd @types/node@24.13.2
+245 verbose afterAdd /Users/bleeck/.npm/@types/node/24.13.2/package/package.json not in flight; writing
+246 verbose correctMkdir /Users/bleeck/.npm correctMkdir not in flight; initializing
+247 verbose afterAdd /Users/bleeck/.npm/@types/node/24.13.2/package/package.json written
+248 silly fetchNamedPackageData debug
+249 silly mapToRegistry name debug
+250 silly mapToRegistry using default registry
+251 silly mapToRegistry registry https://registry.npmjs.org/
+252 silly mapToRegistry data Result {
+252 silly mapToRegistry   raw: 'debug',
+252 silly mapToRegistry   scope: null,
+252 silly mapToRegistry   escapedName: 'debug',
+252 silly mapToRegistry   name: 'debug',
+252 silly mapToRegistry   rawSpec: '',
+252 silly mapToRegistry   spec: 'latest',
+252 silly mapToRegistry   type: 'tag' }
+253 silly mapToRegistry uri https://registry.npmjs.org/debug
+254 silly fetchNamedPackageData env-paths
+255 silly mapToRegistry name env-paths
+256 silly mapToRegistry using default registry
+257 silly mapToRegistry registry https://registry.npmjs.org/
+258 silly mapToRegistry data Result {
+258 silly mapToRegistry   raw: 'env-paths',
+258 silly mapToRegistry   scope: null,
+258 silly mapToRegistry   escapedName: 'env-paths',
+258 silly mapToRegistry   name: 'env-paths',
+258 silly mapToRegistry   rawSpec: '',
+258 silly mapToRegistry   spec: 'latest',
+258 silly mapToRegistry   type: 'tag' }
+259 silly mapToRegistry uri https://registry.npmjs.org/env-paths
+260 silly fetchNamedPackageData graceful-fs
+261 silly mapToRegistry name graceful-fs
+262 silly mapToRegistry using default registry
+263 silly mapToRegistry registry https://registry.npmjs.org/
+264 silly mapToRegistry data Result {
+264 silly mapToRegistry   raw: 'graceful-fs',
+264 silly mapToRegistry   scope: null,
+264 silly mapToRegistry   escapedName: 'graceful-fs',
+264 silly mapToRegistry   name: 'graceful-fs',
+264 silly mapToRegistry   rawSpec: '',
+264 silly mapToRegistry   spec: 'latest',
+264 silly mapToRegistry   type: 'tag' }
+265 silly mapToRegistry uri https://registry.npmjs.org/graceful-fs
+266 silly fetchNamedPackageData progress
+267 silly mapToRegistry name progress
+268 silly mapToRegistry using default registry
+269 silly mapToRegistry registry https://registry.npmjs.org/
+270 silly mapToRegistry data Result {
+270 silly mapToRegistry   raw: 'progress',
+270 silly mapToRegistry   scope: null,
+270 silly mapToRegistry   escapedName: 'progress',
+270 silly mapToRegistry   name: 'progress',
+270 silly mapToRegistry   rawSpec: '',
+270 silly mapToRegistry   spec: 'latest',
+270 silly mapToRegistry   type: 'tag' }
+271 silly mapToRegistry uri https://registry.npmjs.org/progress
+272 silly fetchNamedPackageData semver
+273 silly mapToRegistry name semver
+274 silly mapToRegistry using default registry
+275 silly mapToRegistry registry https://registry.npmjs.org/
+276 silly mapToRegistry data Result {
+276 silly mapToRegistry   raw: 'semver',
+276 silly mapToRegistry   scope: null,
+276 silly mapToRegistry   escapedName: 'semver',
+276 silly mapToRegistry   name: 'semver',
+276 silly mapToRegistry   rawSpec: '',
+276 silly mapToRegistry   spec: 'latest',
+276 silly mapToRegistry   type: 'tag' }
+277 silly mapToRegistry uri https://registry.npmjs.org/semver
+278 silly fetchNamedPackageData sumchecker
+279 silly mapToRegistry name sumchecker
+280 silly mapToRegistry using default registry
+281 silly mapToRegistry registry https://registry.npmjs.org/
+282 silly mapToRegistry data Result {
+282 silly mapToRegistry   raw: 'sumchecker',
+282 silly mapToRegistry   scope: null,
+282 silly mapToRegistry   escapedName: 'sumchecker',
+282 silly mapToRegistry   name: 'sumchecker',
+282 silly mapToRegistry   rawSpec: '',
+282 silly mapToRegistry   spec: 'latest',
+282 silly mapToRegistry   type: 'tag' }
+283 silly mapToRegistry uri https://registry.npmjs.org/sumchecker
+284 silly fetchNamedPackageData undici
+285 silly mapToRegistry name undici
+286 silly mapToRegistry using default registry
+287 silly mapToRegistry registry https://registry.npmjs.org/
+288 silly mapToRegistry data Result {
+288 silly mapToRegistry   raw: 'undici',
+288 silly mapToRegistry   scope: null,
+288 silly mapToRegistry   escapedName: 'undici',
+288 silly mapToRegistry   name: 'undici',
+288 silly mapToRegistry   rawSpec: '',
+288 silly mapToRegistry   spec: 'latest',
+288 silly mapToRegistry   type: 'tag' }
+289 silly mapToRegistry uri https://registry.npmjs.org/undici
+290 verbose request uri https://registry.npmjs.org/debug
+291 verbose request no auth needed
+292 info attempt registry request try #1 at 3:28:18 PM
+293 http request GET https://registry.npmjs.org/debug
+294 verbose request uri https://registry.npmjs.org/env-paths
+295 verbose request no auth needed
+296 info attempt registry request try #1 at 3:28:18 PM
+297 http request GET https://registry.npmjs.org/env-paths
+298 verbose request uri https://registry.npmjs.org/graceful-fs
+299 verbose request no auth needed
+300 info attempt registry request try #1 at 3:28:18 PM
+301 http request GET https://registry.npmjs.org/graceful-fs
+302 verbose request uri https://registry.npmjs.org/progress
+303 verbose request no auth needed
+304 info attempt registry request try #1 at 3:28:18 PM
+305 http request GET https://registry.npmjs.org/progress
+306 verbose request uri https://registry.npmjs.org/semver
+307 verbose request no auth needed
+308 info attempt registry request try #1 at 3:28:18 PM
+309 http request GET https://registry.npmjs.org/semver
+310 verbose request uri https://registry.npmjs.org/sumchecker
+311 verbose request no auth needed
+312 info attempt registry request try #1 at 3:28:18 PM
+313 http request GET https://registry.npmjs.org/sumchecker
+314 verbose request uri https://registry.npmjs.org/undici
+315 verbose request no auth needed
+316 info attempt registry request try #1 at 3:28:18 PM
+317 http request GET https://registry.npmjs.org/undici
+318 http 200 https://registry.npmjs.org/env-paths
+319 verbose headers { date: 'Tue, 30 Jun 2026 14:28:18 GMT',
+319 verbose headers   'content-type': 'application/json',
+319 verbose headers   'transfer-encoding': 'chunked',
+319 verbose headers   connection: 'keep-alive',
+319 verbose headers   'set-cookie': [ '_cfuvid=LX2IpmCdEIUcbj22J0nYrajA4jdk5ihDX90zhe8E8HQ-1782829698.9055681-1.0.1.1-uLNPpOmvl2YHIRadxv1EvK5tEjBns9R8F11yyeLCMGA; HttpOnly; SameSite=None; Secure; Path=/; Domain=npmjs.org' ],
+319 verbose headers   'cf-ray': 'a13ddb522f25ed06-LHR',
+319 verbose headers   'cf-cache-status': 'HIT',
+319 verbose headers   'access-control-allow-origin': '*',
+319 verbose headers   age: '16',
+319 verbose headers   'cache-control': 'public, max-age=300',
+319 verbose headers   vary: 'accept-encoding, accept',
+319 verbose headers   'last-modified': 'Sat, 24 Jan 2026 14:29:08 GMT',
+319 verbose headers   server: 'cloudflare',
+319 verbose headers   etag: 'W/"90dd3c8dbbfdf878abf87853176717f9"',
+319 verbose headers   'content-encoding': 'gzip' }
+320 silly get cb [ 200,
+320 silly get   { date: 'Tue, 30 Jun 2026 14:28:18 GMT',
+320 silly get     'content-type': 'application/json',
+320 silly get     'transfer-encoding': 'chunked',
+320 silly get     connection: 'keep-alive',
+320 silly get     'set-cookie': [ '_cfuvid=LX2IpmCdEIUcbj22J0nYrajA4jdk5ihDX90zhe8E8HQ-1782829698.9055681-1.0.1.1-uLNPpOmvl2YHIRadxv1EvK5tEjBns9R8F11yyeLCMGA; HttpOnly; SameSite=None; Secure; Path=/; Domain=npmjs.org' ],
+320 silly get     'cf-ray': 'a13ddb522f25ed06-LHR',
+320 silly get     'cf-cache-status': 'HIT',
+320 silly get     'access-control-allow-origin': '*',
+320 silly get     age: '16',
+320 silly get     'cache-control': 'public, max-age=300',
+320 silly get     vary: 'accept-encoding, accept',
+320 silly get     'last-modified': 'Sat, 24 Jan 2026 14:29:08 GMT',
+320 silly get     server: 'cloudflare',
+320 silly get     etag: 'W/"90dd3c8dbbfdf878abf87853176717f9"',
+320 silly get     'content-encoding': 'gzip' } ]
+321 verbose get saving env-paths to /Users/bleeck/.npm/registry.npmjs.org/env-paths/.cache.json
+322 verbose correctMkdir /Users/bleeck/.npm correctMkdir not in flight; initializing
+323 http 200 https://registry.npmjs.org/graceful-fs
+324 verbose headers { date: 'Tue, 30 Jun 2026 14:28:18 GMT',
+324 verbose headers   'content-type': 'application/json',
+324 verbose headers   'transfer-encoding': 'chunked',
+324 verbose headers   connection: 'keep-alive',
+324 verbose headers   'set-cookie': [ '_cfuvid=3PIMyPW5Lk7UfMw2dsQt8SoNFJtn2skqdSotzgDJ6aU-1782829698.9057171-1.0.1.1-BUlb7uumSJZOcFKDgVhOs1rtZDkQt8L_yc52o2CB.FA; HttpOnly; SameSite=None; Secure; Path=/; Domain=npmjs.org' ],
+324 verbose headers   'cf-ray': 'a13ddb522c61f668-LHR',
+324 verbose headers   'cf-cache-status': 'HIT',
+324 verbose headers   'access-control-allow-origin': '*',
+324 verbose headers   age: '38',
+324 verbose headers   'cache-control': 'public, max-age=300',
+324 verbose headers   vary: 'accept-encoding, accept',
+324 verbose headers   'last-modified': 'Fri, 09 Jun 2023 21:32:48 GMT',
+324 verbose headers   server: 'cloudflare',
+324 verbose headers   etag: 'W/"1cbaa24705e0589f55861c185b5c2307"',
+324 verbose headers   'content-encoding': 'gzip' }
+325 silly get cb [ 200,
+325 silly get   { date: 'Tue, 30 Jun 2026 14:28:18 GMT',
+325 silly get     'content-type': 'application/json',
+325 silly get     'transfer-encoding': 'chunked',
+325 silly get     connection: 'keep-alive',
+325 silly get     'set-cookie': [ '_cfuvid=3PIMyPW5Lk7UfMw2dsQt8SoNFJtn2skqdSotzgDJ6aU-1782829698.9057171-1.0.1.1-BUlb7uumSJZOcFKDgVhOs1rtZDkQt8L_yc52o2CB.FA; HttpOnly; SameSite=None; Secure; Path=/; Domain=npmjs.org' ],
+325 silly get     'cf-ray': 'a13ddb522c61f668-LHR',
+325 silly get     'cf-cache-status': 'HIT',
+325 silly get     'access-control-allow-origin': '*',
+325 silly get     age: '38',
+325 silly get     'cache-control': 'public, max-age=300',
+325 silly get     vary: 'accept-encoding, accept',
+325 silly get     'last-modified': 'Fri, 09 Jun 2023 21:32:48 GMT',
+325 silly get     server: 'cloudflare',
+325 silly get     etag: 'W/"1cbaa24705e0589f55861c185b5c2307"',
+325 silly get     'content-encoding': 'gzip' } ]
+326 verbose get saving graceful-fs to /Users/bleeck/.npm/registry.npmjs.org/graceful-fs/.cache.json
+327 verbose correctMkdir /Users/bleeck/.npm correctMkdir not in flight; initializing
+328 silly resolveWithNewModule env-paths@3.0.0 checking installable status
+329 silly cache add args [ 'env-paths@^3.0.0', null ]
+330 verbose cache add spec env-paths@^3.0.0
+331 silly cache add parsed spec Result {
+331 silly cache add   raw: 'env-paths@^3.0.0',
+331 silly cache add   scope: null,
+331 silly cache add   escapedName: 'env-paths',
+331 silly cache add   name: 'env-paths',
+331 silly cache add   rawSpec: '^3.0.0',
+331 silly cache add   spec: '>=3.0.0 <4.0.0',
+331 silly cache add   type: 'range' }
+332 silly addNamed env-paths@>=3.0.0 <4.0.0
+333 verbose addNamed ">=3.0.0 <4.0.0" is a valid semver range for env-paths
+334 silly addNameRange { name: 'env-paths', range: '>=3.0.0 <4.0.0', hasData: false }
+335 silly mapToRegistry name env-paths
+336 silly mapToRegistry using default registry
+337 silly mapToRegistry registry https://registry.npmjs.org/
+338 silly mapToRegistry data Result {
+338 silly mapToRegistry   raw: 'env-paths',
+338 silly mapToRegistry   scope: null,
+338 silly mapToRegistry   escapedName: 'env-paths',
+338 silly mapToRegistry   name: 'env-paths',
+338 silly mapToRegistry   rawSpec: '',
+338 silly mapToRegistry   spec: 'latest',
+338 silly mapToRegistry   type: 'tag' }
+339 silly mapToRegistry uri https://registry.npmjs.org/env-paths
+340 verbose addNameRange registry:https://registry.npmjs.org/env-paths not in flight; fetching
+341 http 200 https://registry.npmjs.org/debug
+342 verbose headers { date: 'Tue, 30 Jun 2026 14:28:18 GMT',
+342 verbose headers   'content-type': 'application/json',
+342 verbose headers   'transfer-encoding': 'chunked',
+342 verbose headers   connection: 'keep-alive',
+342 verbose headers   'set-cookie': [ '_cfuvid=DDa03mb_A1d_jVhs6etqRIpJnK49xQ3JRY7p6nELk8Q-1782829698.905047-1.0.1.1-lUJ.emrjq3iyk7Bk2VX5D9XE7dHvcM691FSz7L1aBAQ; HttpOnly; SameSite=None; Secure; Path=/; Domain=npmjs.org' ],
+342 verbose headers   'cf-ray': 'a13ddb522efa34ed-LHR',
+342 verbose headers   'cf-cache-status': 'HIT',
+342 verbose headers   'access-control-allow-origin': '*',
+342 verbose headers   age: '291',
+342 verbose headers   'cache-control': 'public, max-age=300',
+342 verbose headers   vary: 'accept-encoding, accept',
+342 verbose headers   'last-modified': 'Sat, 13 Sep 2025 17:25:21 GMT',
+342 verbose headers   server: 'cloudflare',
+342 verbose headers   etag: 'W/"11050952da2ca49e2571ebcd3dfd554e"',
+342 verbose headers   'content-encoding': 'gzip' }
+343 silly get cb [ 200,
+343 silly get   { date: 'Tue, 30 Jun 2026 14:28:18 GMT',
+343 silly get     'content-type': 'application/json',
+343 silly get     'transfer-encoding': 'chunked',
+343 silly get     connection: 'keep-alive',
+343 silly get     'set-cookie': [ '_cfuvid=DDa03mb_A1d_jVhs6etqRIpJnK49xQ3JRY7p6nELk8Q-1782829698.905047-1.0.1.1-lUJ.emrjq3iyk7Bk2VX5D9XE7dHvcM691FSz7L1aBAQ; HttpOnly; SameSite=None; Secure; Path=/; Domain=npmjs.org' ],
+343 silly get     'cf-ray': 'a13ddb522efa34ed-LHR',
+343 silly get     'cf-cache-status': 'HIT',
+343 silly get     'access-control-allow-origin': '*',
+343 silly get     age: '291',
+343 silly get     'cache-control': 'public, max-age=300',
+343 silly get     vary: 'accept-encoding, accept',
+343 silly get     'last-modified': 'Sat, 13 Sep 2025 17:25:21 GMT',
+343 silly get     server: 'cloudflare',
+343 silly get     etag: 'W/"11050952da2ca49e2571ebcd3dfd554e"',
+343 silly get     'content-encoding': 'gzip' } ]
+344 verbose get saving debug to /Users/bleeck/.npm/registry.npmjs.org/debug/.cache.json
+345 verbose correctMkdir /Users/bleeck/.npm correctMkdir not in flight; initializing
+346 verbose get https://registry.npmjs.org/env-paths not expired, no request
+347 silly addNameRange number 2 { name: 'env-paths', range: '>=3.0.0 <4.0.0', hasData: true }
+348 silly addNameRange versions [ 'env-paths',
+348 silly addNameRange   [ '0.1.0',
+348 silly addNameRange     '0.2.0',
+348 silly addNameRange     '0.3.0',
+348 silly addNameRange     '0.3.1',
+348 silly addNameRange     '1.0.0',
+348 silly addNameRange     '2.0.0',
+348 silly addNameRange     '2.1.0',
+348 silly addNameRange     '2.2.0',
+348 silly addNameRange     '2.2.1',
+348 silly addNameRange     '3.0.0',
+348 silly addNameRange     '4.0.0' ] ]
+349 silly addNamed env-paths@3.0.0
+350 verbose addNamed "3.0.0" is a plain semver version for env-paths
+351 silly mapToRegistry name env-paths
+352 silly mapToRegistry using default registry
+353 silly mapToRegistry registry https://registry.npmjs.org/
+354 silly mapToRegistry data Result {
+354 silly mapToRegistry   raw: 'env-paths',
+354 silly mapToRegistry   scope: null,
+354 silly mapToRegistry   escapedName: 'env-paths',
+354 silly mapToRegistry   name: 'env-paths',
+354 silly mapToRegistry   rawSpec: '',
+354 silly mapToRegistry   spec: 'latest',
+354 silly mapToRegistry   type: 'tag' }
+355 silly mapToRegistry uri https://registry.npmjs.org/env-paths
+356 verbose addRemoteTarball https://registry.npmjs.org/env-paths/-/env-paths-3.0.0.tgz not in flight; adding
+357 verbose addRemoteTarball [ 'https://registry.npmjs.org/env-paths/-/env-paths-3.0.0.tgz',
+357 verbose addRemoteTarball   '2f1e89c2f6dbd3408e1b1711dd82d62e317f58da' ]
+358 silly resolveWithNewModule graceful-fs@4.2.11 checking installable status
+359 silly cache add args [ 'graceful-fs@^4.2.11', null ]
+360 verbose cache add spec graceful-fs@^4.2.11
+361 silly cache add parsed spec Result {
+361 silly cache add   raw: 'graceful-fs@^4.2.11',
+361 silly cache add   scope: null,
+361 silly cache add   escapedName: 'graceful-fs',
+361 silly cache add   name: 'graceful-fs',
+361 silly cache add   rawSpec: '^4.2.11',
+361 silly cache add   spec: '>=4.2.11 <5.0.0',
+361 silly cache add   type: 'range' }
+362 silly addNamed graceful-fs@>=4.2.11 <5.0.0
+363 verbose addNamed ">=4.2.11 <5.0.0" is a valid semver range for graceful-fs
+364 silly addNameRange { name: 'graceful-fs', range: '>=4.2.11 <5.0.0', hasData: false }
+365 silly mapToRegistry name graceful-fs
+366 silly mapToRegistry using default registry
+367 silly mapToRegistry registry https://registry.npmjs.org/
+368 silly mapToRegistry data Result {
+368 silly mapToRegistry   raw: 'graceful-fs',
+368 silly mapToRegistry   scope: null,
+368 silly mapToRegistry   escapedName: 'graceful-fs',
+368 silly mapToRegistry   name: 'graceful-fs',
+368 silly mapToRegistry   rawSpec: '',
+368 silly mapToRegistry   spec: 'latest',
+368 silly mapToRegistry   type: 'tag' }
+369 silly mapToRegistry uri https://registry.npmjs.org/graceful-fs
+370 verbose addNameRange registry:https://registry.npmjs.org/graceful-fs not in flight; fetching
+371 info retry fetch attempt 1 at 3:28:18 PM
+372 info attempt registry request try #1 at 3:28:18 PM
+373 http fetch GET https://registry.npmjs.org/env-paths/-/env-paths-3.0.0.tgz
+374 http 200 https://registry.npmjs.org/sumchecker
+375 verbose headers { date: 'Tue, 30 Jun 2026 14:28:18 GMT',
+375 verbose headers   'content-type': 'application/json',
+375 verbose headers   'transfer-encoding': 'chunked',
+375 verbose headers   connection: 'keep-alive',
+375 verbose headers   'set-cookie': [ '_cfuvid=PCBkZgKw_f4vp4R42N.eWZKnD3i3tawAmds.9N4Cn68-1782829698.9159856-1.0.1.1-LPyR9Pq1ywuvtzfOHO0JTRSiH8EkeXWWXzdWxzx.cQU; HttpOnly; SameSite=None; Secure; Path=/; Domain=npmjs.org' ],
+375 verbose headers   'cf-ray': 'a13ddb52387b465b-LHR',
+375 verbose headers   'cf-cache-status': 'HIT',
+375 verbose headers   'access-control-allow-origin': '*',
+375 verbose headers   age: '240',
+375 verbose headers   'cache-control': 'public, max-age=300',
+375 verbose headers   vary: 'accept-encoding, accept',
+375 verbose headers   'last-modified': 'Mon, 27 Jun 2022 02:03:03 GMT',
+375 verbose headers   server: 'cloudflare',
+375 verbose headers   etag: 'W/"b328ec988795a3ebbeadf46781328d36"',
+375 verbose headers   'content-encoding': 'gzip' }
+376 silly get cb [ 200,
+376 silly get   { date: 'Tue, 30 Jun 2026 14:28:18 GMT',
+376 silly get     'content-type': 'application/json',
+376 silly get     'transfer-encoding': 'chunked',
+376 silly get     connection: 'keep-alive',
+376 silly get     'set-cookie': [ '_cfuvid=PCBkZgKw_f4vp4R42N.eWZKnD3i3tawAmds.9N4Cn68-1782829698.9159856-1.0.1.1-LPyR9Pq1ywuvtzfOHO0JTRSiH8EkeXWWXzdWxzx.cQU; HttpOnly; SameSite=None; Secure; Path=/; Domain=npmjs.org' ],
+376 silly get     'cf-ray': 'a13ddb52387b465b-LHR',
+376 silly get     'cf-cache-status': 'HIT',
+376 silly get     'access-control-allow-origin': '*',
+376 silly get     age: '240',
+376 silly get     'cache-control': 'public, max-age=300',
+376 silly get     vary: 'accept-encoding, accept',
+376 silly get     'last-modified': 'Mon, 27 Jun 2022 02:03:03 GMT',
+376 silly get     server: 'cloudflare',
+376 silly get     etag: 'W/"b328ec988795a3ebbeadf46781328d36"',
+376 silly get     'content-encoding': 'gzip' } ]
+377 verbose get saving sumchecker to /Users/bleeck/.npm/registry.npmjs.org/sumchecker/.cache.json
+378 verbose correctMkdir /Users/bleeck/.npm correctMkdir not in flight; initializing
+379 silly resolveWithNewModule debug@4.4.3 checking installable status
+380 silly cache add args [ 'debug@^4.1.1', null ]
+381 verbose cache add spec debug@^4.1.1
+382 silly cache add parsed spec Result {
+382 silly cache add   raw: 'debug@^4.1.1',
+382 silly cache add   scope: null,
+382 silly cache add   escapedName: 'debug',
+382 silly cache add   name: 'debug',
+382 silly cache add   rawSpec: '^4.1.1',
+382 silly cache add   spec: '>=4.1.1 <5.0.0',
+382 silly cache add   type: 'range' }
+383 silly addNamed debug@>=4.1.1 <5.0.0
+384 verbose addNamed ">=4.1.1 <5.0.0" is a valid semver range for debug
+385 silly addNameRange { name: 'debug', range: '>=4.1.1 <5.0.0', hasData: false }
+386 silly mapToRegistry name debug
+387 silly mapToRegistry using default registry
+388 silly mapToRegistry registry https://registry.npmjs.org/
+389 silly mapToRegistry data Result {
+389 silly mapToRegistry   raw: 'debug',
+389 silly mapToRegistry   scope: null,
+389 silly mapToRegistry   escapedName: 'debug',
+389 silly mapToRegistry   name: 'debug',
+389 silly mapToRegistry   rawSpec: '',
+389 silly mapToRegistry   spec: 'latest',
+389 silly mapToRegistry   type: 'tag' }
+390 silly mapToRegistry uri https://registry.npmjs.org/debug
+391 verbose addNameRange registry:https://registry.npmjs.org/debug not in flight; fetching
+392 verbose get https://registry.npmjs.org/graceful-fs not expired, no request
+393 silly addNameRange number 2 { name: 'graceful-fs', range: '>=4.2.11 <5.0.0', hasData: true }
+394 silly addNameRange versions [ 'graceful-fs',
+394 silly addNameRange   [ '1.0.0',
+394 silly addNameRange     '1.0.1',
+394 silly addNameRange     '1.0.2',
+394 silly addNameRange     '1.1.0',
+394 silly addNameRange     '1.1.1',
+394 silly addNameRange     '1.1.2',
+394 silly addNameRange     '1.1.3',
+394 silly addNameRange     '1.1.4',
+394 silly addNameRange     '1.1.5',
+394 silly addNameRange     '1.1.6',
+394 silly addNameRange     '1.1.7',
+394 silly addNameRange     '1.1.8',
+394 silly addNameRange     '1.1.9',
+394 silly addNameRange     '1.1.10',
+394 silly addNameRange     '1.1.11',
+394 silly addNameRange     '1.1.12',
+394 silly addNameRange     '1.1.13',
+394 silly addNameRange     '1.1.14',
+394 silly addNameRange     '1.2.0',
+394 silly addNameRange     '1.2.1',
+394 silly addNameRange     '1.2.2',
+394 silly addNameRange     '1.2.3',
+394 silly addNameRange     '2.0.0',
+394 silly addNameRange     '2.0.1',
+394 silly addNameRange     '2.0.2',
+394 silly addNameRange     '2.0.3',
+394 silly addNameRange     '3.0.0',
+394 silly addNameRange     '3.0.1',
+394 silly addNameRange     '3.0.2',
+394 silly addNameRange     '3.0.3',
+394 silly addNameRange     '3.0.4',
+394 silly addNameRange     '3.0.5',
+394 silly addNameRange     '3.0.6',
+394 silly addNameRange     '3.0.7',
+394 silly addNameRange     '3.0.8',
+394 silly addNameRange     '4.1.0',
+394 silly addNameRange     '4.1.1',
+394 silly addNameRange     '4.1.2',
+394 silly addNameRange     '4.1.3',
+394 silly addNameRange     '4.1.4',
+394 silly addNameRange     '4.1.5',
+394 silly addNameRange     '3.0.9',
+394 silly addNameRange     '4.1.6',
+394 silly addNameRange     '3.0.10',
+394 silly addNameRange     '3.0.11',
+394 silly addNameRange     '4.1.7',
+394 silly addNameRange     '4.1.8',
+394 silly addNameRange     '4.1.9',
+394 silly addNameRange     '4.1.10',
+394 silly addNameRange     '4.1.11',
+394 silly addNameRange     '4.1.12',
+394 silly addNameRange     '4.1.13',
+394 silly addNameRange     '4.1.14',
+394 silly addNameRange     '4.1.15',
+394 silly addNameRange     '4.2.0',
+394 silly addNameRange     '4.2.1',
+394 silly addNameRange     '3.0.12',
+394 silly addNameRange     '4.2.2',
+394 silly addNameRange     '4.2.3',
+394 silly addNameRange     '4.2.4',
+394 silly addNameRange     '4.2.5',
+394 silly addNameRange     '4.2.6',
+394 silly addNameRange     '4.2.7',
+394 silly addNameRange     '4.2.8',
+394 silly addNameRange     '4.2.9',
+394 silly addNameRange     '4.2.10',
+394 silly addNameRange     '4.2.11' ] ]
+395 silly addNamed graceful-fs@4.2.11
+396 verbose addNamed "4.2.11" is a plain semver version for graceful-fs
+397 silly mapToRegistry name graceful-fs
+398 silly mapToRegistry using default registry
+399 silly mapToRegistry registry https://registry.npmjs.org/
+400 silly mapToRegistry data Result {
+400 silly mapToRegistry   raw: 'graceful-fs',
+400 silly mapToRegistry   scope: null,
+400 silly mapToRegistry   escapedName: 'graceful-fs',
+400 silly mapToRegistry   name: 'graceful-fs',
+400 silly mapToRegistry   rawSpec: '',
+400 silly mapToRegistry   spec: 'latest',
+400 silly mapToRegistry   type: 'tag' }
+401 silly mapToRegistry uri https://registry.npmjs.org/graceful-fs
+402 verbose addRemoteTarball https://registry.npmjs.org/graceful-fs/-/graceful-fs-4.2.11.tgz not in flight; adding
+403 verbose addRemoteTarball [ 'https://registry.npmjs.org/graceful-fs/-/graceful-fs-4.2.11.tgz',
+403 verbose addRemoteTarball   '4183e4e8bf08bb6e05bbb2f7d2e0c8f712ca40e3' ]
+404 verbose get https://registry.npmjs.org/debug not expired, no request
+405 silly addNameRange number 2 { name: 'debug', range: '>=4.1.1 <5.0.0', hasData: true }
+406 silly addNameRange versions [ 'debug',
+406 silly addNameRange   [ '0.0.1',
+406 silly addNameRange     '0.1.0',
+406 silly addNameRange     '0.2.0',
+406 silly addNameRange     '0.3.0',
+406 silly addNameRange     '0.4.0',
+406 silly addNameRange     '0.4.1',
+406 silly addNameRange     '0.5.0',
+406 silly addNameRange     '0.6.0',
+406 silly addNameRange     '0.7.0',
+406 silly addNameRange     '0.7.1',
+406 silly addNameRange     '0.7.2',
+406 silly addNameRange     '0.7.3',
+406 silly addNameRange     '0.7.4',
+406 silly addNameRange     '0.8.0',
+406 silly addNameRange     '0.8.1',
+406 silly addNameRange     '1.0.0',
+406 silly addNameRange     '1.0.1',
+406 silly addNameRange     '1.0.2',
+406 silly addNameRange     '1.0.3',
+406 silly addNameRange     '1.0.4',
+406 silly addNameRange     '2.0.0',
+406 silly addNameRange     '2.1.0',
+406 silly addNameRange     '2.1.1',
+406 silly addNameRange     '2.1.2',
+406 silly addNameRange     '2.1.3',
+406 silly addNameRange     '2.2.0',
+406 silly addNameRange     '2.3.0',
+406 silly addNameRange     '2.3.1',
+406 silly addNameRange     '2.3.2',
+406 silly addNameRange     '2.3.3',
+406 silly addNameRange     '2.4.0',
+406 silly addNameRange     '2.4.1',
+406 silly addNameRange     '2.4.2',
+406 silly addNameRange     '2.4.3',
+406 silly addNameRange     '2.4.4',
+406 silly addNameRange     '2.4.5',
+406 silly addNameRange     '2.5.0',
+406 silly addNameRange     '2.5.1',
+406 silly addNameRange     '2.5.2',
+406 silly addNameRange     '2.6.0',
+406 silly addNameRange     '2.6.1',
+406 silly addNameRange     '2.6.2',
+406 silly addNameRange     '2.6.3',
+406 silly addNameRange     '2.6.4',
+406 silly addNameRange     '2.6.5',
+406 silly addNameRange     '2.6.6',
+406 silly addNameRange     '2.6.7',
+406 silly addNameRange     '2.6.8',
+406 silly addNameRange     '1.0.5',
+406 silly addNameRange     '3.0.0',
+406 silly addNameRange     '3.0.1',
+406 silly addNameRange     '2.6.9',
+406 silly addNameRange     '3.1.0',
+406 silly addNameRange     '3.2.0',
+406 silly addNameRange     '3.2.1',
+406 silly addNameRange     '3.2.2',
+406 silly addNameRange     '3.2.3',
+406 silly addNameRange     '4.0.0',
+406 silly addNameRange     '3.2.4',
+406 silly addNameRange     '3.2.5',
+406 silly addNameRange     '4.0.1',
+406 silly addNameRange     '4.1.0',
+406 silly addNameRange     '3.2.6',
+406 silly addNameRange     '4.1.1',
+406 silly addNameRange     '4.2.0',
+406 silly addNameRange     '4.3.0',
+406 silly addNameRange     '4.3.1',
+406 silly addNameRange     '3.2.7',
+406 silly addNameRange     '4.3.2',
+406 silly addNameRange     '4.3.3',
+406 silly addNameRange     '4.3.4',
+406 silly addNameRange     '4.3.5',
+406 silly addNameRange     '4.3.6',
+406 silly addNameRange     '4.3.7',
+406 silly addNameRange     '4.4.0',
+406 silly addNameRange     '4.4.1',
+406 silly addNameRange     '4.4.3' ] ]
+407 silly addNamed debug@4.4.3
+408 verbose addNamed "4.4.3" is a plain semver version for debug
+409 silly mapToRegistry name debug
+410 silly mapToRegistry using default registry
+411 silly mapToRegistry registry https://registry.npmjs.org/
+412 silly mapToRegistry data Result {
+412 silly mapToRegistry   raw: 'debug',
+412 silly mapToRegistry   scope: null,
+412 silly mapToRegistry   escapedName: 'debug',
+412 silly mapToRegistry   name: 'debug',
+412 silly mapToRegistry   rawSpec: '',
+412 silly mapToRegistry   spec: 'latest',
+412 silly mapToRegistry   type: 'tag' }
+413 silly mapToRegistry uri https://registry.npmjs.org/debug
+414 verbose addRemoteTarball https://registry.npmjs.org/debug/-/debug-4.4.3.tgz not in flight; adding
+415 verbose addRemoteTarball [ 'https://registry.npmjs.org/debug/-/debug-4.4.3.tgz',
+415 verbose addRemoteTarball   'c6ae432d9bd9662582fce08709b038c58e9e3d6a' ]
+416 info retry fetch attempt 1 at 3:28:18 PM
+417 info attempt registry request try #1 at 3:28:18 PM
+418 http fetch GET https://registry.npmjs.org/graceful-fs/-/graceful-fs-4.2.11.tgz
+419 http 200 https://registry.npmjs.org/progress
+420 verbose headers { date: 'Tue, 30 Jun 2026 14:28:18 GMT',
+420 verbose headers   'content-type': 'application/json',
+420 verbose headers   'transfer-encoding': 'chunked',
+420 verbose headers   connection: 'keep-alive',
+420 verbose headers   'set-cookie': [ '_cfuvid=oI2LxnfbGFf_AyHzXlnPu8b_MqlBYPzNcVbZ_I2qKmw-1782829698.9179947-1.0.1.1-NSHiG_GdwT0Mq81hmQDbm2sJ_S3yXolq2PUC1Cz2H5k; HttpOnly; SameSite=None; Secure; Path=/; Domain=npmjs.org' ],
+420 verbose headers   'cf-ray': 'a13ddb5239147735-LHR',
+420 verbose headers   'cf-cache-status': 'HIT',
+420 verbose headers   'access-control-allow-origin': '*',
+420 verbose headers   age: '219',
+420 verbose headers   'cache-control': 'public, max-age=300',
+420 verbose headers   vary: 'accept-encoding, accept',
+420 verbose headers   'last-modified': 'Tue, 03 Jun 2025 10:46:23 GMT',
+420 verbose headers   server: 'cloudflare',
+420 verbose headers   etag: 'W/"a1c1d7f1800afa851505353cf87705af"',
+420 verbose headers   'content-encoding': 'gzip' }
+421 silly get cb [ 200,
+421 silly get   { date: 'Tue, 30 Jun 2026 14:28:18 GMT',
+421 silly get     'content-type': 'application/json',
+421 silly get     'transfer-encoding': 'chunked',
+421 silly get     connection: 'keep-alive',
+421 silly get     'set-cookie': [ '_cfuvid=oI2LxnfbGFf_AyHzXlnPu8b_MqlBYPzNcVbZ_I2qKmw-1782829698.9179947-1.0.1.1-NSHiG_GdwT0Mq81hmQDbm2sJ_S3yXolq2PUC1Cz2H5k; HttpOnly; SameSite=None; Secure; Path=/; Domain=npmjs.org' ],
+421 silly get     'cf-ray': 'a13ddb5239147735-LHR',
+421 silly get     'cf-cache-status': 'HIT',
+421 silly get     'access-control-allow-origin': '*',
+421 silly get     age: '219',
+421 silly get     'cache-control': 'public, max-age=300',
+421 silly get     vary: 'accept-encoding, accept',
+421 silly get     'last-modified': 'Tue, 03 Jun 2025 10:46:23 GMT',
+421 silly get     server: 'cloudflare',
+421 silly get     etag: 'W/"a1c1d7f1800afa851505353cf87705af"',
+421 silly get     'content-encoding': 'gzip' } ]
+422 verbose get saving progress to /Users/bleeck/.npm/registry.npmjs.org/progress/.cache.json
+423 verbose correctMkdir /Users/bleeck/.npm correctMkdir not in flight; initializing
+424 info retry fetch attempt 1 at 3:28:18 PM
+425 info attempt registry request try #1 at 3:28:18 PM
+426 http fetch GET https://registry.npmjs.org/debug/-/debug-4.4.3.tgz
+427 silly resolveWithNewModule sumchecker@3.0.1 checking installable status
+428 silly cache add args [ 'sumchecker@^3.0.1', null ]
+429 verbose cache add spec sumchecker@^3.0.1
+430 silly cache add parsed spec Result {
+430 silly cache add   raw: 'sumchecker@^3.0.1',
+430 silly cache add   scope: null,
+430 silly cache add   escapedName: 'sumchecker',
+430 silly cache add   name: 'sumchecker',
+430 silly cache add   rawSpec: '^3.0.1',
+430 silly cache add   spec: '>=3.0.1 <4.0.0',
+430 silly cache add   type: 'range' }
+431 silly addNamed sumchecker@>=3.0.1 <4.0.0
+432 verbose addNamed ">=3.0.1 <4.0.0" is a valid semver range for sumchecker
+433 silly addNameRange { name: 'sumchecker', range: '>=3.0.1 <4.0.0', hasData: false }
+434 silly mapToRegistry name sumchecker
+435 silly mapToRegistry using default registry
+436 silly mapToRegistry registry https://registry.npmjs.org/
+437 silly mapToRegistry data Result {
+437 silly mapToRegistry   raw: 'sumchecker',
+437 silly mapToRegistry   scope: null,
+437 silly mapToRegistry   escapedName: 'sumchecker',
+437 silly mapToRegistry   name: 'sumchecker',
+437 silly mapToRegistry   rawSpec: '',
+437 silly mapToRegistry   spec: 'latest',
+437 silly mapToRegistry   type: 'tag' }
+438 silly mapToRegistry uri https://registry.npmjs.org/sumchecker
+439 verbose addNameRange registry:https://registry.npmjs.org/sumchecker not in flight; fetching
+440 verbose get https://registry.npmjs.org/sumchecker not expired, no request
+441 silly addNameRange number 2 { name: 'sumchecker', range: '>=3.0.1 <4.0.0', hasData: true }
+442 silly addNameRange versions [ 'sumchecker',
+442 silly addNameRange   [ '1.0.0',
+442 silly addNameRange     '1.1.0',
+442 silly addNameRange     '1.2.0',
+442 silly addNameRange     '1.3.0',
+442 silly addNameRange     '2.0.0',
+442 silly addNameRange     '2.0.1',
+442 silly addNameRange     '1.3.1',
+442 silly addNameRange     '2.0.2',
+442 silly addNameRange     '3.0.0',
+442 silly addNameRange     '3.0.1' ] ]
+443 silly addNamed sumchecker@3.0.1
+444 verbose addNamed "3.0.1" is a plain semver version for sumchecker
+445 silly mapToRegistry name sumchecker
+446 silly mapToRegistry using default registry
+447 silly mapToRegistry registry https://registry.npmjs.org/
+448 silly mapToRegistry data Result {
+448 silly mapToRegistry   raw: 'sumchecker',
+448 silly mapToRegistry   scope: null,
+448 silly mapToRegistry   escapedName: 'sumchecker',
+448 silly mapToRegistry   name: 'sumchecker',
+448 silly mapToRegistry   rawSpec: '',
+448 silly mapToRegistry   spec: 'latest',
+448 silly mapToRegistry   type: 'tag' }
+449 silly mapToRegistry uri https://registry.npmjs.org/sumchecker
+450 verbose addRemoteTarball https://registry.npmjs.org/sumchecker/-/sumchecker-3.0.1.tgz not in flight; adding
+451 verbose addRemoteTarball [ 'https://registry.npmjs.org/sumchecker/-/sumchecker-3.0.1.tgz',
+451 verbose addRemoteTarball   '6377e996795abb0b6d348e9b3e1dfb24345a8e42' ]
+452 silly resolveWithNewModule progress@2.0.3 checking installable status
+453 silly cache add args [ 'progress@^2.0.3', null ]
+454 verbose cache add spec progress@^2.0.3
+455 silly cache add parsed spec Result {
+455 silly cache add   raw: 'progress@^2.0.3',
+455 silly cache add   scope: null,
+455 silly cache add   escapedName: 'progress',
+455 silly cache add   name: 'progress',
+455 silly cache add   rawSpec: '^2.0.3',
+455 silly cache add   spec: '>=2.0.3 <3.0.0',
+455 silly cache add   type: 'range' }
+456 silly addNamed progress@>=2.0.3 <3.0.0
+457 verbose addNamed ">=2.0.3 <3.0.0" is a valid semver range for progress
+458 silly addNameRange { name: 'progress', range: '>=2.0.3 <3.0.0', hasData: false }
+459 silly mapToRegistry name progress
+460 silly mapToRegistry using default registry
+461 silly mapToRegistry registry https://registry.npmjs.org/
+462 silly mapToRegistry data Result {
+462 silly mapToRegistry   raw: 'progress',
+462 silly mapToRegistry   scope: null,
+462 silly mapToRegistry   escapedName: 'progress',
+462 silly mapToRegistry   name: 'progress',
+462 silly mapToRegistry   rawSpec: '',
+462 silly mapToRegistry   spec: 'latest',
+462 silly mapToRegistry   type: 'tag' }
+463 silly mapToRegistry uri https://registry.npmjs.org/progress
+464 verbose addNameRange registry:https://registry.npmjs.org/progress not in flight; fetching
+465 info retry fetch attempt 1 at 3:28:18 PM
+466 info attempt registry request try #1 at 3:28:18 PM
+467 http fetch GET https://registry.npmjs.org/sumchecker/-/sumchecker-3.0.1.tgz
+468 verbose get https://registry.npmjs.org/progress not expired, no request
+469 silly addNameRange number 2 { name: 'progress', range: '>=2.0.3 <3.0.0', hasData: true }
+470 silly addNameRange versions [ 'progress',
+470 silly addNameRange   [ '0.0.1',
+470 silly addNameRange     '0.0.2',
+470 silly addNameRange     '0.0.3',
+470 silly addNameRange     '0.0.4',
+470 silly addNameRange     '0.0.5',
+470 silly addNameRange     '0.1.0',
+470 silly addNameRange     '1.0.0',
+470 silly addNameRange     '1.0.1',
+470 silly addNameRange     '1.1.0',
+470 silly addNameRange     '1.1.2',
+470 silly addNameRange     '1.1.3',
+470 silly addNameRange     '1.1.4',
+470 silly addNameRange     '1.1.5',
+470 silly addNameRange     '1.1.6',
+470 silly addNameRange     '1.1.7',
+470 silly addNameRange     '1.1.8',
+470 silly addNameRange     '2.0.0',
+470 silly addNameRange     '2.0.1',
+470 silly addNameRange     '2.0.2',
+470 silly addNameRange     '2.0.3' ] ]
+471 silly addNamed progress@2.0.3
+472 verbose addNamed "2.0.3" is a plain semver version for progress
+473 silly mapToRegistry name progress
+474 silly mapToRegistry using default registry
+475 silly mapToRegistry registry https://registry.npmjs.org/
+476 silly mapToRegistry data Result {
+476 silly mapToRegistry   raw: 'progress',
+476 silly mapToRegistry   scope: null,
+476 silly mapToRegistry   escapedName: 'progress',
+476 silly mapToRegistry   name: 'progress',
+476 silly mapToRegistry   rawSpec: '',
+476 silly mapToRegistry   spec: 'latest',
+476 silly mapToRegistry   type: 'tag' }
+477 silly mapToRegistry uri https://registry.npmjs.org/progress
+478 verbose addRemoteTarball https://registry.npmjs.org/progress/-/progress-2.0.3.tgz not in flight; adding
+479 verbose addRemoteTarball [ 'https://registry.npmjs.org/progress/-/progress-2.0.3.tgz',
+479 verbose addRemoteTarball   '7e8cf8d8f5b8f239c1bc68beb4eb78567d572ef8' ]
+480 info retry fetch attempt 1 at 3:28:18 PM
+481 info attempt registry request try #1 at 3:28:18 PM
+482 http fetch GET https://registry.npmjs.org/progress/-/progress-2.0.3.tgz
+483 http fetch 200 https://registry.npmjs.org/env-paths/-/env-paths-3.0.0.tgz
+484 silly fetchAndShaCheck shasum 2f1e89c2f6dbd3408e1b1711dd82d62e317f58da
+485 verbose addTmpTarball /var/folders/3t/r__v5btd4bs750hqz1x8tlsr0000gp/T/npm-17147-184728d3/registry.npmjs.org/env-paths/-/env-paths-3.0.0.tgz not in flight; adding
+486 verbose addTmpTarball already have metadata; skipping unpack for env-paths@3.0.0
+487 verbose correctMkdir /Users/bleeck/.npm correctMkdir not in flight; initializing
+488 silly cache afterAdd env-paths@3.0.0
+489 verbose afterAdd /Users/bleeck/.npm/env-paths/3.0.0/package/package.json not in flight; writing
+490 verbose correctMkdir /Users/bleeck/.npm correctMkdir not in flight; initializing
+491 verbose afterAdd /Users/bleeck/.npm/env-paths/3.0.0/package/package.json written
+492 http 200 https://registry.npmjs.org/semver
+493 verbose headers { date: 'Tue, 30 Jun 2026 14:28:18 GMT',
+493 verbose headers   'content-type': 'application/json',
+493 verbose headers   'transfer-encoding': 'chunked',
+493 verbose headers   connection: 'keep-alive',
+493 verbose headers   'set-cookie': [ '_cfuvid=.0JR0m4NIhDkObJpUTCTOq6X7dYwwmKsVyRNoDKX.kQ-1782829698.9187503-1.0.1.1-VJ3t.M.42YpDs4NpMwy3KyD1nZFvNe7vTeXyTQGrcY0; HttpOnly; SameSite=None; Secure; Path=/; Domain=npmjs.org' ],
+493 verbose headers   'cf-ray': 'a13ddb523e2c4182-LHR',
+493 verbose headers   'cf-cache-status': 'HIT',
+493 verbose headers   'access-control-allow-origin': '*',
+493 verbose headers   age: '69',
+493 verbose headers   'cache-control': 'public, max-age=300',
+493 verbose headers   vary: 'accept-encoding, accept',
+493 verbose headers   'last-modified': 'Fri, 19 Jun 2026 18:32:50 GMT',
+493 verbose headers   server: 'cloudflare',
+493 verbose headers   etag: 'W/"a0a05b3c7f779093e9bba358bc1d584d"',
+493 verbose headers   'content-encoding': 'gzip' }
+494 silly get cb [ 200,
+494 silly get   { date: 'Tue, 30 Jun 2026 14:28:18 GMT',
+494 silly get     'content-type': 'application/json',
+494 silly get     'transfer-encoding': 'chunked',
+494 silly get     connection: 'keep-alive',
+494 silly get     'set-cookie': [ '_cfuvid=.0JR0m4NIhDkObJpUTCTOq6X7dYwwmKsVyRNoDKX.kQ-1782829698.9187503-1.0.1.1-VJ3t.M.42YpDs4NpMwy3KyD1nZFvNe7vTeXyTQGrcY0; HttpOnly; SameSite=None; Secure; Path=/; Domain=npmjs.org' ],
+494 silly get     'cf-ray': 'a13ddb523e2c4182-LHR',
+494 silly get     'cf-cache-status': 'HIT',
+494 silly get     'access-control-allow-origin': '*',
+494 silly get     age: '69',
+494 silly get     'cache-control': 'public, max-age=300',
+494 silly get     vary: 'accept-encoding, accept',
+494 silly get     'last-modified': 'Fri, 19 Jun 2026 18:32:50 GMT',
+494 silly get     server: 'cloudflare',
+494 silly get     etag: 'W/"a0a05b3c7f779093e9bba358bc1d584d"',
+494 silly get     'content-encoding': 'gzip' } ]
+495 verbose get saving semver to /Users/bleeck/.npm/registry.npmjs.org/semver/.cache.json
+496 verbose correctMkdir /Users/bleeck/.npm correctMkdir not in flight; initializing
+497 http 200 https://registry.npmjs.org/undici
+498 verbose headers { date: 'Tue, 30 Jun 2026 14:28:18 GMT',
+498 verbose headers   'content-type': 'application/json',
+498 verbose headers   'transfer-encoding': 'chunked',
+498 verbose headers   connection: 'keep-alive',
+498 verbose headers   'set-cookie': [ '_cfuvid=Vx4fzzmKjhLjIOubzXL3fLpDcaepxYESj3RAk.GXFMQ-1782829698.918182-1.0.1.1-_hIFuR_g7Wj4AGcQQMOROHofKX1EtosEtTaH1WU13jo; HttpOnly; SameSite=None; Secure; Path=/; Domain=npmjs.org' ],
+498 verbose headers   'cf-ray': 'a13ddb523c655678-LHR',
+498 verbose headers   'cf-cache-status': 'HIT',
+498 verbose headers   'access-control-allow-origin': '*',
+498 verbose headers   age: '269',
+498 verbose headers   'cache-control': 'public, max-age=300',
+498 verbose headers   vary: 'accept-encoding, accept',
+498 verbose headers   'last-modified': 'Mon, 15 Jun 2026 15:51:27 GMT',
+498 verbose headers   server: 'cloudflare',
+498 verbose headers   etag: 'W/"9f5ae2519aa21bdd3c89e74a28be1d9c"',
+498 verbose headers   'content-encoding': 'gzip' }
+499 silly get cb [ 200,
+499 silly get   { date: 'Tue, 30 Jun 2026 14:28:18 GMT',
+499 silly get     'content-type': 'application/json',
+499 silly get     'transfer-encoding': 'chunked',
+499 silly get     connection: 'keep-alive',
+499 silly get     'set-cookie': [ '_cfuvid=Vx4fzzmKjhLjIOubzXL3fLpDcaepxYESj3RAk.GXFMQ-1782829698.918182-1.0.1.1-_hIFuR_g7Wj4AGcQQMOROHofKX1EtosEtTaH1WU13jo; HttpOnly; SameSite=None; Secure; Path=/; Domain=npmjs.org' ],
+499 silly get     'cf-ray': 'a13ddb523c655678-LHR',
+499 silly get     'cf-cache-status': 'HIT',
+499 silly get     'access-control-allow-origin': '*',
+499 silly get     age: '269',
+499 silly get     'cache-control': 'public, max-age=300',
+499 silly get     vary: 'accept-encoding, accept',
+499 silly get     'last-modified': 'Mon, 15 Jun 2026 15:51:27 GMT',
+499 silly get     server: 'cloudflare',
+499 silly get     etag: 'W/"9f5ae2519aa21bdd3c89e74a28be1d9c"',
+499 silly get     'content-encoding': 'gzip' } ]
+500 verbose get saving undici to /Users/bleeck/.npm/registry.npmjs.org/undici/.cache.json
+501 verbose correctMkdir /Users/bleeck/.npm correctMkdir not in flight; initializing
+502 http fetch 200 https://registry.npmjs.org/debug/-/debug-4.4.3.tgz
+503 http fetch 200 https://registry.npmjs.org/graceful-fs/-/graceful-fs-4.2.11.tgz
+504 http fetch 200 https://registry.npmjs.org/sumchecker/-/sumchecker-3.0.1.tgz
+505 http fetch 200 https://registry.npmjs.org/progress/-/progress-2.0.3.tgz
+506 silly fetchAndShaCheck shasum c6ae432d9bd9662582fce08709b038c58e9e3d6a
+507 silly fetchAndShaCheck shasum 4183e4e8bf08bb6e05bbb2f7d2e0c8f712ca40e3
+508 silly fetchAndShaCheck shasum 7e8cf8d8f5b8f239c1bc68beb4eb78567d572ef8
+509 verbose addTmpTarball /var/folders/3t/r__v5btd4bs750hqz1x8tlsr0000gp/T/npm-17147-184728d3/registry.npmjs.org/debug/-/debug-4.4.3.tgz not in flight; adding
+510 verbose addTmpTarball already have metadata; skipping unpack for debug@4.4.3
+511 verbose correctMkdir /Users/bleeck/.npm correctMkdir not in flight; initializing
+512 verbose addTmpTarball /var/folders/3t/r__v5btd4bs750hqz1x8tlsr0000gp/T/npm-17147-184728d3/registry.npmjs.org/graceful-fs/-/graceful-fs-4.2.11.tgz not in flight; adding
+513 verbose addTmpTarball already have metadata; skipping unpack for graceful-fs@4.2.11
+514 verbose correctMkdir /Users/bleeck/.npm correctMkdir not in flight; initializing
+515 verbose addTmpTarball /var/folders/3t/r__v5btd4bs750hqz1x8tlsr0000gp/T/npm-17147-184728d3/registry.npmjs.org/progress/-/progress-2.0.3.tgz not in flight; adding
+516 verbose addTmpTarball already have metadata; skipping unpack for progress@2.0.3
+517 verbose correctMkdir /Users/bleeck/.npm correctMkdir not in flight; initializing
+518 silly resolveWithNewModule semver@7.8.5 checking installable status
+519 silly cache add args [ 'semver@^7.6.3', null ]
+520 verbose cache add spec semver@^7.6.3
+521 silly cache add parsed spec Result {
+521 silly cache add   raw: 'semver@^7.6.3',
+521 silly cache add   scope: null,
+521 silly cache add   escapedName: 'semver',
+521 silly cache add   name: 'semver',
+521 silly cache add   rawSpec: '^7.6.3',
+521 silly cache add   spec: '>=7.6.3 <8.0.0',
+521 silly cache add   type: 'range' }
+522 silly addNamed semver@>=7.6.3 <8.0.0
+523 verbose addNamed ">=7.6.3 <8.0.0" is a valid semver range for semver
+524 silly addNameRange { name: 'semver', range: '>=7.6.3 <8.0.0', hasData: false }
+525 silly mapToRegistry name semver
+526 silly mapToRegistry using default registry
+527 silly mapToRegistry registry https://registry.npmjs.org/
+528 silly mapToRegistry data Result {
+528 silly mapToRegistry   raw: 'semver',
+528 silly mapToRegistry   scope: null,
+528 silly mapToRegistry   escapedName: 'semver',
+528 silly mapToRegistry   name: 'semver',
+528 silly mapToRegistry   rawSpec: '',
+528 silly mapToRegistry   spec: 'latest',
+528 silly mapToRegistry   type: 'tag' }
+529 silly mapToRegistry uri https://registry.npmjs.org/semver
+530 verbose addNameRange registry:https://registry.npmjs.org/semver not in flight; fetching
+531 silly resolveWithNewModule undici@7.28.0 checking installable status
+532 silly cache add args [ 'undici@^7.24.4', null ]
+533 verbose cache add spec undici@^7.24.4
+534 silly cache add parsed spec Result {
+534 silly cache add   raw: 'undici@^7.24.4',
+534 silly cache add   scope: null,
+534 silly cache add   escapedName: 'undici',
+534 silly cache add   name: 'undici',
+534 silly cache add   rawSpec: '^7.24.4',
+534 silly cache add   spec: '>=7.24.4 <8.0.0',
+534 silly cache add   type: 'range' }
+535 silly addNamed undici@>=7.24.4 <8.0.0
+536 verbose addNamed ">=7.24.4 <8.0.0" is a valid semver range for undici
+537 silly addNameRange { name: 'undici', range: '>=7.24.4 <8.0.0', hasData: false }
+538 silly mapToRegistry name undici
+539 silly mapToRegistry using default registry
+540 silly mapToRegistry registry https://registry.npmjs.org/
+541 silly mapToRegistry data Result {
+541 silly mapToRegistry   raw: 'undici',
+541 silly mapToRegistry   scope: null,
+541 silly mapToRegistry   escapedName: 'undici',
+541 silly mapToRegistry   name: 'undici',
+541 silly mapToRegistry   rawSpec: '',
+541 silly mapToRegistry   spec: 'latest',
+541 silly mapToRegistry   type: 'tag' }
+542 silly mapToRegistry uri https://registry.npmjs.org/undici
+543 verbose addNameRange registry:https://registry.npmjs.org/undici not in flight; fetching
+544 verbose get https://registry.npmjs.org/semver not expired, no request
+545 silly addNameRange number 2 { name: 'semver', range: '>=7.6.3 <8.0.0', hasData: true }
+546 silly addNameRange versions [ 'semver',
+546 silly addNameRange   [ '1.0.0',
+546 silly addNameRange     '1.0.1',
+546 silly addNameRange     '1.0.2',
+546 silly addNameRange     '1.0.3',
+546 silly addNameRange     '1.0.4',
+546 silly addNameRange     '1.0.5',
+546 silly addNameRange     '1.0.6',
+546 silly addNameRange     '1.0.7',
+546 silly addNameRange     '1.0.8',
+546 silly addNameRange     '1.0.9',
+546 silly addNameRange     '1.0.10',
+546 silly addNameRange     '1.0.11',
+546 silly addNameRange     '1.0.12',
+546 silly addNameRange     '1.0.13',
+546 silly addNameRange     '1.0.14',
+546 silly addNameRange     '1.1.0',
+546 silly addNameRange     '1.1.1',
+546 silly addNameRange     '1.1.2',
+546 silly addNameRange     '1.1.3',
+546 silly addNameRange     '1.1.4',
+546 silly addNameRange     '2.0.0-alpha',
+546 silly addNameRange     '2.0.0-beta',
+546 silly addNameRange     '2.0.1',
+546 silly addNameRange     '2.0.2',
+546 silly addNameRange     '2.0.3',
+546 silly addNameRange     '2.0.4',
+546 silly addNameRange     '2.0.5',
+546 silly addNameRange     '2.0.6',
+546 silly addNameRange     '2.0.7',
+546 silly addNameRange     '2.0.8',
+546 silly addNameRange     '2.0.9',
+546 silly addNameRange     '2.0.10',
+546 silly addNameRange     '2.0.11',
+546 silly addNameRange     '2.1.0',
+546 silly addNameRange     '2.2.0',
+546 silly addNameRange     '2.2.1',
+546 silly addNameRange     '2.3.0',
+546 silly addNameRange     '2.3.1',
+546 silly addNameRange     '2.3.2',
+546 silly addNameRange     '3.0.0',
+546 silly addNameRange     '3.0.1',
+546 silly addNameRange     '4.0.0',
+546 silly addNameRange     '4.0.2',
+546 silly addNameRange     '4.0.3',
+546 silly addNameRange     '4.1.0',
+546 silly addNameRange     '4.1.1',
+546 silly addNameRange     '4.2.0',
+546 silly addNameRange     '4.2.1',
+546 silly addNameRange     '4.2.2',
+546 silly addNameRange     '4.3.0',
+546 silly addNameRange     '4.3.1',
+546 silly addNameRange     '4.3.2',
+546 silly addNameRange     '4.3.3',
+546 silly addNameRange     '4.3.4',
+546 silly addNameRange     '4.3.5',
+546 silly addNameRange     '4.3.6',
+546 silly addNameRange     '5.0.0',
+546 silly addNameRange     '5.0.1',
+546 silly addNameRange     '5.0.2',
+546 silly addNameRange     '5.0.3',
+546 silly addNameRange     '5.1.0',
+546 silly addNameRange     '5.1.1',
+546 silly addNameRange     '5.2.0',
+546 silly addNameRange     '5.3.0',
+546 silly addNameRange     '5.4.0',
+546 silly addNameRange     '5.4.1',
+546 silly addNameRange     '5.5.0',
+546 silly addNameRange     '5.5.1',
+546 silly addNameRange     '5.6.0',
+546 silly addNameRange     '5.7.0',
+546 silly addNameRange     '6.0.0',
+546 silly addNameRange     '6.1.0',
+546 silly addNameRange     '6.1.1',
+546 silly addNameRange     '6.1.2',
+546 silly addNameRange     '6.1.3',
+546 silly addNameRange     '6.2.0',
+546 silly addNameRange     '6.3.0',
+546 silly addNameRange     '5.7.1',
+546 silly addNameRange     '7.0.0',
+546 silly addNameRange     '7.1.0',
+546 silly addNameRange     '7.1.1',
+546 silly addNameRange     '7.1.2',
+546 silly addNameRange     '7.1.3',
+546 silly addNameRange     '7.2.0',
+546 silly addNameRange     '7.2.1',
+546 silly addNameRange     '7.2.2',
+546 silly addNameRange     '7.2.3',
+546 silly addNameRange     '7.3.0',
+546 silly addNameRange     '7.3.1',
+546 silly addNameRange     '7.3.2',
+546 silly addNameRange     '7.3.3',
+546 silly addNameRange     '7.3.4',
+546 silly addNameRange     '7.3.5',
+546 silly addNameRange     '7.3.6',
+546 silly addNameRange     '7.3.7',
+546 silly addNameRange     '7.3.8',
+546 silly addNameRange     '7.4.0',
+546 silly addNameRange     '7.5.0',
+546 silly addNameRange     '7.5.1',
+546 silly addNameRange     '7.5.2',
+546 silly addNameRange     ... 19 more items ] ]
+547 silly addNamed semver@7.8.5
+548 verbose addNamed "7.8.5" is a plain semver version for semver
+549 silly fetchAndShaCheck shasum 6377e996795abb0b6d348e9b3e1dfb24345a8e42
+550 silly mapToRegistry name semver
+551 silly mapToRegistry using default registry
+552 silly mapToRegistry registry https://registry.npmjs.org/
+553 silly mapToRegistry data Result {
+553 silly mapToRegistry   raw: 'semver',
+553 silly mapToRegistry   scope: null,
+553 silly mapToRegistry   escapedName: 'semver',
+553 silly mapToRegistry   name: 'semver',
+553 silly mapToRegistry   rawSpec: '',
+553 silly mapToRegistry   spec: 'latest',
+553 silly mapToRegistry   type: 'tag' }
+554 silly mapToRegistry uri https://registry.npmjs.org/semver
+555 verbose addRemoteTarball https://registry.npmjs.org/semver/-/semver-7.8.5.tgz not in flight; adding
+556 verbose addRemoteTarball [ 'https://registry.npmjs.org/semver/-/semver-7.8.5.tgz',
+556 verbose addRemoteTarball   '39b646037dd50c14fb451e7e4cac58ed8b863f69' ]
+557 verbose get https://registry.npmjs.org/undici not expired, no request
+558 silly addNameRange number 2 { name: 'undici', range: '>=7.24.4 <8.0.0', hasData: true }
+559 silly addNameRange versions [ 'undici',
+559 silly addNameRange   [ '0.1.0',
+559 silly addNameRange     '0.2.0',
+559 silly addNameRange     '0.3.0',
+559 silly addNameRange     '0.3.1',
+559 silly addNameRange     '0.3.2',
+559 silly addNameRange     '0.3.3',
+559 silly addNameRange     '0.4.0',
+559 silly addNameRange     '0.5.0',
+559 silly addNameRange     '1.0.0',
+559 silly addNameRange     '1.0.1',
+559 silly addNameRange     '1.0.2',
+559 silly addNameRange     '1.0.3',
+559 silly addNameRange     '1.1.0',
+559 silly addNameRange     '1.2.0',
+559 silly addNameRange     '1.2.1',
+559 silly addNameRange     '1.2.2',
+559 silly addNameRange     '1.2.3',
+559 silly addNameRange     '1.2.4',
+559 silly addNameRange     '1.2.5',
+559 silly addNameRange     '1.2.6',
+559 silly addNameRange     '1.3.0',
+559 silly addNameRange     '1.3.1',
+559 silly addNameRange     '2.0.0',
+559 silly addNameRange     '2.0.1',
+559 silly addNameRange     '2.0.2',
+559 silly addNameRange     '2.0.3',
+559 silly addNameRange     '2.0.4',
+559 silly addNameRange     '2.0.5',
+559 silly addNameRange     '2.0.6',
+559 silly addNameRange     '2.0.7',
+559 silly addNameRange     '2.1.0',
+559 silly addNameRange     '2.1.1',
+559 silly addNameRange     '2.2.0',
+559 silly addNameRange     '2.2.1',
+559 silly addNameRange     '3.0.0',
+559 silly addNameRange     '3.1.0',
+559 silly addNameRange     '3.2.0',
+559 silly addNameRange     '3.3.0',
+559 silly addNameRange     '3.3.1',
+559 silly addNameRange     '3.3.2',
+559 silly addNameRange     '3.3.3',
+559 silly addNameRange     '3.3.4',
+559 silly addNameRange     '4.0.0-alpha.0',
+559 silly addNameRange     '4.0.0-alpha.1',
+559 silly addNameRange     '4.0.0-alpha.2',
+559 silly addNameRange     '4.0.0-alpha.3',
+559 silly addNameRange     '4.0.0-alpha.4',
+559 silly addNameRange     '3.3.5',
+559 silly addNameRange     '3.3.6',
+559 silly addNameRange     '4.0.0-alpha.5',
+559 silly addNameRange     '4.0.0-rc.1',
+559 silly addNameRange     '4.0.0-rc.2',
+559 silly addNameRange     '4.0.0-rc.3',
+559 silly addNameRange     '4.0.0-rc.4',
+559 silly addNameRange     '4.0.0-rc.5',
+559 silly addNameRange     '4.0.0-rc.6',
+559 silly addNameRange     '4.0.0-rc.7',
+559 silly addNameRange     '4.0.0-rc.8',
+559 silly addNameRange     '4.0.0',
+559 silly addNameRange     '4.1.0',
+559 silly addNameRange     '4.1.1',
+559 silly addNameRange     '4.2.0',
+559 silly addNameRange     '4.2.1',
+559 silly addNameRange     '4.2.2',
+559 silly addNameRange     '4.3.0',
+559 silly addNameRange     '4.3.1',
+559 silly addNameRange     '4.4.1',
+559 silly addNameRange     '4.4.2',
+559 silly addNameRange     '4.4.3',
+559 silly addNameRange     '4.4.4',
+559 silly addNameRange     '4.4.5',
+559 silly addNameRange     '4.4.6',
+559 silly addNameRange     '4.4.7',
+559 silly addNameRange     '4.5.0',
+559 silly addNameRange     '4.5.1',
+559 silly addNameRange     '4.6.0',
+559 silly addNameRange     '4.7.0',
+559 silly addNameRange     '4.7.1',
+559 silly addNameRange     '4.7.2',
+559 silly addNameRange     '4.7.3',
+559 silly addNameRange     '4.8.0',
+559 silly addNameRange     '4.8.1',
+559 silly addNameRange     '4.8.2',
+559 silly addNameRange     '4.9.0',
+559 silly addNameRange     '4.9.1',
+559 silly addNameRange     '4.9.2',
+559 silly addNameRange     '4.9.3',
+559 silly addNameRange     '4.9.4',
+559 silly addNameRange     '4.9.5',
+559 silly addNameRange     '4.10.0',
+559 silly addNameRange     '4.10.1',
+559 silly addNameRange     '4.10.2',
+559 silly addNameRange     '4.10.3',
+559 silly addNameRange     '4.10.4',
+559 silly addNameRange     '4.11.0',
+559 silly addNameRange     '4.11.1',
+559 silly addNameRange     '4.11.2',
+559 silly addNameRange     '4.11.3',
+559 silly addNameRange     '4.12.0',
+559 silly addNameRange     '4.12.1',
+559 silly addNameRange     ... 193 more items ] ]
+560 silly addNamed undici@7.28.0
+561 verbose addNamed "7.28.0" is a plain semver version for undici
+562 silly mapToRegistry name undici
+563 silly mapToRegistry using default registry
+564 silly mapToRegistry registry https://registry.npmjs.org/
+565 silly mapToRegistry data Result {
+565 silly mapToRegistry   raw: 'undici',
+565 silly mapToRegistry   scope: null,
+565 silly mapToRegistry   escapedName: 'undici',
+565 silly mapToRegistry   name: 'undici',
+565 silly mapToRegistry   rawSpec: '',
+565 silly mapToRegistry   spec: 'latest',
+565 silly mapToRegistry   type: 'tag' }
+566 silly mapToRegistry uri https://registry.npmjs.org/undici
+567 verbose addRemoteTarball https://registry.npmjs.org/undici/-/undici-7.28.0.tgz not in flight; adding
+568 verbose addRemoteTarball [ 'https://registry.npmjs.org/undici/-/undici-7.28.0.tgz',
+568 verbose addRemoteTarball   '97d64564198b285bc281f0e8e29597e3d11fe7ec' ]
+569 verbose addTmpTarball /var/folders/3t/r__v5btd4bs750hqz1x8tlsr0000gp/T/npm-17147-184728d3/registry.npmjs.org/sumchecker/-/sumchecker-3.0.1.tgz not in flight; adding
+570 verbose addTmpTarball already have metadata; skipping unpack for sumchecker@3.0.1
+571 verbose correctMkdir /Users/bleeck/.npm correctMkdir not in flight; initializing
+572 info retry fetch attempt 1 at 3:28:18 PM
+573 info attempt registry request try #1 at 3:28:18 PM
+574 http fetch GET https://registry.npmjs.org/semver/-/semver-7.8.5.tgz
+575 info retry fetch attempt 1 at 3:28:18 PM
+576 info attempt registry request try #1 at 3:28:18 PM
+577 http fetch GET https://registry.npmjs.org/undici/-/undici-7.28.0.tgz
+578 silly cache afterAdd debug@4.4.3
+579 verbose afterAdd /Users/bleeck/.npm/debug/4.4.3/package/package.json not in flight; writing
+580 verbose correctMkdir /Users/bleeck/.npm correctMkdir not in flight; initializing
+581 silly cache afterAdd graceful-fs@4.2.11
+582 verbose afterAdd /Users/bleeck/.npm/graceful-fs/4.2.11/package/package.json not in flight; writing
+583 verbose correctMkdir /Users/bleeck/.npm correctMkdir not in flight; initializing
+584 silly cache afterAdd progress@2.0.3
+585 verbose afterAdd /Users/bleeck/.npm/progress/2.0.3/package/package.json not in flight; writing
+586 verbose correctMkdir /Users/bleeck/.npm correctMkdir not in flight; initializing
+587 verbose afterAdd /Users/bleeck/.npm/debug/4.4.3/package/package.json written
+588 verbose afterAdd /Users/bleeck/.npm/graceful-fs/4.2.11/package/package.json written
+589 verbose afterAdd /Users/bleeck/.npm/progress/2.0.3/package/package.json written
+590 silly cache afterAdd sumchecker@3.0.1
+591 verbose afterAdd /Users/bleeck/.npm/sumchecker/3.0.1/package/package.json not in flight; writing
+592 verbose correctMkdir /Users/bleeck/.npm correctMkdir not in flight; initializing
+593 verbose afterAdd /Users/bleeck/.npm/sumchecker/3.0.1/package/package.json written
+594 http fetch 200 https://registry.npmjs.org/semver/-/semver-7.8.5.tgz
+595 silly fetchAndShaCheck shasum 39b646037dd50c14fb451e7e4cac58ed8b863f69
+596 verbose addTmpTarball /var/folders/3t/r__v5btd4bs750hqz1x8tlsr0000gp/T/npm-17147-184728d3/registry.npmjs.org/semver/-/semver-7.8.5.tgz not in flight; adding
+597 verbose addTmpTarball already have metadata; skipping unpack for semver@7.8.5
+598 verbose correctMkdir /Users/bleeck/.npm correctMkdir not in flight; initializing
+599 silly cache afterAdd semver@7.8.5
+600 verbose afterAdd /Users/bleeck/.npm/semver/7.8.5/package/package.json not in flight; writing
+601 verbose correctMkdir /Users/bleeck/.npm correctMkdir not in flight; initializing
+602 verbose afterAdd /Users/bleeck/.npm/semver/7.8.5/package/package.json written
+603 http fetch 200 https://registry.npmjs.org/undici/-/undici-7.28.0.tgz
+604 silly fetchAndShaCheck shasum 97d64564198b285bc281f0e8e29597e3d11fe7ec
+605 verbose addTmpTarball /var/folders/3t/r__v5btd4bs750hqz1x8tlsr0000gp/T/npm-17147-184728d3/registry.npmjs.org/undici/-/undici-7.28.0.tgz not in flight; adding
+606 verbose addTmpTarball already have metadata; skipping unpack for undici@7.28.0
+607 verbose correctMkdir /Users/bleeck/.npm correctMkdir not in flight; initializing
+608 silly cache afterAdd undici@7.28.0
+609 verbose afterAdd /Users/bleeck/.npm/undici/7.28.0/package/package.json not in flight; writing
+610 verbose correctMkdir /Users/bleeck/.npm correctMkdir not in flight; initializing
+611 verbose afterAdd /Users/bleeck/.npm/undici/7.28.0/package/package.json written
+612 silly fetchNamedPackageData ms
+613 silly mapToRegistry name ms
+614 silly mapToRegistry using default registry
+615 silly mapToRegistry registry https://registry.npmjs.org/
+616 silly mapToRegistry data Result {
+616 silly mapToRegistry   raw: 'ms',
+616 silly mapToRegistry   scope: null,
+616 silly mapToRegistry   escapedName: 'ms',
+616 silly mapToRegistry   name: 'ms',
+616 silly mapToRegistry   rawSpec: '',
+616 silly mapToRegistry   spec: 'latest',
+616 silly mapToRegistry   type: 'tag' }
+617 silly mapToRegistry uri https://registry.npmjs.org/ms
+618 verbose request uri https://registry.npmjs.org/ms
+619 verbose request no auth needed
+620 info attempt registry request try #1 at 3:28:19 PM
+621 http request GET https://registry.npmjs.org/ms
+622 http 200 https://registry.npmjs.org/ms
+623 verbose headers { date: 'Tue, 30 Jun 2026 14:28:19 GMT',
+623 verbose headers   'content-type': 'application/json',
+623 verbose headers   'transfer-encoding': 'chunked',
+623 verbose headers   connection: 'keep-alive',
+623 verbose headers   'set-cookie': [ '_cfuvid=926jKK45iLUqRfjdj0Mvug7Sw.jog70DFkDTya5beuE-1782829699.0892143-1.0.1.1-sAF.77dCfu0IOKt7j4YmDaeifqo5p2f9bl3cU4.9lok; HttpOnly; SameSite=None; Secure; Path=/; Domain=npmjs.org' ],
+623 verbose headers   'cf-ray': 'a13ddb534ebd4182-LHR',
+623 verbose headers   'cf-cache-status': 'HIT',
+623 verbose headers   'access-control-allow-origin': '*',
+623 verbose headers   age: '132',
+623 verbose headers   'cache-control': 'public, max-age=300',
+623 verbose headers   vary: 'accept-encoding, accept',
+623 verbose headers   'last-modified': 'Mon, 08 Sep 2025 19:56:55 GMT',
+623 verbose headers   server: 'cloudflare',
+623 verbose headers   etag: 'W/"a53858f0f0359f946b2e38d52e95c0d9"',
+623 verbose headers   'content-encoding': 'gzip' }
+624 silly get cb [ 200,
+624 silly get   { date: 'Tue, 30 Jun 2026 14:28:19 GMT',
+624 silly get     'content-type': 'application/json',
+624 silly get     'transfer-encoding': 'chunked',
+624 silly get     connection: 'keep-alive',
+624 silly get     'set-cookie': [ '_cfuvid=926jKK45iLUqRfjdj0Mvug7Sw.jog70DFkDTya5beuE-1782829699.0892143-1.0.1.1-sAF.77dCfu0IOKt7j4YmDaeifqo5p2f9bl3cU4.9lok; HttpOnly; SameSite=None; Secure; Path=/; Domain=npmjs.org' ],
+624 silly get     'cf-ray': 'a13ddb534ebd4182-LHR',
+624 silly get     'cf-cache-status': 'HIT',
+624 silly get     'access-control-allow-origin': '*',
+624 silly get     age: '132',
+624 silly get     'cache-control': 'public, max-age=300',
+624 silly get     vary: 'accept-encoding, accept',
+624 silly get     'last-modified': 'Mon, 08 Sep 2025 19:56:55 GMT',
+624 silly get     server: 'cloudflare',
+624 silly get     etag: 'W/"a53858f0f0359f946b2e38d52e95c0d9"',
+624 silly get     'content-encoding': 'gzip' } ]
+625 verbose get saving ms to /Users/bleeck/.npm/registry.npmjs.org/ms/.cache.json
+626 verbose correctMkdir /Users/bleeck/.npm correctMkdir not in flight; initializing
+627 silly resolveWithNewModule ms@2.1.3 checking installable status
+628 silly cache add args [ 'ms@^2.1.3', null ]
+629 verbose cache add spec ms@^2.1.3
+630 silly cache add parsed spec Result {
+630 silly cache add   raw: 'ms@^2.1.3',
+630 silly cache add   scope: null,
+630 silly cache add   escapedName: 'ms',
+630 silly cache add   name: 'ms',
+630 silly cache add   rawSpec: '^2.1.3',
+630 silly cache add   spec: '>=2.1.3 <3.0.0',
+630 silly cache add   type: 'range' }
+631 silly addNamed ms@>=2.1.3 <3.0.0
+632 verbose addNamed ">=2.1.3 <3.0.0" is a valid semver range for ms
+633 silly addNameRange { name: 'ms', range: '>=2.1.3 <3.0.0', hasData: false }
+634 silly mapToRegistry name ms
+635 silly mapToRegistry using default registry
+636 silly mapToRegistry registry https://registry.npmjs.org/
+637 silly mapToRegistry data Result {
+637 silly mapToRegistry   raw: 'ms',
+637 silly mapToRegistry   scope: null,
+637 silly mapToRegistry   escapedName: 'ms',
+637 silly mapToRegistry   name: 'ms',
+637 silly mapToRegistry   rawSpec: '',
+637 silly mapToRegistry   spec: 'latest',
+637 silly mapToRegistry   type: 'tag' }
+638 silly mapToRegistry uri https://registry.npmjs.org/ms
+639 verbose addNameRange registry:https://registry.npmjs.org/ms not in flight; fetching
+640 verbose get https://registry.npmjs.org/ms not expired, no request
+641 silly addNameRange number 2 { name: 'ms', range: '>=2.1.3 <3.0.0', hasData: true }
+642 silly addNameRange versions [ 'ms',
+642 silly addNameRange   [ '0.1.0',
+642 silly addNameRange     '0.2.0',
+642 silly addNameRange     '0.3.0',
+642 silly addNameRange     '0.4.0',
+642 silly addNameRange     '0.5.0',
+642 silly addNameRange     '0.5.1',
+642 silly addNameRange     '0.6.0',
+642 silly addNameRange     '0.6.1',
+642 silly addNameRange     '0.6.2',
+642 silly addNameRange     '0.7.0',
+642 silly addNameRange     '0.7.1',
+642 silly addNameRange     '0.7.2',
+642 silly addNameRange     '0.7.3',
+642 silly addNameRange     '1.0.0',
+642 silly addNameRange     '2.0.0',
+642 silly addNameRange     '2.1.0',
+642 silly addNameRange     '2.1.1',
+642 silly addNameRange     '2.1.2',
+642 silly addNameRange     '2.1.3',
+642 silly addNameRange     '3.0.0-beta.0',
+642 silly addNameRange     '3.0.0-beta.1',
+642 silly addNameRange     '3.0.0-beta.2',
+642 silly addNameRange     '3.0.0-canary.0',
+642 silly addNameRange     '3.0.0-canary.1',
+642 silly addNameRange     '3.0.0-canary.202508252028',
+642 silly addNameRange     '3.0.0-canary.202508252038',
+642 silly addNameRange     '3.0.0-canary.202508261539',
+642 silly addNameRange     '3.0.0-canary.202508261745',
+642 silly addNameRange     '3.0.0-canary.202508261828',
+642 silly addNameRange     '4.0.0-nightly.202508270145',
+642 silly addNameRange     '4.0.0-nightly.202508271358',
+642 silly addNameRange     '4.0.0-nightly.202508271359' ] ]
+643 silly addNamed ms@2.1.3
+644 verbose addNamed "2.1.3" is a plain semver version for ms
+645 silly mapToRegistry name ms
+646 silly mapToRegistry using default registry
+647 silly mapToRegistry registry https://registry.npmjs.org/
+648 silly mapToRegistry data Result {
+648 silly mapToRegistry   raw: 'ms',
+648 silly mapToRegistry   scope: null,
+648 silly mapToRegistry   escapedName: 'ms',
+648 silly mapToRegistry   name: 'ms',
+648 silly mapToRegistry   rawSpec: '',
+648 silly mapToRegistry   spec: 'latest',
+648 silly mapToRegistry   type: 'tag' }
+649 silly mapToRegistry uri https://registry.npmjs.org/ms
+650 verbose addRemoteTarball https://registry.npmjs.org/ms/-/ms-2.1.3.tgz not in flight; adding
+651 verbose addRemoteTarball [ 'https://registry.npmjs.org/ms/-/ms-2.1.3.tgz',
+651 verbose addRemoteTarball   '574c8138ce1d2b5861f0b44579dbadd60c6615b2' ]
+652 info retry fetch attempt 1 at 3:28:19 PM
+653 info attempt registry request try #1 at 3:28:19 PM
+654 http fetch GET https://registry.npmjs.org/ms/-/ms-2.1.3.tgz
+655 http fetch 200 https://registry.npmjs.org/ms/-/ms-2.1.3.tgz
+656 silly fetchAndShaCheck shasum 574c8138ce1d2b5861f0b44579dbadd60c6615b2
+657 verbose addTmpTarball /var/folders/3t/r__v5btd4bs750hqz1x8tlsr0000gp/T/npm-17147-184728d3/registry.npmjs.org/ms/-/ms-2.1.3.tgz not in flight; adding
+658 verbose addTmpTarball already have metadata; skipping unpack for ms@2.1.3
+659 verbose correctMkdir /Users/bleeck/.npm correctMkdir not in flight; initializing
+660 silly cache afterAdd ms@2.1.3
+661 verbose afterAdd /Users/bleeck/.npm/ms/2.1.3/package/package.json not in flight; writing
+662 verbose correctMkdir /Users/bleeck/.npm correctMkdir not in flight; initializing
+663 verbose afterAdd /Users/bleeck/.npm/ms/2.1.3/package/package.json written
+664 silly fetchNamedPackageData undici-types
+665 silly mapToRegistry name undici-types
+666 silly mapToRegistry using default registry
+667 silly mapToRegistry registry https://registry.npmjs.org/
+668 silly mapToRegistry data Result {
+668 silly mapToRegistry   raw: 'undici-types',
+668 silly mapToRegistry   scope: null,
+668 silly mapToRegistry   escapedName: 'undici-types',
+668 silly mapToRegistry   name: 'undici-types',
+668 silly mapToRegistry   rawSpec: '',
+668 silly mapToRegistry   spec: 'latest',
+668 silly mapToRegistry   type: 'tag' }
+669 silly mapToRegistry uri https://registry.npmjs.org/undici-types
+670 verbose request uri https://registry.npmjs.org/undici-types
+671 verbose request no auth needed
+672 info attempt registry request try #1 at 3:28:19 PM
+673 http request GET https://registry.npmjs.org/undici-types
+674 http 200 https://registry.npmjs.org/undici-types
+675 verbose headers { date: 'Tue, 30 Jun 2026 14:28:19 GMT',
+675 verbose headers   'content-type': 'application/json',
+675 verbose headers   'transfer-encoding': 'chunked',
+675 verbose headers   connection: 'keep-alive',
+675 verbose headers   'set-cookie': [ '_cfuvid=ZUbZxGCpCEDMMW6JJ5NBC.Aht4JdbvzoZdi2ViWZxvI-1782829699.167942-1.0.1.1-2DxWqcwUjUaRFXqVwu82fFXW2saZ6mCowQs8i087l_s; HttpOnly; SameSite=None; Secure; Path=/; Domain=npmjs.org' ],
+675 verbose headers   'cf-ray': 'a13ddb53cc0b34ed-LHR',
+675 verbose headers   'cf-cache-status': 'HIT',
+675 verbose headers   'access-control-allow-origin': '*',
+675 verbose headers   age: '48',
+675 verbose headers   'cache-control': 'public, max-age=300',
+675 verbose headers   vary: 'accept-encoding, accept',
+675 verbose headers   'last-modified': 'Mon, 15 Jun 2026 15:51:31 GMT',
+675 verbose headers   server: 'cloudflare',
+675 verbose headers   etag: 'W/"acdd558fc704f7bbfbee12c3aee19861"',
+675 verbose headers   'content-encoding': 'gzip' }
+676 silly get cb [ 200,
+676 silly get   { date: 'Tue, 30 Jun 2026 14:28:19 GMT',
+676 silly get     'content-type': 'application/json',
+676 silly get     'transfer-encoding': 'chunked',
+676 silly get     connection: 'keep-alive',
+676 silly get     'set-cookie': [ '_cfuvid=ZUbZxGCpCEDMMW6JJ5NBC.Aht4JdbvzoZdi2ViWZxvI-1782829699.167942-1.0.1.1-2DxWqcwUjUaRFXqVwu82fFXW2saZ6mCowQs8i087l_s; HttpOnly; SameSite=None; Secure; Path=/; Domain=npmjs.org' ],
+676 silly get     'cf-ray': 'a13ddb53cc0b34ed-LHR',
+676 silly get     'cf-cache-status': 'HIT',
+676 silly get     'access-control-allow-origin': '*',
+676 silly get     age: '48',
+676 silly get     'cache-control': 'public, max-age=300',
+676 silly get     vary: 'accept-encoding, accept',
+676 silly get     'last-modified': 'Mon, 15 Jun 2026 15:51:31 GMT',
+676 silly get     server: 'cloudflare',
+676 silly get     etag: 'W/"acdd558fc704f7bbfbee12c3aee19861"',
+676 silly get     'content-encoding': 'gzip' } ]
+677 verbose get saving undici-types to /Users/bleeck/.npm/registry.npmjs.org/undici-types/.cache.json
+678 verbose correctMkdir /Users/bleeck/.npm correctMkdir not in flight; initializing
+679 silly resolveWithNewModule undici-types@7.18.2 checking installable status
+680 silly cache add args [ 'undici-types@~7.18.0', null ]
+681 verbose cache add spec undici-types@~7.18.0
+682 silly cache add parsed spec Result {
+682 silly cache add   raw: 'undici-types@~7.18.0',
+682 silly cache add   scope: null,
+682 silly cache add   escapedName: 'undici-types',
+682 silly cache add   name: 'undici-types',
+682 silly cache add   rawSpec: '~7.18.0',
+682 silly cache add   spec: '>=7.18.0 <7.19.0',
+682 silly cache add   type: 'range' }
+683 silly addNamed undici-types@>=7.18.0 <7.19.0
+684 verbose addNamed ">=7.18.0 <7.19.0" is a valid semver range for undici-types
+685 silly addNameRange { name: 'undici-types',
+685 silly addNameRange   range: '>=7.18.0 <7.19.0',
+685 silly addNameRange   hasData: false }
+686 silly mapToRegistry name undici-types
+687 silly mapToRegistry using default registry
+688 silly mapToRegistry registry https://registry.npmjs.org/
+689 silly mapToRegistry data Result {
+689 silly mapToRegistry   raw: 'undici-types',
+689 silly mapToRegistry   scope: null,
+689 silly mapToRegistry   escapedName: 'undici-types',
+689 silly mapToRegistry   name: 'undici-types',
+689 silly mapToRegistry   rawSpec: '',
+689 silly mapToRegistry   spec: 'latest',
+689 silly mapToRegistry   type: 'tag' }
+690 silly mapToRegistry uri https://registry.npmjs.org/undici-types
+691 verbose addNameRange registry:https://registry.npmjs.org/undici-types not in flight; fetching
+692 verbose get https://registry.npmjs.org/undici-types not expired, no request
+693 silly addNameRange number 2 { name: 'undici-types',
+693 silly addNameRange   range: '>=7.18.0 <7.19.0',
+693 silly addNameRange   hasData: true }
+694 silly addNameRange versions [ 'undici-types',
+694 silly addNameRange   [ '0.0.1',
+694 silly addNameRange     '5.24.0-test.2',
+694 silly addNameRange     '5.24.0-test.5',
+694 silly addNameRange     '5.24.0-test.6',
+694 silly addNameRange     '5.25.1',
+694 silly addNameRange     '5.25.2',
+694 silly addNameRange     '5.25.3',
+694 silly addNameRange     '5.26.0',
+694 silly addNameRange     '5.26.1',
+694 silly addNameRange     '5.26.2',
+694 silly addNameRange     '5.26.3',
+694 silly addNameRange     '5.26.4',
+694 silly addNameRange     '5.26.5',
+694 silly addNameRange     '5.27.0',
+694 silly addNameRange     '5.27.1',
+694 silly addNameRange     '5.27.2',
+694 silly addNameRange     '5.28.0',
+694 silly addNameRange     '5.28.1',
+694 silly addNameRange     '5.28.2',
+694 silly addNameRange     '6.0.0',
+694 silly addNameRange     '6.0.1',
+694 silly addNameRange     '6.1.0',
+694 silly addNameRange     '6.2.0',
+694 silly addNameRange     '6.2.1',
+694 silly addNameRange     '6.3.0',
+694 silly addNameRange     '6.4.0',
+694 silly addNameRange     '6.5.0',
+694 silly addNameRange     '6.6.0',
+694 silly addNameRange     '6.6.1',
+694 silly addNameRange     '5.28.3',
+694 silly addNameRange     '6.6.2',
+694 silly addNameRange     '6.7.0',
+694 silly addNameRange     '6.7.1',
+694 silly addNameRange     '6.8.0',
+694 silly addNameRange     '6.9.0',
+694 silly addNameRange     '6.10.0',
+694 silly addNameRange     '6.10.2',
+694 silly addNameRange     '6.10.1',
+694 silly addNameRange     '6.11.0',
+694 silly addNameRange     '5.28.4',
+694 silly addNameRange     '6.11.1',
+694 silly addNameRange     '6.12.0',
+694 silly addNameRange     '6.13.0',
+694 silly addNameRange     '6.14.0',
+694 silly addNameRange     '6.14.1',
+694 silly addNameRange     '6.15.0',
+694 silly addNameRange     '6.16.0',
+694 silly addNameRange     '6.16.1',
+694 silly addNameRange     '6.17.0',
+694 silly addNameRange     '6.18.0',
+694 silly addNameRange     '6.18.1',
+694 silly addNameRange     '6.18.2',
+694 silly addNameRange     '6.19.1',
+694 silly addNameRange     '6.19.2',
+694 silly addNameRange     '6.19.3',
+694 silly addNameRange     '6.19.4',
+694 silly addNameRange     '6.19.5',
+694 silly addNameRange     '6.19.6',
+694 silly addNameRange     '6.19.8',
+694 silly addNameRange     '6.20.0',
+694 silly addNameRange     '6.21.0',
+694 silly addNameRange     '7.0.0',
+694 silly addNameRange     '7.1.0',
+694 silly addNameRange     '7.1.1',
+694 silly addNameRange     '7.2.0',
+694 silly addNameRange     '7.2.1',
+694 silly addNameRange     '7.2.2',
+694 silly addNameRange     '7.2.3',
+694 silly addNameRange     '7.3.0',
+694 silly addNameRange     '7.4.0',
+694 silly addNameRange     '7.5.0',
+694 silly addNameRange     '7.7.0',
+694 silly addNameRange     '7.8.0',
+694 silly addNameRange     '7.9.0',
+694 silly addNameRange     '7.10.0',
+694 silly addNameRange     '7.11.0',
+694 silly addNameRange     '7.12.0',
+694 silly addNameRange     '7.13.0',
+694 silly addNameRange     '7.14.0',
+694 silly addNameRange     '7.15.0',
+694 silly addNameRange     '7.16.0',
+694 silly addNameRange     '7.17.0',
+694 silly addNameRange     '7.18.0',
+694 silly addNameRange     '6.23.0',
+694 silly addNameRange     '7.18.1',
+694 silly addNameRange     '7.18.2',
+694 silly addNameRange     '7.19.0',
+694 silly addNameRange     '7.19.1',
+694 silly addNameRange     '7.19.2',
+694 silly addNameRange     '7.20.0',
+694 silly addNameRange     '7.21.0',
+694 silly addNameRange     '7.22.0',
+694 silly addNameRange     '7.23.0',
+694 silly addNameRange     '7.24.0',
+694 silly addNameRange     '6.24.0',
+694 silly addNameRange     '7.24.1',
+694 silly addNameRange     '7.24.2',
+694 silly addNameRange     '6.24.1',
+694 silly addNameRange     '7.24.3',
+694 silly addNameRange     '7.24.4',
+694 silly addNameRange     ... 23 more items ] ]
+695 silly addNamed undici-types@7.18.2
+696 verbose addNamed "7.18.2" is a plain semver version for undici-types
+697 silly mapToRegistry name undici-types
+698 silly mapToRegistry using default registry
+699 silly mapToRegistry registry https://registry.npmjs.org/
+700 silly mapToRegistry data Result {
+700 silly mapToRegistry   raw: 'undici-types',
+700 silly mapToRegistry   scope: null,
+700 silly mapToRegistry   escapedName: 'undici-types',
+700 silly mapToRegistry   name: 'undici-types',
+700 silly mapToRegistry   rawSpec: '',
+700 silly mapToRegistry   spec: 'latest',
+700 silly mapToRegistry   type: 'tag' }
+701 silly mapToRegistry uri https://registry.npmjs.org/undici-types
+702 verbose addRemoteTarball https://registry.npmjs.org/undici-types/-/undici-types-7.18.2.tgz not in flight; adding
+703 verbose addRemoteTarball [ 'https://registry.npmjs.org/undici-types/-/undici-types-7.18.2.tgz',
+703 verbose addRemoteTarball   '29357a89e7b7ca4aef3bf0fd3fd0cd73884229e9' ]
+704 info retry fetch attempt 1 at 3:28:19 PM
+705 info attempt registry request try #1 at 3:28:19 PM
+706 http fetch GET https://registry.npmjs.org/undici-types/-/undici-types-7.18.2.tgz
+707 http fetch 200 https://registry.npmjs.org/undici-types/-/undici-types-7.18.2.tgz
+708 silly fetchAndShaCheck shasum 29357a89e7b7ca4aef3bf0fd3fd0cd73884229e9
+709 verbose addTmpTarball /var/folders/3t/r__v5btd4bs750hqz1x8tlsr0000gp/T/npm-17147-184728d3/registry.npmjs.org/undici-types/-/undici-types-7.18.2.tgz not in flight; adding
+710 verbose addTmpTarball already have metadata; skipping unpack for undici-types@7.18.2
+711 verbose correctMkdir /Users/bleeck/.npm correctMkdir not in flight; initializing
+712 silly cache afterAdd undici-types@7.18.2
+713 verbose afterAdd /Users/bleeck/.npm/undici-types/7.18.2/package/package.json not in flight; writing
+714 verbose correctMkdir /Users/bleeck/.npm correctMkdir not in flight; initializing
+715 verbose afterAdd /Users/bleeck/.npm/undici-types/7.18.2/package/package.json written
+716 silly loadAllDepsIntoIdealTree Finishing
+717 silly loadIdealTree Finishing
+718 silly currentTree desktop-shell@1.0.0
+719 silly idealTree desktop-shell@1.0.0
+719 silly idealTree ├── @electron-internal/extract-zip@1.0.4
+719 silly idealTree ├── @electron/get@5.0.0
+719 silly idealTree ├── @types/node@24.13.2
+719 silly idealTree ├── debug@4.4.3
+719 silly idealTree ├── electron@42.5.1
+719 silly idealTree ├── env-paths@3.0.0
+719 silly idealTree ├── graceful-fs@4.2.11
+719 silly idealTree ├── ms@2.1.3
+719 silly idealTree ├── progress@2.0.3
+719 silly idealTree ├── semver@7.8.5
+719 silly idealTree ├── sumchecker@3.0.1
+719 silly idealTree ├── undici-types@7.18.2
+719 silly idealTree └── undici@7.28.0
+720 silly generateActionsToTake Starting
+721 silly install generateActionsToTake
+722 silly generateActionsToTake Finishing
+723 silly diffTrees action count 13
+724 silly diffTrees add env-paths@3.0.0
+725 silly diffTrees add graceful-fs@4.2.11
+726 silly diffTrees add ms@2.1.3
+727 silly diffTrees add debug@4.4.3
+728 silly diffTrees add progress@2.0.3
+729 silly diffTrees add semver@7.8.5
+730 silly diffTrees add sumchecker@3.0.1
+731 silly diffTrees add undici@7.28.0
+732 silly diffTrees add undici-types@7.18.2
+733 silly diffTrees add @electron-internal/extract-zip@1.0.4
+734 silly diffTrees add @electron/get@5.0.0
+735 silly diffTrees add @types/node@24.13.2
+736 silly diffTrees add electron@42.5.1
+737 silly decomposeActions action count 104
+738 silly decomposeActions fetch env-paths@3.0.0
+739 silly decomposeActions extract env-paths@3.0.0
+740 silly decomposeActions test env-paths@3.0.0
+741 silly decomposeActions preinstall env-paths@3.0.0
+742 silly decomposeActions build env-paths@3.0.0
+743 silly decomposeActions install env-paths@3.0.0
+744 silly decomposeActions postinstall env-paths@3.0.0
+745 silly decomposeActions finalize env-paths@3.0.0
+746 silly decomposeActions fetch graceful-fs@4.2.11
+747 silly decomposeActions extract graceful-fs@4.2.11
+748 silly decomposeActions test graceful-fs@4.2.11
+749 silly decomposeActions preinstall graceful-fs@4.2.11
+750 silly decomposeActions build graceful-fs@4.2.11
+751 silly decomposeActions install graceful-fs@4.2.11
+752 silly decomposeActions postinstall graceful-fs@4.2.11
+753 silly decomposeActions finalize graceful-fs@4.2.11
+754 silly decomposeActions fetch ms@2.1.3
+755 silly decomposeActions extract ms@2.1.3
+756 silly decomposeActions test ms@2.1.3
+757 silly decomposeActions preinstall ms@2.1.3
+758 silly decomposeActions build ms@2.1.3
+759 silly decomposeActions install ms@2.1.3
+760 silly decomposeActions postinstall ms@2.1.3
+761 silly decomposeActions finalize ms@2.1.3
+762 silly decomposeActions fetch debug@4.4.3
+763 silly decomposeActions extract debug@4.4.3
+764 silly decomposeActions test debug@4.4.3
+765 silly decomposeActions preinstall debug@4.4.3
+766 silly decomposeActions build debug@4.4.3
+767 silly decomposeActions install debug@4.4.3
+768 silly decomposeActions postinstall debug@4.4.3
+769 silly decomposeActions finalize debug@4.4.3
+770 silly decomposeActions fetch progress@2.0.3
+771 silly decomposeActions extract progress@2.0.3
+772 silly decomposeActions test progress@2.0.3
+773 silly decomposeActions preinstall progress@2.0.3
+774 silly decomposeActions build progress@2.0.3
+775 silly decomposeActions install progress@2.0.3
+776 silly decomposeActions postinstall progress@2.0.3
+777 silly decomposeActions finalize progress@2.0.3
+778 silly decomposeActions fetch semver@7.8.5
+779 silly decomposeActions extract semver@7.8.5
+780 silly decomposeActions test semver@7.8.5
+781 silly decomposeActions preinstall semver@7.8.5
+782 silly decomposeActions build semver@7.8.5
+783 silly decomposeActions install semver@7.8.5
+784 silly decomposeActions postinstall semver@7.8.5
+785 silly decomposeActions finalize semver@7.8.5
+786 silly decomposeActions fetch sumchecker@3.0.1
+787 silly decomposeActions extract sumchecker@3.0.1
+788 silly decomposeActions test sumchecker@3.0.1
+789 silly decomposeActions preinstall sumchecker@3.0.1
+790 silly decomposeActions build sumchecker@3.0.1
+791 silly decomposeActions install sumchecker@3.0.1
+792 silly decomposeActions postinstall sumchecker@3.0.1
+793 silly decomposeActions finalize sumchecker@3.0.1
+794 silly decomposeActions fetch undici@7.28.0
+795 silly decomposeActions extract undici@7.28.0
+796 silly decomposeActions test undici@7.28.0
+797 silly decomposeActions preinstall undici@7.28.0
+798 silly decomposeActions build undici@7.28.0
+799 silly decomposeActions install undici@7.28.0
+800 silly decomposeActions postinstall undici@7.28.0
+801 silly decomposeActions finalize undici@7.28.0
+802 silly decomposeActions fetch undici-types@7.18.2
+803 silly decomposeActions extract undici-types@7.18.2
+804 silly decomposeActions test undici-types@7.18.2
+805 silly decomposeActions preinstall undici-types@7.18.2
+806 silly decomposeActions build undici-types@7.18.2
+807 silly decomposeActions install undici-types@7.18.2
+808 silly decomposeActions postinstall undici-types@7.18.2
+809 silly decomposeActions finalize undici-types@7.18.2
+810 silly decomposeActions fetch @electron-internal/extract-zip@1.0.4
+811 silly decomposeActions extract @electron-internal/extract-zip@1.0.4
+812 silly decomposeActions test @electron-internal/extract-zip@1.0.4
+813 silly decomposeActions preinstall @electron-internal/extract-zip@1.0.4
+814 silly decomposeActions build @electron-internal/extract-zip@1.0.4
+815 silly decomposeActions install @electron-internal/extract-zip@1.0.4
+816 silly decomposeActions postinstall @electron-internal/extract-zip@1.0.4
+817 silly decomposeActions finalize @electron-internal/extract-zip@1.0.4
+818 silly decomposeActions fetch @electron/get@5.0.0
+819 silly decomposeActions extract @electron/get@5.0.0
+820 silly decomposeActions test @electron/get@5.0.0
+821 silly decomposeActions preinstall @electron/get@5.0.0
+822 silly decomposeActions build @electron/get@5.0.0
+823 silly decomposeActions install @electron/get@5.0.0
+824 silly decomposeActions postinstall @electron/get@5.0.0
+825 silly decomposeActions finalize @electron/get@5.0.0
+826 silly decomposeActions fetch @types/node@24.13.2
+827 silly decomposeActions extract @types/node@24.13.2
+828 silly decomposeActions test @types/node@24.13.2
+829 silly decomposeActions preinstall @types/node@24.13.2
+830 silly decomposeActions build @types/node@24.13.2
+831 silly decomposeActions install @types/node@24.13.2
+832 silly decomposeActions postinstall @types/node@24.13.2
+833 silly decomposeActions finalize @types/node@24.13.2
+834 silly decomposeActions fetch electron@42.5.1
+835 silly decomposeActions extract electron@42.5.1
+836 silly decomposeActions test electron@42.5.1
+837 silly decomposeActions preinstall electron@42.5.1
+838 silly decomposeActions build electron@42.5.1
+839 silly decomposeActions install electron@42.5.1
+840 silly decomposeActions postinstall electron@42.5.1
+841 silly decomposeActions finalize electron@42.5.1
+842 silly runTopLevelLifecycles Starting
+843 silly executeActions Starting
+844 silly install executeActions
+845 silly doSerial global-install 0
+846 silly doParallel fetch 13
+847 verbose correctMkdir /Users/bleeck/.npm/_locks correctMkdir not in flight; initializing
+848 verbose makeDirectory /Users/bleeck/.npm/_locks creation not in flight; initializing
+849 silly makeDirectory /Users/bleeck/.npm/_locks uid: 502 gid: 20
+850 verbose lock using /Users/bleeck/.npm/_locks/staging-0161c8c2c6391404.lock for /Users/bleeck/18xx/desktop-shell/node_modules/.staging
+851 silly doParallel extract 13
+852 silly extract env-paths@3.0.0
+853 silly extract graceful-fs@4.2.11
+854 silly extract ms@2.1.3
+855 silly extract debug@4.4.3
+856 silly extract progress@2.0.3
+857 silly extract semver@7.8.5
+858 silly extract sumchecker@3.0.1
+859 silly extract undici@7.28.0
+860 silly extract undici-types@7.18.2
+861 silly extract @electron-internal/extract-zip@1.0.4
+862 silly extract @electron/get@5.0.0
+863 silly extract @types/node@24.13.2
+864 silly extract electron@42.5.1
+865 verbose unbuild node_modules/.staging/env-paths-ce25d79a
+866 verbose unbuild node_modules/.staging/ms-f7ea3cba
+867 verbose unbuild node_modules/.staging/graceful-fs-4641f94f
+868 verbose unbuild node_modules/.staging/debug-f95264f2
+869 verbose unbuild node_modules/.staging/progress-05241408
+870 verbose unbuild node_modules/.staging/undici-a6a1778d
+871 verbose unbuild node_modules/.staging/sumchecker-e0f376bc
+872 verbose unbuild node_modules/.staging/undici-types-08996c5f
+873 verbose unbuild node_modules/.staging/@electron-internal/extract-zip-fb9cc937
+874 verbose unbuild node_modules/.staging/@electron/get-72e806b7
+875 verbose unbuild node_modules/.staging/semver-989f9d6a
+876 verbose unbuild node_modules/.staging/@types/node-eb6e6a39
+877 verbose unbuild node_modules/.staging/electron-c133dd78
+878 silly gentlyRm /Users/bleeck/18xx/desktop-shell/node_modules/.staging/env-paths-ce25d79a is being purged from base /Users/bleeck/18xx/desktop-shell
+879 verbose gentlyRm don't care about contents; nuking /Users/bleeck/18xx/desktop-shell/node_modules/.staging/env-paths-ce25d79a
+880 silly gentlyRm /Users/bleeck/18xx/desktop-shell/node_modules/.staging/ms-f7ea3cba is being purged from base /Users/bleeck/18xx/desktop-shell
+881 verbose gentlyRm don't care about contents; nuking /Users/bleeck/18xx/desktop-shell/node_modules/.staging/ms-f7ea3cba
+882 silly gentlyRm /Users/bleeck/18xx/desktop-shell/node_modules/.staging/graceful-fs-4641f94f is being purged from base /Users/bleeck/18xx/desktop-shell
+883 verbose gentlyRm don't care about contents; nuking /Users/bleeck/18xx/desktop-shell/node_modules/.staging/graceful-fs-4641f94f
+884 silly gentlyRm /Users/bleeck/18xx/desktop-shell/node_modules/.staging/debug-f95264f2 is being purged from base /Users/bleeck/18xx/desktop-shell
+885 verbose gentlyRm don't care about contents; nuking /Users/bleeck/18xx/desktop-shell/node_modules/.staging/debug-f95264f2
+886 silly gentlyRm /Users/bleeck/18xx/desktop-shell/node_modules/.staging/progress-05241408 is being purged from base /Users/bleeck/18xx/desktop-shell
+887 verbose gentlyRm don't care about contents; nuking /Users/bleeck/18xx/desktop-shell/node_modules/.staging/progress-05241408
+888 silly gentlyRm /Users/bleeck/18xx/desktop-shell/node_modules/.staging/undici-a6a1778d is being purged from base /Users/bleeck/18xx/desktop-shell
+889 verbose gentlyRm don't care about contents; nuking /Users/bleeck/18xx/desktop-shell/node_modules/.staging/undici-a6a1778d
+890 silly gentlyRm /Users/bleeck/18xx/desktop-shell/node_modules/.staging/sumchecker-e0f376bc is being purged from base /Users/bleeck/18xx/desktop-shell
+891 verbose gentlyRm don't care about contents; nuking /Users/bleeck/18xx/desktop-shell/node_modules/.staging/sumchecker-e0f376bc
+892 silly gentlyRm /Users/bleeck/18xx/desktop-shell/node_modules/.staging/undici-types-08996c5f is being purged from base /Users/bleeck/18xx/desktop-shell
+893 verbose gentlyRm don't care about contents; nuking /Users/bleeck/18xx/desktop-shell/node_modules/.staging/undici-types-08996c5f
+894 silly gentlyRm /Users/bleeck/18xx/desktop-shell/node_modules/.staging/@electron-internal/extract-zip-fb9cc937 is being purged from base /Users/bleeck/18xx/desktop-shell
+895 verbose gentlyRm don't care about contents; nuking /Users/bleeck/18xx/desktop-shell/node_modules/.staging/@electron-internal/extract-zip-fb9cc937
+896 silly gentlyRm /Users/bleeck/18xx/desktop-shell/node_modules/.staging/@electron/get-72e806b7 is being purged from base /Users/bleeck/18xx/desktop-shell
+897 verbose gentlyRm don't care about contents; nuking /Users/bleeck/18xx/desktop-shell/node_modules/.staging/@electron/get-72e806b7
+898 verbose tar unpack /Users/bleeck/.npm/env-paths/3.0.0/package.tgz
+899 verbose tar unpacking to /Users/bleeck/18xx/desktop-shell/node_modules/.staging/env-paths-ce25d79a
+900 silly gentlyRm /Users/bleeck/18xx/desktop-shell/node_modules/.staging/env-paths-ce25d79a is being purged
+901 verbose gentlyRm don't care about contents; nuking /Users/bleeck/18xx/desktop-shell/node_modules/.staging/env-paths-ce25d79a
+902 verbose tar unpack /Users/bleeck/.npm/ms/2.1.3/package.tgz
+903 verbose tar unpacking to /Users/bleeck/18xx/desktop-shell/node_modules/.staging/ms-f7ea3cba
+904 silly gentlyRm /Users/bleeck/18xx/desktop-shell/node_modules/.staging/ms-f7ea3cba is being purged
+905 verbose gentlyRm don't care about contents; nuking /Users/bleeck/18xx/desktop-shell/node_modules/.staging/ms-f7ea3cba
+906 verbose tar unpack /Users/bleeck/.npm/graceful-fs/4.2.11/package.tgz
+907 verbose tar unpacking to /Users/bleeck/18xx/desktop-shell/node_modules/.staging/graceful-fs-4641f94f
+908 silly gentlyRm /Users/bleeck/18xx/desktop-shell/node_modules/.staging/graceful-fs-4641f94f is being purged
+909 verbose gentlyRm don't care about contents; nuking /Users/bleeck/18xx/desktop-shell/node_modules/.staging/graceful-fs-4641f94f
+910 verbose tar unpack /Users/bleeck/.npm/debug/4.4.3/package.tgz
+911 verbose tar unpacking to /Users/bleeck/18xx/desktop-shell/node_modules/.staging/debug-f95264f2
+912 silly gentlyRm /Users/bleeck/18xx/desktop-shell/node_modules/.staging/debug-f95264f2 is being purged
+913 verbose gentlyRm don't care about contents; nuking /Users/bleeck/18xx/desktop-shell/node_modules/.staging/debug-f95264f2
+914 verbose tar unpack /Users/bleeck/.npm/progress/2.0.3/package.tgz
+915 verbose tar unpacking to /Users/bleeck/18xx/desktop-shell/node_modules/.staging/progress-05241408
+916 silly gentlyRm /Users/bleeck/18xx/desktop-shell/node_modules/.staging/progress-05241408 is being purged
+917 verbose gentlyRm don't care about contents; nuking /Users/bleeck/18xx/desktop-shell/node_modules/.staging/progress-05241408
+918 silly gentlyRm /Users/bleeck/18xx/desktop-shell/node_modules/.staging/semver-989f9d6a is being purged from base /Users/bleeck/18xx/desktop-shell
+919 verbose gentlyRm don't care about contents; nuking /Users/bleeck/18xx/desktop-shell/node_modules/.staging/semver-989f9d6a
+920 silly gentlyRm /Users/bleeck/18xx/desktop-shell/node_modules/.staging/@types/node-eb6e6a39 is being purged from base /Users/bleeck/18xx/desktop-shell
+921 verbose gentlyRm don't care about contents; nuking /Users/bleeck/18xx/desktop-shell/node_modules/.staging/@types/node-eb6e6a39
+922 verbose tar unpack /Users/bleeck/.npm/undici/7.28.0/package.tgz
+923 verbose tar unpacking to /Users/bleeck/18xx/desktop-shell/node_modules/.staging/undici-a6a1778d
+924 silly gentlyRm /Users/bleeck/18xx/desktop-shell/node_modules/.staging/undici-a6a1778d is being purged
+925 verbose gentlyRm don't care about contents; nuking /Users/bleeck/18xx/desktop-shell/node_modules/.staging/undici-a6a1778d
+926 verbose tar unpack /Users/bleeck/.npm/sumchecker/3.0.1/package.tgz
+927 verbose tar unpacking to /Users/bleeck/18xx/desktop-shell/node_modules/.staging/sumchecker-e0f376bc
+928 silly gentlyRm /Users/bleeck/18xx/desktop-shell/node_modules/.staging/sumchecker-e0f376bc is being purged
+929 verbose gentlyRm don't care about contents; nuking /Users/bleeck/18xx/desktop-shell/node_modules/.staging/sumchecker-e0f376bc
+930 verbose tar unpack /Users/bleeck/.npm/undici-types/7.18.2/package.tgz
+931 verbose tar unpacking to /Users/bleeck/18xx/desktop-shell/node_modules/.staging/undici-types-08996c5f
+932 silly gentlyRm /Users/bleeck/18xx/desktop-shell/node_modules/.staging/undici-types-08996c5f is being purged
+933 verbose gentlyRm don't care about contents; nuking /Users/bleeck/18xx/desktop-shell/node_modules/.staging/undici-types-08996c5f
+934 verbose tar unpack /Users/bleeck/.npm/@electron-internal/extract-zip/1.0.4/package.tgz
+935 verbose tar unpacking to /Users/bleeck/18xx/desktop-shell/node_modules/.staging/@electron-internal/extract-zip-fb9cc937
+936 silly gentlyRm /Users/bleeck/18xx/desktop-shell/node_modules/.staging/@electron-internal/extract-zip-fb9cc937 is being purged
+937 verbose gentlyRm don't care about contents; nuking /Users/bleeck/18xx/desktop-shell/node_modules/.staging/@electron-internal/extract-zip-fb9cc937
+938 verbose tar unpack /Users/bleeck/.npm/@electron/get/5.0.0/package.tgz
+939 verbose tar unpacking to /Users/bleeck/18xx/desktop-shell/node_modules/.staging/@electron/get-72e806b7
+940 silly gentlyRm /Users/bleeck/18xx/desktop-shell/node_modules/.staging/@electron/get-72e806b7 is being purged
+941 verbose gentlyRm don't care about contents; nuking /Users/bleeck/18xx/desktop-shell/node_modules/.staging/@electron/get-72e806b7
+942 silly gunzTarPerm modes [ '755', '644' ]
+943 silly gunzTarPerm modes [ '755', '644' ]
+944 silly gunzTarPerm modes [ '755', '644' ]
+945 silly gunzTarPerm modes [ '755', '644' ]
+946 silly gunzTarPerm modes [ '755', '644' ]
+947 verbose tar unpack /Users/bleeck/.npm/semver/7.8.5/package.tgz
+948 verbose tar unpacking to /Users/bleeck/18xx/desktop-shell/node_modules/.staging/semver-989f9d6a
+949 silly gentlyRm /Users/bleeck/18xx/desktop-shell/node_modules/.staging/semver-989f9d6a is being purged
+950 verbose gentlyRm don't care about contents; nuking /Users/bleeck/18xx/desktop-shell/node_modules/.staging/semver-989f9d6a
+951 verbose tar unpack /Users/bleeck/.npm/@types/node/24.13.2/package.tgz
+952 verbose tar unpacking to /Users/bleeck/18xx/desktop-shell/node_modules/.staging/@types/node-eb6e6a39
+953 silly gentlyRm /Users/bleeck/18xx/desktop-shell/node_modules/.staging/@types/node-eb6e6a39 is being purged
+954 verbose gentlyRm don't care about contents; nuking /Users/bleeck/18xx/desktop-shell/node_modules/.staging/@types/node-eb6e6a39
+955 silly gunzTarPerm modes [ '755', '644' ]
+956 silly gunzTarPerm modes [ '755', '644' ]
+957 silly gunzTarPerm modes [ '755', '644' ]
+958 silly gunzTarPerm modes [ '755', '644' ]
+959 silly gunzTarPerm modes [ '755', '644' ]
+960 silly gentlyRm /Users/bleeck/18xx/desktop-shell/node_modules/.staging/electron-c133dd78 is being purged from base /Users/bleeck/18xx/desktop-shell
+961 verbose gentlyRm don't care about contents; nuking /Users/bleeck/18xx/desktop-shell/node_modules/.staging/electron-c133dd78
+962 silly gunzTarPerm modes [ '755', '644' ]
+963 silly gunzTarPerm modes [ '755', '644' ]
+964 verbose tar unpack /Users/bleeck/.npm/electron/42.5.1/package.tgz
+965 verbose tar unpacking to /Users/bleeck/18xx/desktop-shell/node_modules/.staging/electron-c133dd78
+966 silly gentlyRm /Users/bleeck/18xx/desktop-shell/node_modules/.staging/electron-c133dd78 is being purged
+967 verbose gentlyRm don't care about contents; nuking /Users/bleeck/18xx/desktop-shell/node_modules/.staging/electron-c133dd78
+968 silly gunzTarPerm modes [ '755', '644' ]
+969 silly gunzTarPerm extractEntry license
+970 silly gunzTarPerm extractEntry index.js
+971 silly gunzTarPerm extractEntry binding.js
+972 silly gunzTarPerm extractEntry LICENSE
+973 silly gunzTarPerm extractEntry LICENSE
+974 silly gunzTarPerm extractEntry LICENSE
+975 silly gunzTarPerm extractEntry lib/llhttp/.gitkeep
+976 silly gunzTarPerm extractEntry package.json
+977 silly gunzTarPerm extractEntry LICENSE
+978 silly gunzTarPerm extractEntry
+979 silly gunzTarPerm extractEntry package.json
+980 silly gunzTarPerm extractEntry LICENSE
+981 silly gunzTarPerm extractEntry abi_version
+982 silly gunzTarPerm extractEntry index.js
+983 silly gunzTarPerm extractEntry package.json
+984 silly gunzTarPerm extractEntry package.json
+985 silly gunzTarPerm extractEntry license.md
+986 silly gunzTarPerm extractEntry src/browser.js
+987 silly gunzTarPerm extractEntry src/common.js
+988 silly gunzTarPerm extractEntry clone.js
+989 silly gunzTarPerm extractEntry graceful-fs.js
+990 silly gunzTarPerm extractEntry dist/artifact-utils.js
+991 silly gunzTarPerm extractEntry dist/Cache.js
+992 silly gunzTarPerm extractEntry CHANGELOG.md
+993 silly gunzTarPerm extractEntry index.js
+994 silly gunzTarPerm extractEntry package.json
+995 silly gunzTarPerm extractEntry README.md
+996 silly gunzTarPerm extractEntry index.d.ts
+997 silly gunzTarPerm extractEntry index.js
+998 silly gunzTarPerm extractEntry range.bnf
+999 silly gunzTarPerm extractEntry functions/clean.js
+1000 silly gunzTarPerm extractEntry
+1001 silly gunzTarPerm extractEntry
+1002 silly gunzTarPerm extractEntry
+1003 silly gunzTarPerm extractEntry lib/web/fetch/LICENSE
+1004 silly gunzTarPerm extractEntry LICENSE
+1005 silly gunzTarPerm extractEntry LICENSE
+1006 silly gunzTarPerm extractEntry cli.js
+1007 silly gunzTarPerm extractEntry index.js
+1008 silly gunzTarPerm extractEntry
+1009 silly gunzTarPerm extractEntry dist/downloader-resolver.js
+1010 silly gunzTarPerm extractEntry dist/Downloader.js
+1011 silly gunzTarPerm extractEntry
+1012 silly gunzTarPerm extractEntry src/index.js
+1013 silly gunzTarPerm extractEntry readme.md
+1014 silly gunzTarPerm extractEntry readme.md
+1015 silly gunzTarPerm extractEntry index.d.ts
+1016 silly gunzTarPerm extractEntry LICENSE
+1017 silly gunzTarPerm extractEntry Makefile
+1018 silly gunzTarPerm extractEntry legacy-streams.js
+1019 silly gunzTarPerm extractEntry polyfills.js
+1020 silly gunzTarPerm extractEntry package.json
+1021 silly gunzTarPerm extractEntry README.md
+1022 silly gunzTarPerm extractEntry agent.d.ts
+1023 silly gunzTarPerm extractEntry api.d.ts
+1024 silly gunzTarPerm extractEntry functions/cmp.js
+1025 silly gunzTarPerm extractEntry functions/coerce.js
+1026 silly gunzTarPerm extractEntry index.test-d.ts
+1027 silly gunzTarPerm extractEntry LICENSE
+1028 silly gunzTarPerm extractEntry index.js
+1029 silly gunzTarPerm extractEntry install.js
+1030 silly gunzTarPerm extractEntry package.json
+1031 silly gunzTarPerm extractEntry README.md
+1032 silly gunzTarPerm extractEntry lib/api/abort-signal.js
+1033 silly gunzTarPerm extractEntry lib/dispatcher/agent.js
+1034 silly gunzTarPerm extractEntry
+1035 silly gunzTarPerm extractEntry
+1036 silly gunzTarPerm extractEntry balanced-pool.d.ts
+1037 silly gunzTarPerm extractEntry cache-interceptor.d.ts
+1038 silly gunzTarPerm extractEntry classes/comparator.js
+1039 silly gunzTarPerm extractEntry functions/compare-build.js
+1040 silly gunzTarPerm extractEntry NEWS.md
+1041 silly gunzTarPerm extractEntry Readme.md
+1042 silly gunzTarPerm extractEntry lib/node-progress.js
+1043 silly gunzTarPerm extractEntry dist/FetchDownloader.js
+1044 silly gunzTarPerm extractEntry dist/index.js
+1045 silly gunzTarPerm extractEntry src/node.js
+1046 silly gunzTarPerm extractEntry package.json
+1047 silly gunzTarPerm extractEntry checksums.json
+1048 silly gunzTarPerm extractEntry package.json
+1049 silly gunzTarPerm extractEntry index.darwin-universal.node
+1050 silly gunzTarPerm extractEntry cache.d.ts
+1051 silly gunzTarPerm extractEntry README.md
+1052 silly gunzTarPerm extractEntry yarn.lock
+1053 silly gunzTarPerm extractEntry lib/api/api-connect.js
+1054 silly gunzTarPerm extractEntry lib/api/api-pipeline.js
+1055 silly gunzTarPerm extractEntry
+1056 silly gunzTarPerm extractEntry
+1057 silly gunzTarPerm extractEntry functions/compare-loose.js
+1058 silly gunzTarPerm extractEntry functions/compare.js
+1059 silly gunzTarPerm extractEntry dist/proxy.js
+1060 silly gunzTarPerm extractEntry
+1061 silly gunzTarPerm extractEntry README.md
+1062 silly gunzTarPerm extractEntry README.md
+1063 silly gunzTarPerm extractEntry electron.d.ts
+1064 silly gunzTarPerm extractEntry client-stats.d.ts
+1065 silly gunzTarPerm extractEntry client.d.ts
+1066 silly gunzTarPerm extractEntry
+1067 silly gunzTarPerm extractEntry
+1068 silly gunzTarPerm extractEntry
+1069 silly gunzTarPerm extractEntry lib/api/api-request.js
+1070 silly gunzTarPerm extractEntry dist/types.js
+1071 silly gunzTarPerm extractEntry dist/utils.js
+1072 silly gunzTarPerm extractEntry .github/FUNDING.yml
+1073 silly gunzTarPerm extractEntry internal/constants.js
+1074 silly gunzTarPerm extractEntry internal/debug.js
+1075 silly gunzTarPerm extractEntry functions/diff.js
+1076 silly gunzTarPerm extractEntry functions/eq.js
+1077 silly gunzTarPerm extractEntry functions/gt.js
+1078 silly gunzTarPerm extractEntry functions/gte.js
+1079 silly gunzTarPerm extractEntry ranges/gtr.js
+1080 silly gunzTarPerm extractEntry internal/identifiers.js
+1081 silly gunzTarPerm extractEntry functions/inc.js
+1082 silly gunzTarPerm extractEntry classes/index.js
+1083 silly gunzTarPerm extractEntry index.js
+1084 silly gunzTarPerm extractEntry ranges/intersects.js
+1085 silly gunzTarPerm extractEntry internal/lrucache.js
+1086 silly gunzTarPerm extractEntry functions/lt.js
+1087 silly gunzTarPerm extractEntry functions/lte.js
+1088 silly gunzTarPerm extractEntry ranges/ltr.js
+1089 silly gunzTarPerm extractEntry functions/major.js
+1090 silly gunzTarPerm extractEntry ranges/max-satisfying.js
+1091 silly gunzTarPerm extractEntry ranges/min-satisfying.js
+1092 silly gunzTarPerm extractEntry ranges/min-version.js
+1093 silly gunzTarPerm extractEntry functions/minor.js
+1094 silly gunzTarPerm extractEntry functions/neq.js
+1095 silly gunzTarPerm extractEntry ranges/outside.js
+1096 silly gunzTarPerm extractEntry internal/parse-options.js
+1097 silly gunzTarPerm extractEntry functions/parse.js
+1098 silly gunzTarPerm extractEntry functions/patch.js
+1099 silly gunzTarPerm extractEntry preload.js
+1100 silly gunzTarPerm extractEntry functions/prerelease.js
+1101 silly gunzTarPerm extractEntry classes/range.js
+1102 silly gunzTarPerm extractEntry functions/rcompare.js
+1103 silly gunzTarPerm extractEntry internal/re.js
+1104 silly gunzTarPerm extractEntry functions/rsort.js
+1105 silly gunzTarPerm extractEntry functions/satisfies.js
+1106 silly gunzTarPerm extractEntry bin/semver.js
+1107 silly gunzTarPerm extractEntry classes/semver.js
+1108 silly gunzTarPerm extractEntry ranges/simplify.js
+1109 silly gunzTarPerm extractEntry functions/sort.js
+1110 silly gunzTarPerm extractEntry ranges/subset.js
+1111 silly gunzTarPerm extractEntry ranges/to-comparators.js
+1112 silly gunzTarPerm extractEntry functions/truncate.js
+1113 silly gunzTarPerm extractEntry functions/valid.js
+1114 silly gunzTarPerm extractEntry ranges/valid.js
+1115 silly gunzTarPerm extractEntry package.json
+1116 silly gunzTarPerm extractEntry README.md
+1117 silly gunzTarPerm extractEntry
+1118 silly gunzTarPerm extractEntry package.json
+1119 silly gunzTarPerm extractEntry dist/artifact-utils.js.map
+1120 silly gunzTarPerm extractEntry connector.d.ts
+1121 silly gunzTarPerm extractEntry content-type.d.ts
+1122 silly gunzTarPerm extractEntry .github/workflows/ci.yml
+1123 silly gunzTarPerm extractEntry lib/api/api-stream.js
+1124 silly gunzTarPerm extractEntry lib/api/api-upgrade.js
+1125 silly gunzTarPerm extractEntry
+1126 silly gunzTarPerm extractEntry
+1127 silly gentlyRm /Users/bleeck/18xx/desktop-shell/node_modules/.staging/ms-f7ea3cba/node_modules is being purged
+1128 verbose gentlyRm don't care about contents; nuking /Users/bleeck/18xx/desktop-shell/node_modules/.staging/ms-f7ea3cba/node_modules
+1129 silly gunzTarPerm extractEntry
+1130 silly gunzTarPerm extractEntry dist/Cache.js.map
+1131 silly gunzTarPerm extractEntry dist/downloader-resolver.js.map
+1132 silly gunzTarPerm extractEntry cookies.d.ts
+1133 silly gunzTarPerm extractEntry diagnostics-channel.d.ts
+1134 silly gunzTarPerm extractEntry lib/dispatcher/balanced-pool.js
+1135 silly gunzTarPerm extractEntry lib/web/fetch/body.js
+1136 silly gunzTarPerm extractEntry
+1137 silly gunzTarPerm extractEntry
+1138 silly gunzTarPerm extractEntry
+1139 silly gentlyRm /Users/bleeck/18xx/desktop-shell/node_modules/.staging/env-paths-ce25d79a/node_modules is being purged
+1140 verbose gentlyRm don't care about contents; nuking /Users/bleeck/18xx/desktop-shell/node_modules/.staging/env-paths-ce25d79a/node_modules
+1141 silly gunzTarPerm extractEntry
+1142 silly gunzTarPerm extractEntry dist/Downloader.js.map
+1143 silly gunzTarPerm extractEntry dist/FetchDownloader.js.map
+1144 silly gunzTarPerm extractEntry dispatcher.d.ts
+1145 silly gunzTarPerm extractEntry env-http-proxy-agent.d.ts
+1146 silly gunzTarPerm extractEntry lib/handler/cache-handler.js
+1147 silly gunzTarPerm extractEntry lib/handler/cache-revalidation-handler.js
+1148 silly gunzTarPerm extractEntry dist/index.js.map
+1149 silly gunzTarPerm extractEntry dist/proxy.js.map
+1150 silly gunzTarPerm extractEntry errors.d.ts
+1151 silly gunzTarPerm extractEntry eventsource.d.ts
+1152 silly gunzTarPerm extractEntry lib/interceptor/cache.js
+1153 silly gunzTarPerm extractEntry lib/util/cache.js
+1154 silly gentlyRm /Users/bleeck/18xx/desktop-shell/node_modules/.staging/graceful-fs-4641f94f/node_modules is being purged
+1155 verbose gentlyRm don't care about contents; nuking /Users/bleeck/18xx/desktop-shell/node_modules/.staging/graceful-fs-4641f94f/node_modules
+1156 silly gentlyRm /Users/bleeck/18xx/desktop-shell/node_modules/.staging/progress-05241408/node_modules is being purged
+1157 verbose gentlyRm don't care about contents; nuking /Users/bleeck/18xx/desktop-shell/node_modules/.staging/progress-05241408/node_modules
+1158 silly gunzTarPerm extractEntry fetch.d.ts
+1159 silly gunzTarPerm extractEntry formdata.d.ts
+1160 silly gunzTarPerm extractEntry dist/types.js.map
+1161 silly gunzTarPerm extractEntry dist/utils.js.map
+1162 silly gentlyRm /Users/bleeck/18xx/desktop-shell/node_modules/.staging/debug-f95264f2/node_modules is being purged
+1163 verbose gentlyRm don't care about contents; nuking /Users/bleeck/18xx/desktop-shell/node_modules/.staging/debug-f95264f2/node_modules
+1164 silly gunzTarPerm extractEntry
+1165 silly gunzTarPerm extractEntry lib/web/cache/cache.js
+1166 silly gunzTarPerm extractEntry lib/web/cache/cachestorage.js
+1167 silly gunzTarPerm extractEntry global-dispatcher.d.ts
+1168 silly gunzTarPerm extractEntry global-origin.d.ts
+1169 silly gunzTarPerm extractEntry README.md
+1170 silly gunzTarPerm extractEntry dist/artifact-utils.d.ts
+1171 silly gunzTarPerm extractEntry
+1172 silly gunzTarPerm extractEntry
+1173 silly gunzTarPerm extractEntry
+1174 silly gunzTarPerm extractEntry lib/dispatcher/client-h1.js
+1175 silly gunzTarPerm extractEntry lib/dispatcher/client-h2.js
+1176 silly gunzTarPerm extractEntry h2c-client.d.ts
+1177 silly gunzTarPerm extractEntry handlers.d.ts
+1178 silly gunzTarPerm extractEntry dist/Cache.d.ts
+1179 silly gunzTarPerm extractEntry dist/downloader-resolver.d.ts
+1180 silly gunzTarPerm extractEntry
+1181 silly gunzTarPerm extractEntry lib/dispatcher/client.js
+1182 silly gunzTarPerm extractEntry lib/core/connect.js
+1183 silly gunzTarPerm extractEntry
+1184 silly gunzTarPerm extractEntry
+1185 silly gunzTarPerm extractEntry header.d.ts
+1186 silly gunzTarPerm extractEntry index.d.ts
+1187 silly gunzTarPerm extractEntry dist/Downloader.d.ts
+1188 silly gunzTarPerm extractEntry dist/FetchDownloader.d.ts
+1189 silly gunzTarPerm extractEntry
+1190 silly gunzTarPerm extractEntry lib/web/websocket/connection.js
+1191 silly gunzTarPerm extractEntry lib/core/constants.js
+1192 silly gunzTarPerm extractEntry lib/llhttp/constants.js
+1193 silly gunzTarPerm extractEntry lib/web/cookies/constants.js
+1194 silly gunzTarPerm extractEntry dist/index.d.ts
+1195 silly gunzTarPerm extractEntry dist/proxy.d.ts
+1196 silly gunzTarPerm extractEntry interceptors.d.ts
+1197 silly gunzTarPerm extractEntry mock-agent.d.ts
+1198 silly gunzTarPerm extractEntry
+1199 silly gunzTarPerm extractEntry
+1200 silly gunzTarPerm extractEntry dist/types.d.ts
+1201 silly gunzTarPerm extractEntry dist/utils.d.ts
+1202 silly gunzTarPerm extractEntry lib/web/fetch/constants.js
+1203 silly gunzTarPerm extractEntry lib/web/websocket/constants.js
+1204 silly gunzTarPerm extractEntry lib/web/fetch/data-url.js
+1205 silly gunzTarPerm extractEntry mock-call-history.d.ts
+1206 silly gunzTarPerm extractEntry mock-client.d.ts
+1207 silly gunzTarPerm extractEntry lib/util/date.js
+1208 silly gunzTarPerm extractEntry
+1209 silly gunzTarPerm extractEntry
+1210 silly gunzTarPerm extractEntry index.linux-arm-gnueabihf.node
+1211 silly gunzTarPerm extractEntry
+1212 silly gentlyRm /Users/bleeck/18xx/desktop-shell/node_modules/.staging/sumchecker-e0f376bc/node_modules is being purged
+1213 verbose gentlyRm don't care about contents; nuking /Users/bleeck/18xx/desktop-shell/node_modules/.staging/sumchecker-e0f376bc/node_modules
+1214 silly gunzTarPerm extractEntry mock-errors.d.ts
+1215 silly gunzTarPerm extractEntry mock-interceptor.d.ts
+1216 silly gunzTarPerm extractEntry lib/interceptor/decompress.js
+1217 silly gunzTarPerm extractEntry
+1218 silly gunzTarPerm extractEntry
+1219 silly gunzTarPerm extractEntry lib/handler/decorator-handler.js
+1220 silly gunzTarPerm extractEntry mock-pool.d.ts
+1221 silly gunzTarPerm extractEntry patch.d.ts
+1222 silly gunzTarPerm extractEntry lib/interceptor/deduplicate.js
+1223 silly gunzTarPerm extractEntry lib/handler/deduplication-handler.js
+1224 silly gunzTarPerm extractEntry
+1225 silly gunzTarPerm extractEntry
+1226 silly gunzTarPerm extractEntry
+1227 silly gunzTarPerm extractEntry
+1228 silly gunzTarPerm extractEntry
+1229 silly gunzTarPerm extractEntry pool-stats.d.ts
+1230 silly gunzTarPerm extractEntry pool.d.ts
+1231 silly gunzTarPerm extractEntry
+1232 silly gunzTarPerm extractEntry lib/core/diagnostics.js
+1233 silly gunzTarPerm extractEntry lib/dispatcher/dispatcher-base.js
+1234 silly gunzTarPerm extractEntry
+1235 silly gunzTarPerm extractEntry
+1236 silly gunzTarPerm extractEntry
+1237 silly gunzTarPerm extractEntry proxy-agent.d.ts
+1238 silly gunzTarPerm extractEntry readable.d.ts
+1239 silly gunzTarPerm extractEntry
+1240 silly gunzTarPerm extractEntry
+1241 silly gunzTarPerm extractEntry lib/dispatcher/dispatcher.js
+1242 silly gunzTarPerm extractEntry lib/interceptor/dns.js
+1243 silly gunzTarPerm extractEntry lib/interceptor/dump.js
+1244 silly gunzTarPerm extractEntry lib/dispatcher/env-http-proxy-agent.js
+1245 silly gunzTarPerm extractEntry
+1246 silly gunzTarPerm extractEntry retry-agent.d.ts
+1247 silly gunzTarPerm extractEntry retry-handler.d.ts
+1248 silly gunzTarPerm extractEntry
+1249 silly gunzTarPerm extractEntry lib/core/errors.js
+1250 silly gunzTarPerm extractEntry lib/web/websocket/events.js
+1251 silly gunzTarPerm extractEntry round-robin-pool.d.ts
+1252 silly gunzTarPerm extractEntry snapshot-agent.d.ts
+1253 silly gunzTarPerm extractEntry
+1254 silly gunzTarPerm extractEntry
+1255 silly gunzTarPerm extractEntry
+1256 silly gunzTarPerm extractEntry util.d.ts
+1257 silly gunzTarPerm extractEntry utility.d.ts
+1258 silly gunzTarPerm extractEntry lib/web/eventsource/eventsource-stream.js
+1259 silly gunzTarPerm extractEntry lib/web/eventsource/eventsource.js
+1260 silly gunzTarPerm extractEntry lib/dispatcher/fixed-queue.js
+1261 silly gunzTarPerm extractEntry index.linux-arm64-gnu.node
+1262 silly gunzTarPerm extractEntry lib/web/fetch/formdata-parser.js
+1263 silly gunzTarPerm extractEntry
+1264 silly gunzTarPerm extractEntry
+1265 silly gunzTarPerm extractEntry
+1266 silly gunzTarPerm extractEntry lib/web/fetch/formdata.js
+1267 silly gunzTarPerm extractEntry
+1268 silly gunzTarPerm extractEntry webidl.d.ts
+1269 silly gunzTarPerm extractEntry websocket.d.ts
+1270 silly gunzTarPerm extractEntry lib/web/websocket/frame.js
+1271 silly gunzTarPerm extractEntry lib/global.js
+1272 silly gunzTarPerm extractEntry lib/web/fetch/global.js
+1273 silly gunzTarPerm extractEntry
+1274 silly gunzTarPerm extractEntry lib/dispatcher/h2c-client.js
+1275 silly gunzTarPerm extractEntry
+1276 silly gunzTarPerm extractEntry
+1277 silly gunzTarPerm extractEntry
+1278 silly gunzTarPerm extractEntry lib/web/fetch/headers.js
+1279 silly gunzTarPerm extractEntry index-fetch.js
+1280 silly gunzTarPerm extractEntry index.js
+1281 silly gunzTarPerm extractEntry
+1282 silly gunzTarPerm extractEntry lib/api/index.js
+1283 silly gunzTarPerm extractEntry
+1284 silly gunzTarPerm extractEntry
+1285 silly gunzTarPerm extractEntry
+1286 silly gunzTarPerm extractEntry lib/encoding/index.js
+1287 silly gunzTarPerm extractEntry lib/web/cookies/index.js
+1288 silly gentlyRm /Users/bleeck/18xx/desktop-shell/node_modules/.staging/electron-c133dd78/node_modules is being purged
+1289 verbose gentlyRm don't care about contents; nuking /Users/bleeck/18xx/desktop-shell/node_modules/.staging/electron-c133dd78/node_modules
+1290 silly gunzTarPerm extractEntry
+1291 silly gunzTarPerm extractEntry
+1292 silly gunzTarPerm extractEntry lib/web/fetch/index.js
+1293 silly gunzTarPerm extractEntry lib/web/infra/index.js
+1294 silly gunzTarPerm extractEntry
+1295 silly gunzTarPerm extractEntry
+1296 silly gunzTarPerm extractEntry lib/web/webidl/index.js
+1297 silly gunzTarPerm extractEntry lib/llhttp/llhttp_simd-wasm.js
+1298 silly gunzTarPerm extractEntry index.linux-arm64-musl.node
+1299 silly gunzTarPerm extractEntry
+1300 silly gunzTarPerm extractEntry
+1301 silly gunzTarPerm extractEntry
+1302 silly gunzTarPerm extractEntry lib/llhttp/llhttp-wasm.js
+1303 silly gunzTarPerm extractEntry lib/cache/memory-cache-store.js
+1304 silly gunzTarPerm extractEntry
+1305 silly gunzTarPerm extractEntry
+1306 silly gunzTarPerm extractEntry
+1307 silly gunzTarPerm extractEntry
+1308 silly gunzTarPerm extractEntry
+1309 silly gunzTarPerm extractEntry
+1310 silly gunzTarPerm extractEntry lib/mock/mock-agent.js
+1311 silly gunzTarPerm extractEntry lib/mock/mock-call-history.js
+1312 silly gunzTarPerm extractEntry
+1313 silly gunzTarPerm extractEntry
+1314 silly gunzTarPerm extractEntry
+1315 silly gunzTarPerm extractEntry
+1316 silly gunzTarPerm extractEntry lib/mock/mock-client.js
+1317 silly gunzTarPerm extractEntry lib/mock/mock-errors.js
+1318 silly gunzTarPerm extractEntry
+1319 silly gunzTarPerm extractEntry
+1320 silly gentlyRm /Users/bleeck/18xx/desktop-shell/node_modules/.staging/@electron/get-72e806b7/node_modules is being purged
+1321 verbose gentlyRm don't care about contents; nuking /Users/bleeck/18xx/desktop-shell/node_modules/.staging/@electron/get-72e806b7/node_modules
+1322 silly gunzTarPerm extractEntry
+1323 silly gunzTarPerm extractEntry
+1324 silly gunzTarPerm extractEntry lib/mock/mock-interceptor.js
+1325 silly gunzTarPerm extractEntry lib/mock/mock-pool.js
+1326 silly gunzTarPerm extractEntry
+1327 silly gunzTarPerm extractEntry
+1328 silly gunzTarPerm extractEntry lib/mock/mock-symbols.js
+1329 silly gunzTarPerm extractEntry lib/mock/mock-utils.js
+1330 silly gunzTarPerm extractEntry lib/web/cookies/parse.js
+1331 silly gunzTarPerm extractEntry lib/mock/pending-interceptors-formatter.js
+1332 silly gunzTarPerm extractEntry lib/web/websocket/permessage-deflate.js
+1333 silly gunzTarPerm extractEntry lib/dispatcher/pool-base.js
+1334 silly gunzTarPerm extractEntry lib/dispatcher/pool.js
+1335 silly gunzTarPerm extractEntry lib/util/promise.js
+1336 silly gunzTarPerm extractEntry lib/dispatcher/proxy-agent.js
+1337 silly gunzTarPerm extractEntry index.linux-ia32-gnu.node
+1338 silly gunzTarPerm extractEntry lib/api/readable.js
+1339 silly gunzTarPerm extractEntry lib/web/websocket/receiver.js
+1340 silly gunzTarPerm extractEntry lib/handler/redirect-handler.js
+1341 silly gunzTarPerm extractEntry lib/interceptor/redirect.js
+1342 silly gunzTarPerm extractEntry lib/core/request.js
+1343 silly gunzTarPerm extractEntry lib/web/fetch/request.js
+1344 silly gunzTarPerm extractEntry lib/interceptor/response-error.js
+1345 silly gunzTarPerm extractEntry lib/web/fetch/response.js
+1346 silly gunzTarPerm extractEntry lib/dispatcher/retry-agent.js
+1347 silly gunzTarPerm extractEntry lib/handler/retry-handler.js
+1348 silly gunzTarPerm extractEntry lib/interceptor/retry.js
+1349 silly gunzTarPerm extractEntry lib/dispatcher/round-robin-pool.js
+1350 silly gunzTarPerm extractEntry lib/util/runtime-features.js
+1351 silly gunzTarPerm extractEntry lib/web/websocket/sender.js
+1352 silly gunzTarPerm extractEntry lib/mock/snapshot-agent.js
+1353 silly gunzTarPerm extractEntry lib/mock/snapshot-recorder.js
+1354 silly gunzTarPerm extractEntry index.linux-x64-gnu.node
+1355 silly gunzTarPerm extractEntry lib/mock/snapshot-utils.js
+1356 silly gunzTarPerm extractEntry lib/core/socks5-client.js
+1357 silly gunzTarPerm extractEntry lib/dispatcher/socks5-proxy-agent.js
+1358 silly gunzTarPerm extractEntry lib/core/socks5-utils.js
+1359 silly gunzTarPerm extractEntry lib/cache/sqlite-cache-store.js
+1360 silly gunzTarPerm extractEntry lib/util/stats.js
+1361 silly gentlyRm /Users/bleeck/18xx/desktop-shell/node_modules/.staging/undici-types-08996c5f/node_modules is being purged
+1362 verbose gentlyRm don't care about contents; nuking /Users/bleeck/18xx/desktop-shell/node_modules/.staging/undici-types-08996c5f/node_modules
+1363 silly gunzTarPerm extractEntry scripts/strip-comments.js
+1364 silly gunzTarPerm extractEntry lib/web/subresource-integrity/subresource-integrity.js
+1365 silly gunzTarPerm extractEntry lib/core/symbols.js
+1366 silly gunzTarPerm extractEntry lib/util/timers.js
+1367 silly gunzTarPerm extractEntry lib/core/tree.js
+1368 silly gunzTarPerm extractEntry lib/handler/unwrap-handler.js
+1369 silly gunzTarPerm extractEntry lib/core/util.js
+1370 silly gunzTarPerm extractEntry lib/web/cache/util.js
+1371 silly gunzTarPerm extractEntry lib/web/cookies/util.js
+1372 silly gunzTarPerm extractEntry index.linux-x64-musl.node
+1373 silly gunzTarPerm extractEntry lib/web/eventsource/util.js
+1374 silly gunzTarPerm extractEntry lib/web/fetch/util.js
+1375 silly gentlyRm /Users/bleeck/18xx/desktop-shell/node_modules/.staging/semver-989f9d6a/node_modules is being purged
+1376 verbose gentlyRm don't care about contents; nuking /Users/bleeck/18xx/desktop-shell/node_modules/.staging/semver-989f9d6a/node_modules
+1377 silly gunzTarPerm extractEntry lib/web/websocket/util.js
+1378 silly gunzTarPerm extractEntry lib/llhttp/utils.js
+1379 silly gunzTarPerm extractEntry lib/web/websocket/websocket.js
+1380 silly gunzTarPerm extractEntry lib/web/websocket/stream/websocketerror.js
+1381 silly gunzTarPerm extractEntry lib/web/websocket/stream/websocketstream.js
+1382 silly gunzTarPerm extractEntry lib/handler/wrap-handler.js
+1383 silly gunzTarPerm extractEntry package.json
+1384 silly gunzTarPerm extractEntry docs/docs/api/Agent.md
+1385 silly gunzTarPerm extractEntry docs/docs/api/api-lifecycle.md
+1386 silly gunzTarPerm extractEntry docs/docs/api/BalancedPool.md
+1387 silly gunzTarPerm extractEntry docs/docs/api/CacheStorage.md
+1388 silly gunzTarPerm extractEntry docs/docs/api/CacheStore.md
+1389 silly gunzTarPerm extractEntry docs/docs/best-practices/client-certificate.md
+1390 silly gunzTarPerm extractEntry docs/docs/api/Client.md
+1391 silly gunzTarPerm extractEntry docs/docs/api/ClientStats.md
+1392 silly gunzTarPerm extractEntry docs/docs/api/Connector.md
+1393 silly gunzTarPerm extractEntry docs/docs/api/ContentType.md
+1394 silly gunzTarPerm extractEntry docs/docs/api/Cookies.md
+1395 silly gunzTarPerm extractEntry docs/docs/best-practices/crawling.md
+1396 silly gunzTarPerm extractEntry docs/docs/api/Debug.md
+1397 silly gunzTarPerm extractEntry index.win32-arm64-msvc.node
+1398 silly gunzTarPerm extractEntry docs/docs/api/DiagnosticsChannel.md
+1399 silly gunzTarPerm extractEntry docs/docs/api/Dispatcher.md
+1400 silly gunzTarPerm extractEntry docs/docs/api/EnvHttpProxyAgent.md
+1401 silly gunzTarPerm extractEntry docs/docs/api/Errors.md
+1402 silly gunzTarPerm extractEntry docs/docs/api/EventSource.md
+1403 silly gunzTarPerm extractEntry docs/docs/api/Fetch.md
+1404 silly gunzTarPerm extractEntry docs/docs/api/GlobalInstallation.md
+1405 silly gunzTarPerm extractEntry docs/docs/api/H2CClient.md
+1406 silly gunzTarPerm extractEntry docs/docs/api/MockAgent.md
+1407 silly gunzTarPerm extractEntry docs/docs/api/MockCallHistory.md
+1408 silly gunzTarPerm extractEntry docs/docs/api/MockCallHistoryLog.md
+1409 silly gunzTarPerm extractEntry docs/docs/api/MockClient.md
+1410 silly gunzTarPerm extractEntry docs/docs/api/MockErrors.md
+1411 silly gunzTarPerm extractEntry docs/docs/best-practices/mocking-request.md
+1412 silly gunzTarPerm extractEntry docs/docs/api/MockPool.md
+1413 silly gunzTarPerm extractEntry docs/docs/api/Pool.md
+1414 silly gunzTarPerm extractEntry docs/docs/api/PoolStats.md
+1415 silly gunzTarPerm extractEntry docs/docs/best-practices/proxy.md
+1416 silly gunzTarPerm extractEntry docs/docs/api/ProxyAgent.md
+1417 silly gunzTarPerm extractEntry index.win32-x64-msvc.node
+1418 silly gunzTarPerm extractEntry lib/web/subresource-integrity/Readme.md
+1419 silly gunzTarPerm extractEntry README.md
+1420 silly gunzTarPerm extractEntry types/README.md
+1421 silly gunzTarPerm extractEntry docs/docs/api/RedirectHandler.md
+1422 silly gunzTarPerm extractEntry docs/docs/api/RetryAgent.md
+1423 silly gunzTarPerm extractEntry docs/docs/api/RetryHandler.md
+1424 silly gunzTarPerm extractEntry docs/docs/api/RoundRobinPool.md
+1425 silly gunzTarPerm extractEntry docs/docs/api/SnapshotAgent.md
+1426 silly gunzTarPerm extractEntry docs/docs/api/Socks5ProxyAgent.md
+1427 silly gunzTarPerm extractEntry docs/docs/best-practices/undici-vs-builtin-fetch.md
+1428 silly gunzTarPerm extractEntry docs/docs/api/Util.md
+1429 silly gunzTarPerm extractEntry docs/docs/api/WebSocket.md
+1430 silly gunzTarPerm extractEntry docs/docs/best-practices/writing-tests.md
+1431 silly gunzTarPerm extractEntry types/agent.d.ts
+1432 silly gunzTarPerm extractEntry types/api.d.ts
+1433 silly gunzTarPerm extractEntry types/balanced-pool.d.ts
+1434 silly gunzTarPerm extractEntry types/cache-interceptor.d.ts
+1435 silly gunzTarPerm extractEntry types/cache.d.ts
+1436 silly gunzTarPerm extractEntry types/client-stats.d.ts
+1437 silly gunzTarPerm extractEntry types/client.d.ts
+1438 silly gunzTarPerm extractEntry binding.d.ts
+1439 silly gunzTarPerm extractEntry types/connector.d.ts
+1440 silly gunzTarPerm extractEntry lib/llhttp/constants.d.ts
+1441 silly gunzTarPerm extractEntry index.d.ts
+1442 silly gunzTarPerm extractEntry types/content-type.d.ts
+1443 silly gunzTarPerm extractEntry types/cookies.d.ts
+1444 silly gunzTarPerm extractEntry types/diagnostics-channel.d.ts
+1445 silly gunzTarPerm extractEntry types/dispatcher.d.ts
+1446 silly gunzTarPerm extractEntry types/env-http-proxy-agent.d.ts
+1447 silly gunzTarPerm extractEntry types/errors.d.ts
+1448 silly gunzTarPerm extractEntry types/eventsource.d.ts
+1449 silly gunzTarPerm extractEntry types/fetch.d.ts
+1450 silly gunzTarPerm extractEntry types/formdata.d.ts
+1451 silly gunzTarPerm extractEntry types/global-dispatcher.d.ts
+1452 silly gunzTarPerm extractEntry types/global-origin.d.ts
+1453 silly gunzTarPerm extractEntry types/h2c-client.d.ts
+1454 silly gunzTarPerm extractEntry types/handlers.d.ts
+1455 silly gunzTarPerm extractEntry types/header.d.ts
+1456 silly gunzTarPerm extractEntry index.d.ts
+1457 silly gunzTarPerm extractEntry types/index.d.ts
+1458 silly gunzTarPerm extractEntry types/interceptors.d.ts
+1459 silly gunzTarPerm extractEntry types/mock-agent.d.ts
+1460 silly gunzTarPerm extractEntry types/mock-call-history.d.ts
+1461 silly gunzTarPerm extractEntry types/mock-client.d.ts
+1462 silly gunzTarPerm extractEntry types/mock-errors.d.ts
+1463 silly gunzTarPerm extractEntry types/mock-interceptor.d.ts
+1464 silly gunzTarPerm extractEntry types/mock-pool.d.ts
+1465 silly gunzTarPerm extractEntry types/patch.d.ts
+1466 silly gunzTarPerm extractEntry types/pool-stats.d.ts
+1467 silly gunzTarPerm extractEntry types/pool.d.ts
+1468 silly gunzTarPerm extractEntry types/proxy-agent.d.ts
+1469 silly gunzTarPerm extractEntry types/readable.d.ts
+1470 silly gunzTarPerm extractEntry types/retry-agent.d.ts
+1471 silly gunzTarPerm extractEntry types/retry-handler.d.ts
+1472 silly gunzTarPerm extractEntry types/round-robin-pool.d.ts
+1473 silly gunzTarPerm extractEntry types/snapshot-agent.d.ts
+1474 silly gunzTarPerm extractEntry types/socks5-proxy-agent.d.ts
+1475 silly gunzTarPerm extractEntry types/util.d.ts
+1476 silly gunzTarPerm extractEntry types/utility.d.ts
+1477 silly gunzTarPerm extractEntry lib/llhttp/utils.d.ts
+1478 silly gunzTarPerm extractEntry types/webidl.d.ts
+1479 silly gunzTarPerm extractEntry types/websocket.d.ts
+1480 silly gentlyRm /Users/bleeck/18xx/desktop-shell/node_modules/.staging/@electron-internal/extract-zip-fb9cc937/node_modules is being purged
+1481 verbose gentlyRm don't care about contents; nuking /Users/bleeck/18xx/desktop-shell/node_modules/.staging/@electron-internal/extract-zip-fb9cc937/node_modules
+1482 silly gentlyRm /Users/bleeck/18xx/desktop-shell/node_modules/.staging/undici-a6a1778d/node_modules is being purged
+1483 verbose gentlyRm don't care about contents; nuking /Users/bleeck/18xx/desktop-shell/node_modules/.staging/undici-a6a1778d/node_modules
+1484 verbose unlock done using /Users/bleeck/.npm/_locks/staging-0161c8c2c6391404.lock for /Users/bleeck/18xx/desktop-shell/node_modules/.staging
+1485 silly rollbackFailedOptional Starting
+1486 silly rollbackFailedOptional Finishing
+1487 silly runTopLevelLifecycles Finishing
+1488 silly install printInstalled
+1489 warn desktop-shell@1.0.0 No description
+1490 verbose If you need help, you may report this error at:
+1490 verbose     <https://github.com/npm/npm/issues>
+1491 warn desktop-shell@1.0.0 No repository field.
+1492 verbose If you need help, you may report this error at:
+1492 verbose     <https://github.com/npm/npm/issues>
+1493 verbose stack Error: ENOTDIR: not a directory, open '/Users/bleeck/18xx/desktop-shell/node_modules/.staging/@types/node-eb6e6a39/package.json'
+1493 verbose stack     at Error (native)
+1494 verbose cwd /Users/bleeck/18xx/desktop-shell
+1495 error Darwin 25.5.0
+1496 error argv "/Users/bleeck/opt/anaconda3/bin/node" "/Users/bleeck/opt/anaconda3/bin/npm" "install" "electron" "--save-dev"
+1497 error node v6.13.1
+1498 error npm  v3.10.10
+1499 error path /Users/bleeck/18xx/desktop-shell/node_modules/.staging/@types/node-eb6e6a39/package.json
+1500 error code ENOTDIR
+1501 error errno -20
+1502 error syscall open
+1503 error ENOTDIR: not a directory, open '/Users/bleeck/18xx/desktop-shell/node_modules/.staging/@types/node-eb6e6a39/package.json'
+1504 error If you need help, you may report this error at:
+1504 error     <https://github.com/npm/npm/issues>
+1505 verbose exit [ -20, true ]

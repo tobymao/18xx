@@ -1,0 +1,14 @@
+{
+  "game": "1835-MALFORMED-TEST",
+  "operating_round": "UNKNOWN_OR",
+  "timeline": {},
+  "market": {
+    "current_prices": null
+  },
+  "ledger": {
+    "error_simulation": true,
+    "recent_transactions": [
+      "System stress test initiated."
+    ]
+  }
+}
