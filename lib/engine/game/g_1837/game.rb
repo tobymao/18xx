@@ -617,7 +617,7 @@ module Engine
             G1837::Step::Bankrupt,
             G1837::Step::HomeToken,
             G1837::Step::DiscardTrain,
-            G1837::Step::SpecialTrack,
+            Engine::Step::SpecialTrack,
             G1837::Step::Track,
             G1837::Step::Token,
             Engine::Step::Route,

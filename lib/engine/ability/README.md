@@ -107,6 +107,7 @@ Designate hexes which are blocked by this ability. Use the `owner_type: "player"
 to specify that the blocking ends when the company is bought in by a corporation.
 
 - `hexes`: An array of hex coordinates that are blocked.
+- `blocks_owning_player` if false, blocks_hexes doesn't apply to the player who owns the private. For games where private powers are given to all corps owned by the player.
 
 ## blocks_hexes_consent
 
