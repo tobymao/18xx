@@ -1,32 +1,63 @@
+// File: desktop-shell/test-harness.js
 const fs = require('fs');
 const path = require('path');
 
-const targetPath = path.join(__dirname, 'src', 'current_game_state.json');
+const TARGET_PATH = path.join(__dirname, 'src', 'current_game_state.json');
 
-// Malformed/Empty test payload structure
-const brokenState = {
-    game: "1835-MALFORMED-TEST",
-    operating_round: "UNKNOWN_OR",
-    // Explicitly omitting the 'map' property to check fallback error tracking
-    timeline: {}, // Empty view block
+// State A: A fully formed, structurally ideal 1835 snapshot
+const robustState = {
+    game: "1835",
+    operating_round: "OR 1.1",
+    timeline: {
+        current_phase: "Phase 2 (2-Train)",
+        export_limit: 4
+    },
     market: {
-        current_prices: null // Null field value test
+        current_prices: {
+            "Prusse": 100,
+            "Bavaria": 90,
+            "Saxe": 75
+        }
     },
     ledger: {
-        error_simulation: true,
-        recent_transactions: ["System stress test initiated."]
+        error_simulation: false,
+        recent_transactions: [
+            "Prusse floated at 100M.",
+            "Player Stefan purchased 1 Share of Bavaria."
+        ]
     }
 };
 
-function runHarness() {
-    console.log("=== Launching Shell Destruction Test ===");
-    try {
-        fs.writeFileSync(targetPath, JSON.stringify(brokenState, null, 2), 'utf8');
-        console.log(`[SUCCESS] Injected broken test state into: ${targetPath}`);
-        console.log("Action: Run 'npm start' now to inspect how your floating view consoles render missing keys.");
-    } catch (err) {
-        console.error(`[ERROR] Failed to write test file: ${err.message}`);
+// State B: A chaotic, missing-key payload designed to break basic rendering loops
+const chaosState = {
+    game: "1835-MALFORMED-STRESS",
+    operating_round: null,
+    timeline: {}, // Missing current_phase keys
+    market: {
+        current_prices: null // Testing our nullish coalescing safety net
+    },
+    ledger: {
+        error_simulation: true,
+        recent_transactions: [] // Empty transaction array
     }
+};
+
+let toggle = true;
+
+function runSimulation() {
+    const payload = toggle ? robustState : chaosState;
+    
+    try {
+        fs.writeFileSync(TARGET_PATH, JSON.stringify(payload, null, 2), 'utf-8');
+        console.log(`[Test Harness] Successfully injected state: ${payload.game}`);
+    } catch (err) {
+        console.error(`[Test Harness] Failed to write file: ${err.message}`);
+    }
+
+    toggle = !toggle;
 }
 
-runHarness();
+// Spin the harness to inject data updates every 5 seconds
+console.log("Starting 18xx State Simulation Subsystem... Press Ctrl+C to terminate.");
+setInterval(runSimulation, 5000);
+runSimulation();

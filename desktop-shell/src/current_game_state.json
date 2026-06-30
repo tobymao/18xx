@@ -1,14 +1,22 @@
 {
-  "game": "1835-MALFORMED-TEST",
-  "operating_round": "UNKNOWN_OR",
-  "timeline": {},
+  "game": "1835",
+  "operating_round": "OR 1.1",
+  "timeline": {
+    "current_phase": "Phase 2 (2-Train)",
+    "export_limit": 4
+  },
   "market": {
-    "current_prices": null
+    "current_prices": {
+      "Prusse": 100,
+      "Bavaria": 90,
+      "Saxe": 75
+    }
   },
   "ledger": {
-    "error_simulation": true,
+    "error_simulation": false,
     "recent_transactions": [
-      "System stress test initiated."
+      "Prusse floated at 100M.",
+      "Player Stefan purchased 1 Share of Bavaria."
     ]
   }
 }
