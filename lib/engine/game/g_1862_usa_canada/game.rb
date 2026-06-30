@@ -6,6 +6,8 @@ require_relative 'meta'
 require_relative 'entities'
 require_relative 'map'
 require_relative '../base'
+require_relative 'step/buy_sell_par_shares'
+require_relative 'step/dividend'
 
 module Engine
   module Game
@@ -79,6 +81,9 @@ module Engine
         SLC_ROUTE_BONUS                = 30
         SLC_ROUTE_BONUS_SOC            = 15
         GOLDEN_SPIKE_SHAREHOLDER_BONUS = 50 # FIXME: amount unconfirmed from rulebook
+
+        CLOSE_ON_FLOATED         = { 'CPR' => 'SOC', 'UP' => 'SOC', 'NYH' => 'NHSC' }.freeze
+        CLOSE_ON_FIRST_DIVIDEND  = { 'WP' => 'PSC', 'NYC' => 'FNY' }.freeze
 
         CURRENCY_FORMAT_STR = '$%s'
 
@@ -281,6 +286,41 @@ module Engine
         GAME_END_CHECK = { bank: :full_or, stock_market: :full_or }.freeze
 
         # ---------------------------------------------------------------------------
+        # Private company close triggers.
+        # SOC closes when CPR or UP floats.
+        # NHSC closes when NYH floats.
+        # PSC closes when WP pays its first dividend (via on_first_payout!).
+        # FNY closes when NYC pays its first dividend (via on_first_payout!).
+        # TOR closes automatically via closed_when_used_up on its tile_lay ability.
+        # ---------------------------------------------------------------------------
+        def float_corporation(corporation)
+          super
+          on_corporation_floated!(corporation)
+        end
+
+        def on_corporation_floated!(corporation)
+          sym = CLOSE_ON_FLOATED[corporation.id]
+          return unless sym
+
+          close_private_if_open!(sym, "#{corporation.name} floats")
+        end
+
+        def on_first_payout!(corporation)
+          sym = CLOSE_ON_FIRST_DIVIDEND[corporation.id]
+          return unless sym
+
+          close_private_if_open!(sym, "#{corporation.name} pays first dividend")
+        end
+
+        def close_private_if_open!(sym, reason)
+          company = companies.find { |c| c.sym == sym && !c.closed? }
+          return unless company
+
+          company.close!
+          @log << "#{company.name} closes (#{reason})"
+        end
+
+        # ---------------------------------------------------------------------------
         # Tile-lay budget override.
         # ---------------------------------------------------------------------------
         def tile_lays(_entity)
@@ -337,7 +377,7 @@ module Engine
             Engine::Step::DiscardTrain,
             Engine::Step::Exchange,
             Engine::Step::SpecialTrack,
-            Engine::Step::BuySellParShares,
+            G1862UsaCanada::Step::BuySellParShares,
           ])
         end
 
@@ -350,7 +390,7 @@ module Engine
             Engine::Step::Track,
             Engine::Step::Token,
             Engine::Step::Route,
-            Engine::Step::Dividend,
+            G1862UsaCanada::Step::Dividend,
             Engine::Step::DiscardTrain,
             Engine::Step::BuyTrain,
           ], round_num: round_num)

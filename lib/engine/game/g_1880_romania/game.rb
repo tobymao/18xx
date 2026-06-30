@@ -161,6 +161,8 @@ module Engine
           'float_40' => ['40% to Float', 'Corporation must sell 40% of shares to float'],
           'float_60' => ['60% to Float', 'Corporation must sell 60% of shares to float'],
           'signal_end_game' => ['Signal End Game', 'Game ends 3 ORs after purchase/export of last 6E train']
+          'open_borders' => ['Open Borders', 'Borders are opened, owner of P2 Consorţiu still receives payment for crossings'],
+          'remove_borders' => ['Remove Borders', 'Borders are removed entirely'],
         ).freeze
 
         GAME_END_REASONS_TEXT = {

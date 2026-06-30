@@ -260,3 +260,27 @@ task 'fixture_import', [:id] do |_task, args|
 
   sh "git add '#{filename}'"
 end
+
+desc 'Refresh the upstream disposable email blocklist (preserves custom additions below the marker)'
+task 'disposable:refresh' do
+  require 'net/http'
+  require_relative 'lib/disposable_email'
+
+  url = URI('https://raw.githubusercontent.com/disposable-email-domains/' \
+            'disposable-email-domains/main/disposable_email_blocklist.conf')
+  upstream = Net::HTTP.get(url).strip
+  raise 'empty upstream response' if upstream.empty?
+
+  path = DisposableEmail::PATH
+  marker = DisposableEmail::MARKER
+
+  custom = "#{marker}\n"
+  if File.exist?(path)
+    lines = File.read(path).lines
+    idx = lines.index { |line| line.strip == marker }
+    custom = lines[idx..].join if idx
+  end
+
+  File.write(path, "#{upstream}\n#{custom}")
+  puts "Refreshed #{path}"
+end

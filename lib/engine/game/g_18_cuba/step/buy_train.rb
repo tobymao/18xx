@@ -8,52 +8,58 @@ module Engine
       module Step
         class BuyTrain < Engine::Step::BuyTrain
           def round_state
-            # Track which minor corporations have exchanged for narrow gauge trains this OR
-            super.merge({ narrow_gauge_exchanged_by: [] })
+            # Track which minor corporations have exchanged for narrow gauge trains this OR.
+            super.merge(narrow_gauge_exchanged_by: [])
           end
 
+          # Take engine's depot list (already narrowed to the cheapest gauge-matching
+          # train), then drop wagons unless the entity may buy one,
+          # and narrow to wagons only once the regular-train slots are full.
           def buyable_trains(entity)
-            track_type = entity.type == :minor ? :narrow : :broad
+            trains = super
+            trains.reject! { |t| @game.wagon?(t) } unless can_buy_wagon?(entity)
+            return trains unless at_train_limit?(entity)
 
-            if must_buy_train?(entity)
-              # Emergency buy: only depot/discard trains allowed (not from other companies),
-              # and only the cheapest of the correct track type.
-              available = @depot.depot_trains.select { |t| t.track_type == track_type }
-              cheapest_price = available.map(&:price).min
-              result = cheapest_price ? available.select { |t| t.price == cheapest_price } : []
-              return result
-            end
-
-            # Normal buy: filter by track type.
-            super.select { |t| t.track_type == track_type }
+            trains.select { |t| @game.wagon?(t) }
           end
 
+          # Pure variant filter: aged lock, emergency cheapest, gauge match.
           def buyable_train_variants(train, entity)
             variants = super
-            # Downgrade train variants (e.g. 4n-1) are not player-chooseable; only the current one is buyable.
+
             if train.variants.values.any? { |v| v[:event_downgrade_variant] }
-              result = variants.select { |v| v == train.variant }
-
-              return result
+              variants = variants.select { |v| v == train.variant }
             end
 
-            # During emergency buy, only the cheapest variant is allowed.
-            if must_buy_train?(entity)
+            # EMR only when the corp has no train and can't afford the cheapest depot one.
+            if must_buy_train?(entity) && entity.cash < @depot.min_depot_price
               min_price = variants.map { |v| v[:price] }.min
-              return variants.select { |v| v[:price] == min_price }
+              variants = variants.select { |v| v[:price] == min_price }
             end
 
-            variants
+            return variants if @game.wagon?(train)
+
+            variants.select { |v| v[:track_type] == @game.gauge_for(entity) }
+          end
+
+          # Extend it to allow wagons if the entity is eligible to buy them.
+          def room?(entity, _shell = nil)
+            super || can_buy_wagon?(entity)
+          end
+
+          # Per rule VII.12: wagons bought from another company must be paid at face value (1824/1844 pattern).
+          def spend_minmax(entity, train)
+            return [train.price, train.price] if @game.wagon?(train) && train.owner&.corporation?
+
+            super
           end
 
           def discountable_trains_allowed?(entity)
-            # Minors can only exchange for narrow gauge trains, and can only do so once per OR.
+            # Minors can only exchange for narrow gauge trains, and only once per OR.
             entity.type == :minor && !@round.narrow_gauge_exchanged_by.include?(entity.id)
           end
 
           def process_buy_train(action)
-            # If the player is exchanging a narrow gauge train, ensure they haven't already done so this OR,
-            # and track that they have.
             if action.exchange
               raise GameError, "#{action.entity.name} has already exchanged a narrow gauge train this OR" \
                 unless discountable_trains_allowed?(action.entity)
@@ -61,6 +67,24 @@ module Engine
               @round.narrow_gauge_exchanged_by << action.entity.id
             end
             super
+          end
+
+          # Skip aged downgrade variants and over-priced plus variants when locating the cheapest.
+          def names_of_cheapest_variants(train)
+            buyable = train.variants.reject { |_, v| v[:event_downgrade_variant] || v[:price] > train.price }
+            return [train.name] if buyable.empty?
+
+            buyable.group_by { |_, v| v[:price] }.min_by { |k, _| k }.last.flat_map(&:first)
+          end
+
+          private
+
+          def at_train_limit?(entity)
+            @game.num_corp_trains(entity) >= @game.train_limit(entity)
+          end
+
+          def can_buy_wagon?(entity)
+            entity.type == :major && @game.num_wagons(entity) < @game.train_limit(entity)
           end
         end
       end

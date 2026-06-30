@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <circle cx="100" cy="100" r="100" fill="#f8b34b"/>
+  <text x="100" y="105" text-anchor="middle" font-weight="700" font-size="64" font-family="Arial" fill="#000">R<tspan font-size="32" dy="-22" dx="2">&#x25CB;</tspan></text>
+  <text x="100" y="163" text-anchor="middle" font-weight="700" font-size="64" font-family="Arial" fill="#000" textLength="110" lengthAdjust="spacingAndGlyphs">CC</text>
+</svg>

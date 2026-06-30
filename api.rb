@@ -85,7 +85,7 @@ class Api < Roda
   use Rack::Deflater unless PRODUCTION
 
   STANDARD_ROUTES = %w[
-    / about hotseat login new_game signup tutorial forgot reset
+    / about hotseat login new_game signup tutorial forgot reset admin
   ].freeze
 
   ROUTES_WITH_GAME_TITLES = %w[
@@ -130,6 +130,14 @@ class Api < Roda
 
     r.on ROUTES_WITH_GAME_TITLES do
       render(titles: request.path.split('/')[2].split('+'))
+    end
+
+    r.on 'verify' do
+      user = User.by_email(r.params['email'].to_s)
+      halt(400, 'Invalid or expired verification link') unless user&.verification_hashes&.include?(r.params['hash'].to_s)
+
+      user.verify!
+      r.redirect('/login?verified=1')
     end
 
     r.on 'profile' do
@@ -192,11 +200,15 @@ class Api < Roda
   end
 
   def render_with_games
-    render(
+    needs = {
       title: request.params['title'],
       pin: request.params['pin'],
       games: Game.home_games(user, **request.params),
-    )
+    }
+    # Seed the standard flash after the email-verification redirect (/login?verified=1),
+    # the same way user/games are seeded into the client store.
+    needs[:flash_opts] = { message: 'Email verified! You can now log in.', color: 'lightgreen' } if request.params['verified']
+    render(**needs)
   end
 
   def render(titles: nil, **needs)

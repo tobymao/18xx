@@ -103,13 +103,25 @@ class Game < Base
       kwargs[:mode] = mode && !mode.empty? && %w[live async].include?(mode) ? mode : nil
       kwargs[:status] = %w[new active]
       kwargs[:limit] = 1000
-      fetch(user ? LOGGED_IN_QUERY : LOGGED_OUT_QUERY, **kwargs).all.map(&:to_h)
+      to_h_safe(fetch(user ? LOGGED_IN_QUERY : LOGGED_OUT_QUERY, **kwargs).all)
     end
   end
 
   def self.profile_games(user)
     Bus.cache("profile_games:#{user.id}", ttl: 60) do
-      fetch(USER_QUERY, { user_id: user.id, status: %w[new active archived finished], limit: 100 }).all.map(&:to_h)
+      games = fetch(USER_QUERY, { user_id: user.id, status: %w[new active archived finished], limit: 100 })
+              .all
+              .reject { |g| g.status == 'new' && g.settings['unlisted'] }
+      to_h_safe(games)
+    end
+  end
+
+  def self.to_h_safe(games)
+    games.filter_map do |game|
+      game.to_h
+    rescue StandardError => e
+      warn "Skipping unloadable game #{game.id}: #{e}"
+      nil
     end
   end
 
@@ -145,7 +157,7 @@ class Game < Base
     update(archive_data)
   end
 
-  def to_h(include_actions: false, logged_in_user_id: nil)
+  def to_h(include_actions: false, logged_in_user_id: nil, admin: false)
     settings_h = settings.to_h
 
     # Move user settings and hide from other players
@@ -167,7 +179,7 @@ class Game < Base
       round: round,
       acting: acting.to_a,
       result: result.to_h,
-      actions: actions_h(include_actions: include_actions, logged_in_user_id: logged_in_user_id),
+      actions: actions_h(include_actions: include_actions, logged_in_user_id: logged_in_user_id, admin: admin),
       loaded: include_actions,
       created_at: created_at_ts,
       updated_at: updated_at_ts,
@@ -182,11 +194,11 @@ class Game < Base
 
   # Remove chat messages for players not in the game. Keeps the chat action (but
   # removes the `message` contents) if the action is the target for an undo, or
-  # if it has auto actions attached.
-  def actions_h(include_actions: false, logged_in_user_id: nil)
+  # if it has auto actions attached. Admins always see the full chat.
+  def actions_h(include_actions: false, logged_in_user_id: nil, admin: false)
     return [] unless include_actions
 
-    remove_messages = players.none? { |p| p.id == logged_in_user_id } && user_id != logged_in_user_id
+    remove_messages = !admin && players.none? { |p| p.id == logged_in_user_id } && user_id != logged_in_user_id
     undo_targets = actions.filter_map { |a| a.action['type'] == 'undo' && a.action['action_id'] }.to_set
 
     actions.filter_map do |db_action|
