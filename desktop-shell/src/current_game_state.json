@@ -1,22 +1,30 @@
 {
-  "game": "1835",
-  "operating_round": "OR 1.1",
+  "game": "G1835",
+  "operating_round": "Draft Round",
   "timeline": {
-    "current_phase": "Phase 2 (2-Train)",
-    "export_limit": 4
+    "current_phase": "1.1"
   },
   "market": {
     "current_prices": {
-      "Prusse": 100,
-      "Bavaria": 90,
-      "Saxe": 75
+      "NF": 100,
+      "1": 80,
+      "LD": 190,
+      "2": 170,
+      "3": 80,
+      "4": 160,
+      "BY_D": 184,
+      "BB": 130,
+      "HB": 160,
+      "5": 80,
+      "6": 80,
+      "OBB": 120,
+      "PB": 150
     }
   },
   "ledger": {
     "error_simulation": false,
     "recent_transactions": [
-      "Prusse floated at 100M.",
-      "Player Stefan purchased 1 Share of Bavaria."
+      "Game initialized with players: Stefan, Player 2, Player 3"
     ]
   }
 }
