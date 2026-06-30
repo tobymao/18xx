@@ -27,13 +27,6 @@ module Engine
             @round.bank_bought = true if action.purchase_for == @game.union_bank
           end
 
-          def can_buy_for(entity)
-            return [] unless entity == @game.company_by_id('UB').owner
-            return [] if @round.bank_bought
-
-            [@game.union_bank]
-          end
-
           # This makes sure we don't auto pass if the player is allowed to
           # exchange a share
           def can_exchange_any?(entity)
@@ -143,10 +136,15 @@ module Engine
           end
 
           def get_par_prices_with_help(entity, _corp, extra_cash: 0)
+            available_cash = entity.cash + extra_cash
+
+            # UB can borrow from its owner to par corporations (Fixes #10461)
+            available_cash += @game.union_bank.cash if union_bank_owner_can_help?(entity)
+
             @game
               .stock_market
               .par_prices
-              .select { |p| p.price * 2 <= entity.cash + extra_cash }
+              .select { |p| p.price * 2 <= available_cash }
           end
 
           # On Prince Edward Island we par from the market
@@ -189,7 +187,16 @@ module Engine
           # Ditto
           def can_ipo_any?(entity)
             !bought? && @game.corporations.any? do |c|
-              @game.can_par?(c, entity) && can_buy?(entity, @game.share_by_id("#{c.name}_0")&.to_bundle)
+              next false unless @game.can_par?(c, entity)
+
+              bundle = @game.share_by_id("#{c.name}_0")&.to_bundle
+              next false unless bundle
+
+              # Check if entity can par directly
+              next true if can_buy?(entity, bundle)
+
+              # Check if entity can par with UB as the purchase target
+              can_buy?(@game.union_bank, bundle) if union_bank_owner_can_help?(entity)
             end
           end
 
@@ -197,6 +204,10 @@ module Engine
           def activate_program_buy_shares(entity, program)
             program.from_market = true
             super
+          end
+
+          def union_bank_owner_can_help?(entity)
+            entity == @game.company_by_id('UB')&.owner && !@round.bank_bought
           end
         end
       end
