@@ -6,54 +6,323 @@
     <title>18xx Tournament Command Center</title>
     <style>
         :root {
-            --bg-color: #1e1e2e;
+            --bg-color: #11111b;
             --text-color: #cdd6f4;
             --accent-color: #89b4fa;
-            --panel-bg: #313244;
-            --border-color: #45475a;
+            --panel-bg: #1e1e2e;
+            --border-color: #313244;
+            --success-color: #a6e3a1;
+            --warning-color: #f9e2af;
+            --error-color: #f38ba8;
+            --muted-color: #a6adc8;
         }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-color);
             margin: 0;
-            padding: 15px;
+            padding: 20px;
             box-sizing: border-box;
+            font-size: 14px;
+        }
+        h2 {
+            font-size: 1.4rem;
+            color: var(--accent-color);
+            margin-top: 0;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.75px;
+        }
+        h3 {
+            font-size: 1.1rem;
+            color: var(--text-color);
+            margin-top: 20px;
+            margin-bottom: 10px;
         }
         .view-panel { display: none; }
         .active-view { display: block; }
+        
+        /* Structural Metric Components */
+        .metric-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        .metric-tile {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 14px 18px;
+        }
+        .metric-label {
+            font-size: 0.75rem;
+            color: var(--muted-color);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+        .metric-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        /* Formatted Dynamic Data Tables */
         table {
             width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 15px;
+            border-radius: 6px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
         }
         th, td {
-            padding: 8px 12px;
-            border: 1px solid var(--border-color);
+            padding: 12px 16px;
             text-align: left;
         }
-        th { background-color: var(--panel-bg); color: var(--accent-color); }
+        th {
+            background-color: var(--panel-bg);
+            color: var(--accent-color);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        td {
+            background-color: #181825;
+            border-bottom: 1px solid var(--border-color);
+        }
+        tr:last-child td {
+            border-bottom: none;
+        }
+        
+        /* Chronological Transaction Registry */
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        li {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            padding: 12px 16px;
+            margin-bottom: 10px;
+            font-family: "SF Mono", Menlo, Monaco, Consolas, monospace;
+            font-size: 0.85rem;
+            border-left: 4px solid var(--accent-color);
+        }
+
+        /* Launcher Specific Setup Styles */
+        .form-control {
+            margin-bottom: 20px;
+        }
+        .form-control label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--accent-color);
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
+        }
+        .form-control input, .form-control select {
+            width: 100%;
+            padding: 12px;
+            background-color: #181825;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: #ffffff;
+            font-size: 0.95rem;
+            box-sizing: border-box;
+            font-family: inherit;
+        }
+        .form-control input:focus, .form-control select:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+        .btn-submit {
+            background-color: var(--accent-color);
+            color: var(--bg-color);
+            border: none;
+            padding: 14px 24px;
+            border-radius: 6px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: opacity 0.15s ease;
+        }
+        .btn-submit:hover {
+            opacity: 0.9;
+        }
     </style>
 </head>
 <body>
+    <!-- Launcher Setup Screen -->
+    <div id="view-launcher" class="view-panel">
+        <h2>18xx Tournament Launcher</h2>
+        <div style="max-width: 500px; margin-top: 25px;">
+            <div class="form-control">
+                <label for="game-select">Select Game Engine</label>
+                <select id="game-select">
+                    <option value="G1835">1835 (Germany)</option>
+                    <option value="G1830">1830 (Railroads & Robber Barons)</option>
+                </select>
+            </div>
+            <div class="form-control">
+                <label for="player-names">Player Roster (Comma-separated)</label>
+                <input type="text" id="player-names" value="Stefan, Player 2, Player 3">
+            </div>
+            <button class="btn-submit" onclick="launchTournament()">Initialize Core Engine</button>
+        </div>
+    </div>
+
+    <!-- Map Console -->
     <div id="view-map" class="view-panel">
         <h2>Map Console</h2>
         <div id="map-content"></div>
     </div>
 
+    <!-- Timeline Console -->
     <div id="view-timeline" class="view-panel">
         <h2>Timeline & Phase Metrics</h2>
         <div id="timeline-content"></div>
     </div>
 
+    <!-- Market Console -->
     <div id="view-market" class="view-panel">
         <h2>Stock Market Console</h2>
         <div id="market-content"></div>
     </div>
 
+    <!-- Ledger Console -->
     <div id="view-ledger" class="view-panel">
         <h2>Ledger & Financial Accounting</h2>
         <div id="ledger-content"></div>
     </div>
+
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const currentView = (params.get('view') || 'map').toLowerCase();
+            
+            const targetPanel = document.getElementById(`view-${currentView}`);
+            if (targetPanel) {
+                targetPanel.classList.add('active-view');
+            }
+
+            // Establish data-binding consumer if initialized as a tracker panel
+            if (currentView !== 'launcher') {
+                try {
+                    const { ipcRenderer } = require('electron');
+                    ipcRenderer.on('game-state-update', (event, data) => {
+                        if (!data) return;
+                        
+                        switch (currentView) {
+                            case 'map':
+                                renderMapData(data.tiles_laid, data.tokens);
+                                break;
+                            case 'timeline':
+                                renderTimelineData(data.operating_round, data.timeline);
+                                break;
+                            case 'market':
+                                renderMarketData(data.market?.current_prices);
+                                break;
+                            case 'ledger':
+                                renderLedgerData(data.ledger);
+                                break;
+                        }
+                    });
+                } catch (error) {
+                    console.error("[Dashboard UI] Failed to bind IPC update stream:", error);
+                }
+            }
+        });
+
+        // Presentation Layout Render Components
+        function renderMapData(tiles, tokens) {
+            const container = document.getElementById('map-content');
+            const tileList = tiles && Object.keys(tiles).length > 0 
+                ? Object.entries(tiles).map(([hex, tile]) => `<tr><td>${hex}</td><td>Tile ${tile}</td></tr>`).join('')
+                : '<tr><td colspan="2">No active tiles placed on map.</td></tr>';
+
+            container.innerHTML = `
+                <table>
+                    <thead><tr><th>Hex Coordinate</th><th>Status/Tile No.</th></tr></thead>
+                    <tbody>${tileList}</tbody>
+                </table>`;
+        }
+
+        function renderTimelineData(or, timeline) {
+            const container = document.getElementById('timeline-content');
+            const currentRound = or ?? 'Pre-Game Phase';
+            const activePhase = timeline?.current_phase ?? 'Phase 1';
+            
+            container.innerHTML = `
+                <div class="metric-group">
+                    <div class="metric-tile">
+                        <div class="metric-label">Operating Round</div>
+                        <div class="metric-value">${currentRound}</div>
+                    </div>
+                    <div class="metric-tile">
+                        <div class="metric-label">Active Phase</div>
+                        <div class="metric-value">${activePhase}</div>
+                    </div>
+                </div>`;
+        }
+
+        function renderMarketData(prices) {
+            const container = document.getElementById('market-content');
+            if (!prices || Object.keys(prices).length === 0) {
+                container.innerHTML = `<p style="color: var(--muted-color); font-style: italic;">Market indexes offline. No values generated.</p>`;
+                return;
+            }
+
+            const priceRows = Object.entries(prices).map(([company, price]) => 
+                `<tr><td>${company}</td><td>${price} M</td></tr>`
+            ).join('');
+
+            container.innerHTML = `
+                <table>
+                    <thead><tr><th>Company Identifier</th><th>Current Value</th></tr></thead>
+                    <tbody>${priceRows}</tbody>
+                </table>`;
+        }
+
+        function renderLedgerData(ledger) {
+            const container = document.getElementById('ledger-content');
+            const logs = ledger?.recent_transactions ?? [];
+            const logItems = logs.length > 0 
+                ? logs.map(entry => `<li>${entry}</li>`).join('')
+                : '<li>No recent transactions logged.</li>';
+
+            container.innerHTML = `
+                <h3>Transaction Registry Log</h3>
+                <ul>${logItems}</ul>`;
+        }
+
+        function launchTournament() {
+            console.log("[Launcher UI] Button clicked. Extracting configuration form values...");
+            const gameType = document.getElementById('game-select').value;
+            const playerInput = document.getElementById('player-names').value;
+            const players = playerInput.split(',').map(name => name.trim()).filter(name => name.length > 0);
+            
+            console.log("[Launcher UI] Form configurations compiled:", { gameType, players });
+            
+            try {
+                const { ipcRenderer } = require('electron');
+                console.log("[Launcher UI] Dispatching 'initialize-engine' packet over IPC bridge...");
+                ipcRenderer.send('initialize-engine', { gameType, players });
+            } catch (error) {
+                console.error("[Launcher UI] IPC Dispatch Failure:", error);
+            }
+        }
+    </script>
 </body>
 </html>
