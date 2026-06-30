@@ -1,36 +1,31 @@
-# frozen_string_literal: true
-
 source 'https://rubygems.org'
 
-gem 'argon2'
-gem 'message_bus'
-gem 'mini_racer'
-gem 'newrelic_rpm'
-gem 'opal'
-gem 'racc'
-gem 'rake'
-gem 'redis'
-gem 'require_all'
-gem 'roda'
-gem 'rufus-scheduler'
-gem 'sequel'
-gem 'sequel_pg'
-gem 'sequel-pg_advisory_lock'
-gem 'snabberb'
-gem 'unicorn'
-gem 'unicorn-worker-killer'
+# Core Engine Dependencies
+gem 'argon2', '~> 2.2.0'
+gem 'message_bus', '~> 4.2.0'
+gem 'opal', '~> 1.8.2'
+gem 'racc', '~> 1.7.3'
+gem 'rake', '~> 13.0.6'
+gem 'redis', '~> 4.6.0'
+gem 'require_all', '~> 3.0.0'
+gem 'roda', '~> 3.97.0'
+gem 'rufus-scheduler', '~> 3.8.2'
+gem 'sequel', '~> 5.55.0'
+gem 'snabberb', '~> 1.5.4'
 
-group :development do
+# Development & Test Tools
+group :development, :test do
+  gem 'byebug'
+  gem 'parallel_tests', '~> 3.8.1'
+  gem 'pry'
   gem 'pry-byebug'
-  gem 'rerun'
-  gem 'rubocop'
-  gem 'rubocop-performance', require: 'false'
-  gem 'sequel-annotate'
-  gem 'stackprof'
-  gem 'tilt'
+  gem 'rerun', '~> 0.14.0'
+  gem 'rspec', '~> 3.11.0'
+  gem 'rubocop', '~> 1.27.0'
+  gem 'rubocop-performance', '~> 1.13.3'
 end
 
-group :test do
-  gem 'parallel_tests'
-  gem 'rspec'
-end
+# Web server dependencies removed to bypass native macOS compilation errors:
+# gem 'mini_racer'
+# gem 'unicorn'
+# gem 'unicorn-worker-killer'

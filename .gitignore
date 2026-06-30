@@ -11,6 +11,8 @@
 /public/assets/*
 /public/pinned/*
 
+desktop-shell/node_modules/
+
 .tags
 .DS_STORE
 *.swp
