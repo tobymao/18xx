@@ -52,8 +52,8 @@ ipcMain.on('initialize-engine', (event, config) => {
 
     console.log("[Main Process] Spawning login shell wrapper to evaluate local environment pathing...");
 
-    // Execute through a login shell context (-l) to natively inherit environment profiles
-    const rubyProcess = spawn(process.env.SHELL || '/bin/zsh', ['-l', '-c', targetCommand], {
+// Execute through an interactive shell context (-i) to natively preserve base environment paths
+    const rubyProcess = spawn(process.env.SHELL || '/bin/zsh', ['-i', '-c', targetCommand], {
         cwd: path.join(__dirname, '../..'),
         env: process.env
     });

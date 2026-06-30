@@ -1,5 +1,13 @@
-Markdown
-# 18xx Universal Tournament Command Center — Project Roadmap & Handover Prompt
+# 18xx Universal Tournament Command Center — Project Roadmap & Handover
+
+## Git Synchronization & Repository Tracking
+This project is securely tracked upstream. Use these commands to sync your progress between your Apple Intel and Apple Silicon hosts:
+Repository Link: https://github.com/sbleeck/18xx-tournament.git
+
+To pull latest changes before starting work:
+```bash
+git pull origin main
+
 
 Git Synchronization & Repository Tracking
 This project is securely tracked upstream. Use these commands to sync your progress between your Apple Intel and Apple Silicon hosts:
