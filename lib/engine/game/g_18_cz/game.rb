@@ -318,7 +318,14 @@ module Engine
           ]
           @timeline.append("Game ends after OR #{OR_SETS.size}.#{OR_SETS.last}")
           @timeline.append("Current value of each private company is #{COMPANY_VALUES[[0, @or - 1].max]}")
-          @timeline.append("Next set of Operating Rounds will have #{OR_SETS[@turn - 1]} ORs")
+          next_ors = case @round
+                     when Engine::Round::Stock
+                       OR_SETS[@turn - 1]
+                     when Engine::Round::Operating
+                       OR_SETS[@turn]
+                     end
+          @timeline.append("Next set of Operating Rounds will have #{next_ors} OR#{'s' if next_ors > 1}") if next_ors
+          @timeline
         end
 
         def able_to_operate?(entity, _train, name)
