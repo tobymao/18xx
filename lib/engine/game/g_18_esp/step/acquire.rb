@@ -16,7 +16,11 @@ module Engine
           end
 
           def auto_actions(entity)
-            return super if @merging
+            if @merging
+              return [Engine::Action::Choose.new(entity, choice: 'charter')] unless can_swap?
+
+              return super
+            end
             return [Engine::Action::Pass.new(entity)] unless can_merge?(entity)
 
             super
@@ -90,10 +94,9 @@ module Engine
           end
 
           def can_swap?
-            return merged_token_in_shared_city? unless mz?(@merging.last)
+            return false unless @merging.first.next_token
+            return false if mz?(@merging.last)
 
-            @merging.first.next_token &&
-            !mz?(@merging.last) &&
             merged_token_in_shared_city?
           end
 
