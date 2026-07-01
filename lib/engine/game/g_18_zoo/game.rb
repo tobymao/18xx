@@ -987,9 +987,8 @@ module Engine
                                                                       .reject(&:ipoed)
                                                                       .map(&:full_name)
                                                                       .join(', ')
-                                 return if following_corporations.empty?
 
-                                 "open company in strict order: #{following_corporations}"
+                                 "open company in strict order: #{following_corporations}" unless following_corporations.empty?
                                when 2
                                  next_family = corporation_by_id(@near_families_purchasable[0][:id])
                                  prev_family = corporation_by_id(@near_families_purchasable[1][:id])
