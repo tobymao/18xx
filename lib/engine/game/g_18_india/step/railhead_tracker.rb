@@ -24,12 +24,18 @@ module Engine
             return nil unless @round.pending_tokens.empty? # by placed yellow OO tile
             return [] if @round.laid_yellow_hexes.empty?
 
-            # check simple case of only one or two 'white' neighbor connected to prior tile => return without walking
-            last_tile = @round.laid_yellow_hexes.last.tile
-            unless [1, 6].include?(last_tile.exits.size) # exclude triple town tiles (6 exits) and OO tiles (1 exit)
-              empty_neighbors = empty_neighbors(last_tile.hex, last_tile.exits)
-              return empty_neighbors if [1, 2].include?(empty_neighbors.size)
-            end
+            # Performance shortcut: if the last tile has 1-2 direct white neighbors (and is not a
+            # triple-town/OO tile), return them immediately without a full walk. DISABLED because
+            # it misses white hexes reachable through adjacent red cities (rule 8.4.1.1 — e.g.
+            # E22/triple-dit via Mumbai). To restore, add a guard skipping when any exit is red:
+            #   last_tile = @round.laid_yellow_hexes.last.tile
+            #   unless [1, 6].include?(last_tile.exits.size)
+            #     hex = last_tile.hex
+            #     unless last_tile.exits.any? { |e| hex.neighbors[e]&.tile&.color == :red }
+            #       empty_neighbors = empty_neighbors(hex, last_tile.exits)
+            #       return empty_neighbors if [1, 2].include?(empty_neighbors.size)
+            #     end
+            #   end
 
             corp = @round.current_operator
             railheads = corp.placed_tokens.map(&:city)
