@@ -331,7 +331,6 @@ module Engine
           # A wagon may extend a route by exactly one extra stop, only to a harbor (rule VII.10).
           train ||= route.train
           return super unless @round.wagon_for_train.key?(train.id)
-          return super unless train.distance.is_a?(Numeric)
 
           total = visits.sum(&:visit_cost)
           return super if total <= train.distance
@@ -353,12 +352,16 @@ module Engine
         def check_route_combination(routes)
           # Each delivering wagon train must deliver to a different harbor (rule VII.10).
           # Filter on delivering, not merely attached: empty wagons don't compete for a harbor delivery.
+          # Legal as long as the delivering routes can be matched to distinct harbors;
+          # a route with harbors at both ends contributes both as candidates, not just the first.
           super
           delivering_routes = routes.select { |r| train_with_cubes?(r.train) }
           return if delivering_routes.size <= 1
 
-          harbors = delivering_routes.map { |r| r.visited_stops.find { |s| harbor?(s) }&.hex }.compact
-          raise GameError, 'Each wagon train must run to a different harbor' if harbors.uniq.size != harbors.size
+          harbor_sets = delivering_routes.map do |r|
+            r.visited_stops.select { |s| harbor?(s) }.map(&:hex).uniq
+          end
+          raise GameError, 'Each wagon train must run to a different harbor' unless distinct_harbors?(harbor_sets)
         end
 
         def all_potential_upgrades(tile, tile_manifest: false, selected_company: nil)
@@ -394,6 +397,14 @@ module Engine
         end
 
         private
+
+        # True if each delivering route can be matched to a distinct harbor it visits (rule VII.10).
+        def distinct_harbors?(sets)
+          return true if sets.empty?
+
+          first, *rest = sets
+          first.any? { |harbor| distinct_harbors?(rest.map { |s| s - [harbor] }) }
+        end
 
         def minor_operating_sort_key(corp)
           # Order by share price, then market position, then name.

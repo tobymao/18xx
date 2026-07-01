@@ -23,14 +23,17 @@ module Engine
             actions = super
             return actions if actions.empty?
 
-            actions = actions.dup
-            actions << 'choose' if choosing?(entity)
+            actions += %w[choose] if choosing?(entity)
             actions
           end
 
           def choosing?(entity)
-            # Keep the choose panel mounted while the entity owns a wagon (route-independent), like 18Uruguay.
-            entity.trains.any? { |t| @game.wagon?(t) }
+            return false if entity.minor?
+
+            # Only offer the panel when there's an actual choice: an attachable wagon+train,
+            # or a wagon already attached (kept mounted for route-dependent cube loading, like 18Uruguay).
+            !wagon_choices(entity).empty? ||
+              entity.trains.any? { |t| @round.wagon_for_train.key?(t.id) }
           end
 
           def choice_name
@@ -41,10 +44,11 @@ module Engine
             choices_for(current_entity)
           end
 
-          # Show the attached wagon on the train in the route UI, e.g. "2+1w" (display only).
+          # Show the attached wagon on the train in the route UI, e.g. "2 (1w)" (display only).
+          # Parentheses avoid a double plus on plus-trains (e.g. "8+ (1w)" not "8++1w").
           def train_name(_entity, train)
             wagon = @round.wagon_for_train[train.id]
-            wagon ? "#{train.name}+#{wagon.name}" : train.name
+            wagon ? "#{train.name} (#{wagon.name})" : train.name
           end
 
           def process_choose(action)
@@ -65,8 +69,8 @@ module Engine
           end
 
           def process_attach(entity, wagon_id, train_id)
-            wagon = entity.trains.find { |t| t.id == wagon_id }
-            train = entity.trains.find { |t| t.id == train_id }
+            wagon = @game.train_by_id(wagon_id)
+            train = @game.train_by_id(train_id)
             raise GameError, 'Invalid wagon or train' if wagon.nil? || train.nil?
             raise GameError, 'Train cannot take this wagon' if !@game.wagon?(wagon) || !@game.wagon_attachable?(train)
             raise GameError, 'Wagon or train already attached' if @round.wagon_for_train.key?(train.id) ||
@@ -77,7 +81,7 @@ module Engine
           end
 
           def process_load(entity, train_id, corp_id)
-            train = entity.trains.find { |t| t.id == train_id }
+            train = @game.train_by_id(train_id)
             corp = @game.corporation_by_id(corp_id)
             raise GameError, 'Invalid train or mill' if train.nil? || corp.nil?
             raise GameError, 'Train has no wagon' unless @round.wagon_for_train.key?(train.id)
@@ -89,7 +93,7 @@ module Engine
           end
 
           def process_unload(entity, train_id)
-            train = entity.trains.find { |t| t.id == train_id }
+            train = @game.train_by_id(train_id)
             raise GameError, 'Invalid train' unless train
 
             @game.unload_cubes(train)
@@ -100,11 +104,10 @@ module Engine
           def wagon_choices(entity)
             wagons = entity.trains.select { |t| @game.wagon?(t) && !@round.wagon_for_train.value?(t) }
             trains = entity.trains.select { |t| @game.wagon_attachable?(t) && !@round.wagon_for_train.key?(t.id) }
-            wagons.each_with_object({}) do |wagon, result|
-              trains.each do |train|
-                key = { 'type' => 'attach', 'wagon' => wagon.id, 'train' => train.id }
-                result[key] = "Attach #{wagon.name} to #{train.name}"
-              end
+            wagons.product(trains).to_h do |wagon, train|
+              key = { 'type' => 'attach', 'wagon' => wagon.id, 'train' => train.id }
+              val = "Attach #{wagon.name} to #{train.name}"
+              [key, val]
             end
           end
 
@@ -118,7 +121,8 @@ module Engine
                 @round.current_routes[train.id]&.visited_stops&.any? { |s| @game.harbor?(s) }
             end
 
-            wagon_trains_at_harbor.select { |train| @game.train_with_cubes?(train) }.each do |train|
+            sugar_at_harbor = wagon_trains_at_harbor.select { |train| @game.train_with_cubes?(train) }
+            sugar_at_harbor.each do |train|
               result[{ 'type' => 'unload', 'train' => train.id }] = "Unload sugar from #{train.name}"
             end
 

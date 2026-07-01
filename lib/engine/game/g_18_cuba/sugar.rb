@@ -98,6 +98,10 @@ module Engine
             cubes = cubes_on_train(route.train)
             next if cubes.empty?
 
+            unless route.visited_stops.any? { |s| harbor?(s) }
+              raise GameError, "#{route.train.name} has sugar cubes loaded but no harbor to deliver them to"
+            end
+
             tally = cubes.tally
             tally.each do |corp, count|
               @sugar_cubes[corp] -= count
@@ -126,7 +130,6 @@ module Engine
 
         def extended_harbor_revenue(route, stops)
           return 0 unless @round.wagon_for_train.key?(route.train.id)
-          return 0 unless route.train.distance.is_a?(Numeric)
           return 0 unless stops.sum(&:visit_cost) > route.train.distance
 
           # The wagon-extended harbor scores zero (rule VII.10); with two harbors zero the cheaper.

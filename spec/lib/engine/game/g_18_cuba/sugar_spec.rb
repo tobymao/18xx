@@ -39,9 +39,11 @@ module Engine
 
         describe 'cube accounting' do
           let(:wagon_train) { give_train(minor, '1w') }
-          let(:route) { instance_double(Engine::Route, train: wagon_train) }
+          let(:harbor) { double('harbor') }
+          let(:route) { instance_double(Engine::Route, train: wagon_train, visited_stops: [harbor]) }
 
           it 'pays exactly $30 per delivered cube and never oversells the warehouse' do
+            allow(game).to receive(:harbor?) { |s| s.equal?(harbor) }
             game.sugar_production(minor, 80) # 80 revenue -> 2 cubes (Table 10)
             2.times { game.attach_cube_to_train(wagon_train, minor) }
 
