@@ -4,6 +4,10 @@ require_relative 'meta'
 require_relative 'map'
 require_relative 'entities'
 require_relative '../base'
+require_relative 'round/operating'
+require_relative 'step/waterfall_auction'
+require_relative 'step/buy_train'
+require_relative 'step/dividend'
 
 module Engine
   module Game
@@ -233,6 +237,16 @@ module Engine
           ])
         end
 
+        def new_operating_round(round_num = 1)
+          G2038::Round::Operating.new(self, [
+            Engine::Step::Bankrupt,
+            Engine::Step::DiscardTrain,
+            G2038::Step::Dividend,
+            G2038::Step::BuyTrain,
+            Engine::Step::BuyCompany,
+          ], round_num: round_num)
+        end
+
         def next_round!
           @round =
             case @round
@@ -240,7 +254,7 @@ module Engine
               @operating_rounds = @phase.operating_rounds
               reorder_players
               new_operating_round
-            when Engine::Round::Operating
+            when G2038::Round::Operating
               if @round.round_num < @operating_rounds
                 or_round_finished
                 new_operating_round(@round.round_num + 1)
@@ -255,6 +269,22 @@ module Engine
               reorder_players
               new_stock_round
             end
+        end
+
+        def bank_sort(entities)
+          entities.sort_by { |e| ENTITY_DISPLAY_ORDER.index(e.id) || ENTITY_DISPLAY_ORDER.size }
+        end
+
+        def operating_order
+          minors = MINOR_OPERATING_ORDER.filter_map { |id| minor_by_id(id) }
+          corps = @corporations.select(&:floated?).sort do |a, b|
+            if a.share_price.price != b.share_price.price
+              b.share_price.price <=> a.share_price.price
+            else
+              a.share_price.coordinates <=> b.share_price.coordinates
+            end
+          end
+          minors + corps
         end
 
         def setup
@@ -303,12 +333,7 @@ module Engine
 
         def company_header(company)
           is_minor = @minors.find { |m| m.id == company.id }
-
-          if is_minor
-            'INDEPENDENT COMPANY'
-          else
-            'PRIVATE COMPANY'
-          end
+          is_minor ? 'INDEPENDENT COMPANY' : 'PRIVATE COMPANY'
         end
 
         def after_par(corporation)
