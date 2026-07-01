@@ -65,7 +65,11 @@ module View
           h(:div, { style: { fontSize: '1.1rem', fontWeight: 'bold' } }, treasury.to_s),
         ])
 
-        # Permanent, non-jumping token tracker section
+        upper_content << h(:div, { style: { border: '1px solid #999', padding: '0.2rem', marginBottom: '0.2rem', backgroundColor: '#f0f0f0', textAlign: 'center' } }, [
+                  h(:div, { style: { fontSize: '0.75rem', fontWeight: 'bold', marginBottom: '2px' } }, 'Owned Trains'),
+                  render_owned_trains(current_entity),
+                ])
+
         upper_content << h(:div, { style: { border: '1px solid #999', padding: '0.2rem', marginBottom: '0.2rem', backgroundColor: '#f0f0f0', textAlign: 'center' } }, [
           h(:div, { style: { fontSize: '0.75rem', fontWeight: 'bold', marginBottom: '2px' } }, 'Tokens'),
           render_company_tokens(current_entity),
@@ -96,9 +100,9 @@ module View
           upper_content << render_phase_box('3. Revenue', false, %w[Pay Hold Split], actions, current_entity, nil)
         end
 
-        train_list = render_owned_trains(current_entity)
+        buyable_list = phase == :buy_train ? render_buyable_trains(step, current_entity) : h(:div)
         upper_content << h(:div, { style: { marginBottom: '0.4rem' } }, [
-          render_phase_box('4. Buy Trains', phase == :buy_train, ['Done Buying'], actions, current_entity, train_list),
+          render_phase_box('4. Buy Trains', phase == :buy_train, ['Done Buying'], actions, current_entity, buyable_list),
         ])
 
         undo_ok = @game.undo_possible
@@ -241,6 +245,50 @@ module View
 
         h(:div,
           { style: { display: 'flex', flexDirection: 'row', justifyContent: 'center', flexWrap: 'wrap', padding: '0.1rem 0' } }, token_icons)
+      end
+
+      def render_buyable_trains(step, current_entity)
+        return h(:div) unless step.respond_to?(:buyable_trains)
+
+        trains = step.buyable_trains(current_entity)
+        if trains.empty?
+          return h(:div, { style: { fontSize: '0.75rem', color: '#666', fontStyle: 'italic', padding: '0.2rem' } },
+                   'No trains available')
+        end
+
+        train_groups = trains.group_by(&:name)
+
+        train_boxes = train_groups.map do |name, group|
+          train = group.first
+          price = train.respond_to?(:price) ? @game.format_currency(train.price) : ''
+          count = group.size
+          label = count > 1 ? "#{name} (#{price}) x#{count}" : "#{name} (#{price})"
+
+          click_buy = lambda do
+            process_action(Engine::Action::BuyTrain.new(
+              current_entity,
+              train: train,
+              price: train.price
+            ))
+          end
+
+          h(:div, {
+              style: {
+                padding: '4px 8px',
+                backgroundColor: '#add8e6',
+                border: '1px solid #555',
+                borderRadius: '3px',
+                margin: '2px',
+                fontSize: '0.75rem',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+              },
+              on: { click: click_buy },
+            }, label)
+        end
+
+        h(:div,
+          { style: { display: 'flex', flexDirection: 'row', justifyContent: 'center', flexWrap: 'wrap', padding: '0.2rem 0', margin: '0.2rem 0' } }, train_boxes)
       end
 
       def render_owned_trains(current_entity)
