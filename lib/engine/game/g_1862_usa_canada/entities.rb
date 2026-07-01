@@ -56,7 +56,7 @@ module Engine
                 cheater: true,
                 connected: true,
                 from_owner: true,
-                price: 0,
+                special_only: true,
                 count: 1,
                 closed_when_used_up: true,
                 hexes: [],

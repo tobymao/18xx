@@ -568,8 +568,8 @@ module Engine
         def group_available?(group_num)
           case group_num
           when 1 then all_privates_sold?
-          when 2 then corp_groups[1].all? { |corp| corp.num_ipo_shares.zero? }
-          when 3 then corp_groups[2].all?(&:floated?)
+          when 2 then CORP_GROUPS[1].map { |sym| corporation_by_id(sym) }.all? { |corp| corp.num_ipo_shares.zero? }
+          when 3 then CORP_GROUPS[2].map { |sym| corporation_by_id(sym) }.all?(&:floated?)
           else raise GameError, "Unknown corporation group #{group_num}"
           end
         end
