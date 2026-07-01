@@ -6,118 +6,172 @@ module View
       needs :game
       needs :tile_selector, default: nil
 
-      # We initialize local component states for the sliding layout split percentage
-      needs :viz_split_pct, default: 50, store: true
-      needs :viz_is_dragging, default: false, store: true
-
       def render
-        split_pct = @viz_split_pct
-        
-        # Main Flexible Container Workspace
+        # LOCKED: Main Workspace configuration
         h(:div, {
+          hook: {
+            insert: lambda {
+              `document.body.style.overflow = 'hidden'`
+              `document.getElementById('app').style.overflow = 'hidden'`
+              `document.getElementById('game').style.overflow = 'hidden'`
+              
+              `window.scaleTournamentDashboard = function() {
+                var baseHeight = 900;
+                var baseWidth = 1600;
+                var currentHeight = window.innerHeight;
+                var currentWidth = window.innerWidth;
+                
+                var scaleFactor = Math.min(currentWidth / baseWidth, currentHeight / baseHeight);
+                if (scaleFactor < 0.3) scaleFactor = 0.3;
+                
+                var container = document.getElementById('viz-master-frame');
+                if (container) {
+                  container.style.transform = 'scale(' + scaleFactor + ')';
+                }
+              }`
+              `window.addEventListener('resize', window.scaleTournamentDashboard)`
+              `window.scaleTournamentDashboard()`
+            },
+            destroy: lambda {
+              `document.body.style.overflow = 'auto'`
+              `document.getElementById('app').style.overflow = 'auto'`
+              `document.getElementById('game').style.overflow = 'auto'`
+              `window.removeEventListener('resize', window.scaleTournamentDashboard)`
+            }
+          },
+          attrs: {
+            id: 'viz-master-frame'
+          },
           style: {
             display: 'flex',
             flexDirection: 'row',
-            width: '100%',
-            height: '80vh',
-            userSelect: @viz_is_dragging ? 'none' : 'auto',
-            position: 'relative'
-          },
-          on: {
-            mousemove: ->(e) { handle_mousemove(e) },
-            mouseup: ->(_e) { handle_mouseup }
+            width: '1600px',
+            height: '900px', 
+            maxHeight: '900px',
+            position: 'relative',
+            gap: '0.75rem',
+            overflow: 'hidden',
+            transformOrigin: 'top left'
           }
-        }, [
-          # Left Panel: Game Map
+      }, [
+          # Column 1 (Far Left): Command Column Tracker (10% width)
           h(:div, {
             style: {
-              width: "#{split_pct}%",
-              overflow: 'auto',
+              width: '10%',
+              height: '100%',
               border: '1px solid #ccc',
-              padding: '0.5rem'
+              borderRadius: '4px',
+              backgroundColor: '#fff',
+              overflow: 'auto'
             }
           }, [
-            h(View::Game::Map, game: @game, opacity: 1.0, tile_selector: @tile_selector)
+            # Replace the standalone EntityOrder with our new full-height master component
+            h(View::Game::CommandColumn, game: @game)
           ]),
 
-          # Draggable Center Splitter Bar
+          # Column 2 (Middle): Map Canvas (40% width)
           h(:div, {
             style: {
-              width: '10px',
-              cursor: 'col-resize',
-              backgroundColor: @viz_is_dragging ? '#333' : '#aaa',
-              margin: '0 4px',
-              transition: 'background-color 0.1s'
-            },
-            on: {
-              mousedown: ->(e) { handle_mousedown(e) }
+              width: '40%',
+              height: '100%',
+              border: '1px solid #ccc',
+              borderRadius: '4px',
+              backgroundColor: '#fff',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: 'center',
+              overflow: 'hidden'
             }
-          }),
+          }, [
+            h(:div, {
+              style: {
+                width: '100%',
+                height: '100%',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                overflow: 'hidden',
+                '& svg': {
+                  width: '100% !important',
+                  height: '100% !important',
+                  maxWidth: '100%',
+                  maxHeight: '100%',
+                  objectFit: 'contain'
+                },
+                '& text': {
+                  fontSize: '0.65em !important',   
+                  letterSpacing: 'normal !important'
+                },
+                '& .tile__text': {
+                  fontSize: '0.75em !important'    
+                },
+                '& text.number': {
+                  fontSize: '0.55em !important'    
+                }
+              }
+            }, [
+              h(View::Game::Map, game: @game, opacity: 1.0, tile_selector: @tile_selector, minimal: true)
+            ])
+          ]),
 
-          # Right Column: Split Vertically (Spreadsheet top, Market bottom)
-          # --- START FIX ---
+          # Column 3 (Far Right): Status Stack (50% width)
           h(:div, {
             style: {
-              width: "calc(100% - #{split_pct}% - 18px)",
+              width: '50%',
               display: 'flex',
               flexDirection: 'column',
               height: '100%',
-              gap: '0.5rem'
+              maxHeight: '100%',
+              gap: '0.5rem',
+              overflow: 'hidden'
             }
           }, [
-            # Top Right: Spreadsheet Ledger
+            # Top Right: Spreadsheet Ledger expanded to 60% vertical space
             h(:div, {
               style: {
-                flex: '1 1 50%',
+                flex: '1 1 60%',
                 overflow: 'auto',
                 border: '1px solid #ccc',
-                padding: '0.5rem'
+                padding: '0.5rem',
+                borderRadius: '4px',
+                backgroundColor: '#fff'
               }
             }, [
               h(View::Game::Spreadsheet, game: @game)
             ]),
 
-            # Bottom Right: Stock Market
+            # Bottom Right: Stock Market Grid restricted to 40% vertical space and scaled down
             h(:div, {
               style: {
-                flex: '1 1 50%',
-                overflow: 'auto',
+                flex: '1 1 40%',
+                overflow: 'hidden', 
                 border: '1px solid #ccc',
-                padding: '0.5rem'
+                padding: '0.5rem',
+                borderRadius: '4px',
+                backgroundColor: '#fff',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center'
               }
             }, [
-              h(View::Game::StockMarket, game: @game, explain_colors: false)
+              h(:div, {
+                style: {
+                  width: '100%',
+                  height: '100%',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  transform: 'scale(0.85)', # Shrinks the market matrix down by 15% inside its container
+                  transformOrigin: 'center center'
+                }
+              }, [
+                h(View::Game::StockMarket, game: @game, explain_colors: false)
+              ])
             ])
+            # --- END FIX ---
           ])
         ])
-      end
-
-      private
-
-      def handle_mousedown(e)
-        event = Native(e)
-        event.preventDefault
-        store(:viz_is_dragging, true, skip: true)
-      end
-
-      def handle_mousemove(e)
-        return unless @viz_is_dragging
-
-        native_event = Native(e)
-        # Calculate cursor's relative horizontal position over total window width
-        window_width = `window.innerWidth`.to_f
-        client_x = native_event['clientX'].to_f
-        
-        # Convert to strict percentages clamped safely between 15% and 85%
-        new_pct = ((client_x / window_width) * 100).round
-        new_pct = [15, [new_pct, 85].min].max
-
-        store(:viz_split_pct, new_pct)
-      end
-
-      def handle_mouseup
-        return unless @viz_is_dragging
-        store(:viz_is_dragging, false)
       end
     end
   end

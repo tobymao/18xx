@@ -14,6 +14,7 @@ module View
     class Map < Snabberb::Component
       include Lib::Settings
       needs :game, store: true
+      needs :minimal, default: false
       needs :tile_selector, default: nil, store: true
       needs :selected_route, default: nil, store: true
       needs :selected_company, default: nil, store: true
@@ -150,8 +151,13 @@ module View
           },
         }
 
-        map_elements = [h(MapZoom, map_zoom: map_zoom), h(:div, props, children), h(MapControls)]
-        map_elements << h(MapLegend, game: @game) if @game.show_map_legend? && !@game.show_map_legend_on_left?
+        # Explicitly check for a strict truthy value to prevent cross-tab state leakage
+        if @minimal == true
+          map_elements = [h(:div, props, children)]
+        else
+          map_elements = [h(MapZoom, map_zoom: map_zoom), h(:div, props, children), h(MapControls)]
+          map_elements << h(MapLegend, game: @game) if @game.show_map_legend? && !@game.show_map_legend_on_left?
+        end
 
         h(:div, { style: { marginBottom: '1rem' } }, map_elements)
       end
