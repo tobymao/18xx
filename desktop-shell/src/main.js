@@ -3,7 +3,55 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 const fs = require('fs');
-const { spawn } = require('child_process');
+const http = require('http');
+
+// Spin up a zero-dependency local background server to host repository assets over HTTP
+const localServer = http.createServer((req, res) => {
+    try {
+        const url = new URL(req.url, `http://${req.headers.host}`);
+        let filePath = '';
+        
+        const isAsset = url.pathname.endsWith('.js') || 
+                        url.pathname.endsWith('.css') || 
+                        url.pathname.endsWith('.json') || 
+                        url.pathname.endsWith('.svg');
+
+        if (!isAsset && url.pathname.startsWith('/hotseat/')) {
+            filePath = path.join(__dirname, '../index.html');
+        } else {
+            let cleanPath = url.pathname;
+            
+            // Normalize path routing for absolute asset paths requested by Opal scripts
+            if (cleanPath.includes('/public/')) {
+                cleanPath = '/public/' + cleanPath.split('/public/')[1];
+            } else if (cleanPath.startsWith('/assets/') || cleanPath.startsWith('/images/')) {
+                cleanPath = '/public' + cleanPath;
+            }
+
+            filePath = path.join(__dirname, '../..', cleanPath);
+        }
+        
+        console.log(`[HTTP Server] Request: ${url.pathname} -> Resolved File: ${filePath}`);
+
+        fs.readFile(filePath, (err, data) => {
+            if (err) {
+                res.statusCode = 404;
+                res.end('Asset Not Found');
+            } else {
+                if (filePath.endsWith('.js')) res.setHeader('Content-Type', 'application/javascript');
+                if (filePath.endsWith('.html')) res.setHeader('Content-Type', 'text/html');
+                if (filePath.endsWith('.json')) res.setHeader('Content-Type', 'application/json');
+                if (filePath.endsWith('.svg')) res.setHeader('Content-Type', 'image/svg+xml');
+                res.end(data);
+            }
+        });
+    } catch (serverError) {
+        res.statusCode = 500;
+        res.end('Internal Server Error');
+    }
+});
+localServer.listen(8085, '127.0.0.1');
+
 
 const windows = {};
 let launcherWindow = null;
@@ -14,92 +62,32 @@ function createLauncherWindow() {
         width: 600,
         height: 450,
         title: "18xx Tournament — Setup Wizard",
-        webPreferences: {
-            nodeIntegration: true,
-            contextIsolation: false
-        }
+        webPreferences: { nodeIntegration: true, contextIsolation: false }
     });
 
-    launcherWindow.loadFile(path.join(__dirname, '../index.html'), { query: { view: 'launcher' } });
+    launcherWindow.loadURL(`http://localhost:8085/hotseat/1830/launcher?view=launcher`);
+
+    launcherWindow.webContents.openDevTools();
     launcherWindow.on('closed', () => { launcherWindow = null; });
 }
 
-function createTournamentWindow(type, index) {
+
+function createTournamentWindow() {
     const win = new BrowserWindow({
-        width: 850,
-        height: 650,
-        x: 80 + (index * 30),
-        y: 80 + (index * 30),
-        title: `18xx Tournament CC — ${type}`,
-        webPreferences: {
-            nodeIntegration: true,
-            contextIsolation: false
-        }
+        width: 1400,
+        height: 900,
+        title: "18xx Tournament Console",
+        webPreferences: { nodeIntegration: false, contextIsolation: true }
     });
 
-    win.loadFile(path.join(__dirname, '../index.html'), { query: { view: type } });
-    windows[type] = win;
-    win.on('closed', () => { delete windows[type]; });
+    // Load the living local server instance directly instead of a static asset hack
+    win.loadURL(`http://localhost:9292/hotseat/1830/hs_zmzlzwyx_1782892264`);
 }
 
-// Intercept the frontend launcher settings over IPC channel
 ipcMain.on('initialize-engine', (event, config) => {
-    console.log("[Main Process] Intercepted 'initialize-engine' event. Config:", config);
-    const { gameType, players } = config;
-
-    // Build a shell-safe, single-line command utilizing project bundler configurations
-    const targetCommand = `bundle exec ruby -Ilib -e "require './lib/engine'; game = Engine::Game.const_get('${gameType}')::Game.new('${players.join(',')}'.split(',')); payload = { game: '${gameType}', operating_round: game.round.name, timeline: { current_phase: game.phase.current[:name] }, market: { current_prices: game.companies.each_with_object({}) { |c, h| h[c.id] = c.value } }, ledger: { error_simulation: false, recent_transactions: ['Game initialized with players: ${players.join(", ")}'] } }; File.write('desktop-shell/src/current_game_state.json', JSON.pretty_generate(payload))"`;
-
-    console.log("[Main Process] Spawning login shell wrapper to evaluate local environment pathing...");
-
-// Execute through an interactive shell context (-i) to natively preserve base environment paths
-    const rubyProcess = spawn(process.env.SHELL || '/bin/zsh', ['-i', '-c', targetCommand], {
-        cwd: path.join(__dirname, '../..'),
-        env: process.env
-    });
-
-    rubyProcess.stdout.on('data', (data) => {
-        console.log(`[Ruby Engine stdout]: ${data}`);
-    });
-
-    rubyProcess.stderr.on('data', (data) => {
-        console.error(`[Ruby Engine stderr]: ${data}`);
-    });
-
-    rubyProcess.on('close', (code) => {
-        console.log(`[Main Process] Background Ruby runtime execution finished with exit code ${code}`);
-        if (code === 0) {
-            console.log("[Main Process] State array written safely. Initializing dashboard layout windows...");
-            WINDOW_TYPES.forEach((type, index) => createTournamentWindow(type, index));
-            
-            if (launcherWindow) {
-                launcherWindow.close();
-            }
-        } else {
-            console.error(`[Main Process] Ruby execution failed with non-zero status code: ${code}`);
-        }
-    });
+    // Open the single monolithic display panel view
+    createTournamentWindow();
+    if (launcherWindow) launcherWindow.close();
 });
-
-app.whenReady().then(() => {
-    createLauncherWindow();
-    app.on('activate', () => { if (Object.keys(windows).length === 0 && !launcherWindow) createLauncherWindow(); });
-});
-
+app.whenReady().then(() => { createLauncherWindow(); });
 app.on('window-all-closed', () => { if (process.platform !== 'darwin') app.quit(); });
-
-// File-system monitor loop
-const targetStateFile = path.join(__dirname, 'current_game_state.json');
-fs.watch(targetStateFile, (eventType) => {
-    if (eventType === 'change') {
-        try {
-            const rawData = fs.readFileSync(targetStateFile, 'utf8');
-            const gameState = JSON.parse(rawData);
-            Object.values(windows).forEach((win) => {
-                if (!win.isDestroyed()) { win.webContents.send('game-state-update', gameState); }
-            });
-        } catch (error) {
-            console.error("[Main Process Pipeline Error]:", error);
-        }
-    }
-});

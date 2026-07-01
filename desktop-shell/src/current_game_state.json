@@ -1,30 +1,375 @@
 {
-  "game": "G1835",
-  "operating_round": "Draft Round",
-  "timeline": {
-    "current_phase": "1.1"
-  },
-  "market": {
-    "current_prices": {
-      "NF": 100,
-      "1": 80,
-      "LD": 190,
-      "2": 170,
-      "3": 80,
-      "4": 160,
-      "BY_D": 184,
-      "BB": 130,
-      "HB": 160,
-      "5": 80,
-      "6": 80,
-      "OBB": 120,
-      "PB": 150
+  "status": "active",
+  "actions": [
+    {
+      "type": "bid",
+      "entity": 0,
+      "entity_type": "player",
+      "id": 1,
+      "created_at": 1782892268,
+      "company": "SV",
+      "price": 20
+    },
+    {
+      "type": "bid",
+      "entity": 1,
+      "entity_type": "player",
+      "id": 2,
+      "created_at": 1782892272,
+      "company": "DH",
+      "price": 75
+    },
+    {
+      "type": "bid",
+      "entity": 2,
+      "entity_type": "player",
+      "id": 3,
+      "created_at": 1782892274,
+      "company": "CS",
+      "price": 40
+    },
+    {
+      "type": "bid",
+      "entity": 0,
+      "entity_type": "player",
+      "id": 4,
+      "created_at": 1782892275,
+      "company": "MH",
+      "price": 110
+    },
+    {
+      "type": "bid",
+      "entity": 1,
+      "entity_type": "player",
+      "id": 5,
+      "created_at": 1782892276,
+      "company": "CA",
+      "price": 160
+    },
+    {
+      "type": "bid",
+      "entity": 2,
+      "entity_type": "player",
+      "id": 6,
+      "created_at": 1782892277,
+      "company": "BO",
+      "price": 220
+    },
+    {
+      "type": "par",
+      "entity": 2,
+      "entity_type": "player",
+      "id": 7,
+      "created_at": 1782892280,
+      "corporation": "B&O",
+      "share_price": "90,1,6"
+    },
+    {
+      "type": "par",
+      "entity": 0,
+      "entity_type": "player",
+      "id": 8,
+      "created_at": 1782892287,
+      "corporation": "PRR",
+      "share_price": "71,4,6"
+    },
+    {
+      "type": "buy_shares",
+      "entity": 1,
+      "entity_type": "player",
+      "id": 9,
+      "created_at": 1782892294,
+      "shares": [
+        "PRR_2"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "buy_shares",
+      "entity": 2,
+      "entity_type": "player",
+      "id": 10,
+      "created_at": 1782892295,
+      "shares": [
+        "B&O_1"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "buy_shares",
+      "entity": 0,
+      "entity_type": "player",
+      "id": 11,
+      "created_at": 1782892296,
+      "shares": [
+        "PRR_3"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "buy_shares",
+      "entity": 1,
+      "entity_type": "player",
+      "id": 12,
+      "created_at": 1782892297,
+      "shares": [
+        "B&O_2"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "buy_shares",
+      "entity": 2,
+      "entity_type": "player",
+      "id": 13,
+      "created_at": 1782892298,
+      "shares": [
+        "PRR_4"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "buy_shares",
+      "entity": 0,
+      "entity_type": "player",
+      "id": 14,
+      "created_at": 1782892300,
+      "shares": [
+        "B&O_3"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "buy_shares",
+      "entity": 1,
+      "entity_type": "player",
+      "id": 15,
+      "created_at": 1782892301,
+      "shares": [
+        "PRR_5"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "buy_shares",
+      "entity": 2,
+      "entity_type": "player",
+      "id": 16,
+      "created_at": 1782892302,
+      "shares": [
+        "B&O_4"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "buy_shares",
+      "entity": 0,
+      "entity_type": "player",
+      "id": 17,
+      "created_at": 1782892303,
+      "shares": [
+        "PRR_6"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "buy_shares",
+      "entity": 1,
+      "entity_type": "player",
+      "id": 18,
+      "created_at": 1782892304,
+      "shares": [
+        "B&O_5"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "buy_shares",
+      "entity": 2,
+      "entity_type": "player",
+      "id": 19,
+      "created_at": 1782892305,
+      "shares": [
+        "B&O_6"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "buy_shares",
+      "entity": 0,
+      "entity_type": "player",
+      "id": 20,
+      "created_at": 1782892306,
+      "shares": [
+        "B&O_7"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "buy_shares",
+      "entity": 1,
+      "entity_type": "player",
+      "id": 21,
+      "created_at": 1782892307,
+      "shares": [
+        "PRR_7"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "buy_shares",
+      "entity": 2,
+      "entity_type": "player",
+      "id": 22,
+      "created_at": 1782892308,
+      "shares": [
+        "PRR_8"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "buy_shares",
+      "entity": 0,
+      "entity_type": "player",
+      "id": 23,
+      "created_at": 1782892310,
+      "shares": [
+        "B&O_8"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "pass",
+      "entity": 1,
+      "entity_type": "player",
+      "id": 24,
+      "created_at": 1782892313
+    },
+    {
+      "type": "lay_tile",
+      "entity": "B&O",
+      "entity_type": "corporation",
+      "id": 25,
+      "created_at": 1782892327,
+      "hex": "J14",
+      "tile": "57-0",
+      "rotation": 0
+    },
+    {
+      "type": "pass",
+      "entity": "B&O",
+      "entity_type": "corporation",
+      "id": 26,
+      "created_at": 1782892332
+    },
+    {
+      "type": "buy_train",
+      "entity": "B&O",
+      "entity_type": "corporation",
+      "id": 27,
+      "created_at": 1782892336,
+      "train": "2-0",
+      "price": 80,
+      "variant": "2"
+    },
+    {
+      "type": "buy_train",
+      "entity": "B&O",
+      "entity_type": "corporation",
+      "id": 28,
+      "created_at": 1782892338,
+      "train": "2-1",
+      "price": 80,
+      "variant": "2"
+    },
+    {
+      "type": "buy_train",
+      "entity": "B&O",
+      "entity_type": "corporation",
+      "id": 29,
+      "created_at": 1782892338,
+      "train": "2-2",
+      "price": 80,
+      "variant": "2"
+    },
+    {
+      "type": "buy_train",
+      "entity": "B&O",
+      "entity_type": "corporation",
+      "id": 30,
+      "created_at": 1782892339,
+      "train": "2-3",
+      "price": 80,
+      "variant": "2"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "PRR",
+      "entity_type": "corporation",
+      "id": 31,
+      "created_at": 1782892347,
+      "hex": "H14",
+      "tile": "9-0",
+      "rotation": 1
+    },
+    {
+      "type": "buy_train",
+      "entity": "PRR",
+      "entity_type": "corporation",
+      "id": 32,
+      "created_at": 1782892351,
+      "train": "2-4",
+      "price": 80,
+      "variant": "2"
+    },
+    {
+      "type": "buy_train",
+      "entity": "PRR",
+      "entity_type": "corporation",
+      "id": 33,
+      "created_at": 1782892351,
+      "train": "2-5",
+      "price": 80,
+      "variant": "2"
     }
+  ],
+  "id": "hs_zmzlzwyx_1782892264",
+  "players": [
+    {
+      "name": "Player 1",
+      "id": 0
+    },
+    {
+      "name": "Player 2",
+      "id": 1
+    },
+    {
+      "name": "Player 3",
+      "id": 2
+    }
+  ],
+  "title": "1830",
+  "description": "",
+  "min_players": "3",
+  "max_players": "3",
+  "settings": {
+    "optional_rules": [],
+    "seed": ""
   },
-  "ledger": {
-    "error_simulation": false,
-    "recent_transactions": [
-      "Game initialized with players: Stefan, Player 2, Player 3"
-    ]
-  }
+  "mode": "hotseat",
+  "user": {
+    "id": 0,
+    "name": "You"
+  },
+  "created_at": "2026-07-01",
+  "loaded": true,
+  "result": {},
+  "manually_ended": null,
+  "game_end_reason": null,
+  "turn": 1,
+  "round": "Operating Round",
+  "acting": [
+    0
+  ],
+  "updated_at": 1782892351
 }
