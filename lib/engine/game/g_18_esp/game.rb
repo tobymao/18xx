@@ -17,7 +17,7 @@ module Engine
         include CitiesPlusTownsRouteDistanceStr
         include DoubleSidedTiles
 
-        attr_reader :can_acquire_minors, :strict
+        attr_reader :can_acquire_minors
 
         attr_accessor :combined_trains, :luxury_carriages
 
