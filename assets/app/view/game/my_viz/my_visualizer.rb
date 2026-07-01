@@ -10,49 +10,35 @@ module View
         h(:div, {
             hook: {
               insert: lambda {
-                `document.body.style.overflow = 'hidden'`
-                `document.getElementById('app').style.overflow = 'hidden'`
-                `document.getElementById('game').style.overflow = 'hidden'`
-                `document.body.style.margin = '0'`
-                `document.body.style.padding = '0'`
-                `document.body.style.backgroundColor = '#ffffff'`
-                `var app = document.getElementById('app'); if(app) { app.style.padding = '0'; app.style.margin = '0'; app.style.maxWidth = '100%'; app.style.backgroundColor = '#ffffff'; }`
-                %x(window.scaleTournamentDashboard = function() {
-                var baseHeight = 900; var baseWidth = 1600;
-                var currentHeight = window.innerHeight; var currentWidth = window.innerWidth;
-                var scaleFactor = Math.min(currentWidth / baseWidth, currentHeight / baseHeight);
-                if (scaleFactor < 0.3) scaleFactor = 0.3;
-                var container = document.getElementById('viz-master-frame');
-                if (container) {
-                  container.style.transform = 'scale(' + scaleFactor + ')';
-                  container.style.margin = '0 auto';
-                }
-              })
-                `window.addEventListener('resize', window.scaleTournamentDashboard)`
-                `window.scaleTournamentDashboard()`
-              },
+                        `document.body.style.overflow = 'hidden'`
+                        `document.body.style.margin = '0'`
+                        `document.body.style.padding = '0'`
+                        `document.body.style.backgroundColor = '#ffffff'`
+                        `document.getElementById('app') && Object.assign(document.getElementById('app').style, { overflow: 'hidden', padding: '0', margin: '0', maxWidth: '100vw', width: '100vw', height: '100vh', backgroundColor: '#ffffff' })`
+                        `document.getElementById('game') && Object.assign(document.getElementById('game').style, { overflow: 'hidden', width: '100vw', height: '100vh', maxWidth: '100vw', maxHeight: '100vh' })`
+                      },
               destroy: lambda {
-                `document.body.style.overflow = 'auto'`
-                `document.getElementById('app').style.overflow = 'auto'`
-                `document.getElementById('game').style.overflow = 'auto'`
-                `document.body.style.margin = ''`
-                `document.body.style.padding = ''`
-                `document.body.style.backgroundColor = ''`
-                `var app = document.getElementById('app'); if(app) { app.style.padding = ''; app.style.margin = ''; app.style.maxWidth = ''; app.style.backgroundColor = ''; }`
-                `window.removeEventListener('resize', window.scaleTournamentDashboard)`
-              },
+                         `document.body.style.overflow = ''`
+                         `document.body.style.margin = ''`
+                         `document.body.style.padding = ''`
+                         `document.body.style.backgroundColor = ''`
+                         `document.getElementById('app') && Object.assign(document.getElementById('app').style, { overflow: '', padding: '', margin: '', maxWidth: '', width: '', height: '', backgroundColor: '' })`
+                         `document.getElementById('game') && Object.assign(document.getElementById('game').style, { overflow: '', width: '', height: '', maxWidth: '', maxHeight: '' })`
+                       },
             },
             attrs: { id: 'viz-master-frame' },
             style: {
               display: 'flex',
               flexDirection: 'row',
-              width: '1600px',
-              height: '900px',
-              maxHeight: '900px',
+              width: '100vw',
+              height: '100vh',
+              maxHeight: '100vh',
+              boxSizing: 'border-box',
               position: 'relative',
               gap: '0.75rem',
               overflow: 'hidden',
-              transformOrigin: 'top center',
+              padding: '0.5rem',
+              backgroundColor: '#ffffff',
             },
           }, [
           # Column 1 (Far Left): Command Column Tracker (10% width)
