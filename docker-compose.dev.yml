@@ -29,6 +29,7 @@ services:
     command: bundle exec ruby queue.rb
 
   db:
+    platform: linux/amd64
     environment:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: password
