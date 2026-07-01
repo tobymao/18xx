@@ -65,24 +65,28 @@ module View
           h(:div, { style: { fontSize: '1.1rem', fontWeight: 'bold' } }, treasury.to_s),
         ])
 
+        # Permanent, non-jumping token tracker section
+        upper_content << h(:div, { style: { border: '1px solid #999', padding: '0.2rem', marginBottom: '0.2rem', backgroundColor: '#f0f0f0', textAlign: 'center' } }, [
+          h(:div, { style: { fontSize: '0.75rem', fontWeight: 'bold', marginBottom: '2px' } }, 'Tokens'),
+          render_company_tokens(current_entity),
+        ])
+
         upper_content << render_phase_box('1. Build Track', phase == :build_track, ['Skip'], actions, current_entity, nil)
 
-        token_row = phase == :place_token ? render_unplaced_tokens(current_entity) : h(:div)
         upper_content << h(:div, { style: { marginBottom: '0.4rem' } }, [
           render_phase_box('2. Place Token', phase == :place_token, ['Skip'], actions, current_entity, nil),
-          token_row,
         ])
 
         revenue_overlay = if %i[run_routes dividend].include?(phase)
-                            h(:div,
-                              { style: { fontSize: '1.8rem', fontWeight: 'bold', color: 'green', margin: '0.3rem 0' } }, formatted_revenue)
+                            h(:div, { style: { fontSize: '1.8rem', fontWeight: 'bold', color: 'green', margin: '0.3rem 0' } },
+                              formatted_revenue)
                           end
 
         if phase == :run_routes
           upper_content << render_phase_box('3. Run Routes', true, ["Submit #{formatted_revenue}"], actions, current_entity,
                                             revenue_overlay)
         elsif phase == :dividend
-          div_buttons = if @game.class::TITLE == '1835' && current_entity.respond_to?(:minor?) && current_entity.minor?
+          div_buttons = if @game.class.name.include?('1835') && current_entity.respond_to?(:minor?) && current_entity.minor?
                           ['Split']
                         else
                           %w[Pay Hold Split]
@@ -186,21 +190,57 @@ module View
         ])
       end
 
-      def render_unplaced_tokens(current_entity)
+      def render_company_tokens(current_entity)
         return h(:div) unless current_entity
 
-        tokener = @game.token_owner(current_entity)
-        return h(:div) unless tokener
+        unplaced_tokens = []
+        if current_entity.respond_to?(:tokens)
+          unplaced_tokens = current_entity.tokens.select do |t|
+            # A token is unplaced if it doesn't have a hex, or if its status says it's not used/placed on the map
+            has_hex = t.respond_to?(:hex) && t.hex
+            is_placed = t.respond_to?(:placed?) && t.placed?
 
-        tokens = tokener.tokens_by_type.map do |token|
-          h(:img,
-            {
-              attrs: { src: setting_for(:simple_logos, @game) ? token.simple_logo : token.logo },
-              style: { width: '32px', height: '32px', margin: '2px', borderRadius: '50%', border: '1px solid #666' },
-            })
+            !has_hex && !is_placed
+          end
         end
+
+        if unplaced_tokens.nil? || unplaced_tokens.empty?
+          return h(:div, { style: { fontSize: '0.75rem', color: '#666', fontStyle: 'italic' } }, 'No tokens remaining')
+        end
+
+        logo_src = begin
+          setting_for(:simple_logos, @game) ? current_entity.simple_logo : current_entity.logo
+        rescue StandardError
+          nil
+        end
+
+        token_icons = unplaced_tokens.map do |_token|
+          style = {
+            width: '26px',
+            height: '26px',
+            margin: '2px',
+            borderRadius: '50%',
+            boxSizing: 'border-box',
+            display: 'inline-block',
+            border: '1px solid #333',
+          }
+
+          if logo_src
+            style[:backgroundColor] = current_entity.color || '#fff'
+            h(:img, { attrs: { src: logo_src }, style: style })
+          else
+            style[:lineHeight] = '24px'
+            style[:textAlign] = 'center'
+            style[:backgroundColor] = current_entity.color || '#4169e1'
+            style[:color] = current_entity.text_color || '#fff'
+            style[:fontSize] = '0.65rem'
+            style[:fontWeight] = 'bold'
+            h(:div, { style: style }, current_entity.id.to_s[0..2])
+          end
+        end
+
         h(:div,
-          { style: { display: 'flex', flexDirection: 'row', justifyContent: 'center', flexWrap: 'wrap', padding: '0.2rem', backgroundColor: '#fff', border: '1px solid #ccc' } }, tokens)
+          { style: { display: 'flex', flexDirection: 'row', justifyContent: 'center', flexWrap: 'wrap', padding: '0.1rem 0' } }, token_icons)
       end
 
       def render_owned_trains(current_entity)
@@ -248,13 +288,16 @@ module View
 
             if ['Skip', 'Done Buying'].include?(label) && available_actions.include?('pass')
               process_action(Engine::Action::Pass.new(current_entity))
+
             elsif label.start_with?('Submit') && available_actions.include?('run_routes')
+              routes_to_submit = active_routes
               process_action(Engine::Action::RunRoutes.new(
                 current_entity,
-                routes: active_routes,
-                extra_revenue: @game.extra_revenue(current_entity, active_routes),
-                subsidy: @game.routes_subsidy(active_routes)
+                routes: routes_to_submit,
+                extra_revenue: @game.extra_revenue(current_entity, routes_to_submit),
+                subsidy: @game.routes_subsidy(routes_to_submit)
               ))
+
             elsif label == 'Pay' && available_actions.include?('dividend')
               process_action(Engine::Action::Dividend.new(current_entity, kind: 'payout'))
             elsif label == 'Hold' && available_actions.include?('dividend')
