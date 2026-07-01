@@ -231,7 +231,7 @@ module Engine
           when '6'
             limited_express ? 2 : 3
           when 'D'
-            20
+            'unlimited'
           end
         end
 
