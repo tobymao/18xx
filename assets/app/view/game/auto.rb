@@ -24,6 +24,11 @@ module View
         children = [
           h(:h2, 'What are Auto Actions?'),
           h(:p, "You can pre-program share purchases and passes during #{@game.stock_round_name}s."),
+          *(if @game.available_programmed_actions.include?(Engine::Action::ProgramAuctionBid)
+              [h(:p, 'You can pre-program bids during auctions.')]
+            else
+              []
+            end),
           h(:p, 'Deactivates when players take actions that may affect you (e.g. shares are sold).'),
           h('p.bold', 'Your Auto Actions are not secret from other players.'),
           h(:p, render_wiki),
