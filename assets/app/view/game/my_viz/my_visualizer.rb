@@ -108,7 +108,8 @@ module View
                   },
                 },
               }, [
-              h(View::Game::Spreadsheet, game: @game),
+              # Hooking into your custom implementation sandbox
+              h(View::Game::GameStatus, game: @game),
             ]),
             # Stock Market Component
             h(:div, { style: { flex: '1 1 40%', overflow: 'hidden', border: '1px solid #ccc', padding: '0.5rem', borderRadius: '4px', backgroundColor: '#fff', display: 'flex', justifyContent: 'center', alignItems: 'center' } }, [
