@@ -1,4 +1,3 @@
 ---
-BUNDLE_PATH: "vendor/bundle"
-BUNDLE_BUILD__PG: "--with-pg-config=/usr/local/opt/postgresql@14/bin/pg_config"
-BUNDLE_BIN: "bin"
+BUNDLE_BUILD__MINI_RACER: "--with-v8-dir=/usr/local/opt/v8"
+BUNDLE_BUILD__PG: "--with-pg-config=/usr/local/opt/libpq/bin/pg_config"

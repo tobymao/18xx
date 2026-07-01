@@ -11,6 +11,8 @@ gem 'require_all', '~> 3.0.0'
 gem 'roda', '~> 3.97.0'
 gem 'rufus-scheduler', '~> 3.8.2'
 gem 'sequel', '~> 5.55.0'
+gem 'tilt', '~> 2.3.0'
+gem 'sequel-pg_advisory_lock'
 gem 'snabberb', '~> 1.5.4'
 
 # Development & Test Tools
@@ -26,6 +28,7 @@ group :development, :test do
 end
 
 # Web server dependencies removed to bypass native macOS compilation errors:
-# gem 'mini_racer'
-# gem 'unicorn'
-# gem 'unicorn-worker-killer'
+gem 'mini_racer', platforms: :ruby, force_ruby_platform: true
+gem 'unicorn'
+gem 'unicorn-worker-killer'
+gem "pg", "~> 1.6"

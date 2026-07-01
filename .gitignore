@@ -40,3 +40,6 @@ validate/
 .vscode
 
 .rerun
+
+desktop-shell/*
+desktop-shell/node_modules/*

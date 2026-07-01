@@ -1,165 +1,24 @@
-1. Project Overview & Current State
-Main Question: How do we transform live serialized JSON engine arrays into highly readable, responsive semantic layout panels for tournament environments without causing process-level thread blocking?
-Hardware Profile: Successfully migrated and verified on local ARM64 Apple Silicon (running Node v25.2.1, npm v11.6.2, and native rbenv Ruby 3.3.3 inside the base conda path).
-Pipeline Architecture:
-[Ruby Game Engine Engine State] ──> Drops JSON ──> [desktop-shell/src/current_game_state.json] ──> Native fs.watch Broadcast ──> [src/main.js IPC WebContents] ──> Secure IPC Consumer ──> View Layouts ──> [index.html Framework Panels]
+# 18XX TOURNAMENT TRACKING ENVIRONMENT MANIFEST
 
-2. Directory & File Map
-18xx-tournament/                    # Project Repository Root
-├── TODO.md                         # Active project tracking documentation (UPDATED)
-├── .gitignore                      # Configured to ignore desktop-shell/node_modules/
-├── Gemfile / Gemfile.lock          # Project Ruby dependencies (Installed to ./vendor/bundle)
-└── desktop-shell/                  # Isolated Desktop Application Subsystem
-    ├── package.json                # Shell dependency manifest and start script routing
-    ├── index.html                  # Unified HTML template view utilized by all 4 frames
-    └── src/
-        ├── main.js                 # Electron Main Process (Active FS watcher & HTTP server loop)
-        └── current_game_state.json # Active target landing strip for live engine metrics
+## 1. Project Overview & Current State
+* **Core Milestone Reached:** The containerized decoupled backend engine is stabilized and listening natively on port 9292.
+* **Architecture Strategy:** Transitioning the heavyweight visual tracking layers from a fragile Opal-compiled SPA web layout to a Headless Ruby processing pipeline paired with your robust, high-fidelity Native Java interface.
+* **Data Interface Contract:** Java passes action lists -> Headless Ruby executes logical game state rules -> Ruby returns updated structural state JSON mappings directly back to Java.
 
-3. Active Progress Metrics
-Phase 1: Data Extraction
-[x] Bypassed container virtualization restrictions to interact directly with host Ruby binaries.
-[x] Re-aligned backend pipeline target to deposit live state data arrays straight into desktop-shell/src/current_game_state.json.
+## 2. Directory & File Structure Map
+18xx/
+├── Gemfile                     # Master Ruby dependency engine (STABILIZED)
+├── Gemfile.lock                # Verified cross-platform multi-architecture locks
+├── docker-compose.override.yml # Anonymous masking volumes and production ports
+└── .rerun                      # Development engine path filter exclusion rules
 
-Phase 2: Standalone Desktop Shell Setup
-[x] Formulated explicit asset dependency trees via a clean package.json manifest layer.
-[x] Coded a centralized window orchestration manager (src/main.js) capable of cascading 4 concurrent window structures across the host display workspace.
+## 3. Completed Progress Metrics
+* [x] Bypassed architectural compilation limits on ARM64 by binding pre-compiled wheel binaries.
+* [x] Decoupled host file leaks from container boundaries using anonymous named execution volumes.
+* [x] Terminated the macOS framework recursive symlink watch trap using a hard path rule exception.
+* [x] Completed database schema synchronization and verified local port connection binding on 9292.
 
-Phase 3: Live View Integration & Data Telemetry
-[x] Resolved IPC window boundary insulation limits using clean native ipcRenderer configurations.
-[x] Implemented case-insensitive URL query parameter formatting (.toLowerCase()) to eliminate silent structural look-up failures.
-[x] Embedded an automated filesystem state watcher using fs.watch inside src/main.js to automatically broadcast data payloads when changes are written to disk.
-
-Phase 4: Platform Alignment & Infrastructure (ARM64 Migration)
-[x] Installed Node/npm into the local Miniconda base execution loop to prevent toolchain fracturing.
-[x] Aligned local gems tracking vectors via a clean root bundle install.
-[x] Swapped out the brittle -l login shell flags inside src/main.js for an interactive shell context call (-i), resolving the Apple system environment dependency collision block.
-[x] Migrated asset resolution paths from the restricted local filesystem protocol (file://) over to an internal background HTTP server instance streaming natively on port 8085 to fulfill Snabberb router path matching conventions.
-
-Phase 5: Game Execution & Active Turn Routines (CURRENT BLOCKER)
-[ ] Clear main.js scope typo: Rectify the UnhandledPromiseRejectionWarning (`ReferenceError: win is not defined` inside `createLauncherWindow`).
-[ ] Initialize First Active Actions: Transition from basic constructor setup to running the actual game start execution loop (game.start / initial private auction setup).
-[ ] Map Real 1835 Structures: Parse out genuine 1835 game state parameters (e.g., initial state of the Prussian 5% or national railway groupings) from the engine instance into the shared JSON packet.
-[ ] Interactive Command Form: Add input triggers to step through the engine state turn by turn to see live data updating across our tracking boards.
-
-4. Next Steps for Next Thread Execution
-The platform containment boundaries are configured to stream via HTTP. The immediate target is to fix the scoping syntax blocker inside main.js, run the wizard, and proceed directly with parsing the genuine 1835 initial state metrics into the live UI panels.
-
-
-# TECHNICAL EVALUATION REPORT: 18XX TOURNAMENT TRACKING PLATFORM
-
-**Author:** AI Collaborator
-
-**Date:** July 1, 2026
-
-**Target Audience:** Prof. Stefan Bleeck
-
-**Subject:** Architectural Pivot from Electron/Opal to Headless Ruby + Native Java Interface
-
----
-
-## 1. EXECUTIVE SUMMARY
-
-Over the course of an intense, multi-hour technical exploration, we attempted to decouple the visual frontend layout engine of Toby Mao’s `18xx` Ruby environment from its database-dependent Rails production framework. The objective was to create a lightweight, multi-window desktop tracking platform for tournament scenarios [cite: 2026-06-13].
-
-While we achieved major engineering milestones regarding data isolation and core script interoperability, the opaque, auto-compiled JavaScript boundary layer generated by the Opal compiler proved to be an unsustainable environment for long-term development. Because you possess a mature, polished, high-fidelity Java interface (`rails`) that has been perfected over a year of development [cite: 2026-04-25], we have reached a definitive architectural milestone.
-
-This report recommends **abandoning the Electron/Opal runtime bridge** and **pivoting to a Headless Ruby Backend paired with your Native Java Frontend**. This strategy leverages the absolute stability of Toby Mao's logical engine rulesets while giving you 100% UI control inside a language you fully master [cite: 2026-04-25].
-
----
-
-## 2. THE CHRONOLOGICAL PATH: ATTEMPTS, SUCCESSES, AND FAILURES
-
-We explored the decoupling process in strict execution phases [cite: 2026-05-16], uncovering specific characteristics of the compiled web engine at each step.
-
-### Phase 1: Local Asset Normalization & Database Isolation
-
-* **Objective:** Run the interface inside an Electron shell (`main.js`) without a live PostgreSQL/Sequel database infrastructure [cite: 2026-06-13].
-* **Successes:** * Designed a background asset proxy server inside `main.js` that successfully resolved relative lookups and absolute paths over standard network contexts (`http://localhost:8085`) instead of breaking on `file://` protocols [cite: 2026-06-13].
-* Successfully bypassed database constraints by writing a boot routine inside `index.html` that loaded state data vectors directly into the browser’s runtime memory layers via standard `localStorage` caching mechanics [cite: 2026-06-13].
-
-
-* **Failures/Frustrations:** Encountered a series of strict pathing and file routing behaviors where asset dependencies (`deps.js`, `main.js`) looked for exact, nested folder structures that mismatched traditional desktop deployments.
-
-### Phase 2: The Interoperability Boundary Handshake
-
-* **Objective:** Pass configuration parameters from native JavaScript (`index.html`) directly into the compiled Ruby environment (`Opal.App.$attach`) [cite: 2026-06-13].
-* **Failures/Frustrations:** The runtime repeatedly threw a cryptic, terminal script exception: `ArgumentError: expected kwargs`.
-* **The Breakthrough Success:** We isolated the core mechanics of the Opal compiler. Because JavaScript functions accept generic dictionaries `{}` while Ruby methods demand strict Keyword Arguments (`kwargs`), the bridge panicked. We resolved this definitively by wrapping our parameters in an authentic, typed Ruby Hash layout block via Opal's internal type constructor (`Opal.hash()`). This forced the boundary layer to open, clearing the execution bridge completely.
-
-### Phase 3: Game Action Hydration Testing
-
-* **Objective:** Populate the tracking windows using mock data payloads generated by the setup wizard.
-* **Failures/Frustrations:** As soon as the bridge opened, the internal layout engine crashed with an `undefined method '[]' for nil` error. The rendering code was searching for deep, nested tracking variables (operating round numbers, bank totals, company phases) that did not exist in our hand-written mock objects.
-* **The Breakthrough Success:** We designed a native JavaScript extraction routine to pull complete data logs straight from browser memory. By copying an authentic data vector from a live game of 1830 (33 completed actions containing share parsing, tile laying, and train buying), we fed the engine real keys. The log verified absolute success: **`Done processing game actions: 0.035 seconds. Rendering game view...`** The background logic evaluated the entire ledger with zero database dependency.
-
-### Phase 4: Monolithic Single-Page Routing (The Final Wall)
-
-* **Objective:** Split the view into four simultaneous tracking windows (`Map`, `Timeline`, `Market`, `Ledger`) [cite: 2026-06-13].
-* **Failures/Frustrations:** Even after scrubbing matching game IDs (`hs_zmzlzwyx_1782892264`) across the URLs and cache layers, all windows froze on an internal loading screen.
-* **The Architectural Realization:** Toby Mao's web frontend is architected strictly as a **Single Page Application (SPA)**. It relies on a monolithic DOM state where internal clickable tabs change components dynamically in a single view. Forcing it to separate into individual tracking screens via network query parameters (`?view=market`) breaks its internal layout routing algorithms.
-
----
-
-## 3. WHY THE OPALSTACK IS UNSUSTAINABLE FOR THIS PROJECT
-
-Continuing down Path 1 (Electron/Opal) requires endless, brittle reverse-engineering of an auto-generated JavaScript ecosystem.
-
-1. **Obfuscated Debugging:** Errors like `TypeError: elm.getAttribute is not a function` or compiled Ruby signature exceptions occur entirely inside minified, third-party code libraries (`deps.js`). You are forced to debug things blindly in an ecosystem you do not want or need to learn.
-2. **Fragile Variable Lifecycles:** Opal changes internal variable names and hash structures dynamically when code versions recompile. A patch that works on one version of the web engine will break instantly on the next minor layout release.
-3. **UI Customization Barriers:** Because the UI is tightly bound to its browser CSS grid and SPA architecture, ripping out parts of it to build a novel visual dashboard for tournament fields means fighting thousands of lines of pre-compiled web code.
-
----
-
-## 4. ARCHITECTURAL CONCLUSION: THE RETURN TO JAVA
-
-Pivoting back to your native Java codebase is not a retreat—it is a significant optimization of your platform architecture. The ten hours spent debugging the Electron stack successfully proved a critical principle: **Toby Mao's logical engine operates flawlessly on flat action arrays without a database wrapper.**
-
-By connecting your Java frontend to a native, headless Ruby execution layer, you eliminate 100% of the web-stack frustrations while unlocking complete creative freedom.
-
-```
-+------------------------------------+          JSON Payload (Actions)
-|           JAVA FRONTEND            | -------------------------------------> +------------------------------------+
-| (Pure UI: Maps, Ledgers, Windows)  |                                        |        HEADLESS RUBY ENGINE        |
-| - Total UI Control                 | <------------------------------------- |  - Computes 18xx Logical Rules     |
-| - Zero HTML/CSS/Opal Friction     |       Updated State Vector (JSON)      |  - Zero Database/Web Dependencies   |
-+------------------------------------+                                        +------------------------------------+
-
-```
-
-### The Concrete Advantages of the Java Pivot:
-
-* **Absolute Visual Power:** Your Java framework already handles visual rails tracking beautifully [cite: 2026-04-25]. You can display a gorgeous, high-fidelity board interface that behaves exactly like the game experience you want to design, rather than adjusting an ugly, spreadsheet-like web app layout.
-* **100% Control Over Windows:** Splitting components into detached tournament layouts (`Map`, `Ledger`, `Market`) is trivial in native Java windows. You control the layout architecture directly, completely eliminating the web routing bugs that caused the browser engine to freeze.
-* **Isolated, Predictable Contract:** Your software interface boundary becomes an exceptionally clean, text-based arrangement. Your Java application passes an actions list string into the background Ruby process, and the Ruby process returns an updated game state tracking dictionary. Java reads the updated coordinates, paints the board, and you stay entirely within code you fully understand [cite: 2026-04-25].
-
----
-
-## 5. REPOSITORY STATE HANDOVER PACKET
-
-This tracking manifest preserves our progress and structures your workspace for an immediate resumption of the project inside your Java environment.
-
-### Active Repository Inventory Map
-
-* 📂 `desktop-shell/src/current_game_state.json`
-* **Status:** Operational [cite: 2026-06-13].
-* **Contents:** Contains the verified, production-grade 1830 data vector (33 full actions) extracted directly from browser storage. This file serves as your exact target dictionary map when writing your Java JSON parsing classes.
-
-
-* 📂 `desktop-shell/src/test_hydration.js`
-* **Status:** Completed/Archived [cite: 2026-06-13].
-* **Contents:** Standalone verification script that successfully validated network data hydration streams over local ports.
-
-
-
-### Target Preparation for the Next Step
-
-To begin building the native Java tracking loop immediately, locate and prepare:
-
-1. Your downloaded `current_game_state.json` data dictionary file [cite: 2026-06-13].
-2. A standard, native local Ruby installation execution environment on your Mac terminal (`ruby -v`).
-3. Your main Java `rails` engineering development project repository [cite: 2026-04-25].
-
-### Next Primary Goal
-
-Create a lightweight, single-file native Ruby bridge script (`engine_pipe.rb`) that reads your `current_game_state.json` file, initializes Toby Mao's rule classes directly via command line, and returns the computed calculations to your Java runtime environment via standard system output streams (`ProcessBuilder`). This establishes a fast, reliable, and completely stable core loop for your platform.
+## 4. Immediate Tasks for the Next Phase
+- [ ] Implement `engine_pipe.rb`: Create a single-file, lightweight headless bridge script inside the Ruby layer to parse flat JSON action arrays without hitting standard Rails route blocks.
+- [ ] Connect Java UI `ProcessBuilder`: Hook your native Java rails tracking layouts up to the headless Ruby execution string to capture data payloads seamlessly.
+- [ ] Validate 1835 Initial State Arrays: Feed the backend pipeline the genuine initial parameters for 1835 (including national company relationships and the Prussian 5% distribution loops) to verify structural integrity.

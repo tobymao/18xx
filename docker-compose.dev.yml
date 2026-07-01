@@ -5,15 +5,18 @@ x-rack: &rack
     RACK_ENV: development
     RUBYOPT: --yjit
     OPAL_PREFORK_DISABLE: "true"
-    # debug/info/warn/error/fatal
     DB_LOG_LEVEL: fatal
+    BUNDLE_APP_CONFIG: /usr/local/bundle
   build:
     args:
       RACK_ENV: development
     dockerfile: ${DEV_DOCKERFILE:-Dockerfile}
   volumes:
     - .:/18xx:z
-    - /18xx/vendor
+    # CHANGED: Switched to named volumes so memory is shared and preserved
+    - rack_vendor:/18xx/vendor   
+    - rack_bundle:/18xx/.bundle  
+    - /18xx/desktop-shell  # Anonymous volume: Masks the heavy desktop folder from being indexed
 
 services:
   rack:
@@ -23,7 +26,7 @@ services:
 
   queue:
     <<: *rack
-    command: bundle exec ruby queue.rb # bundle exec rerun --background -i 'build/*' -i 'public/*' 'ruby queue.rb'
+    command: bundle exec ruby queue.rb
 
   db:
     environment:
@@ -32,3 +35,8 @@ services:
       POSTGRES_DB: 18xx_development
     build:
       dockerfile: ${DEV_DOCKERFILE:-Dockerfile}
+
+# NEW: Explicitly define the shared data volumes at the bottom of the file
+volumes:
+  rack_vendor:
+  rack_bundle:
