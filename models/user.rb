@@ -114,7 +114,7 @@ class User < Base
     validates_unique(:name, :email, { message: 'is already registered' })
     validates_format(/^.+$/, :name, message: 'may not be empty')
     validates_format(/^[^\s].*$/, :name, message: 'may not start with a whitespace')
-    validates_format(/^[^@\s]+@[^@\s]+\.[^@\s]+$/, :email)
+    validates_format(/\A[^@\s]+@[^@\s]+\.[^@\s]+\z/, :email)
 
     validate_webhook_user_id
   end

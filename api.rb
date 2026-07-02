@@ -213,6 +213,9 @@ class Api < Roda
 
   def render(titles: nil, **needs)
     needs[:user] = user&.to_h(for_user: true)
+    # pin is interpolated raw into a <script src> and <title>; only hex tokens
+    # name real /pinned/*.js bundles, so reject anything else (reflected XSS).
+    needs[:pin] = HtmlSafe.safe_pin(needs[:pin])
 
     return render_pin(**needs) if needs[:pin]
 
@@ -263,7 +266,7 @@ class Api < Roda
         <body>
           <div id="app"></div>
           #{js_tags}
-          <script>Opal.App.$attach('app', #{args})</script>
+          <script>Opal.App.$attach('app', #{HtmlSafe.escape_inline_script(args)})</script>
         </body>
       </html>
     HTML
@@ -276,7 +279,23 @@ class Api < Roda
   end
 
   def user
-    session&.valid? ? session.user : nil
+    return @user if @user_resolved
+
+    @user_resolved = true
+    @user = session&.valid? ? session.user : nil
+    @user = nil if @user && banned?(@user)
+    @user
+  end
+
+  # A ban must take effect on the very next request, not just at login: an
+  # already-authenticated user whose account (or current IP) is banned would
+  # otherwise keep acting until their (up to 180-day) session expires. Rechecked
+  # here so every authenticated request re-evaluates it; result is memoized per
+  # request via #user.
+  def banned?(user_record)
+    return false unless user_record
+
+    Ban.banned_account?(user_record.id) || Ban.banned_ip?(request.ip)
   end
 
   def halt(code, message)

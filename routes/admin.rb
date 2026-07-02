@@ -64,9 +64,13 @@ class Api
           if account && !Ban.banned_account?(account.id)
             Ban.create(user: account, reason: reason, created_by: user.id)
             Session.where(user_id: account.id).delete
+            Game.where(id: account.game_users.map(&:game_id)).delete
           end
           ips.each do |ip|
-            Ban.create(ip: ip, reason: reason, created_by: user.id) unless Ban.banned_ip?(ip)
+            next if Ban.banned_ip?(ip)
+
+            Ban.create(ip: ip, reason: reason, created_by: user.id)
+            Session.where(ip: ip).delete
           end
 
           { bans: Ban.order(Sequel.desc(:id)).map(&:to_h) }
