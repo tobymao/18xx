@@ -77,7 +77,7 @@ module View
             # Spreadsheet Ledger Component
             h(:div, {
                 style: {
-                  flex: '1 1 60%',
+                  flex: '1 1 70%',
                   overflow: 'hidden',
                   border: '1px solid #ccc',
                   padding: '0.4rem',
@@ -112,9 +112,9 @@ module View
               h(View::Game::GameStatus, game: @game),
             ]),
             # Stock Market Component
-            h(:div, { style: { flex: '1 1 40%', overflow: 'hidden', border: '1px solid #ccc', padding: '0.5rem', borderRadius: '4px', backgroundColor: '#fff', display: 'flex', justifyContent: 'center', alignItems: 'center' } }, [
-              h(:div, { style: { width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', transform: 'scale(0.85)', transformOrigin: 'center center' } }, [
-                h(View::Game::StockMarket, game: @game, explain_colors: false),
+          h(:div, { style: { flex: '1 1 30%', overflow: 'hidden', border: '1px solid #ccc', padding: '0.5rem', borderRadius: '4px', backgroundColor: '#fff', display: 'flex', justifyContent: 'flex-start', alignItems: 'center', flexDirection: 'column' } }, [
+              h(:div, { style: { width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'flex-start', transform: 'scale(0.85)', transformOrigin: 'center top', marginTop: '-5px' } }, [
+                h(View::Game::SimpleStockMarket, game: @game),
               ]),
             ]),
           ]),
