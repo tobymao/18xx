@@ -85,7 +85,11 @@ class Game < Base
   # rubocop:enable Style/FormatString
 
   def self.home_games(user, **opts)
-    Bus.cache("home_games:#{user&.id}", ttl: 9, skip: !opts.empty?) do
+    # Key the cache on only the params that actually change the result, so
+    # pagination/filtering still caches per-variant while unrecognized junk
+    # params can't bust the cache
+    key = opts.slice('new', 'active', 'finished', 'title', 'mode').sort.to_h
+    Bus.cache("home_games:#{user&.id}:#{key}", ttl: 9) do
       kwargs = {
         new_offset: opts['new'],
         active_offset: opts['active'],
