@@ -169,7 +169,16 @@ module View
 
       def render_extra_cards
         children = []
-        children << h(Bank, game: @game)
+        train_handler = lambda do |train|
+          process_action(Engine::Action::BuyTrain.new(
+            active_entity,
+            train: train,
+            price: train.price
+          ))
+        end
+
+        children << h(MyBank, game: @game, train_handler: train_handler)
+
         children << h(Tranches, game: @game) if @game.respond_to?(:tranches)
         children << h(MyUpcomingTrains, game: @game)
         h('div#extra_cards', { style: { marginBottom: '1rem' } }, children.compact)

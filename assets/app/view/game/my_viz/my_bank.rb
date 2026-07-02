@@ -11,6 +11,7 @@ module View
       include Actionable
 
       needs :game, store: true
+      needs :train_handler, default: nil
       needs :show_loan_table, default: false, store: true
 
       FONT_STD = '"Helvetica Neue", Helvetica, Arial, sans-serif'
@@ -148,69 +149,35 @@ module View
         h(:table, { style: { borderCollapse: 'collapse', width: '100%' } }, trs)
       end
 
-      def safe_can_buy_train?(step, entity, train)
-        return false if !step || !entity || !train
-        return false unless step.respond_to?(:can_buy_train?)
-
-        begin
-          step.can_buy_train?(entity, train)
-        rescue StandardError => _e
-          false
-        end
-      end
-
       def render_bank_trains
         return nil unless @game.respond_to?(:depot) && @game.depot
 
-        trains_to_show = []
-        if @game.depot.respond_to?(:available)
-          trains_to_show = @game.depot.available || []
-        elsif @game.depot.respond_to?(:upcoming)
-          trains_to_show = @game.depot.upcoming || []
-        end
-
-        return nil if !trains_to_show || trains_to_show.empty?
-
-        seen = {}
-        unique_trains = []
-
-        trains_to_show.each do |t|
-          next if `t === undefined || t === null`
-          next unless t.respond_to?(:name)
-          next unless t.name
-
-          unless seen[t.name]
-            seen[t.name] = true
-            unique_trains << t
-          end
-        end
-
-        return nil if unique_trains.empty?
+        # Directly identify the single next upcoming train to bypass the core engine lookup layer entirely
+        next_train = @game.depot.upcoming.first
+        return nil unless next_train
 
         step = @game.round.active_step
         train_buyable_step = step&.current_actions&.include?('buy_train')
 
-        train_cards = unique_trains.map do |t|
-          border_color = '#999999'
-          click_handler = nil
+        border_color = '#999999'
+        click_handler = nil
 
-          if train_buyable_step && active_entity && safe_can_buy_train?(step, active_entity, t)
-            border_color = '#00cc00'
-            click_handler = lambda {
-              process_action(Engine::Action::BuyTrain.new(
-                active_entity,
-                train: t,
-                price: t.price
-              ))
-            }
-          end
-
-          h(:div, { style: { display: 'inline-block', margin: '2px', textAlign: 'center', verticalAlign: 'top' } }, [
-            h(View::Game::Card, text: t.name, border_color: border_color, click_action: click_handler),
-            h(:div,
-              { style: { fontFamily: FONT_CASH, color: COLOR_CASH, fontSize: '0.75rem', fontWeight: 'bold', marginTop: '2px' } }, t.respond_to?(:price) ? @game.format_currency(t.price) : ''),
-          ])
+        if train_buyable_step && active_entity && active_entity.corporation?
+          border_color = '#00cc00'
+          click_handler = lambda {
+            process_action(Engine::Action::BuyTrain.new(
+              active_entity,
+              train: next_train,
+              price: next_train.price
+            ))
+          }
         end
+
+        train_card = h(:div, { style: { display: 'inline-block', margin: '2px', textAlign: 'center', verticalAlign: 'top' } }, [
+          h(View::Game::Card, text: next_train.name, border_color: border_color, click_action: click_handler),
+          h(:div,
+            { style: { fontFamily: FONT_CASH, color: COLOR_CASH, fontSize: '0.75rem', fontWeight: 'bold', marginTop: '2px' } }, @game.format_currency(next_train.price)),
+        ])
 
         h(:div, {
             style: {
@@ -222,7 +189,7 @@ module View
           }, [
           h(:div, { style: { fontSize: '0.8rem', fontWeight: 'bold', marginBottom: '0.3rem', fontFamily: FONT_STD } },
             'Bank Depot:'),
-          h(:div, { style: { display: 'flex', flexWrap: 'wrap', justifyContent: 'center' } }, train_cards),
+          h(:div, { style: { display: 'flex', flexWrap: 'wrap', justifyContent: 'center' } }, [train_card]),
         ])
       end
 
@@ -266,7 +233,7 @@ module View
           border_color = '#999999'
           click_handler = nil
 
-          if train_buyable_step && active_entity && safe_can_buy_train?(step, active_entity, train)
+          if train_buyable_step && active_entity && active_entity.corporation?
             border_color = '#00cc00'
             click_handler = lambda {
               process_action(Engine::Action::BuyTrain.new(
