@@ -60,17 +60,17 @@ module View
           h(:div, { style: { fontSize: '0.8rem', textTransform: 'uppercase', marginTop: '1px' } }, phase.to_s.tr('_', ' ')),
         ])
 
-        upper_content << h(:div, { style: { border: '1px solid #999', padding: '0.2rem', marginBottom: '0.2rem', backgroundColor: '#e6e6fa', textAlign: 'center', fontSize: '0.85rem' } }, [
+        upper_content << h(:div, { style: { border: '1px solid #999', padding: '0.2rem', marginBottom: '0.2rem', backgroundColor: '#dda0dd', textAlign: 'center', fontSize: '0.85rem' } }, [
           h(:div, { style: { fontSize: '0.75rem', fontWeight: 'bold' } }, 'Treasury'),
           h(:div, { style: { fontSize: '1.1rem', fontWeight: 'bold' } }, treasury.to_s),
         ])
 
-        upper_content << h(:div, { style: { border: '1px solid #999', padding: '0.2rem', marginBottom: '0.2rem', backgroundColor: '#f0f0f0', textAlign: 'center' } }, [
+        upper_content << h(:div, { style: { border: '1px solid #999', padding: '0.2rem', marginBottom: '0.2rem', backgroundColor: '#dda0dd', textAlign: 'center' } }, [
                   h(:div, { style: { fontSize: '0.75rem', fontWeight: 'bold', marginBottom: '2px' } }, 'Owned Trains'),
                   render_owned_trains(current_entity),
                 ])
 
-        upper_content << h(:div, { style: { border: '1px solid #999', padding: '0.2rem', marginBottom: '0.2rem', backgroundColor: '#f0f0f0', textAlign: 'center' } }, [
+        upper_content << h(:div, { style: { border: '1px solid #999', padding: '0.2rem', marginBottom: '0.2rem', backgroundColor: '#dda0dd', textAlign: 'center' } }, [
           h(:div, { style: { fontSize: '0.75rem', fontWeight: 'bold', marginBottom: '2px' } }, 'Tokens'),
           render_company_tokens(current_entity),
         ])

@@ -218,11 +218,16 @@ module View
         subtitles = []
         players_subtitles = @game.players.map.with_index do |p, idx|
           is_active_col = (p == active_player)
-          props = if p == @game.priority_deal_player
-                    pd_props
-                  else
-                    { style: { backgroundColor: is_active_col ? COLOR_ACTIVE : 'inherit' } }
-                  end
+          # props = if p == @game.priority_deal_player
+          #           pd_props
+          #         else
+          #           { style: { backgroundColor: is_active_col ? COLOR_ACTIVE : 'inherit' } }
+          #         end
+# change later to the little train TODO
+props = { style: { backgroundColor: is_active_col ? COLOR_ACTIVE : 'inherit' } }
+          props = { style: { backgroundColor: is_active_col ? COLOR_ACTIVE : 'inherit' } }
+
+
           props[:style][:minWidth] = min_width(p)
           is_last = idx == @game.players.size - 1
           h("th.name.nowrap#{is_last ? '.thick-right' : ''}", props, render_sort_link(p.name, p.id))
@@ -435,7 +440,7 @@ module View
         tr_props = tr_default_props(is_active_row)
 
         # Map active corporate property cells
-        corp_bg_color = is_active_row ? COLOR_MAUVE : COLOR_INACTIVE
+      corp_bg_color = corporation.floated? ? COLOR_MAUVE : COLOR_INACTIVE
 
         treasury = []
         if @game.separate_treasury?
