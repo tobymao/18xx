@@ -29,7 +29,6 @@ module View
       FONT_MONEY = '"Courier New", Courier, monospace'
       FONT_CASH = '"Arial Black", Gadget, sans-serif'
       COLOR_CASH = '#4b0082' # Dark Purple (Indigo)
-
       COLOR_BANK = '#f5cda8'
       COLOR_ACTIVE = '#ffffff'
       COLOR_INACTIVE = '#e0e0e0'
@@ -64,8 +63,8 @@ module View
             h(:thead, render_titles),
             h(:tbody, render_corporations),
             h(:tfoot, [
-               h(:tr, { style: { height: '0px' } }, []),
-             ]),
+              h(:tr, { style: { height: '0px' } }, []),
+            ]),
           ]),
         ])
       end
@@ -77,11 +76,10 @@ module View
             h('tbody#player_details', [
               render_player_cash,
               render_player_loans,
+              render_player_time,
               render_player_companies,
               render_player_certs,
-              render_player_time,
             ]),
-
           ]),
         ])
       end
@@ -191,21 +189,18 @@ module View
 
         connection_run_header = @game.respond_to?(:connection_run) ? [h(:th, th_props[1, false], '')] : []
         connection_run_subheader = @game.respond_to?(:connection_run) ? [h(:th, render_sort_link('C-Run', :c_run))] : []
-        bank_width = 2
-        reserved_header = []
-        if any_reserved_shares?
-          bank_width += 1
-          reserved_header << h(:th, render_sort_link(@game.ipo_reserved_name, :reserved_shares))
-        end
 
         corporation_props_size = 5 + extra.size + treasury.size
 
         players_title = h(:th, th_props[@game.players.size], 'Players')
-        bank_th_props = th_props[bank_width]
-        bank_th_props[:style][:backgroundColor] = COLOR_BANK
-        bank_title = h(:th, bank_th_props, 'Bank')
 
-        prices_title = h(:th, th_props[2], 'Prices')
+        pool_th_props = th_props[2]
+        pool_th_props[:style][:backgroundColor] = COLOR_BANK
+        pool_title = h(:th, pool_th_props, 'Pool')
+
+        ipo_th_props = th_props[2]
+        ipo_title = h(:th, ipo_th_props, @game.ipo_name)
+
         corporation_title = h(:th, th_props[corporation_props_size, false], ['Corporation ', render_toggle_not_floated_link])
 
         subtitles = []
@@ -222,14 +217,13 @@ module View
         end
 
         bank_sub_th_props = { style: { backgroundColor: COLOR_BANK } }
-        bank_subtitles = [
-          *reserved_header,
-          h(:th, bank_sub_th_props, render_sort_link(@game.ipo_name, :ipo_shares)),
-          h(:th, bank_sub_th_props, render_sort_link('Market', :market_shares)),
+        pool_subtitles = [
+          h(:th, bank_sub_th_props, render_sort_link('Shares', :market_shares)),
+          h(:th, bank_sub_th_props, render_sort_link('Prices', :share_price)),
         ]
-        prices_subtitles = [
-          h(:th, render_sort_link(@game.ipo_name, :par_price)),
-          h(:th, render_sort_link('Market', :share_price)),
+        ipo_subtitles = [
+          h(:th, render_sort_link('Shares', :ipo_shares)),
+          h(:th, render_sort_link('Price', :par_price)),
         ]
         corporation_subtitles = [
           h(:th, render_sort_link('Cash', :cash)),
@@ -243,13 +237,12 @@ module View
 
         titles = [
           players_title,
-          bank_title,
-          prices_title,
-          corporation_title,
+          pool_title,
+          ipo_title,
         ]
         subtitles.concat(players_subtitles)
-        subtitles.concat(bank_subtitles)
-        subtitles.concat(prices_subtitles)
+        subtitles.concat(pool_subtitles)
+        subtitles.concat(ipo_subtitles)
         subtitles.concat(corporation_subtitles)
 
         [
@@ -373,8 +366,6 @@ module View
               else
                 [1, corporation.id]
               end
-            when :reserved_shares
-              num_reserved_shares(corporation)
             when :ipo_shares
               num_ipo_shares(corporation)
             when :market_shares
@@ -443,15 +434,8 @@ module View
         }
 
         tr_props = tr_default_props(is_active_row)
-        market_props = money_props({ borderRight: border_style })
 
-        if !@game.operating_order.include?(corporation)
-          tr_props[:style][:opacity] = '0.5'
-        elsif corporation.share_price&.highlight? &&
-          (color = StockMarket::COLOR_MAP[@game.class::STOCKMARKET_COLORS[corporation.share_price.type]])
-          market_props[:style][:backgroundColor] = color
-          market_props[:style][:color] = contrast_on(color)
-        end
+        tr_props[:style][:opacity] = '0.5' unless @game.operating_order.include?(corporation)
 
         order_props = { style: { paddingLeft: '1.2em' } }
         order_props[:style][:color] =
@@ -463,17 +447,6 @@ module View
 
         treasury = []
         treasury << h(:td, num_shares_of(corporation, corporation)) if @game.separate_treasury?
-
-        reserved = []
-        if any_reserved_shares?
-          reserved << h('td.padded_number', {
-                          style: {
-                            borderLeft: border_style,
-                            color: num_reserved_shares(corporation).zero? ? 'transparent' : 'inherit',
-                          },
-                        },
-                        num_reserved_shares(corporation))
-        end
 
         extra = []
         extra << h(:td, @game.capitalization_type_desc(corporation)) if @game.respond_to?(:capitalization_type_desc)
@@ -514,7 +487,6 @@ module View
             is_president = corporation.president?(p)
             text = "#{percent}%#{is_president ? 'P' : ''}"
 
-            # Apply red affordance if just sold
             just_sold = @game.round.active_step&.did_sell?(corporation, p)
             border_color = just_sold ? '#cc0000' : '#999999'
 
@@ -524,35 +496,52 @@ module View
           end
         end
 
-        bank_market_props = money_props({
-                                          backgroundColor: COLOR_BANK,
-                                          color: n_market_shares.zero? ? 'transparent' : 'inherit',
-                                          borderRight: border_style,
-                                        })
-        bank_row_content = [
-          *reserved,
-          h('td.padded_number', money_props({
-                                              backgroundColor: COLOR_BANK,
-                                              borderLeft: any_reserved_shares? ? '0px' : border_style,
-                                              color: n_ipo_shares.zero? ? 'transparent' : 'inherit',
-                                            }),
-            n_ipo_shares),
-          h('td.padded_number', bank_market_props,
-            "#{corporation.receivership? ? '*' : ''}#{n_market_shares}"),
+        # --- Pool Shares Content ---
+        pool_share_text = if n_market_shares.zero?
+                            ''
+                          else
+                            "#{corporation.receivership? ? '*' : ''}#{n_market_shares * 10}%"
+                          end
+        pool_share_card = pool_share_text.empty? ? '' : h(View::Game::Card, text: pool_share_text, border_color: '#999999')
+
+        # --- Pool Market Price Content ---
+        market_style = { fontFamily: FONT_CASH, color: COLOR_CASH, fontWeight: 'bold', borderRight: border_style }
+        if corporation.share_price&.highlight? &&
+          (m_color = StockMarket::COLOR_MAP[@game.class::STOCKMARKET_COLORS[corporation.share_price.type]])
+          market_style[:backgroundColor] = m_color
+          market_style[:color] = contrast_on(m_color)
+        end
+        clean_market_price = if corporation.share_price
+                               @game.format_currency(corporation.share_price.price).gsub(/[^0-9]/,
+                                                                                         '')
+                             else
+                               ''
+                             end
+
+        pool_row_content = [
+          h('td.padded_number', { style: { backgroundColor: COLOR_BANK } }, [pool_share_card]),
+          h('td.padded_number', { style: market_style }, clean_market_price),
         ]
 
-        prices_row_content = [
-          h('td.padded_number', money_props, corporation.par_price ? @game.format_currency(corporation.par_price.price) : ''),
-          h('td.padded_number', market_props,
-            corporation.share_price ? @game.format_currency(corporation.share_price.price) : ''),
+        # --- IPO Shares Content ---
+        ipo_share_text = n_ipo_shares.zero? ? '' : "#{n_ipo_shares * 10}%"
+        ipo_share_card = ipo_share_text.empty? ? '' : h(View::Game::Card, text: ipo_share_text, border_color: '#999999')
+
+        # --- IPO Par Price Content ---
+        clean_par_price = corporation.par_price ? @game.format_currency(corporation.par_price.price).gsub(/[^0-9]/, '') : ''
+
+        ipo_row_content = [
+          h('td.padded_number', { style: { borderLeft: border_style } }, [ipo_share_card]),
+          h('td.padded_number', { style: { fontFamily: FONT_CASH, color: COLOR_CASH, fontWeight: 'bold' } }, clean_par_price),
         ]
 
         train_cards = corporation.trains.map do |t|
           h(View::Game::Card, text: t.obsolete ? "(#{t.name})" : t.name)
         end
 
+        clean_corp_cash = @game.format_currency(corporation.cash).gsub(/[^0-9]/, '')
         corporation_row_content = [
-          h('td.padded_number', money_props, @game.format_currency(corporation.cash)),
+          h('td.padded_number', { style: { fontFamily: FONT_CASH, color: COLOR_CASH, fontWeight: 'bold' } }, clean_corp_cash),
           *treasury,
           h(:td, { style: { fontFamily: FONT_STD } }, train_cards),
           h(:td, @game.token_string(corporation)),
@@ -567,8 +556,8 @@ module View
 
         row_content = []
         row_content.concat(players_row_content)
-        row_content.concat(bank_row_content)
-        row_content.concat(prices_row_content)
+        row_content.concat(pool_row_content)
+        row_content.concat(ipo_row_content)
         row_content.concat(corporation_row_content)
 
         h(:tr, tr_props, [
@@ -609,17 +598,6 @@ module View
         ])
       end
 
-      def render_player_time
-        h(:tr, tr_default_props, [
-          h('th.left', 'Time'),
-          *@game.players.map do |p|
-            is_active_col = (p == active_player)
-            bg_color = is_active_col ? COLOR_ACTIVE : COLOR_INACTIVE
-            h('td.padded_number', { style: { backgroundColor: bg_color } }, '0:00')
-          end,
-                ])
-      end
-
       def render_player_cash
         h(:tr, tr_default_props, [
           h('th.left', 'Cash'),
@@ -633,25 +611,13 @@ module View
         ])
       end
 
-      def render_player_value
+      def render_player_time
         h(:tr, tr_default_props, [
-          h('th.left', 'Value'),
-          *@game.players.map { |p| h('td.padded_number', @game.format_currency(@game.player_value(p))) },
-        ])
-      end
-
-      def render_player_liquidity
-        h(:tr, tr_default_props, [
-          h('th.left', 'Liquidity'),
-          *@game.players.map { |p| h('td.padded_number', @game.format_currency(@game.liquidity(p))) },
-        ])
-      end
-
-      def render_player_shares
-        h(:tr, tr_default_props, [
-          h('th.left', 'Shares'),
+          h('th.left', 'Time'),
           *@game.players.map do |p|
-            h('td.padded_number', @game.all_corporations.sum { |c| c.minor? ? 0 : num_shares_of(p, c) })
+            is_active_col = (p == active_player)
+            bg_color = is_active_col ? COLOR_ACTIVE : COLOR_INACTIVE
+            h('td.padded_number', { style: { backgroundColor: bg_color } }, '0:00')
           end,
         ])
       end
@@ -669,11 +635,6 @@ module View
             h('td.padded_number', cell_props, "#{num_certs}/#{cert_limit}")
           end,
         ])
-      end
-
-      def render_player_cert_count(player, cert_limit, props)
-        num_certs = @game.num_certs(player)
-        h('td.padded_number', num_certs > cert_limit ? props : '', num_certs)
       end
 
       def render_player_loans
@@ -709,18 +670,6 @@ module View
             borderCollapse: 'collapse',
             textAlign: 'center',
             whiteSpace: 'nowrap',
-            backgroundColor: COLOR_INACTIVE,
-            fontFamily: FONT_STD,
-          },
-        }
-      end
-
-      def table_props
-        {
-          style: {
-            borderCollapse: 'collapse',
-            textAlign: 'center',
-            whiteSpace: 'nowrap',
           },
         }
       end
@@ -738,22 +687,12 @@ module View
 
       def num_ipo_shares(corporation)
         if @game.separate_treasury?
-          num_shares_of(@game.bank, corporation) - num_reserved_shares(corporation)
+          num_shares_of(@game.bank, corporation)
         elsif corporation.respond_to?(:num_ipo_shares)
-          corporation.num_ipo_shares - num_reserved_shares(corporation)
+          corporation.num_ipo_shares
         else
-          num_shares_of(corporation, corporation) - num_reserved_shares(corporation)
+          num_shares_of(corporation, corporation)
         end
-      end
-
-      def num_reserved_shares(corporation)
-        return 0 unless corporation.respond_to?(:num_ipo_reserved_shares)
-
-        corporation.num_ipo_reserved_shares
-      end
-
-      def any_reserved_shares?
-        @game.all_corporations.any? { |c| num_reserved_shares(c).positive? }
       end
 
       def min_width(entity)
