@@ -62,7 +62,7 @@ module View
               marginTop: '1rem',
             },
           },
-          [h(:style, css), render_corporation_table, render_extra_cards])
+          [h(:style, css), render_corporation_table])
       end
 
       def render_corporation_table
@@ -70,18 +70,84 @@ module View
           h(:table, table_props, [
             h(:thead, render_titles),
             h(:tbody, render_corporations),
-            h('tbody#player_details', [
-              render_player_cash,
-              render_player_loans,
-              render_player_time,
-              render_player_companies,
-              render_player_certs,
-            ].compact),
+            h('tbody#player_details', render_player_rows),
             h(:tfoot, [
               h(:tr, { style: { height: '0px' } }, []),
             ]),
           ]),
         ])
+      end
+
+      def render_player_rows
+        rows = []
+
+        # 1. Cash Row
+        cash_cells = [h('th.left', 'Cash')]
+        @game.players.each_with_index do |p, idx|
+          clean_cash = @game.format_currency(p.cash).gsub(/[^0-9]/, '')
+          bg_color = p == active_player ? COLOR_ACTIVE : COLOR_INACTIVE
+          is_last = idx == @game.players.size - 1
+          cash_cells << h("td.padded_number#{is_last ? '.thick-right' : ''}",
+                          { style: { fontFamily: FONT_CASH, color: COLOR_CASH, fontWeight: 'bold', backgroundColor: bg_color } }, clean_cash)
+        end
+        rows << cash_cells
+
+        # 2. Loans Row
+        if @game.respond_to?(:player_loans)
+          loans_cells = [h('th.left', 'Loans')]
+          @game.players.each_with_index do |p, idx|
+            bg_color = p == active_player ? COLOR_ACTIVE : COLOR_INACTIVE
+            is_last = idx == @game.players.size - 1
+            loans_cells << h("td.padded_number#{is_last ? '.thick-right' : ''}", { style: { backgroundColor: bg_color } },
+                             @game.player_loans(p))
+          end
+          rows << loans_cells
+        end
+
+        # 3. Time Row
+        time_cells = [h('th.left', 'Time')]
+        @game.players.each_with_index do |p, idx|
+          bg_color = p == active_player ? COLOR_ACTIVE : COLOR_INACTIVE
+          is_last = idx == @game.players.size - 1
+          time_cells << h("td.padded_number#{is_last ? '.thick-right' : ''}", { style: { backgroundColor: bg_color } }, '0:00')
+        end
+        rows << time_cells
+
+        # 4. Companies Row
+        comp_cells = [h('th.left', 'Companies')]
+        @game.players.each_with_index do |p, idx|
+          bg_color = p == active_player ? COLOR_ACTIVE : COLOR_INACTIVE
+          is_last = idx == @game.players.size - 1
+          comp_cells << h("td#{is_last ? '.thick-right' : ''}", { style: { backgroundColor: bg_color } }, [render_companies(p)])
+        end
+        rows << comp_cells
+
+        # 5. Certs Row
+        cert_limit = @game.cert_limit
+        props = { style: { color: 'red' } }
+        cert_cells = [h('th.left', 'Cert')]
+        @game.players.each_with_index do |player, idx|
+          bg_color = player == active_player ? COLOR_ACTIVE : COLOR_INACTIVE
+          num_certs = @game.num_certs(player)
+          cell_props = num_certs > cert_limit ? props.merge(style: { backgroundColor: bg_color }) : { style: { backgroundColor: bg_color } }
+          is_last = idx == @game.players.size - 1
+          cert_cells << h("td.padded_number#{is_last ? '.thick-right' : ''}", cell_props, "#{num_certs}/#{cert_limit}")
+        end
+        rows << cert_cells
+
+        # Append the bank / extra information cell container to the first row
+        rows[0] << h(:td, {
+                       attrs: { rowspan: rows.size, colspan: 30 },
+                       style: {
+                         backgroundColor: '#ffffff',
+                         border: 'none',
+                         verticalAlign: 'top',
+                         paddingLeft: '1.5rem',
+                         textAlign: 'left',
+                       },
+                     }, [render_extra_cards])
+
+        rows.map { |row_cells| h(:tr, tr_default_props, row_cells) }
       end
 
       def render_player_table
