@@ -27,6 +27,9 @@ module View
 
       FONT_STD = '"Helvetica Neue", Helvetica, Arial, sans-serif'
       FONT_MONEY = '"Courier New", Courier, monospace'
+      FONT_CASH = '"Arial Black", Gadget, sans-serif'
+      COLOR_CASH = '#4b0082' # Dark Purple (Indigo)
+
       COLOR_BANK = '#f5cda8'
       COLOR_ACTIVE = '#ffffff'
       COLOR_INACTIVE = '#e0e0e0'
@@ -61,13 +64,8 @@ module View
             h(:thead, render_titles),
             h(:tbody, render_corporations),
             h(:tfoot, [
-              h(:tr, { style: { height: '1rem' } }, [
-                h(:td, { attrs: { colspan: @game.players.size + 8 } }, ''),
-                h(:td, { attrs: { colspan: 2 } }, @game.respond_to?(:token_note) ? @game.token_note : ''),
-                h(:td, { attrs: { colspan: 1 + @extra_size } }, ''),
-                h(:td, { attrs: { colspan: @halfpaid ? 6 : 3 } }, "[withheld]#{' ¦half-paid¦' if @halfpaid}"),
-              ]),
-            ]),
+               h(:tr, { style: { height: '0px' } }, []),
+             ]),
           ]),
         ])
       end
@@ -79,18 +77,11 @@ module View
             h('tbody#player_details', [
               render_player_cash,
               render_player_loans,
-              render_player_value,
-              render_player_liquidity,
-              render_player_shares,
               render_player_companies,
               render_player_certs,
+              render_player_time,
             ]),
-            h(:thead, [
-              h(:th, { style: { minWidth: '5rem' } }, ''),
-              *@game.players.map do |p|
-                h('th.name.nowrap', p == @game.priority_deal_player ? pd_props : '', p.name)
-              end,
-            ]),
+
           ]),
         ])
       end
@@ -512,17 +503,25 @@ module View
         players_row_content = []
         @game.players.map do |p|
           is_active_col = (p == active_player) && !is_active_row
-          props = money_props({ backgroundColor: is_active_col ? COLOR_ACTIVE : 'inherit' })
+          bg_color = is_active_col ? COLOR_ACTIVE : 'inherit'
 
-          if @game.round.active_step&.did_sell?(corporation, p)
-            props[:style][:backgroundColor] = '#9e0000'
-            props[:style][:color] = 'white'
-          end
           n_shares = num_shares_of(p, corporation)
-          props[:style][:color] = 'transparent' if n_shares.zero?
-          share_holding = corporation.president?(p) ? '*' : ''
-          share_holding += n_shares.to_s unless corporation.minor?
-          players_row_content << h('td.padded_number', props, share_holding)
+
+          if n_shares.zero?
+            players_row_content << h(:td, { style: { backgroundColor: bg_color } }, '')
+          else
+            percent = p.percent_of(corporation) || (n_shares * 10)
+            is_president = corporation.president?(p)
+            text = "#{percent}%#{is_president ? 'P' : ''}"
+
+            # Apply red affordance if just sold
+            just_sold = @game.round.active_step&.did_sell?(corporation, p)
+            border_color = just_sold ? '#cc0000' : '#999999'
+
+            players_row_content << h(:td, { style: { backgroundColor: bg_color, textAlign: 'center' } }, [
+              h(View::Game::Card, text: text, border_color: border_color),
+            ])
+          end
         end
 
         bank_market_props = money_props({
@@ -548,12 +547,14 @@ module View
             corporation.share_price ? @game.format_currency(corporation.share_price.price) : ''),
         ]
 
+        train_cards = corporation.trains.map do |t|
+          h(View::Game::Card, text: t.obsolete ? "(#{t.name})" : t.name)
+        end
+
         corporation_row_content = [
           h('td.padded_number', money_props, @game.format_currency(corporation.cash)),
           *treasury,
-          h(:td, { style: { fontFamily: FONT_STD } }, corporation.trains.map do |t|
-                                                        t.obsolete ? "(#{t.name})" : t.name
-                                                      end.join(', ')),
+          h(:td, { style: { fontFamily: FONT_STD } }, train_cards),
           h(:td, @game.token_string(corporation)),
           *extra,
           h('td.padded_number', order_props, if operating_order[0] == UNFLOATED
@@ -590,20 +591,45 @@ module View
           }
           props[:style][:minWidth] = min_width(entity)
         end
-        h(:td, props, entity.companies.map(&:sym).join(', '))
+        company_cards = entity.companies.map do |c|
+          h(View::Game::Card, text: c.sym)
+        end
+
+        h(:td, props || {}, company_cards)
       end
 
       def render_player_companies
         h(:tr, tr_default_props, [
           h('th.left', 'Companies'),
-          *@game.players.map { |p| render_companies(p) },
+          *@game.players.map do |p|
+            is_active_col = (p == active_player)
+            bg_color = is_active_col ? COLOR_ACTIVE : COLOR_INACTIVE
+            h(:td, { style: { backgroundColor: bg_color } }, [render_companies(p)])
+          end,
         ])
+      end
+
+      def render_player_time
+        h(:tr, tr_default_props, [
+          h('th.left', 'Time'),
+          *@game.players.map do |p|
+            is_active_col = (p == active_player)
+            bg_color = is_active_col ? COLOR_ACTIVE : COLOR_INACTIVE
+            h('td.padded_number', { style: { backgroundColor: bg_color } }, '0:00')
+          end,
+                ])
       end
 
       def render_player_cash
         h(:tr, tr_default_props, [
           h('th.left', 'Cash'),
-          *@game.players.map { |p| h('td.padded_number', @game.format_currency(p.cash)) },
+          *@game.players.map do |p|
+            clean_cash = @game.format_currency(p.cash).gsub(/[^0-9]/, '')
+            is_active_col = (p == active_player)
+            bg_color = is_active_col ? COLOR_ACTIVE : COLOR_INACTIVE
+            h('td.padded_number',
+              { style: { fontFamily: FONT_CASH, color: COLOR_CASH, fontWeight: 'bold', backgroundColor: bg_color } }, clean_cash)
+          end,
         ])
       end
 
@@ -634,8 +660,14 @@ module View
         cert_limit = @game.cert_limit
         props = { style: { color: 'red' } }
         h(:tr, tr_default_props, [
-          h('th.left', 'Certs' + (@game.show_game_cert_limit? ? "/#{cert_limit}" : '')),
-          *@game.players.map { |player| render_player_cert_count(player, cert_limit, props) },
+          h('th.left', 'Cert'),
+          *@game.players.map do |player|
+            is_active_col = (player == active_player)
+            bg_color = is_active_col ? COLOR_ACTIVE : COLOR_INACTIVE
+            num_certs = @game.num_certs(player)
+            cell_props = num_certs > cert_limit ? props.merge(style: { backgroundColor: bg_color }) : { style: { backgroundColor: bg_color } }
+            h('td.padded_number', cell_props, "#{num_certs}/#{cert_limit}")
+          end,
         ])
       end
 
@@ -649,7 +681,11 @@ module View
 
         h(:tr, tr_default_props, [
           h('th.left', 'Loans'),
-          *@game.players.map { |p| h('td.padded_number', @game.player_loans(p)) },
+          *@game.players.map do |p|
+            is_active_col = (p == active_player)
+            bg_color = is_active_col ? COLOR_ACTIVE : COLOR_INACTIVE
+            h('td.padded_number', { style: { backgroundColor: bg_color } }, @game.player_loans(p))
+          end,
         ])
       end
 
