@@ -122,6 +122,14 @@ class Api
           user.update_settings(r.params)
           user.save
 
+          # Clear the flag once the account holds a real, distinct address (the
+          # save above would have raised on a collision).
+          if user.settings['email_conflict'] && !user.email.end_with?('@aliased.18xx.games')
+            user.settings.delete('email_conflict')
+            user.settings.delete('aliased_email')
+            user.save
+          end
+
           if password_changed
             Session.where(user_id: user.id).delete
             issue_session(user)
