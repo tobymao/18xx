@@ -589,7 +589,7 @@ module View
                             end
           elsif can_buy_from_player
             border_color = '#00cc00'
-            click_handler = if valid_player_buys.size > 1
+            click_handler = if valid_player_buys.uniq { |s| s.to_bundle.percent }.size > 1
                               lambda {
                                 Lib::Storage['buy_player_menu_player'] = p.id
                                 Lib::Storage['buy_player_menu_corp'] = corporation.id
@@ -619,7 +619,13 @@ module View
           else
             n_shares = num_shares_of(p, corporation)
 
-            if n_shares.zero? && !can_buy_from_player
+            just_sold = begin
+              step&.did_sell?(corporation, p)
+            rescue StandardError
+              false
+            end
+
+            if n_shares.zero? && !can_buy_from_player && !just_sold
               players_row_content << h(:td, { style: { backgroundColor: bg_color } }, '')
             else
               percent = p.percent_of(corporation) || (n_shares * 10)
@@ -630,16 +636,26 @@ module View
                        "#{percent}%#{is_president ? 'P' : ''}"
                      end
 
-              just_sold = begin
-                step&.did_sell?(corporation, p)
-              rescue StandardError
-                false
-              end
               border_color = '#cc0000' if just_sold && !click_handler
 
-              td_children = [
-                h(View::Game::Card, text: text, border_color: border_color, click_action: click_handler),
-              ]
+              card = h(View::Game::Card, text: text, border_color: border_color, click_action: click_handler)
+              card = h(:span, { style: { visibility: 'hidden', display: 'inline-block' } }, [card]) if n_shares.zero?
+
+              td_children = [card]
+
+              if just_sold
+                td_children << h(:span, {
+                                   style: {
+                                     display: 'inline-block',
+                                     width: '6px',
+                                     height: '6px',
+                                     backgroundColor: '#cc0000',
+                                     borderRadius: '50%',
+                                     marginLeft: '4px',
+                                     verticalAlign: 'middle',
+                                   },
+                                 })
+              end
 
               if Lib::Storage['sell_menu_player'] == p.id && Lib::Storage['sell_menu_corp'] == corporation.id && can_sell
                 options = bundles.map do |bundle|
@@ -718,7 +734,7 @@ module View
 
           unless valid_pool_shares.empty?
             pool_border_color = '#00cc00'
-            pool_click_handler = if valid_pool_shares.size > 1
+            pool_click_handler = if valid_pool_shares.uniq { |s| s.to_bundle.percent }.size > 1
                                    lambda {
                                      Lib::Storage['buy_pool_menu_corp'] = corporation.id
                                      update
@@ -805,7 +821,7 @@ module View
 
           unless valid_ipo_shares.empty?
             ipo_border_color = '#00cc00'
-            ipo_click_handler = if valid_ipo_shares.size > 1
+            ipo_click_handler = if valid_ipo_shares.uniq { |s| s.to_bundle.percent }.size > 1
                                   lambda {
                                     Lib::Storage['buy_ipo_menu_corp'] = corporation.id
                                     update
