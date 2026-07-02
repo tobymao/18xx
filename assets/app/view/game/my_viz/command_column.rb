@@ -51,8 +51,11 @@ module View
         end
 
         current_revenue = active_routes.any? ? active_routes.sum(&:revenue) : 0
+        if phase == :dividend && current_revenue == 0 && current_entity&.respond_to?(:operating_history)
+          operating = current_entity.operating_history || {}
+          current_revenue = operating[operating.keys.max]&.revenue || 0
+        end
         formatted_revenue = @game.format_revenue_currency(current_revenue)
-
         upper_content = []
         upper_content << h(:div, { style: { backgroundColor: bg_color, color: text_color, padding: '0.2rem', textAlign: 'center', fontWeight: 'bold', border: '1px solid #999', marginBottom: '0.2rem', fontSize: '0.75rem' } }, [
           h(:div, { style: { fontSize: '1.2rem' } }, company_logo),
@@ -90,14 +93,28 @@ module View
           upper_content << render_phase_box('3. Run Routes', true, ["Submit #{formatted_revenue}"], actions, current_entity,
                                             revenue_overlay)
         elsif phase == :dividend
-          div_buttons = if @game.class.name.include?('1835') && current_entity.respond_to?(:minor?) && current_entity.minor?
-                          ['Split']
-                        else
-                          %w[Pay Hold Split]
-                        end
+          options = step.respond_to?(:dividend_options) ? step.dividend_options(current_entity).map(&:to_s) : []
+          div_buttons = []
+          if actions.include?('payout') || options.include?('payout') || (actions.include?('dividend') && !(current_entity.respond_to?(:minor?) && current_entity.minor?))
+            div_buttons << 'Pay'
+          end
+          if actions.include?('withhold') || options.include?('withhold') || (actions.include?('dividend') && !(current_entity.respond_to?(:minor?) && current_entity.minor?))
+            div_buttons << 'Hold'
+          end
+          if actions.include?('half') || actions.include?('split') || options.include?('half') || options.include?('split') || (actions.include?('dividend') && current_entity.respond_to?(:minor?) && current_entity.minor?)
+            div_buttons << 'Split'
+          end
+
           upper_content << render_phase_box('3. Dividend', true, div_buttons, actions, current_entity, revenue_overlay)
         else
-          upper_content << render_phase_box('3. Revenue', false, %w[Pay Hold Split], actions, current_entity, nil)
+          options = step.respond_to?(:dividend_options) ? step.dividend_options(current_entity).map(&:to_s) : []
+          div_buttons = []
+          div_buttons << 'Pay' if actions.include?('payout') || options.include?('payout') || actions.include?('dividend')
+          div_buttons << 'Hold' if actions.include?('withhold') || options.include?('withhold') || actions.include?('dividend')
+          div_buttons << 'Split' if actions.include?('half') || options.include?('half') || actions.include?('dividend')
+
+          upper_content << render_phase_box('3. Revenue', false, div_buttons, actions, current_entity, nil)
+
         end
 
         buyable_list = phase == :buy_train ? render_buyable_trains(step, current_entity) : h(:div)
@@ -107,7 +124,8 @@ module View
 
         if @game.round.stock?
           upper_content = [
-            h(:div, { style: { padding: '2rem', textAlign: 'center', fontSize: '1.2rem', fontWeight: 'bold', textTransform: 'uppercase' } }, 'Stock Round')
+            h(:div,
+              { style: { padding: '2rem', textAlign: 'center', fontSize: '1.2rem', fontWeight: 'bold', textTransform: 'uppercase' } }, 'Stock Round'),
           ]
         end
 
@@ -158,6 +176,20 @@ module View
               `console.warn('AutoRouter skipped layout matching: ' + e)`
             end
             `}, 100);`
+          }.call
+        end
+
+        if phase == :run_routes && active_routes.any? && actions.include?('run_routes')
+          lambda {
+            `setTimeout(function() {`
+            routes_to_submit = active_routes
+            process_action(Engine::Action::RunRoutes.new(
+              current_entity,
+              routes: routes_to_submit,
+              extra_revenue: @game.extra_revenue(current_entity, routes_to_submit),
+              subsidy: @game.routes_subsidy(routes_to_submit)
+            ))
+            `}, 150);`
           }.call
         end
 
@@ -258,7 +290,8 @@ module View
 
         trains = step.buyable_trains(current_entity)
         if trains.empty?
-          return h(:div, { style: { fontSize: '0.75rem', color: '#666', fontStyle: 'italic', padding: '0.2rem' } }, 'No trains available')
+          return h(:div, { style: { fontSize: '0.75rem', color: '#666', fontStyle: 'italic', padding: '0.2rem' } },
+                   'No trains available')
         end
 
         active_p = current_entity&.player? ? current_entity : current_entity&.owner
@@ -306,70 +339,71 @@ module View
             }
 
             menu_dropdown = h(:div, {
-              style: {
-                position: 'absolute',
-                top: '105%',
-                left: '50%',
-                transform: 'translateX(-50%)',
-                backgroundColor: '#ffffff',
-                border: '2px solid #333333',
-                borderRadius: '4px',
-                padding: '0.5rem',
-                zIndex: '9999',
-                boxShadow: '0px 4px 10px rgba(0,0,0,0.3)',
-                color: '#000000'
-              }
-            }, [
-              h(:div, { style: { fontSize: '0.75rem', fontWeight: 'bold', marginBottom: '0.4rem', whiteSpace: 'nowrap' } }, menu_title),
+                                style: {
+                                  position: 'absolute',
+                                  top: '105%',
+                                  left: '50%',
+                                  transform: 'translateX(-50%)',
+                                  backgroundColor: '#ffffff',
+                                  border: '2px solid #333333',
+                                  borderRadius: '4px',
+                                  padding: '0.5rem',
+                                  zIndex: '9999',
+                                  boxShadow: '0px 4px 10px rgba(0,0,0,0.3)',
+                                  color: '#000000',
+                                },
+                              }, [
+              h(:div, { style: { fontSize: '0.75rem', fontWeight: 'bold', marginBottom: '0.4rem', whiteSpace: 'nowrap' } },
+                menu_title),
               h(:input, {
-                style: {
-                  display: 'block',
-                  width: '100%',
-                  marginBottom: '0.4rem',
-                  boxSizing: 'border-box',
-                  padding: '3px 6px',
-                  fontSize: '0.85rem'
-                },
-                attrs: {
-                  type: 'number',
-                  min: '1',
-                  value: Lib::Storage[price_storage_key] || '1'
-                },
-                on: {
-                  input: lambda { |event|
-                    Lib::Storage[price_storage_key] = event.JS[:target].JS[:value]
-                  }
-                }
-              }),
+                  style: {
+                    display: 'block',
+                    width: '100%',
+                    marginBottom: '0.4rem',
+                    boxSizing: 'border-box',
+                    padding: '3px 6px',
+                    fontSize: '0.85rem',
+                  },
+                  attrs: {
+                    type: 'number',
+                    min: '1',
+                    value: Lib::Storage[price_storage_key] || '1',
+                  },
+                  on: {
+                    input: lambda { |event|
+                      Lib::Storage[price_storage_key] = event.JS[:target].JS[:value]
+                    },
+                  },
+                }),
               h(:button, {
-                style: {
-                  display: 'block',
-                  width: '100%',
-                  marginBottom: '0.2rem',
-                  cursor: 'pointer',
-                  fontSize: '0.75rem',
-                  fontWeight: 'bold',
-                  padding: '3px 6px',
-                  backgroundColor: '#007bff',
-                  border: '1px solid #0056b3',
-                  color: '#ffffff',
-                  borderRadius: '3px'
-                },
-                on: { click: confirm_handler }
-              }, 'Confirm'),
+                  style: {
+                    display: 'block',
+                    width: '100%',
+                    marginBottom: '0.2rem',
+                    cursor: 'pointer',
+                    fontSize: '0.75rem',
+                    fontWeight: 'bold',
+                    padding: '3px 6px',
+                    backgroundColor: '#007bff',
+                    border: '1px solid #0056b3',
+                    color: '#ffffff',
+                    borderRadius: '3px',
+                  },
+                  on: { click: confirm_handler },
+                }, 'Confirm'),
               h(:button, {
-                style: {
-                  display: 'block',
-                  width: '100%',
-                  cursor: 'pointer',
-                  fontSize: '0.75rem',
-                  padding: '3px 6px',
-                  backgroundColor: '#e0e0e0',
-                  border: '1px solid #999',
-                  borderRadius: '3px'
-                },
-                on: { click: cancel_handler }
-              }, 'Cancel')
+                  style: {
+                    display: 'block',
+                    width: '100%',
+                    cursor: 'pointer',
+                    fontSize: '0.75rem',
+                    padding: '3px 6px',
+                    backgroundColor: '#e0e0e0',
+                    border: '1px solid #999',
+                    borderRadius: '3px',
+                  },
+                  on: { click: cancel_handler },
+                }, 'Cancel'),
             ])
           end
 
@@ -378,12 +412,13 @@ module View
           # Formatted block display layout structure pushing cards into individual wide lines
           h(:div, { style: { display: 'block', width: '100%', position: 'relative', margin: '4px 0' } }, [
             h(View::Game::Card, text: card_text, border_color: train_border_color, click_action: train_click_handler),
-            menu_dropdown
+            menu_dropdown,
           ].compact)
         end.compact
 
         if train_boxes.empty?
-          return h(:div, { style: { fontSize: '0.75rem', color: '#666', fontStyle: 'italic', padding: '0.2rem' } }, 'No matching same-owner trains available')
+          return h(:div, { style: { fontSize: '0.75rem', color: '#666', fontStyle: 'italic', padding: '0.2rem' } },
+                   'No matching same-owner trains available')
         end
 
         h(:div,
@@ -444,11 +479,11 @@ module View
                 subsidy: @game.routes_subsidy(routes_to_submit)
               ))
 
-            elsif label == 'Pay' && available_actions.include?('dividend')
+            elsif label == 'Pay' && (available_actions.include?('dividend') || available_actions.include?('payout'))
               process_action(Engine::Action::Dividend.new(current_entity, kind: 'payout'))
-            elsif label == 'Hold' && available_actions.include?('dividend')
+            elsif label == 'Hold' && (available_actions.include?('dividend') || available_actions.include?('withhold'))
               process_action(Engine::Action::Dividend.new(current_entity, kind: 'withhold'))
-            elsif label == 'Split' && available_actions.include?('dividend')
+            elsif label == 'Split' && (available_actions.include?('dividend') || available_actions.include?('half') || available_actions.include?('split'))
               process_action(Engine::Action::Dividend.new(current_entity, kind: 'half'))
             end
           end
