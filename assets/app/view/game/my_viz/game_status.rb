@@ -468,7 +468,6 @@ module View
         def render_unplaced_tokens(corporation)
           return h(:span, '') unless corporation.respond_to?(:tokens)
 
-          # Filter down strictly to unplaced tokens
           unplaced = corporation.tokens.select do |t|
             has_hex = t.respond_to?(:hex) && t.hex
             is_placed = t.respond_to?(:placed?) && t.placed?
