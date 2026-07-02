@@ -319,6 +319,13 @@ class Api < Roda
     halt(401, 'You are not authorized to make this request')
   end
 
+  def block_if_email_conflict!(user)
+    return unless user&.settings.to_h['email_conflict']
+
+    halt(403, 'This account shares an email with another account. Message an ' \
+              'admin on Slack or Discord to set a new email and restore access.')
+  end
+
   def publish(channel, limit = nil, **data)
     MessageBus.publish(
       channel,
