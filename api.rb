@@ -2,6 +2,16 @@
 
 PRODUCTION = ENV['RACK_ENV'] == 'production'
 
+# Cloudflare Turnstile challenge for the auth endpoints. The site key is public;
+# outside production we use Cloudflare's always-pass test keys so local dev works
+# without registering a hostname. In production the real secret is required -- we
+# never fall back to the always-pass test secret.
+TURNSTILE_SITEKEY = PRODUCTION ? '0x4AAAAAADuTm2-bvPUtb2pz' : '1x00000000000000000000AA'
+raise 'TURNSTILE_SECRET must be set in production' if PRODUCTION && ENV['TURNSTILE_SECRET'].to_s.empty?
+
+TURNSTILE_SECRET = ENV['TURNSTILE_SECRET'] || '1x0000000000000000000000000000000AA'
+TURNSTILE_HOSTS = %w[18xx.games www.18xx.games].freeze
+
 require 'opal'
 require 'require_all'
 require 'roda'
@@ -29,7 +39,8 @@ class Api < Roda
     csp.style_src :self, :unsafe_inline, 'fonts.googleapis.com', 'cdn.jsdelivr.net'
     csp.font_src :self, 'fonts.gstatic.com'
     csp.form_action :self
-    csp.script_src :self, :unsafe_inline, 'cdn.jsdelivr.net'
+    csp.script_src :self, :unsafe_inline, 'cdn.jsdelivr.net', 'challenges.cloudflare.com'
+    csp.frame_src :self, 'challenges.cloudflare.com'
     csp.connect_src :self
     csp.base_uri :none
     csp.frame_ancestors :none
@@ -239,6 +250,7 @@ class Api < Roda
     args = Snabberb.wrap(
       app_route: request.path,
       production: PRODUCTION,
+      turnstile_sitekey: TURNSTILE_SITEKEY,
       **needs,
     )
 
@@ -262,6 +274,7 @@ class Api < Roda
            <meta id=\"theme_ms\" rel=\"msapplication-navbutton-color\" name=\"msapplication-navbutton-color\" content=\"#ffffff\">
            <meta id=\"theme_apple\" rel=\"apple-mobile-web-app-status-bar-style\" name=\"apple-mobile-web-app-status-bar-style\" content=\"#ffffff\">
            <link rel=\"stylesheet\" href=\"/assets/main.css\">
+           <script src=\"https://challenges.cloudflare.com/turnstile/v0/api.js\" async defer></script>
         </head>
         <body>
           <div id="app"></div>

@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'net/http'
+
 class Api
   hash_routes :api do |hr|
     # '/api/user[/*]'
@@ -9,6 +11,7 @@ class Api
         # POST '/api/user/login'
         r.is 'login' do
           halt(403, 'Access denied') if Ban.banned_ip?(request.ip)
+          verify_turnstile!
           halt(400, 'Could not find user') unless (user = User.by_email(r.params['email']))
           halt(401, 'Incorrect password') unless Auth.password_match?(user.password, r.params['password'])
           halt(403, 'This account has been banned') if Ban.banned_account?(user.id)
@@ -23,6 +26,7 @@ class Api
         # POST '/api/user/'
         r.is do
           halt(403, 'Access denied') if Ban.banned_ip?(request.ip)
+          verify_turnstile!
           email = r.params['email']
           # Static blocklist first (free); fall through to the MX-backend check
           # (one DNS lookup) only if it passes, to catch rotating-domain providers.
@@ -50,6 +54,7 @@ class Api
 
         # POST '/api/user/forgot'
         r.is 'forgot' do
+          verify_turnstile!
           user = User.by_email(r.params['email'])
 
           halt(400, 'Could not find email') unless user
@@ -71,6 +76,7 @@ class Api
 
         # POST '/api/user/reset'
         r.is 'reset' do
+          verify_turnstile!
           user = User.by_email(r.params['email'])
 
           halt(400, 'Invalid email!') unless user
@@ -86,6 +92,7 @@ class Api
 
         # POST '/api/user/resend_verification'
         r.is 'resend_verification' do
+          verify_turnstile!
           user = User.by_email(r.params['email'].to_s)
           send_verification_email(user, r.base_url) if user && !user.verified? && user.can_resend_verification?
           { result: true }
@@ -151,6 +158,36 @@ class Api
         end
       end
     end
+  end
+
+  # Cloudflare Turnstile check for the unauthenticated auth endpoints, to stop
+  # scripted signup/login abuse. Skipped in the test env; if the verify request
+  # itself errors it fails closed in production, open elsewhere.
+  def verify_turnstile!
+    return if ENV['RACK_ENV'] == 'test'
+
+    token = request.params['cf_turnstile_response'].to_s
+    halt(400, 'Please complete the captcha') if token.empty?
+
+    ok =
+      begin
+        uri = URI('https://challenges.cloudflare.com/turnstile/v0/siteverify')
+        http = Net::HTTP.new(uri.host, uri.port)
+        http.use_ssl = true
+        http.open_timeout = 3
+        http.read_timeout = 3
+        req = Net::HTTP::Post.new(uri)
+        req.set_form_data('secret' => TURNSTILE_SECRET, 'response' => token, 'remoteip' => request.ip)
+        data = JSON.parse(http.request(req).body)
+        # In prod also bind the token to our own hostname, so a token minted against
+        # our public site key on some other page can't be replayed here.
+        data['success'] == true && (!PRODUCTION || TURNSTILE_HOSTS.include?(data['hostname']))
+      rescue StandardError => e
+        API_LOGGER.error("Turnstile verify error: #{e}")
+        !PRODUCTION
+      end
+
+    halt(403, 'Captcha check failed — please try again') unless ok
   end
 
   def clear_cookies!

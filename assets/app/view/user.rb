@@ -156,6 +156,7 @@ module View
         render_input('Email', id: :email, type: :email, attrs: { autocomplete: 'email' }),
         render_input('Password', id: :password, type: :password, attrs: { autocomplete: 'new-password' }),
         render_notifications,
+        turnstile_widget,
         h(:div, [render_button('Create Account') { submit }]),
       ]
 
@@ -169,9 +170,10 @@ module View
       inputs = [
         render_input('Email or Username', id: :email, type: :email, attrs: { autocomplete: 'email' }),
         render_input('Password', id: :password, type: :password, attrs: { autocomplete: 'current-password' }),
+        turnstile_widget,
         h(:div, { style: { marginBottom: '1rem' } }, [render_button('Login') { submit }]),
         h(:a, { attrs: { href: '/forgot' } }, 'Forgot Password'),
-        h(:div, { style: { marginTop: '1rem' } }, [render_button('Resend verification email') { resend_verification(params) }]),
+        h(:div, { style: { marginTop: '1rem' } }, [render_button('Resend verification email') { resend }]),
       ]
 
       [render_form(title, inputs)]
@@ -453,12 +455,19 @@ module View
       case @type
       when :signup
         create_user(params)
+        reset_turnstile
       when :login
         login(params)
+        reset_turnstile
       when :profile
         edit_user(params)
         `setTimeout(function() { location.reload() }, 1000)`
       end
+    end
+
+    def resend
+      resend_verification(params)
+      reset_turnstile
     end
 
     def render_default_game_options
