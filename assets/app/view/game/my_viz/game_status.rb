@@ -121,23 +121,21 @@ module View
         end
         @extra_size = extra.size
 
-        # Treasury, Trains, Tokens, Extras, Privates
         corporation_props_size = 4 + extra.size + treasury.size
 
-        players_title = h(:th, th_props[@game.players.size], 'Players')
+        players_title = h('th.thick-right', th_props[@game.players.size], 'Players')
 
         pool_th_props = th_props[2]
         pool_th_props[:style][:backgroundColor] = COLOR_BANK
-        pool_title = h(:th, pool_th_props, 'Pool')
+        pool_title = h('th.thick-right', pool_th_props, 'Pool')
 
         ipo_th_props = th_props[2]
-        ipo_title = h(:th, ipo_th_props, @game.ipo_name)
+        ipo_title = h('th.thick-right', ipo_th_props, @game.ipo_name)
 
-        corporation_title = h(:th, th_props[corporation_props_size, false], ['Corporation ', render_toggle_not_floated_link])
+        corporation_title = h(:th, th_props[corporation_props_size], ['Corporation ', render_toggle_not_floated_link])
 
         subtitles = []
-        players_subtitles = []
-        @game.players.map do |p|
+        players_subtitles = @game.players.map.with_index do |p, idx|
           is_active_col = (p == active_player)
           props = if p == @game.priority_deal_player
                     pd_props
@@ -145,20 +143,21 @@ module View
                     { style: { backgroundColor: is_active_col ? COLOR_ACTIVE : 'inherit' } }
                   end
           props[:style][:minWidth] = min_width(p)
-          players_subtitles << h('th.name.nowrap', props, render_sort_link(p.name, p.id))
+          is_last = idx == @game.players.size - 1
+          h("th.name.nowrap#{is_last ? '.thick-right' : ''}", props, render_sort_link(p.name, p.id))
         end
 
         bank_sub_th_props = { style: { backgroundColor: COLOR_BANK } }
         pool_subtitles = [
           h(:th, bank_sub_th_props, render_sort_link('Shares', :market_shares)),
-          h(:th, bank_sub_th_props, render_sort_link('Prices', :share_price)),
+          h('th.thick-right', bank_sub_th_props, render_sort_link('Prices', :share_price)),
         ]
         ipo_subtitles = [
           h(:th, render_sort_link('Shares', :ipo_shares)),
-          h(:th, render_sort_link('Price', :par_price)),
+          h('th.thick-right', render_sort_link('Price', :par_price)),
         ]
         corporation_subtitles = [
-          h(:th, render_sort_link('Cash', :cash)),
+          h(:th, render_sort_link('Treasury', :cash)),
           *treasury,
           h(:th, render_sort_link('Trains', :trains)),
           h(:th, render_sort_link('Tokens', :tokens)),
@@ -179,11 +178,11 @@ module View
 
         [
           h(:tr, [
-            h(:th, { style: { minWidth: '5rem' } }, ''),
+            h('th.thick-right', { style: { minWidth: '5rem' } }, ''),
             *titles,
           ]),
           h(:tr, [
-            h(:th, { style: { paddingBottom: '0.3rem' } }, render_sort_link('SYM', :id)),
+            h('th.thick-right', { style: { paddingBottom: '0.3rem' } }, render_sort_link('SYM', :id)),
             *subtitles,
           ]),
         ]
