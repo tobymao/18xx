@@ -350,13 +350,17 @@ props = { style: { backgroundColor: is_active_col ? COLOR_ACTIVE : 'inherit' } }
           end
         operating_corporations = operating_array.each_with_index.to_h
 
+        
+        all_entities = @game.respond_to?(:minors) ? (@game.minors || []) : []
+        all_entities += @game.all_corporations
+
         unfloated_corporations =
-          (@game.all_corporations - operating_array)
+          (all_entities - operating_array)
             .select { |c| c.respond_to?(:sort_order_key) && c.sort_order_key }
             .sort
             .each_with_index.to_h
 
-        result = @game.all_corporations.map do |c|
+        result = all_entities.map do |c|
           operating_order =
             if (index = operating_corporations[c])
               [FLOATED, index + 1]
@@ -371,26 +375,33 @@ props = { style: { backgroundColor: is_active_col ? COLOR_ACTIVE : 'inherit' } }
         result.sort_by! do |operating_order, corporation|
           if @spreadsheet_sort_by.is_a?(Array)
             corporation.operating_history[@spreadsheet_sort_by]&.revenue || -1
-          else
+         else
             case @spreadsheet_sort_by
             when :id
+              type_order = corporation.minor? ? 0 : 1
               if /^\d+$/.match?(corporation.id)
-                [2, corporation.id.to_i]
+                [type_order, 2, corporation.id.to_i]
               else
-                [1, corporation.id]
+                [type_order, 1, corporation.id]
               end
             when :ipo_shares
-              num_ipo_shares(corporation)
+              corporation.minor? ? 0 : num_ipo_shares(corporation)
             when :market_shares
-              num_shares_of(@game.share_pool, corporation)
+              corporation.minor? ? 0 : num_shares_of(@game.share_pool, corporation)
             when :share_price
               [corporation.share_price&.price || 0, operating_order[0], -operating_order[1]]
             when :par_price
-              corporation.par_price&.price || 0
-            when :cash
+            if corporation.minor?
+                minors_list = @game.respond_to?(:minors) ? (@game.minors || []) : []
+                minor_idx = minors_list.index(corporation) || 0
+                [1, -minor_idx]
+              else
+                [0, corporation.par_price&.price || 0]
+              end
+                        when :cash
               corporation.cash
             when :treasury
-              num_shares_of(corporation, corporation)
+              corporation.minor? ? 0 : num_shares_of(corporation, corporation)
             when :trains
               ct = corporation.trains.sort_by(&:name).reverse
               train_limit = @game.phase.train_limit(corporation)
@@ -412,10 +423,14 @@ props = { style: { backgroundColor: is_active_col ? COLOR_ACTIVE : 'inherit' } }
             when :companies
               corporation.companies.size
             else
-              p = @game.player_by_id(@spreadsheet_sort_by)
-              n = p&.num_shares_of(corporation)
-              n += 0.01 if corporation.president?(p)
-              n.nil? || n.zero? ? -99 : n # sort shorts between longs and 0 shares
+             p = @game.player_by_id(@spreadsheet_sort_by)
+              if corporation.minor?
+                corporation.owner == p ? 10 : -99
+              else
+                n = p&.num_shares_of(corporation)
+                n += 0.01 if corporation.respond_to?(:president?) && corporation.president?(p)
+                n.nil? || n.zero? ? -99 : n
+              end
             end
           end
         end
@@ -456,33 +471,54 @@ props = { style: { backgroundColor: is_active_col ? COLOR_ACTIVE : 'inherit' } }
                      @game.capitalization_type_desc(corporation))
         end
         if @game.total_loans&.nonzero?
+          loans_count = corporation.respond_to?(:loans) ? corporation.loans.size : 0
           extra << h(:td, { style: { backgroundColor: corp_bg_color } },
-                     "#{corporation.loans.size}/#{@game.maximum_loans(corporation)}")
+                     "#{loans_count}/#{@game.maximum_loans(corporation)}")
         end
         if @game.respond_to?(:available_shorts)
-          taken, total = @game.available_shorts(corporation)
+          taken, total = if @game.respond_to?(:available_shorts)
+                           @game.available_shorts(corporation)
+                         else
+                           [0, 0]
+                         end
           extra << h(:td, { style: { backgroundColor: corp_bg_color } }, "#{taken} / #{total}")
         end
         if @game.total_loans.positive?
+          buying_power_val = if @game.respond_to?(:buying_power)
+                               @game.buying_power(corporation, full: true)
+                             else
+                               corporation.cash
+                             end
           extra << h(:td, { style: { backgroundColor: corp_bg_color } },
-                     @game.format_currency(@game.buying_power(corporation, full: true)))
+                     @game.format_currency(buying_power_val))
           interest_props = { style: { backgroundColor: corp_bg_color } }
-          unless @game.can_pay_interest?(corporation)
+          if !corporation.minor? && @game.respond_to?(:can_pay_interest?) && !@game.can_pay_interest?(corporation)
             color = StockMarket::COLOR_MAP[:yellow]
             interest_props[:style][:backgroundColor] = color
             interest_props[:style][:color] = contrast_on(color)
           end
           if @game.corporation_show_interest?
+            interest_owed_val = if !corporation.minor? && @game.respond_to?(:interest_owed)
+                                  @game.interest_owed(corporation)
+                                else
+                                  0
+                                end
             extra << h(:td, interest_props,
-                       @game.format_currency(@game.interest_owed(corporation)).to_s)
+                       @game.format_currency(interest_owed_val).to_s)
           end
         end
         if @diff_corp_sizes
-          extra << h(:td, { style: { backgroundColor: corp_bg_color } },
-                     @game.corporation_size_name(corporation))
+          size_name = if corporation.minor?
+                        'Minor'
+                      elsif @game.respond_to?(:corporation_size_name)
+                        @game.corporation_size_name(corporation)
+                      else
+                        ''
+                      end
+          extra << h(:td, { style: { backgroundColor: corp_bg_color } }, size_name)
         end
 
-        n_ipo_shares = num_ipo_shares(corporation)
+        n_ipo_shares = corporation.minor? ? 0 : num_ipo_shares(corporation)
         n_market_shares = num_shares_of(@game.share_pool, corporation)
 
         players_row_content = []
@@ -490,34 +526,45 @@ props = { style: { backgroundColor: is_active_col ? COLOR_ACTIVE : 'inherit' } }
           is_active_col = (p == active_player) && !is_active_row
           bg_color = is_active_col ? COLOR_ACTIVE : 'inherit'
 
-          n_shares = num_shares_of(p, corporation)
-
-          if n_shares.zero?
-            players_row_content << h(:td, { style: { backgroundColor: bg_color } }, '')
+          if corporation.minor?
+            if corporation.owner == p
+              players_row_content << h(:td, { style: { backgroundColor: bg_color, textAlign: 'center' } }, [
+                h(View::Game::Card, text: '100%', border_color: '#999999'),
+              ])
+            else
+              players_row_content << h(:td, { style: { backgroundColor: bg_color } }, '')
+            end
           else
-            percent = p.percent_of(corporation) || (n_shares * 10)
-            is_president = corporation.president?(p)
-            text = "#{percent}%#{is_president ? 'P' : ''}"
+            n_shares = num_shares_of(p, corporation)
 
-            just_sold = @game.round.active_step&.did_sell?(corporation, p)
-            border_color = just_sold ? '#cc0000' : '#999999'
+            if n_shares.zero?
+              players_row_content << h(:td, { style: { backgroundColor: bg_color } }, '')
+            else
+              percent = p.percent_of(corporation) || (n_shares * 10)
+              is_president = corporation.respond_to?(:president?) && corporation.president?(p)
+              text = "#{percent}%#{is_president ? 'P' : ''}"
 
-            players_row_content << h(:td, { style: { backgroundColor: bg_color, textAlign: 'center' } }, [
-              h(View::Game::Card, text: text, border_color: border_color),
-            ])
+              just_sold = @game.round.active_step&.did_sell?(corporation, p) rescue false
+              border_color = just_sold ? '#cc0000' : '#999999'
+
+              players_row_content << h(:td, { style: { backgroundColor: bg_color, textAlign: 'center' } }, [
+                h(View::Game::Card, text: text, border_color: border_color),
+              ])
+            end
           end
         end
 
         # --- Pool Shares Content ---
-        pool_share_text = if n_market_shares.zero?
+        pool_share_text = if corporation.minor? || n_market_shares.zero?  
                             ''
                           else
-                            "#{corporation.receivership? ? '*' : ''}#{n_market_shares * 10}%"
+                            is_receivership = corporation.respond_to?(:receivership?) && corporation.receivership?
+                            "#{is_receivership ? '*' : ''}#{n_market_shares * 10}%"
                           end
         pool_share_card = pool_share_text.empty? ? '' : h(View::Game::Card, text: pool_share_text, border_color: '#999999')
 
         # --- Pool Market Price Content ---
-        market_style = { fontFamily: FONT_CASH, color: COLOR_CASH, fontWeight: 'bold', borderRight: border_style }
+market_style = { fontFamily: FONT_CASH, color: COLOR_CASH, fontWeight: 'bold', borderRight: border_style, backgroundColor: COLOR_INACTIVE }
         if corporation.share_price&.highlight? &&
           (m_color = StockMarket::COLOR_MAP[@game.class::STOCKMARKET_COLORS[corporation.share_price.type]])
           market_style[:backgroundColor] = m_color
@@ -541,9 +588,9 @@ props = { style: { backgroundColor: is_active_col ? COLOR_ACTIVE : 'inherit' } }
         # --- IPO Par Price Content ---
         clean_par_price = corporation.par_price ? @game.format_currency(corporation.par_price.price).gsub(/[^0-9]/, '') : ''
 
-        ipo_row_content = [
-          h('td.padded_number', { style: { borderLeft: border_style } }, [ipo_share_card]),
-          h('td.padded_number', { style: { fontFamily: FONT_CASH, color: COLOR_CASH, fontWeight: 'bold' } }, clean_par_price),
+ipo_row_content = [
+          h('td.padded_number', { style: { borderLeft: border_style, backgroundColor: COLOR_INACTIVE } }, [ipo_share_card]),
+          h('td.padded_number', { style: { fontFamily: FONT_CASH, color: COLOR_CASH, fontWeight: 'bold', backgroundColor: COLOR_INACTIVE } }, clean_par_price),
         ]
 
         train_cards = corporation.trains.map do |t|
@@ -699,7 +746,8 @@ props = { style: { backgroundColor: is_active_col ? COLOR_ACTIVE : 'inherit' } }
                         end
         props[:style][:backgroundColor] = bg_color if bg_color
 
-        company_cards = entity.companies.map do |c|
+companies_list = entity.respond_to?(:companies) ? entity.companies : []
+        company_cards = companies_list.map do |c|
           h(View::Game::Card, text: c.sym)
         end
 

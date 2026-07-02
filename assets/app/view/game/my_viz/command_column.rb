@@ -105,6 +105,12 @@ module View
           render_phase_box('4. Buy Trains', phase == :buy_train, ['Done Buying'], actions, current_entity, buyable_list),
         ])
 
+        if @game.round.stock?
+          upper_content = [
+            h(:div, { style: { padding: '2rem', textAlign: 'center', fontSize: '1.2rem', fontWeight: 'bold', textTransform: 'uppercase' } }, 'Stock Round')
+          ]
+        end
+
         undo_ok = @game.undo_possible
         redo_ok = @game.respond_to?(:redo_possible) ? @game.redo_possible : true
 
