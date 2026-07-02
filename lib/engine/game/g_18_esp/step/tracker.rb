@@ -34,7 +34,8 @@ module Engine
             hex.tile.cities.first.delete_token!(mz_token)
             hex.tile.cities.first.exchange_token(mz_token, extra_slot: true)
           end
-          action.entity.goal_reached!(:destination) if @game.check_for_destination_connection(action.entity)
+          # clear graphs
+          @game.graph.clear
         end
 
         def extra_cost(tile, tile_lay, hex)
