@@ -213,7 +213,7 @@ module View
         end
         @extra_size = extra.size
 
-        corporation_props_size = (@show_privates ? 4 : 3) + extra.size + treasury.size
+        corporation_props_size = (@show_privates ? 5 : 4) + extra.size + treasury.size
 
         players_title = h('th.thick-right', th_props[@game.players.size], 'Players')
 
@@ -253,12 +253,13 @@ module View
           h('th.thick-right', render_sort_link('Price', :par_price)),
         ]
         corporation_subtitles = [
-           h(:th, render_sort_link('Treasury', :cash)),
-           *treasury,
-           h(:th, render_sort_link('Trains', :trains)),
-           h(:th, render_sort_link('Tokens', :tokens)),
-           *extra,
-         ]
+          h(:th, render_sort_link('Treasury', :cash)),
+          *treasury,
+          h(:th, render_sort_link('Last Run', :prev_revenue)),
+          h(:th, render_sort_link('Trains', :trains)),
+          h(:th, render_sort_link('Tokens', :tokens)),
+          *extra,
+        ]
         corporation_subtitles << h(:th, render_sort_link('Privates', :companies)) if @show_privates
 
         titles = [
@@ -407,6 +408,8 @@ module View
               end
             when :cash
               corporation.cash
+            when :prev_revenue
+              corporation.operating_history.values.last&.revenue || 0
             when :treasury
               corporation.minor? ? 0 : num_shares_of(corporation, corporation)
             when :trains
@@ -1027,55 +1030,15 @@ active_entity, t
 
         clean_corp_cash = @game.format_currency(corporation.cash).gsub(/[^0-9]/, '')
 
-        def render_unplaced_tokens(corporation)
-          return h(:span, '') unless corporation.respond_to?(:tokens)
-
-          unplaced = corporation.tokens.select do |t|
-            has_hex = t.respond_to?(:hex) && t.hex
-            is_placed = t.respond_to?(:placed?) && t.placed?
-            !has_hex && !is_placed
-          end
-
-          return h(:span, '') if unplaced.empty?
-
-          logo_src = begin
-            setting_for(:simple_logos, @game) ? corporation.simple_logo : corporation.logo
-          rescue StandardError
-            nil
-          end
-
-          token_icons = unplaced.map do |_token|
-            style = {
-              width: '20px',
-              height: '20px',
-              margin: '2px',
-              borderRadius: '50%',
-              boxSizing: 'border-box',
-              display: 'inline-block',
-              border: '1px solid #333',
-            }
-
-            if logo_src
-              style[:backgroundColor] = corporation.color || '#fff'
-              h(:img, { attrs: { src: logo_src }, style: style })
-            else
-              style[:lineHeight] = '18px'
-              style[:textAlign] = 'center'
-              style[:backgroundColor] = corporation.color || '#4169e1'
-              style[:color] = corporation.text_color || '#fff'
-              style[:fontSize] = '0.55rem'
-              style[:fontWeight] = 'bold'
-              h(:div, { style: style }, corporation.id.to_s[0..2])
-            end
-          end
-
-          h(:div, { style: { display: 'flex', flexDirection: 'row', justifyContent: 'center', flexWrap: 'wrap' } }, token_icons)
-        end
+        last_rev = corporation.operating_history.values.last&.revenue
+        clean_rev = last_rev ? @game.format_currency(last_rev).gsub(/[^0-9]/, '') : ''
 
         corporation_row_content = [
           h('td.padded_number',
             { style: { backgroundColor: corp_bg_color, fontFamily: FONT_CASH, color: COLOR_CASH, fontWeight: 'bold' } }, clean_corp_cash),
           *treasury,
+          h('td.padded_number',
+            { style: { backgroundColor: corp_bg_color, fontFamily: FONT_CASH, color: COLOR_CASH, fontWeight: 'bold' } }, clean_rev),
           h(:td, { style: { backgroundColor: corp_bg_color, fontFamily: FONT_STD } }, train_cards),
           h(:td, { style: { backgroundColor: corp_bg_color } }, [render_unplaced_tokens(corporation)]),
           *extra,
@@ -1092,6 +1055,51 @@ active_entity, t
           h(:th, name_props, corporation.name),
           *row_content,
         ])
+      end
+
+      def render_unplaced_tokens(corporation)
+        return h(:span, '') unless corporation.respond_to?(:tokens)
+
+        unplaced = corporation.tokens.select do |t|
+          has_hex = t.respond_to?(:hex) && t.hex
+          is_placed = t.respond_to?(:placed?) && t.placed?
+          !has_hex && !is_placed
+        end
+
+        return h(:span, '') if unplaced.empty?
+
+        logo_src = begin
+          setting_for(:simple_logos, @game) ? corporation.simple_logo : corporation.logo
+        rescue StandardError
+          nil
+        end
+
+        token_icons = unplaced.map do |_token|
+          style = {
+            width: '20px',
+            height: '20px',
+            margin: '2px',
+            borderRadius: '50%',
+            boxSizing: 'border-box',
+            display: 'inline-block',
+            border: '1px solid #333',
+          }
+
+          if logo_src
+            style[:backgroundColor] = corporation.color || '#fff'
+            h(:img, { attrs: { src: logo_src }, style: style })
+          else
+            style[:lineHeight] = '18px'
+            style[:textAlign] = 'center'
+            style[:backgroundColor] = corporation.color || '#4169e1'
+            style[:color] = corporation.text_color || '#fff'
+            style[:fontSize] = '0.55rem'
+            style[:fontWeight] = 'bold'
+            h(:div, { style: style }, corporation.id.to_s[0..2])
+          end
+        end
+
+        h(:div, { style: { display: 'flex', flexDirection: 'row', justifyContent: 'center', flexWrap: 'wrap' } }, token_icons)
       end
 
       def render_corp_tokens(corporation)
