@@ -62,7 +62,7 @@ module View
               marginTop: '1rem',
             },
           },
-          [h(:style, css), render_corporation_table, render_player_table, render_extra_cards])
+          [h(:style, css), render_corporation_table, render_extra_cards])
       end
 
       def render_corporation_table
@@ -70,6 +70,13 @@ module View
           h(:table, table_props, [
             h(:thead, render_titles),
             h(:tbody, render_corporations),
+            h('tbody#player_details', [
+              render_player_cash,
+              render_player_loans,
+              render_player_time,
+              render_player_companies,
+              render_player_certs,
+            ].compact),
             h(:tfoot, [
               h(:tr, { style: { height: '0px' } }, []),
             ]),
@@ -360,7 +367,6 @@ module View
         }
 
         tr_props = tr_default_props(is_active_row)
-        tr_props[:style][:opacity] = '0.5' unless @game.operating_order.include?(corporation)
 
         # Map active corporate property cells
         corp_bg_color = is_active_row ? COLOR_MAUVE : COLOR_INACTIVE
@@ -606,13 +612,15 @@ module View
 
       def render_player_companies
         h(:tr, tr_default_props, [
-          h('th.left', 'Companies'),
-          *@game.players.map do |p|
-            is_active_col = (p == active_player)
-            bg_color = is_active_col ? COLOR_ACTIVE : COLOR_INACTIVE
-            h(:td, { style: { backgroundColor: bg_color } }, [render_companies(p)])
-          end,
-        ])
+           h('th.left', 'Companies'),
+           *@game.players.map.with_index do |p, idx|
+             is_active_col = (p == active_player)
+             bg_color = is_active_col ? COLOR_ACTIVE : COLOR_INACTIVE
+             is_last = idx == @game.players.size - 1
+             h("td#{is_last ? '.thick-right' : ''}", { style: { backgroundColor: bg_color } }, [render_companies(p)])
+           end,
+           h(:td, { attrs: { colspan: 30 }, style: { border: 'none' } }, ''),
+         ])
       end
 
       def render_player_cash
@@ -630,41 +638,47 @@ module View
 
       def render_player_time
         h(:tr, tr_default_props, [
-          h('th.left', 'Time'),
-          *@game.players.map do |p|
-            is_active_col = (p == active_player)
-            bg_color = is_active_col ? COLOR_ACTIVE : COLOR_INACTIVE
-            h('td.padded_number', { style: { backgroundColor: bg_color } }, '0:00')
-          end,
-        ])
+        h('th.left', 'Time'),
+        *@game.players.map.with_index do |p, idx|
+          is_active_col = (p == active_player)
+          bg_color = is_active_col ? COLOR_ACTIVE : COLOR_INACTIVE
+          is_last = idx == @game.players.size - 1
+          h("td.padded_number#{is_last ? '.thick-right' : ''}", { style: { backgroundColor: bg_color } }, '0:00')
+        end,
+        h(:td, { attrs: { colspan: 30 }, style: { border: 'none' } }, ''),
+      ])
       end
 
       def render_player_certs
         cert_limit = @game.cert_limit
         props = { style: { color: 'red' } }
         h(:tr, tr_default_props, [
-          h('th.left', 'Cert'),
-          *@game.players.map do |player|
-            is_active_col = (player == active_player)
-            bg_color = is_active_col ? COLOR_ACTIVE : COLOR_INACTIVE
-            num_certs = @game.num_certs(player)
-            cell_props = num_certs > cert_limit ? props.merge(style: { backgroundColor: bg_color }) : { style: { backgroundColor: bg_color } }
-            h('td.padded_number', cell_props, "#{num_certs}/#{cert_limit}")
-          end,
-        ])
+    h('th.left', 'Cert'),
+    *@game.players.map.with_index do |player, idx|
+      is_active_col = (player == active_player)
+      bg_color = is_active_col ? COLOR_ACTIVE : COLOR_INACTIVE
+      num_certs = @game.num_certs(player)
+      cell_props = num_certs > cert_limit ? props.merge(style: { backgroundColor: bg_color }) : { style: { backgroundColor: bg_color } }
+      is_last = idx == @game.players.size - 1
+      h("td.padded_number#{is_last ? '.thick-right' : ''}", cell_props, "#{num_certs}/#{cert_limit}")
+    end,
+    h(:td, { attrs: { colspan: 30 }, style: { border: 'none' } }, ''),
+  ])
       end
 
       def render_player_loans
         return '' unless @game.respond_to?(:player_loans)
 
         h(:tr, tr_default_props, [
-          h('th.left', 'Loans'),
-          *@game.players.map do |p|
-            is_active_col = (p == active_player)
-            bg_color = is_active_col ? COLOR_ACTIVE : COLOR_INACTIVE
-            h('td.padded_number', { style: { backgroundColor: bg_color } }, @game.player_loans(p))
-          end,
-        ])
+         h('th.left', 'Loans'),
+         *@game.players.map.with_index do |p, idx|
+           is_active_col = (p == active_player)
+           bg_color = is_active_col ? COLOR_ACTIVE : COLOR_INACTIVE
+           is_last = idx == @game.players.size - 1
+           h("td.padded_number#{is_last ? '.thick-right' : ''}", { style: { backgroundColor: bg_color } }, @game.player_loans(p))
+         end,
+         h(:td, { attrs: { colspan: 30 }, style: { border: 'none' } }, ''),
+       ])
       end
 
       def tr_default_props(is_active_row = false)
