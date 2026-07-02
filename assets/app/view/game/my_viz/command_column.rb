@@ -303,8 +303,7 @@ module View
         limit = owned_trains.size if limit < owned_trains.size
 
         train_boxes = owned_trains.map do |train|
-          h(:div,
-            { style: { padding: '4px 8px', minWidth: '20px', textAlign: 'center', backgroundColor: '#fff', border: '1px solid #777', borderRadius: '3px', margin: '2px', fontSize: '0.8rem', fontWeight: 'bold' } }, train.name)
+          h(View::Game::Card, text: train.name)
         end
 
         empty_count = [limit - owned_trains.size, 0].max
@@ -312,13 +311,13 @@ module View
           train_boxes << h(:div,
                            {
                              style: {
-                               padding: '4px 8px',
-                               minWidth: '20px',
-                               minHeight: '15px',
+                               width: '42px',
+                               height: '22px',
                                backgroundColor: 'transparent',
                                border: '1px dashed #999',
                                borderRadius: '3px',
                                margin: '2px',
+                               boxSizing: 'border-box',
                              },
                            })
         end
