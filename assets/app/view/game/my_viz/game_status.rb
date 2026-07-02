@@ -10,6 +10,7 @@ require 'view/game/tranches'
 require 'view/game/actionable'
 require 'lib/truncate'
 require 'view/game/my_viz/my_bank'
+require 'view/game/my_viz/my_upcoming_trains'
 
 FLOATED = 2
 UNFLOATED = 1
@@ -47,8 +48,11 @@ module View
         @spreadsheet_sort_by = Lib::Storage['spreadsheet_sort_by']
         @spreadsheet_sort_order = Lib::Storage['spreadsheet_sort_order']
         @hide_not_floated = Lib::Storage['spreadsheet_hide_not_floated']
-        @show_privates = @game.respond_to?(:game_phases) && @game.game_phases.any? { |p| p[:status]&.any? { |s| s.include?('can_buy_companies') } }
-
+        @show_privates = @game.respond_to?(:game_phases) && @game.game_phases.any? do |p|
+          p[:status]&.any? do |s|
+            s.include?('can_buy_companies')
+          end
+        end
 
         css = <<~CSS
           #spreadsheet table { border-collapse: collapse; border: 2px solid #333; background-color: #{COLOR_INACTIVE}; }
@@ -58,24 +62,23 @@ module View
           .thick-right { border-right: 2px solid #333 !important; }
         CSS
 
-     h(:div, [
-        h('div#spreadsheet', {
-            style: {
-              overflow: 'auto',
-              marginTop: '1rem',
-            },
-          },
-          [h(:style, css), render_corporation_table])
-      ])
-    end
-
-     def render_corporation_table
-        h(:table, table_props, [
-          h(:thead, render_titles),
-          h(:tbody, render_corporations + render_player_rows)
-        ])
+        h(:div, [
+           h('div#spreadsheet', {
+               style: {
+                 overflow: 'auto',
+                 marginTop: '1rem',
+               },
+             },
+             [h(:style, css), render_corporation_table]),
+         ])
       end
 
+      def render_corporation_table
+        h(:table, table_props, [
+          h(:thead, render_titles),
+          h(:tbody, render_corporations + render_player_rows),
+        ])
+      end
 
       def render_player_rows
         rows = []
@@ -146,10 +149,7 @@ module View
                        },
                      }, [render_extra_cards])
 
-rendered_rows = rows.map { |row_cells| h(:tr, tr_default_props, row_cells) }
-
-       
-        rendered_rows
+        rows.map { |row_cells| h(:tr, tr_default_props, row_cells) }
       end
 
       def render_player_table
@@ -171,7 +171,7 @@ rendered_rows = rows.map { |row_cells| h(:tr, tr_default_props, row_cells) }
         children = []
         children << h(Bank, game: @game)
         children << h(Tranches, game: @game) if @game.respond_to?(:tranches)
-        children << h(GameInfo, game: @game, layout: 'upcoming_trains')
+        children << h(MyUpcomingTrains, game: @game)
         h('div#extra_cards', { style: { marginBottom: '1rem' } }, children.compact)
       end
 
@@ -225,10 +225,9 @@ rendered_rows = rows.map { |row_cells| h(:tr, tr_default_props, row_cells) }
           #         else
           #           { style: { backgroundColor: is_active_col ? COLOR_ACTIVE : 'inherit' } }
           #         end
-# change later to the little train TODO
-props = { style: { backgroundColor: is_active_col ? COLOR_ACTIVE : 'inherit' } }
+          # change later to the little train TODO
           props = { style: { backgroundColor: is_active_col ? COLOR_ACTIVE : 'inherit' } }
-
+          props = { style: { backgroundColor: is_active_col ? COLOR_ACTIVE : 'inherit' } }
 
           props[:style][:minWidth] = min_width(p)
           is_last = idx == @game.players.size - 1
@@ -244,13 +243,13 @@ props = { style: { backgroundColor: is_active_col ? COLOR_ACTIVE : 'inherit' } }
           h(:th, render_sort_link('Shares', :ipo_shares)),
           h('th.thick-right', render_sort_link('Price', :par_price)),
         ]
-       corporation_subtitles = [
-          h(:th, render_sort_link('Treasury', :cash)),
-          *treasury,
-          h(:th, render_sort_link('Trains', :trains)),
-          h(:th, render_sort_link('Tokens', :tokens)),
-          *extra,
-        ]
+        corporation_subtitles = [
+           h(:th, render_sort_link('Treasury', :cash)),
+           *treasury,
+           h(:th, render_sort_link('Trains', :trains)),
+           h(:th, render_sort_link('Tokens', :tokens)),
+           *extra,
+         ]
         corporation_subtitles << h(:th, render_sort_link('Privates', :companies)) if @show_privates
 
         titles = [
@@ -350,7 +349,6 @@ props = { style: { backgroundColor: is_active_col ? COLOR_ACTIVE : 'inherit' } }
           end
         operating_corporations = operating_array.each_with_index.to_h
 
-        
         all_entities = @game.respond_to?(:minors) ? (@game.minors || []) : []
         all_entities += @game.all_corporations
 
@@ -375,7 +373,7 @@ props = { style: { backgroundColor: is_active_col ? COLOR_ACTIVE : 'inherit' } }
         result.sort_by! do |operating_order, corporation|
           if @spreadsheet_sort_by.is_a?(Array)
             corporation.operating_history[@spreadsheet_sort_by]&.revenue || -1
-         else
+          else
             case @spreadsheet_sort_by
             when :id
               type_order = corporation.minor? ? 0 : 1
@@ -391,14 +389,14 @@ props = { style: { backgroundColor: is_active_col ? COLOR_ACTIVE : 'inherit' } }
             when :share_price
               [corporation.share_price&.price || 0, operating_order[0], -operating_order[1]]
             when :par_price
-            if corporation.minor?
+              if corporation.minor?
                 minors_list = @game.respond_to?(:minors) ? (@game.minors || []) : []
                 minor_idx = minors_list.index(corporation) || 0
                 [1, -minor_idx]
               else
                 [0, corporation.par_price&.price || 0]
               end
-                        when :cash
+            when :cash
               corporation.cash
             when :treasury
               corporation.minor? ? 0 : num_shares_of(corporation, corporation)
@@ -423,7 +421,7 @@ props = { style: { backgroundColor: is_active_col ? COLOR_ACTIVE : 'inherit' } }
             when :companies
               corporation.companies.size
             else
-             p = @game.player_by_id(@spreadsheet_sort_by)
+              p = @game.player_by_id(@spreadsheet_sort_by)
               if corporation.minor?
                 corporation.owner == p ? 10 : -99
               else
@@ -459,7 +457,7 @@ props = { style: { backgroundColor: is_active_col ? COLOR_ACTIVE : 'inherit' } }
         tr_props = tr_default_props(is_active_row)
 
         # Map active corporate property cells
-      corp_bg_color = corporation.floated? ? COLOR_MAUVE : COLOR_INACTIVE
+        corp_bg_color = corporation.floated? ? COLOR_MAUVE : COLOR_INACTIVE
 
         treasury = []
         if @game.separate_treasury?
@@ -524,27 +522,24 @@ props = { style: { backgroundColor: is_active_col ? COLOR_ACTIVE : 'inherit' } }
         n_market_shares = num_shares_of(@game.share_pool, corporation)
 
         players_row_content = []
-       
-
-
 
         @game.players.each do |p|
           is_active_col = (p == active_player) && !is_active_row
           bg_color = is_active_col ? COLOR_ACTIVE : 'inherit'
 
           step = @game.round.active_step
-          
+
           player_shares = p.respond_to?(:shares_of) ? p.shares_of(corporation) : []
           bundles = []
 
           if step&.current_actions&.include?('sell_shares') && p == active_player
             sorted_shares = player_shares.sort_by { |s| s.respond_to?(:president) && s.president ? 1 : 0 }
-            
+
             (1..sorted_shares.size).each do |num|
               chosen_shares = sorted_shares[0...num]
               total_percent = 0
               chosen_shares.each { |s| total_percent += (s.respond_to?(:percent) ? s.percent : 10) }
-              
+
               numeric_price = corporation.share_price ? corporation.share_price.price : 0
               bundles << { shares: chosen_shares, percent: total_percent, share_price: numeric_price }
             end
@@ -566,52 +561,52 @@ props = { style: { backgroundColor: is_active_col ? COLOR_ACTIVE : 'inherit' } }
 
           if can_sell
             border_color = '#cc0000'
-            if bundles.size > 1
-              click_handler = lambda {
-                Lib::Storage['sell_menu_player'] = p.id
-                Lib::Storage['sell_menu_corp'] = corporation.id
-                update
-              }
-            else
-              click_handler = lambda {
-                target_bundle = bundles.first
-                process_action(Engine::Action::SellShares.new(
-                  p,
-                  shares: target_bundle[:shares],
-                  share_price: target_bundle[:share_price],
-                  percent: target_bundle[:percent]
-                ))
-              }
-            end
+            click_handler = if bundles.size > 1
+                              lambda {
+                                Lib::Storage['sell_menu_player'] = p.id
+                                Lib::Storage['sell_menu_corp'] = corporation.id
+                                update
+                              }
+                            else
+                              lambda {
+                                target_bundle = bundles.first
+                                process_action(Engine::Action::SellShares.new(
+                                  p,
+                                  shares: target_bundle[:shares],
+                                  share_price: target_bundle[:share_price],
+                                  percent: target_bundle[:percent]
+                                ))
+                              }
+                            end
           elsif can_buy_from_player
             border_color = '#00cc00'
-            if valid_player_buys.size > 1
-              click_handler = lambda {
-                Lib::Storage['buy_player_menu_player'] = p.id
-                Lib::Storage['buy_player_menu_corp'] = corporation.id
-                update
-              }
-            else
-              click_handler = lambda {
-                bnd = valid_player_buys.first.to_bundle
-                process_action(Engine::Action::BuyShares.new(
-                  active_player,
-                  shares: bnd.shares,
-                  share_price: bnd.share_price,
-                  percent: bnd.percent
-                ))
-              }
-            end
+            click_handler = if valid_player_buys.size > 1
+                              lambda {
+                                Lib::Storage['buy_player_menu_player'] = p.id
+                                Lib::Storage['buy_player_menu_corp'] = corporation.id
+                                update
+                              }
+                            else
+                              lambda {
+                                bnd = valid_player_buys.first.to_bundle
+                                process_action(Engine::Action::BuyShares.new(
+                                  active_player,
+                                  shares: bnd.shares,
+                                  share_price: bnd.share_price,
+                                  percent: bnd.percent
+                                ))
+                              }
+                            end
           end
 
           if corporation.minor?
-            if corporation.owner == p
-              players_row_content << h(:td, { style: { backgroundColor: bg_color, textAlign: 'center' } }, [
-                h(View::Game::Card, text: '100%', border_color: border_color, click_action: click_handler),
-              ])
-            else
-              players_row_content << h(:td, { style: { backgroundColor: bg_color } }, '')
-            end
+            players_row_content << if corporation.owner == p
+                                     h(:td, { style: { backgroundColor: bg_color, textAlign: 'center' } }, [
+                                       h(View::Game::Card, text: '100%', border_color: border_color, click_action: click_handler),
+                                     ])
+                                   else
+                                     h(:td, { style: { backgroundColor: bg_color } }, '')
+                                   end
           else
             n_shares = num_shares_of(p, corporation)
 
@@ -620,13 +615,21 @@ props = { style: { backgroundColor: is_active_col ? COLOR_ACTIVE : 'inherit' } }
             else
               percent = p.percent_of(corporation) || (n_shares * 10)
               is_president = corporation.respond_to?(:president?) && corporation.president?(p)
-              text = n_shares.zero? ? '0%' : "#{percent}%#{is_president ? 'P' : ''}"
+              text = if n_shares.zero?
+                       '0%'
+                     else
+                       "#{percent}%#{is_president ? 'P' : ''}"
+                     end
 
-              just_sold = step&.did_sell?(corporation, p) rescue false
+              just_sold = begin
+                step&.did_sell?(corporation, p)
+              rescue StandardError
+                false
+              end
               border_color = '#cc0000' if just_sold && !click_handler
 
               td_children = [
-                h(View::Game::Card, text: text, border_color: border_color, click_action: click_handler)
+                h(View::Game::Card, text: text, border_color: border_color, click_action: click_handler),
               ]
 
               if Lib::Storage['sell_menu_player'] == p.id && Lib::Storage['sell_menu_corp'] == corporation.id && can_sell
@@ -642,7 +645,7 @@ props = { style: { backgroundColor: is_active_col ? COLOR_ACTIVE : 'inherit' } }
                         share_price: bundle[:share_price],
                         percent: bundle[:percent]
                       ))
-                    }
+                    },
                   }
                 end
 
@@ -668,7 +671,7 @@ props = { style: { backgroundColor: is_active_col ? COLOR_ACTIVE : 'inherit' } }
                         share_price: bnd.share_price,
                         percent: bnd.percent
                       ))
-                    }
+                    },
                   }
                 end
 
@@ -680,13 +683,14 @@ props = { style: { backgroundColor: is_active_col ? COLOR_ACTIVE : 'inherit' } }
                 td_children << render_choice_menu('Nationalize share bundle?', options, cancel_handler)
               end
 
-              players_row_content << h(:td, { style: { backgroundColor: bg_color, textAlign: 'center', position: 'relative' } }, td_children)
+              players_row_content << h(:td, { style: { backgroundColor: bg_color, textAlign: 'center', position: 'relative' } },
+                                       td_children)
             end
           end
         end
 
         # --- Pool Shares Content ---
-        pool_share_text = if corporation.minor? || n_market_shares.zero?  
+        pool_share_text = if corporation.minor? || n_market_shares.zero?
                             ''
                           else
                             is_receivership = corporation.respond_to?(:receivership?) && corporation.receivership?
@@ -699,33 +703,36 @@ props = { style: { backgroundColor: is_active_col ? COLOR_ACTIVE : 'inherit' } }
 
         if step&.respond_to?(:can_buy?) && active_player
           pool_shares = step.respond_to?(:pool_shares) ? step.pool_shares(corporation) : (@game.share_pool.shares_by_corporation[corporation] || [])
-          valid_pool_shares = pool_shares.select { |s| (s.respond_to?(:buyable) ? s.buyable : true) && step.can_buy?(active_player, s.to_bundle) }
-          
-          if !valid_pool_shares.empty?
+          valid_pool_shares = pool_shares.select do |s|
+            (s.respond_to?(:buyable) ? s.buyable : true) && step.can_buy?(active_player, s.to_bundle)
+          end
+
+          unless valid_pool_shares.empty?
             pool_border_color = '#00cc00'
-            if valid_pool_shares.size > 1
-              pool_click_handler = lambda {
-                Lib::Storage['buy_pool_menu_corp'] = corporation.id
-                update
-              }
-            else
-              pool_click_handler = lambda {
-                bnd = valid_pool_shares.first.to_bundle
-                process_action(Engine::Action::BuyShares.new(
-                  active_player,
-                  shares: bnd.shares,
-                  share_price: bnd.share_price,
-                  percent: bnd.percent
-                ))
-              }
-            end
+            pool_click_handler = if valid_pool_shares.size > 1
+                                   lambda {
+                                     Lib::Storage['buy_pool_menu_corp'] = corporation.id
+                                     update
+                                   }
+                                 else
+                                   lambda {
+                                     bnd = valid_pool_shares.first.to_bundle
+                                     process_action(Engine::Action::BuyShares.new(
+                                       active_player,
+                                       shares: bnd.shares,
+                                       share_price: bnd.share_price,
+                                       percent: bnd.percent
+                                     ))
+                                   }
+                                 end
           end
         end
 
         pool_cell_children = []
-        if !pool_share_text.empty?
-          pool_cell_children << h(View::Game::Card, text: pool_share_text, border_color: pool_border_color, click_action: pool_click_handler)
-          
+        unless pool_share_text.empty?
+          pool_cell_children << h(View::Game::Card, text: pool_share_text, border_color: pool_border_color,
+                                                    click_action: pool_click_handler)
+
           if Lib::Storage['buy_pool_menu_corp'] == corporation.id && !valid_pool_shares.empty?
             options = valid_pool_shares.map do |share|
               {
@@ -739,7 +746,7 @@ props = { style: { backgroundColor: is_active_col ? COLOR_ACTIVE : 'inherit' } }
                     share_price: bnd.share_price,
                     percent: bnd.percent
                   ))
-                }
+                },
               }
             end
             cancel_handler = lambda {
@@ -751,7 +758,13 @@ props = { style: { backgroundColor: is_active_col ? COLOR_ACTIVE : 'inherit' } }
         end
 
         # --- Pool Market Price Content ---
-        market_style = { fontFamily: FONT_CASH, color: COLOR_CASH, fontWeight: 'bold', borderRight: border_style, backgroundColor: COLOR_INACTIVE }
+        market_style = {
+          fontFamily: FONT_CASH,
+          color: COLOR_CASH,
+          fontWeight: 'bold',
+          borderRight: border_style,
+          backgroundColor: COLOR_INACTIVE,
+        }
         if corporation.share_price&.highlight? &&
           (m_color = StockMarket::COLOR_MAP[@game.class::STOCKMARKET_COLORS[corporation.share_price.type]])
           market_style[:backgroundColor] = m_color
@@ -777,33 +790,36 @@ props = { style: { backgroundColor: is_active_col ? COLOR_ACTIVE : 'inherit' } }
 
         if step&.respond_to?(:can_buy?) && active_player
           ipo_shares = corporation.respond_to?(:ipo_shares) ? corporation.ipo_shares : []
-          valid_ipo_shares = ipo_shares.select { |s| (s.respond_to?(:buyable) ? s.buyable : true) && step.can_buy?(active_player, s.to_bundle) }
-          
-          if !valid_ipo_shares.empty?
+          valid_ipo_shares = ipo_shares.select do |s|
+            (s.respond_to?(:buyable) ? s.buyable : true) && step.can_buy?(active_player, s.to_bundle)
+          end
+
+          unless valid_ipo_shares.empty?
             ipo_border_color = '#00cc00'
-            if valid_ipo_shares.size > 1
-              ipo_click_handler = lambda {
-                Lib::Storage['buy_ipo_menu_corp'] = corporation.id
-                update
-              }
-            else
-              ipo_click_handler = lambda {
-                bnd = valid_ipo_shares.first.to_bundle
-                process_action(Engine::Action::BuyShares.new(
-                  active_player,
-                  shares: bnd.shares,
-                  share_price: bnd.share_price,
-                  percent: bnd.percent
-                ))
-              }
-            end
+            ipo_click_handler = if valid_ipo_shares.size > 1
+                                  lambda {
+                                    Lib::Storage['buy_ipo_menu_corp'] = corporation.id
+                                    update
+                                  }
+                                else
+                                  lambda {
+                                    bnd = valid_ipo_shares.first.to_bundle
+                                    process_action(Engine::Action::BuyShares.new(
+                                      active_player,
+                                      shares: bnd.shares,
+                                      share_price: bnd.share_price,
+                                      percent: bnd.percent
+                                    ))
+                                  }
+                                end
           end
         end
 
         ipo_cell_children = []
-        if !ipo_share_text.empty?
-          ipo_cell_children << h(View::Game::Card, text: ipo_share_text, border_color: ipo_border_color, click_action: ipo_click_handler)
-          
+        unless ipo_share_text.empty?
+          ipo_cell_children << h(View::Game::Card, text: ipo_share_text, border_color: ipo_border_color,
+                                                   click_action: ipo_click_handler)
+
           if Lib::Storage['buy_ipo_menu_corp'] == corporation.id && !valid_ipo_shares.empty?
             options = valid_ipo_shares.map do |share|
               {
@@ -817,7 +833,7 @@ props = { style: { backgroundColor: is_active_col ? COLOR_ACTIVE : 'inherit' } }
                     share_price: bnd.share_price,
                     percent: bnd.percent
                   ))
-                }
+                },
               }
             end
             cancel_handler = lambda {
@@ -832,12 +848,12 @@ props = { style: { backgroundColor: is_active_col ? COLOR_ACTIVE : 'inherit' } }
         clean_par_price = corporation.par_price ? @game.format_currency(corporation.par_price.price).gsub(/[^0-9]/, '') : ''
 
         ipo_row_content = [
-          h('td.padded_number', { style: { borderLeft: border_style, backgroundColor: COLOR_INACTIVE, position: 'relative' } }, ipo_cell_children),
-          h('td.padded_number', { style: { fontFamily: FONT_CASH, color: COLOR_CASH, fontWeight: 'bold', backgroundColor: COLOR_INACTIVE } }, clean_par_price),
+          h('td.padded_number', { style: { borderLeft: border_style, backgroundColor: COLOR_INACTIVE, position: 'relative' } },
+            ipo_cell_children),
+          h('td.padded_number',
+            { style: { fontFamily: FONT_CASH, color: COLOR_CASH, fontWeight: 'bold', backgroundColor: COLOR_INACTIVE } }, clean_par_price),
         ]
 
-
-        
         train_buyable_step = step&.current_actions&.include?('buy_train')
 
         train_cards = corporation.trains.map do |t|
@@ -849,7 +865,9 @@ props = { style: { backgroundColor: is_active_col ? COLOR_ACTIVE : 'inherit' } }
           owned_by_same_player = active_player && corporation.owner == active_player
           not_own_train = active_entity && corporation != active_entity
 
-          if train_buyable_step && not_own_train && owned_by_same_player && step.respond_to?(:can_buy_train?) && step.can_buy_train?(active_entity, t)
+          if train_buyable_step && not_own_train && owned_by_same_player && step.respond_to?(:can_buy_train?) && step.can_buy_train?(
+active_entity, t
+)
             train_border_color = '#00cc00'
             menu_storage_key = "buy_train_menu_#{corporation.id}_#{t.id}"
             price_storage_key = "buy_train_price_#{corporation.id}_#{t.id}"
@@ -883,83 +901,82 @@ props = { style: { backgroundColor: is_active_col ? COLOR_ACTIVE : 'inherit' } }
               }
 
               menu_dropdown = h(:div, {
-                style: {
-                  position: 'absolute',
-                  top: '105%',
-                  left: '50%',
-                  transform: 'translateX(-50%)',
-                  backgroundColor: '#ffffff',
-                  border: '2px solid #333333',
-                  borderRadius: '4px',
-                  padding: '0.5rem',
-                  zIndex: '9999',
-                  boxShadow: '0px 4px 10px rgba(0,0,0,0.3)'
-                }
-              }, [
-                h(:div, { style: { fontSize: '0.75rem', fontWeight: 'bold', marginBottom: '0.4rem', color: '#333', whiteSpace: 'nowrap' } }, menu_title),
+                                  style: {
+                                    position: 'absolute',
+                                    top: '105%',
+                                    left: '50%',
+                                    transform: 'translateX(-50%)',
+                                    backgroundColor: '#ffffff',
+                                    border: '2px solid #333333',
+                                    borderRadius: '4px',
+                                    padding: '0.5rem',
+                                    zIndex: '9999',
+                                    boxShadow: '0px 4px 10px rgba(0,0,0,0.3)',
+                                  },
+                                }, [
+                h(:div,
+                  { style: { fontSize: '0.75rem', fontWeight: 'bold', marginBottom: '0.4rem', color: '#333', whiteSpace: 'nowrap' } }, menu_title),
                 h(:input, {
-                  style: {
-                    display: 'block',
-                    width: '100%',
-                    marginBottom: '0.4rem',
-                    boxSizing: 'border-box',
-                    padding: '3px 6px',
-                    fontSize: '0.85rem'
-                  },
-                  attrs: {
-                    type: 'number',
-                    min: '1',
-                    value: Lib::Storage[price_storage_key] || '1'
-                  },
-                  on: {
-                    input: lambda { |event|
-                      Lib::Storage[price_storage_key] = event.JS[:target].JS[:value]
-                    }
-                  }
-                }),
+                    style: {
+                      display: 'block',
+                      width: '100%',
+                      marginBottom: '0.4rem',
+                      boxSizing: 'border-box',
+                      padding: '3px 6px',
+                      fontSize: '0.85rem',
+                    },
+                    attrs: {
+                      type: 'number',
+                      min: '1',
+                      value: Lib::Storage[price_storage_key] || '1',
+                    },
+                    on: {
+                      input: lambda { |event|
+                        Lib::Storage[price_storage_key] = event.JS[:target].JS[:value]
+                      },
+                    },
+                  }),
                 h(:button, {
-                  style: {
-                    display: 'block',
-                    width: '100%',
-                    marginBottom: '0.2rem',
-                    cursor: 'pointer',
-                    fontSize: '0.75rem',
-                    fontWeight: 'bold',
-                    padding: '3px 6px',
-                    backgroundColor: '#007bff',
-                    border: '1px solid #0056b3',
-                    color: '#ffffff',
-                    borderRadius: '3px'
-                  },
-                  on: { click: confirm_handler }
-                }, 'Confirm'),
+                    style: {
+                      display: 'block',
+                      width: '100%',
+                      marginBottom: '0.2rem',
+                      cursor: 'pointer',
+                      fontSize: '0.75rem',
+                      fontWeight: 'bold',
+                      padding: '3px 6px',
+                      backgroundColor: '#007bff',
+                      border: '1px solid #0056b3',
+                      color: '#ffffff',
+                      borderRadius: '3px',
+                    },
+                    on: { click: confirm_handler },
+                  }, 'Confirm'),
                 h(:button, {
-                  style: {
-                    display: 'block',
-                    width: '100%',
-                    cursor: 'pointer',
-                    fontSize: '0.75rem',
-                    padding: '3px 6px',
-                    backgroundColor: '#e0e0e0',
-                    border: '1px solid #999',
-                    borderRadius: '3px'
-                  },
-                  on: { click: cancel_handler }
-                }, 'Cancel')
+                    style: {
+                      display: 'block',
+                      width: '100%',
+                      cursor: 'pointer',
+                      fontSize: '0.75rem',
+                      padding: '3px 6px',
+                      backgroundColor: '#e0e0e0',
+                      border: '1px solid #999',
+                      borderRadius: '3px',
+                    },
+                    on: { click: cancel_handler },
+                  }, 'Cancel'),
               ])
             end
           end
 
           h(:div, { style: { display: 'inline-block', position: 'relative' } }, [
-            h(View::Game::Card, text: t.obsolete ? "(#{t.name})" : t.name, border_color: train_border_color, click_action: train_click_handler),
-            menu_dropdown
+            h(View::Game::Card, text: t.obsolete ? "(#{t.name})" : t.name, border_color: train_border_color,
+                                click_action: train_click_handler),
+            menu_dropdown,
           ].compact)
         end
 
-
-
-
-       limit = begin
+        limit = begin
           @game.train_limit(corporation)
         rescue StandardError
           corporation.trains.size
@@ -969,18 +986,18 @@ props = { style: { backgroundColor: is_active_col ? COLOR_ACTIVE : 'inherit' } }
         empty_count = [limit - corporation.trains.size, 0].max
         empty_count.times do
           train_cards << h(:div, {
-            style: {
-              width: '42px',
-              height: '22px',
-              backgroundColor: 'transparent',
-              border: '1px dashed #999',
-              borderRadius: '3px',
-              margin: '2px',
-              boxSizing: 'border-box',
-              display: 'inline-block',
-              verticalAlign: 'middle',
-            },
-          })
+                             style: {
+                               width: '42px',
+                               height: '22px',
+                               backgroundColor: 'transparent',
+                               border: '1px dashed #999',
+                               borderRadius: '3px',
+                               margin: '2px',
+                               boxSizing: 'border-box',
+                               display: 'inline-block',
+                               verticalAlign: 'middle',
+                             },
+                           })
         end
 
         clean_corp_cash = @game.format_currency(corporation.cash).gsub(/[^0-9]/, '')
@@ -1037,7 +1054,7 @@ props = { style: { backgroundColor: is_active_col ? COLOR_ACTIVE : 'inherit' } }
           h(:td, { style: { backgroundColor: corp_bg_color, fontFamily: FONT_STD } }, train_cards),
           h(:td, { style: { backgroundColor: corp_bg_color } }, [render_unplaced_tokens(corporation)]),
           *extra,
-        ]        
+        ]
         corporation_row_content << render_companies(corporation, corp_bg_color) if @show_privates
 
         row_content = []
@@ -1109,7 +1126,7 @@ props = { style: { backgroundColor: is_active_col ? COLOR_ACTIVE : 'inherit' } }
                         end
         props[:style][:backgroundColor] = bg_color if bg_color
 
-companies_list = entity.respond_to?(:companies) ? entity.companies : []
+        companies_list = entity.respond_to?(:companies) ? entity.companies : []
         company_cards = companies_list.map do |c|
           h(View::Game::Card, text: c.sym)
         end
@@ -1223,56 +1240,57 @@ companies_list = entity.respond_to?(:companies) ? entity.companies : []
 
       def render_choice_menu(title, options, cancel_handler)
         menu_elements = [
-          h(:div, { style: { fontSize: '0.75rem', fontWeight: 'bold', marginBottom: '0.4rem', color: '#333', whiteSpace: 'nowrap' } }, title)
+          h(:div,
+            { style: { fontSize: '0.75rem', fontWeight: 'bold', marginBottom: '0.4rem', color: '#333', whiteSpace: 'nowrap' } }, title),
         ]
 
         options.each do |opt|
           menu_elements << h(:button, {
-            style: {
-              display: 'block',
-              width: '100%',
-              marginBottom: '0.2rem',
-              cursor: 'pointer',
-              fontSize: '0.75rem',
-              fontWeight: 'bold',
-              padding: '3px 6px',
-              backgroundColor: '#ffffff',
-              border: '1px solid #cc0000',
-              borderRadius: '3px'
-            },
-            on: { click: opt[:action] }
-          }, opt[:label])
+                               style: {
+                                 display: 'block',
+                                 width: '100%',
+                                 marginBottom: '0.2rem',
+                                 cursor: 'pointer',
+                                 fontSize: '0.75rem',
+                                 fontWeight: 'bold',
+                                 padding: '3px 6px',
+                                 backgroundColor: '#ffffff',
+                                 border: '1px solid #cc0000',
+                                 borderRadius: '3px',
+                               },
+                               on: { click: opt[:action] },
+                             }, opt[:label])
         end
 
         menu_elements << h(:button, {
-          style: {
-            display: 'block',
-            width: '100%',
-            cursor: 'pointer',
-            fontSize: '0.75rem',
-            padding: '3px 6px',
-            backgroundColor: '#e0e0e0',
-            border: '1px solid #999',
-            borderRadius: '3px',
-            marginTop: '0.2rem'
-          },
-          on: { click: cancel_handler }
-        }, 'Cancel')
+                             style: {
+                               display: 'block',
+                               width: '100%',
+                               cursor: 'pointer',
+                               fontSize: '0.75rem',
+                               padding: '3px 6px',
+                               backgroundColor: '#e0e0e0',
+                               border: '1px solid #999',
+                               borderRadius: '3px',
+                               marginTop: '0.2rem',
+                             },
+                             on: { click: cancel_handler },
+                           }, 'Cancel')
 
         h(:div, {
-          style: {
-            position: 'absolute',
-            top: '105%',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            backgroundColor: '#ffffff',
-            border: '2px solid #333333',
-            borderRadius: '4px',
-            padding: '0.5rem',
-            zIndex: '9999',
-            boxShadow: '0px 4px 10px rgba(0,0,0,0.3)'
-          }
-        }, menu_elements)
+            style: {
+              position: 'absolute',
+              top: '105%',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              backgroundColor: '#ffffff',
+              border: '2px solid #333333',
+              borderRadius: '4px',
+              padding: '0.5rem',
+              zIndex: '9999',
+              boxShadow: '0px 4px 10px rgba(0,0,0,0.3)',
+            },
+          }, menu_elements)
       end
 
       private
