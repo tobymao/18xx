@@ -1,11 +1,23 @@
 # frozen_string_literal: true
 
+require 'view/game/actionable'
+
 module View
   module Game
     class MyVisualizer < Snabberb::Component
       needs :game
       needs :tile_selector, default: nil
+      include Actionable
 
+      def active_entity
+        @game.round.active_step&.current_entity
+      end
+
+      def active_player
+        entity = active_entity
+        entity&.player? ? entity : entity&.owner
+      end
+      
       def render
         h(:div, {
             hook: {
@@ -77,7 +89,7 @@ module View
             # Spreadsheet Ledger Component
             h(:div, {
                 style: {
-                  flex: '1 1 70%',
+                  flex: '1 1 62%',
                   overflow: 'hidden',
                   border: '1px solid #ccc',
                   padding: '0.4rem',
@@ -111,6 +123,62 @@ module View
               # Hooking into your custom implementation sandbox
               h(View::Game::GameStatus, game: @game),
             ]),
+            
+h(:div, {
+                style: {
+                  flex: '0 0 8%',
+                  minHeight: '3.5rem',
+                  border: '1px solid #ccc',
+                  borderRadius: '4px',
+                  backgroundColor: '#fff',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'flex-start',
+                  padding: '0 0.75rem',
+                  boxSizing: 'border-box'
+                }
+              }, begin
+                active_p = active_player
+step = @game.round.active_step
+                current_entity = step&.current_entity
+                actions = current_entity ? step.actions(current_entity) : []
+
+                undo_handler = lambda { process_action(Engine::Action::Undo.new(active_p)) if active_p }
+                redo_handler = lambda { process_action(Engine::Action::Redo.new(active_p)) if active_p }
+
+                default_btn_text = 'Pass'
+                default_handler = lambda { process_action(Engine::Action::Pass.new(current_entity)) if current_entity && actions.include?('pass') }
+
+                if @game.round.stock?
+                  default_btn_text = 'Pass'
+                elsif actions.include?('lay_tile')
+                  default_btn_text = 'Skip Build'
+                elsif actions.include?('place_token')
+                  default_btn_text = 'Skip Token'
+                elsif actions.include?('dividend')
+                  default_btn_text = 'Pay Out'
+                  default_handler = lambda { process_action(Engine::Action::Dividend.new(current_entity, kind: 'payout')) if current_entity && actions.include?('dividend') }
+                elsif actions.include?('buy_train')
+                  default_btn_text = 'Finished Buying'
+                end
+               button_style = {
+                  padding: '0.5rem 1.5rem',
+                  fontSize: '1.1rem',
+                  fontWeight: 'bold',
+                  marginRight: '0.75rem',
+                  cursor: 'pointer',
+                  borderRadius: '4px',
+                  border: '1px solid #999',
+                  verticalAlign: 'middle'
+                }
+
+                [
+                  h(:button, { style: button_style.merge(backgroundColor: '#e0e0e0', color: '#000000'), on: { click: undo_handler } }, 'Undo'),
+                  h(:button, { style: button_style.merge(backgroundColor: '#e0e0e0', color: '#000000'), on: { click: redo_handler } }, 'Redo'),
+h(:button, { style: button_style.merge(backgroundColor: '#007bff', borderColor: '#0056b3', color: '#ffffff'), on: { click: default_handler } }, default_btn_text)
+                ]
+              end),
+
             # Stock Market Component
           h(:div, { style: { flex: '1 1 30%', overflow: 'hidden', border: '1px solid #ccc', padding: '0.5rem', borderRadius: '4px', backgroundColor: '#fff', display: 'flex', justifyContent: 'flex-start', alignItems: 'center', flexDirection: 'column' } }, [
               h(:div, { style: { width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'flex-start', transform: 'scale(0.85)', transformOrigin: 'center top', marginTop: '-5px' } }, [
