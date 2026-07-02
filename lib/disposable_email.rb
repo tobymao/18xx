@@ -34,11 +34,10 @@ module DisposableEmail
   # to a throwaway provider. Refresh via `rake disposable:mx_cluster` (below).
   #
   # DELIBERATELY EXCLUDED (legit shared infra that also serves disposable domains
-  # -- adding these would block real users): Cloudflare Email Routing
-  # (*.mx.cloudflare.net), Google (aspmx.l.google.com), Mailgun (*.mailgun.org),
-  # AWS SES (*.amazonaws.com), Outlook/Microsoft, Zoho, Proton (protonmail.ch),
-  # Yandex, OVH, Namecheap (registrar-servers.com / privateemail.com), and domain
-  # parking (park-mx.above.com, hostedmxserver.com).
+  # -- adding these would block real users): Google (aspmx.l.google.com), Mailgun
+  # (*.mailgun.org), AWS SES (*.amazonaws.com), Outlook/Microsoft, Zoho, Proton
+  # (protonmail.ch), Yandex, OVH, Namecheap (registrar-servers.com /
+  # privateemail.com), and domain parking (park-mx.above.com, hostedmxserver.com).
   BANNED_MX_DOMAINS = %w[
     10minutemail.com
     1secmail.com
@@ -70,6 +69,7 @@ module DisposableEmail
     mail.tm
     mb5p.com
     moakt.com
+    mx.cloudflare.net
     nukemail.app
     oneb.net
     papierkorb.me

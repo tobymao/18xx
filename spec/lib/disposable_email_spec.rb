@@ -55,6 +55,15 @@ describe DisposableEmail do
       expect(DisposableEmail.banned_mx_host?('gmail-smtp-in.l.google.com')).to be(false)
     end
 
+    it 'matches a listed host exactly and as a subdomain' do
+      expect(DisposableEmail.banned_mx_host?('mx.cloudflare.net')).to be(true)
+      expect(DisposableEmail.banned_mx_host?('route1.mx.cloudflare.net')).to be(true)
+    end
+
+    it 'respects the subdomain boundary for listed hosts' do
+      expect(DisposableEmail.banned_mx_host?('example.cloudflare.net')).to be(false)
+    end
+
     it 'does not match a lookalike that only shares a suffix (no subdomain boundary)' do
       expect(DisposableEmail.banned_mx_host?('evil10minutemail.com')).to be(false)
     end
