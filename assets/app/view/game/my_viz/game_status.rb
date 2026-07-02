@@ -48,13 +48,21 @@ module View
         @spreadsheet_sort_order = Lib::Storage['spreadsheet_sort_order']
         @hide_not_floated = Lib::Storage['spreadsheet_hide_not_floated']
 
+        css = <<~CSS
+          #spreadsheet table { border-collapse: collapse; border: 2px solid #333; background-color: #{COLOR_INACTIVE}; }
+          #spreadsheet th, #spreadsheet td { border: 1px solid #999; }
+          #spreadsheet thead tr:last-child th { border-bottom: 2px solid #333; }
+          #spreadsheet tbody tr:last-child td, #spreadsheet tbody tr:last-child th { border-bottom: 2px solid #333; }
+          .thick-right { border-right: 2px solid #333 !important; }
+        CSS
+
         h('div#spreadsheet', {
             style: {
               overflow: 'auto',
               marginTop: '1rem',
             },
           },
-          [render_corporation_table, render_player_table, render_extra_cards])
+          [h(:style, css), render_corporation_table, render_player_table, render_extra_cards])
       end
 
       def render_corporation_table
