@@ -58,6 +58,9 @@ services:
     volumes:
       - ./public:/public
       - /etc/letsencrypt:/etc/letsencrypt
+      # Access log on a stable host path so the host can watch it (the default
+      # log only goes to the container's stdout, whose path changes each deploy).
+      - /var/log/18xx-nginx:/var/log/18xx-nginx
     depends_on:
       - rack
       - rack_backup
