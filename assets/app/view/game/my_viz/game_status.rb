@@ -20,8 +20,7 @@ module View
       include Lib::Settings
       include Actionable
       include View::ShareCalculation
-
-      needs :game
+      needs :game, store: true
 
       PLAYER_COL_MAX_WIDTH = '4.5rem'
 
@@ -442,6 +441,8 @@ props = { style: { backgroundColor: is_active_col ? COLOR_ACTIVE : 'inherit' } }
       def render_corporation(corporation, _operating_order, _current_round)
         return '' if @hide_not_floated && !@game.operating_order.include?(corporation)
 
+        step = @game.round.active_step
+
         border_style = "1px solid #{color_for(:font2)}"
         is_active_row = (active_entity == corporation)
 
@@ -522,14 +523,63 @@ props = { style: { backgroundColor: is_active_col ? COLOR_ACTIVE : 'inherit' } }
         n_market_shares = num_shares_of(@game.share_pool, corporation)
 
         players_row_content = []
-        @game.players.map do |p|
+       
+@game.players.each do |p|
           is_active_col = (p == active_player) && !is_active_row
           bg_color = is_active_col ? COLOR_ACTIVE : 'inherit'
+
+          step = @game.round.active_step
+          
+          # Safely build sell combinations using raw inventory primitives to avoid step gaps
+          player_shares = p.respond_to?(:shares_of) ? p.shares_of(corporation) : []
+          bundles = []
+
+          if step&.current_actions&.include?('sell_shares') && p == active_player
+            sorted_shares = player_shares.sort_by { |s| s.respond_to?(:president) && s.president ? 1 : 0 }
+            
+            (1..sorted_shares.size).each do |num|
+              chosen_shares = sorted_shares[0...num]
+              total_percent = 0
+              chosen_shares.each { |s| total_percent += (s.respond_to?(:percent) ? s.percent : 10) }
+              
+              # CRITICAL FIX: Pass the raw integer price, NOT the SharePrice configuration object
+              numeric_price = corporation.share_price ? corporation.share_price.price : 0
+              bundles << { shares: chosen_shares, percent: total_percent, share_price: numeric_price }
+            end
+          end
+
+          can_sell = (p == active_player) && !bundles.empty?
+
+          border_color = '#999999'
+          click_handler = nil
+
+          if can_sell
+            border_color = '#cc0000'
+            if bundles.size > 1
+              click_handler = lambda {
+                puts "CRITICAL: Clicked card with MULTIPLE bundles. Storing state for Player: #{p.id}, Corp: #{corporation.id}"
+                Lib::Storage['sell_menu_player'] = p.id
+                Lib::Storage['sell_menu_corp'] = corporation.id
+                update
+              }
+            else
+              click_handler = lambda {
+                puts "CRITICAL: Clicked card with SINGLE bundle. Executing action directly."
+                target_bundle = bundles.first
+                process_action(Engine::Action::SellShares.new(
+                  p,
+                  shares: target_bundle[:shares],
+                  share_price: target_bundle[:share_price],
+                  percent: target_bundle[:percent]
+                ))
+              }
+            end
+          end
 
           if corporation.minor?
             if corporation.owner == p
               players_row_content << h(:td, { style: { backgroundColor: bg_color, textAlign: 'center' } }, [
-                h(View::Game::Card, text: '100%', border_color: '#999999'),
+                h(View::Game::Card, text: '100%', border_color: border_color, click_action: click_handler),
               ])
             else
               players_row_content << h(:td, { style: { backgroundColor: bg_color } }, '')
@@ -544,15 +594,45 @@ props = { style: { backgroundColor: is_active_col ? COLOR_ACTIVE : 'inherit' } }
               is_president = corporation.respond_to?(:president?) && corporation.president?(p)
               text = "#{percent}%#{is_president ? 'P' : ''}"
 
-              just_sold = @game.round.active_step&.did_sell?(corporation, p) rescue false
-              border_color = just_sold ? '#cc0000' : '#999999'
+              just_sold = step&.did_sell?(corporation, p) rescue false
+              border_color = '#cc0000' if just_sold && !click_handler
 
-              players_row_content << h(:td, { style: { backgroundColor: bg_color, textAlign: 'center' } }, [
-                h(View::Game::Card, text: text, border_color: border_color),
-              ])
+              td_children = [
+                h(View::Game::Card, text: text, border_color: border_color, click_action: click_handler)
+              ]
+
+              if Lib::Storage['sell_menu_player'] == p.id && Lib::Storage['sell_menu_corp'] == corporation.id && can_sell
+                options = bundles.map do |bundle|
+                  {
+                    label: "#{bundle[:percent]}%",
+                    action: lambda {
+                      Lib::Storage['sell_menu_player'] = nil
+                      Lib::Storage['sell_menu_corp'] = nil
+                      process_action(Engine::Action::SellShares.new(
+                        p,
+                        shares: bundle[:shares],
+                        share_price: bundle[:share_price],
+                        percent: bundle[:percent]
+                      ))
+                    }
+                  }
+                end
+
+                cancel_handler = lambda {
+                  Lib::Storage['sell_menu_player'] = nil
+                  Lib::Storage['sell_menu_corp'] = nil
+                  update
+                }
+
+                td_children << render_choice_menu('How many shares to sell?', options, cancel_handler)
+              end
+
+              players_row_content << h(:td, { style: { backgroundColor: bg_color, textAlign: 'center', position: 'relative' } }, td_children)
             end
           end
         end
+
+
 
         # --- Pool Shares Content ---
         pool_share_text = if corporation.minor? || n_market_shares.zero?  
@@ -561,10 +641,24 @@ props = { style: { backgroundColor: is_active_col ? COLOR_ACTIVE : 'inherit' } }
                             is_receivership = corporation.respond_to?(:receivership?) && corporation.receivership?
                             "#{is_receivership ? '*' : ''}#{n_market_shares * 10}%"
                           end
-        pool_share_card = pool_share_text.empty? ? '' : h(View::Game::Card, text: pool_share_text, border_color: '#999999')
+
+        pool_border_color = '#999999'
+        pool_click_handler = nil
+        if step&.respond_to?(:can_buy?) && active_player
+          pool_shares = step.respond_to?(:pool_shares) ? step.pool_shares(corporation) : (@game.share_pool.shares_by_corporation[corporation] || [])
+          pool_share = pool_shares.find { |s| (s.respond_to?(:buyable) ? s.buyable : true) && step.can_buy?(active_player, s.to_bundle) }
+          if pool_share
+            pool_border_color = '#00cc00'
+            pool_click_handler = lambda {
+              process_action(Engine::Action::BuyShares.new(active_player, bundle: pool_share.to_bundle))
+            }
+          end
+        end
+
+        pool_share_card = pool_share_text.empty? ? '' : h(View::Game::Card, text: pool_share_text, border_color: pool_border_color, click_action: pool_click_handler)
 
         # --- Pool Market Price Content ---
-market_style = { fontFamily: FONT_CASH, color: COLOR_CASH, fontWeight: 'bold', borderRight: border_style, backgroundColor: COLOR_INACTIVE }
+        market_style = { fontFamily: FONT_CASH, color: COLOR_CASH, fontWeight: 'bold', borderRight: border_style, backgroundColor: COLOR_INACTIVE }
         if corporation.share_price&.highlight? &&
           (m_color = StockMarket::COLOR_MAP[@game.class::STOCKMARKET_COLORS[corporation.share_price.type]])
           market_style[:backgroundColor] = m_color
@@ -580,6 +674,34 @@ market_style = { fontFamily: FONT_CASH, color: COLOR_CASH, fontWeight: 'bold', b
           h('td.padded_number', { style: { backgroundColor: COLOR_INACTIVE } }, [pool_share_card]),
           h('td.padded_number', { style: market_style }, clean_market_price),
         ]
+
+        # --- IPO Shares Content ---
+        ipo_share_text = n_ipo_shares.zero? ? '' : "#{n_ipo_shares * 10}%"
+
+        ipo_border_color = '#999999'
+        ipo_click_handler = nil
+        if step&.respond_to?(:can_buy?) && active_player
+          ipo_shares = corporation.respond_to?(:ipo_shares) ? corporation.ipo_shares : []
+          ipo_share = ipo_shares.find { |s| (s.respond_to?(:buyable) ? s.buyable : true) && step.can_buy?(active_player, s.to_bundle) }
+          if ipo_share
+            ipo_border_color = '#00cc00'
+            ipo_click_handler = lambda {
+              process_action(Engine::Action::BuyShares.new(active_player, bundle: ipo_share.to_bundle))
+            }
+          end
+        end
+
+        ipo_share_card = ipo_share_text.empty? ? '' : h(View::Game::Card, text: ipo_share_text, border_color: ipo_border_color, click_action: ipo_click_handler)
+
+
+
+
+
+
+
+
+
+
 
         # --- IPO Shares Content ---
         ipo_share_text = n_ipo_shares.zero? ? '' : "#{n_ipo_shares * 10}%"
@@ -856,6 +978,60 @@ companies_list = entity.respond_to?(:companies) ? entity.companies : []
             color: 'black',
           },
         }
+      end
+
+      def render_choice_menu(title, options, cancel_handler)
+        menu_elements = [
+          h(:div, { style: { fontSize: '0.75rem', fontWeight: 'bold', marginBottom: '0.4rem', color: '#333', whiteSpace: 'nowrap' } }, title)
+        ]
+
+        options.each do |opt|
+          menu_elements << h(:button, {
+            style: {
+              display: 'block',
+              width: '100%',
+              marginBottom: '0.2rem',
+              cursor: 'pointer',
+              fontSize: '0.75rem',
+              fontWeight: 'bold',
+              padding: '3px 6px',
+              backgroundColor: '#ffffff',
+              border: '1px solid #cc0000',
+              borderRadius: '3px'
+            },
+            on: { click: opt[:action] }
+          }, opt[:label])
+        end
+
+        menu_elements << h(:button, {
+          style: {
+            display: 'block',
+            width: '100%',
+            cursor: 'pointer',
+            fontSize: '0.75rem',
+            padding: '3px 6px',
+            backgroundColor: '#e0e0e0',
+            border: '1px solid #999',
+            borderRadius: '3px',
+            marginTop: '0.2rem'
+          },
+          on: { click: cancel_handler }
+        }, 'Cancel')
+
+        h(:div, {
+          style: {
+            position: 'absolute',
+            top: '105%',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            backgroundColor: '#ffffff',
+            border: '2px solid #333333',
+            borderRadius: '4px',
+            padding: '0.5rem',
+            zIndex: '9999',
+            boxShadow: '0px 4px 10px rgba(0,0,0,0.3)'
+          }
+        }, menu_elements)
       end
 
       private
