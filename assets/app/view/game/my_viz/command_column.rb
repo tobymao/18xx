@@ -258,43 +258,136 @@ module View
 
         trains = step.buyable_trains(current_entity)
         if trains.empty?
-          return h(:div, { style: { fontSize: '0.75rem', color: '#666', fontStyle: 'italic', padding: '0.2rem' } },
-                   'No trains available')
+          return h(:div, { style: { fontSize: '0.75rem', color: '#666', fontStyle: 'italic', padding: '0.2rem' } }, 'No trains available')
         end
 
-        train_groups = trains.group_by(&:name)
+        active_p = current_entity&.player? ? current_entity : current_entity&.owner
 
-        train_boxes = train_groups.map do |name, group|
-          train = group.first
-          price = train.respond_to?(:price) ? @game.format_currency(train.price) : ''
-          count = group.size
-          label = count > 1 ? "#{name} (#{price}) x#{count}" : "#{name} (#{price})"
+        train_boxes = trains.map do |t|
+          owner_entity = t.owner
+          next nil unless owner_entity && owner_entity.respond_to?(:owner)
 
-          click_buy = lambda do
-            process_action(Engine::Action::BuyTrain.new(
-              current_entity,
-              train: train,
-              price: train.price
-            ))
+          # Strictly filter out trains that are not owned by the same player or belong to the active company itself
+          owned_by_same_player = active_p && owner_entity.owner == active_p
+          not_own_train = current_entity && owner_entity != current_entity
+
+          next nil unless not_own_train && owned_by_same_player
+
+          train_border_color = '#00cc00'
+          menu_storage_key = "cmd_buy_train_menu_#{owner_entity.id}_#{t.id}"
+          price_storage_key = "cmd_buy_train_price_#{owner_entity.id}_#{t.id}"
+
+          train_click_handler = lambda {
+            Lib::Storage[menu_storage_key] = true
+            Lib::Storage[price_storage_key] = 1
+            update
+          }
+
+          if Lib::Storage[menu_storage_key]
+            menu_title = "#{current_entity.name} buys #{t.name} from #{owner_entity.name} for how much?"
+
+            confirm_handler = lambda {
+              price_value = Lib::Storage[price_storage_key].to_i
+              price_value = 1 if price_value < 1
+
+              Lib::Storage[menu_storage_key] = nil
+              Lib::Storage[price_storage_key] = nil
+              process_action(Engine::Action::BuyTrain.new(
+                current_entity,
+                train: t,
+                price: price_value
+              ))
+            }
+
+            cancel_handler = lambda {
+              Lib::Storage[menu_storage_key] = nil
+              Lib::Storage[price_storage_key] = nil
+              update
+            }
+
+            menu_dropdown = h(:div, {
+              style: {
+                position: 'absolute',
+                top: '105%',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                backgroundColor: '#ffffff',
+                border: '2px solid #333333',
+                borderRadius: '4px',
+                padding: '0.5rem',
+                zIndex: '9999',
+                boxShadow: '0px 4px 10px rgba(0,0,0,0.3)',
+                color: '#000000'
+              }
+            }, [
+              h(:div, { style: { fontSize: '0.75rem', fontWeight: 'bold', marginBottom: '0.4rem', whiteSpace: 'nowrap' } }, menu_title),
+              h(:input, {
+                style: {
+                  display: 'block',
+                  width: '100%',
+                  marginBottom: '0.4rem',
+                  boxSizing: 'border-box',
+                  padding: '3px 6px',
+                  fontSize: '0.85rem'
+                },
+                attrs: {
+                  type: 'number',
+                  min: '1',
+                  value: Lib::Storage[price_storage_key] || '1'
+                },
+                on: {
+                  input: lambda { |event|
+                    Lib::Storage[price_storage_key] = event.JS[:target].JS[:value]
+                  }
+                }
+              }),
+              h(:button, {
+                style: {
+                  display: 'block',
+                  width: '100%',
+                  marginBottom: '0.2rem',
+                  cursor: 'pointer',
+                  fontSize: '0.75rem',
+                  fontWeight: 'bold',
+                  padding: '3px 6px',
+                  backgroundColor: '#007bff',
+                  border: '1px solid #0056b3',
+                  color: '#ffffff',
+                  borderRadius: '3px'
+                },
+                on: { click: confirm_handler }
+              }, 'Confirm'),
+              h(:button, {
+                style: {
+                  display: 'block',
+                  width: '100%',
+                  cursor: 'pointer',
+                  fontSize: '0.75rem',
+                  padding: '3px 6px',
+                  backgroundColor: '#e0e0e0',
+                  border: '1px solid #999',
+                  borderRadius: '3px'
+                },
+                on: { click: cancel_handler }
+              }, 'Cancel')
+            ])
           end
 
-          h(:div, {
-              style: {
-                padding: '4px 8px',
-                backgroundColor: '#add8e6',
-                border: '1px solid #555',
-                borderRadius: '3px',
-                margin: '2px',
-                fontSize: '0.75rem',
-                fontWeight: 'bold',
-                cursor: 'pointer',
-              },
-              on: { click: click_buy },
-            }, label)
+          card_text = "#{t.name} from #{owner_entity.name}"
+
+          # Formatted block display layout structure pushing cards into individual wide lines
+          h(:div, { style: { display: 'block', width: '100%', position: 'relative', margin: '4px 0' } }, [
+            h(View::Game::Card, text: card_text, border_color: train_border_color, click_action: train_click_handler),
+            menu_dropdown
+          ].compact)
+        end.compact
+
+        if train_boxes.empty?
+          return h(:div, { style: { fontSize: '0.75rem', color: '#666', fontStyle: 'italic', padding: '0.2rem' } }, 'No matching same-owner trains available')
         end
 
         h(:div,
-          { style: { display: 'flex', flexDirection: 'row', justifyContent: 'center', flexWrap: 'wrap', padding: '0.2rem 0', margin: '0.2rem 0' } }, train_boxes)
+          { style: { display: 'flex', flexDirection: 'column', width: '100%', padding: '0.2rem 0', boxSizing: 'border-box' } }, train_boxes)
       end
 
       def render_owned_trains(current_entity)

@@ -9,6 +9,7 @@ require 'view/game/stock_market'
 require 'view/game/tranches'
 require 'view/game/actionable'
 require 'lib/truncate'
+require 'view/game/my_viz/my_bank'
 
 FLOATED = 2
 UNFLOATED = 1
@@ -75,39 +76,6 @@ module View
         ])
       end
 
-      def render_action_toolbar
-        active_p = active_player
-        undo_handler = lambda { process_action(Engine::Action::Undo.new(active_p)) if active_p }
-        redo_handler = lambda { process_action(Engine::Action::Redo.new(active_p)) if active_p }
-        pass_handler = lambda { process_action(Engine::Action::Pass.new(active_p)) if active_p }
-
-        button_style = {
-          padding: '0.5rem 1rem',
-          fontSize: '1rem',
-          fontWeight: 'bold',
-          marginRight: '0.5rem',
-          cursor: 'pointer',
-          borderRadius: '4px',
-          verticalAlign: 'middle'
-        }
-
-        undo_style = button_style.merge(backgroundColor: '#e0e0e0', border: '1px solid #999', color: '#000000')
-        redo_style = button_style.merge(backgroundColor: '#e0e0e0', border: '1px solid #999', color: '#000000')
-        pass_style = button_style.merge(backgroundColor: '#007bff', border: '1px solid #0056b3', color: '#ffffff')
-
-        h(:div, {
-          style: {
-            textAlign: 'left',
-            padding: '0.75rem',
-            backgroundColor: '#ffffff',
-            borderTop: '2px solid #333'
-          }
-        }, [
-          h(:button, { style: undo_style, on: { click: undo_handler } }, 'Undo'),
-          h(:button, { style: redo_style, on: { click: redo_handler } }, 'Redo'),
-          h(:button, { style: pass_style, on: { click: pass_handler } }, 'Pass')
-        ])
-      end
 
       def render_player_rows
         rows = []
@@ -180,42 +148,7 @@ module View
 
 rendered_rows = rows.map { |row_cells| h(:tr, tr_default_props, row_cells) }
 
-        active_p = active_player
-        undo_handler = lambda { process_action(Engine::Action::Undo.new(active_p)) if active_p }
-        redo_handler = lambda { process_action(Engine::Action::Redo.new(active_p)) if active_p }
-        pass_handler = lambda { process_action(Engine::Action::Pass.new(active_p)) if active_p }
-
-        button_style = {
-          padding: '0.5rem 1rem',
-          fontSize: '1rem',
-          fontWeight: 'bold',
-          marginRight: '0.5rem',
-          cursor: 'pointer',
-          borderRadius: '4px',
-          verticalAlign: 'middle'
-        }
-
-        undo_style = button_style.merge(backgroundColor: '#e0e0e0', border: '1px solid #999', color: '#000000')
-        redo_style = button_style.merge(backgroundColor: '#e0e0e0', border: '1px solid #999', color: '#000000')
-        pass_style = button_style.merge(backgroundColor: '#007bff', border: '1px solid #0056b3', color: '#ffffff')
-
-        action_cells = [
-          h(:td, {
-            attrs: { colspan: 50 },
-            style: {
-              textAlign: 'left',
-              padding: '0.75rem',
-              backgroundColor: '#ffffff',
-              borderTop: '2px solid #333'
-            }
-          }, [
-            h(:button, { style: undo_style, on: { click: undo_handler } }, 'Undo'),
-            h(:button, { style: redo_style, on: { click: redo_handler } }, 'Redo'),
-            h(:button, { style: pass_style, on: { click: pass_handler } }, 'Pass')
-          ])
-        ]
-
-        rendered_rows << h(:tr, tr_default_props, action_cells)
+       
         rendered_rows
       end
 
