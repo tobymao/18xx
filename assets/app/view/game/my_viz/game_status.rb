@@ -904,11 +904,128 @@ props = { style: { backgroundColor: is_active_col ? COLOR_ACTIVE : 'inherit' } }
         ]
 
 
-
+        
+        train_buyable_step = step&.current_actions&.include?('buy_train')
 
         train_cards = corporation.trains.map do |t|
-          h(View::Game::Card, text: t.obsolete ? "(#{t.name})" : t.name)
+          train_border_color = '#999999'
+          train_click_handler = nil
+          menu_dropdown = nil
+
+          # Only highlight if owned by the same player AND it's not the active company's own train
+          owned_by_same_player = active_player && corporation.owner == active_player
+          not_own_train = active_entity && corporation != active_entity
+
+          if train_buyable_step && not_own_train && owned_by_same_player && step.respond_to?(:can_buy_train?) && step.can_buy_train?(active_entity, t)
+            train_border_color = '#00cc00'
+            menu_storage_key = "buy_train_menu_#{corporation.id}_#{t.id}"
+            price_storage_key = "buy_train_price_#{corporation.id}_#{t.id}"
+
+            train_click_handler = lambda {
+              Lib::Storage[menu_storage_key] = true
+              Lib::Storage[price_storage_key] = 1 # Initialize default price string
+              update
+            }
+
+            if Lib::Storage[menu_storage_key]
+              menu_title = "#{active_entity.name} buys #{t.name} from #{corporation.name} for how much?"
+
+              confirm_handler = lambda {
+                price_value = Lib::Storage[price_storage_key].to_i
+                price_value = 1 if price_value < 1
+
+                Lib::Storage[menu_storage_key] = nil
+                Lib::Storage[price_storage_key] = nil
+                process_action(Engine::Action::BuyTrain.new(
+                  active_entity,
+                  train: t,
+                  price: price_value
+                ))
+              }
+
+              cancel_handler = lambda {
+                Lib::Storage[menu_storage_key] = nil
+                Lib::Storage[price_storage_key] = nil
+                update
+              }
+
+              menu_dropdown = h(:div, {
+                style: {
+                  position: 'absolute',
+                  top: '105%',
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  backgroundColor: '#ffffff',
+                  border: '2px solid #333333',
+                  borderRadius: '4px',
+                  padding: '0.5rem',
+                  zIndex: '9999',
+                  boxShadow: '0px 4px 10px rgba(0,0,0,0.3)'
+                }
+              }, [
+                h(:div, { style: { fontSize: '0.75rem', fontWeight: 'bold', marginBottom: '0.4rem', color: '#333', whiteSpace: 'nowrap' } }, menu_title),
+                h(:input, {
+                  style: {
+                    display: 'block',
+                    width: '100%',
+                    marginBottom: '0.4rem',
+                    boxSizing: 'border-box',
+                    padding: '3px 6px',
+                    fontSize: '0.85rem'
+                  },
+                  attrs: {
+                    type: 'number',
+                    min: '1',
+                    value: Lib::Storage[price_storage_key] || '1'
+                  },
+                  on: {
+                    input: lambda { |event|
+                      Lib::Storage[price_storage_key] = event.JS[:target].JS[:value]
+                    }
+                  }
+                }),
+                h(:button, {
+                  style: {
+                    display: 'block',
+                    width: '100%',
+                    marginBottom: '0.2rem',
+                    cursor: 'pointer',
+                    fontSize: '0.75rem',
+                    fontWeight: 'bold',
+                    padding: '3px 6px',
+                    backgroundColor: '#007bff',
+                    border: '1px solid #0056b3',
+                    color: '#ffffff',
+                    borderRadius: '3px'
+                  },
+                  on: { click: confirm_handler }
+                }, 'Confirm'),
+                h(:button, {
+                  style: {
+                    display: 'block',
+                    width: '100%',
+                    cursor: 'pointer',
+                    fontSize: '0.75rem',
+                    padding: '3px 6px',
+                    backgroundColor: '#e0e0e0',
+                    border: '1px solid #999',
+                    borderRadius: '3px'
+                  },
+                  on: { click: cancel_handler }
+                }, 'Cancel')
+              ])
+            end
+          end
+
+          h(:div, { style: { display: 'inline-block', position: 'relative' } }, [
+            h(View::Game::Card, text: t.obsolete ? "(#{t.name})" : t.name, border_color: train_border_color, click_action: train_click_handler),
+            menu_dropdown
+          ].compact)
         end
+
+
+
+
        limit = begin
           @game.train_limit(corporation)
         rescue StandardError
