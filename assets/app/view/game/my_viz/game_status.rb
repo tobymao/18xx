@@ -47,6 +47,8 @@ module View
         @spreadsheet_sort_by = Lib::Storage['spreadsheet_sort_by']
         @spreadsheet_sort_order = Lib::Storage['spreadsheet_sort_order']
         @hide_not_floated = Lib::Storage['spreadsheet_hide_not_floated']
+        @show_privates = @game.respond_to?(:game_phases) && @game.game_phases.any? { |p| p[:status]&.any? { |s| s.include?('can_buy_companies') } }
+
 
         css = <<~CSS
           #spreadsheet table { border-collapse: collapse; border: 2px solid #333; background-color: #{COLOR_INACTIVE}; }
@@ -202,12 +204,12 @@ module View
         end
         @extra_size = extra.size
 
-        corporation_props_size = 4 + extra.size + treasury.size
+        corporation_props_size = (@show_privates ? 4 : 3) + extra.size + treasury.size
 
         players_title = h('th.thick-right', th_props[@game.players.size], 'Players')
 
         pool_th_props = th_props[2]
-        pool_th_props[:style][:backgroundColor] = COLOR_BANK
+        pool_th_props[:style][:backgroundColor] = COLOR_INACTIVE
         pool_title = h('th.thick-right', pool_th_props, 'Pool')
 
         ipo_th_props = th_props[2]
@@ -233,7 +235,7 @@ props = { style: { backgroundColor: is_active_col ? COLOR_ACTIVE : 'inherit' } }
           h("th.name.nowrap#{is_last ? '.thick-right' : ''}", props, render_sort_link(p.name, p.id))
         end
 
-        bank_sub_th_props = { style: { backgroundColor: COLOR_BANK } }
+        bank_sub_th_props = { style: { backgroundColor: COLOR_INACTIVE } }
         pool_subtitles = [
           h(:th, bank_sub_th_props, render_sort_link('Shares', :market_shares)),
           h('th.thick-right', bank_sub_th_props, render_sort_link('Prices', :share_price)),
@@ -242,14 +244,14 @@ props = { style: { backgroundColor: is_active_col ? COLOR_ACTIVE : 'inherit' } }
           h(:th, render_sort_link('Shares', :ipo_shares)),
           h('th.thick-right', render_sort_link('Price', :par_price)),
         ]
-        corporation_subtitles = [
+       corporation_subtitles = [
           h(:th, render_sort_link('Treasury', :cash)),
           *treasury,
           h(:th, render_sort_link('Trains', :trains)),
           h(:th, render_sort_link('Tokens', :tokens)),
           *extra,
-          h(:th, render_sort_link('Privates', :companies)),
         ]
+        corporation_subtitles << h(:th, render_sort_link('Privates', :companies)) if @show_privates
 
         titles = [
           players_title,
@@ -528,7 +530,7 @@ props = { style: { backgroundColor: is_active_col ? COLOR_ACTIVE : 'inherit' } }
                              end
 
         pool_row_content = [
-          h('td.padded_number', { style: { backgroundColor: COLOR_BANK } }, [pool_share_card]),
+          h('td.padded_number', { style: { backgroundColor: COLOR_INACTIVE } }, [pool_share_card]),
           h('td.padded_number', { style: market_style }, clean_market_price),
         ]
 
@@ -546,6 +548,29 @@ props = { style: { backgroundColor: is_active_col ? COLOR_ACTIVE : 'inherit' } }
 
         train_cards = corporation.trains.map do |t|
           h(View::Game::Card, text: t.obsolete ? "(#{t.name})" : t.name)
+        end
+       limit = begin
+          @game.train_limit(corporation)
+        rescue StandardError
+          corporation.trains.size
+        end
+        limit = corporation.trains.size if limit < corporation.trains.size
+
+        empty_count = [limit - corporation.trains.size, 0].max
+        empty_count.times do
+          train_cards << h(:div, {
+            style: {
+              width: '42px',
+              height: '22px',
+              backgroundColor: 'transparent',
+              border: '1px dashed #999',
+              borderRadius: '3px',
+              margin: '2px',
+              boxSizing: 'border-box',
+              display: 'inline-block',
+              verticalAlign: 'middle',
+            },
+          })
         end
 
         clean_corp_cash = @game.format_currency(corporation.cash).gsub(/[^0-9]/, '')
@@ -602,8 +627,8 @@ props = { style: { backgroundColor: is_active_col ? COLOR_ACTIVE : 'inherit' } }
           h(:td, { style: { backgroundColor: corp_bg_color, fontFamily: FONT_STD } }, train_cards),
           h(:td, { style: { backgroundColor: corp_bg_color } }, [render_unplaced_tokens(corporation)]),
           *extra,
-          render_companies(corporation, corp_bg_color),
-        ]
+        ]        
+        corporation_row_content << render_companies(corporation, corp_bg_color) if @show_privates
 
         row_content = []
         row_content.concat(players_row_content)
