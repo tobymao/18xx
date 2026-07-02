@@ -92,70 +92,6 @@ module View
         h('div#extra_cards', { style: { marginBottom: '1rem' } }, children.compact)
       end
 
-      def or_history(corporations)
-        corporations.flat_map { |c| c.operating_history.keys }.uniq.sort
-      end
-
-      def render_history_titles(corporations)
-        or_history(corporations).map do |turn, round|
-          h(:th, render_sort_link(@game.or_description_short(turn, round), [turn, round]))
-        end
-      end
-
-      def render_history(corporation)
-        or_history(@game.all_corporations).map do |turn, round|
-          if (op_history = corporation.operating_history[[turn, round]])
-            revenue_text, alpha =
-              case op_history.dividend_kind
-              when 'withhold'
-                ["[#{op_history.revenue}]", 0.5]
-              when 'half'
-                @halfpaid = true
-                ["¦#{op_history.revenue}¦", 0.75]
-              else
-                [op_history.revenue.to_s, 1]
-              end
-
-            props = {
-              style: {
-                color: convert_hex_to_rgba(color_for(:font2), alpha),
-              },
-            }
-
-            if op_history&.dividend&.id&.positive?
-              link_h = history_link(revenue_text,
-                                    "Go to run #{@game.or_description_short(turn, round)} of #{corporation.name}",
-                                    op_history.dividend.id - 1)
-              h('td.right', props, [link_h])
-            else
-              h('td.right', props, revenue_text)
-            end
-          else
-            h(:td, '')
-          end
-        end
-      end
-
-      def render_connection_run(corporation)
-        return [] unless @game.respond_to?(:connection_run)
-        return [h(:td)] unless @game.connection_run[corporation]
-
-        turn, round, c_run = @game.connection_run[corporation]
-        revenue_text, alpha = c_run.dividend.kind == 'withhold' ? ["[#{c_run.revenue}]", 0.5] : [c_run.revenue, 1]
-        props = {
-          style: {
-            color: convert_hex_to_rgba(color_for(:font2), alpha),
-          },
-        }
-        link_h = history_link(
-          "#{@game.or_description_short(turn, round)}: #{revenue_text}",
-          "Go to connection run of #{corporation.name} (in #{@game.or_description_short(turn, round)})",
-          c_run.dividend.id - 1
-        )
-
-        [h('td.right', props, [link_h])]
-      end
-
       def render_titles
         th_props = lambda do |cols, border_right = true|
           props = tr_default_props
@@ -166,8 +102,6 @@ module View
           props[:style][:letterSpacing] = '1px'
           props
         end
-
-        or_history_titles = render_history_titles(@game.all_corporations)
 
         treasury = []
         treasury << h(:th, render_sort_link('Shares', :treasury)) if @game.separate_treasury?
@@ -187,10 +121,8 @@ module View
         end
         @extra_size = extra.size
 
-        connection_run_header = @game.respond_to?(:connection_run) ? [h(:th, th_props[1, false], '')] : []
-        connection_run_subheader = @game.respond_to?(:connection_run) ? [h(:th, render_sort_link('C-Run', :c_run))] : []
-
-        corporation_props_size = 5 + extra.size + treasury.size
+        # Treasury, Trains, Tokens, Extras, Privates
+        corporation_props_size = 4 + extra.size + treasury.size
 
         players_title = h(:th, th_props[@game.players.size], 'Players')
 
@@ -231,14 +163,14 @@ module View
           h(:th, render_sort_link('Trains', :trains)),
           h(:th, render_sort_link('Tokens', :tokens)),
           *extra,
-          h(:th, render_sort_link('Order', :order)),
-          h(:th, render_sort_link('Companies', :companies)),
+          h(:th, render_sort_link('Privates', :companies)),
         ]
 
         titles = [
           players_title,
           pool_title,
           ipo_title,
+          corporation_title,
         ]
         subtitles.concat(players_subtitles)
         subtitles.concat(pool_subtitles)
@@ -249,16 +181,10 @@ module View
           h(:tr, [
             h(:th, { style: { minWidth: '5rem' } }, ''),
             *titles,
-            h(:th, ''),
-            *connection_run_header,
-            h(:th, th_props[or_history_titles.size, false], 'OR History'),
           ]),
           h(:tr, [
             h(:th, { style: { paddingBottom: '0.3rem' } }, render_sort_link('SYM', :id)),
             *subtitles,
-            h(:th, ''),
-            *connection_run_subheader,
-            *or_history_titles,
           ]),
         ]
       end
@@ -378,8 +304,6 @@ module View
               corporation.cash
             when :treasury
               num_shares_of(corporation, corporation)
-            when :order
-              operating_order
             when :trains
               ct = corporation.trains.sort_by(&:name).reverse
               train_limit = @game.phase.train_limit(corporation)
@@ -400,11 +324,6 @@ module View
               @game.corporation_size(corporation)
             when :companies
               corporation.companies.size
-            when :c_run
-              if @game.respond_to?(:connection_run)
-                _turn, _round, c_run = @game.connection_run[corporation]
-                c_run&.revenue || 0
-              end
             else
               p = @game.player_by_id(@spreadsheet_sort_by)
               n = p&.num_shares_of(corporation)
@@ -418,7 +337,7 @@ module View
         result
       end
 
-      def render_corporation(corporation, operating_order, current_round)
+      def render_corporation(corporation, _operating_order, _current_round)
         return '' if @hide_not_floated && !@game.operating_order.include?(corporation)
 
         border_style = "1px solid #{color_for(:font2)}"
@@ -434,30 +353,34 @@ module View
         }
 
         tr_props = tr_default_props(is_active_row)
-
         tr_props[:style][:opacity] = '0.5' unless @game.operating_order.include?(corporation)
 
-        order_props = { style: { paddingLeft: '1.2em' } }
-        order_props[:style][:color] =
-          if operating_order[0] == UNSTARTED
-            'transparent'
-          elsif corporation.operating_history.keys[-1] == current_round
-            convert_hex_to_rgba(color_for(:font2), 0.5)
-          end
+        # Map active corporate property cells
+        corp_bg_color = is_active_row ? COLOR_MAUVE : COLOR_INACTIVE
 
         treasury = []
-        treasury << h(:td, num_shares_of(corporation, corporation)) if @game.separate_treasury?
+        if @game.separate_treasury?
+          treasury << h(:td, { style: { backgroundColor: corp_bg_color } },
+                        num_shares_of(corporation, corporation))
+        end
 
         extra = []
-        extra << h(:td, @game.capitalization_type_desc(corporation)) if @game.respond_to?(:capitalization_type_desc)
-        extra << h(:td, "#{corporation.loans.size}/#{@game.maximum_loans(corporation)}") if @game.total_loans&.nonzero?
+        if @game.respond_to?(:capitalization_type_desc)
+          extra << h(:td, { style: { backgroundColor: corp_bg_color } },
+                     @game.capitalization_type_desc(corporation))
+        end
+        if @game.total_loans&.nonzero?
+          extra << h(:td, { style: { backgroundColor: corp_bg_color } },
+                     "#{corporation.loans.size}/#{@game.maximum_loans(corporation)}")
+        end
         if @game.respond_to?(:available_shorts)
           taken, total = @game.available_shorts(corporation)
-          extra << h(:td, "#{taken} / #{total}")
+          extra << h(:td, { style: { backgroundColor: corp_bg_color } }, "#{taken} / #{total}")
         end
         if @game.total_loans.positive?
-          extra << h(:td, @game.format_currency(@game.buying_power(corporation, full: true)))
-          interest_props = { style: {} }
+          extra << h(:td, { style: { backgroundColor: corp_bg_color } },
+                     @game.format_currency(@game.buying_power(corporation, full: true)))
+          interest_props = { style: { backgroundColor: corp_bg_color } }
           unless @game.can_pay_interest?(corporation)
             color = StockMarket::COLOR_MAP[:yellow]
             interest_props[:style][:backgroundColor] = color
@@ -468,7 +391,10 @@ module View
                        @game.format_currency(@game.interest_owed(corporation)).to_s)
           end
         end
-        extra << h(:td, @game.corporation_size_name(corporation)) if @diff_corp_sizes
+        if @diff_corp_sizes
+          extra << h(:td, { style: { backgroundColor: corp_bg_color } },
+                     @game.corporation_size_name(corporation))
+        end
 
         n_ipo_shares = num_ipo_shares(corporation)
         n_market_shares = num_shares_of(@game.share_pool, corporation)
@@ -512,8 +438,7 @@ module View
           market_style[:color] = contrast_on(m_color)
         end
         clean_market_price = if corporation.share_price
-                               @game.format_currency(corporation.share_price.price).gsub(/[^0-9]/,
-                                                                                         '')
+                               @game.format_currency(corporation.share_price.price).gsub(/[^0-9]/, '')
                              else
                                ''
                              end
@@ -540,18 +465,61 @@ module View
         end
 
         clean_corp_cash = @game.format_currency(corporation.cash).gsub(/[^0-9]/, '')
+
+        def render_unplaced_tokens(corporation)
+          return h(:span, '') unless corporation.respond_to?(:tokens)
+
+          # Filter down strictly to unplaced tokens
+          unplaced = corporation.tokens.select do |t|
+            has_hex = t.respond_to?(:hex) && t.hex
+            is_placed = t.respond_to?(:placed?) && t.placed?
+            !has_hex && !is_placed
+          end
+
+          return h(:span, '') if unplaced.empty?
+
+          logo_src = begin
+            setting_for(:simple_logos, @game) ? corporation.simple_logo : corporation.logo
+          rescue StandardError
+            nil
+          end
+
+          token_icons = unplaced.map do |_token|
+            style = {
+              width: '20px',
+              height: '20px',
+              margin: '2px',
+              borderRadius: '50%',
+              boxSizing: 'border-box',
+              display: 'inline-block',
+              border: '1px solid #333',
+            }
+
+            if logo_src
+              style[:backgroundColor] = corporation.color || '#fff'
+              h(:img, { attrs: { src: logo_src }, style: style })
+            else
+              style[:lineHeight] = '18px'
+              style[:textAlign] = 'center'
+              style[:backgroundColor] = corporation.color || '#4169e1'
+              style[:color] = corporation.text_color || '#fff'
+              style[:fontSize] = '0.55rem'
+              style[:fontWeight] = 'bold'
+              h(:div, { style: style }, corporation.id.to_s[0..2])
+            end
+          end
+
+          h(:div, { style: { display: 'flex', flexDirection: 'row', justifyContent: 'center', flexWrap: 'wrap' } }, token_icons)
+        end
+
         corporation_row_content = [
-          h('td.padded_number', { style: { fontFamily: FONT_CASH, color: COLOR_CASH, fontWeight: 'bold' } }, clean_corp_cash),
+          h('td.padded_number',
+            { style: { backgroundColor: corp_bg_color, fontFamily: FONT_CASH, color: COLOR_CASH, fontWeight: 'bold' } }, clean_corp_cash),
           *treasury,
-          h(:td, { style: { fontFamily: FONT_STD } }, train_cards),
-          h(:td, @game.token_string(corporation)),
+          h(:td, { style: { backgroundColor: corp_bg_color, fontFamily: FONT_STD } }, train_cards),
+          h(:td, { style: { backgroundColor: corp_bg_color } }, [render_unplaced_tokens(corporation)]),
           *extra,
-          h('td.padded_number', order_props, if operating_order[0] == UNFLOATED
-                                               "[#{operating_order[1]}]"
-                                             else
-                                               operating_order[1]
-                                             end),
-          render_companies(corporation),
+          render_companies(corporation, corp_bg_color),
         ]
 
         row_content = []
@@ -563,28 +531,71 @@ module View
         h(:tr, tr_props, [
           h(:th, name_props, corporation.name),
           *row_content,
-          h(:th, name_props, corporation.name),
-          *render_connection_run(corporation),
-          *render_history(corporation),
         ])
       end
 
-      def render_companies(entity)
-        if entity.player?
-          props = {
-            style: {
-              maxWidth: PLAYER_COL_MAX_WIDTH,
-              whiteSpace: 'normal',
-              textAlign: 'right',
-            },
-          }
-          props[:style][:minWidth] = min_width(entity)
+      def render_corp_tokens(corporation)
+        return h(:span, '') unless corporation.respond_to?(:tokens)
+
+        tokens = corporation.tokens
+        return h(:span, '') if tokens.empty?
+
+        logo_src = begin
+          setting_for(:simple_logos, @game) ? corporation.simple_logo : corporation.logo
+        rescue StandardError
+          nil
         end
+
+        token_icons = tokens.map do |token|
+          is_placed = token.respond_to?(:hex) && token.hex
+
+          style = {
+            width: '20px',
+            height: '20px',
+            margin: '2px',
+            borderRadius: '50%',
+            boxSizing: 'border-box',
+            display: 'inline-block',
+            border: '1px solid #333',
+            opacity: is_placed ? '1' : '0.3',
+          }
+
+          if logo_src
+            style[:backgroundColor] = corporation.color || '#fff'
+            h(:img, { attrs: { src: logo_src }, style: style })
+          else
+            style[:lineHeight] = '18px'
+            style[:textAlign] = 'center'
+            style[:backgroundColor] = corporation.color || '#4169e1'
+            style[:color] = corporation.text_color || '#fff'
+            style[:fontSize] = '0.55rem'
+            style[:fontWeight] = 'bold'
+            h(:div, { style: style }, corporation.id.to_s[0..2])
+          end
+        end
+
+        h(:div, { style: { display: 'flex', flexDirection: 'row', justifyContent: 'center', flexWrap: 'wrap' } }, token_icons)
+      end
+
+      def render_companies(entity, bg_color = nil)
+        props = {}
+        props[:style] = if entity.player?
+                          {
+                            maxWidth: PLAYER_COL_MAX_WIDTH,
+                            whiteSpace: 'normal',
+                            textAlign: 'right',
+                            minWidth: min_width(entity),
+                          }
+                        else
+                          {}
+                        end
+        props[:style][:backgroundColor] = bg_color if bg_color
+
         company_cards = entity.companies.map do |c|
           h(View::Game::Card, text: c.sym)
         end
 
-        h(:td, props || {}, company_cards)
+        h(:td, props, company_cards)
       end
 
       def render_player_companies
