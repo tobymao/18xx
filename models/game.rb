@@ -84,27 +84,36 @@ class Game < Base
   SQL
   # rubocop:enable Style/FormatString
 
+  # Cap how deep offset paging can go -- well past any real page count, but finite
+  # so the cache key space can't be grown unbounded by arbitrary offsets.
+  HOME_OFFSET_MAX = 10_000
+
   def self.home_games(user, **opts)
-    # Key the cache on only the params that actually change the result, so
-    # pagination/filtering still caches per-variant while unrecognized junk
-    # params can't bust the cache
-    key = opts.slice('new', 'active', 'finished', 'title', 'mode').sort.to_h
+    offsets = {
+      new_offset: opts['new'],
+      active_offset: opts['active'],
+      finished_offset: opts['finished'],
+    }.transform_values { |v| (v&.to_i || 0).clamp(0, HOME_OFFSET_MAX) }
+
+    # Normalize titles to the valid, sorted set (an all-invalid request still
+    # filters to nothing rather than falling back to every game).
+    requested = Array(opts['title']).map(&:strip).reject(&:empty?)
+    titles = requested.empty? ? nil : (requested & Engine::GAME_TITLES).sort
+
+    mode = opts['mode']&.strip
+    mode = nil unless %w[live async].include?(mode)
+
+    # Key the cache on the *normalized* query inputs so equivalent or junk params
+    # (e.g. "01" vs "1", unknown titles/modes) collapse to one key instead of
+    # minting an unbounded number of distinct entries.
+    key = [offsets.values, titles, mode]
     Bus.cache("home_games:#{user&.id}:#{key}", ttl: 9) do
-      kwargs = {
-        new_offset: opts['new'],
-        active_offset: opts['active'],
-        finished_offset: opts['finished'],
-      }.transform_values { |v| v&.to_i || 0 }
-
+      kwargs = offsets.dup
       kwargs[:user_id] = user.id if user
-      kwargs[:titles] = opts['title']&.then do |t|
-        titles = Array(t).map(&:strip).reject(&:empty?)
-        next nil if titles.empty?
-
-        Sequel.pg_array(titles)
-      end
-      mode = opts['mode']&.strip
-      kwargs[:mode] = mode && !mode.empty? && %w[live async].include?(mode) ? mode : nil
+      # Typed so an all-invalid request (empty array) still binds as text[] rather
+      # than raising IndeterminateDatatype; it just matches no rows.
+      kwargs[:titles] = titles && Sequel.pg_array(titles, :text)
+      kwargs[:mode] = mode
       kwargs[:status] = %w[new active]
       kwargs[:limit] = 1000
       to_h_safe(fetch(user ? LOGGED_IN_QUERY : LOGGED_OUT_QUERY, **kwargs).all)
