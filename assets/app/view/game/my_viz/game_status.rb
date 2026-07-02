@@ -362,6 +362,8 @@ module View
         all_entities = @game.respond_to?(:minors) ? (@game.minors || []) : []
         all_entities += @game.all_corporations
 
+        all_entities.reject! { |c| c.respond_to?(:closed?) && c.closed? }
+
         unfloated_corporations =
           (all_entities - operating_array)
             .select { |c| c.respond_to?(:sort_order_key) && c.sort_order_key }
@@ -1160,6 +1162,7 @@ active_entity, t
         props[:style][:backgroundColor] = bg_color if bg_color
 
         companies_list = entity.respond_to?(:companies) ? entity.companies : []
+        companies_list = companies_list.reject { |c| c.respond_to?(:closed?) && c.closed? }
         company_cards = companies_list.map do |c|
           h(View::Game::Card, text: c.sym)
         end
