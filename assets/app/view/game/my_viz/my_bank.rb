@@ -1,20 +1,26 @@
 # frozen_string_literal: true
 
 require 'lib/settings'
+require 'view/game/actionable'
 require 'view/game/my_viz/card'
 
 module View
   module Game
     class MyBank < Snabberb::Component
       include Lib::Settings
+      include Actionable
 
-      needs :game
+      needs :game, store: true
       needs :show_loan_table, default: false, store: true
 
       FONT_STD = '"Helvetica Neue", Helvetica, Arial, sans-serif'
       FONT_MONEY = '"Courier New", Courier, monospace'
       FONT_CASH = '"Arial Black", Gadget, sans-serif'
       COLOR_CASH = '#4b0082' # Dark Purple (Indigo)
+
+      def active_entity
+        @game.round.active_step&.current_entity
+      end
 
       def render
         title_props = {
@@ -40,7 +46,7 @@ module View
           h(:div, body_props, [
             render_financial_table,
             render_bank_trains,
-            h(GameInfo, game: @game, layout: 'discarded_trains'),
+            render_discarded_trains,
           ].compact),
         ])
       end
@@ -65,7 +71,8 @@ module View
           if @game.respond_to?(:future_interest_rate)
             trs << h(:tr, [
               h('td.left', { style: { fontFamily: FONT_STD } }, 'Future Interest'),
-              h('td.right', { style: { fontFamily: FONT_MONEY, fontWeight: 'bold' } }, @game.format_currency(@game.future_interest_rate)),
+              h('td.right', { style: { fontFamily: FONT_MONEY, fontWeight: 'bold' } },
+                @game.format_currency(@game.future_interest_rate)),
             ])
           end
           trs << h(:tr, [
@@ -141,8 +148,18 @@ module View
         h(:table, { style: { borderCollapse: 'collapse', width: '100%' } }, trs)
       end
 
-      
-def render_bank_trains
+      def safe_can_buy_train?(step, entity, train)
+        return false if !step || !entity || !train
+        return false unless step.respond_to?(:can_buy_train?)
+
+        begin
+          step.can_buy_train?(entity, train)
+        rescue StandardError => _e
+          false
+        end
+      end
+
+      def render_bank_trains
         return nil unless @game.respond_to?(:depot) && @game.depot
 
         trains_to_show = []
@@ -160,7 +177,7 @@ def render_bank_trains
         trains_to_show.each do |t|
           next if `t === undefined || t === null`
           next unless t.respond_to?(:name)
-          next if !t.name
+          next unless t.name
 
           unless seen[t.name]
             seen[t.name] = true
@@ -170,29 +187,143 @@ def render_bank_trains
 
         return nil if unique_trains.empty?
 
+        step = @game.round.active_step
+        train_buyable_step = step&.current_actions&.include?('buy_train')
+
         train_cards = unique_trains.map do |t|
           border_color = '#999999'
           click_handler = nil
 
-          h(:div, { style: { display: 'inline-block', margin: '2px' } }, [
-            h(View::Game::Card, text: t.name, border_color: border_color, click_action: click_handler)
+          if train_buyable_step && active_entity && safe_can_buy_train?(step, active_entity, t)
+            border_color = '#00cc00'
+            click_handler = lambda {
+              process_action(Engine::Action::BuyTrain.new(
+                active_entity,
+                train: t,
+                price: t.price
+              ))
+            }
+          end
+
+          h(:div, { style: { display: 'inline-block', margin: '2px', textAlign: 'center', verticalAlign: 'top' } }, [
+            h(View::Game::Card, text: t.name, border_color: border_color, click_action: click_handler),
+            h(:div,
+              { style: { fontFamily: FONT_CASH, color: COLOR_CASH, fontSize: '0.75rem', fontWeight: 'bold', marginTop: '2px' } }, t.respond_to?(:price) ? @game.format_currency(t.price) : ''),
           ])
         end
 
         h(:div, {
-          style: {
-            marginTop: '0.4rem',
-            paddingTop: '0.4rem',
-            borderTop: '1px solid #bbbbbb',
-            textAlign: 'center',
-          }
-        }, [
-          h(:div, { style: { fontSize: '0.8rem', fontWeight: 'bold', marginBottom: '0.3rem', fontFamily: FONT_STD } }, 'Bank Depot:'),
-          h(:div, { style: { display: 'flex', flexWrap: 'wrap', justifyContent: 'center' } }, train_cards)
+            style: {
+              marginTop: '0.4rem',
+              paddingTop: '0.4rem',
+              borderTop: '1px solid #bbbbbb',
+              textAlign: 'center',
+            },
+          }, [
+          h(:div, { style: { fontSize: '0.8rem', fontWeight: 'bold', marginBottom: '0.3rem', fontFamily: FONT_STD } },
+            'Bank Depot:'),
+          h(:div, { style: { display: 'flex', flexWrap: 'wrap', justifyContent: 'center' } }, train_cards),
         ])
       end
 
+      def render_discarded_trains
+        return nil unless @game.respond_to?(:depot) && @game.depot && !@game.depot.discarded.empty?
 
+        rust_schedule = Hash.new { |h, k| h[k] = [] }
+        obsolete_schedule = Hash.new { |h, k| h[k] = [] }
+
+        @game.depot.trains.group_by(&:name).each do |_name, trains|
+          first = trains.first
+          base_variant = first.variants.values.find { |v| !v[:ignore_rust_obsolete_schedule] }
+          next unless base_variant
+
+          base_rust = base_variant[:rusts_on]
+          base_obsolete = base_variant[:obsolete_on]
+
+          first.variants.each do |name, train_variant|
+            next if train_variant[:ignore_rust_obsolete_schedule]
+
+            train_variant[:rusts_on] ||= base_rust
+            train_variant[:obsolete_on] ||= base_obsolete
+
+            Array(train_variant[:rusts_on]).each do |rusts_on|
+              rust_schedule[rusts_on].append(name) unless rust_schedule[rusts_on].include?(name)
+            end
+            Array(train_variant[:obsolete_on]).each do |obsolete_on|
+              obsolete_schedule[obsolete_on].append(name) unless obsolete_schedule[obsolete_on].include?(name)
+            end
+          end
+        end
+
+        step = @game.round.active_step
+        train_buyable_step = step&.current_actions&.include?('buy_train')
+
+        rows = @game.depot.discarded.group_by(&:name).map do |_name, trains|
+          train = trains.first
+          price = @game.format_currency(train.price)
+          count_text = trains.size.to_s
+
+          border_color = '#999999'
+          click_handler = nil
+
+          if train_buyable_step && active_entity && safe_can_buy_train?(step, active_entity, train)
+            border_color = '#00cc00'
+            click_handler = lambda {
+              process_action(Engine::Action::BuyTrain.new(
+                active_entity,
+                train: train,
+                price: train.price
+              ))
+            }
+          end
+
+          effects = []
+          train.names_to_prices.keys.each do |key|
+            if (rust = rust_schedule[key]) && !rust.empty?
+              effects << "Rusts: #{rust.join(', ')}"
+            end
+          end
+
+          if obsolete_schedule[train.name] && !obsolete_schedule[train.name].empty?
+            effects << "Phases out: #{obsolete_schedule[train.name].join(', ')}"
+          end
+
+          h(:tr, { style: { borderBottom: '1px solid #cccccc' } }, [
+            h('td.center', { style: { padding: '0.4rem 0.6rem', verticalAlign: 'middle' } }, [
+              h(View::Game::Card, text: train.name, border_color: border_color, click_action: click_handler),
+            ]),
+            h('td.right', { style: { fontFamily: FONT_CASH, color: COLOR_CASH, padding: '0.4rem 0.6rem', fontWeight: 'bold' } },
+              price),
+            h('td.center', { style: { fontFamily: FONT_STD, padding: '0.4rem 0.6rem', verticalAlign: 'middle' } }, count_text),
+            h('td.left', { style: { fontFamily: FONT_STD, padding: '0.4rem 0.6rem', fontSize: '0.8rem', color: '#444444', verticalAlign: 'middle' } },
+              effects.join(' | ')),
+          ])
+        end
+
+        h(:div, {
+            style: {
+              marginTop: '0.4rem',
+              paddingTop: '0.4rem',
+              borderTop: '1px solid #bbbbbb',
+            },
+          }, [
+          h(:div,
+            { style: { fontSize: '0.8rem', fontWeight: 'bold', marginBottom: '0.3rem', fontFamily: FONT_STD, textAlign: 'center' } }, 'Bank Pool (Discarded):'),
+          h(:div, { style: { overflowX: 'auto' } }, [
+            h(:table, { style: { borderCollapse: 'collapse', width: '100%', fontSize: '0.85rem' } }, [
+              h(:thead, [
+                h(:tr, { style: { borderBottom: '2px solid #333333' } }, [
+                  h('th.center', { style: { padding: '0.4rem 0.6rem' } }, 'Type'),
+                  h('th.right', { style: { padding: '0.4rem 0.6rem' } }, 'Price'),
+                  h('th.center', { style: { padding: '0.4rem 0.6rem' } }, 'Available'),
+                  h('th.left', { style: { padding: '0.4rem 0.6rem' } }, 'Effect'),
+                ]),
+              ]),
+              h(:tbody, rows),
+            ]),
+          ]),
+        ])
+      end
     end
   end
 end
