@@ -179,6 +179,7 @@ module View
         upper_content << h(:div, { style: { marginBottom: '0.4rem' } }, [
           render_phase_box('4. Buy Trains', phase == :buy_train, ['Done Buying'], actions, current_entity, buyable_list),
         ])
+        upper_content << h(Abilities)
 
         standard_actions = %w[lay_tile place_token run_routes dividend payout withhold half split
                               buy_train pass]
