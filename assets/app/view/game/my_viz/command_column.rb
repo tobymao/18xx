@@ -27,7 +27,14 @@ module View
           store(:routes, @routes, skip: true)
         end
 
-        actions = current_entity ? step.actions(current_entity) : []
+# Ask the Round instead of the Step to capture global actions like take_loan
+        actions = current_entity ? @game.round.actions_for(current_entity) : []
+        
+        puts "--- DEBUG ACTIONS ---"
+        puts "Entity ID: #{current_entity&.id}"
+        puts "Entity Type: #{current_entity.class.name}"
+        puts "Step Class: #{step.class.name}"
+        puts "Raw Actions: #{actions.inspect}"
 
         phase = :waiting
         if actions.include?('lay_tile') then phase = :build_track
@@ -183,19 +190,34 @@ module View
 
         standard_actions = %w[lay_tile place_token run_routes dividend payout withhold half split
                               buy_train pass]
-        special_actions = actions - standard_actions
+        system_actions = %w[end_game bankrupt]
+        special_actions = actions - standard_actions - system_actions
 
-        if special_actions.any?
+if special_actions.any?
           special_buttons = special_actions.map do |action|
+            action_class = begin
+              Engine::Action.const_get(action.split('_').map(&:capitalize).join)
+            rescue NameError
+              nil
+            end
+            
+            next unless action_class
+
+            # Dynamic check: Does the action require extra parameters we can't provide?
+            required_args = action_class.const_defined?(:REQUIRED_ARGS) ? action_class::REQUIRED_ARGS : []
+            
+            # Allow the button if it requires nothing, OR if it's one of our handled loan actions
+            is_loan_action = %w[take_loan payoff_loan].include?(action)
+            next unless required_args.empty? || is_loan_action
+
             label = action.split('_').map(&:capitalize).join(' ')
             click_action = lambda do
-              # Placeholder for action instantiation to be confirmed with exact class structure
-              action_class = begin
-                Engine::Action.const_get(action.split('_').map(&:capitalize).join)
-              rescue NameError
-                nil
+              if is_loan_action
+                loan_pool = action == 'payoff_loan' ? (current_entity.respond_to?(:loans) ? current_entity.loans : []) : (@game.respond_to?(:loans) ? @game.loans : [])
+                process_action(action_class.new(current_entity, loan: loan_pool[0])) if loan_pool[0]
+              else
+                process_action(action_class.new(current_entity))
               end
-              process_action(action_class.new(current_entity)) if action_class
             end
 
             h(:button, {
@@ -213,7 +235,7 @@ module View
                 },
                 on: { click: click_action },
               }, label)
-          end
+          end.compact
 
           upper_content << h(:div, { style: { border: '2px solid #007bff', padding: '0.4rem', backgroundColor: '#e2e3e5', textAlign: 'center', marginBottom: '0.4rem' } }, [
             h(:div, { style: { fontSize: '0.8rem', fontWeight: 'bold', color: '#1b1e21', marginBottom: '0.2rem' } },

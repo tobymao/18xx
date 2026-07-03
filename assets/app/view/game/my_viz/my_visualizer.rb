@@ -98,14 +98,14 @@ module View
             h(:div, {
                 style: {
                   flex: '1 1 62%',
-                  overflow: 'hidden',
+                  overflow: 'auto',
                   border: '1px solid #ccc',
                   padding: '0.4rem',
                   borderRadius: '4px',
                   backgroundColor: '#fff',
                   display: 'flex',
                   flexDirection: 'column',
-                  '& div': { overflow: 'hidden !important' },
+                  '& div': { overflow: 'auto !important' },
                   '& table': {
                     width: '100% !important',
                     tableLayout: 'fixed',
