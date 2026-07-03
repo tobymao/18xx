@@ -397,71 +397,15 @@ module View
         end
 
         result.sort_by! do |operating_order, corporation|
-          if @spreadsheet_sort_by.is_a?(Array)
-            corporation.operating_history[@spreadsheet_sort_by]&.revenue || -1
-          else
-            case @spreadsheet_sort_by
-            when :id
-              type_order = corporation.minor? ? 0 : 1
-              if /^\d+$/.match?(corporation.id)
-                [type_order, 2, corporation.id.to_i]
-              else
-                [type_order, 1, corporation.id]
-              end
-            when :ipo_shares
-              corporation.minor? ? 0 : num_ipo_shares(corporation)
-            when :market_shares
-              corporation.minor? ? 0 : num_shares_of(@game.share_pool, corporation)
-            when :share_price
-              [corporation.share_price&.price || 0, operating_order[0], -operating_order[1]]
-            when :par_price
-              if corporation.minor?
-                minors_list = @game.respond_to?(:minors) ? (@game.minors || []) : []
-                minor_idx = minors_list.index(corporation) || 0
-                [1, -minor_idx]
-              else
-                [0, corporation.par_price&.price || 0]
-              end
-            when :cash
-              corporation.cash
-            when :prev_revenue
-              corporation.operating_history.values.last&.revenue || 0
-            when :treasury
-              corporation.minor? ? 0 : num_shares_of(corporation, corporation)
-            when :trains
-              ct = corporation.trains.sort_by(&:name).reverse
-              train_limit = @game.phase.train_limit(corporation)
-              corporation.floated? ? [ct.size, [Array.new(train_limit) { |i| ct[i]&.name }]] : [-1, []]
-            when :tokens
-              @game.count_available_tokens(corporation)
-            when :capitalization_type_desc
-              @game.capitalization_type_desc(corporation) if @game.respond_to?(:capitalization_type_desc)
-            when :loans
-              corporation.loans.size
-            when :shorts
-              @game.available_shorts(corporation) if @game.respond_to?(:available_shorts)
-            when :buying_power
-              @game.buying_power(corporation, full: true)
-            when :interest
-              @game.interest_owed(corporation) if @game.total_loans.positive?
-            when :corp_size
-              @game.corporation_size(corporation)
-            when :companies
-              corporation.companies.size
-            else
-              p = @game.player_by_id(@spreadsheet_sort_by)
-              if corporation.minor?
-                corporation.owner == p ? 10 : -99
-              else
-                n = p&.num_shares_of(corporation)
-                n += 0.01 if corporation.respond_to?(:president?) && corporation.president?(p)
-                n.nil? || n.zero? ? -99 : n
-              end
-            end
-          end
+          is_minor = corporation.minor? ? 0 : 1
+          minor_order = corporation.minor? ? operating_order[1] : 0
+          major_price = corporation.minor? ? 0 : -(corporation.share_price&.price || 0)
+          major_status = corporation.minor? ? 0 : -operating_order[0]
+          major_secondary_order = corporation.minor? ? 0 : operating_order[1]
+
+          [is_minor, minor_order, major_price, major_status, major_secondary_order]
         end
 
-        result.reverse! if @spreadsheet_sort_order == 'DESC'
         result
       end
 
