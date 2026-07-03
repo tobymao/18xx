@@ -127,10 +127,11 @@ module View
         rows << comp_cells
 
         # 5. Certs Row
-        cert_limit = @game.cert_limit
         props = { style: { color: 'red' } }
         cert_cells = [h('th.left', 'Cert')]
         @game.players.each_with_index do |player, idx|
+        cert_limit = @game.cert_limit(player)
+
           bg_color = player == active_player ? COLOR_ACTIVE : COLOR_INACTIVE
           num_certs = @game.num_certs(player)
           cell_props = num_certs > cert_limit ? props.merge(style: { backgroundColor: bg_color }) : { style: { backgroundColor: bg_color } }
