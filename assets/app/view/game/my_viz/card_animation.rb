@@ -2,35 +2,55 @@
 
 module Lib
   module CardAnimation
-    def self.fly(event, dest_selector)
+    def self.fly(_event, dest_selector)
       # FIRST: Handle DOM capture and cloning natively to avoid Opal bridge errors
+      capture_successful = false
       %x{
-        var nativeEvent = #{event}.$to_n ? #{event}.$to_n() : #{event};
-        var target = nativeEvent.target || nativeEvent;
-        var card = target.closest('.card') || target;
+        var card = null, startX, startY, width, height, clone;
+        try {
+          if (typeof #{event_or_source} === 'string') {
+            var parts = #{event_or_source}.split(' ');
+            var id = parts[0].replace('#', '');
+            var parent = window.document.getElementById(id);
+            if (parent) {
+              card = parent.querySelector(parts[1] || '.card');
+            }
+          } else {
+            var nativeEvent = #{event_or_source}.$to_n ? #{event_or_source}.$to_n() : #{event_or_source};
+            var target = nativeEvent.target || nativeEvent;
+            card = target.closest('.card') || target;
+          }
+        } catch(e) {
+          console.warn("Animation failed to locate source", e);
+        }
 
-        var rect = card.getBoundingClientRect();
-        var startX = rect.left;
-        var startY = rect.top;
-        var width = rect.width;
-        var height = rect.height;
+        if (card) {
+          #{capture_successful = true};
+          var rect = card.getBoundingClientRect();
+          startX = rect.left;
+          startY = rect.top;
+          width = rect.width;
+          height = rect.height;
 
-        var clone = card.cloneNode(true);
-        clone.style.position = 'fixed';
-        clone.style.left = startX + 'px';
-        clone.style.top = startY + 'px';
-        clone.style.width = width + 'px';
-        clone.style.height = height + 'px';
-        clone.style.zIndex = '9999';
-        clone.style.margin = '0';
-        clone.style.transition = 'transform 0.5s ease-in-out, opacity 0.5s ease-in-out';
-        clone.style.pointerEvents = 'none';
+          clone = card.cloneNode(true);
+          clone.style.position = 'fixed';
+          clone.style.left = startX + 'px';
+          clone.style.top = startY + 'px';
+          clone.style.width = width + 'px';
+          clone.style.height = height + 'px';
+          clone.style.zIndex = '9999';
+          clone.style.margin = '0';
+          clone.style.transition = 'transform 0.5s ease-in-out, opacity 0.5s ease-in-out';
+          clone.style.pointerEvents = 'none';
 
-        window.document.body.appendChild(clone);
+          window.document.body.appendChild(clone);
+        }
       }
 
-      # Execute the game action to update state and trigger Snabberb VDOM patch
-      yield
+      # Execute the game action to update state and trigger Snabberb VDOM patch unconditionally
+      yield if block_given?
+
+      return unless capture_successful
 
       # LAST & PLAY: Handle the FLIP destination logic natively
       %x{
