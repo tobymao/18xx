@@ -11,6 +11,8 @@ require 'view/game/actionable'
 require 'lib/truncate'
 require 'view/game/my_viz/my_bank'
 require 'view/game/my_viz/my_upcoming_trains'
+require 'view/game/my_viz/card_animation'
+require 'view/game/my_viz/money_animation'
 
 FLOATED = 2
 UNFLOATED = 1
@@ -90,7 +92,7 @@ module View
           bg_color = p == active_player ? COLOR_ACTIVE : COLOR_INACTIVE
           is_last = idx == @game.players.size - 1
           cash_cells << h("td.padded_number#{is_last ? '.thick-right' : ''}",
-                          { style: { fontFamily: FONT_CASH, color: COLOR_CASH, fontWeight: 'bold', backgroundColor: bg_color } }, clean_cash)
+                          { hook: Lib::MoneyAnimation.hook, style: { fontFamily: FONT_CASH, color: COLOR_CASH, fontWeight: 'bold', backgroundColor: bg_color } }, clean_cash)
         end
         rows << cash_cells
 
@@ -582,14 +584,16 @@ module View
                                 update
                               }
                             else
-                              lambda {
+                              lambda { |event|
                                 target_bundle = bundles.first
-                                process_action(Engine::Action::SellShares.new(
-                                  p,
-                                  shares: target_bundle[:shares],
-                                  share_price: target_bundle[:share_price],
-                                  percent: target_bundle[:percent]
-                                ))
+                                Lib::CardAnimation.fly(event, "#pool_shares_#{corporation.id}") do
+                                  process_action(Engine::Action::SellShares.new(
+                                    p,
+                                    shares: target_bundle[:shares],
+                                    share_price: target_bundle[:share_price],
+                                    percent: target_bundle[:percent]
+                                  ))
+                                end
                               }
                             end
           elsif can_buy_from_player
@@ -713,7 +717,7 @@ module View
                 td_children << render_choice_menu('Nationalize share bundle?', options, cancel_handler)
               end
 
-              players_row_content << h(:td, { style: { backgroundColor: bg_color, textAlign: 'center', position: 'relative' } },
+              players_row_content << h(:td, { attrs: { id: "player_shares_#{p.id}_#{corporation.id}" }, style: { backgroundColor: bg_color, textAlign: 'center', position: 'relative' } },
                                        td_children)
             end
           end
@@ -745,14 +749,16 @@ module View
                                      update
                                    }
                                  else
-                                   lambda {
+                                   lambda { |event|
                                      bnd = valid_pool_shares.first.to_bundle
-                                     process_action(Engine::Action::BuyShares.new(
-                                       active_player,
-                                       shares: bnd.shares,
-                                       share_price: bnd.share_price,
-                                       percent: bnd.percent
-                                     ))
+                                     Lib::CardAnimation.fly(event, "#player_shares_#{active_player.id}_#{corporation.id}") do
+                                       process_action(Engine::Action::BuyShares.new(
+                                         active_player,
+                                         shares: bnd.shares,
+                                         share_price: bnd.share_price,
+                                         percent: bnd.percent
+                                       ))
+                                     end
                                    }
                                  end
           end
@@ -767,15 +773,17 @@ module View
             options = valid_pool_shares.map do |share|
               {
                 label: "Buy #{share.to_bundle.percent}%",
-                action: lambda {
+                action: lambda { |event|
                   Lib::Storage['buy_pool_menu_corp'] = nil
                   bnd = share.to_bundle
-                  process_action(Engine::Action::BuyShares.new(
-                    active_player,
-                    shares: bnd.shares,
-                    share_price: bnd.share_price,
-                    percent: bnd.percent
-                  ))
+                  Lib::CardAnimation.fly(event, "#player_shares_#{active_player.id}_#{corporation.id}") do
+                    process_action(Engine::Action::BuyShares.new(
+                      active_player,
+                      shares: bnd.shares,
+                      share_price: bnd.share_price,
+                      percent: bnd.percent
+                    ))
+                  end
                 },
               }
             end
@@ -807,9 +815,10 @@ module View
                              end
 
         pool_row_content = [
-          h('td.padded_number', { style: { backgroundColor: COLOR_INACTIVE, position: 'relative' } }, pool_cell_children),
-          h('td.padded_number', { style: market_style }, clean_market_price),
-        ]
+           h('td.padded_number',
+             { attrs: { id: "pool_shares_#{corporation.id}" }, style: { backgroundColor: COLOR_INACTIVE, position: 'relative' } }, pool_cell_children),
+           h('td.padded_number', { style: market_style }, clean_market_price),
+         ]
 
         # --- IPO Shares Content ---
         ipo_share_text = n_ipo_shares.zero? ? '' : "#{n_ipo_shares * 10}%"
@@ -832,14 +841,16 @@ module View
                                     update
                                   }
                                 else
-                                  lambda {
+                                  lambda { |event|
                                     bnd = valid_ipo_shares.first.to_bundle
-                                    process_action(Engine::Action::BuyShares.new(
-                                      active_player,
-                                      shares: bnd.shares,
-                                      share_price: bnd.share_price,
-                                      percent: bnd.percent
-                                    ))
+                                    Lib::CardAnimation.fly(event, "#player_shares_#{active_player.id}_#{corporation.id}") do
+                                      process_action(Engine::Action::BuyShares.new(
+                                        active_player,
+                                        shares: bnd.shares,
+                                        share_price: bnd.share_price,
+                                        percent: bnd.percent
+                                      ))
+                                    end
                                   }
                                 end
           end
@@ -854,15 +865,17 @@ module View
             options = valid_ipo_shares.map do |share|
               {
                 label: "Buy #{share.to_bundle.percent}%",
-                action: lambda {
+                action: lambda { |event|
                   Lib::Storage['buy_ipo_menu_corp'] = nil
                   bnd = share.to_bundle
-                  process_action(Engine::Action::BuyShares.new(
-                    active_player,
-                    shares: bnd.shares,
-                    share_price: bnd.share_price,
-                    percent: bnd.percent
-                  ))
+                  Lib::CardAnimation.fly(event, "#player_shares_#{active_player.id}_#{corporation.id}") do
+                    process_action(Engine::Action::BuyShares.new(
+                      active_player,
+                      shares: bnd.shares,
+                      share_price: bnd.share_price,
+                      percent: bnd.percent
+                    ))
+                  end
                 },
               }
             end
@@ -1036,15 +1049,15 @@ active_entity, t
         clean_rev = last_rev ? @game.format_currency(last_rev).gsub(/[^0-9]/, '') : ''
 
         corporation_row_content = [
-          h('td.padded_number',
-            { style: { backgroundColor: corp_bg_color, fontFamily: FONT_CASH, color: COLOR_CASH, fontWeight: 'bold' } }, clean_corp_cash),
-          *treasury,
-          h('td.padded_number',
-            { style: { backgroundColor: corp_bg_color, fontFamily: FONT_CASH, color: COLOR_CASH, fontWeight: 'bold' } }, clean_rev),
-          h(:td, { style: { backgroundColor: corp_bg_color, fontFamily: FONT_STD } }, train_cards),
-          h(:td, { style: { backgroundColor: corp_bg_color } }, [render_unplaced_tokens(corporation)]),
-          *extra,
-        ]
+                  h('td.padded_number',
+                    { hook: Lib::MoneyAnimation.hook, style: { backgroundColor: corp_bg_color, fontFamily: FONT_CASH, color: COLOR_CASH, fontWeight: 'bold' } }, clean_corp_cash),
+                  *treasury,
+                  h('td.padded_number',
+                    { hook: Lib::MoneyAnimation.hook, style: { backgroundColor: corp_bg_color, fontFamily: FONT_CASH, color: COLOR_CASH, fontWeight: 'bold' } }, clean_rev),
+                  h(:td, { style: { backgroundColor: corp_bg_color, fontFamily: FONT_STD } }, train_cards),
+                  h(:td, { style: { backgroundColor: corp_bg_color } }, [render_unplaced_tokens(corporation)]),
+                  *extra,
+                ]
         corporation_row_content << render_companies(corporation, corp_bg_color) if @show_privates
 
         row_content = []
@@ -1191,7 +1204,7 @@ active_entity, t
             is_active_col = (p == active_player)
             bg_color = is_active_col ? COLOR_ACTIVE : COLOR_INACTIVE
             h('td.padded_number',
-              { style: { fontFamily: FONT_CASH, color: COLOR_CASH, fontWeight: 'bold', backgroundColor: bg_color } }, clean_cash)
+              { hook: Lib::MoneyAnimation.hook, style: { fontFamily: FONT_CASH, color: COLOR_CASH, fontWeight: 'bold', backgroundColor: bg_color } }, clean_cash)
           end,
         ])
       end
