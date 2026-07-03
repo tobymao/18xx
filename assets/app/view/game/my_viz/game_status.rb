@@ -201,9 +201,13 @@ module View
         treasury = []
         treasury << h(:th, render_sort_link('Shares', :treasury)) if @game.separate_treasury?
 
-        extra = []
+extra = []
         if @game.respond_to?(:capitalization_type_desc)
-          extra << h(:th, render_sort_link('Capitalization', :capitalization_type_desc))
+          @is_escrow_game = @game.all_corporations.any? do |c|
+            @game.capitalization_type_desc(c)&.include?('Escrow')
+          end
+          header_label = @is_escrow_game ? 'Escrow' : 'Capitalization'
+          extra << h(:th, render_sort_link(header_label, :capitalization_type_desc))
         end
         extra << h(:th, render_sort_link('Loans', :loans)) if @game.total_loans&.nonzero?
         extra << h(:th, render_sort_link('Shorts', :shorts)) if @game.respond_to?(:available_shorts)
@@ -484,11 +488,19 @@ module View
                         num_shares_of(corporation, corporation))
         end
 
-        extra = []
+
+extra = []
         if @game.respond_to?(:capitalization_type_desc)
-          extra << h(:td, { style: { backgroundColor: corp_bg_color } },
-                     @game.capitalization_type_desc(corporation))
+          desc_text = @game.capitalization_type_desc(corporation)
+          if @is_escrow_game && desc_text&.include?('Escrow')
+            clean_digits = desc_text.scan(/\d+/).first || '0'
+            extra << h(:td, money_props(backgroundColor: corp_bg_color), clean_digits)
+          else
+            extra << h(:td, { style: { backgroundColor: corp_bg_color } }, desc_text)
+          end
         end
+
+
         if @game.total_loans&.nonzero?
           extra << h(:td, { style: { backgroundColor: corp_bg_color } }, [render_loan_dots(corporation)])
         end
