@@ -399,11 +399,11 @@ module View
         result.sort_by! do |operating_order, corporation|
           is_minor = corporation.minor? ? 0 : 1
           minor_order = corporation.minor? ? operating_order[1] : 0
-          major_price = corporation.minor? ? 0 : -(corporation.share_price&.price || 0)
           major_status = corporation.minor? ? 0 : -operating_order[0]
+          major_price = corporation.minor? ? 0 : -(corporation.share_price&.price || 0)
           major_secondary_order = corporation.minor? ? 0 : operating_order[1]
 
-          [is_minor, minor_order, major_price, major_status, major_secondary_order]
+          [is_minor, minor_order, major_status, major_price, major_secondary_order]
         end
 
         result
