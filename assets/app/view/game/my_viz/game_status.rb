@@ -827,34 +827,54 @@ module View
         ipo_click_handler = nil
         valid_ipo_shares = []
 
-        if step&.respond_to?(:can_buy?) && active_player
-          ipo_shares = corporation.respond_to?(:ipo_shares) ? corporation.ipo_shares : []
-          valid_ipo_shares = ipo_shares.select do |s|
-            (s.respond_to?(:buyable) ? s.buyable : true) && step.can_buy?(active_player, s.to_bundle)
-          end
+        can_par = active_player && @game.respond_to?(:can_par?) && @game.can_par?(corporation, active_player)
+par_prices = []
+    if can_par
+      par_prices = if step.respond_to?(:get_par_prices_with_help)
+                     step.get_par_prices_with_help(active_player, corporation).sort_by(&:price)
+                   elsif step.respond_to?(:get_par_prices)
+                     step.get_par_prices(active_player, corporation).sort_by(&:price)
+                   elsif @game.respond_to?(:par_prices)
+                     @game.par_prices(corporation).sort_by(&:price)
+                   else
+                     @game.stock_market.par_prices.sort_by(&:price)
+                   end
 
-          unless valid_ipo_shares.empty?
-            ipo_border_color = '#00cc00'
-            ipo_click_handler = if valid_ipo_shares.uniq { |s| s.to_bundle.percent }.size > 1
-                                  lambda {
-                                    Lib::Storage['buy_ipo_menu_corp'] = corporation.id
-                                    update
-                                  }
-                                else
-                                  lambda { |event|
-                                    bnd = valid_ipo_shares.first.to_bundle
-                                    Lib::CardAnimation.fly(event, "#player_shares_#{active_player.id}_#{corporation.id}") do
-                                      process_action(Engine::Action::BuyShares.new(
-                                        active_player,
-                                        shares: bnd.shares,
-                                        share_price: bnd.share_price,
-                                        percent: bnd.percent
-                                      ))
-                                    end
-                                  }
+      unless par_prices.empty?
+        ipo_border_color = '#00cc00'
+        ipo_click_handler = lambda {
+          Lib::Storage['par_menu_corp'] = corporation.id
+          update
+        }
+      end
+    elsif step&.respond_to?(:can_buy?) && active_player
+      ipo_shares = corporation.respond_to?(:ipo_shares) ? corporation.ipo_shares : []
+      valid_ipo_shares = ipo_shares.select do |s|
+        (s.respond_to?(:buyable) ? s.buyable : true) && step.can_buy?(active_player, s.to_bundle)
+      end
+
+      unless valid_ipo_shares.empty?
+        ipo_border_color = '#00cc00'
+        ipo_click_handler = if valid_ipo_shares.uniq { |s| s.to_bundle.percent }.size > 1
+                              lambda {
+                                Lib::Storage['buy_ipo_menu_corp'] = corporation.id
+                                update
+                              }
+                            else
+                              lambda { |event|
+                                bnd = valid_ipo_shares.first.to_bundle
+                                Lib::CardAnimation.fly(event, "#player_shares_#{active_player.id}_#{corporation.id}") do
+                                  process_action(Engine::Action::BuyShares.new(
+                                    active_player,
+                                    shares: bnd.shares,
+                                    share_price: bnd.share_price,
+                                    percent: bnd.percent
+                                  ))
                                 end
-          end
-        end
+                              }
+                            end
+      end
+    end
 
         ipo_cell_children = []
         unless ipo_share_text.empty?
@@ -884,6 +904,13 @@ module View
               update
             }
             ipo_cell_children << render_choice_menu('Buy from IPO:', options, cancel_handler)
+          end
+          if Lib::Storage['par_menu_corp'] == corporation.id && can_par && !par_prices.empty?
+            cancel_handler = lambda {
+              Lib::Storage['par_menu_corp'] = nil
+              update
+            }
+            ipo_cell_children << render_par_matrix_menu(corporation, par_prices, cancel_handler)
           end
         end
 
@@ -1341,6 +1368,104 @@ active_entity, t
             },
           }, menu_elements)
       end
+
+      def render_par_matrix_menu(corporation, par_prices, cancel_handler)
+        shares_range = (2..10).to_a
+
+        headers = [h(:th, { style: { padding: '5px', border: '1px solid #999', backgroundColor: COLOR_INACTIVE } }, 'Par \ Shares')]
+        shares_range.each do |n|
+          headers << h(:th, { style: { padding: '5px', border: '1px solid #999', backgroundColor: COLOR_INACTIVE } }, n.to_s)
+        end
+
+        rows = []
+        par_prices.each do |par_node|
+          par_price = par_node.price
+
+          # Calculate required float shares, defaulting to float_percent logic if standard method isn't present
+          float_shares = if @game.respond_to?(:total_shares_to_float)
+                           @game.total_shares_to_float(corporation, par_price)
+                         else
+                           (corporation.float_percent || 60) / (corporation.share_percent || 10)
+                         end
+
+          cells = [h(:th, { style: { padding: '5px', border: '1px solid #999', backgroundColor: COLOR_INACTIVE } }, @game.format_currency(par_price))]
+
+          shares_range.each do |n|
+            cost = n * par_price
+            can_afford = active_player.cash >= cost
+            is_float = n == float_shares
+
+            bg_color = can_afford ? '#c8e6c9' : '#000000'
+            fg_color = can_afford ? '#000000' : '#ffffff'
+            border_style = is_float ? '3px solid #ff0000' : '1px solid #999'
+
+            cell_props = {
+              style: {
+                padding: '5px',
+                border: border_style,
+                backgroundColor: bg_color,
+                color: fg_color,
+                cursor: can_afford ? 'pointer' : 'not-allowed',
+                textAlign: 'center',
+                fontWeight: is_float ? 'bold' : 'normal'
+              },
+              on: {}
+            }
+
+            if can_afford
+              cell_props[:on][:click] = lambda {
+                Lib::Storage['par_menu_corp'] = nil
+                process_action(Engine::Action::Par.new(
+                  active_player,
+                  corporation: corporation,
+                  share_price: par_node
+                ))
+              }
+            end
+
+            cells << h(:td, cell_props, @game.format_currency(cost))
+          end
+          rows << h(:tr, cells)
+        end
+
+        table = h(:table, { style: { borderCollapse: 'collapse', marginTop: '10px' } }, [
+          h(:thead, [h(:tr, headers)]),
+          h(:tbody, rows)
+        ])
+
+        h(:div, {
+          style: {
+            position: 'absolute',
+            top: '105%',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            backgroundColor: '#ffffff',
+            border: '2px solid #333333',
+            borderRadius: '4px',
+            padding: '1rem',
+            zIndex: '9999',
+            boxShadow: '0px 4px 10px rgba(0,0,0,0.3)',
+          },
+        }, [
+          h(:div, { style: { fontSize: '1rem', fontWeight: 'bold', marginBottom: '0.5rem', color: '#333' } }, "Select Par Price for #{corporation.name}"),
+          table,
+          h(:button, {
+            style: {
+              display: 'block',
+              width: '100%',
+              cursor: 'pointer',
+              fontSize: '0.85rem',
+              padding: '5px',
+              backgroundColor: '#e0e0e0',
+              border: '1px solid #999',
+              borderRadius: '3px',
+              marginTop: '10px',
+            },
+            on: { click: cancel_handler },
+          }, 'Cancel')
+        ])
+      end
+
 
       private
 
