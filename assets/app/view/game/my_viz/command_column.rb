@@ -33,7 +33,7 @@ module View
         if actions.include?('lay_tile') then phase = :build_track
         elsif actions.include?('place_token') then phase = :place_token
         elsif actions.include?('run_routes') then phase = :run_routes
-        elsif actions.include?('dividend') then phase = :dividend
+        elsif actions.include?('dividend') || actions.include?('payout') || actions.include?('withhold') || actions.include?('half') || actions.include?('split') then phase = :dividend
         elsif actions.include?('buy_train') then phase = :buy_train
         end
 
@@ -50,18 +50,23 @@ module View
           player_name = current_entity&.name || ''
         end
 
-        current_revenue = active_routes.any? ? active_routes.sum(&:revenue) : 0
-        if phase == :dividend && current_revenue == 0 && current_entity&.respond_to?(:operating_history)
+        base_revenue = active_routes.any? ? active_routes.sum(&:revenue) : 0
+        if phase == :dividend && base_revenue == 0 && current_entity&.respond_to?(:operating_history)
           operating = current_entity.operating_history || {}
-          current_revenue = operating[operating.keys.max]&.revenue || 0
+          base_revenue = (operating[operating.keys.max]&.revenue || 0).to_i
         end
+
+        storage_key = "rev_override_#{current_entity&.id}"
+        last_base_key = "last_base_rev_#{current_entity&.id}"
+
+        if Lib::Storage[last_base_key] != base_revenue
+          Lib::Storage[storage_key] = base_revenue
+          Lib::Storage[last_base_key] = base_revenue
+        end
+
+        current_revenue = Lib::Storage[storage_key].to_i
         formatted_revenue = @game.format_revenue_currency(current_revenue)
         upper_content = []
-        upper_content << h(:div, { style: { backgroundColor: bg_color, color: text_color, padding: '0.2rem', textAlign: 'center', fontWeight: 'bold', border: '1px solid #999', marginBottom: '0.2rem', fontSize: '0.75rem' } }, [
-          h(:div, { style: { fontSize: '1.2rem' } }, company_logo),
-          h(:div, { style: { fontSize: '0.9rem' } }, player_name),
-          h(:div, { style: { fontSize: '0.8rem', textTransform: 'uppercase', marginTop: '1px' } }, phase.to_s.tr('_', ' ')),
-        ])
 
         upper_content << h(:div, { style: { border: '1px solid #999', padding: '0.2rem', marginBottom: '0.2rem', backgroundColor: '#dda0dd', textAlign: 'center', fontSize: '0.85rem' } }, [
           h(:div, { style: { fontSize: '0.75rem', fontWeight: 'bold' } }, 'Treasury'),
@@ -85,8 +90,44 @@ module View
         ])
 
         revenue_overlay = if %i[run_routes dividend].include?(phase)
-                            h(:div, { style: { fontSize: '1.8rem', fontWeight: 'bold', color: 'green', margin: '0.3rem 0' } },
-                              formatted_revenue)
+                            h(:div, { style: { display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', margin: '0.3rem 0' } }, [
+                              h(:button, {
+                                  style: {
+                                    padding: '0.1rem 0.4rem',
+                                    fontSize: '1.1rem',
+                                    fontWeight: 'bold',
+                                    cursor: 'pointer',
+                                    backgroundColor: '#e0e0e0',
+                                    border: '1px solid #999',
+                                    borderRadius: '3px',
+                                  },
+                                  on: {
+                                    click: lambda {
+                                             Lib::Storage[storage_key] = [current_revenue - 10, 0].max
+                                             update
+                                           },
+                                  },
+                                }, '-'),
+                              h(:div, { style: { fontSize: '1.8rem', fontWeight: 'bold', color: 'green', minWidth: '4rem', textAlign: 'center' } },
+                                formatted_revenue),
+                              h(:button, {
+                                  style: {
+                                    padding: '0.1rem 0.4rem',
+                                    fontSize: '1.1rem',
+                                    fontWeight: 'bold',
+                                    cursor: 'pointer',
+                                    backgroundColor: '#e0e0e0',
+                                    border: '1px solid #999',
+                                    borderRadius: '3px',
+                                  },
+                                  on: {
+                                    click: lambda {
+                                             Lib::Storage[storage_key] = current_revenue + 10
+                                             update
+                                           },
+                                  },
+                                }, '+'),
+                            ])
                           end
 
         if phase == :run_routes
@@ -128,9 +169,6 @@ module View
               { style: { padding: '2rem', textAlign: 'center', fontSize: '1.2rem', fontWeight: 'bold', textTransform: 'uppercase' } }, 'Stock Round'),
           ]
         end
-
-        undo_ok = @game.undo_possible
-        redo_ok = @game.respond_to?(:redo_possible) ? @game.redo_possible : true
 
         # AUTOMATED REVENUE PATH ROUTER WITH ASYNC TIMING GATE
         current_action_id = @game.raw_actions.size
@@ -179,57 +217,10 @@ module View
           }.call
         end
 
-        if phase == :run_routes && active_routes.any? && actions.include?('run_routes')
-          lambda {
-            `setTimeout(function() {`
-            routes_to_submit = active_routes
-            process_action(Engine::Action::RunRoutes.new(
-              current_entity,
-              routes: routes_to_submit,
-              extra_revenue: @game.extra_revenue(current_entity, routes_to_submit),
-              subsidy: @game.routes_subsidy(routes_to_submit)
-            ))
-            `}, 150);`
-          }.call
-        end
-
-        footer_content = h(:div, { style: { display: 'flex', flexDirection: 'row', gap: '0.4rem', width: '100%' } }, [
-          h(:button, {
-              style: {
-                flex: '1',
-                padding: '0.4rem',
-                fontSize: '0.8rem',
-                fontWeight: 'bold',
-                backgroundColor: undo_ok ? '#cc0000' : '#888888',
-                color: 'white',
-                border: '1px solid #999',
-                cursor: undo_ok ? 'pointer' : 'not-allowed',
-              },
-              attrs: { id: 'undo', disabled: !undo_ok },
-              on: { click: -> { process_action(Engine::Action::Undo.new(@game.current_entity)) if undo_ok } },
-            }, 'Undo'),
-          h(:button, {
-              style: {
-                flex: '1',
-                padding: '0.4rem',
-                fontSize: '0.8rem',
-                fontWeight: 'bold',
-                backgroundColor: redo_ok ? '#008800' : '#888888',
-                color: 'white',
-                border: '1px solid #999',
-                cursor: redo_ok ? 'pointer' : 'not-allowed',
-              },
-              attrs: { id: 'redo', disabled: !redo_ok },
-              on: { click: -> { process_action(Engine::Action::Redo.new(@game.current_entity)) if redo_ok } },
-            }, 'Redo'),
-        ])
-
         h(:div, { style: { display: 'flex', flexDirection: 'column', height: '100%', maxHeight: '100%', overflow: 'hidden', padding: '0.2rem', backgroundColor: '#c0c0c0', boxSizing: 'border-box', position: 'relative' } }, [
-          h(:div,
-            { style: { position: 'absolute', top: '0.2rem', left: '0.2rem', right: '0.2rem', bottom: '45px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.1rem' } }, upper_content),
-          h(:div,
-            { style: { position: 'absolute', bottom: '0.2rem', left: '0.2rem', right: '0.2rem', height: '35px', borderTop: '1px solid #aaa', paddingTop: '0.2rem' } }, [footer_content]),
-        ])
+            h(:div,
+              { style: { position: 'absolute', top: '0.2rem', left: '0.2rem', right: '0.2rem', bottom: '0.2rem', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.1rem' } }, upper_content),
+          ])
       end
 
       def render_company_tokens(current_entity)
@@ -472,19 +463,40 @@ module View
 
             elsif label.start_with?('Submit') && available_actions.include?('run_routes')
               routes_to_submit = active_routes
+              base_revenue = routes_to_submit.any? ? routes_to_submit.sum(&:revenue) : 0
+              storage_key = "rev_override_#{current_entity&.id}"
+              current_revenue = Lib::Storage[storage_key] ? Lib::Storage[storage_key].to_i : base_revenue
+
               process_action(Engine::Action::RunRoutes.new(
                 current_entity,
                 routes: routes_to_submit,
-                extra_revenue: @game.extra_revenue(current_entity, routes_to_submit),
+                extra_revenue: @game.extra_revenue(current_entity, routes_to_submit) + (current_revenue - base_revenue),
                 subsidy: @game.routes_subsidy(routes_to_submit)
               ))
-
             elsif label == 'Pay' && (available_actions.include?('dividend') || available_actions.include?('payout'))
-              process_action(Engine::Action::Dividend.new(current_entity, kind: 'payout'))
+              routes_to_submit = active_routes
+              base_revenue = routes_to_submit.any? ? routes_to_submit.sum(&:revenue) : 0
+              storage_key = "rev_override_#{current_entity&.id}"
+              current_revenue = Lib::Storage[storage_key] ? Lib::Storage[storage_key].to_i : base_revenue
+              extra_rev = current_revenue - base_revenue
+
+              process_action(Engine::Action::Dividend.new(current_entity, kind: 'payout', extra_revenue: extra_rev))
             elsif label == 'Hold' && (available_actions.include?('dividend') || available_actions.include?('withhold'))
-              process_action(Engine::Action::Dividend.new(current_entity, kind: 'withhold'))
+              routes_to_submit = active_routes
+              base_revenue = routes_to_submit.any? ? routes_to_submit.sum(&:revenue) : 0
+              storage_key = "rev_override_#{current_entity&.id}"
+              current_revenue = Lib::Storage[storage_key] ? Lib::Storage[storage_key].to_i : base_revenue
+              extra_rev = current_revenue - base_revenue
+
+              process_action(Engine::Action::Dividend.new(current_entity, kind: 'withhold', extra_revenue: extra_rev))
             elsif label == 'Split' && (available_actions.include?('dividend') || available_actions.include?('half') || available_actions.include?('split'))
-              process_action(Engine::Action::Dividend.new(current_entity, kind: 'half'))
+              routes_to_submit = active_routes
+              base_revenue = routes_to_submit.any? ? routes_to_submit.sum(&:revenue) : 0
+              storage_key = "rev_override_#{current_entity&.id}"
+              current_revenue = Lib::Storage[storage_key] ? Lib::Storage[storage_key].to_i : base_revenue
+              extra_rev = current_revenue - base_revenue
+
+              process_action(Engine::Action::Dividend.new(current_entity, kind: 'half', extra_revenue: extra_rev))
             end
           end
 
