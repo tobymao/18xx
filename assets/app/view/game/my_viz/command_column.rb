@@ -27,7 +27,7 @@ module View
           store(:routes, @routes, skip: true)
         end
 
-# Ask the Round instead of the Step to capture global actions like take_loan
+        # Ask the Round instead of the Step to capture global actions like take_loan
         actions = current_entity ? @game.round.actions_for(current_entity) : []
         
         puts "--- DEBUG ACTIONS ---"
@@ -93,7 +93,6 @@ module View
                              { style: { backgroundColor: bg_color, color: text_color, padding: '0.2rem', textAlign: 'center', fontWeight: 'bold', border: '1px solid #999', marginBottom: '0.2rem', fontSize: '0.75rem' } }, header_elements)
         end
 
-       
         mauve_box_children = [
            h(:div, { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #b886b8', paddingBottom: '0.2rem' } }, [
              h(:div, { style: { fontSize: '0.8rem', fontWeight: 'bold' } }, 'Cash'),
@@ -117,7 +116,6 @@ module View
         end
 
         upper_content << h(:div, { style: { border: '1px solid #999', padding: '0.4rem', marginBottom: '0.4rem', backgroundColor: '#dda0dd', borderRadius: '4px', display: 'flex', flexDirection: 'column', gap: '0.4rem' } }, mauve_box_children)
-
 
         upper_content << render_phase_box('1. Build Track', phase == :build_track, ['Skip'], actions, current_entity, nil)
 
@@ -191,21 +189,28 @@ module View
           div_buttons << 'Split' if actions.include?('half') || options.include?('half') || actions.include?('dividend')
 
           upper_content << render_phase_box('3. Revenue', false, div_buttons, actions, current_entity, nil)
-
         end
 
         buyable_list = phase == :buy_train ? render_buyable_trains(step, current_entity) : h(:div)
         upper_content << h(:div, { style: { marginBottom: '0.4rem' } }, [
           render_phase_box('4. Buy Trains', phase == :buy_train, ['Done Buying'], actions, current_entity, buyable_list),
         ])
+
+        buyable_company_list = actions.include?('buy_company') ? render_buyable_companies(step, current_entity) : h(:div)
+        if actions.include?('buy_company')
+          upper_content << h(:div, { style: { marginBottom: '0.4rem' } }, [
+            render_phase_box('Buy Private Company', true, actions.include?('pass') ? ['Skip'] : [], actions, current_entity, buyable_company_list),
+          ])
+        end
+
         upper_content << h(Abilities)
 
         standard_actions = %w[lay_tile place_token run_routes dividend payout withhold half split
-                              buy_train pass]
+                              buy_train pass buy_company]
         system_actions = %w[end_game bankrupt]
         special_actions = actions - standard_actions - system_actions
 
-if special_actions.any?
+        if special_actions.any?
           special_buttons = special_actions.map do |action|
             action_class = begin
               Engine::Action.const_get(action.split('_').map(&:capitalize).join)
@@ -388,7 +393,143 @@ if special_actions.any?
 
         h(:div, { style: { display: 'flex', alignItems: 'center', justifyContent: 'center' } }, dots)
       end
-      
+
+      def render_buyable_companies(step, current_entity)
+        companies = []
+        if step.respond_to?(:buyable_companies)
+          companies = step.buyable_companies(current_entity)
+        elsif step.respond_to?(:companies)
+          companies = step.companies
+        elsif @game.respond_to?(:companies)
+          companies = @game.companies.select { |c| step.respond_to?(:can_buy_company?) ? step.can_buy_company?(current_entity, c) : !c.owned_by?(current_entity) }
+        end
+
+        if companies.nil? || companies.empty?
+          return h(:div, { style: { fontSize: '0.75rem', color: '#666', fontStyle: 'italic', padding: '0.2rem' } },
+                   'No companies available')
+        end
+
+        company_boxes = companies.map do |c|
+          owner_name = c.owner&.name || 'Bank'
+          next nil if c.owner == current_entity
+
+          min_price = step.respond_to?(:min_price) ? step.min_price(c) : (c.respond_to?(:min_price) ? c.min_price : 1)
+          max_price = step.respond_to?(:max_price) ? step.max_price(current_entity, c) : (c.respond_to?(:max_price) ? c.max_price : current_entity.cash)
+
+          menu_storage_key = "cmd_buy_company_menu_#{c.id}"
+          price_storage_key = "cmd_buy_company_price_#{c.id}"
+
+          company_click_handler = lambda {
+            Lib::Storage[menu_storage_key] = true
+            Lib::Storage[price_storage_key] = min_price
+            update
+          }
+
+          if Lib::Storage[menu_storage_key]
+            menu_title = "Buy #{c.name} from #{owner_name} (#{min_price}-#{max_price}):"
+
+            confirm_handler = lambda {
+              price_value = Lib::Storage[price_storage_key].to_i
+              price_value = min_price if price_value < min_price
+              price_value = max_price if price_value > max_price
+
+              Lib::Storage[menu_storage_key] = nil
+              Lib::Storage[price_storage_key] = nil
+              process_action(Engine::Action::BuyCompany.new(
+                current_entity,
+                company: c,
+                price: price_value
+              ))
+            }
+
+            cancel_handler = lambda {
+              Lib::Storage[menu_storage_key] = nil
+              Lib::Storage[price_storage_key] = nil
+              update
+            }
+
+            menu_dropdown = h(:div, {
+                                style: {
+                                  position: 'absolute',
+                                  top: '105%',
+                                  left: '50%',
+                                  transform: 'translateX(-50%)',
+                                  backgroundColor: '#ffffff',
+                                  border: '2px solid #333333',
+                                  borderRadius: '4px',
+                                  padding: '0.5rem',
+                                  zIndex: '9999',
+                                  boxShadow: '0px 4px 10px rgba(0,0,0,0.3)',
+                                  color: '#000000',
+                                },
+                              }, [
+              h(:div, { style: { fontSize: '0.75rem', fontWeight: 'bold', marginBottom: '0.4rem', whiteSpace: 'nowrap' } },
+                menu_title),
+              h(:input, {
+                  style: {
+                    display: 'block',
+                    width: '100%',
+                    marginBottom: '0.4rem',
+                    boxSizing: 'border-box',
+                    padding: '3px 6px',
+                    fontSize: '0.85rem',
+                  },
+                  attrs: {
+                    type: 'number',
+                    min: min_price.to_s,
+                    max: max_price.to_s,
+                    value: Lib::Storage[price_storage_key] || min_price.to_s,
+                  },
+                  on: {
+                    input: lambda { |event|
+                      Lib::Storage[price_storage_key] = event.JS[:target].JS[:value]
+                    },
+                  },
+                }),
+              h(:button, {
+                  style: {
+                    display: 'block',
+                    width: '100%',
+                    marginBottom: '0.2rem',
+                    cursor: 'pointer',
+                    fontSize: '0.75rem',
+                    fontWeight: 'bold',
+                    padding: '3px 6px',
+                    backgroundColor: '#007bff',
+                    border: '1px solid #0056b3',
+                    color: '#ffffff',
+                    borderRadius: '3px',
+                  },
+                  on: { click: confirm_handler },
+                }, 'Confirm'),
+              h(:button, {
+                  style: {
+                    display: 'block',
+                    width: '100%',
+                    cursor: 'pointer',
+                    fontSize: '0.75rem',
+                    padding: '3px 6px',
+                    backgroundColor: '#e0e0e0',
+                    border: '1px solid #999',
+                    borderRadius: '3px',
+                  },
+                  on: { click: cancel_handler },
+                }, 'Cancel'),
+            ])
+          end
+
+          card_text = "#{c.name} (#{owner_name})"
+
+          h(:div, { style: { display: 'block', width: '100%', position: 'relative', margin: '4px 0' } }, [
+            h(View::Game::Card, text: card_text, border_color: '#ff8c00', click_action: company_click_handler),
+            menu_dropdown,
+          ].compact)
+        end.compact
+
+        h(:div,
+          { style: { display: 'flex', flexDirection: 'column', width: '100%', padding: '0.2rem 0', boxSizing: 'border-box' } }, company_boxes)
+      end
+
       def render_buyable_trains(step, current_entity)
         return h(:div) unless step.respond_to?(:buyable_trains)
 
@@ -580,12 +721,12 @@ if special_actions.any?
               storage_key = "rev_override_#{current_entity&.id}"
               current_revenue = Lib::Storage[storage_key] ? Lib::Storage[storage_key].to_i : base_revenue
 
-              process_action(Engine::Action::RunRoutes.new(
-                current_entity,
-                routes: routes_to_submit,
-                extra_revenue: @game.extra_revenue(current_entity, routes_to_submit) + (current_revenue - base_revenue),
-                subsidy: @game.routes_subsidy(routes_to_submit)
-              ))
+                  process_action(Engine::Action::RunRoutes.new(
+                    current_entity,
+                    routes: routes_to_submit,
+                    extra_revenue: @game.extra_revenue(current_entity, routes_to_submit) + (current_revenue - base_revenue),
+                    subsidy: @game.routes_subsidy(routes_to_submit)
+                  ))
             elsif label == 'Pay' && (available_actions.include?('dividend') || available_actions.include?('payout'))
               routes_to_submit = active_routes
               base_revenue = routes_to_submit.any? ? routes_to_submit.sum(&:revenue) : 0
