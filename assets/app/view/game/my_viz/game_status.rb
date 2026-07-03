@@ -207,10 +207,7 @@ module View
         end
         extra << h(:th, render_sort_link('Loans', :loans)) if @game.total_loans&.nonzero?
         extra << h(:th, render_sort_link('Shorts', :shorts)) if @game.respond_to?(:available_shorts)
-        if @game.total_loans.positive?
-          extra << h(:th, render_sort_link('Buying Power', :buying_power))
-          extra << h(:th, render_sort_link('Interest Due', :interest)) if @game.corporation_show_interest?
-        end
+
         if (@diff_corp_sizes = @game.all_corporations.any? { |c| @game.corporation_size(c) != :small })
           extra << h(:th, render_sort_link('Size', :corp_size))
         end
@@ -493,9 +490,7 @@ module View
                      @game.capitalization_type_desc(corporation))
         end
         if @game.total_loans&.nonzero?
-          loans_count = corporation.respond_to?(:loans) ? corporation.loans.size : 0
-          extra << h(:td, { style: { backgroundColor: corp_bg_color } },
-                     "#{loans_count}/#{@game.maximum_loans(corporation)}")
+          extra << h(:td, { style: { backgroundColor: corp_bg_color } }, [render_loan_dots(corporation)])
         end
         if @game.respond_to?(:available_shorts)
           taken, total = if @game.respond_to?(:available_shorts)
@@ -505,30 +500,7 @@ module View
                          end
           extra << h(:td, { style: { backgroundColor: corp_bg_color } }, "#{taken} / #{total}")
         end
-        if @game.total_loans.positive?
-          buying_power_val = if @game.respond_to?(:buying_power)
-                               @game.buying_power(corporation, full: true)
-                             else
-                               corporation.cash
-                             end
-          extra << h(:td, { style: { backgroundColor: corp_bg_color } },
-                     @game.format_currency(buying_power_val))
-          interest_props = { style: { backgroundColor: corp_bg_color } }
-          if !corporation.minor? && @game.respond_to?(:can_pay_interest?) && !@game.can_pay_interest?(corporation)
-            color = StockMarket::COLOR_MAP[:yellow]
-            interest_props[:style][:backgroundColor] = color
-            interest_props[:style][:color] = contrast_on(color)
-          end
-          if @game.corporation_show_interest?
-            interest_owed_val = if !corporation.minor? && @game.respond_to?(:interest_owed)
-                                  @game.interest_owed(corporation)
-                                else
-                                  0
-                                end
-            extra << h(:td, interest_props,
-                       @game.format_currency(interest_owed_val).to_s)
-          end
-        end
+        
         if @diff_corp_sizes
           size_name = if corporation.minor?
                         'Minor'
@@ -1191,6 +1163,26 @@ active_entity, t
         end
 
         h(:div, { style: { display: 'flex', flexDirection: 'row', justifyContent: 'center', flexWrap: 'wrap' } }, token_icons)
+      end
+
+      def render_loan_dots(entity)
+        return h(:div, '') unless entity && entity.respond_to?(:loans) && @game.respond_to?(:maximum_loans)
+
+        loans_taken = entity.loans.size
+        max_loans = @game.maximum_loans(entity)
+        interest_owed = @game.respond_to?(:interest_owed) ? @game.interest_owed(entity) : 0
+
+        dots = []
+        loans_taken.times do
+          dots << h(:span, { style: { display: 'inline-block', width: '8px', height: '8px', backgroundColor: '#dc3545', borderRadius: '50%', margin: '0 2px', verticalAlign: 'middle' } })
+        end
+        [max_loans - loans_taken, 0].max.times do
+          dots << h(:span, { style: { display: 'inline-block', width: '8px', height: '8px', border: '1px solid #dc3545', borderRadius: '50%', margin: '0 2px', verticalAlign: 'middle', boxSizing: 'border-box' } })
+        end
+
+        dots << h(:span, { style: { marginLeft: '4px', fontSize: '0.75rem', fontWeight: 'bold', verticalAlign: 'middle' } }, "(#{interest_owed})")
+
+        h(:div, { style: { display: 'flex', alignItems: 'center', justifyContent: 'center' } }, dots)
       end
 
       def render_companies(entity, bg_color = nil)

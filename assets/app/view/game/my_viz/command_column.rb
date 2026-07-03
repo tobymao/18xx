@@ -93,7 +93,8 @@ module View
                              { style: { backgroundColor: bg_color, color: text_color, padding: '0.2rem', textAlign: 'center', fontWeight: 'bold', border: '1px solid #999', marginBottom: '0.2rem', fontSize: '0.75rem' } }, header_elements)
         end
 
-        upper_content << h(:div, { style: { border: '1px solid #999', padding: '0.4rem', marginBottom: '0.4rem', backgroundColor: '#dda0dd', borderRadius: '4px', display: 'flex', flexDirection: 'column', gap: '0.4rem' } }, [
+       
+        mauve_box_children = [
            h(:div, { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #b886b8', paddingBottom: '0.2rem' } }, [
              h(:div, { style: { fontSize: '0.8rem', fontWeight: 'bold' } }, 'Cash'),
              h(:div, { style: { fontSize: '1.2rem', fontWeight: 'bold' } }, treasury.to_s),
@@ -106,7 +107,18 @@ module View
              h(:div, { style: { fontSize: '0.75rem', fontWeight: 'bold', marginBottom: '2px' } }, 'Tokens'),
              render_company_tokens(current_entity),
            ]),
-         ])
+        ]
+
+        if @game.respond_to?(:total_loans) && @game.total_loans&.nonzero?
+          mauve_box_children << h(:div, { style: { textAlign: 'center' } }, [
+            h(:div, { style: { fontSize: '0.75rem', fontWeight: 'bold', marginBottom: '2px' } }, 'Loans'),
+            render_loan_dots(current_entity),
+          ])
+        end
+
+        upper_content << h(:div, { style: { border: '1px solid #999', padding: '0.4rem', marginBottom: '0.4rem', backgroundColor: '#dda0dd', borderRadius: '4px', display: 'flex', flexDirection: 'column', gap: '0.4rem' } }, mauve_box_children)
+
+
         upper_content << render_phase_box('1. Build Track', phase == :build_track, ['Skip'], actions, current_entity, nil)
 
         upper_content << h(:div, { style: { marginBottom: '0.4rem' } }, [
@@ -357,6 +369,26 @@ if special_actions.any?
           { style: { display: 'flex', flexDirection: 'row', justifyContent: 'center', flexWrap: 'wrap', padding: '0.1rem 0' } }, token_icons)
       end
 
+      def render_loan_dots(entity)
+        return h(:div, '') unless entity && entity.respond_to?(:loans) && @game.respond_to?(:maximum_loans)
+
+        loans_taken = entity.loans.size
+        max_loans = @game.maximum_loans(entity)
+        interest_owed = @game.respond_to?(:interest_owed) ? @game.interest_owed(entity) : 0
+
+        dots = []
+        loans_taken.times do
+          dots << h(:span, { style: { display: 'inline-block', width: '8px', height: '8px', backgroundColor: '#dc3545', borderRadius: '50%', margin: '0 2px', verticalAlign: 'middle' } })
+        end
+        [max_loans - loans_taken, 0].max.times do
+          dots << h(:span, { style: { display: 'inline-block', width: '8px', height: '8px', border: '1px solid #dc3545', borderRadius: '50%', margin: '0 2px', verticalAlign: 'middle', boxSizing: 'border-box' } })
+        end
+
+        dots << h(:span, { style: { marginLeft: '4px', fontSize: '0.75rem', fontWeight: 'bold', verticalAlign: 'middle' } }, "(#{interest_owed})")
+
+        h(:div, { style: { display: 'flex', alignItems: 'center', justifyContent: 'center' } }, dots)
+      end
+      
       def render_buyable_trains(step, current_entity)
         return h(:div) unless step.respond_to?(:buyable_trains)
 
