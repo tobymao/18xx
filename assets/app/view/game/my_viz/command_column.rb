@@ -68,6 +68,24 @@ module View
         formatted_revenue = @game.format_revenue_currency(current_revenue)
         upper_content = []
 
+        if current_entity
+          logo_src = begin
+            setting_for(:simple_logos, @game) ? current_entity.simple_logo : current_entity.logo
+          rescue StandardError
+            nil
+          end
+
+          header_elements = []
+
+          header_elements << h(:div, { style: { fontSize: '1.2rem' } }, company_logo)
+          header_elements << h(:div, { style: { fontSize: '0.9rem' } }, player_name) if player_name && !player_name.empty?
+          header_elements << h(:div, { style: { fontSize: '0.8rem', textTransform: 'uppercase', marginTop: '1px' } },
+                               phase.to_s.tr('_', ' '))
+
+          upper_content << h(:div,
+                             { style: { backgroundColor: bg_color, color: text_color, padding: '0.2rem', textAlign: 'center', fontWeight: 'bold', border: '1px solid #999', marginBottom: '0.2rem', fontSize: '0.75rem' } }, header_elements)
+        end
+
         upper_content << h(:div, { style: { border: '1px solid #999', padding: '0.2rem', marginBottom: '0.2rem', backgroundColor: '#dda0dd', textAlign: 'center', fontSize: '0.85rem' } }, [
           h(:div, { style: { fontSize: '0.75rem', fontWeight: 'bold' } }, 'Treasury'),
           h(:div, { style: { fontSize: '1.1rem', fontWeight: 'bold' } }, treasury.to_s),
@@ -162,6 +180,47 @@ module View
         upper_content << h(:div, { style: { marginBottom: '0.4rem' } }, [
           render_phase_box('4. Buy Trains', phase == :buy_train, ['Done Buying'], actions, current_entity, buyable_list),
         ])
+
+        standard_actions = %w[lay_tile place_token run_routes dividend payout withhold half split
+                              buy_train pass]
+        special_actions = actions - standard_actions
+
+        if special_actions.any?
+          special_buttons = special_actions.map do |action|
+            label = action.split('_').map(&:capitalize).join(' ')
+            click_action = lambda do
+              # Placeholder for action instantiation to be confirmed with exact class structure
+              action_class = begin
+                Engine::Action.const_get(action.split('_').map(&:capitalize).join)
+              rescue NameError
+                nil
+              end
+              process_action(action_class.new(current_entity)) if action_class
+            end
+
+            h(:button, {
+                style: {
+                  width: '100%',
+                  padding: '0.3rem',
+                  marginTop: '0.2rem',
+                  fontSize: '0.8rem',
+                  backgroundColor: '#f0f8ff',
+                  color: '#004085',
+                  border: '2px dashed #007bff',
+                  cursor: 'pointer',
+                  fontWeight: 'bold',
+                  borderRadius: '4px',
+                },
+                on: { click: click_action },
+              }, label)
+          end
+
+          upper_content << h(:div, { style: { border: '2px solid #007bff', padding: '0.4rem', backgroundColor: '#e2e3e5', textAlign: 'center', marginBottom: '0.4rem' } }, [
+            h(:div, { style: { fontSize: '0.8rem', fontWeight: 'bold', color: '#1b1e21', marginBottom: '0.2rem' } },
+              '5. Special Actions'),
+            *special_buttons,
+          ])
+        end
 
         if @game.round.stock?
           upper_content = [
