@@ -894,11 +894,14 @@ active_entity, t
 
                 Lib::Storage[menu_storage_key] = nil
                 Lib::Storage[price_storage_key] = nil
-                process_action(Engine::Action::BuyTrain.new(
-                  active_entity,
-                  train: t,
-                  price: price_value
-                ))
+                source_selector = "#train_wrapper_#{corporation.id}_#{t.id} .card"
+                Lib::CardAnimation.fly(source_selector, "#trains_#{active_entity.id}") do
+                  process_action(Engine::Action::BuyTrain.new(
+                    active_entity,
+                    train: t,
+                    price: price_value
+                  ))
+                end
               }
 
               cancel_handler = lambda {
@@ -976,11 +979,11 @@ active_entity, t
             end
           end
 
-          h(:div, { style: { display: 'inline-block', position: 'relative' } }, [
-            h(View::Game::Card, text: t.obsolete ? "(#{t.name})" : t.name, border_color: train_border_color,
-                                click_action: train_click_handler),
-            menu_dropdown,
-          ].compact)
+          h(:div, { attrs: { id: "train_wrapper_#{corporation.id}_#{t.id}" }, style: { display: 'inline-block', position: 'relative' } }, [
+              h(View::Game::Card, text: t.obsolete ? "(#{t.name})" : t.name, border_color: train_border_color,
+                                  click_action: train_click_handler),
+              menu_dropdown,
+            ].compact)
         end
 
         limit = begin
@@ -1018,7 +1021,8 @@ active_entity, t
                   *treasury,
                   h('td.padded_number',
                     { hook: Lib::MoneyAnimation.hook, style: { backgroundColor: corp_bg_color, fontFamily: FONT_CASH, color: COLOR_CASH, fontWeight: 'bold' } }, clean_rev),
-                  h(:td, { style: { backgroundColor: corp_bg_color, fontFamily: FONT_STD } }, train_cards),
+                  h(:td,
+                    { attrs: { id: "trains_#{corporation.id}" }, style: { backgroundColor: corp_bg_color, fontFamily: FONT_STD } }, train_cards),
                   h(:td, { style: { backgroundColor: corp_bg_color } }, [render_unplaced_tokens(corporation)]),
                   *extra,
                 ]
@@ -1169,7 +1173,7 @@ active_entity, t
       end
 
       def render_companies(entity, bg_color = nil)
-        props = {}
+        props = { attrs: { id: "companies_#{entity.id}" } }
         props[:style] = if entity.player?
                           {
                             maxWidth: PLAYER_COL_MAX_WIDTH,
@@ -1184,8 +1188,127 @@ active_entity, t
 
         companies_list = entity.respond_to?(:companies) ? entity.companies : []
         companies_list = companies_list.reject { |c| c.respond_to?(:closed?) && c.closed? }
+        step = @game.round.active_step
+        active_ent = active_entity
+        company_buyable_step = step&.current_actions&.include?('buy_company')
+
         company_cards = companies_list.map do |c|
-          h(View::Game::Card, text: c.sym)
+          company_border_color = '#999999'
+          company_click_handler = nil
+          menu_dropdown = nil
+
+          not_own_company = active_ent && entity != active_ent
+
+          if company_buyable_step && not_own_company && step.respond_to?(:can_buy_company?) && step.can_buy_company?(active_ent,
+                                                                                                                     c)
+            company_border_color = '#00cc00'
+            menu_storage_key = "buy_company_menu_#{entity.id}_#{c.id}"
+            price_storage_key = "buy_company_price_#{entity.id}_#{c.id}"
+
+            company_click_handler = lambda {
+              Lib::Storage[menu_storage_key] = true
+              Lib::Storage[price_storage_key] = c.respond_to?(:value) ? c.value : 1
+              update
+            }
+
+            if Lib::Storage[menu_storage_key]
+              menu_title = "#{active_ent.name} buys #{c.name} from #{entity.name} for how much?"
+
+              confirm_handler = lambda {
+                price_value = Lib::Storage[price_storage_key].to_i
+
+                Lib::Storage[menu_storage_key] = nil
+                Lib::Storage[price_storage_key] = nil
+                source_selector = "#company_wrapper_#{entity.id}_#{c.id} .card"
+                Lib::CardAnimation.fly(source_selector, "#companies_#{active_ent.id}") do
+                  process_action(Engine::Action::BuyCompany.new(
+                    active_ent,
+                    company: c,
+                    price: price_value
+                  ))
+                end
+              }
+
+              cancel_handler = lambda {
+                Lib::Storage[menu_storage_key] = nil
+                Lib::Storage[price_storage_key] = nil
+                update
+              }
+
+              menu_dropdown = h(:div, {
+                                  style: {
+                                    position: 'absolute',
+                                    top: '105%',
+                                    left: '50%',
+                                    transform: 'translateX(-50%)',
+                                    backgroundColor: '#ffffff',
+                                    border: '2px solid #333333',
+                                    borderRadius: '4px',
+                                    padding: '0.5rem',
+                                    zIndex: '9999',
+                                    boxShadow: '0px 4px 10px rgba(0,0,0,0.3)',
+                                  },
+                                }, [
+                h(:div,
+                  { style: { fontSize: '0.75rem', fontWeight: 'bold', marginBottom: '0.4rem', color: '#333', whiteSpace: 'nowrap' } }, menu_title),
+                h(:input, {
+                    style: {
+                      display: 'block',
+                      width: '100%',
+                      marginBottom: '0.4rem',
+                      boxSizing: 'border-box',
+                      padding: '3px 6px',
+                      fontSize: '0.85rem',
+                    },
+                    attrs: {
+                      type: 'number',
+                      min: c.respond_to?(:min_price) ? c.min_price.to_s : '0',
+                      max: c.respond_to?(:max_price) ? c.max_price.to_s : '9999',
+                      value: Lib::Storage[price_storage_key] || (c.respond_to?(:value) ? c.value : 1).to_s,
+                    },
+                    on: {
+                      input: lambda { |event|
+                        Lib::Storage[price_storage_key] = event.JS[:target].JS[:value]
+                      },
+                    },
+                  }),
+                h(:button, {
+                    style: {
+                      display: 'block',
+                      width: '100%',
+                      marginBottom: '0.2rem',
+                      cursor: 'pointer',
+                      fontSize: '0.75rem',
+                      fontWeight: 'bold',
+                      padding: '3px 6px',
+                      backgroundColor: '#007bff',
+                      border: '1px solid #0056b3',
+                      color: '#ffffff',
+                      borderRadius: '3px',
+                    },
+                    on: { click: confirm_handler },
+                  }, 'Confirm'),
+                h(:button, {
+                    style: {
+                      display: 'block',
+                      width: '100%',
+                      cursor: 'pointer',
+                      fontSize: '0.75rem',
+                      padding: '3px 6px',
+                      backgroundColor: '#e0e0e0',
+                      border: '1px solid #999',
+                      borderRadius: '3px',
+                    },
+                    on: { click: cancel_handler },
+                  }, 'Cancel'),
+              ])
+            end
+          end
+
+          h(:div, { attrs: { id: "company_wrapper_#{entity.id}_#{c.id}" }, style: { display: 'inline-block', position: 'relative' } }, [
+                        h(View::Game::Card, text: c.sym, border_color: company_border_color, click_action: company_click_handler),
+                        menu_dropdown,
+                      ].compact)
         end
 
         h(:td, props, company_cards)
