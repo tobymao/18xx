@@ -130,7 +130,7 @@ module View
         props = { style: { color: 'red' } }
         cert_cells = [h('th.left', 'Cert')]
         @game.players.each_with_index do |player, idx|
-        cert_limit = @game.cert_limit(player)
+          cert_limit = @game.cert_limit(player)
 
           bg_color = player == active_player ? COLOR_ACTIVE : COLOR_INACTIVE
           num_certs = @game.num_certs(player)
@@ -201,7 +201,7 @@ module View
         treasury = []
         treasury << h(:th, render_sort_link('Shares', :treasury)) if @game.separate_treasury?
 
-extra = []
+        extra = []
         if @game.respond_to?(:capitalization_type_desc)
           @is_escrow_game = @game.all_corporations.any? do |c|
             @game.capitalization_type_desc(c)&.include?('Escrow')
@@ -230,7 +230,7 @@ extra = []
 
         corporation_title = h(:th, th_props[corporation_props_size], ['Corporation ', render_toggle_not_floated_link])
 
-        players_subtitles = []    
+        players_subtitles = []
         subtitles = []
         @game.players.each_with_index do |p, idx|
           is_active_col = (p == active_player)
@@ -239,25 +239,30 @@ extra = []
           props[:style][:minWidth] = min_width(p)
           is_last = idx == @game.players.size - 1
 
-# Restored full original player name strings
+          # Restored full original player name strings
           header_content = []
           header_content.concat(render_sort_link(p.name, p.id))
 
           if @game.respond_to?(:priority_deal_player) && p == @game.priority_deal_player
-           header_content << h(:svg, {
-              attrs: { viewBox: '0 0 16 16', width: '16', height: '16', title: 'Priority Deal' },
-              style: { display: 'inline-block', marginLeft: '6px', verticalAlign: 'middle', fill: COLOR_CASH }
-            }, [
-              h(:rect, attrs: { x: '0', y: '2', width: '6', height: '1' }),     # Roof overhang
-              h(:rect, attrs: { x: '1', y: '3', width: '4', height: '7' }),     # Driver's cab
-              h(:rect, attrs: { x: '11', y: '1', width: '2', height: '4' }),    # Smokestack funnel
-              h(:rect, attrs: { x: '4', y: '5', width: '10', height: '5' }),    # Boiler tank
-              h(:rect, attrs: { x: '1', y: '10', width: '14', height: '2' }),   # Chassis bed
-              h(:polygon, attrs: { points: '14,10 16,12 14,12' }),              # Cowcatcher wedge
-              h(:circle, attrs: { cx: '3.5', cy: '13.5', r: '1.5' }),           # Wheel 1
-              h(:circle, attrs: { cx: '8.5', cy: '13.5', r: '1.5' }),           # Wheel 2
-              h(:circle, attrs: { cx: '12.5', cy: '13.5', r: '1.5' })           # Wheel 3
-            ])
+            header_content << h(:svg, {
+                                  attrs: { viewBox: '0 0 16 16', width: '16', height: '16', title: 'Priority Deal' },
+                                  style: {
+                                    display: 'inline-block',
+                                    marginLeft: '6px',
+                                    verticalAlign: 'middle',
+                                    fill: COLOR_CASH,
+                                  },
+                                }, [
+               h(:rect, attrs: { x: '0', y: '2', width: '6', height: '1' }),     # Roof overhang
+               h(:rect, attrs: { x: '1', y: '3', width: '4', height: '7' }),     # Driver's cab
+               h(:rect, attrs: { x: '11', y: '1', width: '2', height: '4' }),    # Smokestack funnel
+               h(:rect, attrs: { x: '4', y: '5', width: '10', height: '5' }),    # Boiler tank
+               h(:rect, attrs: { x: '1', y: '10', width: '14', height: '2' }),   # Chassis bed
+               h(:polygon, attrs: { points: '14,10 16,12 14,12' }),              # Cowcatcher wedge
+               h(:circle, attrs: { cx: '3.5', cy: '13.5', r: '1.5' }),           # Wheel 1
+               h(:circle, attrs: { cx: '8.5', cy: '13.5', r: '1.5' }),           # Wheel 2
+               h(:circle, attrs: { cx: '12.5', cy: '13.5', r: '1.5' }), # Wheel 3
+             ])
           end
 
           players_subtitles << h("th.name.nowrap#{is_last ? '.thick-right' : ''}", props, header_content)
@@ -305,7 +310,7 @@ extra = []
         ]
       end
 
-      def render_sort_link(text, sort_by)
+      def render_sort_link(text, _sort_by)
         # Returns a simple flat text element array, decoupling the link layers and disabling sorting
         [text]
       end
@@ -488,8 +493,7 @@ extra = []
                         num_shares_of(corporation, corporation))
         end
 
-
-extra = []
+        extra = []
         if @game.respond_to?(:capitalization_type_desc)
           desc_text = @game.capitalization_type_desc(corporation)
           if @is_escrow_game && desc_text&.include?('Escrow')
@@ -499,7 +503,6 @@ extra = []
             extra << h(:td, { style: { backgroundColor: corp_bg_color } }, desc_text)
           end
         end
-
 
         if @game.total_loans&.nonzero?
           extra << h(:td, { style: { backgroundColor: corp_bg_color } }, [render_loan_dots(corporation)])
@@ -512,7 +515,7 @@ extra = []
                          end
           extra << h(:td, { style: { backgroundColor: corp_bg_color } }, "#{taken} / #{total}")
         end
-        
+
         if @diff_corp_sizes
           size_name = if corporation.minor?
                         'Minor'
@@ -818,53 +821,53 @@ extra = []
         valid_ipo_shares = []
 
         can_par = active_player && @game.respond_to?(:can_par?) && @game.can_par?(corporation, active_player)
-par_prices = []
-    if can_par
-      par_prices = if step.respond_to?(:get_par_prices_with_help)
-                     step.get_par_prices_with_help(active_player, corporation).sort_by(&:price)
-                   elsif step.respond_to?(:get_par_prices)
-                     step.get_par_prices(active_player, corporation).sort_by(&:price)
-                   elsif @game.respond_to?(:par_prices)
-                     @game.par_prices(corporation).sort_by(&:price)
-                   else
-                     @game.stock_market.par_prices.sort_by(&:price)
-                   end
+        par_prices = []
+        if can_par
+          par_prices = if step.respond_to?(:get_par_prices_with_help)
+                         step.get_par_prices_with_help(active_player, corporation).sort_by(&:price)
+                       elsif step.respond_to?(:get_par_prices)
+                         step.get_par_prices(active_player, corporation).sort_by(&:price)
+                       elsif @game.respond_to?(:par_prices)
+                         @game.par_prices(corporation).sort_by(&:price)
+                       else
+                         @game.stock_market.par_prices.sort_by(&:price)
+                       end
 
-      unless par_prices.empty?
-        ipo_border_color = '#00cc00'
-        ipo_click_handler = lambda {
-          Lib::Storage['par_menu_corp'] = corporation.id
-          update
-        }
-      end
-    elsif step&.respond_to?(:can_buy?) && active_player
-      ipo_shares = corporation.respond_to?(:ipo_shares) ? corporation.ipo_shares : []
-      valid_ipo_shares = ipo_shares.select do |s|
-        (s.respond_to?(:buyable) ? s.buyable : true) && step.can_buy?(active_player, s.to_bundle)
-      end
+          unless par_prices.empty?
+            ipo_border_color = '#00cc00'
+            ipo_click_handler = lambda {
+              Lib::Storage['par_menu_corp'] = corporation.id
+              update
+            }
+          end
+        elsif step&.respond_to?(:can_buy?) && active_player
+          ipo_shares = corporation.respond_to?(:ipo_shares) ? corporation.ipo_shares : []
+          valid_ipo_shares = ipo_shares.select do |s|
+            (s.respond_to?(:buyable) ? s.buyable : true) && step.can_buy?(active_player, s.to_bundle)
+          end
 
-      unless valid_ipo_shares.empty?
-        ipo_border_color = '#00cc00'
-        ipo_click_handler = if valid_ipo_shares.uniq { |s| s.to_bundle.percent }.size > 1
-                              lambda {
-                                Lib::Storage['buy_ipo_menu_corp'] = corporation.id
-                                update
-                              }
-                            else
-                              lambda { |event|
-                                bnd = valid_ipo_shares.first.to_bundle
-                                Lib::CardAnimation.fly(event, "#player_shares_#{active_player.id}_#{corporation.id}") do
-                                  process_action(Engine::Action::BuyShares.new(
-                                    active_player,
-                                    shares: bnd.shares,
-                                    share_price: bnd.share_price,
-                                    percent: bnd.percent
-                                  ))
+          unless valid_ipo_shares.empty?
+            ipo_border_color = '#00cc00'
+            ipo_click_handler = if valid_ipo_shares.uniq { |s| s.to_bundle.percent }.size > 1
+                                  lambda {
+                                    Lib::Storage['buy_ipo_menu_corp'] = corporation.id
+                                    update
+                                  }
+                                else
+                                  lambda { |event|
+                                    bnd = valid_ipo_shares.first.to_bundle
+                                    Lib::CardAnimation.fly(event, "#player_shares_#{active_player.id}_#{corporation.id}") do
+                                      process_action(Engine::Action::BuyShares.new(
+                                        active_player,
+                                        shares: bnd.shares,
+                                        share_price: bnd.share_price,
+                                        percent: bnd.percent
+                                      ))
+                                    end
+                                  }
                                 end
-                              }
-                            end
-      end
-    end
+          end
+        end
 
         ipo_cell_children = []
         unless ipo_share_text.empty?
@@ -1186,13 +1189,37 @@ active_entity, t
 
         dots = []
         loans_taken.times do
-          dots << h(:span, { style: { display: 'inline-block', width: '8px', height: '8px', backgroundColor: '#dc3545', borderRadius: '50%', margin: '0 2px', verticalAlign: 'middle' } })
+          dots << h(:span,
+                    {
+                      style: {
+                        display: 'inline-block',
+                        width: '8px',
+                        height: '8px',
+                        backgroundColor: '#dc3545',
+                        borderRadius: '50%',
+                        margin: '0 2px',
+                        verticalAlign: 'middle',
+                      },
+                    })
         end
         [max_loans - loans_taken, 0].max.times do
-          dots << h(:span, { style: { display: 'inline-block', width: '8px', height: '8px', border: '1px solid #dc3545', borderRadius: '50%', margin: '0 2px', verticalAlign: 'middle', boxSizing: 'border-box' } })
+          dots << h(:span,
+                    {
+                      style: {
+                        display: 'inline-block',
+                        width: '8px',
+                        height: '8px',
+                        border: '1px solid #dc3545',
+                        borderRadius: '50%',
+                        margin: '0 2px',
+                        verticalAlign: 'middle',
+                        boxSizing: 'border-box',
+                      },
+                    })
         end
 
-        dots << h(:span, { style: { marginLeft: '4px', fontSize: '0.75rem', fontWeight: 'bold', verticalAlign: 'middle' } }, "(#{interest_owed})")
+        dots << h(:span, { style: { marginLeft: '4px', fontSize: '0.75rem', fontWeight: 'bold', verticalAlign: 'middle' } },
+                  "(#{interest_owed})")
 
         h(:div, { style: { display: 'flex', alignItems: 'center', justifyContent: 'center' } }, dots)
       end
@@ -1382,7 +1409,8 @@ active_entity, t
       def render_par_matrix_menu(corporation, par_prices, cancel_handler)
         shares_range = (2..10).to_a
 
-        headers = [h(:th, { style: { padding: '5px', border: '1px solid #999', backgroundColor: COLOR_INACTIVE } }, 'Par \ Shares')]
+        headers = [h(:th, { style: { padding: '5px', border: '1px solid #999', backgroundColor: COLOR_INACTIVE } },
+                     'Par \ Shares')]
         shares_range.each do |n|
           headers << h(:th, { style: { padding: '5px', border: '1px solid #999', backgroundColor: COLOR_INACTIVE } }, n.to_s)
         end
@@ -1398,7 +1426,8 @@ active_entity, t
                            (corporation.float_percent || 60) / (corporation.share_percent || 10)
                          end
 
-          cells = [h(:th, { style: { padding: '5px', border: '1px solid #999', backgroundColor: COLOR_INACTIVE } }, @game.format_currency(par_price))]
+          cells = [h(:th, { style: { padding: '5px', border: '1px solid #999', backgroundColor: COLOR_INACTIVE } },
+                     @game.format_currency(par_price))]
 
           shares_range.each do |n|
             cost = n * par_price
@@ -1417,9 +1446,9 @@ active_entity, t
                 color: fg_color,
                 cursor: can_afford ? 'pointer' : 'not-allowed',
                 textAlign: 'center',
-                fontWeight: is_float ? 'bold' : 'normal'
+                fontWeight: is_float ? 'bold' : 'normal',
               },
-              on: {}
+              on: {},
             }
 
             if can_afford
@@ -1440,42 +1469,42 @@ active_entity, t
 
         table = h(:table, { style: { borderCollapse: 'collapse', marginTop: '10px' } }, [
           h(:thead, [h(:tr, headers)]),
-          h(:tbody, rows)
+          h(:tbody, rows),
         ])
 
         h(:div, {
-          style: {
-            position: 'absolute',
-            top: '105%',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            backgroundColor: '#ffffff',
-            border: '2px solid #333333',
-            borderRadius: '4px',
-            padding: '1rem',
-            zIndex: '9999',
-            boxShadow: '0px 4px 10px rgba(0,0,0,0.3)',
-          },
-        }, [
-          h(:div, { style: { fontSize: '1rem', fontWeight: 'bold', marginBottom: '0.5rem', color: '#333' } }, "Select Par Price for #{corporation.name}"),
+            style: {
+              position: 'absolute',
+              top: '105%',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              backgroundColor: '#ffffff',
+              border: '2px solid #333333',
+              borderRadius: '4px',
+              padding: '1rem',
+              zIndex: '9999',
+              boxShadow: '0px 4px 10px rgba(0,0,0,0.3)',
+            },
+          }, [
+          h(:div, { style: { fontSize: '1rem', fontWeight: 'bold', marginBottom: '0.5rem', color: '#333' } },
+            "Select Par Price for #{corporation.name}"),
           table,
           h(:button, {
-            style: {
-              display: 'block',
-              width: '100%',
-              cursor: 'pointer',
-              fontSize: '0.85rem',
-              padding: '5px',
-              backgroundColor: '#e0e0e0',
-              border: '1px solid #999',
-              borderRadius: '3px',
-              marginTop: '10px',
-            },
-            on: { click: cancel_handler },
-          }, 'Cancel')
+              style: {
+                display: 'block',
+                width: '100%',
+                cursor: 'pointer',
+                fontSize: '0.85rem',
+                padding: '5px',
+                backgroundColor: '#e0e0e0',
+                border: '1px solid #999',
+                borderRadius: '3px',
+                marginTop: '10px',
+              },
+              on: { click: cancel_handler },
+            }, 'Cancel'),
         ])
       end
-
 
       private
 

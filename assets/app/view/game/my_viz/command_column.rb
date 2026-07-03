@@ -29,8 +29,8 @@ module View
 
         # Ask the Round instead of the Step to capture global actions like take_loan
         actions = current_entity ? @game.round.actions_for(current_entity) : []
-        
-        puts "--- DEBUG ACTIONS ---"
+
+        puts '--- DEBUG ACTIONS ---'
         puts "Entity ID: #{current_entity&.id}"
         puts "Entity Type: #{current_entity.class.name}"
         puts "Step Class: #{step.class.name}"
@@ -115,7 +115,8 @@ module View
           ])
         end
 
-        upper_content << h(:div, { style: { border: '1px solid #999', padding: '0.4rem', marginBottom: '0.4rem', backgroundColor: '#dda0dd', borderRadius: '4px', display: 'flex', flexDirection: 'column', gap: '0.4rem' } }, mauve_box_children)
+        upper_content << h(:div,
+                           { style: { border: '1px solid #999', padding: '0.4rem', marginBottom: '0.4rem', backgroundColor: '#dda0dd', borderRadius: '4px', display: 'flex', flexDirection: 'column', gap: '0.4rem' } }, mauve_box_children)
 
         upper_content << render_phase_box('1. Build Track', phase == :build_track, ['Skip'], actions, current_entity, nil)
 
@@ -217,12 +218,12 @@ module View
             rescue NameError
               nil
             end
-            
+
             next unless action_class
 
             # Dynamic check: Does the action require extra parameters we can't provide?
             required_args = action_class.const_defined?(:REQUIRED_ARGS) ? action_class::REQUIRED_ARGS : []
-            
+
             # Allow the button if it requires nothing, OR if it's one of our handled loan actions
             is_loan_action = %w[take_loan payoff_loan].include?(action)
             next unless required_args.empty? || is_loan_action
@@ -230,7 +231,11 @@ module View
             label = action.split('_').map(&:capitalize).join(' ')
             click_action = lambda do
               if is_loan_action
-                loan_pool = action == 'payoff_loan' ? (current_entity.respond_to?(:loans) ? current_entity.loans : []) : (@game.respond_to?(:loans) ? @game.loans : [])
+                loan_pool = if action == 'payoff_loan'
+                              current_entity.respond_to?(:loans) ? current_entity.loans : []
+                            else
+                              (@game.respond_to?(:loans) ? @game.loans : [])
+                            end
                 process_action(action_class.new(current_entity, loan: loan_pool[0])) if loan_pool[0]
               else
                 process_action(action_class.new(current_entity))
@@ -383,13 +388,37 @@ module View
 
         dots = []
         loans_taken.times do
-          dots << h(:span, { style: { display: 'inline-block', width: '8px', height: '8px', backgroundColor: '#dc3545', borderRadius: '50%', margin: '0 2px', verticalAlign: 'middle' } })
+          dots << h(:span,
+                    {
+                      style: {
+                        display: 'inline-block',
+                        width: '8px',
+                        height: '8px',
+                        backgroundColor: '#dc3545',
+                        borderRadius: '50%',
+                        margin: '0 2px',
+                        verticalAlign: 'middle',
+                      },
+                    })
         end
         [max_loans - loans_taken, 0].max.times do
-          dots << h(:span, { style: { display: 'inline-block', width: '8px', height: '8px', border: '1px solid #dc3545', borderRadius: '50%', margin: '0 2px', verticalAlign: 'middle', boxSizing: 'border-box' } })
+          dots << h(:span,
+                    {
+                      style: {
+                        display: 'inline-block',
+                        width: '8px',
+                        height: '8px',
+                        border: '1px solid #dc3545',
+                        borderRadius: '50%',
+                        margin: '0 2px',
+                        verticalAlign: 'middle',
+                        boxSizing: 'border-box',
+                      },
+                    })
         end
 
-        dots << h(:span, { style: { marginLeft: '4px', fontSize: '0.75rem', fontWeight: 'bold', verticalAlign: 'middle' } }, "(#{interest_owed})")
+        dots << h(:span, { style: { marginLeft: '4px', fontSize: '0.75rem', fontWeight: 'bold', verticalAlign: 'middle' } },
+                  "(#{interest_owed})")
 
         h(:div, { style: { display: 'flex', alignItems: 'center', justifyContent: 'center' } }, dots)
       end
@@ -401,7 +430,9 @@ module View
         elsif step.respond_to?(:companies)
           companies = step.companies
         elsif @game.respond_to?(:companies)
-          companies = @game.companies.select { |c| step.respond_to?(:can_buy_company?) ? step.can_buy_company?(current_entity, c) : !c.owned_by?(current_entity) }
+          companies = @game.companies.select do |c|
+            step.respond_to?(:can_buy_company?) ? step.can_buy_company?(current_entity, c) : !c.owned_by?(current_entity)
+          end
         end
 
         if companies.nil? || companies.empty?
@@ -413,8 +444,17 @@ module View
           owner_name = c.owner&.name || 'Bank'
           next nil if c.owner == current_entity
 
-          min_price = step.respond_to?(:min_price) ? step.min_price(c) : (c.respond_to?(:min_price) ? c.min_price : 1)
-          max_price = step.respond_to?(:max_price) ? step.max_price(current_entity, c) : (c.respond_to?(:max_price) ? c.max_price : current_entity.cash)
+          min_price = if step.respond_to?(:min_price)
+                        step.min_price(c)
+                      else
+                        (c.respond_to?(:min_price) ? c.min_price : 1)
+                      end
+          max_price = if step.respond_to?(:max_price)
+                        step.max_price(current_entity,
+                                       c)
+                      else
+                        (c.respond_to?(:max_price) ? c.max_price : current_entity.cash)
+                      end
 
           menu_storage_key = "cmd_buy_company_menu_#{c.id}"
           price_storage_key = "cmd_buy_company_price_#{c.id}"
@@ -543,25 +583,43 @@ module View
 
         train_boxes = trains.map do |t|
           owner_entity = t.owner
-          next nil unless owner_entity && owner_entity.respond_to?(:owner)
+          next nil unless owner_entity
 
-          # Strictly filter out trains that are not owned by the same player or belong to the active company itself
-          owned_by_same_player = active_p && owner_entity.owner == active_p
-          not_own_train = current_entity && owner_entity != current_entity
+          is_corp = owner_entity.respond_to?(:owner)
+          is_bank = !is_corp
 
-          next nil unless not_own_train && owned_by_same_player
+          # Filter out trains that already belong to the active company
+          next nil if current_entity && owner_entity == current_entity
 
-          train_border_color = '#00cc00'
-          menu_storage_key = "cmd_buy_train_menu_#{owner_entity.id}_#{t.id}"
-          price_storage_key = "cmd_buy_train_price_#{owner_entity.id}_#{t.id}"
+          # Only show corporate trains if they belong to a company with the same owner
+          if is_corp
+            owned_by_same_player = active_p && owner_entity.owner == active_p
+            next nil unless owned_by_same_player
+          end
+
+          is_adjustable_price = is_corp
+          train_border_color = is_bank ? '#ff8c00' : '#00cc00'
+
+          owner_key = owner_entity.respond_to?(:id) ? owner_entity.id : 'depot'
+          menu_storage_key = "cmd_buy_train_menu_#{owner_key}_#{t.id}"
+          price_storage_key = "cmd_buy_train_price_#{owner_key}_#{t.id}"
 
           train_click_handler = lambda {
-            Lib::Storage[menu_storage_key] = true
-            Lib::Storage[price_storage_key] = 1
-            update
+            if is_adjustable_price
+              Lib::Storage[menu_storage_key] = true
+              Lib::Storage[price_storage_key] = 1
+              update
+            else
+              process_action(Engine::Action::BuyTrain.new(
+                current_entity,
+                train: t,
+                price: t.price
+              ))
+            end
           }
 
-          if Lib::Storage[menu_storage_key]
+          menu_dropdown = nil
+          if is_adjustable_price && Lib::Storage[menu_storage_key]
             menu_title = "#{current_entity.name} buys #{t.name} from #{owner_entity.name} for how much?"
 
             confirm_handler = lambda {
@@ -652,18 +710,27 @@ module View
             ])
           end
 
-          card_text = "#{t.name} from #{owner_entity.name}"
+          card_element = h(View::Game::Card, text: t.name, border_color: train_border_color)
 
-          # Formatted block display layout structure pushing cards into individual wide lines
+          source_name = is_bank ? 'Bank' : owner_entity.name
+          info_string = is_adjustable_price ? "from #{source_name}" : "from #{source_name} (#{@game.format_currency(t.price)})"
+
+          info_text = h(:span, { style: { marginLeft: '0.5rem', fontSize: '0.85rem', color: '#111' } }, info_string)
+
+          clickable_container = h(:div, {
+                                    style: { display: 'flex', alignItems: 'center', cursor: 'pointer' },
+                                    on: { click: train_click_handler },
+                                  }, [card_element, info_text])
+
           h(:div, { style: { display: 'block', width: '100%', position: 'relative', margin: '4px 0' } }, [
-            h(View::Game::Card, text: card_text, border_color: train_border_color, click_action: train_click_handler),
+            clickable_container,
             menu_dropdown,
           ].compact)
         end.compact
 
         if train_boxes.empty?
           return h(:div, { style: { fontSize: '0.75rem', color: '#666', fontStyle: 'italic', padding: '0.2rem' } },
-                   'No matching same-owner trains available')
+                   'No buyable trains available')
         end
 
         h(:div,
@@ -721,12 +788,12 @@ module View
               storage_key = "rev_override_#{current_entity&.id}"
               current_revenue = Lib::Storage[storage_key] ? Lib::Storage[storage_key].to_i : base_revenue
 
-                  process_action(Engine::Action::RunRoutes.new(
-                    current_entity,
-                    routes: routes_to_submit,
-                    extra_revenue: @game.extra_revenue(current_entity, routes_to_submit) + (current_revenue - base_revenue),
-                    subsidy: @game.routes_subsidy(routes_to_submit)
-                  ))
+              process_action(Engine::Action::RunRoutes.new(
+                current_entity,
+                routes: routes_to_submit,
+                extra_revenue: @game.extra_revenue(current_entity, routes_to_submit) + (current_revenue - base_revenue),
+                subsidy: @game.routes_subsidy(routes_to_submit)
+              ))
             elsif label == 'Pay' && (available_actions.include?('dividend') || available_actions.include?('payout'))
               routes_to_submit = active_routes
               base_revenue = routes_to_submit.any? ? routes_to_submit.sum(&:revenue) : 0
