@@ -17,7 +17,7 @@ module View
         entity = active_entity
         entity&.player? ? entity : entity&.owner
       end
-      
+
       def render
         h(:div, {
             hook: {
@@ -58,29 +58,37 @@ module View
             h(View::Game::CommandColumn, game: @game),
           ]),
 
-          # Column 2 (Middle): Map Canvas (41% width)
-          h(:div, { style: { width: '41%', height: '100%', border: '1px solid #ccc', borderRadius: '4px', backgroundColor: '#fff', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', overflow: 'hidden' } }, [
-            h(:div, {
-                style: {
-                  width: '100%',
-                  height: '100%',
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  overflow: 'hidden',
-                  '& svg': {
-                    width: '100% !important',
-                    height: '100% !important',
-                    maxWidth: '100%',
-                    maxHeight: '100%',
-                    objectFit: 'contain',
+          # Column 2 (Middle): Entity Order (Top) & Map Canvas (Bottom) (41% width)
+          h(:div, { style: { width: '41%', height: '100%', display: 'flex', flexDirection: 'column', gap: '0.5rem', overflow: 'hidden' } }, [
+            # Narrow Strip: Entity Order Section
+            h(:div, { style: { flex: '0 0 auto', border: '1px solid #ccc', borderRadius: '4px', backgroundColor: '#fff', padding: '0.25rem', overflow: 'auto' } }, [
+              h(View::Game::MyEntityOrder, round: @game.round),
+            ]),
+
+            # Map Panel Box
+            h(:div, { style: { flex: '1 1 auto', border: '1px solid #ccc', borderRadius: '4px', backgroundColor: '#fff', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', overflow: 'hidden' } }, [
+              h(:div, {
+                  style: {
+                    width: '100%',
+                    height: '100%',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    overflow: 'hidden',
+                    '& svg': {
+                      width: '100% !important',
+                      height: '100% !important',
+                      maxWidth: '100%',
+                      maxHeight: '100%',
+                      objectFit: 'contain',
+                    },
+                    '& text': { fontSize: '0.65em !important', letterSpacing: 'normal !important' },
+                    '& .tile__text': { fontSize: '0.75em !important' },
+                    '& text.number': { fontSize: '0.55em !important' },
                   },
-                  '& text': { fontSize: '0.65em !important', letterSpacing: 'normal !important' },
-                  '& .tile__text': { fontSize: '0.75em !important' },
-                  '& text.number': { fontSize: '0.55em !important' },
-                },
-              }, [
-              h(View::Game::Map, game: @game, opacity: 1.0, tile_selector: @tile_selector, minimal: true),
+                }, [
+                h(View::Game::Map, game: @game, opacity: 1.0, tile_selector: @tile_selector, minimal: true),
+              ]),
             ]),
           ]),
 
@@ -123,8 +131,8 @@ module View
               # Hooking into your custom implementation sandbox
               h(View::Game::GameStatus, game: @game),
             ]),
-            
-h(:div, {
+
+            h(:div, {
                 style: {
                   flex: '0 0 8%',
                   minHeight: '3.5rem',
@@ -135,19 +143,21 @@ h(:div, {
                   alignItems: 'center',
                   justifyContent: 'flex-start',
                   padding: '0 0.75rem',
-                  boxSizing: 'border-box'
-                }
+                  boxSizing: 'border-box',
+                },
               }, begin
                 active_p = active_player
-step = @game.round.active_step
+                step = @game.round.active_step
                 current_entity = step&.current_entity
                 actions = current_entity ? step.actions(current_entity) : []
 
-                undo_handler = lambda { process_action(Engine::Action::Undo.new(active_p)) if active_p }
-                redo_handler = lambda { process_action(Engine::Action::Redo.new(active_p)) if active_p }
+                undo_handler = -> { process_action(Engine::Action::Undo.new(active_p)) if active_p }
+                redo_handler = -> { process_action(Engine::Action::Redo.new(active_p)) if active_p }
 
                 default_btn_text = 'Pass'
-                default_handler = lambda { process_action(Engine::Action::Pass.new(current_entity)) if current_entity && actions.include?('pass') }
+                default_handler = lambda {
+                  process_action(Engine::Action::Pass.new(current_entity)) if current_entity && actions.include?('pass')
+                }
 
                 if @game.round.stock?
                   default_btn_text = 'Pass'
@@ -157,11 +167,15 @@ step = @game.round.active_step
                   default_btn_text = 'Skip Token'
                 elsif actions.include?('dividend')
                   default_btn_text = 'Pay Out'
-                  default_handler = lambda { process_action(Engine::Action::Dividend.new(current_entity, kind: 'payout')) if current_entity && actions.include?('dividend') }
+                  default_handler = lambda {
+                    if current_entity && actions.include?('dividend')
+                      process_action(Engine::Action::Dividend.new(current_entity, kind: 'payout'))
+                    end
+                  }
                 elsif actions.include?('buy_train')
                   default_btn_text = 'Finished Buying'
                 end
-               button_style = {
+                button_style = {
                   padding: '0.5rem 1.5rem',
                   fontSize: '1.1rem',
                   fontWeight: 'bold',
@@ -169,22 +183,25 @@ step = @game.round.active_step
                   cursor: 'pointer',
                   borderRadius: '4px',
                   border: '1px solid #999',
-                  verticalAlign: 'middle'
+                  verticalAlign: 'middle',
                 }
 
                 [
-                  h(:button, { style: button_style.merge(backgroundColor: '#e0e0e0', color: '#000000'), on: { click: undo_handler } }, 'Undo'),
-                  h(:button, { style: button_style.merge(backgroundColor: '#e0e0e0', color: '#000000'), on: { click: redo_handler } }, 'Redo'),
-h(:button, { style: button_style.merge(backgroundColor: '#007bff', borderColor: '#0056b3', color: '#ffffff'), on: { click: default_handler } }, default_btn_text)
+                  h(:button,
+                    { style: button_style.merge(backgroundColor: '#e0e0e0', color: '#000000'), on: { click: undo_handler } }, 'Undo'),
+                  h(:button,
+                    { style: button_style.merge(backgroundColor: '#e0e0e0', color: '#000000'), on: { click: redo_handler } }, 'Redo'),
+                  h(:button,
+                    { style: button_style.merge(backgroundColor: '#007bff', borderColor: '#0056b3', color: '#ffffff'), on: { click: default_handler } }, default_btn_text),
                 ]
               end),
 
             # Stock Market Component
-          h(:div, { style: { flex: '1 1 30%', overflow: 'hidden', border: '1px solid #ccc', padding: '0.5rem', borderRadius: '4px', backgroundColor: '#fff', display: 'flex', justifyContent: 'flex-start', alignItems: 'center', flexDirection: 'column' } }, [
-              h(:div, { style: { width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'flex-start', transform: 'scale(0.85)', transformOrigin: 'center top', marginTop: '-5px' } }, [
-                h(View::Game::SimpleStockMarket, game: @game),
+            h(:div, { style: { flex: '1 1 30%', overflow: 'hidden', border: '1px solid #ccc', padding: '0.5rem', borderRadius: '4px', backgroundColor: '#fff', display: 'flex', justifyContent: 'flex-start', alignItems: 'center', flexDirection: 'column' } }, [
+                h(:div, { style: { width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'flex-start', transform: 'scale(0.85)', transformOrigin: 'center top', marginTop: '-5px' } }, [
+                  h(View::Game::SimpleStockMarket, game: @game),
+                ]),
               ]),
-            ]),
           ]),
         ])
       end
