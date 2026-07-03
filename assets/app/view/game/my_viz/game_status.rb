@@ -228,21 +228,37 @@ module View
 
         corporation_title = h(:th, th_props[corporation_props_size], ['Corporation ', render_toggle_not_floated_link])
 
+        players_subtitles = []    
         subtitles = []
-        players_subtitles = @game.players.map.with_index do |p, idx|
+        @game.players.each_with_index do |p, idx|
           is_active_col = (p == active_player)
-          # props = if p == @game.priority_deal_player
-          #           pd_props
-          #         else
-          #           { style: { backgroundColor: is_active_col ? COLOR_ACTIVE : 'inherit' } }
-          #         end
-          # change later to the little train TODO
-          props = { style: { backgroundColor: is_active_col ? COLOR_ACTIVE : 'inherit' } }
           props = { style: { backgroundColor: is_active_col ? COLOR_ACTIVE : 'inherit' } }
 
           props[:style][:minWidth] = min_width(p)
           is_last = idx == @game.players.size - 1
-          h("th.name.nowrap#{is_last ? '.thick-right' : ''}", props, render_sort_link(p.name, p.id))
+
+# Restored full original player name strings
+          header_content = []
+          header_content.concat(render_sort_link(p.name, p.id))
+
+          if @game.respond_to?(:priority_deal_player) && p == @game.priority_deal_player
+           header_content << h(:svg, {
+              attrs: { viewBox: '0 0 16 16', width: '16', height: '16', title: 'Priority Deal' },
+              style: { display: 'inline-block', marginLeft: '6px', verticalAlign: 'middle', fill: COLOR_CASH }
+            }, [
+              h(:rect, attrs: { x: '0', y: '2', width: '6', height: '1' }),     # Roof overhang
+              h(:rect, attrs: { x: '1', y: '3', width: '4', height: '7' }),     # Driver's cab
+              h(:rect, attrs: { x: '11', y: '1', width: '2', height: '4' }),    # Smokestack funnel
+              h(:rect, attrs: { x: '4', y: '5', width: '10', height: '5' }),    # Boiler tank
+              h(:rect, attrs: { x: '1', y: '10', width: '14', height: '2' }),   # Chassis bed
+              h(:polygon, attrs: { points: '14,10 16,12 14,12' }),              # Cowcatcher wedge
+              h(:circle, attrs: { cx: '3.5', cy: '13.5', r: '1.5' }),           # Wheel 1
+              h(:circle, attrs: { cx: '8.5', cy: '13.5', r: '1.5' }),           # Wheel 2
+              h(:circle, attrs: { cx: '12.5', cy: '13.5', r: '1.5' })           # Wheel 3
+            ])
+          end
+
+          players_subtitles << h("th.name.nowrap#{is_last ? '.thick-right' : ''}", props, header_content)
         end
 
         bank_sub_th_props = { style: { backgroundColor: COLOR_INACTIVE } }
@@ -288,19 +304,8 @@ module View
       end
 
       def render_sort_link(text, sort_by)
-        [
-          h(:span, @spreadsheet_sort_by == sort_by ? sort_order_icon : ''),
-          h(
-            Link,
-            href: '',
-            title: 'Sort',
-            click: lambda {
-              mark_sort_column(sort_by)
-              toggle_sort_order if @spreadsheet_sort_by == sort_by
-            },
-            children: text,
-          ),
-        ]
+        # Returns a simple flat text element array, decoupling the link layers and disabling sorting
+        [text]
       end
 
       def sort_order_icon
