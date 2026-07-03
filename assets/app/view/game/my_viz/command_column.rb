@@ -86,21 +86,20 @@ module View
                              { style: { backgroundColor: bg_color, color: text_color, padding: '0.2rem', textAlign: 'center', fontWeight: 'bold', border: '1px solid #999', marginBottom: '0.2rem', fontSize: '0.75rem' } }, header_elements)
         end
 
-        upper_content << h(:div, { style: { border: '1px solid #999', padding: '0.2rem', marginBottom: '0.2rem', backgroundColor: '#dda0dd', textAlign: 'center', fontSize: '0.85rem' } }, [
-          h(:div, { style: { fontSize: '0.75rem', fontWeight: 'bold' } }, 'Treasury'),
-          h(:div, { style: { fontSize: '1.1rem', fontWeight: 'bold' } }, treasury.to_s),
-        ])
-
-        upper_content << h(:div, { style: { border: '1px solid #999', padding: '0.2rem', marginBottom: '0.2rem', backgroundColor: '#dda0dd', textAlign: 'center' } }, [
-                  h(:div, { style: { fontSize: '0.75rem', fontWeight: 'bold', marginBottom: '2px' } }, 'Owned Trains'),
-                  render_owned_trains(current_entity),
-                ])
-
-        upper_content << h(:div, { style: { border: '1px solid #999', padding: '0.2rem', marginBottom: '0.2rem', backgroundColor: '#dda0dd', textAlign: 'center' } }, [
-          h(:div, { style: { fontSize: '0.75rem', fontWeight: 'bold', marginBottom: '2px' } }, 'Tokens'),
-          render_company_tokens(current_entity),
-        ])
-
+        upper_content << h(:div, { style: { border: '1px solid #999', padding: '0.4rem', marginBottom: '0.4rem', backgroundColor: '#dda0dd', borderRadius: '4px', display: 'flex', flexDirection: 'column', gap: '0.4rem' } }, [
+           h(:div, { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #b886b8', paddingBottom: '0.2rem' } }, [
+             h(:div, { style: { fontSize: '0.8rem', fontWeight: 'bold' } }, 'Cash'),
+             h(:div, { style: { fontSize: '1.2rem', fontWeight: 'bold' } }, treasury.to_s),
+           ]),
+           h(:div, { style: { textAlign: 'center' } }, [
+             h(:div, { style: { fontSize: '0.75rem', fontWeight: 'bold', marginBottom: '2px' } }, 'Owned Trains'),
+             render_owned_trains(current_entity),
+           ]),
+           h(:div, { style: { textAlign: 'center' } }, [
+             h(:div, { style: { fontSize: '0.75rem', fontWeight: 'bold', marginBottom: '2px' } }, 'Tokens'),
+             render_company_tokens(current_entity),
+           ]),
+         ])
         upper_content << render_phase_box('1. Build Track', phase == :build_track, ['Skip'], actions, current_entity, nil)
 
         upper_content << h(:div, { style: { marginBottom: '0.4rem' } }, [
