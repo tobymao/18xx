@@ -116,12 +116,12 @@ module View
         end
 
         upper_content << h(:div,
-                           { style: { border: '1px solid #999', padding: '0.4rem', marginBottom: '0.4rem', backgroundColor: '#dda0dd', borderRadius: '4px', display: 'flex', flexDirection: 'column', gap: '0.4rem' } }, mauve_box_children)
-
-        upper_content << render_phase_box('1. Build Track', phase == :build_track, ['Skip'], actions, current_entity, nil)
+                           { style: { border: '1px solid #999', borderTop: "4px solid #{bg_color}", padding: '0.4rem', marginBottom: '0.4rem', backgroundColor: '#dda0dd', borderRadius: '4px', display: 'flex', flexDirection: 'column', gap: '0.4rem', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' } }, mauve_box_children)
+        upper_content << render_phase_box('1. Build Track', phase == :build_track, ['Skip'], actions, current_entity, nil,
+                                          bg_color, text_color)
 
         upper_content << h(:div, { style: { marginBottom: '0.4rem' } }, [
-          render_phase_box('2. Place Token', phase == :place_token, ['Skip'], actions, current_entity, nil),
+          render_phase_box('2. Place Token', phase == :place_token, ['Skip'], actions, current_entity, nil, bg_color, text_color),
         ])
 
         revenue_overlay = if %i[run_routes dividend].include?(phase)
@@ -167,7 +167,8 @@ module View
 
         if phase == :run_routes
           upper_content << render_phase_box('3. Run Routes', true, ["Submit #{formatted_revenue}"], actions, current_entity,
-                                            revenue_overlay)
+                                            revenue_overlay, bg_color, text_color)
+
         elsif phase == :dividend
           options = step.respond_to?(:dividend_options) ? step.dividend_options(current_entity).map(&:to_s) : []
           div_buttons = []
@@ -181,7 +182,8 @@ module View
             div_buttons << 'Split'
           end
 
-          upper_content << render_phase_box('3. Dividend', true, div_buttons, actions, current_entity, revenue_overlay)
+          upper_content << render_phase_box('3. Dividend', true, div_buttons, actions, current_entity, revenue_overlay, bg_color,
+                                            text_color)
         else
           options = step.respond_to?(:dividend_options) ? step.dividend_options(current_entity).map(&:to_s) : []
           div_buttons = []
@@ -189,18 +191,18 @@ module View
           div_buttons << 'Hold' if actions.include?('withhold') || options.include?('withhold') || actions.include?('dividend')
           div_buttons << 'Split' if actions.include?('half') || options.include?('half') || actions.include?('dividend')
 
-          upper_content << render_phase_box('3. Revenue', false, div_buttons, actions, current_entity, nil)
+          upper_content << render_phase_box('3. Revenue', false, div_buttons, actions, current_entity, nil, bg_color, text_color)
         end
 
         buyable_list = phase == :buy_train ? render_buyable_trains(step, current_entity) : h(:div)
         upper_content << h(:div, { style: { marginBottom: '0.4rem' } }, [
-          render_phase_box('4. Buy Trains', phase == :buy_train, ['Done Buying'], actions, current_entity, buyable_list),
+render_phase_box('4. Buy Trains', phase == :buy_train, ['Done Buying'], actions, current_entity, buyable_list, bg_color, text_color),
         ])
 
         buyable_company_list = actions.include?('buy_company') ? render_buyable_companies(step, current_entity) : h(:div)
         if actions.include?('buy_company')
           upper_content << h(:div, { style: { marginBottom: '0.4rem' } }, [
-            render_phase_box('Buy Private Company', true, actions.include?('pass') ? ['Skip'] : [], actions, current_entity, buyable_company_list),
+render_phase_box('Buy Private Company', true, actions.include?('pass') ? ['Skip'] : [], actions, current_entity, buyable_company_list, bg_color, text_color),
           ])
         end
 
@@ -259,11 +261,11 @@ module View
               }, label)
           end.compact
 
-          upper_content << h(:div, { style: { border: '2px solid #007bff', padding: '0.4rem', backgroundColor: '#e2e3e5', textAlign: 'center', marginBottom: '0.4rem' } }, [
-            h(:div, { style: { fontSize: '0.8rem', fontWeight: 'bold', color: '#1b1e21', marginBottom: '0.2rem' } },
-              '5. Special Actions'),
-            *special_buttons,
-          ])
+          upper_content << h(:div, { style: { border: '2px solid #007bff', padding: '0.4rem', backgroundColor: '#e2e3e5', textAlign: 'center', marginBottom: '0.4rem', borderRadius: '4px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' } }, [
+                      h(:div, { style: { fontSize: '0.8rem', fontWeight: 'bold', color: '#1b1e21', marginBottom: '0.2rem' } },
+                        '5. Special Actions'),
+                      *special_buttons,
+                              ])
         end
 
         if @game.round.stock?
@@ -320,10 +322,10 @@ module View
           }.call
         end
 
-        h(:div, { style: { display: 'flex', flexDirection: 'column', height: '100%', maxHeight: '100%', overflow: 'hidden', padding: '0.2rem', backgroundColor: '#c0c0c0', boxSizing: 'border-box', position: 'relative' } }, [
-            h(:div,
-              { style: { position: 'absolute', top: '0.2rem', left: '0.2rem', right: '0.2rem', bottom: '0.2rem', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.1rem' } }, upper_content),
-          ])
+        h(:div, { style: { display: 'flex', flexDirection: 'column', height: '100%', maxHeight: '100%', overflow: 'hidden', padding: '0.4rem', backgroundColor: '#e0e0e0', boxSizing: 'border-box', position: 'relative' } }, [
+                      h(:div,
+                        { style: { position: 'absolute', top: '0.2rem', left: '0.2rem', right: '0.2rem', bottom: '0.2rem', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.1rem' } }, upper_content),
+                  ])
       end
 
       def render_company_tokens(current_entity)
@@ -772,9 +774,11 @@ module View
           { style: { display: 'flex', flexDirection: 'row', justifyContent: 'center', flexWrap: 'wrap', padding: '0.2rem 0', margin: '0.2rem 0' } }, train_boxes)
       end
 
-      def render_phase_box(title, is_active, button_labels, available_actions, current_entity, custom_overlay)
-        bg_color = is_active ? '#ffebcd' : '#d3d3d3'
-        border_color = is_active ? '#8b4513' : '#999'
+      def render_phase_box(title, is_active, button_labels, available_actions, current_entity, custom_overlay, entity_bg_color = '#4169e1', _entity_text_color = '#ffffff')
+        box_bg = is_active ? '#ffffff' : '#f5f5f5'
+        box_border = is_active ? "2px solid #{entity_bg_color}" : '1px solid #cccccc'
+        title_color = is_active ? '#000000' : '#888888'
+
         buttons = button_labels.map do |label|
           click_action = lambda do
             next unless is_active
@@ -791,7 +795,8 @@ module View
               process_action(Engine::Action::RunRoutes.new(
                 current_entity,
                 routes: routes_to_submit,
-                extra_revenue: @game.extra_revenue(current_entity, routes_to_submit) + (current_revenue - base_revenue),
+                extra_revenue: @game.extra_revenue(current_entity,
+                                                   routes_to_submit) + (current_revenue - base_revenue),
                 subsidy: @game.routes_subsidy(routes_to_submit)
               ))
             elsif label == 'Pay' && (available_actions.include?('dividend') || available_actions.include?('payout'))
@@ -824,13 +829,17 @@ module View
           attrs = { disabled: !is_active }
           attrs[:id] = 'submit' if label.start_with?('Submit')
 
+          btn_bg = is_active ? '#4169e1' : '#e0e0e0'
+          btn_text = is_active ? '#ffffff' : '#a0a0a0'
+          btn_border = is_active ? 'none' : '1px solid #cccccc'
+
           h(:button,
-            { style: { width: '100%', padding: '0.2rem', marginTop: '0.2rem', fontSize: '0.75rem', backgroundColor: is_active ? '#4169e1' : '#f5f5f5', color: is_active ? 'white' : '#a9a9a9', border: '1px solid #999', cursor: is_active ? 'pointer' : 'not-allowed', fontWeight: 'bold' }, attrs: attrs, on: { click: click_action } }, label)
+            { style: { width: '100%', padding: '0.3rem', marginTop: '0.2rem', fontSize: '0.75rem', backgroundColor: btn_bg, color: btn_text, border: btn_border, borderRadius: '3px', cursor: is_active ? 'pointer' : 'not-allowed', fontWeight: 'bold' }, attrs: attrs, on: { click: click_action } }, label)
         end
-        h(:div, { style: { border: "2px solid #{border_color}", padding: '0.2rem', backgroundColor: bg_color, textAlign: 'center' } }, [
-          h(:div, { style: { fontSize: '0.75rem', fontWeight: 'bold', color: is_active ? '#8b4513' : '#666' } }, title),
-          custom_overlay, *buttons
-        ].compact)
+        h(:div, { style: { border: box_border, padding: '0.4rem', backgroundColor: box_bg, textAlign: 'center', borderRadius: '4px', boxShadow: is_active ? '0 1px 3px rgba(0,0,0,0.1)' : 'none' } }, [
+                  h(:div, { style: { fontSize: '0.75rem', fontWeight: 'bold', color: title_color, marginBottom: '0.2rem' } }, title),
+                  custom_overlay, *buttons
+                ].compact)
       end
     end
   end
