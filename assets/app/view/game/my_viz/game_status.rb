@@ -57,48 +57,48 @@ module View
         end
 
         css = <<~CSS
-                               :root {
-                                 --font-money: 'Courier New', monospace;
-                                 --font-standard: "Helvetica Neue", Helvetica, Arial, sans-serif;
-                                 --color-money-text: #4c1d95;
-                                 --accent-action-color: #2563eb;
-                                 --pulse-opacity-min: 0.75;
-                                 --pulse-scale-duration: 2s;
-                                 --opacity-unopened-row: 0.45;
-                                 --bg-active-row: #ffffff;
-                                 --bg-market-zone: #e6f4ea; /* Soft Sage Green */
-                                 --bg-corporate-zone: #f3e8ff;
-                                 --action-buy-edge: #16a34a;
-                                 --action-sell-edge: #dc2626;
-                                 --shadow-card: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-                               }
+                                         :root {
+                                           --font-money: 'Courier New', monospace;
+                                           --font-standard: "Helvetica Neue", Helvetica, Arial, sans-serif;
+                                           --color-money-text: #4c1d95;
+                                           --accent-action-color: #2563eb;
+                                           --pulse-opacity-min: 0.75;
+                                           --pulse-scale-duration: 2s;
+                                           --opacity-unopened-row: 0.45;
+                                           --bg-active-row: #ffffff;
+                                           --bg-market-zone: #e6f4ea; /* Soft Sage Green */
+                                           --bg-corporate-zone: #f3e8ff;
+                                           --action-buy-edge: #16a34a;
+                                           --action-sell-edge: #dc2626;
+                                           --shadow-card: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+                                         }
 
           #spreadsheet table { border-collapse: collapse; border: 3px solid #333333; background-color: #{COLOR_INACTIVE}; }
-           #spreadsheet th, #spreadsheet td { border: 1px solid #b3b3b3 !important; }
-           #spreadsheet thead tr:last-child th { border-bottom: 3px solid #333333 !important; }
-           #spreadsheet tr.last-player-row th, #spreadsheet tr.last-player-row td { border-bottom: 3px solid #333333 !important; }
-           #spreadsheet tr.last-minor-row th, #spreadsheet tr.last-minor-row td { border-bottom: 3px solid #333333 !important; }
-           .thick-right { border-right: 3px solid #333333 !important; }
-           .no-border { border: none !important; }
-                                      .money-value { font-family: var(--font-money) !important; font-weight: 700 !important; color: var(--color-money-text) !important; font-variant-numeric: tabular-nums !important; }
+          #spreadsheet th, #spreadsheet td { border: 1px solid #b3b3b3 !important; }
+                     #spreadsheet thead tr:last-child th { border-bottom: 3px solid #333333 !important; }
+                     #spreadsheet tr.last-player-row th, #spreadsheet tr.last-player-row td { border-bottom: 3px solid #333333 !important; }
+                     #spreadsheet tr.last-minor-row th, #spreadsheet tr.last-minor-row td { border-bottom: 3px solid #333333 !important; }
+                              .thick-right { border-right: 3px solid #333333 !important; }
+                     .no-border { border: none !important; }
+                                                .money-value { font-family: var(--font-money) !important; font-weight: 700 !important; color: var(--color-money-text) !important; font-variant-numeric: tabular-nums !important; }
 
-                               .game-card { display: inline-block; padding: 4px 8px; margin: 2px; border-radius: 4px; background-color: #ffffff; box-shadow: var(--shadow-card); transition: transform 0.1s ease; font-family: var(--font-standard); }
-                               .game-card.clickable:hover { cursor: pointer; transform: translateY(-1px); }
-                     .game-card.action-buy { border: 3px solid var(--action-buy-edge) !important; }
-                               .game-card.action-sell { border: 3px solid var(--action-sell-edge) !important; }
+                                         .game-card { display: inline-block; padding: 4px 8px; margin: 2px; border-radius: 4px; background-color: #ffffff; box-shadow: var(--shadow-card); transition: transform 0.1s ease; font-family: var(--font-standard); }
+                                         .game-card.clickable:hover { cursor: pointer; transform: translateY(-1px); }
+                               .game-card.action-buy { border: 3px solid var(--action-buy-edge) !important; }
+                                         .game-card.action-sell { border: 3px solid var(--action-sell-edge) !important; }
 
-                               .sell-restricted { text-decoration: line-through !important; opacity: 0.5 !important; cursor: not-allowed !important; }
-                               .token-bond { display: inline-block; width: 12px; height: 12px; background-color: #b91c1c; border-radius: 2px; }
+                                         .sell-restricted { text-decoration: line-through !important; opacity: 0.5 !important; cursor: not-allowed !important; }
+                                         .token-bond { display: inline-block; width: 12px; height: 12px; background-color: #b91c1c; border-radius: 2px; }
 
-                               tr.active-turn-focus { outline: 3px solid var(--accent-action-color) !important; outline-offset: -3px !important; background-color: var(--bg-active-row) !important; animation: zeroJankPulse var(--pulse-scale-duration) infinite ease-in-out; }
-                               @keyframes zeroJankPulse { 0% { opacity: 1; } 50% { opacity: var(--pulse-opacity-min); } 100% { opacity: 1; } }
+                                         tr.active-turn-focus { outline: 3px solid var(--accent-action-color) !important; outline-offset: -3px !important; background-color: var(--bg-active-row) !important; animation: zeroJankPulse var(--pulse-scale-duration) infinite ease-in-out; }
+                                         @keyframes zeroJankPulse { 0% { opacity: 1; } 50% { opacity: var(--pulse-opacity-min); } 100% { opacity: 1; } }
 
-                               tr.directed-by-active-player { background-color: rgba(37, 99, 235, 0.06) !important; }
-                               tr.company-row-unfloated, tr.company-row-closed { opacity: var(--opacity-unopened-row) !important; filter: grayscale(40%) !important; }
+                                         tr.directed-by-active-player { background-color: rgba(37, 99, 235, 0.06) !important; }
+                                         tr.company-row-unfloated, tr.company-row-closed { opacity: var(--opacity-unopened-row) !important; filter: grayscale(40%) !important; }
 
-                               .column-zone-market { background-color: var(--bg-market-zone) !important; }
-                               .column-zone-corporate { background-color: var(--bg-corporate-zone) !important; }
-                               th.column-zone-corporate { background-color: #e9d5ff !important; color: #4c1d95 !important; }
+                                         .column-zone-market { background-color: var(--bg-market-zone) !important; }
+                                         .column-zone-corporate { background-color: var(--bg-corporate-zone) !important; }
+                                         th.column-zone-corporate { background-color: #e9d5ff !important; color: #4c1d95 !important; }
         CSS
 
         h(:div, [
@@ -929,6 +929,7 @@ module View
         ipo_row_content = [
 h('td.padded_number.column-zone-market', { style: { position: 'relative' } },
   ipo_cell_children),
+h('td.padded_number.column-zone-market.money-value', {}, clean_par_price),
         ]
 
         train_buyable_step = step&.current_actions&.include?('buy_train')
