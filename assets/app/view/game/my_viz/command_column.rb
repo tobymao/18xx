@@ -117,11 +117,11 @@ module View
 
         upper_content << h(:div,
                            { style: { border: '1px solid #999', borderTop: "4px solid #{bg_color}", padding: '0.4rem', marginBottom: '0.4rem', backgroundColor: '#dda0dd', borderRadius: '4px', display: 'flex', flexDirection: 'column', gap: '0.4rem', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' } }, mauve_box_children)
-        upper_content << render_phase_box('1. Build Track', phase == :build_track, ['Skip'], actions, current_entity, nil,
+        upper_content << render_phase_box('Build Track', phase == :build_track, ['Skip'], actions, current_entity, nil,
                                           bg_color, text_color)
 
         upper_content << h(:div, { style: { marginBottom: '0.4rem' } }, [
-          render_phase_box('2. Place Token', phase == :place_token, ['Skip'], actions, current_entity, nil, bg_color, text_color),
+          render_phase_box('Place Token', phase == :place_token, ['Skip'], actions, current_entity, nil, bg_color, text_color),
         ])
 
         revenue_overlay = if %i[run_routes dividend].include?(phase)
@@ -166,7 +166,7 @@ module View
                           end
 
         if phase == :run_routes
-          upper_content << render_phase_box('3. Run Routes', true, ["Submit #{formatted_revenue}"], actions, current_entity,
+          upper_content << render_phase_box('Run Routes', true, ["Submit #{formatted_revenue}"], actions, current_entity,
                                             revenue_overlay, bg_color, text_color)
 
         elsif phase == :dividend
@@ -182,7 +182,7 @@ module View
             div_buttons << 'Split'
           end
 
-          upper_content << render_phase_box('3. Dividend', true, div_buttons, actions, current_entity, revenue_overlay, bg_color,
+          upper_content << render_phase_box('Dividend', true, div_buttons, actions, current_entity, revenue_overlay, bg_color,
                                             text_color)
         else
           options = step.respond_to?(:dividend_options) ? step.dividend_options(current_entity).map(&:to_s) : []
@@ -191,12 +191,12 @@ module View
           div_buttons << 'Hold' if actions.include?('withhold') || options.include?('withhold') || actions.include?('dividend')
           div_buttons << 'Split' if actions.include?('half') || options.include?('half') || actions.include?('dividend')
 
-          upper_content << render_phase_box('3. Revenue', false, div_buttons, actions, current_entity, nil, bg_color, text_color)
+          upper_content << render_phase_box('Revenue', false, div_buttons, actions, current_entity, nil, bg_color, text_color)
         end
 
         buyable_list = phase == :buy_train ? render_buyable_trains(step, current_entity) : h(:div)
         upper_content << h(:div, { style: { marginBottom: '0.4rem' } }, [
-render_phase_box('4. Buy Trains', phase == :buy_train, ['Done Buying'], actions, current_entity, buyable_list, bg_color, text_color),
+render_phase_box('Buy Trains', phase == :buy_train, ['Done Buying'], actions, current_entity, buyable_list, bg_color, text_color),
         ])
 
         buyable_company_list = actions.include?('buy_company') ? render_buyable_companies(step, current_entity) : h(:div)
@@ -463,7 +463,7 @@ render_phase_box('Buy Private Company', true, actions.include?('pass') ? ['Skip'
 
           company_click_handler = lambda {
             Lib::Storage[menu_storage_key] = true
-            Lib::Storage[price_storage_key] = min_price
+            Lib::Storage[price_storage_key] = current_entity.cash
             update
           }
 
@@ -562,8 +562,14 @@ render_phase_box('Buy Private Company', true, actions.include?('pass') ? ['Skip'
 
           card_text = "#{c.name} (#{owner_name})"
 
+          card_props = {
+            attrs: { class: 'game-card clickable' },
+            style: { border: '2px solid #ff8c00', width: 'auto', padding: '0 8px' },
+            on: { click: company_click_handler },
+          }
+
           h(:div, { style: { display: 'block', width: '100%', position: 'relative', margin: '4px 0' } }, [
-            h(View::Game::Card, text: card_text, border_color: '#ff8c00', click_action: company_click_handler),
+            h(:div, card_props, card_text),
             menu_dropdown,
           ].compact)
         end.compact
@@ -609,7 +615,7 @@ render_phase_box('Buy Private Company', true, actions.include?('pass') ? ['Skip'
           train_click_handler = lambda {
             if is_adjustable_price
               Lib::Storage[menu_storage_key] = true
-              Lib::Storage[price_storage_key] = 1
+              Lib::Storage[price_storage_key] = current_entity.cash
               update
             else
               process_action(Engine::Action::BuyTrain.new(
@@ -712,7 +718,8 @@ render_phase_box('Buy Private Company', true, actions.include?('pass') ? ['Skip'
             ])
           end
 
-          card_element = h(View::Game::Card, text: t.name, border_color: train_border_color)
+          card_element = h(:div,
+                           { attrs: { class: 'game-card clickable' }, style: { border: "2px solid #{train_border_color}" } }, t.name)
 
           source_name = is_bank ? 'Bank' : owner_entity.name
           info_string = is_adjustable_price ? "from #{source_name}" : "from #{source_name} (#{@game.format_currency(t.price)})"
@@ -751,7 +758,7 @@ render_phase_box('Buy Private Company', true, actions.include?('pass') ? ['Skip'
         limit = owned_trains.size if limit < owned_trains.size
 
         train_boxes = owned_trains.map do |train|
-          h(View::Game::Card, text: train.name)
+          h(:div, { attrs: { class: 'game-card' } }, train.name)
         end
 
         empty_count = [limit - owned_trains.size, 0].max
@@ -759,8 +766,8 @@ render_phase_box('Buy Private Company', true, actions.include?('pass') ? ['Skip'
           train_boxes << h(:div,
                            {
                              style: {
-                               width: '42px',
-                               height: '22px',
+                               width: '3.5rem',
+                               height: '1.45rem',
                                backgroundColor: 'transparent',
                                border: '1px dashed #999',
                                borderRadius: '3px',

@@ -57,54 +57,53 @@ module View
         end
 
         css = <<~CSS
-                                                                       :root {
-                                                                         --font-money: 'Courier New', monospace;
-                                                                         --font-standard: "Helvetica Neue", Helvetica, Arial, sans-serif;
-                                                                         --color-money-text: #4c1d95;
-                                                                         --accent-action-color: #2563eb;
-                                                                         --pulse-opacity-min: 0.75;
-                                                                         --pulse-scale-duration: 2s;
-                                                                         --opacity-unopened-row: 0.45;
-                                                                         --bg-active-row: #ffffff;
-                                                                         --bg-market-zone: #e6f4ea; /* Soft Sage Green */
-                                                                         --bg-corporate-zone: #f3e8ff;
-                                                                         --action-buy-edge: #16a34a;
-                                                                         --action-sell-edge: #dc2626;
-                                                                         --shadow-card: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-                                                                       }
-          #spreadsheet table { border-collapse: collapse; border: 3px solid #333333; background-color: #{COLOR_INACTIVE}; }
-                    #spreadsheet th, #spreadsheet td { border: 1px solid #b3b3b3 !important; vertical-align: middle !important; }
-                               #spreadsheet thead tr:last-child th { border-bottom: 3px solid #333333 !important; }
-                               #spreadsheet tr.last-player-row th, #spreadsheet tr.last-player-row td { border-bottom: 3px solid #333333 !important; }
-                               #spreadsheet tr.last-minor-row th, #spreadsheet tr.last-minor-row td { border-bottom: 3px solid #333333 !important; }
-                                        .thick-right { border-right: 3px solid #333333 !important; }
-                               .no-border { border: none !important; }
-                                                          .money-value, .padded_number { text-align: right !important; padding-right: 0.5rem !important; }
-                                                          .money-value { font-family: var(--font-money) !important; font-weight: 700 !important; color: var(--color-money-text) !important; font-variant-numeric: tabular-nums !important; }
+                                                                                           :root {
+                                                                                             --font-money: 'Courier New', monospace;
+                                                                                             --font-standard: "Helvetica Neue", Helvetica, Arial, sans-serif;
+                                                                                             --color-money-text: #4c1d95;
+                                                                                             --accent-action-color: #2563eb;
+                                                                                             --pulse-opacity-min: 0.75;
+                                                                                             --pulse-scale-duration: 2s;
+                                                                                             --opacity-unopened-row: 0.45;
+                                                                                             --bg-active-row: #ffffff;
+                                                                                             --bg-market-zone: #e6f4ea; /* Soft Sage Green */
+                                                                                             --bg-corporate-zone: #f3e8ff;
+                                                                                             --action-buy-edge: #16a34a;
+                                                                                             --action-sell-edge: #dc2626;
+                                                                                             --shadow-card: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+                                                                                           }
+                              #spreadsheet table { border-collapse: collapse; border: 3px solid #333333; background-color: #{COLOR_INACTIVE}; }
+                    #spreadsheet th, #spreadsheet td { border: 1px solid #b3b3b3 !important; vertical-align: middle !important; padding: 4px 2px !important; }
+                                                   #spreadsheet thead tr:last-child th { border-bottom: 3px solid #333333 !important; }
+                                                   #spreadsheet tr.last-player-row th, #spreadsheet tr.last-player-row td { border-bottom: 3px solid #333333 !important; }
+                                                   #spreadsheet tr.last-minor-row th, #spreadsheet tr.last-minor-row td { border-bottom: 3px solid #333333 !important; }
+                                                            .thick-right { border-right: 3px solid #333333 !important; }
+                                                   .no-border { border: none !important; }
+                                                                              .money-value, .padded_number { text-align: right !important; padding-right: 0.5rem !important; }
+                                                                              .money-value { font-family: var(--font-money) !important; font-weight: 700 !important; color: var(--color-money-text) !important; font-variant-numeric: tabular-nums !important; }
 
-                                                   .game-card { display: inline-flex; align-items: center; justify-content: center; box-sizing: border-box; min-width: 3.5rem; height: 1.6rem; font-size: 0.85rem; padding: 0 4px; margin: 2px; border: 3px solid transparent; border-radius: 4px; background-color: #f3f4f6; box-shadow: var(--shadow-card); transition: transform 0.1s ease; font-family: var(--font-standard); }
-                                                   .game-card.clickable:hover { cursor: pointer; transform: translateY(-1px); }
-                                                   .game-card.action-buy { border-color: var(--action-buy-edge) !important; }
-                                                   .game-card.action-sell { border-color: var(--action-sell-edge) !important; }
-
-          #{'                                         '}
-                                                                       .sell-restricted { text-decoration: line-through !important; opacity: 0.5 !important; cursor: not-allowed !important; }
-                                                                       .token-bond { display: inline-block; width: 12px; height: 12px; background-color: #b91c1c; border-radius: 2px; }
-
-
-                              tr.active-turn-focus { background-color: var(--bg-active-row) !important; animation: zeroJankPulse var(--pulse-scale-duration) infinite ease-in-out; }
-                                                                       tr.active-turn-focus th, tr.active-turn-focus td { box-shadow: inset 0 3px 0 var(--accent-action-color), inset 0 -3px 0 var(--accent-action-color) !important; }
-                                                                       tr.active-turn-focus th:first-child, tr.active-turn-focus td:first-child { box-shadow: inset 3px 3px 0 var(--accent-action-color), inset 0 -3px 0 var(--accent-action-color) !important; }
-                                                                       tr.active-turn-focus th:last-child, tr.active-turn-focus td:last-child { box-shadow: inset -3px 3px 0 var(--accent-action-color), inset 0 -3px 0 var(--accent-action-color) !important; }
+          .game-card { display: inline-flex; align-items: center; justify-content: center; box-sizing: border-box; min-width: 3.5rem; height: 1.45rem; font-size: 0.85rem; padding: 0 4px; margin: 2px; border: 1px solid #888888; border-radius: 4px; background-color: #fdfbf7; color: #000000; box-shadow: var(--shadow-card); transition: transform 0.1s ease; font-family: var(--font-standard); }
+                                                             .game-card.clickable:hover { cursor: pointer; transform: translateY(-1px); box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+                                                             .game-card.action-buy { border: 2px solid var(--action-buy-edge) !important; }
+                                                             .game-card.action-sell { border: 2px solid var(--action-sell-edge) !important; }
                               #{'                                         '}
-                                                                       @keyframes zeroJankPulse { 0% { opacity: 1; } 50% { opacity: var(--pulse-opacity-min); } 100% { opacity: 1; } }
+                                                                                           .sell-restricted { text-decoration: line-through !important; opacity: 0.5 !important; cursor: not-allowed !important; }
+                                                                                           .token-bond { display: inline-block; width: 12px; height: 12px; background-color: #b91c1c; border-radius: 2px; }
 
-                                                                       tr.directed-by-active-player { background-color: rgba(37, 99, 235, 0.06) !important; }
-                                                                       tr.company-row-unfloated, tr.company-row-closed { opacity: var(--opacity-unopened-row) !important; filter: grayscale(40%) !important; }
 
-                                                                       .column-zone-market { background-color: var(--bg-market-zone) !important; }
-                                                                       .column-zone-corporate { background-color: var(--bg-corporate-zone) !important; }
-                                                                       th.column-zone-corporate { background-color: #e9d5ff !important; color: #4c1d95 !important; }
+                                                  tr.active-turn-focus { background-color: var(--bg-active-row) !important; animation: zeroJankPulse var(--pulse-scale-duration) infinite ease-in-out; }
+                                                                                           tr.active-turn-focus th, tr.active-turn-focus td { box-shadow: inset 0 3px 0 var(--accent-action-color), inset 0 -3px 0 var(--accent-action-color) !important; }
+                                                                                           tr.active-turn-focus th:first-child, tr.active-turn-focus td:first-child { box-shadow: inset 3px 3px 0 var(--accent-action-color), inset 0 -3px 0 var(--accent-action-color) !important; }
+                                                                                           tr.active-turn-focus th:last-child, tr.active-turn-focus td:last-child { box-shadow: inset -3px 3px 0 var(--accent-action-color), inset 0 -3px 0 var(--accent-action-color) !important; }
+                                                  #{'                                         '}
+                                                                                           @keyframes zeroJankPulse { 0% { opacity: 1; } 50% { opacity: var(--pulse-opacity-min); } 100% { opacity: 1; } }
+
+                                                                                           tr.directed-by-active-player { background-color: rgba(37, 99, 235, 0.06) !important; }
+                                                                                           tr.company-row-unfloated, tr.company-row-closed { opacity: var(--opacity-unopened-row) !important; filter: grayscale(40%) !important; }
+
+                                                                                           .column-zone-market { background-color: var(--bg-market-zone) !important; }
+                                                                                           .column-zone-corporate { background-color: var(--bg-corporate-zone) !important; }
+                                                                                           th.column-zone-corporate { background-color: #e9d5ff !important; color: #4c1d95 !important; }
         CSS
 
         h(:div, [
@@ -165,7 +164,7 @@ module View
         @game.players.each_with_index do |p, idx|
           bg_color = p == active_player ? COLOR_ACTIVE : COLOR_INACTIVE
           is_last = idx == @game.players.size - 1
-          comp_cells << h("td#{is_last ? '.thick-right' : ''}", { style: { backgroundColor: bg_color } }, [render_companies(p)])
+          comp_cells << render_companies(p, bg_color, is_last: is_last)
         end
         rows << comp_cells
 
@@ -633,8 +632,16 @@ module View
 
           if corporation.minor?
             players_row_content << if corporation.owner == p
+                                     card_classes = ['game-card']
+                                     card_classes << 'action-sell' if can_sell
+                                     card_classes << 'action-buy' if can_buy_from_player
+                                     card_classes << 'clickable' if click_handler
+
+                                     card_props = { attrs: { class: card_classes.join(' ') } }
+                                     card_props[:on] = { click: click_handler } if click_handler
+
                                      h(:td, { style: { backgroundColor: bg_color, textAlign: 'center' } }, [
-                                       h(View::Game::Card, text: '100%', border_color: border_color, click_action: click_handler),
+                                       h(:div, card_props, '100%'),
                                      ])
                                    else
                                      h(:td, { style: { backgroundColor: bg_color } }, '')
@@ -664,7 +671,6 @@ module View
               card_classes << 'action-sell' if can_sell
               card_classes << 'action-buy' if can_buy_from_player
               card_classes << 'clickable' if click_handler
-              card_classes << 'sell-restricted' if just_sold && !click_handler
 
               card_props = { attrs: { class: card_classes.join(' ') } }
               card_props[:on] = { click: click_handler } if click_handler
@@ -673,6 +679,21 @@ module View
               card = h(:span, { style: { visibility: 'hidden', display: 'inline-block' } }, [card]) if n_shares.zero?
 
               td_children = [card]
+
+              if just_sold
+                td_children << h(:span, {
+                                   attrs: { class: 'token-bond' },
+                                   style: {
+                                     position: 'absolute',
+                                     top: '2px',
+                                     right: '2px',
+                                     width: '6px',
+                                     height: '6px',
+                                     borderRadius: '50%',
+                                     backgroundColor: '#dc2626',
+                                   },
+                                 })
+              end
 
               if Lib::Storage['sell_menu_player'] == p.id && Lib::Storage['sell_menu_corp'] == corporation.id && can_sell
                 options = bundles.map do |bundle|
@@ -963,7 +984,7 @@ module View
 
             train_click_handler = lambda {
               Lib::Storage[menu_storage_key] = true
-              Lib::Storage[price_storage_key] = 1 # Initialize default price string
+              Lib::Storage[price_storage_key] = active_entity.cash
               update
             }
 
@@ -976,7 +997,8 @@ module View
 
                 Lib::Storage[menu_storage_key] = nil
                 Lib::Storage[price_storage_key] = nil
-                source_selector = "#train_wrapper_#{corporation.id}_#{t.id} .card"
+
+                source_selector = "#train_wrapper_#{corporation.id}_#{t.id} .game-card"
                 Lib::CardAnimation.fly(source_selector, "#trains_#{active_entity.id}") do
                   process_action(Engine::Action::BuyTrain.new(
                     active_entity,
@@ -1082,7 +1104,7 @@ module View
           train_cards << h(:div, {
                              style: {
                                width: '3.5rem',
-                               height: '1.6rem',
+                               height: '1.45rem',
                                backgroundColor: 'transparent',
                                border: '1px dashed #999',
                                borderRadius: '4px',
@@ -1297,7 +1319,7 @@ module View
 
                 Lib::Storage[menu_storage_key] = nil
                 Lib::Storage[price_storage_key] = nil
-                source_selector = "#company_wrapper_#{entity.id}_#{c.id} .card"
+source_selector = "#company_wrapper_#{entity.id}_#{c.id} .game-card"
                 Lib::CardAnimation.fly(source_selector, "#companies_#{active_ent.id}") do
                   process_action(Engine::Action::BuyCompany.new(
                     active_ent,

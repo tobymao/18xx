@@ -202,13 +202,13 @@ module View
                 }
 
                 [
-                  h(:button,
-                    { style: button_style.merge(backgroundColor: '#e0e0e0', color: '#000000'), on: { click: undo_handler } }, 'Undo'),
-                  h(:button,
-                    { style: button_style.merge(backgroundColor: '#e0e0e0', color: '#000000'), on: { click: redo_handler } }, 'Redo'),
-                  h(:button,
-                    { style: button_style.merge(backgroundColor: '#007bff', borderColor: '#0056b3', color: '#ffffff'), on: { click: default_handler } }, default_btn_text),
-                ]
+h(:button,
+  { attrs: { id: 'undo' }, style: button_style.merge(backgroundColor: '#e0e0e0', color: '#000000'), on: { click: undo_handler } }, 'Undo'),
+h(:button,
+  { attrs: { id: 'redo' }, style: button_style.merge(backgroundColor: '#e0e0e0', color: '#000000'), on: { click: redo_handler } }, 'Redo'),
+h(:button,
+  { attrs: { id: 'pass' }, style: button_style.merge(backgroundColor: '#007bff', borderColor: '#0056b3', color: '#ffffff'), on: { click: default_handler } }, default_btn_text),
+                                  ]
               end),
 
             # Stock Market Component

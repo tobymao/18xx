@@ -2,27 +2,33 @@
 
 module Lib
   module CardAnimation
-    def self.fly(_event, dest_selector)
+    def self.fly(event_or_source, dest_selector, &block)
       # FIRST: Handle DOM capture and cloning natively to avoid Opal bridge errors
       capture_successful = false
       %x{
         var card = null, startX, startY, width, height, clone;
         try {
-          if (typeof #{event_or_source} === 'string') {
-            var parts = #{event_or_source}.split(' ');
-            var id = parts[0].replace('#', '');
-            var parent = window.document.getElementById(id);
-            if (parent) {
-              card = parent.querySelector(parts[1] || '.card');
+
+        if (typeof #{event_or_source} === 'string') {
+            card = window.document.querySelector(#{event_or_source});
+            if (!card) {
+              var parts = #{event_or_source}.split(' ');
+              var id = parts[0].replace('#', '');
+              var parent = window.document.getElementById(id);
+              if (parent) {
+                card = parent.querySelector('.game-card') || parent.querySelector('.card') || parent;
+              }
             }
-          } else {
+          } else if (#{event_or_source}) {
             var nativeEvent = #{event_or_source}.$to_n ? #{event_or_source}.$to_n() : #{event_or_source};
             var target = nativeEvent.target || nativeEvent;
-            card = target.closest('.card') || target;
+            card = target.closest('.game-card') || target.closest('.card') || target;
           }
-        } catch(e) {
+            } catch(e) {
           console.warn("Animation failed to locate source", e);
         }
+
+
 
         if (card) {
           #{capture_successful = true};
@@ -33,6 +39,16 @@ module Lib
           height = rect.height;
 
           clone = card.cloneNode(true);
+
+          // Strip out absolute choice dropdown containers from the moving clone
+          var nestedDivs = clone.getElementsByTagName('div');
+          for (var i = 0; i < nestedDivs.length; i++) {
+            if (nestedDivs[i].style.position === 'absolute') {
+              nestedDivs[i].parentNode.removeChild(nestedDivs[i]);
+            }
+          }
+
+
           clone.style.position = 'fixed';
           clone.style.left = startX + 'px';
           clone.style.top = startY + 'px';
@@ -44,15 +60,17 @@ module Lib
           clone.style.pointerEvents = 'none';
 
           window.document.body.appendChild(clone);
+          // Hide the original element template while the flight clone is active
+          card.style.visibility = 'hidden';
         }
       }
 
-      # Execute the game action to update state and trigger Snabberb VDOM patch unconditionally
-      yield if block_given?
+      unless capture_successful
+        yield if block
+        return
+      end
 
-      return unless capture_successful
-
-      # LAST & PLAY: Handle the FLIP destination logic natively
+      js_block = block
       %x{
         window.requestAnimationFrame(function() {
           window.requestAnimationFrame(function() {
@@ -75,7 +93,13 @@ module Lib
               if (clone.parentNode) {
                 clone.parentNode.removeChild(clone);
               }
-            }, 550);
+                if (card) {
+                card.style.visibility = 'visible';
+              }
+              if (js_block) {
+                js_block.$call();
+              }
+            }, 500);
           });
         });
       }
