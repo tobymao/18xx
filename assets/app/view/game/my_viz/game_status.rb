@@ -91,8 +91,8 @@ module View
           clean_cash = @game.format_currency(p.cash).gsub(/[^0-9]/, '')
           bg_color = p == active_player ? COLOR_ACTIVE : COLOR_INACTIVE
           is_last = idx == @game.players.size - 1
-          cash_cells << h("td.padded_number#{is_last ? '.thick-right' : ''}",
-                          { hook: Lib::MoneyAnimation.hook, style: { fontFamily: FONT_CASH, color: COLOR_CASH, fontWeight: 'bold', backgroundColor: bg_color } }, clean_cash)
+          cash_cells << h("td.padded_number.money-value#{is_last ? '.thick-right' : ''}",
+                          { hook: Lib::MoneyAnimation.hook, style: { backgroundColor: bg_color } }, clean_cash)
         end
         rows << cash_cells
 
@@ -578,6 +578,7 @@ module View
             if n_shares.zero? && !can_buy_from_player && !just_sold
               players_row_content << h(:td, { style: { backgroundColor: bg_color } }, '')
             else
+
               percent = p.percent_of(corporation) || (n_shares * 10)
               is_president = corporation.respond_to?(:president?) && corporation.president?(p)
               text = if n_shares.zero?
@@ -586,26 +587,19 @@ module View
                        "#{percent}%#{is_president ? 'P' : ''}"
                      end
 
-              border_color = '#cc0000' if just_sold && !click_handler
+              card_classes = ['game-card']
+              card_classes << 'action-sell' if can_sell
+              card_classes << 'action-buy' if can_buy_from_player
+              card_classes << 'clickable' if click_handler
+              card_classes << 'sell-restricted' if just_sold && !click_handler
 
-              card = h(View::Game::Card, text: text, border_color: border_color, click_action: click_handler)
+              card_props = { attrs: { class: card_classes.join(' ') } }
+              card_props[:on] = { click: click_handler } if click_handler
+
+              card = h(:div, card_props, text)
               card = h(:span, { style: { visibility: 'hidden', display: 'inline-block' } }, [card]) if n_shares.zero?
 
               td_children = [card]
-
-              if just_sold
-                td_children << h(:span, {
-                                   style: {
-                                     display: 'inline-block',
-                                     width: '6px',
-                                     height: '6px',
-                                     backgroundColor: '#cc0000',
-                                     borderRadius: '50%',
-                                     marginLeft: '4px',
-                                     verticalAlign: 'middle',
-                                   },
-                                 })
-              end
 
               if Lib::Storage['sell_menu_player'] == p.id && Lib::Storage['sell_menu_corp'] == corporation.id && can_sell
                 options = bundles.map do |bundle|
@@ -707,9 +701,16 @@ module View
 
         pool_cell_children = []
         unless pool_share_text.empty?
-          pool_cell_children << h(View::Game::Card, text: pool_share_text, border_color: pool_border_color,
-                                                    click_action: pool_click_handler)
+          card_classes = ['game-card']
+          if pool_click_handler
+            card_classes << 'action-buy'
+            card_classes << 'clickable'
+          end
 
+          card_props = { attrs: { class: card_classes.join(' ') } }
+          card_props[:on] = { click: pool_click_handler } if pool_click_handler
+
+          pool_cell_children << h(:div, card_props, pool_share_text)
           if Lib::Storage['buy_pool_menu_corp'] == corporation.id && !valid_pool_shares.empty?
             options = valid_pool_shares.map do |share|
               {
@@ -813,8 +814,17 @@ module View
 
         ipo_cell_children = []
         unless ipo_share_text.empty?
-          ipo_cell_children << h(View::Game::Card, text: ipo_share_text, border_color: ipo_border_color,
-                                                   click_action: ipo_click_handler)
+
+          card_classes = ['game-card']
+          if ipo_click_handler
+            card_classes << 'action-buy'
+            card_classes << 'clickable'
+          end
+
+          card_props = { attrs: { class: card_classes.join(' ') } }
+          card_props[:on] = { click: ipo_click_handler } if ipo_click_handler
+
+          ipo_cell_children << h(:div, card_props, ipo_share_text)
 
           if Lib::Storage['buy_ipo_menu_corp'] == corporation.id && !valid_ipo_shares.empty?
             options = valid_ipo_shares.map do |share|
@@ -1138,28 +1148,20 @@ module View
 
         dots = []
         loans_taken.times do
-          dots << h(:span,
-                    {
-                      style: {
-                        display: 'inline-block',
-                        width: '8px',
-                        height: '8px',
-                        backgroundColor: '#dc3545',
-                        borderRadius: '50%',
-                        margin: '0 2px',
-                        verticalAlign: 'middle',
-                      },
+          dots << h(:span, {
+                      attrs: { class: 'token-bond' },
+                      style: { margin: '0 2px', verticalAlign: 'middle' },
                     })
         end
+
         [max_loans - loans_taken, 0].max.times do
-          dots << h(:span,
-                    {
+          dots << h(:span, {
                       style: {
                         display: 'inline-block',
-                        width: '8px',
-                        height: '8px',
-                        border: '1px solid #dc3545',
-                        borderRadius: '50%',
+                        width: '12px',
+                        height: '12px',
+                        border: '1px solid #b91c1c',
+                        borderRadius: '2px',
                         margin: '0 2px',
                         verticalAlign: 'middle',
                         boxSizing: 'border-box',
@@ -1340,8 +1342,9 @@ module View
             clean_cash = @game.format_currency(p.cash).gsub(/[^0-9]/, '')
             is_active_col = (p == active_player)
             bg_color = is_active_col ? COLOR_ACTIVE : COLOR_INACTIVE
-            h('td.padded_number',
-              { hook: Lib::MoneyAnimation.hook, style: { fontFamily: FONT_CASH, color: COLOR_CASH, fontWeight: 'bold', backgroundColor: bg_color } }, clean_cash)
+
+            h('td.padded_number.money-value',
+              { hook: Lib::MoneyAnimation.hook, style: { backgroundColor: bg_color } }, clean_cash)
           end,
         ])
       end
