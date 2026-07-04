@@ -25,6 +25,7 @@ module View
       include Actionable
       include View::ShareCalculation
       needs :game, store: true
+      needs :game_data, store: true
 
       PLAYER_COL_MAX_WIDTH = '4.5rem'
 
@@ -155,7 +156,10 @@ module View
         @game.players.each_with_index do |p, idx|
           bg_color = p == active_player ? COLOR_ACTIVE : COLOR_INACTIVE
           is_last = idx == @game.players.size - 1
-          time_cells << h("td.padded_number#{is_last ? '.thick-right' : ''}", { style: { backgroundColor: bg_color } }, '0:00')
+          time_val, formatted_time = player_time_details(p)
+          text_color = time_val < 0 ? '#ff0000' : '#000000'
+          time_cells << h("td.padded_number#{is_last ? '.thick-right' : ''}",
+                          { style: { backgroundColor: bg_color, color: text_color } }, formatted_time)
         end
         rows << time_cells
 
@@ -1458,15 +1462,18 @@ module View
 
       def render_player_time
         h(:tr, tr_default_props, [
-        h('th.left', 'Time'),
-        *@game.players.map.with_index do |p, idx|
-          is_active_col = (p == active_player)
-          bg_color = is_active_col ? COLOR_ACTIVE : COLOR_INACTIVE
-          is_last = idx == @game.players.size - 1
-          h("td.padded_number#{is_last ? '.thick-right' : ''}", { style: { backgroundColor: bg_color } }, '0:00')
-        end,
-        h(:td, { attrs: { colspan: 30 }, style: { border: 'none' } }, ''),
-      ])
+          h('th.left', 'Time'),
+          *@game.players.map.with_index do |p, idx|
+            is_active_col = (p == active_player)
+            bg_color = is_active_col ? COLOR_ACTIVE : COLOR_INACTIVE
+            is_last = idx == @game.players.size - 1
+            time_val, formatted_time = player_time_details(p)
+            text_color = time_val < 0 ? '#ff0000' : '#000000'
+            h("td.padded_number#{is_last ? '.thick-right' : ''}", { style: { backgroundColor: bg_color, color: text_color } },
+              formatted_time)
+          end,
+          h(:td, { attrs: { colspan: 30 }, style: { border: 'none' } }, ''),
+        ])
       end
 
       def render_player_certs
@@ -1690,6 +1697,30 @@ module View
       end
 
       private
+
+      def player_time_details(p)
+        times_hash = @game_data&.dig('thinking_times') || @game_data&.dig(:thinking_times) || {}
+        game_players = @game_data&.dig('players') || @game_data&.dig(:players) || []
+        user_match = game_players.find { |u| u['name'] == p.name || u[:name] == p.name }
+        user_id = user_match ? (user_match['id'] || user_match[:id]) : p.id
+
+        base_time = times_hash[user_id.to_s] || times_hash[user_id.to_i] || 300
+
+        if p == active_player
+          last_act = @game_data&.dig('last_action_at') || @game_data&.dig(:last_action_at) || Time.now.to_i
+          last_act = last_act.to_i / 1000 if last_act.to_i > 5_000_000_000
+          elapsed_seconds = Time.now.to_i - last_act.to_i
+          time_val = (base_time - elapsed_seconds).to_i
+        else
+          time_val = base_time.to_i
+        end
+
+        abs_time = time_val.abs
+        mins = abs_time / 60
+        secs = abs_time % 60
+        formatted_time = "#{time_val < 0 ? '-' : ''}#{mins}:#{secs < 10 ? '0' : ''}#{secs}"
+        [time_val, formatted_time]
+      end
 
       def num_ipo_shares(corporation)
         if @game.separate_treasury?
