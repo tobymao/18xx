@@ -57,47 +57,48 @@ module View
         end
 
         css = <<~CSS
-                              :root {
-                                --font-money: 'Courier New', monospace;
-                                --font-standard: "Helvetica Neue", Helvetica, Arial, sans-serif;
-                                --color-money-text: #4c1d95;
-                                --accent-action-color: #2563eb;
-                                --pulse-opacity-min: 0.75;
-                                --pulse-scale-duration: 2s;
-                                --opacity-unopened-row: 0.45;
-                                --bg-active-row: #ffffff;
-                                --bg-market-zone: #e6f4ea; /* Soft Sage Green */
-                                --bg-corporate-zone: #f3e8ff;
-                                --action-buy-edge: #16a34a;
-                                --action-sell-edge: #dc2626;
-                                --shadow-card: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-                              }
+                               :root {
+                                 --font-money: 'Courier New', monospace;
+                                 --font-standard: "Helvetica Neue", Helvetica, Arial, sans-serif;
+                                 --color-money-text: #4c1d95;
+                                 --accent-action-color: #2563eb;
+                                 --pulse-opacity-min: 0.75;
+                                 --pulse-scale-duration: 2s;
+                                 --opacity-unopened-row: 0.45;
+                                 --bg-active-row: #ffffff;
+                                 --bg-market-zone: #e6f4ea; /* Soft Sage Green */
+                                 --bg-corporate-zone: #f3e8ff;
+                                 --action-buy-edge: #16a34a;
+                                 --action-sell-edge: #dc2626;
+                                 --shadow-card: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+                               }
 
-          #spreadsheet table { border-collapse: collapse; border: 2px solid #333333; background-color: #{COLOR_INACTIVE}; }
-                    #spreadsheet th, #spreadsheet td { border: 1px solid #b3b3b3 !important; }
-                    #spreadsheet thead tr:last-child th { border-bottom: 2px solid #333333 !important; }
-                    #spreadsheet tr.last-player-row th, #spreadsheet tr.last-player-row td { border-bottom: 2px solid #333333 !important; }
-                    .thick-right { border-right: 2px solid #333333 !important; }
-                    .no-border { border: none !important; }
-                              .money-value { font-family: var(--font-money) !important; font-weight: 700 !important; color: var(--color-money-text) !important; font-variant-numeric: tabular-nums !important; }
+          #spreadsheet table { border-collapse: collapse; border: 3px solid #333333; background-color: #{COLOR_INACTIVE}; }
+           #spreadsheet th, #spreadsheet td { border: 1px solid #b3b3b3 !important; }
+           #spreadsheet thead tr:last-child th { border-bottom: 3px solid #333333 !important; }
+           #spreadsheet tr.last-player-row th, #spreadsheet tr.last-player-row td { border-bottom: 3px solid #333333 !important; }
+           #spreadsheet tr.last-minor-row th, #spreadsheet tr.last-minor-row td { border-bottom: 3px solid #333333 !important; }
+           .thick-right { border-right: 3px solid #333333 !important; }
+           .no-border { border: none !important; }
+                                      .money-value { font-family: var(--font-money) !important; font-weight: 700 !important; color: var(--color-money-text) !important; font-variant-numeric: tabular-nums !important; }
 
-                              .game-card { display: inline-block; padding: 4px 8px; margin: 2px; border-radius: 4px; background-color: #ffffff; box-shadow: var(--shadow-card); transition: transform 0.1s ease; font-family: var(--font-standard); }
-                              .game-card.clickable:hover { cursor: pointer; transform: translateY(-1px); }
-                    .game-card.action-buy { border: 3px solid var(--action-buy-edge) !important; }
-                              .game-card.action-sell { border: 3px solid var(--action-sell-edge) !important; }
+                               .game-card { display: inline-block; padding: 4px 8px; margin: 2px; border-radius: 4px; background-color: #ffffff; box-shadow: var(--shadow-card); transition: transform 0.1s ease; font-family: var(--font-standard); }
+                               .game-card.clickable:hover { cursor: pointer; transform: translateY(-1px); }
+                     .game-card.action-buy { border: 3px solid var(--action-buy-edge) !important; }
+                               .game-card.action-sell { border: 3px solid var(--action-sell-edge) !important; }
 
-                              .sell-restricted { text-decoration: line-through !important; opacity: 0.5 !important; cursor: not-allowed !important; }
-                              .token-bond { display: inline-block; width: 12px; height: 12px; background-color: #b91c1c; border-radius: 2px; }
+                               .sell-restricted { text-decoration: line-through !important; opacity: 0.5 !important; cursor: not-allowed !important; }
+                               .token-bond { display: inline-block; width: 12px; height: 12px; background-color: #b91c1c; border-radius: 2px; }
 
-                              tr.active-turn-focus { outline: 3px solid var(--accent-action-color) !important; outline-offset: -3px !important; background-color: var(--bg-active-row) !important; animation: zeroJankPulse var(--pulse-scale-duration) infinite ease-in-out; }
-                              @keyframes zeroJankPulse { 0% { opacity: 1; } 50% { opacity: var(--pulse-opacity-min); } 100% { opacity: 1; } }
+                               tr.active-turn-focus { outline: 3px solid var(--accent-action-color) !important; outline-offset: -3px !important; background-color: var(--bg-active-row) !important; animation: zeroJankPulse var(--pulse-scale-duration) infinite ease-in-out; }
+                               @keyframes zeroJankPulse { 0% { opacity: 1; } 50% { opacity: var(--pulse-opacity-min); } 100% { opacity: 1; } }
 
-                              tr.directed-by-active-player { background-color: rgba(37, 99, 235, 0.06) !important; }
-                              tr.company-row-unfloated, tr.company-row-closed { opacity: var(--opacity-unopened-row) !important; filter: grayscale(40%) !important; }
+                               tr.directed-by-active-player { background-color: rgba(37, 99, 235, 0.06) !important; }
+                               tr.company-row-unfloated, tr.company-row-closed { opacity: var(--opacity-unopened-row) !important; filter: grayscale(40%) !important; }
 
-                              .column-zone-market { background-color: var(--bg-market-zone) !important; }
-                              .column-zone-corporate { background-color: var(--bg-corporate-zone) !important; }
-                              th.column-zone-corporate { background-color: #e9d5ff !important; color: #4c1d95 !important; }
+                               .column-zone-market { background-color: var(--bg-market-zone) !important; }
+                               .column-zone-corporate { background-color: var(--bg-corporate-zone) !important; }
+                               th.column-zone-corporate { background-color: #e9d5ff !important; color: #4c1d95 !important; }
         CSS
 
         h(:div, [
@@ -192,6 +193,19 @@ module View
           props[:attrs] ||= {}
           props[:attrs][:class] = 'last-player-row' if idx == rows.size - 1
           h(:tr, props, row_cells)
+        end
+      end
+
+      def render_corporations
+        current_round = @game.turn_round_num
+        corps = sorted_corporations
+
+        corps.map.with_index do |corp_array, idx|
+          current_corp = corp_array[1]
+          next_corp = corps[idx + 1]&.last
+          is_last_minor = current_corp.minor? && next_corp && !next_corp.minor?
+
+          render_corporation(current_corp, corp_array[0], current_round, is_last_minor)
         end
       end
 
@@ -459,7 +473,7 @@ module View
         result
       end
 
-      def render_corporation(corporation, _operating_order, _current_round)
+      def render_corporation(corporation, _operating_order, _current_round, is_last_minor = false)
         return '' if @hide_not_floated && !@game.operating_order.include?(corporation)
 
         step = @game.round.active_step
@@ -477,9 +491,9 @@ module View
         row_classes << 'company-row-unfloated' if is_unfloated
         row_classes << 'active-turn-focus' if is_active_row
         row_classes << 'directed-by-active-player' if is_directed
+        row_classes << 'last-minor-row' if is_last_minor
 
         tr_props[:attrs][:class] = row_classes.join(' ') unless row_classes.empty?
-
         name_props = {
           style: {
             backgroundColor: corporation.color,
@@ -788,7 +802,7 @@ module View
         end
 
         # --- Pool Market Price Content ---
-        market_style = { borderRight: border_style }
+        market_style = {}
         if corporation.share_price&.highlight? &&
           (m_color = StockMarket::COLOR_MAP[@game.class::STOCKMARKET_COLORS[corporation.share_price.type]])
           market_style[:backgroundColor] = m_color
@@ -913,9 +927,8 @@ module View
         clean_par_price = corporation.par_price ? @game.format_currency(corporation.par_price.price).gsub(/[^0-9]/, '') : ''
 
         ipo_row_content = [
-          h('td.padded_number.column-zone-market', { style: { borderLeft: border_style, position: 'relative' } },
-            ipo_cell_children),
-          h('td.padded_number.column-zone-market.money-value', {}, clean_par_price),
+h('td.padded_number.column-zone-market', { style: { position: 'relative' } },
+  ipo_cell_children),
         ]
 
         train_buyable_step = step&.current_actions&.include?('buy_train')
