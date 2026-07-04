@@ -42,14 +42,14 @@ module View
           },
         }
 
-        h('div#bank.card', [
-          h('div.title', title_props, 'The Bank'),
-          h(:div, body_props, [
-            render_financial_table,
-            render_bank_trains,
-            render_discarded_trains,
-          ].compact),
-        ])
+        h('div#bank.card.column-zone-market', [
+           h('div.title', title_props, 'The Bank'),
+           h(:div, body_props, [
+             render_financial_table,
+             render_bank_trains,
+             render_discarded_trains,
+           ].compact),
+         ])
       end
 
       def render_financial_table
