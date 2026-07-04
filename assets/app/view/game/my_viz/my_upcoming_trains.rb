@@ -82,14 +82,14 @@ module View
           effects << "Events: #{train_events.join(', ')}" unless train_events.empty?
 
           h(:tr, { style: { borderBottom: '1px solid #cccccc' } }, [
-            h('td.center', { style: { padding: '0.4rem 0.6rem', verticalAlign: 'middle' } }, [
-              h(View::Game::Card, text: name, border_color: '#999999'),
+h('td.center', { style: { padding: '0.4rem 0.6rem', verticalAlign: 'middle' } }, [
+              h(:div, { attrs: { class: 'game-card' } }, name),
             ]),
-            h('td.right', { style: { fontFamily: FONT_CASH, color: COLOR_CASH, padding: '0.4rem 0.6rem', fontWeight: 'bold' } },
-              price),
-            h('td.center', { style: { fontFamily: FONT_STD, padding: '0.4rem 0.6rem', verticalAlign: 'middle' } }, rem_text),
-            h('td.left', { style: { fontFamily: FONT_STD, padding: '0.4rem 0.6rem', fontSize: '0.8rem', color: '#444444', verticalAlign: 'middle' } },
-              effects.join(' | ')),
+h('td.right', { style: { fontFamily: FONT_CASH, color: COLOR_CASH, padding: '0.4rem 0.6rem', fontWeight: 'bold' } },
+  price),
+h('td.center', { style: { fontFamily: FONT_STD, padding: '0.4rem 0.6rem', verticalAlign: 'middle' } }, rem_text),
+h('td.left', { style: { fontFamily: FONT_STD, padding: '0.4rem 0.6rem', fontSize: '0.8rem', color: '#444444', verticalAlign: 'middle' } },
+  effects.join(' | ')),
           ])
         end.compact
 

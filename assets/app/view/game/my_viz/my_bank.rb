@@ -159,11 +159,12 @@ module View
         step = @game.round.active_step
         train_buyable_step = step&.current_actions&.include?('buy_train')
 
-        border_color = '#999999'
+        card_classes = ['game-card']
         click_handler = nil
 
         if train_buyable_step && active_entity && active_entity.corporation?
-          border_color = '#00cc00'
+          card_classes << 'action-buy'
+          card_classes << 'clickable'
           click_handler = lambda {
             process_action(Engine::Action::BuyTrain.new(
               active_entity,
@@ -173,8 +174,11 @@ module View
           }
         end
 
+        card_props = { attrs: { class: card_classes.join(' ') } }
+        card_props[:on] = { click: click_handler } if click_handler
+
         train_card = h(:div, { style: { display: 'inline-block', margin: '2px', textAlign: 'center', verticalAlign: 'top' } }, [
-          h(View::Game::Card, text: next_train.name, border_color: border_color, click_action: click_handler),
+          h(:div, card_props, next_train.name),
           h(:div,
             { style: { fontFamily: FONT_CASH, color: COLOR_CASH, fontSize: '0.75rem', fontWeight: 'bold', marginTop: '2px' } }, @game.format_currency(next_train.price)),
         ])
@@ -230,11 +234,12 @@ module View
           price = @game.format_currency(train.price)
           count_text = trains.size.to_s
 
-          border_color = '#999999'
+          card_classes = ['game-card']
           click_handler = nil
 
           if train_buyable_step && active_entity && active_entity.corporation?
-            border_color = '#00cc00'
+            card_classes << 'action-buy'
+            card_classes << 'clickable'
             click_handler = lambda {
               process_action(Engine::Action::BuyTrain.new(
                 active_entity,
@@ -243,6 +248,9 @@ module View
               ))
             }
           end
+
+          card_props = { attrs: { class: card_classes.join(' ') } }
+          card_props[:on] = { click: click_handler } if click_handler
 
           effects = []
           train.names_to_prices.keys.each do |key|
@@ -256,14 +264,14 @@ module View
           end
 
           h(:tr, { style: { borderBottom: '1px solid #cccccc' } }, [
-            h('td.center', { style: { padding: '0.4rem 0.6rem', verticalAlign: 'middle' } }, [
-              h(View::Game::Card, text: train.name, border_color: border_color, click_action: click_handler),
+h('td.center', { style: { padding: '0.4rem 0.6rem', verticalAlign: 'middle' } }, [
+              h(:div, card_props, train.name),
             ]),
-            h('td.right', { style: { fontFamily: FONT_CASH, color: COLOR_CASH, padding: '0.4rem 0.6rem', fontWeight: 'bold' } },
-              price),
-            h('td.center', { style: { fontFamily: FONT_STD, padding: '0.4rem 0.6rem', verticalAlign: 'middle' } }, count_text),
-            h('td.left', { style: { fontFamily: FONT_STD, padding: '0.4rem 0.6rem', fontSize: '0.8rem', color: '#444444', verticalAlign: 'middle' } },
-              effects.join(' | ')),
+h('td.right', { style: { fontFamily: FONT_CASH, color: COLOR_CASH, padding: '0.4rem 0.6rem', fontWeight: 'bold' } },
+  price),
+h('td.center', { style: { fontFamily: FONT_STD, padding: '0.4rem 0.6rem', verticalAlign: 'middle' } }, count_text),
+h('td.left', { style: { fontFamily: FONT_STD, padding: '0.4rem 0.6rem', fontSize: '0.8rem', color: '#444444', verticalAlign: 'middle' } },
+  effects.join(' | ')),
           ])
         end
 
