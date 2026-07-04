@@ -417,6 +417,19 @@ module View
         border_style = "1px solid #{color_for(:font2)}"
         is_active_row = (active_entity == corporation)
 
+        is_unfloated = corporation.respond_to?(:floated?) && !corporation.floated?
+        is_directed = corporation.respond_to?(:owner) && (corporation.owner == active_player)
+
+        tr_props = tr_default_props(is_active_row)
+        tr_props[:attrs] ||= {}
+
+        row_classes = []
+        row_classes << 'company-row-unfloated' if is_unfloated
+        row_classes << 'active-turn-focus' if is_active_row
+        row_classes << 'directed-by-active-player' if is_directed
+
+        tr_props[:attrs][:class] = row_classes.join(' ') unless row_classes.empty?
+
         name_props = {
           style: {
             backgroundColor: is_active_row ? COLOR_MAUVE : corporation.color,
@@ -426,38 +439,29 @@ module View
           },
         }
 
-        tr_props = tr_default_props(is_active_row)
-
         # Map active corporate property cells
-        corp_bg_color = corporation.floated? ? COLOR_MAUVE : COLOR_INACTIVE
-
         treasury = []
-        if @game.separate_treasury?
-          treasury << h(:td, { style: { backgroundColor: corp_bg_color } },
-                        num_shares_of(corporation, corporation))
-        end
+        treasury << h('td.column-zone-corporate', {}, num_shares_of(corporation, corporation)) if @game.separate_treasury?
 
         extra = []
         if @game.respond_to?(:capitalization_type_desc)
           desc_text = @game.capitalization_type_desc(corporation)
           if @is_escrow_game && desc_text&.include?('Escrow')
             clean_digits = desc_text.scan(/\d+/).first || '0'
-            extra << h(:td, money_props(backgroundColor: corp_bg_color), clean_digits)
+            extra << h('td.column-zone-corporate.money-value', {}, clean_digits)
           else
-            extra << h(:td, { style: { backgroundColor: corp_bg_color } }, desc_text)
+            extra << h('td.column-zone-corporate', {}, desc_text)
           end
         end
 
-        if @game.total_loans&.nonzero?
-          extra << h(:td, { style: { backgroundColor: corp_bg_color } }, [render_loan_dots(corporation)])
-        end
+        extra << h('td.column-zone-corporate', {}, [render_loan_dots(corporation)]) if @game.total_loans&.nonzero?
         if @game.respond_to?(:available_shorts)
           taken, total = if @game.respond_to?(:available_shorts)
                            @game.available_shorts(corporation)
                          else
                            [0, 0]
                          end
-          extra << h(:td, { style: { backgroundColor: corp_bg_color } }, "#{taken} / #{total}")
+          extra << h('td.column-zone-corporate', {}, "#{taken} / #{total}")
         end
 
         if @diff_corp_sizes
@@ -468,7 +472,7 @@ module View
                       else
                         ''
                       end
-          extra << h(:td, { style: { backgroundColor: corp_bg_color } }, size_name)
+          extra << h('td.column-zone-corporate', {}, size_name)
         end
 
         n_ipo_shares = corporation.minor? ? 0 : num_ipo_shares(corporation)
@@ -733,13 +737,7 @@ module View
         end
 
         # --- Pool Market Price Content ---
-        market_style = {
-          fontFamily: FONT_CASH,
-          color: COLOR_CASH,
-          fontWeight: 'bold',
-          borderRight: border_style,
-          backgroundColor: COLOR_INACTIVE,
-        }
+        market_style = { borderRight: border_style }
         if corporation.share_price&.highlight? &&
           (m_color = StockMarket::COLOR_MAP[@game.class::STOCKMARKET_COLORS[corporation.share_price.type]])
           market_style[:backgroundColor] = m_color
@@ -752,9 +750,9 @@ module View
                              end
 
         pool_row_content = [
-           h('td.padded_number',
-             { attrs: { id: "pool_shares_#{corporation.id}" }, style: { backgroundColor: COLOR_INACTIVE, position: 'relative' } }, pool_cell_children),
-           h('td.padded_number', { style: market_style }, clean_market_price),
+           h('td.padded_number.column-zone-market',
+             { attrs: { id: "pool_shares_#{corporation.id}" }, style: { position: 'relative' } }, pool_cell_children),
+           h('td.padded_number.column-zone-market.money-value', { style: market_style }, clean_market_price),
          ]
 
         # --- IPO Shares Content ---
@@ -855,16 +853,15 @@ module View
         clean_par_price = corporation.par_price ? @game.format_currency(corporation.par_price.price).gsub(/[^0-9]/, '') : ''
 
         ipo_row_content = [
-          h('td.padded_number', { style: { borderLeft: border_style, backgroundColor: COLOR_INACTIVE, position: 'relative' } },
+          h('td.padded_number.column-zone-market', { style: { borderLeft: border_style, position: 'relative' } },
             ipo_cell_children),
-          h('td.padded_number',
-            { style: { fontFamily: FONT_CASH, color: COLOR_CASH, fontWeight: 'bold', backgroundColor: COLOR_INACTIVE } }, clean_par_price),
+          h('td.padded_number.column-zone-market.money-value', {}, clean_par_price),
         ]
 
         train_buyable_step = step&.current_actions&.include?('buy_train')
 
         train_cards = corporation.trains.map do |t|
-          train_border_color = '#999999'
+          card_classes = ['game-card']
           train_click_handler = nil
           menu_dropdown = nil
 
@@ -873,9 +870,11 @@ module View
           not_own_train = active_entity && corporation != active_entity
 
           if train_buyable_step && not_own_train && owned_by_same_player && step.respond_to?(:can_buy_train?) && step.can_buy_train?(
-active_entity, t
-)
-            train_border_color = '#00cc00'
+        active_entity, t
+      )
+            card_classes << 'action-buy'
+            card_classes << 'clickable'
+
             menu_storage_key = "buy_train_menu_#{corporation.id}_#{t.id}"
             price_storage_key = "buy_train_price_#{corporation.id}_#{t.id}"
 
@@ -979,9 +978,11 @@ active_entity, t
             end
           end
 
+          card_props = { attrs: { class: card_classes.join(' ') } }
+          card_props[:on] = { click: train_click_handler } if train_click_handler
+
           h(:div, { attrs: { id: "train_wrapper_#{corporation.id}_#{t.id}" }, style: { display: 'inline-block', position: 'relative' } }, [
-              h(View::Game::Card, text: t.obsolete ? "(#{t.name})" : t.name, border_color: train_border_color,
-                                  click_action: train_click_handler),
+              h(:div, card_props, t.obsolete ? "(#{t.name})" : t.name),
               menu_dropdown,
             ].compact)
         end
@@ -1016,17 +1017,17 @@ active_entity, t
         clean_rev = last_rev ? @game.format_currency(last_rev).gsub(/[^0-9]/, '') : ''
 
         corporation_row_content = [
-                  h('td.padded_number',
-                    { hook: Lib::MoneyAnimation.hook, style: { backgroundColor: corp_bg_color, fontFamily: FONT_CASH, color: COLOR_CASH, fontWeight: 'bold' } }, clean_corp_cash),
+                  h('td.padded_number.column-zone-corporate.money-value',
+                    { hook: Lib::MoneyAnimation.hook }, clean_corp_cash),
                   *treasury,
-                  h('td.padded_number',
-                    { hook: Lib::MoneyAnimation.hook, style: { backgroundColor: corp_bg_color, fontFamily: FONT_CASH, color: COLOR_CASH, fontWeight: 'bold' } }, clean_rev),
-                  h(:td,
-                    { attrs: { id: "trains_#{corporation.id}" }, style: { backgroundColor: corp_bg_color, fontFamily: FONT_STD } }, train_cards),
-                  h(:td, { style: { backgroundColor: corp_bg_color } }, [render_unplaced_tokens(corporation)]),
+                  h('td.padded_number.column-zone-corporate.money-value',
+                    { hook: Lib::MoneyAnimation.hook }, clean_rev),
+                  h('td.column-zone-corporate',
+                    { attrs: { id: "trains_#{corporation.id}" } }, train_cards),
+                  h('td.column-zone-corporate', {}, [render_unplaced_tokens(corporation)]),
                   *extra,
                 ]
-        corporation_row_content << render_companies(corporation, corp_bg_color) if @show_privates
+        corporation_row_content << render_companies(corporation) if @show_privates
 
         row_content = []
         row_content.concat(players_row_content)
@@ -1193,7 +1194,7 @@ active_entity, t
         company_buyable_step = step&.current_actions&.include?('buy_company')
 
         company_cards = companies_list.map do |c|
-          company_border_color = '#999999'
+          card_classes = ['game-card']
           company_click_handler = nil
           menu_dropdown = nil
 
@@ -1201,7 +1202,9 @@ active_entity, t
 
           if company_buyable_step && not_own_company && step.respond_to?(:can_buy_company?) && step.can_buy_company?(active_ent,
                                                                                                                      c)
-            company_border_color = '#00cc00'
+            card_classes << 'action-buy'
+            card_classes << 'clickable'
+
             menu_storage_key = "buy_company_menu_#{entity.id}_#{c.id}"
             price_storage_key = "buy_company_price_#{entity.id}_#{c.id}"
 
@@ -1305,8 +1308,11 @@ active_entity, t
             end
           end
 
+          card_props = { attrs: { class: card_classes.join(' ') } }
+          card_props[:on] = { click: company_click_handler } if company_click_handler
+
           h(:div, { attrs: { id: "company_wrapper_#{entity.id}_#{c.id}" }, style: { display: 'inline-block', position: 'relative' } }, [
-                        h(View::Game::Card, text: c.sym, border_color: company_border_color, click_action: company_click_handler),
+                        h(:div, card_props, c.sym),
                         menu_dropdown,
                       ].compact)
         end
