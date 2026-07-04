@@ -38,7 +38,8 @@ module Engine
               pass_auction(entity)
               resolve_bids
             else
-              @log << "#{entity.name} passes bidding"
+              reason = @game.num_certs(entity) >= @game.cert_limit(entity) ? 'is at cert limit and must pass' : 'passes'
+              @log << "#{entity.name} #{reason} bidding"
               entity.pass!
               return next_entity! unless entities.all?(&:passed?)
 
@@ -68,6 +69,13 @@ module Engine
             return [] unless entity == current_entity
 
             ACTIONS
+          end
+
+          def auto_actions(entity)
+            return unless entity == current_entity
+            return if @game.num_certs(entity) < @game.cert_limit(entity)
+
+            [Action::Pass.new(entity)]
           end
 
           def min_increment
