@@ -1699,21 +1699,13 @@ module View
       private
 
       def player_time_details(p)
-        times_hash = @game_data&.dig('thinking_times') || @game_data&.dig(:thinking_times) || {}
-        game_players = @game_data&.dig('players') || @game_data&.dig(:players) || []
-        user_match = game_players.find { |u| u['name'] == p.name || u[:name] == p.name }
-        user_id = user_match ? (user_match['id'] || user_match[:id]) : p.id
+        time_val = if p.respond_to?(:thinking_time) && p.thinking_time
+                     p.thinking_time.to_i
+                   else
+                     p.instance_variable_get(:@thinking_time).to_i
+                   end
 
-        base_time = times_hash[user_id.to_s] || times_hash[user_id.to_i] || 300
-
-        if p == active_player
-          last_act = @game_data&.dig('last_action_at') || @game_data&.dig(:last_action_at) || Time.now.to_i
-          last_act = last_act.to_i / 1000 if last_act.to_i > 5_000_000_000
-          elapsed_seconds = Time.now.to_i - last_act.to_i
-          time_val = (base_time - elapsed_seconds).to_i
-        else
-          time_val = base_time.to_i
-        end
+        time_val = 300 if time_val == 0 && !p.instance_variable_defined?(:@thinking_time)
 
         abs_time = time_val.abs
         mins = (abs_time / 60).to_i

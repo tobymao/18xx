@@ -232,51 +232,18 @@ module View
                  ]
 
                 if active_p
-                  # Extract remaining baseline time from server payload
-                  times_hash = @game_data&.dig('thinking_times') || @game_data&.dig(:thinking_times) || {}
+                  time_val = if active_p.respond_to?(:thinking_time) && active_p.thinking_time
+                               active_p.thinking_time.to_i
+                             else
+                               active_p.instance_variable_get(:@thinking_time).to_i
+                             end
 
-                  # Map the Engine Player name to the database User ID to match backend thinking_times keys
-                  game_players = @game_data&.dig('players') || @game_data&.dig(:players) || []
-                  user_match = game_players.find { |u| u['name'] == active_p.name || u[:name] == active_p.name }
-                  user_id = user_match ? (user_match['id'] || user_match[:id]) : active_p.id
-
-                  base_time = times_hash[user_id.to_s] || times_hash[user_id.to_i] || 300
-
-                  # Compare current local time directly to the last action milestone
-
-                  last_act = @game_data&.dig('last_action_at') || @game_data&.dig(:last_action_at) ||
-                             @game_data&.dig('updated_at') || @game_data&.dig(:updated_at) ||
-                             Time.now.to_i
-
-                  # Guard: Convert millisecond epochs safely to seconds if detected
-                  last_act = last_act.to_i / 1000 if last_act.to_i > 5_000_000_000
-
-                  # Read and explicitly anchor the reactive trigger to force the Snabberb VDOM repaint engine
-                  _tick = @tick_trigger
-
-                  # Calculate true decay purely on the frontend base checkpoint
-                  current_frontend_time = Time.now.to_i
-                  elapsed_seconds = current_frontend_time - last_act.to_i
-                  time_val = (base_time - elapsed_seconds).to_i
+                  time_val = 300 if time_val == 0 && !active_p.instance_variable_defined?(:@thinking_time)
 
                   abs_time = time_val.abs
                   mins = (abs_time / 60).to_i
                   secs = (abs_time % 60).to_i
                   formatted_time = "#{time_val < 0 ? '-' : ''}#{mins}:#{secs < 10 ? '0' : ''}#{secs}"
-
-                  `console.log("--- CHESS TIMER DEBUG LOG ---")`
-                  `console.log("Active Player:", #{active_p&.name || 'nil'})`
-                  %x(console.log("Full Game Data Hash:", #{begin
-                    JSON.generate(@game_data.to_h)
-                  rescue StandardError
-                    '{}'
-                  end}))
-                  `console.log("Extracted Base Time:", #{base_time})`
-                  `console.log("Raw Last Action At Checkpoint:", #{last_act})`
-                  `console.log("Current Front-End System Epoch:", #{current_frontend_time})`
-                  `console.log("Computed Elapsed Seconds:", #{elapsed_seconds})`
-                  `console.log("Computed Final Time Value:", #{time_val})`
-                  `console.log("Reactive Tick Trigger State:", #{_tick})`
 
                   btns << h(:span, {
                               style: {

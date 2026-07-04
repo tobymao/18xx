@@ -178,62 +178,29 @@ class Game < Base
 
   # timer
   def player_thinking_times
-    times = Hash.new(0)
-    initial_time = settings['clock_initial'] || 300 # 5 minutes in seconds
+    initial_time = settings['clock_initial'] || 300
 
-    # Initialize all participating players with their starting time allocations
-    ordered_players.each { |p| times[p.id] = initial_time }
-
-    prev_time = created_at
-
-    # Track unique markers to ensure bonuses are only awarded once per turn cycle
-    seen_stock_rounds = Set.new
-    seen_company_turns = Set.new
-
-    actions.each do |act|
-      next unless act.created_at
-
-      # Deduct the time spent thinking before this action was committed
-      delta = act.created_at.to_f - prev_time.to_f
-      times[act.user_id] -= delta if act.user_id
-
-      # Extract game engine state tracking metadata from the action payload
-      action_data = act.action || {}
-      round_name = action_data['round']   # e.g., "SR 1", "OR 1.1"
-      entity_id = action_data['entity']   # The company or player symbol currently operating
-
-      # Rule 1: Stock Round Initialization (+3 minutes to EVERY player)
-      if round_name && (round_name.start_with?('SR') || round_name.downcase.include?('stock')) && !seen_stock_rounds.include?(round_name)
-        seen_stock_rounds << round_name
-        ordered_players.each { |p| times[p.id] += 180 }
-      end
-
-      # Rule 2: Company Operating Turn (+30 seconds to the owning player when the company has a go)
-      if round_name && (round_name.start_with?('OR') || round_name.downcase.include?('operating')) && entity_id
-        company_turn_key = "#{round_name}_#{entity_id}"
-        unless seen_company_turns.include?(company_turn_key)
-          seen_company_turns << company_turn_key
-          times[act.user_id] += 30 if act.user_id
-        end
-      end
-
-      prev_time = act.created_at
+    times = ordered_players.each_with_object({}) do |p, hash|
+      hash[p.id] = initial_time.to_f
     end
 
-    # Deduct the active real-time debt for the current ongoing turn
-    if status == 'active' && acting && !acting.empty?
-      # acting contains the IDs of players expected to move next
-      current_active_user_id = acting.first
-      if current_active_user_id && times.key?(current_active_user_id)
-        active_delta = Time.now.to_f - prev_time.to_f
-        times[current_active_user_id] -= active_delta
-      end
+    actions_array = actions.all
+    return times.transform_values(&:to_i) if actions_array.empty?
+
+    prev_time = created_at.to_f
+
+    actions_array.each do |action|
+      current_time = action.created_at.to_f
+      delta = current_time - prev_time
+
+      user_id = action.user_id
+      times[user_id] -= delta if times.key?(user_id)
+
+      prev_time = current_time
     end
 
-    # Real-Time Decay: Rely purely on client-side reactive ticks to avoid double-deductions over active JSON refreshes
-    # We maintain static history on the backend so the client baseline remains fully synced with last_action_at
-
-    times
+    # Return clean integer seconds for the JSON payload
+    times.transform_values(&:to_i)
   end
 
   def to_h(include_actions: false, logged_in_user_id: nil, admin: false)
