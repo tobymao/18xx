@@ -125,6 +125,26 @@ class Game < Base
     end
   end
 
+  def player_thinking_times
+    # Tracks cumulative elapsed seconds: { user_id => total_seconds }
+    times = Hash.new(0)
+
+    # Start the timeline anchor at the game's creation milestone
+    prev_time = created_at
+
+    actions.each do |act|
+      next unless act.created_at
+
+      # Calculate how long this player took since the last event
+      delta = act.created_at.to_f - prev_time.to_f
+      times[act.user_id] += delta if act.user_id
+
+      prev_time = act.created_at
+    end
+
+    times
+  end
+
   SETTINGS = %w[
     notepad
   ].freeze
@@ -157,6 +177,60 @@ class Game < Base
     update(archive_data)
   end
 
+  # timer
+  def player_thinking_times
+    times = Hash.new(0)
+    initial_time = settings['clock_initial'] || 300 # 5 minutes in seconds
+
+    # Initialize all participating players with their starting time allocations
+    ordered_players.each { |p| times[p.id] = initial_time }
+
+    prev_time = created_at
+
+    # Track unique markers to ensure bonuses are only awarded once per turn cycle
+    seen_stock_rounds = Set.new
+    seen_company_turns = Set.new
+
+    actions.each do |act|
+      next unless act.created_at
+
+      # Deduct the time spent thinking before this action was committed
+      delta = act.created_at.to_f - prev_time.to_f
+      times[act.user_id] -= delta if act.user_id
+
+      # Extract game engine state tracking metadata from the action payload
+      action_data = act.action || {}
+      round_name = action_data['round']   # e.g., "SR 1", "OR 1.1"
+      entity_id = action_data['entity']   # The company or player symbol currently operating
+
+      # Rule 1: Stock Round Initialization (+3 minutes to EVERY player)
+      if round_name && (round_name.start_with?('SR') || round_name.downcase.include?('stock')) && !seen_stock_rounds.include?(round_name)
+        seen_stock_rounds << round_name
+        ordered_players.each { |p| times[p.id] += 180 }
+      end
+
+      # Rule 2: Company Operating Turn (+30 seconds to the owning player when the company has a go)
+      if round_name && (round_name.start_with?('OR') || round_name.downcase.include?('operating')) && entity_id
+        company_turn_key = "#{round_name}_#{entity_id}"
+        unless seen_company_turns.include?(company_turn_key)
+          seen_company_turns << company_turn_key
+          times[act.user_id] += 30 if act.user_id
+        end
+      end
+
+      prev_time = act.created_at
+    end
+
+    # Real-Time Decay: Ticking down live for the currently active players
+    if status == 'active'
+      now = Time.now.to_f
+      delta = now - prev_time.to_f
+      acting.each { |user_id| times[user_id] -= delta }
+    end
+
+    times
+  end
+
   def to_h(include_actions: false, logged_in_user_id: nil, admin: false)
     settings_h = settings.to_h
 
@@ -179,11 +253,14 @@ class Game < Base
       round: round,
       acting: acting.to_a,
       result: result.to_h,
+      thinking_times: player_thinking_times,
+      last_action_at: actions.last&.created_at_ts || created_at_ts,
       actions: actions_h(include_actions: include_actions, logged_in_user_id: logged_in_user_id, admin: admin),
       loaded: include_actions,
       created_at: created_at_ts,
       updated_at: updated_at_ts,
       finished_at: finished_at_ts,
+
     }
   end
 
