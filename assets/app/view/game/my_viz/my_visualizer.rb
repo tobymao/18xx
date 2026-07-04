@@ -17,7 +17,15 @@ module View
 
       def active_player
         entity = active_entity
-        entity&.player? ? entity : entity&.owner
+        return nil unless entity
+
+        if entity.player?
+          entity
+        elsif entity.respond_to?(:player) && entity.player
+          entity.player
+        else
+          entity.owner
+        end
       end
 
       def render
@@ -31,8 +39,9 @@ module View
                         `document.getElementById('app') && Object.assign(document.getElementById('app').style, { overflow: 'hidden', padding: '0', margin: '0', maxWidth: '100vw', width: '100vw', height: '100vh', backgroundColor: '#ffffff' })`
                         `document.getElementById('game') && Object.assign(document.getElementById('game').style, { overflow: 'hidden', width: '100vw', height: '100vh', maxWidth: '100vw', maxHeight: '100vh' })`
 
-                        # Start a browser interval loop to trigger a UI redraw every second
-                        @clock_ticker = `setInterval(function() { #{respond_to?(:update) ? update : 'update()'} }, 1000)`
+                        # Avoid inline Ruby interpolation inside JS backticks.
+                        # Direct Opal runtime invocation forces Snabberb to refresh the component's state context.
+                        @clock_ticker = `setInterval(function() { self.$store().$update(); }, 1000)`
                       },
               destroy: lambda {
                          `clearInterval(#{@clock_ticker})`
@@ -218,10 +227,20 @@ module View
                 if active_p
                   # Extract remaining baseline time from server payload
                   times_hash = @game_data&.dig('thinking_times') || @game_data&.dig(:thinking_times) || {}
-                  base_time = times_hash[active_p.id.to_s] || times_hash[active_p.id.to_i] || 300
+
+                  # Map the Engine Player name to the database User ID to match backend thinking_times keys
+                  game_players = @game_data&.dig('players') || @game_data&.dig(:players) || []
+                  user_match = game_players.find { |u| u['name'] == active_p.name || u[:name] == active_p.name }
+                  user_id = user_match ? (user_match['id'] || user_match[:id]) : active_p.id
+
+                  base_time = times_hash[user_id.to_s] || times_hash[user_id.to_i] || 300
 
                   # Compare current local time directly to the last action milestone
                   last_act = @game_data&.dig('last_action_at') || @game_data&.dig(:last_action_at) || Time.now.to_i
+
+                  # Guard: Convert millisecond epochs safely to seconds if detected
+                  last_act = last_act.to_i / 1000 if last_act.to_i > 5_000_000_000
+
                   elapsed_seconds = Time.now.to_i - last_act.to_i
                   time_val = (base_time - elapsed_seconds).to_i
 
