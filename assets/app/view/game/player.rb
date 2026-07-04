@@ -17,6 +17,7 @@ module View
 
       needs :player
       needs :game
+      needs :game_data, store: true, default: {}
       needs :user, default: nil, store: true
       needs :display, default: 'inline-block'
       needs :show_hidden, default: false
@@ -169,20 +170,25 @@ module View
             h('td.right', @game.format_currency(@game.bidding_power(@player))),
           ])
         end
-        if @game.respond_to?(:player_thinking_times)
-          p_times = @game.player_thinking_times
-          if p_times && p_times[@player.id]
-            t_val = p_times[@player.id].to_i
-            t_abs = t_val.abs
-            t_mins = (t_abs / 60).to_i
-            t_secs = (t_abs % 60).to_i
-            t_formatted = "#{t_val < 0 ? '-' : ''}#{t_mins}:#{t_secs < 10 ? '0' : ''}#{t_secs}"
-            trs << h(:tr, [
-              h(:td, 'Time Left'),
-              h('td.right', { style: { fontWeight: 'bold', color: t_val < 0 ? 'red' : 'currentColor' } }, t_formatted),
-            ])
-          end
-        end
+
+        time_val = if @player.respond_to?(:thinking_time) && @player.thinking_time
+                     @player.thinking_time.to_i
+                   else
+                     @player.instance_variable_get(:@thinking_time).to_i
+                   end
+
+        time_val = 300 if time_val == 0 && !@player.instance_variable_defined?(:@thinking_time)
+
+        t_abs = time_val.abs
+        t_mins = (t_abs / 60).to_i
+        t_secs = (t_abs % 60).to_i
+        t_formatted = "#{time_val < 0 ? '-' : ''}#{t_mins}:#{t_secs < 10 ? '0' : ''}#{t_secs}"
+
+        trs << h(:tr, [
+          h(:td, 'Time Left'),
+          h('td.right', { style: { fontWeight: 'bold', color: time_val < 0 ? 'red' : 'currentColor' } }, t_formatted),
+        ])
+
         trs << h(:tr, [
           h(:td, 'Certs'),
           h('td.right', td_cert_props, @game.show_game_cert_limit?(@player) ? "#{num_certs}/#{cert_limit}" : num_certs.to_s),
