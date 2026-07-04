@@ -323,8 +323,9 @@ module Engine
         end
 
         def operating_round(round_num)
-          G18ESP::Round::Operating.new(self, [
+          Engine::Round::Operating.new(self, [
             Engine::Step::Bankrupt,
+            G18ESP::Step::CheckDestinationConnection,
             Engine::Step::Assign,
             Engine::Step::Exchange,
             Engine::Step::SpecialToken,
@@ -726,6 +727,12 @@ module Engine
           @no_blocking_graph.reachable_hexes(entity).include?(hex_by_id(entity.destination))
         end
 
+        def new_destination_connection?(entity)
+          entity&.corporation? &&
+            !entity.destination_connected? &&
+            check_for_destination_connection(entity)
+        end
+
         def clear_graph_for_entity(entity)
           super
           @no_blocking_graph&.clear
@@ -901,7 +908,6 @@ module Engine
             super
           end
           clear_graph_for_entity(corporation)
-          corporation.goal_reached!(:destination) if check_for_destination_connection(corporation)
         end
 
         def rust_trains!(train, _entity)
@@ -983,7 +989,7 @@ module Engine
               @operating_rounds = @phase.operating_rounds
               reorder_players
               new_operating_round
-            when Round::Operating
+            when Engine::Round::Operating
               or_round_finished
               skip_pre_final_or = game_end_check_second_eight? && !final_ors?
               if @round.round_num < @operating_rounds && !skip_pre_final_or
@@ -1006,7 +1012,7 @@ module Engine
         end
 
         def final_ors?
-          @turn == @final_turn && @round.is_a?(Round::Operating)
+          @turn == @final_turn && @round.is_a?(Engine::Round::Operating)
         end
 
         def holder_for_corporation(_entity)
@@ -1070,6 +1076,7 @@ module Engine
 
           @opened_mountain_passes << pass_hax.id
           pass_tile.cities.first.remove_tokens!
+          @graph.clear
 
           entity_name = p4_ability ? "#{entity.name} (#{p4.name})" : entity.name
 
@@ -1079,7 +1086,6 @@ module Engine
         def opening_new_mountain_pass(entity, p4_ability = false)
           return {} unless entity
 
-          @graph.clear unless @loading
           openable_passes = @graph.connected_hexes(entity).keys.select do |hex|
             mountain_pass_token_hex?(hex)
           end

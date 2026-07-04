@@ -10,15 +10,22 @@ module Engine
           ACTIONS = %w[destination_connection].freeze
 
           def actions(entity)
-            return [] if @game.loading
-            return [] unless new_destination_connection?(entity)
+            return [] unless entity == current_entity
+
+            if @game.loading
+              return [] unless entity&.corporation?
+              return [] if entity.destination_connected?
+
+              return ACTIONS
+            end
+            return [] unless @game.new_destination_connection?(entity)
 
             ACTIONS
           end
 
           def auto_actions(entity)
             return [] if @game.loading
-            return [] unless new_destination_connection?(entity)
+            return [] unless @game.new_destination_connection?(entity)
 
             [Engine::Action::DestinationConnection.new(entity, corporations: [entity])]
           end
@@ -27,20 +34,26 @@ module Engine
             'Check destination connection'
           end
 
-          # Step is not player-passable; @passed is set in process_destination_connection
-          def pass!; end
+          def blocking?
+            return false if @game.loading
 
-          def process_destination_connection(action)
-            action.corporations.first.goal_reached!(:destination)
-            @passed = true
+            super
           end
 
-          private
+          def pass!; end
 
-          def new_destination_connection?(entity)
-            entity&.corporation? &&
-              !entity.destination_connected? &&
-              @game.check_for_destination_connection(entity)
+          def log_skip(_entity); end
+
+          def process_destination_connection(action)
+            corp = action.corporations.first
+            corp.goal_reached!(:destination)
+            @game.clear_graph_for_entity(corp)
+            # Track may have been skipped by skip_steps because can_token? was
+            # false while the token was still blocked.  Now that goal_reached!
+            # released it, reactivate Track so place_token remains available.
+            track_step = @round.steps.find { |s| s.is_a?(Engine::Game::G18ESP::Step::Track) }
+            track_step&.reactivate_for_token!
+            @passed = true
           end
         end
       end
