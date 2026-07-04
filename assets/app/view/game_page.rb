@@ -114,11 +114,11 @@ module View
 
       return h('div.padded', 'Loading game...') unless @game
 
-      LOGGER.debug do
-        @_logger ||= {}
-        @_logger[:render] = Time.now
-        'Rendering game view...'
-      end
+      # LOGGER.debug do
+      #   @_logger ||= {}
+      #   @_logger[:render] = Time.now
+      #   'Rendering game view...'
+      # end
       page =
         case route_anchor
         when nil
@@ -142,9 +142,9 @@ module View
         when 'my_viz'
           h(Game::MyVisualizer, game: @game, tile_selector: @tile_selector)
         end
-      LOGGER.debug do
-        "Done rendering game view: #{Time.now - @_logger[:render]} seconds"
-      end
+      # LOGGER.debug do
+      #   "Done rendering game view: #{Time.now - @_logger[:render]} seconds"
+      # end
 
       @connection = nil if @game_data[:mode] == :hotseat || cursor
 

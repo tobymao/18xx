@@ -30,11 +30,11 @@ module View
         # Ask the Round instead of the Step to capture global actions like take_loan
         actions = current_entity ? @game.round.actions_for(current_entity) : []
 
-        puts '--- DEBUG ACTIONS ---'
-        puts "Entity ID: #{current_entity&.id}"
-        puts "Entity Type: #{current_entity.class.name}"
-        puts "Step Class: #{step.class.name}"
-        puts "Raw Actions: #{actions.inspect}"
+        # # puts '--- DEBUG ACTIONS ---'
+        # puts "Entity ID: #{current_entity&.id}"
+        # puts "Entity Type: #{current_entity.class.name}"
+        # puts "Step Class: #{step.class.name}"
+        # puts "Raw Actions: #{actions.inspect}"
 
         phase = :waiting
         if actions.include?('lay_tile') then phase = :build_track

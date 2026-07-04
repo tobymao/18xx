@@ -67,10 +67,10 @@ module Engine
         if node.tokenable?(corporation, free: true, cheater: cheater, tokens: tokens, same_hex_allowed: same_hex_allowed)
           tokeners[corporation] = true
 
-          LOGGER.debug do
-            "    Graph computed for can_token? with #{walk_calls(corporation)[:not_skipped]} "\
-              "completed walk calls (skipped #{walk_calls(corporation)[:skipped]})"
-          end
+          # LOGGER.debug do
+          #   "    Graph computed for can_token? with #{walk_calls(corporation)[:not_skipped]} "\
+          #     "completed walk calls (skipped #{walk_calls(corporation)[:skipped]})"
+          # end
           break
         end
       end
@@ -191,7 +191,7 @@ module Engine
     end
 
     def compute(corporation, routes_only: false, one_token: nil)
-      LOGGER.debug { "    Graph#compute(#{corporation.name}, routes_only: #{routes_only}, one_token: #{one_token})" }
+      # LOGGER.debug { "    Graph#compute(#{corporation.name}, routes_only: #{routes_only}, one_token: #{one_token})" }
 
       hexes = Hash.new { |h, k| h[k] = {} }
       nodes = {}
@@ -249,10 +249,10 @@ module Engine
 
       tokens.keys.each do |node|
         if routes[:route_train_purchase] && routes_only
-          LOGGER.debug do
-            "    Graph computed for route_info with #{walk_calls(corporation)[:not_skipped]} "\
-              "completed walk calls (skipped #{walk_calls(corporation)[:skipped]})"
-          end
+          # LOGGER.debug do
+          #   "    Graph computed for route_info with #{walk_calls(corporation)[:not_skipped]} "\
+          #     "completed walk calls (skipped #{walk_calls(corporation)[:skipped]})"
+          # end
           return nil
         end
 
@@ -321,10 +321,10 @@ module Engine
         @reachable_hexes[corporation] = paths.to_h { |path, _| [path.hex, true] }
       end
 
-      LOGGER.debug do
-        "    Graph computed with #{walk_calls(corporation)[:not_skipped]} "\
-          "completed walk calls (skipped #{walk_calls(corporation)[:skipped]})"
-      end
+      # LOGGER.debug do
+      #   "    Graph computed with #{walk_calls(corporation)[:not_skipped]} "\
+      #     "completed walk calls (skipped #{walk_calls(corporation)[:skipped]})"
+      # end
     end
   end
 end

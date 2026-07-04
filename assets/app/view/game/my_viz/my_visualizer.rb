@@ -46,9 +46,8 @@ module View
                         `document.getElementById('app') && Object.assign(document.getElementById('app').style, { overflow: 'hidden', padding: '0', margin: '0', maxWidth: '100vw', width: '100vw', height: '100vh', backgroundColor: '#ffffff' })`
                         `document.getElementById('game') && Object.assign(document.getElementById('game').style, { overflow: 'hidden', width: '100vw', height: '100vh', maxWidth: '100vw', maxHeight: '100vh' })`
 
-                        # Capture Snabberb context and trigger a reactive state mutation on tick
-                        comp = self
-                        @clock_ticker = `setInterval(function() { comp.$tick_clock(); }, 1000)`
+                        # Use Opal's interpolation to bridge the Ruby instance into JS
+                        @clock_ticker = `setInterval(function() { #{self}.$tick_clock(); }, 1000)`
                       },
               destroy: lambda {
                          `clearInterval(#{@clock_ticker})`
@@ -248,6 +247,8 @@ module View
                   # Guard: Convert millisecond epochs safely to seconds if detected
                   last_act = last_act.to_i / 1000 if last_act.to_i > 5_000_000_000
 
+                  # Read the reactive trigger to force the Snabberb VDOM to link the dependency
+                  _tick = @tick_trigger
                   elapsed_seconds = Time.now.to_i - last_act.to_i
                   time_val = (base_time - elapsed_seconds).to_i
 

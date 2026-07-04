@@ -955,7 +955,7 @@ module Engine
 
         # for the moment, this is tailored for the Russia map
         def nationalize(entity, national)
-          LOGGER.debug "nationalize(#{entity&.id}, #{national&.id})"
+          # LOGGER.debug "nationalize(#{entity&.id}, #{national&.id})"
           return unless entity.corporation?
 
           # delete shares after giving share value to shareholders

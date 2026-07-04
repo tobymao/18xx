@@ -103,18 +103,18 @@ module Engine
 
             node_a&.walk(corporation: entity, walk_calls: walk_calls) do |path, _, _|
               if path.nodes.include?(node_b)
-                LOGGER.debug do
-                  "    nodes_connected? returning true after #{walk_calls[:not_skipped]} "\
-                    "walk calls (#{walk_calls[:skipped]} skipped)"
-                end
+                # LOGGER.debug do
+                #   "    nodes_connected? returning true after #{walk_calls[:not_skipped]} "\
+                #     "walk calls (#{walk_calls[:skipped]} skipped)"
+                # end
                 return true
               end
             end
 
-            LOGGER.debug do
-              "    nodes_connected? returning false after #{walk_calls[:not_skipped]} "\
-                "walk calls (#{walk_calls[:skipped]} skipped)"
-            end
+            # LOGGER.debug do
+            #   "    nodes_connected? returning false after #{walk_calls[:not_skipped]} "\
+            #     "walk calls (#{walk_calls[:skipped]} skipped)"
+            # end
 
             false
           end
