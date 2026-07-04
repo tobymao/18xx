@@ -23,6 +23,7 @@ module Engine
       @history = []
       @unsold_companies = []
       @penalty = 0
+      @thinking_time = 0 # Defaults to 0 during initialization
     end
 
     def value
@@ -31,6 +32,10 @@ module Engine
 
     def owner
       self
+    end
+
+    def thinking_time
+      0
     end
 
     def player

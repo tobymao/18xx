@@ -6,6 +6,7 @@ module View
   module Game
     class MyVisualizer < Snabberb::Component
       needs :game
+      needs :game_data, store: true
       needs :tile_selector, default: nil
       needs :routes, store: true, default: []
       include Actionable
@@ -29,8 +30,12 @@ module View
                         `document.body.style.backgroundColor = '#ffffff'`
                         `document.getElementById('app') && Object.assign(document.getElementById('app').style, { overflow: 'hidden', padding: '0', margin: '0', maxWidth: '100vw', width: '100vw', height: '100vh', backgroundColor: '#ffffff' })`
                         `document.getElementById('game') && Object.assign(document.getElementById('game').style, { overflow: 'hidden', width: '100vw', height: '100vh', maxWidth: '100vw', maxHeight: '100vh' })`
+
+                        # Start a browser interval loop to trigger a UI redraw every second
+                        @clock_ticker = `setInterval(function() { #{respond_to?(:update) ? update : 'update()'} }, 1000)`
                       },
               destroy: lambda {
+                         `clearInterval(#{@clock_ticker})`
                          `document.body.style.overflow = ''`
                          `document.body.style.margin = ''`
                          `document.body.style.padding = ''`
@@ -201,14 +206,41 @@ module View
                   verticalAlign: 'middle',
                 }
 
-                [
-h(:button,
-  { attrs: { id: 'undo' }, style: button_style.merge(backgroundColor: '#e0e0e0', color: '#000000'), on: { click: undo_handler } }, 'Undo'),
-h(:button,
-  { attrs: { id: 'redo' }, style: button_style.merge(backgroundColor: '#e0e0e0', color: '#000000'), on: { click: redo_handler } }, 'Redo'),
-h(:button,
-  { attrs: { id: 'pass' }, style: button_style.merge(backgroundColor: '#007bff', borderColor: '#0056b3', color: '#ffffff'), on: { click: default_handler } }, default_btn_text),
-                                  ]
+                btns = [
+                   h(:button,
+                     { attrs: { id: 'undo' }, style: button_style.merge(backgroundColor: '#e0e0e0', color: '#000000'), on: { click: undo_handler } }, 'Undo'),
+                   h(:button,
+                     { attrs: { id: 'redo' }, style: button_style.merge(backgroundColor: '#e0e0e0', color: '#000000'), on: { click: redo_handler } }, 'Redo'),
+                   h(:button,
+                     { attrs: { id: 'pass' }, style: button_style.merge(backgroundColor: '#007bff', borderColor: '#0056b3', color: '#ffffff'), on: { click: default_handler } }, default_btn_text),
+                 ]
+
+                if active_p
+                  # Extract remaining baseline time from server payload
+                  times_hash = @game_data&.dig('thinking_times') || @game_data&.dig(:thinking_times) || {}
+                  base_time = times_hash[active_p.id.to_s] || times_hash[active_p.id.to_i] || 300
+
+                  # Compare current local time directly to the last action milestone
+                  last_act = @game_data&.dig('last_action_at') || @game_data&.dig(:last_action_at) || Time.now.to_i
+                  elapsed_seconds = Time.now.to_i - last_act.to_i
+                  time_val = (base_time - elapsed_seconds).to_i
+
+                  abs_time = time_val.abs
+                  mins = abs_time / 60
+                  secs = abs_time % 60
+                  formatted_time = "#{time_val < 0 ? '-' : ''}#{mins}:#{secs < 10 ? '0' : ''}#{secs}"
+
+                  btns << h(:span, {
+                              style: {
+                                marginLeft: 'auto',
+                                fontSize: '1.8rem',
+                                fontWeight: 'bold',
+                                color: time_val < 0 ? '#ff0000' : '#000000',
+                              },
+                            }, "#{active_p.name}: #{formatted_time}")
+                end
+
+                btns
               end),
 
             # Stock Market Component
