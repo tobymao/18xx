@@ -169,6 +169,20 @@ module View
             h('td.right', @game.format_currency(@game.bidding_power(@player))),
           ])
         end
+        if @game.respond_to?(:player_thinking_times)
+          p_times = @game.player_thinking_times
+          if p_times && p_times[@player.id]
+            t_val = p_times[@player.id].to_i
+            t_abs = t_val.abs
+            t_mins = (t_abs / 60).to_i
+            t_secs = (t_abs % 60).to_i
+            t_formatted = "#{t_val < 0 ? '-' : ''}#{t_mins}:#{t_secs < 10 ? '0' : ''}#{t_secs}"
+            trs << h(:tr, [
+              h(:td, 'Time Left'),
+              h('td.right', { style: { fontWeight: 'bold', color: t_val < 0 ? 'red' : 'currentColor' } }, t_formatted),
+            ])
+          end
+        end
         trs << h(:tr, [
           h(:td, 'Certs'),
           h('td.right', td_cert_props, @game.show_game_cert_limit?(@player) ? "#{num_certs}/#{cert_limit}" : num_certs.to_s),

@@ -14,6 +14,7 @@ module View
 
       def tick_clock
         store(:tick_trigger, Time.now.to_i)
+        update! if respond_to?(:update!)
       end
 
       def active_entity
@@ -47,7 +48,7 @@ module View
                         `document.getElementById('game') && Object.assign(document.getElementById('game').style, { overflow: 'hidden', width: '100vw', height: '100vh', maxWidth: '100vw', maxHeight: '100vh' })`
 
                         # Use Opal's interpolation to bridge the Ruby instance into JS
-                        @clock_ticker = `setInterval(function() { #{self}.$tick_clock(); }, 1000)`
+                        @clock_ticker = `setInterval(function() { #{comp}.$tick_clock(); }, 1000)`
                       },
               destroy: lambda {
                          `clearInterval(#{@clock_ticker})`
@@ -242,20 +243,40 @@ module View
                   base_time = times_hash[user_id.to_s] || times_hash[user_id.to_i] || 300
 
                   # Compare current local time directly to the last action milestone
-                  last_act = @game_data&.dig('last_action_at') || @game_data&.dig(:last_action_at) || Time.now.to_i
+
+                  last_act = @game_data&.dig('last_action_at') || @game_data&.dig(:last_action_at) ||
+                             @game_data&.dig('updated_at') || @game_data&.dig(:updated_at) ||
+                             Time.now.to_i
 
                   # Guard: Convert millisecond epochs safely to seconds if detected
                   last_act = last_act.to_i / 1000 if last_act.to_i > 5_000_000_000
 
-                  # Read the reactive trigger to force the Snabberb VDOM to link the dependency
+                  # Read and explicitly anchor the reactive trigger to force the Snabberb VDOM repaint engine
                   _tick = @tick_trigger
-                  elapsed_seconds = Time.now.to_i - last_act.to_i
+
+                  # Calculate true decay purely on the frontend base checkpoint
+                  current_frontend_time = Time.now.to_i
+                  elapsed_seconds = current_frontend_time - last_act.to_i
                   time_val = (base_time - elapsed_seconds).to_i
 
                   abs_time = time_val.abs
-                  mins = abs_time / 60
-                  secs = abs_time % 60
+                  mins = (abs_time / 60).to_i
+                  secs = (abs_time % 60).to_i
                   formatted_time = "#{time_val < 0 ? '-' : ''}#{mins}:#{secs < 10 ? '0' : ''}#{secs}"
+
+                  `console.log("--- CHESS TIMER DEBUG LOG ---")`
+                  `console.log("Active Player:", #{active_p&.name || 'nil'})`
+                  %x(console.log("Full Game Data Hash:", #{begin
+                    JSON.generate(@game_data.to_h)
+                  rescue StandardError
+                    '{}'
+                  end}))
+                  `console.log("Extracted Base Time:", #{base_time})`
+                  `console.log("Raw Last Action At Checkpoint:", #{last_act})`
+                  `console.log("Current Front-End System Epoch:", #{current_frontend_time})`
+                  `console.log("Computed Elapsed Seconds:", #{elapsed_seconds})`
+                  `console.log("Computed Final Time Value:", #{time_val})`
+                  `console.log("Reactive Tick Trigger State:", #{_tick})`
 
                   btns << h(:span, {
                               style: {

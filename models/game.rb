@@ -144,26 +144,6 @@ class Game < Base
     end
   end
 
-  def player_thinking_times
-    # Tracks cumulative elapsed seconds: { user_id => total_seconds }
-    times = Hash.new(0)
-
-    # Start the timeline anchor at the game's creation milestone
-    prev_time = created_at
-
-    actions.each do |act|
-      next unless act.created_at
-
-      # Calculate how long this player took since the last event
-      delta = act.created_at.to_f - prev_time.to_f
-      times[act.user_id] += delta if act.user_id
-
-      prev_time = act.created_at
-    end
-
-    times
-  end
-
   SETTINGS = %w[
     notepad
   ].freeze
@@ -240,12 +220,18 @@ class Game < Base
       prev_time = act.created_at
     end
 
-    # Real-Time Decay: Ticking down live for the currently active players
-    if status == 'active'
-      now = Time.now.to_f
-      delta = now - prev_time.to_f
-      acting.each { |user_id| times[user_id] -= delta }
+    # Deduct the active real-time debt for the current ongoing turn
+    if status == 'active' && acting && !acting.empty?
+      # acting contains the IDs of players expected to move next
+      current_active_user_id = acting.first
+      if current_active_user_id && times.key?(current_active_user_id)
+        active_delta = Time.now.to_f - prev_time.to_f
+        times[current_active_user_id] -= active_delta
+      end
     end
+
+    # Real-Time Decay: Rely purely on client-side reactive ticks to avoid double-deductions over active JSON refreshes
+    # We maintain static history on the backend so the client baseline remains fully synced with last_action_at
 
     times
   end
