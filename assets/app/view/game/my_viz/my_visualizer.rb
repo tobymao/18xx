@@ -9,7 +9,12 @@ module View
       needs :game_data, store: true
       needs :tile_selector, default: nil
       needs :routes, store: true, default: []
+      needs :tick_trigger, store: true, default: 0
       include Actionable
+
+      def tick_clock
+        store(:tick_trigger, Time.now.to_i)
+      end
 
       def active_entity
         @game.round.active_step&.current_entity
@@ -29,6 +34,8 @@ module View
       end
 
       def render
+        # Capture the Snabberb component instance to survive the JS boundary
+        comp = self
         h(:div, {
             hook: {
               insert: lambda {
@@ -39,9 +46,9 @@ module View
                         `document.getElementById('app') && Object.assign(document.getElementById('app').style, { overflow: 'hidden', padding: '0', margin: '0', maxWidth: '100vw', width: '100vw', height: '100vh', backgroundColor: '#ffffff' })`
                         `document.getElementById('game') && Object.assign(document.getElementById('game').style, { overflow: 'hidden', width: '100vw', height: '100vh', maxWidth: '100vw', maxHeight: '100vh' })`
 
-                        # Avoid inline Ruby interpolation inside JS backticks.
-                        # Direct Opal runtime invocation forces Snabberb to refresh the component's state context.
-                        @clock_ticker = `setInterval(function() { self.$store().$update(); }, 1000)`
+                        # Capture Snabberb context and trigger a reactive state mutation on tick
+                        comp = self
+                        @clock_ticker = `setInterval(function() { comp.$tick_clock(); }, 1000)`
                       },
               destroy: lambda {
                          `clearInterval(#{@clock_ticker})`
