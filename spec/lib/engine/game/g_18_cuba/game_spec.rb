@@ -75,6 +75,20 @@ module Engine
           end
         end
 
+        describe '#wagon_attachable?' do
+          let(:broad_regular) { depot_train('2') }
+          let(:four_d) { depot_train('8+').tap { |t| t.variant = '4D' } }
+          let(:narrow_train) { depot_train('2n') }
+          let(:wagon) { depot_train('1w') }
+
+          it 'allows wagons only on regular broad trains' do
+            expect(game.wagon_attachable?(broad_regular)).to be(true)
+            expect(game.wagon_attachable?(four_d)).to be(false) # NON_WAGON_TRAINS
+            expect(game.wagon_attachable?(narrow_train)).to be(false) # track_type
+            expect(game.wagon_attachable?(wagon)).to be(false)
+          end
+        end
+
         # ─────────────────────────────────────────────────────────────────────
         # train_limit_overflow / crowded_corps — correct discard axes on phase change
         # ─────────────────────────────────────────────────────────────────────
