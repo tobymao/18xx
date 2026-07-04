@@ -836,7 +836,7 @@ module Engine
         action = Engine::Action::Base.action_from_h(action, self) if action.is_a?(Hash)
 
         action.id = current_action_id + 1
-        LOGGER.debug { "Game::Base#process_action({ id: #{action.id}, ... }, ...)" }
+        # LOGGER.debug { "Game::Base#process_action({ id: #{action.id}, ... }, ...)" }
         @raw_actions << action.to_h
         return clone(@raw_actions) if action.is_a?(Action::Undo) || action.is_a?(Action::Redo)
 
@@ -906,7 +906,7 @@ module Engine
       end
 
       def rescue_exception(e, action)
-        LOGGER.debug { %(Caught exception #{e.inspect}, backtrace: [#{e.backtrace.join("\n")}]) }
+        # LOGGER.debug { %(Caught exception #{e.inspect}, backtrace: [#{e.backtrace.join("\n")}]) }
         @raw_actions.pop
         @actions.pop
         @exception = e
