@@ -1716,8 +1716,8 @@ module View
         end
 
         abs_time = time_val.abs
-        mins = abs_time / 60
-        secs = abs_time % 60
+        mins = (abs_time / 60).to_i
+        secs = (abs_time % 60).to_i
         formatted_time = "#{time_val < 0 ? '-' : ''}#{mins}:#{secs < 10 ? '0' : ''}#{secs}"
         [time_val, formatted_time]
       end
