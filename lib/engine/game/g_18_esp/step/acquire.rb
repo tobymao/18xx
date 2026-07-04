@@ -16,14 +16,13 @@ module Engine
           end
 
           def auto_actions(entity)
-            if @merging
-              return [Engine::Action::Choose.new(entity, choice: 'charter')] unless can_swap?
-
-              return super
+            if @merging && !can_swap?
+              [Engine::Action::Choose.new(entity, choice: 'charter')]
+            elsif !@merging && !can_merge?(entity)
+              [Engine::Action::Pass.new(entity)]
+            else
+              super
             end
-            return [Engine::Action::Pass.new(entity)] unless can_merge?(entity)
-
-            super
           end
 
           def merge_name(_entity = nil)
