@@ -57,11 +57,47 @@ module View
         end
 
         css = <<~CSS
+          :root {
+            --font-money: 'Courier New', monospace;
+            --font-standard: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            --color-money-text: #4c1d95;
+            --accent-action-color: #2563eb;
+            --pulse-opacity-min: 0.75;
+            --pulse-scale-duration: 2s;
+            --opacity-unopened-row: 0.45;
+            --bg-active-row: #ffffff;
+            --bg-market-zone: #f8fafc;
+            --bg-corporate-zone: #f3e8ff;
+            --action-buy-edge: #16a34a;
+            --action-sell-edge: #dc2626;
+            --shadow-card: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+          }
+
           #spreadsheet table { border-collapse: collapse; border: 2px solid #333; background-color: #{COLOR_INACTIVE}; }
           #spreadsheet th, #spreadsheet td { border: 1px solid #999; }
           #spreadsheet thead tr:last-child th { border-bottom: 2px solid #333; }
           #spreadsheet tbody tr:last-child td, #spreadsheet tbody tr:last-child th { border-bottom: 2px solid #333; }
           .thick-right { border-right: 2px solid #333 !important; }
+
+          .money-value { font-family: var(--font-money) !important; font-weight: 700 !important; color: var(--color-money-text) !important; font-variant-numeric: tabular-nums !important; }
+
+          .game-card { display: inline-block; padding: 4px 8px; margin: 2px; border-radius: 4px; background-color: #ffffff; box-shadow: var(--shadow-card); transition: transform 0.1s ease; font-family: var(--font-standard); }
+          .game-card.clickable:hover { cursor: pointer; transform: translateY(-1px); }
+          .game-card.action-buy { border-left: 4px solid var(--action-buy-edge) !important; }
+          .game-card.action-sell { border-left: 4px solid var(--action-sell-edge) !important; }
+
+          .sell-restricted { text-decoration: line-through !important; opacity: 0.5 !important; cursor: not-allowed !important; }
+          .token-bond { display: inline-block; width: 12px; height: 12px; background-color: #b91c1c; border-radius: 2px; }
+
+          tr.active-turn-focus { outline: 3px solid var(--accent-action-color) !important; outline-offset: -3px !important; background-color: var(--bg-active-row) !important; animation: zeroJankPulse var(--pulse-scale-duration) infinite ease-in-out; }
+          @keyframes zeroJankPulse { 0% { opacity: 1; } 50% { opacity: var(--pulse-opacity-min); } 100% { opacity: 1; } }
+
+          tr.directed-by-active-player { background-color: rgba(37, 99, 235, 0.06) !important; }
+          tr.company-row-unfloated, tr.company-row-closed { opacity: var(--opacity-unopened-row) !important; filter: grayscale(40%) !important; }
+
+          .column-zone-market { background-color: var(--bg-market-zone) !important; }
+          .column-zone-corporate { background-color: var(--bg-corporate-zone) !important; }
+          th.column-zone-corporate { background-color: #e9d5ff !important; color: #4c1d95 !important; }
         CSS
 
         h(:div, [
@@ -222,10 +258,11 @@ module View
         players_title = h('th.thick-right', th_props[@game.players.size], 'Players')
 
         pool_th_props = th_props[2]
-        pool_th_props[:style][:backgroundColor] = COLOR_INACTIVE
+        pool_th_props[:attrs][:class] = 'column-zone-market'
         pool_title = h('th.thick-right', pool_th_props, 'Pool')
 
         ipo_th_props = th_props[2]
+        ipo_th_props[:attrs][:class] = 'column-zone-market'
         ipo_title = h('th.thick-right', ipo_th_props, @game.ipo_name)
 
         corporation_title = h(:th, th_props[corporation_props_size], ['Corporation ', render_toggle_not_floated_link])
@@ -269,21 +306,28 @@ module View
         end
 
         bank_sub_th_props = { style: { backgroundColor: COLOR_INACTIVE } }
+
         pool_subtitles = [
-          h(:th, bank_sub_th_props, render_sort_link('Shares', :market_shares)),
-          h('th.thick-right', bank_sub_th_props, render_sort_link('Prices', :share_price)),
+          h('th.column-zone-market', {}, render_sort_link('Shares', :market_shares)),
+          h('th.thick-right.column-zone-market', {}, render_sort_link('Prices', :share_price)),
         ]
         ipo_subtitles = [
-          h(:th, render_sort_link('Shares', :ipo_shares)),
-          h('th.thick-right', render_sort_link('Price', :par_price)),
+          h('th.column-zone-market', {}, render_sort_link('Shares', :ipo_shares)),
+          h('th.thick-right.column-zone-market', {}, render_sort_link('Price', :par_price)),
         ]
         corporation_subtitles = [
-          h(:th, render_sort_link('Treasury', :cash)),
-          *treasury,
-          h(:th, render_sort_link('Last Run', :prev_revenue)),
-          h(:th, render_sort_link('Trains', :trains)),
-          h(:th, render_sort_link('Tokens', :tokens)),
-          *extra,
+          h('th.column-zone-corporate', {}, render_sort_link('Treasury', :cash)),
+          *treasury.map do |t|
+            t[:attrs][:class] = 'column-zone-corporate'
+            t
+          end,
+          h('th.column-zone-corporate', {}, render_sort_link('Last Run', :prev_revenue)),
+          h('th.column-zone-corporate', {}, render_sort_link('Trains', :trains)),
+          h('th.column-zone-corporate', {}, render_sort_link('Tokens', :tokens)),
+          *extra.map do |e|
+            e[:attrs][:class] = 'column-zone-corporate'
+            e
+          end,
         ]
         corporation_subtitles << h(:th, render_sort_link('Privates', :companies)) if @show_privates
 
@@ -432,7 +476,7 @@ module View
 
         name_props = {
           style: {
-            backgroundColor: is_active_row ? COLOR_MAUVE : corporation.color,
+            backgroundColor: corporation.color,
             color: corporation.text_color,
             fontFamily: FONT_STD,
             fontWeight: 'bold',
