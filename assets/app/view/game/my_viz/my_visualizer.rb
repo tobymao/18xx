@@ -7,6 +7,7 @@ module View
     class MyVisualizer < Snabberb::Component
       needs :game
       needs :tile_selector, default: nil
+      needs :routes, store: true, default: []
       include Actionable
 
       def active_entity
@@ -165,6 +166,20 @@ module View
                   default_btn_text = 'Skip Build'
                 elsif actions.include?('place_token')
                   default_btn_text = 'Skip Token'
+                elsif actions.include?('run_routes')
+                  default_btn_text = 'Submit Revenue'
+                  default_handler = lambda {
+                    active_routes = @routes.select { |r| r.chains.any? }
+                    base_revenue = active_routes.any? ? active_routes.sum(&:revenue) : 0
+                    storage_key = "rev_override_#{current_entity&.id}"
+                    current_revenue = Lib::Storage[storage_key] ? Lib::Storage[storage_key].to_i : base_revenue
+                    process_action(Engine::Action::RunRoutes.new(
+                      current_entity,
+                      routes: active_routes,
+                      extra_revenue: @game.extra_revenue(current_entity, active_routes) + (current_revenue - base_revenue),
+                      subsidy: @game.routes_subsidy(active_routes)
+                    ))
+                  }
                 elsif actions.include?('dividend')
                   default_btn_text = 'Pay Out'
                   default_handler = lambda {
