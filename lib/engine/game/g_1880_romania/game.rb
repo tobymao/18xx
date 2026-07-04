@@ -19,6 +19,8 @@ module Engine
 
         STARTING_CASH = { 3 => 600, 4 => 480, 5 => 400, 6 => 340 }.freeze
 
+        CORPORATION_CLASS = G1880Romania::Corporation
+
         TRAINS_NOT_TRIGGERING_SR = %w[2R 8 8E].freeze
 
         ASSIGNMENT_TOKENS = G1880::Game::ASSIGNMENT_TOKENS.merge(
@@ -155,6 +157,9 @@ module Engine
                   { name: '2R', distance: 2, price: 250, num: 10, available_on: 'C2' }].freeze
 
         EVENTS_TEXT = G1880::Game::EVENTS_TEXT.merge(
+          'float_30' => ['30% to Float', 'Corporation must sell 30% of shares to float'],
+          'float_40' => ['40% to Float', 'Corporation must sell 40% of shares to float'],
+          'float_60' => ['60% to Float', 'Corporation must sell 60% of shares to float'],
           'signal_end_game' => ['Signal End Game', 'Game ends 3 ORs after purchase/export of last 6E train'],
           'open_borders' => ['Open Borders', 'Borders are opened, owner of P2 Consorţiu still receives payment for crossings'],
           'remove_borders' => ['Remove Borders', 'Borders are removed entirely'],
@@ -163,6 +168,10 @@ module Engine
         GAME_END_REASONS_TEXT = {
           final_train: 'Last 6E train sold',
         }.freeze
+
+        def float_str(entity)
+          "#{entity.percent_to_float}% to float" if entity.corporation? && entity.floatable
+        end
 
         def init_minors
           game_minors.map { |minor| G1880::Minor.new(**minor) }
@@ -180,7 +189,7 @@ module Engine
         end
 
         def stock_round
-          G1880::Round::Stock.new(self, [
+          G1880Romania::Round::Stock.new(self, [
             Engine::Step::Exchange,
             G1880Romania::Step::SpecialChoose,
             G1880Romania::Step::BuySellParShares,
