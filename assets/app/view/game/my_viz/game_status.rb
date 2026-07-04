@@ -296,7 +296,14 @@ module View
           is_active_col = (p == active_player)
           props = { style: { backgroundColor: is_active_col ? COLOR_ACTIVE : 'inherit' } }
 
-          props[:style][:minWidth] = min_width(p)
+          props[:style][:width] = PLAYER_COL_MAX_WIDTH
+          props[:style][:minWidth] = PLAYER_COL_MAX_WIDTH
+          props[:style][:maxWidth] = PLAYER_COL_MAX_WIDTH
+          props[:style][:position] = 'relative'
+          props[:style][:overflow] = 'hidden'
+          props[:style][:textOverflow] = 'ellipsis'
+          props[:style][:textAlign] = 'left'
+          props[:style][:paddingRight] = '22px'
           is_last = idx == @game.players.size - 1
 
           # Restored full original player name strings
@@ -307,9 +314,10 @@ module View
             header_content << h(:svg, {
                                   attrs: { viewBox: '0 0 16 16', width: '16', height: '16', title: 'Priority Deal' },
                                   style: {
-                                    display: 'inline-block',
-                                    marginLeft: '6px',
-                                    verticalAlign: 'middle',
+                                    position: 'absolute',
+                                    right: '4px',
+                                    top: '50%',
+                                    transform: 'translateY(-50%)',
                                     fill: COLOR_CASH,
                                   },
                                 }, [
@@ -373,7 +381,7 @@ module View
             *titles,
           ]),
           h(:tr, [
-            h('th.thick-right', { style: { paddingBottom: '0.3rem' } }, render_sort_link('SYM', :id)),
+            h('th.thick-right', { style: { paddingBottom: '0.3rem' } }, ''),
             *subtitles,
           ]),
         ]
@@ -656,7 +664,8 @@ module View
             end
 
             if n_shares.zero? && !can_buy_from_player && !just_sold
-              players_row_content << h(:td, { style: { backgroundColor: bg_color } }, '')
+              players_row_content << h(:td,
+                                       { attrs: { id: "player_shares_#{p.id}_#{corporation.id}" }, style: { backgroundColor: bg_color } }, '')
             else
 
               percent = p.percent_of(corporation) || (n_shares * 10)
@@ -676,7 +685,10 @@ module View
               card_props[:on] = { click: click_handler } if click_handler
 
               card = h(:div, card_props, text)
-              card = h(:span, { style: { visibility: 'hidden', display: 'inline-block' } }, [card]) if n_shares.zero?
+              if n_shares.zero?
+                card = h(:span, { style: { visibility: 'hidden', display: 'inline-block' } },
+                         [card])
+              end
 
               td_children = [card]
 
@@ -1319,7 +1331,7 @@ module View
 
                 Lib::Storage[menu_storage_key] = nil
                 Lib::Storage[price_storage_key] = nil
-source_selector = "#company_wrapper_#{entity.id}_#{c.id} .game-card"
+                source_selector = "#company_wrapper_#{entity.id}_#{c.id} .game-card"
                 Lib::CardAnimation.fly(source_selector, "#companies_#{active_ent.id}") do
                   process_action(Engine::Action::BuyCompany.new(
                     active_ent,
