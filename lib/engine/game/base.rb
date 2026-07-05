@@ -833,6 +833,8 @@ module Engine
       end
 
       def process_action(action, add_auto_actions: false, validate_auto_actions: false)
+        warn '=== [ENGINE REDUCER RECEIVE] ==='
+        warn "Processing Action ID: #{action.id} | Engine State Turn: #{@turn}"
         action = Engine::Action::Base.action_from_h(action, self) if action.is_a?(Hash)
 
         action.id = current_action_id + 1

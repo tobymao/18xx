@@ -165,18 +165,26 @@ class Game < Base
       hash[p.id] = initial_time.to_f
     end
 
+    warn "=== [CLOCK SYNC CHECK] ACCESSING GAME ##{id} ==="
+    warn "  Total Database Actions Registered: #{actions.count}"
+    warn "  Game Current Status: #{status}"
+
     actions_array = actions.all
     return times.transform_values(&:to_i) if actions_array.empty?
 
     prev_time = created_at.to_f
 
+    warn "=== [CLOCK SYNC CHECK] GAME ##{id} ==="
+    warn "  Game Created At: #{prev_time}"
+
     actions_array.each do |action|
       current_time = action.created_at.to_f
       delta = current_time - prev_time
-
       user_id = action.user_id
-      times[user_id] -= delta if times.key?(user_id)
 
+      warn "  -> Action ##{action.id} | User: #{user_id} | Created At: #{current_time} | Delta: #{delta}"
+
+      times[user_id] -= delta if times.key?(user_id)
       prev_time = current_time
     end
 
