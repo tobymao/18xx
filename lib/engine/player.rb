@@ -23,7 +23,7 @@ module Engine
       @history = []
       @unsold_companies = []
       @penalty = 0
-      @thinking_time = 0 # Defaults to 0 during initialization
+      @thinking_time_ms = 300_00
     end
 
     def value
@@ -35,7 +35,7 @@ module Engine
     end
 
     def thinking_time
-      0
+      (@thinking_time_ms / 1000.0).to_i
     end
 
     def player

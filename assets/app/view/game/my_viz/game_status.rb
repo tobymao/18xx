@@ -611,13 +611,15 @@ module View
                             else
                               lambda { |event|
                                 target_bundle = bundles.first
-                                Lib::CardAnimation.fly(event, "#pool_shares_#{corporation.id}") do
+                                # Escape the corporation ID to ensure valid CSS selector strings for querySelector
+                                escaped_corp_id = `CSS.escape(#{corporation.id})`
+                                Lib::CardAnimation.fly(event, "#pool_shares_#{escaped_corp_id}") do
                                   process_action(Engine::Action::SellShares.new(
-                                    p,
-                                    shares: target_bundle[:shares],
-                                    share_price: target_bundle[:share_price],
-                                    percent: target_bundle[:percent]
-                                  ))
+    p,
+    shares: target_bundle[:shares],
+    share_price: target_bundle[:share_price],
+    percent: target_bundle[:percent]
+  ))
                                 end
                               }
                             end
@@ -796,13 +798,15 @@ module View
                                  else
                                    lambda { |event|
                                      bnd = valid_pool_shares.first.to_bundle
-                                     Lib::CardAnimation.fly(event, "#player_shares_#{active_player.id}_#{corporation.id}") do
+                                     escaped_player_id = `CSS.escape(#{active_player.id})`
+                                     escaped_corp_id = `CSS.escape(#{corporation.id})`
+                                     Lib::CardAnimation.fly(event, "#player_shares_#{escaped_player_id}_#{escaped_corp_id}") do
                                        process_action(Engine::Action::BuyShares.new(
-                                         active_player,
-                                         shares: bnd.shares,
-                                         share_price: bnd.share_price,
-                                         percent: bnd.percent
-                                       ))
+    active_player,
+    shares: bnd.shares,
+    share_price: bnd.share_price,
+    percent: bnd.percent
+  ))
                                      end
                                    }
                                  end
@@ -909,13 +913,15 @@ module View
                                 else
                                   lambda { |event|
                                     bnd = valid_ipo_shares.first.to_bundle
-                                    Lib::CardAnimation.fly(event, "#player_shares_#{active_player.id}_#{corporation.id}") do
+                                    escaped_player_id = `CSS.escape(#{active_player.id})`
+                                    escaped_corp_id = `CSS.escape(#{corporation.id})`
+                                    Lib::CardAnimation.fly(event, "#player_shares_#{escaped_player_id}_#{escaped_corp_id}") do
                                       process_action(Engine::Action::BuyShares.new(
-                                        active_player,
-                                        shares: bnd.shares,
-                                        share_price: bnd.share_price,
-                                        percent: bnd.percent
-                                      ))
+    active_player,
+    shares: bnd.shares,
+    share_price: bnd.share_price,
+    percent: bnd.percent
+  ))
                                     end
                                   }
                                 end
@@ -1672,8 +1678,8 @@ module View
               border: '2px solid #333333',
               borderRadius: '4px',
               padding: '1rem',
-              zIndex: '9999',
-              boxShadow: '0px 4px 10px rgba(0,0,0,0.3)',
+              zIndex: '100000', # Raised from 9999 to guarantee it floats above all grid layers
+              boxShadow: '0px 8px 24px rgba(0,0,0,0.4)', # Deeper shadow to indicate foreground focus
             },
           }, [
           h(:div, { style: { fontSize: '1rem', fontWeight: 'bold', marginBottom: '0.5rem', color: '#333' } },

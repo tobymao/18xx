@@ -67,9 +67,21 @@ module View
       end
 
       def process_action(action)
+        # 1. Capture the millisecond timestamp when the user clicked the action button
+        click_timestamp = (Time.now.to_f * 1000).to_i
+
+        # 2. Derive the turn anchor point from when the last move was committed
+        last_action_epoch = @game_data['updated_at'] || @game_data[:updated_at]
+        turn_start_ms = last_action_epoch ? (last_action_epoch.to_i * 1000) : click_timestamp
+
+        # 3. Calculate absolute elapsed duration and bind it to the action object
+        elapsed_ms = click_timestamp - turn_start_ms
+        action.time_consumed = elapsed_ms if elapsed_ms > 0
+
         warn '=== [UI ACTION DISPATCH] ==='
         warn "Action Class: #{action.class} | Payload: #{action.to_h}"
         if @game.exception
+
           msg = 'This game is broken and cannot accept any new actions. If '\
                 'this issue has not already been reported, please follow the '\
                 'instructions at the top of the page to report it.'
