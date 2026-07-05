@@ -28,6 +28,9 @@ module Engine
             return false unless super
             return true if bundle.owner == @game.share_pool
 
+            # Enforce the block and company sequential availability rules for IPO shares
+            return false unless @game.corporation_available?(bundle.corporation)
+
             # ensure 20% shares of BA, WT and HE cannot be bought before all 10% shares are gone
             return bundle.shares.first == bundle.corporation.shares.first unless bundle.corporation == @game.prussian
 

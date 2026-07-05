@@ -1,1 +1,74 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="56.719" height="56.719" viewBox="0 0 1500.723 1500.723" fill-rule="evenodd"  xmlns:v="https://vecta.io/nano"><circle transform="matrix(.5 .866025 -.866025 .5 -10294.638 -5331.918)" r="750.362" cx="10789.95" cy="-6524.042" fill="#4b005f"/><text xml:space="preserve" x="356.993" y="982.297" transform="scale(.9467149 1.0562842)" font-size="886.998" font-family="Baskerville Old Face" letter-spacing="0" word-spacing="0" fill="#000"><tspan x="356.993" y="982.297" font-weight="normal">M</tspan></text><text xml:space="preserve" x="765.922" y="786.633" transform="scale(1.0360697 .96518604)" font-size="524.339" font-family="Baskerville Old Face" letter-spacing="0" word-spacing="0" fill="#fffffe"><tspan x="765.922" y="786.633" font-weight="normal">S</tspan></text></svg>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="56.719"
+   height="56.719"
+   viewBox="0 0 1500.723 1500.723"
+   fill-rule="evenodd"
+   version="1.1"
+   id="svg2"
+   sodipodi:docname="MS.svg"
+   inkscape:version="1.4.3 (0d15f75, 2025-12-25)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs2" />
+  <sodipodi:namedview
+     id="namedview2"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="15.409298"
+     inkscape:cx="28.359501"
+     inkscape:cy="28.327053"
+     inkscape:window-width="1018"
+     inkscape:window-height="920"
+     inkscape:window-x="0"
+     inkscape:window-y="34"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="svg2" />
+  <circle
+     transform="matrix(.5 .866025 -.866025 .5 -10294.638 -5331.918)"
+     r="750.362"
+     cx="10789.95"
+     cy="-6524.042"
+     fill="#4b005f"
+     id="circle1" />
+  <text
+     xml:space="preserve"
+     x="356.993"
+     y="982.297"
+     transform="scale(.9467149 1.0562842)"
+     font-size="886.998"
+     font-family="Baskerville Old Face"
+     letter-spacing="0"
+     word-spacing="0"
+     fill="#000"
+     id="text1"
+     style="fill:#ffffff;fill-opacity:1;stroke-width:1.00543861;stroke-dasharray:none"><tspan
+       x="356.993"
+       y="982.297"
+       font-weight="normal"
+       id="tspan1"
+       style="fill:#ffffff;fill-opacity:1;stroke-width:1.00543861;stroke-dasharray:none">M</tspan></text>
+  <text
+     xml:space="preserve"
+     x="765.922"
+     y="786.633"
+     transform="scale(1.0360697 .96518604)"
+     font-size="524.339"
+     font-family="Baskerville Old Face"
+     letter-spacing="0"
+     word-spacing="0"
+     fill="#fffffe"
+     id="text2"><tspan
+       x="765.922"
+       y="786.633"
+       font-weight="normal"
+       id="tspan2">S</tspan></text>
+</svg>

@@ -27,6 +27,23 @@ module View
           store(:routes, @routes, skip: true)
         end
 
+        router_callback = lambda do
+          router = Engine::AutoRouter.new(@game, ->(_msg) {})
+          router.compute(
+            current_entity,
+            routes: @routes.reject { |r| r.respond_to?(:paths) && r.paths.empty? },
+            path_timeout: 3000,
+            route_timeout: 3000,
+            callback: lambda do |computed_routes|
+              store(:routes, computed_routes)
+            end
+          )
+        rescue StandardError => e
+          `console.warn('AutoRouter skipped layout matching: ' + e)`
+        end
+
+        `setTimeout(#{router_callback}, 10);`
+
         # Ask the Round instead of the Step to capture global actions like take_loan
         actions = current_entity ? @game.round.actions_for(current_entity) : []
 
