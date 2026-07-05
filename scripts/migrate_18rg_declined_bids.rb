@@ -23,6 +23,18 @@ def repair(game, original_actions, actions, broken_action, data, pry_db: false)
   broken_action_idx = actions.index(broken_action)
   action = broken_action['original_id'] || broken_action['id']
   step = game.active_step
+
+  # Game reached its end condition mid-replay (e.g. the declined-bids fix
+  # resolves an earlier auction differently, so the game finishes before all
+  # recorded actions are consumed). There is no active step to repair against —
+  # bail out with a clear message so the game is pinned, instead of crashing on
+  # nil active_step below.
+  if step.nil? || game.finished
+    remaining = actions.size - broken_action_idx
+    raise Exception, "Cannot fix Game #{game.id} — game finished early with #{remaining} action(s) remaining " \
+                     "(#{broken_action['type']} from #{broken_action['entity']} at action #{action}), game needs pinning"
+  end
+
   prev_actions = actions[0..broken_action_idx - 1]
   prev_action = prev_actions[prev_actions.rindex { |a| !optionalish_actions.include?(a['type']) }]
   next_actions = actions[broken_action_idx + 1..]
@@ -54,6 +66,18 @@ def repair(game, original_actions, actions, broken_action, data, pry_db: false)
     actions.delete(broken_action)
     puts "        patched: deleted pass from declined player #{broken_action['entity']} (18RG SingleItemAuction)"
     return
+  end
+
+  # 18RoyalGorge: an auction bid has ended up outside the SingleItemAuction step
+  # (the auction resolved early once declined players are removed from
+  # @active_bidders, so the game has moved on to a later step). Inserting a pass
+  # cannot fix this — it loops forever — so bail out and let the game be pinned.
+  if broken_action['type'] == 'bid' &&
+     !step.is_a?(Engine::Game::G18RoyalGorge::Step::SingleItemAuction) &&
+     !entity_matches_action_entity?(current_entity, broken_action)
+
+    raise Exception, "Cannot fix Game #{game.id} — orphaned auction bid from #{broken_action['entity']} " \
+                     "in #{step.class.name}, game needs pinning"
   end
 
   # Generic handling for when a change just needs pass actions to be
@@ -160,7 +184,7 @@ def attempt_repair(actions, debug, data, pry_db: false)
       rescue Exception => e
         puts e.backtrace if debug
         iteration += 1
-        puts "    iteration #{iteration}; action #{action['id']}; #{game.active_step.type} step; #{action['entity']}, #{action['type']}"
+        puts "    iteration #{iteration}; action #{action['id']}; #{game.active_step&.type || 'none (game over)'} step; #{action['entity']}, #{action['type']}"
 
         raise Exception, "Stuck in infinite loop?" if iteration > 100
 
