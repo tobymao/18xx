@@ -11,6 +11,8 @@ else
   require_relative 'scripts_helper'
 end
 
+require 'set'
+
 $broken = {}
 
 # If the same action is repaired more than this many times, the repair is not
@@ -170,12 +172,132 @@ def repair(game, original_actions, actions, broken_action, data, pry_db: false)
   raise Exception, "Cannot fix Game #{game.id} at action #{action}"
 end
 
+# Temporarily restore the original (buggy) auction step, run block, restore fixed.
+def with_original_auction_step
+  klass = Engine::Game::G18RoyalGorge::Step::SingleItemAuction
+  saved = %i[active_entities process_pass process_bid auction_entity_log]
+          .to_h { |m| [m, klass.instance_method(m)] }
+  klass.class_eval do
+    def active_entities
+      winning_bid = highest_bid(@auctioning)
+      if winning_bid
+        [@active_bidders[(@active_bidders.index(winning_bid.entity) + 1) % @active_bidders.size]]
+      else
+        [@active_bidders.reject { |e| (@declined_bids || []).include?(e) }&.first]
+      end
+    end
+
+    def process_pass(action)
+      entity = action.entity
+      winning_bid = highest_bid(@auctioning)
+      if winning_bid
+        pass_auction(entity)
+      else
+        @game.log << "#{entity.name} declined to bid on #{@auctioning.name}"
+        @declined_bids ||= []
+        @declined_bids << entity
+        if @declined_bids.size == @active_bidders.size
+          remove(@auctioning)
+          @declined_bids = []
+        end
+      end
+      resolve_bids
+    end
+
+    def process_bid(action)
+      @declined_bids = []
+      add_bid(action)
+    end
+
+    def auction_entity_log(entity)
+      @declined_bids = []
+      @game.log << "#{entity.name} is up for auction, minimum bid is #{@game.format_currency(min_bid(entity))}"
+      auction_entity(entity)
+    end
+  end
+  yield
+ensure
+  saved.each { |m, um| klass.define_method(m, um) }
+end
+
+# Phase 1: replay with original code, return [mapping, filtered_actions, original_result].
+def extract_pass_company_mapping(actions, data)
+  mapping = {}
+  filtered = nil
+  truth = nil
+  auction_step = Engine::Game::G18RoyalGorge::Step::SingleItemAuction
+  with_original_auction_step do
+    game = Engine::Game.load(data, actions: [])
+    game.instance_variable_set(:@loading, true)
+    filtered, = game.class.filtered_actions(actions)
+    filtered.compact!
+    filtered.each do |a|
+      processed = a.is_a?(Engine::Action::Base) ? a.copy(game) : a
+      if a['type'] == 'pass' && game.active_step.is_a?(auction_step)
+        mapping[a['id']] = game.active_step.instance_variable_get(:@auctioning)&.id
+      end
+      game.process_action(processed)
+      break if game.exception
+    end
+    # A partial replay (e.g. re-running on an already-migrated stream) yields
+    # wrong companies, so only trust the mapping/result if the replay ran to the end.
+    if game.exception
+      mapping = {}
+    else
+      truth = game.result
+    end
+  end
+  [mapping, filtered, truth]
+end
+
+# Phase 2: strip repeated (player, company) passes using the Phase-1 mapping.
+def strip_duplicate_passes!(actions, mapping)
+  seen = Set.new
+  to_delete = []
+  actions.each do |a|
+    next unless a['type'] == 'pass'
+
+    company = mapping[a['id']]
+    next unless company
+
+    key = [a['entity'], company]
+    if seen.include?(key)
+      to_delete << a
+    else
+      seen.add(key)
+    end
+  end
+
+  to_delete.each do |a|
+    puts "    strip: deleted duplicate pass from #{a['entity']} on #{mapping[a['id']]} at action #{a['id']}"
+    actions.delete(a)
+  end
+
+  unless to_delete.empty?
+    actions.each_with_index do |a, idx|
+      a['original_id'] = a['id'] unless a.include?('original_id')
+      a['id'] = idx + 1
+    end
+  end
+
+  to_delete.size
+end
+
 def attempt_repair(actions, debug, data, pry_db: false)
   repairs = []
   rewritten = false
   ever_repaired = false
   iteration = 0
   repair_counts = Hash.new(0)
+
+  # Phase 1/2: strip duplicate auction passes before replaying with the fixed code.
+  mapping, filtered, truth = extract_pass_company_mapping(actions, data)
+  if strip_duplicate_passes!(filtered, mapping).positive?
+    actions = filtered
+    ever_repaired = true
+    rewritten = true
+  end
+
   loop do
     game = yield
     game.instance_variable_set(:@loading, true)
@@ -225,6 +347,16 @@ def attempt_repair(actions, debug, data, pry_db: false)
     break unless repaired
 
   end
+
+  # Only accept the migration if the repaired game reaches the same end-state as
+  # the original; otherwise the fix changed the outcome — bail out and pin.
+  if ever_repaired && truth
+    verify = Engine::Game.load(data, actions: actions)
+    if verify.exception || verify.result != truth
+      raise Exception, "Cannot fix Game #{verify.id} — migrated end-state diverges from original, game needs pinning"
+    end
+  end
+
   repairs = nil if rewritten
   return [actions, repairs] if ever_repaired
 end
