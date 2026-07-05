@@ -1705,13 +1705,22 @@ module View
       private
 
       def player_time_details(p)
-        time_val = if p.respond_to?(:thinking_time) && p.thinking_time
-                     p.thinking_time.to_i
-                   else
-                     p.instance_variable_get(:@thinking_time).to_i
-                   end
+        base_bank_seconds = if p.respond_to?(:thinking_time) && p.thinking_time
+                              p.thinking_time.to_i
+                            else
+                              p.instance_variable_get(:@thinking_time).to_i
+                            end
 
-        time_val = 300 if time_val == 0 && !p.instance_variable_defined?(:@thinking_time)
+        base_bank_seconds = 300 if base_bank_seconds == 0 && !p.instance_variable_defined?(:@thinking_time)
+
+        time_val = base_bank_seconds
+
+        if p == active_player
+          last_update_epoch = @game_data['updated_at'] || @game_data[:updated_at]
+          turn_start_seconds = last_update_epoch ? last_update_epoch.to_i : Time.now.to_i
+          elapsed_seconds = Time.now.to_i - turn_start_seconds
+          time_val = base_bank_seconds - elapsed_seconds
+        end
 
         abs_time = time_val.abs
         mins = (abs_time / 60).to_i
