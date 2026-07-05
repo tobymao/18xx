@@ -13,6 +13,11 @@ end
 
 $broken = {}
 
+# If the same action is repaired more than this many times, the repair is not
+# converging (e.g. the fix-entity handler flip-flopping a pass between two
+# players). Bail out and pin instead of looping up to the iteration cap.
+MAX_REPAIRS_PER_ACTION = 6
+
 def entity_matches_action_entity?(entity, action)
   action['entity'] == entity.id &&
     entity.send(action['entity_type'] + '?')
@@ -170,6 +175,7 @@ def attempt_repair(actions, debug, data, pry_db: false)
   rewritten = false
   ever_repaired = false
   iteration = 0
+  repair_counts = Hash.new(0)
   loop do
     game = yield
     game.instance_variable_set(:@loading, true)
@@ -187,6 +193,17 @@ def attempt_repair(actions, debug, data, pry_db: false)
         puts "    iteration #{iteration}; action #{action['id']}; #{game.active_step&.type || 'none (game over)'} step; #{action['entity']}, #{action['type']}"
 
         raise Exception, "Stuck in infinite loop?" if iteration > 100
+
+        # Detect a non-converging repair: the same action keeps getting repaired
+        # without the replay ever moving past it (the auction fix cascades into
+        # the stock round and the fix-entity handler flip-flops a pass between
+        # players). Bail out so the game is pinned instead of looping.
+        repair_key = action['original_id'] || action['id']
+        repair_counts[repair_key] += 1
+        if repair_counts[repair_key] > MAX_REPAIRS_PER_ACTION
+          raise Exception, "Cannot fix Game #{game.id} — non-converging repair at action #{repair_key} " \
+                           "(#{action['type']} from #{action['entity']} repaired #{repair_counts[repair_key]} times), game needs pinning"
+        end
 
         ever_repaired = true
         inplace_actions = repair(game, actions, filtered_actions, action, data, pry_db: pry_db)
