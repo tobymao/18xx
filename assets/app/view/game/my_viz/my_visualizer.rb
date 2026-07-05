@@ -232,25 +232,30 @@ module View
                  ]
 
                 if active_p
-                  time_val = if active_p.respond_to?(:thinking_time) && active_p.thinking_time
-                               active_p.thinking_time.to_i
-                             else
-                               active_p.instance_variable_get(:@thinking_time).to_i
-                             end
+                  # 1. Fetch the baseline committed player bank value (natively returns seconds)
+                  base_bank_seconds = active_p.thinking_time.to_i
+                  base_bank_seconds = 300 if base_bank_seconds == 0
 
-                  time_val = 300 if time_val == 0 && !active_p.instance_variable_defined?(:@thinking_time)
+                  # 2. Grab the turn anchor epoch timestamp from the game transaction metadata
+                  last_update_epoch = @game_data['updated_at'] || @game_data[:updated_at]
+                  turn_start_seconds = last_update_epoch ? last_update_epoch.to_i : Time.now.to_i
 
-                  abs_time = time_val.abs
+                  # 3. Calculate dynamic live remaining duration using the active 1-second ticking trigger
+                  elapsed_seconds = Time.now.to_i - turn_start_seconds
+                  live_remaining_time = base_bank_seconds - elapsed_seconds
+
+                  # 4. Format the final interactive display attributes
+                  abs_time = live_remaining_time.abs
                   mins = (abs_time / 60).to_i
                   secs = (abs_time % 60).to_i
-                  formatted_time = "#{time_val < 0 ? '-' : ''}#{mins}:#{secs < 10 ? '0' : ''}#{secs}"
+                  formatted_time = "#{live_remaining_time < 0 ? '-' : ''}#{mins}:#{secs < 10 ? '0' : ''}#{secs}"
 
                   btns << h(:span, {
                               style: {
                                 marginLeft: 'auto',
                                 fontSize: '1.8rem',
                                 fontWeight: 'bold',
-                                color: time_val < 0 ? '#ff0000' : '#000000',
+                                color: live_remaining_time < 0 ? '#ff0000' : '#000000',
                               },
                             }, "#{active_p.name}: #{formatted_time}")
                 end

@@ -833,13 +833,34 @@ module Engine
       end
 
       def process_action(action, add_auto_actions: false, validate_auto_actions: false)
+        act_id = action.is_a?(Hash) ? action['id'] : action.id
         warn '=== [ENGINE REDUCER RECEIVE] ==='
-        warn "Processing Action ID: #{action.id} | Engine State Turn: #{@turn}"
-        action = Engine::Action::Base.action_from_h(action, self) if action.is_a?(Hash)
+        warn "Processing Action ID: #{act_id} | Engine State Turn: #{@turn}"
+
+        if action.is_a?(Hash)
+          time_spent = action['time_consumed']
+          action = Engine::Action::Base.action_from_h(action, self)
+          action.time_consumed = time_spent if time_spent
+        end
+
+        # Safe execution wrapper to deduct time regardless of asset pipeline compilation states
+        if action.respond_to?(:time_consumed) && action.time_consumed && (actor = action.entity&.player)
+          if actor.respond_to?(:deduct_time!)
+            actor.deduct_time!(action.time_consumed)
+          else
+            # Directly mutate the instance variable or use set if method is uncompiled in the asset
+            current_ms = actor.instance_variable_get(:@thinking_time_ms) || 300_000
+            actor.instance_variable_set(:@thinking_time_ms, current_ms - action.time_consumed.to_i)
+          end
+        end
 
         action.id = current_action_id + 1
         # LOGGER.debug { "Game::Base#process_action({ id: #{action.id}, ... }, ...)" }
-        @raw_actions << action.to_h
+        # Clear the internal Opal VDOM serialization cache to capture the new ID and timer data cleanly
+        action.clear_cache if action.respond_to?(:clear_cache)
+        action_hash = action.to_h
+        action_hash['time_consumed'] = action.time_consumed if action.respond_to?(:time_consumed) && action.time_consumed
+        @raw_actions << action_hash
         return clone(@raw_actions) if action.is_a?(Action::Undo) || action.is_a?(Action::Redo)
 
         @actions << action
@@ -981,7 +1002,7 @@ module Engine
       end
 
       def current_action_id
-        @raw_actions[-1]&.fetch('id') || 0
+        @raw_actions[-1]&.[]('id') || 0
       end
 
       def last_game_action_id
@@ -990,16 +1011,18 @@ module Engine
 
       def previous_action_id_from(action_id)
         # Skips messages and undone actions
-        @filtered_actions.reverse.find { |a| a && a['id'] < action_id && a['type'] != 'message' }&.fetch('id') || 0
+        @filtered_actions.reverse.find { |a| a && a['id'] < action_id && a['type'] != 'message' }&.[]('id') || 0
       end
 
       def next_action_id_from(action_id)
         # Skips messages and undone actions
-        @filtered_actions.find { |a| a && a['id'] > action_id && a['type'] != 'message' }&.fetch('id')
+        @filtered_actions.find { |a| a && a['id'] > action_id && a['type'] != 'message' }&.[]('id')
       end
 
       def process_to_action(id)
-        last_processed_action_id = @raw_actions.last&.fetch('id') || 0
+        last_processed_action_id = @raw_actions.last&.[]('id') || 0
+        # CHANGED: Use safe bracket access to accommodate system-injected/unindexed payload histories safely
+        last_processed_action_id = @raw_actions.last&.[]('id') || 0
         @raw_all_actions.each.with_index do |action, index|
           next if @exception
           next if action['id'] <= last_processed_action_id
@@ -1007,8 +1030,10 @@ module Engine
 
           if @filtered_actions[index]
             process_action(action)
-            # maintain original action ids
-            @raw_actions.last['id'] = action['id'] unless @raw_actions.empty?
+            unless @raw_actions.empty?
+              @raw_actions.last['id'] = action['id']
+              @raw_actions.last['time_consumed'] = action['time_consumed'] if action['time_consumed']
+            end
             @last_processed_action = action['id']
           else
             @raw_actions << action
