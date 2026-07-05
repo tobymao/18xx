@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'base'
+require_relative '../timer_rules'
 
 module Engine
   module Round
@@ -20,6 +21,7 @@ module Engine
       end
 
       def setup
+        Engine::TimerRules.apply_round_bonus!(@game, :operating)
         @current_operator = nil
         @home_token_timing = @game.class::HOME_TOKEN_TIMING
         @game.payout_companies
