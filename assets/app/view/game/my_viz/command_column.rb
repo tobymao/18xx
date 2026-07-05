@@ -352,29 +352,35 @@ render_phase_box('Buy Private Company', true, actions.include?('pass') ? ['Skip'
           nil
         end
 
-        token_icons = unplaced_tokens.map do |_token|
+        token_icons = unplaced_tokens.map do |token|
           style = {
             width: '26px',
             height: '26px',
-            margin: '2px',
             borderRadius: '50%',
             boxSizing: 'border-box',
             display: 'inline-block',
             border: '1px solid #333',
           }
 
-          if logo_src
-            style[:backgroundColor] = current_entity.color || '#fff'
-            h(:img, { attrs: { src: logo_src }, style: style })
-          else
-            style[:lineHeight] = '24px'
-            style[:textAlign] = 'center'
-            style[:backgroundColor] = current_entity.color || '#4169e1'
-            style[:color] = current_entity.text_color || '#fff'
-            style[:fontSize] = '0.65rem'
-            style[:fontWeight] = 'bold'
-            h(:div, { style: style }, current_entity.id.to_s[0..2])
-          end
+          icon_el = if logo_src
+                      style[:backgroundColor] = current_entity.color || '#fff'
+                      h(:img, { attrs: { src: logo_src }, style: style })
+                    else
+                      style[:lineHeight] = '24px'
+                      style[:textAlign] = 'center'
+                      style[:backgroundColor] = current_entity.color || '#4169e1'
+                      style[:color] = current_entity.text_color || '#fff'
+                      style[:fontSize] = '0.65rem'
+                      style[:fontWeight] = 'bold'
+                      h(:div, { style: style }, current_entity.id.to_s[0..2])
+                    end
+
+          formatted_price = @game.format_currency(token.price)
+          h(:div, { style: { display: 'inline-flex', alignItems: 'center', margin: '2px' } }, [
+            icon_el,
+            h(:span, { style: { fontSize: '0.75rem', marginLeft: '4px', fontWeight: 'bold', color: '#000000' } },
+              "(#{formatted_price})"),
+          ])
         end
 
         h(:div,
@@ -445,6 +451,8 @@ render_phase_box('Buy Private Company', true, actions.include?('pass') ? ['Skip'
         company_boxes = companies.map do |c|
           owner_name = c.owner&.name || 'Bank'
           next nil if c.owner == current_entity
+          # Restrict buyable list to only show privates owned by the operating corporation's president
+          next nil if current_entity.corporation? && c.owner != current_entity.owner
 
           min_price = if step.respond_to?(:min_price)
                         step.min_price(c)
@@ -452,8 +460,7 @@ render_phase_box('Buy Private Company', true, actions.include?('pass') ? ['Skip'
                         (c.respond_to?(:min_price) ? c.min_price : 1)
                       end
           max_price = if step.respond_to?(:max_price)
-                        step.max_price(current_entity,
-                                       c)
+                        step.max_price(current_entity, c)
                       else
                         (c.respond_to?(:max_price) ? c.max_price : current_entity.cash)
                       end
@@ -606,7 +613,7 @@ render_phase_box('Buy Private Company', true, actions.include?('pass') ? ['Skip'
           end
 
           is_adjustable_price = is_corp
-          train_border_color = is_bank ? '#ff8c00' : '#00cc00'
+          train_border_color = is_bank ? '#00cc00' : '#ff8c00'
 
           owner_key = owner_entity.respond_to?(:id) ? owner_entity.id : 'depot'
           menu_storage_key = "cmd_buy_train_menu_#{owner_key}_#{t.id}"

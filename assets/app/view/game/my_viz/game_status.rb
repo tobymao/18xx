@@ -998,7 +998,7 @@ module View
           if train_buyable_step && not_own_train && owned_by_same_player && step.respond_to?(:can_buy_train?) && step.can_buy_train?(
         active_entity, t
       )
-            card_classes << 'action-buy'
+            card_classes << 'action-sell'
             card_classes << 'clickable'
 
             menu_storage_key = "buy_train_menu_#{corporation.id}_#{t.id}"
@@ -1319,8 +1319,8 @@ module View
 
           not_own_company = active_ent && entity != active_ent
 
-          if company_buyable_step && not_own_company && step.respond_to?(:can_buy_company?) && step.can_buy_company?(active_ent,
-                                                                                                                     c)
+          if company_buyable_step && not_own_company && step.respond_to?(:can_buy_company?) &&
+                         step.can_buy_company?(active_ent, c) && (!active_ent.corporation? || c.owner == active_ent.owner)
             card_classes << 'action-buy'
             card_classes << 'clickable'
 
