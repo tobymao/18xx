@@ -297,7 +297,12 @@ module Engine
         end
 
         def corporation_available?(corp)
-          return !corporation_by_id('BA').shares.first&.president if corp == prussian
+          return false unless corp.ipoed
+
+          if corp == prussian
+            ba = corporation_by_id('BA')
+            return ba.shares.first.owner != ba
+          end
 
           block = @corporation_blocks.find { |corporation_block| corporation_block.include?(corp) }
           index_in_block = block.index(corp)

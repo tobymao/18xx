@@ -224,10 +224,14 @@ module View
 
     def change_anchor(anchor)
       unless route_anchor
-        elm = Native(`document.getElementById('chatlog')`)
-        # only store when scrolled up at least one line (20px)
-        store(:scroll_pos, elm.scrollTop < elm.scrollHeight - elm.offsetHeight - 20 ? elm.scrollTop : nil, skip: true)
-        if (chatbar = Native(`document.getElementById('chatbar')`))
+        raw_elm = `document.getElementById('chatlog')`
+        if raw_elm && !`#{raw_elm} === null`
+          elm = Native(raw_elm)
+          store(:scroll_pos, elm.scrollTop < elm.scrollHeight - elm.offsetHeight - 20 ? elm.scrollTop : nil, skip: true)
+        end
+        raw_chatbar = `document.getElementById('chatbar')`
+        if raw_chatbar && !`#{raw_chatbar} === null`
+          chatbar = Native(raw_chatbar)
           store(:chat_input, chatbar.value, skip: true)
         end
       end
@@ -417,10 +421,15 @@ module View
     def render_round
       description = @game_data['mode'] == :hotseat ? '[HOTSEAT] ' : ''
       description += "#{@game.class.display_title}: "
-      description += "#{@game.round_phase_string} - "
+      name = @round ? @round.class.name.split(':').last : 'Setup'
       name = @round.class.name.split(':').last
       description += @game.round_description(name)
-      description += @game.finished ? ' - Game Over' : " - #{@round.description}"
+      round_desc = begin
+        @round&.description
+      rescue StandardError
+        name
+      end
+      description += @game.finished ? ' - Game Over' : " - #{round_desc}"
 
       if @game.manually_ended
         description += ' - manually ended'
@@ -434,6 +443,7 @@ module View
 
     def render_action
       return h(Game::GameEnd) if @game.finished
+      return h(:div, 'Loading step actions...') unless step
 
       if current_entity_actions.include?('discard_train') &&
         current_entity_actions.include?('swap_train')

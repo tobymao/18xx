@@ -437,14 +437,6 @@ module View
          ])
       end
 
-      def render_corporations
-        current_round = @game.turn_round_num
-
-        sorted_corporations.map do |corp_array|
-          render_corporation(corp_array[1], corp_array[0], current_round)
-        end
-      end
-
       def sorted_corporations
         operating_array =
           if @game.round.operating?
@@ -505,7 +497,25 @@ module View
         tr_props[:attrs] ||= {}
 
         row_classes = []
-        row_classes << 'company-row-unfloated' if is_unfloated
+
+        president_sold = corporation.respond_to?(:owner) && corporation.owner ? true : false
+        president_available = if corporation.respond_to?(:minor?) && corporation.minor?
+                                !president_sold
+                              elsif corporation.respond_to?(:available?)
+                                corporation.available?
+                              elsif @game.respond_to?(:corporation_available?)
+                                @game.corporation_available?(corporation)
+                              else
+                                true
+                              end
+
+        should_grey_unfloated = if @game.round.operating?
+                                  is_unfloated
+                                else
+                                  is_unfloated && !(president_available || president_sold)
+                                end
+
+        row_classes << 'company-row-unfloated' if should_grey_unfloated
         row_classes << 'active-turn-focus' if is_active_row
         row_classes << 'directed-by-active-player' if is_directed
         row_classes << 'last-minor-row' if is_last_minor
