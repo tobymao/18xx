@@ -10,6 +10,7 @@ module View
       needs :tile_selector, default: nil
       needs :routes, store: true, default: []
       needs :tick_trigger, store: true, default: 0
+      needs :user, default: nil
       include Actionable
 
       def tick_clock
@@ -109,8 +110,8 @@ module View
                     '& text.number': { fontSize: '0.55em !important' },
                   },
                 }, [
-                h(View::Game::Map, game: @game, opacity: 1.0, tile_selector: @tile_selector, minimal: true),
-              ]),
+h(View::Game::Map, game: @game, user: @user),
+]),
             ]),
           ]),
 
