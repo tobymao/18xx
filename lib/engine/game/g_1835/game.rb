@@ -189,8 +189,14 @@ module Engine
         TWO_LAYS = [{ lay: true, upgrade: false }, { lay: true, upgrade: false }].freeze
 
         def setup
+          # Restore original safe share placement to keep the IPO dropdown pristine
           prussian.shares.last(7).each { |s| s.buyable = false }
           prussian.shares.first.buyable = false
+
+          # Override ipo_percent on the Prussian instance so the UI tracks the 40% public market
+          def prussian.ipo_percent
+            shares.select(&:buyable).sum(&:percent)
+          end
 
           @corporations.each do |corp|
             corp.shares.reject(&:president).each { |share| share.double_cert = (share.percent == 20) }
@@ -301,7 +307,7 @@ module Engine
 
           if corp == prussian
             ba = corporation_by_id('BA')
-            return ba.shares.first.owner != ba
+            return !ba.shares.any?(&:president)
           end
 
           block = @corporation_blocks.find { |corporation_block| corporation_block.include?(corp) }
