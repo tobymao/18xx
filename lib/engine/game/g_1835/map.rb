@@ -180,7 +180,7 @@ module Engine
             ['G5'] => 'city=revenue:0,loc:0',
             ['H2'] => 'city=revenue:0,loc:3.5;label=Y',
             ['H16'] => 'city=revenue:0,loc:2.5',
-            ['H20'] => 'city=revenue:0,loc:0.5;upgrade=cost:50;label=Y',
+            ['H20'] => 'city=revenue:0,loc:0.5;label=Y',
             ['I3'] => 'city=revenue:0;label=Y;upgrade=cost:50',
             ['M9'] => 'city=revenue:0,loc:0.5',
             ['N12'] => 'city=revenue:0,loc:5',
