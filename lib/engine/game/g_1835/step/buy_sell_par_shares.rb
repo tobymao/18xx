@@ -44,6 +44,14 @@ module Engine
             corporation.id != 'PR' || corporation.floated?
           end
 
+          def can_sell?(entity, bundle)
+            # Rule 7.4: Cannot sell shares in a company floated in the current share round
+            # (it hasn't operated yet), except for the Prussian Railway.
+            return false if bundle.corporation.id != 'PR' && !bundle.corporation.operated?
+
+            super
+          end
+
           def can_gain?(entity, bundle, exchange: false)
             return if !bundle || !entity
             return false if bundle.owner.player? && !@game.can_gain_from_player?(entity, bundle)

@@ -630,7 +630,7 @@ render_phase_box('Buy Private Company', true, actions.include?('pass') ? ['Skip'
           end
 
           is_adjustable_price = is_corp
-          train_border_color = is_bank ? '#00cc00' : '#ff8c00'
+          train_border_color = '#00cc00'
 
           owner_key = owner_entity.respond_to?(:id) ? owner_entity.id : 'depot'
           menu_storage_key = "cmd_buy_train_menu_#{owner_key}_#{t.id}"
