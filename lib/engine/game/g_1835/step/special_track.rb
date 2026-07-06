@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
-require_relative '../../../step/special_token'
+require_relative '../../../step/special_track'
 
 module Engine
   module Game
     module G1835
       module Step
-        class SpecialToken < Engine::Step::SpecialToken
+        class SpecialTrack < Engine::Step::SpecialTrack
         end
       end
     end

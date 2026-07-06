@@ -388,6 +388,38 @@ module Engine
           @prussian_companies ||= %w[BB HB].map { |id| company_by_id(id) }
         end
 
+        def entity_can_use_company?(entity, company)
+          # Explicitly forbid minor companies from using private company powers
+          return false if entity.minor?
+
+          super
+        end
+
+        def preprocess_action(action)
+          case action
+          when Action::LayTile
+            # Direct map-driven hostile closure check for Ostbayrische Bahn (OBB)
+            obb = company_by_id('OBB')
+            if obb && !obb.closed? && %w[M15 M17].include?(action.hex.id)
+              # Check if the OTHER hex has track before this one gets laid
+              other_hex_id = action.hex.id == 'M15' ? 'M17' : 'M15'
+              if hex_by_id(other_hex_id).tile.color != :white
+                obb.close!
+                @log << "#{obb.name} closes because both target hexes have been built on."
+              end
+            end
+
+            # Direct map-driven hostile closure check for Pfalzbahnen (PB)
+            pb = company_by_id('PB')
+            if pb && !pb.closed? && action.hex.id == 'L6' && !abilities(pb, :token)
+              pb.close!
+              @log << "#{pb.name} closes because its track has been laid and token power is spent."
+            end
+          end
+
+          super
+        end
+
         def event_pr_can_form!
           @log << "-- Event: #{EVENTS_TEXT['pr_can_form'][1]} --"
           @pr_can_form = true
