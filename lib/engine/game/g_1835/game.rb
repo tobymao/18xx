@@ -304,17 +304,19 @@ module Engine
 
         def operating_round(round_num)
           G1835::Round::Operating.new(self, [
-Engine::Step::Bankrupt,
-G1835::Step::MinorExchange,
-Engine::Step::DiscardTrain,
-Engine::Step::SpecialTrack,
-G1835::Step::SpecialToken,
-Engine::Step::Track,
-Engine::Step::HomeToken,
-Engine::Step::Token,
-Engine::Step::Route,
-G1835::Step::Dividend,
-G1835::Step::BuyTrain,
+            Engine::Step::Bankrupt,
+            G1835::Step::MinorExchange,
+            Engine::Step::DiscardTrain,
+            Engine::Step::SpecialTrack,
+            Engine::Step::HomeToken,
+
+            G1835::Step::SpecialToken,
+            Engine::Step::Track,
+            Engine::Step::HomeToken,
+            Engine::Step::Token,
+            Engine::Step::Route,
+            G1835::Step::Dividend,
+            G1835::Step::BuyTrain,
           ], round_num: round_num)
         end
 
@@ -466,7 +468,7 @@ G1835::Step::BuyTrain,
 
             # Direct map-driven hostile closure check for Pfalzbahnen (PB)
             pb = company_by_id('PB')
-            if pb && !pb.closed? && action.hex.id == 'L6' && !abilities(pb, :token)
+            if pb && !pb.closed? && action.hex.id == 'L6' && pb.all_abilities.none? { |a| a.type == :token }
               pb.close!
               @log << "#{pb.name} closes because its track has been laid and token power is spent."
             end
@@ -474,6 +476,110 @@ G1835::Step::BuyTrain,
 
           super
         end
+
+        def action_processed(action)
+          super
+          case action
+          when Action::LayTile
+            if action.hex.id == 'L6'
+              @log << "[DEBUG L6] LayTile processed on L6. Active step: #{@round.active_step.class.name}"
+
+              ba = corporation_by_id('BA')
+              if ba
+                @log << "[DEBUG L6] Baden status - Floated?: #{ba.floated?}, Has tokens?: #{!!ba.tokens.first}, Token used?: #{ba.tokens.first&.used}"
+              else
+                @log << '[DEBUG L6] Baden corporation (BA) not found!'
+              end
+
+              if ba && ba.floated? && ba.tokens.first && !ba.tokens.first.used
+                if @round.respond_to?(:pending_tokens)
+                  @log << "[DEBUG L6] pending_tokens exists. Current pending queue size: #{@round.pending_tokens.size}"
+
+                  if @round.pending_tokens.any? { |p| p[:entity] == ba }
+                    @log << '[DEBUG L6] Baden is already present in the pending_tokens queue.'
+                  else
+                    @log << "#{ba.name} must immediately choose city for home token on L6"
+
+                    if @round.active_step.is_a?(Engine::Step::Track)
+                      @log << "[DEBUG L6] Reverting track step laid_tiles count from #{@round.active_step.laid_tiles.size}"
+                      @round.active_step.laid_tiles.pop
+                    end
+
+                    @round.pending_tokens << {
+                      entity: ba,
+                      hexes: [action.hex],
+                      token: ba.tokens.first,
+                    }
+                    @round.clear_cache!
+                    @log << '[DEBUG L6] Baden token pushed to pending_tokens successfully.'
+                  end
+                else
+                  @log << '[DEBUG L6] Round does not respond to pending_tokens!'
+                end
+              else
+                @log << '[DEBUG L6] Baden conditional check failed (either not floated or token already used).'
+              end
+            end
+          when Action::PlaceToken
+            pb = company_by_id('PB')
+            if pb && !pb.closed? && pb.all_abilities.none? { |a| a.type == :token } && pb.all_abilities.none? do |a|
+                 a.type == :tile_lay
+               end
+              pb.close!
+              @log << "#{pb.name} closes as both special tile and token actions are complete."
+            end
+          end
+        end
+
+        def ability_usable?(ability)
+          if ability.type == :token && ability.owner.sym == 'PB'
+            ba = corporation_by_id('BA')
+            return false unless ba&.floated? && ba.tokens.first&.used
+          end
+          super
+        end
+
+        def place_home_token(corporation)
+          return unless corporation.next_token
+          return if corporation.tokens.first&.used
+
+          hex = hex_by_id(corporation.coordinates)
+          tile = hex&.tile
+
+          if !tile || (tile.reserved_by?(corporation) && !tile.paths.empty?) || (corporation.id == 'BA' && @round.respond_to?(:pending_tokens))
+            if @round.respond_to?(:pending_tokens) && @round.pending_tokens.any? { |p| p[:entity] == corporation }
+              @round.clear_cache!
+              return
+            end
+
+            hexes = hex ? [hex] : home_token_locations(corporation)
+            return unless hexes
+
+            @log << "#{corporation.name} must choose city for home token"
+            @round.pending_tokens << {
+              entity: corporation,
+              hexes: hexes,
+              token: corporation.find_token_by_type,
+            }
+
+            @round.clear_cache!
+            return
+          end
+
+          cities = tile&.cities || []
+          city = cities.find { |c| c.reserved_by?(corporation) } || cities.first
+          token = corporation.find_token_by_type
+
+          same_hex_allowed = multiple_tokens_allowed_on_home_hex?
+          if city && city.tokenable?(corporation, tokens: token, same_hex_allowed: same_hex_allowed)
+            @log << "#{corporation.name} places a token on #{hex.name}"
+            city.place_token(corporation, token, same_hex_allowed: same_hex_allowed)
+          elsif home_token_can_be_cheater && city
+            @log << "#{corporation.name} places a token on #{hex.name}"
+            city.place_token(corporation, token, cheater: true)
+          end
+        end
+        # --- END FIX ---
 
         def event_pr_can_form!
           @log << "-- Event: #{EVENTS_TEXT['pr_can_form'][1]} --"
