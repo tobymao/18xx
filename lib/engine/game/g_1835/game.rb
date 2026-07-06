@@ -302,18 +302,17 @@ module Engine
 
         def operating_round(round_num)
           G1835::Round::Operating.new(self, [
-            Engine::Step::Bankrupt,
-            G1835::Step::MinorExchange,
-            Engine::Step::DiscardTrain,
-            G1835::Step::SpecialTrack,
-            Engine::Step::SpecialTrack,
-            G1835::Step::SpecialToken,
-            Engine::Step::Track,
-            Engine::Step::HomeToken,
-            Engine::Step::Token,
-            Engine::Step::Route,
-            G1835::Step::Dividend,
-            G1835::Step::BuyTrain,
+Engine::Step::Bankrupt,
+G1835::Step::MinorExchange,
+Engine::Step::DiscardTrain,
+Engine::Step::SpecialTrack,
+G1835::Step::SpecialToken,
+Engine::Step::Track,
+Engine::Step::HomeToken,
+Engine::Step::Token,
+Engine::Step::Route,
+G1835::Step::Dividend,
+G1835::Step::BuyTrain,
           ], round_num: round_num)
         end
 
@@ -578,6 +577,10 @@ end
 
 module Engine
   class Player
+    def logo
+      nil
+    end
+
     def tokens_by_type(*)
       []
     end
