@@ -101,8 +101,9 @@ module View
 
           header_elements = []
 
-          header_elements << h(:div, { style: { fontSize: '1.2rem' } }, company_logo)
-          header_elements << h(:div, { style: { fontSize: '0.9rem' } }, player_name) if player_name && !player_name.empty?
+          header_elements << h(:div, { style: { fontSize: '4rem' } }, company_logo)
+          header_elements << h(:div, { style: { fontSize: '2.5rem' } }, player_name) if player_name && !player_name.empty?
+
           header_elements << h(:div, { style: { fontSize: '0.8rem', textTransform: 'uppercase', marginTop: '1px' } },
                                phase.to_s.tr('_', ' '))
 
@@ -289,6 +290,11 @@ render_phase_box('Buy Private Company', true, actions.include?('pass') ? ['Skip'
           upper_content = [
             h(:div,
               { style: { padding: '2rem', textAlign: 'center', fontSize: '1.2rem', fontWeight: 'bold', textTransform: 'uppercase' } }, 'Stock Round'),
+          ]
+        elsif @game.round.class.name.include?('Draft')
+          upper_content = [
+            h(:div,
+              { style: { padding: '2rem', textAlign: 'center', fontSize: '1.2rem', fontWeight: 'bold', textTransform: 'uppercase' } }, 'Draft Round'),
           ]
         end
 

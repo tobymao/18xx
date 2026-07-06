@@ -228,14 +228,61 @@ module Engine
           G1835::SharePool.new(self)
         end
 
+        def ensure_clemens_round_defined!
+          return if self.class.const_defined?(:ClemensDraftRound)
+
+          klass = Class.new(G1835::Round::Draft) do
+            def setup
+              super
+              @clemens_turn = 0
+              @entity_index = current_clemens_index
+            end
+
+            def current_entity
+              entities[current_clemens_index]
+            end
+
+            def current_clemens_index
+              num_players = entities.size
+              return 0 if num_players.zero?
+
+              if @clemens_turn < num_players
+                # Reverse phase: passes from last down to first
+                num_players - 1 - @clemens_turn
+              elsif @clemens_turn < 2 * num_players
+                # Forward snake phase: first player goes twice, climbs back to last
+                @clemens_turn - num_players
+              else
+                # Standard clockwise iteration phase for the remainder of the draft
+                (@clemens_turn - (2 * num_players)) % num_players
+              end
+            end
+
+            def next_entity_index!
+              @clemens_turn += 1
+              @entity_index = current_clemens_index
+            end
+          end
+
+          self.class.const_set(:ClemensDraftRound, klass)
+        end
+
         def init_round
-          G1835::Round::Draft.new(self,
-                                  [G1835::Step::Draft])
+          if @optional_rules&.include?(:clemens)
+            ensure_clemens_round_defined!
+            self.class::ClemensDraftRound.new(self, [G1835::Step::Draft])
+          else
+            G1835::Round::Draft.new(self, [G1835::Step::Draft])
+          end
         end
 
         def new_draft_round
-          G1835::Round::Draft.new(self,
-                                  [G1835::Step::Draft],)
+          if @optional_rules&.include?(:clemens)
+            ensure_clemens_round_defined!
+            self.class::ClemensDraftRound.new(self, [G1835::Step::Draft])
+          else
+            G1835::Round::Draft.new(self, [G1835::Step::Draft])
+          end
         end
 
         def next_round!
@@ -258,6 +305,7 @@ module Engine
             Engine::Step::Bankrupt,
             G1835::Step::MinorExchange,
             Engine::Step::DiscardTrain,
+            G1835::Step::SpecialTrack,
             Engine::Step::SpecialTrack,
             G1835::Step::SpecialToken,
             Engine::Step::Track,
@@ -352,6 +400,12 @@ module Engine
           return TWO_LAYS if entity.type == :major && @phase.status.include?('two_tile_lays')
 
           LAY_OR_UPGRADE
+        end
+
+        def operating_order
+          order = super
+          order.reject!(&:minor?) if @optional_rules&.include?(:clemens) && !corporation_by_id('BY').floated?
+          order
         end
 
         def payout_companies
@@ -518,6 +572,14 @@ module Engine
           'h' * shares.count { |share| share.percent == 5 }
         end
       end
+    end
+  end
+end
+
+module Engine
+  class Player
+    def tokens_by_type(*)
+      []
     end
   end
 end

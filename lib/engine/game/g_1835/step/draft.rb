@@ -14,13 +14,29 @@ module Engine
           def setup
             @companies = @game.companies.select { |c| c.owner.nil? && !c.closed? }
 
-            # set up the tiered companies as 2d array that might contain empty arrays if the starting package was not
-            # fully sold in a previous draft round. These empty arrays are important for may_purchase: companies in rows
-            # after an empty row can only be purchased if all rows before are empty. If we were to only group_by
-            # auction_row, we might lose these empty rows.
-            @tiered_companies = Array.new(4) { [] }
-            @companies.each do |company|
-              @tiered_companies[company.auction_row] << company
+            if @game.optional_rules&.include?(:clemens)
+              @tiered_companies = Array.new(3) { [] }
+              @companies.each do |company|
+                if company.sym.start_with?('M')
+                  @tiered_companies[0] << company
+                elsif %w[NF LD BY_D OBB PB].include?(company.sym)
+                  @tiered_companies[1] << company
+                else
+                  @tiered_companies[2] << company
+                end
+              end
+              @tiered_companies[0].sort_by! { |c| c.sym }
+              @tiered_companies[1].sort_by! { |c| %w[NF LD BY_D OBB PB].index(c.sym) }
+              @tiered_companies[2].sort_by! { |c| %w[BB HB].index(c.sym) }
+            else
+              # set up the tiered companies as 2d array that might contain empty arrays if the starting package was not
+              # fully sold in a previous draft round. These empty arrays are important for may_purchase: companies in rows
+              # after an empty row can only be purchased if all rows before are empty. If we were to only group_by
+              # auction_row, we might lose these empty rows.
+              @tiered_companies = Array.new(4) { [] }
+              @companies.each do |company|
+                @tiered_companies[company.auction_row] << company
+              end
             end
           end
 
@@ -34,6 +50,7 @@ module Engine
 
           def may_purchase?(company)
             return false unless company
+            return true if @game.optional_rules&.include?(:clemens)
 
             # in the vanilla draft a company can only be purchased if it is either in the top-most row or furthest to
             # the left in the second top-most row if the top-most row only has one company
