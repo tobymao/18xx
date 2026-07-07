@@ -290,7 +290,7 @@ module Engine
           clear_programmed_actions
           @round =
             case @round
-            when G1835::Round::Draft, G1835::Round::ClemensDraft
+            when Engine::Round::Draft, G1835::Round::ClemensDraft
               reorder_players
               new_operating_round(@draft_round_num)
             when G1835::Round::Operating
