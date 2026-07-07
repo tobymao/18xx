@@ -15,7 +15,7 @@ module Engine
             @companies = @game.companies.select { |c| c.owner.nil? && !c.closed? }
 
             if @game.optional_rules&.include?(:clemens)
-              @tiered_companies = Array.new(3) { [] }
+             @tiered_companies = Array.new(3) { [] }
               @companies.each do |company|
                 if company.sym.start_with?('M')
                   @tiered_companies[0] << company
@@ -28,7 +28,7 @@ module Engine
               @tiered_companies[0].sort_by! { |c| c.sym }
               @tiered_companies[1].sort_by! { |c| %w[NF LD BY_D OBB PB].index(c.sym) }
               @tiered_companies[2].sort_by! { |c| %w[BB HB].index(c.sym) }
-            else
+                        else
               # set up the tiered companies as 2d array that might contain empty arrays if the starting package was not
               # fully sold in a previous draft round. These empty arrays are important for may_purchase: companies in rows
               # after an empty row can only be purchased if all rows before are empty. If we were to only group_by
@@ -85,10 +85,10 @@ module Engine
           end
 
           def actions(entity)
-            return [] if finished?
+              return [] if finished?
 
-            unless @companies.any? { |c| current_entity.cash >= min_bid(c) }
-              @log << "#{current_entity.name} has no valid actions and passes"
+if entity.player? && !@companies.any? { |c| entity.cash >= c.value }
+              @log << "#{entity.name} has no valid actions and passes"
               return []
             end
 
@@ -189,6 +189,16 @@ module Engine
             # which might be during the current or any earlier action
             allow_president_change = share.president || !share.corporation.shares.first.president
             @game.share_pool.transfer_shares(ShareBundle.new(share), player, allow_president_change: allow_president_change)
+
+            # Under Clemens rules, force BY to float immediately once 50% of its total equity is player-held
+            by_corp = share.corporation
+            if @game.optional_rules&.include?(:clemens) && by_corp.name == 'BY' && !by_corp.floated?
+              total_held = by_corp.player_share_holders.values.sum
+              if total_held >= 50
+                by_corp.floated = true
+                @log << "#{by_corp.name} floats early via the Clemens Gate at #{total_held}% shares sold!"
+              end
+            end
 
             @game.place_home_token(share.corporation) if share.corporation.floated?
           end
