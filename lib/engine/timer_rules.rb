@@ -28,7 +28,7 @@ module Engine
         current_time = player.instance_variable_get(:@thinking_time_ms) || (STARTING_BANK_SECONDS * 1000)
         player.instance_variable_set(:@thinking_time_ms, current_time + bonus_ms)
       end
-      warn "=== [TIMER RULES] === Awarded #{round_type.to_s.upcase} Round Start Bonus (+#{bonus_seconds}s) to all players."
+      # warn "=== [TIMER RULES] === Awarded #{round_type.to_s.upcase} Round Start Bonus (+#{bonus_seconds}s) to all players."
     end
 
     # Deprecated per-company hook since OR bonus is now distributed globally at round start

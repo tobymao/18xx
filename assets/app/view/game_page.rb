@@ -78,11 +78,11 @@ module View
       return @game.process_to_action(cursor) if game_id == @game&.id && cursor && cursor > @game.last_game_action_id
 
       load_game_with_class = lambda do
-        LOGGER.debug do
-          @_logger ||= {}
-          @_logger[:process] = Time.now
-          "Processing game actions, strict: #{strict}, use_engine_v2: #{use_engine_v2}..."
-        end
+        # LOGGER.debug do
+        #   @_logger ||= {}
+        #   @_logger[:process] = Time.now
+        #   "Processing game actions, strict: #{strict}, use_engine_v2: #{use_engine_v2}..."
+        # end
         @game = Engine::Game.load(
           @game_data,
           at_action: cursor,
@@ -90,9 +90,9 @@ module View
           strict: strict,
           use_engine_v2: use_engine_v2
         )
-        LOGGER.debug do
-          "Done processing game actions: #{Time.now - @_logger[:process]} seconds"
-        end
+        # LOGGER.debug do
+        #   "Done processing game actions: #{Time.now - @_logger[:process]} seconds"
+        # end
         store(:game, @game, skip: true)
       end
 

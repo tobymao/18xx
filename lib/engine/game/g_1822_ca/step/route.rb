@@ -78,7 +78,7 @@ module Engine
               @log << "#{entity.id} attaches the grain train to a #{@grain_train.name} train"
               attach_grain_train
             else
-              raise GameError, 'Unexpected value for @choosing when processing action "choose"'
+              # raise GameError, 'Unexpected value for @choosing when processing action "choose"'
             end
           end
 
