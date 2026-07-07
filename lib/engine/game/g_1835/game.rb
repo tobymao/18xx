@@ -460,6 +460,7 @@ module Engine
               if hex_by_id(other_hex_id).tile.color != :white
                 obb.close!
                 @log << "#{obb.name} closes because both target hexes have been built on."
+                @round.clear_cache!
               end
             end
 
@@ -468,6 +469,7 @@ module Engine
             if pb && !pb.closed? && action.hex.id == 'L6' && pb.all_abilities.none? { |a| a.type == :token }
               pb.close!
               @log << "#{pb.name} closes because its track has been laid and token power is spent."
+              @round.clear_cache!
             end
           end
 
@@ -523,6 +525,7 @@ module Engine
             if nf && !nf.closed? && action.city.hex.id == 'L14'
               nf.close!
               @log << "#{nf.name} closes because its special station marker has been placed."
+              @round.clear_cache!
             end
             pb = company_by_id('PB')
             if pb && !pb.closed? && pb.all_abilities.none? { |a| a.type == :token } && pb.all_abilities.none? do |a|
@@ -530,6 +533,7 @@ module Engine
                end
               pb.close!
               @log << "#{pb.name} closes as both special tile and token actions are complete."
+              @round.clear_cache!
             end
           end
         end
@@ -581,6 +585,13 @@ module Engine
             @log << "#{corporation.name} places a token on #{hex.name}"
             city.place_token(corporation, token, cheater: true)
           end
+        end
+
+        def graph_for(entity, type = nil)
+          return nil if entity.player?
+          return nil if entity.company? && !abilities(entity, :tile_lay) && !abilities(entity, :token)
+
+          super
         end
 
         def event_pr_can_form!
