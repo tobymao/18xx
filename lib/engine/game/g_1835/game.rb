@@ -519,6 +519,12 @@ module Engine
               end
             end
           when Action::PlaceToken
+
+            nf = company_by_id('NF')
+            if nf && !nf.closed? && action.city.hex.id == 'L14'
+              nf.close!
+              @log << "#{nf.name} closes because its special station marker has been placed."
+            end
             pb = company_by_id('PB')
             if pb && !pb.closed? && pb.all_abilities.none? { |a| a.type == :token } && pb.all_abilities.none? do |a|
                  a.type == :tile_lay
@@ -687,7 +693,15 @@ module Engine
       nil
     end
 
+    def simple_logo
+      nil
+    end
+
     def tokens_by_type(*)
+      []
+    end
+
+    def all_abilities
       []
     end
   end

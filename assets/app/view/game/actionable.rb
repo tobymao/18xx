@@ -78,8 +78,8 @@ module View
         elapsed_ms = click_timestamp - turn_start_ms
         action.time_consumed = elapsed_ms if elapsed_ms > 0
 
-        warn '=== [UI ACTION DISPATCH] ==='
-        warn "Action Class: #{action.class} | Payload: #{action.to_h}"
+        # warn '=== [UI ACTION DISPATCH] ==='
+        # warn "Action Class: #{action.class} | Payload: #{action.to_h}"
         if @game.exception
 
           msg = 'This game is broken and cannot accept any new actions. If '\
