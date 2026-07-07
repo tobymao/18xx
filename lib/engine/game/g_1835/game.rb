@@ -6,6 +6,7 @@ require_relative 'map'
 require_relative 'entities'
 require_relative 'share_pool'
 require_relative '../../round/operating'
+require_relative 'round/clemens_draft'
 require_relative '../cities_plus_towns_route_distance_str'
 
 module Engine
@@ -269,8 +270,7 @@ module Engine
 
         def init_round
           if @optional_rules&.include?(:clemens)
-            ensure_clemens_round_defined!
-            self.class::ClemensDraftRound.new(self, [G1835::Step::Draft])
+            G1835::Round::ClemensDraft.new(self, [G1835::Step::Draft])
           else
             G1835::Round::Draft.new(self, [G1835::Step::Draft])
           end
@@ -278,8 +278,7 @@ module Engine
 
         def new_draft_round
           if @optional_rules&.include?(:clemens)
-            ensure_clemens_round_defined!
-            self.class::ClemensDraftRound.new(self, [G1835::Step::Draft])
+            G1835::Round::ClemensDraft.new(self, [G1835::Step::Draft])    
           else
             G1835::Round::Draft.new(self, [G1835::Step::Draft])
           end
@@ -291,7 +290,7 @@ module Engine
           clear_programmed_actions
           @round =
             case @round
-            when G1835::Round::Draft
+            when G1835::Round::Draft, G1835::Round::ClemensDraft
               reorder_players
               new_operating_round(@draft_round_num)
             when G1835::Round::Operating
@@ -583,7 +582,6 @@ module Engine
             city.place_token(corporation, token, cheater: true)
           end
         end
-        # --- END FIX ---
 
         def event_pr_can_form!
           @log << "-- Event: #{EVENTS_TEXT['pr_can_form'][1]} --"
