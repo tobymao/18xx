@@ -87,13 +87,19 @@ class Game < Base
   # Cap how deep offset paging can go -- well past any real page count, but finite
   # so the cache key space can't be grown unbounded by arbitrary offsets.
   HOME_OFFSET_MAX = 10_000
+  # Logged-out visitors get a far shallower cap: no anonymous session browses
+  # hundreds of pages deep, and the small cap keeps the shared (user-less) cache
+  # key space tiny, so walking offsets collapses onto a few cached pages instead
+  # of an endless stream of distinct, uncached DB queries.
+  ANON_OFFSET_MAX = 10
 
   def self.home_games(user, **opts)
+    offset_max = user ? HOME_OFFSET_MAX : ANON_OFFSET_MAX
     offsets = {
       new_offset: opts['new'],
       active_offset: opts['active'],
       finished_offset: opts['finished'],
-    }.transform_values { |v| (v&.to_i || 0).clamp(0, HOME_OFFSET_MAX) }
+    }.transform_values { |v| (v&.to_i || 0).clamp(0, offset_max) }
 
     # Normalize titles to the valid, sorted set (an all-invalid request still
     # filters to nothing rather than falling back to every game).
