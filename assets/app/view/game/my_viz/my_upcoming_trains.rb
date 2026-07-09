@@ -24,27 +24,34 @@ module View
         rust_schedule = Hash.new { |h, k| h[k] = [] }
         obsolete_schedule = Hash.new { |h, k| h[k] = [] }
 
-        @depot.trains.group_by(&:name).each do |_name, trains|
-          first = trains.first
-          base_variant = first.variants.values.find { |v| !v[:ignore_rust_obsolete_schedule] }
-          next unless base_variant
+        begin
+          @depot.trains.group_by(&:name).each do |_name, trains|
+            first = trains.first
+            next unless first
 
-          base_rust = base_variant[:rusts_on]
-          base_obsolete = base_variant[:obsolete_on]
+            base_variant = first.variants.values.find { |v| !v[:ignore_rust_obsolete_schedule] }
+            next unless base_variant
 
-          first.variants.each do |name, train_variant|
-            next if train_variant[:ignore_rust_obsolete_schedule]
+            base_rust = base_variant[:rusts_on]
+            base_obsolete = base_variant[:obsolete_on]
 
-            train_variant[:rusts_on] ||= base_rust
-            train_variant[:obsolete_on] ||= base_obsolete
+            first.variants.each do |name, train_variant|
+              next if train_variant[:ignore_rust_obsolete_schedule]
 
-            Array(train_variant[:rusts_on]).each do |rusts_on|
-              rust_schedule[rusts_on].append(name) unless rust_schedule[rusts_on].include?(name)
-            end
-            Array(train_variant[:obsolete_on]).each do |obsolete_on|
-              obsolete_schedule[obsolete_on].append(name) unless obsolete_schedule[obsolete_on].include?(name)
+              train_variant[:rusts_on] ||= base_rust
+              train_variant[:obsolete_on] ||= base_obsolete
+
+              Array(train_variant[:rusts_on]).each do |rusts_on|
+                rust_schedule[rusts_on].append(name) unless rust_schedule[rusts_on].include?(name)
+              end
+              Array(train_variant[:obsolete_on]).each do |obsolete_on|
+                obsolete_schedule[obsolete_on].append(name) unless obsolete_schedule[obsolete_on].include?(name)
+              end
             end
           end
+        rescue NotImplementedError, StandardError
+          return h(:div, { style: { padding: '0.5rem', fontStyle: 'italic', color: '#666' } },
+                   'Train schedule unavailable (Game Finished)')
         end
 
         rows = @depot.trains.reject(&:reserved).group_by(&:sym).map do |sym, trains|

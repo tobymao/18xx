@@ -9,6 +9,7 @@ require 'view/game/stock_market'
 require 'view/game/tranches'
 require 'view/game/actionable'
 require 'lib/truncate'
+require 'lib/row_animation'
 require 'view/game/my_viz/my_bank'
 require 'view/game/my_viz/my_upcoming_trains'
 require 'view/game/my_viz/card_animation'
@@ -264,7 +265,7 @@ module View
         end
 
         treasury = []
-        treasury << h(:th, render_sort_link('Shares', :treasury)) if @game.separate_treasury?
+        treasury << h('th.column-zone-corporate', {}, render_sort_link('Shares', :treasury)) if @game.separate_treasury?
 
         extra = []
         if @game.respond_to?(:capitalization_type_desc)
@@ -272,13 +273,13 @@ module View
             @game.capitalization_type_desc(c)&.include?('Escrow')
           end
           header_label = @is_escrow_game ? 'Escrow' : 'Capitalization'
-          extra << h(:th, render_sort_link(header_label, :capitalization_type_desc))
+          extra << h('th.column-zone-corporate', {}, render_sort_link(header_label, :capitalization_type_desc))
         end
-        extra << h(:th, render_sort_link('Loans', :loans)) if @game.total_loans&.nonzero?
-        extra << h(:th, render_sort_link('Shorts', :shorts)) if @game.respond_to?(:available_shorts)
+        extra << h('th.column-zone-corporate', {}, render_sort_link('Loans', :loans)) if @game.total_loans&.nonzero?
+        extra << h('th.column-zone-corporate', {}, render_sort_link('Shorts', :shorts)) if @game.respond_to?(:available_shorts)
 
         if (@diff_corp_sizes = @game.all_corporations.any? { |c| @game.corporation_size(c) != :small })
-          extra << h(:th, render_sort_link('Size', :corp_size))
+          extra << h('th.column-zone-corporate', {}, render_sort_link('Size', :corp_size))
         end
         @extra_size = extra.size
 
@@ -313,7 +314,6 @@ module View
           props[:style][:color] = '#000000'
           is_last = idx == @game.players.size - 1
 
-          # Restored full original player name strings
           header_content = []
           header_content.concat(render_sort_link(p.name, p.id))
 
@@ -328,22 +328,20 @@ module View
                                     fill: COLOR_CASH,
                                   },
                                 }, [
-               h(:rect, attrs: { x: '0', y: '2', width: '6', height: '1' }),     # Roof overhang
-               h(:rect, attrs: { x: '1', y: '3', width: '4', height: '7' }),     # Driver's cab
-               h(:rect, attrs: { x: '11', y: '1', width: '2', height: '4' }),    # Smokestack funnel
-               h(:rect, attrs: { x: '4', y: '5', width: '10', height: '5' }),    # Boiler tank
-               h(:rect, attrs: { x: '1', y: '10', width: '14', height: '2' }),   # Chassis bed
-               h(:polygon, attrs: { points: '14,10 16,12 14,12' }),              # Cowcatcher wedge
-               h(:circle, attrs: { cx: '3.5', cy: '13.5', r: '1.5' }),           # Wheel 1
-               h(:circle, attrs: { cx: '8.5', cy: '13.5', r: '1.5' }),           # Wheel 2
-               h(:circle, attrs: { cx: '12.5', cy: '13.5', r: '1.5' }), # Wheel 3
+               h(:rect, attrs: { x: '0', y: '2', width: '6', height: '1' }),
+               h(:rect, attrs: { x: '1', y: '3', width: '4', height: '7' }),
+               h(:rect, attrs: { x: '11', y: '1', width: '2', height: '4' }),
+               h(:rect, attrs: { x: '4', y: '5', width: '10', height: '5' }),
+               h(:rect, attrs: { x: '1', y: '10', width: '14', height: '2' }),
+               h(:polygon, attrs: { points: '14,10 16,12 14,12' }),
+               h(:circle, attrs: { cx: '3.5', cy: '13.5', r: '1.5' }),
+               h(:circle, attrs: { cx: '8.5', cy: '13.5', r: '1.5' }),
+               h(:circle, attrs: { cx: '12.5', cy: '13.5', r: '1.5' }),
              ])
           end
 
           players_subtitles << h("th.name.nowrap#{is_last ? '.thick-right' : ''}", props, header_content)
         end
-
-        bank_sub_th_props = { style: { backgroundColor: COLOR_INACTIVE } }
 
         pool_subtitles = [
            h('th.column-zone-market', { attrs: { class: 'column-zone-market' }, style: { color: '#000000' } },
@@ -357,22 +355,17 @@ module View
           h('th.thick-right.column-zone-market', { attrs: { class: 'column-zone-market' }, style: { color: '#000000' } },
             render_sort_link('Price', :par_price)),
         ]
+
         corporation_subtitles = [
           h('th.column-zone-corporate', {}, render_sort_link('Treasury', :cash)),
-          *treasury.map do |t|
-            t[:attrs][:class] = 'column-zone-corporate'
-            t
-          end,
+          *treasury,
           h('th.column-zone-corporate', {}, render_sort_link('Last Run', :prev_revenue)),
           h('th.column-zone-corporate', {}, render_sort_link('Trains', :trains)),
           h('th.column-zone-corporate', {}, render_sort_link('Tokens', :tokens)),
-          *extra.map do |e|
-            e[:attrs][:class] = 'column-zone-corporate'
-            e
-          end,
+          *extra,
         ]
-        corporation_subtitles << h(:th, render_sort_link('Privates', :companies)) if @show_privates
 
+        corporation_subtitles << h('th.column-zone-corporate', {}, render_sort_link('Privates', :companies)) if @show_privates
         titles = [
           players_title,
           pool_title,
@@ -500,6 +493,10 @@ module View
 
         tr_props = tr_default_props(is_active_row)
         tr_props[:attrs] ||= {}
+
+        # Attach DOM tracking and the FLIP animation hooks
+        tr_props[:key] = corporation.id
+        tr_props[:hook] = Lib::RowAnimation.hook(corporation.id)
 
         row_classes = []
 
@@ -1281,20 +1278,28 @@ module View
 
         dots = []
         loans_taken.times do
-          dots << h(:span, {
-                      attrs: { class: 'token-bond' },
-                      style: { margin: '0 2px', verticalAlign: 'middle' },
-                    })
-        end
-
-        [max_loans - loans_taken, 0].max.times do
-          dots << h(:span, {
+          dots << h(:span,
+                    {
                       style: {
                         display: 'inline-block',
-                        width: '12px',
-                        height: '12px',
-                        border: '1px solid #b91c1c',
-                        borderRadius: '2px',
+                        width: '8px',
+                        height: '8px',
+                        backgroundColor: '#dc3545',
+                        borderRadius: '50%',
+                        margin: '0 2px',
+                        verticalAlign: 'middle',
+                      },
+                    })
+        end
+        [max_loans - loans_taken, 0].max.times do
+          dots << h(:span,
+                    {
+                      style: {
+                        display: 'inline-block',
+                        width: '8px',
+                        height: '8px',
+                        border: '1px solid #dc3545',
+                        borderRadius: '50%',
                         margin: '0 2px',
                         verticalAlign: 'middle',
                         boxSizing: 'border-box',

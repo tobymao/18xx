@@ -421,19 +421,24 @@ module View
     def render_round
       description = @game_data['mode'] == :hotseat ? '[HOTSEAT] ' : ''
       description += "#{@game.class.display_title}: "
-      name = @round ? @round.class.name.split(':').last : 'Setup'
-      name = @round.class.name.split(':').last
-      description += @game.round_description(name)
-      round_desc = begin
-        @round&.description
-      rescue StandardError
-        name
-      end
-      description += @game.finished ? ' - Game Over' : " - #{round_desc}"
 
-      if @game.manually_ended
+      if @game.respond_to?(:finished) && @game.finished
+        description += 'Game Over'
+      else
+        name = @round ? @round.class.name.split(':').last : 'Setup'
+        name = @round.class.name.split(':').last
+        description += @game.round_description(name)
+        round_desc = begin
+          @round&.description
+        rescue Exception
+          name
+        end
+        description += " - #{round_desc}"
+      end
+
+      if @game.respond_to?(:manually_ended) && @game.manually_ended
         description += ' - manually ended'
-      elsif (game_end = @game.game_ending_description)
+      elsif @game.respond_to?(:game_ending_description) && (game_end = @game.game_ending_description)
         description += " - #{game_end}"
       end
 
