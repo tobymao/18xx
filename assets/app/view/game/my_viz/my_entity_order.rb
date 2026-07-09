@@ -12,6 +12,11 @@ module View
       include Lib::Settings
 
       def render
+        if @game.respond_to?(:finished?) && @game.finished?
+          return h(:div,
+                   { style: { display: 'flex', alignItems: 'center', padding: '0.5rem', fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif', fontWeight: 'bold', fontSize: '1.5rem', color: '#dc3545' } }, 'Game Over / Match Finished')
+        end
+
         is_or = @round.respond_to?(:operating?) && @round.operating?
 
         # Fractional round numbering format (e.g., OR 1/2) derived from the game engine state

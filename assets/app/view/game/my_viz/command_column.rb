@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'view/game/actionable'
+require 'view/game/results_overlay'
 
 module View
   module Game
@@ -27,25 +28,16 @@ module View
           store(:routes, @routes, skip: true)
         end
 
-        router_callback = lambda do
-          router = Engine::AutoRouter.new(@game, ->(_msg) {})
-          router.compute(
-            current_entity,
-            routes: @routes.reject { |r| r.respond_to?(:paths) && r.paths.empty? },
-            path_timeout: 3000,
-            route_timeout: 3000,
-            callback: lambda do |computed_routes|
-              store(:routes, computed_routes)
-            end
-          )
-        rescue StandardError => e
-          `console.warn('AutoRouter skipped layout matching: ' + e)`
-        end
-
-        `setTimeout(#{router_callback}, 10);`
-
         # Ask the Round instead of the Step to capture global actions like take_loan
-        actions = current_entity ? @game.round.actions_for(current_entity) : []
+        actions = if current_entity && @game.round.respond_to?(:actions_for)
+                    begin
+                      @game.round.actions_for(current_entity)
+                    rescue NotImplementedError, StandardError
+                      []
+                    end
+                  else
+                    []
+                  end
 
         # # puts '--- DEBUG ACTIONS ---'
         # puts "Entity ID: #{current_entity&.id}"
@@ -59,6 +51,8 @@ module View
         elsif actions.include?('run_routes') then phase = :run_routes
         elsif actions.include?('dividend') || actions.include?('payout') || actions.include?('withhold') || actions.include?('half') || actions.include?('split') then phase = :dividend
         elsif actions.include?('buy_train') then phase = :buy_train
+        elsif actions.include?('merge')
+          phase = step && step.class.name.split('::').last == 'Acquire' ? :acquisition : :merge
         end
 
         company_logo = current_entity&.id || 'N/A'
@@ -214,20 +208,35 @@ module View
 
         buyable_list = phase == :buy_train ? render_buyable_trains(step, current_entity) : h(:div)
         upper_content << h(:div, { style: { marginBottom: '0.4rem' } }, [
-render_phase_box('Buy Trains', phase == :buy_train, ['Done Buying'], actions, current_entity, buyable_list, bg_color, text_color),
+          render_phase_box('Buy Trains', phase == :buy_train, ['Done Buying'], actions, current_entity, buyable_list, bg_color, text_color),
         ])
 
         buyable_company_list = actions.include?('buy_company') ? render_buyable_companies(step, current_entity) : h(:div)
         if actions.include?('buy_company')
           upper_content << h(:div, { style: { marginBottom: '0.4rem' } }, [
-render_phase_box('Buy Private Company', true, actions.include?('pass') ? ['Skip'] : [], actions, current_entity, buyable_company_list, bg_color, text_color),
+          render_phase_box('Buy Private Company', true, actions.include?('pass') ? ['Skip'] : [], actions, current_entity, buyable_company_list, bg_color, text_color),
+          ])
+        end
+
+        if phase == :merge
+          merge_list = render_mergeable_companies(step, current_entity)
+          upper_content << h(:div, { style: { marginBottom: '0.4rem' } }, [
+            render_phase_box('Merge', true, actions.include?('pass') ? ['Skip'] : [], actions, current_entity, merge_list, bg_color, text_color),
+          ])
+        elsif phase == :acquisition
+          acquire_list = render_acquirable_companies(step, current_entity)
+          target = step.respond_to?(:auctioning_corporation) ? step.auctioning_corporation : nil
+          target_name = target ? " #{target.name}" : ''
+          upper_content << h(:div, { style: { marginBottom: '0.4rem' } }, [
+            render_phase_box("Acquire#{target_name}", true, actions.include?('pass') ? ['Skip'] : [], actions, current_entity, acquire_list, bg_color, text_color),
           ])
         end
 
         upper_content << h(Abilities)
 
         standard_actions = %w[lay_tile place_token run_routes dividend payout withhold half split
-                              buy_train pass buy_company]
+                              buy_train pass buy_company merge]
+
         system_actions = %w[end_game bankrupt]
         special_actions = actions - standard_actions - system_actions
 
@@ -284,6 +293,18 @@ render_phase_box('Buy Private Company', true, actions.include?('pass') ? ['Skip'
                         '5. Special Actions'),
                       *special_buttons,
                               ])
+        end
+
+        if @game.round.respond_to?(:stock?) && @game.round.stock?
+          upper_content = [
+            h(:div,
+              { style: { padding: '2rem', textAlign: 'center', fontSize: '1.2rem', fontWeight: 'bold', textTransform: 'uppercase' } }, 'Stock Round'),
+          ]
+        elsif @game.round.class.name.include?('Draft')
+          upper_content = [
+            h(:div,
+              { style: { padding: '2rem', textAlign: 'center', fontSize: '1.2rem', fontWeight: 'bold', textTransform: 'uppercase' } }, 'Draft Round'),
+          ]
         end
 
         if @game.round.stock?
@@ -606,6 +627,87 @@ render_phase_box('Buy Private Company', true, actions.include?('pass') ? ['Skip'
 
         h(:div,
           { style: { display: 'flex', flexDirection: 'column', width: '100%', padding: '0.2rem 0', boxSizing: 'border-box' } }, company_boxes)
+      end
+
+      def render_mergeable_companies(step, current_entity)
+        return h(:div) unless step.respond_to?(:mergeable)
+
+        targets = step.mergeable(current_entity).select { |c| c.owner == current_entity.owner }
+
+        if targets.empty?
+          return h(:div, { style: { fontSize: '0.75rem', color: '#666', fontStyle: 'italic', padding: '0.2rem' } },
+                   'No valid companies to merge with')
+        end
+
+        target_boxes = targets.map do |target|
+          merge_handler = lambda do
+            process_action(Engine::Action::Merge.new(
+              current_entity,
+              corporation: target
+            ))
+          end
+
+          h(:button, {
+              style: {
+                display: 'block',
+                width: '100%',
+                marginBottom: '0.2rem',
+                cursor: 'pointer',
+                fontSize: '0.8rem',
+                fontWeight: 'bold',
+                padding: '0.3rem',
+                backgroundColor: target.color || '#e0e0e0',
+                color: target.text_color || '#000000',
+                border: '1px solid #333',
+                borderRadius: '3px',
+              },
+              on: { click: merge_handler },
+            }, "Merge with #{target.name}")
+        end
+
+        h(:div,
+          { style: { display: 'flex', flexDirection: 'column', width: '100%', padding: '0.2rem 0', boxSizing: 'border-box' } }, target_boxes)
+      end
+
+      def render_acquirable_companies(step, current_entity)
+        target = step.respond_to?(:auctioning_corporation) ? step.auctioning_corporation : nil
+        return h(:div) unless target
+
+        buyers = step.respond_to?(:mergeable) ? step.mergeable(target) : []
+
+        if buyers.empty?
+          return h(:div, { style: { fontSize: '0.75rem', color: '#666', fontStyle: 'italic', padding: '0.2rem' } },
+                   'No eligible companies to acquire with')
+        end
+
+        target_boxes = buyers.map do |buyer|
+          acquire_handler = lambda do
+            process_action(Engine::Action::Merge.new(
+              current_entity,
+              corporation: buyer
+            ))
+          end
+
+          h(:button, {
+              style: {
+                display: 'block',
+                width: '100%',
+                marginBottom: '0.2rem',
+                cursor: 'pointer',
+                fontSize: '0.8rem',
+                fontWeight: 'bold',
+                padding: '0.3rem',
+                backgroundColor: buyer.color || '#e0e0e0',
+                color: buyer.text_color || '#000000',
+                border: '1px solid #333',
+                borderRadius: '3px',
+              },
+              on: { click: acquire_handler },
+            }, "Buy with #{buyer.name}")
+        end
+
+        h(:div,
+          { style: { display: 'flex', flexDirection: 'column', width: '100%', padding: '0.2rem 0', boxSizing: 'border-box' } }, target_boxes)
       end
 
       def render_buyable_trains(step, current_entity)

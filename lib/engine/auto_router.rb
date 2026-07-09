@@ -90,7 +90,7 @@ module Engine
           path_walk_timed_out = true
           break
         else
-          LOGGER.debug { "Path search: #{nodes.index(node)} / #{nodes.size} - paths starting from #{node.hex.name}" }
+          # LOGGER.debug { "Path search: #{nodes.index(node)} / #{nodes.size} - paths starting from #{node.hex.name}" }
         end
 
         walk_corporation = graph.no_blocking? ? nil : corporation
@@ -190,11 +190,11 @@ module Engine
         end
       end
 
-      # Check that there are no duplicate hexside bits (algorithm error)
-      LOGGER.debug do
-        "Evaluated #{connections.size} paths, found #{@next_hexside_bit} unique hexsides, and found valid routes "\
-          "#{train_routes.map { |k, v| k.name + ':' + v.size.to_s }.join(', ')} in: #{Time.now - now}"
-      end
+      # # Check that there are no duplicate hexside bits (algorithm error)
+      # LOGGER.debug do
+      #   "Evaluated #{connections.size} paths, found #{@next_hexside_bit} unique hexsides, and found valid routes "\
+      #     "#{train_routes.map { |k, v| k.name + ':' + v.size.to_s }.join(', ')} in: #{Time.now - now}"
+      # end
 
       static.each do |route|
         # recompute bitfields of passed-in routes since the bits may have changed across auto-router runs
