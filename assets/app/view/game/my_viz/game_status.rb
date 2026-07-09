@@ -997,7 +997,8 @@ module View
                   h('td.padded_number.column-zone-market.money-value', {}, clean_par_price),
                 ]
 
-        train_buyable_step = step&.current_actions&.include?('buy_train')
+       train_buyable_step = step&.current_actions&.include?('buy_train')
+        train_discardable_step = step&.current_actions&.include?('discard_train')
 
         train_cards = corporation.trains.map do |t|
           card_classes = ['game-card']
@@ -1116,6 +1117,16 @@ module View
                   }, 'Cancel'),
               ])
             end
+          elsif train_discardable_step && active_entity == corporation
+            card_classes << 'action-sell'
+            card_classes << 'clickable'
+
+            train_click_handler = lambda {
+              process_action(Engine::Action::DiscardTrain.new(
+                active_entity,
+                train: t
+              ))
+            }
           end
 
           card_props = { attrs: { class: card_classes.join(' ') } }
@@ -1340,17 +1351,19 @@ module View
 
           not_own_company = active_ent && entity != active_ent
 
-          if company_buyable_step && not_own_company && step.respond_to?(:can_buy_company?) &&
-                         step.can_buy_company?(active_ent, c) && (!active_ent.corporation? || c.owner == active_ent.owner)
+         if company_buyable_step && not_own_company && step.respond_to?(:can_buy_company?) && step.can_buy_company?(active_ent, c)
             card_classes << 'action-buy'
             card_classes << 'clickable'
+
+            min_price = c.respond_to?(:min_price) ? c.min_price : 0
+            max_price = c.respond_to?(:max_price) ? c.max_price : (active_ent.respond_to?(:cash) ? active_ent.cash : 9999)
 
             menu_storage_key = "buy_company_menu_#{entity.id}_#{c.id}"
             price_storage_key = "buy_company_price_#{entity.id}_#{c.id}"
 
             company_click_handler = lambda {
               Lib::Storage[menu_storage_key] = true
-              Lib::Storage[price_storage_key] = c.respond_to?(:value) ? c.value : 1
+              Lib::Storage[price_storage_key] = min_price > 0 ? min_price : (c.respond_to?(:value) ? c.value : 1)
               update
             }
 
@@ -1359,6 +1372,8 @@ module View
 
               confirm_handler = lambda {
                 price_value = Lib::Storage[price_storage_key].to_i
+                price_value = min_price if price_value < min_price
+                price_value = max_price if price_value > max_price
 
                 Lib::Storage[menu_storage_key] = nil
                 Lib::Storage[price_storage_key] = nil
@@ -1380,33 +1395,36 @@ module View
 
               menu_dropdown = h(:div, {
                                   style: {
-                                    position: 'absolute',
-                                    top: '105%',
+                                    position: 'fixed',
+                                    top: '50%',
                                     left: '50%',
-                                    transform: 'translateX(-50%)',
+                                    transform: 'translate(-50%, -50%)',
                                     backgroundColor: '#ffffff',
                                     border: '2px solid #333333',
-                                    borderRadius: '4px',
-                                    padding: '0.5rem',
-                                    zIndex: '9999',
-                                    boxShadow: '0px 4px 10px rgba(0,0,0,0.3)',
+                                    borderRadius: '8px',
+                                    padding: '1.5rem',
+                                    zIndex: '10000',
+                                    boxShadow: '0px 10px 30px rgba(0,0,0,0.5)',
+                                    color: '#000000',
+                                    minWidth: '250px',
+                                    textAlign: 'center',
                                   },
                                 }, [
                 h(:div,
-                  { style: { fontSize: '0.75rem', fontWeight: 'bold', marginBottom: '0.4rem', color: '#333', whiteSpace: 'nowrap' } }, menu_title),
+                  { style: { fontSize: '0.85rem', fontWeight: 'bold', marginBottom: '0.8rem', color: '#333', whiteSpace: 'normal' } }, menu_title),
                 h(:input, {
                     style: {
                       display: 'block',
                       width: '100%',
-                      marginBottom: '0.4rem',
+                      marginBottom: '0.8rem',
                       boxSizing: 'border-box',
-                      padding: '3px 6px',
-                      fontSize: '0.85rem',
+                      padding: '5px 8px',
+                      fontSize: '1rem',
                     },
                     attrs: {
                       type: 'number',
-                      min: c.respond_to?(:min_price) ? c.min_price.to_s : '0',
-                      max: c.respond_to?(:max_price) ? c.max_price.to_s : '9999',
+                      min: min_price.to_s,
+                      max: max_price.to_s,
                       value: Lib::Storage[price_storage_key] || (c.respond_to?(:value) ? c.value : 1).to_s,
                     },
                     on: {
