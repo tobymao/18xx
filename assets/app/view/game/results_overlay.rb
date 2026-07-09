@@ -7,8 +7,8 @@ module View
 
       def render
         sorted_players = @game.players.sort_by do |p|
-          if @game.respond_to?(:result) && @game.result
-            @game.result[p] || 0
+if @game.respond_to?(:result) && @game.result && @game.result[p]
+            @game.result[p]
           else
             (@game.respond_to?(:player_value) ? @game.player_value(p) : p.cash)
           end
@@ -23,8 +23,8 @@ module View
 
         revealed_players.each_with_index do |player, idx|
           place = total_players - reveal_index + idx + 1
-          val = if @game.respond_to?(:result) && @game.result
-                  @game.result[player] || 0
+val = if @game.respond_to?(:result) && @game.result && @game.result[player]
+                  @game.result[player]
                 else
                   (@game.respond_to?(:player_value) ? @game.player_value(player) : player.cash)
                 end
@@ -71,8 +71,9 @@ module View
                           on: { click: reveal_handler },
                         }, "Reveal #{place_str}")
         else
-          close_handler = lambda do
+close_handler = lambda do
             Lib::Storage['show_results_overlay'] = false
+            Lib::Storage['results_reveal_index'] = 0
             update
           end
           children << h(:button, {
