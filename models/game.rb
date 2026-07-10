@@ -216,7 +216,7 @@ class Game < Base
       round: round,
       acting: acting.to_a,
       result: result.to_h,
-      thinking_times: player_thinking_times,
+      thinking_times: (include_actions ? player_thinking_times : {}),
       last_action_at: display_last_action_at, # Output the anchored timestamp here
       actions: actions_h(include_actions: include_actions, logged_in_user_id: logged_in_user_id, admin: admin),
       loaded: include_actions,

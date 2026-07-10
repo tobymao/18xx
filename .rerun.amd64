@@ -1,1 +1,2 @@
 --force-polling
+--ignore "db/*,node_modules/*,desktop-shell/node_modules/*,public/assets/*"
