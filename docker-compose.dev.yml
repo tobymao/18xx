@@ -28,14 +28,13 @@ services:
     <<: *rack
     command: bundle exec ruby queue.rb
 
-  db:
-    platform: linux/amd64
-    environment:
-      POSTGRES_USER: root
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: 18xx_development
-    build:
-      dockerfile: ${DEV_DOCKERFILE:-Dockerfile}
+db:
+environment:
+POSTGRES_USER: root
+POSTGRES_PASSWORD: password
+POSTGRES_DB: 18xx_development
+build:
+dockerfile: ${DEV_DOCKERFILE:-Dockerfile}
 
 # NEW: Explicitly define the shared data volumes at the bottom of the file
 volumes:
