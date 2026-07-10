@@ -7,7 +7,13 @@ RUN git config --global --add safe.directory /18xx
 
 RUN if [ "$RACK_ENV" = "development" ]; \
     then \
-      curl -s https://registry.npmjs.org/esbuild-linux-64/-/esbuild-linux-64-0.14.36.tgz | tar xz; \
+      ARCH=$(uname -m); \
+      if [ "$ARCH" = "aarch64" ]; then \
+        ESBUILD_PKG="esbuild-linux-arm64"; \
+      else \
+        ESBUILD_PKG="esbuild-linux-64"; \
+      fi; \
+      curl -s https://registry.npmjs.org/${ESBUILD_PKG}/-/${ESBUILD_PKG}-0.14.36.tgz | tar xz; \
       mv package/bin/esbuild /usr/local/bin && rm -rf package; \
     fi;
 
