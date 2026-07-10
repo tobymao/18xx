@@ -52,7 +52,7 @@ module View
         elsif actions.include?('run_routes') then phase = :run_routes
         elsif actions.include?('dividend') || actions.include?('payout') || actions.include?('withhold') || actions.include?('half') || actions.include?('split') then phase = :dividend
         elsif actions.include?('buy_train') then phase = :buy_train
-          elsif actions.include?('discard_train') then phase = :discard_train
+        elsif actions.include?('discard_train') then phase = :discard_train
         elsif actions.include?('merge')
           phase = step && step.class.name.split('::').last == 'Acquire' ? :acquisition : :merge
         end
@@ -71,16 +71,14 @@ module View
         end
 
         base_revenue = 0
-            if active_routes.any? && !@cmd_router_running
-              active_routes.each do |r|
-                begin
-                  base_revenue += r.revenue if r.chains.any?
-                rescue Engine::GameError, StandardError
-                  # Suppress evaluation crashes while the graph is computing
-                end
-              end
-            end
-            if phase == :dividend && base_revenue == 0 && current_entity&.respond_to?(:operating_history)
+        if active_routes.any? && !@cmd_router_running
+          active_routes.each do |r|
+            base_revenue += r.revenue if r.chains.any?
+          rescue Engine::GameError, StandardError
+            # Suppress evaluation crashes while the graph is computing
+          end
+        end
+        if phase == :dividend && base_revenue == 0 && current_entity&.respond_to?(:operating_history)
           operating = current_entity.operating_history || {}
           base_revenue = (operating[operating.keys.max]&.revenue || 0).to_i
         end
@@ -122,109 +120,113 @@ module View
 
           upper_content << h(ResultsOverlay, game: @game) if Lib::Storage['show_results_overlay']
         else
-if !@game.round.operating?
+          if !@game.round.operating?
             round_name_str = @game.round.class.respond_to?(:round_name) ? @game.round.class.round_name : @game.round.class.name.split('::').last
             upper_content << h(:div, { style: { padding: '3rem 1rem', textAlign: 'center', color: '#333' } }, [
-              h(:div, { style: { fontSize: '1.5rem', fontWeight: 'bold', textTransform: 'uppercase' } }, "#{round_name_str} Round"),
-              h(:div, { style: { fontSize: '1.2rem', marginTop: '0.5rem', fontWeight: 'normal' } }, current_entity&.name || '')
+              h(:div, { style: { fontSize: '1.5rem', fontWeight: 'bold', textTransform: 'uppercase' } },
+                "#{round_name_str} Round"),
+              h(:div, { style: { fontSize: '1.2rem', marginTop: '0.5rem', fontWeight: 'normal' } },
+                current_entity&.name || ''),
             ])
           else
             if current_entity
               logo_src = begin
-              setting_for(:simple_logos, @game) ? current_entity.simple_logo : current_entity.logo
-            rescue StandardError
-              nil
+                setting_for(:simple_logos, @game) ? current_entity.simple_logo : current_entity.logo
+              rescue StandardError
+                nil
+              end
+
+              header_elements = []
+
+              header_elements << h(:div, { style: { fontSize: '4rem' } }, company_logo)
+              if player_name && !player_name.empty?
+                header_elements << h(:div, { style: { fontSize: '2.5rem' } },
+                                     player_name)
+              end
+
+              header_elements << h(:div, { style: { fontSize: '0.8rem', textTransform: 'uppercase', marginTop: '1px' } },
+                                   phase.to_s.tr('_', ' '))
+
+              upper_content << h(:div,
+                                 { style: { backgroundColor: bg_color, color: text_color, padding: '0.2rem', textAlign: 'center', fontWeight: 'bold', border: '1px solid #999', marginBottom: '0.2rem', fontSize: '0.75rem' } }, header_elements)
             end
 
-            header_elements = []
+            mauve_box_children = [
+               h(:div, { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #b886b8', paddingBottom: '0.2rem' } }, [
+                 h(:div, { style: { fontSize: '0.8rem', fontWeight: 'bold' } }, 'Cash'),
+                 h(:div, { style: { fontSize: '1.2rem', fontWeight: 'bold' } }, treasury.to_s),
+               ]),
+               h(:div, { style: { textAlign: 'center' } }, [
+                 h(:div, { style: { fontSize: '0.75rem', fontWeight: 'bold', marginBottom: '2px' } }, 'Owned Trains'),
+                 render_owned_trains(current_entity, phase),
+               ]),
+               h(:div, { style: { textAlign: 'center' } }, [
+                 h(:div, { style: { fontSize: '0.75rem', fontWeight: 'bold', marginBottom: '2px' } }, 'Tokens'),
+                 render_company_tokens(current_entity),
+               ]),
+            ]
 
-            header_elements << h(:div, { style: { fontSize: '4rem' } }, company_logo)
-            header_elements << h(:div, { style: { fontSize: '2.5rem' } }, player_name) if player_name && !player_name.empty?
+            if @game.respond_to?(:total_loans) && @game.total_loans&.nonzero?
+              mauve_box_children << h(:div, { style: { textAlign: 'center' } }, [
+                h(:div, { style: { fontSize: '0.75rem', fontWeight: 'bold', marginBottom: '2px' } }, 'Loans'),
+                render_loan_dots(current_entity),
+              ])
+            end
 
-            header_elements << h(:div, { style: { fontSize: '0.8rem', textTransform: 'uppercase', marginTop: '1px' } },
-                                 phase.to_s.tr('_', ' '))
-
-            upper_content << h(:div,
-                               { style: { backgroundColor: bg_color, color: text_color, padding: '0.2rem', textAlign: 'center', fontWeight: 'bold', border: '1px solid #999', marginBottom: '0.2rem', fontSize: '0.75rem' } }, header_elements)
-          end
-
-          mauve_box_children = [
-             h(:div, { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #b886b8', paddingBottom: '0.2rem' } }, [
-               h(:div, { style: { fontSize: '0.8rem', fontWeight: 'bold' } }, 'Cash'),
-               h(:div, { style: { fontSize: '1.2rem', fontWeight: 'bold' } }, treasury.to_s),
-             ]),
-             h(:div, { style: { textAlign: 'center' } }, [
-               h(:div, { style: { fontSize: '0.75rem', fontWeight: 'bold', marginBottom: '2px' } }, 'Owned Trains'),
-               render_owned_trains(current_entity, phase),
-             ]),
-             h(:div, { style: { textAlign: 'center' } }, [
-               h(:div, { style: { fontSize: '0.75rem', fontWeight: 'bold', marginBottom: '2px' } }, 'Tokens'),
-               render_company_tokens(current_entity),
-             ]),
-          ]
-
-          if @game.respond_to?(:total_loans) && @game.total_loans&.nonzero?
-            mauve_box_children << h(:div, { style: { textAlign: 'center' } }, [
-              h(:div, { style: { fontSize: '0.75rem', fontWeight: 'bold', marginBottom: '2px' } }, 'Loans'),
-              render_loan_dots(current_entity),
-            ])
-          end
-
-          if current_entity
-            upper_content << h(:div,
-                               { style: { border: '1px solid #999', borderTop: "4px solid #{bg_color}", padding: '0.4rem', marginBottom: '0.4rem', backgroundColor: '#dda0dd', borderRadius: '4px', display: 'flex', flexDirection: 'column', gap: '0.4rem', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' } }, mauve_box_children)
-          end
-
+            if current_entity
+              upper_content << h(:div,
+                                 { style: { border: '1px solid #999', borderTop: "4px solid #{bg_color}", padding: '0.4rem', marginBottom: '0.4rem', backgroundColor: '#dda0dd', borderRadius: '4px', display: 'flex', flexDirection: 'column', gap: '0.4rem', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' } }, mauve_box_children)
+            end
 
             upper_content << h(:div, { style: { marginBottom: '0.4rem' } }, [
               render_phase_box('Place Token', phase == :place_token, ['Skip'], actions, current_entity, nil, bg_color, text_color),
             ])
 
-  revenue_overlay = if %i[run_routes dividend].include?(phase)
-                            if @cmd_router_running
-                              h(:div, { style: { padding: '0.5rem', textAlign: 'center', color: '#666', fontStyle: 'italic', fontSize: '0.85rem' } }, 
-                                '🔄 Computing optimal network tracks...')
-                            else
-                              h(:div, { style: { display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', margin: '0.3rem 0' } }, [
-                                h(:button, {
-                                    style: {
-                                      padding: '0.1rem 0.4rem',
-                                      fontSize: '1.1rem',
-                                      fontWeight: 'bold',
-                                      cursor: 'pointer',
-                                      backgroundColor: '#e0e0e0',
-                                      border: '1px solid #999',
-                                      borderRadius: '3px',
-                                    },
-                                    on: {
-                                      click: lambda {
-                                               Lib::Storage[storage_key] = [current_revenue - 10, 0].max
-                                               update
-                                             },
-                                    },
-                                  }, '-'),
-                                h(:div, { style: { fontSize: '1.8rem', fontWeight: 'bold', color: 'green', minWidth: '4rem', textAlign: 'center' } },
-                                  formatted_revenue),
-                                h(:button, {
-                                    style: {
-                                      padding: '0.1rem 0.4rem',
-                                      fontSize: '1.1rem',
-                                      fontWeight: 'bold',
-                                      cursor: 'pointer',
-                                      backgroundColor: '#e0e0e0',
-                                      border: '1px solid #999',
-                                      borderRadius: '3px',
-                                    },
-                                    on: {
-                                      click: lambda {
-                                               Lib::Storage[storage_key] = current_revenue + 10
-                                               update
-                                             },
-                                    },
-                                  }, '+'),
-                              ])
-                            end
-                          end
+            revenue_overlay = if %i[run_routes dividend].include?(phase)
+                                if @cmd_router_running
+                                  h(:div, { style: { padding: '0.5rem', textAlign: 'center', color: '#666', fontStyle: 'italic', fontSize: '0.85rem' } },
+                                    '🔄 Computing optimal network tracks...')
+                                else
+                                  h(:div, { style: { display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', margin: '0.3rem 0' } }, [
+                                    h(:button, {
+                                        style: {
+                                          padding: '0.1rem 0.4rem',
+                                          fontSize: '1.1rem',
+                                          fontWeight: 'bold',
+                                          cursor: 'pointer',
+                                          backgroundColor: '#e0e0e0',
+                                          border: '1px solid #999',
+                                          borderRadius: '3px',
+                                        },
+                                        on: {
+                                          click: lambda {
+                                                   Lib::Storage[storage_key] = [current_revenue - 10, 0].max
+                                                   update
+                                                 },
+                                        },
+                                      }, '-'),
+                                    h(:div, { style: { fontSize: '1.8rem', fontWeight: 'bold', color: 'green', minWidth: '4rem', textAlign: 'center' } },
+                                      formatted_revenue),
+                                    h(:button, {
+                                        style: {
+                                          padding: '0.1rem 0.4rem',
+                                          fontSize: '1.1rem',
+                                          fontWeight: 'bold',
+                                          cursor: 'pointer',
+                                          backgroundColor: '#e0e0e0',
+                                          border: '1px solid #999',
+                                          borderRadius: '3px',
+                                        },
+                                        on: {
+                                          click: lambda {
+                                                   Lib::Storage[storage_key] = current_revenue + 10
+                                                   update
+                                                 },
+                                        },
+                                      }, '+'),
+                                  ])
+                                end
+                              end
 
             if phase == :run_routes
               upper_content << render_phase_box('Run Routes', true, ["Submit #{formatted_revenue}"], actions, current_entity,
@@ -254,7 +256,8 @@ if !@game.round.operating?
               end
               div_buttons << 'Split' if actions.include?('half') || options.include?('half') || actions.include?('dividend')
 
-              upper_content << render_phase_box('Revenue', false, div_buttons, actions, current_entity, nil, bg_color, text_color)
+              upper_content << render_phase_box('Revenue', false, div_buttons, actions, current_entity, nil, bg_color,
+                                                text_color)
             end
 
             buyable_list = phase == :buy_train ? render_buyable_trains(step, current_entity) : h(:div)
@@ -268,7 +271,12 @@ if !@game.round.operating?
               ])
             end
 
-            buyable_company_list = actions.include?('buy_company') ? render_buyable_companies(step, current_entity) : h(:div)
+            buyable_company_list = if actions.include?('buy_company')
+                                     render_buyable_companies(step,
+                                                              current_entity)
+                                   else
+                                     h(:div)
+                                   end
             if actions.include?('buy_company')
               upper_content << h(:div, { style: { marginBottom: '0.4rem' } }, [
               render_phase_box('Buy Private Company', true, actions.include?('pass') ? ['Skip'] : [], actions, current_entity, buyable_company_list, bg_color, text_color),
@@ -298,9 +306,7 @@ if !@game.round.operating?
           special_actions = actions - standard_actions - system_actions
 
           # Temporary game check to filter out 1817-specific programming buttons
-          if @game.class.title != '1817'
-            special_actions -= %w[program_merger_pass program_share_pass program_close_pass]
-          end
+          special_actions -= %w[program_merger_pass program_share_pass program_close_pass] if @game.class.title != '1817'
 
           if special_actions.any?
             special_buttons = special_actions.map do |action|
@@ -360,54 +366,54 @@ if !@game.round.operating?
         end
 
         # AUTOMATED REVENUE PATH ROUTER WITH ASYNC TIMING GATE
-    current_action_id = @game.raw_actions.size
-    if phase == :run_routes && @last_routed_action_id != current_action_id
-      store(:last_routed_action_id, current_action_id, skip: true)
-      store(:cmd_router_running, true, skip: false)
+        current_action_id = @game.raw_actions.size
+        if phase == :run_routes && @last_routed_action_id != current_action_id
+          store(:last_routed_action_id, current_action_id, skip: true)
+          store(:cmd_router_running, true, skip: false)
 
-      if @routes.empty?
-        trains = @game.route_trains(current_entity) || []
-        operating = current_entity.respond_to?(:operating_history) ? current_entity.operating_history : {}
-        last_run = operating.any? ? operating[operating.keys.max]&.routes : nil
+          if @routes.empty?
+            trains = @game.route_trains(current_entity) || []
+            operating = current_entity.respond_to?(:operating_history) ? current_entity.operating_history : {}
+            last_run = operating.any? ? operating[operating.keys.max]&.routes : nil
 
-        if last_run
-          halts = operating[operating.keys.max]&.halts
-          nodes = operating[operating.keys.max]&.nodes
-          last_run.each do |train, connection_hexes|
-            next unless trains.include?(train)
+            if last_run
+              halts = operating[operating.keys.max]&.halts
+              nodes = operating[operating.keys.max]&.nodes
+              last_run.each do |train, connection_hexes|
+                next unless trains.include?(train)
 
-            @routes << Engine::Route.new(@game, @game.phase, train, connection_hexes: connection_hexes, routes: @routes,
-                                                                    halts: halts[train], nodes: nodes[train])
+                @routes << Engine::Route.new(@game, @game.phase, train, connection_hexes: connection_hexes, routes: @routes,
+                                                                        halts: halts[train], nodes: nodes[train])
+              end
+            else
+              trains.each do |train|
+                @routes << Engine::Route.new(@game, @game.phase, train, routes: @routes)
+              end
+            end
+            store(:routes, @routes, skip: true)
           end
-        else
-          trains.each do |train|
-            @routes << Engine::Route.new(@game, @game.phase, train, routes: @routes)
-          end
-        end
-        store(:routes, @routes, skip: true)
-      end
 
-      lambda {
-        `setTimeout(function() {`
-        begin
-          router = Engine::AutoRouter.new(@game, ->(_msg) {})
-          router.compute(
-            current_entity,
-            routes: @routes.reject { |r| r.respond_to?(:paths) && r.paths.empty? },
-            path_timeout: 10000,
-            route_timeout: 10000,
-            callback: lambda do |computed_routes|
-                  store(:routes, computed_routes, skip: true)
-                  store(:cmd_router_running, false)
-                end
-          )
-        rescue StandardError => e
-          store(:cmd_router_running, false)
-          `console.warn('AutoRouter skipped layout matching: ' + e)`
+          lambda {
+            `setTimeout(function() {`
+            begin
+              router = Engine::AutoRouter.new(@game, ->(_msg) {})
+              router.compute(
+                current_entity,
+                routes: @routes.reject { |r| r.respond_to?(:paths) && r.paths.empty? },
+                path_timeout: 10_000,
+                route_timeout: 10_000,
+                callback: lambda do |computed_routes|
+                            store(:routes, computed_routes, skip: true)
+                            store(:cmd_router_running, false)
+                          end
+              )
+            rescue StandardError => e
+              store(:cmd_router_running, false)
+              `console.warn('AutoRouter skipped layout matching: ' + e)`
+            end
+            `}, 100);`
+          }.call
         end
-        `}, 100);`
-      }.call
-    end
 
         h(:div, { style: { display: 'flex', flexDirection: 'column', height: '100%', maxHeight: '100%', overflow: 'hidden', padding: '0.4rem', backgroundColor: '#e0e0e0', boxSizing: 'border-box', position: 'relative' } }, [
                       h(:div,
@@ -431,7 +437,8 @@ if !@game.round.operating?
             click_handler = lambda do
               process_action(Engine::Action::DiscardTrain.new(current_entity, train: train))
             end
-            h(:div, { attrs: { class: 'game-card clickable' }, style: { border: '2px solid red', cursor: 'pointer' }, on: { click: click_handler } }, train.name)
+            h(:div,
+              { attrs: { class: 'game-card clickable' }, style: { border: '2px solid red', cursor: 'pointer' }, on: { click: click_handler } }, train.name)
           else
             h(:div, { attrs: { class: 'game-card' } }, train.name)
           end
@@ -580,8 +587,9 @@ if !@game.round.operating?
         company_boxes = companies.map do |c|
           owner_name = c.owner&.name || 'Bank'
           next nil if c.owner == current_entity
-          # Restrict buyable list to only show privates owned by the operating corporation's president
-          next nil if current_entity.corporation? && c.owner != current_entity.owner
+
+          # # Restrict buyable list to only show privates owned by the operating corporation's president
+          # next nil if current_entity.corporation? && c.owner != current_entity.owner
 
           min_price = if step.respond_to?(:min_price)
                         step.min_price(c)
@@ -1046,17 +1054,16 @@ if !@game.round.operating?
           { style: { display: 'flex', flexDirection: 'column', width: '100%', padding: '0.2rem 0', boxSizing: 'border-box' } }, train_boxes)
       end
 
-     
-
       def render_phase_box(title, is_active, button_labels, available_actions, current_entity, custom_overlay, entity_bg_color = '#4169e1', _entity_text_color = '#ffffff')
-effectively_active = is_active && !(@cmd_router_running && title == 'Run Routes')
+        effectively_active = is_active && !(@cmd_router_running && title == 'Run Routes')
         box_bg = effectively_active ? '#ffffff' : '#f5f5f5'
         box_border = effectively_active ? "2px solid #{entity_bg_color}" : '1px solid #cccccc'
         title_color = effectively_active ? '#000000' : '#888888'
 
         buttons = button_labels.map do |label|
           click_action = lambda do
-next unless effectively_active
+            next unless effectively_active
+
             if ['Skip', 'Done Buying'].include?(label) && available_actions.include?('pass')
               process_action(Engine::Action::Pass.new(current_entity))
 
@@ -1110,10 +1117,10 @@ next unless effectively_active
           h(:button,
             { style: { width: '100%', padding: '0.3rem', marginTop: '0.2rem', fontSize: '0.75rem', backgroundColor: btn_bg, color: btn_text, border: btn_border, borderRadius: '3px', cursor: effectively_active ? 'pointer' : 'not-allowed', fontWeight: 'bold' }, attrs: attrs, on: { click: click_action } }, label)
         end
-            h(:div, { style: { border: box_border, padding: '0.4rem', backgroundColor: box_bg, textAlign: 'center', borderRadius: '4px', boxShadow: effectively_active ? '0 1px 3px rgba(0,0,0,0.1)' : 'none' } }, [
-                    h(:div, { style: { fontSize: '0.75rem', fontWeight: 'bold', color: title_color, marginBottom: '0.2rem' } }, title),
-                  custom_overlay, *buttons
-                ].compact)
+        h(:div, { style: { border: box_border, padding: '0.4rem', backgroundColor: box_bg, textAlign: 'center', borderRadius: '4px', boxShadow: effectively_active ? '0 1px 3px rgba(0,0,0,0.1)' : 'none' } }, [
+                h(:div, { style: { fontSize: '0.75rem', fontWeight: 'bold', color: title_color, marginBottom: '0.2rem' } }, title),
+                custom_overlay, *buttons
+            ].compact)
       end
     end
   end

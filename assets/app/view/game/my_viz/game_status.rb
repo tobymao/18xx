@@ -997,7 +997,7 @@ module View
                   h('td.padded_number.column-zone-market.money-value', {}, clean_par_price),
                 ]
 
-       train_buyable_step = step&.current_actions&.include?('buy_train')
+        train_buyable_step = step&.current_actions&.include?('buy_train')
         train_discardable_step = step&.current_actions&.include?('discard_train')
 
         train_cards = corporation.trains.map do |t|
@@ -1351,19 +1351,33 @@ module View
 
           not_own_company = active_ent && entity != active_ent
 
-         if company_buyable_step && not_own_company && step.respond_to?(:can_buy_company?) && step.can_buy_company?(active_ent, c)
+          is_buyable = if step.respond_to?(:buyable_companies)
+                         step.buyable_companies(active_ent).include?(c)
+                       else
+                         step.respond_to?(:can_buy_company?) && step.can_buy_company?(active_ent, c)
+                       end
+
+          if company_buyable_step && not_own_company && is_buyable
             card_classes << 'action-buy'
             card_classes << 'clickable'
 
             min_price = c.respond_to?(:min_price) ? c.min_price : 0
-            max_price = c.respond_to?(:max_price) ? c.max_price : (active_ent.respond_to?(:cash) ? active_ent.cash : 9999)
+            max_price = if c.respond_to?(:max_price)
+                          c.max_price
+                        else
+                          (active_ent.respond_to?(:cash) ? active_ent.cash : 9999)
+                        end
 
             menu_storage_key = "buy_company_menu_#{entity.id}_#{c.id}"
             price_storage_key = "buy_company_price_#{entity.id}_#{c.id}"
 
             company_click_handler = lambda {
               Lib::Storage[menu_storage_key] = true
-              Lib::Storage[price_storage_key] = min_price > 0 ? min_price : (c.respond_to?(:value) ? c.value : 1)
+              Lib::Storage[price_storage_key] = if min_price > 0
+                                                  min_price
+                                                else
+                                                  (c.respond_to?(:value) ? c.value : 1)
+                                                end
               update
             }
 
