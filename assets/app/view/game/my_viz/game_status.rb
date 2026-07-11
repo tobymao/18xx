@@ -1340,9 +1340,31 @@ module View
 
         companies_list = entity.respond_to?(:companies) ? entity.companies : []
         companies_list = companies_list.reject { |c| c.respond_to?(:closed?) && c.closed? }
+
         step = @game.round.active_step
         active_ent = active_entity
-        company_buyable_step = step&.current_actions&.include?('buy_company')
+
+        actions = if active_ent && @game.round.respond_to?(:actions_for)
+                    @game.round.actions_for(active_ent)
+                  else
+                    step&.current_actions || []
+                  end
+
+        company_buyable_step = actions.include?('buy_company')
+
+        special_actions = actions - %w[lay_tile place_token run_routes dividend payout withhold half split buy_train pass
+                                       buy_company merge choose end_game bankrupt]
+        valid_special_actions = special_actions.map do |action_name|
+          action_class = begin
+            Engine::Action.const_get(action_name.split('_').map(&:capitalize).join)
+          rescue NameError
+            nil
+          end
+          next nil unless action_class
+
+          required_args = action_class.const_defined?(:REQUIRED_ARGS) ? action_class::REQUIRED_ARGS : []
+          required_args.include?(:company) ? [action_name, action_class] : nil
+        end.compact
 
         company_cards = companies_list.map do |c|
           card_classes = ['game-card']
@@ -1353,36 +1375,87 @@ module View
 
           is_buyable = if step.respond_to?(:buyable_companies)
                          step.buyable_companies(active_ent).include?(c)
+                       elsif step.respond_to?(:can_buy_company?)
+                         step.can_buy_company?(active_ent, c)
+                       elsif c.respond_to?(:owned_by?)
+                         !c.owned_by?(active_ent)
                        else
-                         step.respond_to?(:can_buy_company?) && step.can_buy_company?(active_ent, c)
+                         c.owner != active_ent
                        end
 
-          if company_buyable_step && not_own_company && is_buyable
+          matching_special_action = valid_special_actions.find do |_, _action_class|
+            targets = if step.respond_to?(:available_targets)
+                        step.available_targets(active_ent) || []
+                      elsif step.respond_to?(:companies)
+                        step.companies || []
+                      else
+                        []
+                      end
+            targets.include?(c)
+          end
+
+          if matching_special_action
             card_classes << 'action-buy'
             card_classes << 'clickable'
 
-            min_price = c.respond_to?(:min_price) ? c.min_price : 0
-            max_price = if c.respond_to?(:max_price)
-                          c.max_price
+            company_click_handler = lambda {
+              process_action(matching_special_action[1].new(active_ent, company: c))
+            }
+          elsif company_buyable_step && not_own_company && is_buyable
+            card_classes << 'action-buy'
+            card_classes << 'clickable'
+
+            min_price = if step.respond_to?(:min_price)
+                          step.min_price(c)
                         else
-                          (active_ent.respond_to?(:cash) ? active_ent.cash : 9999)
+                          (c.respond_to?(:min_price) ? c.min_price : 1)
+                        end
+            max_price = if step.respond_to?(:max_price)
+                          step.max_price(active_ent, c)
+                        else
+                          (if c.respond_to?(:max_price)
+                             c.max_price
+                           else
+                             (active_ent.respond_to?(:cash) ? active_ent.cash : 9999)
+                           end)
                         end
 
             menu_storage_key = "buy_company_menu_#{entity.id}_#{c.id}"
             price_storage_key = "buy_company_price_#{entity.id}_#{c.id}"
 
             company_click_handler = lambda {
+              process_action(matching_special_action[1].new(active_ent, company: c))
+            }
+          elsif company_buyable_step && not_own_company && is_buyable
+            card_classes << 'action-buy'
+            card_classes << 'clickable'
+
+            min_price = if step.respond_to?(:min_price)
+                          step.min_price(c)
+                        else
+                          (c.respond_to?(:min_price) ? c.min_price : 1)
+                        end
+            max_price = if step.respond_to?(:max_price)
+                          step.max_price(active_ent, c)
+                        else
+                          (if c.respond_to?(:max_price)
+                             c.max_price
+                           else
+                             (active_ent.respond_to?(:cash) ? active_ent.cash : 9999)
+                           end)
+                        end
+
+            menu_storage_key = "cmd_buy_company_menu_#{c.id}"
+            price_storage_key = "cmd_buy_company_price_#{c.id}"
+
+            company_click_handler = lambda {
               Lib::Storage[menu_storage_key] = true
-              Lib::Storage[price_storage_key] = if min_price > 0
-                                                  min_price
-                                                else
-                                                  (c.respond_to?(:value) ? c.value : 1)
-                                                end
+              Lib::Storage[price_storage_key] = min_price
               update
             }
 
             if Lib::Storage[menu_storage_key]
-              menu_title = "#{active_ent.name} buys #{c.name} from #{entity.name} for how much?"
+              menu_title = "Buy #{c.name} from #{entity.name} (#{min_price}-#{max_price}):"
 
               confirm_handler = lambda {
                 price_value = Lib::Storage[price_storage_key].to_i
@@ -1391,14 +1464,11 @@ module View
 
                 Lib::Storage[menu_storage_key] = nil
                 Lib::Storage[price_storage_key] = nil
-                source_selector = "#company_wrapper_#{entity.id}_#{c.id} .game-card"
-                Lib::CardAnimation.fly(source_selector, "#companies_#{active_ent.id}") do
-                  process_action(Engine::Action::BuyCompany.new(
-                    active_ent,
-                    company: c,
-                    price: price_value
-                  ))
-                end
+                process_action(Engine::Action::BuyCompany.new(
+                  active_ent,
+                  company: c,
+                  price: price_value
+                ))
               }
 
               cancel_handler = lambda {
@@ -1424,8 +1494,8 @@ module View
                                     textAlign: 'center',
                                   },
                                 }, [
-                h(:div,
-                  { style: { fontSize: '0.85rem', fontWeight: 'bold', marginBottom: '0.8rem', color: '#333', whiteSpace: 'normal' } }, menu_title),
+                h(:div, { style: { fontSize: '0.85rem', fontWeight: 'bold', marginBottom: '0.8rem', whiteSpace: 'nowrap' } },
+                  menu_title),
                 h(:input, {
                     style: {
                       display: 'block',
@@ -1439,7 +1509,7 @@ module View
                       type: 'number',
                       min: min_price.to_s,
                       max: max_price.to_s,
-                      value: Lib::Storage[price_storage_key] || (c.respond_to?(:value) ? c.value : 1).to_s,
+                      value: Lib::Storage[price_storage_key] || min_price.to_s,
                     },
                     on: {
                       input: lambda { |event|
