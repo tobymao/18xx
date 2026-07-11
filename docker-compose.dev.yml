@@ -13,30 +13,40 @@ x-rack: &rack
     dockerfile: ${DEV_DOCKERFILE:-Dockerfile}
   volumes:
     - .:/18xx:z
-    # CHANGED: Switched to named volumes so memory is shared and preserved
     - rack_vendor:/18xx/vendor   
     - rack_bundle:/18xx/.bundle  
-    - /18xx/desktop-shell  # Anonymous volume: Masks the heavy desktop folder from being indexed
+    - /18xx/desktop-shell
 
 services:
   rack:
     <<: *rack
     ports:
       - 9292:9292
+    depends_on:
+      - db
+      - redis
 
   queue:
     <<: *rack
     command: bundle exec ruby queue.rb
+    depends_on:
+      - db
+      - redis
 
-db:
-environment:
-POSTGRES_USER: root
-POSTGRES_PASSWORD: password
-POSTGRES_DB: 18xx_development
-build:
-dockerfile: ${DEV_DOCKERFILE:-Dockerfile}
+  db:
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: 18xx_development
+    build:
+      context: ./db/
+      dockerfile: ${DEV_DOCKERFILE:-Dockerfile}
 
-# NEW: Explicitly define the shared data volumes at the bottom of the file
+  redis:
+    image: redis:7-alpine
+    ports:
+      - 6379:6379
+
 volumes:
   rack_vendor:
   rack_bundle:
