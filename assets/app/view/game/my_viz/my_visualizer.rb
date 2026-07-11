@@ -50,8 +50,8 @@ module View
             # Column 2: Map
             h(:div, { style: { width: '41%', height: '100%', display: 'flex', flexDirection: 'column', gap: '0.5rem', overflow: 'hidden' } }, [
               h(:div, { style: { flex: '1 1 auto', border: '1px solid #ccc', borderRadius: '4px', display: 'flex', justifyContent: 'center', alignItems: 'center', overflow: 'hidden' } }, [
-                h(:div, { style: { width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', overflow: 'hidden', '& svg': { width: '100% !important', height: '100% !important', objectFit: 'contain' } } }, [
-                  h(View::Game::Map, game: @game, user: @user),
+h(:div, { attrs: { class: 'scaler-content' }, style: { display: 'flex', justifyContent: 'center', alignItems: 'center' } }, [
+h(View::Game::Map, game: @game, user: @user, minimal: true),
                 ]),
               ]),
             ]),
@@ -63,8 +63,8 @@ module View
                 h(:p, 'The 1846 game has concluded. Active turn components and ledgers are disabled.'),
               ]),
               h(:div, { style: { flex: '1 1 30%', border: '1px solid #ccc', padding: '0.5rem', borderRadius: '4px', display: 'flex', justifyContent: 'center', alignItems: 'flex-start', overflow: 'hidden' } }, [
-                h(:div, { style: { transform: 'scale(0.85)', transformOrigin: 'center top' } }, [
-                  h(View::Game::SimpleStockMarket, game: @game),
+h(:div, { attrs: { class: 'scaler-content' }, style: { width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'flex-start', transformOrigin: 'center top' } }, [
+                    h(View::Game::SimpleStockMarket, game: @game),
                 ]),
               ]),
             ]),
@@ -85,6 +85,72 @@ module View
 
                         # Use Opal's interpolation to bridge the Ruby instance into JS
                         @clock_ticker = `setInterval(function() { #{comp}.$tick_clock(); }, 1000)`
+
+                        %x(window.init18xxResizers = function() {
+                          var createResizer = function(resizerId, prevId, nextId, isVertical) {
+                            var resizer = document.getElementById(resizerId);
+                            var prev = document.getElementById(prevId);
+                            var next = document.getElementById(nextId);
+                            if(!resizer || !prev || !next) return;
+                            var x = 0, y = 0, prevFlex = 0, nextFlex = 0;
+                            var mouseDownHandler = function(e) {
+                              x = e.clientX; y = e.clientY;
+                              var prevRect = prev.getBoundingClientRect();
+                              var nextRect = next.getBoundingClientRect();
+                              prevFlex = isVertical ? prevRect.height : prevRect.width;
+                              nextFlex = isVertical ? nextRect.height : nextRect.width;
+                              document.addEventListener('mousemove', mouseMoveHandler);
+                              document.addEventListener('mouseup', mouseUpHandler);
+                              document.body.style.cursor = isVertical ? 'row-resize' : 'col-resize';
+                            };
+                            var mouseMoveHandler = function(e) {
+                              var delta = isVertical ? (e.clientY - y) : (e.clientX - x);
+                              var totalFlex = prevFlex + nextFlex;
+                              var newPrevFlex = Math.max(0, prevFlex + delta);
+                              var newNextFlex = Math.max(0, totalFlex - newPrevFlex);
+                              prev.style.flex = '0 0 ' + newPrevFlex + 'px';
+                              next.style.flex = '0 0 ' + newNextFlex + 'px';
+                              prev.style.width = 'auto'; prev.style.height = 'auto';
+                              next.style.width = 'auto'; next.style.height = 'auto';
+                            };
+                            var mouseUpHandler = function() {
+                              document.removeEventListener('mousemove', mouseMoveHandler);
+                              document.removeEventListener('mouseup', mouseUpHandler);
+                              document.body.style.cursor = '';
+                            };
+                            resizer.addEventListener('mousedown', mouseDownHandler);
+                          };
+                          createResizer('resizer-v-1', 'col-1', 'col-2', false);
+                          createResizer('resizer-v-2', 'col-2', 'col-3', false);
+                          createResizer('resizer-h-3-1', 'panel-3-top', 'panel-3-bot', true);
+                          createResizer('resizer-h-3-2', 'panel-3-top', 'panel-3-bot', true);
+
+
+                          var fitObserver = new ResizeObserver(function(entries) {
+                            for (var i = 0; i < entries.length; i++) {
+                              var panel = entries[i].target;
+                              var wrapper = panel.querySelector('.scaler-content');
+                              if (!wrapper) continue;
+
+                              wrapper.style.zoom = 1;
+                              var cw = wrapper.offsetWidth;
+                              var ch = wrapper.offsetHeight;
+                              var pw = entries[i].contentRect.width;
+                              var ph = entries[i].contentRect.height;
+
+                              if (cw > 0 && ch > 0) {
+                                var scale = Math.min(pw / cw, ph / ch) * 0.96;
+                                wrapper.style.zoom = scale;
+                              }
+                            }
+                          });
+
+              ['col-1', 'panel-2-bot', 'panel-3-top', 'panel-3-bot'].forEach(function(id) {
+                            var el = document.getElementById(id);
+                            if (el) fitObserver.observe(el);
+                          });
+                        };
+                        setTimeout(window.init18xxResizers, 200);)
                       },
               destroy: lambda {
                          `clearInterval(#{@clock_ticker})`
@@ -105,21 +171,23 @@ module View
               maxHeight: '100vh',
               boxSizing: 'border-box',
               position: 'relative',
-              gap: '0.75rem',
               overflow: 'hidden',
               padding: '0.5rem',
               backgroundColor: '#ffffff',
             },
           }, [
-          # Column 1 (Far Left): Command Column Tracker (10% width)
-          h(:div, { style: { width: '10%', height: '100%', border: '1px solid #ccc', borderRadius: '4px', backgroundColor: '#fff', overflow: 'hidden' } }, [
+          # Column 1 (Far Left): Command Column Tracker
+          h(:div, { attrs: { id: 'col-1' }, style: { flex: '0 0 10%', height: '100%', border: '1px solid #ccc', borderRadius: '4px', backgroundColor: '#fff', overflow: 'hidden' } }, [
             h(View::Game::CommandColumn, game: @game),
           ]),
 
-          # Column 2 (Middle): Entity Order (Top) & Map Canvas (Bottom) (41% width)
-          h(:div, { style: { width: '41%', height: '100%', display: 'flex', flexDirection: 'column', gap: '0.5rem', overflow: 'hidden' } }, [
+          # Vertical Resizer 1 (replaces 0.75rem gap)
+          h(:div, { attrs: { id: 'resizer-v-1' }, style: { flex: '0 0 0.75rem', cursor: 'col-resize', zIndex: 10 } }),
+
+          # Column 2 (Middle): Entity Order (Top) & Map Canvas (Bottom)
+          h(:div, { attrs: { id: 'col-2' }, style: { flex: '0 0 41%', height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden' } }, [
             # Narrow Strip: Entity Order Section
-            h(:div, { style: { flex: '0 0 auto', border: '1px solid #ccc', borderRadius: '4px', backgroundColor: '#fff', padding: '0.25rem', overflow: 'auto' } }, [
+            h(:div, { attrs: { id: 'panel-2-top' }, style: { flex: '0 0 auto', minHeight: '3rem', border: '1px solid #ccc', borderRadius: '4px', backgroundColor: '#fff', padding: '0.25rem', overflow: 'auto' } }, [
                 if @game.respond_to?(:finished?) && @game.finished?
                   h(View::Game::MyEntityOrder, round: nil)
                 else
@@ -127,39 +195,38 @@ module View
                 end,
               ]),
 
+            # Horizontal Resizer 2 (replaces 0.5rem gap)
+            h(:div, { attrs: { id: 'resizer-h-2' }, style: { flex: '0 0 0.5rem', cursor: 'row-resize', zIndex: 10 } }),
+
             # Map Panel Box
-            h(:div, { style: { flex: '1 1 auto', border: '1px solid #ccc', borderRadius: '4px', backgroundColor: '#fff', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', overflow: 'hidden' } }, [
-              h(:div, {
-                  style: {
-                    width: '100%',
-                    height: '100%',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    overflow: 'hidden',
-                    '& svg': {
-                      width: '100% !important',
-                      height: '100% !important',
-                      maxWidth: '100%',
-                      maxHeight: '100%',
-                      objectFit: 'contain',
-                    },
-                    '& text': { fontSize: '0.65em !important', letterSpacing: 'normal !important' },
-                    '& .tile__text': { fontSize: '0.75em !important' },
-                    '& text.number': { fontSize: '0.55em !important' },
-                  },
-                }, [
-        h(View::Game::Map, game: @game, user: @user),
-        ]),
-            ]),
+            h(:div, { attrs: { id: 'panel-2-bot' }, style: { flex: '1 1 auto', border: '1px solid #ccc', borderRadius: '4px', backgroundColor: '#fff', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', overflow: 'hidden' } }, [
+                                         h(:div, {
+                                             attrs: { class: 'scaler-content' },
+                                             style: {
+                                               display: 'flex',
+                                               justifyContent: 'center',
+                                               alignItems: 'center',
+                                               '& text': { fontSize: '0.65em !important', letterSpacing: 'normal !important' },
+                                               '& .tile__text': { fontSize: '0.75em !important' },
+                                               '& text.number': { fontSize: '0.55em !important' },
+                                             },
+                                           }, [
+h(View::Game::Map, game: @game, user: @user, minimal: true),
+]),
+                        ]),
           ]),
 
           # Column 3 (Far Right): Status Stack (49% width)
-          h(:div, { style: { width: '49%', display: 'flex', flexDirection: 'column', height: '100%', maxHeight: '100%', gap: '0.5rem', overflow: 'hidden' } }, [
+          # Vertical Resizer 2 (replaces 0.75rem gap)
+          h(:div, { attrs: { id: 'resizer-v-2' }, style: { flex: '0 0 0.75rem', cursor: 'col-resize', zIndex: 10 } }),
+
+          # Column 3 (Far Right): Status Stack
+          h(:div, { attrs: { id: 'col-3' }, style: { flex: '1 1 auto', display: 'flex', flexDirection: 'column', height: '100%', maxHeight: '100%', overflow: 'hidden' } }, [
             # Spreadsheet Ledger Component
             h(:div, {
+                attrs: { id: 'panel-3-top' },
                 style: {
-                  flex: '1 1 62%',
+                  flex: '0 0 62%',
                   overflow: 'auto',
                   border: '1px solid #ccc',
                   padding: '0.4rem',
@@ -190,21 +257,26 @@ module View
                   },
                 },
               }, [
-                # Hooking into your custom implementation sandbox
-                if @game.respond_to?(:finished?) && @game.finished?
-                  h(:div, { style: { padding: '1rem', fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif', textAlign: 'center' } }, [
-                    h(:h3, { style: { color: '#dc3545', margin: '0 0 0.5rem 0' } }, 'Match Verification Complete'),
-                    h(:p, { style: { fontSize: '0.85rem', color: '#555', margin: '0' } },
-                      'The 1846 game engine successfully processed all historical match movements deterministically. Active turn ledger is disabled for completed states.'),
-                  ])
-                else
-                  h(View::Game::GameStatus, game: @game)
-                end,
+               h(:div, { attrs: { class: 'scaler-content' }, style: { display: 'flex', flexDirection: 'column', width: '100%' } }, [
+                  if @game.respond_to?(:finished?) && @game.finished?
+                    h(:div, { style: { padding: '1rem', fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif', textAlign: 'center' } }, [
+                      h(:h3, { style: { color: '#dc3545', margin: '0 0 0.5rem 0' } }, 'Match Verification Complete'),
+                      h(:p, { style: { fontSize: '0.85rem', color: '#555', margin: '0' } },
+                        'The 1846 game engine successfully processed all historical match movements deterministically. Active turn ledger is disabled for completed states.'),
+                    ])
+                  else
+                    h(View::Game::GameStatus, game: @game)
+                  end,
+                ]),
                 ]),
 
+            # Horizontal Resizer 3-1
+            h(:div, { attrs: { id: 'resizer-h-3-1' }, style: { flex: '0 0 0.5rem', cursor: 'row-resize', zIndex: 10 } }),
+
             h(:div, {
+                attrs: { id: 'panel-3-mid' },
                 style: {
-                  flex: '0 0 8%',
+                  flex: '0 0 auto',
                   minHeight: '3.5rem',
                   border: '1px solid #ccc',
                   borderRadius: '4px',
@@ -380,11 +452,22 @@ module View
                   btns
                 end
               end),
+            # Horizontal Resizer 3-2
+            h(:div, { attrs: { id: 'resizer-h-3-2' }, style: { flex: '0 0 0.5rem', cursor: 'row-resize', zIndex: 10 } }),
 
             # Stock Market Component
-            h(:div, { style: { flex: '1 1 30%', overflow: 'hidden', border: '1px solid #ccc', padding: '0.5rem', borderRadius: '4px', backgroundColor: '#fff', display: 'flex', justifyContent: 'flex-start', alignItems: 'center', flexDirection: 'column' } }, [
-                h(:div, { style: { width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'flex-start', transform: 'scale(0.85)', transformOrigin: 'center top', marginTop: '-5px' } }, [
-                  h(View::Game::SimpleStockMarket, game: @game),
+            h(:div, { attrs: { id: 'panel-3-bot' }, style: { flex: '1 1 auto', overflow: 'hidden', border: '1px solid #ccc', padding: '0.5rem', borderRadius: '4px', backgroundColor: '#fff', display: 'flex', justifyContent: 'flex-start', alignItems: 'center', flexDirection: 'column' } }, [
+              h(:div, {
+                  attrs: { class: 'scaler-content' },
+                  style: {
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'flex-start',
+                    transformOrigin: 'center top',
+                    marginTop: '-5px',
+                  },
+                }, [
+                              h(View::Game::SimpleStockMarket, game: @game),
                 ]),
               ]),
           ]),
