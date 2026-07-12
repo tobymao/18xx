@@ -59,55 +59,53 @@ module View
         end
 
         css = <<~CSS
-                                                                                                               :root {
-                                                                                                                 --font-money: 'Courier New', monospace;
-                                                                                                                 --font-standard: "Helvetica Neue", Helvetica, Arial, sans-serif;
-                                                                                                                 --color-money-text: #4c1d95;
-                                                                                                                 --accent-action-color: #2563eb;
-                                                                                                                 --pulse-opacity-min: 0.75;
-                                                                                                                 --pulse-scale-duration: 2s;
-                                                                                                                 --opacity-unopened-row: 0.45;
-                                                                                                                 --bg-active-row: #ffffff;
-                                                                                                                 --bg-market-zone: #e6f4ea; /* Soft Sage Green */
-                                                                                                                 --bg-corporate-zone: #f3e8ff;
-                                                                                                                 --action-buy-edge: #16a34a;
-                                                                                                                 --action-sell-edge: #dc2626;
-                                                                                                                 --shadow-card: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-                                                                                                               }
-                                                  #spreadsheet table { border-collapse: collapse; border: 3px solid #333333; background-color: #{COLOR_INACTIVE}; }
-                                        #spreadsheet th, #spreadsheet td { border: 1px solid #b3b3b3 !important; vertical-align: middle !important; padding: 4px 2px !important; }
-                                                                       #spreadsheet thead tr:last-child th { border-bottom: 3px solid #333333 !important; }
-                                                                       #spreadsheet tr.last-player-row th, #spreadsheet tr.last-player-row td { border-bottom: 3px solid #333333 !important; }
-                                                                       #spreadsheet tr.last-minor-row th, #spreadsheet tr.last-minor-row td { border-bottom: 3px solid #333333 !important; }
-                                                                                .thick-right { border-right: 3px solid #333333 !important; }
-                                                                       .no-border { border: none !important; }
-                                                                                                  .money-value, .padded_number { text-align: right !important; padding-right: 0.5rem !important; }
-                    .money-value { font-family: var(--font-money) !important; font-weight: bold !important; color: var(--color-money-text) !important; font-variant-numeric: tabular-nums !important; }
+                                                                                                                                   :root {
+                                                                                                                                     --font-money: 'Courier New', monospace;
+                                                                                                                                     --font-standard: "Helvetica Neue", Helvetica, Arial, sans-serif;
+                                                                                                                                     --color-money-text: #4c1d95;
+                                                                                                                                     --accent-action-color: #2563eb;
+                                                                                                                                     --pulse-opacity-min: 0.75;
+                                                                                                                                     --pulse-scale-duration: 2s;
+                                                                                                                                     --opacity-unopened-row: 0.45;
+                                                                                                                                     --bg-active-row: #ffffff;
+                                                                                                                                     --bg-market-zone: #e6f4ea; /* Soft Sage Green */
+                                                                                                                                     --bg-corporate-zone: #f3e8ff;
+                                                                                                                                     --action-buy-edge: #16a34a;
+                                                                                                                                     --action-sell-edge: #dc2626;
+                                                                                                                                     --shadow-card: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+                                                                                                                                   }
+                                                                      #spreadsheet table { border-collapse: collapse; border: 3px solid #333333; background-color: #{COLOR_INACTIVE}; }
+                                                            #spreadsheet th, #spreadsheet td { border: 1px solid #b3b3b3 !important; vertical-align: middle !important; padding: 4px 2px !important; }
+                                                                                           #spreadsheet thead tr:last-child th { border-bottom: 3px solid #333333 !important; }
+                                                                                           #spreadsheet tr.last-player-row th, #spreadsheet tr.last-player-row td { border-bottom: 3px solid #333333 !important; }
+                                                                                           #spreadsheet tr.last-minor-row th, #spreadsheet tr.last-minor-row td { border-bottom: 3px solid #333333 !important; }
+                                                                                                    .thick-right { border-right: 3px solid #333333 !important; }
+                                                                                           .no-border { border: none !important; }
+                                                                                                                      .money-value, .padded_number { text-align: right !important; padding-right: 0.5rem !important; }
+                                        .money-value { font-family: var(--font-money) !important; font-weight: bold !important; color: var(--color-money-text) !important; font-variant-numeric: tabular-nums !important; }
 
-          .game-card { display: inline-flex; align-items: center; justify-content: center; box-sizing: border-box; min-width: 3.5rem; height: 1.45rem; font-size: 0.85rem; padding: 0 4px; margin: 2px; border: 1px solid #888888; border-radius: 4px; background-color: #fdfbf7; color: #000000; box-shadow: var(--shadow-card); transition: transform 0.1s ease; font-family: var(--font-standard); }
-                                                                                 .game-card.clickable:hover { cursor: pointer; transform: translateY(-1px); box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
-                                                                                 .game-card.action-buy { border: 2px solid var(--action-buy-edge) !important; }
-                                                                                 .game-card.action-sell { border: 2px solid var(--action-sell-edge) !important; }
-                                                  #{'                                         '}
-                                                                                                               .sell-restricted { text-decoration: line-through !important; opacity: 0.5 !important; cursor: not-allowed !important; }
-                                                                                                               .token-bond { display: inline-block; width: 12px; height: 12px; background-color: #b91c1c; border-radius: 2px; }
-          // --- START FIX ---
-                                                                                                               .align-top { vertical-align: top !important; }
-          // --- END FIX ---
-
-
-                                       tr.active-turn-focus { background-color: var(--bg-active-row) !important; animation: zeroJankPulse var(--pulse-scale-duration) infinite ease-in-out; }                                                                                                   tr.active-turn-focus th, tr.active-turn-focus td { box-shadow: inset 0 3px 0 var(--accent-action-color), inset 0 -3px 0 var(--accent-action-color) !important; }
-                                                                                                               tr.active-turn-focus th:first-child, tr.active-turn-focus td:first-child { box-shadow: inset 3px 3px 0 var(--accent-action-color), inset 0 -3px 0 var(--accent-action-color) !important; }
-                                                                                                               tr.active-turn-focus th:last-child, tr.active-turn-focus td:last-child { box-shadow: inset -3px 3px 0 var(--accent-action-color), inset 0 -3px 0 var(--accent-action-color) !important; }
+                              .game-card { display: inline-flex; align-items: center; justify-content: center; box-sizing: border-box; min-width: 3.5rem; height: 1.45rem; font-size: 0.85rem; padding: 0 4px; margin: 2px; border: 1px solid #888888; border-radius: 4px; background-color: #fdfbf7; color: #000000; box-shadow: var(--shadow-card); transition: transform 0.1s ease; font-family: var(--font-standard); }
+                                                                                                     .game-card.clickable:hover { cursor: pointer; transform: translateY(-1px); box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+                                                                                                     .game-card.action-buy { border: 3px solid var(--action-buy-edge) !important; }
+          .game-card.action-buy { outline: 3px solid #22c55e !important; outline-offset: 1px !important; background-color: #bbf7d0 !important; font-weight: 900 !important; color: #14532d !important; }
                                                                       #{'                                         '}
-                                                                                                               @keyframes zeroJankPulse { 0% { opacity: 1; } 50% { opacity: var(--pulse-opacity-min); } 100% { opacity: 1; } }
+                                                                                                                                   .sell-restricted { text-decoration: line-through !important; opacity: 0.5 !important; cursor: not-allowed !important; }
+                                                                                                                                   .token-bond { display: inline-block; width: 12px; height: 12px; background-color: #b91c1c; border-radius: 2px; }
+                                                                                                                                   .align-top { vertical-align: top !important; }
 
-                                                                                                               tr.directed-by-active-player { background-color: rgba(37, 99, 235, 0.06) !important; }
-                                                                                                               tr.company-row-unfloated, tr.company-row-closed { opacity: var(--opacity-unopened-row) !important; filter: grayscale(40%) !important; }
 
-                                                                                                               .column-zone-market { background-color: var(--bg-market-zone) !important; }
-                                                                                                               .column-zone-corporate { background-color: var(--bg-corporate-zone) !important; }
-                                                                                                               th.column-zone-corporate { background-color: #e9d5ff !important; color: #4c1d95 !important; }
+                                                           tr.active-turn-focus { background-color: var(--bg-active-row) !important; animation: zeroJankPulse var(--pulse-scale-duration) infinite ease-in-out; }                                                                                                   tr.active-turn-focus th, tr.active-turn-focus td { box-shadow: inset 0 3px 0 var(--accent-action-color), inset 0 -3px 0 var(--accent-action-color) !important; }
+                                                                                                                                   tr.active-turn-focus th:first-child, tr.active-turn-focus td:first-child { box-shadow: inset 3px 3px 0 var(--accent-action-color), inset 0 -3px 0 var(--accent-action-color) !important; }
+                                                                                                                                   tr.active-turn-focus th:last-child, tr.active-turn-focus td:last-child { box-shadow: inset -3px 3px 0 var(--accent-action-color), inset 0 -3px 0 var(--accent-action-color) !important; }
+                                                                                          #{'                                         '}
+                                                                                                                                   @keyframes zeroJankPulse { 0% { opacity: 1; } 50% { opacity: var(--pulse-opacity-min); } 100% { opacity: 1; } }
+
+                                                                                                                                   tr.directed-by-active-player { background-color: rgba(37, 99, 235, 0.06) !important; }
+                                                                                                                                   tr.company-row-unfloated, tr.company-row-closed { opacity: var(--opacity-unopened-row) !important; filter: grayscale(40%) !important; }
+
+                                                                                                                                   .column-zone-market { background-color: var(--bg-market-zone) !important; }
+                                                                                                                                   .column-zone-corporate { background-color: var(--bg-corporate-zone) !important; }
+                                                                                                                                   th.column-zone-corporate { background-color: #e9d5ff !important; color: #4c1d95 !important; }
         CSS
 
         h(:div, [

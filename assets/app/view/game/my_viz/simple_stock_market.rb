@@ -479,18 +479,18 @@ module View
 
         children = []
 
-grid_props = {
+        grid_props = {
           style: {
             width: '100%',
             height: '100%',
-            overflow: 'auto',
+            overflowY: 'auto',
+            overflowX: 'hidden',
             margin: '0',
             padding: '0',
           },
         }
         children << h(:div, grid_props, grid)
 
-      
         if @explain_colors
           type_text = @game.class::MARKET_TEXT
 
