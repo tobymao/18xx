@@ -86,9 +86,10 @@ module View
 
                               .game-card { display: inline-flex; align-items: center; justify-content: center; box-sizing: border-box; min-width: 3.5rem; height: 1.45rem; font-size: 0.85rem; padding: 0 4px; margin: 2px; border: 1px solid #888888; border-radius: 4px; background-color: #fdfbf7; color: #000000; box-shadow: var(--shadow-card); transition: transform 0.1s ease; font-family: var(--font-standard); }
                                                                                                      .game-card.clickable:hover { cursor: pointer; transform: translateY(-1px); box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
-                                                                                                     .game-card.action-buy { border: 3px solid var(--action-buy-edge) !important; }
-          .game-card.action-buy { outline: 3px solid #22c55e !important; outline-offset: 1px !important; background-color: #bbf7d0 !important; font-weight: 900 !important; color: #14532d !important; }
-                                                                      #{'                                         '}
+          .game-card.action-sell { border: 2px solid var(--action-sell-edge) !important; background-color: #fef2f2 !important; box-shadow: 0 0 0 1px var(--action-sell-edge) !important; }
+
+
+                                                                                                     .game-card.action-buy { border: 2px solid var(--action-buy-edge) !important; background-color: #e6f4ea !important; box-shadow: 0 0 0 1px var(--action-buy-edge) !important; }                                                  #{'                                         '}
                                                                                                                                    .sell-restricted { text-decoration: line-through !important; opacity: 0.5 !important; cursor: not-allowed !important; }
                                                                                                                                    .token-bond { display: inline-block; width: 12px; height: 12px; background-color: #b91c1c; border-radius: 2px; }
                                                                                                                                    .align-top { vertical-align: top !important; }
@@ -237,11 +238,19 @@ module View
       def render_extra_cards
         children = []
         train_handler = lambda do |train|
-          process_action(Engine::Action::BuyTrain.new(
-            active_entity,
-            train: train,
-            price: train.price
-          ))
+          owner_entity = train.owner
+          if owner_entity && owner_entity.respond_to?(:owner) # Corporate train
+            owner_key = owner_entity.respond_to?(:id) ? owner_entity.id : 'depot'
+            Lib::Storage["cmd_buy_train_menu_#{owner_key}_#{train.id}"] = true
+            Lib::Storage["cmd_buy_train_price_#{owner_key}_#{train.id}"] = active_entity.cash
+            update
+          else # Bank/Depot train at fixed value
+            process_action(Engine::Action::BuyTrain.new(
+              active_entity,
+              train: train,
+              price: train.price
+            ))
+          end
         end
 
         children << h(MyBank, game: @game, train_handler: train_handler)
@@ -1073,14 +1082,17 @@ module View
                       padding: '3px 6px',
                       fontSize: '0.85rem',
                     },
+                    props: {
+                      value: Lib::Storage[price_storage_key] || '1',
+                    },
                     attrs: {
                       type: 'number',
                       min: '1',
-                      value: Lib::Storage[price_storage_key] || '1',
                     },
                     on: {
                       input: lambda { |event|
-                        Lib::Storage[price_storage_key] = event.JS[:target].JS[:value]
+                        Lib::Storage[price_storage_key] = event.target.value
+                        update
                       },
                     },
                   }),
@@ -1381,6 +1393,11 @@ module View
                          c.owner != active_ent
                        end
 
+          # Restrict buyable list to only show privates owned by the operating corporation's president
+          if active_ent&.respond_to?(:corporation?) && active_ent&.corporation? && (c.owner != active_ent.owner)
+            is_buyable = false
+          end
+
           matching_special_action = valid_special_actions.find do |_, _action_class|
             targets = if step.respond_to?(:available_targets)
                         step.available_targets(active_ent) || []
@@ -1399,31 +1416,7 @@ module View
             company_click_handler = lambda {
               process_action(matching_special_action[1].new(active_ent, company: c))
             }
-          elsif company_buyable_step && not_own_company && is_buyable
-            card_classes << 'action-buy'
-            card_classes << 'clickable'
 
-            min_price = if step.respond_to?(:min_price)
-                          step.min_price(c)
-                        else
-                          (c.respond_to?(:min_price) ? c.min_price : 1)
-                        end
-            max_price = if step.respond_to?(:max_price)
-                          step.max_price(active_ent, c)
-                        else
-                          (if c.respond_to?(:max_price)
-                             c.max_price
-                           else
-                             (active_ent.respond_to?(:cash) ? active_ent.cash : 9999)
-                           end)
-                        end
-
-            menu_storage_key = "buy_company_menu_#{entity.id}_#{c.id}"
-            price_storage_key = "buy_company_price_#{entity.id}_#{c.id}"
-
-            company_click_handler = lambda {
-              process_action(matching_special_action[1].new(active_ent, company: c))
-            }
           elsif company_buyable_step && not_own_company && is_buyable
             card_classes << 'action-buy'
             card_classes << 'clickable'
@@ -1503,15 +1496,18 @@ module View
                       padding: '5px 8px',
                       fontSize: '1rem',
                     },
+                    props: {
+                      value: Lib::Storage[price_storage_key] || min_price.to_s,
+                    },
                     attrs: {
                       type: 'number',
                       min: min_price.to_s,
                       max: max_price.to_s,
-                      value: Lib::Storage[price_storage_key] || min_price.to_s,
                     },
                     on: {
                       input: lambda { |event|
-                        Lib::Storage[price_storage_key] = event.JS[:target].JS[:value]
+                        Lib::Storage[price_storage_key] = event.target.value
+                        update
                       },
                     },
                   }),

@@ -662,8 +662,10 @@ module View
           owner_name = c.owner&.name || 'Bank'
           next nil if c.owner == current_entity
 
-          # # Restrict buyable list to only show privates owned by the operating corporation's president
-          # next nil if current_entity.corporation? && c.owner != current_entity.owner
+          # Restrict buyable list to only show privates owned by the operating corporation's president
+          if current_entity.respond_to?(:corporation?) && current_entity.corporation? && (c.owner != current_entity.owner)
+            next nil
+          end
 
           min_price = if step.respond_to?(:min_price)
                         step.min_price(c)
@@ -728,6 +730,7 @@ module View
               h(:div, { style: { fontSize: '0.85rem', fontWeight: 'bold', marginBottom: '0.8rem', whiteSpace: 'nowrap' } },
                 menu_title),
               h(:input, {
+                  key: price_storage_key,
                   style: {
                     display: 'block',
                     width: '100%',
@@ -736,15 +739,18 @@ module View
                     padding: '5px 8px',
                     fontSize: '1rem',
                   },
+                  props: {
+                    value: Lib::Storage[price_storage_key] || min_price.to_s,
+                  },
                   attrs: {
                     type: 'number',
                     min: min_price.to_s,
                     max: max_price.to_s,
-                    value: Lib::Storage[price_storage_key] || min_price.to_s,
                   },
                   on: {
                     input: lambda { |event|
-                      Lib::Storage[price_storage_key] = event.JS[:target].JS[:value]
+                      Lib::Storage[price_storage_key] = `#{event}.target.value`
+                      update
                     },
                   },
                 }),
@@ -1090,6 +1096,7 @@ module View
               h(:div, { style: { fontSize: '0.75rem', fontWeight: 'bold', marginBottom: '0.4rem', whiteSpace: 'nowrap' } },
                 menu_title),
               h(:input, {
+                  key: price_storage_key,
                   style: {
                     display: 'block',
                     width: '100%',
@@ -1098,14 +1105,17 @@ module View
                     padding: '3px 6px',
                     fontSize: '0.85rem',
                   },
+                  props: {
+                    value: Lib::Storage[price_storage_key] || '1',
+                  },
                   attrs: {
                     type: 'number',
                     min: '1',
-                    value: Lib::Storage[price_storage_key] || '1',
                   },
                   on: {
                     input: lambda { |event|
-                      Lib::Storage[price_storage_key] = event.JS[:target].JS[:value]
+                      Lib::Storage[price_storage_key] = `#{event}.target.value`
+                      update
                     },
                   },
                 }),
