@@ -192,6 +192,10 @@ module View
           unless @game.round.stock?
 
             # ACTION BLOCKS - NOW ACCESSIBLE IN ALL ROUND TYPES!
+
+            upper_content << h(:div, { style: { marginBottom: '0.4rem' } }, [
+              render_phase_box('Lay Tile', phase == :build_track, actions.include?('pass') ? ['Skip'] : [], actions, current_entity, nil, bg_color, text_color),
+            ])
             upper_content << h(:div, { style: { marginBottom: '0.4rem' } }, [
               render_phase_box('Place Token', phase == :place_token, ['Skip'], actions, current_entity, nil, bg_color, text_color),
             ])
