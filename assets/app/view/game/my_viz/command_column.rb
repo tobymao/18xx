@@ -189,250 +189,254 @@ module View
             end
           end
 
-          # ACTION BLOCKS - NOW ACCESSIBLE IN ALL ROUND TYPES!
-          upper_content << h(:div, { style: { marginBottom: '0.4rem' } }, [
-            render_phase_box('Place Token', phase == :place_token, ['Skip'], actions, current_entity, nil, bg_color, text_color),
-          ])
+          unless @game.round.stock?
 
-          revenue_overlay = if %i[run_routes dividend].include?(phase)
-                              if @cmd_router_running
-                                h(:div, { style: { padding: '0.5rem', textAlign: 'center', color: '#666', fontStyle: 'italic', fontSize: '0.85rem' } },
-                                  '🔄 Computing optimal network tracks...')
-                              else
-                                h(:div, { style: { display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', margin: '0.3rem 0' } }, [
-                                  h(:button, {
-                                      style: {
-                                        padding: '0.1rem 0.4rem',
-                                        fontSize: '1.1rem',
-                                        fontWeight: 'bold',
-                                        cursor: 'pointer',
-                                        backgroundColor: '#e0e0e0',
-                                        border: '1px solid #999',
-                                        borderRadius: '3px',
-                                      },
-                                      on: {
-                                        click: lambda {
-                                                 Lib::Storage[storage_key] = [current_revenue - 10, 0].max
-                                                 update
-                                               },
-                                      },
-                                    }, '-'),
-                                  h(:div, { style: { fontSize: '1.8rem', fontWeight: 'bold', color: 'green', minWidth: '4rem', textAlign: 'center' } },
-                                    formatted_revenue),
-                                  h(:button, {
-                                      style: {
-                                        padding: '0.1rem 0.4rem',
-                                        fontSize: '1.1rem',
-                                        fontWeight: 'bold',
-                                        cursor: 'pointer',
-                                        backgroundColor: '#e0e0e0',
-                                        border: '1px solid #999',
-                                        borderRadius: '3px',
-                                      },
-                                      on: {
-                                        click: lambda {
-                                                 Lib::Storage[storage_key] = current_revenue + 10
-                                                 update
-                                               },
-                                      },
-                                    }, '+'),
-                                ])
+            # ACTION BLOCKS - NOW ACCESSIBLE IN ALL ROUND TYPES!
+            upper_content << h(:div, { style: { marginBottom: '0.4rem' } }, [
+              render_phase_box('Place Token', phase == :place_token, ['Skip'], actions, current_entity, nil, bg_color, text_color),
+            ])
+
+            revenue_overlay = if %i[run_routes dividend].include?(phase)
+                                if @cmd_router_running
+                                  h(:div, { style: { padding: '0.5rem', textAlign: 'center', color: '#666', fontStyle: 'italic', fontSize: '0.85rem' } },
+                                    '🔄 Computing optimal network tracks...')
+                                else
+                                  h(:div, { style: { display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', margin: '0.3rem 0' } }, [
+                                    h(:button, {
+                                        style: {
+                                          padding: '0.1rem 0.4rem',
+                                          fontSize: '1.1rem',
+                                          fontWeight: 'bold',
+                                          cursor: 'pointer',
+                                          backgroundColor: '#e0e0e0',
+                                          border: '1px solid #999',
+                                          borderRadius: '3px',
+                                        },
+                                        on: {
+                                          click: lambda {
+                                                   Lib::Storage[storage_key] = [current_revenue - 10, 0].max
+                                                   update
+                                                 },
+                                        },
+                                      }, '-'),
+                                    h(:div, { style: { fontSize: '1.8rem', fontWeight: 'bold', color: 'green', minWidth: '4rem', textAlign: 'center' } },
+                                      formatted_revenue),
+                                    h(:button, {
+                                        style: {
+                                          padding: '0.1rem 0.4rem',
+                                          fontSize: '1.1rem',
+                                          fontWeight: 'bold',
+                                          cursor: 'pointer',
+                                          backgroundColor: '#e0e0e0',
+                                          border: '1px solid #999',
+                                          borderRadius: '3px',
+                                        },
+                                        on: {
+                                          click: lambda {
+                                                   Lib::Storage[storage_key] = current_revenue + 10
+                                                   update
+                                                 },
+                                        },
+                                      }, '+'),
+                                  ])
+                                end
                               end
-                            end
 
-          if phase == :run_routes
-            upper_content << render_phase_box('Run Routes', true, ["Submit #{formatted_revenue}"], actions, current_entity,
-                                              revenue_overlay, bg_color, text_color)
+            if phase == :run_routes
+              upper_content << render_phase_box('Run Routes', true, ["Submit #{formatted_revenue}"], actions, current_entity,
+                                                revenue_overlay, bg_color, text_color)
 
-          elsif phase == :dividend
-            options = step.respond_to?(:dividend_options) ? step.dividend_options(current_entity).map(&:to_s) : []
-            div_buttons = []
-            if actions.include?('payout') || options.include?('payout') || (actions.include?('dividend') && !(current_entity.respond_to?(:minor?) && current_entity.minor?))
-              div_buttons << 'Pay'
-            end
-            if actions.include?('withhold') || options.include?('withhold') || (actions.include?('dividend') && !(current_entity.respond_to?(:minor?) && current_entity.minor?))
-              div_buttons << 'Hold'
-            end
-            if actions.include?('half') || actions.include?('split') || options.include?('half') || options.include?('split') || (actions.include?('dividend') && current_entity.respond_to?(:minor?) && current_entity.minor?)
-              div_buttons << 'Split'
-            end
-
-            upper_content << render_phase_box('Dividend', true, div_buttons, actions, current_entity, revenue_overlay, bg_color,
-                                              text_color)
-          else
-            options = step.respond_to?(:dividend_options) ? step.dividend_options(current_entity).map(&:to_s) : []
-            div_buttons = []
-            div_buttons << 'Pay' if actions.include?('payout') || options.include?('payout') || actions.include?('dividend')
-            div_buttons << 'Hold' if actions.include?('withhold') || options.include?('withhold') || actions.include?('dividend')
-            div_buttons << 'Split' if actions.include?('half') || options.include?('half') || actions.include?('dividend')
-
-            upper_content << render_phase_box('Revenue', false, div_buttons, actions, current_entity, nil, bg_color,
-                                              text_color)
-          end
-
-          buyable_list = phase == :buy_train ? render_buyable_trains(step, current_entity) : h(:div)
-          upper_content << h(:div, { style: { marginBottom: '0.4rem' } }, [
-            render_phase_box('Buy Trains', phase == :buy_train, ['Done Buying'], actions, current_entity, buyable_list, bg_color, text_color),
-          ])
-
-          if phase == :discard_train
-            upper_content << h(:div, { style: { marginBottom: '0.4rem' } }, [
-              render_phase_box('Discard Train', true, [], actions, current_entity, h(:div), bg_color, text_color),
-            ])
-          end
-
-          buyable_company_list = if actions.include?('buy_company')
-                                   render_buyable_companies(step,
-                                                            current_entity)
-                                 else
-                                   h(:div)
-                                 end
-          if actions.include?('buy_company')
-            upper_content << h(:div, { style: { marginBottom: '0.4rem' } }, [
-            render_phase_box('Buy Private Company', true, actions.include?('pass') ? ['Skip'] : [], actions, current_entity, buyable_company_list, bg_color, text_color),
-            ])
-          end
-          if phase == :choose
-            choice_title = step.respond_to?(:choice_name) ? step.choice_name : 'Choose Action'
-            choice_list = render_choices(step, current_entity, bg_color, text_color)
-            upper_content << h(:div, { style: { marginBottom: '0.4rem' } }, [
-              render_phase_box(choice_title, true, [], actions, current_entity, choice_list, bg_color, text_color),
-            ])
-          end
-
-          if phase == :merge
-            merge_list = render_mergeable_companies(step, current_entity)
-            upper_content << h(:div, { style: { marginBottom: '0.4rem' } }, [
-              render_phase_box('Merge', true, actions.include?('pass') ? ['Skip'] : [], actions, current_entity, merge_list, bg_color, text_color),
-            ])
-          elsif phase == :acquisition
-            acquire_list = render_acquirable_companies(step, current_entity)
-            target = step.respond_to?(:auctioning_corporation) ? step.auctioning_corporation : nil
-            target_name = target ? " #{target.name}" : ''
-            upper_content << h(:div, { style: { marginBottom: '0.4rem' } }, [
-              render_phase_box("Acquire#{target_name}", true, actions.include?('pass') ? ['Skip'] : [], actions, current_entity, acquire_list, bg_color, text_color),
-            ])
-          end
-
-          upper_content << h(Abilities)
-          standard_actions = %w[lay_tile place_token run_routes dividend payout withhold half split
-                                buy_train pass buy_company merge choose]
-
-          system_actions = %w[end_game bankrupt]
-          special_actions = actions - standard_actions - system_actions
-          if special_actions.any?
-            special_buttons = special_actions.map do |action|
-              action_class = begin
-                Engine::Action.const_get(action.split('_').map(&:capitalize).join)
-              rescue NameError
-                nil
+            elsif phase == :dividend
+              options = step.respond_to?(:dividend_options) ? step.dividend_options(current_entity).map(&:to_s) : []
+              div_buttons = []
+              if actions.include?('payout') || options.include?('payout') || (actions.include?('dividend') && !(current_entity.respond_to?(:minor?) && current_entity.minor?))
+                div_buttons << 'Pay'
+              end
+              if actions.include?('withhold') || options.include?('withhold') || (actions.include?('dividend') && !(current_entity.respond_to?(:minor?) && current_entity.minor?))
+                div_buttons << 'Hold'
+              end
+              if actions.include?('half') || actions.include?('split') || options.include?('half') || options.include?('split') || (actions.include?('dividend') && current_entity.respond_to?(:minor?) && current_entity.minor?)
+                div_buttons << 'Split'
               end
 
-              next unless action_class
+              upper_content << render_phase_box('Dividend', true, div_buttons, actions, current_entity, revenue_overlay, bg_color,
+                                                text_color)
+            else
+              options = step.respond_to?(:dividend_options) ? step.dividend_options(current_entity).map(&:to_s) : []
+              div_buttons = []
+              div_buttons << 'Pay' if actions.include?('payout') || options.include?('payout') || actions.include?('dividend')
+              if actions.include?('withhold') || options.include?('withhold') || actions.include?('dividend')
+                div_buttons << 'Hold'
+              end
+              div_buttons << 'Split' if actions.include?('half') || options.include?('half') || actions.include?('dividend')
 
-              required_args = action_class.const_defined?(:REQUIRED_ARGS) ? action_class::REQUIRED_ARGS : []
-              is_loan_action = %w[take_loan payoff_loan].include?(action)
+              upper_content << render_phase_box('Revenue', false, div_buttons, actions, current_entity, nil, bg_color,
+                                                text_color)
+            end
 
-              label = action.split('_').map(&:capitalize).join(' ')
+            buyable_list = phase == :buy_train ? render_buyable_trains(step, current_entity) : h(:div)
+            upper_content << h(:div, { style: { marginBottom: '0.4rem' } }, [
+              render_phase_box('Buy Trains', phase == :buy_train, ['Done Buying'], actions, current_entity, buyable_list, bg_color, text_color),
+            ])
 
-              if required_args.empty? || is_loan_action
-                click_action = lambda do
-                  if is_loan_action
-                    loan_pool = if action == 'payoff_loan'
-                                  current_entity.respond_to?(:loans) ? current_entity.loans : []
-                                else
-                                  (@game.respond_to?(:loans) ? @game.loans : [])
-                                end
-                    process_action(action_class.new(current_entity, loan: loan_pool[0])) if loan_pool[0]
-                  else
-                    process_action(action_class.new(current_entity))
-                  end
+            if phase == :discard_train
+              upper_content << h(:div, { style: { marginBottom: '0.4rem' } }, [
+                render_phase_box('Discard Train', true, [], actions, current_entity, h(:div), bg_color, text_color),
+              ])
+            end
+
+            buyable_company_list = if actions.include?('buy_company')
+                                     render_buyable_companies(step,
+                                                              current_entity)
+                                   else
+                                     h(:div)
+                                   end
+            if actions.include?('buy_company')
+              upper_content << h(:div, { style: { marginBottom: '0.4rem' } }, [
+              render_phase_box('Buy Private Company', true, actions.include?('pass') ? ['Skip'] : [], actions, current_entity, buyable_company_list, bg_color, text_color),
+              ])
+            end
+            if phase == :choose
+              choice_title = step.respond_to?(:choice_name) ? step.choice_name : 'Choose Action'
+              choice_list = render_choices(step, current_entity, bg_color, text_color)
+              upper_content << h(:div, { style: { marginBottom: '0.4rem' } }, [
+                render_phase_box(choice_title, true, [], actions, current_entity, choice_list, bg_color, text_color),
+              ])
+            end
+
+            if phase == :merge
+              merge_list = render_mergeable_companies(step, current_entity)
+              upper_content << h(:div, { style: { marginBottom: '0.4rem' } }, [
+                render_phase_box('Merge', true, actions.include?('pass') ? ['Skip'] : [], actions, current_entity, merge_list, bg_color, text_color),
+              ])
+            elsif phase == :acquisition
+              acquire_list = render_acquirable_companies(step, current_entity)
+              target = step.respond_to?(:auctioning_corporation) ? step.auctioning_corporation : nil
+              target_name = target ? " #{target.name}" : ''
+              upper_content << h(:div, { style: { marginBottom: '0.4rem' } }, [
+                render_phase_box("Acquire#{target_name}", true, actions.include?('pass') ? ['Skip'] : [], actions, current_entity, acquire_list, bg_color, text_color),
+              ])
+            end
+
+            upper_content << h(Abilities)
+            standard_actions = %w[lay_tile place_token run_routes dividend payout withhold half split
+                                  buy_train pass buy_company merge choose]
+
+            system_actions = %w[end_game bankrupt]
+            special_actions = actions - standard_actions - system_actions
+            if special_actions.any?
+              special_buttons = special_actions.map do |action|
+                action_class = begin
+                  Engine::Action.const_get(action.split('_').map(&:capitalize).join)
+                rescue NameError
+                  nil
                 end
 
-                h(:button, {
-                    style: {
-                      width: '100%',
-                      padding: '0.3rem',
-                      marginTop: '0.2rem',
-                      fontSize: '0.8rem',
-                      backgroundColor: '#f0f8ff',
-                      color: '#004085',
-                      border: '2px dashed #007bff',
-                      cursor: 'pointer',
-                      fontWeight: 'bold',
-                      borderRadius: '4px',
-                    },
-                    on: { click: click_action },
-                  }, label)
+                next unless action_class
 
-              elsif required_args.include?(:corporation) || required_args.include?(:company)
-                # Scaffold to repeat the "Target Selection" pattern dynamically for unknown special actions
-                targets = if step.respond_to?(:available_targets)
-                            step.available_targets(current_entity) || []
-                          elsif step.respond_to?(:corporations)
-                            step.corporations || []
-                          elsif step.respond_to?(:companies)
-                            step.companies || []
-                          else
-                            []
-                          end
+                required_args = action_class.const_defined?(:REQUIRED_ARGS) ? action_class::REQUIRED_ARGS : []
+                is_loan_action = %w[take_loan payoff_loan].include?(action)
 
-                if targets.any?
-                  target_buttons = targets.map do |target|
-                    click_action = lambda do
-                      kwargs = {}
-                      kwargs[:corporation] = target if required_args.include?(:corporation)
-                      kwargs[:company] = target if required_args.include?(:company)
-                      process_action(action_class.new(current_entity, **kwargs))
+                label = action.split('_').map(&:capitalize).join(' ')
+
+                if required_args.empty? || is_loan_action
+                  click_action = lambda do
+                    if is_loan_action
+                      loan_pool = if action == 'payoff_loan'
+                                    current_entity.respond_to?(:loans) ? current_entity.loans : []
+                                  else
+                                    (@game.respond_to?(:loans) ? @game.loans : [])
+                                  end
+                      process_action(action_class.new(current_entity, loan: loan_pool[0])) if loan_pool[0]
+                    else
+                      process_action(action_class.new(current_entity))
                     end
-                    h(:button, {
-                        style: {
-                          width: '100%',
-                          padding: '0.2rem',
-                          marginTop: '0.1rem',
-                          fontSize: '0.75rem',
-                          cursor: 'pointer',
-                          backgroundColor: '#e0f7fa',
-                          border: '1px solid #17a2b8',
-                          borderRadius: '3px',
-                        },
-                        on: { click: click_action },
-                      }, "#{label} #{target.name}")
                   end
 
-                  h(:div, { style: { border: '1px solid #17a2b8', padding: '0.3rem', marginTop: '0.2rem', borderRadius: '4px', backgroundColor: '#ffffff' } }, [
-                    h(:div, { style: { fontSize: '0.8rem', fontWeight: 'bold', color: '#0056b3', marginBottom: '0.2rem' } },
-                      label),
-                    *target_buttons,
-                  ])
+                  h(:button, {
+                      style: {
+                        width: '100%',
+                        padding: '0.3rem',
+                        marginTop: '0.2rem',
+                        fontSize: '0.8rem',
+                        backgroundColor: '#f0f8ff',
+                        color: '#004085',
+                        border: '2px dashed #007bff',
+                        cursor: 'pointer',
+                        fontWeight: 'bold',
+                        borderRadius: '4px',
+                      },
+                      on: { click: click_action },
+                    }, label)
+
+                elsif required_args.include?(:corporation) || required_args.include?(:company)
+                  # Scaffold to repeat the "Target Selection" pattern dynamically for unknown special actions
+                  targets = if step.respond_to?(:available_targets)
+                              step.available_targets(current_entity) || []
+                            elsif step.respond_to?(:corporations)
+                              step.corporations || []
+                            elsif step.respond_to?(:companies)
+                              step.companies || []
+                            else
+                              []
+                            end
+
+                  if targets.any?
+                    target_buttons = targets.map do |target|
+                      click_action = lambda do
+                        kwargs = {}
+                        kwargs[:corporation] = target if required_args.include?(:corporation)
+                        kwargs[:company] = target if required_args.include?(:company)
+                        process_action(action_class.new(current_entity, **kwargs))
+                      end
+                      h(:button, {
+                          style: {
+                            width: '100%',
+                            padding: '0.2rem',
+                            marginTop: '0.1rem',
+                            fontSize: '0.75rem',
+                            cursor: 'pointer',
+                            backgroundColor: '#e0f7fa',
+                            border: '1px solid #17a2b8',
+                            borderRadius: '3px',
+                          },
+                          on: { click: click_action },
+                        }, "#{label} #{target.name}")
+                    end
+
+                    h(:div, { style: { border: '1px solid #17a2b8', padding: '0.3rem', marginTop: '0.2rem', borderRadius: '4px', backgroundColor: '#ffffff' } }, [
+                      h(:div, { style: { fontSize: '0.8rem', fontWeight: 'bold', color: '#0056b3', marginBottom: '0.2rem' } },
+                        label),
+                      *target_buttons,
+                    ])
+                  else
+                    # Fallback if no targets could be resolved dynamically
+                    h(:div, { style: { border: '1px solid #17a2b8', padding: '0.3rem', marginTop: '0.2rem', borderRadius: '4px', backgroundColor: '#e0f7fa', textAlign: 'center' } }, [
+                      h(:div, { style: { fontSize: '0.8rem', fontWeight: 'bold', color: '#0056b3' } }, label),
+                      h(:div, { style: { fontSize: '0.7rem', color: '#666', fontStyle: 'italic' } },
+                        '(Select target on map)'),
+                    ])
+                  end
+
                 else
-                  # Fallback if no targets could be resolved dynamically
+                  # Action requires arguments like :hex or :share that we cannot easily list in a column right now
                   h(:div, { style: { border: '1px solid #17a2b8', padding: '0.3rem', marginTop: '0.2rem', borderRadius: '4px', backgroundColor: '#e0f7fa', textAlign: 'center' } }, [
                     h(:div, { style: { fontSize: '0.8rem', fontWeight: 'bold', color: '#0056b3' } }, label),
                     h(:div, { style: { fontSize: '0.7rem', color: '#666', fontStyle: 'italic' } },
-                      '(Select target on map)'),
+                      '(Interact via map/market)'),
+                    h(:div, { style: { fontSize: '0.65rem', color: '#888' } },
+                      "Args: #{required_args.join(', ')}"),
                   ])
                 end
+              end.compact
 
-              else
-                # Action requires arguments like :hex or :share that we cannot easily list in a column right now
-                h(:div, { style: { border: '1px solid #17a2b8', padding: '0.3rem', marginTop: '0.2rem', borderRadius: '4px', backgroundColor: '#e0f7fa', textAlign: 'center' } }, [
-                  h(:div, { style: { fontSize: '0.8rem', fontWeight: 'bold', color: '#0056b3' } }, label),
-                  h(:div, { style: { fontSize: '0.7rem', color: '#666', fontStyle: 'italic' } },
-                    '(Interact via map/market)'),
-                  h(:div, { style: { fontSize: '0.65rem', color: '#888' } },
-                    "Args: #{required_args.join(', ')}"),
-                ])
-              end
-            end.compact
-
-            upper_content << h(:div, { style: { border: '2px solid #007bff', padding: '0.4rem', backgroundColor: '#e2e3e5', textAlign: 'center', marginBottom: '0.4rem', borderRadius: '4px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' } }, [
-                        h(:div, { style: { fontSize: '0.8rem', fontWeight: 'bold', color: '#1b1e21', marginBottom: '0.2rem' } },
-                          '5. Special Actions'),
-                        *special_buttons,
-                                ])
+              upper_content << h(:div, { style: { border: '2px solid #007bff', padding: '0.4rem', backgroundColor: '#e2e3e5', textAlign: 'center', marginBottom: '0.4rem', borderRadius: '4px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' } }, [
+                          h(:div, { style: { fontSize: '0.8rem', fontWeight: 'bold', color: '#1b1e21', marginBottom: '0.2rem' } },
+                            '5. Special Actions'),
+                          *special_buttons,
+                                  ])
+            end
           end
-
         end
 
         # AUTOMATED REVENUE PATH ROUTER WITH ASYNC TIMING GATE

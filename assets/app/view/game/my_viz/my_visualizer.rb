@@ -110,6 +110,9 @@ h(:div, { attrs: { class: 'scaler-content' }, style: { width: '100%', height: '1
                               var newNextFlex = Math.max(0, totalFlex - newPrevFlex);
                               prev.style.flex = '0 0 ' + newPrevFlex + 'px';
                               next.style.flex = '0 0 ' + newNextFlex + 'px';
+                              if (!isVertical && nextId === 'col-3') {
+                                next.style.flex = '1 1 auto';
+                              }
                               prev.style.width = 'auto'; prev.style.height = 'auto';
                               next.style.width = 'auto'; next.style.height = 'auto';
                             };
@@ -456,7 +459,7 @@ h(View::Game::Map, game: @game, user: @user, minimal: true),
             h(:div, { attrs: { id: 'resizer-h-3-2' }, style: { flex: '0 0 0.5rem', cursor: 'row-resize', zIndex: 10 } }),
 
             # Stock Market Component
-            h(:div, { attrs: { id: 'panel-3-bot' }, style: { flex: '1 1 auto', overflow: 'hidden', border: '1px solid #ccc', padding: '0.5rem', borderRadius: '4px', backgroundColor: '#fff', display: 'flex', justifyContent: 'flex-start', alignItems: 'center', flexDirection: 'column' } }, [
+            h(:div, { attrs: { id: 'panel-3-bot' }, style: { flex: '1 1 auto', overflow: 'visible', border: '1px solid #ccc', padding: '0.5rem', borderRadius: '4px', backgroundColor: '#fff', display: 'flex', justifyContent: 'flex-start', alignItems: 'center', flexDirection: 'column' } }, [
               h(:div, {
                   attrs: { class: 'scaler-content' },
                   style: {
@@ -464,7 +467,7 @@ h(View::Game::Map, game: @game, user: @user, minimal: true),
                     justifyContent: 'center',
                     alignItems: 'flex-start',
                     transformOrigin: 'center top',
-                    marginTop: '-5px',
+                    marginTop: '0px',
                   },
                 }, [
                               h(View::Game::SimpleStockMarket, game: @game),
