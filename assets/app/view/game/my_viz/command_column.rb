@@ -289,17 +289,12 @@ module View
               ])
             end
 
-            buyable_company_list = if actions.include?('buy_company')
-                                     render_buyable_companies(step,
-                                                              current_entity)
-                                   else
-                                     h(:div)
-                                   end
-            if actions.include?('buy_company')
-              upper_content << h(:div, { style: { marginBottom: '0.4rem' } }, [
-              render_phase_box('Buy Private Company', true, actions.include?('pass') ? ['Skip'] : [], actions, current_entity, buyable_company_list, bg_color, text_color),
-              ])
-            end
+            allow_private_buy = actions.include?('buy_company') || (@game.phase.status.include?('can_buy_companies') && current_entity&.corporation?)
+            buyable_company_list = allow_private_buy ? render_buyable_companies(step, current_entity) : h(:div)
+            upper_content << h(:div, { style: { marginBottom: '0.4rem' } }, [
+              render_phase_box('Buy Private Company', allow_private_buy, actions.include?('pass') ? ['Skip'] : [], actions, current_entity, buyable_company_list, bg_color, text_color),
+            ])
+
             if phase == :choose
               choice_title = step.respond_to?(:choice_name) ? step.choice_name : 'Choose Action'
               choice_list = render_choices(step, current_entity, bg_color, text_color)
