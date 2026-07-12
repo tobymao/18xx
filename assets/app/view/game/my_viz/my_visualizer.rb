@@ -135,15 +135,22 @@ h(:div, { attrs: { class: 'scaler-content' }, style: { width: '100%', height: '1
                               var wrapper = panel.querySelector('.scaler-content');
                               if (!wrapper) continue;
 
-                              wrapper.style.zoom = 1;
-                              var cw = wrapper.offsetWidth;
-                              var ch = wrapper.offsetHeight;
-                              var pw = entries[i].contentRect.width;
-                              var ph = entries[i].contentRect.height;
+                             wrapper.style.transform = 'none';
+                              wrapper.style.width = 'max-content';
+                              wrapper.style.height = 'max-content';
+
+                              var cw = wrapper.scrollWidth;
+                              var ch = wrapper.scrollHeight;
+                              var pw = entries[i].contentRect.width - 16; // Account for panel padding
+                              var ph = entries[i].contentRect.height - 16;
 
                               if (cw > 0 && ch > 0) {
-                                var scale = Math.min(pw / cw, ph / ch) * 0.96;
-                                wrapper.style.zoom = scale;
+                                var scale = Math.min(pw / cw, ph / ch);
+                                wrapper.style.transform = 'scale(' + scale + ')';
+                                // Lock the container dimensions to the scaled footprint to prevent layout collapse
+                                panel.style.display = 'block';
+                                wrapper.style.width = cw + 'px';
+                                wrapper.style.height = ch + 'px';
                               }
                             }
                           });
@@ -459,20 +466,18 @@ h(View::Game::Map, game: @game, user: @user, minimal: true),
             h(:div, { attrs: { id: 'resizer-h-3-2' }, style: { flex: '0 0 0.5rem', cursor: 'row-resize', zIndex: 10 } }),
 
             # Stock Market Component
-            h(:div, { attrs: { id: 'panel-3-bot' }, style: { flex: '1 1 auto', overflow: 'visible', border: '1px solid #ccc', padding: '0.5rem', borderRadius: '4px', backgroundColor: '#fff', display: 'flex', justifyContent: 'flex-start', alignItems: 'center', flexDirection: 'column' } }, [
-              h(:div, {
-                  attrs: { class: 'scaler-content' },
-                  style: {
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'flex-start',
-                    transformOrigin: 'center top',
-                    marginTop: '0px',
-                  },
-                }, [
-                              h(View::Game::SimpleStockMarket, game: @game),
+            h(:div, { attrs: { id: 'panel-3-bot' }, style: { flex: '1 1 auto', overflow: 'hidden', border: '1px solid #ccc', padding: '0.5rem', borderRadius: '4px', backgroundColor: '#fff', boxSizing: 'border-box', position: 'relative' } }, [
+                h(:div, {
+                    attrs: { class: 'scaler-content' },
+                    style: {
+                      transformOrigin: 'top left',
+                      margin: '0 auto',
+                      padding: '0',
+                    },
+                  }, [
+                                h(View::Game::SimpleStockMarket, game: @game),
+                  ]),
                 ]),
-              ]),
           ]),
         ])
       end

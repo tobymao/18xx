@@ -400,7 +400,7 @@ module View
 
       def grid_2d
         # Need to peek at row below to know if sitting on ledge.
-        @game.stock_market.market.push([]).each_cons(2).each_with_index.map do |rows, row_i|
+        (@game.stock_market.market + [[]]).each_cons(2).each_with_index.map do |rows, row_i|
           row_prices, next_row = rows
           first_price = true
 
@@ -430,7 +430,8 @@ module View
                 [
                   h('div.xsmall_font', price.price),
                   h(:div, tokens),
-                  h(:div, { style: { color: '#00000060', position: 'absolute', 'font-size': '170%' }.merge(align) }, arrow),
+                  h(:div, { style: { color: '#00000060', position: 'absolute', 'font-size': '170%' }.merge(align) },
+                    arrow),
                   price.info ? h(:div, { style: PRICE_STYLE_INFO }, price.info) : nil,
                 ].compact)
             else
@@ -481,10 +482,9 @@ module View
 
         grid_props = {
           style: {
-            width: '100%',
-            height: '100%',
-            overflowY: 'auto',
-            overflowX: 'hidden',
+            width: 'max-content',
+            height: 'max-content',
+            overflow: 'visible',
             margin: '0',
             padding: '0',
           },
