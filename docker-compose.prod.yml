@@ -9,7 +9,13 @@ x-rack: &rack
     NEW_RELIC_DISABLE_MIDDLEWARE_INSTRUMENTATION: 1
     SLACK_WEBHOOK_URL: $SLACK_WEBHOOK_URL
     TURNSTILE_SECRET: $TURNSTILE_SECRET
-    RUBYOPT: --yjit
+    # No RUBYOPT: --yjit. YJIT pins the method entries it compiles in its root
+    # set, so any method defined at runtime per object -- define_method or
+    # singleton_class in an initializer -- keeps that object alive for the life
+    # of the worker. That leaked every replayed game (~6.5MB each) until the
+    # memory killer shot the worker, taking its long-poll connections with it.
+    # The two offenders are fixed, but YJIT only bought ~3% on engine replay and
+    # this is too easy to reintroduce, so it stays off.
     PORT: 9292
     OPAL_PREFORK_DISABLE: "true"
   restart: always
