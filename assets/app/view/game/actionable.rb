@@ -76,7 +76,7 @@ module View
 
         # 3. Calculate absolute elapsed duration and bind it to the action object
         elapsed_ms = click_timestamp - turn_start_ms
-        action.time_consumed = elapsed_ms if elapsed_ms > 0
+        action.time_consumed = elapsed_ms if elapsed_ms.positive?
 
         # warn '=== [UI ACTION DISPATCH] ==='
         # warn "Action Class: #{action.class} | Payload: #{action.to_h}"
