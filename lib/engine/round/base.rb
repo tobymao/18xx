@@ -27,18 +27,47 @@ module Engine
         @entities = select_entities
         @last_to_act = nil
         @pass_order = []
+        @round_state_keys = {}
 
         @steps = (self.class::DEFAULT_STEPS + steps).map do |step, step_opts|
           step_opts ||= {}
           step = step.new(@game, self, **step_opts)
           step.round_state.each do |key, value|
-            singleton_class.class_eval { attr_accessor key }
-            send("#{key}=", value)
+            @round_state_keys[key] = true
+            instance_variable_set("@#{key}", value)
           end
           @game.next_turn!
           step.setup
           step
         end
+      end
+
+      # Round state lives in plain ivars: steps reach it as round.converted, while
+      # round subclasses reach the very same storage as @converted (see
+      # g_1817/round/merger.rb). Which keys a round has is per instance -- the
+      # engine probes with respond_to? (step/special_token.rb, step/exchange.rb,
+      # step/special_buy_train.rb) -- so presence must stay per instance too.
+      #
+      # These readers/writers used to be attr_accessors defined on each round's
+      # singleton class. YJIT pins the method entries it compiles in its root set,
+      # so every singleton class -- and through it the round and the round's @game
+      # -- stayed alive for the life of the worker. Every game ever loaded leaked
+      # (~6.5MB each) until unicorn's memory killer shot the worker. Answering the
+      # same calls here keeps both the ivar storage and the per-instance presence,
+      # and defines no methods at all.
+      def method_missing(name, *args)
+        key = round_state_key(name)
+        return super unless key
+
+        if name.to_s.end_with?('=')
+          instance_variable_set("@#{key}", args.first)
+        else
+          instance_variable_get("@#{key}")
+        end
+      end
+
+      def respond_to_missing?(name, include_private = false)
+        !round_state_key(name).nil? || super
       end
 
       def setup; end
@@ -218,6 +247,14 @@ module Engine
       def highest_bid(_entity); end
 
       private
+
+      # nil unless this round actually has the state, so respond_to? stays true
+      # only for keys the round's own steps declared
+      def round_state_key(name)
+        str = name.to_s
+        key = (str.end_with?('=') ? str[0..-2] : str).to_sym
+        @round_state_keys&.key?(key) ? key : nil
+      end
 
       def before_process(_action); end
 
