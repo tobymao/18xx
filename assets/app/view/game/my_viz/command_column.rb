@@ -51,13 +51,13 @@ module View
         elsif actions.include?('place_token') then phase = :place_token
         elsif actions.include?('run_routes') then phase = :run_routes
 
-elsif actions.include?('dividend') ||
+       elsif actions.include?('dividend') ||
               actions.include?('payout') ||
               actions.include?('withhold') ||
               actions.include?('half') ||
               actions.include?('split')
           phase = :dividend
-                elsif actions.include?('buy_train') then phase = :buy_train
+        elsif actions.include?('buy_train') then phase = :buy_train
         elsif actions.include?('discard_train') then phase = :discard_train
         elsif actions.include?('choose') then phase = :choose
         elsif actions.include?('merge')
@@ -68,8 +68,7 @@ elsif actions.include?('dividend') ||
         player_name = current_entity&.owner&.name || ''
         treasury = current_entity&.cash || 0
 
-
-        if current_entity&.respond_to?(:color)
+        if current_entity.respond_to?(:color)
           bg_color = current_entity.color || '#4169e1'
           text_color = current_entity.text_color || 'white'
         else
