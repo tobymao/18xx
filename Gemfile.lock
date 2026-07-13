@@ -5,6 +5,8 @@ GEM
       ffi (~> 1.15)
       ffi-compiler (~> 1.0)
     ast (2.4.2)
+    base64 (0.3.0)
+    bigdecimal (4.1.2)
     byebug (11.1.3)
     coderay (1.1.3)
     concurrent-ruby (1.3.7)
@@ -26,6 +28,7 @@ GEM
     listen (3.8.0)
       rb-fsevent (~> 0.10, >= 0.10.3)
       rb-inotify (~> 0.9, >= 0.9.10)
+    logger (1.7.0)
     message_bus (4.2.0)
       rack (>= 1.1.3)
     method_source (1.0.0)
@@ -122,6 +125,9 @@ PLATFORMS
 
 DEPENDENCIES
   argon2
+  base64
+  bigdecimal
+  logger
   message_bus
   mini_racer
   newrelic_rpm
@@ -149,4 +155,4 @@ DEPENDENCIES
   unicorn-worker-killer
 
 BUNDLED WITH
-   2.5.13
+   2.6.9
