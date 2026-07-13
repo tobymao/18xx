@@ -1,5 +1,7 @@
 # frozen_string_literal: true
+
 # rubocop:disable Layout/LineLength
+
 
 require 'view/game/actionable'
 
@@ -21,7 +23,7 @@ module View
 
       def active_entity
         @game.round.active_step&.current_entity
-      rescue NotImplementedError, StandardError
+        rescue NotImplementedError, StandardError
         nil
       end
 
@@ -476,3 +478,4 @@ h(View::Game::Map, game: @game, user: @user, minimal: true),
     end
   end
 end
+# rubocop:enable Layout/LineLength

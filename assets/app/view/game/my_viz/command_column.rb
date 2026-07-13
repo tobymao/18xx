@@ -1,5 +1,7 @@
 # frozen_string_literal: true
+
 # rubocop:disable Layout/LineLength
+
 
 require 'view/game/actionable'
 require 'view/game/results_overlay'

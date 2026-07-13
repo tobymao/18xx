@@ -15,7 +15,7 @@ module Engine
             @companies = @game.companies.select { |c| c.owner.nil? && !c.closed? }
 
             if @game.optional_rules&.include?(:clemens)
-             @tiered_companies = Array.new(3) { [] }
+              @tiered_companies = Array.new(3) { [] }
               @companies.each do |company|
                 if company.sym.start_with?('M')
                   @tiered_companies[0] << company
@@ -25,10 +25,10 @@ module Engine
                   @tiered_companies[2] << company
                 end
               end
-              @tiered_companies[0].sort_by! { |c| c.sym }
+              @tiered_companies[0].sort_by!(&:sym)
               @tiered_companies[1].sort_by! { |c| %w[NF LD BY_D OBB PB].index(c.sym) }
               @tiered_companies[2].sort_by! { |c| %w[BB HB].index(c.sym) }
-                        else
+            else
               # set up the tiered companies as 2d array that might contain empty arrays if the starting package was not
               # fully sold in a previous draft round. These empty arrays are important for may_purchase: companies in rows
               # after an empty row can only be purchased if all rows before are empty. If we were to only group_by
@@ -85,9 +85,9 @@ module Engine
           end
 
           def actions(entity)
-              return [] if finished?
+            return [] if finished?
 
-if entity.player? && !@companies.any? { |c| entity.cash >= c.value }
+            if entity.player? && @companies.none? { |c| entity.cash >= c.value }
               @log << "#{entity.name} has no valid actions and passes"
               return []
             end
