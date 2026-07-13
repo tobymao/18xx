@@ -2,6 +2,16 @@
 
 PRODUCTION = ENV['RACK_ENV'] == 'production'
 
+# Cloudflare Turnstile challenge for the auth endpoints. The site key is public;
+# outside production we use Cloudflare's always-pass test keys so local dev works
+# without registering a hostname. In production the real secret is required -- we
+# never fall back to the always-pass test secret.
+TURNSTILE_SITEKEY = PRODUCTION ? '0x4AAAAAADuTm2-bvPUtb2pz' : '1x00000000000000000000AA'
+raise 'TURNSTILE_SECRET must be set in production' if PRODUCTION && ENV['TURNSTILE_SECRET'].to_s.empty?
+
+TURNSTILE_SECRET = ENV['TURNSTILE_SECRET'] || '1x0000000000000000000000000000000AA'
+TURNSTILE_HOSTS = %w[18xx.games www.18xx.games].freeze
+
 require 'opal'
 require 'require_all'
 require 'roda'
@@ -29,7 +39,8 @@ class Api < Roda
     csp.style_src :self, :unsafe_inline, 'fonts.googleapis.com', 'cdn.jsdelivr.net'
     csp.font_src :self, 'fonts.gstatic.com'
     csp.form_action :self
-    csp.script_src :self, :unsafe_inline, 'cdn.jsdelivr.net'
+    csp.script_src :self, :unsafe_inline, 'cdn.jsdelivr.net', 'challenges.cloudflare.com'
+    csp.frame_src :self, 'challenges.cloudflare.com'
     csp.connect_src :self
     csp.base_uri :none
     csp.frame_ancestors :none
@@ -213,6 +224,9 @@ class Api < Roda
 
   def render(titles: nil, **needs)
     needs[:user] = user&.to_h(for_user: true)
+    # pin is interpolated raw into a <script src> and <title>; only hex tokens
+    # name real /pinned/*.js bundles, so reject anything else (reflected XSS).
+    needs[:pin] = HtmlSafe.safe_pin(needs[:pin])
 
     return render_pin(**needs) if needs[:pin]
 
@@ -236,6 +250,7 @@ class Api < Roda
     args = Snabberb.wrap(
       app_route: request.path,
       production: PRODUCTION,
+      turnstile_sitekey: TURNSTILE_SITEKEY,
       **needs,
     )
 
@@ -259,11 +274,12 @@ class Api < Roda
            <meta id=\"theme_ms\" rel=\"msapplication-navbutton-color\" name=\"msapplication-navbutton-color\" content=\"#ffffff\">
            <meta id=\"theme_apple\" rel=\"apple-mobile-web-app-status-bar-style\" name=\"apple-mobile-web-app-status-bar-style\" content=\"#ffffff\">
            <link rel=\"stylesheet\" href=\"/assets/main.css\">
+           <script src=\"https://challenges.cloudflare.com/turnstile/v0/api.js\" async defer></script>
         </head>
         <body>
           <div id="app"></div>
           #{js_tags}
-          <script>Opal.App.$attach('app', #{args})</script>
+          <script>Opal.App.$attach('app', #{HtmlSafe.escape_inline_script(args)})</script>
         </body>
       </html>
     HTML
@@ -276,7 +292,23 @@ class Api < Roda
   end
 
   def user
-    session&.valid? ? session.user : nil
+    return @user if @user_resolved
+
+    @user_resolved = true
+    @user = session&.valid? ? session.user : nil
+    @user = nil if @user && banned?(@user)
+    @user
+  end
+
+  # A ban must take effect on the very next request, not just at login: an
+  # already-authenticated user whose account (or current IP) is banned would
+  # otherwise keep acting until their (up to 180-day) session expires. Rechecked
+  # here so every authenticated request re-evaluates it; result is memoized per
+  # request via #user.
+  def banned?(user_record)
+    return false unless user_record
+
+    Ban.banned_account?(user_record.id) || Ban.banned_ip?(request.ip)
   end
 
   def halt(code, message)
@@ -285,6 +317,13 @@ class Api < Roda
 
   def not_authorized!
     halt(401, 'You are not authorized to make this request')
+  end
+
+  def block_if_email_conflict!(user)
+    return unless user&.settings.to_h['email_conflict']
+
+    halt(403, 'This account shares an email with another account. Message an ' \
+              'admin on Slack or Discord to set a new email and restore access.')
   end
 
   def publish(channel, limit = nil, **data)

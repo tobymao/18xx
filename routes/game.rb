@@ -17,6 +17,7 @@ class Api
         # POST '/api/game/<game_id>'
         r.post do
           not_authorized! unless user
+          block_if_email_conflict!(user)
 
           users = game.ordered_players
 
@@ -69,12 +70,23 @@ class Api
             # just by posting an action such as a chat message.
             halt(400, 'Game has not started') if game.status == 'new'
 
+            # A message's entity must be the sender's own id; only the game owner
+            # may act for others (hotseat / master mode).
+            if r.params['type'] == 'message' &&
+               r.params['entity'].to_i != user.id &&
+               game.user_id != user.id
+              halt(403, 'You can only send messages as yourself')
+            end
+
             acting, action = nil
 
             DB.with_advisory_lock(:action_lock, game.id) do
               if game.settings['pin']
                 action_id = r.params['id']
                 action = r.params.clone
+                # Attribute the action to the authenticated submitter, mirroring
+                # the engine branch below.
+                action['user'] = user.id
                 meta = action['meta']
                 halt(400, 'Game missing metadata') unless meta
                 halt(400, 'Game out of sync') unless actions_h(game).size + 1 == action_id
@@ -202,6 +214,7 @@ class Api
       # POST '/api/game[/*]'
       r.post do
         not_authorized! unless user
+        block_if_email_conflict!(user)
 
         # POST '/api/game'
         r.is do

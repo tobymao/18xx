@@ -8,6 +8,7 @@ x-rack: &rack
     NEW_RELIC_LICENSE_KEY: $NEW_RELIC_LICENSE_KEY
     NEW_RELIC_DISABLE_MIDDLEWARE_INSTRUMENTATION: 1
     SLACK_WEBHOOK_URL: $SLACK_WEBHOOK_URL
+    TURNSTILE_SECRET: $TURNSTILE_SECRET
     RUBYOPT: --yjit
     PORT: 9292
     OPAL_PREFORK_DISABLE: "true"
@@ -57,6 +58,9 @@ services:
     volumes:
       - ./public:/public
       - /etc/letsencrypt:/etc/letsencrypt
+      # Access log on a stable host path so the host can watch it (the default
+      # log only goes to the container's stdout, whose path changes each deploy).
+      - /var/log/18xx-nginx:/var/log/18xx-nginx
     depends_on:
       - rack
       - rack_backup

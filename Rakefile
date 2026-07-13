@@ -284,3 +284,59 @@ task 'disposable:refresh' do
   File.write(path, "#{upstream}\n#{custom}")
   puts "Refreshed #{path}"
 end
+
+desc 'Mine the disposable list for shared MX backends (candidates for BANNED_MX_DOMAINS)'
+task 'disposable:mx_cluster', [:min] do |_task, args|
+  require 'resolv'
+  require_relative 'lib/disposable_email'
+
+  min = (args[:min] || 5).to_i
+  domains = File.foreach(DisposableEmail::PATH)
+                .map { |line| line.strip.downcase }
+                .reject { |d| d.empty? || d.start_with?('#') }
+                .uniq
+  parent = ->(host) { host.to_s.downcase.chomp('.').split('.').last(2).join('.') }
+
+  queue = Queue.new
+  domains.each { |d| queue << d }
+  counts = Hash.new { |h, k| h[k] = { n: 0, examples: [] } }
+  mutex = Mutex.new
+
+  workers = Array.new(40) do
+    Thread.new do
+      loop do
+        domain = begin
+          queue.pop(true)
+        rescue ThreadError
+          break
+        end
+        hosts = begin
+          Resolv::DNS.open do |dns|
+            dns.timeouts = 2
+            dns.getresources(domain, Resolv::DNS::Resource::IN::MX).map { |mx| mx.exchange.to_s }
+          end
+        rescue StandardError
+          []
+        end
+        next if hosts.empty?
+
+        mutex.synchronize do
+          hosts.map { |h| parent.call(h) }.uniq.each do |p|
+            counts[p][:n] += 1
+            counts[p][:examples] << domain if counts[p][:examples].size < 5
+          end
+        end
+      end
+    end
+  end
+  workers.each(&:join)
+
+  banned = DisposableEmail::BANNED_MX_DOMAINS
+  puts "# mx_backend | disposable_domains | examples  (>= #{min}; * already banned)"
+  counts.select { |_, v| v[:n] >= min }.sort_by { |_, v| -v[:n] }.each do |p, v|
+    puts "#{p} | #{v[:n]} | #{v[:examples].join(', ')}#{banned.include?(p) ? ' *' : ''}"
+  end
+  puts "\nReview before adding -- EXCLUDE legit shared infra (cloudflare.net, google.com, " \
+       'mailgun.org, amazonaws.com, outlook.com, zoho.com, protonmail.ch, yandex.net, ovh.net, ' \
+       'registrar-servers.com, privateemail.com, above.com, hostedmxserver.com).'
+end
