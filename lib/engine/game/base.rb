@@ -449,6 +449,19 @@ module Engine
         %i[loans loan],
       ].freeze
 
+      # Defined once, on the class. cache_objects used to (re)define these per
+      # game via self.class.define_method, and YJIT pins the method entries it
+      # compiles in its root set -- so each block, and the game it closed over,
+      # was held for the life of the worker. Here the block closes over ivar and
+      # self is the class, so nothing per-game is captured.
+      CACHABLE.each do |type, name|
+        ivar = "@_#{type}"
+
+        define_method("#{name}_by_id") do |id|
+          instance_variable_get(ivar)[id]
+        end
+      end
+
       # https://en.wikipedia.org/wiki/Linear_congruential_generator#Parameters_in_common_use
       RAND_A = 1_103_515_245
       RAND_C = 12_345
@@ -3223,13 +3236,8 @@ module Engine
       end
 
       def cache_objects
-        CACHABLE.each do |type, name|
-          ivar = "@_#{type}"
-          instance_variable_set(ivar, send(type).to_h { |x| [x.id, x] })
-
-          self.class.define_method("#{name}_by_id") do |id|
-            instance_variable_get(ivar)[id]
-          end
+        CACHABLE.each do |type, _name|
+          instance_variable_set("@_#{type}", send(type).to_h { |x| [x.id, x] })
         end
       end
 
