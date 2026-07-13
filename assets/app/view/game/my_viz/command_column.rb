@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+# rubocop:disable Layout/LineLength
 
 require 'view/game/actionable'
 require 'view/game/results_overlay'
@@ -51,7 +52,7 @@ module View
         elsif actions.include?('place_token') then phase = :place_token
         elsif actions.include?('run_routes') then phase = :run_routes
 
-       elsif actions.include?('dividend') ||
+        elsif actions.include?('dividend') ||
               actions.include?('payout') ||
               actions.include?('withhold') ||
               actions.include?('half') ||
@@ -87,8 +88,8 @@ module View
             # Suppress general runtime graph issues safely
           end
         end
-if phase == :dividend && base_revenue.zero? && current_entity&.respond_to?(:operating_history)
-            operating = current_entity.operating_history || {}
+        if phase == :dividend && base_revenue.zero? && current_entity.respond_to?(:operating_history)
+          operating = current_entity.operating_history || {}
           base_revenue = (operating[operating.keys.max]&.revenue || 0).to_i
         end
 
@@ -106,7 +107,14 @@ if phase == :dividend && base_revenue.zero? && current_entity&.respond_to?(:oper
 
         if @game.finished
           upper_content << h(:div,
-                             { style: { fontSize: '1.5rem', fontWeight: 'bold', textAlign: 'center', margin: '2rem 0 1rem 0' } }, 'End of Game')
+                             {
+                               style: {
+                                 fontSize: '1.5rem',
+                                 fontWeight: 'bold',
+                                 textAlign: 'center',
+                                 margin: '2rem 0 1rem 0',
+                               },
+                             }, 'End of Game')
           upper_content << h(:button, {
                                style: {
                                  width: '100%',
@@ -131,18 +139,24 @@ if phase == :dividend && base_revenue.zero? && current_entity&.respond_to?(:oper
         else
 
           unless @game.round.operating?
-            round_name_str = @game.round.class.respond_to?(:round_name) ? @game.round.class.round_name : @game.round.class.name.split('::').last
+            r_class = @game.round.class
+            round_name_str = if r_class.respond_to?(:round_name)
+                               r_class.round_name
+                             else
+                               r_class.name.split('::').last
+                             end
+
             upper_content << h(:div, { style: { padding: '1.5rem 1rem 0.5rem', textAlign: 'center', color: '#333' } }, [
-              h(:div, { style: { fontSize: '1.5rem', fontWeight: 'bold', textTransform: 'uppercase' } },
-                "#{round_name_str} Round"),
-              h(:div, { style: { fontSize: '1.2rem', marginTop: '0.2rem', fontWeight: 'normal' } },
-                current_entity&.name || ''),
-            ])
+            h(:div, { style: { fontSize: '1.5rem', fontWeight: 'bold', textTransform: 'uppercase' } },
+              "#{round_name_str} Round"),
+            h(:div, { style: { fontSize: '1.2rem', marginTop: '0.2rem', fontWeight: 'normal' } },
+              current_entity&.name || ''),
+          ])
           end
 
           if current_entity
             if @game.round.operating?
-              logo_src = begin
+              begin
                 setting_for(:simple_logos, @game) ? current_entity.simple_logo : current_entity.logo
               rescue StandardError
                 nil
@@ -488,7 +502,7 @@ if phase == :dividend && base_revenue.zero? && current_entity&.respond_to?(:oper
                             store(:cmd_router_running, false)
                           end
               )
-            rescue StandardError => e
+            rescue StandardError
               store(:cmd_router_running, false)
               `console.warn('AutoRouter skipped layout matching: ' + e)`
             end
@@ -503,7 +517,7 @@ if phase == :dividend && base_revenue.zero? && current_entity&.respond_to?(:oper
       end
 
       def render_owned_trains(current_entity, phase = nil)
-        return h(:div) unless current_entity&.respond_to?(:trains)
+        return h(:div) unless current_entity.respond_to?(:trains)
 
         owned_trains = current_entity.trains
         limit = begin
@@ -605,7 +619,7 @@ if phase == :dividend && base_revenue.zero? && current_entity&.respond_to?(:oper
       end
 
       def render_loan_dots(entity)
-        return h(:div, '') unless entity && entity.respond_to?(:loans) && @game.respond_to?(:maximum_loans)
+        return h(:div, '') unless entity.respond_to?(:loans) && @game.respond_to?(:maximum_loans)
 
         loans_taken = entity.loans.size
         max_loans = @game.maximum_loans(entity)
@@ -933,7 +947,6 @@ if phase == :dividend && base_revenue.zero? && current_entity&.respond_to?(:oper
           { style: { display: 'flex', flexDirection: 'column', width: '100%', padding: '0.2rem 0', boxSizing: 'border-box' } }, target_boxes)
       end
 
-
       def render_buyable_trains(step, current_entity)
         return h(:div) unless step.respond_to?(:buyable_trains)
 
@@ -1106,7 +1119,8 @@ if phase == :dividend && base_revenue.zero? && current_entity&.respond_to?(:oper
           { style: { display: 'flex', flexDirection: 'column', width: '100%', padding: '0.2rem 0', boxSizing: 'border-box' } }, train_boxes)
       end
 
-      def render_phase_box(title, is_active, button_labels, available_actions, current_entity, custom_overlay, entity_bg_color = '#4169e1', _entity_text_color = '#ffffff')
+      def render_phase_box(title, is_active, button_labels, available_actions, current_entity, custom_overlay,
+                           entity_bg_color = '#4169e1', _entity_text_color = '#ffffff')
         effectively_active = is_active && !(@cmd_router_running && title == 'Run Routes')
         box_bg = effectively_active ? '#ffffff' : '#f5f5f5'
         box_border = effectively_active ? "2px solid #{entity_bg_color}" : '1px solid #cccccc'

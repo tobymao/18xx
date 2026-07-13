@@ -111,7 +111,7 @@ module View
         color = @game.class::STOCKMARKET_COLORS[normal_types&.first]
         color_to_use = color ? COLOR_MAP[color] : color_for(:bg2)
 
-        style = if !(normal_types & CROSSHATCH_TYPES).empty? && normal_types.size > 1
+        style = if !!normal_types.intersect?(CROSSHATCH_TYPES) && normal_types.size > 1
                   secondary = @game.class::STOCKMARKET_COLORS[(normal_types & CROSSHATCH_TYPES).first]
                   secondary_color = secondary ? COLOR_MAP[secondary] : color_for(:bg2)
                   box_style.merge(background: "repeating-linear-gradient(45deg, #{color_to_use}, #{color_to_use} 10px,
@@ -120,7 +120,7 @@ module View
                   box_style.merge(backgroundColor: color_to_use)
                 end
 
-        unless (types & BORDER_TYPES).empty?
+        if types.intersect?(BORDER_TYPES)
           style[:borderRightWidth] = "#{BORDER * 4}px"
           style[:borderRightColor] = @game.class::STOCKMARKET_COLORS[(types & BORDER_TYPES).first]
           style[:width] = "#{WIDTH_TOTAL - (2 * PAD) - (2 * BORDER) - 3}px"
@@ -144,7 +144,7 @@ module View
       end
 
       def operated?(corporation)
-        return unless @game.round.operating?
+        return false unless @game.round.operating?
 
         order = @game.round.entities.index(corporation)
         idx = @game.round.entities.index(@game.round.current_entity)
@@ -400,7 +400,7 @@ module View
 
       def grid_2d
         # Need to peek at row below to know if sitting on ledge.
-        (@game.stock_market.market + [[]]).each_cons(2).each_with_index.map do |rows, row_i|
+        (@game.stock_market.market + [[]]).each_cons(2).with_index.map do |rows, row_i|
           row_prices, next_row = rows
           first_price = true
 

@@ -4,7 +4,6 @@ module Lib
   module CardAnimation
     def self.fly(event_or_source, dest_selector, &block)
       # FIRST: Handle DOM capture and cloning natively to avoid Opal bridge errors
-      capture_successful = false
       %x{
         var card = null, startX, startY, width, height, clone;
         try {
@@ -69,8 +68,6 @@ module Lib
         yield if block
         return
       end
-
-      js_block = block
       %x{
         window.requestAnimationFrame(function() {
           window.requestAnimationFrame(function() {

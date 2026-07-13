@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+# rubocop:disable Layout/LineLength
 
 require 'view/game/actionable'
 
@@ -314,23 +315,15 @@ h(View::Game::Map, game: @game, user: @user, minimal: true),
                           else
                             []
                           end
-                undo_handler = -> { process_action(Engine::Action::Undo.new(active_p)) if active_p }
-                redo_handler = -> { process_action(Engine::Action::Redo.new(active_p)) if active_p }
-
-                default_btn_text = 'Pass'
-                default_handler = lambda {
-                  process_action(Engine::Action::Pass.new(current_entity)) if current_entity && actions.include?('pass')
-                }
 
                 if @game.round.respond_to?(:stock?) && @game.round.stock?
-                  default_btn_text = 'Pass'
+                  'Pass'
                 elsif actions.include?('lay_tile')
-                  default_btn_text = 'Skip Build'
+                  'Skip Build'
                 elsif actions.include?('place_token')
-                  default_btn_text = 'Skip Token'
+                  'Skip Token'
                 elsif actions.include?('run_routes')
-                  default_btn_text = 'Submit Revenue'
-                  default_handler = lambda {
+                  lambda {
                     active_routes = @routes.select { |r| r.chains.any? }
                     base_revenue = active_routes.any? ? active_routes.sum(&:revenue) : 0
                     storage_key = "rev_override_#{current_entity&.id}"
@@ -344,14 +337,13 @@ h(View::Game::Map, game: @game, user: @user, minimal: true),
                     ))
                   }
                 elsif actions.include?('dividend')
-                  default_btn_text = 'Pay Out'
-                  default_handler = lambda {
+                  lambda {
                     if current_entity && actions.include?('dividend')
                       process_action(Engine::Action::Dividend.new(current_entity, kind: 'payout'))
                     end
                   }
                 elsif actions.include?('buy_train')
-                  default_btn_text = 'Finished Buying'
+                  'Finished Buying'
                 end
                 button_style = {
                   padding: '0.5rem 1.5rem',
@@ -446,7 +438,7 @@ h(View::Game::Map, game: @game, user: @user, minimal: true),
 
                   if active_p && active_p.respond_to?(:thinking_time)
                     base_bank_seconds = active_p.thinking_time.to_i
-                    base_bank_seconds = 300 if base_bank_seconds == 0
+                    base_bank_seconds = 300 if base_bank_seconds.zero?
                     last_update_epoch = @game_data['updated_at'] || @game_data[:updated_at]
                     turn_start_seconds = last_update_epoch ? last_update_epoch.to_i : Time.now.to_i
                     elapsed_seconds = Time.now.to_i - turn_start_seconds
@@ -454,9 +446,9 @@ h(View::Game::Map, game: @game, user: @user, minimal: true),
                     abs_time = live_remaining_time.abs
                     mins = (abs_time / 60).to_i
                     secs = (abs_time % 60).to_i
-                    formatted_time = "#{live_remaining_time < 0 ? '-' : ''}#{mins}:#{secs < 10 ? '0' : ''}#{secs}"
+                    formatted_time = "#{'-' if live_remaining_time.negative?}#{mins}:#{'0' if secs < 10}#{secs}"
 
-                    btns << h(:span, { style: { marginLeft: 'auto', fontSize: '1.8rem', fontWeight: 'bold', color: live_remaining_time < 0 ? '#ff0000' : '#000000' } }, "#{active_p.name}: #{formatted_time}")
+                    btns << h(:span, { style: { marginLeft: 'auto', fontSize: '1.8rem', fontWeight: 'bold', color: live_remaining_time.negative? ? '#ff0000' : '#000000' } }, "#{active_p.name}: #{formatted_time}")
                   end
 
                   btns

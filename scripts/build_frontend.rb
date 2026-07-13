@@ -4,24 +4,19 @@
 
 # 1. Pre-emptively mock mini_racer to bypass local ARM64 native extension compilation blocks
 module MiniRacer
-  class Context
-    # Dummy mock context placeholder for compiler stability
-  end
-
-  class Platform
-    # Dummy mock platform placeholder for compiler stability
-  end
+  # rubocop:disable Lint/EmptyClass
+  class Context; end
+  class Platform; end
+  # rubocop:enable Lint/EmptyClass
 end
 $LOADED_FEATURES << 'mini_racer.rb'
 $LOADED_FEATURES << 'mini_racer'
 
 # Mock JsContext to prevent it from trying to instantiate a V8 engine core during compile phase
+# rubocop:disable Style/OneClassPerFile
 class JsContext
-  def initialize(*args)
-    # Void initializer to suppress uncompiled binary lookup crashes
-  end
+  def initialize(*args); end
 end
-
 require_relative '../lib/assets'
 require 'fileutils'
 

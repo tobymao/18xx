@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+# rubocop:disable Layout/LineLength
 
 require 'lib/settings'
 require 'lib/storage'
@@ -25,6 +26,7 @@ module View
       include Lib::Settings
       include Actionable
       include View::ShareCalculation
+
       needs :game, store: true
       needs :game_data, store: true
 
@@ -136,7 +138,7 @@ module View
           clean_cash = @game.format_currency(p.cash).gsub(/[^0-9]/, '')
           bg_color = p == active_player ? COLOR_ACTIVE : COLOR_INACTIVE
           is_last = idx == @game.players.size - 1
-          cash_cells << h("td.padded_number.money-value#{is_last ? '.thick-right' : ''}",
+          cash_cells << h("td.padded_number.money-value#{'.thick-right' if is_last}",
                           { hook: Lib::MoneyAnimation.hook, style: { backgroundColor: bg_color } }, clean_cash)
         end
         rows << cash_cells
@@ -151,7 +153,7 @@ module View
           num_certs = @game.num_certs(player)
           cell_props = num_certs > cert_limit ? props.merge(style: { backgroundColor: bg_color }) : { style: { backgroundColor: bg_color } }
           is_last = idx == @game.players.size - 1
-          cert_cells << h("td.padded_number#{is_last ? '.thick-right' : ''}", cell_props, "#{num_certs}/#{cert_limit}")
+          cert_cells << h("td.padded_number#{'.thick-right' if is_last}", cell_props, "#{num_certs}/#{cert_limit}")
         end
         rows << cert_cells
 
@@ -161,7 +163,7 @@ module View
           @game.players.each_with_index do |p, idx|
             bg_color = p == active_player ? COLOR_ACTIVE : COLOR_INACTIVE
             is_last = idx == @game.players.size - 1
-            loans_cells << h("td.padded_number#{is_last ? '.thick-right' : ''}", { style: { backgroundColor: bg_color } },
+            loans_cells << h("td.padded_number#{'.thick-right' if is_last}", { style: { backgroundColor: bg_color } },
                              @game.player_loans(p))
           end
           rows << loans_cells
@@ -173,8 +175,8 @@ module View
           bg_color = p == active_player ? COLOR_ACTIVE : COLOR_INACTIVE
           is_last = idx == @game.players.size - 1
           time_val, formatted_time = player_time_details(p)
-          text_color = time_val < 0 ? '#ff0000' : '#000000'
-          time_cells << h("td.padded_number#{is_last ? '.thick-right' : ''}",
+          text_color = time_val.negative? ? '#ff0000' : '#000000'
+          time_cells << h("td.padded_number#{'.thick-right' if is_last}",
                           { style: { backgroundColor: bg_color, color: text_color } }, formatted_time)
         end
         rows << time_cells
@@ -239,7 +241,7 @@ module View
         children = []
         train_handler = lambda do |train|
           owner_entity = train.owner
-          if owner_entity && owner_entity.respond_to?(:owner) # Corporate train
+          if owner_entity.respond_to?(:owner) # Corporate train
             owner_key = owner_entity.respond_to?(:id) ? owner_entity.id : 'depot'
             Lib::Storage["cmd_buy_train_menu_#{owner_key}_#{train.id}"] = true
             Lib::Storage["cmd_buy_train_price_#{owner_key}_#{train.id}"] = active_entity.cash
@@ -347,7 +349,7 @@ module View
              ])
           end
 
-          players_subtitles << h("th.name.nowrap#{is_last ? '.thick-right' : ''}", props, header_content)
+          players_subtitles << h("th.name.nowrap#{'.thick-right' if is_last}", props, header_content)
         end
 
         pool_subtitles = [
@@ -491,8 +493,6 @@ module View
         return '' if @hide_not_floated && !@game.operating_order.include?(corporation)
 
         step = @game.round.active_step
-
-        border_style = "1px solid #{color_for(:font2)}"
         is_active_row = (active_entity == corporation)
 
         is_unfloated = corporation.respond_to?(:floated?) && !corporation.floated?
@@ -609,18 +609,15 @@ module View
 
           # Check if the active player can buy from this specific player (e.g., Nationalization)
           valid_player_buys = []
-          if !can_sell && p != active_player && step&.respond_to?(:can_buy?)
+          if !can_sell && p != active_player && step.respond_to?(:can_buy?)
             player_shares.each do |s|
               valid_player_buys << s if step.can_buy?(active_player, s.to_bundle)
             end
           end
           can_buy_from_player = !valid_player_buys.empty?
-
-          border_color = '#999999'
           click_handler = nil
 
           if can_sell
-            border_color = '#cc0000'
             click_handler = if bundles.size > 1
                               lambda {
                                 Lib::Storage['sell_menu_player'] = p.id
@@ -643,7 +640,6 @@ module View
                               }
                             end
           elsif can_buy_from_player
-            border_color = '#00cc00'
             click_handler = if valid_player_buys.uniq { |s| s.to_bundle.percent }.size > 1
                               lambda {
                                 Lib::Storage['buy_player_menu_player'] = p.id
@@ -698,7 +694,7 @@ module View
               text = if n_shares.zero?
                        '0%'
                      else
-                       "#{percent}%#{is_president ? 'P' : ''}"
+                       "#{percent}%#{'P' if is_president}"
                      end
 
               card_classes = ['game-card']
@@ -794,21 +790,18 @@ module View
                             ''
                           else
                             is_receivership = corporation.respond_to?(:receivership?) && corporation.receivership?
-                            "#{is_receivership ? '*' : ''}#{n_market_shares * 10}%"
+                            "#{'*' if is_receivership}#{n_market_shares * 10}%"
                           end
-
-        pool_border_color = '#999999'
         pool_click_handler = nil
         valid_pool_shares = []
 
-        if step&.respond_to?(:can_buy?) && active_player
+        if step.respond_to?(:can_buy?) && active_player
           pool_shares = step.respond_to?(:pool_shares) ? step.pool_shares(corporation) : (@game.share_pool.shares_by_corporation[corporation] || [])
           valid_pool_shares = pool_shares.select do |s|
             (s.respond_to?(:buyable) ? s.buyable : true) && step.can_buy?(active_player, s.to_bundle)
           end
 
           unless valid_pool_shares.empty?
-            pool_border_color = '#00cc00'
             pool_click_handler = if valid_pool_shares.uniq { |s| s.to_bundle.percent }.size > 1
                                    lambda {
                                      Lib::Storage['buy_pool_menu_corp'] = corporation.id
@@ -892,8 +885,6 @@ module View
 
         # --- IPO Shares Content ---
         ipo_share_text = n_ipo_shares.zero? ? '' : "#{n_ipo_shares * 10}%"
-
-        ipo_border_color = '#999999'
         ipo_click_handler = nil
         valid_ipo_shares = []
 
@@ -911,20 +902,18 @@ module View
                        end
 
           unless par_prices.empty?
-            ipo_border_color = '#00cc00'
             ipo_click_handler = lambda {
               Lib::Storage['par_menu_corp'] = corporation.id
               update
             }
           end
-        elsif step&.respond_to?(:can_buy?) && active_player
+        elsif step.respond_to?(:can_buy?) && active_player
           ipo_shares = corporation.respond_to?(:ipo_shares) ? corporation.ipo_shares : []
           valid_ipo_shares = ipo_shares.select do |s|
             (s.respond_to?(:buyable) ? s.buyable : true) && step.can_buy?(active_player, s.to_bundle)
           end
 
           unless valid_ipo_shares.empty?
-            ipo_border_color = '#00cc00'
             ipo_click_handler = if valid_ipo_shares.uniq { |s| s.to_bundle.percent }.size > 1
                                   lambda {
                                     Lib::Storage['buy_ipo_menu_corp'] = corporation.id
@@ -1291,7 +1280,7 @@ module View
       end
 
       def render_loan_dots(entity)
-        return h(:div, '') unless entity && entity.respond_to?(:loans) && @game.respond_to?(:maximum_loans)
+        return h(:div, '') unless entity.respond_to?(:loans) && @game.respond_to?(:maximum_loans)
 
         loans_taken = entity.loans.size
         max_loans = @game.maximum_loans(entity)
@@ -1394,9 +1383,7 @@ module View
                        end
 
           # Restrict buyable list to only show privates owned by the operating corporation's president
-          if active_ent&.respond_to?(:corporation?) && active_ent&.corporation? && (c.owner != active_ent.owner)
-            is_buyable = false
-          end
+          is_buyable = false if active_ent.respond_to?(:corporation?) && active_ent.corporation? && (c.owner != active_ent.owner)
 
           matching_special_action = valid_special_actions.find do |_, _action_class|
             targets = if step.respond_to?(:available_targets)
@@ -1563,7 +1550,7 @@ module View
              is_active_col = (p == active_player)
              bg_color = is_active_col ? COLOR_ACTIVE : COLOR_INACTIVE
              is_last = idx == @game.players.size - 1
-             h("td.align-top#{is_last ? '.thick-right' : ''}", { style: { backgroundColor: bg_color } }, [render_companies(p)])
+             h("td.align-top#{'.thick-right' if is_last}", { style: { backgroundColor: bg_color } }, [render_companies(p)])
            end,
            h(:td, { attrs: { colspan: 30 }, style: { border: 'none' } }, ''),
          ])
@@ -1591,8 +1578,8 @@ module View
             bg_color = is_active_col ? COLOR_ACTIVE : COLOR_INACTIVE
             is_last = idx == @game.players.size - 1
             time_val, formatted_time = player_time_details(p)
-            text_color = time_val < 0 ? '#ff0000' : '#000000'
-            h("td.padded_number#{is_last ? '.thick-right' : ''}", { style: { backgroundColor: bg_color, color: text_color } },
+            text_color = time_val.negative? ? '#ff0000' : '#000000'
+            h("td.padded_number#{'.thick-right' if is_last}", { style: { backgroundColor: bg_color, color: text_color } },
               formatted_time)
           end,
           h(:td, { attrs: { colspan: 30 }, style: { border: 'none' } }, ''),
@@ -1610,7 +1597,7 @@ module View
       num_certs = @game.num_certs(player)
       cell_props = num_certs > cert_limit ? props.merge(style: { backgroundColor: bg_color }) : { style: { backgroundColor: bg_color } }
       is_last = idx == @game.players.size - 1
-      h("td.padded_number#{is_last ? '.thick-right' : ''}", cell_props, "#{num_certs}/#{cert_limit}")
+      h("td.padded_number#{'.thick-right' if is_last}", cell_props, "#{num_certs}/#{cert_limit}")
     end,
     h(:td, { attrs: { colspan: 30 }, style: { border: 'none' } }, ''),
   ])
@@ -1625,7 +1612,7 @@ module View
            is_active_col = (p == active_player)
            bg_color = is_active_col ? COLOR_ACTIVE : COLOR_INACTIVE
            is_last = idx == @game.players.size - 1
-           h("td.padded_number#{is_last ? '.thick-right' : ''}", { style: { backgroundColor: bg_color } }, @game.player_loans(p))
+           h("td.padded_number#{'.thick-right' if is_last}", { style: { backgroundColor: bg_color } }, @game.player_loans(p))
          end,
          h(:td, { attrs: { colspan: 30 }, style: { border: 'none' } }, ''),
        ])
@@ -1828,7 +1815,7 @@ module View
                               p.instance_variable_get(:@thinking_time).to_i
                             end
 
-        base_bank_seconds = 300 if base_bank_seconds == 0 && !p.instance_variable_defined?(:@thinking_time)
+        base_bank_seconds = 300 if base_bank_seconds.zero? && !p.instance_variable_defined?(:@thinking_time)
 
         time_val = base_bank_seconds
 
@@ -1842,7 +1829,7 @@ module View
         abs_time = time_val.abs
         mins = (abs_time / 60).to_i
         secs = (abs_time % 60).to_i
-        formatted_time = "#{time_val < 0 ? '-' : ''}#{mins}:#{secs < 10 ? '0' : ''}#{secs}"
+        formatted_time = "#{'-' if time_val.negative?}#{mins}:#{'0' if secs < 10}#{secs}"
         [time_val, formatted_time]
       end
 

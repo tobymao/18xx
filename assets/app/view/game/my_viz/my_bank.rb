@@ -162,7 +162,7 @@ module View
         card_classes = ['game-card']
         click_handler = nil
 
-        if train_buyable_step && active_entity && active_entity.corporation?
+        if train_buyable_step && active_entity&.corporation?
           card_classes << 'action-buy'
           card_classes << 'clickable'
           click_handler = lambda {

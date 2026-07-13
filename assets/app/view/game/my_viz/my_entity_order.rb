@@ -150,15 +150,11 @@ module View
 
           if is_active
             # Highlight wrapper for the active company currently "at go"
-            item_style.merge!(
-              backgroundColor: '#f8d7da',
-              border: '2px solid #dc3545'
-            )
+            item_style[:backgroundColor] = '#f8d7da'
+            item_style[:border] = '2px solid #dc3545'
           elsif has_operated
             # Clear faded presentation for completed entities
-            item_style.merge!(
-              opacity: '0.4'
-            )
+            item_style[:opacity] = '0.4'
           end
 
           elements << h(:div, { style: item_style }, [h(:div, { style: marker_style }, [marker_content])])
