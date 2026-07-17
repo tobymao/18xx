@@ -12,6 +12,8 @@ module Engine
   module Game
     module G18Cuba
       class Game < Game::Base
+        attr_reader :fc
+
         include_meta(G18Cuba::Meta)
         include Entities
         include Map
@@ -30,6 +32,16 @@ module Engine
         DEPOT_CLASS = G18Cuba::Depot
 
         BANK_CASH = 10_000
+
+        GAME_END_CHECK = { bankrupt: :immediate, bank: :full_or, second_eight_plus: :immediate }.freeze
+
+        GAME_END_REASONS_TEXT = Base::GAME_END_REASONS_TEXT.merge(
+          second_eight_plus: 'Second 8+ train is exported to the FC',
+        ).freeze
+
+        GAME_END_DESCRIPTION_REASON_MAP_TEXT = Base::GAME_END_DESCRIPTION_REASON_MAP_TEXT.merge(
+          second_eight_plus: 'Second 8+ exported to FC',
+        ).freeze
 
         CERT_LIMIT = { 2 => 35, 3 => 30, 4 => 20, 5 => 17, 6 => 15 }.freeze
 
@@ -121,7 +133,7 @@ module Engine
 
         def num_trains(train)
           num_players = [@players.size, 2].max
-          TRAIN_FOR_PLAYER_COUNT[num_players][train[:name].to_sym]
+          TRAIN_FOR_PLAYER_COUNT[num_players][train[:name].to_sym] || super
         end
 
         def company_header(company)
@@ -175,8 +187,10 @@ module Engine
         end
 
         def crowded_corps
-          # TODO: FC logic - train limit
-          @crowded_corps ||= corporations.select { |c| train_limit_overflow(c).value?(true) }
+          # FC (:national) holds exported trains without a limit and never discards.
+          @crowded_corps ||= corporations.select do |c|
+            c.type != :national && train_limit_overflow(c).value?(true)
+          end
         end
 
         # A corp owning only wagons is still trainless (wagons don't count as trains).
@@ -201,7 +215,21 @@ module Engine
           initialize_tile_opposites!
           @unused_tiles = []
           sugar_setup
+          fc_setup
           @minor_graph = Graph.new(self, skip_track: :broad)
+        end
+
+        def fc_setup
+          @fc = @corporations.find { |c| c.type == :national }
+          # Never parred or floated, so mark as ipoed to keep it out of the unstarted corporations.
+          @fc.ipoed = true
+          # TODO: unbuyable until the FC has a price/dividend/M4 mechanic; re-enable then or it can't sell out (VII.15/VIII.2).
+          @fc.shares.each { |s| s.buyable = false }
+          @fc_exported_8plus = 0
+          train = train_by_id('1-0')
+          buy_train(@fc, train, :free)
+          # Belt and braces next to Depot#other_trains, which is what actually keeps FC trains unbuyable.
+          train.buyable = false
         end
 
         def init_graph
@@ -254,7 +282,7 @@ module Engine
         def can_par?(corporation, entity)
           # FC cannot be parred
           # Minors can only be parred by players with a concession to exchange
-          return false if corporation.type == :state
+          return false if corporation.type == :national
           return super unless corporation.type == :minor
 
           entity.companies.any? { |c| abilities(c, :exchange) }
@@ -279,6 +307,8 @@ module Engine
                 @turn += 1
                 or_round_finished
                 or_set_finished
+                return if @finished
+
                 new_stock_round
               end
             when init_round.class
@@ -347,6 +377,32 @@ module Engine
           @sugar_cubes.each { |corp, cubes| update_sugar_cube_icons(corp, 0) if cubes.positive? }
           @sugar_cubes.clear
           @log << 'All remaining sugar cubes are removed at the end of the Operating Round.'
+        end
+
+        def or_set_finished
+          export_train_to_fc!
+          super
+        end
+
+        def export_train_to_fc!
+          train = depot.upcoming.find { |t| !wagon?(t) && t.track_type == :broad }
+          return unless train
+
+          # FC trains never rust and are never bought back (rules VII.15/16).
+          train.rusts_on = nil
+          train.obsolete_on = nil
+          buy_train(@fc, train, :free)
+          train.buyable = false
+          @phase.buying_train!(@fc, train, depot)
+          @log << "-- Event: A #{train.name} train is exported to #{@fc.name} --"
+          @fc_exported_8plus += 1 if train.name == '8+'
+          # End directly: game_end_check would only fire an action later, after a new SR began (rule IX.1).
+          # TODO: reliable only once 8+ is unlimited (#12722); until then the finite 8+ stack can be bought out before 2nd export
+          end_game!(:second_eight_plus) if @fc_exported_8plus >= 2
+        end
+
+        def game_end_check_second_eight_plus?
+          @fc_exported_8plus >= 2
         end
 
         def check_route_combination(routes)

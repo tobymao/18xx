@@ -19,6 +19,11 @@ module Engine
           gauge = @game.gauge_for(current_entity)
           depot_trains.reject { |t| @game.wagon?(t) || t.track_type != gauge }.min_by(&:price)
         end
+
+        # FC trains never leave it (rule VII.16); by owner, as Train#variant= would reset buyable.
+        def other_trains(corporation)
+          super.reject { |t| t.owner == @game.fc }
+        end
       end
     end
   end
