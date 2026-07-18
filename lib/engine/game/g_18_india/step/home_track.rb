@@ -16,11 +16,10 @@ module Engine
           end
 
           def pending_token
-            @round.pending_tokens&.find do |entry|
-              corp = entry[:entity]
-              next true unless @game.oo_corporation?(corp)
+            @round.pending_tokens&.find do |pending|
+              next true unless @game.oo_corporation?(pending[:entity])
 
-              oo_on_yellow_tile?(entry)
+              oo_on_yellow_tile?(pending)
             end || {}
           end
 
@@ -35,16 +34,18 @@ module Engine
           end
 
           def any_open_cities?
-            entry = pending_token
-            corp = entry[:entity]
-            token_corp = entry[:token]&.corporation
-            return oo_on_yellow_tile?(entry) if @game.oo_corporation?(corp) || @game.oo_corporation?(token_corp)
+            pending = pending_token
+            return oo_on_yellow_tile?(pending) if oo_pending?(pending)
 
             !@game.open_city_hexes.empty?
           end
 
-          def oo_on_yellow_tile?(entry)
-            hex = entry[:hexes]&.first
+          def oo_pending?(pending)
+            @game.oo_corporation?(pending[:entity]) || @game.oo_corporation?(pending[:token]&.corporation)
+          end
+
+          def oo_on_yellow_tile?(pending)
+            hex = pending[:hexes]&.first
             hex && !hex.tile.paths.empty?
           end
 
@@ -62,18 +63,18 @@ module Engine
           end
 
           def process_lay_tile(action)
-            entry = pending_token
+            pending = pending_token
             lay_tile(action)
 
             place_token(
               action.entity,
               action.tile.cities[0],
-              entry[:token],
+              pending[:token],
               connected: false,
               extra_action: true
             )
 
-            @round.pending_tokens.delete(entry)
+            @round.pending_tokens.delete(pending)
           end
 
           def auto_actions(entity)

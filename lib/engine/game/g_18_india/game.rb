@@ -722,7 +722,7 @@ module Engine
 
         # Home hexes for GIPR
         def home_token_locations(corporation)
-          raise NotImplementedError unless corporation.name == 'GIPR'
+          raise NotImplementedError unless corporation.id == 'GIPR'
 
           open_city_hexes + town_to_green_city_hexes
         end
@@ -736,7 +736,7 @@ module Engine
 
           if oo_corporation?(corporation)
             place_oo_home_token(corporation)
-          elsif corporation.name == 'GIPR'
+          elsif corporation.id == 'GIPR'
             place_gipr_home_token(corporation)
           else
             super
