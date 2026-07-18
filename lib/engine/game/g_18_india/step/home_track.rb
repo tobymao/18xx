@@ -11,18 +11,42 @@ module Engine
           include Engine::Step::Tracker
           ACTIONS = %w[lay_tile place_token].freeze
 
+          def round_state
+            super.merge(pending_tokens: [])
+          end
+
+          def pending_token
+            @round.pending_tokens&.find do |pending|
+              next true unless @game.oo_corporation?(pending[:entity])
+
+              oo_on_yellow_tile?(pending)
+            end || {}
+          end
+
           def actions(entity)
             return [] unless entity == pending_entity
 
             actions = []
             actions << 'place_token' if any_open_cities?
-            actions << 'lay_tile' if any_town_hex?
+            actions << 'lay_tile' if any_town_hex? && entity == @game.gipr
 
             actions
           end
 
           def any_open_cities?
+            pending = pending_token
+            return oo_on_yellow_tile?(pending) if oo_pending?(pending)
+
             !@game.open_city_hexes.empty?
+          end
+
+          def oo_pending?(pending)
+            @game.oo_corporation?(pending[:entity]) || @game.oo_corporation?(pending[:token]&.corporation)
+          end
+
+          def oo_on_yellow_tile?(pending)
+            hex = pending[:hexes]&.first
+            hex && !hex.tile.paths.empty?
           end
 
           def any_town_hex?
@@ -30,70 +54,38 @@ module Engine
           end
 
           def description
-            "Lay home token in open city or upgrade town for #{pending_entity.name}"
+            corp = token&.corporation
+            if corp && pending_entity != corp
+              "Place #{corp.name} token"
+            else
+              "Lay home token in open city or upgrade town for #{pending_entity.name}"
+            end
           end
 
           def process_lay_tile(action)
+            pending = pending_token
             lay_tile(action)
 
             place_token(
               action.entity,
               action.tile.cities[0],
-              token,
+              pending[:token],
               connected: false,
               extra_action: true
             )
 
-            @round.pending_tokens.shift
+            @round.pending_tokens.delete(pending)
           end
 
-          def place_second_oo_token(tile, corp_name)
-            corporation = @game.corporation_by_id(corp_name)
-            return unless corporation&.floated
+          def auto_actions(entity)
+            return unless (pending = pending_token)
+            return unless pending[:hexes]&.one?
 
-            token = corporation.next_token
-            city = tile.cities.reject(&:tokened?).first
-            city.place_token(corporation, token) if city.tokenable?(corporation, tokens: token)
-          end
+            hex = pending[:hexes].first
+            cities = hex.tile.cities.reject(&:tokened?)
+            return unless cities.one?
 
-          def swap_higher_value_oo_token(city, entity)
-            old_token = city.tokens.first
-            old_token.remove!
-            city.exchange_token(entity.find_token_by_type)
-          end
-
-          def process_place_token(action)
-            super
-            tile = action.city.tile
-            other_corp =
-              case [action.entity.name, tile.name]
-              when %w[NWR 235]
-                'SPD'
-              when %w[SPD 235]
-                swap_higher_value_oo_token(action.city, action.entity)
-                'NWR'
-              when %w[EBR 235]
-                swap_higher_value_oo_token(action.city, action.entity)
-                'EIR'
-              when %w[EIR 235]
-                'EBR'
-              end
-
-            return unless other_corp
-
-            place_second_oo_token(tile, other_corp)
-            @round.pending_tokens.shift
-          end
-
-          # Base code doesn't handle one token and one reservation on a OO tile
-          # Moves a reservation from hex to untoken city
-          def replace_oo_reservations(tile)
-            return unless tile.name == '235'
-
-            corp = tile.reservations.first
-            city = tile.cities.reject(&:tokened?).first
-            city.add_reservation!(corp)
-            tile.reservations.clear
+            [Engine::Action::PlaceToken.new(entity, city: cities.first, token: pending[:token])]
           end
 
           def hex_neighbors(_entity, hex)
