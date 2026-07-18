@@ -245,7 +245,7 @@ module View
         children << h(:div, [h(:i, ['Auto Routing', auto_route_whats_this])]) if @gdata.dig('settings', 'auto_routing')
         children << h(:div, [h(:i, ['Engine V2', engine_v2_whats_this])]) if @gdata.dig('settings', 'use_engine_v2')
       end
-      children << h(:div, [h(:strong, 'Description: '), @gdata['description']]) unless @gdata['description'].empty?
+      children << h(:div, [h(:strong, 'Description: '), @gdata['description']]) unless @gdata['description'].to_s.empty?
 
       optional = render_optional_rules
       children << optional if optional

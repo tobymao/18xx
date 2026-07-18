@@ -474,8 +474,8 @@ module View
       return store(:flash_opts, 'Cannot have duplicate player names') if players.uniq.size != players.size
 
       checked_options = Engine.meta_by_title(game_data[:title])
-                          .check_options(game_data[:settings][:optional_rules],
-                                         game_data[:min_players], game_data[:max_players])
+                          &.check_options(game_data.dig(:settings, :optional_rules) || [],
+                                          game_data[:min_players], game_data[:max_players])
       if (options_error_msg = checked_options&.[](:error))
         return store(:flash_opts, "game_data Optional Rules Error: #{options_error_msg}")
       end
