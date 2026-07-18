@@ -417,6 +417,12 @@ describe 'Assets' do
       render_game_at_action(data.dup, nil, ['$500', 'B&amp;O'], '#spreadsheet')
       # Map view exercises the laid tile + placed token through the compiled renderer.
       render_game_at_action(data.dup, nil, ['Baltimore'], '#map')
+      # Setup Editor panels render.
+      render_game_at_action(data.dup, nil,
+                            ['Setup Editor', 'Set Cash', 'Par Corporation', 'Move on Market', 'Grant Shares',
+                             'Assign Train', 'Advance Phase', 'Private Companies', 'Place Token', 'Lay Tile',
+                             'Advance Round'],
+                            '#setup')
     end
 
     def render_game_at_action(data, action_count, string, suffix = '')

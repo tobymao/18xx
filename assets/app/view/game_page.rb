@@ -138,6 +138,8 @@ module View
           h(Game::Tools, game: @game, game_data: @game_data, user: @user)
         when 'auto'
           h(Game::Auto, game: @game, game_data: @game_data, user: @user)
+        when 'setup'
+          h(Game::SetupEditor, game: @game, game_data: @game_data, user: @user)
         end
       LOGGER.debug do
         "Done rendering game view: #{Time.now - @_logger[:render]} seconds"
@@ -370,6 +372,7 @@ module View
 
       enabled = !@game.programmed_actions[@game.player_by_id(@user['id'])].empty? if @user
       menu_items << item("A|uto#{' ✅' if enabled}", '#auto') if @game_data[:mode] != :hotseat && !cursor
+      menu_items << item('Set|up', '#setup') if @game_data[:mode] == :hotseat && !cursor
 
       h('nav#game_menu', nav_props, [
         h('ul.no_margin.no_padding', { style: { width: 'max-content' } }, menu_items),
