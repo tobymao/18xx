@@ -236,6 +236,10 @@ module Engine
         expect(game.corporation_by_id('B&O').companies).to include(cs)
         expect(dh.closed?).to be(true)
 
+        # Assigned/closed privates are pulled out of the still-running auction.
+        auction = game.round.active_step
+        expect(auction.companies).not_to include(sv, cs, dh)
+
         reloaded = round_trip(game, '1830')
         expect(reloaded.company_by_id('SV').owner).to eq(reloaded.player_by_id(1))
         expect(reloaded.company_by_id('DH').closed?).to be(true)

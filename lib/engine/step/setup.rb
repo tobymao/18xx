@@ -207,6 +207,7 @@ module Engine
           company = company!(h['company'])
 
           if h['close']
+            remove_from_auction(company)
             company.close!
             @log << "-- Setup: #{company.name} closed --"
             next
@@ -216,6 +217,7 @@ module Engine
           company.owner&.companies&.delete(company)
           company.owner = new_owner
           new_owner.companies << company
+          remove_from_auction(company)
           @log << "-- Setup: #{company.name} assigned to #{new_owner.name} --"
         end
       end
@@ -264,6 +266,17 @@ module Engine
       def advance_description(advance)
         [advance['round'], advance['turn'] && "turn #{advance['turn']}",
          advance['round_num'] && "OR #{advance['round_num']}"].compact.join(' ')
+      end
+
+      # If a private is assigned during the initial auction, the auction step still
+      # lists it as available (it tracks its own `companies` pool). Drop it there so
+      # it doesn't linger in the auction. No-op outside an auction.
+      def remove_from_auction(company)
+        step = @game.round.active_step
+        return unless step.respond_to?(:companies)
+
+        pool = step.companies
+        pool.delete(company) if pool.is_a?(Array) && pool.include?(company)
       end
 
       # --- entity lookup helpers (shared by all directive handlers) ---
