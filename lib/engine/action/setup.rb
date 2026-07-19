@@ -21,7 +21,7 @@ module Engine
       # rust:      [ train_name, ... ]                             retire all trains of these types
       # par:       [ { 'corporation' => id, 'price' => n, 'president' => player_id }, ... ]
       # market:    [ { 'corporation' => id, 'coordinates' => [row, col] }, ... ]
-      # shares:    [ { 'player' => id, 'corporation' => id, 'percent' => n }, ... ]
+      # shares:    [ { 'player' => id_or_'market', 'corporation' => id, 'percent' => n }, ... ]
       # trains:    [ { 'corporation' => id, 'train' => name, 'phase_effects' => bool }, ... ]
       # tiles:     [ { 'hex' => id, 'tile' => name, 'rotation' => n }, ... ]
       # remove_tiles: [ hex_id, ... ]                            revert hexes to their original tile

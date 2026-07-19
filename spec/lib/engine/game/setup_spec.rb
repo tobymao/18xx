@@ -383,6 +383,18 @@ module Engine
         reloaded = round_trip(game, '1830')
         expect(reloaded.player_by_id(1).percent_of(reloaded.corporation_by_id('B&O'))).to eq(40)
       end
+
+      it 'grants shares into the market pool in 1830' do
+        game = load_game('1830', [setup_action(
+          par: [{ 'corporation' => 'B&O', 'price' => 100, 'president' => 1 }],
+          shares: [{ 'player' => 'market', 'corporation' => 'B&O', 'percent' => 30 }],
+        )])
+
+        expect(game.share_pool.percent_of(game.corporation_by_id('B&O'))).to eq(30)
+
+        reloaded = round_trip(game, '1830')
+        expect(reloaded.share_pool.percent_of(reloaded.corporation_by_id('B&O'))).to eq(30)
+      end
     end
   end
 end

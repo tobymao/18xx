@@ -152,13 +152,14 @@ module Engine
 
       def process_shares(shares)
         shares.each do |grant|
-          player = player!(grant['player'])
           corporation = corporation!(grant['corporation'])
           percent = grant['percent']
+          # 'player' may be a player id or 'market' (into the share pool).
+          target = grant['player'] == 'market' ? @game.share_pool : player!(grant['player'])
 
           bundle = Engine::ShareBundle.new(take_ipo_shares(corporation, percent))
-          @game.share_pool.transfer_shares(bundle, player, allow_president_change: false)
-          @log << "-- Setup: #{player.name} granted #{percent}% of #{corporation.name} --"
+          @game.share_pool.transfer_shares(bundle, target, allow_president_change: false)
+          @log << "-- Setup: #{target.name} granted #{percent}% of #{corporation.name} --"
         end
       end
 
