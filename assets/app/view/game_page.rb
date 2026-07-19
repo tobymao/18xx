@@ -372,11 +372,22 @@ module View
 
       enabled = !@game.programmed_actions[@game.player_by_id(@user['id'])].empty? if @user
       menu_items << item("A|uto#{' ✅' if enabled}", '#auto') if @game_data[:mode] != :hotseat && !cursor
-      menu_items << item('Set|up', '#setup') if @game_data[:mode] == :hotseat && !cursor
+      menu_items << item('Set|up', '#setup') if !cursor && setup_editor_available?
 
       h('nav#game_menu', nav_props, [
         h('ul.no_margin.no_padding', { style: { width: 'max-content' } }, menu_items),
       ])
+    end
+
+    # The Setup Editor (god-move preset builder) is offered for hotseat games, and
+    # for multiplayer games the logged-in user owns and has started -- there its
+    # edits POST to the server like any action, so the preset persists for real
+    # multiplayer play. (Hotseat game_data is symbol-keyed; server game_data is
+    # string-keyed, hence the different accessors.)
+    def setup_editor_available?
+      return true if @game_data[:mode] == :hotseat
+
+      @game_data['status'] == 'active' && @user && @game_data.dig('user', 'id') == @user['id']
     end
 
     def item(name, anchor)
