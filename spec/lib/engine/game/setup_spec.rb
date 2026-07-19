@@ -351,6 +351,24 @@ module Engine
         end
       end
 
+      it 'sets the priority deal player when advancing to a stock round in 1830' do
+        game = load_game('1830', [setup_action(advance: { 'round' => 'stock', 'priority' => 2 })])
+
+        expect(game.players.first).to eq(game.player_by_id(2))
+        expect(game.send(:priority_deal_player)).to eq(game.player_by_id(2))
+
+        reloaded = round_trip(game, '1830')
+        expect(reloaded.send(:priority_deal_player)).to eq(reloaded.player_by_id(2))
+      end
+
+      it 'sets an exact player order via player_order in 1830' do
+        game = load_game('1830', [setup_action(advance: { 'round' => 'stock', 'player_order' => [2, 0, 1] })])
+
+        expect(game.players.map(&:id)).to eq([2, 0, 1])
+        expect(game.send(:priority_deal_player)).to eq(game.player_by_id(2))
+        expect(round_trip(game, '1830').players.map(&:id)).to eq([2, 0, 1])
+      end
+
       it 'advances to a specified operating round with priority in 1830' do
         # Float B&O (60% out of IPO: 20% president at par + 40% granted) so there is
         # a corporation to operate -- otherwise the empty OR is auto-skipped.

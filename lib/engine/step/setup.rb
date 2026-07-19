@@ -253,12 +253,30 @@ module Engine
           @game.transition_to_next_round!
         end
 
-        if (priority = advance['priority'])
-          player = player!(priority)
-          @game.round.goto_entity!(player) if @game.round.entities.include?(player)
-        end
-
+        apply_player_order(advance)
         @log << "-- Setup: advanced to #{@game.round.name} --"
+      end
+
+      # Set the priority deal / player rotation. `player_order` gives the exact
+      # order (priority is first); `priority` just moves one player to the front.
+      # At the start of a round, entity 0 = @players.first, so this fixes who acts
+      # first and who holds priority deal -- game-agnostic (bypasses the per-game
+      # NEXT_SR_PLAYER_ORDER rule the empty advance rounds would otherwise apply).
+      def apply_player_order(advance)
+        order =
+          if (list = advance['player_order'])
+            list.map { |id| player!(id) }
+          elsif (pid = advance['priority'])
+            priority = player!(pid)
+            [priority, *@game.players.reject { |p| p == priority }]
+          end
+        return unless order
+
+        @game.instance_variable_set(:@players, order)
+        round = @game.round
+        round.entities = round.select_entities
+        round.entity_index = 0
+        round.at_start = true
       end
 
       def advance_target_reached?(advance)
