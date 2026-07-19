@@ -142,6 +142,27 @@ module Engine
       end
     end
 
+    describe 'rust' do
+      it 'retires all trains of the named types in 1830' do
+        game = load_game('1830', [setup_action(rust: %w[2 3])])
+
+        expect(game.trains.any? { |t| %w[2 3].include?(t.name) && !t.rusted }).to be(false)
+        expect(game.depot.upcoming.map(&:name) & %w[2 3]).to be_empty
+
+        reloaded = round_trip(game, '1830')
+        expect(reloaded.depot.upcoming.map(&:name) & %w[2 3]).to be_empty
+      end
+
+      it 'rusts a train already held by a corporation in 1830' do
+        game = load_game('1830', [
+          setup_action(id: 1, trains: [{ 'corporation' => 'PRR', 'train' => '2' }]),
+          setup_action(id: 2, rust: ['2']),
+        ])
+
+        expect(game.corporation_by_id('PRR').trains.map(&:name)).not_to include('2')
+      end
+    end
+
     describe 'tiles' do
       it 'lays a tile with a rotation on a hex in 1830' do
         blank = load_game('1830', []).hexes

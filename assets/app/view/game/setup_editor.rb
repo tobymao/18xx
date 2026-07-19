@@ -36,6 +36,7 @@ module View
           render_shares,
           render_trains,
           render_phase,
+          render_rust,
           render_companies,
           render_tokens,
           render_tiles,
@@ -170,6 +171,15 @@ module View
         return unless present?(v['ph_name'])
 
         dispatch(Engine::Action::Setup.new(actor, phase: v['ph_name']))
+      end
+
+      def render_rust
+        names = @game.trains.reject(&:rusted).map(&:name).uniq
+        section('Rust Trains', [
+          h(:span, { style: { width: '100%' } },
+            'Retire a train type everywhere (e.g. after advancing the phase, rust the older trains):'),
+          *names.map { |n| render_button("Rust #{n}") { dispatch(Engine::Action::Setup.new(actor, rust: [n])) } },
+        ])
       end
 
       def render_companies

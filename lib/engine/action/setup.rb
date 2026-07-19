@@ -13,11 +13,12 @@ module Engine
     # It carries any subset of directive fields; Step::Setup#process_setup applies
     # them in a fixed order. Empty directives are dropped from the serialized form.
     class Setup < Base
-      attr_reader :cash, :phase, :shares, :par, :market, :trains, :tiles, :remove_tiles,
+      attr_reader :cash, :phase, :rust, :shares, :par, :market, :trains, :tiles, :remove_tiles,
                   :tokens, :companies, :loans, :advance
 
       # cash:      { entity_id => amount, ... }         corporations, players, or 'bank'
       # phase:     'name'                                          advance the game to this phase
+      # rust:      [ train_name, ... ]                             retire all trains of these types
       # par:       [ { 'corporation' => id, 'price' => n, 'president' => player_id }, ... ]
       # market:    [ { 'corporation' => id, 'coordinates' => [row, col] }, ... ]
       # shares:    [ { 'player' => id, 'corporation' => id, 'percent' => n }, ... ]
@@ -28,11 +29,12 @@ module Engine
       # companies: [ { 'company' => id, 'owner' => player_or_corp_id }, { 'company' => id, 'close' => true }, ... ]
       # loans:     [ { 'corporation' => id, 'count' => n }, ... ]     (loan-supporting games only)
       # advance:   { 'round' => 'stock'|'operating', 'turn' => n, 'round_num' => n, 'priority' => player_id }
-      def initialize(entity, cash: {}, phase: nil, par: [], market: [], shares: [], trains: [],
+      def initialize(entity, cash: {}, phase: nil, rust: [], par: [], market: [], shares: [], trains: [],
                      tiles: [], remove_tiles: [], tokens: [], companies: [], loans: [], advance: {})
         super(entity)
         @cash = cash
         @phase = phase
+        @rust = rust
         @par = par
         @market = market
         @shares = shares
@@ -49,6 +51,7 @@ module Engine
         {
           cash: h['cash'] || {},
           phase: h['phase'],
+          rust: h['rust'] || [],
           par: h['par'] || [],
           market: h['market'] || [],
           shares: h['shares'] || [],
@@ -66,6 +69,7 @@ module Engine
         {
           'cash' => @cash,
           'phase' => @phase,
+          'rust' => @rust,
           'par' => @par,
           'market' => @market,
           'shares' => @shares,

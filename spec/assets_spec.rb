@@ -420,8 +420,8 @@ describe 'Assets' do
       # Setup Editor panels render.
       render_game_at_action(data.dup, nil,
                             ['Setup Editor', 'Set Cash', 'Par Corporation', 'Move on Market', 'Grant Shares',
-                             'Assign Train', 'Advance Phase', 'Private Companies', 'Place Token', 'Lay Tile',
-                             'Advance Round'],
+                             'Assign Train', 'Advance Phase', 'Rust Trains', 'Private Companies', 'Place Token',
+                             'Lay Tile', 'Advance Round'],
                             '#setup')
     end
 

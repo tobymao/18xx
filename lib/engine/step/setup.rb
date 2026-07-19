@@ -36,6 +36,7 @@ module Engine
       def process_setup(action)
         process_cash(action.cash)
         process_phase(action.phase)
+        process_rust(action.rust)
         process_par(action.par)
         process_loans(action.loans)
         process_market(action.market)
@@ -110,6 +111,19 @@ module Engine
           @game.buy_train(corporation, train, :free)
           @game.phase.buying_train!(corporation, train, @game.depot) if h['phase_effects']
           @log << "-- Setup: #{corporation.name} given a #{train.name} train --"
+        end
+      end
+
+      # Retire every un-rusted train of each named type across the game (corp
+      # rosters + depot), e.g. rust the 2s and 3s after advancing the phase.
+      def process_rust(rust)
+        rust.each do |name|
+          retired = @game.trains.select { |t| t.name == name && !t.rusted }
+          next if retired.empty?
+
+          retired.each { |t| @game.rust(t) }
+          @game.instance_variable_set(:@crowded_corps, nil)
+          @log << "-- Setup: rusted #{retired.size} #{name} train(s) --"
         end
       end
 
