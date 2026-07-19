@@ -389,6 +389,45 @@ module Engine
       end
     end
 
+    describe 'extensions (per-game hook)' do
+      it 'raises a friendly error for a title with no handler in 1830' do
+        expect do
+          load_game('1830', [setup_action(extensions: { 'building_permit' => { 'corporation' => 'B&O' } })]).maybe_raise!
+        end.to raise_error(Engine::GameError, /no handler for the 'building_permit' setup extension/)
+      end
+
+      it 'delegates a directive to the game handler with the step and payload in 1830' do
+        received = nil
+        allow_any_instance_of(Engine::Game::G1830::Game)
+          .to receive(:process_setup_extension) do |game, step, key, payload|
+            received = [key, payload]
+            # Exercise the (public) lookup helpers exposed to extension authors.
+            step.corporation!(payload['corporation']).set_cash(payload['cash'], game.bank)
+          end
+
+        game = load_game('1830', [setup_action(
+          extensions: { 'fund' => { 'corporation' => 'B&O', 'cash' => 4242 } },
+        )])
+
+        expect(received).to eq(['fund', { 'corporation' => 'B&O', 'cash' => 4242 }])
+        expect(game.corporation_by_id('B&O').cash).to eq(4242)
+      end
+
+      it 'round-trips the extensions field through JSON serialization' do
+        allow_any_instance_of(Engine::Game::G1830::Game)
+          .to receive(:process_setup_extension) do |game, step, _key, payload|
+            step.corporation!(payload['corporation']).set_cash(payload['cash'], game.bank)
+          end
+
+        game = load_game('1830', [setup_action(
+          extensions: { 'fund' => { 'corporation' => 'B&O', 'cash' => 4242 } },
+        )])
+        reloaded = round_trip(game, '1830')
+
+        expect(reloaded.corporation_by_id('B&O').cash).to eq(4242)
+      end
+    end
+
     describe 'shares' do
       it 'grants IPO shares to a player in 1830' do
         game = load_game('1830', [setup_action(shares: [

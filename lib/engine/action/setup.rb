@@ -14,7 +14,7 @@ module Engine
     # them in a fixed order. Empty directives are dropped from the serialized form.
     class Setup < Base
       attr_reader :cash, :phase, :rust, :shares, :par, :market, :trains, :tiles, :remove_tiles,
-                  :tokens, :companies, :loans, :advance
+                  :tokens, :companies, :loans, :advance, :extensions
 
       # cash:      { entity_id => amount, ... }         corporations, players, or 'bank'
       # phase:     'name'                                          advance the game to this phase
@@ -28,9 +28,12 @@ module Engine
       # tokens:    [ { 'hex' => id, 'city' => idx, 'corporation' => id }, { 'corporation' => id, 'home' => true }, ... ]
       # companies: [ { 'company' => id, 'owner' => player_or_corp_id }, { 'company' => id, 'close' => true }, ... ]
       # loans:     [ { 'corporation' => id, 'count' => n }, ... ]     (loan-supporting games only)
-      # advance:   { 'round' => 'stock'|'operating', 'turn' => n, 'round_num' => n, 'priority' => player_id }
+      # advance:   { 'round' => 'stock'|'operating', 'turn' => n, 'round_num' => n,
+      #             'priority' => player_id, 'player_order' => [player_id, ...] }
+      # extensions:{ 'key' => payload, ... }   game-specific directives handled by
+      #             Game::Base#process_setup_extension (override per g_<title>)
       def initialize(entity, cash: {}, phase: nil, rust: [], par: [], market: [], shares: [], trains: [],
-                     tiles: [], remove_tiles: [], tokens: [], companies: [], loans: [], advance: {})
+                     tiles: [], remove_tiles: [], tokens: [], companies: [], loans: [], advance: {}, extensions: {})
         super(entity)
         @cash = cash
         @phase = phase
@@ -45,6 +48,7 @@ module Engine
         @companies = companies
         @loans = loans
         @advance = advance
+        @extensions = extensions
       end
 
       def self.h_to_args(h, _game)
@@ -62,6 +66,7 @@ module Engine
           companies: h['companies'] || [],
           loans: h['loans'] || [],
           advance: h['advance'] || {},
+          extensions: h['extensions'] || {},
         }
       end
 
@@ -80,6 +85,7 @@ module Engine
           'companies' => @companies,
           'loans' => @loans,
           'advance' => @advance,
+          'extensions' => @extensions,
         }.reject { |_, v| v.nil? || (v.respond_to?(:empty?) && v.empty?) }
       end
 

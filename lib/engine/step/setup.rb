@@ -46,6 +46,7 @@ module Engine
         process_remove_tiles(action.remove_tiles)
         process_tokens(action.tokens)
         process_companies(action.companies)
+        process_extensions(action.extensions)
         process_advance(action.advance)
       end
 
@@ -217,6 +218,12 @@ module Engine
         end
       end
 
+      # Hand each game-specific directive to the game (override
+      # Game::Base#process_setup_extension in a g_<title> module).
+      def process_extensions(extensions)
+        extensions.each { |key, payload| @game.process_setup_extension(self, key, payload) }
+      end
+
       def process_companies(companies)
         companies.each do |h|
           company = company!(h['company'])
@@ -319,6 +326,10 @@ module Engine
           raise(GameError, "Setup: unknown cash target '#{id}'")
       end
 
+      # The id lookups below are public so game setup extensions can reuse them
+      # via the step passed to Game::Base#process_setup_extension.
+      public
+
       def player!(id)
         find_player(id) || raise(GameError, "Setup: unknown player '#{id}'")
       end
@@ -354,6 +365,8 @@ module Engine
         @game.corporation_by_id(id) || find_player(id) ||
           raise(GameError, "Setup: unknown owner '#{id}'")
       end
+
+      private
 
       def depot_train!(name)
         @game.depot.upcoming.find { |t| t.name == name } ||

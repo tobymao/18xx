@@ -1893,6 +1893,20 @@ module Engine
         corporation.percent_to_float / corporation.share_percent
       end
 
+      # Hook for game-specific "god-move" setup directives passed via the
+      # `extensions` field of Engine::Action::Setup. The generic Step::Setup
+      # handles the common facets (cash, par, market, shares, trains, tiles,
+      # tokens, companies, loans, phase, advance); anything a title needs beyond
+      # those (bespoke floating, permits, foreign investors, ...) is delivered
+      # here. Override in a g_<title> module and mutate state directly.
+      #
+      # `step` is the Engine::Step::Setup (use step.corporation!/player!/company!/
+      # hex!/corp_or_player! for id lookups); `key` is the directive name and
+      # `payload` its value. See docs/setup_extensions.md.
+      def process_setup_extension(_step, key, _payload)
+        raise GameError, "Setup: #{self.class.title} has no handler for the '#{key}' setup extension"
+      end
+
       def close_corporation(corporation, quiet: false)
         @log << "#{corporation.name} closes" unless quiet
 
