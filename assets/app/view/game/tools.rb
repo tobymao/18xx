@@ -50,6 +50,19 @@ module View
         ])
       end
 
+      def setup_mode
+        mode = @settings[:setup_mode] || false
+        toggle = lambda do
+          Lib::Storage[@game.id] = @settings.merge('setup_mode' => !mode)
+          update
+        end
+
+        h('div.margined', [
+          h(:button, { on: { click: toggle } }, "Setup Mode #{mode ? '✅' : '❌'}"),
+          h(:label, mode ? 'Setup tab shown — build a preset with god-moves' : 'Enable to build a preset (adds the Setup tab)'),
+        ])
+      end
+
       def end_game
         end_game =
           if @confirm_endgame
@@ -74,7 +87,7 @@ module View
       end
 
       def render_tools
-        children = [player_notification, master_mode]
+        children = [player_notification, master_mode, setup_mode]
         children << end_game unless @game.finished
         children
       end
