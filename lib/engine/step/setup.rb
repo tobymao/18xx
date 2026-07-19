@@ -42,6 +42,7 @@ module Engine
         process_shares(action.shares)
         process_trains(action.trains)
         process_tiles(action.tiles)
+        process_remove_tiles(action.remove_tiles)
         process_tokens(action.tokens)
         process_companies(action.companies)
         process_advance(action.advance)
@@ -161,6 +162,21 @@ module Engine
           @game.clear_graph
 
           @log << "-- Setup: laid tile #{tile.name} on #{hex.id} (rotation #{tile.rotation}) --"
+        end
+      end
+
+      # Revert each hex to its original (preprinted) tile, returning the laid tile to
+      # the pool. Mirrors hex.lay_downgrade (used by 1837's remove-Italy event).
+      def process_remove_tiles(remove_tiles)
+        remove_tiles.each do |hex_id|
+          hex = hex!(hex_id)
+          next if hex.tile == hex.original_tile
+
+          laid = hex.tile
+          hex.lay_downgrade(hex.original_tile)
+          @game.tiles << laid unless laid.preprinted
+          @game.clear_graph
+          @log << "-- Setup: removed tile from #{hex.id} --"
         end
       end
 

@@ -166,6 +166,28 @@ module Engine
       end
     end
 
+    describe 'remove_tiles' do
+      it 'reverts a hex to its original tile and returns the tile to the pool in 1830' do
+        blank = load_game('1830', []).hexes
+          .find { |h| h.tile.color == :white && h.tile.cities.empty? && h.tile.towns.empty? }
+        original_name = blank.tile.name
+        pool_before = load_game('1830', []).tiles.count { |t| t.name == '9' }
+
+        game = load_game('1830', [setup_action(
+          tiles: [{ 'hex' => blank.id, 'tile' => '9', 'rotation' => 0 }],
+          remove_tiles: [blank.id],
+        )])
+
+        hex = game.hex_by_id(blank.id)
+        expect(hex.tile.name).to eq(original_name)
+        expect(hex.tile).to eq(hex.original_tile)
+        expect(game.tiles.count { |t| t.name == '9' }).to eq(pool_before)
+
+        reloaded = round_trip(game, '1830')
+        expect(reloaded.hex_by_id(blank.id).tile).to eq(reloaded.hex_by_id(blank.id).original_tile)
+      end
+    end
+
     describe 'tokens' do
       it 'places a home token for a corporation in 1830' do
         game = load_game('1830', [setup_action(

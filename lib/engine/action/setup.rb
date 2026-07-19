@@ -13,7 +13,8 @@ module Engine
     # It carries any subset of directive fields; Step::Setup#process_setup applies
     # them in a fixed order. Empty directives are dropped from the serialized form.
     class Setup < Base
-      attr_reader :cash, :phase, :shares, :par, :market, :trains, :tiles, :tokens, :companies, :loans, :advance
+      attr_reader :cash, :phase, :shares, :par, :market, :trains, :tiles, :remove_tiles,
+                  :tokens, :companies, :loans, :advance
 
       # cash:      { entity_id => amount, ... }         corporations, players, or 'bank'
       # phase:     'name'                                          advance the game to this phase
@@ -22,12 +23,13 @@ module Engine
       # shares:    [ { 'player' => id, 'corporation' => id, 'percent' => n }, ... ]
       # trains:    [ { 'corporation' => id, 'train' => name, 'phase_effects' => bool }, ... ]
       # tiles:     [ { 'hex' => id, 'tile' => name, 'rotation' => n }, ... ]
+      # remove_tiles: [ hex_id, ... ]                            revert hexes to their original tile
       # tokens:    [ { 'hex' => id, 'city' => idx, 'corporation' => id }, { 'corporation' => id, 'home' => true }, ... ]
       # companies: [ { 'company' => id, 'owner' => player_or_corp_id }, { 'company' => id, 'close' => true }, ... ]
       # loans:     [ { 'corporation' => id, 'count' => n }, ... ]     (loan-supporting games only)
       # advance:   { 'round' => 'stock'|'operating', 'turn' => n, 'round_num' => n, 'priority' => player_id }
       def initialize(entity, cash: {}, phase: nil, par: [], market: [], shares: [], trains: [],
-                     tiles: [], tokens: [], companies: [], loans: [], advance: {})
+                     tiles: [], remove_tiles: [], tokens: [], companies: [], loans: [], advance: {})
         super(entity)
         @cash = cash
         @phase = phase
@@ -36,6 +38,7 @@ module Engine
         @shares = shares
         @trains = trains
         @tiles = tiles
+        @remove_tiles = remove_tiles
         @tokens = tokens
         @companies = companies
         @loans = loans
@@ -51,6 +54,7 @@ module Engine
           shares: h['shares'] || [],
           trains: h['trains'] || [],
           tiles: h['tiles'] || [],
+          remove_tiles: h['remove_tiles'] || [],
           tokens: h['tokens'] || [],
           companies: h['companies'] || [],
           loans: h['loans'] || [],
@@ -67,6 +71,7 @@ module Engine
           'shares' => @shares,
           'trains' => @trains,
           'tiles' => @tiles,
+          'remove_tiles' => @remove_tiles,
           'tokens' => @tokens,
           'companies' => @companies,
           'loans' => @loans,

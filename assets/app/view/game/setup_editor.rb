@@ -17,6 +17,7 @@ module View
       needs :game, store: true
       needs :user, default: nil
       needs :flash_opts, default: {}, store: true
+      needs :setup_map_edit, default: false, store: true
 
       SECTION = {
         style: {
@@ -46,7 +47,20 @@ module View
           h(:h2, 'Setup Editor'),
           h(:p, 'Apply god-move edits to build a preset position. Each edit is recorded as a ' \
                 'setup action, so it survives export/import like any other move.'),
+          render_map_edit,
           *panels,
+        ])
+      end
+
+      def render_map_edit
+        section('Map Edit Mode', [
+          render_input('Enable map editing', id: :map_edit, type: :checkbox,
+                                             attrs: { checked: @setup_map_edit },
+                                             on: { change: -> { store(:setup_map_edit, !@setup_map_edit) } }),
+          h(:span, { style: { width: '100%' } },
+            'When enabled, open the Map tab and click a hex to choose and lay a tile (the tile ' \
+            'fan appears; click a tile, click the hex again to rotate, then confirm). Tokens and ' \
+            'everything else are set from the panels below.'),
         ])
       end
 

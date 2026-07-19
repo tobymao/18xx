@@ -11,6 +11,7 @@ module View
 
       needs :tile_selector, store: true
       needs :zoom, default: 1
+      needs :setup_map_edit, default: false, store: true
 
       def render
         button_style = {
@@ -82,13 +83,20 @@ module View
       end
 
       def lay_tile(entity, tile, hex)
-        action = Engine::Action::LayTile.new(
-          entity,
-          tile: tile,
-          hex: hex,
-          rotation: tile.rotation,
-          combo_entities: @selected_combos.map { |id| @game.company_by_id(id) },
-        )
+        action =
+          if @setup_map_edit
+            # God-move: lay via a Setup action (bypasses upgrade/connectivity/cost rules).
+            actor = @game.players.first || @game.corporations.first
+            Engine::Action::Setup.new(actor, tiles: [{ 'hex' => hex.id, 'tile' => tile.name, 'rotation' => tile.rotation }])
+          else
+            Engine::Action::LayTile.new(
+              entity,
+              tile: tile,
+              hex: hex,
+              rotation: tile.rotation,
+              combo_entities: @selected_combos.map { |id| @game.company_by_id(id) },
+            )
+          end
         store(:tile_selector, nil, skip: true)
         store(:selected_combos, [], skip: true)
         process_action(action)
