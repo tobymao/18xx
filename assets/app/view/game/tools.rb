@@ -50,10 +50,14 @@ module View
         ])
       end
 
+      # Stored under its own key rather than in @settings: a hotseat game's data is
+      # saved to Lib::Storage[game.id] on every action, which would wipe a flag kept
+      # there (unlike master mode, which is moot in hotseat and server-side in MP).
       def setup_mode
-        mode = @settings[:setup_mode] || false
+        key = "setup_mode-#{@game.id}"
+        mode = Lib::Storage[key] || false
         toggle = lambda do
-          Lib::Storage[@game.id] = @settings.merge('setup_mode' => !mode)
+          Lib::Storage[key] = !mode
           update
         end
 

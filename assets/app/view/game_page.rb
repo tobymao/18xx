@@ -387,7 +387,7 @@ module View
     # action, so the preset persists for real multiplayer play. (Hotseat game_data
     # is symbol-keyed; server game_data is string-keyed, hence the different accessors.)
     def setup_editor_available?
-      return false unless Lib::Storage[@game.id]&.dig('setup_mode')
+      return false unless Lib::Storage["setup_mode-#{@game.id}"]
 
       @game_data[:mode] == :hotseat ||
         (@game_data['status'] == 'active' && @user && @game_data.dig('user', 'id') == @user['id'])
