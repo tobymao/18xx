@@ -450,6 +450,15 @@ module Engine
           true
         end
 
+        # In play the '9' straight is gated behind SBC ownership (see upgrades_to?),
+        # so all_potential_upgrades never offers it in the Setup Editor. A god-move
+        # ignores that restriction, so surface it here when a yellow lay applies.
+        def setup_edit_extra_tiles(hex)
+          return [] unless hex.tile.color == :white
+
+          @all_tiles.select { |t| t.name == '9' }.uniq(&:name)
+        end
+
         # Standard hex edge cost method copied from multiple other games
         def hex_edge_cost(conn)
           conn[:paths].each_cons(2).sum do |a, b|

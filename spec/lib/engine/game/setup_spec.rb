@@ -428,6 +428,30 @@ module Engine
       end
     end
 
+    describe 'setup_edit_extra_tiles (per-game map-edit hook)' do
+      it 'returns nothing by default (1830)' do
+        game = load_game('1830', [])
+        white = game.hexes.find { |h| h.tile.color == :white }
+        expect(game.setup_edit_extra_tiles(white)).to eq([])
+      end
+
+      it 'surfaces the SBC-gated 9 straight on a white hex in 1871' do
+        game = load_game('The Old Prince 1871', [])
+        white = game.hexes.find { |h| h.tile.color == :white }
+
+        names = game.setup_edit_extra_tiles(white).map(&:name)
+        expect(names).to include('9')
+        # And the god-move tile directive can actually lay it without SBC ownership.
+        expect(game.tiles.any? { |t| t.name == '9' }).to be(true)
+      end
+
+      it 'offers nothing on a non-white hex in 1871' do
+        game = load_game('The Old Prince 1871', [])
+        non_white = game.hexes.find { |h| h.tile.color != :white }
+        expect(game.setup_edit_extra_tiles(non_white)).to eq([]) if non_white
+      end
+    end
+
     describe 'shares' do
       it 'grants IPO shares to a player in 1830' do
         game = load_game('1830', [setup_action(shares: [

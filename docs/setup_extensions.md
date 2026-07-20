@@ -78,6 +78,32 @@ Like every other setup directive, `extensions` is additive to the action log, so
 it serializes, round-trips through JSON, replays deterministically, and is
 delivered through the normal import-hotseat path.
 
+## Offering game-gated tiles in map-edit mode
+
+The Setup Editor's map-click mode builds its tile candidates from
+`all_potential_upgrades`, which runs the game's `upgrades_to?`. If a title gates a
+tile behind ownership or economics (e.g. 1871's `9` straight requires the SBC
+private), that tile never appears in the god-move selector even though a god-move
+should ignore the restriction — and the engine `tiles` directive would happily lay
+it (it bypasses `upgrades_to?`).
+
+Override `Game::Base#setup_edit_extra_tiles(hex)` to add such tiles back into the
+map-edit selector. Return `Tile` objects; the editor matches them by name against
+the unlaid pool and marks all rotations legal.
+
+```ruby
+# g_1871/game.rb — the '9' straight is SBC-gated in play; surface it in setup.
+def setup_edit_extra_tiles(hex)
+  return [] unless hex.tile.color == :white
+
+  @all_tiles.select { |t| t.name == '9' }.uniq(&:name)
+end
+```
+
+This is a separate seam from `process_setup_extension`: that one *applies* setup
+directives at replay time, while this one only *offers* tiles in the authoring UI.
+The tile still lays through the ordinary `tiles` directive.
+
 ## Notes
 
 - Extensions run after all generic directives and before `advance`, so the

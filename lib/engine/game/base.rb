@@ -1920,6 +1920,15 @@ module Engine
         raise GameError, "Setup: #{self.class.title} has no handler for the '#{key}' setup extension"
       end
 
+      # Extra tiles to offer in the Setup Editor's map-edit mode, beyond the normal
+      # upgrade candidates (all_potential_upgrades). Override per g_<title> to expose
+      # tiles whose in-game availability is gated by ownership/economics that a
+      # god-move should ignore (e.g. 1871's SBC-restricted '9' straight). Returns
+      # Tile objects; the editor matches them by name against the unlaid pool.
+      def setup_edit_extra_tiles(_hex)
+        []
+      end
+
       def close_corporation(corporation, quiet: false)
         @log << "#{corporation.name} closes" unless quiet
 

@@ -222,7 +222,8 @@ module View
       # All six rotations are marked legal so re-clicking the hex can rotate freely
       # (rotate! cycles through legal_rotations, which the tracker step normally fills).
       def setup_edit_tiles(hex)
-        @game.all_potential_upgrades(hex.tile).filter_map do |tile|
+        candidates = @game.all_potential_upgrades(hex.tile) + @game.setup_edit_extra_tiles(hex)
+        candidates.uniq(&:name).filter_map do |tile|
           real = @game.tiles.find { |t| t.name == tile.name }
           next unless real
 
