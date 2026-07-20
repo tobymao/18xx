@@ -576,24 +576,9 @@ module View
       end
 
       def same_effective_owner?(corporation, other_corp)
-        buyer_owner = corp_owner(corporation)
-        seller_owner = other_owner(other_corp)
-
-        return true if buyer_owner == seller_owner
-
-        return false unless @game.respond_to?(:acting_for_player)
-
-        # code for The Old Prince 1871's Union Bank
-        ub_player = @game.instance_variable_get(:@union_bank)
-        return false unless ub_player
-
-        human = @game.acting_for_player(ub_player)
-        return false if !human || human == ub_player
-
-        effective_buyer = buyer_owner == ub_player ? human : buyer_owner
-        effective_seller = seller_owner == ub_player ? human : seller_owner
-
-        effective_buyer == effective_seller
+        player_a = corp_owner(corporation)
+        player_b = other_owner(other_corp)
+        player_a == player_b || @game.same_acting_player?(player_a, player_b)
       end
 
       # need to abstract due to corporations owning minors owning trains
