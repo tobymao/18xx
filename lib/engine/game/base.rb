@@ -777,6 +777,10 @@ module Engine
         player
       end
 
+      def same_acting_player?(_owner_a, _owner_b)
+        false
+      end
+
       def player_log(entity, msg)
         @log << "-- #{msg}" if entity.id == @user
       end
