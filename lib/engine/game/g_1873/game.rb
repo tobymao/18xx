@@ -25,7 +25,7 @@ module Engine
         attr_accessor :premium, :premium_order, :premium_winner, :reimbursed_hexes
 
         CURRENCY_FORMAT_STR = '%s ℳ'
-        BANK_CASH = 100_000
+        BANK_CASH = :unlimited
         CERT_LIMIT = {
           2 => 999,
           3 => 999,

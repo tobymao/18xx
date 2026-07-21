@@ -17,7 +17,7 @@ module Engine
 
         BANKRUPTCY_ENDS_GAME_AFTER = :all_but_one
 
-        BANK_CASH = 99_999
+        BANK_CASH = :unlimited
         CURRENCY_FORMAT_STR = '%sc'
 
         STARTING_CASH = { 2 => 450, 3 => 300, 4 => 225, 5 => 180 }.freeze

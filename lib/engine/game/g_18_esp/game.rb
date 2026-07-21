@@ -23,7 +23,7 @@ module Engine
 
         CURRENCY_FORMAT_STR = '₧%d'
 
-        BANK_CASH = 99_999
+        BANK_CASH = :unlimited
 
         IMPASSABLE_HEX_COLORS = %i[gray red blue orange].freeze
 

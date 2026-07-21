@@ -37,7 +37,7 @@ module Engine
 
         # Standard config
         ALLOW_TRAIN_BUY_FROM_OTHER_PLAYERS = true
-        BANK_CASH = 99_999
+        BANK_CASH = :unlimited
         CAPITALIZATION = :full
         CERT_LIMIT = { 3 => 20, 4 => 16 }.freeze
         CURRENCY_FORMAT_STR = '$%s'

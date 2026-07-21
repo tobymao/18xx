@@ -37,7 +37,7 @@ module Engine
 
         BANKRUPTCY_ALLOWED = false
 
-        BANK_CASH = 99_999
+        BANK_CASH = :unlimited
 
         CURRENCY_FORMAT_STR = '£%s'
 

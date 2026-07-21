@@ -42,7 +42,7 @@ module Engine
         EBUY_CAN_TAKE_PLAYER_LOAN = true
         MARKET_SHARE_LIMIT = 80 # percent
 
-        BANK_CASH = 37_860
+        BANK_CASH = :unlimited
 
         CERT_LIMIT = { 3 => 20, 4 => 16, 5 => 14, 6 => 12, 7 => 11 }.freeze
 

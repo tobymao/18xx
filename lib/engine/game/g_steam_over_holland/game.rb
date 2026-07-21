@@ -23,7 +23,7 @@ module Engine
         MUST_EMERGENCY_ISSUE_BEFORE_EBUY = true
         BANKRUPTCY_ALLOWED = false
 
-        BANK_CASH = 99_999
+        BANK_CASH = :unlimited
 
         CERT_LIMIT = { 2 => 18, 3 => 16, 4 => 14, 5 => 12 }.freeze
 

@@ -11,7 +11,7 @@ module Engine
       class Game < Game::Base
         CURRENCY_FORMAT_STR = '%s$N'
 
-        BANK_CASH = 99_999
+        BANK_CASH = :unlimited
 
         CERT_LIMIT = {
           2 => { '5' => 10, '7' => 12 },

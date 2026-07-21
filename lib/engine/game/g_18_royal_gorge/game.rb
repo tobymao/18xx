@@ -21,7 +21,7 @@ module Engine
                     :treaty_of_boston, :hanging_bridge_lease_payment_due, :sf_debt
 
         CURRENCY_FORMAT_STR = '$%s'
-        BANK_CASH = 99_999
+        BANK_CASH = :unlimited
         CERT_LIMIT = { 2 => 20, 3 => 14, 4 => 10 }.freeze
         STARTING_CASH = { 2 => 800, 3 => 550, 4 => 400 }.freeze
 
