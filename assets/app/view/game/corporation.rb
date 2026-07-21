@@ -58,7 +58,7 @@ module View
           card_style[:border] = '1px dashed'
         end
 
-        card_style[:border] = '4px solid' if @game.round.can_act?(@corporation)
+        card_style[:border] = '4px solid' if @game.round.active_step&.current_entity == @corporation
 
         if selected?
           card_style[:backgroundColor] = 'lightblue'

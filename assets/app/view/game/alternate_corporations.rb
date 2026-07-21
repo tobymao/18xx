@@ -23,8 +23,6 @@ module View
           card_style[:border] = '1px dashed'
         end
 
-        card_style[:border] = '4px solid' if @game.round.can_act?(@corporation)
-
         if selected?
           card_style[:backgroundColor] = 'lightblue'
           card_style[:color] = 'black'
@@ -60,8 +58,6 @@ module View
           card_style[:backgroundColor] = convert_hex_to_rgba(color_for(:bg2), factor)
           card_style[:border] = '1px dashed'
         end
-
-        card_style[:border] = '4px solid' if @game.round.can_act?(@corporation)
 
         if selected?
           card_style[:backgroundColor] = 'lightblue'
@@ -316,7 +312,7 @@ module View
           card_style[:border] = '1px dashed'
         end
 
-        card_style[:border] = '4px solid' if @game.round.can_act?(@corporation)
+        card_style[:border] = '4px solid' if @game.round.active_step&.current_entity == @corporation
 
         if selected?
           card_style[:backgroundColor] = 'lightblue'
