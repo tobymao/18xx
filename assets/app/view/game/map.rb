@@ -23,6 +23,8 @@ module View
       needs :routes, default: [], store: true
       needs :historical_laid_hexes, default: nil, store: true
       needs :historical_routes, default: [], store: true
+      needs :setup_map_edit, default: false, store: true
+      needs :setup_map_mode, default: 'lay', store: true
       needs :map_zoom, default: nil, store: true
 
       EDGE_LENGTH = 50
@@ -84,7 +86,7 @@ module View
 
         children = [render_map]
 
-        if current_entity && @tile_selector
+        if (current_entity || @setup_map_edit) && @tile_selector
           left = (@tile_selector.x + map_x) * @scale
           top = (@tile_selector.y + map_y) * @scale
           selector =
@@ -95,6 +97,18 @@ module View
               # Tile selector not for the map
             elsif @tile_selector.hex.tile != @tile_selector.tile
               h(TileConfirmation, zoom: map_zoom)
+            elsif @setup_map_edit
+              select_tiles = setup_edit_tiles(@tile_selector.hex)
+              if select_tiles.empty?
+                h(:div)
+              else
+                distance = TileSelector::DISTANCE * map_zoom
+                width, height = map_size
+                ts_ds = [TileSelector::DROP_SHADOW_SIZE - 5, 0].max
+                h(TileSelector, layout: @layout, tiles: select_tiles, actions: actions, zoom: map_zoom,
+                                top_row: top < distance, left_col: left < distance,
+                                right_col: width - left < distance + ts_ds, bottom_row: height - top < distance + ts_ds)
+              end
             else
               tiles = step.upgradeable_tiles(entity_or_entities, @tile_selector.hex)
               all_upgrades = @game.all_potential_upgrades(@tile_selector.hex.tile, selected_company: @selected_company)
@@ -153,7 +167,69 @@ module View
         map_elements = [h(MapZoom, map_zoom: map_zoom), h(:div, props, children), h(MapControls)]
         map_elements << h(MapLegend, game: @game) if @game.show_map_legend? && !@game.show_map_legend_on_left?
 
+        map_elements.unshift(setup_edit_banner) if @setup_map_edit
+
         h(:div, { style: { marginBottom: '1rem' } }, map_elements)
+      end
+
+      def setup_edit_banner
+        props = {
+          style: {
+            background: '#fff3cd',
+            color: 'black',
+            border: '1px solid #d0b000',
+            borderRadius: '5px',
+            padding: '0.4rem 0.6rem',
+            margin: '0.3rem 0',
+            fontWeight: 'bold',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+          },
+        }
+        instruction =
+          if @setup_map_mode == 'delete'
+            'click a hex to remove its tile (revert to original).'
+          else
+            'click a hex to choose and lay a tile; click again to rotate, then confirm.'
+          end
+
+        h(:div, props, [
+          h(:span, "Map Edit Mode — #{instruction}"),
+          setup_mode_button('Lay', 'lay'),
+          setup_mode_button('Delete', 'delete'),
+        ])
+      end
+
+      def setup_mode_button(label, mode)
+        active = @setup_map_mode == mode
+        props = {
+          style: {
+            padding: '0.1rem 0.6rem',
+            fontWeight: active ? 'bold' : 'normal',
+            background: active ? '#d0b000' : 'white',
+            border: '1px solid #d0b000',
+            borderRadius: '4px',
+            cursor: 'pointer',
+          },
+          on: { click: -> { store(:setup_map_mode, mode) } },
+        }
+        h(:button, props, label)
+      end
+
+      # God-move tile candidates for a hex: available tiles that upgrade the current
+      # tile (across all phases), computed without the operating-round tracker step.
+      # All six rotations are marked legal so re-clicking the hex can rotate freely
+      # (rotate! cycles through legal_rotations, which the tracker step normally fills).
+      def setup_edit_tiles(hex)
+        candidates = @game.all_potential_upgrades(hex.tile) + @game.setup_edit_extra_tiles(hex)
+        candidates.uniq(&:name).filter_map do |tile|
+          real = @game.tiles.find { |t| t.name == tile.name }
+          next unless real
+
+          real.legal_rotations = (0..5).to_a
+          [real, nil]
+        end
       end
 
       def map_x

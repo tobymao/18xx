@@ -389,6 +389,42 @@ describe 'Assets' do
       expect(render(app_route: '/game/1#auto', **needs)).to include('Auto Actions')
     end
 
+    it 'renders a setup (preset-position) game' do
+      # Drives the compiled engine over the `setup` god-move: cash + par + president
+      # + share grant. Confirms the preset renders with no JS error and the position
+      # is visible (par'd shares now carry value rather than $0).
+      data = {
+        'id' => 1,
+        'user' => { 'id' => 0, 'name' => 'Alice' },
+        'players' => [{ 'id' => 0, 'name' => 'Alice' }, { 'id' => 1, 'name' => 'Bob' }, { 'id' => 2, 'name' => 'Carol' }],
+        'title' => '1830',
+        'actions' => [
+          {
+            'id' => 1,
+            'type' => 'setup',
+            'entity' => 0,
+            'entity_type' => 'player',
+            'cash' => { 'PRR' => 500 },
+            'par' => [{ 'corporation' => 'B&O', 'price' => 100, 'president' => 1 }],
+            'shares' => [{ 'player' => 1, 'corporation' => 'B&O', 'percent' => 40 }],
+            'tiles' => [{ 'hex' => 'F8', 'tile' => '9', 'rotation' => 1 }],
+            'tokens' => [{ 'corporation' => 'B&O', 'home' => true }],
+            'advance' => { 'round' => 'stock' },
+          },
+        ],
+      }
+
+      render_game_at_action(data.dup, nil, ['$500', 'B&amp;O'], '#spreadsheet')
+      # Map view exercises the laid tile + placed token through the compiled renderer.
+      render_game_at_action(data.dup, nil, ['Baltimore'], '#map')
+      # Setup Editor panels render.
+      render_game_at_action(data.dup, nil,
+                            ['Setup Editor', 'Set Cash', 'Par Corporation', 'Move on Market', 'Grant Shares',
+                             'Assign Train', 'Advance Phase', 'Rust Trains', 'Private Companies', 'Place Token',
+                             'Lay Tile', 'Advance Round'],
+                            '#setup')
+    end
+
     def render_game_at_action(data, action_count, string, suffix = '')
       data['actions'] = data['actions'].take(action_count) if action_count
       data[:loaded] = true

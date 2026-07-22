@@ -50,6 +50,23 @@ module View
         ])
       end
 
+      # Stored under its own key rather than in @settings: a hotseat game's data is
+      # saved to Lib::Storage[game.id] on every action, which would wipe a flag kept
+      # there (unlike master mode, which is moot in hotseat and server-side in MP).
+      def setup_mode
+        key = "setup_mode-#{@game.id}"
+        mode = Lib::Storage[key] || false
+        toggle = lambda do
+          Lib::Storage[key] = !mode
+          update
+        end
+
+        h('div.margined', [
+          h(:button, { on: { click: toggle } }, "Setup Mode #{mode ? '✅' : '❌'}"),
+          h(:label, mode ? 'Setup tab shown — build a preset with god-moves' : 'Enable to build a preset (adds the Setup tab)'),
+        ])
+      end
+
       def end_game
         end_game =
           if @confirm_endgame
@@ -74,7 +91,7 @@ module View
       end
 
       def render_tools
-        children = [player_notification, master_mode]
+        children = [player_notification, master_mode, setup_mode]
         children << end_game unless @game.finished
         children
       end

@@ -43,12 +43,18 @@ module View
       needs :start_pos, default: [1, 1]
       needs :highlight, default: false
 
+      # Setup Editor "map edit mode": when on, a hex click opens the tile fan and the
+      # lay is dispatched as a god-move (see TileConfirmation), bypassing normal play.
+      # setup_map_mode ('lay'|'delete') is toggled from the map banner.
+      needs :setup_map_edit, default: false, store: true
+      needs :setup_map_mode, default: 'lay', store: true
+
       def render
         return '' if @hex.empty
 
         @selected = @hex == @tile_selector&.hex || @selected_route&.last_node&.hex == @hex
         @tile =
-          if @selected && @actions.include?('lay_tile') && @tile_selector&.tile
+          if @selected && (@actions.include?('lay_tile') || @setup_map_edit) && @tile_selector&.tile
             @tile_selector.tile
           else
             @hex.tile
@@ -113,7 +119,7 @@ module View
         }
 
         props[:attrs][:opacity] = @opacity if @opacity
-        props[:attrs][:cursor] = 'pointer' if @clickable
+        props[:attrs][:cursor] = 'pointer' if @clickable || @setup_map_edit
 
         props[:on] = { click: ->(e) { on_hex_click(e) } }
         props[:attrs]['stroke-width'] = 5 if @selected
@@ -175,7 +181,28 @@ module View
         "#{translation}#{@hex.layout == :pointy ? ' rotate(30)' : ''}"
       end
 
+      def delete_setup_tile
+        return if @hex.tile == @hex.original_tile
+
+        actor = @game.players.first || @game.corporations.first
+        process_action(Engine::Action::Setup.new(actor, remove_tiles: [@hex.id]))
+      end
+
       def on_hex_click
+        # Map edit mode: in delete mode a click reverts the hex; in lay mode a click
+        # opens the tile fan (rotate on re-click) and TileConfirmation dispatches the
+        # lay as a god-move Setup action.
+        if @setup_map_edit && @role == :map
+          return delete_setup_tile if @setup_map_mode == 'delete'
+
+          if @selected && (tile = @tile_selector&.tile)
+            @tile_selector.rotate! if tile.hex != @hex
+          else
+            store(:tile_selector, Lib::TileSelector.new(@hex, @tile, coordinates, root, @entity, @role))
+          end
+          return
+        end
+
         return if @actions.empty? && @role != :tile_page
 
         if !@clickable || (@hex == @tile_selector&.hex && !(@tile_selector.respond_to?(:tile) && @tile_selector.tile))

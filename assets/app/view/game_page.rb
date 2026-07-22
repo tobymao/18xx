@@ -138,6 +138,8 @@ module View
           h(Game::Tools, game: @game, game_data: @game_data, user: @user)
         when 'auto'
           h(Game::Auto, game: @game, game_data: @game_data, user: @user)
+        when 'setup'
+          h(Game::SetupEditor, game: @game, game_data: @game_data, user: @user)
         end
       LOGGER.debug do
         "Done rendering game view: #{Time.now - @_logger[:render]} seconds"
@@ -278,6 +280,8 @@ module View
           change_anchor('#tools')
         when 'a'
           change_anchor('#auto')
+        when 'p'
+          change_anchor('#setup') if setup_editor_available?
         when '1'
           button_click('pass')
         when '2'
@@ -370,10 +374,23 @@ module View
 
       enabled = !@game.programmed_actions[@game.player_by_id(@user['id'])].empty? if @user
       menu_items << item("A|uto#{' ✅' if enabled}", '#auto') if @game_data[:mode] != :hotseat && !cursor
+      menu_items << item('Setup|', '#setup') if !cursor && setup_editor_available?
 
       h('nav#game_menu', nav_props, [
         h('ul.no_margin.no_padding', { style: { width: 'max-content' } }, menu_items),
       ])
+    end
+
+    # The Setup Editor (god-move preset builder) is offered when "Setup Mode" is
+    # enabled in Tools, for hotseat games or for a multiplayer game the logged-in
+    # user owns and has started -- there its edits POST to the server like any
+    # action, so the preset persists for real multiplayer play. (Hotseat game_data
+    # is symbol-keyed; server game_data is string-keyed, hence the different accessors.)
+    def setup_editor_available?
+      return false unless Lib::Storage["setup_mode-#{@game.id}"]
+
+      @game_data[:mode] == :hotseat ||
+        (@game_data['status'] == 'active' && @user && @game_data.dig('user', 'id') == @user['id'])
     end
 
     def item(name, anchor)

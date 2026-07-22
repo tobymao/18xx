@@ -15,6 +15,7 @@ module Engine
 
       DEFAULT_STEPS = [
         Step::EndGame,
+        Step::Setup,
         Step::Message,
         Step::Program,
       ].freeze

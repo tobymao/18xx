@@ -1906,6 +1906,29 @@ module Engine
         corporation.percent_to_float / corporation.share_percent
       end
 
+      # Hook for game-specific "god-move" setup directives passed via the
+      # `extensions` field of Engine::Action::Setup. The generic Step::Setup
+      # handles the common facets (cash, par, market, shares, trains, tiles,
+      # tokens, companies, loans, phase, advance); anything a title needs beyond
+      # those (bespoke floating, permits, foreign investors, ...) is delivered
+      # here. Override in a g_<title> module and mutate state directly.
+      #
+      # `step` is the Engine::Step::Setup (use step.corporation!/player!/company!/
+      # hex!/corp_or_player! for id lookups); `key` is the directive name and
+      # `payload` its value. See docs/setup_extensions.md.
+      def process_setup_extension(_step, key, _payload)
+        raise GameError, "Setup: #{self.class.title} has no handler for the '#{key}' setup extension"
+      end
+
+      # Extra tiles to offer in the Setup Editor's map-edit mode, beyond the normal
+      # upgrade candidates (all_potential_upgrades). Override per g_<title> to expose
+      # tiles whose in-game availability is gated by ownership/economics that a
+      # god-move should ignore (e.g. 1871's SBC-restricted '9' straight). Returns
+      # Tile objects; the editor matches them by name against the unlaid pool.
+      def setup_edit_extra_tiles(_hex)
+        []
+      end
+
       def close_corporation(corporation, quiet: false)
         @log << "#{corporation.name} closes" unless quiet
 
