@@ -187,12 +187,19 @@ class Api < Roda
       render(titles: titles)
     end
 
-    r.on 'game', Integer do |id|
-      halt(404, 'Game not found') unless (game = Game[id])
+    r.on 'game' do
+      r.get 'next' do
+        game = Game.next_for_user(user)
+        r.redirect(game ? "/game/#{game.id}" : '/')
+      end
 
-      pin = game.settings['pin']
-      render(titles: [game.title], pin: pin,
-             game_data: pin ? game.to_h(include_actions: true, logged_in_user_id: user&.id) : game.to_h)
+      r.get Integer do |id|
+        halt(404, 'Game not found') unless (game = Game[id])
+
+        pin = game.settings['pin']
+        render(titles: [game.title], pin: pin,
+               game_data: pin ? game.to_h(include_actions: true, logged_in_user_id: user&.id) : game.to_h)
+      end
     end
 
     r.on 'issues', String do |str|
