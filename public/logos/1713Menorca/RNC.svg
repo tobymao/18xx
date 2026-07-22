@@ -1,0 +1,11 @@
+<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <title>Royal Navy Company</title>
+  <circle cx="50" cy="50" r="50" fill="#1A3A5C"/>
+  <line x1="50" y1="20" x2="50" y2="82" stroke="white" stroke-width="6" stroke-linecap="round"/>
+  <circle cx="50" cy="20" r="8" fill="none" stroke="white" stroke-width="5"/>
+  <line x1="30" y1="33" x2="70" y2="33" stroke="white" stroke-width="6" stroke-linecap="round"/>
+  <path d="M50 75 Q36 84 24 73" fill="none" stroke="white" stroke-width="6" stroke-linecap="round"/>
+  <line x1="24" y1="73" x2="18" y2="62" stroke="white" stroke-width="6" stroke-linecap="round"/>
+  <path d="M50 75 Q64 84 76 73" fill="none" stroke="white" stroke-width="6" stroke-linecap="round"/>
+  <line x1="76" y1="73" x2="82" y2="62" stroke="white" stroke-width="6" stroke-linecap="round"/>
+</svg>
