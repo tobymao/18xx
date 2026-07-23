@@ -207,8 +207,6 @@ module Engine
 
           corporation_by_id('BY').ipoed = true
           corporation_by_id('SX').ipoed = true
-          corporation_by_id('MS').forced_share_percent = 10
-          corporation_by_id('OL').forced_share_percent = 10
 
           @corporation_blocks = CORPORATION_BLOCKS.map { |block| block.map { |c| corporation_by_id(c) } }
         end
