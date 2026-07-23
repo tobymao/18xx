@@ -11,9 +11,15 @@ module Engine
           include Engine::Step::Tokener
           def actions(entity)
             return [] unless @game.phase.status.include?('mountain_pass')
-            return [] unless opening_mountain_pass?(entity)
+            return [] unless mountain_pass_ability_available?(entity)
 
             super
+          end
+
+          def mountain_pass_ability_available?(entity)
+            return @game.future_mountain_pass_choose?(entity) if @game.loading
+
+            opening_mountain_pass?(entity)
           end
 
           def opening_mountain_pass?(entity)
@@ -33,6 +39,7 @@ module Engine
             @game.graph_for_entity(corp).clear
             @log << "#{action.entity.name} closes"
             action.entity.close!
+            @game.consume_mountain_pass_hint!(action.entity)
           end
         end
       end
