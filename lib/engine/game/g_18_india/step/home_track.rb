@@ -79,10 +79,12 @@ module Engine
                 'EBR'
               end
 
-            return unless other_corp
-
-            place_second_oo_token(tile, other_corp)
-            @round.pending_tokens.shift
+            if other_corp
+              place_second_oo_token(tile, other_corp)
+              @round.pending_tokens.shift
+            else
+              @game.protect_tr_home_reservation(action.city)
+            end
           end
 
           # Base code doesn't handle one token and one reservation on a OO tile
