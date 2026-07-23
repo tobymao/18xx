@@ -1,0 +1,2236 @@
+{
+  "status": "active",
+  "id": "hs_dt_test_001",
+  "players": [
+    {
+      "name": "Diana"
+    },
+    {
+      "name": "Eve"
+    },
+    {
+      "name": "Frank"
+    }
+  ],
+  "title": "18OE",
+  "description": "DoubleTown test \u2014 LNWR at J27, J29=OE10 yellow double-town, 2+2 train. Run route J27\u2192J29 to verify \u00a320 revenue.",
+  "mode": "hotseat",
+  "user": {
+    "id": 0,
+    "name": "You"
+  },
+  "created_at": "2026-06-04",
+  "loaded": false,
+  "settings": {},
+  "actions": [
+    {
+      "type": "bid",
+      "entity": "Diana",
+      "entity_type": "player",
+      "id": 1,
+      "created_at": 1780228508,
+      "company": "RSC",
+      "price": 20
+    },
+    {
+      "type": "bid",
+      "entity": "Eve",
+      "entity_type": "player",
+      "id": 2,
+      "created_at": 1780228508,
+      "company": "PeC",
+      "price": 20
+    },
+    {
+      "type": "bid",
+      "entity": "Frank",
+      "entity_type": "player",
+      "id": 3,
+      "created_at": 1780228508,
+      "company": "WS",
+      "price": 40
+    },
+    {
+      "type": "bid",
+      "entity": "Diana",
+      "entity_type": "player",
+      "id": 4,
+      "created_at": 1780228508,
+      "company": "BBBT",
+      "price": 40
+    },
+    {
+      "type": "bid",
+      "entity": "Eve",
+      "entity_type": "player",
+      "id": 5,
+      "created_at": 1780228508,
+      "company": "SHTC",
+      "price": 60
+    },
+    {
+      "type": "bid",
+      "entity": "Frank",
+      "entity_type": "player",
+      "id": 6,
+      "created_at": 1780228508,
+      "company": "CCTC",
+      "price": 60
+    },
+    {
+      "type": "bid",
+      "entity": "Diana",
+      "entity_type": "player",
+      "id": 7,
+      "created_at": 1780228508,
+      "company": "WCF",
+      "price": 60
+    },
+    {
+      "type": "bid",
+      "entity": "Eve",
+      "entity_type": "player",
+      "id": 8,
+      "created_at": 1780228508,
+      "company": "HMLC",
+      "price": 80
+    },
+    {
+      "type": "bid",
+      "entity": "Frank",
+      "entity_type": "player",
+      "id": 9,
+      "created_at": 1780228508,
+      "company": "BBE",
+      "price": 100
+    },
+    {
+      "type": "bid",
+      "entity": "Diana",
+      "entity_type": "player",
+      "id": 10,
+      "created_at": 1780228508,
+      "company": "SML",
+      "price": 120
+    },
+    {
+      "type": "bid",
+      "entity": "Eve",
+      "entity_type": "player",
+      "id": 11,
+      "created_at": 1780228508,
+      "company": "C",
+      "price": 120
+    },
+    {
+      "type": "bid",
+      "entity": "Frank",
+      "entity_type": "player",
+      "id": 12,
+      "created_at": 1780228508,
+      "company": "H",
+      "price": 120
+    },
+    {
+      "type": "bid",
+      "entity": "Diana",
+      "entity_type": "player",
+      "id": 13,
+      "created_at": 1780228508,
+      "company": "K",
+      "price": 120
+    },
+    {
+      "type": "bid",
+      "entity": "Eve",
+      "entity_type": "player",
+      "id": 14,
+      "created_at": 1780228508,
+      "company": "M",
+      "price": 120
+    },
+    {
+      "type": "bid",
+      "entity": "Frank",
+      "entity_type": "player",
+      "id": 15,
+      "created_at": 1780228508,
+      "company": "A",
+      "price": 120
+    },
+    {
+      "type": "bid",
+      "entity": "Diana",
+      "entity_type": "player",
+      "id": 16,
+      "created_at": 1780228508,
+      "company": "B",
+      "price": 120
+    },
+    {
+      "type": "bid",
+      "entity": "Eve",
+      "entity_type": "player",
+      "id": 17,
+      "created_at": 1780228508,
+      "company": "D",
+      "price": 120
+    },
+    {
+      "type": "bid",
+      "entity": "Frank",
+      "entity_type": "player",
+      "id": 18,
+      "created_at": 1780228508,
+      "company": "E",
+      "price": 120
+    },
+    {
+      "type": "bid",
+      "entity": "Diana",
+      "entity_type": "player",
+      "id": 19,
+      "created_at": 1780228508,
+      "company": "F",
+      "price": 120
+    },
+    {
+      "type": "bid",
+      "entity": "Eve",
+      "entity_type": "player",
+      "id": 20,
+      "created_at": 1780228508,
+      "company": "G",
+      "price": 120
+    },
+    {
+      "type": "bid",
+      "entity": "Frank",
+      "entity_type": "player",
+      "id": 21,
+      "created_at": 1780228508,
+      "company": "J",
+      "price": 120
+    },
+    {
+      "type": "bid",
+      "entity": "Diana",
+      "entity_type": "player",
+      "id": 22,
+      "created_at": 1780228508,
+      "company": "L",
+      "price": 120
+    },
+    {
+      "type": "par",
+      "entity": "Eve",
+      "entity_type": "player",
+      "id": 23,
+      "created_at": 1780228508,
+      "corporation": "D",
+      "share_price": "70,4,0"
+    },
+    {
+      "type": "place_token",
+      "entity": "D",
+      "entity_type": "corporation",
+      "id": 24,
+      "created_at": 1780228508,
+      "city": "A64-0-0"
+    },
+    {
+      "type": "par",
+      "entity": "Frank",
+      "entity_type": "player",
+      "id": 25,
+      "created_at": 1780228508,
+      "corporation": "E",
+      "share_price": "70,4,0"
+    },
+    {
+      "type": "place_token",
+      "entity": "E",
+      "entity_type": "corporation",
+      "id": 26,
+      "created_at": 1780228508,
+      "city": "A64-0-0"
+    },
+    {
+      "type": "choose",
+      "entity": "Diana",
+      "entity_type": "player",
+      "id": 27,
+      "created_at": 1780228508,
+      "choice": "bbbt_D"
+    },
+    {
+      "type": "par",
+      "entity": "Diana",
+      "entity_type": "player",
+      "id": 28,
+      "created_at": 1780228508,
+      "corporation": "F",
+      "share_price": "70,4,0"
+    },
+    {
+      "type": "place_token",
+      "entity": "F",
+      "entity_type": "corporation",
+      "id": 29,
+      "created_at": 1780228508,
+      "city": "Z1-0-0"
+    },
+    {
+      "type": "par",
+      "entity": "Eve",
+      "entity_type": "player",
+      "id": 30,
+      "created_at": 1780228508,
+      "corporation": "M",
+      "share_price": "70,4,0"
+    },
+    {
+      "type": "place_token",
+      "entity": "M",
+      "entity_type": "corporation",
+      "id": 31,
+      "created_at": 1780228508,
+      "city": "J25-0-0"
+    },
+    {
+      "type": "par",
+      "entity": "Frank",
+      "entity_type": "player",
+      "id": 32,
+      "created_at": 1780228508,
+      "corporation": "J",
+      "share_price": "70,4,0"
+    },
+    {
+      "type": "place_token",
+      "entity": "J",
+      "entity_type": "corporation",
+      "id": 33,
+      "created_at": 1780228508,
+      "city": "L37-0-0"
+    },
+    {
+      "type": "par",
+      "entity": "Diana",
+      "entity_type": "player",
+      "id": 34,
+      "created_at": 1780228508,
+      "corporation": "B",
+      "share_price": "70,4,0"
+    },
+    {
+      "type": "place_token",
+      "entity": "B",
+      "entity_type": "corporation",
+      "id": 35,
+      "created_at": 1780228508,
+      "city": "V39-0-0"
+    },
+    {
+      "type": "par",
+      "entity": "Eve",
+      "entity_type": "player",
+      "id": 36,
+      "created_at": 1780228508,
+      "corporation": "G",
+      "share_price": "70,4,0"
+    },
+    {
+      "type": "place_token",
+      "entity": "G",
+      "entity_type": "corporation",
+      "id": 37,
+      "created_at": 1780228508,
+      "city": "N31-0-0"
+    },
+    {
+      "type": "par",
+      "entity": "Frank",
+      "entity_type": "player",
+      "id": 38,
+      "created_at": 1780228508,
+      "corporation": "A",
+      "share_price": "70,4,0"
+    },
+    {
+      "type": "place_token",
+      "entity": "A",
+      "entity_type": "corporation",
+      "id": 39,
+      "created_at": 1780228508,
+      "city": "X33-0-0"
+    },
+    {
+      "type": "par",
+      "entity": "Diana",
+      "entity_type": "player",
+      "id": 40,
+      "created_at": 1780228508,
+      "corporation": "K",
+      "share_price": "70,4,0"
+    },
+    {
+      "type": "place_token",
+      "entity": "K",
+      "entity_type": "corporation",
+      "id": 41,
+      "created_at": 1780228508,
+      "city": "C48-0-0"
+    },
+    {
+      "type": "par",
+      "entity": "Eve",
+      "entity_type": "player",
+      "id": 42,
+      "created_at": 1780228508,
+      "corporation": "C",
+      "share_price": "70,4,0"
+    },
+    {
+      "type": "place_token",
+      "entity": "C",
+      "entity_type": "corporation",
+      "id": 43,
+      "created_at": 1780228508,
+      "city": "X13-9-0"
+    },
+    {
+      "type": "par",
+      "entity": "Frank",
+      "entity_type": "player",
+      "id": 44,
+      "created_at": 1780228508,
+      "corporation": "H",
+      "share_price": "70,4,0"
+    },
+    {
+      "type": "place_token",
+      "entity": "H",
+      "entity_type": "corporation",
+      "id": 45,
+      "created_at": 1780228508,
+      "city": "T53-18-0"
+    },
+    {
+      "type": "par",
+      "entity": "Diana",
+      "entity_type": "player",
+      "id": 46,
+      "created_at": 1780228508,
+      "corporation": "L",
+      "share_price": "70,4,0"
+    },
+    {
+      "type": "place_token",
+      "entity": "L",
+      "entity_type": "corporation",
+      "id": 47,
+      "created_at": 1780228509,
+      "city": "P53-0-0"
+    },
+    {
+      "type": "par",
+      "entity": "Eve",
+      "entity_type": "player",
+      "id": 48,
+      "created_at": 1780228509,
+      "corporation": "CHN",
+      "share_price": "60,6,0"
+    },
+    {
+      "type": "par",
+      "entity": "Frank",
+      "entity_type": "player",
+      "id": 49,
+      "created_at": 1780228509,
+      "corporation": "GSWR",
+      "share_price": "70,4,0"
+    },
+    {
+      "type": "par",
+      "entity": "Diana",
+      "entity_type": "player",
+      "id": 50,
+      "created_at": 1780228509,
+      "corporation": "MIDI",
+      "share_price": "60,6,0"
+    },
+    {
+      "type": "par",
+      "entity": "Eve",
+      "entity_type": "player",
+      "id": 51,
+      "created_at": 1780228509,
+      "corporation": "RCP",
+      "share_price": "60,6,0"
+    },
+    {
+      "type": "par",
+      "entity": "Frank",
+      "entity_type": "player",
+      "id": 52,
+      "created_at": 1780228509,
+      "corporation": "SFAI",
+      "share_price": "60,6,0"
+    },
+    {
+      "type": "par",
+      "entity": "Diana",
+      "entity_type": "player",
+      "id": 53,
+      "created_at": 1780228509,
+      "corporation": "MKV",
+      "share_price": "60,6,0"
+    },
+    {
+      "type": "par",
+      "entity": "Eve",
+      "entity_type": "player",
+      "id": 54,
+      "created_at": 1780228509,
+      "corporation": "GWR",
+      "share_price": "70,4,0"
+    },
+    {
+      "type": "par",
+      "entity": "Frank",
+      "entity_type": "player",
+      "id": 55,
+      "created_at": 1780228509,
+      "corporation": "MSP",
+      "share_price": "60,6,0"
+    },
+    {
+      "type": "par",
+      "entity": "Diana",
+      "entity_type": "player",
+      "id": 56,
+      "created_at": 1780228509,
+      "corporation": "KSS",
+      "share_price": "70,4,0"
+    },
+    {
+      "type": "par",
+      "entity": "Eve",
+      "entity_type": "player",
+      "id": 57,
+      "created_at": 1780228509,
+      "corporation": "LRZD",
+      "share_price": "60,6,0"
+    },
+    {
+      "type": "par",
+      "entity": "Frank",
+      "entity_type": "player",
+      "id": 58,
+      "created_at": 1780228509,
+      "corporation": "WW",
+      "share_price": "60,6,0"
+    },
+    {
+      "type": "par",
+      "entity": "Diana",
+      "entity_type": "player",
+      "id": 59,
+      "created_at": 1780228509,
+      "corporation": "LNWR",
+      "share_price": "70,4,0"
+    },
+    {
+      "type": "par",
+      "entity": "Eve",
+      "entity_type": "player",
+      "id": 60,
+      "created_at": 1780228509,
+      "corporation": "KBS",
+      "share_price": "70,4,0"
+    },
+    {
+      "type": "par",
+      "entity": "Frank",
+      "entity_type": "player",
+      "id": 61,
+      "created_at": 1780228509,
+      "corporation": "MZA",
+      "share_price": "60,6,0"
+    },
+    {
+      "type": "par",
+      "entity": "Diana",
+      "entity_type": "player",
+      "id": 62,
+      "created_at": 1780228509,
+      "corporation": "OU",
+      "share_price": "60,6,0"
+    },
+    {
+      "type": "par",
+      "entity": "Eve",
+      "entity_type": "player",
+      "id": 63,
+      "created_at": 1780228509,
+      "corporation": "SB",
+      "share_price": "60,6,0"
+    },
+    {
+      "type": "par",
+      "entity": "Frank",
+      "entity_type": "player",
+      "id": 64,
+      "created_at": 1780228509,
+      "corporation": "MAV",
+      "share_price": "60,6,0"
+    },
+    {
+      "type": "par",
+      "entity": "Diana",
+      "entity_type": "player",
+      "id": 65,
+      "created_at": 1780228509,
+      "corporation": "BHB",
+      "share_price": "70,4,0"
+    },
+    {
+      "type": "buy_shares",
+      "entity": "Eve",
+      "entity_type": "player",
+      "id": 66,
+      "created_at": 1780228509,
+      "shares": [
+        "KBS_1"
+      ],
+      "percent": 25
+    },
+    {
+      "type": "buy_shares",
+      "entity": "Frank",
+      "entity_type": "player",
+      "id": 67,
+      "created_at": 1780228509,
+      "shares": [
+        "SFAI_1"
+      ],
+      "percent": 25
+    },
+    {
+      "type": "buy_shares",
+      "entity": "Diana",
+      "entity_type": "player",
+      "id": 68,
+      "created_at": 1780228509,
+      "shares": [
+        "BHB_1"
+      ],
+      "percent": 25
+    },
+    {
+      "type": "convert",
+      "entity": "GWR",
+      "entity_type": "corporation",
+      "id": 69,
+      "created_at": 1780228509
+    },
+    {
+      "type": "buy_shares",
+      "entity": "Eve",
+      "entity_type": "player",
+      "id": 70,
+      "created_at": 1780228509,
+      "shares": [
+        "GWR_1"
+      ],
+      "percent": 25
+    },
+    {
+      "type": "pass",
+      "entity": "Eve",
+      "entity_type": "player",
+      "id": 71,
+      "created_at": 1780228509
+    },
+    {
+      "type": "pass",
+      "entity": "Eve",
+      "entity_type": "player",
+      "id": 72,
+      "created_at": 1780228509
+    },
+    {
+      "type": "convert",
+      "entity": "GSWR",
+      "entity_type": "corporation",
+      "id": 73,
+      "created_at": 1780228509
+    },
+    {
+      "type": "buy_shares",
+      "entity": "Frank",
+      "entity_type": "player",
+      "id": 74,
+      "created_at": 1780228509,
+      "shares": [
+        "GSWR_1"
+      ],
+      "percent": 25
+    },
+    {
+      "type": "pass",
+      "entity": "Frank",
+      "entity_type": "player",
+      "id": 75,
+      "created_at": 1780228509
+    },
+    {
+      "type": "pass",
+      "entity": "Frank",
+      "entity_type": "player",
+      "id": 76,
+      "created_at": 1780228509
+    },
+    {
+      "type": "convert",
+      "entity": "LNWR",
+      "entity_type": "corporation",
+      "id": 77,
+      "created_at": 1780228509
+    },
+    {
+      "type": "buy_shares",
+      "entity": "Diana",
+      "entity_type": "player",
+      "id": 78,
+      "created_at": 1780228509,
+      "shares": [
+        "LNWR_1"
+      ],
+      "percent": 25
+    },
+    {
+      "type": "pass",
+      "entity": "Diana",
+      "entity_type": "player",
+      "id": 79,
+      "created_at": 1780228509
+    },
+    {
+      "type": "pass",
+      "entity": "Diana",
+      "entity_type": "player",
+      "id": 80,
+      "created_at": 1780228509
+    },
+    {
+      "type": "choose",
+      "entity": "C",
+      "entity_type": "corporation",
+      "id": 81,
+      "created_at": 1780228509,
+      "choice": "first"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "C",
+      "entity_type": "corporation",
+      "id": 82,
+      "created_at": 1780228509,
+      "hex": "X13",
+      "tile": "5-0",
+      "rotation": 0
+    },
+    {
+      "type": "lay_tile",
+      "entity": "C",
+      "entity_type": "corporation",
+      "id": 83,
+      "created_at": 1780228509,
+      "hex": "Y12",
+      "tile": "7-0",
+      "rotation": 2
+    },
+    {
+      "type": "lay_tile",
+      "entity": "C",
+      "entity_type": "corporation",
+      "id": 84,
+      "created_at": 1780228509,
+      "hex": "X11",
+      "tile": "3-0",
+      "rotation": 3
+    },
+    {
+      "type": "buy_train",
+      "entity": "C",
+      "entity_type": "corporation",
+      "id": 85,
+      "created_at": 1780228509,
+      "train": "2+2-0",
+      "price": 100
+    },
+    {
+      "type": "choose",
+      "entity": "C",
+      "entity_type": "corporation",
+      "id": 86,
+      "created_at": 1780228509,
+      "choice": "first"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "D",
+      "entity_type": "corporation",
+      "id": 87,
+      "created_at": 1780228509,
+      "hex": "A66",
+      "tile": "7-1",
+      "rotation": 0
+    },
+    {
+      "type": "lay_tile",
+      "entity": "D",
+      "entity_type": "corporation",
+      "id": 88,
+      "created_at": 1780228509,
+      "hex": "B65",
+      "tile": "7-2",
+      "rotation": 3
+    },
+    {
+      "type": "lay_tile",
+      "entity": "D",
+      "entity_type": "corporation",
+      "id": 89,
+      "created_at": 1780228509,
+      "hex": "B67",
+      "tile": "5-1",
+      "rotation": 0
+    },
+    {
+      "type": "pass",
+      "entity": "D",
+      "entity_type": "corporation",
+      "id": 90,
+      "created_at": 1780228509
+    },
+    {
+      "type": "buy_train",
+      "entity": "D",
+      "entity_type": "corporation",
+      "id": 91,
+      "created_at": 1780228509,
+      "train": "2+2-1",
+      "price": 100
+    },
+    {
+      "type": "pass",
+      "entity": "D",
+      "entity_type": "corporation",
+      "id": 92,
+      "created_at": 1780228509
+    },
+    {
+      "type": "choose",
+      "entity": "C",
+      "entity_type": "corporation",
+      "id": 93,
+      "created_at": 1780228509,
+      "choice": "first"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "E",
+      "entity_type": "corporation",
+      "id": 94,
+      "created_at": 1780228509,
+      "hex": "B63",
+      "tile": "7-3",
+      "rotation": 3
+    },
+    {
+      "type": "lay_tile",
+      "entity": "E",
+      "entity_type": "corporation",
+      "id": 95,
+      "created_at": 1780228509,
+      "hex": "C66",
+      "tile": "7-4",
+      "rotation": 2
+    },
+    {
+      "type": "pass",
+      "entity": "E",
+      "entity_type": "corporation",
+      "id": 96,
+      "created_at": 1780228509
+    },
+    {
+      "type": "pass",
+      "entity": "E",
+      "entity_type": "corporation",
+      "id": 97,
+      "created_at": 1780228509
+    },
+    {
+      "type": "buy_train",
+      "entity": "E",
+      "entity_type": "corporation",
+      "id": 98,
+      "created_at": 1780228509,
+      "train": "2+2-2",
+      "price": 100
+    },
+    {
+      "type": "pass",
+      "entity": "E",
+      "entity_type": "corporation",
+      "id": 99,
+      "created_at": 1780228509
+    },
+    {
+      "type": "choose",
+      "entity": "C",
+      "entity_type": "corporation",
+      "id": 100,
+      "created_at": 1780228509,
+      "choice": "first"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "F",
+      "entity_type": "corporation",
+      "id": 101,
+      "created_at": 1780228509,
+      "hex": "Z3",
+      "tile": "3-1",
+      "rotation": 0
+    },
+    {
+      "type": "lay_tile",
+      "entity": "F",
+      "entity_type": "corporation",
+      "id": 102,
+      "created_at": 1780228509,
+      "hex": "AA2",
+      "tile": "7-5",
+      "rotation": 3
+    },
+    {
+      "type": "lay_tile",
+      "entity": "F",
+      "entity_type": "corporation",
+      "id": 103,
+      "created_at": 1780228509,
+      "hex": "Y2",
+      "tile": "7-6",
+      "rotation": 5
+    },
+    {
+      "type": "buy_train",
+      "entity": "F",
+      "entity_type": "corporation",
+      "id": 104,
+      "created_at": 1780228509,
+      "train": "2+2-3",
+      "price": 100
+    },
+    {
+      "type": "pass",
+      "entity": "F",
+      "entity_type": "corporation",
+      "id": 105,
+      "created_at": 1780228509
+    },
+    {
+      "type": "choose",
+      "entity": "C",
+      "entity_type": "corporation",
+      "id": 106,
+      "created_at": 1780228509,
+      "choice": "first"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "M",
+      "entity_type": "corporation",
+      "id": 107,
+      "created_at": 1780228509,
+      "hex": "I20",
+      "tile": "5-2",
+      "rotation": 3
+    },
+    {
+      "type": "pass",
+      "entity": "M",
+      "entity_type": "corporation",
+      "id": 108,
+      "created_at": 1780228509
+    },
+    {
+      "type": "buy_train",
+      "entity": "M",
+      "entity_type": "corporation",
+      "id": 109,
+      "created_at": 1780228509,
+      "train": "2+2-4",
+      "price": 100
+    },
+    {
+      "type": "choose",
+      "entity": "C",
+      "entity_type": "corporation",
+      "id": 110,
+      "created_at": 1780228509,
+      "choice": "first"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "J",
+      "entity_type": "corporation",
+      "id": 111,
+      "created_at": 1780228509,
+      "hex": "M38",
+      "tile": "3-2",
+      "rotation": 1
+    },
+    {
+      "type": "lay_tile",
+      "entity": "J",
+      "entity_type": "corporation",
+      "id": 112,
+      "created_at": 1780228509,
+      "hex": "M36",
+      "tile": "5-3",
+      "rotation": 2
+    },
+    {
+      "type": "pass",
+      "entity": "J",
+      "entity_type": "corporation",
+      "id": 113,
+      "created_at": 1780228509
+    },
+    {
+      "type": "pass",
+      "entity": "J",
+      "entity_type": "corporation",
+      "id": 114,
+      "created_at": 1780228509
+    },
+    {
+      "type": "buy_train",
+      "entity": "J",
+      "entity_type": "corporation",
+      "id": 115,
+      "created_at": 1780228509,
+      "train": "2+2-5",
+      "price": 100
+    },
+    {
+      "type": "choose",
+      "entity": "C",
+      "entity_type": "corporation",
+      "id": 116,
+      "created_at": 1780228509,
+      "choice": "first"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "B",
+      "entity_type": "corporation",
+      "id": 117,
+      "created_at": 1780228509,
+      "hex": "V39",
+      "tile": "5-4",
+      "rotation": 0
+    },
+    {
+      "type": "lay_tile",
+      "entity": "B",
+      "entity_type": "corporation",
+      "id": 118,
+      "created_at": 1780228509,
+      "hex": "V37",
+      "tile": "7-7",
+      "rotation": 3
+    },
+    {
+      "type": "pass",
+      "entity": "B",
+      "entity_type": "corporation",
+      "id": 119,
+      "created_at": 1780228509
+    },
+    {
+      "type": "buy_train",
+      "entity": "B",
+      "entity_type": "corporation",
+      "id": 120,
+      "created_at": 1780228509,
+      "train": "2+2-6",
+      "price": 100
+    },
+    {
+      "type": "choose",
+      "entity": "C",
+      "entity_type": "corporation",
+      "id": 121,
+      "created_at": 1780228509,
+      "choice": "first"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "G",
+      "entity_type": "corporation",
+      "id": 122,
+      "created_at": 1780228509,
+      "hex": "N31",
+      "tile": "201-0",
+      "rotation": 0
+    },
+    {
+      "type": "lay_tile",
+      "entity": "G",
+      "entity_type": "corporation",
+      "id": 123,
+      "created_at": 1780228509,
+      "hex": "O30",
+      "tile": "7-8",
+      "rotation": 3
+    },
+    {
+      "type": "lay_tile",
+      "entity": "G",
+      "entity_type": "corporation",
+      "id": 124,
+      "created_at": 1780228509,
+      "hex": "O32",
+      "tile": "7-9",
+      "rotation": 0
+    },
+    {
+      "type": "lay_tile",
+      "entity": "G",
+      "entity_type": "corporation",
+      "id": 125,
+      "created_at": 1780228509,
+      "hex": "P31",
+      "tile": "7-10",
+      "rotation": 2
+    },
+    {
+      "type": "pass",
+      "entity": "G",
+      "entity_type": "corporation",
+      "id": 126,
+      "created_at": 1780228509
+    },
+    {
+      "type": "pass",
+      "entity": "G",
+      "entity_type": "corporation",
+      "id": 127,
+      "created_at": 1780228509
+    },
+    {
+      "type": "buy_train",
+      "entity": "G",
+      "entity_type": "corporation",
+      "id": 128,
+      "created_at": 1780228509,
+      "train": "2+2-7",
+      "price": 100
+    },
+    {
+      "type": "choose",
+      "entity": "C",
+      "entity_type": "corporation",
+      "id": 129,
+      "created_at": 1780228509,
+      "choice": "first"
+    },
+    {
+      "type": "pass",
+      "entity": "A",
+      "entity_type": "corporation",
+      "id": 130,
+      "created_at": 1780228509
+    },
+    {
+      "type": "buy_train",
+      "entity": "A",
+      "entity_type": "corporation",
+      "id": 131,
+      "created_at": 1780228509,
+      "train": "2+2-8",
+      "price": 100
+    },
+    {
+      "type": "choose",
+      "entity": "C",
+      "entity_type": "corporation",
+      "id": 132,
+      "created_at": 1780228509,
+      "choice": "first"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "K",
+      "entity_type": "corporation",
+      "id": 133,
+      "created_at": 1780228509,
+      "hex": "C48",
+      "tile": "5-5",
+      "rotation": 0
+    },
+    {
+      "type": "lay_tile",
+      "entity": "K",
+      "entity_type": "corporation",
+      "id": 134,
+      "created_at": 1780228509,
+      "hex": "C46",
+      "tile": "7-11",
+      "rotation": 3
+    },
+    {
+      "type": "lay_tile",
+      "entity": "K",
+      "entity_type": "corporation",
+      "id": 135,
+      "created_at": 1780228509,
+      "hex": "B47",
+      "tile": "7-12",
+      "rotation": 0
+    },
+    {
+      "type": "buy_train",
+      "entity": "K",
+      "entity_type": "corporation",
+      "id": 136,
+      "created_at": 1780228509,
+      "train": "2+2-9",
+      "price": 100
+    },
+    {
+      "type": "pass",
+      "entity": "K",
+      "entity_type": "corporation",
+      "id": 137,
+      "created_at": 1780228509
+    },
+    {
+      "type": "choose",
+      "entity": "C",
+      "entity_type": "corporation",
+      "id": 138,
+      "created_at": 1780228509,
+      "choice": "first"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "H",
+      "entity_type": "corporation",
+      "id": 139,
+      "created_at": 1780228509,
+      "hex": "T53",
+      "tile": "5-6",
+      "rotation": 0
+    },
+    {
+      "type": "lay_tile",
+      "entity": "H",
+      "entity_type": "corporation",
+      "id": 140,
+      "created_at": 1780228509,
+      "hex": "U52",
+      "tile": "3-3",
+      "rotation": 2
+    },
+    {
+      "type": "pass",
+      "entity": "H",
+      "entity_type": "corporation",
+      "id": 141,
+      "created_at": 1780228509
+    },
+    {
+      "type": "buy_train",
+      "entity": "H",
+      "entity_type": "corporation",
+      "id": 142,
+      "created_at": 1780228509,
+      "train": "2+2-10",
+      "price": 100
+    },
+    {
+      "type": "choose",
+      "entity": "C",
+      "entity_type": "corporation",
+      "id": 143,
+      "created_at": 1780228509,
+      "choice": "first"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "L",
+      "entity_type": "corporation",
+      "id": 144,
+      "created_at": 1780228509,
+      "hex": "P53",
+      "tile": "201-1",
+      "rotation": 0
+    },
+    {
+      "type": "lay_tile",
+      "entity": "L",
+      "entity_type": "corporation",
+      "id": 145,
+      "created_at": 1780228509,
+      "hex": "Q52",
+      "tile": "3-4",
+      "rotation": 2
+    },
+    {
+      "type": "lay_tile",
+      "entity": "L",
+      "entity_type": "corporation",
+      "id": 146,
+      "created_at": 1780228509,
+      "hex": "P51",
+      "tile": "7-13",
+      "rotation": 3
+    },
+    {
+      "type": "buy_train",
+      "entity": "L",
+      "entity_type": "corporation",
+      "id": 147,
+      "created_at": 1780228509,
+      "train": "2+2-11",
+      "price": 100
+    },
+    {
+      "type": "choose",
+      "entity": "C",
+      "entity_type": "corporation",
+      "id": 148,
+      "created_at": 1780228509,
+      "choice": "first"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "CHN",
+      "entity_type": "corporation",
+      "id": 149,
+      "created_at": 1780228509,
+      "hex": "Z27",
+      "tile": "201-2",
+      "rotation": 0
+    },
+    {
+      "type": "lay_tile",
+      "entity": "CHN",
+      "entity_type": "corporation",
+      "id": 150,
+      "created_at": 1780228509,
+      "hex": "Z25",
+      "tile": "3-5",
+      "rotation": 3
+    },
+    {
+      "type": "lay_tile",
+      "entity": "CHN",
+      "entity_type": "corporation",
+      "id": 151,
+      "created_at": 1780228509,
+      "hex": "Y26",
+      "tile": "8-0",
+      "rotation": 0
+    },
+    {
+      "type": "buy_train",
+      "entity": "CHN",
+      "entity_type": "corporation",
+      "id": 152,
+      "created_at": 1780228509,
+      "train": "2+2-12",
+      "price": 100
+    },
+    {
+      "type": "pass",
+      "entity": "CHN",
+      "entity_type": "corporation",
+      "id": 153,
+      "created_at": 1780228509
+    },
+    {
+      "type": "choose",
+      "entity": "C",
+      "entity_type": "corporation",
+      "id": 154,
+      "created_at": 1780228509,
+      "choice": "first"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "MIDI",
+      "entity_type": "corporation",
+      "id": 155,
+      "created_at": 1780228509,
+      "hex": "U24",
+      "tile": "5-7",
+      "rotation": 0
+    },
+    {
+      "type": "lay_tile",
+      "entity": "MIDI",
+      "entity_type": "corporation",
+      "id": 156,
+      "created_at": 1780228509,
+      "hex": "U22",
+      "tile": "8-1",
+      "rotation": 4
+    },
+    {
+      "type": "lay_tile",
+      "entity": "MIDI",
+      "entity_type": "corporation",
+      "id": 157,
+      "created_at": 1780228509,
+      "hex": "V21",
+      "tile": "3-6",
+      "rotation": 3
+    },
+    {
+      "type": "buy_train",
+      "entity": "MIDI",
+      "entity_type": "corporation",
+      "id": 158,
+      "created_at": 1780228509,
+      "train": "2+2-13",
+      "price": 100
+    },
+    {
+      "type": "choose",
+      "entity": "C",
+      "entity_type": "corporation",
+      "id": 159,
+      "created_at": 1780228509,
+      "choice": "first"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "RCP",
+      "entity_type": "corporation",
+      "id": 160,
+      "created_at": 1780228509,
+      "hex": "AA4",
+      "tile": "3-7",
+      "rotation": 0
+    },
+    {
+      "type": "lay_tile",
+      "entity": "RCP",
+      "entity_type": "corporation",
+      "id": 161,
+      "created_at": 1780228509,
+      "hex": "AB3",
+      "tile": "3-8",
+      "rotation": 2
+    },
+    {
+      "type": "pass",
+      "entity": "RCP",
+      "entity_type": "corporation",
+      "id": 162,
+      "created_at": 1780228509
+    },
+    {
+      "type": "buy_train",
+      "entity": "RCP",
+      "entity_type": "corporation",
+      "id": 163,
+      "created_at": 1780228509,
+      "train": "2+2-14",
+      "price": 100
+    },
+    {
+      "type": "pass",
+      "entity": "RCP",
+      "entity_type": "corporation",
+      "id": 164,
+      "created_at": 1780228509
+    },
+    {
+      "type": "choose",
+      "entity": "C",
+      "entity_type": "corporation",
+      "id": 165,
+      "created_at": 1780228509,
+      "choice": "first"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "SFAI",
+      "entity_type": "corporation",
+      "id": 166,
+      "created_at": 1780228509,
+      "hex": "V41",
+      "tile": "201-3",
+      "rotation": 0
+    },
+    {
+      "type": "lay_tile",
+      "entity": "SFAI",
+      "entity_type": "corporation",
+      "id": 167,
+      "created_at": 1780228509,
+      "hex": "W40",
+      "tile": "5-8",
+      "rotation": 2
+    },
+    {
+      "type": "pass",
+      "entity": "SFAI",
+      "entity_type": "corporation",
+      "id": 168,
+      "created_at": 1780228509
+    },
+    {
+      "type": "pass",
+      "entity": "SFAI",
+      "entity_type": "corporation",
+      "id": 169,
+      "created_at": 1780228509
+    },
+    {
+      "type": "buy_train",
+      "entity": "SFAI",
+      "entity_type": "corporation",
+      "id": 170,
+      "created_at": 1780228509,
+      "train": "2+2-15",
+      "price": 100
+    },
+    {
+      "type": "pass",
+      "entity": "SFAI",
+      "entity_type": "corporation",
+      "id": 171,
+      "created_at": 1780228509
+    },
+    {
+      "type": "choose",
+      "entity": "C",
+      "entity_type": "corporation",
+      "id": 172,
+      "created_at": 1780228509,
+      "choice": "first"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "MKV",
+      "entity_type": "corporation",
+      "id": 173,
+      "created_at": 1780228509,
+      "hex": "O80",
+      "tile": "201-4",
+      "rotation": 0
+    },
+    {
+      "type": "lay_tile",
+      "entity": "MKV",
+      "entity_type": "corporation",
+      "id": 174,
+      "created_at": 1780228509,
+      "hex": "O78",
+      "tile": "8-2",
+      "rotation": 2
+    },
+    {
+      "type": "lay_tile",
+      "entity": "MKV",
+      "entity_type": "corporation",
+      "id": 175,
+      "created_at": 1780228509,
+      "hex": "N77",
+      "tile": "8-3",
+      "rotation": 3
+    },
+    {
+      "type": "buy_train",
+      "entity": "MKV",
+      "entity_type": "corporation",
+      "id": 176,
+      "created_at": 1780228509,
+      "train": "2+2-16",
+      "price": 100
+    },
+    {
+      "type": "choose",
+      "entity": "C",
+      "entity_type": "corporation",
+      "id": 177,
+      "created_at": 1780228509,
+      "choice": "first"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "MSP",
+      "entity_type": "corporation",
+      "id": 178,
+      "created_at": 1780228509,
+      "hex": "C74",
+      "tile": "OE8-0",
+      "rotation": 0
+    },
+    {
+      "type": "place_token",
+      "entity": "MSP",
+      "entity_type": "corporation",
+      "id": 179,
+      "created_at": 1780228509,
+      "city": "OE8-0-0"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "MSP",
+      "entity_type": "corporation",
+      "id": 180,
+      "created_at": 1780228509,
+      "hex": "D73",
+      "tile": "8-4",
+      "rotation": 1
+    },
+    {
+      "type": "buy_train",
+      "entity": "MSP",
+      "entity_type": "corporation",
+      "id": 181,
+      "created_at": 1780228509,
+      "train": "2+2-17",
+      "price": 100
+    },
+    {
+      "type": "choose",
+      "entity": "C",
+      "entity_type": "corporation",
+      "id": 182,
+      "created_at": 1780228509,
+      "choice": "first"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "KSS",
+      "entity_type": "corporation",
+      "id": 183,
+      "created_at": 1780228509,
+      "hex": "N49",
+      "tile": "5-9",
+      "rotation": 0
+    },
+    {
+      "type": "lay_tile",
+      "entity": "KSS",
+      "entity_type": "corporation",
+      "id": 184,
+      "created_at": 1780228509,
+      "hex": "N47",
+      "tile": "8-5",
+      "rotation": 2
+    },
+    {
+      "type": "lay_tile",
+      "entity": "KSS",
+      "entity_type": "corporation",
+      "id": 185,
+      "created_at": 1780228509,
+      "hex": "M46",
+      "tile": "8-6",
+      "rotation": 3
+    },
+    {
+      "type": "buy_train",
+      "entity": "KSS",
+      "entity_type": "corporation",
+      "id": 186,
+      "created_at": 1780228509,
+      "train": "2+2-18",
+      "price": 100
+    },
+    {
+      "type": "choose",
+      "entity": "C",
+      "entity_type": "corporation",
+      "id": 187,
+      "created_at": 1780228509,
+      "choice": "first"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "LRZD",
+      "entity_type": "corporation",
+      "id": 188,
+      "created_at": 1780228509,
+      "hex": "J73",
+      "tile": "5-10",
+      "rotation": 0
+    },
+    {
+      "type": "lay_tile",
+      "entity": "LRZD",
+      "entity_type": "corporation",
+      "id": 189,
+      "created_at": 1780228509,
+      "hex": "K72",
+      "tile": "8-7",
+      "rotation": 1
+    },
+    {
+      "type": "lay_tile",
+      "entity": "LRZD",
+      "entity_type": "corporation",
+      "id": 190,
+      "created_at": 1780228509,
+      "hex": "J71",
+      "tile": "8-8",
+      "rotation": 2
+    },
+    {
+      "type": "buy_train",
+      "entity": "LRZD",
+      "entity_type": "corporation",
+      "id": 191,
+      "created_at": 1780228509,
+      "train": "2+2-19",
+      "price": 100
+    },
+    {
+      "type": "choose",
+      "entity": "C",
+      "entity_type": "corporation",
+      "id": 192,
+      "created_at": 1780228509,
+      "choice": "first"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "WW",
+      "entity_type": "corporation",
+      "id": 193,
+      "created_at": 1780228509,
+      "hex": "M62",
+      "tile": "201-5",
+      "rotation": 0
+    },
+    {
+      "type": "lay_tile",
+      "entity": "WW",
+      "entity_type": "corporation",
+      "id": 194,
+      "created_at": 1780228509,
+      "hex": "N61",
+      "tile": "8-9",
+      "rotation": 1
+    },
+    {
+      "type": "lay_tile",
+      "entity": "WW",
+      "entity_type": "corporation",
+      "id": 195,
+      "created_at": 1780228509,
+      "hex": "M60",
+      "tile": "8-10",
+      "rotation": 2
+    },
+    {
+      "type": "buy_train",
+      "entity": "WW",
+      "entity_type": "corporation",
+      "id": 196,
+      "created_at": 1780228509,
+      "train": "2+2-20",
+      "price": 100
+    },
+    {
+      "type": "pass",
+      "entity": "WW",
+      "entity_type": "corporation",
+      "id": 197,
+      "created_at": 1780228509
+    },
+    {
+      "type": "choose",
+      "entity": "C",
+      "entity_type": "corporation",
+      "id": 198,
+      "created_at": 1780228509,
+      "choice": "first"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "KBS",
+      "entity_type": "corporation",
+      "id": 199,
+      "created_at": 1780228509,
+      "hex": "R47",
+      "tile": "201-6",
+      "rotation": 0
+    },
+    {
+      "type": "lay_tile",
+      "entity": "KBS",
+      "entity_type": "corporation",
+      "id": 200,
+      "created_at": 1780228509,
+      "hex": "S46",
+      "tile": "3-9",
+      "rotation": 2
+    },
+    {
+      "type": "lay_tile",
+      "entity": "KBS",
+      "entity_type": "corporation",
+      "id": 201,
+      "created_at": 1780228509,
+      "hex": "R45",
+      "tile": "8-11",
+      "rotation": 2
+    },
+    {
+      "type": "buy_train",
+      "entity": "KBS",
+      "entity_type": "corporation",
+      "id": 202,
+      "created_at": 1780228509,
+      "train": "2+2-21",
+      "price": 100
+    },
+    {
+      "type": "pass",
+      "entity": "KBS",
+      "entity_type": "corporation",
+      "id": 203,
+      "created_at": 1780228509
+    },
+    {
+      "type": "choose",
+      "entity": "C",
+      "entity_type": "corporation",
+      "id": 204,
+      "created_at": 1780228509,
+      "choice": "first"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "MZA",
+      "entity_type": "corporation",
+      "id": 205,
+      "created_at": 1780228509,
+      "hex": "AD17",
+      "tile": "5-11",
+      "rotation": 1
+    },
+    {
+      "type": "lay_tile",
+      "entity": "MZA",
+      "entity_type": "corporation",
+      "id": 206,
+      "created_at": 1780228509,
+      "hex": "AD15",
+      "tile": "3-10",
+      "rotation": 3
+    },
+    {
+      "type": "lay_tile",
+      "entity": "MZA",
+      "entity_type": "corporation",
+      "id": 207,
+      "created_at": 1780228509,
+      "hex": "AC16",
+      "tile": "5-12",
+      "rotation": 0
+    },
+    {
+      "type": "pass",
+      "entity": "MZA",
+      "entity_type": "corporation",
+      "id": 208,
+      "created_at": 1780228509
+    },
+    {
+      "type": "buy_train",
+      "entity": "MZA",
+      "entity_type": "corporation",
+      "id": 209,
+      "created_at": 1780228509,
+      "train": "2+2-22",
+      "price": 100
+    },
+    {
+      "type": "pass",
+      "entity": "MZA",
+      "entity_type": "corporation",
+      "id": 210,
+      "created_at": 1780228509
+    },
+    {
+      "type": "choose",
+      "entity": "C",
+      "entity_type": "corporation",
+      "id": 211,
+      "created_at": 1780228509,
+      "choice": "first"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "OU",
+      "entity_type": "corporation",
+      "id": 212,
+      "created_at": 1780228509,
+      "hex": "Q26",
+      "tile": "5-13",
+      "rotation": 0
+    },
+    {
+      "type": "lay_tile",
+      "entity": "OU",
+      "entity_type": "corporation",
+      "id": 213,
+      "created_at": 1780228509,
+      "hex": "Q24",
+      "tile": "8-12",
+      "rotation": 2
+    },
+    {
+      "type": "lay_tile",
+      "entity": "OU",
+      "entity_type": "corporation",
+      "id": 214,
+      "created_at": 1780228509,
+      "hex": "P23",
+      "tile": "8-13",
+      "rotation": 3
+    },
+    {
+      "type": "buy_train",
+      "entity": "OU",
+      "entity_type": "corporation",
+      "id": 215,
+      "created_at": 1780228509,
+      "train": "2+2-23",
+      "price": 100
+    },
+    {
+      "type": "choose",
+      "entity": "C",
+      "entity_type": "corporation",
+      "id": 216,
+      "created_at": 1780228509,
+      "choice": "first"
+    },
+    {
+      "type": "pass",
+      "entity": "SB",
+      "entity_type": "corporation",
+      "id": 217,
+      "created_at": 1780228509
+    },
+    {
+      "type": "buy_train",
+      "entity": "SB",
+      "entity_type": "corporation",
+      "id": 218,
+      "created_at": 1780228509,
+      "train": "2+2-24",
+      "price": 100
+    },
+    {
+      "type": "choose",
+      "entity": "C",
+      "entity_type": "corporation",
+      "id": 219,
+      "created_at": 1780228509,
+      "choice": "first"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "MAV",
+      "entity_type": "corporation",
+      "id": 220,
+      "created_at": 1780228509,
+      "hex": "S60",
+      "tile": "201-7",
+      "rotation": 0
+    },
+    {
+      "type": "lay_tile",
+      "entity": "MAV",
+      "entity_type": "corporation",
+      "id": 221,
+      "created_at": 1780228509,
+      "hex": "S58",
+      "tile": "8-14",
+      "rotation": 2
+    },
+    {
+      "type": "lay_tile",
+      "entity": "MAV",
+      "entity_type": "corporation",
+      "id": 222,
+      "created_at": 1780228509,
+      "hex": "R57",
+      "tile": "8-15",
+      "rotation": 3
+    },
+    {
+      "type": "buy_train",
+      "entity": "MAV",
+      "entity_type": "corporation",
+      "id": 223,
+      "created_at": 1780228509,
+      "train": "2+2-25",
+      "price": 100
+    },
+    {
+      "type": "choose",
+      "entity": "C",
+      "entity_type": "corporation",
+      "id": 224,
+      "created_at": 1780228509,
+      "choice": "first"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "BHB",
+      "entity_type": "corporation",
+      "id": 225,
+      "created_at": 1780228509,
+      "hex": "K46",
+      "tile": "201-8",
+      "rotation": 0
+    },
+    {
+      "type": "lay_tile",
+      "entity": "BHB",
+      "entity_type": "corporation",
+      "id": 226,
+      "created_at": 1780228509,
+      "hex": "K44",
+      "tile": "8-16",
+      "rotation": 4
+    },
+    {
+      "type": "lay_tile",
+      "entity": "BHB",
+      "entity_type": "corporation",
+      "id": 227,
+      "created_at": 1780228509,
+      "hex": "L45",
+      "tile": "8-17",
+      "rotation": 1
+    },
+    {
+      "type": "buy_train",
+      "entity": "BHB",
+      "entity_type": "corporation",
+      "id": 228,
+      "created_at": 1780228509,
+      "train": "2+2-26",
+      "price": 100
+    },
+    {
+      "type": "pass",
+      "entity": "BHB",
+      "entity_type": "corporation",
+      "id": 229,
+      "created_at": 1780228509
+    },
+    {
+      "type": "choose",
+      "entity": "C",
+      "entity_type": "corporation",
+      "id": 230,
+      "created_at": 1780228509,
+      "choice": "first"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "GWR",
+      "entity_type": "corporation",
+      "id": 231,
+      "created_at": 1780228509,
+      "hex": "L25",
+      "tile": "5-14",
+      "rotation": 0
+    },
+    {
+      "type": "lay_tile",
+      "entity": "GWR",
+      "entity_type": "corporation",
+      "id": 232,
+      "created_at": 1780228509,
+      "hex": "L23",
+      "tile": "3-11",
+      "rotation": 3
+    },
+    {
+      "type": "lay_tile",
+      "entity": "GWR",
+      "entity_type": "corporation",
+      "id": 233,
+      "created_at": 1780228509,
+      "hex": "K24",
+      "tile": "8-18",
+      "rotation": 0
+    },
+    {
+      "type": "lay_tile",
+      "entity": "GWR",
+      "entity_type": "corporation",
+      "id": 234,
+      "created_at": 1780228509,
+      "hex": "M24",
+      "tile": "8-19",
+      "rotation": 1
+    },
+    {
+      "type": "lay_tile",
+      "entity": "GWR",
+      "entity_type": "corporation",
+      "id": 235,
+      "created_at": 1780228509,
+      "hex": "J23",
+      "tile": "3-12",
+      "rotation": 4
+    },
+    {
+      "type": "pass",
+      "entity": "GWR",
+      "entity_type": "corporation",
+      "id": 236,
+      "created_at": 1780228509
+    },
+    {
+      "type": "buy_train",
+      "entity": "GWR",
+      "entity_type": "corporation",
+      "id": 237,
+      "created_at": 1780228509,
+      "train": "2+2-27",
+      "price": 100
+    },
+    {
+      "type": "sell_shares",
+      "entity": "GWR",
+      "entity_type": "corporation",
+      "id": 238,
+      "created_at": 1780228509,
+      "shares": [
+        "GWR_2"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "choose",
+      "entity": "C",
+      "entity_type": "corporation",
+      "id": 239,
+      "created_at": 1780228509,
+      "choice": "first"
+    },
+    {
+      "type": "lay_tile",
+      "entity": "LNWR",
+      "entity_type": "corporation",
+      "id": 240,
+      "created_at": 1780228509,
+      "hex": "J29",
+      "tile": "OE10-2",
+      "rotation": 0
+    },
+    {
+      "type": "lay_tile",
+      "entity": "LNWR",
+      "entity_type": "corporation",
+      "id": 241,
+      "created_at": 1780228509,
+      "hex": "K30",
+      "tile": "8-20",
+      "rotation": 0
+    },
+    {
+      "type": "lay_tile",
+      "entity": "LNWR",
+      "entity_type": "corporation",
+      "id": 242,
+      "created_at": 1780228509,
+      "hex": "L29",
+      "tile": "3-13",
+      "rotation": 2
+    },
+    {
+      "type": "lay_tile",
+      "entity": "LNWR",
+      "entity_type": "corporation",
+      "id": 243,
+      "created_at": 1780228509,
+      "hex": "K28",
+      "tile": "8-21",
+      "rotation": 3
+    },
+    {
+      "type": "pass",
+      "entity": "LNWR",
+      "entity_type": "corporation",
+      "id": 244,
+      "created_at": 1780228509
+    },
+    {
+      "type": "buy_train",
+      "entity": "LNWR",
+      "entity_type": "corporation",
+      "id": 245,
+      "created_at": 1780228509,
+      "train": "2+2-28",
+      "price": 100
+    },
+    {
+      "type": "pass",
+      "entity": "LNWR",
+      "entity_type": "corporation",
+      "id": 246,
+      "created_at": 1780228509
+    },
+    {
+      "type": "sell_shares",
+      "entity": "LNWR",
+      "entity_type": "corporation",
+      "id": 247,
+      "created_at": 1780228509,
+      "shares": [
+        "LNWR_2"
+      ],
+      "percent": 10
+    },
+    {
+      "type": "choose",
+      "entity": "C",
+      "entity_type": "corporation",
+      "id": 248,
+      "created_at": 1780228509,
+      "choice": "first"
+    },
+    {
+      "type": "pass",
+      "entity": "LNWR",
+      "entity_type": "corporation",
+      "id": 249,
+      "created_at": 1780228509
+    }
+  ]
+}

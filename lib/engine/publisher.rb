@@ -12,6 +12,11 @@ module Engine
         url: 'https://boardgamegeek.com/boardgamepublisher/4192/deep-thought-games-llc',
         hidden: true,
       },
+      dice: {
+        name: 'Designs in Computer Entertainment',
+        url: 'http://designsice.com',
+        hidden: true,
+      },
       gmt_games: {
         name: 'GMT Games',
         url: 'https://www.gmtgames.com/',
