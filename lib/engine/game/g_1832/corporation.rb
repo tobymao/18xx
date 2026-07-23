@@ -6,7 +6,7 @@ module Engine
   module Game
     module G1832
       class Corporation < Engine::Corporation
-        attr_accessor :coal_token
+        attr_accessor :coal_token, :system_shells
       end
     end
   end

@@ -208,6 +208,11 @@ module Engine
           option_finish_on_400? ? FINISH_ON_400_GAME_END_CHECK : STANDARD_GAME_END_CHECK
         end
 
+        # §11.6.7: Systems hold twice the normal train limit.
+        def train_limit(entity)
+          super * (system?(entity) ? 2 : 1)
+        end
+
         def available_programmed_actions
           [Action::ProgramMergerPass, Action::ProgramBuyShares, Action::ProgramSharePass]
         end
