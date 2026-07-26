@@ -28,17 +28,28 @@ module Engine
             return false unless super
             return true if bundle.owner == @game.share_pool
 
+            # Enforce the block and company sequential availability rules for IPO shares
+            return false unless @game.corporation_available?(bundle.corporation)
+
             # ensure 20% shares of BA, WT and HE cannot be bought before all 10% shares are gone
             return bundle.shares.first == bundle.corporation.shares.first unless bundle.corporation == @game.prussian
 
             # Ignore the order for PR: We cannot use the same logic we use for the other corporations, because the very first
-            # share - the president - is reserved. If we used the same logic, no PR share could  ever be bought
+            # share - the president - is reserved. If we used the same logic, no PR share could ever be bought
             true
           end
 
           def allow_president_change?(corporation)
             # PR president can only change hands after it has been floated
             corporation.id != 'PR' || corporation.floated?
+          end
+
+          def can_sell?(entity, bundle)
+            # Rule 7.4: Cannot sell shares in a company floated in the current share round
+            # (it hasn't operated yet), except for the Prussian Railway.
+            return false if bundle.corporation.id != 'PR' && !bundle.corporation.operated?
+
+            super
           end
 
           def can_gain?(entity, bundle, exchange: false)
@@ -67,6 +78,24 @@ module Engine
             return false unless player
 
             player.percent_of(corporation) > 50
+          end
+
+          def pass!
+            super
+            # In 1835, selling shares does not count as an action that keeps the stock round alive.
+            # If the player didn't buy anything this turn, force their state to "passed".
+            return if bought?
+
+            @round.pass_order |= [current_entity]
+            current_entity&.pass!
+          end
+
+          def track_action(action, corporation, player_action = true)
+            # Only a purchase action updates the priority deal (last_to_act) in 1835.
+            @round.last_to_act = action.entity.player if self.class::PURCHASE_ACTIONS.include?(action.class)
+
+            @round.current_actions << action if player_action
+            @round.players_history[action.entity.player][corporation] << action
           end
         end
       end

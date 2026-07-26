@@ -180,7 +180,7 @@ module Engine
             ['G5'] => 'city=revenue:0,loc:0',
             ['H2'] => 'city=revenue:0,loc:3.5;label=Y',
             ['H16'] => 'city=revenue:0,loc:2.5',
-            ['H20'] => 'city=revenue:0,loc:0.5;upgrade=cost:50;label=Y',
+            ['H20'] => 'city=revenue:0,loc:0.5;label=Y',
             ['I3'] => 'city=revenue:0;label=Y;upgrade=cost:50',
             ['M9'] => 'city=revenue:0,loc:0.5',
             ['N12'] => 'city=revenue:0,loc:5',
@@ -239,7 +239,8 @@ module Engine
             'city=revenue:40,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0;upgrade=cost:50;label=Y',
             ['L14'] =>
             'city=revenue:30,loc:2.5;path=a:3,b:_0;path=a:2,b:_0;'\
-            'city=revenue:30,loc:5.5;path=a:5,b:_1;path=a:0,b:_1;label=XX',
+            'city=revenue:30,loc:5.5;path=a:5,b:_1;path=a:0,b:_1;label=XX;'\
+            'future_label=label:X,color:brown',
           },
           brown: {
             %w[A9 G1] => 'path=a:4,b:5',

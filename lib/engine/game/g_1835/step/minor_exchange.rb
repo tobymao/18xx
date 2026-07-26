@@ -163,6 +163,7 @@ module Engine
                           'PR will therefore be skipped this OR.'
                 end
               end
+              @game.conversion_choice_during_or = false
             else
               insert_prussian! if pr_formed_this_round?
 
@@ -178,12 +179,12 @@ module Engine
           # - neither it nor the prussian companies HB and BB (since they paid out their revenue) are converted
           def pr_should_operate_this_or?
             no_prussian_company_or_minor_1_converted = !@round.converted.intersect?(@game.prussian_companies + [minor_1])
-            minor_1_bought_triggering_train = minor_1 == @round.entities[@round.entity_index]
+            minor_1_bought_triggering_train = minor_1 == @game.pr_triggering_entity
             no_prussian_company_or_minor_1_converted && minor_1_bought_triggering_train
           end
 
           def minor_1
-            @minor_1 ||= @game.minor_by_id('1')
+            @minor_1 ||= @game.minor_by_id('M1') || @game.minor_by_id('1')
           end
 
           def pr_formed_this_round?

@@ -14,13 +14,29 @@ module Engine
           def setup
             @companies = @game.companies.select { |c| c.owner.nil? && !c.closed? }
 
-            # set up the tiered companies as 2d array that might contain empty arrays if the starting package was not
-            # fully sold in a previous draft round. These empty arrays are important for may_purchase: companies in rows
-            # after an empty row can only be purchased if all rows before are empty. If we were to only group_by
-            # auction_row, we might lose these empty rows.
-            @tiered_companies = Array.new(4) { [] }
-            @companies.each do |company|
-              @tiered_companies[company.auction_row] << company
+            if @game.optional_rules&.include?(:clemens)
+              @tiered_companies = Array.new(3) { [] }
+              @companies.each do |company|
+                if company.sym.start_with?('M')
+                  @tiered_companies[0] << company
+                elsif %w[NF LD BY_D OBB PB].include?(company.sym)
+                  @tiered_companies[1] << company
+                else
+                  @tiered_companies[2] << company
+                end
+              end
+              @tiered_companies[0].sort_by!(&:sym)
+              @tiered_companies[1].sort_by! { |c| %w[NF LD BY_D OBB PB].index(c.sym) }
+              @tiered_companies[2].sort_by! { |c| %w[BB HB].index(c.sym) }
+            else
+              # set up the tiered companies as 2d array that might contain empty arrays if the starting package was not
+              # fully sold in a previous draft round. These empty arrays are important for may_purchase: companies in rows
+              # after an empty row can only be purchased if all rows before are empty. If we were to only group_by
+              # auction_row, we might lose these empty rows.
+              @tiered_companies = Array.new(4) { [] }
+              @companies.each do |company|
+                @tiered_companies[company.auction_row] << company
+              end
             end
           end
 
@@ -34,6 +50,7 @@ module Engine
 
           def may_purchase?(company)
             return false unless company
+            return true if @game.optional_rules&.include?(:clemens)
 
             # in the vanilla draft a company can only be purchased if it is either in the top-most row or furthest to
             # the left in the second top-most row if the top-most row only has one company
@@ -70,12 +87,15 @@ module Engine
           def actions(entity)
             return [] if finished?
 
-            unless @companies.any? { |c| current_entity.cash >= min_bid(c) }
-              @log << "#{current_entity.name} has no valid actions and passes"
-              return []
-            end
-
             entity == current_entity ? ACTIONS : []
+          end
+
+          def auto_actions(entity)
+            return [Engine::Action::Pass.new(entity)] if entity.player? && @companies.none? do |c|
+                                                           entity.cash >= c.value
+                                                         end
+
+            []
           end
 
           def skip!
@@ -127,6 +147,7 @@ module Engine
           def process_pass(action)
             @log << "#{action.entity.name} passes"
             action.entity.pass!
+            @round.last_to_act = action.entity
             @round.next_entity_index!
             action_finalized
           end
@@ -134,7 +155,7 @@ module Engine
           def action_finalized
             return unless finished?
 
-            @round.next_entity_index!
+            @round.next_entity_index! if @game.optional_rules&.include?(:clemens)
           end
 
           def may_choose?(_company)
@@ -171,7 +192,18 @@ module Engine
             # allow president change for SX when LD is being sold, but for BY only if the BY director has been sold,
             # which might be during the current or any earlier action
             allow_president_change = share.president || !share.corporation.shares.first.president
-            @game.share_pool.transfer_shares(ShareBundle.new(share), player, allow_president_change: allow_president_change)
+            @game.share_pool.transfer_shares(ShareBundle.new(share), player,
+                                             allow_president_change: allow_president_change)
+
+            # Under Clemens rules, force BY to float immediately once 50% of its total equity is player-held
+            by_corp = share.corporation
+            if @game.optional_rules&.include?(:clemens) && by_corp.name == 'BY' && !by_corp.floated?
+              total_held = by_corp.player_share_holders.values.sum
+              if total_held >= 50
+                by_corp.floated = true
+                @log << "#{by_corp.name} floats early via the Clemens Gate at #{total_held}% shares sold!"
+              end
+            end
 
             @game.place_home_token(share.corporation) if share.corporation.floated?
           end
