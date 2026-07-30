@@ -7,10 +7,6 @@ module Engine
     module G18India
       module Step
         class Token < Engine::Step::Token
-          # modified to prevent skipping step if there are token abilities
-          def can_place_token?(entity)
-            super || @game.abilities(entity, :token)
-          end
         end
       end
     end
