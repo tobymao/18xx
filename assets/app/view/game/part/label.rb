@@ -62,6 +62,32 @@ module View
           },
         }.freeze
 
+        P_TOP_LEFT_CORNER = {
+          flat: {
+            region_weights: { UPPER_LEFT_CORNER => 1.0 },
+            x: -40,
+            y: -65,
+          },
+          pointy: {
+            region_weights: { UPPER_LEFT_CORNER => 1.0 },
+            x: -30,
+            y: -65,
+          },
+        }.freeze
+
+        P_TOP_RIGHT_CORNER = {
+          flat: {
+            region_weights: { UPPER_RIGHT_CORNER => 1.0 },
+            x: 40,
+            y: -65,
+          },
+          pointy: {
+            region_weights: { UPPER_RIGHT_CORNER => 1.0, [2] => 0.5 },
+            x: 30,
+            y: -65,
+          },
+        }.freeze
+
         P_BOTTOM_LEFT_CORNER = {
           flat: {
             region_weights: { BOTTOM_LEFT_CORNER => 1.0 },
@@ -94,18 +120,8 @@ module View
             x: 50,
             y: 37,
           },
-          # top left corner
-          {
-            region_weights: { UPPER_LEFT_CORNER => 1.0 },
-            x: -40,
-            y: -65,
-          },
-          # top right corner
-          {
-            region_weights: { UPPER_RIGHT_CORNER => 1.0 },
-            x: 40,
-            y: -65,
-          },
+          P_TOP_LEFT_CORNER[:flat],
+          P_TOP_RIGHT_CORNER[:flat],
           P_LEFT_CORNER[:flat],
           P_RIGHT_CORNER[:flat],
           P_BOTTOM_LEFT_CORNER[:flat],
@@ -142,12 +158,7 @@ module View
             x: -50,
             y: -31,
           },
-          # top left corner
-          {
-            region_weights: { UPPER_LEFT_CORNER => 1.0 },
-            x: -30,
-            y: -65,
-          },
+          P_TOP_LEFT_CORNER[:pointy],
           # edge 1
           {
             region_weights: { [13, 14] => 1.0 },
@@ -156,12 +167,7 @@ module View
           },
           P_LEFT_CORNER[:pointy],
           P_BOTTOM_LEFT_CORNER[:pointy],
-          # top right corner
-          {
-            region_weights: { UPPER_RIGHT_CORNER => 1.0, [2] => 0.5 },
-            x: 30,
-            y: -65,
-          },
+          P_TOP_RIGHT_CORNER[:pointy],
           # edge 4
           {
             region_weights: { [10] => 1.0, [4, 11] => 0.25 },
@@ -185,7 +191,7 @@ module View
         def preferred_render_locations
           if @tile.city_towns.one?
             if @tile.cities.one? && (@tile.cities.first.slots > 1)
-              [P_LEFT_CORNER[layout]]
+              [P_LEFT_CORNER[layout], P_TOP_LEFT_CORNER[layout], P_TOP_RIGHT_CORNER[layout], P_BOTTOM_LEFT_CORNER[layout]]
             else
               [SINGLE_CITY_ONE_SLOT[layout], SINGLE_CITY_ONE_SLOT_RIGHT[layout], P_RIGHT_CORNER[layout]]
             end
