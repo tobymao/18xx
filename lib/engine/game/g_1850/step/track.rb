@@ -80,13 +80,16 @@ module Engine
           end
 
           def can_buy_mesabi_token?(entity)
+            can_buy_mesabi_token_without_lay?(entity) && get_tile_lay(entity)
+          end
+
+          def can_buy_mesabi_token_without_lay?(entity)
             entity.corporation? &&
-            !entity.mesabi_token &&
-            @game.mesabi_company_sold_or_closed &&
-            @game.mesabi_token_counter.positive? &&
-            entity.cash >= 80 &&
-            hex_neighbors(entity, @game.mesabi_hex) &&
-            get_tile_lay(entity)
+              !entity.mesabi_token &&
+              @game.mesabi_company_sold_or_closed &&
+              @game.mesabi_token_counter.positive? &&
+              entity.cash >= 80 &&
+              hex_neighbors(entity, @game.mesabi_hex)
           end
         end
       end
