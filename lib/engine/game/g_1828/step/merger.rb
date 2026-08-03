@@ -321,11 +321,13 @@ module Engine
             total_shares = entity.num_shares_of(@merger) + entity.num_shares_of(@target)
             return unless total_shares.odd?
 
-            merger_share = entity.shares_of(@merger).reject(&:president).first
-            target_share = entity.shares_of(@target).reject(&:president).first
+            merger_share = entity.shares_of(@merger).reject(&:president).first || entity.shares_of(@merger).find(&:president)
+            target_share = entity.shares_of(@target).reject(&:president).first || entity.shares_of(@target).find(&:president)
 
             if @player_selection
-              @odd_share = @player_selection.include?(@merger.name) ? merger_share : target_share
+              chosen_corp = @player_selection.include?(@merger.name) ? @merger : @target
+              chosen_share = entity.shares_of(chosen_corp).reject(&:president).first
+              @odd_share = chosen_share || (chosen_corp == @merger ? target_share : merger_share)
               @player_selection = nil
             elsif entity.player? && merger_share && target_share
               choices = merging_corporations.map do |c|
