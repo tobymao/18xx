@@ -13,15 +13,33 @@ module Engine
         include Entities
         include Map
 
-        # Temporary stub: 1867's #setup expects a national-type corporation
-        # and hidden company '3' that this skeleton doesn't have yet.
-        # Task 3 replaces this with the real #setup (16 minors, 8 majors,
-        # the Union Pacific).
+        GREEN_CORPORATIONS = %w[MB Y V TR SV E].freeze
+
+        # Filled in by Task 4 with the Omaha and Cheyenne hex ids. Must be
+        # defined here and empty: 1867's value is ['L12'], a hex that does not
+        # exist on the 1864 map, and `setup` below dereferences it.
+        NATIONAL_RESERVATIONS = [].freeze
+
+        attr_reader :union_pacific, :future_corporations
+
         def setup
           @interest = {}
-          @national_reservations = []
           @show_majors = false
-          @future_corporations = []
+          @national_reservations = self.class::NATIONAL_RESERVATIONS.dup
+
+          @union_pacific = @national = @corporations.find { |c| c.type == :national }
+          @corporations.delete(@national)
+          @national.ipoed = true
+          share_price = stock_market.market.flatten.compact.find { |sp| sp.price == 80 }
+          stock_market.set_par(@national, share_price)
+
+          @corporations, @future_corporations = @corporations.partition do |corporation|
+            corporation.type == :minor && !self.class::GREEN_CORPORATIONS.include?(corporation.id)
+          end
+        end
+
+        def all_corporations
+          @corporations + [@national]
         end
       end
     end
