@@ -126,13 +126,22 @@ module View
       }
 
       dev_status = game.meta::DEV_STAGE
+      dev_suffix = dev_status != :production ? " (#{dev_status})" : ''
+
+      title_elm =
+        if game.meta::GAME_INFO_URL
+          link_props = {
+            attrs: { href: game.meta::GAME_INFO_URL, target: '_blank' },
+            style: { color: 'inherit', textDecoration: 'underline' },
+          }
+          h(:a, link_props, game.display_title)
+        else
+          game.display_title
+        end
 
       h('div.header', div_props, [
         h(:div, text_props, [
-          h(:div, [
-            "Game: #{game.display_title}",
-            (dev_status != :production ? " (#{dev_status})" : ''),
-          ].join),
+          h(:div, ['Game: ', title_elm, dev_suffix]),
           h('div.nowrap', owner_props, "Owner: #{@gdata['user']['name']}"),
         ]),
         h(:div, buttons_props, buttons),
