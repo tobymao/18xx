@@ -451,15 +451,28 @@ module View
       delete_user(password)
     end
 
+    WEBHOOK_CHECKS = {
+      # Slack member IDs start with U (or W), never a username.
+      # https://docs.slack.dev/messaging/formatting-message-text/
+      slack: { match: 'slack', id_regexp: /\A[UW][A-Z0-9]{7,}\z/ },
+      # Discord IDs are numeric, currently 17-19 digits.
+      # https://discord.com/developers/docs/reference#snowflakes
+      discord: { match: 'discord', id_regexp: /\A\d{17,19}\z/ },
+    }.freeze
+
     def submit
       case @type
       when :signup
+        return unless webhook_credentials_valid?
+
         create_user(params)
         reset_turnstile
       when :login
         login(params)
         reset_turnstile
       when :profile
+        return unless webhook_credentials_valid?
+
         edit_user(params)
         `setTimeout(function() { location.reload() }, 1000)`
       end
@@ -536,6 +549,36 @@ module View
 
     def password_change_attempted?(p)
       (p[:new_password] || p['new_password']).to_s.strip != ''
+    end
+
+    private
+
+    def webhook_credentials_valid?
+      WEBHOOK_CHECKS.each do |service, check|
+        next if webhook_id_valid?(service, check)
+
+        store(:flash_opts, "Your #{service.to_s.capitalize} User ID looks incorrect. See the Learn About Notifications link.")
+        return false
+      end
+
+      true
+    end
+
+    def webhook_id_valid?(service, check)
+      return true unless webhook?(service, check[:match])
+
+      id = input_elm(:webhook_user_id).value.to_s
+      id.empty? || id.match?(check[:id_regexp])
+    end
+
+    def webhook?(service, match)
+      @webhook.to_s == service.to_s || custom_webhook_url.include?(match)
+    end
+
+    def custom_webhook_url
+      return '' if @webhook.to_s != 'custom' || !@inputs[:webhook_url]
+
+      input_elm(:webhook_url).value.to_s
     end
   end
 end
