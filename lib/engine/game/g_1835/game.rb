@@ -437,7 +437,7 @@ module Engine
         end
 
         def berlin_potsdamer_bahn
-          @berlin_potsdamer_bahn ||= minor_by_id('M2') || minor_by_id('2')
+          @berlin_potsdamer_bahn ||= minor_by_id('2')
         end
 
         def prussian_exchangeables
@@ -501,17 +501,9 @@ module Engine
         def ability_usable?(ability)
           if ability.type == :token && ability.owner.sym == 'PB'
             ba = corporation_by_id('BA')
-            is_usable = ba&.floated? && ba.tokens.first&.used
-
-            # Use a state flag to avoid crashing the UI render loop while ensuring exactly one log when state changes
-            unless @logged_pb_ability_state == is_usable
-              @log << "[LOG] PB Token ability: Usable=#{!!is_usable}, " \
-                      "from_owner=#{ability.from_owner}, special_only=#{ability.special_only}"
-              @logged_pb_ability_state = is_usable
-            end
-
-            return false unless is_usable
+            return ba&.floated? && ba.tokens.first&.used
           end
+
           super
         end
 
@@ -561,11 +553,10 @@ module Engine
           @log << "#{minor.name} merges into #{prussian.name}"
 
           owner = minor.owner
-          exchange_share_percentage = %w[2 4 M2 M4].include?(minor.id) ? 10 : 5
+          exchange_share_percentage = %w[2 4].include?(minor.id) ? 10 : 5
 
           exchange_prussian_share(allow_president_change, exchange_share_percentage, owner,
-                                  president: %w[2 M2].include?(minor.id))
-
+                                  president: minor.id == '2')
           if minor.cash.positive?
             @log << "#{prussian.name} receives #{format_currency(minor.cash)} from #{minor.name}'s treasury"
             minor.spend(minor.cash, prussian)
@@ -577,9 +568,9 @@ module Engine
             minor.trains.dup.each { |t| buy_train(prussian, t, :free) }
           end
 
-          unless %w[5 M5].include?(minor.id)
+         unless minor.id == '5'
             token = minor.tokens.first
-            new_token = %w[2 M2].include?(minor.id) ? prussian.tokens.first : Token.new(prussian)
+            new_token = minor.id == '2' ? prussian.tokens.first : Token.new(prussian)
             prussian.tokens << new_token
 
             token.swap!(new_token, check_tokenable: false)

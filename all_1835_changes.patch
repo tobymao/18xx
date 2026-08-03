@@ -1,0 +1,1205 @@
+diff --git a/lib/engine/game/g_1835/entities.rb b/lib/engine/game/g_1835/entities.rb
+index 418ed614d..2c9823070 100644
+--- a/lib/engine/game/g_1835/entities.rb
++++ b/lib/engine/game/g_1835/entities.rb
+@@ -16,21 +16,22 @@ module Engine
+                   'track of the company is not required. This action closes the Nürnberg-Fürth.',
+             abilities: [{ type: 'shares', shares: 'BY_2' }, {
+               type: 'token',
+-              when: 'owning_player_track',
++              when: 'owning_player_or_turn',
+               owner_type: 'player',
+               hexes: ['L14'],
+               price: 0,
+               teleport_price: 0,
+               count: 1,
+               extra_action: true,
+-              from_owner: true,
++              from_owner: false,
++              special_only: true,
+             }],
+             color: :dodgerblue,
+             auction_row: 0,
+           },
+           {
+-            name: '1',
+-            sym: '1',
++            name: 'M1',
++            sym: 'M1',
+             value: 80,
+             revenue: 0,
+             desc: '',
+@@ -51,8 +52,8 @@ module Engine
+             auction_row: 1,
+           },
+           {
+-            name: '2',
+-            sym: '2',
++            name: 'M2',
++            sym: 'M2',
+             value: 170,
+             revenue: 0,
+             desc: '',
+@@ -60,8 +61,8 @@ module Engine
+             color: '#444444',
+           },
+           {
+-            name: '3',
+-            sym: '3',
++            name: 'M3',
++            sym: 'M3',
+             value: 80,
+             revenue: 0,
+             desc: '',
+@@ -69,8 +70,8 @@ module Engine
+             color: '#444444',
+           },
+           {
+-            name: '4',
+-            sym: '4',
++            name: 'M4',
++            sym: 'M4',
+             value: 160,
+             revenue: 0,
+             desc: '',
+@@ -127,8 +128,8 @@ module Engine
+             color: '#444444',
+           },
+           {
+-            name: '5',
+-            sym: '5',
++            name: 'M5',
++            sym: 'M5',
+             value: 80,
+             revenue: 0,
+             desc: '',
+@@ -136,8 +137,8 @@ module Engine
+             color: '#444444',
+           },
+           {
+-            name: '6',
+-            sym: '6',
++            name: 'M6',
++            sym: 'M6',
+             value: 80,
+             revenue: 0,
+             desc: '',
+@@ -189,18 +190,21 @@ module Engine
+                 hexes: ['L6'],
+                 when: 'owning_player_track',
+                 tiles: %w[210 211 212 213 214 215],
++                count: 1,
++                connect: false,
+               },
+               { type: 'shares', shares: 'BY_3' },
+               {
+                 type: 'token',
+-                when: 'owning_player_track',
+-                owner_type: 'corporation',
++                when: 'owning_player_or_turn',
++                owner_type: 'player',
+                 hexes: ['L6'],
+-                city: 3,
+                 price: 0,
+                 teleport_price: 0,
+                 count: 1,
+                 extra_action: true,
++                from_owner: false,
++                special_only: true,
+               },
+             ],
+             color: :dodgerblue,
+@@ -277,7 +281,7 @@ module Engine
+           {
+             sym: 'PR',
+             name: 'Preußische Eisenbahn',
+-            type: 'major',
++            type: 'prussian',
+             logo: '1835/PR',
+             simple_logo: '1835/PR.alt',
+             tokens: [0, 0, 0, 0, 0],
+@@ -322,20 +326,20 @@ module Engine
+ 
+         MINORS = [
+           {
+-            sym: '1',
++            sym: 'M1',
+             name: 'Bergisch Märkische Bahn',
+             type: 'minor',
+-            logo: '1835/P1',
++            logo: '1835/M1',
+             simple_logo: '1835/PR.alt',
+             tokens: [0],
+             coordinates: 'H2',
+             color: '#37383a',
+           },
+           {
+-            sym: '2',
++            sym: 'M2',
+             name: 'Berlin Potsdamer Bahn',
+             type: 'minor',
+-            logo: '1835/P2',
++            logo: '1835/M2',
+             simple_logo: '1835/PR.alt',
+             tokens: [0],
+             coordinates: 'E19',
+@@ -343,30 +347,30 @@ module Engine
+             color: '#37383a',
+           },
+           {
+-            sym: '3',
++            sym: 'M3',
+             name: 'Magdeburger-Bahn',
+             type: 'minor',
+-            logo: '1835/P3',
++            logo: '1835/M3',
+             simple_logo: '1835/PR.alt',
+             tokens: [0],
+             coordinates: 'F14',
+             color: '#37383a',
+           },
+           {
+-            sym: '4',
++            sym: 'M4',
+             name: 'Köln-Mindener Bahn',
+             type: 'minor',
+-            logo: '1835/P4',
++            logo: '1835/M4',
+             simple_logo: '1835/PR.alt',
+             tokens: [0],
+             coordinates: 'G5',
+             color: '#37383a',
+           },
+           {
+-            sym: '5',
++            sym: 'M5',
+             name: 'Berlin Stettiner Bahn',
+             type: 'minor',
+-            logo: '1835/P5',
++            logo: '1835/M5',
+             simple_logo: '1835/PR.alt',
+             tokens: [0],
+             coordinates: 'E19',
+@@ -374,10 +378,10 @@ module Engine
+             color: '#37383a',
+           },
+           {
+-            sym: '6',
++            sym: 'M6',
+             name: 'Altona Kiel Bahn',
+             type: 'minor',
+-            logo: '1835/P6',
++            logo: '1835/M6',
+             simple_logo: '1835/PR.alt',
+             tokens: [0],
+             coordinates: 'C11',
+diff --git a/lib/engine/game/g_1835/game.rb b/lib/engine/game/g_1835/game.rb
+index 540ee140d..5074fbee2 100644
+--- a/lib/engine/game/g_1835/game.rb
++++ b/lib/engine/game/g_1835/game.rb
+@@ -5,6 +5,11 @@ require_relative '../base'
+ require_relative 'map'
+ require_relative 'entities'
+ require_relative 'share_pool'
++require_relative 'step/token'
++require_relative 'step/track'
++require_relative 'round/stock'
++require_relative 'round/draft'
++require_relative 'round/clemens_draft'
+ require_relative '../../round/operating'
+ require_relative '../cities_plus_towns_route_distance_str'
+ 
+@@ -20,10 +25,9 @@ module Engine
+         include G1835::Entities
+         include G1835::Map
+ 
++        TRACK_RESTRICTION = :permissive
+         CURRENCY_FORMAT_STR = '%sM'
+-        # game end current or, when the bank is empty
+         GAME_END_CHECK = { bank: :current_or }.freeze
+-        # bankrupt is allowed, player leaves game
+         BANKRUPTCY_ALLOWED = true
+ 
+         BANK_CASH = 12_000
+@@ -40,7 +44,6 @@ module Engine
+         CERT_LIMIT = { 3 => 19, 4 => 15, 5 => 12, 6 => 11, 7 => 9 }.freeze
+ 
+         STARTING_CASH = { 3 => 600, 4 => 475, 5 => 390, 6 => 340, 7 => 310 }.freeze
+-        # money per initial share sold
+         CAPITALIZATION = :incremental
+ 
+         MUST_SELL_IN_BLOCKS = false
+@@ -50,8 +53,6 @@ module Engine
+ 
+         EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
+ 
+-        MUST_BUY_TRAIN = :always
+-
+         MARKET = [['', '', '', ''] + %w[132 148 166 186 208 232 258 286 316 348 382 418],
+                   ['', ''] + %w[98 108 120 134 150 168 188 210 234 260 288 318 350 384],
+                   %w[82 86 92p 100 110 122 136 152 170 190 212 236 262 290 320],
+@@ -152,7 +153,13 @@ module Engine
+                   { name: '3', distance: 3, price: 180, rusts_on: '6', num: 4 },
+                   { name: '3+3', distance: plus_train_distance(3), price: 270, rusts_on: '6+6', num: 3 },
+                   { name: '4', distance: 4, price: 360, num: 3, events: [{ 'type' => 'pr_can_form' }] },
+-                  { name: '4+4', distance: plus_train_distance(4), price: 440, num: 1, events: [{ 'type' => 'pr_must_form' }] },
++                  {
++                    name: '4+4',
++                    distance: plus_train_distance(4),
++                    price: 440,
++                    num: 1,
++                    events: [{ 'type' => 'pr_must_form' }],
++                  },
+                   {
+                     name: '5',
+                     distance: 5,
+@@ -173,16 +180,14 @@ module Engine
+ 
+         STATUS_TEXT = Base::STATUS_TEXT.merge(
+           'can_buy_trains' => ['Buy trains', 'Can buy trains from other corporations'],
+-          'two_tile_lays' => ['Two tile lays', 'Major corporations may lay 2 yellow tiles, minor corporations lay 1 yellow tile'],
++          'two_tile_lays' => ['Two tile lays',
++                              'Major corporations may lay 2 yellow tiles, minor corporations lay 1 yellow tile'],
+           'lay_or_upgrade' => ['Lay or upgrade', 'Corporations may lay 1 tile or upgrade 1 tile']
+         ).freeze
+ 
+         LAYOUT = :pointy
+-
+         SELL_MOVEMENT = :down_block
+-
+         HOME_TOKEN_TIMING = :float
+-
+         CORPORATION_BLOCKS = [%w[BY SX], %w[BA WT HE PR], %w[MS OL]].freeze
+ 
+         LAY_OR_UPGRADE = [{ lay: true, upgrade: true }].freeze
+@@ -192,17 +197,22 @@ module Engine
+           prussian.shares.last(7).each { |s| s.buyable = false }
+           prussian.shares.first.buyable = false
+ 
++          prussian.define_singleton_method(:ipo_percent) do
++            shares.select(&:buyable).sum(&:percent)
++          end
++
+           @corporations.each do |corp|
+             corp.shares.reject(&:president).each { |share| share.double_cert = (share.percent == 20) }
+           end
+ 
+           @draft_finished = false
+-
+           @draft_round_num = 1
+           @preussen_may_float = false
+ 
+-          @corporations.select { |corp| corp.type == :major }.each do |corp|
+-            @stock_market.set_par(corp, @stock_market.par_prices.find { |share_price| share_price.price == PAR_PRICES[corp.id] })
++          @corporations.select { |corp| %i[major prussian].include?(corp.type) }.each do |corp|
++            @stock_market.set_par(corp, @stock_market.par_prices.find do |share_price|
++                                          share_price.price == PAR_PRICES[corp.id]
++                                        end)
+           end
+ 
+           corporation_by_id('BY').ipoed = true
+@@ -211,6 +221,7 @@ module Engine
+           corporation_by_id('OL').forced_share_percent = 10
+ 
+           @corporation_blocks = CORPORATION_BLOCKS.map { |block| block.map { |c| corporation_by_id(c) } }
++          hex_by_id('L6').tile.cities.each { |city| city.reservations << corporation_by_id('BA') }
+         end
+ 
+         def company_header(company)
+@@ -225,23 +236,34 @@ module Engine
+         end
+ 
+         def init_round
+-          G1835::Round::Draft.new(self,
+-                                  [G1835::Step::Draft])
++          if @optional_rules&.include?(:clemens)
++            G1835::Round::ClemensDraft.new(self, [G1835::Step::Draft])
++          else
++            G1835::Round::Draft.new(self, [G1835::Step::Draft])
++          end
+         end
+ 
+         def new_draft_round
+-          G1835::Round::Draft.new(self,
+-                                  [G1835::Step::Draft],)
++          if @optional_rules&.include?(:clemens)
++            G1835::Round::ClemensDraft.new(self, [G1835::Step::Draft])
++          else
++            G1835::Round::Draft.new(self, [G1835::Step::Draft])
++          end
+         end
+ 
+         def next_round!
+-          return super if @draft_finished
++          @draft_finished = true if companies.none? { |c| c.owner.nil? && !c.closed? }
++
++          if @draft_finished
++            reorder_players
++            return super
++          end
+ 
+           clear_programmed_actions
+           @round =
+             case @round
+-            when G1835::Round::Draft
+-              reorder_players
++            when G1835::Round::Draft, G1835::Round::ClemensDraft
++              reorder_players unless @optional_rules&.include?(:clemens)
+               new_operating_round(@draft_round_num)
+             when G1835::Round::Operating
+               @draft_round_num += 1
+@@ -249,16 +271,41 @@ module Engine
+             end
+         end
+ 
++        def reorder_players(order = nil, log_player_order: false, silent: false)
++          order ||= next_sr_player_order
++          if order == :after_last_to_act
++            active_players = @players.reject(&:bankrupt)
++            player = if @round&.last_to_act && active_players.include?(@round.last_to_act)
++                       last_idx = active_players.index(@round.last_to_act)
++                       active_players[(last_idx + 1) % active_players.size]
++                     else
++                       active_players[(@round&.entity_index || 0) % active_players.size]
++                     end
++            @players.rotate!(@players.index(player))
++            @log << "#{player.name} has priority deal" unless silent
++            return
++          end
++
++          super
++        end
++
++        def check_sale_timing(entity, bundle)
++          return true if @optional_rules&.include?(:clemens) && bundle.corporation.operated?
++
++          super
++        end
++
+         def operating_round(round_num)
+           G1835::Round::Operating.new(self, [
+             Engine::Step::Bankrupt,
+             G1835::Step::MinorExchange,
+             Engine::Step::DiscardTrain,
+             Engine::Step::SpecialTrack,
++            G1835::Step::HomeToken,
+             G1835::Step::SpecialToken,
+-            Engine::Step::Track,
+-            Engine::Step::HomeToken,
+-            Engine::Step::Token,
++            G1835::Step::Track,
++            G1835::Step::HomeToken,
++            G1835::Step::Token,
+             Engine::Step::Route,
+             G1835::Step::Dividend,
+             G1835::Step::BuyTrain,
+@@ -273,7 +320,7 @@ module Engine
+         end
+ 
+         def bundles_for_corporation(share_holder, corporation, shares: nil)
+-          return super if share_holder.player? && corporation.type == :major
++          return super if share_holder.player? && %i[major prussian].include?(corporation.type)
+ 
+           []
+         end
+@@ -293,11 +340,18 @@ module Engine
+         def cert_limit(player = nil)
+           return @cert_limit unless player
+ 
+-          @cert_limit + @corporations.count { |corporation| corporation.type == :major && player.percent_of(corporation) >= 80 }
++          @cert_limit + @corporations.count do |corporation|
++                          %i[major prussian].include?(corporation.type) && player.percent_of(corporation) >= 80
++                        end
+         end
+ 
+         def corporation_available?(corp)
+-          return !corporation_by_id('BA').shares.first&.president if corp == prussian
++          return false unless corp.ipoed
++
++          if corp == prussian
++            ba = corporation_by_id('BA')
++            return ba.shares.none?(&:president)
++          end
+ 
+           block = @corporation_blocks.find { |corporation_block| corporation_block.include?(corp) }
+           index_in_block = block.index(corp)
+@@ -340,14 +394,31 @@ module Engine
+         end
+ 
+         def tile_lays(entity)
+-          return TWO_LAYS if entity.type == :major && @phase.status.include?('two_tile_lays')
++          return TWO_LAYS if %i[major prussian].include?(entity.type) && @phase.status.include?('two_tile_lays')
+ 
+           LAY_OR_UPGRADE
+         end
+ 
++        def must_buy_train?(entity)
++          %i[major prussian].include?(entity.type) && super
++        end
++
++        def upgrades_to?(hex, tile, special = false)
++          # L6 requires a green XX tile (210-215) as its first lay, bypassing Phase 1 yellow restriction
++          if hex.id == 'L6' && %w[210 211 212 213 214 215].include?(tile.name)
++            return hex.tile.color == :white || hex.tile.color == :yellow
++          end
++
++          super
++        end
++
++        def operating_order
++          order = super
++          order.reject!(&:minor?) if @optional_rules&.include?(:clemens) && !corporation_by_id('BY').floated?
++          order
++        end
++
+         def payout_companies
+-          # omit paying out companies if any Prussian conversion could happen. Payout is then handled by MinorExchange
+-          # after all choices have been made
+           super unless any_conversion_choice_available?
+         end
+ 
+@@ -356,10 +427,8 @@ module Engine
+         end
+ 
+         def any_conversion_choice_available?
+-          # Owner of 2 has the choice to form the PR
+           return true if @pr_can_form && !prussian.floated?
+ 
+-          # PR has already been formed and not all minors/companies have been converted yet
+           prussian.floated? && !prussian_exchangeables.reject(&:closed?).empty?
+         end
+ 
+@@ -368,7 +437,7 @@ module Engine
+         end
+ 
+         def berlin_potsdamer_bahn
+-          @berlin_potsdamer_bahn ||= minor_by_id('2')
++          @berlin_potsdamer_bahn ||= minor_by_id('M2') || minor_by_id('2')
+         end
+ 
+         def prussian_exchangeables
+@@ -379,6 +448,79 @@ module Engine
+           @prussian_companies ||= %w[BB HB].map { |id| company_by_id(id) }
+         end
+ 
++        def entity_can_use_company?(entity, company)
++          return false if entity.minor?
++
++          super
++        end
++
++        def action_processed(action)
++          super
++
++          case action
++
++          when Action::PlaceToken
++            if action.entity.id == 'BA' && action.city.hex.id == 'L6'
++              ba_corp = corporation_by_id('BA')
++              action.city.hex.tile.cities.each do |c|
++                c.remove_reservation!(ba_corp)
++              end
++            end
++            nf = company_by_id('NF')
++            if nf && !nf.closed? && nf.all_abilities.none? { |a| a.type == :token }
++              nf.close!
++              @log << "#{nf.name} closes as its special token action is complete."
++            end
++            pb = company_by_id('PB')
++            if pb && !pb.closed? && pb.all_abilities.none? { |a| a.type == :token } && pb.all_abilities.none? do |a|
++                 a.type == :tile_lay
++               end
++
++              pb.close!
++              @log << "#{pb.name} closes as both special tile and token actions are complete."
++            end
++          when Action::LayTile
++            obb = company_by_id('OBB')
++            if obb && !obb.closed? && %w[M15 M17].include?(action.hex.id) &&
++            (hex_by_id('M15').tile.color != :white && hex_by_id('M17').tile.color != :white)
++              obb.close!
++              @log << "#{obb.name} closes because both target hexes have been built on."
++            end
++
++            pb = company_by_id('PB')
++            if pb && !pb.closed? && pb.all_abilities.none? { |a| a.type == :token } && pb.all_abilities.none? do |a|
++                 a.type == :tile_lay
++               end
++
++              pb.close!
++              @log << "#{pb.name} closes as both special tile and token actions are complete."
++            end
++          end
++        end
++
++        def ability_usable?(ability)
++          if ability.type == :token && ability.owner.sym == 'PB'
++            ba = corporation_by_id('BA')
++            is_usable = ba&.floated? && ba.tokens.first&.used
++
++            # Use a state flag to avoid crashing the UI render loop while ensuring exactly one log when state changes
++            unless @logged_pb_ability_state == is_usable
++              @log << "[LOG] PB Token ability: Usable=#{!!is_usable}, " \
++                      "from_owner=#{ability.from_owner}, special_only=#{ability.special_only}"
++              @logged_pb_ability_state = is_usable
++            end
++
++            return false unless is_usable
++          end
++          super
++        end
++
++        def place_home_token(corporation)
++          return if corporation.id == 'BA'
++
++          super
++        end
++
+         def event_pr_can_form!
+           @log << "-- Event: #{EVENTS_TEXT['pr_can_form'][1]} --"
+           @pr_can_form = true
+@@ -419,9 +561,10 @@ module Engine
+           @log << "#{minor.name} merges into #{prussian.name}"
+ 
+           owner = minor.owner
+-          exchange_share_percentage = %w[2 4].include?(minor.id) ? 10 : 5
++          exchange_share_percentage = %w[2 4 M2 M4].include?(minor.id) ? 10 : 5
+ 
+-          exchange_prussian_share(allow_president_change, exchange_share_percentage, owner, president: minor.id == '2')
++          exchange_prussian_share(allow_president_change, exchange_share_percentage, owner,
++                                  president: %w[2 M2].include?(minor.id))
+ 
+           if minor.cash.positive?
+             @log << "#{prussian.name} receives #{format_currency(minor.cash)} from #{minor.name}'s treasury"
+@@ -434,13 +577,9 @@ module Engine
+             minor.trains.dup.each { |t| buy_train(prussian, t, :free) }
+           end
+ 
+-          # Preußen already has a token in Berlin and the rules forbid having more than one token per hex
+-          unless minor.id == '5'
++          unless %w[5 M5].include?(minor.id)
+             token = minor.tokens.first
+-
+-            # make sure the first token (= home token) gets used or other methods might behave unexpectedly later, e.g.
+-            # "maybe_place_home_token" called when buying shares
+-            new_token = minor.id == '2' ? prussian.tokens.first : Token.new(prussian)
++            new_token = %w[2 M2].include?(minor.id) ? prussian.tokens.first : Token.new(prussian)
+             prussian.tokens << new_token
+ 
+             token.swap!(new_token, check_tokenable: false)
+@@ -456,6 +595,16 @@ module Engine
+         def close_minor!(minor)
+           minor.tokens.each(&:remove!)
+           minor.close!
++          # If a minor is closed during an Operating Round (e.g., folded into Prussia),
++          # we must remove it from the round's entities to prevent it from taking a turn.
++          # We dynamically shift the entity_index to ensure the acting entity doesn't lose its turn.
++          return unless @round.is_a?(Engine::Round::Operating)
++
++          minor_index = @round.entities.index(minor)
++          return unless minor_index
++
++          @round.entities.delete_at(minor_index)
++          @round.instance_variable_set(:@entity_index, @round.entity_index - 1) if @round.entity_index > minor_index
+         end
+ 
+         def exchange_prussian_share(allow_president_change, exchange_share_percentage, owner, president: false)
+@@ -470,7 +619,8 @@ module Engine
+           raise GameError, 'Preußen director not owned by Preußen anymore' if president && !exchange_share.president
+ 
+           exchange_share.buyable = true
+-          @share_pool.transfer_shares(ShareBundle.new(exchange_share), owner, allow_president_change: allow_president_change)
++          @share_pool.transfer_shares(ShareBundle.new(exchange_share), owner,
++                                      allow_president_change: allow_president_change)
+         end
+ 
+         def share_flags(shares)
+@@ -480,3 +630,23 @@ module Engine
+     end
+   end
+ end
++
++module Engine
++  class Player
++    def logo
++      nil
++    end
++
++    def simple_logo
++      nil
++    end
++
++    def tokens_by_type(*)
++      []
++    end
++
++    def all_abilities
++      []
++    end
++  end
++end
+diff --git a/lib/engine/game/g_1835/map.rb b/lib/engine/game/g_1835/map.rb
+index 4942fcbd3..4e59ffdc1 100644
+--- a/lib/engine/game/g_1835/map.rb
++++ b/lib/engine/game/g_1835/map.rb
+@@ -180,7 +180,7 @@ module Engine
+             ['G5'] => 'city=revenue:0,loc:0',
+             ['H2'] => 'city=revenue:0,loc:3.5;label=Y',
+             ['H16'] => 'city=revenue:0,loc:2.5',
+-            ['H20'] => 'city=revenue:0,loc:0.5;upgrade=cost:50;label=Y',
++            ['H20'] => 'city=revenue:0,loc:0.5;label=Y',
+             ['I3'] => 'city=revenue:0;label=Y;upgrade=cost:50',
+             ['M9'] => 'city=revenue:0,loc:0.5',
+             ['N12'] => 'city=revenue:0,loc:5',
+@@ -239,7 +239,8 @@ module Engine
+             'city=revenue:40,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0;upgrade=cost:50;label=Y',
+             ['L14'] =>
+             'city=revenue:30,loc:2.5;path=a:3,b:_0;path=a:2,b:_0;'\
+-            'city=revenue:30,loc:5.5;path=a:5,b:_1;path=a:0,b:_1;label=XX',
++            'city=revenue:30,loc:5.5;path=a:5,b:_1;path=a:0,b:_1;label=XX;'\
++            'future_label=label:X,color:brown',
+           },
+           brown: {
+             %w[A9 G1] => 'path=a:4,b:5',
+diff --git a/lib/engine/game/g_1835/round/clemens_draft.rb b/lib/engine/game/g_1835/round/clemens_draft.rb
+new file mode 100644
+index 000000000..31c040380
+--- /dev/null
++++ b/lib/engine/game/g_1835/round/clemens_draft.rb
+@@ -0,0 +1,76 @@
++# frozen_string_literal: true
++
++require_relative '../../../round/draft'
++
++module Engine
++  module Game
++    module G1835
++      module Round
++        class ClemensDraft < Engine::Round::Draft
++          def setup
++            super
++            # Clear pass flags across round transitions to prevent freezing
++            @entities.each(&:unpass!)
++            @clemens_turn = 0
++            @entity_index = current_clemens_index
++          end
++
++          def current_entity
++            entities[current_clemens_index]
++          end
++
++          def current_clemens_index
++            num_players = entities.size
++            return 0 if num_players.zero?
++
++            if @clemens_turn < num_players
++              # Reverse phase: passes from last down to first (e.g., CBA)
++              num_players - 1 - @clemens_turn
++            elsif @clemens_turn < 2 * num_players
++              # Forward snake phase: first player takes two turns, climbs back (e.g., ABC)
++              @clemens_turn - num_players
++            else
++              # Standard clockwise iteration phase for remainder of draft
++              (@clemens_turn - (2 * num_players)) % num_players
++            end
++          end
++
++          def next_entity_index!
++            @clemens_turn += 1
++            @entity_index = current_clemens_index
++          end
++
++          def select_entities
++            @game.players
++          end
++
++          def after_process(_action)
++            return if active_step
++
++            next_entity!
++          end
++
++          def next_entity!
++            next_entity_index!
++            if finished?
++              @game.draft_finished = all_drafted?
++              return
++            end
++
++            @steps.each(&:unpass!)
++            skip_steps
++            next_entity! unless active_step
++          end
++
++          def all_drafted?
++            @game.companies.all? { |c| c.owner || c.closed? }
++          end
++
++          def finished?
++            all_drafted? || @entities.all?(&:passed?)
++          end
++        end
++      end
++    end
++  end
++end
+diff --git a/lib/engine/game/g_1835/round/draft.rb b/lib/engine/game/g_1835/round/draft.rb
+index 145317c26..d67dc7343 100644
+--- a/lib/engine/game/g_1835/round/draft.rb
++++ b/lib/engine/game/g_1835/round/draft.rb
+@@ -7,34 +7,12 @@ module Engine
+     module G1835
+       module Round
+         class Draft < Engine::Round::Draft
+-          def select_entities
+-            @game.players
+-          end
+-
+-          def after_process(_action)
+-            return if active_step
+-
+-            next_entity!
+-          end
+-
+-          def next_entity!
+-            next_entity_index!
+-            if finished?
+-              @game.draft_finished = all_drafted?
+-              return
+-            end
+-
+-            @steps.each(&:unpass!)
+-            skip_steps
+-            next_entity! unless active_step
+-          end
+-
+-          def all_drafted?
+-            @game.companies.all? { |c| c.owner || c.closed? }
++          def finished?
++            @entities.all?(&:passed?) || @game.companies.all? { |c| c.owner || c.closed? }
+           end
+ 
+-          def finished?
+-            all_drafted? || @entities.all?(&:passed?)
++          def next_entity_index!
++            @entity_index = (@entity_index + 1) % @entities.size
+           end
+         end
+       end
+diff --git a/lib/engine/game/g_1835/round/stock.rb b/lib/engine/game/g_1835/round/stock.rb
+new file mode 100644
+index 000000000..314002619
+--- /dev/null
++++ b/lib/engine/game/g_1835/round/stock.rb
+@@ -0,0 +1,19 @@
++# lib/engine/game/g_1835/round/stock.rb
++# frozen_string_literal: true
++
++require_relative '../../../round/stock'
++
++module Engine
++  module Game
++    module G1835
++      module Round
++        class Stock < Engine::Round::Stock
++          def setup
++            @game.conversion_choice_during_or = false
++            super
++          end
++        end
++      end
++    end
++  end
++end
+diff --git a/lib/engine/game/g_1835/step/buy_sell_par_shares.rb b/lib/engine/game/g_1835/step/buy_sell_par_shares.rb
+index 3fd3d6688..81c9f3650 100644
+--- a/lib/engine/game/g_1835/step/buy_sell_par_shares.rb
++++ b/lib/engine/game/g_1835/step/buy_sell_par_shares.rb
+@@ -28,11 +28,14 @@ module Engine
+             return false unless super
+             return true if bundle.owner == @game.share_pool
+ 
++            # Enforce the block and company sequential availability rules for IPO shares
++            return false unless @game.corporation_available?(bundle.corporation)
++
+             # ensure 20% shares of BA, WT and HE cannot be bought before all 10% shares are gone
+             return bundle.shares.first == bundle.corporation.shares.first unless bundle.corporation == @game.prussian
+ 
+             # Ignore the order for PR: We cannot use the same logic we use for the other corporations, because the very first
+-            # share - the president - is reserved. If we used the same logic, no PR share could  ever be bought
++            # share - the president - is reserved. If we used the same logic, no PR share could ever be bought
+             true
+           end
+ 
+@@ -41,6 +44,14 @@ module Engine
+             corporation.id != 'PR' || corporation.floated?
+           end
+ 
++          def can_sell?(entity, bundle)
++            # Rule 7.4: Cannot sell shares in a company floated in the current share round
++            # (it hasn't operated yet), except for the Prussian Railway.
++            return false if bundle.corporation.id != 'PR' && !bundle.corporation.operated?
++
++            super
++          end
++
+           def can_gain?(entity, bundle, exchange: false)
+             return if !bundle || !entity
+             return false if bundle.owner.player? && !@game.can_gain_from_player?(entity, bundle)
+@@ -68,6 +79,24 @@ module Engine
+ 
+             player.percent_of(corporation) > 50
+           end
++
++          def pass!
++            super
++            # In 1835, selling shares does not count as an action that keeps the stock round alive.
++            # If the player didn't buy anything this turn, force their state to "passed".
++            return if bought?
++
++            @round.pass_order |= [current_entity]
++            current_entity&.pass!
++          end
++
++          def track_action(action, corporation, player_action = true)
++            # Only a purchase action updates the priority deal (last_to_act) in 1835.
++            @round.last_to_act = action.entity.player if self.class::PURCHASE_ACTIONS.include?(action.class)
++
++            @round.current_actions << action if player_action
++            @round.players_history[action.entity.player][corporation] << action
++          end
+         end
+       end
+     end
+diff --git a/lib/engine/game/g_1835/step/draft.rb b/lib/engine/game/g_1835/step/draft.rb
+index bbe63db87..7b2c36954 100644
+--- a/lib/engine/game/g_1835/step/draft.rb
++++ b/lib/engine/game/g_1835/step/draft.rb
+@@ -14,13 +14,29 @@ module Engine
+           def setup
+             @companies = @game.companies.select { |c| c.owner.nil? && !c.closed? }
+ 
+-            # set up the tiered companies as 2d array that might contain empty arrays if the starting package was not
+-            # fully sold in a previous draft round. These empty arrays are important for may_purchase: companies in rows
+-            # after an empty row can only be purchased if all rows before are empty. If we were to only group_by
+-            # auction_row, we might lose these empty rows.
+-            @tiered_companies = Array.new(4) { [] }
+-            @companies.each do |company|
+-              @tiered_companies[company.auction_row] << company
++            if @game.optional_rules&.include?(:clemens)
++              @tiered_companies = Array.new(3) { [] }
++              @companies.each do |company|
++                if company.sym.start_with?('M')
++                  @tiered_companies[0] << company
++                elsif %w[NF LD BY_D OBB PB].include?(company.sym)
++                  @tiered_companies[1] << company
++                else
++                  @tiered_companies[2] << company
++                end
++              end
++              @tiered_companies[0].sort_by!(&:sym)
++              @tiered_companies[1].sort_by! { |c| %w[NF LD BY_D OBB PB].index(c.sym) }
++              @tiered_companies[2].sort_by! { |c| %w[BB HB].index(c.sym) }
++            else
++              # set up the tiered companies as 2d array that might contain empty arrays if the starting package was not
++              # fully sold in a previous draft round. These empty arrays are important for may_purchase: companies in rows
++              # after an empty row can only be purchased if all rows before are empty. If we were to only group_by
++              # auction_row, we might lose these empty rows.
++              @tiered_companies = Array.new(4) { [] }
++              @companies.each do |company|
++                @tiered_companies[company.auction_row] << company
++              end
+             end
+           end
+ 
+@@ -34,6 +50,7 @@ module Engine
+ 
+           def may_purchase?(company)
+             return false unless company
++            return true if @game.optional_rules&.include?(:clemens)
+ 
+             # in the vanilla draft a company can only be purchased if it is either in the top-most row or furthest to
+             # the left in the second top-most row if the top-most row only has one company
+@@ -70,14 +87,17 @@ module Engine
+           def actions(entity)
+             return [] if finished?
+ 
+-            unless @companies.any? { |c| current_entity.cash >= min_bid(c) }
+-              @log << "#{current_entity.name} has no valid actions and passes"
+-              return []
+-            end
+-
+             entity == current_entity ? ACTIONS : []
+           end
+ 
++          def auto_actions(entity)
++            return [Engine::Action::Pass.new(entity)] if entity.player? && @companies.none? do |c|
++                                                           entity.cash >= c.value
++                                                         end
++
++            []
++          end
++
+           def skip!
+             current_entity.pass!
+             @round.next_entity_index!
+@@ -127,6 +147,7 @@ module Engine
+           def process_pass(action)
+             @log << "#{action.entity.name} passes"
+             action.entity.pass!
++            @round.last_to_act = action.entity
+             @round.next_entity_index!
+             action_finalized
+           end
+@@ -134,7 +155,7 @@ module Engine
+           def action_finalized
+             return unless finished?
+ 
+-            @round.next_entity_index!
++            @round.next_entity_index! if @game.optional_rules&.include?(:clemens)
+           end
+ 
+           def may_choose?(_company)
+@@ -171,7 +192,18 @@ module Engine
+             # allow president change for SX when LD is being sold, but for BY only if the BY director has been sold,
+             # which might be during the current or any earlier action
+             allow_president_change = share.president || !share.corporation.shares.first.president
+-            @game.share_pool.transfer_shares(ShareBundle.new(share), player, allow_president_change: allow_president_change)
++            @game.share_pool.transfer_shares(ShareBundle.new(share), player,
++                                             allow_president_change: allow_president_change)
++
++            # Under Clemens rules, force BY to float immediately once 50% of its total equity is player-held
++            by_corp = share.corporation
++            if @game.optional_rules&.include?(:clemens) && by_corp.name == 'BY' && !by_corp.floated?
++              total_held = by_corp.player_share_holders.values.sum
++              if total_held >= 50
++                by_corp.floated = true
++                @log << "#{by_corp.name} floats early via the Clemens Gate at #{total_held}% shares sold!"
++              end
++            end
+ 
+             @game.place_home_token(share.corporation) if share.corporation.floated?
+           end
+diff --git a/lib/engine/game/g_1835/step/minor_exchange.rb b/lib/engine/game/g_1835/step/minor_exchange.rb
+index 78a41da26..282e11117 100644
+--- a/lib/engine/game/g_1835/step/minor_exchange.rb
++++ b/lib/engine/game/g_1835/step/minor_exchange.rb
+@@ -163,6 +163,7 @@ module Engine
+                           'PR will therefore be skipped this OR.'
+                 end
+               end
++              @game.conversion_choice_during_or = false
+             else
+               insert_prussian! if pr_formed_this_round?
+ 
+@@ -178,12 +179,12 @@ module Engine
+           # - neither it nor the prussian companies HB and BB (since they paid out their revenue) are converted
+           def pr_should_operate_this_or?
+             no_prussian_company_or_minor_1_converted = !@round.converted.intersect?(@game.prussian_companies + [minor_1])
+-            minor_1_bought_triggering_train = minor_1 == @round.entities[@round.entity_index]
++            minor_1_bought_triggering_train = minor_1 == @game.pr_triggering_entity
+             no_prussian_company_or_minor_1_converted && minor_1_bought_triggering_train
+           end
+ 
+           def minor_1
+-            @minor_1 ||= @game.minor_by_id('1')
++            @minor_1 ||= @game.minor_by_id('M1') || @game.minor_by_id('1')
+           end
+ 
+           def pr_formed_this_round?
+diff --git a/lib/engine/game/g_1835/step/special_token.rb b/lib/engine/game/g_1835/step/special_token.rb
+index ab96d601d..bc131727e 100644
+--- a/lib/engine/game/g_1835/step/special_token.rb
++++ b/lib/engine/game/g_1835/step/special_token.rb
+@@ -1,17 +1,12 @@
+ # frozen_string_literal: true
+ 
+-require_relative '../../../step/special_track'
++require_relative '../../../step/special_token'
+ 
+ module Engine
+   module Game
+     module G1835
+       module Step
+         class SpecialToken < Engine::Step::SpecialToken
+-          def available_tokens(entity)
+-            return [] unless entity.corporation?
+-
+-            entity.tokens_by_type
+-          end
+         end
+       end
+     end
+diff --git a/lib/engine/game/g_1835/step/special_track.rb b/lib/engine/game/g_1835/step/special_track.rb
+new file mode 100644
+index 000000000..60ac370a2
+--- /dev/null
++++ b/lib/engine/game/g_1835/step/special_track.rb
+@@ -0,0 +1,45 @@
++# frozen_string_literal: true
++
++require_relative '../../../step/special_track'
++
++module Engine
++  module Game
++    module G1835
++      module Step
++        class SpecialTrack < Engine::Step::SpecialTrack
++          def active_entities
++            entities = super
++            companies = @game.companies.select do |c|
++              c.owner == @round.current_entity&.owner && @game.abilities(c, :tile_lay)
++            end
++            combined = (entities + companies).uniq
++
++            # HYPOTHESIS TEST LOGGING
++            @game.log << "TEST LOG - active_entities: #{combined.map(&:name).join(', ')}" if companies.any?
++
++            combined
++          end
++
++          def actions(entity)
++            acts = super
++            if entity.company? && entity.owner == @round.current_entity&.owner && @game.abilities(entity, :tile_lay)
++              acts |= ['lay_tile']
++            end
++
++            # HYPOTHESIS TEST LOGGING
++            @game.log << "TEST LOG - actions for #{entity.name}: #{acts.inspect}" if acts.include?('lay_tile')
++
++            acts
++          end
++
++          def process_lay_tile(action)
++            # HYPOTHESIS TEST LOGGING
++            @game.log << "TEST LOG - process_lay_tile triggered by: #{action.entity.name}"
++
++            super
++          end
++        end
++      end
++    end
++  end
++end
+diff --git a/lib/engine/game/g_1835/step/token.rb b/lib/engine/game/g_1835/step/token.rb
+new file mode 100644
+index 000000000..a32f848ce
+--- /dev/null
++++ b/lib/engine/game/g_1835/step/token.rb
+@@ -0,0 +1,83 @@
++# frozen_string_literal: true
++
++require_relative '../../../step/token'
++require_relative '../../../step/home_token'
++
++module Engine
++  module Game
++    module G1835
++      module Step
++        class HomeToken < Engine::Step::HomeToken
++          def pending_token
++            # Check standard pending tokens first
++            standard_pending = @round.pending_tokens&.first
++            return standard_pending if standard_pending
++
++            # Dynamically activate for Baden on its turn if L6 has track and home token is unplaced.
++            # Using current_operator instead of current_entity prevents UI recursion loops.
++            return {} unless @round.respond_to?(:current_operator)
++
++            operating_entity = @round.current_operator
++            return {} unless operating_entity&.id == 'BA'
++
++            token = operating_entity.tokens.first
++            return {} if !token || token.used
++
++            hex = @game.hex_by_id('L6')
++            return {} if !hex&.tile || hex.tile.color == :white
++
++            {
++              entity: operating_entity,
++              hexes: [hex],
++              token: token,
++            }
++          end
++
++          def process_place_token(action)
++            entity = action.entity
++            city = action.city
++            token = entity.find_token_by_type
++
++            city_name = city.hex.tile.location_name(city.index) || "slot #{city.index}"
++            @game.log << "#{entity.name} places home token on #{city.hex.name} (#{city_name})"
++
++            city.place_token(entity, token, same_hex_allowed: true)
++
++            # Clean up the base pending_tokens array if it was populated
++            @round.pending_tokens.shift unless @round.pending_tokens.empty?
++          end
++        end
++
++        class Token < Engine::Step::Token
++          def can_afford_token?(token, cash)
++            corp = token.corporation
++
++            @game.token_graph_for_entity(corp).tokenable_cities(corp).any? do |city|
++              token_price(token, city.tile.hex) <= cash
++            end
++          end
++
++          def token_price(token, hex)
++            corp = token.corporation
++            home_hex = @game.hex_by_id(corp.coordinates)
++            return token.price if !home_hex || !hex
++
++            distance = home_hex.distance(hex)
++            token.price + (distance ? distance * 20 : 0)
++          end
++
++          def adjust_token_price_ability!(entity, token, hex, _city, special_ability: nil)
++            if special_ability
++              token.price = special_ability.teleport_price || special_ability.price || 0
++              @game.log << "#{entity.name} uses #{special_ability.owner.name} ability to place token on #{hex.name}"
++              return [token, special_ability]
++            end
++
++            token.price = token_price(token, hex)
++            [token, nil]
++          end
++        end
++      end
++    end
++  end
++end
+diff --git a/lib/engine/game/g_1835/step/track.rb b/lib/engine/game/g_1835/step/track.rb
+new file mode 100644
+index 000000000..2ff3b1e5f
+--- /dev/null
++++ b/lib/engine/game/g_1835/step/track.rb
+@@ -0,0 +1,27 @@
++# frozen_string_literal: true
++
++require_relative '../../../step/track'
++
++module Engine
++  module Game
++    module G1835
++      module Step
++        class Track < Engine::Step::Track
++          def check_connected(action)
++            # Baden can lay its first tile on L6 without connectivity
++            return if action.entity.id == 'BA' && action.hex.id == 'L6' && action.entity.tokens.first&.used == false
++
++            super
++          end
++
++          def available_hex(entity, hex)
++            # Ensure L6 is clickable for Baden before it has placed any tokens
++            return true if entity.id == 'BA' && hex.id == 'L6' && entity.tokens.first&.used == false
++
++            super
++          end
++        end
++      end
++    end
++  end
++end

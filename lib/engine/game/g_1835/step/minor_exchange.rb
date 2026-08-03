@@ -184,7 +184,7 @@ module Engine
           end
 
           def minor_1
-            @minor_1 ||= @game.minor_by_id('M1') || @game.minor_by_id('1')
+            @minor_1 ||= @game.minor_by_id('1')
           end
 
           def pr_formed_this_round?
