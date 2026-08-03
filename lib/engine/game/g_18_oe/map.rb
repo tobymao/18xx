@@ -527,9 +527,9 @@ module Engine
             # Double towns
             %w[J29 M26 W32
                N41 Q46 U64 W46 AF53
-               J77 P77] => 'town=revenue:0;town=revenue:0',
-            %w[AC6 C58 U6] => 'town=revenue:0;town=revenue:0;icon=image:port,sticky:1',
-            ['T37'] => 'town=revenue:0;town=revenue:0;upgrade=cost:45,terrain:hill;' \
+               J77 P77] => 'town=revenue:0,size:2',
+            %w[AC6 C58 U6] => 'town=revenue:0,size:2;icon=image:port,sticky:1',
+            ['T37'] => 'town=revenue:0,size:2;upgrade=cost:45,terrain:hill;' \
                        'partition=a:3,b:0,type:province,length:0.5;partition=a:5,b:2,type:province,length:0.5',
             # Cities — no label, no terrain
             %w[
@@ -585,7 +585,7 @@ module Engine
             ['D81'] => 'town=revenue:0;upgrade=cost:30,terrain:water',
             ['I52'] => 'city=revenue:0;upgrade=cost:45,terrain:river',
             ['J63'] => 'city=revenue:0;label=Y;upgrade=cost:30,terrain:water;icon=image:port,sticky:1',
-            ['L39'] => 'town=revenue:0;town=revenue:0;upgrade=cost:30,terrain:water',
+            ['L39'] => 'town=revenue:0,size:2;upgrade=cost:30,terrain:water',
             ['M36'] => 'city=revenue:0;upgrade=cost:30,terrain:water;border=edge:0,type:province',
             ['M38'] => 'town=revenue:0;upgrade=cost:30,terrain:water',
             ['M72'] => 'town=revenue:0;upgrade=cost:30,terrain:water',
