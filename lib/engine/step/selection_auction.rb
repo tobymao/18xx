@@ -1,11 +1,13 @@
 # frozen_string_literal: true
 
 require_relative 'base'
+require_relative 'programmer_auction_bid'
 
 module Engine
   module Step
     class SelectionAuction < Base
       include Engine::Step::PassableAuction
+      include Engine::Step::ProgrammerAuctionBid
       ACTIONS = %w[bid pass].freeze
 
       attr_reader :companies
@@ -119,6 +121,14 @@ module Engine
 
       def max_bid(player, _company)
         player.cash
+      end
+
+      def auto_requires_auctioning?(_entity, program)
+        @auctioning && program.bid_target != @auctioning
+      end
+
+      def programmable_buy_price?
+        false
       end
 
       protected
