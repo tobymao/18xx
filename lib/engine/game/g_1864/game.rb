@@ -4,6 +4,11 @@ require_relative 'credit_mobilier'
 require_relative 'entities'
 require_relative 'map'
 require_relative 'meta'
+require_relative 'union_pacific'
+require_relative 'round/operating'
+require_relative 'step/buy_train'
+require_relative 'step/dividend'
+require_relative 'step/token'
 require_relative 'step/track'
 require_relative '../g_1867/game'
 
@@ -14,6 +19,7 @@ module Engine
         include_meta(G1864::Meta)
         include Entities
         include Map
+        include UnionPacific
 
         GREEN_CORPORATIONS = %w[MB Y V TR SV E].freeze
 
@@ -207,7 +213,7 @@ module Engine
                                         'The certificate ownership limit is now enforced'],
         ).freeze
 
-        attr_reader :union_pacific, :future_corporations, :credit_mobilier
+        attr_reader :union_pacific, :future_corporations, :credit_mobilier, :up_consist
 
         def setup
           @interest = {}
@@ -224,10 +230,26 @@ module Engine
           @corporations, @future_corporations = @corporations.partition do |corporation|
             corporation.type == :minor && !self.class::GREEN_CORPORATIONS.include?(corporation.id)
           end
+
+          # Deal one consist card per phase, each from that phase's deck.
+          decks = UnionPacific::CONSIST_DECKS.values
+          @up_consist = UnionPacific::PHASES_WITH_CONSISTS.to_h do |phase|
+            [phase, decks[rand % decks.size][phase]]
+          end
         end
 
         def all_corporations
           @corporations + [@national]
+        end
+
+        def operating_order
+          minors, majors = @corporations.select(&:floated?).sort.partition { |c| c.type == :minor }
+          majors << @national if up_operating?
+          minors + majors.sort
+        end
+
+        def operated_operators
+          (@corporations + [@national]).select(&:operated?)
         end
 
         def game_market
@@ -256,7 +278,36 @@ module Engine
           game_end_check
         end
 
-        def event_up_operates!; end
+        def reveal_up_consist!(phase_name)
+          names = @up_consist[phase_name]
+          return unless names
+
+          @union_pacific.trains.clear
+          names.each do |name|
+            prototype = self.class::TRAINS.find { |t| t[:name] == name }
+            train = Train.new(**prototype.except(:events), index: -1)
+            train.owner = @union_pacific
+            train.buyable = false
+            @union_pacific.trains << train
+          end
+          @log << "#{@union_pacific.name} reveals its Phase #{phase_name} consist: #{names.join(', ')}"
+        end
+
+        # Because `event_up_operates!` fires when the 4-train is bought — mid
+        # Operating Round — the UP does not begin operating until the *next*
+        # OR, per the rulebook's timing.
+        def event_up_operates!
+          @up_pending = true
+        end
+
+        def up_operating?
+          !!@up_started
+        end
+
+        def or_set_finished
+          @up_started = true if @up_pending
+          super
+        end
 
         def event_close_credit_mobilier!
           return if @credit_mobilier.closed?
@@ -321,19 +372,19 @@ module Engine
 
         def operating_round(round_num)
           calculate_interest
-          G1867::Round::Operating.new(self, [
+          G1864::Round::Operating.new(self, [
             G1867::Step::MajorTrainless,
             Engine::Step::BuyCompany,
             G1867::Step::RedeemShares,
             G1864::Step::Track,
-            G1867::Step::Token,
+            G1864::Step::Token,
             Engine::Step::Route,
-            G1867::Step::Dividend,
+            G1864::Step::Dividend,
             # The blocking buy company needs to be before loan operations
             [G1867::Step::BuyCompanyPreloan, { blocks: true }],
             G1867::Step::LoanOperations,
             Engine::Step::DiscardTrain,
-            G1867::Step::BuyTrain,
+            G1864::Step::BuyTrain,
             [Engine::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
