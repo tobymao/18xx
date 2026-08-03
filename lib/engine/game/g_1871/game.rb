@@ -355,6 +355,12 @@ module Engine
           bank_company.owner
         end
 
+        def same_acting_player?(owner_a, owner_b)
+          a = acting_for_player(owner_a)
+          b = acting_for_player(owner_b)
+          a && b && a == b
+        end
+
         # Returns the player that should be the current peir owner
         def peir_owner
           # Get all of the share holders
