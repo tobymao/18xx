@@ -235,11 +235,35 @@ module Engine
             corporation.type == :minor && !self.class::GREEN_CORPORATIONS.include?(corporation.id)
           end
 
+          deal_ability_cards!
+
           # Deal one consist card per phase, each from that phase's deck.
           decks = UnionPacific::CONSIST_DECKS.values
           @up_consist = UnionPacific::PHASES_WITH_CONSISTS.to_h do |phase|
             [phase, decks[rand % decks.size][phase]]
           end
+        end
+
+        # Early Adopter is set aside, the other fifteen shuffled, then Early
+        # Adopter is placed within the top ten so it reaches one of the ten
+        # minors available from the start rather than a green minor that
+        # might never be started - a free-ish 2-train is useless on a minor
+        # that never floats.
+        def deal_ability_cards!
+          early = @companies.find { |c| c.sym == 'EA1' }
+          rest = @companies.reject { |c| c.sym == 'EA1' }.sort_by { rand }
+          deck = rest.dup
+          deck.insert(rand % 10, early)
+
+          minors = (@corporations + @future_corporations).select { |c| c.type == :minor }
+          minors.zip(deck).each do |minor, company|
+            company.owner = minor
+            minor.companies << company
+          end
+        end
+
+        def ability_card_for(corporation)
+          corporation.companies.first
         end
 
         def all_corporations
@@ -254,6 +278,24 @@ module Engine
 
         def operated_operators
           (@corporations + [@national]).select(&:operated?)
+        end
+
+        def float_corporation(corporation)
+          super
+
+          corporation.companies.each do |company|
+            case company.name
+            when 'Angel Investors'
+              @bank.spend(60, corporation)
+              @log << "#{corporation.name} receives #{format_currency(60)} from Angel Investors"
+            when 'Early Adopter'
+              train = @depot.upcoming.find { |t| t.name == '2' }
+              next unless train
+
+              buy_train(corporation, train, 100)
+              @log << "#{corporation.name} buys a 2-train for #{format_currency(100)} as an Early Adopter"
+            end
+          end
         end
 
         def game_market

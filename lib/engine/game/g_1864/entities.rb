@@ -4,7 +4,151 @@ module Engine
   module Game
     module G1864
       module Entities
-        COMPANIES = [].freeze
+        # 1864 has no private companies. Instead each minor corporation is
+        # dealt one "Minor Company Ability Card" at setup (see
+        # `Game#deal_ability_cards!`); these are modelled as `Company` objects
+        # owned by a corporation and never traded between players.
+        #
+        # Five of the eleven distinct cards are printed twice in the physical
+        # deck, so five pairs of near-identical hash literals appear below.
+        # This duplication is a direct transcription of the 16 printed cards
+        # and matches how every other title in this repo declares
+        # `COMPANIES` (compare `lib/engine/game/g_1861/entities.rb`). Each
+        # duplicate gets a unique `sym` since the pair shares a name.
+        COMPANIES = [
+          {
+            name: 'Corporate Lobbyists',
+            sym: 'CL1',
+            value: 0,
+            revenue: 0,
+            desc: 'The company may exceed the current train limit by one train.',
+            abilities: [{ type: 'train_limit', increase: 1, owner_type: 'corporation' }],
+            color: nil,
+          },
+          {
+            name: 'Corporate Lobbyists',
+            sym: 'CL2',
+            value: 0,
+            revenue: 0,
+            desc: 'The company may exceed the current train limit by one train.',
+            abilities: [{ type: 'train_limit', increase: 1, owner_type: 'corporation' }],
+            color: nil,
+          },
+          {
+            name: 'U.S. Government Subsidy',
+            sym: 'GS1',
+            value: 0,
+            revenue: 0,
+            desc: 'At the start of each Operating Round, the Bank pays $20 to the treasury of the company.',
+            color: nil,
+          },
+          {
+            name: 'U.S. Government Subsidy',
+            sym: 'GS2',
+            value: 0,
+            revenue: 0,
+            desc: 'At the start of each Operating Round, the Bank pays $20 to the treasury of the company.',
+            color: nil,
+          },
+          {
+            name: 'Track Builder',
+            sym: 'TB1',
+            value: 0,
+            revenue: 0,
+            desc: 'The additional yellow tile placement costs nothing. The Bank pays the $20 to Credit Mobilier.',
+            color: nil,
+          },
+          {
+            name: 'Track Builder',
+            sym: 'TB2',
+            value: 0,
+            revenue: 0,
+            desc: 'The additional yellow tile placement costs nothing. The Bank pays the $20 to Credit Mobilier.',
+            color: nil,
+          },
+          {
+            name: 'Local Contract',
+            sym: 'LC1',
+            value: 0,
+            revenue: 0,
+            desc: 'Place a +$10 marker on one station of this company; that city pays $10 more.',
+            color: nil,
+          },
+          {
+            name: 'Local Contract',
+            sym: 'LC2',
+            value: 0,
+            revenue: 0,
+            desc: 'Place a +$10 marker on one station of this company; that city pays $10 more.',
+            color: nil,
+          },
+          {
+            name: 'Angel Investors',
+            sym: 'AI1',
+            value: 0,
+            revenue: 0,
+            desc: 'The company begins play with an additional $60 in its treasury.',
+            color: nil,
+          },
+          {
+            name: 'Angel Investors',
+            sym: 'AI2',
+            value: 0,
+            revenue: 0,
+            desc: 'The company begins play with an additional $60 in its treasury.',
+            color: nil,
+          },
+          {
+            name: 'Union Station',
+            sym: 'US1',
+            value: 0,
+            revenue: 0,
+            desc: 'An additional station token which may be placed for $10 per hexagon.',
+            abilities: [{ type: 'additional_token', count: 1, owner_type: 'corporation' }],
+            color: nil,
+          },
+          {
+            name: 'Central Station',
+            sym: 'CS1',
+            value: 0,
+            revenue: 0,
+            desc: 'An additional station token which may be placed for $10 per hexagon.',
+            abilities: [{ type: 'additional_token', count: 1, owner_type: 'corporation' }],
+            color: nil,
+          },
+          {
+            name: 'Early Adopter',
+            sym: 'EA1',
+            value: 0,
+            revenue: 0,
+            desc: 'The company begins play with a 2-train and pays $100 for it when it floats.',
+            color: nil,
+          },
+          {
+            name: 'Civil Engineering Firm',
+            sym: 'CE1',
+            value: 0,
+            revenue: 0,
+            desc: 'Terrain costs are free. The Bank pays the full terrain cost to Credit Mobilier.',
+            color: nil,
+          },
+          {
+            name: 'Double Tracks',
+            sym: 'DT1',
+            value: 0,
+            revenue: 0,
+            desc: 'Two trains of this company may share some or all track on their routes.',
+            color: nil,
+          },
+          {
+            name: 'Pullman Car',
+            sym: 'PC1',
+            value: 0,
+            revenue: 0,
+            desc: 'One train may serve an additional two small stations without counting them as stops.',
+            color: nil,
+          },
+        ].freeze
 
         # The rulebook directs using the corporations from 1861: same syms, names,
         # logos, colours and share structures. Only each minor's home `coordinates`
