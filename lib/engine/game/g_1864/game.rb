@@ -6,10 +6,12 @@ require_relative 'map'
 require_relative 'meta'
 require_relative 'union_pacific'
 require_relative 'round/operating'
+require_relative 'step/buy_sell_par_shares'
 require_relative 'step/buy_train'
 require_relative 'step/dividend'
 require_relative 'step/token'
 require_relative 'step/track'
+require_relative 'step/up_shares'
 require_relative '../g_1867/game'
 
 module Engine
@@ -213,13 +215,15 @@ module Engine
                                         'The certificate ownership limit is now enforced'],
         ).freeze
 
-        attr_reader :union_pacific, :future_corporations, :credit_mobilier, :up_consist
+        attr_reader :union_pacific, :future_corporations, :credit_mobilier, :up_consist, :pending_up_share_buyers
 
         def setup
           @interest = {}
           @show_majors = false
           @national_reservations = self.class::NATIONAL_RESERVATIONS.dup
           @credit_mobilier = CreditMobilier.new
+          @pending_up_share_buyers = []
+          @up_ipo_open = false
 
           @union_pacific = @national = @corporations.find { |c| c.type == :national }
           @corporations.delete(@national)
@@ -325,9 +329,49 @@ module Engine
 
         def event_remove_minor_abilities!; end
 
-        def event_up_ipo_purchasable!; end
+        def event_up_ipo_purchasable!
+          @up_ipo_open = true
+          @log << 'Union Pacific shares may now be purchased from the IPO'
+        end
 
         def event_enforce_ownership_limit!; end
+
+        # Shares of the Union Pacific reach players by four routes: (1) a
+        # regionalized minor's owner may buy one 10% share, (2) a regionalized
+        # major's shareholders may each buy one share per 10% they held,
+        # starting with the President and proceeding clockwise, (3) the Open
+        # Market during a Stock Round, and (4) the IPO during a Stock Round,
+        # but only from phase 6 on. `nationalize!` (1861/1867) cannot itself
+        # run an interactive purchase - it's called mid-step from four
+        # different places - so it enqueues eligible buyers here, and
+        # `G1864::Step::UPShares` drains the queue.
+        def queue_up_share_purchase(corporation)
+          case corporation.type
+          when :minor
+            player = corporation.owner
+            return unless player&.player?
+
+            @pending_up_share_buyers << { player: player, shares: 1 }
+          when :major
+            ordered_players_from(corporation.owner).each do |buyer|
+              held = buyer.num_shares_of(corporation)
+              next unless held.positive?
+
+              @pending_up_share_buyers << { player: buyer, shares: held }
+            end
+          end
+        end
+
+        def ordered_players_from(first)
+          return @players.dup unless first
+
+          index = @players.index(first) || 0
+          @players.rotate(index)
+        end
+
+        def up_shares_purchasable_from_ipo?
+          !!@up_ipo_open
+        end
 
         def event_green_minors_available!
           @log << 'Green minors are now available'
@@ -394,9 +438,30 @@ module Engine
           corporation.spend(corporation.cash, @bank, check_positive: false) if corporation.cash.positive?
         end
 
+        # 1867's `nationalize!` pays out shareholders and cannot itself run an
+        # interactive purchase - see `queue_up_share_purchase` above. Enqueue
+        # the eligible buyers once the payout is complete.
+        def nationalize!(corporation)
+          return if !corporation.floated? || !@corporations.include?(corporation)
+
+          super
+          queue_up_share_purchase(corporation)
+        end
+
+        def stock_round
+          G1867::Round::Stock.new(self, [
+            G1864::Step::UPShares,
+            G1867::Step::MajorTrainless,
+            Engine::Step::DiscardTrain,
+            G1867::Step::HomeToken,
+            G1864::Step::BuySellParShares,
+          ])
+        end
+
         def operating_round(round_num)
           calculate_interest
           G1864::Round::Operating.new(self, [
+            G1864::Step::UPShares,
             G1867::Step::MajorTrainless,
             Engine::Step::BuyCompany,
             G1867::Step::RedeemShares,
