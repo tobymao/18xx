@@ -191,7 +191,7 @@ module View
         @depot = @game.depot
 
         available = @step.buyable_trains(@corporation).group_by(&:owner)
-        depot_trains = available.delete(@depot) || []
+        depot_trains = (available.delete(@depot) || []) + (available.delete(nil) || [])
         other_corp_trains = available.sort_by { |c, _| corp_owner(c) == corp_owner(@corporation) ? 0 : 1 }
         children = []
 
@@ -581,6 +581,7 @@ module View
       end
 
       def corp_owner(corp)
+        return nil unless corp
         @step.respond_to?(:corp_owner) ? @step.corp_owner(corp) : corp.owner
       end
 
