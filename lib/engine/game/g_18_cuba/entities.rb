@@ -277,7 +277,7 @@ module Engine
             city: 1,
             color: :white,
             text_color: :black,
-            type: :state,
+            type: :national,
           },
           {
             float_percent: 60,
