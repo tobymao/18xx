@@ -21,7 +21,9 @@ module View
     needs :confirm_delete, store: true, default: false
     needs :confirm_kick, store: true, default: nil
     needs :flash_opts, default: {}, store: true
+    needs :expanded_descriptions, store: true, default: {}
 
+    DESCRIPTION_TRUNCATE_LENGTH = 120
     BUTTON_STYLE = {
       margin: '0',
       padding: '0.2rem 0',
@@ -245,7 +247,13 @@ module View
         children << h(:div, [h(:i, ['Auto Routing', auto_route_whats_this])]) if @gdata.dig('settings', 'auto_routing')
         children << h(:div, [h(:i, ['Engine V2', engine_v2_whats_this])]) if @gdata.dig('settings', 'use_engine_v2')
       end
-      children << h(:div, [h(:strong, 'Description: '), @gdata['description']]) unless @gdata['description'].empty?
+      unless @gdata['description'].empty?
+        desc = @gdata['description']
+        url_search_params = Lib::Params::URLSearchParams.new
+        truncate = !url_search_params.unsupported && url_search_params['truncate_desc'] == 'true'
+        displayed = truncate && desc.length > DESCRIPTION_TRUNCATE_LENGTH ? "#{desc[0...DESCRIPTION_TRUNCATE_LENGTH]}…" : desc
+        children << h(:div, [h(:strong, 'Description: '), displayed])
+      end
 
       optional = render_optional_rules
       children << optional if optional
