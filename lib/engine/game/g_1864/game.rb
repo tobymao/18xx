@@ -1,8 +1,10 @@
 # frozen_string_literal: true
 
+require_relative 'credit_mobilier'
 require_relative 'entities'
 require_relative 'map'
 require_relative 'meta'
+require_relative 'step/track'
 require_relative '../g_1867/game'
 
 module Engine
@@ -205,12 +207,13 @@ module Engine
                                         'The certificate ownership limit is now enforced'],
         ).freeze
 
-        attr_reader :union_pacific, :future_corporations
+        attr_reader :union_pacific, :future_corporations, :credit_mobilier
 
         def setup
           @interest = {}
           @show_majors = false
           @national_reservations = self.class::NATIONAL_RESERVATIONS.dup
+          @credit_mobilier = CreditMobilier.new
 
           @union_pacific = @national = @corporations.find { |c| c.type == :national }
           @corporations.delete(@national)
@@ -255,7 +258,17 @@ module Engine
 
         def event_up_operates!; end
 
-        def event_close_credit_mobilier!; end
+        def event_close_credit_mobilier!
+          return if @credit_mobilier.closed?
+
+          if @credit_mobilier.cash.positive?
+            @log << "Crédit Mobilier closes, returning #{format_currency(@credit_mobilier.cash)} to the bank"
+            @credit_mobilier.spend(@credit_mobilier.cash, @bank)
+          else
+            @log << 'Crédit Mobilier closes'
+          end
+          @credit_mobilier.close!
+        end
 
         def event_open_tunnels!; end
 
@@ -278,6 +291,51 @@ module Engine
 
         def add_neutral_tokens
           @green_tokens = []
+        end
+
+        def pay_credit_mobilier(amount, from:)
+          return if @credit_mobilier.closed? || !amount.positive?
+
+          from.spend(amount, @credit_mobilier)
+        end
+
+        def distribute_credit_mobilier!
+          return if @credit_mobilier.closed?
+
+          per_player = @credit_mobilier.cash / @players.size
+          return unless per_player.positive?
+
+          @players.each { |player| @credit_mobilier.spend(per_player, player) }
+          @log << "Crédit Mobilier pays #{format_currency(per_player)} to each player"\
+                  " (#{format_currency(@credit_mobilier.cash)} remains)"
+        end
+
+        def spending_entities
+          super + [@credit_mobilier]
+        end
+
+        def new_merger_round
+          distribute_credit_mobilier!
+          super
+        end
+
+        def operating_round(round_num)
+          calculate_interest
+          G1867::Round::Operating.new(self, [
+            G1867::Step::MajorTrainless,
+            Engine::Step::BuyCompany,
+            G1867::Step::RedeemShares,
+            G1864::Step::Track,
+            G1867::Step::Token,
+            Engine::Step::Route,
+            G1867::Step::Dividend,
+            # The blocking buy company needs to be before loan operations
+            [G1867::Step::BuyCompanyPreloan, { blocks: true }],
+            G1867::Step::LoanOperations,
+            Engine::Step::DiscardTrain,
+            G1867::Step::BuyTrain,
+            [Engine::Step::BuyCompany, { blocks: true }],
+          ], round_num: round_num)
         end
       end
     end
