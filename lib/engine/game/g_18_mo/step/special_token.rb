@@ -28,6 +28,35 @@ module Engine
             teleport_complete if @round.teleported
             @game.remove_teleport_destination(entity, action.city)
           end
+
+          def available_hex(entity, hex)
+            ability = ability(entity)
+            return unless ability
+
+            if ability.type == :token && ability.hexes.empty?
+              return true if entity.owner.all_abilities.any? { |a| a.type == :token && a.hexes.include?(hex.id) }
+
+              return @game.token_graph_for_entity(entity.owner).reachable_hexes(entity.owner)[hex]
+            end
+
+            super
+          end
+
+          def ability(entity)
+            return super unless entity&.company?
+
+            @game.abilities(entity, :token) do |ability, _|
+              next if ability.owner_type == 'corporation' && !ability.discount
+
+              return ability
+            end
+
+            @game.abilities(entity, :teleport) do |ability, _|
+              return ability if ability.used?
+            end
+
+            nil
+          end
         end
       end
     end

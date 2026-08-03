@@ -68,7 +68,7 @@ module Engine
         tokener = entity.name
         if ability
           tokener += " (#{ability.owner.sym})" if ability.owner != entity
-          entity.remove_ability(ability)
+          entity.remove_ability(ability) unless ability == special_ability
         end
 
         raise GameError, 'Token is already used' if token.used
@@ -126,11 +126,16 @@ module Engine
           return [token, special_ability]
         end
 
-        # TODO: special_ability token here
+        ability_found = false
+
         @game.abilities(entity, :token) do |ability, _|
+          discount = ability.discount
           next if ability.special_only && ability != special_ability
+          next if !discount.nil? && discount.positive? && discount < 1 && ability.hexes.empty? && ability != special_ability
           next if ability.hexes.any? && !ability.hexes.include?(hex.id)
           next if ability.city && ability.city != city.index
+
+          ability_found = true
 
           if ability.neutral
             neutral_corp = Corporation.new(
@@ -146,11 +151,29 @@ module Engine
           end
 
           token.price = ability.teleport_price if ability.teleport_price
-          token.price = ability.price(token) if @game.token_graph_for_entity(entity).reachable_hexes(entity)[hex]
+          token.price = ability.price(token).to_i if @game.token_graph_for_entity(entity).reachable_hexes(entity)[hex]
+
+          return [token, special_ability] if apply_token_discount!(token, special_ability, ability)
+
           return [token, ability]
         end
 
+        return [token, special_ability] if !ability_found && apply_token_discount!(token, special_ability, nil)
+
         [token, nil]
+      end
+
+      def apply_token_discount!(token, special_ability, ability)
+        if special_ability&.discount.is_a?(Float) &&
+          special_ability.discount < 1 &&
+          special_ability.hexes.empty? &&
+          special_ability != ability
+          token.price = (token.price * special_ability.discount).to_i
+          special_ability.use!
+          return true
+        end
+
+        false
       end
 
       def check_connected(entity, city, hex)
