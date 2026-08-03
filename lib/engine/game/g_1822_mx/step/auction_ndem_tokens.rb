@@ -59,7 +59,7 @@ module Engine
           end
 
           def max_bid_for_token(player)
-            corps = player.presidencies.reject { |c| @game.exchange_tokens(c).zero? }
+            corps = player.presidencies.reject { |c| @game.exchange_tokens(c).zero? || !c.floated? }
             corp = corps.max_by(&:cash)
             corp ? corp.cash : 0
           end
@@ -75,6 +75,7 @@ module Engine
           end
 
           def corp_can_purchase_token?(corporation, token)
+            corporation.floated? &&
             corporation.cash >= @available_ndem_tokens[token] &&
             !@game.exchange_tokens(corporation).zero? &&
             token.hex.tile.cities.none? { |c| c.tokened_by?(corporation) }
@@ -239,7 +240,9 @@ module Engine
           end
 
           def mergeable(_corporation)
-            @auction_winner.presidencies.select { |c| !@game.exchange_tokens(c).zero? && c.cash >= @current_high_bid }
+            @auction_winner.presidencies.select do |c|
+              c.floated? && !@game.exchange_tokens(c).zero? && c.cash >= @current_high_bid
+            end
           end
 
           def show_other_players
