@@ -370,6 +370,30 @@ module Engine
           super
         end
 
+        # 1861's rule: one space left per loan, not 1867's two.
+        def nationalization_loan_movement(corporation)
+          corporation.loans.each { stock_market.move_left(corporation) }
+        end
+
+        # 1864 explicitly removes ability cards from the game on
+        # regionalization, overriding 1861's transfer-to-the-national rule. The
+        # same treatment is applied to trains and cash: the UP runs only what
+        # its consist card shows, so transferred trains would be unusable.
+        def nationalization_transfer_assets(corporation)
+          corporation.companies.dup.each do |company|
+            @log << "#{company.name} is removed from the game"
+            company.close!
+          end
+
+          corporation.trains.dup.each do |train|
+            @log << "#{corporation.name}'s #{train.name} train is removed from the game"
+            @depot.forget_train(train)
+          end
+          corporation.trains.clear
+
+          corporation.spend(corporation.cash, @bank, check_positive: false) if corporation.cash.positive?
+        end
+
         def operating_round(round_num)
           calculate_interest
           G1864::Round::Operating.new(self, [
