@@ -278,6 +278,8 @@ module View
           change_anchor('#tools')
         when 'a'
           change_anchor('#auto')
+        when 'n'
+          next_game
         when '1'
           button_click('pass')
         when '2'
@@ -358,25 +360,34 @@ module View
       }
 
       note = !@game_data.dig('user_settings', 'notepad').to_s.empty?
-      menu_items = []
-      menu_items << item('G|ame', '')
-      menu_items << item('E|ntities', '#entities')
-      menu_items << item('M|ap', '#map') unless @game.layout == :none
-      menu_items << item('Mark|et', '#market')
-      menu_items << item('I|nfo', '#info')
-      menu_items << item('T|iles', '#tiles') unless @game.layout == :none
-      menu_items << item('S|preadsheet', '#spreadsheet')
-      menu_items << item("To|ols#{' 📝' if note}", '#tools')
+      left_menu_items = []
+      left_menu_items << item('G|ame', '')
+      left_menu_items << item('E|ntities', '#entities')
+      left_menu_items << item('M|ap', '#map') unless @game.layout == :none
+      left_menu_items << item('Mark|et', '#market')
+      left_menu_items << item('I|nfo', '#info')
+      left_menu_items << item('T|iles', '#tiles') unless @game.layout == :none
+      left_menu_items << item('S|preadsheet', '#spreadsheet')
+      left_menu_items << item("To|ols#{' 📝' if note}", '#tools')
 
       enabled = !@game.programmed_actions[@game.player_by_id(@user['id'])].empty? if @user
-      menu_items << item("A|uto#{' ✅' if enabled}", '#auto') if @game_data[:mode] != :hotseat && !cursor
+      left_menu_items << item("A|uto#{' ✅' if enabled}", '#auto') if @game_data[:mode] != :hotseat && !cursor
+      right_menu_items = [item('N|ext game →', '/game/next', route: true)]
 
       h('nav#game_menu', nav_props, [
-        h('ul.no_margin.no_padding', { style: { width: 'max-content' } }, menu_items),
+        h(:div, { style: { display: 'flex', minWidth: '100%', whiteSpace: 'nowrap', width: 'max-content' } }, [
+          h('ul.no_margin.no_padding', { style: { display: 'flex', width: 'max-content' } }, left_menu_items),
+          h('ul.no_margin.no_padding', { style: { display: 'flex', marginLeft: 'auto', width: 'max-content' } },
+            right_menu_items),
+        ]),
       ])
     end
 
-    def item(name, anchor)
+    def next_game
+      `window.location = '/game/next'`
+    end
+
+    def item(name, anchor, route: false)
       name = name.split(/(\|)/).each_slice(2).flat_map do |text, pipe|
         if pipe
           head = text[0..-2]
@@ -390,14 +401,13 @@ module View
       a_props = {
         attrs: {
           href: anchor,
-          onclick: 'return false',
         },
-        style: { textDecoration: route_anchor == anchor[1..-1] ? 'underline' : 'none' },
-        on: { click: ->(_event) { change_anchor(anchor) } },
+        style: { textDecoration: !route && route_anchor == anchor[1..-1] ? 'underline' : 'none' },
       }
+      a_props[:attrs][:onclick] = 'return false' unless route
+      a_props[:on] = { click: ->(_event) { change_anchor(anchor) } } unless route
       li_props = {
         style: {
-          float: 'left',
           margin: '0 0.5rem',
           listStyle: 'none',
         },
