@@ -210,6 +210,8 @@ module Engine
                     operating_rounds: 3,
                   }].freeze
 
+        DEPOT_CLASS = G1848::Depot
+
         TRAINS = [
           {
             name: '2',
@@ -811,16 +813,6 @@ module Engine
           else
             @cert_limit
           end
-        end
-
-        def init_train_handler
-          trains = game_trains.flat_map do |train|
-            Array.new(num_trains(train)) do |index|
-              Train.new(**train, index: index)
-            end
-          end
-
-          G1848::Depot.new(trains, self)
         end
 
         def ghan_visited?(visited_node)

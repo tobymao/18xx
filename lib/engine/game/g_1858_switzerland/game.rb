@@ -114,8 +114,8 @@ module Engine
           '4H' => 3,
           '6H' => 3,
           '5E' => 2,
-          '6E' => 10,
-          '5D' => 5,
+          '6E' => 'unlimited',
+          '5D' => 'unlimited',
         }.freeze
         GREY_TRAINS = %w[6E 5M 5D].freeze
 
