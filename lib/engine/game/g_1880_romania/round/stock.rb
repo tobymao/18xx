@@ -6,10 +6,18 @@ module Engine
   module Game
     module G1880Romania
       module Round
-        class Stock < G1880::Round::Stock
+        class Stock < Engine::Round::Stock
+          def sold_out?(corporation)
+            (corporation.num_ipo_shares - corporation.num_ipo_reserved_shares).zero?
+          end
+
           def finish_round
             @game.add_interest_player_loans!
             super
+          end
+
+          def show_auto?
+            !active_step.is_a?(G1880::Step::Choose)
           end
         end
       end
