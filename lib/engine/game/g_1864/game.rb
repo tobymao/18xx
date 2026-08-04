@@ -33,6 +33,17 @@ module Engine
         # UP reserves a slot in Omaha from setup and in Cheyenne on the green upgrade.
         NATIONAL_RESERVATIONS = %w[F27 F19].freeze
 
+        # The Moffat Tunnel (G18) and Lucin Cutoff (F11) are grey hexes whose
+        # through-paths do not exist until the Phase 5 `open_tunnels` event -
+        # see `event_open_tunnels!` below. Track may be laid against their
+        # east/west ends beforehand, but Task 2 deliberately left the base
+        # `map.rb` hex definitions blank so no through-route exists too early.
+        TUNNEL_HEXES = %w[G18 F11].freeze
+        TUNNEL_TILE_CODE = {
+          'G18' => 'town=revenue:brown_30|gray_40;path=a:3,b:_0;path=a:0,b:_0',
+          'F11' => 'town=revenue:brown_50|gray_60;path=a:3,b:_0;path=a:0,b:_0',
+        }.freeze
+
         STATUS_TEXT = Base::STATUS_TEXT.merge(
           'up_operates' => ['Union Pacific operates',
                             'The Union Pacific runs the trains on its consist card and pays a full dividend'],
@@ -563,7 +574,14 @@ module Engine
           @credit_mobilier.close!
         end
 
-        def event_open_tunnels!; end
+        def event_open_tunnels!
+          @log << '-- Event: the Moffat Tunnel and Lucin Cutoff are now open --'
+          self.class::TUNNEL_HEXES.each do |hex_id|
+            hex = hex_by_id(hex_id)
+            hex.lay(Engine::Tile.from_code(hex_id, hex.tile.color, self.class::TUNNEL_TILE_CODE[hex_id]))
+          end
+          @graph.clear_graph_for_all
+        end
 
         def event_remove_minor_abilities!
           @log << '-- Event: Minor Company Abilities are removed from the game --'
@@ -727,6 +745,20 @@ module Engine
 
           super
           queue_up_share_purchase(corporation)
+        end
+
+        # Deregulation (optional rule): during the final three Operating
+        # Rounds there is no train limit - see `deregulated?`.
+        def train_limit(entity)
+          return 99 if deregulated?
+
+          super
+        end
+
+        def deregulated?
+          return false unless @optional_rules&.include?(:deregulation)
+
+          !@final_turn.nil? && @turn >= @final_turn
         end
 
         def stock_round

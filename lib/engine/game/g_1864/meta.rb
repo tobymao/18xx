@@ -19,6 +19,15 @@ module Engine
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1864'
 
         PLAYER_RANGE = [2, 6].freeze
+
+        OPTIONAL_RULES = [
+          {
+            sym: :deregulation,
+            short_name: 'Deregulation',
+            desc: 'During the final three Operating Rounds there is no train limit, '\
+                  'and the 2+2 and 5+5E trains are unlimited',
+          },
+        ].freeze
       end
     end
   end
