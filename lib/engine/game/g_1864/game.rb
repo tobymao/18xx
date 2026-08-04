@@ -230,6 +230,11 @@ module Engine
           # +$10 marker.
           @local_contracts = {}
           @pullman_bonus_used = false
+          # Extra station tokens granted by Union Station / Central Station
+          # (see `grant_additional_station_tokens!`), tracked so phase 6 can
+          # remove them explicitly - `Company#close!` revokes the ability but
+          # never touches a `Token` already pushed onto the corporation.
+          @additional_station_tokens = []
 
           @union_pacific = @national = @corporations.find { |c| c.type == :national }
           @corporations.delete(@national)
@@ -240,6 +245,16 @@ module Engine
           @corporations, @future_corporations = @corporations.partition do |corporation|
             corporation.type == :minor && !self.class::GREEN_CORPORATIONS.include?(corporation.id)
           end
+
+          # 1864 states its own ownership rule without a player-count
+          # qualifier, so it supersedes 1861/1867's 70% two-player cap rather
+          # than filling a gap. Majors are uncapped until phase 6, at every
+          # player count; the Union Pacific is always capped at 60%.
+          (@corporations + @future_corporations).each do |corporation|
+            corporation.max_ownership_percent = 100 if corporation.type == :major
+          end
+          @union_pacific.max_ownership_percent = 60
+          @ownership_limited = false
 
           deal_ability_cards!
           grant_additional_station_tokens!
@@ -282,11 +297,23 @@ module Engine
         def grant_additional_station_tokens!
           (@corporations + @future_corporations).each do |corporation|
             abilities(corporation, :additional_token) do |ability|
-              corporation.tokens << Engine::Token.new(corporation, price: extra_token_price(corporation))
+              token = Engine::Token.new(corporation, price: extra_token_price(corporation))
+              corporation.tokens << token
+              @additional_station_tokens << token
               ability.use!
               @log << "#{corporation.name} receives an additional station token from #{ability.owner.name}"
             end
           end
+        end
+
+        # Phase 6 removes Union Station and Central Station along with every
+        # other ability card (`event_remove_minor_abilities!`); the rulebook
+        # is explicit that the station marker itself comes off the map too.
+        # `Token#destroy!` removes the token from its city/hex (if placed)
+        # and from `corporation.tokens` in one call.
+        def remove_additional_station_tokens!
+          @additional_station_tokens.each(&:destroy!)
+          @additional_station_tokens.clear
         end
 
         # The base rate consumed by `hex_distance_from_token` in
@@ -538,14 +565,57 @@ module Engine
 
         def event_open_tunnels!; end
 
-        def event_remove_minor_abilities!; end
+        def event_remove_minor_abilities!
+          @log << '-- Event: Minor Company Abilities are removed from the game --'
+          remove_additional_station_tokens!
+          @companies.each do |company|
+            next if company.closed?
+
+            company.close!
+          end
+          @local_contracts.clear
+        end
 
         def event_up_ipo_purchasable!
           @up_ipo_open = true
           @log << 'Union Pacific shares may now be purchased from the IPO'
         end
 
-        def event_enforce_ownership_limit!; end
+        # 1864 states its own ownership rule without a player-count
+        # qualifier, so it supersedes 1861/1867's 70% two-player cap rather
+        # than filling a gap. Uncapped until phase 6, then 60% at every
+        # player count. The Union Pacific is untouched - already, and always,
+        # 60%.
+        def event_enforce_ownership_limit!
+          @log << 'Players may no longer purchase shares beyond 60% of a company'
+          (@corporations + @future_corporations).each do |corporation|
+            next if corporation.type == :minor
+
+            corporation.max_ownership_percent = 60
+          end
+          @ownership_limited = true
+        end
+
+        # 1867's `reset_corporation` raises a restarted major to 70% at two
+        # players. 1864 caps at 60% regardless of player count (and only from
+        # phase 6), so correct the value after `super` rather than reaching
+        # past 1867's implementation.
+        def reset_corporation(corporation)
+          corp = super
+          corp.max_ownership_percent = @ownership_limited ? 60 : 100
+          corp
+        end
+
+        # 1864 gives its own cash and certificate limits and its own
+        # ownership rule (majors start uncapped at every player count, see
+        # `setup`); only 1861's two-player train removal is inherited. 1867's
+        # private-company removal does not apply - 1864 has no privates.
+        def setup_for_2_players
+          self.class::TRAINS_REMOVE_2_PLAYER.each do |train_name, count|
+            trains = depot.upcoming.select { |t| t.name == train_name }.reverse.take(count)
+            trains.each { |t| depot.forget_train(t) }
+          end
+        end
 
         # Shares of the Union Pacific reach players by four routes: (1) a
         # regionalized minor's owner may buy one 10% share, (2) a regionalized
