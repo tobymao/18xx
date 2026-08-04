@@ -352,8 +352,61 @@ module Engine
           10
         end
 
+        # The four $80 city-pair bonuses (any route touching both cities in a
+        # pair earns the bonus; a route touching cities from two different
+        # pairs earns both).
+        BONUS_PAIRS = [
+          ['Great Lakes', 'Seattle'],
+          ['New Orleans', 'Los Angeles'],
+          ['St. Louis', 'San Francisco'],
+          ['Chicago', 'San Francisco'],
+        ].freeze
+        PAIR_BONUS = 80
+
+        # The $120 Forty-Niner Route bonus: a single route through all five
+        # named cities.
+        FORTY_NINER_ROUTE = ['Chicago', 'Omaha', 'Cheyenne', 'Salt Lake', 'San Francisco'].freeze
+        FORTY_NINER_BONUS = 120
+
+        # The $80 bonus for a route reaching both a north ("N") marker hex and
+        # a south ("S") marker hex. A16 (Canada) and B27 (Great Lakes) carry
+        # the printed "N"; L11 (Mexico) and K28 (New Orleans) carry the
+        # printed "S" - confirmed exhaustive by Task 2's read of all 148 hexes.
+        NORTH_HEXES = %w[A16 B27].freeze
+        SOUTH_HEXES = %w[L11 K28].freeze
+        NORTH_SOUTH_BONUS = 80
+
+        # The rulebook is explicit that none of 1864's route bonuses are ever
+        # multiplied by the 2+2 or 5+5E trains' multiplier, unlike 1867's own
+        # capitals-and-Timmins bonus (`BONUS_CAPITALS`/`BONUS_REVENUE`, still
+        # inherited from `G1867::Game` but never consulted below - see
+        # `revenue_for`). This helper documents that rule for anything that
+        # cares to ask; `revenue_for` itself simply never multiplies.
+        def bonus_multiplier
+          1
+        end
+
+        # Fully replaces `G1867::Game#revenue_for` rather than calling `super`
+        # into it: 1867's version adds `hex_bonus` ability revenue (1864 has
+        # no abilities of that kind - Local Contract is handled below via
+        # `local_contract_bonus`) and a capitals+Timmins bonus that it
+        # multiplies by the train multiplier (1864 has no such bonus, and
+        # none of its own bonuses are ever multiplied). The first line below
+        # reproduces `Base#revenue_for` in full; everything after it is 1864.
         def revenue_for(route, stops)
-          super + stops.sum { |stop| local_contract_bonus(route.corporation, stop) }
+          revenue = stops.sum { |stop| stop.route_revenue(route.phase, route.train) }
+
+          raise GameError, 'Route visits same hex twice' if route.hexes.size != route.hexes.uniq.size
+
+          names = stops.map { |stop| location_name(stop.hex.id) }.compact
+          hex_ids = stops.map { |stop| stop.hex.id }
+
+          revenue += BONUS_PAIRS.count { |a, b| names.include?(a) && names.include?(b) } * PAIR_BONUS
+          revenue += NORTH_SOUTH_BONUS if hex_ids.any? { |id| NORTH_HEXES.include?(id) } &&
+                                          hex_ids.any? { |id| SOUTH_HEXES.include?(id) }
+          revenue += FORTY_NINER_BONUS if FORTY_NINER_ROUTE.all? { |city| names.include?(city) }
+
+          revenue + stops.sum { |stop| local_contract_bonus(route.corporation, stop) }
         end
 
         def local_contract_placed?(company)
