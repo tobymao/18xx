@@ -236,6 +236,7 @@ module Engine
           end
 
           deal_ability_cards!
+          grant_additional_station_tokens!
 
           # Deal one consist card per phase, each from that phase's deck.
           decks = UnionPacific::CONSIST_DECKS.values
@@ -260,6 +261,35 @@ module Engine
             company.owner = minor
             minor.companies << company
           end
+        end
+
+        # `additional_token` (see `Engine::Ability::AdditionalToken`) is an inert
+        # marker in this engine: nothing in `Operator#init_operator` or
+        # `Step::Tokener` ever mutates `@tokens`, which is built once at
+        # construction from `opts[:tokens]`. 1817 and 18Hiawatha are the only
+        # other titles that grant a token from an ability, and both do it by
+        # explicitly pushing a real `Token` when the ability fires
+        # (`corporation.tokens << Engine::Token.new(corporation)`). Union
+        # Station and Central Station are dealt, not bought, so there is no
+        # player action to hang this on - grant the token here, once, at
+        # setup, priced at the $10-per-hexagon rate the card promises.
+        def grant_additional_station_tokens!
+          (@corporations + @future_corporations).each do |corporation|
+            abilities(corporation, :additional_token) do |ability|
+              corporation.tokens << Engine::Token.new(corporation, price: extra_token_price(corporation))
+              ability.use!
+              @log << "#{corporation.name} receives an additional station token from #{ability.owner.name}"
+            end
+          end
+        end
+
+        # The base rate consumed by `hex_distance_from_token` in
+        # `G1867::Step::Token#adjust_token_price_ability!`: the final price is
+        # this multiplied by the hex distance from the corporation's nearest
+        # placed token, exactly as 1867 prices its normal tokens off the
+        # `tokens:` tiers in `Entities::CORPORATIONS` - only the rate differs.
+        def extra_token_price(corporation)
+          corporation.companies.any? { |c| ['Union Station', 'Central Station'].include?(c.name) } ? 10 : 0
         end
 
         def ability_card_for(corporation)
