@@ -6,9 +6,11 @@ require_relative 'map'
 require_relative 'meta'
 require_relative 'union_pacific'
 require_relative 'round/operating'
+require_relative 'step/assign'
 require_relative 'step/buy_sell_par_shares'
 require_relative 'step/buy_train'
 require_relative 'step/dividend'
+require_relative 'step/route'
 require_relative 'step/token'
 require_relative 'step/track'
 require_relative 'step/up_shares'
@@ -224,6 +226,10 @@ module Engine
           @credit_mobilier = CreditMobilier.new
           @pending_up_share_buyers = []
           @up_ipo_open = false
+          # Local Contract: corporation => hex id of the station carrying the
+          # +$10 marker.
+          @local_contracts = {}
+          @pullman_bonus_used = false
 
           @union_pacific = @national = @corporations.find { |c| c.type == :national }
           @corporations.delete(@national)
@@ -290,6 +296,86 @@ module Engine
         # `tokens:` tiers in `Entities::CORPORATIONS` - only the rate differs.
         def extra_token_price(corporation)
           corporation.companies.any? { |c| ['Union Station', 'Central Station'].include?(c.name) } ? 10 : 0
+        end
+
+        def double_tracks?(corporation)
+          corporation.respond_to?(:companies) &&
+            corporation.companies.any? { |c| c.name == 'Double Tracks' }
+        end
+
+        def pullman_car?(corporation)
+          corporation.respond_to?(:companies) &&
+            corporation.companies.any? { |c| c.name == 'Pullman Car' }
+        end
+
+        # Two trains of the same corporation may not normally reuse the same
+        # piece of track (`Route#check_overlap!` -> here). Double Tracks lifts
+        # that restriction for its holder. Minors never run more than two
+        # trains at once (`PHASES`' `train_limit`), so waiving the check
+        # entirely for a holder is equivalent to "two trains may share track".
+        def check_overlap(routes)
+          return if double_tracks?(routes.first&.corporation)
+
+          super
+        end
+
+        def reset_pullman_bonus!
+          @pullman_bonus_used = false
+        end
+
+        # Pullman Car: one train may treat up to two additional towns as real
+        # (revenue-earning) stops without them counting against the train's
+        # distance. `G1867::Game#compute_stops` already gives us the stops a
+        # plain train would earn; here, for a Pullman Car holder that hasn't
+        # used its bonus yet this route-running action (see
+        # `Step::Route#process_run_routes`), add up to two visited-but-unused
+        # towns on top of that base result.
+        def compute_stops(route)
+          stops = super
+          return stops if stops.empty? || @pullman_bonus_used || !pullman_car?(route.corporation)
+
+          extra_towns = (route.visited_stops - stops).select(&:town?).first(2)
+          return stops if extra_towns.empty?
+
+          @pullman_bonus_used = true
+          stops + extra_towns
+        end
+
+        # Local Contract: a +$10 marker placed on one city where the holding
+        # corporation has a station (`Step::Assign` handles the placement
+        # action). Hooked into `revenue_for` here so the ability is testable
+        # now; Task 11 should NOT add a second call to this from its own
+        # route-bonus work in `revenue_for`.
+        def local_contract_bonus(corporation, stop)
+          return 0 unless @local_contracts[corporation] == stop.hex.id
+
+          10
+        end
+
+        def revenue_for(route, stops)
+          super + stops.sum { |stop| local_contract_bonus(route.corporation, stop) }
+        end
+
+        def local_contract_placed?(company)
+          @local_contracts.key?(company.owner)
+        end
+
+        # The stations eligible to receive Local Contract's marker: every hex
+        # where the holding corporation currently has a placed (used) token.
+        def local_contract_hexes(company)
+          corporation = company.owner
+          return [] unless corporation.respond_to?(:tokens)
+
+          # Matches `G1867::Step::Token#adjust_token_price_ability!`'s
+          # `token.city.tile.hex`, rather than `token.hex` directly.
+          corporation.tokens.select(&:used).map { |token| token.city.tile.hex }.compact.uniq
+        end
+
+        def place_local_contract!(company, hex)
+          corporation = company.owner
+          @local_contracts[corporation] = hex.id
+          location = hex.location_name.to_s.empty? ? '' : " (#{hex.location_name})"
+          @log << "#{company.name} places its +$10 marker on #{hex.id}#{location}"
         end
 
         def ability_card_for(corporation)
@@ -539,7 +625,8 @@ module Engine
             G1867::Step::RedeemShares,
             G1864::Step::Track,
             G1864::Step::Token,
-            Engine::Step::Route,
+            G1864::Step::Assign,
+            G1864::Step::Route,
             G1864::Step::Dividend,
             # The blocking buy company needs to be before loan operations
             [G1867::Step::BuyCompanyPreloan, { blocks: true }],
