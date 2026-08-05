@@ -29,15 +29,28 @@ module Engine
             ability_card?(entity, 'Civil Engineering Firm') ? 0 : cost
           end
 
+          # `Tracker#lay_tile_action` reads the pre-lay tile via `action.hex.tile`
+          # before calling `lay_tile`, which then overwrites `hex.tile` with the
+          # new tile - by the time `pay_tile_cost!` runs, the old tile (and the
+          # `upgrade=cost:X,terrain:Y` it carries for mountains/water) is gone
+          # from the hex. Snapshot its terrain cost here, while it is still
+          # reachable, for `pay_tile_cost!` to waive independently below.
+          def lay_tile_action(action, entity: nil, spender: nil)
+            @hex_terrain_cost = action.hex.tile.upgrades.sum(&:cost)
+            super
+          end
+
           # Tracker#remove_border_calculate_cost! computes and returns the
-          # terrain cost as a local variable inside `lay_tile`, folded into the
-          # combined `cost` by the time `pay_tile_cost!` sees it - it is never
-          # passed down on its own. Capture it here so `pay_tile_cost!` can
-          # waive it independently of the $20 extra-lay fee, which *is* passed
-          # separately (as `extra_cost`).
+          # cost of any *border* (river-crossing) terrain as a local variable
+          # inside `lay_tile`, folded into the combined `cost` by the time
+          # `pay_tile_cost!` sees it - it is never passed down on its own.
+          # Added to the hex's own `upgrade=cost:X,terrain:Y` cost captured
+          # above in `lay_tile_action`, so `pay_tile_cost!` can waive the full
+          # terrain cost independently of the $20 extra-lay fee, which *is*
+          # passed separately (as `extra_cost`).
           def remove_border_calculate_cost!(tile, entity_or_entities, spender)
             cost, types = super
-            @terrain_cost = cost
+            @terrain_cost = cost + @hex_terrain_cost.to_i
             [cost, types]
           end
 
