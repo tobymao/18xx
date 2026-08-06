@@ -22,9 +22,9 @@ module View
       needs :show_log, default: true, store: true
 
       def render
-        children = [render_log_choices, render_log]
-
         @player = @game.player_by_id(@user['id']) if @user
+
+        children = [render_log_choices, render_log]
 
         key_event = lambda do |event|
           event = Native(event)
@@ -214,7 +214,7 @@ module View
           action_log << render_action_buttons(action.id)
         end
 
-        h(:div, action_log)
+        h(:div, { attrs: { id: "action-#{action.id}" } }, action_log)
       end
 
       def render_action_buttons(action_id)
@@ -252,15 +252,17 @@ module View
       end
 
       def render_log_choices
+        left_buttons = [
+          h(:button,
+            {
+              style: { marginTop: '0' },
+              on: { click: -> { copy_log_transcript } },
+            },
+            'Copy Transcript 📋'),
+        ]
+
         h(:div, { style: { marginBottom: '0.3rem', display: 'flex', justifyContent: 'space-between' } }, [
-          h(:div, { style: { textAlign: 'left' } }, [
-            h(:button,
-              {
-                style: { marginTop: '0' },
-                on: { click: -> { copy_log_transcript } },
-              },
-              'Copy Transcript 📋'),
-          ]),
+          h(:div, { style: { textAlign: 'left' } }, left_buttons),
           h(:div, { style: { textAlign: 'right' } }, [
             h(:button,
               {
