@@ -63,56 +63,56 @@ module Engine
             'count' => 1,
             'color' => 'green',
             'code' => 'city=revenue:40,loc:0.5;city=revenue:40,loc:2.5;city=revenue:40,loc:4.5;'\
-                      'path=a:0,b:_0;path=a:_0,b:1;path=a:4,b:_2;path=a:_2,b:5;path=a:2,b:_1;'\
-                      'path=a:_1,b:3;label=K;upgrade=cost:40,terrain:water',
+                      'path=a:4,b:_0;path=a:_0,b:3;path=a:0,b:_2;path=a:_2,b:5;path=a:2,b:_1;'\
+                      'path=a:_1,b:1;label=K;upgrade=cost:40,terrain:water',
           },
           '636' =>
           {
             'count' => 1,
             'color' => 'brown',
-            'code' => 'city=revenue:50,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
-                      'path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=K',
+            'code' => 'city=revenue:50,slots:3;path=a:4,b:_0;path=a:3,b:_0;path=a:2,b:_0;'\
+                      'path=a:1,b:_0;path=a:0,b:_0;path=a:5,b:_0;label=K',
           },
           '637' =>
           {
             'count' => 1,
             'color' => 'green',
             'code' => 'city=revenue:50,loc:0.5;city=revenue:50,loc:2.5;city=revenue:50,loc:4.5;'\
-                      'path=a:0,b:_0;path=a:_0,b:1;path=a:4,b:_2;path=a:_2,b:5;'\
-                      'path=a:2,b:_1;path=a:_1,b:3;label=M',
+                      'path=a:4,b:_0;path=a:_0,b:3;path=a:0,b:_2;path=a:_2,b:5;'\
+                      'path=a:2,b:_1;path=a:_1,b:1;label=M',
           },
           '638' =>
           {
             'count' => 1,
             'color' => 'brown',
-            'code' => 'city=revenue:70,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
-                      'path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=M',
+            'code' => 'city=revenue:70,slots:3;path=a:4,b:_0;path=a:3,b:_0;path=a:2,b:_0;'\
+                      'path=a:1,b:_0;path=a:0,b:_0;path=a:5,b:_0;label=M',
           },
           '639' =>
           {
             'count' => 1,
             'color' => 'gray',
-            'code' => 'city=revenue:100,slots:4;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
-                      'path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=M',
+            'code' => 'city=revenue:100,slots:4;path=a:4,b:_0;path=a:3,b:_0;path=a:2,b:_0;'\
+                      'path=a:1,b:_0;path=a:0,b:_0;path=a:5,b:_0;label=M',
           },
           '640' =>
           {
             'count' => 1,
             'color' => 'gray',
-            'code' => 'city=revenue:60,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
-                      'path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=Kh',
+            'code' => 'city=revenue:60,slots:3;path=a:4,b:_0;path=a:3,b:_0;path=a:2,b:_0;'\
+                      'path=a:1,b:_0;path=a:0,b:_0;path=a:5,b:_0;label=Kh',
           },
           '641' =>
           {
             'count' => 1,
             'color' => 'brown',
-            'code' => 'city=revenue:50,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:5,b:_0;label=S',
+            'code' => 'city=revenue:50,slots:3;path=a:4,b:_0;path=a:3,b:_0;path=a:5,b:_0;label=S',
           },
           '642' =>
           {
             'count' => 1,
             'color' => 'gray',
-            'code' => 'city=revenue:70,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:5,b:_0;label=S',
+            'code' => 'city=revenue:70,slots:3;path=a:4,b:_0;path=a:3,b:_0;path=a:5,b:_0;label=S',
           },
           '801' => 2,
           '911' => 3,
@@ -123,13 +123,13 @@ module Engine
           {
             'count' => 2,
             'color' => 'yellow',
-            'code' => 'city=revenue:30;path=a:0,b:_0;path=a:3,b:_0;label=C',
+            'code' => 'city=revenue:30;path=a:4,b:_0;path=a:1,b:_0;label=C',
           },
           'X2' =>
           {
             'count' => 1,
             'color' => 'green',
-            'code' => 'city=revenue:50,slots:2;path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0;label=C',
+            'code' => 'city=revenue:50,slots:2;path=a:4,b:_0;path=a:2,b:_0;path=a:0,b:_0;label=C',
           },
           # Omaha ("O" label) set: the yellow tile is pre-printed directly on hex F27;
           # these are its green/brown upgrades (Task 4's NATIONAL_RESERVATIONS handles
@@ -138,14 +138,14 @@ module Engine
           {
             'count' => 1,
             'color' => 'green',
-            'code' => 'city=revenue:30;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
-                      'path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=O',
+            'code' => 'city=revenue:30;path=a:4,b:_0;path=a:3,b:_0;path=a:2,b:_0;'\
+                      'path=a:1,b:_0;path=a:0,b:_0;path=a:5,b:_0;label=O',
           },
           'X4' =>
           {
             'count' => 1,
             'color' => 'brown',
-            'code' => 'city=revenue:40,slots:2;path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0;label=O',
+            'code' => 'city=revenue:40,slots:2;path=a:4,b:_0;path=a:2,b:_0;path=a:0,b:_0;label=O',
           },
           # Bailey Yard ("BY" label) set: the map hex starts blank, upgraded with these
           # three - the striped yellow/green tile is its first tile.
@@ -153,21 +153,21 @@ module Engine
           {
             'count' => 1,
             'color' => 'yellow',
-            'code' => 'city=revenue:20;path=a:0,b:_0;path=a:3,b:_0;label=BY',
+            'code' => 'city=revenue:20;path=a:4,b:_0;path=a:1,b:_0;label=BY',
           },
           'X6' =>
           {
             'count' => 1,
             'color' => 'brown',
-            'code' => 'city=revenue:50,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
-                      'path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=BY',
+            'code' => 'city=revenue:50,slots:2;path=a:4,b:_0;path=a:3,b:_0;path=a:2,b:_0;'\
+                      'path=a:1,b:_0;path=a:0,b:_0;path=a:5,b:_0;label=BY',
           },
           'X7' =>
           {
             'count' => 1,
             'color' => 'gray',
-            'code' => 'city=revenue:70,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;'\
-                      'path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=BY',
+            'code' => 'city=revenue:70,slots:3;path=a:4,b:_0;path=a:3,b:_0;path=a:2,b:_0;'\
+                      'path=a:1,b:_0;path=a:0,b:_0;path=a:5,b:_0;label=BY',
           },
         }.freeze
 
@@ -223,76 +223,77 @@ module Engine
             ['G28'] => 'upgrade=cost:40,terrain:water',
           },
           yellow: {
-            ['B5'] => 'city=revenue:30;path=a:0,b:_0;path=a:5,b:_0;label=Y;upgrade=cost:20,terrain:water',
-            ['B11'] => 'city=revenue:20;path=a:3,b:_0;path=a:0,b:_0;upgrade=cost:20,terrain:mountain',
+            ['B5'] => 'city=revenue:30;path=a:4,b:_0;path=a:5,b:_0;label=Y;upgrade=cost:20,terrain:water',
+            ['B11'] => 'city=revenue:20;path=a:1,b:_0;path=a:4,b:_0;upgrade=cost:20,terrain:mountain',
             ['D5'] => 'city=revenue:20;path=a:2,b:_0;path=a:5,b:_0',
             ['F27'] =>
-            'city=revenue:20;path=a:3,b:_0;path=a:5,b:_0;label=O;upgrade=cost:40,terrain:water',
-            ['G2'] => 'city=revenue:30;path=a:0,b:_0;path=a:5,b:_0;label=Y;future_label=label:Kh,color:gray',
+            'city=revenue:20;path=a:1,b:_0;path=a:5,b:_0;label=O;upgrade=cost:40,terrain:water',
+            ['G2'] => 'city=revenue:30;path=a:4,b:_0;path=a:5,b:_0;label=Y;future_label=label:Kh,color:gray',
             # Two minor homes (KR, MNN): west stub feeds city 0, east stub feeds city 1.
-            ['G14'] => 'city=revenue:40;city=revenue:40;path=a:3,b:_0;path=a:0,b:_1;label=K',
+            ['G14'] => 'city=revenue:40;city=revenue:40;path=a:1,b:_0;path=a:4,b:_1;label=K',
             # Three minor homes (M-K east, TR northwest, KK southwest), matching the
             # three-slot pattern 1861 uses for its own triple-minor hex (H8/Moscow).
             ['G20'] =>
-            'city=revenue:30;city=revenue:30;city=revenue:30;path=a:0,b:_0;path=a:2,b:_1;'\
-            'path=a:4,b:_2;label=M',
-            ['J5'] => 'city=revenue:30;path=a:2,b:_0;path=a:4,b:_0;label=Y',
-            ['K12'] => 'city=revenue:30;path=a:1,b:_0;path=a:3,b:_0;label=Y',
+            'city=revenue:30;city=revenue:30;city=revenue:30;path=a:4,b:_0;path=a:2,b:_1;'\
+            'path=a:0,b:_2;label=M',
+            ['J5'] => 'city=revenue:30;path=a:2,b:_0;path=a:0,b:_0;label=Y',
+            ['K12'] => 'city=revenue:30;path=a:3,b:_0;path=a:1,b:_0;label=Y',
           },
           green: {
-            ['D11'] => 'city=revenue:40;path=a:3,b:_0;path=a:5,b:_0;label=S',
+            ['D11'] => 'city=revenue:40;path=a:1,b:_0;path=a:5,b:_0;label=S',
           },
           gray: {
             %w[C10 C12 E18 F11 G18 H5 H17] => '',
-            ['D13'] => 'town=revenue:yellow_10|green_20|brown_30|gray_40;path=a:3,b:_0;path=a:5,b:_0',
-            ['D15'] => 'town=revenue:yellow_10|green_20|brown_30|gray_40;path=a:1,b:_0;path=a:4,b:_0',
+            ['D13'] => 'town=revenue:yellow_10|green_20|brown_30|gray_40;path=a:1,b:_0;path=a:5,b:_0',
+            ['D15'] => 'town=revenue:yellow_10|green_20|brown_30|gray_40;path=a:3,b:_0;path=a:0,b:_0',
             ['I8'] =>
-            'town=revenue:yellow_10|green_20|brown_30|gray_40;path=a:1,b:_0;path=a:3,b:_0;path=a:5,b:_0',
+            'town=revenue:yellow_10|green_20|brown_30|gray_40;path=a:3,b:_0;path=a:1,b:_0;path=a:5,b:_0',
           },
           red: {
             %w[A6 A8 A10 A14 A16 A18] =>
             'offboard=revenue:yellow_20|green_30|brown_50|gray_60,hide:1,groups:Canada;'\
-            'path=a:4,b:_0;path=a:5,b:_0;border=edge:0;border=edge:3',
+            'path=a:0,b:_0;path=a:5,b:_0;border=edge:4;border=edge:1',
             ['A12'] =>
             'offboard=revenue:yellow_20|green_30|brown_50|gray_60,groups:Canada;'\
-            'path=a:4,b:_0;path=a:5,b:_0;border=edge:0;border=edge:3',
+            'path=a:0,b:_0;path=a:5,b:_0;border=edge:4;border=edge:1',
             ['A20'] =>
             'offboard=revenue:yellow_20|green_30|brown_50|gray_60,hide:1,groups:Canada;'\
-            'path=a:0,b:_0;path=a:4,b:_0;path=a:5,b:_0;border=edge:3',
+            'path=a:4,b:_0;path=a:0,b:_0;path=a:5,b:_0;border=edge:1',
             ['B27'] =>
             'offboard=revenue:yellow_20|green_30|brown_50|gray_60,groups:GreatLakes;'\
-            'path=a:3,b:_0;path=a:4,b:_0',
+            'path=a:1,b:_0;path=a:0,b:_0',
             ['E28'] =>
             'offboard=revenue:yellow_20|green_40|brown_40|gray_70,groups:Chicago;'\
-            'path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
+            'path=a:2,b:_0;path=a:1,b:_0;path=a:0,b:_0',
             ['H29'] =>
             'offboard=revenue:yellow_20|green_30|brown_50|gray_60,groups:StLouis;'\
-            'path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0',
+            'path=a:2,b:_0;path=a:1,b:_0;path=a:0,b:_0',
             ['K28'] =>
             'offboard=revenue:yellow_20|green_40|brown_50|gray_70,groups:NewOrleans;'\
-            'path=a:2,b:_0;path=a:3,b:_0',
+            'path=a:2,b:_0;path=a:1,b:_0',
             ['L7'] =>
             'offboard=revenue:yellow_20|green_40|brown_50|gray_70,hide:1,groups:Mexico;'\
-            'path=a:1,b:_0;path=a:2,b:_0;border=edge:0',
+            'path=a:3,b:_0;path=a:2,b:_0;border=edge:4',
             %w[L9 L11 L15 L17] =>
             'offboard=revenue:yellow_20|green_40|brown_50|gray_70,hide:1,groups:Mexico;'\
-            'path=a:1,b:_0;path=a:2,b:_0;border=edge:0;border=edge:3',
+            'path=a:3,b:_0;path=a:2,b:_0;border=edge:4;border=edge:1',
             ['L13'] =>
             'offboard=revenue:yellow_20|green_40|brown_50|gray_70,groups:Mexico;'\
-            'path=a:1,b:_0;path=a:2,b:_0;border=edge:0;border=edge:3',
+            'path=a:3,b:_0;path=a:2,b:_0;border=edge:4;border=edge:1',
             ['L19'] =>
             'offboard=revenue:yellow_20|green_40|brown_50|gray_70,hide:1,groups:Mexico;'\
-            'path=a:1,b:_0;path=a:2,b:_0;border=edge:3',
+            'path=a:3,b:_0;path=a:2,b:_0;border=edge:1',
           },
           blue: {
-            ['A4'] => 'offboard=revenue:yellow_0|green_40|brown_50|gray_70,groups:Japan;path=a:5,b:_0;border=edge:0',
-            ['F1'] => 'offboard=revenue:yellow_20|green_40|brown_50|gray_70,groups:China;path=a:0,b:_0;path=a:5,b:_0',
+            ['A4'] => 'offboard=revenue:yellow_0|green_40|brown_50|gray_70,groups:Japan;path=a:5,b:_0;border=edge:4',
+            ['F1'] => 'offboard=revenue:yellow_20|green_40|brown_50|gray_70,groups:China;path=a:4,b:_0;path=a:5,b:_0',
             ['K4'] =>
-            'offboard=revenue:yellow_20|green_40|brown_50|gray_70,groups:Australia;path=a:0,b:_0;path=a:1,b:_0',
+            'offboard=revenue:yellow_20|green_40|brown_50|gray_70,groups:Australia;path=a:4,b:_0;path=a:3,b:_0',
           },
         }.freeze
 
-        LAYOUT = :flat
+        LAYOUT = :pointy
+        AXES = { x: :number, y: :letter }.freeze
       end
     end
   end

@@ -40,8 +40,8 @@ module Engine
         # `map.rb` hex definitions blank so no through-route exists too early.
         TUNNEL_HEXES = %w[G18 F11].freeze
         TUNNEL_TILE_CODE = {
-          'G18' => 'town=revenue:brown_30|gray_40;path=a:3,b:_0;path=a:0,b:_0',
-          'F11' => 'town=revenue:brown_50|gray_60;path=a:3,b:_0;path=a:0,b:_0',
+          'G18' => 'town=revenue:brown_30|gray_40;path=a:1,b:_0;path=a:4,b:_0',
+          'F11' => 'town=revenue:brown_50|gray_60;path=a:1,b:_0;path=a:4,b:_0',
         }.freeze
 
         STATUS_TEXT = Base::STATUS_TEXT.merge(
