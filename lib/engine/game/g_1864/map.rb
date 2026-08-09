@@ -268,12 +268,25 @@ module Engine
             'town=revenue:yellow_10|green_20|brown_30|gray_40;path=a:3,b:_0;path=a:1,b:_0;path=a:5,b:_0',
           },
           red: {
-            %w[A6 A8 A10 A14 A16 A18] =>
+            # The Canada band. A6-A12 face B7/B9/B11, whose printed $20 mountain
+            # cost sits on the shared edges; borders are declared on BOTH hexes so
+            # each draws its own half of the cost marker and neither can cover the
+            # other (the marker is centred on the edge). Same convention as 1807.
+            %w[A14 A16 A18] =>
             'offboard=revenue:yellow_20|green_30|brown_50|gray_60,hide:1,groups:Canada;'\
             'path=a:0,b:_0;path=a:5,b:_0;border=edge:4;border=edge:1',
+            ['A6'] =>
+            'offboard=revenue:yellow_20|green_30|brown_50|gray_60,hide:1,groups:Canada;'\
+            'path=a:0,b:_0;path=a:5,b:_0;border=edge:4;border=edge:1;'\
+            'border=edge:5,type:mountain,cost:20',
+            %w[A8 A10] =>
+            'offboard=revenue:yellow_20|green_30|brown_50|gray_60,hide:1,groups:Canada;'\
+            'path=a:0,b:_0;path=a:5,b:_0;border=edge:4;border=edge:1;'\
+            'border=edge:0,type:mountain,cost:20;border=edge:5,type:mountain,cost:20',
             ['A12'] =>
             'offboard=revenue:yellow_20|green_30|brown_50|gray_60,groups:Canada;'\
-            'path=a:0,b:_0;path=a:5,b:_0;border=edge:4;border=edge:1',
+            'path=a:0,b:_0;path=a:5,b:_0;border=edge:4;border=edge:1;'\
+            'border=edge:0,type:mountain,cost:20',
             ['A20'] =>
             'offboard=revenue:yellow_20|green_30|brown_50|gray_60,hide:1,groups:Canada;'\
             'path=a:4,b:_0;path=a:0,b:_0;path=a:5,b:_0;border=edge:1',
