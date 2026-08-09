@@ -41,9 +41,15 @@ module Engine
         # east/west ends beforehand, but Task 2 deliberately left the base
         # `map.rb` hex definitions blank so no through-route exists too early.
         TUNNEL_HEXES = %w[G18 F11].freeze
+        # The town, its revenue and the brown dashed frame are printed from the
+        # start (see map.rb); phase 5 only opens the east-west through-track.
         TUNNEL_TILE_CODE = {
-          'G18' => 'town=revenue:brown_30|gray_40;path=a:1,b:_0;path=a:4,b:_0',
-          'F11' => 'town=revenue:brown_50|gray_60;path=a:1,b:_0;path=a:4,b:_0',
+          'G18' =>
+            'town=revenue:brown_30|gray_40;path=a:1,b:_0;path=a:4,b:_0;'\
+            'frame=color:#BEBEBE,color2:#8B4513',
+          'F11' =>
+            'town=revenue:brown_50|gray_60;path=a:1,b:_0;path=a:4,b:_0;'\
+            'frame=color:#BEBEBE,color2:#8B4513',
         }.freeze
 
         STATUS_TEXT = Base::STATUS_TEXT.merge(
