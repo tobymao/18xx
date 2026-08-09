@@ -195,6 +195,7 @@ module Engine
           'D11' => 'Boise',
           'D13' => 'Sun Valley Ski Resort',
           'D15' => "Yellowstone Nat'l Park",
+          'D21' => 'Rapid City',
           'F1' => 'China',
           'F23' => 'Bailey Yard',
           'G20' => 'Denver',
@@ -210,7 +211,7 @@ module Engine
         HEXES = {
           white: {
             %w[A22 A24 B17 B19 B21 B25 C14 C16 C20 C24 C26 D3 D7 D9 D17 D19
-               D21 D25 D27 E4 E8 E10 E14 E16 E20 E22 F3 F9 F15 F21 F25 G8 G10 G22 G24 G26 H3
+               D25 D27 E4 E8 E10 E14 E16 E20 E22 F3 F9 F15 F21 F25 G8 G10 G22 G24 G26 H3
                H7 H9 H13 H19 H21 H27 I4 I6 I10 I12 I14 I18 I20 I22 I24 I26 I28 J7 J9
                J11 J13 J17 J21 K6 K8 K10 K16 K22 K24] => '',
             # Bismarck, Billings, Santa Fe, Oklahoma City: printed only as a decorative
@@ -224,16 +225,18 @@ module Engine
             %w[B7 B9] => 'border=edge:2,type:mountain,cost:20;border=edge:3,type:mountain,cost:20',
             %w[B15 C8 H23 J23] => 'town=revenue:0',
             ['C6'] => 'city=revenue:0;upgrade=cost:20,terrain:water',
-            ['H25'] => 'city=revenue:0',
+            %w[D21 H25] => 'city=revenue:0',
             %w[B13 F13 G4 G16 H15] => 'upgrade=cost:40,terrain:mountain',
-            %w[C4 C22 D23 E24 E26 K18 K20] => 'upgrade=cost:20,terrain:water',
+            %w[C4 D23 E24 E26 K18 K20] => 'upgrade=cost:20,terrain:water',
+            ['C22'] => 'town=revenue:0;upgrade=cost:20,terrain:water',
             # The $20 water cost is printed on the edges into New Orleans (K28),
             # not across these hexes. Declared on both sides - see the Canada
             # mountain borders for why.
             ['K26'] => 'border=edge:4,type:water,cost:20',
             ['J27'] => 'border=edge:5,type:water,cost:20',
             ['F19'] => 'label=C',
-            ['F23'] => 'label=BY',
+            # The printed arrow entrances come in from the west and the east.
+            ['F23'] => 'town=revenue:0;path=a:1,b:_0;path=a:4,b:_0;label=BY',
             ['G28'] => 'upgrade=cost:40,terrain:water',
           },
           yellow: {
@@ -242,8 +245,13 @@ module Engine
             'city=revenue:20;path=a:1,b:_0;path=a:4,b:_0;'\
             'border=edge:2,type:mountain,cost:20;border=edge:3,type:mountain,cost:20',
             ['D5'] => 'city=revenue:20;path=a:0,b:_0;path=a:3,b:_0',
+            # One city with TWO SLOTS - the two circles printed side by side and
+            # joined by a single band of track. Slot 0 is minor N's home; the
+            # other is reserved for the Union Pacific, whose token is placed at
+            # setup. Track runs in from the west and out to the north-east.
             ['F27'] =>
-            'city=revenue:20;path=a:1,b:_0;path=a:5,b:_0;label=O;upgrade=cost:40,terrain:water',
+            'city=revenue:20,slots:2;path=a:1,b:_0;path=a:3,b:_0;'\
+            'label=O;upgrade=cost:40,terrain:water',
             ['G2'] => 'city=revenue:30;path=a:4,b:_0;path=a:5,b:_0;label=Y;future_label=label:Kh,color:gray',
             # Two minor homes (KR, MNN): west stub feeds city 0, east stub feeds city 1.
             ['G14'] => 'city=revenue:40;city=revenue:40;path=a:1,b:_0;path=a:4,b:_1;label=K',
@@ -304,7 +312,7 @@ module Engine
             'path=a:4,b:_0;path=a:0,b:_0;path=a:5,b:_0;border=edge:1',
             ['B27'] =>
             'offboard=revenue:yellow_20|green_30|brown_50|gray_60,groups:GreatLakes;'\
-            'path=a:1,b:_0;path=a:0,b:_0',
+            'path=a:1,b:_0;path=a:0,b:_0;label=N',
             ['E28'] =>
             'offboard=revenue:yellow_20|green_40|brown_40|gray_70,groups:Chicago;'\
             'path=a:2,b:_0;path=a:1,b:_0;path=a:0,b:_0',

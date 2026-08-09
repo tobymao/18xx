@@ -31,7 +31,9 @@ module Engine
         STARTING_CASH = { 2 => 530, 3 => 353, 4 => 265, 5 => 212, 6 => 176 }.freeze
 
         # UP reserves a slot in Omaha from setup and in Cheyenne on the green upgrade.
-        NATIONAL_RESERVATIONS = %w[F27 F19].freeze
+        OMAHA_HEX = 'F27'
+        CHEYENNE_HEX = 'F19'
+        NATIONAL_RESERVATIONS = [OMAHA_HEX, CHEYENNE_HEX].freeze
 
         # The Moffat Tunnel (G18) and Lucin Cutoff (F11) are grey hexes whose
         # through-paths do not exist until the Phase 5 `open_tunnels` event -
@@ -269,6 +271,7 @@ module Engine
 
           deal_ability_cards!
           grant_additional_station_tokens!
+          place_up_home_token!
 
           # Deal one consist card per phase, each from that phase's deck.
           decks = UnionPacific::CONSIST_DECKS.values
@@ -305,6 +308,19 @@ module Engine
         # Station and Central Station are dealt, not bought, so there is no
         # player action to hang this on - grant the token here, once, at
         # setup, priced at the $10-per-hexagon rate the card promises.
+        # The rules place a Union Pacific station in Omaha before play begins.
+        # Omaha's second city slot is the reserved one; Cheyenne's reservation is
+        # filled later, when that hex is upgraded to green, so it stays on the list.
+        def place_up_home_token!
+          hex = hex_by_id(OMAHA_HEX)
+          return unless hex
+          return unless (token = @union_pacific.next_token)
+
+          @national_reservations.delete(hex.id)
+          hex.tile.cities.last.place_token(@union_pacific, token, check_tokenable: false)
+          @log << "#{@union_pacific.name} places a station in #{location_name(hex.id)}"
+        end
+
         def grant_additional_station_tokens!
           (@corporations + @future_corporations).each do |corporation|
             abilities(corporation, :additional_token) do |ability|
