@@ -261,9 +261,13 @@ module Engine
             ['D13'] =>
             'town=revenue:yellow_10|green_20|brown_30|gray_40;'\
             'path=a:0,b:_0;path=a:5,b:_0;icon=image:mountain',
+            # Two mountain icons, matching the pair of peaks printed on the hex.
+            # There is no single double-mountain asset, and stacking two of the
+            # same icon is an established pattern (see 18MEX's paired ports).
             ['D15'] =>
             'town=revenue:yellow_10|green_20|brown_30|gray_40;'\
-            'path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0',
+            'path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0;'\
+            'icon=image:mountain;icon=image:mountain',
             ['I8'] =>
             'town=revenue:yellow_10|green_20|brown_30|gray_40;path=a:3,b:_0;path=a:1,b:_0;path=a:5,b:_0',
           },
