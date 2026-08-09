@@ -199,6 +199,7 @@ module Engine
           'F23' => 'Bailey Yard',
           'G20' => 'Denver',
           'I8' => 'Death Valley',
+          'H25' => 'Wichita',
           'J19' => 'Santa Fe',
           'J25' => 'Oklahoma City',
           'K4' => 'Australia',
@@ -210,20 +211,27 @@ module Engine
           white: {
             %w[A22 A24 B17 B19 B21 B25 C14 C16 C20 C24 C26 D3 D7 D9 D17 D19
                D21 D25 D27 E4 E8 E10 E14 E16 E20 E22 F3 F9 F15 F21 F25 G8 G10 G22 G24 G26 H3
-               H7 H9 H13 H19 H21 H23 H25 H27 I4 I6 I10 I12 I14 I18 I20 I22 I24 I26 I28 J7 J9
-               J11 J13 J17 J21 J23 J27 K6 K8 K10 K16 K22 K24] => '',
+               H7 H9 H13 H19 H21 H27 I4 I6 I10 I12 I14 I18 I20 I22 I24 I26 I28 J7 J9
+               J11 J13 J17 J21 K6 K8 K10 K16 K22 K24] => '',
             # Bismarck, Billings, Santa Fe, Oklahoma City: printed only as a decorative
             # minor-home medallion with no revenue number (matching 1861's minor-only
             # homes such as E9/H18/I13/I19/K17), so each gets a plain unlabelled city.
-            %w[B23 C18 J19 J25] => 'city=revenue:0',
+            %w[B23 C18 J19] => 'city=revenue:0',
+            ['J25'] => 'city=revenue:0;label=Y',
             %w[E6 E12 F5 F7 F17 G6 G12 H11 I16 J15 K14] => 'upgrade=cost:20,terrain:mountain',
             # The $20 mountain cost is printed on the two edges facing Canada
             # (2 = northwest, 3 = northeast), not across the whole hex.
             %w[B7 B9] => 'border=edge:2,type:mountain,cost:20;border=edge:3,type:mountain,cost:20',
-            %w[B15 C8] => 'town=revenue:0',
+            %w[B15 C8 H23 J23] => 'town=revenue:0',
             ['C6'] => 'city=revenue:0;upgrade=cost:20,terrain:water',
+            ['H25'] => 'city=revenue:0',
             %w[B13 F13 G4 G16 H15] => 'upgrade=cost:40,terrain:mountain',
-            %w[C4 C22 D23 E24 E26 K18 K20 K26] => 'upgrade=cost:20,terrain:water',
+            %w[C4 C22 D23 E24 E26 K18 K20] => 'upgrade=cost:20,terrain:water',
+            # The $20 water cost is printed on the edges into New Orleans (K28),
+            # not across these hexes. Declared on both sides - see the Canada
+            # mountain borders for why.
+            ['K26'] => 'border=edge:4,type:water,cost:20',
+            ['J27'] => 'border=edge:5,type:water,cost:20',
             ['F19'] => 'label=C',
             ['F23'] => 'label=BY',
             ['G28'] => 'upgrade=cost:40,terrain:water',
@@ -305,7 +313,8 @@ module Engine
             'path=a:2,b:_0;path=a:1,b:_0;path=a:0,b:_0',
             ['K28'] =>
             'offboard=revenue:yellow_20|green_40|brown_50|gray_70,groups:NewOrleans;'\
-            'path=a:2,b:_0;path=a:1,b:_0',
+            'path=a:2,b:_0;path=a:1,b:_0;'\
+            'border=edge:1,type:water,cost:20;border=edge:2,type:water,cost:20',
             ['L7'] =>
             'offboard=revenue:yellow_20|green_40|brown_50|gray_70,hide:1,groups:Mexico;'\
             'path=a:3,b:_0;path=a:2,b:_0;border=edge:4',
