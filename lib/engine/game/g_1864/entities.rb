@@ -370,6 +370,7 @@ module Engine
             max_ownership_percent: 100,
             type: 'minor',
             coordinates: 'D11',
+            city: 0,
             color: '#f3716d',
             reservation_color: '#009a54ff',
           },
