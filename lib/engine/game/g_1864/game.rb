@@ -43,13 +43,16 @@ module Engine
         TUNNEL_HEXES = %w[G18 F11].freeze
         # The town, its revenue and the brown dashed frame are printed from the
         # start (see map.rb); phase 5 only opens the east-west through-track.
+        # Before phase 5 the map gives each pass two `terminal:1` paths - a train
+        # can reach the town from either side but cannot run through it. Phase 5
+        # relays the same town with ordinary paths, opening the through-route.
         TUNNEL_TILE_CODE = {
           'G18' =>
-            'town=revenue:brown_30|gray_40;path=a:1,b:_0;path=a:4,b:_0;'\
-            'frame=color:#BEBEBE,color2:#8B4513',
+            'town=revenue:brown_30|gray_40,style:dot,loc:center;'\
+            'path=a:1,b:_0;path=a:4,b:_0',
           'F11' =>
-            'town=revenue:brown_50|gray_60;path=a:1,b:_0;path=a:4,b:_0;'\
-            'frame=color:#BEBEBE,color2:#8B4513',
+            'town=revenue:brown_50|gray_60,style:dot,loc:center;'\
+            'path=a:1,b:_0;path=a:4,b:_0',
         }.freeze
 
         STATUS_TEXT = Base::STATUS_TEXT.merge(
@@ -278,11 +281,26 @@ module Engine
           deal_ability_cards!
           grant_additional_station_tokens!
           place_up_home_token!
+          setup_up_tile_reservations!
 
           # Deal one consist card per phase, each from that phase's deck.
           decks = UnionPacific::CONSIST_DECKS.values
           @up_consist = UnionPacific::PHASES_WITH_CONSISTS.to_h do |phase|
             [phase, decks[rand % decks.size][phase]]
+          end
+        end
+
+        # Reserve UP slots on future tiles so the reservation is visible before
+        # the tile is placed: X4 (green Cheyenne upgrade) second slot, and
+        # 639/642 (gray upgrades) third slot.
+        UP_TILE_RESERVATIONS = { 'X4' => 1, '639' => 3, '641' => 2 }.freeze
+
+        def setup_up_tile_reservations!
+          UP_TILE_RESERVATIONS.each do |tile_name, slot|
+            [@tiles, @all_tiles].each do |tile_set|
+              tile = tile_set.find { |t| t.name == tile_name }
+              tile.add_reservation!(@union_pacific, 0, slot)
+            end
           end
         end
 

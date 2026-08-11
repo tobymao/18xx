@@ -1,175 +1,77 @@
 # frozen_string_literal: true
 
+require_relative '../g_1861/map'
+
 module Engine
   module Game
     module G1864
       module Map
         # The rulebook directs using 1861's track tile manifest.
-        TILES = {
-          '3' => 2,
-          '4' => 4,
-          '5' => 2,
-          '6' => 2,
-          '7' => 'unlimited',
-          '8' => 'unlimited',
-          '9' => 'unlimited',
-          '14' => 2,
-          '15' => 2,
-          '16' => 2,
-          '17' => 2,
-          '18' => 2,
-          '19' => 2,
-          '20' => 2,
-          '21' => 2,
-          '22' => 2,
-          '23' => 5,
-          '24' => 5,
-          '25' => 4,
-          '26' => 2,
-          '27' => 2,
-          '28' => 2,
-          '29' => 2,
-          '30' => 2,
-          '31' => 2,
-          '39' => 2,
-          '40' => 2,
-          '41' => 2,
-          '42' => 2,
-          '43' => 2,
-          '44' => 2,
-          '45' => 2,
-          '46' => 2,
-          '47' => 2,
-          '57' => 2,
-          '58' => 4,
-          '63' => 3,
-          '87' => 2,
-          '88' => 2,
-          '201' => 3,
-          '202' => 3,
-          '204' => 2,
-          '207' => 5,
-          '208' => 2,
-          '611' => 3,
-          '619' => 2,
-          '621' => 2,
-          '622' => 2,
-          '623' => 3,
-          '624' => 1,
-          '625' => 1,
-          '626' => 1,
-          '635' =>
-          {
-            'count' => 1,
-            'color' => 'green',
-            'code' => 'city=revenue:40,loc:0.5;city=revenue:40,loc:2.5;city=revenue:40,loc:4.5;'\
-                      'path=a:4,b:_0;path=a:_0,b:3;path=a:0,b:_2;path=a:_2,b:5;path=a:2,b:_1;'\
-                      'path=a:_1,b:1;label=K;upgrade=cost:40,terrain:water',
-          },
-          '636' =>
-          {
-            'count' => 1,
-            'color' => 'brown',
-            'code' => 'city=revenue:50,slots:3;path=a:4,b:_0;path=a:3,b:_0;path=a:2,b:_0;'\
-                      'path=a:1,b:_0;path=a:0,b:_0;path=a:5,b:_0;label=K',
-          },
-          '637' =>
-          {
-            'count' => 1,
-            'color' => 'green',
-            'code' => 'city=revenue:50,loc:0.5;city=revenue:50,loc:2.5;city=revenue:50,loc:4.5;'\
-                      'path=a:4,b:_0;path=a:_0,b:3;path=a:0,b:_2;path=a:_2,b:5;'\
-                      'path=a:2,b:_1;path=a:_1,b:1;label=M',
-          },
-          '638' =>
-          {
-            'count' => 1,
-            'color' => 'brown',
-            'code' => 'city=revenue:70,slots:3;path=a:4,b:_0;path=a:3,b:_0;path=a:2,b:_0;'\
-                      'path=a:1,b:_0;path=a:0,b:_0;path=a:5,b:_0;label=M',
-          },
-          '639' =>
-          {
-            'count' => 1,
-            'color' => 'gray',
-            'code' => 'city=revenue:100,slots:4;path=a:4,b:_0;path=a:3,b:_0;path=a:2,b:_0;'\
-                      'path=a:1,b:_0;path=a:0,b:_0;path=a:5,b:_0;label=M',
-          },
-          '640' =>
-          {
-            'count' => 1,
-            'color' => 'gray',
-            'code' => 'city=revenue:60,slots:3;path=a:4,b:_0;path=a:3,b:_0;path=a:2,b:_0;'\
-                      'path=a:1,b:_0;path=a:0,b:_0;path=a:5,b:_0;label=Kh',
-          },
-          '641' =>
-          {
-            'count' => 1,
-            'color' => 'brown',
-            'code' => 'city=revenue:50,slots:3;path=a:4,b:_0;path=a:3,b:_0;path=a:5,b:_0;label=S',
-          },
-          '642' =>
-          {
-            'count' => 1,
-            'color' => 'gray',
-            'code' => 'city=revenue:70,slots:3;path=a:4,b:_0;path=a:3,b:_0;path=a:5,b:_0;label=S',
-          },
-          '801' => 2,
-          '911' => 3,
-
-          # Game-specific tiles from cards/StdEd-SheetG-1.pdf (bottom-left of the sheet).
-          # Cheyenne ("C" label) set: the map hex starts blank, upgraded with these.
-          'X1' =>
-          {
-            'count' => 2,
-            'color' => 'yellow',
-            'code' => 'city=revenue:30;path=a:4,b:_0;path=a:1,b:_0;label=C',
-          },
-          'X2' =>
-          {
-            'count' => 1,
-            'color' => 'green',
-            'code' => 'city=revenue:50,slots:2;path=a:4,b:_0;path=a:2,b:_0;path=a:0,b:_0;label=C',
-          },
-          # Omaha ("O" label) set: the yellow tile is pre-printed directly on hex F27;
-          # these are its green/brown upgrades (Task 4's NATIONAL_RESERVATIONS handles
-          # the UP-reserved slot and minor N's home).
-          'X3' =>
-          {
-            'count' => 1,
-            'color' => 'green',
-            'code' => 'city=revenue:30;path=a:4,b:_0;path=a:3,b:_0;path=a:2,b:_0;'\
-                      'path=a:1,b:_0;path=a:0,b:_0;path=a:5,b:_0;label=O',
-          },
-          'X4' =>
-          {
-            'count' => 1,
-            'color' => 'brown',
-            'code' => 'city=revenue:40,slots:2;path=a:4,b:_0;path=a:2,b:_0;path=a:0,b:_0;label=O',
-          },
-          # Bailey Yard ("BY" label) set: the map hex starts blank, upgraded with these
-          # three - the striped yellow/green tile is its first tile.
-          'X5' =>
+        TILES = G1861::Map::TILES.merge({
+                                          'X1' =>
+                                          {
+                                            'count' => 1,
+                                            'color' => 'yellow',
+                                            'code' => 'city=revenue:30;path=a:1,b:_0;path=a:4,b:_0;label=C',
+                                          },
+                                          'X2' =>
           {
             'count' => 1,
             'color' => 'yellow',
-            'code' => 'city=revenue:20;path=a:4,b:_0;path=a:1,b:_0;label=BY',
+            'code' => 'city=revenue:30;path=a:1,b:_0;path=a:5,b:_0;label=C',
           },
-          'X6' =>
+                                          'X3' =>
+          {
+            'count' => 1,
+            'color' => 'yellow',
+            'code' => 'city=revenue:30;path=a:0,b:_0;path=a:1,b:_0;label=C',
+          },
+                                          'X4' =>
+          {
+            'count' => 1,
+            'color' => 'green',
+            'code' => 'city=revenue:40,slots:3;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=C',
+          },
+                                          'X5' =>
           {
             'count' => 1,
             'color' => 'brown',
-            'code' => 'city=revenue:50,slots:2;path=a:4,b:_0;path=a:3,b:_0;path=a:2,b:_0;'\
-                      'path=a:1,b:_0;path=a:0,b:_0;path=a:5,b:_0;label=BY',
+            'code' => 'city=revenue:50,slots:3;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=C',
           },
-          'X7' =>
+                                          'X6' =>
+          {
+            'count' => 1,
+            'color' => 'yellow',
+            'code' => 'town=revenue:20;path=a:1,b:_0;path=a:4,b:_0;stripes=color:green;label=BY',
+          },
+                                          'X7' =>
+          {
+            'count' => 1,
+            'color' => 'brown',
+            'code' => 'town=revenue:50;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=BY',
+          },
+                                          'X8' =>
           {
             'count' => 1,
             'color' => 'gray',
-            'code' => 'city=revenue:70,slots:3;path=a:4,b:_0;path=a:3,b:_0;path=a:2,b:_0;'\
-                      'path=a:1,b:_0;path=a:0,b:_0;path=a:5,b:_0;label=BY',
+            'code' => 'town=revenue:70;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;'\
+                      'path=a:5,b:_0;label=BY',
           },
-        }.freeze
+                                          'X9' =>
+          {
+            'count' => 1,
+            'color' => 'green',
+            'code' => 'city=revenue:30,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;'\
+                      'path=a:4,b:_0;path=a:0,b:_0;path=a:5,b:_0;label=O',
+          },
+                                          'X10' =>
+          {
+            'count' => 1,
+            'color' => 'brown',
+            'code' => 'city=revenue:40,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;'\
+                      'path=a:4,b:_0;path=a:0,b:_0;path=a:5,b:_0;label=O',
+          },
+                                        }).freeze
 
         LOCATION_NAMES = {
           # The 10 cities Task 11's route bonuses match on - spelled exactly as printed.
@@ -247,12 +149,13 @@ module Engine
             ['J27'] => 'border=edge:5,type:water,cost:20',
             ['F19'] => 'city=revenue:0;label=C',
             # The printed arrow entrances come in from the west and the east.
-            ['F23'] => 'town=revenue:0;path=a:1,b:_0;path=a:4,b:_0;label=BY',
+            ['F23'] => 'town=revenue:0,style:dot,loc:center;'\
+                       'path=a:1,b:_0,terminal:1;path=a:4,b:_0,terminal:1;label=BY',
             ['G28'] => 'upgrade=cost:40,terrain:water',
           },
           yellow: {
             ['B5'] =>
-            'city=revenue:30;path=a:4,b:_0;path=a:5,b:_0;stub=edge:1;'\
+            'city=revenue:30;path=a:4,b:_0;path=a:5,b:_0;'\
             'label=Y;upgrade=cost:20,terrain:water',
             ['B11'] =>
             'city=revenue:20;path=a:1,b:_0;path=a:4,b:_0;'\
@@ -266,7 +169,7 @@ module Engine
             'city=revenue:20,slots:2;path=a:1,b:_0;path=a:3,b:_0;'\
             'label=O;upgrade=cost:40,terrain:water',
             ['G2'] =>
-            'city=revenue:30;path=a:2,b:_0;path=a:3,b:_0;stub=edge:1;'\
+            'city=revenue:30;path=a:2,b:_0;path=a:3,b:_0;'\
             'label=Y;future_label=label:Kh,color:gray',
             # Three cities: MNN (city 0) faces west, KR (city 1) north-east, and the
             # third, unreserved slot (city 2) south-east.
@@ -278,8 +181,8 @@ module Engine
             ['G20'] =>
             'city=revenue:30;city=revenue:30;city=revenue:30;path=a:4,b:_0;path=a:2,b:_1;'\
             'path=a:0,b:_2;label=M',
-            ['J5'] => 'city=revenue:30;path=a:0,b:_0;path=a:4,b:_0;stub=edge:1;label=Y',
-            ['K12'] => 'city=revenue:30;path=a:1,b:_0;path=a:3,b:_0;label=Y',
+            ['J5'] => 'city=revenue:30;path=a:0,b:_0;path=a:4,b:_0;label=Y',
+            ['K12'] => 'city=revenue:30;path=a:1,b:_0;path=a:2,b:_0;label=Y',
           },
           green: {
             # Two cities: city 0 carries minor Y's home (edges 0-1), city 1 is the
@@ -295,9 +198,11 @@ module Engine
             # brown dashed frame as the indicator (the solid ring matches the grey
             # hex fill, leaving just the dashes visible).
             ['F11'] =>
-            'town=revenue:brown_50|gray_60;frame=color:#BEBEBE,color2:#8B4513',
+            'town=revenue:brown_50|gray_60,style:dot,loc:center;'\
+            'path=a:1,b:_0,terminal:1;path=a:4,b:_0,terminal:1',
             ['G18'] =>
-            'town=revenue:brown_30|gray_40;frame=color:#BEBEBE,color2:#8B4513',
+            'town=revenue:brown_30|gray_40,style:dot,loc:center;'\
+            'path=a:1,b:_0,terminal:1;path=a:4,b:_0,terminal:1',
             ['C10'] => 'icon=image:mountain',
             ['C12'] => 'icon=image:mountain;path=a:2,b:3',
             ['D13'] =>
@@ -311,15 +216,18 @@ module Engine
             'path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0;'\
             'icon=image:mountain;icon=image:mountain',
             ['I8'] =>
-            'town=revenue:yellow_10|green_20|brown_30|gray_40;path=a:0,b:_0;path=a:3,b:_0;path=a:4,b:_0',
+            'town=revenue:yellow_10|green_20|brown_30|gray_40;path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0',
           },
           red: {
             # The Canada band. A6-A12 face B7/B9/B11, whose printed $20 mountain
             # cost sits on the shared edges; borders are declared on BOTH hexes so
             # each draws its own half of the cost marker and neither can cover the
             # other (the marker is centred on the edge). Same convention as 1807.
-            %w[A14 A16 A18] =>
-            'offboard=revenue:yellow_20|green_30|brown_50|gray_60,hide:1,groups:Canada;'\
+            ['A14'] =>
+            'offboard=revenue:yellow_20|green_30|brown_50|gray_60,hide:1,groups:Canada'\
+            'path=a:0,b:_0;path=a:5,b:_0;border=edge:4;border=edge:1;label=N',
+            %w[A16 A18] =>
+            'offboard=revenue:yellow_20|green_30|brown_50|gray_60,hide:1,groups:Canada'\
             'path=a:0,b:_0;path=a:5,b:_0;border=edge:4;border=edge:1',
             ['A6'] =>
             'offboard=revenue:yellow_20|green_30|brown_50|gray_60,hide:1,groups:Canada;'\
@@ -348,20 +256,23 @@ module Engine
             ['K28'] =>
             'offboard=revenue:yellow_20|green_40|brown_50|gray_70,groups:NewOrleans;'\
             'path=a:2,b:_0;path=a:1,b:_0;'\
-            'border=edge:1,type:water,cost:20;border=edge:2,type:water,cost:20',
+            'border=edge:1,type:water,cost:20;border=edge:2,type:water,cost:20;label=S',
             ['L7'] =>
             'offboard=revenue:yellow_20|green_40|brown_50|gray_70,hide:1,groups:Mexico;'\
             'path=a:3,b:_0;path=a:2,b:_0;border=edge:4',
-            %w[L9 L11 L15] =>
+            %w[L9 L11] =>
             'offboard=revenue:yellow_20|green_40|brown_50|gray_70,hide:1,groups:Mexico;'\
             'path=a:3,b:_0;path=a:2,b:_0;border=edge:4;border=edge:1',
+            ['L15'] =>
+            'offboard=revenue:yellow_20|green_40|brown_50|gray_70,hide:1,groups:Mexico;'\
+            'path=a:3,b:_0;path=a:2,b:_0;border=edge:4;border=edge:1;label=S',
             ['L17'] =>
             'offboard=revenue:yellow_20|green_40|brown_50|gray_70,hide:1,groups:Mexico;'\
             'path=a:3,b:_0;path=a:2,b:_0;border=edge:4;border=edge:1;'\
             'border=edge:3,type:water,cost:20',
             ['L13'] =>
             'offboard=revenue:yellow_20|green_40|brown_50|gray_70,groups:Mexico;'\
-            'path=a:3,b:_0;path=a:2,b:_0;border=edge:4;border=edge:1;label=S',
+            'path=a:3,b:_0;path=a:2,b:_0;border=edge:4;border=edge:1',
             ['L19'] =>
             'offboard=revenue:yellow_20|green_40|brown_50|gray_70,hide:1,groups:Mexico;'\
             'path=a:3,b:_0;path=a:2,b:_0;border=edge:1;'\
@@ -369,7 +280,13 @@ module Engine
           },
           blue: {
             ['A4'] => 'offboard=revenue:yellow_0|green_40|brown_50|gray_70,groups:Japan;path=a:5,b:_0;border=edge:4',
+            %w[B3 G0] => 'junction;path=a:4,b:_0,terminal:1',
+            ['E2'] => 'junction;path=a:5,b:_0,terminal:1',
             ['F1'] => 'offboard=revenue:yellow_20|green_40|brown_50|gray_70,groups:China;path=a:5,b:_0',
+            ['H1'] => 'path=a:3,b:4',
+
+            ['J3'] => 'junction;path=a:4,b:_0,terminal:1',
+
             ['K4'] =>
             'offboard=revenue:yellow_20|green_40|brown_50|gray_70,groups:Australia;path=a:4,b:_0;path=a:3,b:_0',
           },

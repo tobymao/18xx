@@ -9,7 +9,7 @@ module Engine
         include Game::Meta
 
         DEV_STAGE = :prealpha
-        DEPENDS_ON = '1867'
+        DEPENDS_ON = '1861'
 
         GAME_SUBTITLE = 'Railroading in the Western United States'
         GAME_DESIGNER = 'TraXX'
