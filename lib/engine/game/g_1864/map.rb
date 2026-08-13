@@ -70,7 +70,23 @@ module Engine
             'code' => 'city=revenue:40,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;'\
                       'path=a:4,b:_0;path=a:0,b:_0;path=a:5,b:_0;label=O',
           },
+                                          'X11' =>
+          {
+            'count' => 1,
+            'color' => 'gray',
+            'hidden' => 1,
+            'code' => 'town=revenue:brown_50|gray_60,style:dot,loc:center;path=a:1,b:_0;path=a:4,b:_0',
+          },
+                                          'X12' =>
+          {
+            'count' => 1,
+            'color' => 'gray',
+            'hidden' => 1,
+            'code' => 'town=revenue:brown_30|gray_40,style:dot,loc:center;path=a:1,b:_0;path=a:4,b:_0',
+          },
                                         }).freeze
+
+        TUNNEL_TILES = { 'F11' => 'X11', 'G18' => 'X12' }.freeze
 
         LOCATION_NAMES = {
           'B27' => 'Great Lakes',

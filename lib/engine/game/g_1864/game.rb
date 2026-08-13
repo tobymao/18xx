@@ -34,16 +34,6 @@ module Engine
         CHEYENNE_HEX = 'F19'
         NATIONAL_RESERVATIONS = [OMAHA_HEX, CHEYENNE_HEX].freeze
 
-        TUNNEL_HEXES = %w[G18 F11].freeze
-        TUNNEL_TILE_CODE = {
-          'G18' =>
-            'town=revenue:brown_30|gray_40,style:dot,loc:center;'\
-            'path=a:1,b:_0;path=a:4,b:_0',
-          'F11' =>
-            'town=revenue:brown_50|gray_60,style:dot,loc:center;'\
-            'path=a:1,b:_0;path=a:4,b:_0',
-        }.freeze
-
         UP_OPERATES_PHASE = 4
 
         STATUS_TEXT = Base::STATUS_TEXT.merge(
@@ -138,7 +128,7 @@ module Engine
         end
 
         def place_tunnel_phase_icons!
-          TUNNEL_HEXES.each do |hex_id|
+          TUNNEL_TILES.each_key do |hex_id|
             hex_by_id(hex_id).tile.icons << Engine::Part::Icon.new('1864/phase_5_plus', 'phase_5_plus', true, nil, true,
                                                                    large: true)
           end
@@ -383,9 +373,12 @@ module Engine
 
         def event_open_tunnels!
           @log << '-- Event: the Moffat Tunnel and Lucin Cutoff are now open --'
-          self.class::TUNNEL_HEXES.each do |hex_id|
-            hex = hex_by_id(hex_id)
-            hex.lay(Engine::Tile.from_code(hex_id, hex.tile.color, self.class::TUNNEL_TILE_CODE[hex_id]))
+          self.class::TUNNEL_TILES.each do |hex_id, tile_name|
+            tile = @tiles.find { |t| t.name == tile_name }
+            next unless tile
+
+            @tiles.delete(tile)
+            hex_by_id(hex_id).lay(tile)
           end
           @graph.clear_graph_for_all
         end
