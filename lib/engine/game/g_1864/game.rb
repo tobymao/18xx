@@ -30,22 +30,11 @@ module Engine
         CERT_LIMIT = { 2 => 31, 3 => 21, 4 => 16, 5 => 13, 6 => 11 }.freeze
         STARTING_CASH = { 2 => 530, 3 => 353, 4 => 265, 5 => 212, 6 => 176 }.freeze
 
-        # UP reserves a slot in Omaha from setup and in Cheyenne on the green upgrade.
         OMAHA_HEX = 'F27'
         CHEYENNE_HEX = 'F19'
         NATIONAL_RESERVATIONS = [OMAHA_HEX, CHEYENNE_HEX].freeze
 
-        # The Moffat Tunnel (G18) and Lucin Cutoff (F11) are grey hexes whose
-        # through-paths do not exist until the Phase 5 `open_tunnels` event -
-        # see `event_open_tunnels!` below. Track may be laid against their
-        # east/west ends beforehand, but Task 2 deliberately left the base
-        # `map.rb` hex definitions blank so no through-route exists too early.
         TUNNEL_HEXES = %w[G18 F11].freeze
-        # The town, its revenue and the brown dashed frame are printed from the
-        # start (see map.rb); phase 5 only opens the east-west through-track.
-        # Before phase 5 the map gives each pass two `terminal:1` paths - a train
-        # can reach the town from either side but cannot run through it. Phase 5
-        # relays the same town with ordinary paths, opening the through-route.
         TUNNEL_TILE_CODE = {
           'G18' =>
             'town=revenue:brown_30|gray_40,style:dot,loc:center;'\
@@ -248,14 +237,8 @@ module Engine
           @credit_mobilier = CreditMobilier.new
           @pending_up_share_buyers = []
           @up_ipo_open = false
-          # Local Contract: corporation => hex id of the station carrying the
-          # +$10 marker.
           @local_contracts = {}
           @pullman_bonus_used = false
-          # Extra station tokens granted by Union Station / Central Station
-          # (see `grant_additional_station_tokens!`), tracked so phase 6 can
-          # remove them explicitly - `Company#close!` revokes the ability but
-          # never touches a `Token` already pushed onto the corporation.
           @additional_station_tokens = []
 
           @union_pacific = @national = @corporations.find { |c| c.type == :national }
@@ -268,10 +251,6 @@ module Engine
             corporation.type == :minor && !self.class::GREEN_CORPORATIONS.include?(corporation.id)
           end
 
-          # 1864 states its own ownership rule without a player-count
-          # qualifier, so it supersedes 1861/1867's 70% two-player cap rather
-          # than filling a gap. Majors are uncapped until phase 6, at every
-          # player count; the Union Pacific is always capped at 60%.
           (@corporations + @future_corporations).each do |corporation|
             corporation.max_ownership_percent = 100 if corporation.type == :major
           end
@@ -282,17 +261,14 @@ module Engine
           grant_additional_station_tokens!
           place_up_home_token!
           setup_up_tile_reservations!
+          place_tunnel_phase_icons!
 
-          # Deal one consist card per phase, each from that phase's deck.
           decks = UnionPacific::CONSIST_DECKS.values
           @up_consist = UnionPacific::PHASES_WITH_CONSISTS.to_h do |phase|
             [phase, decks[rand % decks.size][phase]]
           end
         end
 
-        # Reserve UP slots on future tiles so the reservation is visible before
-        # the tile is placed: X4 (green Cheyenne upgrade) second slot, and
-        # 639/642 (gray upgrades) third slot.
         UP_TILE_RESERVATIONS = { 'X4' => 1, '639' => 3, '641' => 2 }.freeze
 
         def setup_up_tile_reservations!
@@ -304,11 +280,19 @@ module Engine
           end
         end
 
-        # Early Adopter is set aside, the other fifteen shuffled, then Early
-        # Adopter is placed within the top ten so it reaches one of the ten
-        # minors available from the start rather than a green minor that
-        # might never be started - a free-ish 2-train is useless on a minor
-        # that never floats.
+        def place_tunnel_phase_icons!
+          TUNNEL_HEXES.each do |hex_id|
+            hex_by_id(hex_id).tile.icons << Engine::Part::Icon.new('1864/phase_5_plus', 'phase_5_plus', true, nil, true,
+                                                                   large: true)
+          end
+        end
+
+        def decorate_marker(icon)
+          return { shape: :none } if icon.name == 'phase_5_plus'
+
+          super
+        end
+
         def deal_ability_cards!
           early = @companies.find { |c| c.sym == 'EA1' }
           rest = @companies.reject { |c| c.sym == 'EA1' }.sort_by { rand }
@@ -322,19 +306,6 @@ module Engine
           end
         end
 
-        # `additional_token` (see `Engine::Ability::AdditionalToken`) is an inert
-        # marker in this engine: nothing in `Operator#init_operator` or
-        # `Step::Tokener` ever mutates `@tokens`, which is built once at
-        # construction from `opts[:tokens]`. 1817 and 18Hiawatha are the only
-        # other titles that grant a token from an ability, and both do it by
-        # explicitly pushing a real `Token` when the ability fires
-        # (`corporation.tokens << Engine::Token.new(corporation)`). Union
-        # Station and Central Station are dealt, not bought, so there is no
-        # player action to hang this on - grant the token here, once, at
-        # setup, priced at the $10-per-hexagon rate the card promises.
-        # The rules place a Union Pacific station in Omaha before play begins.
-        # Omaha's second city slot is the reserved one; Cheyenne's reservation is
-        # filled later, when that hex is upgraded to green, so it stays on the list.
         def place_up_home_token!
           hex = hex_by_id(OMAHA_HEX)
           return unless hex
@@ -357,21 +328,11 @@ module Engine
           end
         end
 
-        # Phase 6 removes Union Station and Central Station along with every
-        # other ability card (`event_remove_minor_abilities!`); the rulebook
-        # is explicit that the station marker itself comes off the map too.
-        # `Token#destroy!` removes the token from its city/hex (if placed)
-        # and from `corporation.tokens` in one call.
         def remove_additional_station_tokens!
           @additional_station_tokens.each(&:destroy!)
           @additional_station_tokens.clear
         end
 
-        # The base rate consumed by `hex_distance_from_token` in
-        # `G1867::Step::Token#adjust_token_price_ability!`: the final price is
-        # this multiplied by the hex distance from the corporation's nearest
-        # placed token, exactly as 1867 prices its normal tokens off the
-        # `tokens:` tiers in `Entities::CORPORATIONS` - only the rate differs.
         def extra_token_price(corporation)
           corporation.companies.any? { |c| ['Union Station', 'Central Station'].include?(c.name) } ? 10 : 0
         end
@@ -386,11 +347,6 @@ module Engine
             corporation.companies.any? { |c| c.name == 'Pullman Car' }
         end
 
-        # Two trains of the same corporation may not normally reuse the same
-        # piece of track (`Route#check_overlap!` -> here). Double Tracks lifts
-        # that restriction for its holder. Minors never run more than two
-        # trains at once (`PHASES`' `train_limit`), so waiving the check
-        # entirely for a holder is equivalent to "two trains may share track".
         def check_overlap(routes)
           return if double_tracks?(routes.first&.corporation)
 
@@ -401,13 +357,6 @@ module Engine
           @pullman_bonus_used = false
         end
 
-        # Pullman Car: one train may treat up to two additional towns as real
-        # (revenue-earning) stops without them counting against the train's
-        # distance. `G1867::Game#compute_stops` already gives us the stops a
-        # plain train would earn; here, for a Pullman Car holder that hasn't
-        # used its bonus yet this route-running action (see
-        # `Step::Route#process_run_routes`), add up to two visited-but-unused
-        # towns on top of that base result.
         def compute_stops(route)
           stops = super
           return stops if stops.empty? || @pullman_bonus_used || !pullman_car?(route.corporation)
@@ -419,20 +368,12 @@ module Engine
           stops + extra_towns
         end
 
-        # Local Contract: a +$10 marker placed on one city where the holding
-        # corporation has a station (`Step::Assign` handles the placement
-        # action). Hooked into `revenue_for` here so the ability is testable
-        # now; Task 11 should NOT add a second call to this from its own
-        # route-bonus work in `revenue_for`.
         def local_contract_bonus(corporation, stop)
           return 0 unless @local_contracts[corporation] == stop.hex.id
 
           10
         end
 
-        # The four $80 city-pair bonuses (any route touching both cities in a
-        # pair earns the bonus; a route touching cities from two different
-        # pairs earns both).
         BONUS_PAIRS = [
           ['Great Lakes', 'Seattle'],
           ['New Orleans', 'Los Angeles'],
@@ -441,36 +382,17 @@ module Engine
         ].freeze
         PAIR_BONUS = 80
 
-        # The $120 Forty-Niner Route bonus: a single route through all five
-        # named cities.
         FORTY_NINER_ROUTE = ['Chicago', 'Omaha', 'Cheyenne', 'Salt Lake', 'San Francisco'].freeze
         FORTY_NINER_BONUS = 120
 
-        # The $80 bonus for a route reaching both a north ("N") marker hex and
-        # a south ("S") marker hex. A16 (Canada) and B27 (Great Lakes) carry
-        # the printed "N"; L11 (Mexico) and K28 (New Orleans) carry the
-        # printed "S" - confirmed exhaustive by Task 2's read of all 148 hexes.
         NORTH_HEXES = %w[A16 B27].freeze
         SOUTH_HEXES = %w[L11 K28].freeze
         NORTH_SOUTH_BONUS = 80
 
-        # The rulebook is explicit that none of 1864's route bonuses are ever
-        # multiplied by the 2+2 or 5+5E trains' multiplier, unlike 1867's own
-        # capitals-and-Timmins bonus (`BONUS_CAPITALS`/`BONUS_REVENUE`, still
-        # inherited from `G1867::Game` but never consulted below - see
-        # `revenue_for`). This helper documents that rule for anything that
-        # cares to ask; `revenue_for` itself simply never multiplies.
         def bonus_multiplier
           1
         end
 
-        # Fully replaces `G1867::Game#revenue_for` rather than calling `super`
-        # into it: 1867's version adds `hex_bonus` ability revenue (1864 has
-        # no abilities of that kind - Local Contract is handled below via
-        # `local_contract_bonus`) and a capitals+Timmins bonus that it
-        # multiplies by the train multiplier (1864 has no such bonus, and
-        # none of its own bonuses are ever multiplied). The first line below
-        # reproduces `Base#revenue_for` in full; everything after it is 1864.
         def revenue_for(route, stops)
           revenue = stops.sum { |stop| stop.route_revenue(route.phase, route.train) }
 
@@ -491,14 +413,10 @@ module Engine
           @local_contracts.key?(company.owner)
         end
 
-        # The stations eligible to receive Local Contract's marker: every hex
-        # where the holding corporation currently has a placed (used) token.
         def local_contract_hexes(company)
           corporation = company.owner
           return [] unless corporation.respond_to?(:tokens)
 
-          # Matches `G1867::Step::Token#adjust_token_price_ability!`'s
-          # `token.city.tile.hex`, rather than `token.hex` directly.
           corporation.tokens.select(&:used).map { |token| token.city.tile.hex }.compact.uniq
         end
 
@@ -549,17 +467,12 @@ module Engine
           self.class::COLUMN_MARKET
         end
 
-        # 1864 has no private companies, so there is no initial auction.
-        # `new_stock_round` can't be used directly: it builds its log line via
-        # `round_description`, which defaults to `@round.round_num`, and `@round`
-        # is not yet set the first time `init_round` runs.
         def init_round
           @log << "-- #{round_description('Stock', 1)} --"
           @round_counter += 1
           stock_round
         end
 
-        # 1867 gives the exported train to the CN. 1864 removes it from the game.
         def or_round_finished
           return unless @phase.status.include?('export_train')
 
@@ -586,9 +499,6 @@ module Engine
           @log << "#{@union_pacific.name} reveals its Phase #{phase_name} consist: #{names.join(', ')}"
         end
 
-        # Because `event_up_operates!` fires when the 4-train is bought — mid
-        # Operating Round — the UP does not begin operating until the *next*
-        # OR, per the rulebook's timing.
         def event_up_operates!
           @up_pending = true
         end
@@ -639,11 +549,6 @@ module Engine
           @log << 'Union Pacific shares may now be purchased from the IPO'
         end
 
-        # 1864 states its own ownership rule without a player-count
-        # qualifier, so it supersedes 1861/1867's 70% two-player cap rather
-        # than filling a gap. Uncapped until phase 6, then 60% at every
-        # player count. The Union Pacific is untouched - already, and always,
-        # 60%.
         def event_enforce_ownership_limit!
           @log << 'Players may no longer purchase shares beyond 60% of a company'
           (@corporations + @future_corporations).each do |corporation|
@@ -654,20 +559,12 @@ module Engine
           @ownership_limited = true
         end
 
-        # 1867's `reset_corporation` raises a restarted major to 70% at two
-        # players. 1864 caps at 60% regardless of player count (and only from
-        # phase 6), so correct the value after `super` rather than reaching
-        # past 1867's implementation.
         def reset_corporation(corporation)
           corp = super
           corp.max_ownership_percent = @ownership_limited ? 60 : 100
           corp
         end
 
-        # 1864 gives its own cash and certificate limits and its own
-        # ownership rule (majors start uncapped at every player count, see
-        # `setup`); only 1861's two-player train removal is inherited. 1867's
-        # private-company removal does not apply - 1864 has no privates.
         def setup_for_2_players
           self.class::TRAINS_REMOVE_2_PLAYER.each do |train_name, count|
             trains = depot.upcoming.select { |t| t.name == train_name }.reverse.take(count)
@@ -675,15 +572,6 @@ module Engine
           end
         end
 
-        # Shares of the Union Pacific reach players by four routes: (1) a
-        # regionalized minor's owner may buy one 10% share, (2) a regionalized
-        # major's shareholders may each buy one share per 10% they held,
-        # starting with the President and proceeding clockwise, (3) the Open
-        # Market during a Stock Round, and (4) the IPO during a Stock Round,
-        # but only from phase 6 on. `nationalize!` (1861/1867) cannot itself
-        # run an interactive purchase - it's called mid-step from four
-        # different places - so it enqueues eligible buyers here, and
-        # `G1864::Step::UPShares` drains the queue.
         def queue_up_share_purchase(corporation)
           case corporation.type
           when :minor
@@ -753,15 +641,10 @@ module Engine
           super
         end
 
-        # 1861's rule: one space left per loan, not 1867's two.
         def nationalization_loan_movement(corporation)
           corporation.loans.each { stock_market.move_left(corporation) }
         end
 
-        # 1864 explicitly removes ability cards from the game on
-        # regionalization, overriding 1861's transfer-to-the-national rule. The
-        # same treatment is applied to trains and cash: the UP runs only what
-        # its consist card shows, so transferred trains would be unusable.
         def nationalization_transfer_assets(corporation)
           corporation.companies.dup.each do |company|
             @log << "#{company.name} is removed from the game"
@@ -777,9 +660,6 @@ module Engine
           corporation.spend(corporation.cash, @bank, check_positive: false) if corporation.cash.positive?
         end
 
-        # 1867's `nationalize!` pays out shareholders and cannot itself run an
-        # interactive purchase - see `queue_up_share_purchase` above. Enqueue
-        # the eligible buyers once the payout is complete.
         def nationalize!(corporation)
           return if !corporation.floated? || !@corporations.include?(corporation)
 
@@ -787,8 +667,6 @@ module Engine
           queue_up_share_purchase(corporation)
         end
 
-        # Deregulation (optional rule): during the final three Operating
-        # Rounds there is no train limit - see `deregulated?`.
         def train_limit(entity)
           return 99 if deregulated?
 
@@ -823,7 +701,6 @@ module Engine
             G1864::Step::Assign,
             G1864::Step::Route,
             G1864::Step::Dividend,
-            # The blocking buy company needs to be before loan operations
             [G1867::Step::BuyCompanyPreloan, { blocks: true }],
             G1867::Step::LoanOperations,
             Engine::Step::DiscardTrain,

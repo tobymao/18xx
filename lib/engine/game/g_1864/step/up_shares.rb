@@ -6,9 +6,6 @@ module Engine
   module Game
     module G1864
       module Step
-        # Drains the queue of players entitled to buy Union Pacific shares from
-        # the IPO following a regionalization. Open Market shares are never
-        # available here - only in a Stock Round.
         class UPShares < Engine::Step::Base
           ACTIONS = %w[buy_shares pass].freeze
 
@@ -56,16 +53,6 @@ module Engine
             @game.pending_up_share_buyers.shift
           end
 
-          # The round calls `skip!` on any step that is `active?` but not
-          # `blocking?` (see `Round::Base#skip_steps`). `actions` returns `[]`
-          # - making this step non-blocking - precisely when the IPO is empty,
-          # so `skip!` is only ever reached in that case. Per the rule, "an
-          # empty IPO simply skips the purchase": drain every entry that can't
-          # be filled instead of leaving it queued forever. (The default
-          # `Passer`-based `skip!`/`pass!` can't do this - `active?` here is
-          # driven by the queue, not by `@passed`, so a bare `pass!` would
-          # never suppress it, and `skip_steps` would re-invoke `skip!` after
-          # every subsequent action for the rest of the game.)
           def skip!
             return super unless available_shares.empty?
 

@@ -4,13 +4,6 @@ module Engine
   module Game
     module G1864
       module UnionPacific
-        # Eight consist decks, one card per phase. At setup one card is dealt
-        # from each phase's deck; it is revealed at the start of that phase and
-        # replaces the UP's previous consist.
-        #
-        # Transcribed from cards/StdEd-SheetE-1.pdf and StdEd-SheetF-1.pdf. The
-        # printed cards are drawn as fanned, overlapping images, so a two-train
-        # consist shows one full card plus a partly hidden one behind it.
         CONSIST_DECKS = {
           'E1' => { '4' => %w[4],   '5' => %w[4 5],   '6' => %w[5 6], '7' => %w[6 7], '8' => %w[7 8] },
           'E2' => { '4' => %w[3 3], '5' => %w[3 3 4], '6' => %w[4],   '7' => %w[4 6], '8' => %w[6 8] },

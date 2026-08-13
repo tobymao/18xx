@@ -6,16 +6,6 @@ module Engine
   module Game
     module G1864
       module Step
-        # Local Contract's +$10 marker is a placed choice, not an automatic
-        # setup grant, so it needs a genuine player action. It has no
-        # `assign_hexes` ability in `Entities::COMPANIES` (its target hex
-        # depends on which minor draws the card and where that minor has
-        # placed stations by the time it's used - not something fixed at
-        # setup), so this overrides the base step's ability lookup entirely
-        # rather than relying on one. `ALL_COMPANIES_ASSIGNABLE` (inherited
-        # from 1867) is what makes the frontend offer the assign control for
-        # any company in the first place; this step supplies the actual
-        # server-side gating for Local Contract specifically.
         class Assign < Engine::Step::Assign
           def actions(entity)
             return [] unless local_contract?(entity)

@@ -4,17 +4,6 @@ module Engine
   module Game
     module G1864
       module Entities
-        # 1864 has no private companies. Instead each minor corporation is
-        # dealt one "Minor Company Ability Card" at setup (see
-        # `Game#deal_ability_cards!`); these are modelled as `Company` objects
-        # owned by a corporation and never traded between players.
-        #
-        # Five of the eleven distinct cards are printed twice in the physical
-        # deck, so five pairs of near-identical hash literals appear below.
-        # This duplication is a direct transcription of the 16 printed cards
-        # and matches how every other title in this repo declares
-        # `COMPANIES` (compare `lib/engine/game/g_1861/entities.rb`). Each
-        # duplicate gets a unique `sym` since the pair shares a name.
         COMPANIES = [
           {
             name: 'Corporate Lobbyists',
@@ -150,13 +139,6 @@ module Engine
           },
         ].freeze
 
-        # The rulebook says to use 1861's companies, so the minors and majors come
-        # straight from 1861 - same syms, names, logos and colours. Only their homes
-        # differ, so each minor is re-homed onto the 1864 map here.
-        #
-        # `city:` is set only where a hex has more than one CITY and the slot matters.
-        # Omaha (F27) is deliberately absent: it is a single city with two slots, one
-        # of which the Union Pacific takes at setup, so N needs no index.
         MINOR_HOMES = {
           'RO' => { coordinates: 'C18' },                # Billings
           'KB' => { coordinates: 'B23' },                # Bismarck
@@ -176,8 +158,6 @@ module Engine
           'E' => { coordinates: 'D5' },                  # Eugene
         }.freeze
 
-        # The ten minors available from the start are printed as yellow circles; the
-        # six green minors already carry 1861's green.
         YELLOW_RESERVATION = '#ffe600'
 
         UNION_PACIFIC = {
@@ -200,8 +180,6 @@ module Engine
              home = MINOR_HOMES[corporation[:sym]]
              next corporation unless home
 
-             # Drop 1861's city index first - a stale one would point at a slot that
-             # does not exist on the 1864 hex.
              corporation
                .except(:city)
                .merge(home)

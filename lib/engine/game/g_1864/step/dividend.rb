@@ -8,7 +8,6 @@ module Engine
       module Step
         class Dividend < G1867::Step::Dividend
           def actions(entity)
-            # The UP has no choice; it always pays out in full.
             return [] if entity.corporation? && entity.type == :national
 
             super

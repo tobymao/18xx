@@ -699,8 +699,8 @@ module Engine
       @stops = @paths.flat_map(&:stops).uniq
       @edges = @paths.flat_map(&:edges).uniq
 
-      # allow offboards w/o paths to render
-      @revenue_stops = (@stops + @offboards).uniq
+      # allow offboards w/o paths, and stops connected only by stubs, to render
+      @revenue_stops = (@stops + @offboards + (@stubs.empty? ? [] : @city_towns)).uniq
 
       @edges.each { |e| e.tile = self }
     end

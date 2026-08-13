@@ -6,8 +6,6 @@ require_relative '../../spender'
 module Engine
   module Game
     module G1864
-      # A cash pot that collects tile and terrain costs and pays them out to
-      # the players before each Merger Round. Closes at the start of phase 4.
       class CreditMobilier
         include Entity
         include Spender
