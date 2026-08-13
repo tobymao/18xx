@@ -7,6 +7,11 @@ module Engine
     module G1864
       module Step
         class Track < G1867::Step::Track
+          def lay_tile(action, extra_cost: 0, entity: nil, spender: nil)
+            super
+            @game.place_up_reserved_token!(action.hex.tile)
+          end
+
           def tile_cost_spender(entity)
             entity.type == :national ? @game.bank : entity
           end

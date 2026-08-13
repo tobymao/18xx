@@ -30,10 +30,6 @@ module Engine
         CERT_LIMIT = { 2 => 31, 3 => 21, 4 => 16, 5 => 13, 6 => 11 }.freeze
         STARTING_CASH = { 2 => 530, 3 => 353, 4 => 265, 5 => 212, 6 => 176 }.freeze
 
-        OMAHA_HEX = 'F27'
-        CHEYENNE_HEX = 'F19'
-        NATIONAL_RESERVATIONS = [OMAHA_HEX, CHEYENNE_HEX].freeze
-
         UP_OPERATES_PHASE = 4
 
         STATUS_TEXT = Base::STATUS_TEXT.merge(
@@ -80,7 +76,7 @@ module Engine
         def setup
           @interest = {}
           @show_majors = false
-          @national_reservations = self.class::NATIONAL_RESERVATIONS.dup
+          @national_reservations = []
           @credit_mobilier = CreditMobilier.new
           @pending_up_share_buyers = []
           @up_ipo_open = false
@@ -106,7 +102,7 @@ module Engine
 
           deal_ability_cards!
           grant_additional_station_tokens!
-          place_up_home_token!
+          place_home_token(@union_pacific)
           setup_up_tile_reservations!
           place_tunnel_phase_icons!
 
@@ -141,10 +137,9 @@ module Engine
         end
 
         def deal_ability_cards!
-          early = @companies.find { |c| c.sym == 'EA1' }
-          rest = @companies.reject { |c| c.sym == 'EA1' }.sort_by { rand }
-          deck = rest.dup
-          deck.insert(rand % 10, early)
+          early, rest = @companies.partition { |c| c.name == EARLY_ADOPTER }
+          deck = rest.sort_by { rand }
+          deck.insert(rand % EARLY_ADOPTER_MAX_INDEX, *early)
 
           minors = (@corporations + @future_corporations).select { |c| c.type == :minor }
           minors.zip(deck).each do |minor, company|
@@ -153,14 +148,15 @@ module Engine
           end
         end
 
-        def place_up_home_token!
-          hex = hex_by_id(OMAHA_HEX)
-          return unless hex
+        def place_up_reserved_token!(tile)
+          return if tile.cities.any? { |city| city.tokened_by?(@union_pacific) }
+
+          city = tile.cities.find { |c| c.reserved_by?(@union_pacific) }
+          return unless city
           return unless (token = @union_pacific.next_token)
 
-          @national_reservations.delete(hex.id)
-          hex.tile.cities.last.place_token(@union_pacific, token, check_tokenable: false)
-          @log << "#{@union_pacific.name} places a station in #{location_name(hex.id)}"
+          city.place_token(@union_pacific, token, check_tokenable: false)
+          @log << "#{@union_pacific.name} places a station in #{tile.hex.location_name}"
         end
 
         def grant_additional_station_tokens!

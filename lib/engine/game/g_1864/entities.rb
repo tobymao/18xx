@@ -16,6 +16,7 @@ module Engine
         DOUBLE_TRACKS = 'Double Tracks'.freeze
         PULLMAN_CAR = 'Pullman Car'.freeze
         EXTRA_STATION_CARDS = [UNION_STATION, CENTRAL_STATION].freeze
+        EARLY_ADOPTER_MAX_INDEX = 10
 
         COMPANIES = [
           {
@@ -175,6 +176,7 @@ module Engine
 
         UNION_PACIFIC = {
           sym: 'UP',
+          coordinates: 'F27',
           name: 'Union Pacific Railroad',
           logo: '1864/UP',
           simple_logo: '1864/UP.alt',
