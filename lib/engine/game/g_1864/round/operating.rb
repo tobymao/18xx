@@ -17,7 +17,7 @@ module Engine
             entity = @entities[@entity_index]
             @game.reveal_up_consist!(@game.phase.name) if entity.type == :national
 
-            if entity.respond_to?(:companies) && entity.companies.any? { |c| c.name == 'U.S. Government Subsidy' }
+            if entity.respond_to?(:companies) && entity.companies.any? { |c| c.name == Entities::GOVERNMENT_SUBSIDY }
               @game.bank.spend(20, entity)
               @game.log << "#{entity.name} receives #{@game.format_currency(20)} in U.S. Government Subsidy"
             end

@@ -38,7 +38,7 @@ module Engine
           private
 
           def local_contract?(entity)
-            entity.company? && entity.name == 'Local Contract' && !entity.closed?
+            entity.company? && entity.name == Entities::LOCAL_CONTRACT && !entity.closed?
           end
 
           def local_contract_hexes(company)

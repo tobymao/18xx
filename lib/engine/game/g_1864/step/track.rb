@@ -16,11 +16,11 @@ module Engine
           end
 
           def extra_lay_cost(entity, cost)
-            ability_card?(entity, 'Track Builder') ? 0 : cost
+            ability_card?(entity, Entities::TRACK_BUILDER) ? 0 : cost
           end
 
           def terrain_cost(entity, cost)
-            ability_card?(entity, 'Civil Engineering Firm') ? 0 : cost
+            ability_card?(entity, Entities::CIVIL_ENGINEERING_FIRM) ? 0 : cost
           end
 
           def lay_tile_action(action, entity: nil, spender: nil)

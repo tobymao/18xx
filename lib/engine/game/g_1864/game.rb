@@ -44,174 +44,31 @@ module Engine
             'path=a:1,b:_0;path=a:4,b:_0',
         }.freeze
 
+        UP_OPERATES_PHASE = 4
+
         STATUS_TEXT = Base::STATUS_TEXT.merge(
-          'up_operates' => ['Union Pacific operates',
-                            'The Union Pacific runs the trains on its consist card and pays a full dividend'],
+          'national_operates' => ['Union Pacific operates',
+                                  'The Union Pacific runs the trains on its consist card and pays a full dividend'],
           'export_train' => ['Train Export',
                              'At the end of each OR the next available train is exported and removed from the game'],
         ).freeze
 
-        PHASES = [
-          { name: '2', train_limit: { minor: 2 }, tiles: [:yellow], operating_rounds: 2 },
-          {
-            name: '3',
-            train_limit: { minor: 2, major: 4 },
-            tiles: %i[yellow green],
-            on: '3',
-            operating_rounds: 2,
-          },
-          {
-            name: '4',
-            train_limit: { minor: 1, major: 3, national: 99 },
-            tiles: %i[yellow green],
-            status: %w[export_train up_operates],
-            on: '4',
-            operating_rounds: 2,
-          },
-          {
-            name: '5',
-            train_limit: { minor: 1, major: 3, national: 99 },
-            tiles: %i[yellow green brown],
-            status: %w[export_train up_operates],
-            on: '5',
-            operating_rounds: 2,
-          },
-          {
-            name: '6',
-            train_limit: { minor: 1, major: 2, national: 99 },
-            tiles: %i[yellow green brown],
-            status: %w[export_train up_operates],
-            on: '6',
-            operating_rounds: 2,
-          },
-          {
-            name: '7',
-            train_limit: { minor: 1, major: 2, national: 99 },
-            tiles: %i[yellow green brown gray],
-            status: %w[export_train up_operates],
-            on: '7',
-            operating_rounds: 2,
-          },
-          {
-            name: '8',
-            train_limit: { major: 2, national: 99 },
-            tiles: %i[yellow green brown gray],
-            status: ['up_operates'],
-            on: '8',
-            operating_rounds: 2,
-          },
-        ].freeze
+        PHASES = G1861::Game::PHASES.map do |phase|
+          status = (phase[:status] || []) - ['can_buy_companies']
+          status |= %w[national_operates export_train] if phase[:name].to_i >= UP_OPERATES_PHASE
+          status.empty? ? phase.except(:status) : phase.merge(status: status)
+        end.freeze
 
-        TRAINS = [
-          {
-            name: '2',
-            distance: [{ 'nodes' => %w[city offboard], 'pay' => 2, 'visit' => 2 },
-                       { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
-            price: 100,
-            rusts_on: '4',
-            num: 10,
-          },
-          {
-            name: '3',
-            distance: [{ 'nodes' => %w[city offboard], 'pay' => 3, 'visit' => 3 },
-                       { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
-            price: 225,
-            rusts_on: '6',
-            num: 7,
-            events: [{ 'type' => 'green_minors_available' }],
-          },
-          {
-            name: '4',
-            distance: [{ 'nodes' => %w[city offboard], 'pay' => 4, 'visit' => 4 },
-                       { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
-            price: 350,
-            rusts_on: '8',
-            num: 4,
-            events: [{ 'type' => 'majors_can_ipo' },
-                     { 'type' => 'trainless_nationalization' },
-                     { 'type' => 'up_operates' },
-                     { 'type' => 'close_credit_mobilier' }],
-          },
-          {
-            name: '5',
-            distance: [{ 'nodes' => %w[city offboard], 'pay' => 5, 'visit' => 5 },
-                       { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
-            price: 550,
-            num: 4,
-            events: [{ 'type' => 'minors_cannot_start' },
-                     { 'type' => 'open_tunnels' }],
-          },
-          {
-            name: '6',
-            distance: [{ 'nodes' => %w[city offboard], 'pay' => 6, 'visit' => 6 },
-                       { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
-            price: 650,
-            num: 2,
-            events: [{ 'type' => 'trainless_nationalization' },
-                     { 'type' => 'remove_minor_abilities' },
-                     { 'type' => 'up_ipo_purchasable' },
-                     { 'type' => 'enforce_ownership_limit' }],
-          },
-          {
-            name: '7',
-            distance: [{ 'nodes' => %w[city offboard], 'pay' => 7, 'visit' => 7 },
-                       { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
-            price: 800,
-            num: 2,
-          },
-          {
-            name: '8',
-            distance: [{ 'nodes' => %w[city offboard], 'pay' => 8, 'visit' => 8 },
-                       { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
-            price: 1000,
-            num: 'unlimited',
-            events: [{ 'type' => 'minors_nationalized' },
-                     { 'type' => 'trainless_nationalization' },
-                     { 'type' => 'train_trade_allowed' }],
-            discount: {
-              '5' => 275,
-              '6' => 325,
-              '7' => 400,
-              '8' => 500,
-              '2+2' => 300,
-              '5+5E' => 750,
-            },
-          },
-          {
-            name: '2+2',
-            distance: [{ 'nodes' => %w[city offboard], 'pay' => 2, 'visit' => 2 },
-                       { 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 }],
-            multiplier: 2,
-            price: 600,
-            num: 'unlimited',
-            available_on: '8',
-            discount: {
-              '5' => 275,
-              '6' => 325,
-              '7' => 400,
-              '8' => 500,
-              '2+2' => 300,
-              '5+5E' => 750,
-            },
-          },
-          {
-            name: '5+5E',
-            distance: [{ 'nodes' => ['offboard'], 'pay' => 5, 'visit' => 5 },
-                       { 'nodes' => %w[city town], 'pay' => 0, 'visit' => 99 }],
-            multiplier: 2,
-            price: 1500,
-            num: 'unlimited',
-            available_on: '8',
-            discount: {
-              '5' => 275,
-              '6' => 325,
-              '7' => 400,
-              '8' => 500,
-              '2+2' => 300,
-              '5+5E' => 750,
-            },
-          },
-        ].freeze
+        TRAIN_EVENTS = {
+          '4' => %w[majors_can_ipo trainless_nationalization up_operates close_credit_mobilier],
+          '5' => %w[minors_cannot_start open_tunnels],
+          '6' => %w[trainless_nationalization remove_minor_abilities up_ipo_purchasable enforce_ownership_limit],
+        }.freeze
+
+        TRAINS = G1867::Game::TRAINS.map do |train|
+          events = TRAIN_EVENTS[train[:name]]
+          events ? train.merge(events: events.map { |type| { 'type' => type } }) : train
+        end.freeze
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
           'up_operates' => ['Union Pacific operates',
@@ -334,17 +191,17 @@ module Engine
         end
 
         def extra_token_price(corporation)
-          corporation.companies.any? { |c| ['Union Station', 'Central Station'].include?(c.name) } ? 10 : 0
+          corporation.companies.any? { |c| EXTRA_STATION_CARDS.include?(c.name) } ? 10 : 0
         end
 
         def double_tracks?(corporation)
           corporation.respond_to?(:companies) &&
-            corporation.companies.any? { |c| c.name == 'Double Tracks' }
+            corporation.companies.any? { |c| c.name == DOUBLE_TRACKS }
         end
 
         def pullman_car?(corporation)
           corporation.respond_to?(:companies) &&
-            corporation.companies.any? { |c| c.name == 'Pullman Car' }
+            corporation.companies.any? { |c| c.name == PULLMAN_CAR }
         end
 
         def check_overlap(routes)
@@ -450,10 +307,10 @@ module Engine
 
           corporation.companies.each do |company|
             case company.name
-            when 'Angel Investors'
+            when ANGEL_INVESTORS
               @bank.spend(60, corporation)
               @log << "#{corporation.name} receives #{format_currency(60)} from Angel Investors"
-            when 'Early Adopter'
+            when EARLY_ADOPTER
               train = @depot.upcoming.find { |t| t.name == '2' }
               next unless train
 
@@ -609,10 +466,6 @@ module Engine
         def init_loans
           @loan_value = 50
           Array.new(72) { |id| Loan.new(id, @loan_value) }
-        end
-
-        def add_neutral_tokens
-          @green_tokens = []
         end
 
         def pay_credit_mobilier(amount, from:)

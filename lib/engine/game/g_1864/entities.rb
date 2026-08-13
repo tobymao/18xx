@@ -4,9 +4,22 @@ module Engine
   module Game
     module G1864
       module Entities
+        CORPORATE_LOBBYISTS = 'Corporate Lobbyists'.freeze
+        GOVERNMENT_SUBSIDY = 'U.S. Government Subsidy'.freeze
+        TRACK_BUILDER = 'Track Builder'.freeze
+        LOCAL_CONTRACT = 'Local Contract'.freeze
+        ANGEL_INVESTORS = 'Angel Investors'.freeze
+        UNION_STATION = 'Union Station'.freeze
+        CENTRAL_STATION = 'Central Station'.freeze
+        EARLY_ADOPTER = 'Early Adopter'.freeze
+        CIVIL_ENGINEERING_FIRM = 'Civil Engineering Firm'.freeze
+        DOUBLE_TRACKS = 'Double Tracks'.freeze
+        PULLMAN_CAR = 'Pullman Car'.freeze
+        EXTRA_STATION_CARDS = [UNION_STATION, CENTRAL_STATION].freeze
+
         COMPANIES = [
           {
-            name: 'Corporate Lobbyists',
+            name: CORPORATE_LOBBYISTS,
             sym: 'CL1',
             value: 0,
             revenue: 0,
@@ -15,7 +28,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'Corporate Lobbyists',
+            name: CORPORATE_LOBBYISTS,
             sym: 'CL2',
             value: 0,
             revenue: 0,
@@ -24,7 +37,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'U.S. Government Subsidy',
+            name: GOVERNMENT_SUBSIDY,
             sym: 'GS1',
             value: 0,
             revenue: 0,
@@ -32,7 +45,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'U.S. Government Subsidy',
+            name: GOVERNMENT_SUBSIDY,
             sym: 'GS2',
             value: 0,
             revenue: 0,
@@ -40,7 +53,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'Track Builder',
+            name: TRACK_BUILDER,
             sym: 'TB1',
             value: 0,
             revenue: 0,
@@ -48,7 +61,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'Track Builder',
+            name: TRACK_BUILDER,
             sym: 'TB2',
             value: 0,
             revenue: 0,
@@ -56,7 +69,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'Local Contract',
+            name: LOCAL_CONTRACT,
             sym: 'LC1',
             value: 0,
             revenue: 0,
@@ -64,7 +77,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'Local Contract',
+            name: LOCAL_CONTRACT,
             sym: 'LC2',
             value: 0,
             revenue: 0,
@@ -72,7 +85,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'Angel Investors',
+            name: ANGEL_INVESTORS,
             sym: 'AI1',
             value: 0,
             revenue: 0,
@@ -80,7 +93,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'Angel Investors',
+            name: ANGEL_INVESTORS,
             sym: 'AI2',
             value: 0,
             revenue: 0,
@@ -88,7 +101,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'Union Station',
+            name: UNION_STATION,
             sym: 'US1',
             value: 0,
             revenue: 0,
@@ -97,7 +110,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'Central Station',
+            name: CENTRAL_STATION,
             sym: 'CS1',
             value: 0,
             revenue: 0,
@@ -106,7 +119,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'Early Adopter',
+            name: EARLY_ADOPTER,
             sym: 'EA1',
             value: 0,
             revenue: 0,
@@ -114,7 +127,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'Civil Engineering Firm',
+            name: CIVIL_ENGINEERING_FIRM,
             sym: 'CE1',
             value: 0,
             revenue: 0,
@@ -122,7 +135,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'Double Tracks',
+            name: DOUBLE_TRACKS,
             sym: 'DT1',
             value: 0,
             revenue: 0,
@@ -130,7 +143,7 @@ module Engine
             color: nil,
           },
           {
-            name: 'Pullman Car',
+            name: PULLMAN_CAR,
             sym: 'PC1',
             value: 0,
             revenue: 0,
