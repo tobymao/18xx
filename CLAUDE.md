@@ -50,11 +50,9 @@ make fixture_format
 
 ```bash
 docker compose exec rack irb
-# Then: load "scripts/import_game.rb" to import a production game
-# Or:   load "scripts/migrate_game.rb" then migrate_json('file.json') to repair a game
 ```
 
-Use `debug!` (from `lib/engine/debug.rb`) to set breakpoints — works on both the Ruby (pry-byebug) and JavaScript (debugger statement) sides.
+Use `debug!` (from `lib/engine/debug.rb`) to set breakpoints — works on both the Ruby (pry-byebug) and JavaScript (debugger statement) sides. See `DEVELOPMENT.md` for importing production games (`scripts/import_game.rb`) and repairing broken games (`scripts/migrate_game.rb`).
 
 ## Architecture
 
@@ -64,7 +62,7 @@ The engine code in `lib/engine/` runs in two environments:
 - **Ruby** (server-side): standard Ruby execution for tests, API, game replay
 - **JavaScript** (client-side): compiled from Ruby by [Opal](https://opalrb.com/) and served as JS
 
-Code using `if RUBY_ENGINE == 'opal'` branches by environment. The `# backtick_javascript: true` comment enables JS-specific behavior.
+Code using `if RUBY_ENGINE == 'opal'` branches by environment.
 
 ### Core engine (`lib/engine/`)
 
@@ -73,7 +71,7 @@ Shared game logic:
 - `tile.rb`, `hex.rb`, `graph.rb` — Map and tile management
 - `stock_market.rb`, `share_pool.rb` — Market mechanics
 - `depot.rb`, `train.rb` — Train management
-- `round/`, `step/` — Turn structure. A game plays a sequence of rounds (auction/draft, then alternating stock and operating rounds); `Game#next_round!` selects the next. Each round owns an ordered list of steps; a step handles one or more action types. The train *phase* (`phase.rb`) is separate — it only sets how many operating rounds run per set.
+- `round/`, `step/` — Turn structure: a game plays a sequence of rounds, each owning an ordered list of steps; `Game#next_round!` sequences them. `phase.rb` is the separate train-phase concept.
 
 ### Game implementations (`lib/engine/game/`)
 
@@ -93,7 +91,7 @@ Ruby (compiled to JS by Opal):
 
 ### Tests (`spec/`)
 
-- `spec/lib/engine/game/fixtures_spec.rb` — Automatically replays every JSON fixture in `public/fixtures/`. Fixtures are *required* to be `"status": "finished"` — a non-finished fixture fails the suite, it is not skipped.
+- `spec/lib/engine/game/fixtures_spec.rb` — Automatically replays every JSON fixture in `public/fixtures/`; every fixture must play to completion or the suite fails.
 - `spec/assets_spec.rb` — UI tests that assert DOM text using mini_racer to run the compiled JS.
 - `public/fixtures/` — JSON game states. Adding a file here auto-includes it in tests.
 
@@ -106,15 +104,8 @@ Ruby (compiled to JS by Opal):
 
 ## Adding or Modifying a Game
 
-1. Create the stub file `lib/engine/game/g_XXXX.rb` (empty `Engine::Game::GXXXX` module) and the directory `lib/engine/game/g_XXXX/` with `meta.rb` and `game.rb` (plus `entities.rb` and `map.rb` for a standalone game)
-2. No registration step — games are auto-discovered by reflecting over `Engine::Game` constants (do not edit `lib/engine.rb`)
-3. Add a fixture JSON under `public/fixtures/`. The directory name is the title with all non-alphanumeric characters removed (e.g. `18462pVariant`); confirm with `Engine.meta_by_title('<title>').fixture_dir_name`
-4. The fixture must have `"status": "finished"`, `"loaded": true`, and a `"result"` key; run `make fixture_format` before committing it
+A game is a stub file `lib/engine/game/g_XXXX.rb` plus a `g_XXXX/` directory (`meta.rb`, `game.rb`, and for a standalone game `entities.rb` + `map.rb`). No registration step — games are auto-discovered. Ship a fixture under `public/fixtures/` that plays to completion. Full conventions load from `.claude/rules/game-implementations.md` and `.claude/rules/fixtures.md` when you edit those files.
 
 ## Useful Dev Routes
 
-When the server is running:
-- `/map/<game_title>` — View a game's map
-- `/tiles/all` — All track tiles
-- `/tiles/<game_title>/all` — All tiles for a specific game
-- `/tiles/<game_title>/<hex_coord>` — Single hex at large scale
+With the server running: `/map/<game_title>`, `/tiles/all`, `/tiles/<game_title>/all`, `/tiles/<game_title>/<hex_coord>`. See `TILES.md` for the full list and URL params (`r=`, `n=`, `grid`).
