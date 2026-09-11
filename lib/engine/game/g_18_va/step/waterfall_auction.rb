@@ -21,6 +21,35 @@ module Engine
             false
           end
 
+          # Companies the entity is currently the high bidder on.
+          def auction_pass_defending(entity)
+            bids_for_player(entity).map { |bid| bid_target(bid) }
+          end
+
+          # Snapshot what the player was winning when they armed "Auto-pass unless outbid"
+          # (Action::ProgramAuctionPass), so activate_program_auction_pass can tell when
+          # they've actually been outbid on something they cared about.
+          def player_enabled_program(entity)
+            return unless @game.programmed_actions[entity].last.is_a?(Action::ProgramAuctionPass)
+
+            (@auction_pass_defending ||= {})[entity] = auction_pass_defending(entity)
+          end
+
+          # Drives "Auto-pass unless outbid": pass every time the turn cycles back, and hand
+          # control back once one of the bids the player was defending has been topped.
+          def activate_program_auction_pass(entity, _program)
+            return unless actions(entity).include?('pass')
+
+            lost = (@auction_pass_defending&.dig(entity) || []) - auction_pass_defending(entity)
+            unless lost.empty?
+              return [Action::ProgramDisable.new(entity,
+                                                 reason: "#{entity.name} was outbid on "\
+                                                         "#{lost.map(&:name).join(', ')}")]
+            end
+
+            [Action::Pass.new(entity)]
+          end
+
           def resolve_bids_for_company(company)
             accept_bid(@bids[company].max_by(&:price))
             true

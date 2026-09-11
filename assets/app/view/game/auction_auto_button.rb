@@ -4,9 +4,9 @@ require 'view/game/program_auto_button'
 
 module View
   module Game
-    class PassAutoButton < ProgramAutoButton
+    class AuctionAutoButton < ProgramAutoButton
       def program_action(entity)
-        Engine::Action::ProgramSharePass.new(entity)
+        Engine::Action::ProgramAuctionPass.new(entity)
       end
     end
   end
