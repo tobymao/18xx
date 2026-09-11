@@ -8,18 +8,7 @@ module Engine
       module Round
         class Draft < Engine::Round::Draft
           def setup
-            return unless first_round_in_a_clemens_draft
-
-            @first_round_in_first_draft_round = true
-            @entity_index = @entities.size - 1
-          end
-
-          def first_round_in_a_clemens_draft
-            round_num == 1 && @game.option_clemens?
-          end
-
-          def select_entities
-            @game.players
+            @all_players_have_acted_at_least_once = false
           end
 
           def next_entity!
@@ -36,14 +25,18 @@ module Engine
           end
 
           def next_entity_index!
-            return super if round_num > 1 || !@first_round_in_first_draft_round || !@game.option_clemens?
-
-            if @entity_index.zero?
-              @first_round_in_first_draft_round = false
+            if @entity_index == @entities.size - 1 && very_first_round_with_clemens?
+              # select_entities reversed the players, we now un-reverse them and let the first player have another turn
+              @entities = @entities.reverse
+              @entity_index = 0
+              @all_players_have_acted_at_least_once = true
             else
-              @game.next_turn!
-              @entity_index -= 1
+              super
             end
+          end
+
+          def very_first_round_with_clemens?
+            !@all_players_have_acted_at_least_once && @game.option_clemens? && @round_num == 1
           end
         end
       end

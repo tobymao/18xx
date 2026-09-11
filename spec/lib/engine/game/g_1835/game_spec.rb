@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
+require_relative 'spec_helper_1835'
 
 describe Engine::Game::G1835::Game do
   let(:game) { Engine::Game::G1835::Game.new(players) }
@@ -19,27 +20,6 @@ describe Engine::Game::G1835::Game do
   let(:player_5) { game.players.find { |player| player.id == 'e' } }
   let(:player_6) { game.players.find { |player| player.id == 'f' } }
   let(:player_7) { game.players.find { |player| player.id == 'g' } }
-
-  def pass(entity)
-    game.process_action(Engine::Action::Pass.new(entity)).maybe_raise!
-  end
-
-  def buy(player, company_id)
-    game.process_action(Engine::Action::Bid.new(player, company: game.company_by_id(company_id),
-                                                        price: game.company_by_id(company_id).value)).maybe_raise!
-  end
-
-  def buy_shares(player, corporation_id, percent = nil, other_player = nil)
-    corp = game.corporation_by_id(corporation_id)
-    unless other_player
-      return game.process_action(Engine::Action::BuyShares.new(player,
-                                                               shares: corp.shares.find(&:buyable))).maybe_raise!
-    end
-
-    game.process_action(Engine::Action::BuyShares.new(player, shares: other_player.shares_of(corp).find do |share|
-      share.percent == percent
-    end)).maybe_raise!
-  end
 
   describe 'after_starter_pack_player_order_3' do
     let(:players) { %w[a b c] }
@@ -306,117 +286,6 @@ describe Engine::Game::G1835::Game do
       expect(by.owner).to eq(player_1)
 
       expect(game.minor_by_id('1').owner).to eq(player_1)
-    end
-  end
-
-  describe 'clemens_draft' do
-    let(:players) { %w[a b c] }
-    let(:game) { Engine::Game::G1835::Game.new(players, optional_rules: [:clemens]) }
-
-    it 'should be possible to buy any paper' do
-      # put the companies in an order that makes no player run out of money, but is otherwise arbitrary
-      companies = %w[LD 1 NF BY_D HB 5 2 3 4 BB 6 PB OBB]
-      companies.each do |company_id|
-        buy(game.round.current_entity, company_id)
-      end
-    end
-
-    it 'should reverse the first round and then go in order' do
-      buy(player_3, '1')
-      buy(player_2, '2')
-      buy(player_1, '3')
-
-      buy(player_1, '4')
-      buy(player_2, '5')
-      buy(player_3, '6')
-
-      buy(player_1, 'NF')
-      buy(player_2, 'PB')
-      buy(player_3, 'OBB')
-
-      pass(player_1)
-      pass(player_2)
-      pass(player_3)
-
-      expect(game.players.first).to eq(player_1)
-    end
-
-    it 'should skip minors but pay privates if BY does not float in draft' do
-      # sell all minors and 40% of BY
-      buy(player_3, '1')
-      buy(player_2, '2')
-      buy(player_1, '3')
-      buy(player_1, '4')
-      buy(player_2, '5')
-      buy(player_3, '6')
-      buy(player_1, 'BY_D')
-      buy(player_2, 'OBB')
-      buy(player_3, 'PB')
-
-      player_2_cash_at_end_of_draft = player_2.cash
-      player_3_cash_at_end_of_draft = player_3.cash
-      pass(game.round.current_entity)
-      pass(game.round.current_entity)
-      pass(game.round.current_entity)
-
-      # did the minors pay out?
-      expect(player_2.cash).to eq(player_2_cash_at_end_of_draft + 10)
-      expect(player_3.cash).to eq(player_3_cash_at_end_of_draft + 15)
-
-      # are we in a draft again?
-      expect(game.active_step.class).to eq(Engine::Game::G1835::Step::Draft)
-
-      # were the minors skipped?
-      game.minors.each do |minor|
-        expect(minor.operated?).to be(false)
-      end
-    end
-
-    it 'should let the minors operate if BY floats' do
-      # sell only the first minor and 50% of BY to let it float
-      buy(player_3, '1')
-      buy(player_2, 'BY_D')
-      buy(player_1, 'OBB')
-      buy(player_1, 'PB')
-      buy(player_2, 'NF')
-
-      pass(game.round.current_entity)
-      pass(game.round.current_entity)
-      pass(game.round.current_entity)
-
-      expect(game.round.current_entity).to eq(game.minor_by_id('1'))
-    end
-
-    it 'should properly move the PD' do
-      buy(player_3, '1')
-      buy(player_2, 'BY_D')
-      buy(player_1, 'OBB')
-      buy(player_1, 'PB')
-      buy(player_2, 'NF')
-
-      pass(game.round.current_entity)
-      pass(game.round.current_entity)
-      pass(game.round.current_entity)
-
-      expect(game.players.first).to eq(player_3)
-    end
-
-    it 'should proceed in regular player order in the second draft round' do
-      buy(player_3, '1')
-      buy(player_2, 'BY_D')
-      buy(player_1, 'OBB')
-      buy(player_1, 'PB')
-
-      pass(game.round.current_entity)
-      pass(game.round.current_entity)
-      pass(game.round.current_entity)
-
-      # everyone passed, first draft round over
-      buy(player_2, 'NF')
-      buy(player_3, '3')
-      buy(player_1, '5')
-      buy(player_2, '6')
-      buy(player_3, 'BB')
     end
   end
 

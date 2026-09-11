@@ -179,8 +179,9 @@ module Engine
         end
 
         def init_round
+          round_num = @draft_round_num || 1
           G1835::Round::Draft.new(self,
-                                  [G1835::Step::Draft], round_num: @draft_round_num || 1)
+                                  [G1835::Step::Draft], round_num: round_num, reverse_order: round_num == 1 && option_clemens?)
         end
 
         def new_draft_round

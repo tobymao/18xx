@@ -100,7 +100,10 @@ module Engine
             float_minor(company, minor, player, price) if minor
 
             entities.each(&:unpass!)
-            @round.last_to_act = player
+
+            # In the rare case of no one buying anything in the first taking place in proper player order in a Clemens
+            # variant game, the PD remains with the first player
+            @round.last_to_act = player unless @round.very_first_round_with_clemens?
             @round.next_entity!
           end
 
