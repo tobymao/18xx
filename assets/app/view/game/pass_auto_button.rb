@@ -1,22 +1,12 @@
 # frozen_string_literal: true
 
-require 'view/game/actionable'
+require 'view/game/program_auto_button'
 
 module View
   module Game
-    class PassAutoButton < Snabberb::Component
-      include Actionable
-
-      def render
-        props = {
-          on: {
-            click: lambda do
-              process_action(Engine::Action::ProgramSharePass.new(@game.current_entity))
-            end,
-          },
-        }
-
-        h(:button, props, 'Auto pass')
+    class PassAutoButton < ProgramAutoButton
+      def program_action(entity)
+        Engine::Action::ProgramSharePass.new(entity)
       end
     end
   end

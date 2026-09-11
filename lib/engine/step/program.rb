@@ -7,6 +7,7 @@ module Engine
     class Program < Base
       ACTIONS = %w[
         program_auction_bid
+        program_auction_pass
         program_buy_shares
         program_independent_mines
         program_merger_pass
@@ -23,6 +24,10 @@ module Engine
       end
 
       def process_program_auction_bid(action)
+        process_program_enable(action)
+      end
+
+      def process_program_auction_pass(action)
         process_program_enable(action)
       end
 
@@ -56,7 +61,12 @@ module Engine
         remove_programmed_action(action.entity, action.type)
         @game.player_log(action.entity, "Enabled programmed action '#{action}'")
         @game.programmed_actions[action.entity] << action
-        @round.player_enabled_program(action.entity) if @round.respond_to?(:player_enabled_program)
+
+        if @round.respond_to?(:player_enabled_program)
+          @round.player_enabled_program(action.entity)
+        elsif @round.active_step.respond_to?(:player_enabled_program)
+          @round.active_step.player_enabled_program(action.entity)
+        end
       end
 
       def process_program_disable(action)

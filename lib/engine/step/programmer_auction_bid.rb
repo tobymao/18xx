@@ -30,10 +30,7 @@ module Engine
         end
 
         high_bid = highest_bid(target)
-        if high_bid&.entity == entity
-          return [Action::ProgramDisable.new(entity,
-                                             reason: "#{entity.name} is already the high bid on #{target.name}")]
-        end
+        return auto_already_high_bid(entity, program, target) if high_bid&.entity == entity
 
         bid_params = { price: min_bid(target) }
         bid_params[:corporation] = target if target.corporation?
@@ -84,6 +81,17 @@ module Engine
 
       def auto_requires_auctioning?(_entity, _program)
         false
+      end
+
+      # Called when the entity already holds the high bid on their target. If the auction is
+      # currently waiting on this entity (pass is a legal move), auto-pass and keep the
+      # program armed so it re-bids when outbid; this covers auctions that cycle turns past
+      # the high bidder (e.g. 18VA). Otherwise the program has nothing to do, so disable it.
+      def auto_already_high_bid(entity, _program, target)
+        return [Action::Pass.new(entity)] if actions(entity).include?('pass')
+
+        [Action::ProgramDisable.new(entity,
+                                    reason: "#{entity.name} is already the high bid on #{target.name}")]
       end
 
       def auto_bid_on_empty?(_entity, program)
