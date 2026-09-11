@@ -41,4 +41,4 @@ Custom matchers in `spec/matchers.rb`: `be_assigned_to`, `have_available_hexes`.
 The only UI test — it runs the Opal-compiled JS through `MiniRacer` and asserts
 on raw HTML text. Add a regression case by appending a row to `TEST_CASES`
 referencing an existing fixture. A `!!`-prefixed expected string asserts
-*absence*. Match against HTML entities (`B&amp;amp;O`, not `B&amp;O`).
+*absence*. Match against HTML entities — write `B&amp;O`, not `B&O`.
