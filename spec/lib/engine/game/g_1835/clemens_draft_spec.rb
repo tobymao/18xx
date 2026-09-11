@@ -5,14 +5,6 @@ require_relative 'spec_helper_1835'
 
 describe Engine::Game::G1835::Game do
   let(:game) { Engine::Game::G1835::Game.new(players, optional_rules: [:clemens]) }
-  let(:by) { game.corporation_by_id('BY') }
-  let(:sx) { game.corporation_by_id('SX') }
-  let(:ba) { game.corporation_by_id('BA') }
-  let(:wt) { game.corporation_by_id('WT') }
-  let(:he) { game.corporation_by_id('HE') }
-  let(:pr) { game.corporation_by_id('PR') }
-  let(:ms) { game.corporation_by_id('MS') }
-  let(:ol) { game.corporation_by_id('OL') }
   let(:player_1) { game.players.find { |player| player.id == 'a' } }
   let(:player_2) { game.players.find { |player| player.id == 'b' } }
   let(:player_3) { game.players.find { |player| player.id == 'c' } }
