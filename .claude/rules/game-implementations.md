@@ -38,17 +38,19 @@ game exists once `Engine::Game::G<Name>::Meta` and `::Game` are defined under
 
 ## Directory ↔ module name
 
-Strip the leading `g_`, capitalize each `_`-separated segment, drop the
-underscores, prepend `G`:
+There is no reliable mechanical transform from directory to module name.
+`Meta::ClassMethods#fs_name` in `lib/engine/game/meta.rb` gives the forward
+direction (module → directory: `G` → `g_`, underscore before each run of
+capitals, downcase), but it's lossy going back — acronyms and state/country
+codes stay all-caps rather than title-case, so `g_18_va` → `G18VA` (not
+`G18Va`), `g_18_mex` → `G18MEX`, `g_1817_na` → `G1817NA`. **Don't derive the
+module name — read the sibling stub file (`g_<name>.rb`) or `git grep` it.**
 
 | directory | module |
 | --- | --- |
 | `g_1830` | `G1830` |
 | `g_18_chesapeake` | `G18Chesapeake` |
-| `g_1824_cisleithania` | `G1824Cisleithania` |
-
-The reverse transform is `Meta::ClassMethods#fs_name` in
-`lib/engine/game/meta.rb`.
+| `g_18_va` | `G18VA` |
 
 ## `meta.rb`
 
