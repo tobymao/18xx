@@ -28,9 +28,9 @@ name is cosmetic, discovery is by the `*_spec.rb` glob).
   forward. **Pass `fixture_at_action(n, clear_cache: true)` in any test that
   processes its own actions** (anything not already in the fixture) — otherwise
   the mutated game leaks into the next `it`.
-- There is **no `shared_examples` and no shared `Helper` module** in game specs —
-  define per-file helper methods inside the top `describe` block (the established
-  pattern).
+- The established pattern is per-file helper methods inside the top `describe`
+  block, not a shared `Helper` module — `spec/lib/engine/game/g_18_zoo/game_spec.rb`
+  is the one exception that uses `shared_examples`.
 - Fixture-free alternative: `game = Engine::Game::G1835::Game.new(players)`, then
   drive it with `game.process_action(Engine::Action::X.new(...)).maybe_raise!`.
 

@@ -90,17 +90,20 @@ end
 
 ## `game.rb`
 
-Require order matters — **`require_relative '../base'` comes last**:
+Require order does **not** matter — all requires precede the module body, so
+there's no load-order dependency. Across the 131 games, only 23 happen to put
+`require_relative '../base'` last; 65 have it present but not last; 43 (subclass
+variants) never require it at all. A typical `game.rb` looks like:
 
 ```ruby
 # frozen_string_literal: true
 
+require_relative '../base'
 require_relative 'entities'
 require_relative 'map'
 require_relative 'meta'
 require_relative 'step/special_track'   # each local step/ and round/ file
 require_relative '../company_price_up_to_face'   # shared mixins live one level up
-require_relative '../base'               # ALWAYS LAST
 
 module Engine
   module Game
