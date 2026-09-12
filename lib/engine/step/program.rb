@@ -64,8 +64,11 @@ module Engine
 
         if @round.respond_to?(:player_enabled_program)
           @round.player_enabled_program(action.entity)
-        elsif @round.active_step.respond_to?(:player_enabled_program)
-          @round.active_step.player_enabled_program(action.entity)
+        else
+          # Notify whichever step wants to know, not whichever step is currently blocking —
+          # `active_step` can miss this entity entirely (e.g. arming before its turn).
+          step = @round.steps.find { |s| s.respond_to?(:player_enabled_program) }
+          step&.player_enabled_program(action.entity)
         end
       end
 

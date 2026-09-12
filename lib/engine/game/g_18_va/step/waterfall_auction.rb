@@ -17,6 +17,11 @@ module Engine
         end
 
         class WaterfallAuction < Engine::Step::WaterfallAuction
+          def setup
+            super
+            @auction_pass_defending = {}
+          end
+
           def may_purchase?(_company)
             false
           end
@@ -32,15 +37,20 @@ module Engine
           def player_enabled_program(entity)
             return unless @game.programmed_actions[entity].last.is_a?(Action::ProgramAuctionPass)
 
-            (@auction_pass_defending ||= {})[entity] = auction_pass_defending(entity)
+            @auction_pass_defending[entity] = auction_pass_defending(entity)
           end
 
           # Drives "Auto-pass unless outbid": pass every time the turn cycles back, and hand
-          # control back once one of the bids the player was defending has been topped.
+          # control back once one of the bids the player was defending has been topped. If
+          # player_enabled_program never snapshotted this entity, take the snapshot now instead
+          # of assuming "defending nothing" — otherwise a missed hook means never disabling.
           def activate_program_auction_pass(entity, _program)
             return unless actions(entity).include?('pass')
 
-            lost = (@auction_pass_defending&.dig(entity) || []) - auction_pass_defending(entity)
+            defending = @auction_pass_defending.key?(entity) ? @auction_pass_defending[entity] : auction_pass_defending(entity)
+            currently_defending = auction_pass_defending(entity)
+            @auction_pass_defending[entity] = currently_defending
+            lost = defending - currently_defending
             unless lost.empty?
               return [Action::ProgramDisable.new(entity,
                                                  reason: "#{entity.name} was outbid on "\

@@ -78,6 +78,14 @@ class Api
               halt(403, 'You can only send messages as yourself')
             end
 
+            # A program_* action's entity must be the submitter's own id; only the game owner
+            # may manage another player's programs (hotseat / master mode).
+            if r.params['type']&.start_with?('program_') &&
+               r.params['entity'].to_i != user.id &&
+               game.user_id != user.id
+              halt(403, 'You can only manage your own programmed actions')
+            end
+
             acting, action = nil
 
             DB.with_advisory_lock(:action_lock, game.id) do
