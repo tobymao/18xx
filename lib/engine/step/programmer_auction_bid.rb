@@ -83,12 +83,11 @@ module Engine
         false
       end
 
-      # Called when the entity already holds the high bid on their target. If the auction is
-      # currently waiting on this entity (pass is a legal move), auto-pass and keep the
-      # program armed so it re-bids when outbid; this covers auctions that cycle turns past
-      # the high bidder (e.g. 18VA). Otherwise the program has nothing to do, so disable it.
-      def auto_already_high_bid(entity, _program, target)
-        return [Action::Pass.new(entity)] if actions(entity).include?('pass')
+      # Already the high bidder. If auto_pass_after and pass is legal, stay armed and pass
+      # (covers auctions that cycle back to the high bidder, e.g. 18VA); otherwise disable,
+      # same gating as auto_disable_if_bids?/auto_disable_if_exceeded_price? below.
+      def auto_already_high_bid(entity, program, target)
+        return [Action::Pass.new(entity)] if program.auto_pass_after && actions(entity).include?('pass')
 
         [Action::ProgramDisable.new(entity,
                                     reason: "#{entity.name} is already the high bid on #{target.name}")]
