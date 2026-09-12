@@ -7,6 +7,12 @@ TEST_CASES = [
   ['1889',
    314,
    [[6, 'stock_round', 'Pass (Share)'],
+    # Same stock round, but at an action where the viewing user (Player 3) is
+    # actually the active player: View::Game::PassAutoButton (renamed/shared
+    # from a single-game button into ProgramAutoButton's base class) only
+    # renders the "Auto pass" button for the active player, not any player
+    # who merely has a Pass button showing.
+    [8, 'stock_round_own_turn', ['Pass (Share)', 'Auto pass']],
     [13, 'float', 'KO receives ¥700'],
     [21, 'lay_track', '1889: Phase 2 - Operating Round 1.1 (of 1) - Lay/Upgrade Track'],
     [23, 'buy_train',
@@ -436,6 +442,41 @@ describe 'Assets' do
           end
         end
       end
+    end
+
+    # Pass#show_auction_auto? / View::Game::AutoAction::AuctionPass both need a
+    # fixture where the viewing `user` matches a real player id, which neither
+    # committed 18VA fixture provides (their players have no explicit `id`, so
+    # `user['id']` of 0 never matches - the auto-actions replay test resolves
+    # entities by name instead, so those fixtures never needed one). Built
+    # inline rather than adding a new file under public/fixtures/, which
+    # fixtures_spec.rb would otherwise require to play to completion.
+    def eighteen_va_auction_data(id)
+      {
+        'id' => id,
+        'title' => '18VA',
+        'players' => [{ 'id' => 0, 'name' => 'Alice' }, { 'id' => 1, 'name' => 'Bob' }, { 'id' => 2, 'name' => 'Cara' }],
+        'user' => { 'id' => 0, 'name' => 'Alice' },
+        'settings' => {},
+        'actions' => [
+          { 'type' => 'bid', 'entity' => 'Alice', 'entity_type' => 'player', 'company' => 'P1', 'price' => 45, 'id' => 1 },
+          { 'type' => 'bid', 'entity' => 'Bob', 'entity_type' => 'player', 'company' => 'P2', 'price' => 65, 'id' => 2 },
+          { 'type' => 'bid', 'entity' => 'Cara', 'entity_type' => 'player', 'company' => 'P3', 'price' => 85, 'id' => 3 },
+        ],
+      }
+    end
+
+    it 'renders the AuctionAutoButton next to Pass for the active player during 18VA\'s auction' do
+      # After all three bid once, it's Alice's turn again (still the high
+      # bidder on P1, nobody has outbid anyone) - exactly when the button
+      # should show.
+      render_game_at_action(eighteen_va_auction_data('assets_spec_18va_auction_auto_button'), nil, ['Auto pass'])
+    end
+
+    it 'renders the "Auto pass" auto-action description on the #auto tab during 18VA\'s auction' do
+      render_game_at_action(eighteen_va_auction_data('assets_spec_18va_auction_auto_tab'), 1,
+                            ['Auto pass in Auction Round',
+                             '&quot;Auto pass&quot; button next to Pass during the auction'], '#auto')
     end
 
     it 'renders tutorial to the end' do
