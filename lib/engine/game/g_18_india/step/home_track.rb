@@ -36,6 +36,13 @@ module Engine
           def any_open_cities?
             pending = pending_token
             return oo_on_yellow_tile?(pending) if oo_pending?(pending)
+            # Fixed-home corps (e.g. WR, KGF, TR) only ever have their own home hex(es) as
+            # pending_token[:hexes], which #available_hex already restricts to, so board-wide
+            # open_city_hexes is meaningless for them and previously blocked #place_token
+            # whenever the rest of the board filled up even though their own hex was open -- see
+            # GH #11461. Only GIPR's flexible "pick any open city" home rule needs the board-wide
+            # check below.
+            return true if pending_entity != @game.gipr
 
             !@game.open_city_hexes.empty?
           end
@@ -57,8 +64,10 @@ module Engine
             corp = token&.corporation
             if corp && pending_entity != corp
               "Place #{corp.name} token"
-            else
+            elsif pending_entity == @game.gipr
               "Lay home token in open city or upgrade town for #{pending_entity.name}"
+            else
+              super
             end
           end
 
