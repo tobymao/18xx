@@ -4,14 +4,15 @@ require 'view/game/actionable'
 
 module View
   module Game
-    # Base for the small "Auto pass" buttons next to Pass that arm a
-    # program-enable action for the current entity. Subclasses supply
-    # `program_action`.
+    # The small "Auto pass" button next to Pass that arms a program-enable
+    # action for the current entity. `program_action_class` supplies which one.
     class ProgramAutoButton < Snabberb::Component
       include Actionable
 
+      needs :program_action_class
+
       def render
-        props = { on: { click: -> { process_action(program_action(@game.current_entity)) } } }
+        props = { on: { click: -> { process_action(@program_action_class.new(@game.current_entity)) } } }
         h(:button, props, 'Auto pass')
       end
     end

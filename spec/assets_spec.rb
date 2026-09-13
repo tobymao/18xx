@@ -8,10 +8,9 @@ TEST_CASES = [
    314,
    [[6, 'stock_round', 'Pass (Share)'],
     # Same stock round, but at an action where the viewing user (Player 3) is
-    # actually the active player: View::Game::PassAutoButton (renamed/shared
-    # from a single-game button into ProgramAutoButton's base class) only
-    # renders the "Auto pass" button for the active player, not any player
-    # who merely has a Pass button showing.
+    # actually the active player: View::Game::Pass only renders the "Auto
+    # pass" button (View::Game::ProgramAutoButton) for the active player, not
+    # any player who merely has a Pass button showing.
     [8, 'stock_round_own_turn', ['Pass (Share)', 'Auto pass']],
     [13, 'float', 'KO receives ¥700'],
     [21, 'lay_track', '1889: Phase 2 - Operating Round 1.1 (of 1) - Lay/Upgrade Track'],
