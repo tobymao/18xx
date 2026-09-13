@@ -21,11 +21,14 @@ module Engine
             false
           end
 
-          # Companies `entity` was the highest bidder on the moment `program` was armed.
-          # Replays Bid actions (main and auto) up to that point rather than reading live
-          # @bids, which only holds each bidder's *current* bid — a later re-bid by the
-          # same leader would otherwise erase who was leading earlier. Forced 0-bids never
-          # appear in the log and so are deliberately not counted as defended.
+          # Replays Bid actions (main and auto) logged before `program` was armed. Live
+          # @bids can't be used: it only holds each bidder's current bid, so a leader's
+          # later re-bid would erase their earlier lead. Forced 0-bids aren't logged and
+          # so don't count as defended.
+          #
+          # @param entity [Player]
+          # @param program [Action::ProgramAuctionPass]
+          # @return [Array<Company>] companies `entity` led when `program` was armed
           def auction_pass_defending(entity, program)
             leader_by_company = {}
             @game.actions.each do |action|
@@ -38,9 +41,13 @@ module Engine
             leader_by_company.select { |_company, leader| leader == entity }.keys
           end
 
-          # Drives "Auto-pass unless outbid": pass every time the turn cycles back, and
-          # hand control back once a company the player was defending when they armed
-          # has been topped by someone else.
+          # "Auto-pass unless outbid": keep passing until a company `entity` was
+          # defending when they armed is topped by someone else.
+          #
+          # @param entity [Player]
+          # @param program [Action::ProgramAuctionPass]
+          # @return [Array<Action::Pass>, Array<Action::ProgramDisable>, nil] nil leaves
+          #   the program armed without acting (pass not currently legal)
           def activate_program_auction_pass(entity, program)
             return unless actions(entity).include?('pass')
 
