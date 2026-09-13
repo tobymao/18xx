@@ -17,45 +17,37 @@ module Engine
         end
 
         class WaterfallAuction < Engine::Step::WaterfallAuction
-          def setup
-            super
-            @auction_pass_defending = {}
-          end
-
           def may_purchase?(_company)
             false
           end
 
-          # Companies the entity is currently the high bidder on.
-          def auction_pass_defending(entity)
-            bids_for_player(entity).map { |bid| bid_target(bid) }
+          # Companies `entity` was the highest bidder on the moment `program` was armed.
+          # Replays Bid actions (main and auto) up to that point rather than reading live
+          # @bids, which only holds each bidder's *current* bid — a later re-bid by the
+          # same leader would otherwise erase who was leading earlier. Forced 0-bids never
+          # appear in the log and so are deliberately not counted as defended.
+          def auction_pass_defending(entity, program)
+            leader_by_company = {}
+            @game.actions.each do |action|
+              break if action >= program
+
+              [action, *action.auto_actions].each do |a|
+                leader_by_company[bid_target(a)] = a.entity if a.is_a?(Action::Bid)
+              end
+            end
+            leader_by_company.select { |_company, leader| leader == entity }.keys
           end
 
-          # Snapshot what the player was winning when they armed "Auto-pass unless outbid"
-          # (Action::ProgramAuctionPass), so activate_program_auction_pass can tell when
-          # they've actually been outbid on something they cared about.
-          def player_enabled_program(entity)
-            return unless @game.programmed_actions[entity].last.is_a?(Action::ProgramAuctionPass)
-
-            @auction_pass_defending[entity] = auction_pass_defending(entity)
-          end
-
-          # Drives "Auto-pass unless outbid": pass every time the turn cycles back, and hand
-          # control back once one of the bids the player was defending has been topped. If
-          # player_enabled_program never snapshotted this entity, take the snapshot now instead
-          # of assuming "defending nothing" — otherwise a missed hook means never disabling.
-          def activate_program_auction_pass(entity, _program)
+          # Drives "Auto-pass unless outbid": pass every time the turn cycles back, and
+          # hand control back once a company the player was defending when they armed
+          # has been topped by someone else.
+          def activate_program_auction_pass(entity, program)
             return unless actions(entity).include?('pass')
 
-            currently_defending = auction_pass_defending(entity)
-            defending = @auction_pass_defending.fetch(entity, currently_defending)
-            @auction_pass_defending[entity] = currently_defending
-            lost = defending - currently_defending
+            lost = auction_pass_defending(entity, program).reject { |company| highest_bid(company)&.entity == entity }
             return [Action::Pass.new(entity)] if lost.empty?
 
-            @auction_pass_defending.delete(entity)
-            [Action::ProgramDisable.new(entity,
-                                        reason: "#{entity.name} was outbid on #{lost.map(&:name).join(', ')}")]
+            [Action::ProgramDisable.new(entity, reason: "#{entity.name} was outbid on #{lost.map(&:name).join(', ')}")]
           end
 
           def resolve_bids_for_company(company)
@@ -65,7 +57,6 @@ module Engine
 
           def end_auction!
             resolve_bids
-            @auction_pass_defending.clear
           end
 
           def min_bid(company)
