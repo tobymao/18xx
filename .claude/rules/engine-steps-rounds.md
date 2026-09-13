@@ -2,6 +2,7 @@
 paths:
   - "lib/engine/step/**/*.rb"
   - "lib/engine/round/**/*.rb"
+  - "lib/engine/action/**/*.rb"
   - "lib/engine/game/*/step/**/*.rb"
   - "lib/engine/game/*/round/**/*.rb"
 ---
@@ -16,9 +17,13 @@ operating rounds run per set and which trains/tile colors are available.
 
 ## Action dispatch
 
-`Round::Base#process_action` (`round/base.rb:112-124`) finds the first active step
-whose **`actions(entity)`** array includes `action.type`, then calls
-`step.send("process_#{action.type}", action)`.
+`Round::Base#process_action` (`round/base.rb:112-124`) scans active steps in
+order and stops at the first one that either can process `action.type` (its
+**`actions(entity)`** array includes it) or is currently `blocking?`. **A
+blocking step that can't process the action raises immediately** ("Blocking
+step X cannot process action Y") rather than letting a later step try — this
+is the most common `GameError` message from a malformed or out-of-order
+action. Once a step is found, dispatch calls `step.send("process_#{action.type}", action)`.
 
 `action.type` is the action class's base name de-camelized (`Helper::Type`):
 `Engine::Action::BuyTrain` → `"buy_train"` → `process_buy_train`. Handling a new
