@@ -29,7 +29,6 @@ module View
               percent: bundle.percent,
             ))
           end
-          double_cert = bundle.shares.any? { |s| s.last_cert || s.double_cert } ? '[d]' : ''
           props = {
             style: {
               padding: '0.2rem 0',
@@ -40,7 +39,7 @@ module View
           h(
             'button.sell_share',
             props,
-            "Sell #{share_presentation(bundle)}#{double_cert} (#{@game.format_currency(bundle.price)})"
+            "Sell #{share_presentation(bundle)} (#{@game.format_currency(bundle.price)})"
           )
         end
 
@@ -64,7 +63,13 @@ module View
 
       def share_presentation(bundle)
         num_shares = bundle.num_shares
-        num_shares == 1 && bundle.percent != @corporation.share_percent ? "a #{bundle.percent}%" : num_shares.to_s
+        return "a #{bundle.percent}%" if num_shares == 1 && bundle.percent != @corporation.share_percent
+
+        shares = bundle.shares
+        unique_percentages = shares.uniq(&:percent)
+        return num_shares.to_s if unique_percentages.one? && unique_percentages.first.percent == @corporation.share_percent
+
+        "#{bundle.percent}% (#{shares.map(&:percent).tally.map { |percent, count| "#{count}x #{percent}%" }.join(', ')})"
       end
 
       def sell_with_swap(player, bundle, swap_sell)
