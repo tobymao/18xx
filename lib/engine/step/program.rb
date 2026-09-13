@@ -62,14 +62,13 @@ module Engine
         @game.player_log(action.entity, "Enabled programmed action '#{action}'")
         @game.programmed_actions[action.entity] << action
 
-        if @round.respond_to?(:player_enabled_program)
-          @round.player_enabled_program(action.entity)
-        else
-          # Notify whichever step wants to know, not whichever step is currently blocking —
-          # `active_step` can miss this entity entirely (e.g. arming before its turn).
-          step = @round.steps.find { |s| s.respond_to?(:player_enabled_program) }
-          step&.player_enabled_program(action.entity)
-        end
+        @round.player_enabled_program(action.entity) if @round.respond_to?(:player_enabled_program)
+
+        # Notify whichever step wants to know, not whichever step is currently blocking —
+        # `active_step` can miss this entity entirely (e.g. arming before its turn). Independent
+        # of the round-level hook above so a game could use both without one silently no-oping.
+        step = @round.steps.find { |s| s.respond_to?(:player_enabled_program) }
+        step&.player_enabled_program(action.entity)
       end
 
       def process_program_disable(action)

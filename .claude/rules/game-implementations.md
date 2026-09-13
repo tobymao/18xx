@@ -146,4 +146,4 @@ Mixed into the game class with `include Entities` / `include Map`.
 
 ## Game-specific `step/` and `round/`
 
-See [[engine-steps-rounds]].
+See `.claude/rules/engine-steps-rounds.md`.

@@ -10,7 +10,7 @@ never randomized. Don't rely on random-order isolation; *do* rely on ascending
 order (the fixture cache only replays forward). Default task is
 `docker compose exec rack rake` (rubocop + `spec_parallel`).
 
-For fixture files themselves, see [[fixtures]].
+For fixture files themselves, see `.claude/rules/fixtures.md`.
 
 ## Hand-written game specs
 
