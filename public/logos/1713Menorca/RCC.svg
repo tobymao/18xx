@@ -1,0 +1,15 @@
+<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <title>Real Compañía de Comercio</title>
+  <circle cx="50" cy="50" r="50" fill="#7B2D00"/>
+  <path d="M22,72 L22,63 Q22,59 26,59 L74,59 Q78,59 78,63 L78,72 Q78,76 74,76 L26,76 Q22,76 22,72 Z" fill="none" stroke="white" stroke-width="3.5" stroke-linejoin="round"/>
+  <path d="M26,59 L26,43 L38,55 L50,22 L62,55 L74,43 L74,59" fill="none" stroke="white" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M26,59 Q38,51 50,59" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M50,59 Q62,51 74,59" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="50" y1="14" x2="50" y2="24" stroke="white" stroke-width="3" stroke-linecap="round"/>
+  <line x1="44" y1="18" x2="56" y2="18" stroke="white" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="38" cy="55" r="2.5" fill="white"/>
+  <circle cx="62" cy="55" r="2.5" fill="white"/>
+  <rect x="46" y="63" width="8" height="6" rx="2" fill="none" stroke="white" stroke-width="2"/>
+  <circle cx="32" cy="67" r="3" fill="none" stroke="white" stroke-width="2"/>
+  <circle cx="68" cy="67" r="3" fill="none" stroke="white" stroke-width="2"/>
+</svg>
