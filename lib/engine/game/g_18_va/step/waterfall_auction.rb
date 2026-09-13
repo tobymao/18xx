@@ -47,17 +47,15 @@ module Engine
           def activate_program_auction_pass(entity, _program)
             return unless actions(entity).include?('pass')
 
-            defending = @auction_pass_defending.key?(entity) ? @auction_pass_defending[entity] : auction_pass_defending(entity)
             currently_defending = auction_pass_defending(entity)
+            defending = @auction_pass_defending.fetch(entity, currently_defending)
             @auction_pass_defending[entity] = currently_defending
             lost = defending - currently_defending
-            unless lost.empty?
-              return [Action::ProgramDisable.new(entity,
-                                                 reason: "#{entity.name} was outbid on "\
-                                                         "#{lost.map(&:name).join(', ')}")]
-            end
+            return [Action::Pass.new(entity)] if lost.empty?
 
-            [Action::Pass.new(entity)]
+            @auction_pass_defending.delete(entity)
+            [Action::ProgramDisable.new(entity,
+                                        reason: "#{entity.name} was outbid on #{lost.map(&:name).join(', ')}")]
           end
 
           def resolve_bids_for_company(company)
@@ -67,6 +65,7 @@ module Engine
 
           def end_auction!
             resolve_bids
+            @auction_pass_defending.clear
           end
 
           def min_bid(company)
