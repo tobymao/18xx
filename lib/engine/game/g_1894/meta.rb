@@ -8,8 +8,7 @@ module Engine
       module Meta
         include Game::Meta
 
-        DEV_STAGE = :beta
-        PROTOTYPE = true
+        DEV_STAGE = :production
 
         GAME_DESIGNER = 'Jan Kłos'
         GAME_IMPLEMENTER = 'Jan Kłos'
