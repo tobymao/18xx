@@ -87,6 +87,11 @@ module GameManager
     end
   end
 
+  def delete_all_hotseats
+    Lib::Storage.all_keys.each { |k| Lib::Storage.delete(k) if k.start_with?('hs_') }
+    store(:confirm_delete, false)
+  end
+
   def join_game(game)
     @connection.safe_post(url(game, '/join')) do |data|
       update_game(data)
