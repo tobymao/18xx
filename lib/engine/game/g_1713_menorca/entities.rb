@@ -61,7 +61,7 @@ module Engine
             sym: 'VRC',
             name: '8. Vinculació Familiar amb la Real Compania',
             value: 100,
-            revenue: 0,
+            revenue: 10,
             desc: 'Upon acquisition, owner immediately receives the RCC family trust share (20%) at no cost. Then this private closes.',
           },
           {
@@ -83,7 +83,7 @@ module Engine
             tokens: [0, 80],
             coordinates: 'J11',
             color: '#1A3A5C',
-            float_percent: 30,
+            float_percent: 20,
             shares: [20, 10, 10, 10, 10, 10, 10, 10, 10],
           },
           {
@@ -94,7 +94,7 @@ module Engine
             tokens: [0, 80],
             coordinates: 'C8',
             color: '#7B2D00',
-            float_percent: 30,
+            float_percent: 20,
             shares: [20, 10, 10, 10, 10, 10, 10, 10, 10],
           },
           {
@@ -105,7 +105,7 @@ module Engine
             tokens: [0, 30, 60],
             coordinates: 'G8',
             color: '#2D5A1B',
-            float_percent: 30,
+            float_percent: 20,
             shares: [20, 10, 10, 10, 10, 10, 10, 10, 10],
           },
           {
