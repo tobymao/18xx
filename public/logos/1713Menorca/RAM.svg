@@ -3,8 +3,8 @@
   <circle cx="50" cy="50" r="50" fill="#2D5A1B"/>
   <path d="M33,28 Q18,15 23,28" fill="none" stroke="white" stroke-width="5" stroke-linecap="round"/>
   <path d="M67,28 Q82,15 77,28" fill="none" stroke="white" stroke-width="5" stroke-linecap="round"/>
-  <ellipse cx="18" cy="50" rx="8" ry="5" fill="none" stroke="white" stroke-width="4"/>
-  <ellipse cx="82" cy="50" rx="8" ry="5" fill="none" stroke="white" stroke-width="4"/>
+  <path d="M24,45 A8,5 0 0 0 24,55" fill="none" stroke="white" stroke-width="4"/>
+  <path d="M76,45 A8,5 0 0 1 76,55" fill="none" stroke="white" stroke-width="4"/>
   <rect x="24" y="28" width="52" height="50" rx="10" fill="none" stroke="white" stroke-width="5"/>
   <circle cx="38" cy="47" r="3.5" fill="white"/>
   <circle cx="62" cy="47" r="3.5" fill="white"/>
