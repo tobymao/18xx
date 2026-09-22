@@ -740,6 +740,19 @@ module Engine
           end
 
           update_home(qmoo, tile_trigger: true) if hex == quebec_hex
+
+          # replace destination tokens before skip_steps so the Token step
+          # doesn't see the destination hex as empty and block instead of skip
+          replace_pending_destination_tokens!
+        end
+
+        def replace_pending_destination_tokens!
+          return if @pending_destination_tokens.nil? || @pending_destination_tokens.empty?
+
+          @pending_destination_tokens.each do |token, city|
+            place_destination_token(token.corporation, city.hex, token, city, log: false)
+          end
+          @pending_destination_tokens = []
         end
 
         def after_place_token(_entity, city)
@@ -854,11 +867,8 @@ module Engine
               @city_slot_icons.clear
             end
 
-            # put down destination tokens that were in extra slots
-            @pending_destination_tokens.each do |token, city|
-              place_destination_token(token.corporation, city.hex, token, city, log: false)
-            end
-            @pending_destination_tokens.clear
+            # safety net; normally already replaced during after_lay_tile
+            replace_pending_destination_tokens!
           end
         end
 
