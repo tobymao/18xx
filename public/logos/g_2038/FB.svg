@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <circle cx="100" cy="100" r="100" fill="#1f3a5f"/>
+  <text x="100" y="94" text-anchor="middle" font-weight="700" font-size="40" font-family="Arial" fill="#fff" textLength="107" lengthAdjust="spacing">Fast</text>
+  <text x="100" y="130" text-anchor="middle" font-weight="700" font-size="40" font-family="Arial" fill="#fff" textLength="125" lengthAdjust="spacing">Buck</text>
+</svg>
