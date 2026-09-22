@@ -359,6 +359,11 @@ module Engine
 
       IMPASSABLE_HEX_COLORS = %i[blue gray red].freeze
 
+      # When true, an unstarted corporation/minor's home-station reservation is
+      # drawn as a colored ring inset inside a white disc (using
+      # reservation_color) instead of filling the whole disc with that color.
+      RESERVATION_COLOR_HALO = false
+
       EVENTS_TEXT = {
         'close_companies' =>
           ['Companies Close', 'All companies unless otherwise noted are discarded from the game'],
