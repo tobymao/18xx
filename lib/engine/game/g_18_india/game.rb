@@ -1052,10 +1052,13 @@ module Engine
           @unclaimed_commodities + corporation.commodities
         end
 
+        # Number of claimed commodities shown directly on the corp card before
+        # the rest are collapsed behind the ability's desc_detail (click to expand).
+        COMMODITIES_ABILITY_VISIBLE_LIMIT = 3
+
         # Test using Ability to display Claimed Commodities on VIEW for Corporation card
         def claim_concession(corporation, commodity)
           ability = corporation.all_abilities.find { |a| a.type == :commodities }
-          ability.description = ability.description + commodity + ' '
           @log << "#{corporation.name} claims the #{commodity} concession"
           case commodity
           when 'ORE'
@@ -1067,6 +1070,19 @@ module Engine
           else
             corporation.commodities << commodity
             @unclaimed_commodities.delete(commodity)
+          end
+          update_commodities_ability(corporation, ability)
+        end
+
+        def update_commodities_ability(corporation, ability)
+          labels = corporation.commodities.map { |c| COMMODITY_BONUSES[c][:commodity] }.uniq
+
+          if labels.size > COMMODITIES_ABILITY_VISIBLE_LIMIT
+            ability.description = "Commodities: #{labels.first(COMMODITIES_ABILITY_VISIBLE_LIMIT).join(' ')} ▼"
+            ability.desc_detail = "Commodities: #{labels.join(' ')}"
+          else
+            ability.description = "Commodities: #{labels.join(' ')}"
+            ability.desc_detail = nil
           end
         end
 
