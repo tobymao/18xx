@@ -52,6 +52,10 @@ module Engine
 
         MUST_BUY_TRAIN = :always
 
+        # brown tiles - in addition to the default - cannot be built into unless there is track on the other side
+        IMPASSABLE_HEX_COLORS = %i[blue brown gray red].freeze
+        TRACK_RESTRICTION = :permissive
+
         MARKET = [['', '', '', ''] + %w[132 148 166 186 208 232 258 286 316 348 382 418],
                   ['', ''] + %w[98 108 120 134 150 168 188 210 234 260 288 318 350 384],
                   %w[82 86 92p 100 110 122 136 152 170 190 212 236 262 290 320],
