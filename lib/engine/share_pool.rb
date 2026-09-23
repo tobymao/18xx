@@ -352,10 +352,14 @@ module Engine
     end
 
     def num_presentation(bundle)
-      num_shares = bundle.num_shares
+      num_shares = bundle.shares.size
       return "a #{bundle.percent}% share" if num_shares == 1
 
-      "#{num_shares} shares"
+      shares = bundle.shares
+      unique_percentages = shares.uniq(&:percent)
+      return "#{num_shares} shares" if unique_percentages.one?
+
+      "#{bundle.percent}% (#{shares.map(&:percent).tally.map { |percent, count| "#{count}x #{percent}%" }.join(', ')})"
     end
 
     private
