@@ -62,7 +62,7 @@ module View
       private
 
       def share_presentation(bundle)
-        num_shares = bundle.num_shares
+        num_shares = bundle.shares.size
         return "a #{bundle.percent}%" if num_shares == 1 && bundle.percent != @corporation.share_percent
 
         shares = bundle.shares
