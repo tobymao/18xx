@@ -389,6 +389,25 @@ describe Engine::Game::G1822CA::Game do
     end
   end
 
+  describe '5' do
+    it 'does not block on the Token step after a corporation upgrades its own destination hex' do
+      # GTP upgrades its destination A7 (Prince Rupert). The destination token is
+      # briefly removed while the tile is laid; the Token step must still be
+      # skipped (GTP cannot place a normal token there) so the active step is
+      # Route, not Token. See https://github.com/tobymao/18xx/issues/12803
+      game = fixture_at_action(1241)
+
+      active_step = game.round.active_step
+      expect(active_step).to be_a(Engine::Game::G1822CA::Step::Route)
+      expect(active_step).not_to be_a(Engine::Step::Token)
+
+      a7 = game.hex_by_id('A7').tile.cities[0]
+      gtp = game.corporation_by_id('GTP')
+      expect(a7.tokened_by?(gtp)).to be(true)
+      expect(a7.tokens.map { |t| t&.type }).to eq([nil, :destination])
+    end
+  end
+
   describe '4' do
     it 'M13 Toronto' do
       game = fixture_at_action(988)
