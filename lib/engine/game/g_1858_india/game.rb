@@ -26,8 +26,8 @@ module Engine
           '6H' => 5,
           '5E' => 4,
           '6E' => 3,
-          '7E' => 20,
-          '5D' => 10,
+          '7E' => 'unlimited',
+          '5D' => 'unlimited',
           'Pullman' => 4,
         }.freeze
 

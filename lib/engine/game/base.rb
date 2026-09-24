@@ -2676,8 +2676,9 @@ module Engine
 
       def init_train_handler
         trains = game_trains.flat_map do |train|
-          Array.new(num_trains(train)) do |index|
-            self.class::TRAIN_CLASS.new(**train, index: index)
+          unlimited = num_trains(train) == 'unlimited'
+          Array.new(train_rank_count(train)) do |index|
+            self.class::TRAIN_CLASS.new(**train, unlimited: unlimited, index: index)
           end
         end
 
@@ -2688,12 +2689,21 @@ module Engine
         self.class::TRAINS
       end
 
+      # The number of trains available of a train type.
+      # @param train [Hash] The train definition.
+      # @return [integer, String] The number of trains available, or 'unlimited'.
       def num_trains(train)
-        if train[:num] == 'unlimited'
-          (train[:events] || []).filter_map { |e| e['when'] }.max || 1
-        else
-          train[:num]
-        end
+        train[:num]
+      end
+
+      # The number of Train objects to create at the start of a game for a train type.
+      # @param train [Hash] The train definition.
+      # @return [integer] The number of train objects to be created.
+      def train_rank_count(train)
+        count = num_trains(train)
+        return count unless count == 'unlimited'
+
+        (train[:events] || []).filter_map { |e| e['when'] }.max || 1
       end
 
       def init_minors
