@@ -1622,6 +1622,7 @@ module Engine
 
       def visited_stops(route)
         route.connection_data.flat_map { |c| [c[:left], c[:right]] }.uniq.compact
+             .flat_map { |s| s.respond_to?(:sub_stops) ? s.sub_stops : [s] }
       end
 
       def revenue_stops(route)

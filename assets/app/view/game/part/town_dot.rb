@@ -20,6 +20,7 @@ module View
         REVENUE_DISPLACEMENT = 42
         REVENUE_EDGE_DISPLACEMENT = 25
         REVENUE_ANGLE = -60
+        TWO_DOT_OFFSET = 12
 
         REVENUE_REGIONS = {
           flat: [9, 16],
@@ -109,25 +110,84 @@ module View
 
         def render_part
           radius = 10 * (0.8 + (@width.to_i / 40))
-
-          dot_attrs = {
-            transform: translate.to_s,
-            r: radius,
-            fill: (@town.halt? ? 'gray' : @color),
-            stroke: (@town.halt? ? @color : 'white'),
-            'stroke-width': 4,
-          }
+          fill = @town.halt? ? 'gray' : @color
+          stroke = @town.halt? ? @color : 'white'
 
           children = []
 
-          children << h(:circle, attrs: dot_attrs)
-          children << render_boom if @town.boom
-
-          if @show_revenue && (rendered = render_revenue)
-            children << rendered
+          case @town.size
+          when 2 then children.concat(render_double_town(radius, fill, stroke))
+          when 1 then children.concat(render_single_town(radius, fill, stroke))
+          else raise NotImplementedError, "Unsupported town size: #{@town.size}"
           end
+
           children << h(HitBox, click: -> { touch_node(@town) }, transform: translate) unless @town.solo?
           h(:g, { key: "#{@town.id}-d" }, children)
+        end
+
+        def render_double_town(radius, fill, stroke)
+          result = []
+          result << h(:ellipse, attrs: {
+                        transform: translate.to_s,
+                        rx: TWO_DOT_OFFSET + radius + 4,
+                        ry: radius + 3,
+                        fill: 'white',
+                        stroke: @color,
+                        'stroke-width': 2,
+                      })
+          [-TWO_DOT_OFFSET, TWO_DOT_OFFSET].each do |dx|
+            result << h(:circle, attrs: {
+                          transform: "#{translate} translate(#{dx} 0)",
+                          r: radius,
+                          fill: fill,
+                          stroke: stroke,
+                          'stroke-width': 4,
+                        })
+          end
+          if @show_revenue
+            rev = render_revenue_size2
+            result.concat(rev) unless rev.empty?
+          end
+          result
+        end
+
+        def render_single_town(radius, fill, stroke)
+          result = []
+          result << h(:circle, attrs: {
+                        transform: translate.to_s,
+                        r: radius,
+                        fill: fill,
+                        stroke: stroke,
+                        'stroke-width': 4,
+                      })
+          result << render_boom if @town.boom
+          if @show_revenue
+            rev = render_revenue
+            result << rev if rev
+          end
+          result
+        end
+
+        def render_revenue_size2
+          revenues = @town.uniq_revenues
+          return [] if revenues.size > 1
+
+          revenue = revenues.first
+          return [] if revenue.zero?
+
+          x = render_location[:x]
+          y = render_location[:y]
+
+          increment_weight_for_regions(REVENUE_REGIONS[layout])
+
+          [-REVENUE_DISPLACEMENT, REVENUE_DISPLACEMENT].map.with_index do |dx, i|
+            h(:g, {
+                key: "#{@town.id}-r#{i}",
+                attrs: { transform: "translate(#{(x + dx).round(2)} #{y.round(2)})" },
+              }, [
+              h(Part::SingleRevenue, revenue: revenue, transform: rotation_for_layout),
+            ])
+          end
         end
 
         def render_boom(transform: nil)
