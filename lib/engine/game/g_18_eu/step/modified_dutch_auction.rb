@@ -142,6 +142,10 @@ module Engine
             @current_reduction.positive?
           end
 
+          def programmable_buy_price?
+            true
+          end
+
           def may_choose?(_entity)
             !@auctioning
           end
