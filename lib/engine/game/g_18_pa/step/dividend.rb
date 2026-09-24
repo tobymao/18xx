@@ -11,14 +11,22 @@ module Engine
           include Engine::Step::MinorHalfPay
 
           def payout(entity, revenue)
-            return super if entity.corporation? && entity.type != :minor
+            return super unless entity.minor?
 
             amount = revenue / 2
             { corporation: 0, per_share: amount }
           end
 
+          def payout_shares(entity, revenue)
+            return super unless entity.minor?
+
+            amount = revenue / 2
+            @log << "#{entity.owner.name} receives #{@game.format_currency(amount)} (half of #{entity.name}'s earnings)"
+            @game.bank.spend(amount, entity.owner) if amount.positive?
+          end
+
           def share_price_change(entity, revenue = 0)
-            return {} if entity.type == :minor
+            return {} if entity.minor?
 
             super
           end

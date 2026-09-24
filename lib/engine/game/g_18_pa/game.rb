@@ -162,7 +162,7 @@ module Engine
         def setup
           @scranton_marker_ability = Engine::Ability::Description.new(type: 'description', description: 'Scranton Token')
 
-          @corporations.select { |corporation| corporation.type == :minor }.each do |minor|
+          @minors.each do |minor|
             train = @depot.upcoming.first
             train.reserved = true
             train.buyable = false
@@ -175,12 +175,22 @@ module Engine
           buy_train(corporation_by_id('NYC'), nyc_train, :free)
 
           # place the home station for all corporations and minors except NYC.
-          @corporations.each do |corporation|
+          (@minors + @corporations).each do |corporation|
             next if corporation.id == 'NYC'
 
             tile = hex_by_id(corporation.coordinates).tile
             tile.cities[corporation.city || 0].place_token(corporation, corporation.tokens.first, free: true)
           end
+        end
+
+        def minor_for(company)
+          minor_by_id(company.id.delete_prefix('P'))
+        end
+
+        def after_buy_company(player, company, _price)
+          minor = minor_for(company)
+          minor.owner = player
+          minor.float!
         end
 
         def scranton_marker_available?
