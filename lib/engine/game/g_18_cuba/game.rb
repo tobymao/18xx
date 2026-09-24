@@ -48,8 +48,8 @@ module Engine
         STARTING_CASH = { 2 => 950, 3 => 900, 4 => 680, 5 => 650, 6 => 650 }.freeze
 
         MARKET = [
-          %w[50 55 60 65 70p 75p 80p 85p 90p 95p 100p 105 110 115 120 126 192 198 144
-             151 158 172 180 188 196 204 013 222 231 240 250 260 275 290 300],
+          %w[50 55 60 65 70p 75p 80p 85p 90p 95p 100p 105 110 115 120 126 132 138 144
+             151 158 165 172 180 188 196 204 213 222 231 240 250 260 275 290 300],
         ].freeze
 
         STATUS_TEXT = Base::STATUS_TEXT.merge(
@@ -124,7 +124,7 @@ module Engine
         end
 
         def init_stock_market
-          StockMarket.new(self.class::MARKET, [], zigzag: :flip)
+          StockMarket.new(self.class::MARKET, [], zigzag: :flip, ledge_movement: true)
         end
 
         def multiple_buy_only_from_market?
