@@ -59,7 +59,7 @@ module Engine
         entity = entities[entity_index]
         if @auctioning
           entity.pass! if max_bid(entity, @auctioning) < min_bid(@auctioning)
-        elsif @companies.none? { |c| max_bid(entity, c) >= min_bid(c) }
+        elsif !@companies.empty? && @companies.none? { |c| max_bid(entity, c) >= min_bid(c) }
           @log << "#{entity.name} has no valid actions and passes"
           entity.pass!
           entity = nil if entities.all?(&:passed?)
