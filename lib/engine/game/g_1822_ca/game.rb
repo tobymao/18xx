@@ -836,8 +836,8 @@ module Engine
             return unless @destination_hexes.include?(hex.id)
 
             # pick up "cheater" destination tokens to remove the extra slot, put
-            # them back down in action_processed() so that after the upgrade
-            # they use an extra slot onlly if they need it
+            # them back down in after_lay_tile so that after the upgrade they
+            # use an extra slot only if they need it
             @pending_destination_tokens = old_tile.cities.each_with_object([]) do |city, tokens|
               city.tokens.each do |token|
                 tokens << [token, city_map[city]] if token&.type == :destination && token.cheater
