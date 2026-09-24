@@ -208,8 +208,8 @@ module Engine
             %w[D14 E15 K7 K9 M13 M17] => 'upgrade=cost:50,terrain:water',
             %w[G13 H6 H8 H12 I7 I9 J14 K15 N8 O7] =>
                    'upgrade=cost:70,terrain:mountain',
-            ['C9'] => 'border=edge:3,type:water',
-            ['B10'] => 'border=edge:0,type:water',
+            ['C9'] => 'border=edge:3,type:impassable,color:blue',
+            ['B10'] => 'border=edge:0,type:impassable,color:blue',
           },
           red: {
             ['C21'] => 'offboard=revenue:yellow_20|green_20|brown_40;path=a:1,b:_0',
