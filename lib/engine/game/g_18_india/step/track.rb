@@ -110,19 +110,28 @@ module Engine
               @round.laid_yellow_hexes << action.hex
             end
             super
-            move_oo_reservations(action) unless @round.pending_tokens.empty? # Pending token due to Yellow OO tile
             @round.next_empty_hexes = calculate_railhead_hexes unless @game.loading
           end
 
-          # Base code doesn't handle one token and a reservation in first city on OO tile
-          # Moves a reservation from city to hex to allow any of the two cities to be tokened
-          # Reservation to be moved back to empty city after token is placed (See HomeTrack < HomeToken)
-          def move_oo_reservations(action)
-            tile = action.tile
+          def update_token!(action, entity, tile, old_tile)
             cities = tile.cities
-            reservations = cities.flat_map(&:reservations).compact + tile.reservations
-            tile.reservations = reservations.uniq
-            cities.each(&:remove_all_reservations!)
+            return super if !old_tile.paths.empty? || tile.paths.empty? || cities.size <= 1
+
+            tokens = cities.flat_map(&:tokens).compact
+            return super if tokens.empty?
+
+            actor = entity.company? ? entity.owner : entity
+            tokens.each do |token|
+              @round.pending_tokens << { entity: actor, hexes: [action.hex], token: token }
+              token.remove!
+            end
+
+            @log << if tokens.one?
+                      "#{actor.name} must choose city for #{tokens.first.corporation.name} token"
+                    else
+                      "Place #{tokens.first.corporation.name} token; " \
+                        "#{tokens.last.corporation.name} token will be placed in the other city"
+                    end
           end
 
           # Bypass some Step::Tracker tests for Town to City upgrade: maintain exits, and check new exits are valid

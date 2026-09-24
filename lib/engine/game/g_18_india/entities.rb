@@ -209,7 +209,6 @@ module Engine
             float_percent: 30,
             max_ownership_percent: 100,
             coordinates: 'G8', # Delhi
-            city: 0,
             color: '#48bc39', # green
           },
           {
@@ -222,7 +221,6 @@ module Engine
             float_percent: 30,
             max_ownership_percent: 100,
             coordinates: 'P17', # Kolkata
-            city: 0,
             color: '#f14324', # orange
           },
           {
@@ -319,7 +317,6 @@ module Engine
             float_percent: 30,
             max_ownership_percent: 100,
             coordinates: 'P17', # Kolkata
-            city: 1,
             color: '#72818e', # gray
           },
           {
@@ -368,7 +365,6 @@ module Engine
             float_percent: 30,
             max_ownership_percent: 100,
             coordinates: 'G8', # Delhi
-            city: 1,
             color: '#c3b07a', # tan
           },
           {
