@@ -161,6 +161,9 @@ module Engine
           corporation_by_id('OL').forced_share_percent = 10
 
           @corporation_blocks = CORPORATION_BLOCKS.map { |block| block.map { |c| corporation_by_id(c) } }
+
+          # PR does not need a reservation, since its home token is put where 2's token was
+          hex_by_id('E19').tile.remove_reservation!(prussian)
         end
 
         def company_header(company)

@@ -284,6 +284,7 @@ module Engine
             floatable: false,
             max_ownership_percent: 100,
             shares: [10, 10, 10, 10, 10, 10, 10, 10, 5, 5, 5, 5],
+            coordinates: 'E19',
             color: '#37383a',
           },
           {
