@@ -46,14 +46,49 @@ module View
 
       # 2D markets
       HEIGHT_TOTAL = 50
-      TOKEN_PAD = 3                               # left/right padding of tokens within box
-      BOX_WIDTH = WIDTH_TOTAL - (2 * BORDER)
-      LEFT_MARGIN = TOKEN_PAD                     # left edge of leftmost token
-      RIGHT_MARGIN = BOX_WIDTH - TOKEN_PAD        # right edge of rightmost token
-      LEFT_TOKEN_POS = LEFT_MARGIN
-      RIGHT_TOKEN_POS = RIGHT_MARGIN - TOKEN_SIZE # left edge of rightmost token
-      MID_TOKEN_POS = (LEFT_TOKEN_POS + RIGHT_TOKEN_POS) / 2
+      TOKEN_PAD = 3 # left/right padding of tokens within box
       TOKEN_BORDER_WIDTH = 2
+
+      # Multiplier applied to 2D market cell width/height when the
+      # 'Large Cells' toggle is enabled (50% bigger in each dimension)
+      LARGE_CELL_SCALE = 1.5
+
+      # Only 2D grid markets support the large-cells toggle
+      def large_cells_available?
+        !@game.stock_market.hex_market? && !@game.stock_market.one_d?
+      end
+
+      def large_market_cells?
+        large_cells_available? && setting_for(:large_market_cells, @game)
+      end
+
+      def cell_scale_2d
+        large_market_cells? ? LARGE_CELL_SCALE : 1.0
+      end
+
+      def width_total_2d
+        (WIDTH_TOTAL * cell_scale_2d).round
+      end
+
+      def height_total_2d
+        (HEIGHT_TOTAL * cell_scale_2d).round
+      end
+
+      def box_width_2d
+        width_total_2d - (2 * BORDER)
+      end
+
+      def left_token_pos_2d
+        TOKEN_PAD
+      end
+
+      def right_token_pos_2d
+        (box_width_2d - TOKEN_PAD) - TOKEN_SIZE
+      end
+
+      def mid_token_pos_2d
+        (left_token_pos_2d + right_token_pos_2d) / 2
+      end
 
       # Hex markets
       HEX_WIDTH_TOTAL = 20
@@ -106,7 +141,7 @@ module View
       CROSSHATCH_TYPES = %i[par_overlap convert_range].freeze
       BORDER_TYPES = %i[max_price max_price_1].freeze
 
-      def cell_style(box_style, types)
+      def cell_style(box_style, types, width_total = WIDTH_TOTAL)
         normal_types = types.reject { |t| BORDER_TYPES.include?(t) }
         color = @game.class::STOCKMARKET_COLORS[normal_types&.first]
         color_to_use = color ? COLOR_MAP[color] : color_for(:bg2)
@@ -123,7 +158,7 @@ module View
         unless (types & BORDER_TYPES).empty?
           style[:borderRightWidth] = "#{BORDER * 4}px"
           style[:borderRightColor] = @game.class::STOCKMARKET_COLORS[(types & BORDER_TYPES).first]
-          style[:width] = "#{WIDTH_TOTAL - (2 * PAD) - (2 * BORDER) - 3}px"
+          style[:width] = "#{width_total - (2 * PAD) - (2 * BORDER) - 3}px"
         end
         if color == :black
           style[:color] = 'gainsboro'
@@ -164,7 +199,7 @@ module View
           props[:attrs][:width] = "#{TOKEN_SIZE}px"
           props[:style] = {
             position: 'absolute',
-            left: num > 1 ? "#{LEFT_TOKEN_POS + ((num - index - 1) * spacing)}px" : "#{MID_TOKEN_POS}px",
+            left: num > 1 ? "#{left_token_pos_2d + ((num - index - 1) * spacing)}px" : "#{mid_token_pos_2d}px",
             zIndex: num - index,
           }
         end
@@ -408,7 +443,7 @@ module View
             if price
               corporations = price.corporations
               num = corporations.size
-              spacing = num > 1 ? (RIGHT_TOKEN_POS - LEFT_TOKEN_POS) / (num - 1) : 0
+              spacing = num > 1 ? (right_token_pos_2d - left_token_pos_2d) / (num - 1) : 0
               tokens = corporations.map.with_index { |corp, index| h(:img, token_props(corp, index, num, spacing)) }
 
               # first cell on left, not on bottom row, has price in cell below
@@ -426,7 +461,7 @@ module View
 
               first_price = false
 
-              h(:div, { style: cell_style(@box_style_2d, price.types) },
+              h(:div, { style: cell_style(@box_style_2d, price.types, width_total_2d) },
                 [
                   h('div.xsmall_font', price.price),
                   h(:div, tokens),
@@ -446,14 +481,26 @@ module View
         setting_for(:simple_logos, @game) ? entity.simple_logo : entity.logo
       end
 
+      def render_market_controls
+        on_click = lambda do
+          toggle_setting(:large_market_cells, @game)
+          update
+        end
+
+        props = { on: { click: on_click } }
+        button = h('button.small', props, "Large Cells #{large_market_cells? ? '✅' : '❌'}")
+
+        h('div#market_controls', { style: { marginBottom: '0.5rem' } }, [button])
+      end
+
       def render
         # For locations in the grid with no cells
         @space_style_2d = {
           position: 'relative',
           display: 'inline-block',
           padding: "#{PAD}px",
-          width: "#{WIDTH_TOTAL - (2 * PAD) - (2 * BORDER)}px",
-          height: "#{HEIGHT_TOTAL - (2 * PAD) - (2 * BORDER)}px",
+          width: "#{width_total_2d - (2 * PAD) - (2 * BORDER)}px",
+          height: "#{height_total_2d - (2 * PAD) - (2 * BORDER)}px",
           border: "solid #{BORDER}px rgba(0,0,0,0)",
           margin: '0',
           verticalAlign: 'top',
@@ -493,6 +540,7 @@ module View
           },
         }
         children << h(:div, grid_props, grid)
+        children << render_market_controls if large_cells_available?
 
         if @explain_colors
           type_text = @game.class::MARKET_TEXT
@@ -520,7 +568,7 @@ module View
             }
 
             h(:div, line_props, [
-              h(:div, { style: cell_style(@box_style_2d, [type]) }, []),
+              h(:div, { style: cell_style(@box_style_2d, [type], width_total_2d) }, []),
               h(:div, { style: { maxWidth: '24rem' } }, type_text[type]),
             ])
           end
