@@ -57,9 +57,12 @@ module View
                   events = []
                   events << h('div.left', "obsoletes #{obsolete_schedule[name].join(', ')}") unless obsolete_schedule[name].empty?
                   events << h('div.left', "rusts #{rust_schedule[name].join(', ')}") unless rust_schedule[name].empty?
+
+                  count_str = trains.first.unlimited ? 'Unlimited' : "×#{trains.size}"
+
                   tds = [h(:td, @game.info_train_name(trains.first)),
                          h("td#{price_str_class}", @game.info_train_price(trains.first)),
-                         h('td.right', "×#{trains.size}")]
+                         h('td.right', count_str)]
                   tds << h('td.right', events) unless events.empty?
 
                   h(:tr, tds)
