@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative '../g_1846/game'
 require_relative 'entities'
 require_relative 'map'
 require_relative 'meta'
@@ -16,6 +17,28 @@ module Engine
         include CompanyPriceUpToFace
 
         BANK_CASH = 10_000
+        STARTING_CASH = { 3 => 600, 4 => 450, 5 => 400 }.freeze
+
+        CAPITALIZATION = :incremental
+        HOME_TOKEN_TIMING = :float
+        MUST_SELL_IN_BLOCKS = true
+        POOL_SHARE_DROP = :left_block
+        SELL_AFTER = :p_any_operate
+        SELL_BUY_ORDER = :sell_buy
+        SELL_MOVEMENT = :left_block_pres
+
+        EBUY_FROM_OTHERS = :never
+        EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
+        MUST_EMERGENCY_ISSUE_BEFORE_EBUY = true
+        MUST_BUY_TRAIN = :always
+
+        BANKRUPTCY_ENDS_GAME_AFTER = :all_but_one
+        GAME_END_CHECK = {
+          bankrupt: :immediate,
+          bank: :full_or,
+          all_closed: :immediate,
+          final_train: :one_more_full_or_set,
+        }.freeze
 
         CERT_LIMIT = {
           3 => { 14 => 35, 13 => 33, 12 => 30, 11 => 28, 10 => 26, 9 => 24, 8 => 22, 7 => 19, 6 => 16, 5 => 14 },
@@ -23,11 +46,7 @@ module Engine
           5 => { 14 => 21, 13 => 20, 12 => 18, 11 => 17, 10 => 16, 9 => 14, 8 => 13, 7 => 11, 6 => 10, 5 => 8 },
         }.freeze
 
-        STARTING_CASH = { 3 => 600, 4 => 450, 5 => 400 }.freeze
-
-        CAPITALIZATION = :incremental
-
-        MUST_SELL_IN_BLOCKS = true
+        TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: :not_if_upgraded }].freeze
 
         MARKET = [
           %w[0c 10 20 30 40p 50p 60p 70p 80p 90p 100p 112p 124p 137p 150p
@@ -149,6 +168,22 @@ module Engine
           },
         ].freeze
 
+        def num_trains(train)
+          return takeover_game? ? 5 : 3 if train[:name] == '6/9'
+
+          train[:num]
+        end
+
+        def setup
+          setup_company_price_up_to_face
+
+          @last_action = nil
+        end
+
+        def ipo_name(_entity = nil)
+          'Treasury'
+        end
+
         def new_auction_round
           Engine::Round::Auction.new(self, [
             G1833NE::Step::WaterfallAuction,
@@ -158,25 +193,25 @@ module Engine
         def stock_round
           Engine::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
-            G1846::Step::Assign,
+            Engine::Step::Assign,
             G1846::Step::BuySellParShares,
           ])
         end
 
         def operating_round(round_num)
           @round_num = round_num
-          G1846::Round::Operating.new(self, [
+          G1833NE::Round::Operating.new(self, [
             G1846::Step::Bankrupt,
-            G1846::Step::Assign,
+            Engine::Step::Assign,
             Engine::Step::SpecialToken,
-            G1846::Step::SpecialTrack,
-            G1846::Step::BuyCompany,
+            Engine::Step::SpecialTrack,
+            G1833NE::Step::BuyCompany,
             G1846::Step::IssueShares,
-            G1846::Step::TrackAndToken,
+            G1833NE::Step::TrackAndToken,
             Engine::Step::Route,
             G1846::Step::Dividend,
             Engine::Step::DiscardTrain,
-            G1846::Step::BuyTrain,
+            G1833NE::Step::BuyTrain,
             [G1846::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
@@ -191,11 +226,11 @@ module Engine
         def next_round!
           @round =
             case @round
-            when Round::Stock
+            when Engine::Round::Stock
               @operating_rounds = @phase.operating_rounds
               reorder_players
               new_operating_round
-            when Round::Operating
+            when Engine::Round::Operating
               if @round.round_num < @operating_rounds
                 or_round_finished
                 new_operating_round(@round.round_num + 1)
@@ -208,7 +243,7 @@ module Engine
                 or_round_finished
                 new_stock_round
               end
-            when Round::Takeover
+            when G1833NE::Round::Takeover
               new_stock_round
             when init_round.class
               init_round_finished
@@ -219,15 +254,100 @@ module Engine
 
         def new_takeover_round
           @log << '-- Takeover Round -- '
-          takeover_round(round_num)
+          takeover_round
         end
 
-        def num_trains(train)
-          if train[:name] == '6/9'
-            takeover_game? ? 5 : 3
+        def operating_order
+          corporations = @corporations.select(&:floated?)
+          if @turn == 1 && (@round_num || 1) == 1
+            corporations.sort_by! do |c|
+              sp = c.share_price
+              [sp.price, sp.corporations.find_index(c)]
+            end
+          else
+            corporations.sort!
           end
+        end
+
+        def sellable_bundles(player, corporation)
+          return [] if corporation.receivership?
 
           super
+        end
+
+        def buying_power(entity, **)
+          entity.cash + (issuable_shares(entity).map(&:price).max || 0)
+        end
+
+        def total_emr_buying_power(player, corporation)
+          emergency = (issuable = emergency_issuable_cash(corporation)).zero?
+          corporation.cash + issuable + liquidity(player, emergency: emergency)
+        end
+
+        def issuable_shares(entity)
+          return [] unless entity.corporation?
+          return [] unless round.steps.find { |step| step.instance_of?(G1846::Step::IssueShares) }.active?
+
+          num_shares = entity.num_player_shares - entity.num_market_shares
+          bundles = bundles_for_corporation(entity, entity)
+          share_price = stock_market.find_share_price(entity, :left).price
+
+          bundles
+            .each { |bundle| bundle.share_price = share_price }
+            .reject { |bundle| bundle.num_shares > num_shares }
+        end
+
+        def redeemable_shares(entity)
+          return [] unless entity.corporation?
+          return [] unless round.steps.find { |step| step.instance_of?(G1846::Step::IssueShares) }.active?
+
+          share_price = stock_market.find_share_price(entity, :right).price
+
+          bundles_for_corporation(share_pool, entity)
+            .each { |bundle| bundle.share_price = share_price }
+            .reject { |bundle| entity.cash < bundle.price }
+        end
+
+        def emergency_issuable_bundles(corp)
+          return [] if corp.trains.any?
+          return [] if @round.emergency_issued
+          return [] unless (train = @depot.min_depot_train)
+
+          min_train_price, max_train_price = train.variants.map { |_, v| v[:price] }.minmax
+          return [] if corp.cash >= max_train_price
+
+          bundles = bundles_for_corporation(corp, corp)
+
+          num_issuable_shares = corp.num_player_shares - corp.num_market_shares
+          bundles.reject! { |bundle| bundle.num_shares > num_issuable_shares }
+
+          bundles.each do |bundle|
+            directions = [:left] * (1 + bundle.num_shares)
+            bundle.share_price = stock_market.find_share_price(corp, directions).price
+          end
+
+          # cannot issue shares that generate no money
+          bundles.reject! { |b| b.price.zero? }
+
+          bundles.sort_by!(&:price)
+
+          # Cannot issue more shares than needed to buy the train from the bank
+          # (but may buy either variant)
+          train_buying_bundles = bundles.select { |b| (corp.cash + b.price) >= min_train_price }
+          if train_buying_bundles.any?
+            bundles = train_buying_bundles
+
+            index = bundles.find_index { |b| (corp.cash + b.price) >= max_train_price }
+            return bundles.take(index + 1) if index
+
+            return bundles
+          end
+
+          # if a train cannot be afforded, issue all possible shares
+          biggest_bundle = bundles.max_by(&:num_shares)
+          return [biggest_bundle] if biggest_bundle
+
+          []
         end
 
         def takeover_game?
