@@ -299,6 +299,13 @@ module Engine
           LAY_OR_UPGRADE
         end
 
+        def upgrades_to?(from, to, special = nil, selected_company: nil)
+          # green double cities cannot be upgraded any further
+          return false if from.name == '14' || from.name == '15'
+
+          super
+        end
+
         def payout_companies
           # omit paying out companies if any Prussian conversion could happen. Payout is then handled by MinorExchange
           # after all choices have been made
