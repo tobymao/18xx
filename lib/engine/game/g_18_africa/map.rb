@@ -84,11 +84,13 @@ module Engine
             'code' => 'city=revenue:50;city=revenue:50;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;'\
                       'path=a:4,b:_1;path=a:0,b:_1',
           },
-          # through track N-S; from N branch into the western city, from S into the eastern city
+          # through track N-S touching no City; from the N a branch ends in the western City, from the S a
+          # branch runs through the eastern City on to the NE edge
           'A22' => {
             'count' => 1,
             'color' => 'gray',
-            'code' => 'city=revenue:50;city=revenue:50;path=a:0,b:3;path=a:3,b:_0;path=a:0,b:_1;path=a:4,b:_1',
+            'code' => 'city=revenue:50,loc:1.5;city=revenue:50,loc:4.5;path=a:0,b:3;path=a:3,b:_0;path=a:0,b:_1;'\
+                      'path=a:4,b:_1',
           },
         }.freeze
 
