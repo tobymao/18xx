@@ -13,7 +13,7 @@ module Engine
         GAME_TITLE = '18Africa'
         GAME_DESIGNER = 'Jeff Edmunds'
         GAME_LOCATION = 'Africa'
-        GAME_RULES_URL = 'https://boardgamegeek.com/filepage/116302/rules'
+        GAME_RULES_URL = 'https://boardgamegeek.com/filepage/302566/rules-v21'
         GAME_ISSUE_LABEL = '18Africa'
 
         PLAYER_RANGE = [2, 5].freeze
