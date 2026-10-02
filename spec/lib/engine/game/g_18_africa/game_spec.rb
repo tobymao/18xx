@@ -43,6 +43,12 @@ module Engine
           expect(counts.call(new_game(2))).to eq('2' => 5, '3' => 3)
         end
 
+        it 'describes every train event on the Info tab' do
+          events = Game::TRAINS.flat_map { |train| train[:events] || [] }.map { |event| event['type'] }
+          expect(events).to eq(['all_trains_available'])
+          expect(Game::EVENTS_TEXT.keys).to include(*events)
+        end
+
         it 'marks every Commodity and destination port with a sticky icon' do
           game = new_game(3)
           G18Africa::Map::CONCESSIONS.each do |id, data|

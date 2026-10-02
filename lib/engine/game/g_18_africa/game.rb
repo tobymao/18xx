@@ -70,6 +70,14 @@ module Engine
           { name: 'All', train_limit: 2, tiles: %i[yellow green brown gray], operating_rounds: 2 },
         ].freeze
 
+        EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+          'all_trains_available' => [
+            'All Trains Available',
+            'Only after the third and last 4E has been bought can the 3+3, 3+3T, 4+4+4E and 4+4+4T trains be '\
+            'bought, in any order',
+          ],
+        ).freeze
+
         # Towns never count against the distance; only Cities do [3.4.1].
         # 'E' trains visit any number of Cities and count the best four stops [3.4.3].
         TRAINS = [
