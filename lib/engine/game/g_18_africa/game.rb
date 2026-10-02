@@ -170,6 +170,36 @@ module Engine
           mark_commodities
         end
 
+        # Commodity diamonds and port plaques are drawn without the round background of large icons,
+        # so they cannot be mistaken for tokens
+        def decorate_marker(icon)
+          return unless CONCESSIONS.key?(icon.name.split('-').first.upcase)
+
+          { shape: :none }
+        end
+
+        # Round definitions use engine defaults only; the custom steps follow in later PRs
+        def stock_round
+          Round::Stock.new(self, [
+            Engine::Step::DiscardTrain,
+            Engine::Step::BuySellParShares,
+          ])
+        end
+
+        def operating_round(round_num)
+          Round::Operating.new(self, [
+            Engine::Step::HomeToken,
+            Engine::Step::Track,
+            Engine::Step::Token,
+            Engine::Step::Route,
+            Engine::Step::Dividend,
+            Engine::Step::DiscardTrain,
+            Engine::Step::BuyTrain,
+          ], round_num: round_num)
+        end
+
+        private
+
         def remove_unused_corporations!
           keep = CORPORATIONS_IN_GAME[@players.size]
           removed = @corporations.sort_by { rand }.drop(keep)
@@ -201,34 +231,6 @@ module Engine
 
         def add_sticky_icon(hex_id, image)
           hex_by_id(hex_id).tile.icons << Part::Icon.new("18_africa/#{image}", nil, true, nil, true, large: true)
-        end
-
-        # Commodity diamonds and port plaques are drawn without the round background of large icons,
-        # so they cannot be mistaken for tokens
-        def decorate_marker(icon)
-          return unless CONCESSIONS.key?(icon.name.split('-').first.upcase)
-
-          { shape: :none }
-        end
-
-        # Round definitions use engine defaults only; the custom steps follow in later PRs
-        def stock_round
-          Round::Stock.new(self, [
-            Engine::Step::DiscardTrain,
-            Engine::Step::BuySellParShares,
-          ])
-        end
-
-        def operating_round(round_num)
-          Round::Operating.new(self, [
-            Engine::Step::HomeToken,
-            Engine::Step::Track,
-            Engine::Step::Token,
-            Engine::Step::Route,
-            Engine::Step::Dividend,
-            Engine::Step::DiscardTrain,
-            Engine::Step::BuyTrain,
-          ], round_num: round_num)
         end
       end
     end
