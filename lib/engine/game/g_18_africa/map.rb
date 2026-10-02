@@ -207,13 +207,13 @@ module Engine
 
             # Variable Cities [3.4.4]; the value depends on the route, so only the label is shown,
             # see VARIABLE_CITY_MODIFIERS
-            ['D3'] => 'city=revenue:20,hide:1;path=a:0,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=?+20',
-            ['E2'] => 'city=revenue:20,hide:1;path=a:0,b:_0;path=a:1,b:_0;path=a:5,b:_0;label=?+0',
-            ['G2'] => 'city=revenue:20,hide:1;path=a:1,b:_0;path=a:4,b:_0;label=?+20',
-            ['G16'] => 'city=revenue:20,hide:1;path=a:2,b:_0;path=a:5,b:_0;label=?+20',
-            ['K36'] => 'city=revenue:20,hide:1;path=a:2,b:_0;path=a:4,b:_0;label=?+40',
-            ['N5'] => 'city=revenue:20,hide:1;path=a:0,b:_0;path=a:1,b:_0;label=?+30',
-            ['P23'] => 'city=revenue:20,hide:1;path=a:0,b:_0;path=a:3,b:_0;label=?+10',
+            ['D3'] => 'city=revenue:0;path=a:0,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=?+20',
+            ['E2'] => 'city=revenue:0;path=a:0,b:_0;path=a:1,b:_0;path=a:5,b:_0;label=?+0',
+            ['G2'] => 'city=revenue:0;path=a:1,b:_0;path=a:4,b:_0;label=?+20',
+            ['G16'] => 'city=revenue:0;path=a:2,b:_0;path=a:5,b:_0;label=?+20',
+            ['K36'] => 'city=revenue:0;path=a:2,b:_0;path=a:4,b:_0;label=?+40',
+            ['N5'] => 'city=revenue:0;path=a:0,b:_0;path=a:1,b:_0;label=?+30',
+            ['P23'] => 'city=revenue:0;path=a:0,b:_0;path=a:3,b:_0;label=?+10',
           },
         }.freeze
 

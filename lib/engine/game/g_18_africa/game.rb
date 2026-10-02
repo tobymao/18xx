@@ -211,11 +211,6 @@ module Engine
           { shape: :none }
         end
 
-        # Variable Cities are marked hide: their "?+X" label replaces the printed revenue [3.4.4]
-        def hide_city_revenue?
-          true
-        end
-
         # Round definitions use engine defaults only; the custom steps follow in later PRs
         def stock_round
           Round::Stock.new(self, [
