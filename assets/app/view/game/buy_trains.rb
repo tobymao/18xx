@@ -520,7 +520,7 @@ module View
               train_props[:style][:backgroundColor] = color
               train_props[:style][:color] = contrast_on(color)
             end
-            line = if @show_other_players || other_owner(other) == corp_owner(@corporation)
+            line = if corp_owner(other) && (@show_other_players || other_owner(other) == corp_owner(@corporation))
                      [h(:div, train_props, name),
                       h('div.nowrap', train_props,
                         "#{other.name} (#{count > 1 ? "#{count}, " : ''}#{corp_owner(other).name}#{real_name})"),
