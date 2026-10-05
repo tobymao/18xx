@@ -49,9 +49,10 @@ module View
         ICON_RADIUS = 16
 
         def render_part
-          color = ((@reservation&.corporation? || @reservation&.minor?) &&
-                    @reservation&.reservation_color) ||
-                    'white'
+          reservation_color = (@reservation&.corporation? || @reservation&.minor?) && @reservation&.reservation_color
+          use_halo = reservation_color && @game&.class::RESERVATION_COLOR_HALO
+
+          color = use_halo ? 'white' : (reservation_color || 'white')
 
           radius = @radius
           show_player_colors = setting_for(:show_player_colors, @game)
@@ -79,6 +80,16 @@ module View
           end
 
           children = [h(:circle, attrs: token_attrs)]
+
+          if use_halo && !@token
+            children << h(:circle, attrs: {
+                            r: @radius - 4,
+                            fill: 'none',
+                            stroke: reservation_color,
+                            'stroke-width': 5,
+                          })
+          end
+
           children << reservation if @reservation && !@token
           children << render_boom if @city&.boom
           children << render_slot_icon if @city&.slot_icons&.[](@slot_index)

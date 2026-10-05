@@ -145,6 +145,7 @@ module Engine
         MUST_BID_INCREMENT_MULTIPLE = true
         MUST_BUY_TRAIN = :always
         TRAIN_PRICE_MULTIPLE = 5
+        RESERVATION_COLOR_HALO = true
 
         GAME_END_CHECK = { stock_market: :current_round, sl_formed: :full_or }.freeze
 
@@ -169,15 +170,15 @@ module Engine
           @starting_phase = {}
           @offer_order.take(5).each do |corporation|
             @starting_phase[corporation] = '2'
-            corporation.reservation_color = '#ffff75'
+            corporation.reservation_color = 'yellow'
           end
           @offer_order.slice(5, 4).each do |corporation|
             @starting_phase[corporation] = '3'
-            corporation.reservation_color = '#a2f075'
+            corporation.reservation_color = 'green'
           end
           @offer_order.slice(9, 3).each do |corporation|
             @starting_phase[corporation] = '6'
-            corporation.reservation_color = '#fba775'
+            corporation.reservation_color = 'brown'
           end
         end
 
