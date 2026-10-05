@@ -1682,7 +1682,7 @@ module Engine
           return if !corporation || @major_national_formed[corporation.id]
 
           share_price = forced_formation_par_prices(corporation).last
-          @stock_market.set_par(corporation, share_price)
+          par_corporation(corporation, share_price)
           @log << "#{corporation.name} #{ipo_verb(corporation)} at #{format_currency(share_price.price)}"
 
           # Find the share holders to give a share, then close the minor
@@ -1721,7 +1721,7 @@ module Engine
 
           # Set the correct par price
           share_price = forced_formation_par_prices(corporation).last
-          @stock_market.set_par(corporation, share_price)
+          par_corporation(corporation, share_price)
 
           # Find the president and give player the share, and spend the money. The player can go into debt
           player = corporation.par_via_exchange.owner
@@ -2035,7 +2035,7 @@ module Engine
           corporation.ipoed = true
           corporation.owner = player
 
-          @stock_market.set_par(corporation, share_price)
+          par_corporation(corporation, share_price)
           share = corporation.ipo_shares.first
           @share_pool.transfer_shares(share.to_bundle, player)
 

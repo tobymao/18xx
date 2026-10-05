@@ -52,7 +52,7 @@ module Engine
 
       it 'should remove unparred corporations at purple phase' do
         player_1.set_cash(10_000, game.bank)
-        stock_market.set_par(corporation, game.par_prices.first)
+        game.par_corporation(corporation, game.par_prices.first)
         5.times { game.share_pool.buy_shares(player_1, corporation.shares.first) }
 
         erie = game.corporations.find { |c| c.name == 'ERIE' }
@@ -79,7 +79,7 @@ module Engine
 
       it 'should block unless coal marker purchased' do
         player_1.set_cash(10_000, game.bank)
-        stock_market.set_par(ic, game.par_prices.first)
+        game.par_corporation(ic, game.par_prices.first)
         5.times { game.share_pool.buy_shares(player_1, ic.shares.first) }
 
         next_or!
@@ -119,7 +119,7 @@ module Engine
 
       it 'should acquire coal marker when laying VA tunnel' do
         player_1.set_cash(10_000, game.bank)
-        stock_market.set_par(co, game.par_prices.first)
+        game.par_corporation(co, game.par_prices.first)
         5.times { game.share_pool.buy_shares(player_1, co.shares.first) }
 
         next_or!

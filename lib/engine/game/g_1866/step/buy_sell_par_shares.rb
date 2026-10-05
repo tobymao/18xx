@@ -99,7 +99,7 @@ module Engine
             raise GameError, "#{corporation} can't be parred" unless @game.can_par?(corporation, entity)
 
             if corporation.par_via_exchange
-              @game.stock_market.set_par(corporation, share_price)
+              @game.par_corporation(corporation, share_price)
 
               # Select the president share to buy
               share = corporation.ipo_shares.first

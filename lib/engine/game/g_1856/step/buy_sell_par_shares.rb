@@ -171,7 +171,7 @@ module Engine
 
             corporation.par!
             @log << "#{corporation.name} is parred as a #{corporation.capitalization_type_desc} cap corporation"
-            @game.stock_market.set_par(corporation, share_price)
+            @game.par_corporation(corporation, share_price)
             share = corporation.shares.first
             buy_shares(entity, share.to_bundle)
             @game.after_par(corporation)

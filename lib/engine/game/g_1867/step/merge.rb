@@ -90,7 +90,7 @@ module Engine
               sp.price <= corporation.share_price.price
             end
 
-            @game.stock_market.set_par(target, new_price)
+            @game.par_corporation(target, new_price)
             owner = corporation.owner
 
             @converting = nil
@@ -174,7 +174,7 @@ module Engine
               raise GameError, 'Merge impossible, no player can become president'
             end
 
-            @game.stock_market.set_par(target, merged_par)
+            @game.par_corporation(target, merged_par)
 
             # Replace the entity with the new one.
             @round.entities[@round.entity_index] = target

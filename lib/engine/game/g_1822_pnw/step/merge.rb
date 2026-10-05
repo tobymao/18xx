@@ -140,7 +140,7 @@ module Engine
           def process_select_par(action)
             @selected_par = action.choice.to_i
             @game.log << "#{@new_corporation.name} is parred at #{@game.format_currency(@selected_par)}"
-            @game.stock_market.set_par(@new_corporation, @game.stock_market.par_prices.find { |pp| pp.price == @selected_par })
+            @game.par_corporation(@new_corporation, @game.stock_market.par_prices.find { |pp| pp.price == @selected_par })
             @merge_state = :selecting_shares
           end
 

@@ -156,7 +156,7 @@ module Engine
             entity = action.entity
             raise GameError, "#{corporation.name} cannot be parred" unless @game.can_par?(corporation, entity)
 
-            @game.stock_market.set_par(corporation, share_price)
+            @game.par_corporation(corporation, share_price)
             share = @game.share_by_id("#{corporation.name}_0")
             buy_shares(action.purchase_for || entity, share.to_bundle, borrow_from: action.borrow_from)
             @game.after_par(corporation)
