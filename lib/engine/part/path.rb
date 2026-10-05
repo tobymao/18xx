@@ -140,6 +140,7 @@ module Engine
         converging: true,
         walk_calls: Hash.new(0),
         backtracking: false,
+        pruner: nil,
         &block
       )
         walk_calls[:all] += 1
@@ -149,6 +150,7 @@ module Engine
         return if edges.sum { |edge| counter[edge.id] }.positive?
         return if track == skip_track
         return if @junction && @terminal
+        return if converging && pruner&.prune?(self)
 
         walk_calls[:not_skipped] += 1
 
@@ -168,6 +170,7 @@ module Engine
               converging: converging,
               walk_calls: walk_calls,
               backtracking: backtracking,
+              pruner: pruner,
               &block
             )
           end
@@ -184,7 +187,7 @@ module Engine
 
               p.walk(skip: edge, visited: visited, skip_paths: skip_paths, counter: counter, skip_track: skip_track,
                      converging: converging || @tile.converging_exit?(edge), walk_calls: walk_calls,
-                     backtracking: backtracking, &block)
+                     backtracking: backtracking, pruner: pruner, &block)
             end
           end
 
@@ -199,7 +202,7 @@ module Engine
 
             np.walk(skip: np_edge, visited: visited, skip_paths: skip_paths, counter: counter, skip_track: skip_track,
                     converging: converging || @tile.converging_exit?(edge), walk_calls: walk_calls,
-                    backtracking: backtracking, &block)
+                    backtracking: backtracking, pruner: pruner, &block)
           end
 
           counter[edge_id] -= 1
