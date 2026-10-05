@@ -72,12 +72,12 @@ module Engine
             sym: 'P5',
           },
           {
-            name: 'P6. Ogdensburg Railroad',
+            name: 'P6. Delaware & Hudson Railroad',
             value: 80,
             revenue: 30,
             desc: 'May use D&H RR (hex A12) as a token to lay track and run a route (only).'\
                   'Purchasing corporation must pay an additional $40 to the bank when buying this in.',
-            abilities: [], # todo
+            abilities: [{ type: 'close', on_phase: 'never', owner_type: 'corporation' }], # still more todo
             sym: 'P6',
           },
         ].freeze
