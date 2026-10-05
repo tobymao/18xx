@@ -19,6 +19,8 @@ module Engine
         def map_ms_game_tiles(tiles)
           tiles['8'] += 3
           tiles['9'] += 1
+          tiles['23'] += 1
+          tiles['24'] += 1
           tiles.delete('12')
           tiles.delete('13')
           tiles.delete('205')
