@@ -28,6 +28,7 @@ module Engine
                 owner_type: 'corporation',
                 discount: 20,
                 hexes: ['G20'],
+                count: 1,
               },
             ],
             sym: 'P2',

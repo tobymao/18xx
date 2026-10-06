@@ -16,6 +16,8 @@ module Engine
         include Map
         include CompanyPriceUpToFace
 
+        attr_accessor :last_action, :lowell_merchants_company_purchased
+
         BANK_CASH = 10_000
         STARTING_CASH = { 3 => 600, 4 => 450, 5 => 400 }.freeze
 
@@ -31,6 +33,7 @@ module Engine
         EBUY_DEPOT_TRAIN_MUST_BE_CHEAPEST = false
         MUST_EMERGENCY_ISSUE_BEFORE_EBUY = true
         MUST_BUY_TRAIN = :always
+        TILE_COST = 20
 
         BANKRUPTCY_ENDS_GAME_AFTER = :all_but_one
         GAME_END_CHECK = {
@@ -178,6 +181,7 @@ module Engine
           setup_company_price_up_to_face
 
           @last_action = nil
+          @lowell_merchants_company_purchased = false
         end
 
         def ipo_name(_entity = nil)
@@ -204,7 +208,7 @@ module Engine
             G1846::Step::Bankrupt,
             Engine::Step::Assign,
             Engine::Step::SpecialToken,
-            Engine::Step::SpecialTrack,
+            G1833NE::Step::SpecialTrack,
             G1833NE::Step::BuyCompany,
             G1846::Step::IssueShares,
             G1833NE::Step::TrackAndToken,
@@ -212,7 +216,7 @@ module Engine
             G1846::Step::Dividend,
             Engine::Step::DiscardTrain,
             G1833NE::Step::BuyTrain,
-            [G1846::Step::BuyCompany, { blocks: true }],
+            [G1833NE::Step::BuyCompany, { blocks: true }],
           ], round_num: round_num)
         end
 
@@ -231,6 +235,7 @@ module Engine
               reorder_players
               new_operating_round
             when Engine::Round::Operating
+              remove_lowell_merchants_ability if @lowell_merchants_company_purchased
               if @round.round_num < @operating_rounds
                 or_round_finished
                 new_operating_round(@round.round_num + 1)
@@ -267,6 +272,10 @@ module Engine
           else
             corporations.sort!
           end
+        end
+
+        def upgrade_cost(tile, hex, entity, spender)
+          [self.class::TILE_COST, super].max
         end
 
         def sellable_bundles(player, corporation)
@@ -352,6 +361,20 @@ module Engine
 
         def takeover_game?
           @takeover_game ||= @optional_rules&.include?(:takeover_game)
+        end
+
+        def lowell_merchants_company
+          @lowell_merchants_company ||= company_by_id('P2')
+        end
+
+        def remove_lowell_merchants_ability
+          corp = lowell_merchants_company.owner
+          ability = corp.all_abilities.find { |a| a.type == :tile_discount }
+
+          corp.remove_ability(ability)
+          @log << "#{corp.name} loses the ability to lay a tile in G20 for free." if hex_by_id('G20').tile.color == :white
+
+          @lowell_merchants_company_purchased = false
         end
       end
     end

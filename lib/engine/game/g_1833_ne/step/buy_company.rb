@@ -10,10 +10,10 @@ module Engine
         class BuyCompany < Engine::Step::BuyCompany
           include ReceivershipSkip
 
-          def can_buy_company?(entity)
-            return false unless super
+          def process_buy_company(action)
+            super
 
-            @round.emergency_issued ? entity.trains.any? { |t| !t.obsolete } : true
+            @game.lowell_merchants_company_purchased = true if action.company.id == 'P2'
           end
         end
       end
