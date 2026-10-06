@@ -442,21 +442,34 @@ module View
 
           # terminal tapered track only supported for centered city/town
           if @terminal
-            props[:attrs].merge!(
-              transform: "rotate(#{rotation})",
-              d: "M #{terminal_start_x} 70 L #{terminal_start_x} 87 L #{terminal_end_x} 87 "\
-                 "L #{terminal_end_x} 70 L #{point_x} 35 Z",
-              fill: color,
-              stroke: 'none',
-              'stroke-linecap': 'butt',
-              'stroke-linejoin': 'miter',
-              'stroke-width': (width.to_i * 0.75).to_s,
-              'stroke-dasharray': dash,
-            )
-            if @terminal == '2'
-              props[:attrs][:d] = "M #{terminal_start_x} 85 L #{terminal_start_x} 87 L #{terminal_end_x} 87 "\
-                                  "L #{terminal_end_x} 85 L #{point_x} 65 Z"
-              props[:attrs][:fill] = '#707070'
+            # Cities get the short stub automatically, regardless of terminal:1 vs terminal:2.
+            # Only terminal:2 (mountain/ignored dead-ends) keeps the grey fill.
+            short_taper = @terminal == '2' || @stop0&.city?
+
+            if short_taper
+              props[:attrs].merge!(
+                transform: "rotate(#{rotation})",
+                d: "M #{terminal_start_x} 85 L #{terminal_start_x} 87 L #{terminal_end_x} 87 "\
+                   "L #{terminal_end_x} 85 L #{point_x} 65 Z",
+                fill: @terminal == '2' ? '#707070' : color,
+                stroke: 'none',
+                'stroke-linecap': 'butt',
+                'stroke-linejoin': 'miter',
+                'stroke-width': (width.to_i * 0.75).to_s,
+                'stroke-dasharray': dash,
+              )
+            else
+              props[:attrs].merge!(
+                transform: "rotate(#{rotation})",
+                d: "M #{terminal_start_x} 70 L #{terminal_start_x} 87 L #{terminal_end_x} 87 "\
+                   "L #{terminal_end_x} 70 L #{point_x} 35 Z",
+                fill: color,
+                stroke: 'none',
+                'stroke-linecap': 'butt',
+                'stroke-linejoin': 'miter',
+                'stroke-width': (width.to_i * 0.75).to_s,
+                'stroke-dasharray': dash,
+              )
             end
           end
           props
