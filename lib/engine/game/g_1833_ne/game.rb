@@ -16,7 +16,7 @@ module Engine
         include Map
         include CompanyPriceUpToFace
 
-        attr_accessor :last_action, :lowell_merchants_company_purchased
+        attr_accessor :last_action, :lowell_merchants_company_activated
 
         BANK_CASH = 10_000
         STARTING_CASH = { 3 => 600, 4 => 450, 5 => 400 }.freeze
@@ -181,7 +181,7 @@ module Engine
           setup_company_price_up_to_face
 
           @last_action = nil
-          @lowell_merchants_company_purchased = false
+          @lowell_merchants_company_activated = false
         end
 
         def ipo_name(_entity = nil)
@@ -235,7 +235,7 @@ module Engine
               reorder_players
               new_operating_round
             when Engine::Round::Operating
-              remove_lowell_merchants_ability if @lowell_merchants_company_purchased
+              remove_lowell_merchants_ability if @lowell_merchants_company_activated
               if @round.round_num < @operating_rounds
                 or_round_finished
                 new_operating_round(@round.round_num + 1)
@@ -372,9 +372,11 @@ module Engine
           ability = corp.all_abilities.find { |a| a.type == :tile_discount }
 
           corp.remove_ability(ability)
-          @log << "#{corp.name} loses the ability to lay a tile in G20 for free." if hex_by_id('G20').tile.color == :white
+          if hex_by_id('G20').tile.color == :white
+            @log << "#{corp.name} forfeits #{lowell_merchants_company.name}'s ability to lay a tile in G20 for free."
+          end
 
-          @lowell_merchants_company_purchased = false
+          @lowell_merchants_company_activated = false
         end
       end
     end

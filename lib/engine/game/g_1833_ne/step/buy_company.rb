@@ -13,7 +13,7 @@ module Engine
           def process_buy_company(action)
             super
 
-            @game.lowell_merchants_company_purchased = true if action.company.id == 'P2'
+            @game.lowell_merchants_company_activated = true if action.company.id == 'P2'
           end
         end
       end
