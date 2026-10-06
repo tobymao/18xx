@@ -247,9 +247,14 @@ module Engine
               corp = share.corporation
               old_pres = corp.owner
               log_purchase("a share of #{company.name}", location, price)
+              # Snapshot before make_manager: a company may have already pushed this corp's
+              # IPO percent past the float threshold, but it can't become Manager, so the corp
+              # was never actually floated (see G18India::Corporation#make_manager). Capturing
+              # this before make_manager runs ensures the one-time float/home-token logic below
+              # still fires the first time a player becomes Manager.
+              already_floated = corp.floated?
               corp.make_manager(entity) if corp.owner.nil?
               share.buyable = true
-              already_floated = corp.floated?
               # use transfer share to send payment to corporation
               bundle = ShareBundle.new(share)
               @game.share_pool.transfer_shares(bundle, entity, spender: entity, receiver: corp, price: price)
@@ -301,8 +306,18 @@ module Engine
           def process_buy_shares(action)
             # Assign Manager if none yet
             corp = action.bundle.corporation
+            # Snapshot before make_manager: a company may have already pushed this corp's IPO
+            # percent past the float threshold, but it can't become Manager, so the corp was
+            # never actually floated (see G18India::Corporation#make_manager). Capturing this
+            # before make_manager runs lets us detect a first-time float below, in case the
+            # core float-transition check in Engine::SharePool#buy_shares misses it for the same
+            # reason (it also runs after make_manager has already flipped floatable to true).
+            already_floated = corp.floated?
             corp.make_manager(action.entity) if corp.owner.nil?
             super
+            if corp.floatable && corp.floated? && !already_floated && !corp.share_price&.corporations&.include?(corp)
+              @game.float_corporation(corp)
+            end
             @round.bought_from_market = true
           end
 
