@@ -12,6 +12,7 @@ module View
     needs :game_row_games
     needs :user
     needs :type
+    needs :confirm_delete, store: true, default: false
 
     LIMIT = 12
 
@@ -37,6 +38,7 @@ module View
         url_search_params[@type] = p + 1
         children << render_more('Next', "?#{url_search_params.to_query_string}")
       end
+      children << render_delete_all if @type == :hotseat
 
       props = {
         style: {
@@ -70,6 +72,23 @@ module View
       }
 
       h("a.#{text.downcase}", props, text)
+    end
+
+    def render_delete_all
+      confirming = @confirm_delete == :all_hotseats
+      props = {
+        style: {
+          margin: '0',
+          gridRowStart: '2',
+          gridColumnStart: '1',
+          justifySelf: 'start',
+        },
+        on: {
+          click: confirming ? -> { delete_all_hotseats } : -> { store(:confirm_delete, :all_hotseats) },
+        },
+      }
+
+      h(:button, props, confirming ? 'Confirm' : 'Delete All')
     end
 
     def render_row
