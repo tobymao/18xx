@@ -182,7 +182,9 @@ module Engine
           # Check if we are allowed to split any of the current corporations
           def can_split_any?(entity)
             !bought? && @game.corporations.any? do |c|
-              @game.can_split?(c, entity)
+              @game.can_split?(c, entity) ||
+                (entity == @game.company_by_id('UB')&.owner &&
+                @game.can_split?(c, @game.union_bank))
             end
           end
 
