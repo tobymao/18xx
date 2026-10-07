@@ -86,8 +86,8 @@ module Engine
           if borrow_from && player.cash < remaining
             current_cash = player.cash
             extra_needed = remaining - current_cash
-            player.spend(current_cash, entity)
-            @log << "#{player.name} contributes #{@game.format_currency(current_cash)}"
+            player.spend(current_cash, entity) if current_cash.positive?
+            @log << "#{player.name} contributes #{@game.format_currency(current_cash)}" if current_cash.positive?
             borrow_from.spend(extra_needed, entity)
             @log << "#{borrow_from.name} contributes #{@game.format_currency(extra_needed)}"
           else

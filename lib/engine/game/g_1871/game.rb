@@ -495,15 +495,33 @@ module Engine
           super
         end
 
-        def can_go_bankrupt?(player, corporation)
-          return false if player == @union_bank
+        def ub_owner
+          company_by_id('UB')&.owner
+        end
 
-          if corporation.owner == @union_bank && company_by_id('UB').owner == player
-            total_emr_buying_power(player, corporation) +
-              total_emr_buying_power(@union_bank, corporation) < @depot.min_depot_price
-          else
-            super
+        def acting_as_union_bank?(player)
+          player == @union_bank || player == ub_owner
+        end
+
+        def can_go_bankrupt?(player, corporation)
+          return super unless acting_as_union_bank?(player)
+
+          acting = player == @union_bank ? ub_owner : player
+          player_power = liquidity(acting, emergency: true)
+          ub_power = liquidity(@union_bank, emergency: true)
+          corp_power = corporation.cash + emergency_issuable_cash(corporation)
+          player_power + ub_power + corp_power < @depot.min_depot_price
+        end
+
+        def total_emr_buying_power(player, corporation)
+          # When UB is the acting entity, combine UB + owner liquidity
+          if player == @union_bank
+            owner_power = ub_owner ? liquidity(ub_owner, emergency: true) : 0
+            ub_power = liquidity(@union_bank, emergency: true)
+            corp_power = corporation ? corporation.cash + emergency_issuable_cash(corporation) : 0
+            return owner_power + ub_power + corp_power
           end
+          super
         end
 
         def purchasable_companies(entity = nil)
