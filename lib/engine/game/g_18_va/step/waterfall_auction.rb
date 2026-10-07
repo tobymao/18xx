@@ -21,6 +21,42 @@ module Engine
             false
           end
 
+          # Replays Bid actions (main and auto) logged before `program` was armed. Live
+          # @bids can't be used: it only holds each bidder's current bid, so a leader's
+          # later re-bid would erase their earlier lead. Forced 0-bids aren't logged and
+          # so don't count as defended.
+          #
+          # @param entity [Player]
+          # @param program [Action::ProgramAuctionPass]
+          # @return [Array<Company>] companies `entity` led when `program` was armed
+          def auction_pass_defending(entity, program)
+            leader_by_company = {}
+            @game.actions.each do |action|
+              break if action >= program
+
+              [action, *action.auto_actions].each do |a|
+                leader_by_company[bid_target(a)] = a.entity if a.is_a?(Action::Bid)
+              end
+            end
+            leader_by_company.select { |_company, leader| leader == entity }.keys
+          end
+
+          # "Auto-pass unless outbid": keep passing until a company `entity` was
+          # defending when they armed is topped by someone else.
+          #
+          # @param entity [Player]
+          # @param program [Action::ProgramAuctionPass]
+          # @return [Array<Action::Pass>, Array<Action::ProgramDisable>, nil] nil leaves
+          #   the program armed without acting (pass not currently legal)
+          def activate_program_auction_pass(entity, program)
+            return unless actions(entity).include?('pass')
+
+            lost = auction_pass_defending(entity, program).reject { |company| highest_bid(company)&.entity == entity }
+            return [Action::Pass.new(entity)] if lost.empty?
+
+            [Action::ProgramDisable.new(entity, reason: "#{entity.name} was outbid on #{lost.map(&:name).join(', ')}")]
+          end
+
           def resolve_bids_for_company(company)
             accept_bid(@bids[company].max_by(&:price))
             true
