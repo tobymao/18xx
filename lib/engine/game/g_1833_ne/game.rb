@@ -51,6 +51,12 @@ module Engine
 
         TILE_LAYS = [{ lay: true, upgrade: true }, { lay: true, upgrade: :not_if_upgraded }].freeze
 
+        OFFBOARD_PHASE_STYLES = [
+          { label: 'I-II',   colors: %i[yellow green] },
+          { label: 'III-IV', colors: ['#98ff98', :brown] },
+          { label: 'V',      colors: [:gray] },
+        ].freeze
+
         MARKET = [
           %w[0c 10 20 30 40p 50p 60p 70p 80p 90p 100p 112p 124p 137p 150p
              165 180 195 212 230 250 270 295 320 345 375 405 440 475 510 550 590 630 680 730],

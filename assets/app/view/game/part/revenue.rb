@@ -10,6 +10,8 @@ module View
       class Revenue < Base
         include SmallItem
 
+        needs :game, default: nil, store: true
+
         FLAT_MULTI_REVENUE_LOCATIONS =
           [
             {
@@ -89,11 +91,20 @@ module View
           !@revenue.is_a?(Numeric)
         end
 
+        def phase_styles
+          return unless @game&.class&.const_defined?(:OFFBOARD_PHASE_STYLES)
+
+          @game.class::OFFBOARD_PHASE_STYLES
+        end
+
         def render_part
           transform = "#{rotation_for_layout} #{translate}"
 
           if multi_revenue?
-            h(MultiRevenue, revenues: @revenue, transform: transform, rows: @rows)
+            styles = phase_styles
+            transform = "#{transform} translate(0 #{-27 * (@revenue.size - 1) / 2.0})" if styles
+            h(MultiRevenue, revenues: @revenue, transform: transform,
+                            rows: styles ? @revenue.size : @rows, phase_styles: styles)
           else
             h(SingleRevenue, revenue: @revenue, transform: transform)
           end
