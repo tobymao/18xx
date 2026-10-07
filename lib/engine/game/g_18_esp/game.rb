@@ -1161,10 +1161,6 @@ module Engine
           @corporations.dup.each do |c|
             next unless c.type == :minor
 
-            if c.operated?
-              @bank.spend(c.share_price.price, c.owner)
-              @log << "#{c.owner.name} recieves compensation of #{format_currency(c.share_price.price)} for #{c.name}"
-            end
             close_minor(c)
           end
         end
