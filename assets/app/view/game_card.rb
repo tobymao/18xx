@@ -132,7 +132,7 @@ module View
         if game.meta::GAME_INFO_URL
           link_props = {
             attrs: { href: game.meta::GAME_INFO_URL, target: '_blank' },
-            style: { color: 'inherit', textDecoration: 'underline' },
+            style: { color: 'inherit', textDecoration: 'none' },
           }
           h(:a, link_props, game.display_title)
         else
