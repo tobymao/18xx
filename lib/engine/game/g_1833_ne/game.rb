@@ -235,7 +235,7 @@ module Engine
               reorder_players
               new_operating_round
             when Engine::Round::Operating
-              remove_lowell_merchants_ability if @lowell_merchants_company_activated
+              remove_lowell_merchants_ability! if @lowell_merchants_company_activated
               if @round.round_num < @operating_rounds
                 or_round_finished
                 new_operating_round(@round.round_num + 1)
@@ -367,7 +367,11 @@ module Engine
           @lowell_merchants_company ||= company_by_id('P2')
         end
 
-        def remove_lowell_merchants_ability
+        def activate_lowell_merchants_company!
+          @lowell_merchants_company_activated = true
+        end
+
+        def remove_lowell_merchants_ability!
           corp = lowell_merchants_company.owner
           ability = corp.all_abilities.find { |a| a.type == :tile_discount }
 

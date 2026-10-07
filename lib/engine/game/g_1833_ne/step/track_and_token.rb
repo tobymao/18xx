@@ -14,7 +14,7 @@ module Engine
             lay_tile_action(action)
 
             if action.entity == @game.lowell_merchants_company&.owner && @game.lowell_merchants_company_activated
-              @game.remove_lowell_merchants_ability
+              @game.remove_lowell_merchants_ability!
             end
 
             pass! if !can_lay_tile?(action.entity) && @tokened
