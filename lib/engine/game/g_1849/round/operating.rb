@@ -12,6 +12,12 @@ module Engine
 
             super
           end
+
+          def finished?
+            return false if @game.loan_choice_player
+
+            super
+          end
         end
       end
     end
