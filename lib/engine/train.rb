@@ -35,7 +35,7 @@ module Engine
       @events = (opts[:events] || []).select { |e| @index == (e['when'] || 1) - 1 }
       @reserved = opts[:reserved] || false
       @requires_token = opts[:requires_token].nil? ? true : opts[:requires_token]
-      @unlimited = opts[:num] == 'unlimited'
+      @unlimited = opts[:unlimited]
       @opts = opts
       init_variants(opts[:variants])
     end

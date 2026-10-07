@@ -202,8 +202,8 @@ module Engine
           '6H' => 4,
           '5E' => 3,
           '6E' => 2,
-          '7E' => 16,
-          '5D' => 8,
+          '7E' => 'unlimited',
+          '5D' => 'unlimited',
         }.freeze
 
         TRAIN_COUNTS_2P = {
@@ -212,8 +212,8 @@ module Engine
           '6H' => 3,
           '5E' => 2,
           '6E' => 2,
-          '7E' => 16,
-          '5D' => 8,
+          '7E' => 'unlimited',
+          '5D' => 'unlimited',
         }.freeze
 
         def num_trains(train)
