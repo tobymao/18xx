@@ -7,6 +7,7 @@ require_relative '../base'
 require_relative 'round/operating'
 require_relative 'step/waterfall_auction'
 require_relative 'step/buy_train'
+require_relative 'step/dividend'
 
 module Engine
   module Game
@@ -233,6 +234,7 @@ module Engine
           G2038::Round::Operating.new(self, [
             Engine::Step::Bankrupt,
             Engine::Step::DiscardTrain,
+            G2038::Step::Dividend,
             G2038::Step::BuyTrain,
             Engine::Step::BuyCompany,
           ], round_num: round_num)
