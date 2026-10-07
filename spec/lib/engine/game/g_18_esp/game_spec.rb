@@ -66,4 +66,59 @@ describe Engine::Game::G18ESP::Game do
       end
     end
   end
+
+  describe '18ESP_unreached_destination_phase_8' do
+    # The graph walk can only report hexes with paths, so these cases are answerable without it.
+    describe 'destination connection short-circuits' do
+      # Phase 3: the minors still exist and three destinations have no track laid on them yet.
+      let(:game) { fixture_at_action(600) }
+
+      # What the check did before the short circuit was added.
+      def by_graph(corp)
+        return false unless corp&.corporation?
+        return true if corp.destination_connected?
+
+        Engine::Graph.new(game, no_blocking: true).reachable_hexes(corp).include?(game.hex_by_id(corp.destination))
+      end
+
+      it 'answers false for a corporation without a destination, without walking' do
+        minor = game.corporations.find { |c| !c.destination }
+        expect(minor).not_to be_nil
+        # Arm after the load, and on reachable_hexes: the graph itself is built once, inside that load.
+        expect_any_instance_of(Engine::Graph).not_to receive(:reachable_hexes)
+        expect(game.check_for_destination_connection(minor)).to be(false)
+      end
+
+      it 'answers false without walking while the destination has no track' do
+        corp = game.corporations.find do |c|
+          c.destination && !c.destination_connected? && game.hex_by_id(c.destination).tile.paths.empty?
+        end
+        expect(corp).not_to be_nil
+        expect_any_instance_of(Engine::Graph).not_to receive(:reachable_hexes)
+        expect(game.check_for_destination_connection(corp)).to be(false)
+      end
+
+      # Equivalence with the body this replaced; walked counts the corporations that still reach the graph.
+      it 'agrees with the graph walk for every corporation' do
+        walked = 0
+        game.corporations.each do |corp|
+          destination = corp.destination && game.hex_by_id(corp.destination)
+          walked += 1 if destination && !destination.tile.paths.empty? && !corp.destination_connected?
+          expect(game.check_for_destination_connection(corp)).to eq(by_graph(corp)), corp.id
+        end
+        expect(walked).to be_positive
+      end
+    end
+
+    describe 'the last playable action, GSSR still short of its destination' do
+      let(:game) { fixture_at_action(1072) }
+
+      it 'answers without walking, with no track on the destination hex' do
+        gssr = game.corporation_by_id('GSSR')
+        expect(game.hex_by_id(gssr.destination).tile.paths).to be_empty
+        expect_any_instance_of(Engine::Graph).not_to receive(:reachable_hexes)
+        expect(game.check_for_destination_connection(gssr)).to be(false)
+      end
+    end
+  end
 end
