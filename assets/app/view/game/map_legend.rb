@@ -36,7 +36,18 @@ module View
 
         rows = chart.map do |r|
           columns = r.map do |cell|
-            item = cell[:text] || [h(:img, { attrs: { src: cell[:image], height: cell[:image_height] } })]
+            item =
+              if cell[:parts]
+                cell[:parts].map do |part|
+                  if part[:image]
+                    h(:img, { attrs: { src: part[:image], height: part[:image_height] } })
+                  else
+                    part[:text]
+                  end
+                end
+              else
+                cell[:text] || [h(:img, { attrs: { src: cell[:image], height: cell[:image_height] } })]
+              end
             if cell[:props]
               h(:td, cell[:props], item)
             else

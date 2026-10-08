@@ -90,7 +90,7 @@ module Engine
             name: 'V',
             on: '7+3',
             train_limit: 2,
-            tiles: %i[yellow green brown],
+            tiles: %i[yellow green brown gray],
             operating_rounds: 2,
           },
         ].freeze
@@ -276,6 +276,156 @@ module Engine
 
         def upgrade_cost(tile, hex, entity, spender)
           [self.class::TILE_COST, super].max
+        end
+
+        def show_map_legend?
+          true
+        end
+
+        def map_legend(font_color, yellow, green, brown, _gray, *_extra_colors)
+          [
+            # table-wide props
+            {
+              style: {
+                margin: '0.5rem 0 0.5rem 0',
+                border: '1px solid',
+                borderCollapse: 'collapse',
+              },
+            },
+            # header
+            [
+              { text: 'Interconnection bonuses', props: { style: { border: '1px solid', textAlign: 'center' } } },
+              {
+                text: 'I-II',
+                props: {
+                  style: {
+                    border: '1px solid',
+                    color: 'black',
+                    background: "linear-gradient(135deg, #{yellow} 50%, #{green} 50%)",
+                  },
+                },
+              },
+              {
+                text: 'III-IV',
+                props: {
+                  style: {
+                    border: '1px solid',
+                    color: 'black',
+                    background: "linear-gradient(135deg, #98ff98 50%, #{brown} 50%)",
+                  },
+                },
+              },
+              {
+                text: 'V',
+                props: {
+                  style: {
+                    border: '1px solid',
+                    color: 'black',
+                    backgroundColor: 'gray',
+                  },
+                },
+              },
+              { text: 'Direct bonuses', props: { style: { border: '1px solid', textAlign: 'center' } } },
+              {
+                text: 'I-II',
+                props: {
+                  style: {
+                    border: '1px solid',
+                    color: 'black',
+                    background: "linear-gradient(135deg, #{yellow} 50%, #{green} 50%)",
+                  },
+                },
+              },
+              {
+                text: 'III-IV',
+                props: {
+                  style: {
+                    border: '1px solid',
+                    color: 'black',
+                    background: "linear-gradient(135deg, #98ff98 50%, #{brown} 50%)",
+                  },
+                },
+              },
+              {
+                text: 'V',
+                props: {
+                  style: {
+                    border: '1px solid',
+                    color: 'black',
+                    backgroundColor: 'gray',
+                  },
+                },
+              },
+            ],
+            # body
+            [
+              {
+                text: 'Montreal to Portland',
+                props: { style: { border: "1px solid #{font_color}" } },
+              },
+              { text: '30', props: { style: { border: '1px solid',  textAlign: 'center' } } },
+              { text: '60', props: { style: { border: '1px solid',  textAlign: 'center' } } },
+              { text: '40', props: { style: { border: '1px solid',  textAlign: 'center' } } },
+              {
+                text: 'New York and Boston',
+                props: { style: { border: "1px solid #{font_color}" } },
+              },
+              { text: '- ', props: { style: { border: '1px solid',  textAlign: 'center' } } },
+              { text: '60', props: { style: { border: '1px solid',  textAlign: 'center' } } },
+              { text: '80', props: { style: { border: '1px solid',  textAlign: 'center' } } },
+            ],
+            [
+              {
+                text: 'Montreal to Boston',
+                props: { style: { border: "1px solid #{font_color}" } },
+              },
+              { text: '70', props: { style: { border: '1px solid',  textAlign: 'center' } } },
+              { text: '90', props: { style: { border: '1px solid',  textAlign: 'center' } } },
+              { text: '-', props: { style: { border: '1px solid', textAlign: 'center' } } },
+              {
+                text: 'Montreal and Boston or Ogdensburg',
+                props: { style: { border: "1px solid #{font_color}" } },
+              },
+              { text: '50', props: { style: { border: '1px solid',  textAlign: 'center' } } },
+              { text: '60', props: { style: { border: '1px solid',  textAlign: 'center' } } },
+              { text: '-', props: { style: { border: '1px solid', textAlign: 'center' } } },
+            ],
+            [
+              {
+                text: 'Ogdensburg to Boston',
+                props: { style: { border: "1px solid #{font_color}" } },
+              },
+              { text: '40', props: { style: { border: '1px solid',  textAlign: 'center' } } },
+              { text: '70', props: { style: { border: '1px solid',  textAlign: 'center' } } },
+              { text: '-', props: { style: { border: '1px solid', textAlign: 'center' } } },
+              {
+                parts: [
+                  { text: 'Montreal and ' },
+                  { image: '/icons/port.svg', image_height: 16 },
+                ],
+                props: { style: { border: "1px solid #{font_color}" } },
+              },
+              { text: '-', props: { style: { border: '1px solid', textAlign: 'center' } } },
+              { text: '50', props: { style: { border: '1px solid',  textAlign: 'center' } } },
+              { text: '80', props: { style: { border: '1px solid',  textAlign: 'center' } } },
+            ],
+            [
+              {
+                text: 'Albany/Troy to Boston',
+                props: { style: { border: "1px solid #{font_color}" } },
+              },
+              { text: '50', props: { style: { border: '1px solid', textAlign: 'center' } } },
+              { text: '-', props: { style: { border: '1px solid',  textAlign: 'center' } } },
+              { text: '-', props: { style: { border: '1px solid',  textAlign: 'center' } } },
+              {
+                text: 'Albany/Troy and Boston',
+                props: { style: { border: "1px solid #{font_color}" } },
+              },
+              { text: '50', props: { style: { border: '1px solid', textAlign: 'center' } } },
+              { text: '-', props: { style: { border: '1px solid',  textAlign: 'center' } } },
+              { text: '-', props: { style: { border: '1px solid',  textAlign: 'center' } } },
+            ],
+          ]
         end
 
         def sellable_bundles(player, corporation)
