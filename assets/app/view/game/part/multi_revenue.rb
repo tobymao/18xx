@@ -30,10 +30,12 @@ module View
             }
           end
 
-          # uniform box width so stacked rows line up
+          # uniform box width so the row lines up; also wide enough for the label above it
           if styled
             max_width = computed_revenues.map { |r| r[:width] }.max
-            computed_revenues.each { |r| r[:width] = max_width }
+            label_width = @phase_styles.map { |s| s[:label].to_s.size * 8 }.max
+            box_width = [max_width, label_width].max
+            computed_revenues.each { |r| r[:width] = box_width }
           end
 
           # Compute total width of rectangles so we can center
@@ -79,7 +81,7 @@ module View
             elements = [h(:rect, attrs: rect_attrs)]
 
             if colors
-              # second color fills the lower-right half, only if it differs from the first
+              # second color fills the lower-right half, but only when it differs from the first
               if colors[1] && colors[1] != colors[0]
                 elements << h(:polygon, attrs: {
                                 points: "#{width},-12 #{width},#{HEIGHT - 12} 0,#{HEIGHT - 12}",
@@ -87,11 +89,10 @@ module View
                                 transform: "translate(#{t_x} #{t_y})",
                               })
               end
-
               elements << h(:text, {
                               attrs: {
-                                transform: "translate(#{t_x - 4} #{t_y})",
-                                'text-anchor': 'end',
+                                transform: "translate(#{t_x + (width * 0.5)} #{t_y - 22})",
+                                'text-anchor': 'middle',
                                 'dominant-baseline': 'central',
                                 'font-size': '16',
                                 fill: '#000',

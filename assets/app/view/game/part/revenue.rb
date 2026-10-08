@@ -102,9 +102,8 @@ module View
 
           if multi_revenue?
             styles = phase_styles
-            transform = "#{transform} translate(0 #{-27 * (@revenue.size - 1) / 2.0})" if styles
             h(MultiRevenue, revenues: @revenue, transform: transform,
-                            rows: styles ? @revenue.size : @rows, phase_styles: styles)
+                            rows: styles ? 1 : @rows, phase_styles: styles)
           else
             h(SingleRevenue, revenue: @revenue, transform: transform)
           end
