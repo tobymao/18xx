@@ -212,7 +212,7 @@ module View
           names_to_prices = train.names_to_prices
 
           event_text = []
-          remaining.each.with_index do |train2, index|
+          remaining.each do |train2|
             train2.events.each do |event|
               event_name = event['type']
               next if event['hidden'] # don't show hidden events on the info page
@@ -222,10 +222,11 @@ module View
                 event_name = @game.class::EVENTS_TEXT[event_name][0]
               end
 
-              event_text << if index.zero?
+              position = trains.index(train2)
+              event_text << if position.zero?
                               event_name
                             else
-                              "#{event_name} (on #{ordinal(train2.index + 1)} train)"
+                              "#{event_name} (on #{ordinal(position + 1)} train)"
                             end
             end
           end
