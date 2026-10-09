@@ -296,7 +296,7 @@ module Engine
             [
               { text: 'Interconnection bonuses', props: { style: { border: '1px solid', textAlign: 'center' } } },
               {
-                text: 'I-II',
+                text: 'I',
                 props: {
                   style: {
                     border: '1px solid',
@@ -306,7 +306,7 @@ module Engine
                 },
               },
               {
-                text: 'III-IV',
+                text: 'III',
                 props: {
                   style: {
                     border: '1px solid',
@@ -327,7 +327,7 @@ module Engine
               },
               { text: 'Direct bonuses', props: { style: { border: '1px solid', textAlign: 'center' } } },
               {
-                text: 'I-II',
+                text: 'I',
                 props: {
                   style: {
                     border: '1px solid',
@@ -337,7 +337,7 @@ module Engine
                 },
               },
               {
-                text: 'III-IV',
+                text: 'III',
                 props: {
                   style: {
                     border: '1px solid',
@@ -367,11 +367,14 @@ module Engine
               { text: '60', props: { style: { border: '1px solid',  textAlign: 'center' } } },
               { text: '40', props: { style: { border: '1px solid',  textAlign: 'center' } } },
               {
-                text: 'New York and Boston',
+                parts: [
+                  { text: 'Montreal and ' },
+                  { image: '/icons/port.svg', image_height: 16 },
+                ],
                 props: { style: { border: "1px solid #{font_color}" } },
               },
-              { text: '- ', props: { style: { border: '1px solid',  textAlign: 'center' } } },
-              { text: '60', props: { style: { border: '1px solid',  textAlign: 'center' } } },
+              { text: '-', props: { style: { border: '1px solid', textAlign: 'center' } } },
+              { text: '50', props: { style: { border: '1px solid',  textAlign: 'center' } } },
               { text: '80', props: { style: { border: '1px solid',  textAlign: 'center' } } },
             ],
             [
@@ -383,7 +386,7 @@ module Engine
               { text: '90', props: { style: { border: '1px solid',  textAlign: 'center' } } },
               { text: '-', props: { style: { border: '1px solid', textAlign: 'center' } } },
               {
-                text: 'Montreal and Boston or Ogdensburg',
+                text: 'Montreal/Ogdensburg and Boston',
                 props: { style: { border: "1px solid #{font_color}" } },
               },
               { text: '50', props: { style: { border: '1px solid',  textAlign: 'center' } } },
@@ -399,14 +402,11 @@ module Engine
               { text: '70', props: { style: { border: '1px solid',  textAlign: 'center' } } },
               { text: '-', props: { style: { border: '1px solid', textAlign: 'center' } } },
               {
-                parts: [
-                  { text: 'Montreal and ' },
-                  { image: '/icons/port.svg', image_height: 16 },
-                ],
+                text: 'New York and Boston',
                 props: { style: { border: "1px solid #{font_color}" } },
               },
-              { text: '-', props: { style: { border: '1px solid', textAlign: 'center' } } },
-              { text: '50', props: { style: { border: '1px solid',  textAlign: 'center' } } },
+              { text: '- ', props: { style: { border: '1px solid',  textAlign: 'center' } } },
+              { text: '60', props: { style: { border: '1px solid',  textAlign: 'center' } } },
               { text: '80', props: { style: { border: '1px solid',  textAlign: 'center' } } },
             ],
             [
@@ -424,6 +424,24 @@ module Engine
               { text: '50', props: { style: { border: '1px solid', textAlign: 'center' } } },
               { text: '-', props: { style: { border: '1px solid',  textAlign: 'center' } } },
               { text: '-', props: { style: { border: '1px solid',  textAlign: 'center' } } },
+            ],
+            [
+              {
+                text: 'Portland to Montreal',
+                props: { style: { border: "1px solid #{font_color}" } },
+              },
+              { text: '30', props: { style: { border: '1px solid', textAlign: 'center' } } },
+              { text: '60', props: { style: { border: '1px solid',  textAlign: 'center' } } },
+              { text: '40', props: { style: { border: '1px solid',  textAlign: 'center' } } },
+            ],
+            [
+              {
+                text: 'Boston to Montreal',
+                props: { style: { border: "1px solid #{font_color}" } },
+              },
+              { text: '30', props: { style: { border: '1px solid', textAlign: 'center' } } },
+              { text: '50', props: { style: { border: '1px solid', textAlign: 'center' } } },
+              { text: '-', props: { style: { border: '1px solid', textAlign: 'center' } } },
             ],
           ]
         end
