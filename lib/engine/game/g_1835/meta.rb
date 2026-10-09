@@ -20,7 +20,7 @@ module Engine
           {
             sym: :clemens,
             short_name: 'Clemens-Variante',
-            desc: 'all Privates and minors are available, Playerorder for the SR 4-3-2-1-1-2-3-4-1-2-3-4, '\
+            desc: 'all Privates and minors are available, player order for the first draft round is 4-3-2-1-1-2-3-4-1-2-3-4, '\
                   'Minors start when Bayerische Eisenbahn floats',
           },
         ].freeze

@@ -170,6 +170,10 @@ module Engine
           hex_by_id('E19').tile.remove_reservation!(prussian)
         end
 
+        def option_clemens?
+          @optional_rules&.include?(:clemens)
+        end
+
         def company_header(company)
           return 'MINOR' if '123456'.include?(company.sym)
           return 'SHARE' if company.sym == 'BY_D'
@@ -182,8 +186,9 @@ module Engine
         end
 
         def init_round
+          round_num = @draft_round_num || 1
           G1835::Round::Draft.new(self,
-                                  [G1835::Step::Draft])
+                                  [G1835::Step::Draft], round_num: round_num, reverse_order: round_num == 1 && option_clemens?)
         end
 
         def new_draft_round
