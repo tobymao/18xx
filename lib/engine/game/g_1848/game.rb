@@ -394,7 +394,7 @@ module Engine
           end
           @boe.owner = @share_pool
           @boe.set_cash(BOE_STARTING_CASH, @bank)
-          @stock_market.set_par(@boe, lookup_boe_price(BOE_STARTING_PRICE))
+          par_corporation(@boe, lookup_boe_price(BOE_STARTING_PRICE))
           @extra_tile_lay = false
           @close_corp_count = 0
           @player_corp_close_count = Hash.new { |h, k| h[k] = 0 }
@@ -543,7 +543,7 @@ module Engine
           abilities(company, :shares) do |ability|
             ability.shares.each do |share|
               if share.president
-                stock_market.set_par(share.corporation, stock_market.par_prices.find { |p| p.price == 100 })
+                par_corporation(share.corporation, stock_market.par_prices.find { |p| p.price == 100 })
                 share_pool.buy_shares(player, share, exchange: :free)
                 after_par(share.corporation)
               else

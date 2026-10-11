@@ -50,6 +50,7 @@ module Engine
         converging_path: true,
         walk_calls: Hash.new(0),
         backtracking: false,
+        pruner: nil,
         &block
       )
         walk_calls[:all] += 1
@@ -72,6 +73,7 @@ module Engine
             converging: converging_path,
             walk_calls: walk_calls,
             backtracking: backtracking,
+            pruner: pruner,
           ) do |path, vp, ct, converging|
             ret = yield path, vp, visited
             next if ret == :abort
@@ -91,6 +93,7 @@ module Engine
                 converging_path: converging_path || converging,
                 walk_calls: walk_calls,
                 backtracking: backtracking,
+                pruner: pruner,
                 &block
               )
             end

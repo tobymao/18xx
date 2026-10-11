@@ -175,7 +175,7 @@ module Engine
 
             @log << "#{entity.name} floats #{company.sym}"
 
-            @game.stock_market.set_par(corporation, share_price)
+            @game.par_corporation(corporation, share_price)
             share = corporation.ipo_shares.first
             @round.players_bought[entity][corporation] += share.percent
             buy_shares(entity, share.to_bundle, exchange: company, silent: true)

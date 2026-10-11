@@ -7,13 +7,13 @@ module Engine
         class BuySellParShares < Engine::Step::BuySellParShares
           def process_buy_shares(action)
             if action.bundle.owner.player?
-              raise GameError, 'Cannot nationalize this corporation' unless can_buy?(action.entity, action.bundle)
-
-              action.bundle.share_price = nationalization_price(action.bundle.corporation.share_price.price)
+              nationalize(action.entity, action.bundle)
+              track_action(action, action.bundle.corporation)
+            else
+              owner = action.bundle.owner
+              super
+              @game.maybe_ipo_next_block(action.bundle.corporation) unless owner == @game.share_pool
             end
-            owner = action.bundle.owner
-            super
-            @game.maybe_ipo_next_block(action.bundle.corporation) unless owner == @game.share_pool
           end
 
           def can_buy?(entity, bundle)
@@ -21,8 +21,8 @@ module Engine
               return false unless can_nationalize?(entity, bundle.corporation)
 
               return entity.cash >= nationalization_price(bundle.price) &&
-                !@round.players_sold[entity][bundle.corporation] &&
-                can_gain?(entity, bundle)
+                     !@round.players_sold[entity][bundle.corporation] &&
+                     can_gain?(entity, bundle)
             end
 
             return false unless super
@@ -32,7 +32,7 @@ module Engine
             return bundle.shares.first == bundle.corporation.shares.first unless bundle.corporation == @game.prussian
 
             # Ignore the order for PR: We cannot use the same logic we use for the other corporations, because the very first
-            # share - the president - is reserved. If we used the same logic, no PR share could  ever be bought
+            # share - the president - is reserved. If we used the same logic, no PR share could ever be bought
             true
           end
 
@@ -67,6 +67,25 @@ module Engine
             return false unless player
 
             player.percent_of(corporation) > 50
+          end
+
+          def nationalize(buyer, bundle)
+            price = nationalization_price(bundle.price)
+            seller = bundle.owner
+            corporation = bundle.corporation
+
+            raise GameError, 'Not enough cash for nationalization' unless buyer.cash >= price
+            raise GameError, 'Cannot nationalize this corporation' unless can_nationalize?(buyer, corporation)
+            raise GameError, "Can't buy a share of #{corporation&.name}" unless can_buy?(buyer, bundle)
+
+            @log << "-- Nationalization: #{buyer.name} buys a #{bundle.percent}% share"\
+                    " of #{corporation.name} from #{seller.name} for #{@game.format_currency(price)} --"
+
+            @game.share_pool.transfer_shares(bundle,
+                                             buyer,
+                                             spender: buyer,
+                                             receiver: seller,
+                                             price: price)
           end
         end
       end

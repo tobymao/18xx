@@ -316,6 +316,11 @@ module Engine
       # operate (corporation's first OR turn)
       HOME_TOKEN_TIMING = :operate
 
+      # when is the stock market token placed? on...
+      # par
+      # float
+      STOCK_MARKET_TOKEN_TIMING = :par
+
       # Entity for token placement decided on tile lay
       # :current_operator
       # :owner
@@ -358,6 +363,11 @@ module Engine
       TILE_COST = 0
 
       IMPASSABLE_HEX_COLORS = %i[blue gray red].freeze
+
+      # When true, an unstarted corporation/minor's home-station reservation is
+      # drawn as a colored ring inset inside a white disc (using
+      # reservation_color) instead of filling the whole disc with that color.
+      RESERVATION_COLOR_HALO = false
 
       EVENTS_TEXT = {
         'close_companies' =>
@@ -1893,8 +1903,21 @@ module Engine
         self.class::MULTIPLE_BUY_ONLY_FROM_MARKET
       end
 
+      def par_corporation(corporation, share_price)
+        if self.class::STOCK_MARKET_TOKEN_TIMING == :par
+          share_price.corporations << corporation
+          corporation.share_price = share_price
+        end
+        corporation.par_price = share_price
+        corporation.original_par_price = share_price
+      end
+
       def float_corporation(corporation)
         @log << "#{corporation.name} floats"
+        if self.class::STOCK_MARKET_TOKEN_TIMING == :float
+          corporation.par_price.corporations << corporation
+          corporation.share_price = corporation.par_price
+        end
 
         return if %i[incremental none].include?(corporation.capitalization)
 

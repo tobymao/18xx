@@ -16,15 +16,25 @@ module Engine
             return [] if entity.company?
 
             actions = []
-            actions << 'lay_tile' if can_lay_tile?(entity)
-            if opening_mountain_pass?(entity) && @game.phase.status.include?('mountain_pass') && !@round.opened_mountain_pass
-              actions << 'choose'
-            end
-            actions << 'place_token' if can_place_token?(entity)
+            can_lay = can_lay_tile?(entity)
+            can_token = can_place_token?(entity)
+            actions << 'lay_tile' if can_lay
+            actions << 'choose' if mountain_pass_choice_available?(entity, can_lay || can_token)
+            actions << 'place_token' if can_token
             actions << 'destination_connection' if !@game.loading && @acted &&
                                                    @game.new_destination_connection?(entity)
             actions << 'pass' if actions.any?
             actions
+          end
+
+          def mountain_pass_choice_available?(entity, otherwise_blocking)
+            return false unless @game.phase.status.include?('mountain_pass')
+            return false if @round.opened_mountain_pass
+
+            # Skip the graph query while loading when the step already blocks; the log tells us if a pass opens.
+            return @game.future_mountain_pass_choose?(entity) if @game.loading && otherwise_blocking
+
+            opening_mountain_pass?(entity)
           end
 
           def round_state
@@ -88,6 +98,7 @@ module Engine
             @game.open_mountain_pass(action.entity, action.choice)
             @game.graph_for_entity(action.entity).clear
             @round.opened_mountain_pass = true
+            @game.consume_mountain_pass_hint!(action.entity)
           end
 
           def reactivate_for_token!

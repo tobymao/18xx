@@ -41,6 +41,9 @@ module Engine
 
         MOUNTAIN_PASS_TOKEN_HEXES = %w[L8 J10 H12 D12].freeze
 
+        # Action types whose choice can open a mountain pass (Track choose / P4 SpecialChoose).
+        MOUNTAIN_PASS_CHOICE_ACTIONS = %w[choose choose_ability].freeze
+
         MOUNTAIN_PASS_TOKEN_COST = { 'L8' => 80, 'J10' => 80, 'H12' => 60, 'D12' => 100 }.freeze
 
         MOUNTAIN_PASS_TOKEN_BONUS = { 'L8' => 40, 'J10' => 40, 'H12' => 30, 'D12' => 50 }.freeze
@@ -367,6 +370,21 @@ module Engine
 
         def madrid_hex
           @madrid_hex ||= hex_by_id(MADRID_HEX)
+        end
+
+        # Tallies each entity's mountain-pass opens from @filtered_actions; consume_mountain_pass_hint! decrements as replayed.
+        def future_mountain_pass_choose?(entity)
+          @loading_mountain_pass_remaining ||= @filtered_actions.filter_map do |action|
+            action['entity'] if action && MOUNTAIN_PASS_CHOICE_ACTIONS.include?(action['type']) &&
+                                MOUNTAIN_PASS_TOKEN_HEXES.include?(action['choice'])
+          end.tally
+          @loading_mountain_pass_remaining.fetch(entity.id, 0).positive?
+        end
+
+        def consume_mountain_pass_hint!(entity)
+          return unless @loading
+
+          @loading_mountain_pass_remaining[entity.id] -= 1 if future_mountain_pass_choose?(entity)
         end
 
         def setup

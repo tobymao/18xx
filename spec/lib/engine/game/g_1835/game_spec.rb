@@ -555,4 +555,33 @@ describe Engine::Game::G1835::Game do
       expect(pr.owner).to eq(player_3)
     end
   end
+
+  describe 'nationalization' do
+    let(:players) { %w[a b c] }
+    it 'is possible to nationalize' do
+      # ignore cash limits for now....
+      player_1.set_cash(3000, game.bank)
+      player_2.set_cash(3000, game.bank)
+      player_3.set_cash(3000, game.bank)
+      sell_start_packet
+
+      buy_shares(player_2, 'BY')
+      pass(player_3)
+      buy_shares(player_1, 'BY')
+      # player_1 now has 60% and player_2 has 10% of BY, so player_1 can nationalize
+      pass(player_2)
+      pass(player_3)
+
+      nationalization_price = 138 # BY stock value is 92
+      # give player 1 exactly the money they need for the nationlization
+      player_1.set_cash(nationalization_price, game.bank)
+      player_1_cash_before = player_1.cash
+      player_2_cash_before = player_2.cash
+      buy_shares(player_1, 'BY', 10, player_2)
+      expect(player_1.percent_of(by)).to be 70
+      expect(player_2.percent_of(by)).to be 0
+      expect(player_1.cash).to be(player_1_cash_before - nationalization_price)
+      expect(player_2.cash).to be(player_2_cash_before + nationalization_price)
+    end
+  end
 end

@@ -38,10 +38,10 @@ module Engine
     describe '#can_buy?' do
       it 'can buy yellow at limit' do
         player_0.set_cash(10_000, game.bank)
-        market.set_par(corp_0, market.market[2][4])
-        market.set_par(corp_1, market.market[2][4])
-        market.set_par(corp_2, market.market[2][4])
-        market.set_par(corp_3, market.market[6][0])
+        game.par_corporation(corp_0, market.market[2][4])
+        game.par_corporation(corp_1, market.market[2][4])
+        game.par_corporation(corp_2, market.market[2][4])
+        game.par_corporation(corp_3, market.market[6][0])
         5.times { game.share_pool.buy_shares(player_0, corp_0.shares[0]) }
         5.times { game.share_pool.buy_shares(player_0, corp_1.shares[0]) }
         game.share_pool.buy_shares(player_0, corp_2.shares[0]) # at 6-player cert limit
@@ -59,10 +59,10 @@ module Engine
       it "can't buy when at cert limit when doing so would gain you the presidency" do
         player_0.set_cash(10_000, game.bank)
         player_1.set_cash(10_000, game.bank)
-        market.set_par(corp_0, market.market[2][4])
-        market.set_par(corp_1, market.market[2][4])
-        market.set_par(corp_2, market.market[2][4])
-        market.set_par(corp_3, market.market[6][0])
+        game.par_corporation(corp_0, market.market[2][4])
+        game.par_corporation(corp_1, market.market[2][4])
+        game.par_corporation(corp_2, market.market[2][4])
+        game.par_corporation(corp_3, market.market[6][0])
 
         # Make player 1 president
         3.times { game.share_pool.buy_shares(player_1, corp_0.shares[0]) }
@@ -83,7 +83,7 @@ module Engine
       it 'can\'t buy over 60%' do
         goto_new_sr!
         player_0.set_cash(10_000, game.bank)
-        market.set_par(corp_0, market.market[7][0])
+        game.par_corporation(corp_0, market.market[7][0])
         6.times { game.share_pool.buy_shares(player_0, corp_0.shares[0]) }
         # Force game to SR 2
         subject = goto_new_sr!
@@ -93,7 +93,7 @@ module Engine
       it 'can buy gray over 60%' do
         goto_new_sr!
         player_0.set_cash(10_000, game.bank)
-        market.set_par(corp_0, market.market[8][0])
+        game.par_corporation(corp_0, market.market[8][0])
         6.times { game.share_pool.buy_shares(player_0, corp_0.shares[0]) }
         # Force game to SR 2
         subject = goto_new_sr!
@@ -103,7 +103,7 @@ module Engine
       it 'must sell when over 60%' do
         goto_new_sr!
         player_0.set_cash(10_000, game.bank)
-        market.set_par(corp_0, market.market[7][0])
+        game.par_corporation(corp_0, market.market[7][0])
         7.times { game.share_pool.buy_shares(player_0, corp_0.shares[0]) }
 
         # Force game to SR 2
@@ -115,7 +115,7 @@ module Engine
       it 'needn\'t sell gray when over 60%' do
         goto_new_sr!
         player_0.set_cash(10_000, game.bank)
-        market.set_par(corp_0, market.market[8][0])
+        game.par_corporation(corp_0, market.market[8][0])
         7.times { game.share_pool.buy_shares(player_0, corp_0.shares[0]) }
         # Force game to SR 2
         subject = goto_new_sr!
@@ -128,7 +128,7 @@ module Engine
         let(:corp_0) { game.corporation_by_id('CPR') }
 
         it 'can buy multiple stocks from ipo in brown' do
-          market.set_par(corp_0, market.market.last[0]) # 10
+          game.par_corporation(corp_0, market.market.last[0]) # 10
           game.share_pool.buy_shares(player_0, corp_0.shares[0])
           ipo_share = corp_0.shares[0]
           expect(subject.active_step.can_buy?(player_0, ipo_share)).to be_truthy
@@ -143,7 +143,7 @@ module Engine
         end
 
         it 'cannot buy stocks from second company after buying one brown' do
-          market.set_par(corp_0, market.market.last[0]) # 10
+          game.par_corporation(corp_0, market.market.last[0]) # 10
           game.share_pool.buy_shares(player_0, corp_0.shares[0])
           ipo_share = corp_0.shares[0]
           expect(subject.active_step.can_buy?(player_0, ipo_share)).to be_truthy
@@ -224,10 +224,10 @@ module Engine
         player_0.set_cash(10_000, game.bank)
         player_1.set_cash(10_000, game.bank)
 
-        market.set_par(corp_0, game.par_prices[0])
+        game.par_corporation(corp_0, game.par_prices[0])
         5.times { game.share_pool.buy_shares(player_0, corp_0.shares.first) }
 
-        market.set_par(corp_1, game.par_prices[0])
+        game.par_corporation(corp_1, game.par_prices[0])
         5.times { game.share_pool.buy_shares(player_1, corp_1.shares.first) }
 
         move_to_sr!
