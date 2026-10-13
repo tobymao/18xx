@@ -134,8 +134,10 @@ module Engine
           def process_choose(action)
             entity = action.entity
             bond = first_bond(entity)
+            already_floated = @game.gipr.floated?
             @game.convert_bond_to_gipr(entity, bond)
-
+            @game.check_gipr_float
+            maybe_place_home_token(@game.gipr) if !already_floated && @game.gipr.floated?
             track_action(action, bond)
           end
 
