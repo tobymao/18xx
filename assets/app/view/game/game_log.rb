@@ -102,6 +102,7 @@ module View
         blank_action.created_at = @game.actions[0]&.created_at || Time.now
 
         last_action = nil
+        @last_indent_group = nil
 
         actions = @game.actions.to_h { |a| [a.id, a] }
 
@@ -165,13 +166,6 @@ module View
       end
 
       def render_log_for_action(log, action)
-        timestamp_props = {
-          style: {
-            fontSize: 'smaller',
-          },
-        }
-        message_props = { style: { margin: '0 0.2rem' } }
-
         timestamp = "[#{Time.at(action.created_at || Time.now).strftime('%R')}] "
 
         click = lambda do
@@ -192,20 +186,31 @@ module View
             },
             on: { click: click },
           }
-          line_props[:style][:fontWeight] = 'bold' if line.is_a?(String) && line.start_with?('--')
+          is_banner = line.is_a?(String) && line.start_with?('--')
+          line_props[:style][:fontWeight] = 'bold' if is_banner
+
+          indent = false
 
           if line.is_a?(Engine::Action::Message)
             next [] if line.message.empty?
 
             line_props[:style][:fontWeight] = 'bold'
             line_props[:style][:marginTop] = '0.5em'
-
             sender = line.entity.name || 'Owner'
             line = "#{sender}: #{line.message}"
+          elsif entry.indent_group && !is_banner
+            indent = entry.indent_group == @last_indent_group
+            @last_indent_group = entry.indent_group
           end
 
-          h('div.chatline', line_props,
-            [h('span.timestamp', timestamp_props, timestamp), h('span.message', message_props, line)])
+          ts_props = { style: { fontSize: 'smaller' } }
+          msg_props = { style: { margin: '0 0.2rem' } }
+          msg_props[:style][:marginLeft] = '1.5rem' if indent
+
+          h('div.chatline', line_props, [
+            h('span.timestamp', ts_props, timestamp),
+            h('span.message', msg_props, line),
+          ])
         end
 
         if !action.is_a?(Engine::Action::Message) &&
