@@ -135,6 +135,10 @@ Towns, cities, and offboards have a few "sub parts" in common:
     - `dot` - default when 0 or 3+ paths connect to the town
     - `hidden` - don't show at all, useful for special offboards that count as
       towns instead of cities; construct with a hidden town and `terminal` paths
+- **size** - integer (default: `1`) - number of scoring slots in the town.
+  `size:2` renders as an oval containing two dots and counts as two stops when
+  computing route revenue, allowing trains to score the town once or twice
+  depending on the train's remaining pay slots. Used by 18OE double-town tiles.
 
 #### Lanes
 

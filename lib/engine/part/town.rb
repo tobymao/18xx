@@ -6,7 +6,7 @@ module Engine
   module Part
     class Town < RevenueCenter
       attr_accessor :style
-      attr_reader :to_city, :boom
+      attr_reader :to_city, :boom, :size
 
       def initialize(revenue, **opts)
         super
@@ -14,6 +14,7 @@ module Engine
         @to_city = opts[:to_city]
         @boom = opts[:boom]
         @style = opts[:style]&.to_sym
+        @size = opts[:size]&.to_i || 1
       end
 
       def <=(other)
@@ -32,6 +33,8 @@ module Engine
       # in the center or it is in the center and has less than two exits and
       # less than three paths
       def rect?
+        return false if @size > 1
+
         @style ? (@style == :rect) : (!paths.empty? && paths.size < 3)
       end
 

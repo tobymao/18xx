@@ -137,16 +137,18 @@ module Engine
         cache << pass
         pass
       when 'town'
-        town = Part::Town.new(params['revenue'],
-                              groups: params['groups'],
-                              hide: params['hide'],
-                              visit_cost: params['visit_cost'],
-                              route: params['route'],
-                              format: params['format'],
-                              loc: params['loc'],
-                              boom: params['boom'],
-                              style: params['style'],
-                              to_city: params['to_city'])
+        klass = params['size'].to_i > 1 ? Part::DoubleTown : Part::Town
+        town = klass.new(params['revenue'],
+                         groups: params['groups'],
+                         hide: params['hide'],
+                         visit_cost: params['visit_cost'],
+                         route: params['route'],
+                         format: params['format'],
+                         loc: params['loc'],
+                         boom: params['boom'],
+                         style: params['style'],
+                         size: params['size'],
+                         to_city: params['to_city'])
         cache << town
         town
       when 'halt'
@@ -464,7 +466,10 @@ module Engine
         return ct_edges
       end
       # if a tile has no cities and exactly one town that doesn't have two exits, place in center
-      if @cities.empty? && @towns.one? && (@towns[0].exits.size != 2) && !compute_loc(@towns.first.loc)
+      # size>1 towns (double towns) always center regardless of exit count
+      if @cities.empty? && @towns.one? &&
+          (@towns[0].exits.size != 2 || @towns[0].size > 1) &&
+          !compute_loc(@towns.first.loc)
         ct_edges[@towns.first] = nil
         return ct_edges
       end
