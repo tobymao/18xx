@@ -174,7 +174,8 @@ module Engine
       end
 
       def auto_actions
-        active_step(current_entity)&.auto_actions(current_entity)
+        step = active_step
+        step&.auto_actions(step.current_entity)
       end
 
       def finished?
