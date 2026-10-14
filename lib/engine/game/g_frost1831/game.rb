@@ -9,8 +9,6 @@ require_relative '../base'
 module Engine
   module Game
     module GFrost1831
-      # Data skeleton: map, entities, market, trains and phases. Rounds use the engine defaults;
-      # factions, parliament, influence and the other rules follow in later PRs.
       class Game < Game::Base
         include_meta(GFrost1831::Meta)
         include Entities
@@ -159,7 +157,6 @@ module Engine
           },
         ].freeze
 
-        # Round definitions use engine defaults only; the custom steps follow in later PRs
         def stock_round
           Engine::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,
