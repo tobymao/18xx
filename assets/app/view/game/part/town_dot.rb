@@ -3,6 +3,7 @@
 require 'view/game/hit_box'
 require 'view/game/part/base'
 require 'view/game/part/city'
+require 'view/game/part/multi_revenue'
 require 'view/game/runnable'
 
 module View
@@ -19,6 +20,7 @@ module View
 
         REVENUE_DISPLACEMENT = 42
         REVENUE_EDGE_DISPLACEMENT = 25
+        MULTI_REVENUE_DISPLACEMENT = 48
         REVENUE_ANGLE = -60
 
         REVENUE_REGIONS = {
@@ -78,6 +80,7 @@ module View
 
         def render_revenue
           revenues = @town.uniq_revenues
+          return render_multi_revenue if revenues.size > 1 && !@town.halt?
           return if revenues.size > 1
 
           revenue = revenues.first
@@ -104,6 +107,17 @@ module View
                 end,
               ]),
             ]),
+          ])
+        end
+
+        def render_multi_revenue
+          x = render_location[:x]
+          y = render_location[:y] - MULTI_REVENUE_DISPLACEMENT
+
+          increment_weight_for_regions(TOP_MIDDLE_ROW, 1.5)
+
+          h(:g, { key: "#{@town.id}-r", attrs: { transform: "translate(#{x.round(2)} #{y.round(2)})" } }, [
+            h(Part::MultiRevenue, revenues: @town.revenue_to_render, transform: rotation_for_layout),
           ])
         end
 

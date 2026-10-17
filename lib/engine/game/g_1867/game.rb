@@ -389,7 +389,7 @@ module Engine
         def init_corporations(stock_market)
           major_min_price = stock_market.par_prices.map(&:price).min
           minor_min_price = MINIMUM_MINOR_PRICE
-          self.class::CORPORATIONS.map do |corporation|
+          game_corporations.map do |corporation|
             Corporation.new(
               min_price: corporation[:type] == :major ? major_min_price : minor_min_price,
               capitalization: self.class::CAPITALIZATION,
@@ -565,10 +565,18 @@ module Engine
           corporation.set_cash(0, @bank)
         end
 
+        def nationalize_verb
+          'nationalize'
+        end
+
+        def trainless?(corporation)
+          corporation.trains.empty?
+        end
+
         def nationalize!(corporation)
           return if !corporation.floated? || !@corporations.include?(corporation)
 
-          @log << "#{corporation.name} is nationalized"
+          @log << "#{corporation.name} is #{nationalize_verb}d"
 
           repay_loan(corporation, corporation.loans.first) while corporation.cash >= @loan_value && !corporation.loans.empty?
 
@@ -969,7 +977,10 @@ module Engine
           @national_reservations = self.class::NATIONAL_RESERVATIONS.dup
           @corporations.delete(@national)
           add_neutral_tokens
+          setup_future_corporations!
+        end
 
+        def setup_future_corporations!
           # Move green and majors out of the normal list
           @corporations, @future_corporations = @corporations.partition do |corporation|
             corporation.type == :minor && !self.class::GREEN_CORPORATIONS.include?(corporation.id)
@@ -1017,7 +1028,7 @@ module Engine
           corporations, removed = @corporations.partition do |corporation|
             corporation.type != :minor
           end
-          @log << 'Minors nationalized' if removed.any?
+          @log << "Minors #{nationalize_verb}d" if removed.any?
           removed.sort.each { |c| nationalize!(c) }
           @corporations = corporations
         end
@@ -1028,7 +1039,7 @@ module Engine
         end
 
         def postevent_trainless_nationalization!
-          trainless = @corporations.select { |c| c.operated? && c.trains.none? }.sort
+          trainless = @corporations.select { |c| c.operated? && trainless?(c) }.sort
 
           @trainless_major = []
           trainless.each do |c|
