@@ -171,7 +171,7 @@ module Engine
         cache << offboard
         offboard
       when 'label'
-        Part::Label.new(params)
+        params.is_a?(Hash) ? Part::Label.new(params['label'], loc: params['loc']) : Part::Label.new(params)
       when 'upgrade'
         Part::Upgrade.new(params['cost'], params['terrain']&.split('|'), params['size'], loc: params['loc'])
       when 'border'
