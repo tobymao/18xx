@@ -17,7 +17,7 @@ module Engine
         GAME_LOCATION = 'Western USA'
         GAME_PUBLISHER = :self_published
         GAME_RULES_URL = 'https://boardgamegeek.com/boardgame/382235/1864-forty-niner'
-        GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1864'
+        GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1864:-Forty-Niner'
 
         PLAYER_RANGE = [2, 6].freeze
 
