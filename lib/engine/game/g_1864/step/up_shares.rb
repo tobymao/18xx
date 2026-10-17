@@ -7,17 +7,28 @@ module Engine
     module G1864
       module Step
         class UPShares < Engine::Step::Base
-          ACTIONS = %w[buy_shares pass].freeze
+          ACTIONS = %w[choose].freeze
 
           def actions(entity)
-            return [] unless entity == current_entity
-            return [] if available_shares.empty?
+            return [] if entity != current_entity || !share
 
             ACTIONS
           end
 
           def active?
             !@game.pending_up_share_buyers.empty?
+          end
+
+          def skip!
+            return if share
+
+            until @game.pending_up_share_buyers.empty?
+              @game.pending_up_share_buyers.each do |buyer|
+                @log << "#{buyer[:player].name} cannot buy #{@game.union_pacific.name} shares - the IPO is empty"
+              end
+              @game.pending_up_share_buyers.clear
+              @game.regionalize_pending!
+            end
           end
 
           def active_entities
@@ -29,45 +40,68 @@ module Engine
           end
 
           def description
-            'Buy Union Pacific shares'
+            "Buy #{@game.union_pacific.name} shares"
           end
 
-          def available_shares
-            @game.union_pacific.shares.take(1)
+          def choice_name
+            "Buy #{@game.union_pacific.name} shares"
           end
 
-          def can_buy?(entity, bundle)
-            return false unless bundle&.corporation == @game.union_pacific
-
-            entity.cash >= bundle.price &&
-              entity.percent_of(@game.union_pacific) + bundle.percent <= 60
+          def choice_available?(entity)
+            entity == current_entity
           end
 
-          def process_buy_shares(action)
-            @game.share_pool.buy_shares(action.entity, action.bundle)
-            decrement_or_pop
+          def hide_corporations?
+            true
           end
 
-          def process_pass(action)
-            log_pass(action.entity)
-            @game.pending_up_share_buyers.shift
-          end
-
-          def skip!
-            return super unless available_shares.empty?
-
-            while !@game.pending_up_share_buyers.empty? && available_shares.empty?
-              buyer = @game.pending_up_share_buyers.shift
-              @log << "#{buyer[:player].name} cannot buy Union Pacific shares - the IPO is empty"
+          def choices
+            choices = (1..max_buyable(current_entity)).to_h do |count|
+              price = @game.format_currency(share_price * count)
+              [count.to_s, "Buy #{count} share#{'s' if count > 1} (#{price})"]
             end
+            choices['pass'] = 'Decline'
+            choices
           end
 
-          private
+          def share
+            @game.union_pacific.ipo_shares.first
+          end
 
-          def decrement_or_pop
-            head = @game.pending_up_share_buyers.first
-            head[:shares] -= 1
-            @game.pending_up_share_buyers.shift unless head[:shares].positive?
+          def share_price
+            @game.union_pacific.share_price.price
+          end
+
+          def max_buyable(entity)
+            allowed = [@game.pending_up_share_buyers.first&.fetch(:shares).to_i, @game.union_pacific.ipo_shares.size].min
+            (1..allowed).take_while { |count| can_buy?(entity, count) }.last || 0
+          end
+
+          def can_buy?(entity, count = 1)
+            return false if @game.union_pacific.ipo_shares.size < count
+
+            entity.cash >= share_price * count &&
+              @game.union_pacific.holding_ok?(entity, share.percent * count) &&
+              @game.num_certs(entity) + count <= @game.cert_limit(entity)
+          end
+
+          def process_choose(action)
+            entity = action.entity
+            raise GameError, "Not #{entity.name}'s turn to buy #{@game.union_pacific.name} shares" unless entity == current_entity
+
+            if action.choice == 'pass'
+              @log << "#{entity.name} declines to buy #{@game.union_pacific.name} shares"
+            else
+              count = action.choice.to_i
+              raise GameError, "#{entity.name} cannot buy #{action.choice} #{@game.union_pacific.name} shares" if
+                count < 1 || count > max_buyable(entity)
+
+              shares = @game.union_pacific.ipo_shares.take(count)
+              shares.each { |share| share.buyable = true }
+              @game.share_pool.buy_shares(entity, ShareBundle.new(shares))
+            end
+            @game.pending_up_share_buyers.shift
+            @game.regionalize_pending!
           end
         end
       end

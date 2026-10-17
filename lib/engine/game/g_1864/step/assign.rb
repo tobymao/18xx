@@ -7,42 +7,28 @@ module Engine
     module G1864
       module Step
         class Assign < Engine::Step::Assign
-          def actions(entity)
-            return [] unless local_contract?(entity)
-            return [] if @game.local_contract_placed?(entity)
-
-            ACTIONS
-          end
-
           def process_assign(action)
             company = action.entity
-            raise GameError, "#{company.name} cannot be assigned" unless local_contract?(company)
-
             hex = action.target
-            raise GameError, "#{company.name} can only be assigned to one of its own stations" \
-              unless local_contract_hexes(company).include?(hex)
+            ability = @game.abilities(company, :assign_hexes)
+            if !ability || !station_hexes(company).include?(hex)
+              raise GameError, "#{company.name} can only be placed in one of #{company.owner.name}'s stations"
+            end
 
-            @game.place_local_contract!(company, hex)
+            city = hex.tile.cities.find { |c| c.tokened_by?(company.owner) }
+            @game.place_local_contract!(company, city)
+            ability.use!
+            @log << "#{company.name} is placed in #{hex.location_name || hex.name}"
           end
 
           def available_hex(entity, hex)
-            return unless local_contract?(entity)
-
-            local_contract_hexes(entity).include?(hex)
-          end
-
-          def blocks?
-            false
+            entity.company? && !!@game.abilities(entity, :assign_hexes) && station_hexes(entity).include?(hex)
           end
 
           private
 
-          def local_contract?(entity)
-            entity.company? && entity.name == Entities::LOCAL_CONTRACT && !entity.closed?
-          end
-
-          def local_contract_hexes(company)
-            @game.local_contract_hexes(company)
+          def station_hexes(company)
+            company.owner.tokens.select(&:used).map { |token| token.city.hex }
           end
         end
       end

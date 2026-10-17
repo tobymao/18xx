@@ -8,21 +8,26 @@ module Engine
       module Round
         class Operating < G1867::Round::Operating
           def skip_entity?(entity)
-            return super if entity.type != :national
-
-            !@game.up_operating? || entity.owner.nil?
-          end
-
-          def start_operating
-            entity = @entities[@entity_index]
-            @game.reveal_up_consist!(@game.phase.name) if entity.type == :national
-
-            if entity.respond_to?(:companies) && entity.companies.any? { |c| c.name == Entities::GOVERNMENT_SUBSIDY }
-              @game.bank.spend(20, entity)
-              @game.log << "#{entity.name} receives #{@game.format_currency(20)} in U.S. Government Subsidy"
-            end
+            return !entity.owner if entity == @game.union_pacific
 
             super
+          end
+
+          def after_setup
+            @game.up_without_president! if presidentless_up?(@entities[@entity_index])
+
+            super
+          end
+
+          def next_entity_index!
+            super
+            @game.up_without_president! if presidentless_up?(@entities[@entity_index])
+          end
+
+          private
+
+          def presidentless_up?(entity)
+            entity == @game.union_pacific && !entity.owner
           end
         end
       end

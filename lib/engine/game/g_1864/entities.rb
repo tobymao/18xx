@@ -1,26 +1,14 @@
 # frozen_string_literal: true
 
+require_relative '../g_1861/entities'
+
 module Engine
   module Game
     module G1864
       module Entities
-        CORPORATE_LOBBYISTS = 'Corporate Lobbyists'.freeze
-        GOVERNMENT_SUBSIDY = 'U.S. Government Subsidy'.freeze
-        TRACK_BUILDER = 'Track Builder'.freeze
-        LOCAL_CONTRACT = 'Local Contract'.freeze
-        ANGEL_INVESTORS = 'Angel Investors'.freeze
-        UNION_STATION = 'Union Station'.freeze
-        CENTRAL_STATION = 'Central Station'.freeze
-        EARLY_ADOPTER = 'Early Adopter'.freeze
-        CIVIL_ENGINEERING_FIRM = 'Civil Engineering Firm'.freeze
-        DOUBLE_TRACKS = 'Double Tracks'.freeze
-        PULLMAN_CAR = 'Pullman Car'.freeze
-        EXTRA_STATION_CARDS = [UNION_STATION, CENTRAL_STATION].freeze
-        EARLY_ADOPTER_MAX_INDEX = 10
-
         COMPANIES = [
           {
-            name: CORPORATE_LOBBYISTS,
+            name: 'Corporate Lobbyists',
             sym: 'CL1',
             value: 0,
             revenue: 0,
@@ -29,7 +17,7 @@ module Engine
             color: nil,
           },
           {
-            name: CORPORATE_LOBBYISTS,
+            name: 'Corporate Lobbyists',
             sym: 'CL2',
             value: 0,
             revenue: 0,
@@ -38,55 +26,59 @@ module Engine
             color: nil,
           },
           {
-            name: GOVERNMENT_SUBSIDY,
+            name: 'U.S. Government Subsidy',
             sym: 'GS1',
             value: 0,
-            revenue: 0,
+            revenue: 20,
             desc: 'At the start of each Operating Round, the Bank pays $20 to the treasury of the company.',
             color: nil,
           },
           {
-            name: GOVERNMENT_SUBSIDY,
+            name: 'U.S. Government Subsidy',
             sym: 'GS2',
             value: 0,
-            revenue: 0,
+            revenue: 20,
             desc: 'At the start of each Operating Round, the Bank pays $20 to the treasury of the company.',
             color: nil,
           },
           {
-            name: TRACK_BUILDER,
+            name: 'Track Builder',
             sym: 'TB1',
             value: 0,
             revenue: 0,
-            desc: 'The additional yellow tile placement costs nothing. The Bank pays the $20 to Credit Mobilier.',
+            desc: 'The additional tile placement costs nothing. The Bank pays the $20 to Credit Mobilier.',
             color: nil,
           },
           {
-            name: TRACK_BUILDER,
+            name: 'Track Builder',
             sym: 'TB2',
             value: 0,
             revenue: 0,
-            desc: 'The additional yellow tile placement costs nothing. The Bank pays the $20 to Credit Mobilier.',
+            desc: 'The additional tile placement costs nothing. The Bank pays the $20 to Credit Mobilier.',
             color: nil,
           },
           {
-            name: LOCAL_CONTRACT,
+            name: 'Local Contract',
             sym: 'LC1',
             value: 0,
             revenue: 0,
-            desc: 'Place a +$10 marker on one station of this company; that city pays $10 more.',
+            desc: 'Place a +$10 marker on one station of this company; that city pays $10 more '\
+                  '(doubled for 2+2 and 5+5E trains).',
+            abilities: [{ type: 'assign_hexes', hexes: [], count: 1, owner_type: 'corporation', when: 'owning_corp_or_turn' }],
             color: nil,
           },
           {
-            name: LOCAL_CONTRACT,
+            name: 'Local Contract',
             sym: 'LC2',
             value: 0,
             revenue: 0,
-            desc: 'Place a +$10 marker on one station of this company; that city pays $10 more.',
+            desc: 'Place a +$10 marker on one station of this company; that city pays $10 more '\
+                  '(doubled for 2+2 and 5+5E trains).',
+            abilities: [{ type: 'assign_hexes', hexes: [], count: 1, owner_type: 'corporation', when: 'owning_corp_or_turn' }],
             color: nil,
           },
           {
-            name: ANGEL_INVESTORS,
+            name: 'Angel Investors',
             sym: 'AI1',
             value: 0,
             revenue: 0,
@@ -94,7 +86,7 @@ module Engine
             color: nil,
           },
           {
-            name: ANGEL_INVESTORS,
+            name: 'Angel Investors',
             sym: 'AI2',
             value: 0,
             revenue: 0,
@@ -102,25 +94,45 @@ module Engine
             color: nil,
           },
           {
-            name: UNION_STATION,
+            name: 'Union Station',
             sym: 'US1',
             value: 0,
             revenue: 0,
-            desc: 'An additional station token which may be placed for $10 per hexagon.',
-            abilities: [{ type: 'additional_token', count: 1, owner_type: 'corporation' }],
+            desc: 'An additional station token which may be placed for $10 per hexagon. It is removed at Phase 6.',
+            abilities: [
+              {
+                type: 'token',
+                owner_type: 'corporation',
+                when: 'owning_corp_or_turn',
+                hexes: [],
+                price: 10,
+                connected: true,
+                count: 1,
+              },
+            ],
             color: nil,
           },
           {
-            name: CENTRAL_STATION,
+            name: 'Central Station',
             sym: 'CS1',
             value: 0,
             revenue: 0,
-            desc: 'An additional station token which may be placed for $10 per hexagon.',
-            abilities: [{ type: 'additional_token', count: 1, owner_type: 'corporation' }],
+            desc: 'An additional station token which may be placed for $10 per hexagon. It is removed at Phase 6.',
+            abilities: [
+              {
+                type: 'token',
+                owner_type: 'corporation',
+                when: 'owning_corp_or_turn',
+                hexes: [],
+                price: 10,
+                connected: true,
+                count: 1,
+              },
+            ],
             color: nil,
           },
           {
-            name: EARLY_ADOPTER,
+            name: 'Early Adopter',
             sym: 'EA1',
             value: 0,
             revenue: 0,
@@ -128,7 +140,7 @@ module Engine
             color: nil,
           },
           {
-            name: CIVIL_ENGINEERING_FIRM,
+            name: 'Civil Engineering Firm',
             sym: 'CE1',
             value: 0,
             revenue: 0,
@@ -136,7 +148,7 @@ module Engine
             color: nil,
           },
           {
-            name: DOUBLE_TRACKS,
+            name: 'Double Tracks',
             sym: 'DT1',
             value: 0,
             revenue: 0,
@@ -144,11 +156,12 @@ module Engine
             color: nil,
           },
           {
-            name: PULLMAN_CAR,
+            name: 'Pullman Car',
             sym: 'PC1',
             value: 0,
             revenue: 0,
-            desc: 'One train may serve an additional two small stations without counting them as stops.',
+            desc: 'The company begins play with the Pullman, which lets one train serve an additional two small '\
+                  'stations without counting them as stops. It may be bought by another company for a minimum of $1.',
             color: nil,
           },
         ].freeze
@@ -172,7 +185,27 @@ module Engine
           'E' => { coordinates: 'D5' },                  # Eugene
         }.freeze
 
-        YELLOW_RESERVATION = '#ffe600'
+        MINORS = [
+          {
+            sym: 'CM',
+            name: 'Crédit Mobilier',
+            logo: '1864/CM',
+            simple_logo: '1864/CM',
+            tokens: [],
+            color: '#5b4636',
+            text_color: 'white',
+            abilities: [
+              {
+                type: 'description',
+                description: 'Collects extra-tile and terrain costs',
+                desc_detail: 'Every $20 extra yellow tile cost and every terrain cost is paid here; the Bank pays any '\
+                             'amount waived by a Minor Company Ability. Immediately before each Merger Round the '\
+                             'money is divided equally among the players, with any remainder staying here. Closes at '\
+                             'Phase 4, returning its money to the Bank.',
+              },
+            ],
+          },
+        ].freeze
 
         UNION_PACIFIC = {
           sym: 'UP',
@@ -185,7 +218,6 @@ module Engine
           max_ownership_percent: 60,
           always_market_price: true,
           type: 'national',
-          float_percent: 10,
           color: '#c8102e',
           text_color: 'white',
         }.freeze
@@ -198,7 +230,7 @@ module Engine
              corporation
                .except(:city)
                .merge(home)
-               .merge(reservation_color: corporation[:reservation_color] || YELLOW_RESERVATION)
+               .merge(reservation_color: corporation[:reservation_color] || :yellow)
            end + [UNION_PACIFIC]).freeze
       end
     end

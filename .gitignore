@@ -43,6 +43,3 @@ validate/
 MAINLINE 1864 Forty-Niner Rules.pdf
 /map/
 /cards/
-
-# 1864 specs are for local development only
-/spec/lib/engine/game/g_1864/

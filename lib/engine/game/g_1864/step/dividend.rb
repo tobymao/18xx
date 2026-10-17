@@ -8,21 +8,15 @@ module Engine
       module Step
         class Dividend < G1867::Step::Dividend
           def actions(entity)
-            return [] if entity.corporation? && entity.type == :national
+            return [] if entity == @game.union_pacific
 
             super
           end
 
           def skip!
-            return super unless current_entity.type == :national
+            return super unless current_entity == @game.union_pacific
 
             process_dividend(Action::Dividend.new(current_entity, kind: 'payout'))
-          end
-
-          def payout(entity, revenue)
-            return super if entity.type != :national
-
-            { corporation: 0, per_share: revenue / entity.total_shares }
           end
         end
       end

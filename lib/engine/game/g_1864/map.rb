@@ -181,7 +181,7 @@ module Engine
           green: {
             ['D11'] =>
             'city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:1,b:_0;'\
-            'path=a:0,b:_1;path=a:5,b:_1;label=S',
+            'path=a:0,b:_1;path=a:5,b:_1;label=label:S,loc:3.5',
           },
           gray: {
             %w[E18 H5 H17] => 'icon=image:mountain',
@@ -205,10 +205,10 @@ module Engine
           },
           red: {
             ['A14'] =>
-            'offboard=revenue:yellow_20|green_30|brown_50|gray_60,hide:1,groups:Canada'\
+            'offboard=revenue:yellow_20|green_30|brown_50|gray_60,hide:1,groups:Canada;'\
             'path=a:0,b:_0;path=a:5,b:_0;border=edge:4;border=edge:1;label=N',
             %w[A16 A18] =>
-            'offboard=revenue:yellow_20|green_30|brown_50|gray_60,hide:1,groups:Canada'\
+            'offboard=revenue:yellow_20|green_30|brown_50|gray_60,hide:1,groups:Canada;'\
             'path=a:0,b:_0;path=a:5,b:_0;border=edge:4;border=edge:1',
             ['A6'] =>
             'offboard=revenue:yellow_20|green_30|brown_50|gray_60,hide:1,groups:Canada;'\
