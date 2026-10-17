@@ -43,7 +43,10 @@ module Engine
           end
 
           def split_active_entities
-            [@split_corporation&.owner].compact
+            owner = @split_corporation&.owner
+            # If the UB is president, its owner (the player) is the active entity
+            owner = @game.company_by_id('UB').owner if owner == @game.union_bank
+            [owner].compact
           end
 
           def split_choice_entity

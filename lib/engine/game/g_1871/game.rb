@@ -578,16 +578,20 @@ module Engine
 
         # Allow a company to split, if the owner has >= 40 percent, at least two
         # tokens out and there is a tranch available
-        def can_split?(corporation, spliter)
+        def can_split?(corporation, splitter)
           return false unless tranch_available?
           return false if corporation.name == 'PEIR'
           return false unless corporation.ipoed
 
+          # Resolve the effective splitter — if the UB is president, its owner acts on its behalf
+          effective_splitter = splitter
+          effective_splitter = union_bank if splitter == company_by_id('UB')&.owner && union_bank == corporation.owner
+
           # Have to own the company in question
-          return false unless corporation.owner == spliter
+          return false unless corporation.owner == effective_splitter
 
           # Have to own at least 40 percent
-          return false unless spliter.percent_of(corporation) >= 40
+          return false unless effective_splitter.percent_of(corporation) >= 40
 
           # Have to have two tokens of this corporation out on the map
           corporation.placed_tokens.size >= 2
