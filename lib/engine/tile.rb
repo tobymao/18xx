@@ -171,7 +171,7 @@ module Engine
         cache << offboard
         offboard
       when 'label'
-        Part::Label.new(params)
+        params.is_a?(Hash) ? Part::Label.new(params['label'], loc: params['loc']) : Part::Label.new(params)
       when 'upgrade'
         Part::Upgrade.new(params['cost'], params['terrain']&.split('|'), params['size'], loc: params['loc'])
       when 'border'
@@ -699,8 +699,8 @@ module Engine
       @stops = @paths.flat_map(&:stops).uniq
       @edges = @paths.flat_map(&:edges).uniq
 
-      # allow offboards w/o paths, and stops connected only by stubs, to render
-      @revenue_stops = (@stops + @offboards + (@stubs.empty? ? [] : @city_towns)).uniq
+      # allow offboards w/o paths to render
+      @revenue_stops = (@stops + @offboards).uniq
 
       @edges.each { |e| e.tile = self }
     end
