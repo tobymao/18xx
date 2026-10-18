@@ -38,9 +38,16 @@ module Engine
             raise GameError, 'Cannot attach the Pullman Car to that train' if !train || !choosing_pullman?(entity)
 
             @log << "#{entity.name} attaches the Pullman Car to a #{train.name} train"
+            attach_pullman(train)
+          end
+
+          def attach_pullman(train)
             @pullman_train = train
-            @pullman_distance = train.distance
-            train.distance = @game.pullman_distance(train)
+            @pullman_original_train = train.dup
+            train.name += 'P'
+            train.distance = train.distance.map do |h|
+              h['nodes'] == ['town'] ? h.merge('pay' => @game.num_pullman_towns) : h
+            end
           end
 
           def process_run_routes(action)
@@ -51,7 +58,9 @@ module Engine
           def detach_pullman
             return unless @pullman_train
 
-            @pullman_train.distance = @pullman_distance
+            @pullman_train.name = @pullman_original_train.name
+            @pullman_train.distance = @pullman_original_train.distance
+            @pullman_original_train = nil
             @pullman_train = nil
           end
         end
