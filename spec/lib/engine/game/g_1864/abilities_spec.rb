@@ -461,10 +461,6 @@ describe 'G1864 minor abilities' do
     let(:other) { game.corporations.find { |c| c != holder && c.type == :minor } }
     let(:route_step) { Engine::Game::G1864::Step::Route.new(game, []) }
 
-    def town_pay(train)
-      train.distance.find { |h| h['nodes'] == ['town'] }['pay']
-    end
-
     def give_trains(corporation, count)
       game.depot.upcoming.first(count).each { |train| game.buy_train(corporation, train, :free) }
       corporation.trains.reject { |t| game.pullman?(t) }
@@ -495,7 +491,7 @@ describe 'G1864 minor abilities' do
       expect(game.must_buy_train?(holder)).to be(true)
     end
 
-    it 'lets the holder attach it to one train, which then pays two towns until it runs' do
+    it 'lets the holder attach it to one train, which becomes a P train until it runs' do
       trains = give_trains(holder, 2)
 
       expect(route_step.choosing_pullman?(holder)).to be(true)
@@ -503,13 +499,63 @@ describe 'G1864 minor abilities' do
 
       route_step.process_choose(Engine::Action::Choose.new(holder, choice: trains.last.id))
 
-      expect(town_pay(trains.last)).to eq(2)
-      expect(town_pay(trains.first)).to eq(0)
+      expect(trains.map(&:name)).to eq(%w[2 2P])
       expect(route_step.choosing_pullman?(holder)).to be(false)
 
       route_step.detach_pullman
 
-      expect(town_pay(trains.last)).to eq(0)
+      expect(trains.map(&:name)).to eq(%w[2 2])
+    end
+
+    describe 'route revenue' do
+      let(:train) { give_trains(holder, 1).first }
+      let(:boise) { game.hex_by_id('D11') }
+      let(:salt_lake) { game.hex_by_id('G14') }
+      let(:towns) { %w[D13 D15 I8].map { |id| game.hex_by_id(id) } }
+
+      before do
+        boise.tile.cities.last.place_token(holder, holder.next_token, check_tokenable: false)
+      end
+
+      def route_through(hexes)
+        stops = hexes.flat_map { |hex| hex.tile.stops.last(1) }
+        instance_double(Engine::Route, corporation: holder, phase: game.phase, train: train,
+                                       hexes: hexes, visited_stops: stops)
+      end
+
+      def revenue(route)
+        game.revenue_for(route, game.compute_stops(route))
+      end
+
+      describe 'of the train it is attached to' do
+        before do
+          route_step.process_choose(Engine::Action::Choose.new(holder, choice: train.id))
+        end
+
+        it 'adds two towns to a route that fills the train with cities' do
+          expect(revenue(route_through([boise, salt_lake] + towns.first(2)))).to eq(40 + 40 + 10 + 10)
+        end
+
+        it 'adds two towns beyond those the train counts as stops' do
+          expect(revenue(route_through([boise] + towns))).to eq(40 + 10 + 10 + 10)
+        end
+
+        it 'stops adding towns once it runs' do
+          route_step.detach_pullman
+
+          expect(revenue(route_through([boise, salt_lake] + towns.first(2)))).to eq(40 + 40)
+        end
+      end
+
+      describe 'of a train it was never attached to' do
+        it 'skips towns when cities fill the train' do
+          expect(revenue(route_through([boise, salt_lake] + towns.first(2)))).to eq(40 + 40)
+        end
+
+        it 'counts a town as one of its stops' do
+          expect(revenue(route_through([boise, towns.first]))).to eq(40 + 10)
+        end
+      end
     end
 
     it 'offers no Pullman choice to a corporation without the Pullman' do

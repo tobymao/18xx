@@ -310,8 +310,17 @@ module Engine
           train.name == PULLMAN
         end
 
-        def pullman_distance(train)
-          train.distance.map { |h| h['nodes'] == ['town'] ? h.merge('pay' => PULLMAN_TOWNS) : h }
+        def num_pullman_towns
+          PULLMAN_TOWNS
+        end
+
+        def compute_stops(route)
+          stops = super
+          town_pay = route.train.distance.sum { |h| h['nodes'] == ['town'] ? h['pay'] : 0 }
+          return stops if !stops || town_pay.zero?
+
+          towns = (route.visited_stops - stops).select(&:town?)
+          towns.combination([town_pay, towns.size].min).map { |combo| stops + combo }.max_by { |s| revenue_for(route, s) }
         end
 
         def route_trains(entity)
