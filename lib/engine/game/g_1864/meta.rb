@@ -16,7 +16,7 @@ module Engine
         GAME_DESIGNER = 'TraXX'
         GAME_LOCATION = 'Western USA'
         GAME_PUBLISHER = :self_published
-        GAME_RULES_URL = 'https://boardgamegeek.com/boardgame/382235/1864-forty-niner'
+        GAME_RULES_URL = 'https://tonyfryer.github.io/1864-forty-niner-rules/'
         GAME_INFO_URL = 'https://github.com/tobymao/18xx/wiki/1864-Forty-Niner'
 
         PLAYER_RANGE = [2, 6].freeze
