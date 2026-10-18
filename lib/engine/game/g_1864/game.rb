@@ -59,7 +59,7 @@ module Engine
           status |= ['national_operates'] if number >= UP_OPERATES_PHASE
           status |= ['export_train'] if number.between?(UP_OPERATES_PHASE, LAST_EXPORT_PHASE)
           status << (number >= OWNERSHIP_LIMIT_PHASE ? 'ownership_limit' : 'no_ownership_limit')
-          phase.merge(status: status)
+          phase.merge(status: status, train_limit: phase[:train_limit].except(:national))
         end.freeze
 
         TRAIN_EVENTS = {
@@ -588,6 +588,7 @@ module Engine
 
         def train_limit(entity)
           return entity.trains.size + 1 if deregulated?
+          return 99 if entity == @union_pacific
 
           super
         end
