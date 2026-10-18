@@ -2946,7 +2946,9 @@ module Engine
             next unless neighbor
 
             hex.all_neighbors[direction] = neighbor
-            next if self.class::IMPASSABLE_HEX_COLORS.include?(neighbor.tile.color) && !neighbor.targeting?(hex)
+            next if self.class::IMPASSABLE_HEX_COLORS.include?(neighbor.tile.color) &&
+                    !neighbor.targeting?(hex) &&
+                    neighbor.tile.stubs.none? { |stub| stub.edge == Hex.invert(direction) }
             next if hex.tile.borders.any? { |border| border.edge == direction && border.type == :impassable }
 
             hex.neighbors[direction] = neighbor

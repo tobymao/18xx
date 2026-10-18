@@ -40,6 +40,15 @@ describe 'G1864 phase events' do
     end
   end
 
+  it 'lets the hexes beside the tunnel stubs lay track toward them' do
+    { 'G18' => %w[G16 G20], 'F11' => %w[F9 F13] }.each do |hex_id, (west_id, east_id)|
+      hex = game.hex_by_id(hex_id)
+
+      expect(game.hex_by_id(west_id).neighbors[4]).to eq(hex)
+      expect(game.hex_by_id(east_id).neighbors[1]).to eq(hex)
+    end
+  end
+
   it 'uses 1867 game end timing, not 1861 conditional timing' do
     expect(game.method(:game_end_set_final_turn!).owner)
       .to eq(Engine::Game::G1867::Game)
