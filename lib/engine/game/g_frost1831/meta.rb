@@ -20,7 +20,7 @@ module Engine
         GAME_INFO_URL = nil
         GAME_LOCATION = 'New London'.freeze
         GAME_PUBLISHER = nil
-        GAME_RULES_URL = nil
+        GAME_RULES_URL = 'https://boardgamegeek.com/filepage/331178/rulebook-v0933'
         GAME_ALIASES = ['1831'].freeze
 
         PLAYER_RANGE = [2, 5].freeze

@@ -53,8 +53,9 @@ module Engine
             if entity.type == :faction
               hex = city.hex
 
-              # Validate: faction can't have 2 bases in same hex
-              if city.tokens.any? { |t| t&.corporation == entity }
+              # Validate: faction can't have 2 bases in same hex. Check ALL
+              # cities on the hex (multi-city OO/NL tiles), not just this one.
+              if hex.tile.cities.any? { |c| c.tokens.any? { |t| t&.corporation == entity } }
                 raise GameError, "#{entity.name} already has a base in #{hex.id}"
               end
 

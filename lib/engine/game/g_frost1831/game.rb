@@ -2162,12 +2162,13 @@ module Engine
           @hexes.each do |hex|
             next if excluded_hexes.include?(hex.id)
 
-            city = hex.tile.cities.first
-            next unless city
-            next unless city.available_slots.positive?
+            cities = hex.tile.cities
+            next if cities.empty?
+            next unless cities.any? { |c| c.available_slots.positive? }
 
-            # Faction can't have more than 1 base in the same hex
-            next if city.tokens.any? { |t| t&.corporation == faction }
+            # Faction can't have more than 1 base in the same hex — check ALL
+            # cities on the hex, not just the first (multi-city OO/NL tiles).
+            next if cities.any? { |c| c.tokens.any? { |t| t&.corporation == faction } }
 
             # Must be connected to one of the faction's existing bases
             next unless connected_to_faction_base?(faction, hex, existing_bases)
