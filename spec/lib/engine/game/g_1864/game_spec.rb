@@ -99,4 +99,26 @@ describe Engine::Game::G1864::Game do
       expect(legend_home.call).to eq('San Francisco')
     end
   end
+
+  describe 'Train Trade-in' do
+    let(:game) { described_class.new(players, seed: 1, optional_rules: [:train_trade_in]) }
+    let(:major) { (game.corporations + game.future_corporations).find { |c| c.type == :major } }
+
+    it 'lets a major at its train limit exchange a train in phase 8' do
+      game.phase.next! until game.phase.name == '8'
+      game.depot.upcoming.select { |t| t.name == '6' }.first(game.train_limit(major)).each do |train|
+        game.buy_train(major, train, :free)
+      end
+      major.owner = game.players.first
+      game.bank.spend(1200, major)
+      round = game.operating_round(1)
+      step = round.steps.find { |st| st.is_a?(Engine::Game::G1864::Step::BuyTrain) }
+      allow(step).to receive(:current_entity).and_return(major)
+      old_train, new_train, _, price = game.discountable_trains_for(major).find { |_, t, _, _| t.name == '5+5E' }
+
+      step.process_buy_train(Engine::Action::BuyTrain.new(major, train: new_train, price: price, exchange: old_train))
+
+      expect(major.trains.map(&:name)).to eq(%w[6 5+5E])
+    end
+  end
 end

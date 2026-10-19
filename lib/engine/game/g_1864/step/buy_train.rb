@@ -32,7 +32,7 @@ module Engine
 
           def process_buy_train(action)
             entity = action.entity
-            if !@game.pullman?(action.train) && !train_room?(entity)
+            if !action.exchange && !@game.pullman?(action.train) && !train_room?(entity)
               raise GameError, "#{entity.name} has no room for another train"
             end
 
