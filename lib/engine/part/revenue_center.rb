@@ -24,19 +24,17 @@ module Engine
       def parse_revenue(revenue, format = nil)
         @revenue =
           if revenue.include?('|')
-            # rubocop:disable Style/MapToHash
-            rev = revenue
-              .split('|')
-              .map { |s| s.split('_') }
-              .to_h { |c, r| [c.to_sym, r.to_i] }
-            # rubocop:enable Style/MapToHash
-            @revenue_to_render = rev
-            @revenue_to_render =
-              if format
-                rev.transform_values { |r| format % r }
-              else
-                rev
-              end
+            rev = {}
+            render = {}
+            revenue.split('|').each do |entry|
+              keys, _, value = entry.rpartition('_') # split on the LAST underscore
+              value = value.to_i
+              phases = keys.split('/')
+              phases.each { |p| rev[p.to_sym] = value }
+              render[phases.first.to_sym] = format ? format % value : value
+            end
+            @revenue_to_render = render
+
             rev
           else
             @revenue_to_render =
@@ -60,9 +58,12 @@ module Engine
       end
 
       def route_base_revenue(phase, train)
-        return (@revenue[:diesel]) if train.name.upcase == 'D' && @revenue[:diesel]
+        return @revenue[:diesel] if train.name.upcase == 'D' && @revenue[:diesel]
 
-        phase.tiles.reverse_each { |color| return (@revenue[color]) if @revenue[color] }
+        by_name = @revenue[phase.name.to_sym]
+        return by_name if by_name
+
+        phase.tiles.reverse_each { |color| return @revenue[color] if @revenue[color] }
         0
       end
 
