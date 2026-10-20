@@ -9,6 +9,13 @@ Related docs:
 - [`TILES.md`](TILES.md): tile development and useful tile routes
 - [`lib/engine/GRAPH.md`](lib/engine/GRAPH.md): the route/connectivity graph
 - [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md): PR checklist
+- [Developing for 18xx.games](https://github.com/tobymao/18xx/wiki/Developing-for-18xx.games) (wiki): adding games,
+  advice, troubleshooting. Pre-alpha titles only appear on the new game page with `?all` in the URL
+  (e.g. `http://localhost:9292/new_game?all`).
+- [Developing FAQ](https://github.com/tobymao/18xx/wiki/Developing-FAQ) (wiki): running specs by line number or
+  `--only-failures`, running rubocop on specific files
+- [Common Rule Interpretations](https://github.com/tobymao/18xx/wiki/Common-Rule-Interpretations) (wiki): rulings
+  that apply across titles when the rules are ambiguous
 
 ## How it works
 
@@ -50,8 +57,8 @@ Related docs:
 | --- | --- | --- |
 | Full suite (compile, specs, rubocop) | `docker compose exec rack rake` | `bundle exec rake` |
 | One spec file | `docker compose exec rack rspec <path>` | `bundle exec rspec <path>` |
-| One title's fixtures | `docker compose exec rack rspec spec/lib/engine/game/fixtures_spec.rb -e '<fixture dir>'` | `bundle exec rspec spec/lib/engine/game/fixtures_spec.rb -e '<fixture dir>'` |
-| One fixture | `... -e '<fixture dir> <fixture id>'` | `... -e '<fixture dir> <fixture id>'` |
+| One title's fixtures | `docker compose exec rack rspec spec/lib/engine/game/fixtures_spec.rb -e '<title>'` | `bundle exec rspec spec/lib/engine/game/fixtures_spec.rb -e '<title>'` |
+| One fixture | `... -e '<title> <fixture id>'` | `... -e '<title> <fixture id>'` |
 | Lint and autocorrect | `docker compose exec rack rubocop -a` | `bundle exec rubocop -a` |
 
 To inspect engine state without the web server:
@@ -61,8 +68,9 @@ bundle exec ruby -e "require './lib/engine'; g = Engine::Game::G1889::Game.new(%
 ```
 
 To check the UI without a browser, render a page headlessly the way `spec/assets_spec.rb` does:
-`Assets.new.html('assets/app/app.rb', app_route: "/game/#{data['id']}", game_data: data, user: ...)`, then search
-the HTML for the text you expect (or for errors such as "cannot be continued").
+`Assets.new.html('assets/app/app.rb', app_route: "/game/#{data['id']}", game_data: data,
+user: data['user'].merge(settings: { consent: true }))`, then search the HTML for the text you expect (or for errors
+such as "cannot be continued"). Without `consent` the page renders the privacy-policy prompt instead of the game.
 
 ## Ruby that runs in the browser
 
@@ -77,14 +85,33 @@ When a change affects what the UI renders, render the page headlessly (above) at
 
 ## Writing game code
 
-- **Wrap constants in methods.** Read configuration through a method so titles that inherit from this one can
-  override it without redefining constants:
+- **Follow the rulebook.** Every rule the code enforces should trace back to the title's rules; don't invent
+  behavior, and cite the rule in the PR when it isn't obvious. Check that the change still works with each optional
+  rule in the title's `meta.rb`. When the rules are ambiguous, follow
+  [Common Rule Interpretations](https://github.com/tobymao/18xx/wiki/Common-Rule-Interpretations).
+- **Use what the engine already has.** Before writing custom code, look for an existing mechanism: company powers
+  belong in abilities (`lib/engine/ability/`) rather than special cases in the game class, and existing helpers on
+  the game, depot and core steps (or a hook such as `can_buy_train?` that a step already calls) usually beat
+  reimplementing their logic.
+- **No magic strings, no redundant constants.** Put fixed names and values in constants (`map.rb` and
+  `entities.rb` hold only constants) and read them through a method so titles that inherit from this one can
+  override them:
 
   ```ruby
   def minor_count
     self.class::MINOR_COUNT
   end
   ```
+
+  Don't add constants for data already on the entities or map: derive it instead (a tile's color, a corporation's
+  home hex, a name written directly in the company definition).
+- **Use one name for each concept.** Use the rulebook's term and the same name across code, logs and UI (don't call
+  one thing `union_pacific` in one place and `national` in another). Group multi-step setup into `setup_<thing>`
+  helpers called from `setup`.
+- **Don't add code comments.** Make the code clear through naming and structure instead.
+- **Keep display in the views.** The engine exposes game state and data (e.g. a game method that returns a status
+  string); views in `assets/app/view` decide layout, widths and formatting. Don't put layout concerns in
+  `lib/engine` or game rules in views.
 - **Keep it simple.** Prefer the simplest solution that matches the rules. If a mechanic needs many special cases,
   look for a new abstraction that removes them.
 - **Avoid duplication.** Before implementing a mechanic, search other titles for the same or a similar one. If it
@@ -102,6 +129,24 @@ When a change affects what the UI renders, render the page headlessly (above) at
 - Fixtures live in `public/fixtures/<fixture dir>/` (`spec/fixtures` is a symlink) and run automatically in
   `spec/lib/engine/game/fixtures_spec.rb`. See `public/fixtures/README.md` for the required fields and formatting
   (`make fixture_format`).
+
+## Investigating a reported game
+
+1. **Get the game's JSON** from `/api/game/<id>` (see [Using the live site](#using-the-live-site-18xxgames)), or from
+   the game's Tools tab for hotseat games.
+2. **Replay it locally.** `Engine::Game.load('game.json', at_action: n)` rebuilds the game up to action `n`; check
+   `game.exception` and `game.log` for the failure. Write a short repro script that loads the state just before the
+   broken action, inspects it, and processes the action.
+3. **Fix it, then keep the repro as a test**: a spec that loads the JSON at that action and asserts the corrected
+   behavior, or the game as a fixture.
+4. **Check whether the fix changes past actions' outcomes** (see [Breaking live games](#breaking-live-games)).
+
+## Validating a shared-code change
+
+Fixture specs only check each game's final result. When changing shared code, especially performance work, also
+compare intermediate state: replay the affected titles' fixtures (and imported games if needed) on `master` and on
+your branch, dump the state the change touches after each action (e.g. graph output, routes, log), and diff the two
+runs. Any difference must be intended.
 
 ## Simulating games through the UI
 
@@ -156,6 +201,13 @@ which games to migrate, pin or archive. If a title has no label yet, name the ti
   `[dev]` for developer-only changes.
 - Split new titles into several reviewable PRs.
 - Add the `migration`, `pins` or `archive_alpha_games` label, plus each affected title's label, when the change
-  breaks live games (see
-  [Breaking live games](#breaking-live-games)).
+  breaks live games (see [Breaking live games](#breaking-live-games)).
 - Run rubocop and the full suite before opening the PR, and fill in the PR template.
+- In the description, say what you verified (specs, fixtures, reproduced games) and what you didn't run, and why
+  the change does or doesn't need pins or a migration.
+
+### Addressing review feedback
+
+- When a reviewer gives specific code, use it as given. If you think it's wrong, say so and explain why instead of
+  quietly writing something different.
+- Change only what the feedback asks for. Don't refactor, merge or extend nearby code beyond the request.
