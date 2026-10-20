@@ -7,6 +7,7 @@ module Engine
     class Program < Base
       ACTIONS = %w[
         program_auction_bid
+        program_auction_pass
         program_buy_shares
         program_independent_mines
         program_merger_pass
@@ -23,6 +24,10 @@ module Engine
       end
 
       def process_program_auction_bid(action)
+        process_program_enable(action)
+      end
+
+      def process_program_auction_pass(action)
         process_program_enable(action)
       end
 

@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class Api
+  SELF_ONLY_ACTION_TYPES = (Engine::Step::Program::ACTIONS + ['message']).freeze
+
   hash_routes :api do |hr|
     hr.on 'game' do |r|
       # '/api/game/<game_id>/*'
@@ -70,12 +72,16 @@ class Api
             # just by posting an action such as a chat message.
             halt(400, 'Game has not started') if game.status == 'new'
 
-            # A message's entity must be the sender's own id; only the game owner
-            # may act for others (hotseat / master mode).
-            if r.params['type'] == 'message' &&
+            # A message's or program_*'s entity must be the submitter's own id; only the
+            # game owner may act for others (hotseat / master mode).
+            if SELF_ONLY_ACTION_TYPES.include?(r.params['type']) &&
                r.params['entity'].to_i != user.id &&
                game.user_id != user.id
-              halt(403, 'You can only send messages as yourself')
+              if r.params['type'] == 'message'
+                halt(403, 'You can only send messages as yourself')
+              else
+                halt(403, 'You can only manage your own programmed actions')
+              end
             end
 
             acting, action = nil

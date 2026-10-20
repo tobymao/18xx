@@ -246,6 +246,10 @@ module Engine
           ])
         end
 
+        def available_programmed_actions
+          super + [Action::ProgramAuctionBid, Action::ProgramAuctionPass]
+        end
+
         def stock_round
           G18VA::Round::Stock.new(self, [
             Engine::Step::DiscardTrain,

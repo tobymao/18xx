@@ -3,6 +3,7 @@
 # backtick_javascript: true
 
 require 'view/game/auto_action/auction_bid'
+require 'view/game/auto_action/auction_pass'
 require 'view/game/auto_action/buy_shares'
 require 'view/game/auto_action/share_pass'
 
@@ -32,6 +33,7 @@ module View
         if @game.players.find { |p| p.name == @user&.dig('name') }
           types = {
             Engine::Action::ProgramAuctionBid => ->(settings) { render_auction_bid(settings) },
+            Engine::Action::ProgramAuctionPass => ->(settings) { render_auction_pass(settings) },
             Engine::Action::ProgramBuyShares => ->(settings) { render_buy_shares(settings) },
             Engine::Action::ProgramHarzbahnDraftPass => ->(settings) { render_harzbahn_draft_pass(settings) },
             Engine::Action::ProgramIndependentMines => ->(settings) { render_independent_mines(settings) },
@@ -74,6 +76,10 @@ module View
 
       def render_auction_bid(settings)
         h(AutoAction::AuctionBid, game: @game, sender: sender, settings: settings)
+      end
+
+      def render_auction_pass(settings)
+        h(AutoAction::AuctionPass, game: @game, sender: sender, settings: settings)
       end
 
       def render_buy_shares(settings)
