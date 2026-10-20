@@ -381,7 +381,7 @@ module Engine
           # 3. Influence exchange: every 4 Influence → faction value +1 (move right, max 250)
           @corporations.select { |c| c.type == :faction }.each do |faction|
             total_influence = (@faction_influence[faction.id] || 0).to_i
-            moves = (total_influence / 4).to_i
+            moves = (total_influence.to_f / 4).floor
 
             # Calculate how many tokens are available to lose
             tokens_total = faction.tokens.size - 1  # 8 additional tokens

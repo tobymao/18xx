@@ -63,7 +63,7 @@ module Engine
 
             return if total.zero?
 
-            per_share = total / 5
+            per_share = (total.to_f / 5).floor
 
             paid_to_players = {}
             faction.player_share_holders.each do |player, percent|
