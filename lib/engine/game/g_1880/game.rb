@@ -352,7 +352,7 @@ module Engine
         end
 
         def force_exchange_rocket
-          return if rocket.closed?
+          return if rocket.nil? || rocket.closed?
 
           player_corps = @corporations.select { |c| c.owner == rocket.owner }
 
@@ -623,10 +623,10 @@ module Engine
 
         def revenue_for(route, stops)
           revenue = super
-          revenue -= 10 * (route.all_hexes & ferry_hexes).size unless route.corporation.owner == ferry_company.owner
+          revenue -= 10 * (route.all_hexes & ferry_hexes).size unless route.corporation.owner == ferry_company&.owner
 
           stop_hexes = stops.map(&:hex)
-          revenue += 20 if route.corporation.owner == taiwan_company.owner && stop_hexes.include?(taiwan_hex)
+          revenue += 20 if route.corporation.owner == taiwan_company&.owner && stop_hexes.include?(taiwan_hex)
           revenue += 50 if trans_siberian_bonus?(stops)
 
           revenue
@@ -742,7 +742,7 @@ module Engine
         def after_buying_train(train, source)
           return unless trigger_sr?(train, source)
 
-          if train.name == '4' && !rocket.closed? && @depot.upcoming.first.name != train.name
+          if train.name == '4' && rocket && !rocket.closed? && @depot.upcoming.first.name != train.name
             @rocket_train = train
             return
           end

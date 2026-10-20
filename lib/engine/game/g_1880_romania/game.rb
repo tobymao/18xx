@@ -5,6 +5,7 @@ require_relative '../g_1880/game'
 require_relative 'map'
 require_relative 'entities'
 require_relative 'variants/kingdom_of_romania'
+require_relative 'variants/transylvania'
 
 module Engine
   module Game
@@ -183,11 +184,12 @@ module Engine
         end
 
         def transylvania?
-          false
+          @optional_rules.include?(:transylvania)
         end
 
         def variant
           return KingdomOfRomania if kingdom_of_romania?
+          return Transylvania if transylvania?
 
           nil
         end
@@ -195,7 +197,8 @@ module Engine
         def game_hexes
           return add_borders(merge_hexes(KINGDOM_OF_ROMANIA_HEXES, TRANSYLVANIA_HEXES, FULL_MAP_HEXES)) unless variant
 
-          merge_hexes(KINGDOM_OF_ROMANIA_HEXES, variant::HEXES)
+          region = kingdom_of_romania? ? KINGDOM_OF_ROMANIA_HEXES : TRANSYLVANIA_HEXES
+          merge_hexes(region, variant::HEXES)
         end
 
         def location_name(coord)
@@ -465,6 +468,8 @@ module Engine
         end
 
         def danube_port_bonus?(route, stops = route.stops)
+          return false unless danube_port
+
           stops.any? { |stop| stop.hex.assigned?(danube_port.id) } && route.corporation.owner == danube_port.owner
         end
 
@@ -475,6 +480,8 @@ module Engine
         # This game's Electroputere S.A. private company's forced train exchange is identical to the forced exchange for the
         # Rocket of China in 1880, so we can reuse that logic here rather than recoding the whole thing.
         def forced_exchange_rocket?
+          return false unless rocket
+
           phase.name == 'B2' && !rocket.closed?
         end
       end

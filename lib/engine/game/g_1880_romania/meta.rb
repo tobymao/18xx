@@ -27,9 +27,15 @@ module Engine
             desc: 'Regatul României map for 2-3 players',
             players: [2, 3],
           },
+          {
+            sym: :transylvania,
+            short_name: 'Transylvania',
+            desc: 'Transylvania map for 2 players',
+            players: [2],
+          },
         ].freeze
 
-        VARIANT_RULES = %i[kingdom_of_romania].freeze
+        VARIANT_RULES = %i[kingdom_of_romania transylvania].freeze
 
         def self.variant_rules(options)
           (options || []).map(&:to_sym) & VARIANT_RULES
@@ -40,13 +46,20 @@ module Engine
         end
 
         def self.max_players(optional_rules, _num_players)
-          variant_rules(optional_rules).include?(:kingdom_of_romania) ? 3 : 6
+          rules = variant_rules(optional_rules)
+          return 2 if rules.include?(:transylvania)
+
+          rules.include?(:kingdom_of_romania) ? 3 : 6
         end
 
         def self.check_options(options, min_players, max_players)
           rules = variant_rules(options)
           if rules.empty?
             { error: '2 players requires the Kingdom of Romania or Transylvania variant' } if min_players && min_players < 3
+          elsif rules.include?(:kingdom_of_romania) && rules.include?(:transylvania)
+            { error: 'Kingdom of Romania and Transylvania cannot be combined' }
+          elsif rules.include?(:transylvania) && max_players && max_players > 2
+            { error: 'Transylvania is for 2 players' }
           elsif rules.include?(:kingdom_of_romania) && max_players && max_players > 3
             { error: 'Kingdom of Romania is for 2-3 players' }
           end

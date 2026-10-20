@@ -179,6 +179,155 @@ describe Engine::Game::G1880Romania::Game do
     end
   end
 
+  describe 'transylvania' do
+    let(:game) { new_game(%w[a b], [:transylvania]) }
+
+    def tile_of(id)
+      game.hex_by_id(id).tile
+    end
+
+    it 'creates with 2 players and drops the rule at 3' do
+      expect { game }.not_to raise_error
+      expect(game.transylvania?).to be(true)
+      expect(game.kingdom_of_romania?).to be(false)
+      expect(game.variant).to eq(Engine::Game::G1880Romania::Transylvania)
+
+      three = new_game(%w[a b c], [:transylvania])
+      expect(three.optional_rules).not_to include(:transylvania)
+      expect(three.hexes.size).to eq(112)
+    end
+
+    it 'cannot be combined with the Kingdom of Romania rule' do
+      expect { new_game(%w[a b], %i[kingdom_of_romania transylvania]) }.to raise_error(Engine::OptionError)
+    end
+
+    it 'validates options' do
+      expect(meta.check_options(%w[kingdom_of_romania transylvania], 2, 2)).to include(:error)
+      expect(meta.check_options(['transylvania'], 2, 3)).to include(:error)
+      expect(meta.check_options(['transylvania'], 2, 2)).to be_nil
+    end
+
+    it 'has 48 hexes without province borders' do
+      borders = game.hexes.flat_map { |hex| hex.tile.borders }
+
+      expect(game.hexes.size).to eq(48)
+      expect(borders.map(&:type)).not_to include(:impassable, :province)
+      expect(game.hexes.reject { |hex| hex.tile.borders.empty? }.map(&:id).sort).to eq(%w[G11 G13])
+    end
+
+    it 'has the Cernauti offboard on A17' do
+      tile = tile_of('A17')
+
+      expect(tile.color).to eq(:red)
+      expect(tile.offboards.size).to eq(1)
+      expect(tile.exits).to eq([0])
+    end
+
+    it 'has the Radauti town on B16' do
+      tile = tile_of('B16')
+
+      expect(tile.color).to eq(:gray)
+      expect(tile.towns.size).to eq(1)
+      expect(tile.exits.sort).to eq([0, 1, 3])
+    end
+
+    it 'has the F16 city' do
+      tile = tile_of('F16')
+
+      expect(tile.color).to eq(:gray)
+      expect(tile.cities.size).to eq(1)
+      expect(tile.exits.sort).to eq([1, 2])
+    end
+
+    it 'has the Istanbul offboards on G11 and G13' do
+      expect(tile_of('G11').color).to eq(:red)
+      expect(tile_of('G13').color).to eq(:red)
+      expect(tile_of('G11').exits).to eq([3])
+      expect(tile_of('G13').exits).to eq([2])
+      expect(tile_of('G11').offboards.first.revenue_to_render[:yellow]).to eq(10)
+      expect(tile_of('G13').offboards.first.revenue_to_render[:yellow]).to eq(10)
+    end
+
+    it 'leaves H2 as on the full map' do
+      full = described_class.new(%w[a b c]).hex_by_id('H2').tile
+      tile = tile_of('H2')
+
+      expect(tile.color).to eq(full.color)
+      expect(tile.exits.sort).to eq(full.exits.sort)
+      expect(tile.cities.size).to eq(full.cities.size)
+    end
+
+    it 'names the Istanbul hex' do
+      expect(game.hex_by_id('G11').location_name).to eq('Istanbul')
+    end
+
+    it 'has the Transylvania corporations, minors and companies' do
+      expect(game.corporations.map(&:id).sort).to eq(%w[BR CR SZ TR])
+      expect(game.minors.map(&:id)).to eq(%w[1 4 5])
+      expect(game.companies.map(&:id)).to eq(%w[P1 P3 P5 P8])
+    end
+
+    it 'uses the 2 player cash and certificate limit' do
+      expect(game.players.map(&:cash)).to eq([350, 350])
+      expect(game.cert_limit).to eq(11)
+    end
+
+    it 'has the reduced train roster' do
+      expect(game.depot.trains.map(&:name).tally).to eq(
+        '2' => 6, '2+2' => 3, '3' => 3, '3+3' => 2, '4' => 2, '4+4' => 2,
+        '6' => 2, '6E' => 1, '8' => 1, '8E' => 1, '2R' => 10
+      )
+    end
+
+    it 'has no border events and ends the game on the single 6E' do
+      events = game.depot.trains.flat_map(&:events).map { |event| event['type'] }
+      six_e = game.depot.trains.find { |train| train.name == '6E' }
+
+      expect(events).not_to include('open_borders', 'remove_borders')
+      expect(six_e.events.map { |event| event['type'] }).to include('signal_end_game')
+    end
+
+    describe 'without the privates Transylvania does not use' do
+      it 'survives the communist takeover' do
+        expect { game.event_communist_takeover! }.not_to raise_error
+      end
+
+      it 'has no forced rocket exchange' do
+        allow(game.phase).to receive(:name).and_return('B2')
+
+        expect(game.forced_exchange_rocket?).to be(false)
+      end
+
+      it 'has no Danube port bonus' do
+        route = double(corporation: game.corporations.first)
+        stops = [double(hex: game.hex_by_id('C5'))]
+
+        expect(game.danube_port_bonus?(route, stops)).to be(false)
+      end
+
+      it 'calculates route revenue without the ferry company' do
+        route = double(corporation: game.corporations.first, all_hexes: [])
+
+        expect(game.revenue_for(route, [])).to eq(0)
+      end
+
+      it 'buys a train that triggers a stock round' do
+        allow(game).to receive(:trigger_sr?).and_return(true)
+        allow(game).to receive(:transition_to_next_round!)
+        train = game.depot.trains.find { |t| t.name == '4' }
+
+        expect { game.after_buying_train(train, game.depot) }.not_to raise_error
+      end
+
+      it 'does not block track laying on a missing Malaxa' do
+        step = Engine::Game::G1880Romania::Step::Track.new(game, game.round)
+        allow(game).to receive(:can_build_track?).and_return(false)
+
+        expect { step.tile_lay_abilities_should_block?(game.corporations.first) }.not_to raise_error
+      end
+    end
+  end
+
   describe 'base game' do
     let(:game) { new_game(%w[a b c]) }
 
