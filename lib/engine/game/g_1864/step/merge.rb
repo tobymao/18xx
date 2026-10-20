@@ -62,6 +62,44 @@ module Engine
               end
           end
 
+          def help
+            return super unless @merging
+
+            names = @merging.map { |c| "#{c.name} (#{@game.format_currency(c.share_price.price)})" }.join(', ')
+            if (par = merged_par_price)
+              "Merging #{names} - the major corporation will start at #{@game.format_currency(par.price)}"
+            else
+              "Merging #{names} - the average of #{@game.format_currency(merged_value)} is below the "\
+                "#{@game.format_currency(min_merged_price)} minimum, add more companies to continue"
+            end
+          end
+
+          def finish_merge
+            unless merged_par_price
+              raise GameError, "Merge impossible, value of #{@game.format_currency(merged_value)} is below "\
+                               "#{@game.format_currency(min_merged_price)}"
+            end
+
+            super
+          end
+
+          def merged_value
+            prices = @merging.map { |c| c.share_price.price }
+            (prices.sum / prices.size.to_f).floor
+          end
+
+          def merged_par_prices
+            @game.stock_market.share_prices_with_types(%i[par_1 par par_2])
+          end
+
+          def merged_par_price
+            merged_par_prices.find { |sp| sp.price <= merged_value }
+          end
+
+          def min_merged_price
+            merged_par_prices.last.price
+          end
+
           def process_merge(action)
             super
             target = @round.converted
