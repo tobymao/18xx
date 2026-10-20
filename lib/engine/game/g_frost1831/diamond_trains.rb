@@ -19,7 +19,7 @@ module Engine
 
         # Can a corporation upgrade any of its trains to ◆?
         def can_upgrade_to_diamond?(corporation)
-          upgradeable_to_diamond(corporation).any?
+          !upgradeable_to_diamond(corporation).empty?
         end
 
         # Returns array of [train, [available_factions]] pairs for trains that can be upgraded

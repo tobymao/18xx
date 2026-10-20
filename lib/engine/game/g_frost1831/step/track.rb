@@ -34,7 +34,7 @@ module Engine
               acts = []
               acts << 'lay_tile' if can_lay_tile?(entity)
               acts << 'place_token' if can_place_faction_token?(entity)
-              acts << 'pass' if acts.any?
+              acts << 'pass' unless acts.empty?
               return acts
             end
 

@@ -81,7 +81,7 @@ module Engine
                         end
 
             unavailable = FACTION_ORDER.reject { |f| available.include?(f) }
-            unavailable_text = if unavailable.any?
+            unavailable_text = if !unavailable.empty?
                                  parts = unavailable.map { |f| "#{faction_name(f)} (#{@game.faction_support_remaining(f)})" }
                                  " - #{parts.join(' and ')} not available"
                                else

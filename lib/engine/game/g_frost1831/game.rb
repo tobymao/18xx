@@ -619,7 +619,7 @@ module Engine
               @operating_rounds = @phase.operating_rounds
               # reorder_players is now called in Stock::finish_round
               # before priority faction choice trigger
-              if parliament_open? && faction_voting_order.any?
+              if parliament_open? && !faction_voting_order.empty?
                 new_voting_round
               else
                 new_operating_round
@@ -1386,7 +1386,7 @@ module Engine
           # Check if any player has influence they can use
           players_with_influence = @players.select { |p| player_influence(p).positive? }
 
-          if players_with_influence.any?
+          unless players_with_influence.empty?
             @log << 'Players with Influence may allocate before consequences are calculated.'
             @pre_turmoil_window = {
               players_remaining: players_with_influence.dup,
@@ -1407,7 +1407,7 @@ module Engine
           # Check if any player has influence they can use
           players_with_influence = @players.select { |p| player_influence(p).positive? }
 
-          if players_with_influence.any?
+          unless players_with_influence.empty?
             @log << 'Players with Influence may allocate before consequences are calculated.'
             @pre_turmoil_window = {
               players_remaining: players_with_influence.dup,
@@ -1668,8 +1668,8 @@ module Engine
             hex.tile.icons.reject! { |i| i.name == 'blizzard' }
           end
 
-          @log << "Tiles removed: #{removed_tiles.join(', ')}" if removed_tiles.any?
-          @log << "Stations/bases destroyed: #{destroyed_tokens.join(', ')}" if destroyed_tokens.any?
+          @log << "Tiles removed: #{removed_tiles.join(', ')}" unless removed_tiles.empty?
+          @log << "Stations/bases destroyed: #{destroyed_tokens.join(', ')}" unless destroyed_tokens.empty?
 
           # Check if any corporation lost ALL stations → close it.
           # Corps start with 3 tokens. If tokens.size < 3 and none are used,
@@ -2305,7 +2305,7 @@ module Engine
           end
 
           factions = corporation_factions(corporation)
-          return unless factions.any?
+          return if factions.empty?
 
           influence = corporation_influence(corporation)
           limit = corporation_influence_limit
@@ -2823,7 +2823,7 @@ module Engine
 
         def can_request_favor?(corporation)
           return false if corporation.type == :faction
-          return false unless available_favor_factions(corporation).any?
+          return false if available_favor_factions(corporation).empty?
 
           # Check if corporation is forced to buy train but can't afford
           forced_train_purchase = must_buy_train?(corporation) && corporation.cash < cheapest_depot_train_price
