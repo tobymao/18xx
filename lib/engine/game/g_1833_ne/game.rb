@@ -367,10 +367,7 @@ module Engine
               { text: '60', props: { style: { border: '1px solid',  textAlign: 'center' } } },
               { text: '40', props: { style: { border: '1px solid',  textAlign: 'center' } } },
               {
-                parts: [
-                  { text: 'Montreal and ' },
-                  { image: '/icons/port.svg', image_height: 16 },
-                ],
+                text: 'Montreal ending at New Haven or Norwich',
                 props: { style: { border: "1px solid #{font_color}" } },
               },
               { text: '-', props: { style: { border: '1px solid', textAlign: 'center' } } },
