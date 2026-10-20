@@ -77,6 +77,7 @@ module Engine
             company = special_ability.owner
             @game.company_closing_after_using_ability(company)
             company.close!
+            @log << "#{company.name} closes!!! #{company.closed?} #{company.owner}"
           end
         end
 
