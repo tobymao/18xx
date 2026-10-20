@@ -4,6 +4,7 @@ require_relative 'meta'
 require_relative '../g_1880/game'
 require_relative 'map'
 require_relative 'entities'
+require_relative 'variants/kingdom_of_romania'
 
 module Engine
   module Game
@@ -169,8 +170,94 @@ module Engine
           final_train: 'Last 6E train sold',
         }.freeze
 
+        def self.min_players(optional_rules, num_players)
+          meta.min_players(optional_rules, num_players)
+        end
+
+        def self.max_players(optional_rules, num_players)
+          meta.max_players(optional_rules, num_players)
+        end
+
+        def kingdom_of_romania?
+          @optional_rules.include?(:kingdom_of_romania)
+        end
+
+        def transylvania?
+          false
+        end
+
+        def variant
+          return KingdomOfRomania if kingdom_of_romania?
+
+          nil
+        end
+
         def game_hexes
-          add_borders(merge_hexes(KINGDOM_OF_ROMANIA_HEXES, TRANSYLVANIA_HEXES, FULL_MAP_HEXES))
+          return add_borders(merge_hexes(KINGDOM_OF_ROMANIA_HEXES, TRANSYLVANIA_HEXES, FULL_MAP_HEXES)) unless variant
+
+          merge_hexes(KINGDOM_OF_ROMANIA_HEXES, variant::HEXES)
+        end
+
+        def location_name(coord)
+          return super unless variant
+
+          variant::LOCATION_NAMES[coord] || super
+        end
+
+        def game_companies
+          return super unless variant
+
+          coords = game_hexes.values.flat_map(&:keys).flatten
+          super.select { |company| variant::COMPANIES.include?(company[:sym]) }.map do |company|
+            next company unless company[:abilities]
+
+            company.merge(abilities: company[:abilities].map do |ability|
+              next ability unless ability[:type] == 'assign_hexes'
+
+              ability.merge(hexes: ability[:hexes] & coords)
+            end)
+          end
+        end
+
+        def game_corporations
+          return super unless variant
+
+          super.select { |corporation| variant::CORPORATIONS.include?(corporation[:sym]) }
+        end
+
+        def game_minors
+          return super unless variant
+
+          super.select { |minor| variant::MINORS.include?(minor[:sym]) }.map do |minor|
+            coordinates = variant::MINOR_COORDINATES[minor[:sym]]
+            coordinates ? minor.merge(coordinates: coordinates) : minor
+          end
+        end
+
+        def game_trains
+          return super unless variant
+
+          super.map do |train|
+            train = train.dup
+            train[:num] = variant::TRAIN_COUNTS[train[:name]] if variant::TRAIN_COUNTS.key?(train[:name])
+            next train unless train[:events]
+
+            train[:events] = train[:events].reject { |event| %w[open_borders remove_borders].include?(event['type']) }
+            train[:events] = train[:events].map do |event|
+              event['type'] == 'signal_end_game' ? event.merge('when' => train[:num]) : event
+            end
+            train
+          end
+        end
+
+        def game_cert_limit
+          variant ? variant::CERT_LIMIT : super
+        end
+
+        def init_starting_cash(players, bank)
+          return super unless variant
+
+          players.each { |player| bank.spend(variant::STARTING_CASH[players.size], player) }
         end
 
         def merge_hexes(*hex_maps)
