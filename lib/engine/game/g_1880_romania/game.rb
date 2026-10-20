@@ -169,6 +169,29 @@ module Engine
           final_train: 'Last 6E train sold',
         }.freeze
 
+        def game_hexes
+          add_borders(merge_hexes(KINGDOM_OF_ROMANIA_HEXES, TRANSYLVANIA_HEXES, FULL_MAP_HEXES))
+        end
+
+        def merge_hexes(*hex_maps)
+          hex_maps.each_with_object({}) do |hex_map, merged|
+            hex_map.each { |color, hexes| (merged[color] ||= {}).merge!(hexes) }
+          end
+        end
+
+        def add_borders(hex_map)
+          hex_map.transform_values do |hexes|
+            hexes.each_with_object({}) do |(coords, tile_string), result|
+              bordered, plain = coords.partition { |coord| BORDERS.key?(coord) }
+              result[plain] = tile_string unless plain.empty?
+              bordered.each do |coord|
+                border_strings = BORDERS[coord].map { |edge| "border=edge:#{edge},type:impassable,color:orange" }
+                result[[coord]] = [tile_string, *border_strings].reject(&:empty?).join(';')
+              end
+            end
+          end
+        end
+
         def float_str(entity)
           "#{entity.percent_to_float}% to float" if entity.corporation? && entity.floatable
         end
