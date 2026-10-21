@@ -7,6 +7,11 @@ module Engine
     module G1835
       module Round
         class Draft < Engine::Round::Draft
+          def setup
+            skip_steps
+            next_entity! unless active_step
+          end
+
           def select_entities
             @game.players
           end
