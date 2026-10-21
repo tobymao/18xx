@@ -24,13 +24,13 @@ module Engine
           {
             sym: :kingdom_of_romania,
             short_name: 'Kingdom of Romania',
-            desc: 'Regatul României map for 2-3 players',
+            desc: 'Regatul României map',
             players: [2, 3],
           },
           {
             sym: :transylvania,
             short_name: 'Transylvania',
-            desc: 'Transylvania map for 2 players',
+            desc: 'Transylvania map',
             players: [2],
           },
         ].freeze
