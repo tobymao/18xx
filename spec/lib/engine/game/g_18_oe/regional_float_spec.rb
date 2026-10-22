@@ -53,10 +53,20 @@ describe 'G18OE regionals (§8.2, §9.2)' do
   end
 
   it 'keeps the 25% shares off sale before the Major RR Phase' do
-    lnwr = float_regional!(game, 'LNWR')
-    game.process_action(Engine::Action::BuyShares.new(game.current_entity, shares: lnwr.ipo_shares.first, percent: 25))
+    game = game_at_sr2(regionals: 17)
+    buyer = game.current_entity
+    game.bank.spend(1000, buyer)
 
-    expect(game.exception).not_to be_nil
+    expect(game.major_phase?).to be(false)
+    expect(game.round.active_step.actions(buyer)).not_to include('buy_shares')
+  end
+
+  it 'puts the 25% shares on sale once the Major RR Phase begins' do
+    game = game_at_sr2
+    buyer = game.current_entity
+    game.bank.spend(1000, buyer)
+
+    expect(game.round.active_step.actions(buyer)).to include('buy_shares')
   end
 
   it 'removes the six unfloated regionals when the 18th floats' do
@@ -98,8 +108,11 @@ describe 'G18OE regionals (§8.2, §9.2)' do
   end
 
   it 'does not offer conversion before the Major RR Phase' do
-    lnwr = float_regional!(game, 'LNWR')
+    game = game_at_sr2(regionals: 17)
+    president = game.current_entity
+    regional = game.corporations.find { |c| c.type == :regional && c.president?(president) }
 
-    expect(game.round.active_step.actions(lnwr)).to eq([])
+    expect(regional).not_to be_nil
+    expect(game.round.active_step.can_convert?(regional, president)).to be(false)
   end
 end
