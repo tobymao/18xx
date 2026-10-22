@@ -13,7 +13,7 @@ module Engine
 
           def actions(entity)
             actions = super
-            return actions if entity.corporation? || @converting || @converted || !presides_regional?(entity)
+            return actions if entity.corporation? || @round.current_actions.any? || !presides_regional?(entity)
 
             actions - ['pass']
           end

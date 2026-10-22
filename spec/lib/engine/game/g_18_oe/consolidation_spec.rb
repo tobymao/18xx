@@ -55,6 +55,18 @@ describe 'G18OE consolidation (§5.1.5, §10.6)' do
     expect(game.round.active_step.actions(game.current_entity)).to include('pass')
   end
 
+  it 'lets a regional president end the turn after selling (§10)' do
+    consolidation!
+    seller = game.current_entity
+    major = convert!(game, own_regional(seller))
+    convert!(game, own_regional(game.current_entity)) until game.current_entity == seller
+    share = seller.shares_of(major).reject(&:president).first
+    act!(game, Engine::Action::SellShares.new(seller, shares: [share], percent: share.percent))
+
+    expect(own_regional(seller)).not_to be_nil
+    expect(game.round.active_step.actions(seller)).to include('pass')
+  end
+
   it 'is the stock round, so operating rounds follow it' do
     consolidation!
     turn = game.turn
