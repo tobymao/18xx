@@ -1216,13 +1216,9 @@ module Engine
           @log << "#{train.name} is removed from the game (phase limit)"
         end
 
-        def check_other(route)
-          # Use ordered_hexes which collapses consecutive duplicates (same hex visited
-          # by adjacent paths). A hex appearing more than once non-consecutively means
-          # the route re-enters that hex from a different direction — not allowed.
-          hexes = route.ordered_hexes
-          raise GameError, 'Route cannot re-enter a hex' if hexes.size != hexes.uniq.size
-        end
+        # A route may re-enter the same hex (e.g. via different track), as long as no
+        # single track segment is re-used. Re-using a track is already forbidden by the
+        # engine's check_overlap, so no extra hex-level check is needed here.
 
         # Factions don't participate in end-of-SR share price movements
         def sold_out_increase?(corporation)
