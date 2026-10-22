@@ -203,7 +203,7 @@ module Engine
             variants: [{
               name: '4D',
               distance: [{ 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 },
-                         { 'nodes' => %w[city offboard], 'pay' => 4, 'visit' => 99 }],
+                         { 'nodes' => %w[city offboard], 'pay' => 4, 'visit' => 4 }],
               price: 850,
             }],
             num: 14,
@@ -218,7 +218,7 @@ module Engine
             variants: [{
               name: '5D',
               distance: [{ 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 },
-                         { 'nodes' => %w[city offboard], 'pay' => 5, 'visit' => 99 }],
+                         { 'nodes' => %w[city offboard], 'pay' => 5, 'visit' => 5 }],
               price: 1000,
             }],
             num: 8,
