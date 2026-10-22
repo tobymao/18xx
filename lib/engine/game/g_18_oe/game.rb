@@ -725,6 +725,12 @@ module Engine
           hexes&.include?(hex.coordinates) || false
         end
 
+        def city_in_track_rights?(entity, hex)
+          return true if entity.type == :major
+
+          region_for_hex(hex) == entity_track_rights_zone(entity)
+        end
+
         def region_for_hex(hex)
           self.class::CITY_NATIONAL_ZONE[hex.coordinates] ||
             self.class::NATIONAL_REGION_HEXES.find { |_, hexes| hexes.include?(hex.coordinates) }&.first
