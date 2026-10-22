@@ -387,6 +387,7 @@ module Engine
 
         MAX_FLOATED_REGIONALS = 18
         CONVERSION_NEW_SHARES = 6
+        MAJOR_MAX_OWNERSHIP_PERCENT = 60
 
         # still need green+ OE specific track tiles
         TILES = {
@@ -859,11 +860,24 @@ module Engine
               end
             when Round::G18OE::Consolidation
               @consolidation_complete = true
+              remove_major_par_markers!
               @turn += 1
               new_stock_round
+            when Engine::Round::Stock
+              remove_major_par_markers!
+              super
             else
               super
             end
+        end
+
+        def place_major_par_marker!(corporation)
+          corporation.max_ownership_percent = self.class::MAJOR_MAX_OWNERSHIP_PERCENT
+          corporation.always_market_price = false
+        end
+
+        def remove_major_par_markers!
+          @corporations.each { |c| c.always_market_price = true if c.type == :major }
         end
 
         def new_consolidation_round

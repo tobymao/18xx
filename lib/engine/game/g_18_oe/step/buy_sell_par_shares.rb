@@ -143,6 +143,7 @@ module Engine
             # Step 5: Promote to major (do this after price moves so move logic
             # doesn't see a half-converted corporation)
             corporation.type = :major
+            @game.place_major_par_marker!(corporation)
 
             # Step 6: Issue the 6 new 10% IPO shares.
             # add_new_share registers each share in @_shares immediately, keeping
@@ -257,14 +258,7 @@ module Engine
               return
             end
 
-            if @converted
-              # Clear current_actions before calling super so the base pass! logic
-              # sees an "empty turn" and calls entity.pass! (marking the player as
-              # done) rather than entity.unpass! (which would give them another
-              # full SR turn for having done Convert+BuyShares this turn).
-              @round.current_actions.clear
-              @converted = nil
-            end
+            @converted = nil
 
             super
           end
