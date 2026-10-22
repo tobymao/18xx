@@ -752,6 +752,16 @@ module Engine
             .select { |hex| hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) } }
             .reject { |hex| metropolis_hex?(hex) }
             .reject { |hex| self.class::MINOR_EXCLUDED_HOME_CITIES.include?(hex.coordinates) }
+            .reject { |hex| railroad_home_hexes.include?(hex.coordinates) }
+            .reject { |hex| minor_tokened?(hex) }
+        end
+
+        def railroad_home_hexes
+          @corporations.reject { |c| c.type == :minor }.map(&:coordinates)
+        end
+
+        def minor_tokened?(hex)
+          hex.tile.cities.any? { |city| city.tokens.any? { |token| token&.corporation&.type == :minor } }
         end
 
         def metropolis_hex?(hex)
