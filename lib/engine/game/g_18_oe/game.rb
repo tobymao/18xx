@@ -221,7 +221,7 @@ module Engine
               price: 1000,
             }],
             num: 8,
-            available_on: '7+7',
+            available_on: '7',
             events: [{ 'type' => 'remainder_cash_added' }],
           },
         ].freeze
