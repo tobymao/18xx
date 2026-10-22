@@ -390,6 +390,7 @@ module Engine
         CONVERSION_NEW_SHARES = 6
         MAJOR_MAX_OWNERSHIP_PERCENT = 60
         EXTENDED_FINAL_OPERATING_ROUNDS = 3
+        LEVEL_7_TRAINS_BEFORE_LEVEL_8 = 4
 
         # still need green+ OE specific track tiles
         TILES = {
@@ -829,7 +830,7 @@ module Engine
           return true if phase.name.to_i == 8
 
           next_train = @depot.upcoming.first
-          next_train.index >= 4 || next_train.name != '7+7'
+          next_train.index >= self.class::LEVEL_7_TRAINS_BEFORE_LEVEL_8 || next_train.name != '7+7'
         end
 
         def event_remainder_cash_added!
