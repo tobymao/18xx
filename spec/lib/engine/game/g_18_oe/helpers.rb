@@ -67,9 +67,22 @@ module G18OESpecHelpers
   def next_regional(game, player, regionals, par)
     return if game.regional_corps_floated >= regionals
     return unless game.round.active_step.actions(player).include?('par')
-    return if player.cash < par * 2
 
-    game.corporations.find { |c| c.type == :regional && !c.ipoed && !c.closed? }
+    capital = par * 2
+    spare = player.cash - promised_train_cash(game, player)
+    game.corporations.find do |c|
+      c.type == :regional && !c.ipoed && !c.closed? && spare >= capital + train_shortfall(game, capital - c.tokens.first.price)
+    end
+  end
+
+  def promised_train_cash(game, player)
+    game.corporations
+      .select { |c| c.floated? && c.trains.empty? && c.owner == player }
+      .sum { |c| train_shortfall(game, c.cash) }
+  end
+
+  def train_shortfall(game, cash)
+    [game.depot.upcoming.first.price - cash, 0].max
   end
 
   def or_step!(game)

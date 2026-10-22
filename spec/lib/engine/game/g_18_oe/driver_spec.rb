@@ -33,6 +33,13 @@ describe 'G18OE spec driver' do
     expect(game.round).to be_a(Engine::Round::G18OE::Operating)
   end
 
+  it 'works for 7 players' do
+    game = finish_or!(game_at_or1(players: %w[a b c d e f g]))
+
+    expect(game.round).to be_a(Engine::Round::G18OE::Operating)
+    expect(game.round.round_num).to eq(2)
+  end
+
   it 'does not share depots between games' do
     expect(new_game.depot).not_to equal(new_game.depot)
   end
