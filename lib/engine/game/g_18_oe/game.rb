@@ -248,7 +248,7 @@ module Engine
         ZONE_TERRAIN_DISCOUNT_RATE  = 0.5 # 50% §11.1.5; E/F augment zone discount to this rate
         TILE_POINT_BUDGET = { minor: 3, regional: 3, major: 6, national: 9 }.freeze
         MINOR_MAX_TREASURY = 180
-        EF_TERRAIN_AUGMENT          = { 'E' => :water, 'F' => :mountain }.freeze
+        EF_TERRAIN_AUGMENT          = { 'E' => %i[water river lake], 'F' => %i[mountain hill] }.freeze
 
         CORPORATIONS_TRACK_RIGHTS = {
           # United Kingdom
@@ -718,6 +718,8 @@ module Engine
         end
 
         def hex_within_national_region?(entity, hex)
+          return true if entity.type == :major
+
           region = self.class::CORPORATIONS_TRACK_RIGHTS[entity.id] || @minor_floated_regions[entity.id]
           hexes = self.class::NATIONAL_REGION_HEXES[region]
           hexes&.include?(hex.coordinates) || false
@@ -797,9 +799,8 @@ module Engine
           return super if base_cost.zero?
 
           entity_zone = entity_track_rights_zone(entity)
-          hex_zone = region_for_hex(hex)
-          zone_match = hex_zone && entity_zone == hex_zone &&
-                       self.class::ZONE_DISCOUNT_ZONES.include?(hex_zone)
+          zone_match = self.class::ZONE_DISCOUNT_ZONES.include?(entity_zone) &&
+                       self.class::NATIONAL_REGION_HEXES[entity_zone].include?(hex.coordinates)
 
           return super unless zone_match
 
@@ -1003,8 +1004,8 @@ module Engine
           corp = owning_corporation(entity)
           return nil unless corp
 
-          terrain = self.class::EF_TERRAIN_AUGMENT[corp.id]
-          terrain && tile.terrain.include?(terrain) ? corp : nil
+          terrains = self.class::EF_TERRAIN_AUGMENT[corp.id]
+          terrains && (tile.terrain & terrains).any? ? corp : nil
         end
 
         def owning_corporation(entity)
