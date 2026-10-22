@@ -389,6 +389,7 @@ module Engine
         MAX_FLOATED_REGIONALS = 18
         CONVERSION_NEW_SHARES = 6
         MAJOR_MAX_OWNERSHIP_PERCENT = 60
+        EXTENDED_FINAL_OPERATING_ROUNDS = 3
 
         # still need green+ OE specific track tiles
         TILES = {
@@ -877,10 +878,23 @@ module Engine
               super
             when Engine::Round::Stock
               remove_major_par_markers!
-              super
+              round = super
+              @operating_rounds = final_operating_rounds if @turn == @final_turn
+              round
             else
               super
             end
+        end
+
+        def after_phase_change(name)
+          super
+          return unless name == self.class::PHASES.last[:name]
+
+          @final_set_extended = @round.is_a?(Engine::Round::Operating) && final_or_in_set?(@round)
+        end
+
+        def final_operating_rounds
+          @final_set_extended ? self.class::EXTENDED_FINAL_OPERATING_ROUNDS : super
         end
 
         def place_major_par_marker!(corporation)
