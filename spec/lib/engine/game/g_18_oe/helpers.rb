@@ -100,6 +100,10 @@ module G18OESpecHelpers
     game
   end
 
+  def pass_until!(game, player)
+    act!(game, Engine::Action::Pass.new(game.current_entity)) until game.current_entity == player
+  end
+
   def advance_to!(game, corp_id)
     corporation = game.corporation_by_id(corp_id)
     or_step!(game) until game.current_entity == corporation

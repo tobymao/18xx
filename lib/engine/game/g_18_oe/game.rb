@@ -3,6 +3,7 @@
 require_relative 'meta'
 require_relative 'entities'
 require_relative 'map'
+require_relative 'stock_market'
 require_relative '../base'
 require_relative 'round/consolidation'
 require_relative 'step/consolidate'
@@ -678,6 +679,11 @@ module Engine
           corporations.each do |corp|
             corp.par_via_exchange = companies.find { |c| c.sym == corp.id } if corp.type == :minor
           end
+        end
+
+        def init_stock_market
+          G18OE::StockMarket.new(game_market, self.class::CERT_LIMIT_TYPES,
+                                 multiple_buy_types: self.class::MULTIPLE_BUY_TYPES)
         end
 
         def ipo_name(_entity = nil)

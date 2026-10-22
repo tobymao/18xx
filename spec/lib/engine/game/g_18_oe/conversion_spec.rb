@@ -19,10 +19,6 @@ describe 'G18OE floating a major (§9.3)' do
     count.times { game.share_pool.buy_shares(player, corporation.ipo_shares.first) }
   end
 
-  def pass_until!(player)
-    act!(game, Engine::Action::Pass.new(game.current_entity)) until game.current_entity == player
-  end
-
   it "offers conversion to the regional's president" do
     expect(step.actions(regional)).to eq(%w[convert pass])
   end
@@ -96,7 +92,7 @@ describe 'G18OE floating a major (§9.3)' do
 
   it 'gives the converting player another turn before the round can end (§10)' do
     convert!(game, regional)
-    pass_until!(president)
+    pass_until!(game, president)
 
     expect(game.round).to be_a(Engine::Round::Stock)
     expect(game.round.active_step.actions(president)).to include('pass')
@@ -119,7 +115,7 @@ describe 'G18OE floating a major (§9.3)' do
 
   it 'sells treasury shares at par until the stock round ends (§10.2, §10.7)' do
     convert!(game, regional)
-    pass_until!(president)
+    pass_until!(game, president)
     act!(game, Engine::Action::SellShares.new(president, shares: [president.shares_of(regional).reject(&:president).first],
                                                          percent: 10))
     act!(game, Engine::Action::Pass.new(president))
@@ -144,7 +140,7 @@ describe 'G18OE floating a major (§9.3)' do
     convert!(game, regional)
     fund!(president)
     take_treasury_shares!(president, regional, 3)
-    pass_until!(president)
+    pass_until!(game, president)
 
     expect(president.percent_of(regional)).to eq(60)
     expect(step.can_buy?(president, regional.ipo_shares.first.to_bundle)).to be(false)
