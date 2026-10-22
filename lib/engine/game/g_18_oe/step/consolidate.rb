@@ -7,40 +7,21 @@ module Engine
     module G18OE
       module Step
         class Consolidate < G18OE::Step::BuySellParShares
-          CONVERT_ACTIONS = ['convert'].freeze
+          def description
+            'Consolidate regionals into majors'
+          end
 
           def actions(entity)
-            return [] unless entity == current_entity
-            return [] if pending_corps(entity).empty?
+            actions = super
+            return actions if entity.corporation? || @converting || @converted || !presides_regional?(entity)
 
-            regional_convertible?(entity) ? CONVERT_ACTIONS : []
-          end
-
-          def description
-            'Consolidate or abandon minors/regionals'
-          end
-
-          def blocks?
-            !pending_corps(current_entity).empty?
-          end
-
-          def regional_convertible?(entity)
-            pending_corps(entity).any? { |corp| can_convert?(corp) }
-          end
-
-          def can_convert?(entity)
-            entity.type == :regional && !@converted
-          end
-
-          def process_convert(action)
-            super
-            pass!
+            actions - ['pass']
           end
 
           private
 
-          def pending_corps(entity)
-            @game.corporations.select { |c| c.type == :regional && c.president?(entity) }
+          def presides_regional?(player)
+            @game.corporations.any? { |c| c.type == :regional && c.president?(player) }
           end
         end
       end

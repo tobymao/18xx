@@ -874,8 +874,7 @@ module Engine
             when Round::G18OE::Consolidation
               @consolidation_complete = true
               remove_major_par_markers!
-              @turn += 1
-              new_stock_round
+              super
             when Engine::Round::Stock
               remove_major_par_markers!
               super
