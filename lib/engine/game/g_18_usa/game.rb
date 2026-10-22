@@ -396,6 +396,11 @@ module Engine
           entity.tokens.first.hex
         end
 
+        def free_home_brown_upgrade?(entity, hex)
+          phase_5_or_later? && home_hex_for(entity) == hex && !entity.operated? &&
+            %i[white yellow green].include?(hex.tile.color)
+        end
+
         def phase_5_or_later?
           @phase.tiles.include?(:brown)
         end
@@ -519,12 +524,9 @@ module Engine
             return Engine::Tile::COLORS.index(to.color) > Engine::Tile::COLORS.index(from.color) if from.cities.empty?
 
             # City upgrades
-            if from.color == :white
-              entity = selected_company&.owner || @round.current_entity
-              colors = [:green]
-              colors << :brown if !entity.operated? && home_hex_for(entity) == from.hex
-              return colors.include?(to.color)
-            end
+            entity = selected_company&.owner || @round.current_entity
+            return true if to.color == :brown && free_home_brown_upgrade?(entity, from.hex)
+            return to.color == :green if from.color == :white
           end
 
           super

@@ -12,7 +12,17 @@ module Engine
           include P11Track
 
           def can_lay_tile?(entity)
-            super || can_place_token_with_p20?(entity) || can_assign_p6?(entity)
+            super || can_place_token_with_p20?(entity) || can_assign_p6?(entity) || free_upgrade_home_to_brown?(entity)
+          end
+
+          def free_upgrade_home_to_brown?(entity, hex = @game.home_hex_for(entity))
+            @game.free_home_brown_upgrade?(entity, hex) && !@round.laid_hexes.include?(hex)
+          end
+
+          def available_hex(entity, hex)
+            return hex_neighbors(entity, hex) if free_upgrade_home_to_brown?(entity, hex)
+
+            super
           end
 
           def can_place_token_with_p20?(entity)
@@ -36,14 +46,11 @@ module Engine
           end
 
           def process_lay_tile(action)
-            return super unless free_brown_city_upgrade?(action.entity, action.hex, action.tile)
+            entity = action.entity
+            return super if action.tile.color != :brown || !free_upgrade_home_to_brown?(entity, action.hex)
 
             lay_tile(action)
             @round.laid_hexes << action.hex
-          end
-
-          def free_brown_city_upgrade?(entity, hex, tile)
-            !entity.operated? && @game.home_hex_for(entity) == hex && tile.color == :brown
           end
 
           def lay_tile(action, extra_cost: 0, entity: nil, spender: nil)
