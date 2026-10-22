@@ -134,6 +134,10 @@ module G18OESpecHelpers
     tile
   end
 
+  def round_step(game, klass)
+    game.round.steps.find { |s| s.is_a?(klass) }
+  end
+
   def cell(game, price, type = nil)
     game.stock_market.market.flatten.compact.find { |sp| sp.price == price && (type.nil? || sp.type == type) }
   end
