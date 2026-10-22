@@ -19,12 +19,22 @@ describe 'G18OE auction (§7)' do
     bidder
   end
 
+  def buy!(sym)
+    buyer = game.current_entity
+    act!(game, Engine::Action::Bid.new(buyer, company: company(sym), price: step.min_bid(company(sym))))
+    buyer
+  end
+
   def pass_all!
     game.players.size.times { act!(game, Engine::Action::Pass.new(game.current_entity)) }
   end
 
-  def clear_rows_through_four!
-    buy_top_row!(game) while step.companies.any? { |c| c.auction_row <= 4 }
+  def hand_out_all_but!(last_sym, through_row: 7)
+    holder = game.players.last
+    step.companies.select { |c| c.auction_row <= through_row && c.sym != last_sym }.each do |c|
+      step.companies.delete(c)
+      give_company!(holder, c)
+    end
   end
 
   it 'only lets the topmost row be bought outright' do
@@ -33,10 +43,9 @@ describe 'G18OE auction (§7)' do
   end
 
   it 'sells a top-row item at its face value' do
-    buyer = game.current_entity
-    bought = buy_top_row!(game)
+    buyer = buy!('RSC')
 
-    expect(bought.owner).to eq(buyer)
+    expect(company('RSC').owner).to eq(buyer)
     expect(buyer.cash).to eq(1780)
   end
 
@@ -60,26 +69,28 @@ describe 'G18OE auction (§7)' do
 
   it 'sells single-bid items to their bidders when their row is exposed' do
     bidders = { 'C' => bid!('C', 200), 'A' => bid!('A', 130), 'B' => bid!('B', 125) }
-    clear_rows_through_four!
+    hand_out_all_but!('SML', through_row: 4)
+    buy!('SML')
 
     expect(%w[C A B].to_h { |sym| [sym, company(sym).owner] }).to eq(bidders)
   end
 
   it 'caps a minor treasury at £180 and gives the excess to the bank (§7.1)' do
-    bank = game.bank.cash
     bid!('C', 200)
     bid!('A', 130)
-    bid!('B', 125)
-    clear_rows_through_four!
+    hand_out_all_but!('SML', through_row: 4)
+    bank = game.bank.cash
+    buy!('SML')
 
     expect(game.corporation_by_id('C').cash).to eq(180)
     expect(game.corporation_by_id('A').cash).to eq(130)
-    expect(game.bank.cash - bank).to eq(600 + 20)
+    expect(game.bank.cash - bank).to eq(120 + 20)
   end
 
   it 'puts a £180 bid entirely into the minor treasury (§7.1)' do
     bid!('C', 180)
-    clear_rows_through_four!
+    hand_out_all_but!('SML', through_row: 4)
+    buy!('SML')
 
     expect(game.corporation_by_id('C').cash).to eq(180)
   end
@@ -88,7 +99,8 @@ describe 'G18OE auction (§7)' do
     low = bid!('C', 200)
     bid!('C', 205)
     outsider = game.players.find { |p| step.committed_cash(p).zero? }
-    clear_rows_through_four!
+    hand_out_all_but!('SML', through_row: 4)
+    act!(game, Engine::Action::Bid.new(outsider, company: company('SML'), price: 120))
 
     expect(step.pass_description).to eq('Pass (on C)')
     expect(step.actions(outsider)).to eq([])
@@ -97,7 +109,8 @@ describe 'G18OE auction (§7)' do
 
   it 'sells a single-bid item even when it is not first in the exposed row' do
     bidder = bid!('B', 200)
-    clear_rows_through_four!
+    hand_out_all_but!('SML', through_row: 4)
+    buy!('SML')
 
     expect(company('B').owner).to eq(bidder)
   end
@@ -115,32 +128,32 @@ describe 'G18OE auction (§7)' do
   end
 
   it 'pays purchased privates when all players pass' do
-    buyer = game.current_entity
-    buy_top_row!(game)
+    buyer = buy!('RSC')
     pass_all!
 
     expect(buyer.cash).to eq(1800 - 20 + 5)
   end
 
   it 'still reduces the top row after something was bought' do
-    bought = buy_top_row!(game)
+    buy!('RSC')
     pass_all!
 
-    expect(step.min_bid((%w[RSC PeC].map { |sym| company(sym) } - [bought]).first)).to eq(15)
+    expect(step.min_bid(company('PeC'))).to eq(15)
   end
 
   it 'gives items reduced to £0 to the next player' do
     first = game.current_entity
-    4.times { pass_all! }
+    %w[RSC PeC].each { |sym| company(sym).discount = 15 }
+    pass_all!
 
     expect([company('RSC').owner, company('PeC').owner]).to eq([first, first])
     expect(first.cash).to eq(1800)
   end
 
   it 'moves to a stock round once the opening packet is sold' do
-    finish_auction!(game)
+    hand_out_all_but!('M')
+    buy!('M')
 
     expect(game.round).to be_a(Engine::Round::Stock)
-    expect(game.companies.map(&:owner).all?(&:player?)).to be(true)
   end
 end

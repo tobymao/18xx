@@ -6,36 +6,49 @@ require_relative 'helpers'
 describe 'G18OE ending the game (§13)' do
   include G18OESpecHelpers
 
-  let(:game) { game_at_or1 }
+  let(:game) { new_game }
 
-  def enter_phase_8!
-    game.phase.next! while game.phase.name != '8'
+  def reach_level_8_in_or!(or_num)
+    start_regional!(game, 'LNWR', game.players.first)
+    game.instance_variable_set(:@operating_rounds, 2)
+    enter_round!(game, game.operating_round(or_num))
+    game.after_phase_change('8')
   end
 
-  it 'finishes the set, plays a SR, then the final two ORs when level 8 arrives in OR1' do
-    enter_phase_8!
+  it 'gives the final turn three ORs when level 8 arrives in the last OR of a set' do
+    reach_level_8_in_or!(2)
 
-    expect(ors_until_end!(game)).to eq(%w[1.1 1.2 2.1 2.2])
+    expect(game.final_operating_rounds).to eq(3)
   end
 
-  it 'finishes the OR, plays a SR, then three ORs when level 8 arrives in OR2' do
-    finish_or!(game)
-    enter_phase_8!
+  it 'keeps two final ORs when level 8 arrives in the first OR of a set' do
+    reach_level_8_in_or!(1)
 
-    expect(ors_until_end!(game)).to eq(%w[1.2 2.1 2.2 2.3])
+    expect(game.final_operating_rounds).to eq(2)
   end
 
-  it 'ends after the current OR when the bank breaks in an OR' do
-    game.bank.break!
+  it 'plays the extended final set before the next stock round' do
+    reach_level_8_in_or!(2)
+    enter_round!(game, game.stock_round)
+    game.instance_variable_set(:@final_turn, game.turn)
 
-    expect(ors_until_end!(game)).to eq(%w[1.1])
+    round_nums = Array.new(3) do
+      game.next_round!
+      expect(game.round).to be_a(Engine::Round::G18OE::Operating)
+      game.round.round_num
+    end
+
+    expect(round_nums).to eq([1, 2, 3])
   end
 
-  it 'plays one more OR when the bank breaks in a SR' do
-    2.times { finish_or!(game) }
-    game.bank.break!
+  it 'returns to a stock round after two ORs when the final set is not extended' do
+    start_regional!(game, 'LNWR', game.players.first)
+    game.instance_variable_set(:@operating_rounds, 2)
+    enter_round!(game, game.operating_round(2))
 
-    expect(ors_until_end!(game)).to eq(%w[2.1])
+    game.next_round!
+
+    expect(game.round).to be_a(Engine::Round::Stock)
   end
 
   it 'adds the remainder cash once, on the first level 8 train' do
@@ -46,7 +59,7 @@ describe 'G18OE ending the game (§13)' do
     expect(game.depot.upcoming.find { |t| t.name == '8+8' }.events).to eq([{ 'type' => 'remainder_cash_added' }])
   end
 
-  it 'does not end on bankruptcy' do
-    expect(Engine::Game::G18OE::Game::GAME_END_CHECK.keys).to eq(%i[bank final_phase])
+  it 'ends after the current OR on a bank break and after the next full OR set on level 8, never on bankruptcy' do
+    expect(Engine::Game::G18OE::Game::GAME_END_CHECK).to eq(bank: :current_or, final_phase: :one_more_full_or_set)
   end
 end

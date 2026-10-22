@@ -6,28 +6,27 @@ require_relative 'helpers'
 describe 'G18OE dividends (§11.4, §4.4)' do
   include G18OESpecHelpers
 
-  let(:game) { game_at_sr2 }
-  let(:step) { Engine::Game::G18OE::Step::Dividend.new(game, game.round) }
-  let(:president) { game.current_entity }
-  let(:regional) { game.corporations.find { |c| c.type == :regional && c.president?(president) } }
-  let(:other) { game.players.find { |p| p != president } }
-  let(:minor) { game.corporation_by_id('K') }
-
-  def split_regional!
-    game.bank.spend(500, other)
-    game.share_pool.buy_shares(other, regional.ipo_shares.first)
-    regional
-  end
+  let(:game) { new_game }
+  let(:step) { Engine::Game::G18OE::Step::Dividend.new(game, []) }
+  let(:president) { game.players[0] }
+  let(:other) { game.players[1] }
+  let(:regional) { start_regional!(game, 'KSS', president) }
+  let(:minor) { start_minor!(game, 'K', president, 'RU') }
 
   def major_at(price)
-    convert!(game, regional)
-    game.stock_market.move(regional, cell(game, price).coordinates)
-    regional
+    major = start_major!(game, 'LNWR', president)
+    game.stock_market.move(major, cell(game, price).coordinates)
+    major
   end
 
   def types_for(entity)
     allow(step).to receive(:current_entity).and_return(entity)
     step.dividend_types
+  end
+
+  def split_regional!
+    take_treasury_shares!(game, other, regional, 1)
+    regional
   end
 
   it 'gives each railroad type its own dividend choices (§11.4)' do
@@ -65,7 +64,7 @@ describe 'G18OE dividends (§11.4, §4.4)' do
     half = step.half(minor, 50)
 
     expect(half[:corporation]).to eq(25)
-    expect(step.dividends_for_entity(minor, minor.owner, half[:per_share])).to eq(25)
+    expect(step.dividends_for_entity(minor, president, half[:per_share])).to eq(25)
   end
 
   it 'never moves minors or regionals on the market' do
@@ -97,9 +96,10 @@ describe 'G18OE dividends (§11.4, §4.4)' do
   end
 
   it 'withholds automatically for a minor that earned nothing' do
-    game = finish_or!(game_at_or1)
-    minor = game.minor_regional_order.first
+    minor
+    round = enter_round!(game, game.operating_round(1))
+    round_step(round, Engine::Game::G18OE::Step::Dividend).skip!
 
-    expect(minor.operating_history[[1, 1]].dividend.kind).to eq('withhold')
+    expect(minor.operating_history[[game.turn, 1]].dividend.kind).to eq('withhold')
   end
 end

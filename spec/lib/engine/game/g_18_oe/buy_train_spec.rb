@@ -6,91 +6,114 @@ require_relative 'helpers'
 describe 'G18OE buy trains (§11.6)' do
   include G18OESpecHelpers
 
-  let(:game) { game_at_or1 }
-
-  def step
-    game.round.active_step
+  let(:game) { new_game }
+  let(:player) { game.players.first }
+  let(:minor) { start_minor!(game, 'K', player, 'RU') }
+  let(:round) do
+    minor
+    enter_round!(game, game.operating_round(1))
   end
-
-  def advance_to_buy_train!(game, corp_id, cash: 0)
-    corporation = advance_to!(game, corp_id)
-    game.bank.spend(cash, corporation) if cash.positive?
-    or_step!(game) until game.round.active_step.is_a?(Engine::Game::G18OE::Step::BuyTrain)
-    corporation
-  end
+  let(:step) { round_step(round, Engine::Game::G18OE::Step::BuyTrain) }
 
   def card(name)
     game.depot.upcoming.find { |t| t.name == name }
   end
 
-  def owned_trains
-    game.corporations.select(&:floated?).flat_map(&:trains).map(&:name)
+  def after_first_or!
+    game.instance_variable_set(:@first_or_complete, true)
+    game.depot.upcoming.select { |t| t.name == '2+2' }.each { |t| game.depot.remove_train(t) }
+  end
+
+  def buy!(entity, train, price, variant: nil)
+    step.process_buy_train(Engine::Action::BuyTrain.new(entity, train: train, price: price, variant: variant))
   end
 
   it 'makes a railroad buy its reserved 2+2 in its first OR (§11.6.1)' do
-    minor = advance_to_buy_train!(game, game.minor_regional_order.first.id)
-
     expect(step.must_buy_train?(minor)).to be(true)
     expect(step.buyable_trains(minor).map(&:name).uniq).to eq(['2+2'])
   end
 
-  it 'sells no level 3 in the first OR of the game (§11.6)' do
-    minor = advance_to_buy_train!(game, game.minor_regional_order.first.id)
-    buy_step = step
-    or_step!(game)
+  it 'records that the reserved 2+2 was bought (§11.6.1)' do
+    buy!(minor, card('2+2'), 100)
 
-    expect(minor.trains.map(&:name)).to eq(['2+2'])
-    expect(buy_step.buyable_trains(minor)).to eq([])
+    expect(game.fulfilled_train_obligation?(minor)).to be(true)
   end
 
-  it 'sells level 3 trains from the second OR once the Major RR Phase began (§8.3)' do
-    finish_or!(game)
-    lnwr = advance_to_buy_train!(game, 'LNWR', cash: 300)
-    names = step.buyable_trains(lnwr).map(&:name)
+  it 'sells no level 3 before the Major RR Phase (§8.2)' do
+    game.fulfill_train_obligation!(minor)
+    after_first_or!
+
+    expect(step.buyable_trains(minor)).to eq([])
+  end
+
+  it 'sells no level 3 in the first OR of the game (§11.6)' do
+    allow(game).to receive(:major_phase?).and_return(true)
+    game.fulfill_train_obligation!(minor)
+
+    expect(step.buyable_trains(minor)).to eq([])
+  end
+
+  it 'sells level 3 trains after the first OR once the Major RR Phase began (§8.3)' do
+    allow(game).to receive(:major_phase?).and_return(true)
+    game.fulfill_train_obligation!(minor)
+    after_first_or!
+    names = step.buyable_trains(minor).map(&:name)
 
     expect(names).to include('3')
     expect(names).not_to include('2+2')
   end
 
+  it 'unlocks level 3 trains when the first OR ends' do
+    allow(game).to receive(:major_phase?).and_return(true)
+    round
+    game.instance_variable_set(:@operating_rounds, 2)
+    game.next_round!
+
+    expect(game.non_starter_trains_available?).to be(true)
+  end
+
   it 'starts phase 3 with the first level 3 train (§5.2)' do
-    finish_or!(game)
-    lnwr = advance_to_buy_train!(game, 'LNWR', cash: 300)
-    cash = lnwr.cash
-    act!(game, Engine::Action::BuyTrain.new(lnwr, train: card('3'), price: 200))
+    allow(game).to receive(:major_phase?).and_return(true)
+    game.fulfill_train_obligation!(minor)
+    after_first_or!
+    fund!(game, minor, 300)
+    cash = minor.cash
+    buy!(minor, card('3'), 200)
 
     expect(game.phase.name).to eq('3')
-    expect(cash - lnwr.cash).to eq(200)
+    expect(cash - minor.cash).to eq(200)
   end
 
   it 'sells the 3+3 side for £225 (§11.6.4)' do
-    finish_or!(game)
-    lnwr = advance_to_buy_train!(game, 'LNWR', cash: 300)
-    act!(game, Engine::Action::BuyTrain.new(lnwr, train: card('3'), price: 225, variant: '3+3'))
+    allow(game).to receive(:major_phase?).and_return(true)
+    game.fulfill_train_obligation!(minor)
+    after_first_or!
+    fund!(game, minor, 300)
+    buy!(minor, card('3'), 225, variant: '3+3')
 
-    expect(lnwr.trains.map(&:name)).to include('3+3')
+    expect(minor.trains.map(&:name)).to eq(['3+3'])
   end
 
   it 'allows buying from other railroads only in the Major RR Phase (§8.2, §8.3)' do
-    expect(game_at_or1(regionals: 17).can_buy_train_from_others?).to be(false)
+    expect(game.can_buy_train_from_others?).to be(false)
+
+    allow(game).to receive(:major_phase?).and_return(true)
     expect(game.can_buy_train_from_others?).to be(true)
   end
 
   it 'makes a major without trains buy one (§11.6)' do
-    game = game_at_sr2
-    major = convert!(game, game.corporations.find { |c| c.type == :regional && c.president?(game.current_entity) })
-    finish_sr!(game)
-    advance_to_buy_train!(game, major.id)
-    game.rust_trains!(game.depot.upcoming.find { |t| t.name == '4' }, major)
+    major = start_major!(game, 'LNWR', player)
+    game.fulfill_train_obligation!(major)
+    round = enter_round!(game, game.operating_round(1))
 
-    expect(major.trains).to be_empty
-    expect(game.round.active_step.must_buy_train?(major)).to be(true)
+    expect(round_step(round, Engine::Game::G18OE::Step::BuyTrain).must_buy_train?(major)).to be(true)
   end
 
   it 'rusts every 2+2 when the first level 4 is bought (§5.2)' do
-    finish_or!(game)
-    game.rust_trains!(card('4'), game.current_entity)
+    game.buy_train(minor, card('2+2'), :free)
+    game.rust_trains!(card('4'), minor)
 
-    expect(owned_trains).not_to include('2+2')
+    expect(minor.trains).to be_empty
   end
 
   it 'ends the reserved train obligation in phase 4 (§11.6.1)' do

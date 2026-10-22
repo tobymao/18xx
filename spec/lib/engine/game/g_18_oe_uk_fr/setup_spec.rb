@@ -8,7 +8,7 @@ describe 'G18OE UK-France scenario (PB 6.1, 6.1.5)' do
 
   let(:klass) { Engine::Game::G18OEUKFR::Game }
   let(:game) { new_game(%w[a b], klass: klass) }
-  let(:cards) { game.depot.upcoming.uniq(&:name).to_h { |t| [t.name, t] } }
+  let(:cards) { game.depot.upcoming.uniq(&:name).to_h { |train| [train.name, train] } }
 
   def scenario(players)
     new_game(Array.new(players) { |i| "p#{i}" }, klass: klass)
@@ -33,39 +33,54 @@ describe 'G18OE UK-France scenario (PB 6.1, 6.1.5)' do
   end
 
   it 'floats a minor in the United Kingdom' do
-    finish_auction!(game)
-    minor = game.corporation_by_id(game.current_entity.companies.find { |c| game.company_becomes_minor?(c) }.sym)
-    float_minor!(game, minor.id, zone: 'UK')
+    round = enter_round!(game, game.stock_round)
+    player = round.current_entity
+    minor = game.corporation_by_id('C')
+    give_company!(player, game.company_by_id('C'))
+    fund!(game, minor, 120)
+    price = round.active_step.get_par_prices(player, minor).first
+    act!(round, Engine::Action::Par.new(player, corporation: minor, share_price: price))
+    hex = game.home_token_locations(minor).find { |h| game.region_for_hex(h) == 'UK' }
+    act!(round, Engine::Action::PlaceToken.new(minor, city: hex.tile.cities.first, slot: 0))
 
-    expect(game.minor_floated_regions[minor.id]).to eq('UK')
+    expect(game.minor_floated_regions['C']).to eq('UK')
   end
 
-  it 'floats six regionals and removes the seventh' do
-    float_everything!(finish_auction!(game), regionals: 6)
+  it 'removes the remaining regionals when the sixth floats' do
+    round = enter_round!(game, game.stock_round)
+    player = round.current_entity
+    plm = game.corporation_by_id('PLM')
+    game.regional_corps_floated = 5
+    fund!(game, player)
+    act!(round, Engine::Action::Par.new(player, corporation: plm, share_price: cell(game, 60, :par)))
 
-    expect(game.round).to be_a(Engine::Round::G18OE::Operating)
-    expect(game.corporations.count { |c| c.type == :regional }).to eq(6)
+    expect(game.corporations.select { |c| c.type == :regional }).to eq([plm])
   end
 
-  it 'uses the short scenario train mix (PB 6.1)' do
+  it 'deals ten level 2, seven level 3, three each of levels 4 and 5, two level 6, four level 7 and three level 8 trains' do
     expect(game.depot.upcoming.map(&:name).tally)
       .to eq('2+2' => 10, '3' => 7, '4' => 3, '5' => 3, '6' => 2, '7+7' => 4, '8+8' => 3)
-    expect(cards.transform_values { |t| t.variants.keys })
+  end
+
+  it 'gives each train card its variants' do
+    expect(cards.transform_values { |train| train.variants.keys })
       .to eq('2+2' => ['2+2'], '3' => %w[3 3+3], '4' => %w[4 4+4], '5' => %w[5 5+5], '6' => %w[6 6+6],
              '7+7' => %w[7+7 4D], '8+8' => %w[8+8 5D])
   end
 
-  it 'rusts level 3 at phase 6 and level 4 at phase 8' do
+  it 'rusts level 3 trains on 6 and level 4 trains on 8+8' do
     expect(cards['3'].variants.values.map { |v| v[:rusts_on] }.uniq).to eq(['6'])
     expect(cards['4'].variants.values.map { |v| v[:rusts_on] }.uniq).to eq(['8+8'])
   end
 
-  it 'releases level 8 trains after the first level 7 is sold (PB 6.1)' do
-    game.depot.upcoming.reject { |t| %w[7+7 8+8].include?(t.name) }.each { |t| game.depot.remove_train(t) }
-    game.phase.next! while game.phase.name != '7'
+  it 'makes level 8 trains available only after the first level 7 train is bought' do
+    game.depot.upcoming.reject { |train| %w[7+7 8+8].include?(train.name) }.each { |train| game.depot.remove_train(train) }
+    game.phase.next! until game.phase.name == '7'
+
     expect(game.level8_train_available?).to be(false)
 
-    game.depot.remove_train(cards['7+7'])
+    game.depot.remove_train(game.depot.upcoming.find { |train| train.name == '7+7' })
+
     expect(game.level8_train_available?).to be(true)
   end
 end

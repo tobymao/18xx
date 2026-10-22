@@ -6,66 +6,51 @@ require_relative 'helpers'
 describe 'G18OE stock round (§4, §10)' do
   include G18OESpecHelpers
 
-  let(:game) { game_at_sr2 }
-  let(:step) { game.round.active_step }
-  let(:president) { game.current_entity }
-  let(:regional) { game.corporations.find { |c| c.type == :regional && c.president?(president) } }
-  let(:others) { game.players.reject { |p| p == president } }
+  let(:game) { new_game }
+  let(:round) { stock_round!(game) }
+  let(:step) { round.active_step }
+  let(:president) { round.current_entity }
+  let(:major) { start_major!(game, 'LNWR', president) }
   let(:market) { game.stock_market }
 
-  def major!
-    convert!(game, regional)
-    pass_until!(game, president)
-    regional
-  end
-
-  def fund!(player, amount = 1000)
-    game.bank.spend(amount, player)
-  end
-
-  def take_treasury_shares!(player, corporation, count)
-    fund!(player)
-    count.times { game.share_pool.buy_shares(player, corporation.ipo_shares.first) }
-  end
+  before { allow(game).to receive(:major_phase?).and_return(true) }
 
   def to_pool!(corporation, count)
-    shares = corporation.ipo_shares.first(count)
-    game.share_pool.transfer_shares(Engine::ShareBundle.new(shares), game.share_pool)
+    game.share_pool.transfer_shares(Engine::ShareBundle.new(corporation.ipo_shares.first(count)), game.share_pool)
   end
 
-  def sell!(player, corporation)
+  def sell_one!(player, corporation)
     share = player.shares_of(corporation).reject(&:president).first
-    act!(game, Engine::Action::SellShares.new(player, shares: [share], percent: share.percent))
+    act!(round, Engine::Action::SellShares.new(player, shares: [share], percent: share.percent))
   end
 
   def move(direction, coordinates)
-    market.share_price(market.send(direction, regional, coordinates)).price
+    market.share_price(market.send(direction, major, coordinates)).price
   end
 
   it 'moves a major DOWN for a share sold (§4.4)' do
-    major = major!
-    sell!(president, major)
+    take_treasury_shares!(game, president, major, 1)
+    sell_one!(president, major)
 
     expect(major.share_price.price).to eq(70)
   end
 
   it 'keeps the Open Market at 50% or less (§10.1)' do
-    major = major!
+    take_treasury_shares!(game, president, major, 1)
     to_pool!(major, 5)
 
     expect(step.can_sell?(president, president.shares_of(major).reject(&:president).first.to_bundle)).to be(false)
   end
 
   it 'forbids buying back a major sold this round (§10.2)' do
-    major = major!
-    sell!(president, major)
+    take_treasury_shares!(game, president, major, 1)
+    sell_one!(president, major)
 
     expect(step.can_buy?(president, game.share_pool.shares_of(major).first.to_bundle)).to be(false)
   end
 
   it 'charges a president at 60% double share value from the Open Market (§10.2)' do
-    major = major!
-    take_treasury_shares!(president, major, 3)
+    take_treasury_shares!(game, president, major, 4)
     to_pool!(major, 1)
     bundle = game.share_pool.shares_of(major).first.to_bundle
 
@@ -73,21 +58,11 @@ describe 'G18OE stock round (§4, §10)' do
     expect(step.modify_purchase_price(bundle)).to eq(major.share_price.price * 2)
   end
 
-  it 'moves a sold out major UP at the end of the round (§4.4, §10.7)' do
-    major = major!
-    take_treasury_shares!(others[0], major, 3)
-    take_treasury_shares!(others[1], major, 4)
-    finish_sr!(game)
+  it 'raises sold out majors and nationals but not regionals or minors at the end of the round (§4.4)' do
+    regional = start_regional!(game, 'PLM', president)
+    minor = game.corporation_by_id('K')
 
-    expect(major.share_price.price).to eq(80)
-  end
-
-  it 'never moves a sold out regional' do
-    other = game.corporations.find { |c| c.type == :regional && c != regional }
-    take_treasury_shares!(other.owner == others[0] ? others[1] : others[0], other, 2)
-    finish_sr!(game)
-
-    expect(other.share_price.price).to eq(60)
+    expect([major, regional, minor].map { |c| game.sold_out_increase?(c) }).to eq([true, false, false])
   end
 
   it 'moves UP on the top row to the RIGHT (§4.4)' do

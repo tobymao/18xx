@@ -6,10 +6,11 @@ require_relative 'helpers'
 describe 'G18OE lay track (§11.1)' do
   include G18OESpecHelpers
 
-  let(:game) { game_at_or1 }
+  let(:game) { new_game }
+  let(:player) { game.players.first }
 
-  def points
-    game.round.active_step.description
+  def operating!
+    enter_round!(game, game.operating_round(1))
   end
 
   def cost(hex_id, corp_id)
@@ -23,10 +24,9 @@ describe 'G18OE lay track (§11.1)' do
     minor_id
   end
 
-  def wien_with_home!
-    advance_to!(game, 'SB')
-    lay_first_legal!(game, 'R55')
-    act!(game, Engine::Action::PlaceToken.new(game.current_entity, city: game.hex_by_id('R55').tile.cities[1], slot: 0))
+  def wien_with_home!(round)
+    lay_first_legal!(game, round, 'R55')
+    act!(round, Engine::Action::PlaceToken.new(game.corporation_by_id('SB'), city: game.hex_by_id('R55').tile.cities[1], slot: 0))
   end
 
   it 'budgets tile points by railroad type (§11.1)' do
@@ -36,61 +36,65 @@ describe 'G18OE lay track (§11.1)' do
   end
 
   it 'gives a regional 3 tile points' do
-    advance_to!(game, 'LNWR')
+    start_regional!(game, 'LNWR', player)
+    round = operating!
 
-    expect(points).to eq('3 track points')
+    expect(round.active_step.description).to eq('3 track points')
   end
 
   it 'charges 1 point for a yellow tile' do
-    advance_to!(game, 'LNWR')
-    lay_first_legal!(game, 'J29')
+    start_regional!(game, 'LNWR', player)
+    round = operating!
+    lay_first_legal!(game, round, 'J29')
 
-    expect(points).to eq('2 track points')
+    expect(round.active_step.description).to eq('2 track points')
   end
 
   it 'charges 2 points for a yellow metropolis and lets SB choose its home station (§11.1.9)' do
-    advance_to!(game, 'SB')
-    lay_first_legal!(game, 'R55')
+    sb = start_regional!(game, 'SB', player)
+    round = operating!
+    lay_first_legal!(game, round, 'R55')
 
-    expect(game.round.active_step).to be_a(Engine::Step::HomeToken)
-    expect(game.current_entity).to eq(game.corporation_by_id('SB'))
+    expect(round.active_step).to be_a(Engine::Step::HomeToken)
 
-    act!(game, Engine::Action::PlaceToken.new(game.current_entity, city: game.hex_by_id('R55').tile.cities[1], slot: 0))
+    act!(round, Engine::Action::PlaceToken.new(sb, city: game.hex_by_id('R55').tile.cities[1], slot: 0))
 
-    expect(points).to eq('1 track points')
-    expect(game.hex_by_id('R55').tile.cities[1].tokened_by?(game.corporation_by_id('SB'))).to be(true)
+    expect(round.active_step.description).to eq('1 track points')
+    expect(game.hex_by_id('R55').tile.cities[1].tokened_by?(sb)).to be(true)
   end
 
   it 'charges 2 points for an upgrade' do
     game.phase.next!
-    advance_to!(game, 'LNWR')
-    lay_first_legal!(game, 'J27')
+    start_regional!(game, 'LNWR', player)
+    round = operating!
+    lay_first_legal!(game, round, 'J27')
 
-    expect(points).to eq('1 track points')
+    expect(round.active_step.description).to eq('1 track points')
   end
 
   it 'refuses a lay that costs more points than remain' do
     game.phase.next!
-    wien_with_home!
+    start_regional!(game, 'SB', player)
+    round = operating!
+    wien_with_home!(round)
     tile = game.tiles.find { |t| t.name == 'OE12' }
-    game.process_action(Engine::Action::LayTile.new(game.current_entity, tile: tile, hex: game.hex_by_id('R55'), rotation: 0))
+    action = Engine::Action::LayTile.new(game.corporation_by_id('SB'), tile: tile, hex: game.hex_by_id('R55'), rotation: 0)
 
-    expect(game.exception.message).to match(/Cannot lay an upgrade now/)
+    expect { round.process_action(action) }.to raise_error(Engine::GameError, /Cannot lay an upgrade now/)
   end
 
   it 'gives a major 6 tile points' do
-    game = game_at_sr2
-    major = convert!(game, game.corporations.find { |c| c.type == :regional && c.president?(game.current_entity) })
-    finish_sr!(game)
-    advance_to!(game, major.id)
+    start_major!(game, 'LNWR', player)
+    round = operating!
 
-    expect(game.round.active_step.description).to eq('6 track points')
+    expect(round.active_step.description).to eq('6 track points')
   end
 
   it 'keeps a regional inside its track rights zone (§11.1.4)' do
-    lnwr = advance_to!(game, 'LNWR')
+    lnwr = start_regional!(game, 'LNWR', player)
+    round = operating!
 
-    expect(game.round.active_step.tracker_available_hex(lnwr, game.hex_by_id('Q30'))).to be_nil
+    expect(round.active_step.tracker_available_hex(lnwr, game.hex_by_id('Q30'))).to be_nil
     expect(game.hex_within_national_region?(lnwr, game.hex_by_id('J29'))).to be(true)
   end
 
@@ -102,8 +106,8 @@ describe 'G18OE lay track (§11.1)' do
   end
 
   it 'does not restrict majors to a zone (§11.1.4)' do
-    game = game_at_sr2
-    major = convert!(game, game.corporations.find { |c| c.type == :regional && c.president?(game.current_entity) })
+    major = start_major!(game, 'LNWR', player)
+
     expect(game.hex_within_national_region?(major, game.hex_by_id('Q30'))).to be(true)
   end
 
