@@ -89,7 +89,7 @@ module View
           rendered_loc_name = render_tile_part(Part::LocationName)
         end
         revenue = render_tile_part(Part::Revenue) if render_revenue
-        @tile.labels.each { |l| children << render_tile_part(Part::Label, label: l) }
+        @tile.labels.each { |l| children << render_tile_part(Part::Label, label: l, loc: l.loc) }
 
         render_tile_parts_by_loc(
           Part::Upgrades,

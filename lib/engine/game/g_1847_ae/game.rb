@@ -347,9 +347,9 @@ module Engine
 
         def setup
           # Place stock market markers for corporations that have their president shares drafted in initial auction
-          stock_market.set_par(l, stock_market.share_price([2, 1]))
-          stock_market.set_par(saar, stock_market.share_price([3, 1]))
-          stock_market.set_par(lfk, stock_market.share_price([2, 3]))
+          par_corporation(l, stock_market.share_price([2, 1]))
+          par_corporation(saar, stock_market.share_price([3, 1]))
+          par_corporation(lfk, stock_market.share_price([2, 3]))
 
           # Place L's home station in case there is a "short OR" during draft
           hex = hex_by_id(l.coordinates)

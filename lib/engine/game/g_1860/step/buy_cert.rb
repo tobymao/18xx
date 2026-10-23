@@ -73,7 +73,7 @@ module Engine
             entity = action.entity
             raise GameError, "#{corporation} cannot be parred" unless @game.can_par?(corporation, entity)
 
-            @game.stock_market.set_par(corporation, share_price)
+            @game.par_corporation(corporation, share_price)
             shares = corporation.shares.first
             if entity.cash >= 2 * share_price.price
               @game.share_pool.buy_shares(entity, shares)

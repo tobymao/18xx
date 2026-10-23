@@ -52,6 +52,10 @@ module Engine
 
         MUST_BUY_TRAIN = :always
 
+        # brown tiles - in addition to the default - cannot be built into unless there is track on the other side
+        IMPASSABLE_HEX_COLORS = %i[blue brown gray red].freeze
+        TRACK_RESTRICTION = :permissive
+
         MARKET = [['', '', '', ''] + %w[132 148 166 186 208 232 258 286 316 348 382 418],
                   ['', ''] + %w[98 108 120 134 150 168 188 210 234 260 288 318 350 384],
                   %w[82 86 92p 100 110 122 136 152 170 190 212 236 262 290 320],
@@ -152,7 +156,7 @@ module Engine
           @preussen_may_float = false
 
           @corporations.select { |corp| major?(corp) }.each do |corp|
-            @stock_market.set_par(corp, @stock_market.par_prices.find { |share_price| share_price.price == PAR_PRICES[corp.id] })
+            par_corporation(corp, @stock_market.par_prices.find { |share_price| share_price.price == PAR_PRICES[corp.id] })
           end
 
           corporation_by_id('BY').ipoed = true
@@ -161,6 +165,9 @@ module Engine
           corporation_by_id('OL').forced_share_percent = 10
 
           @corporation_blocks = CORPORATION_BLOCKS.map { |block| block.map { |c| corporation_by_id(c) } }
+
+          # PR does not need a reservation, since its home token is put where 2's token was
+          hex_by_id('E19').tile.remove_reservation!(prussian)
         end
 
         def company_header(company)
@@ -297,6 +304,13 @@ module Engine
           return TWO_LAYS if major?(entity) && @phase.status.include?('two_tile_lays')
 
           LAY_OR_UPGRADE
+        end
+
+        def upgrades_to?(from, to, special = nil, selected_company: nil)
+          # green double cities cannot be upgraded any further
+          return false if %w[14 15].include?(from.name)
+
+          super
         end
 
         def payout_companies

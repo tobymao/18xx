@@ -26,7 +26,7 @@ module Engine
             entity = action.entity
             share_price = action.share_price
 
-            @game.stock_market.set_par(corporation, share_price)
+            @game.par_corporation(corporation, share_price)
 
             bundle = minor_starting_bundle(corporation)
             concession = exchange_concession(entity)
