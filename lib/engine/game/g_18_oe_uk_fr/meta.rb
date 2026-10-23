@@ -19,6 +19,7 @@ module Engine
         # GAME_VARIANTS = [].freeze
         GAME_ISSUE_LABEL = '18OE'
         PLAYER_RANGE = [2, 3].freeze
+        OPTIONAL_RULES = [].freeze
 
         def self.fs_name
           @fs_name ||= 'g_18_oe_uk_fr'

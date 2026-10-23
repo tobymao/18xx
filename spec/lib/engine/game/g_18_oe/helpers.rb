@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 module G18OESpecHelpers
-  def new_game(players = %w[a b c], klass: Engine::Game::G18OE::Game)
-    klass.new(players, seed: 1)
+  def new_game(players = %w[a b c], klass: Engine::Game::G18OE::Game, optional_rules: [])
+    klass.new(players, seed: 1, optional_rules: optional_rules)
   end
 
   def act!(target, action)

@@ -45,7 +45,15 @@ module Engine
             super
           end
 
+          def can_buy_shares?(entity, shares)
+            return false if shares.any? && @game.open_market_regional?(shares.first.corporation)
+
+            super
+          end
+
           def can_buy?(entity, bundle)
+            return false if bundle && @game.open_market_regional?(bundle.corporation)
+
             # During conversion lock-in: only the new major's IPO is available.
             return false if @converted && bundle.corporation != @converted
 
@@ -173,6 +181,7 @@ module Engine
             corporation = action.corporation
             entity = action.entity
             company = find_minor_company(corporation)
+            raise GameError, "#{entity.name} does not own #{company.name}" unless company.owner == entity
 
             @log << "#{entity.name} floats #{company.sym}"
 
@@ -223,6 +232,10 @@ module Engine
 
             @game.minor_regional_order << action.corporation
 
+            close_unfloated_regionals_at_maximum!
+          end
+
+          def close_unfloated_regionals_at_maximum!
             return unless @game.regional_corps_floated == @game.class::MAX_FLOATED_REGIONALS
 
             corps = @game.corporations.dup
