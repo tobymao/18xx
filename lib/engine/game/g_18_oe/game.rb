@@ -3,6 +3,7 @@
 require_relative 'meta'
 require_relative 'entities'
 require_relative 'map'
+require_relative 'stock_market'
 require_relative '../base'
 require_relative 'round/consolidation'
 require_relative 'step/consolidate'
@@ -48,6 +49,7 @@ module Engine
         }.freeze
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+          'level_8_available' => ['Level 8 Trains Available', 'Level 8 trains may be bought'],
           'consolidation_triggered' => [
             'Consolidation Round',
             'Consolidation round follows at end of current OR set; minors and regionals must merge or be abandoned',
@@ -202,10 +204,11 @@ module Engine
             variants: [{
               name: '4D',
               distance: [{ 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 },
-                         { 'nodes' => %w[city offboard], 'pay' => 4, 'visit' => 99 }],
+                         { 'nodes' => %w[city offboard], 'pay' => 4, 'visit' => 4 }],
               price: 850,
             }],
             num: 14,
+            events: [{ 'type' => 'level_8_available', 'when' => 4 }],
           },
           # Level 8 — gray double-sided (8+8 / 5D); permanent
           # NOTE: purchase of the FIRST level-8 triggers game end
@@ -217,11 +220,11 @@ module Engine
             variants: [{
               name: '5D',
               distance: [{ 'nodes' => ['town'], 'pay' => 0, 'visit' => 99 },
-                         { 'nodes' => %w[city offboard], 'pay' => 5, 'visit' => 99 }],
+                         { 'nodes' => %w[city offboard], 'pay' => 5, 'visit' => 5 }],
               price: 1000,
             }],
             num: 8,
-            available_on: '7+7',
+            available_on: '7',
             events: [{ 'type' => 'remainder_cash_added' }],
           },
         ].freeze
@@ -247,7 +250,7 @@ module Engine
         ZONE_TERRAIN_DISCOUNT_RATE  = 0.5 # 50% §11.1.5; E/F augment zone discount to this rate
         TILE_POINT_BUDGET = { minor: 3, regional: 3, major: 6, national: 9 }.freeze
         MINOR_MAX_TREASURY = 180
-        EF_TERRAIN_AUGMENT          = { 'E' => :water, 'F' => :mountain }.freeze
+        EF_TERRAIN_AUGMENT          = { 'E' => %i[water river lake], 'F' => %i[mountain hill] }.freeze
 
         CORPORATIONS_TRACK_RIGHTS = {
           # United Kingdom
@@ -387,6 +390,8 @@ module Engine
 
         MAX_FLOATED_REGIONALS = 18
         CONVERSION_NEW_SHARES = 6
+        MAJOR_MAX_OWNERSHIP_PERCENT = 60
+        EXTENDED_FINAL_OPERATING_ROUNDS = 3
 
         # still need green+ OE specific track tiles
         TILES = {
@@ -679,6 +684,11 @@ module Engine
           end
         end
 
+        def init_stock_market
+          G18OE::StockMarket.new(game_market, self.class::CERT_LIMIT_TYPES,
+                                 multiple_buy_types: self.class::MULTIPLE_BUY_TYPES)
+        end
+
         def ipo_name(_entity = nil)
           'Treasury'
         end
@@ -711,9 +721,17 @@ module Engine
         end
 
         def hex_within_national_region?(entity, hex)
+          return true if entity.type == :major
+
           region = self.class::CORPORATIONS_TRACK_RIGHTS[entity.id] || @minor_floated_regions[entity.id]
           hexes = self.class::NATIONAL_REGION_HEXES[region]
           hexes&.include?(hex.coordinates) || false
+        end
+
+        def city_in_track_rights?(entity, hex)
+          return true if entity.type == :major
+
+          region_for_hex(hex) == entity_track_rights_zone(entity)
         end
 
         def region_for_hex(hex)
@@ -752,6 +770,16 @@ module Engine
             .select { |hex| hex.tile.cities.any? { |city| city.tokenable?(corporation, free: true) } }
             .reject { |hex| metropolis_hex?(hex) }
             .reject { |hex| self.class::MINOR_EXCLUDED_HOME_CITIES.include?(hex.coordinates) }
+            .reject { |hex| railroad_home_hexes.include?(hex.coordinates) }
+            .reject { |hex| minor_tokened?(hex) }
+        end
+
+        def railroad_home_hexes
+          @corporations.reject { |c| c.type == :minor }.map(&:coordinates)
+        end
+
+        def minor_tokened?(hex)
+          hex.tile.cities.any? { |city| city.tokens.any? { |token| token&.corporation&.type == :minor } }
         end
 
         def metropolis_hex?(hex)
@@ -780,9 +808,8 @@ module Engine
           return super if base_cost.zero?
 
           entity_zone = entity_track_rights_zone(entity)
-          hex_zone = region_for_hex(hex)
-          zone_match = hex_zone && entity_zone == hex_zone &&
-                       self.class::ZONE_DISCOUNT_ZONES.include?(hex_zone)
+          zone_match = self.class::ZONE_DISCOUNT_ZONES.include?(entity_zone) &&
+                       self.class::NATIONAL_REGION_HEXES[entity_zone].include?(hex.coordinates)
 
           return super unless zone_match
 
@@ -800,11 +827,12 @@ module Engine
         end
 
         def level8_train_available?
-          return false if phase.name.to_i < 7
-          return true if phase.name.to_i == 8
+          @level_8_available || false
+        end
 
-          next_train = @depot.upcoming.first
-          next_train.index >= 4 || next_train.name != '7+7'
+        def event_level_8_available!
+          @level_8_available = true
+          @log << '-- Event: Level 8 trains are now available --'
         end
 
         def event_remainder_cash_added!
@@ -849,11 +877,36 @@ module Engine
               end
             when Round::G18OE::Consolidation
               @consolidation_complete = true
-              @turn += 1
-              new_stock_round
+              remove_major_par_markers!
+              super
+            when Engine::Round::Stock
+              remove_major_par_markers!
+              round = super
+              @operating_rounds = final_operating_rounds if @turn == @final_turn
+              round
             else
               super
             end
+        end
+
+        def after_phase_change(name)
+          super
+          return unless name == self.class::PHASES.last[:name]
+
+          @final_set_extended = @round.is_a?(Engine::Round::Operating) && final_or_in_set?(@round)
+        end
+
+        def final_operating_rounds
+          @final_set_extended ? self.class::EXTENDED_FINAL_OPERATING_ROUNDS : super
+        end
+
+        def place_major_par_marker!(corporation)
+          corporation.max_ownership_percent = self.class::MAJOR_MAX_OWNERSHIP_PERCENT
+          corporation.always_market_price = false
+        end
+
+        def remove_major_par_markers!
+          @corporations.each { |c| c.always_market_price = true if c.type == :major }
         end
 
         def new_consolidation_round
@@ -973,8 +1026,8 @@ module Engine
           corp = owning_corporation(entity)
           return nil unless corp
 
-          terrain = self.class::EF_TERRAIN_AUGMENT[corp.id]
-          terrain && tile.terrain.include?(terrain) ? corp : nil
+          terrains = self.class::EF_TERRAIN_AUGMENT[corp.id]
+          terrains && (tile.terrain & terrains).any? ? corp : nil
         end
 
         def owning_corporation(entity)
