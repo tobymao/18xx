@@ -32,6 +32,7 @@ module Engine
         # Standard game: £5,400 total / num_players, rounded up to nearest £5.
         # 2-player variant uses without-concessions formula (£5,200 / 2 = £2,600).
         STARTING_CASH = { 2 => 2600, 3 => 1800, 4 => 1350, 5 => 1080, 6 => 900, 7 => 775 }.freeze
+        STARTING_CASH_NO_CONCESSIONS = { 2 => 2600, 3 => 1735, 4 => 1300, 5 => 1040, 6 => 870, 7 => 745 }.freeze
         BANK_CASH = 54_000
         CAPITALIZATION = :incremental
         SELL_BUY_ORDER = :sell_buy
@@ -361,10 +362,11 @@ module Engine
         }.freeze
 
         # Cities that sit on a national-zone border hex (hex listed in two zones).
-        # All other cities belong unambiguously to one zone; only these two need an explicit override.
+        # All other cities belong unambiguously to one zone; only these need an explicit override.
         CITY_NATIONAL_ZONE = {
           'Q38' => 'FR',  # Nancy   — FR/PHS border hex
           'O52' => 'PHS', # Dresden — PHS/AH border hex
+          'S76' => 'BRS',
         }.freeze
 
         # Cities excluded from minor home-token placement regardless of zone membership.
@@ -682,6 +684,15 @@ module Engine
           corporations.each do |corp|
             corp.par_via_exchange = companies.find { |c| c.sym == corp.id } if corp.type == :minor
           end
+        end
+
+        def medium_start?
+          @optional_rules.include?(:medium_start)
+        end
+
+        def init_starting_cash(players, bank)
+          cash = medium_start? ? self.class::STARTING_CASH_NO_CONCESSIONS : self.class::STARTING_CASH
+          players.each { |player| bank.spend(cash[players.size], player) }
         end
 
         def init_stock_market
