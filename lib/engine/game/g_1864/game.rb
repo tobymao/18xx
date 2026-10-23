@@ -30,7 +30,7 @@ module Engine
         include Map
         include UnionPacific
 
-        GREEN_CORPORATIONS = G1861::Game::GREEN_CORPORATIONS
+        GREEN_CORPORATIONS = %w[M&P ICR SLS&E CCR CSR O&C].freeze
 
         CERT_LIMIT = { 2 => 31, 3 => 21, 4 => 16, 5 => 13, 6 => 11 }.freeze
         STARTING_CASH = { 2 => 530, 3 => 353, 4 => 265, 5 => 212, 6 => 176 }.freeze
@@ -159,6 +159,10 @@ module Engine
             events = train[:events]&.reject { |event| event['type'] == 'train_trade_allowed' }
             train.except(:discount).merge(events: events)
           end
+        end
+
+        def first_minor
+          corporation_by_id('O&NW')
         end
 
         def ownership_limit

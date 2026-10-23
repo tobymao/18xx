@@ -4,7 +4,7 @@ require 'spec_helper'
 
 describe 'G1864 regionalization' do
   let(:game) { Engine::Game::G1864::Game.new(%w[alice bob carol], seed: 1) }
-  let(:minor) { game.corporation_by_id('N') }
+  let(:minor) { game.corporation_by_id('O&NW') }
 
   it 'moves the share price one space left per loan, not two' do
     minor.loans << game.loans.pop
