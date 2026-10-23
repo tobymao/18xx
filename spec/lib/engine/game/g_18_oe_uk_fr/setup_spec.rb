@@ -73,14 +73,10 @@ describe 'G18OE UK-France scenario (PB 6.1, 6.1.5)' do
     expect(cards['4'].variants.values.map { |v| v[:rusts_on] }.uniq).to eq(['8+8'])
   end
 
-  it 'makes level 8 trains available only after the first level 7 train is bought' do
-    game.depot.upcoming.reject { |train| %w[7+7 8+8].include?(train.name) }.each { |train| game.depot.remove_train(train) }
-    game.phase.next! until game.phase.name == '7'
+  it 'puts the level 8 card under the first level 7 train (PB 6.1)' do
+    level_7s = game.depot.upcoming.select { |t| t.name == '7+7' }
+    expected = Array.new(level_7s.size) { |i| i.zero? ? ['level_8_available'] : [] }
 
-    expect(game.level8_train_available?).to be(false)
-
-    game.depot.remove_train(game.depot.upcoming.find { |train| train.name == '7+7' })
-
-    expect(game.level8_train_available?).to be(true)
+    expect(level_7s.map { |t| t.events.map { |e| e['type'] } }).to eq(expected)
   end
 end

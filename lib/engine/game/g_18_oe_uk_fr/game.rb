@@ -18,8 +18,10 @@ module Engine
         BANK_CASH = 18_000
 
         TRAIN_COUNTS = { '2+2' => 10, '3' => 7, '4' => 3, '5' => 3, '6' => 2, '7+7' => 4, '8+8' => 3 }.freeze
-        TRAINS = G18OE::Game::TRAINS.map { |train| train.merge(num: TRAIN_COUNTS[train[:name]]) }.freeze
-        LEVEL_7_TRAINS_BEFORE_LEVEL_8 = 1
+        TRAINS = G18OE::Game::TRAINS.map do |train|
+          scenario = train.merge(num: TRAIN_COUNTS[train[:name]])
+          train[:name] == '7+7' ? scenario.merge(events: [{ 'type' => 'level_8_available', 'when' => 1 }]) : scenario
+        end.freeze
 
         MAX_FLOATED_REGIONALS = 6
 

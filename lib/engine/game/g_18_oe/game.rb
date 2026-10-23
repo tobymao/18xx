@@ -49,6 +49,7 @@ module Engine
         }.freeze
 
         EVENTS_TEXT = Base::EVENTS_TEXT.merge(
+          'level_8_available' => ['Level 8 Trains Available', 'Level 8 trains may be bought'],
           'consolidation_triggered' => [
             'Consolidation Round',
             'Consolidation round follows at end of current OR set; minors and regionals must merge or be abandoned',
@@ -207,6 +208,7 @@ module Engine
               price: 850,
             }],
             num: 14,
+            events: [{ 'type' => 'level_8_available', 'when' => 4 }],
           },
           # Level 8 — gray double-sided (8+8 / 5D); permanent
           # NOTE: purchase of the FIRST level-8 triggers game end
@@ -390,7 +392,6 @@ module Engine
         CONVERSION_NEW_SHARES = 6
         MAJOR_MAX_OWNERSHIP_PERCENT = 60
         EXTENDED_FINAL_OPERATING_ROUNDS = 3
-        LEVEL_7_TRAINS_BEFORE_LEVEL_8 = 4
 
         # still need green+ OE specific track tiles
         TILES = {
@@ -826,11 +827,12 @@ module Engine
         end
 
         def level8_train_available?
-          return false if phase.name.to_i < 7
-          return true if phase.name.to_i == 8
+          @level_8_available || false
+        end
 
-          next_train = @depot.upcoming.first
-          next_train.index >= self.class::LEVEL_7_TRAINS_BEFORE_LEVEL_8 || next_train.name != '7+7'
+        def event_level_8_available!
+          @level_8_available = true
+          @log << '-- Event: Level 8 trains are now available --'
         end
 
         def event_remainder_cash_added!

@@ -122,16 +122,18 @@ describe 'G18OE buy trains (§11.6)' do
     expect(game.train_obligation_active?).to be(false)
   end
 
-  it 'releases level 8 trains after the fourth level 7 is sold (§11.6)' do
-    game.depot.upcoming.reject { |t| %w[7+7 8+8].include?(t.name) }.each { |t| game.depot.remove_train(t) }
-    game.phase.next! while game.phase.name != '6'
+  it 'puts the level 8 card under the fourth level 7 train (§11.6)' do
+    level_7s = game.depot.upcoming.select { |t| t.name == '7+7' }
+    expected = Array.new(level_7s.size) { |i| i == 3 ? ['level_8_available'] : [] }
+
+    expect(level_7s.map { |t| t.events.map { |e| e['type'] } }).to eq(expected)
+  end
+
+  it 'makes level 8 trains buyable once the event fires' do
     expect(game.level8_train_available?).to be(false)
 
-    game.phase.next!
-    3.times { game.depot.remove_train(card('7+7')) }
-    expect(game.level8_train_available?).to be(false)
+    game.event_level_8_available!
 
-    game.depot.remove_train(card('7+7'))
     expect(game.level8_train_available?).to be(true)
   end
 
