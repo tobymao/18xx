@@ -75,6 +75,15 @@ describe 'G18OE regionals (§8.2, §9.2)' do
     expect(game.corporations.select { |c| c.type == :regional }).to eq([lnwr])
   end
 
+  it 'runs the regional closing once (§8.2)' do
+    game.regional_corps_floated = 17
+    par!('LNWR')
+    fresh = round_step(enter_round!(game, game.stock_round), Engine::Game::G18OE::Step::BuySellParShares)
+
+    expect { fresh.close_unfloated_regionals_at_maximum! }.not_to(change { game.corporations.size })
+    expect(fresh.passed?).to be_falsey
+  end
+
   it 'starts the Major RR Phase only with 18 regionals and all 12 minors floated (§5.1.3)' do
     minors = game.corporations.select { |c| c.type == :minor }
     game.regional_corps_floated = 18

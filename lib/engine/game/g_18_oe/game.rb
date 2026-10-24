@@ -6,7 +6,9 @@ require_relative 'map'
 require_relative 'stock_market'
 require_relative '../base'
 require_relative 'round/consolidation'
+require_relative 'round/concession'
 require_relative 'step/consolidate'
+require_relative 'step/concession'
 
 module Engine
   module Game
@@ -690,9 +692,30 @@ module Engine
           @optional_rules.include?(:medium_start)
         end
 
+        def concessions?
+          !medium_start? && players.size > 2
+        end
+
+        def concession?(company)
+          company.type == :concession
+        end
+
+        def concessions
+          @companies.select { |company| concession?(company) && !company.closed? }.sort_by { |company| company.sym[/\d+/].to_i }
+        end
+
         def init_starting_cash(players, bank)
           cash = medium_start? ? self.class::STARTING_CASH_NO_CONCESSIONS : self.class::STARTING_CASH
           players.each { |player| bank.spend(cash[players.size], player) }
+        end
+
+        def init_companies(players)
+          companies = super
+          concessions? ? companies : companies.reject { |company| concession?(company) }
+        end
+
+        def num_certs(entity)
+          super - entity.companies.count { |company| concession?(company) }
         end
 
         def init_stock_market
@@ -728,7 +751,8 @@ module Engine
         end
 
         def operating_order
-          @minor_regional_order + @corporations.select { |c| %i[major national].include?(c.type) && c.floated? }.sort
+          floated_minors_and_regionals = @minor_regional_order.select(&:floated?)
+          floated_minors_and_regionals + @corporations.select { |c| %i[major national].include?(c.type) && c.floated? }.sort
         end
 
         def hex_within_national_region?(entity, hex)
@@ -886,6 +910,13 @@ module Engine
                 or_set_finished
                 new_stock_round
               end
+            when Engine::Round::Auction
+              init_round_finished
+              reorder_players(silent: concessions.any?)
+              concessions.any? ? new_concession_round : new_stock_round
+            when Round::G18OE::Concession
+              reorder_players_after_concessions!
+              new_stock_round
             when Round::G18OE::Consolidation
               @consolidation_complete = true
               remove_major_par_markers!
@@ -918,6 +949,63 @@ module Engine
 
         def remove_major_par_markers!
           @corporations.each { |c| c.always_market_price = true if c.type == :major }
+        end
+
+        def game_corporations
+          super.map do |corporation|
+            corporation[:type] == 'regional' ? corporation.merge(float_excludes_market: true) : corporation
+          end
+        end
+
+        def lowest_regional_par_price
+          stock_market.par_prices.map(&:price).min
+        end
+
+        def par_regional_in_open_market!(corporation, share_price)
+          par_corporation(corporation, share_price)
+          corporation.ipoed = true
+          share_pool.transfer_shares(corporation.presidents_share.to_bundle, share_pool)
+          @minor_regional_order << corporation
+        end
+
+        def open_market_presidency?(bundle)
+          return false unless bundle&.presidents_share
+          return false unless bundle.percent == bundle.corporation.presidents_percent
+
+          bundle.owner == share_pool && open_market_regional?(bundle.corporation)
+        end
+
+        def float_open_market_regional!(player, corporation)
+          price = 2 * corporation.par_price.price
+          @log << "#{player.name} buys the presidency of #{corporation.name} from the Open Market for " \
+                  "#{format_currency(price)} and floats it"
+          share_pool.transfer_shares(corporation.presidents_share.to_bundle, player,
+                                     spender: player, receiver: corporation, price: price)
+          @regional_corps_floated += 1
+          float_corporation(corporation)
+          place_home_token(corporation)
+          after_par(corporation)
+        end
+
+        def regionals_in_play
+          @regional_corps_floated + @corporations.count { |c| open_market_regional?(c) }
+        end
+
+        def open_market_regional?(corporation)
+          corporation.type == :regional && corporation.presidents_share.owner == share_pool
+        end
+
+        def new_concession_round
+          @log << '-- Concession RR Phase --'
+          Round::G18OE::Concession.new(self, [
+            G18OE::Step::HomeToken,
+            G18OE::Step::Concession,
+          ])
+        end
+
+        def reorder_players_after_concessions!
+          @players.rotate!(@players.index(@round.entities.last) + 1)
+          @log << "#{@players.first.name} has priority deal"
         end
 
         def new_consolidation_round

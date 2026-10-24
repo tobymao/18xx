@@ -45,7 +45,17 @@ module Engine
             super
           end
 
+          def can_buy_shares?(entity, shares)
+            if shares.any? && @game.open_market_regional?(shares.first.corporation)
+              return shares.any? { |share| can_buy_open_market_presidency?(entity, share.to_bundle) }
+            end
+
+            super
+          end
+
           def can_buy?(entity, bundle)
+            return can_buy_open_market_presidency?(entity, bundle) if bundle && @game.open_market_regional?(bundle.corporation)
+
             # During conversion lock-in: only the new major's IPO is available.
             return false if @converted && bundle.corporation != @converted
 
@@ -58,6 +68,27 @@ module Engine
             end
 
             super
+          end
+
+          def can_buy_open_market_presidency?(entity, bundle)
+            return false unless @game.open_market_presidency?(bundle)
+            return false unless entity.player?
+            return false if bought?
+            return false if @round.players_sold[entity][bundle.corporation]
+            return false unless available_cash(entity) >= 2 * bundle.corporation.par_price.price
+
+            can_gain?(entity, bundle)
+          end
+
+          def process_buy_shares(action)
+            return super unless @game.open_market_presidency?(action.bundle)
+
+            corporation = action.bundle.corporation
+            raise GameError, "Cannot buy a share of #{corporation.name}" unless can_buy?(action.entity, action.bundle)
+
+            @round.players_bought[action.entity][corporation] += action.bundle.percent
+            @game.float_open_market_regional!(action.entity, corporation)
+            track_action(action, corporation)
           end
 
           def can_gain?(entity, bundle, exchange: false)
@@ -173,6 +204,7 @@ module Engine
             corporation = action.corporation
             entity = action.entity
             company = find_minor_company(corporation)
+            raise GameError, "#{entity.name} does not own #{company.name}" unless company.owner == entity
 
             @log << "#{entity.name} floats #{company.sym}"
 
@@ -223,14 +255,16 @@ module Engine
 
             @game.minor_regional_order << action.corporation
 
-            return unless @game.regional_corps_floated == @game.class::MAX_FLOATED_REGIONALS
+            close_unfloated_regionals_at_maximum!
+          end
 
-            corps = @game.corporations.dup
-            corps.each do |corp|
-              next if corp.ipoed || corp.type == :minor
+          def close_unfloated_regionals_at_maximum!
+            return unless @game.regionals_in_play >= @game.class::MAX_FLOATED_REGIONALS
 
-              @game.close_corporation(corp)
-            end
+            leftovers = @game.corporations.reject { |corp| corp.ipoed || corp.type == :minor }
+            return if leftovers.empty?
+
+            leftovers.each { |corp| @game.close_corporation(corp) }
 
             pass!
           end

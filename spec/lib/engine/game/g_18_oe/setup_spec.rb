@@ -16,6 +16,27 @@ describe 'G18OE setup' do
     expect(cash).to eq(2 => 2600, 3 => 1800, 4 => 1350, 5 => 1080, 6 => 900, 7 => 775)
   end
 
+  it 'lays the ten concessions in rows 8–11 at £30/£20/£10/£0 (§6.3, PB p.32)' do
+    cons = game.companies.select { |c| c.type == :concession }
+
+    expect(cons.map { |c| [c.sym, c.auction_row, c.value] }).to eq(
+      [['CON1', 8, 30], ['CON2', 9, 20], ['CON3', 9, 20], ['CON4', 10, 10], ['CON5', 10, 10], ['CON6', 10, 10],
+       ['CON7', 11, 0], ['CON8', 11, 0], ['CON9', 11, 0], ['CON10', 11, 0]]
+    )
+  end
+
+  it 'opens with 10 privates, 12 minors and 10 concessions (§5.1.1)' do
+    expect(game.round.active_step.companies.size).to eq(32)
+  end
+
+  it 'drops the concessions under Medium Start (PB 5.2)' do
+    expect(new_game(optional_rules: [:medium_start]).companies.count { |c| c.type == :concession }).to eq(0)
+  end
+
+  it 'drops the concessions with two players (PB 5.4)' do
+    expect(new_game(%w[a b]).companies.count { |c| c.type == :concession }).to eq(0)
+  end
+
   it 'splits £5,200 per player with Medium Start (§3.3, PB 5.2)' do
     cash = (2..7).to_h do |n|
       [n, new_game(Array.new(n) { |i| "p#{i}" }, optional_rules: [:medium_start]).players.first.cash]
@@ -95,7 +116,8 @@ describe 'G18OE setup' do
   end
 
   it 'has the ten privates at their face values and revenues (§14)' do
-    privates = game.companies.reject { |c| game.company_becomes_minor?(c) }.to_h { |c| [c.sym, [c.value, c.revenue]] }
+    privates = game.companies.reject { |c| game.company_becomes_minor?(c) || game.concession?(c) }
+                    .to_h { |c| [c.sym, [c.value, c.revenue]] }
 
     expect(privates).to eq('RSC' => [20, 5], 'PeC' => [20, 5], 'WS' => [40, 10], 'BBBT' => [40, 10],
                            'SHTC' => [60, 15], 'CCTC' => [60, 15], 'WCF' => [60, 15], 'HMLC' => [80, 20],
