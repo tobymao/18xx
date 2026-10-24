@@ -50,7 +50,7 @@ describe 'G18OE regionals (§8.2, §9.2)' do
     lnwr = par!('LNWR')
 
     expect(game.minor_regional_order.last).to eq(lnwr)
-    expect(game.regional_corps_floated).to eq(1)
+    expect(game.regionals_in_play).to eq(1)
   end
 
   it 'keeps the 25% shares off sale before the Major RR Phase' do
@@ -69,14 +69,15 @@ describe 'G18OE regionals (§8.2, §9.2)' do
   end
 
   it 'removes every unfloated regional when the 18th floats' do
-    game.regional_corps_floated = 17
-    lnwr = par!('LNWR')
+    float_regionals!(game, 17, except: ['LNWR'])
+    par!('LNWR')
 
-    expect(game.corporations.select { |c| c.type == :regional }).to eq([lnwr])
+    expect(game.corporations.count { |c| c.type == :regional }).to eq(18)
+    expect(game.corporations.select { |c| c.type == :regional && !c.ipoed }).to be_empty
   end
 
   it 'runs the regional closing once (§8.2)' do
-    game.regional_corps_floated = 17
+    float_regionals!(game, 17, except: ['LNWR'])
     par!('LNWR')
     fresh = round_step(enter_round!(game, game.stock_round), Engine::Game::G18OE::Step::BuySellParShares)
 
@@ -86,15 +87,16 @@ describe 'G18OE regionals (§8.2, §9.2)' do
 
   it 'starts the Major RR Phase only with 18 regionals and all 12 minors floated (§5.1.3)' do
     minors = game.corporations.select { |c| c.type == :minor }
-    game.regional_corps_floated = 18
+    float_regionals!(game, 17)
+    game.minor_floated_regions = minors.to_h { |m| [m.id, 'RU'] }
+    expect(game.major_phase?).to be(false)
+
+    game.corporations.select { |c| c.type == :regional && !c.ipoed }.each { |c| game.close_corporation(c) }
     game.minor_floated_regions = minors.first(11).to_h { |m| [m.id, 'RU'] }
     expect(game.major_phase?).to be(false)
 
     game.minor_floated_regions = minors.to_h { |m| [m.id, 'RU'] }
     expect(game.major_phase?).to be(true)
-
-    game.regional_corps_floated = 17
-    expect(game.major_phase?).to be(false)
   end
 
   it 'never lets a player sell a regional share (§10.1)' do

@@ -17,7 +17,7 @@ module Engine
         include_meta(G18OE::Meta)
         include G18OE::Entities
         include G18OE::Map
-        attr_accessor :minor_regional_order, :minor_available_regions, :minor_floated_regions, :regional_corps_floated,
+        attr_accessor :minor_regional_order, :minor_available_regions, :minor_floated_regions,
                       :consolidation_triggered, :consolidation_complete
         attr_reader :concessions
 
@@ -680,7 +680,6 @@ module Engine
           @minor_available_regions = self.class::MINOR_TRACK_RIGHTS_CHITS.transform_values(&:itself)
           @minor_asterisked_selected = 0
           @minor_floated_regions = {}
-          @regional_corps_floated = 0
           @concessions = companies.select { |company| concession?(company) }
           @fulfilled_train_obligation = Set.new
           @first_or_complete = false
@@ -700,10 +699,6 @@ module Engine
 
         def concession?(company)
           company.type == :concession
-        end
-
-        def open_concessions
-          @concessions.reject(&:closed?)
         end
 
         def init_starting_cash(players, bank)
@@ -734,7 +729,7 @@ module Engine
         # "Major Railroad Phase" entry: conversions and secondary-share purchases
         # become available from this point on.
         def major_phase?
-          return false unless @regional_corps_floated >= self.class::MAX_FLOATED_REGIONALS
+          return false if @corporations.any? { |corporation| corporation.type == :regional && !corporation.floated? }
 
           total_minors = corporations.count { |c| c.type == :minor }
           @minor_floated_regions.size >= total_minors
@@ -914,8 +909,8 @@ module Engine
               end
             when Engine::Round::Auction
               init_round_finished
-              reorder_players(silent: open_concessions.any?)
-              open_concessions.any? ? new_concession_round : new_stock_round
+              reorder_players(silent: concessions.any?)
+              concessions.any? ? new_concession_round : new_stock_round
             when Round::G18OE::Concession
               reorder_players_after_concessions!
               new_stock_round
@@ -954,7 +949,7 @@ module Engine
         end
 
         def regionals_in_play
-          @regional_corps_floated + @corporations.count { |corporation| parred_regional?(corporation) }
+          @corporations.count { |corporation| corporation.type == :regional && corporation.ipoed }
         end
 
         def parred_regional?(corporation)
@@ -965,8 +960,7 @@ module Engine
           super
           return unless corporation.type == :regional
 
-          @regional_corps_floated += 1
-          charge_track_rights!(corporation)
+          pay_home_token_cost!(corporation)
         end
 
         def new_concession_round
@@ -1019,7 +1013,7 @@ module Engine
           'Float'
         end
 
-        def charge_track_rights!(corporation)
+        def pay_home_token_cost!(corporation)
           cost = TRACK_RIGHTS_COST[CORPORATIONS_TRACK_RIGHTS[corporation.id]]
           corporation.spend(cost, @bank) if cost&.positive?
         end

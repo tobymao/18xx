@@ -15,15 +15,15 @@ module Engine
         end
 
         def select_entities
-          @game.open_concessions.map(&:owner)
+          @game.concessions.map(&:owner)
         end
 
         def finished?
-          @game.finished || (@game.open_concessions.empty? && @pending_tokens.empty?)
+          @game.finished || (@game.concessions.all?(&:closed?) && @pending_tokens.empty?)
         end
 
         def current_concession
-          @game.open_concessions.first
+          @game.concessions[@entity_index]
         end
 
         protected

@@ -16,7 +16,7 @@ describe 'G18OE Concession RR Phase (§8, §8.1)' do
       fund!(game, holder)
       give_company!(holder, game.company_by_id("CON#{index + 1}"))
     end
-    game.open_concessions.reject(&:owner).each(&:close!)
+    game.instance_variable_set(:@concessions, game.concessions.first(holders.size))
     enter_round!(game, game.new_concession_round)
   end
 
@@ -41,14 +41,13 @@ describe 'G18OE Concession RR Phase (§8, §8.1)' do
   end
 
   it 'describes which stock action each concession gives the right to take (§8)' do
-    expect(game.company_by_id('CON4').desc).to eq('Right to take the 4th stock action in the first stock round.')
+    expect(game.company_by_id('CON4').desc).to eq('Right to take the fourth stock action in the first stock round.')
   end
 
-  it 'keeps closed concessions in the full list but not in the open ones (§8.1)' do
+  it 'keeps an executed concession in the list that sets the stock round order (§8.1)' do
     game.company_by_id('CON1').close!
 
     expect(game.concessions.map(&:sym)).to eq((1..10).map { |n| "CON#{n}" })
-    expect(game.open_concessions.map(&:sym)).to eq((2..10).map { |n| "CON#{n}" })
   end
 
   it 'starts the Concession RR Phase once the opening packet is sold (§8)' do
@@ -141,7 +140,7 @@ describe 'G18OE Concession RR Phase (§8, §8.1)' do
     lnwr = game.corporation_by_id('LNWR')
     expect(lnwr).to be_floated
     expect(a.percent_of(lnwr)).to eq(50)
-    expect(game.regional_corps_floated).to eq(1)
+    expect(game.regionals_in_play).to eq(1)
     expect(game.minor_regional_order.last).to eq(lnwr)
   end
 
@@ -164,7 +163,7 @@ describe 'G18OE Concession RR Phase (§8, §8.1)' do
 
     expect(round.active_step).to be_a(Engine::Game::G18OE::Step::HomeToken)
     expect(round.current_entity).to eq(minor)
-    expect(round.current_concession).to eq(game.company_by_id('CON2'))
+    expect(round.current_concession).to eq(game.company_by_id('CON1'))
 
     place_home!(minor)
 
@@ -193,7 +192,7 @@ describe 'G18OE Concession RR Phase (§8, §8.1)' do
 
     expect(game.company_by_id('CON1')).to be_closed
     expect(a.companies.map(&:sym)).not_to include('CON1')
-    expect(game.open_concessions.map(&:sym)).to eq(['CON2'])
+    expect(game.company_by_id('CON2')).not_to be_closed
   end
 
   it 'logs the execution of the concession (§8.1)' do
@@ -301,7 +300,7 @@ describe 'G18OE Concession RR Phase (§8, §8.1)' do
       a.spend(a.cash - 100, game.bank)
       par_only!(a)
 
-      expect(game.regional_corps_floated).to eq(0)
+      expect(game.corporation_by_id('LNWR')).not_to be_floated
       expect(game.regionals_in_play).to eq(1)
     end
 
@@ -392,7 +391,7 @@ describe 'G18OE Concession RR Phase (§8, §8.1)' do
 
       it 'counts the bought regional as floated (§8.2)' do
         buy!
-        expect([game.regional_corps_floated, game.regionals_in_play]).to eq([1, 1])
+        expect([lnwr.floated?, game.regionals_in_play]).to eq([true, 1])
       end
 
       it 'refuses a partial bundle of the president share (§8.2)' do
@@ -406,8 +405,8 @@ describe 'G18OE Concession RR Phase (§8, §8.1)' do
       end
 
       it 'starts the Major RR Phase when the bought regional is the 18th float (§8.2)' do
+        float_regionals!(game, game.class::MAX_FLOATED_REGIONALS - 1)
         game.corporations.select { |c| c.type == :regional && !c.ipoed }.each { |c| game.close_corporation(c) }
-        game.regional_corps_floated = game.class::MAX_FLOATED_REGIONALS - 1
         game.minor_floated_regions = game.corporations.select { |c| c.type == :minor }.to_h { |m| [m.id, 'RU'] }
         buy!
         expect(game.major_phase?).to be(true)
@@ -460,19 +459,19 @@ describe 'G18OE Concession RR Phase (§8, §8.1)' do
 
     it 'closes the unparred regionals when a par-only reaches the regional maximum (§8.2)' do
       concession_round!([a, b])
-      game.regional_corps_floated = game.class::MAX_FLOATED_REGIONALS - 1
+      float_regionals!(game, game.class::MAX_FLOATED_REGIONALS - 1, except: ['LNWR'])
       a.spend(a.cash - 100, game.bank)
       lnwr = par_only!(a)
 
       expect(lnwr).not_to be_closed
-      expect(game.regional_corps_floated).to eq(game.class::MAX_FLOATED_REGIONALS - 1)
+      expect(lnwr).not_to be_floated
       expect(game.minor_regional_order).to include(lnwr)
       expect(game.corporations.select { |c| c.type == :regional && !c.ipoed }).to all(be_closed)
     end
 
     it 'keeps the Regional/Minor phase while a parred regional is unfloated (§8.2)' do
       concession_round!([a, b])
-      game.regional_corps_floated = game.class::MAX_FLOATED_REGIONALS - 1
+      float_regionals!(game, game.class::MAX_FLOATED_REGIONALS - 1, except: ['LNWR'])
       game.minor_floated_regions = game.corporations.select { |c| c.type == :minor }.to_h { |m| [m.id, 'RU'] }
       a.spend(a.cash - 100, game.bank)
       par_only!(a)

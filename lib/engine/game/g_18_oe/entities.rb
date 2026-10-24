@@ -349,7 +349,7 @@ module Engine
             value: 30,
             revenue: 0,
             type: :concession,
-            desc: 'Right to take the 1st stock action in the first stock round.',
+            desc: 'Right to take the first stock action in the first stock round.',
             auction_row: 8,
           },
           {
@@ -358,7 +358,7 @@ module Engine
             value: 20,
             revenue: 0,
             type: :concession,
-            desc: 'Right to take the 2nd stock action in the first stock round.',
+            desc: 'Right to take the second stock action in the first stock round.',
             auction_row: 9,
           },
           {
@@ -367,7 +367,7 @@ module Engine
             value: 20,
             revenue: 0,
             type: :concession,
-            desc: 'Right to take the 3rd stock action in the first stock round.',
+            desc: 'Right to take the third stock action in the first stock round.',
             auction_row: 9,
           },
           {
@@ -376,7 +376,7 @@ module Engine
             value: 10,
             revenue: 0,
             type: :concession,
-            desc: 'Right to take the 4th stock action in the first stock round.',
+            desc: 'Right to take the fourth stock action in the first stock round.',
             auction_row: 10,
           },
           {
@@ -385,7 +385,7 @@ module Engine
             value: 10,
             revenue: 0,
             type: :concession,
-            desc: 'Right to take the 5th stock action in the first stock round.',
+            desc: 'Right to take the fifth stock action in the first stock round.',
             auction_row: 10,
           },
           {
@@ -394,7 +394,7 @@ module Engine
             value: 10,
             revenue: 0,
             type: :concession,
-            desc: 'Right to take the 6th stock action in the first stock round.',
+            desc: 'Right to take the sixth stock action in the first stock round.',
             auction_row: 10,
           },
           {
@@ -403,7 +403,7 @@ module Engine
             value: 0,
             revenue: 0,
             type: :concession,
-            desc: 'Right to take the 7th stock action in the first stock round.',
+            desc: 'Right to take the seventh stock action in the first stock round.',
             auction_row: 11,
           },
           {
@@ -412,7 +412,7 @@ module Engine
             value: 0,
             revenue: 0,
             type: :concession,
-            desc: 'Right to take the 8th stock action in the first stock round.',
+            desc: 'Right to take the eighth stock action in the first stock round.',
             auction_row: 11,
           },
           {
@@ -421,7 +421,7 @@ module Engine
             value: 0,
             revenue: 0,
             type: :concession,
-            desc: 'Right to take the 9th stock action in the first stock round.',
+            desc: 'Right to take the ninth stock action in the first stock round.',
             auction_row: 11,
           },
           {
@@ -430,7 +430,7 @@ module Engine
             value: 0,
             revenue: 0,
             type: :concession,
-            desc: 'Right to take the 10th stock action in the first stock round.',
+            desc: 'Right to take the tenth stock action in the first stock round.',
             auction_row: 11,
           },
         ].freeze
