@@ -10,6 +10,8 @@ module Engine
           end
 
           def can_place_token?(entity)
+            return true if @game.abilities(entity, :token)
+
             # Cheaper to do the graph first, then check affordability
             current_entity == entity &&
               !(token = entity.next_token).nil? &&

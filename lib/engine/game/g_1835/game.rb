@@ -212,9 +212,9 @@ module Engine
             G1835::Step::MinorExchange,
             Engine::Step::DiscardTrain,
             Engine::Step::SpecialTrack,
-            G1835::Step::SpecialToken,
             Engine::Step::Track,
             Engine::Step::HomeToken,
+            Engine::Step::SpecialToken,
             G1835::Step::Token,
             Engine::Step::Route,
             G1835::Step::Dividend,
@@ -309,6 +309,19 @@ module Engine
         def upgrades_to?(from, to, special = nil, selected_company: nil)
           # green double cities cannot be upgraded any further
           return false if %w[14 15].include?(from.name)
+
+          super
+        end
+
+        def entity_can_use_company?(entity, _company)
+          return false if entity.minor?
+
+          super
+        end
+
+        # Modified to select operator if company is player owned
+        def token_owner(entity)
+          return @round.current_operator if entity&.company? && entity.owner&.player? && @round.operating?
 
           super
         end
