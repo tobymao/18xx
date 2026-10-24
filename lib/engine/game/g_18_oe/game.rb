@@ -21,6 +21,9 @@ module Engine
                       :consolidation_triggered, :consolidation_complete
         attr_reader :concessions
 
+        PATRONAGE_DRAWS = [{ group: :pink, count: 3 }, { group: :yellow, count: 3 },
+                           { group: :white, count: 3 }, { group: :green, count: 8 }].freeze
+
         MARKET = [
           ['', '110', '120C', '135', '150', '165', '180', '200', '225', '250', '280', '310', '350', '390', '440', '490', '550'],
           %w[90p 100 110C 120 135 150 165 180 200 225 250 280 310 350 390 440 490],
@@ -687,6 +690,46 @@ module Engine
           corporations.each do |corp|
             corp.par_via_exchange = companies.find { |c| c.sym == corp.id } if corp.type == :minor
           end
+
+          setup_patronage_tiles!
+        end
+
+        def setup_patronage_tiles!
+          drawn = self.class::PATRONAGE_DRAWS.flat_map do |draw|
+            candidates = self.class::PATRONAGE_TILES.select do |_hex_id, data|
+              data[:group] == draw[:group] && (draw[:zone].nil? || data[:zone] == draw[:zone])
+            end
+            candidates.keys.sort_by { rand }.take(draw[:count])
+          end
+          drawn.each { |hex_id| place_patronage_tile!(hex_id) }
+
+          entries = drawn.map do |id|
+            "#{hex_by_id(id).location_name} (#{id}) #{self.class::PATRONAGE_TILES[id][:payouts].values.join('/')}"
+          end
+          @log << "Patronage tiles: #{entries.join(', ')}"
+        end
+
+        def place_patronage_tile!(hex_id)
+          hex_by_id(hex_id).tile.patronage = self.class::PATRONAGE_TILES[hex_id][:payouts]
+        end
+
+        def patronage_color
+          @phase.tiles.last
+        end
+
+        def remove_patronage!(hex)
+          payouts = hex.tile.patronage
+          hex.tile.patronage = nil
+          payouts
+        end
+
+        def fulfill_patronage!(entity, hex)
+          payouts = remove_patronage!(hex)
+          return unless payouts
+
+          amount = payouts[patronage_color]
+          @bank.spend(amount, entity)
+          @log << "#{entity.name} fulfills the #{hex.location_name} patronage tile and receives #{format_currency(amount)}"
         end
 
         def medium_start?

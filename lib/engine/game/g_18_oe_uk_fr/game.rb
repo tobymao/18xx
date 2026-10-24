@@ -25,6 +25,8 @@ module Engine
 
         MAX_FLOATED_REGIONALS = 6
 
+        PATRONAGE_DRAWS = [{ group: :yellow, zone: 'F', count: 2 }, { group: :pink, zone: 'U', count: 2 }].freeze
+
         def setup
           super
           @minor_available_regions = { 'UK' => 2, 'FR' => 2 }
