@@ -966,7 +966,29 @@ module Engine
           corporation.ipoed = true
           share_pool.transfer_shares(corporation.presidents_share.to_bundle, share_pool)
           @minor_regional_order << corporation
+        end
+
+        def open_market_presidency?(bundle)
+          return false unless bundle&.presidents_share
+          return false unless bundle.percent == bundle.corporation.presidents_percent
+
+          bundle.owner == share_pool && open_market_regional?(bundle.corporation)
+        end
+
+        def float_open_market_regional!(player, corporation)
+          price = 2 * corporation.par_price.price
+          @log << "#{player.name} buys the presidency of #{corporation.name} from the Open Market for " \
+                  "#{format_currency(price)} and floats it"
+          share_pool.transfer_shares(corporation.presidents_share.to_bundle, player,
+                                     spender: player, receiver: corporation, price: price)
           @regional_corps_floated += 1
+          float_corporation(corporation)
+          place_home_token(corporation)
+          after_par(corporation)
+        end
+
+        def regionals_in_play
+          @regional_corps_floated + @corporations.count { |c| open_market_regional?(c) }
         end
 
         def open_market_regional?(corporation)
