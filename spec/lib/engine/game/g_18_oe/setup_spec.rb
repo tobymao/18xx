@@ -16,8 +16,49 @@ describe 'G18OE setup' do
     expect(cash).to eq(2 => 2600, 3 => 1800, 4 => 1350, 5 => 1080, 6 => 900, 7 => 775)
   end
 
+  it 'splits £5,200 per player with Medium Start (§3.3, PB 5.2)' do
+    cash = (2..7).to_h do |n|
+      [n, new_game(Array.new(n) { |i| "p#{i}" }, optional_rules: [:medium_start]).players.first.cash]
+    end
+
+    expect(cash).to eq(2 => 2600, 3 => 1735, 4 => 1300, 5 => 1040, 6 => 870, 7 => 745)
+  end
+
+  it 'offers Medium Start only to three or more players (PB 5.4)' do
+    rule = Engine::Game::G18OE::Meta::OPTIONAL_RULES.find { |r| r[:sym] == :medium_start }
+
+    expect(rule[:players]).to eq([3, 4, 5, 6, 7])
+  end
+
+  it 'offers Medium Start in the base game but not UK-France' do
+    expect(Engine::Game::G18OE::Meta::OPTIONAL_RULES.map { |r| r[:sym] }).to eq([:medium_start])
+    expect(Engine::Game::G18OEUKFR::Meta::OPTIONAL_RULES).to eq([])
+  end
+
   it "holds £54,000 between the bank and the players' starting capital (§3.1, §3.3)" do
     expect(game.bank.cash + game.players.sum(&:cash)).to eq(54_000)
+  end
+
+  it 'uses the Info Board certificate limits (§4.1)' do
+    limits = (2..7).to_h { |n| [n, new_game(Array.new(n) { |i| "p#{i}" }).cert_limit] }
+
+    expect(limits).to eq(2 => 99, 3 => 48, 4 => 36, 5 => 29, 6 => 24, 7 => 20)
+  end
+
+  it "reserves each regional's home city at setup (§3.1, PB 1.1)" do
+    regionals = game.corporations.select { |c| c.type == :regional }
+
+    regionals.each do |corp|
+      expect(game.hex_by_id(corp.coordinates).tile.cities.any? { |c| c.reserved_by?(corp) }).to be(true), corp.id
+    end
+  end
+
+  it "drops a closed regional's home reservation (PB 1.1)" do
+    lnwr = game.corporation_by_id('LNWR')
+
+    game.close_corporation(lnwr)
+
+    expect(game.hex_by_id('J27').tile.cities.any? { |c| c.reserved_by?(lnwr) }).to be(false)
   end
 
   it 'stocks the Locomotive Works (§3.1)' do
