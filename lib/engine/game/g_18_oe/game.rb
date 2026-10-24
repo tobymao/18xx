@@ -6,7 +6,9 @@ require_relative 'map'
 require_relative 'stock_market'
 require_relative '../base'
 require_relative 'round/consolidation'
+require_relative 'round/concession'
 require_relative 'step/consolidate'
+require_relative 'step/concession'
 
 module Engine
   module Game
@@ -15,8 +17,9 @@ module Engine
         include_meta(G18OE::Meta)
         include G18OE::Entities
         include G18OE::Map
-        attr_accessor :minor_regional_order, :minor_available_regions, :minor_floated_regions, :regional_corps_floated,
+        attr_accessor :minor_regional_order, :minor_available_regions, :minor_floated_regions,
                       :consolidation_triggered, :consolidation_complete
+        attr_reader :concessions
 
         MARKET = [
           ['', '110', '120C', '135', '150', '165', '180', '200', '225', '250', '280', '310', '350', '390', '440', '490', '550'],
@@ -677,7 +680,7 @@ module Engine
           @minor_available_regions = self.class::MINOR_TRACK_RIGHTS_CHITS.transform_values(&:itself)
           @minor_asterisked_selected = 0
           @minor_floated_regions = {}
-          @regional_corps_floated = 0
+          @concessions = companies.select { |company| concession?(company) }
           @fulfilled_train_obligation = Set.new
           @first_or_complete = false
 
@@ -690,9 +693,26 @@ module Engine
           @optional_rules.include?(:medium_start)
         end
 
+        def concessions?
+          !medium_start? && players.size > 2
+        end
+
+        def concession?(company)
+          company.type == :concession
+        end
+
         def init_starting_cash(players, bank)
           cash = medium_start? ? self.class::STARTING_CASH_NO_CONCESSIONS : self.class::STARTING_CASH
           players.each { |player| bank.spend(cash[players.size], player) }
+        end
+
+        def init_companies(players)
+          companies = super
+          concessions? ? companies : companies.reject { |company| concession?(company) }
+        end
+
+        def num_certs(entity)
+          super - entity.companies.count { |company| concession?(company) }
         end
 
         def init_stock_market
@@ -709,7 +729,7 @@ module Engine
         # "Major Railroad Phase" entry: conversions and secondary-share purchases
         # become available from this point on.
         def major_phase?
-          return false unless @regional_corps_floated >= self.class::MAX_FLOATED_REGIONALS
+          return false if @corporations.any? { |corporation| corporation.type == :regional && !corporation.floated? }
 
           total_minors = corporations.count { |c| c.type == :minor }
           @minor_floated_regions.size >= total_minors
@@ -728,7 +748,8 @@ module Engine
         end
 
         def operating_order
-          @minor_regional_order + @corporations.select { |c| %i[major national].include?(c.type) && c.floated? }.sort
+          floated_minors_and_regionals = @minor_regional_order.select(&:floated?)
+          floated_minors_and_regionals + @corporations.select { |c| %i[major national].include?(c.type) && c.floated? }.sort
         end
 
         def hex_within_national_region?(entity, hex)
@@ -886,6 +907,13 @@ module Engine
                 or_set_finished
                 new_stock_round
               end
+            when Engine::Round::Auction
+              init_round_finished
+              reorder_players(silent: concessions.any?)
+              concessions.any? ? new_concession_round : new_stock_round
+            when Round::G18OE::Concession
+              reorder_players_after_concessions!
+              new_stock_round
             when Round::G18OE::Consolidation
               @consolidation_complete = true
               remove_major_par_markers!
@@ -918,6 +946,34 @@ module Engine
 
         def remove_major_par_markers!
           @corporations.each { |c| c.always_market_price = true if c.type == :major }
+        end
+
+        def regionals_in_play
+          @corporations.count { |corporation| corporation.type == :regional && corporation.ipoed }
+        end
+
+        def parred_regional?(corporation)
+          corporation.type == :regional && corporation.ipoed && !corporation.floated?
+        end
+
+        def float_corporation(corporation)
+          super
+          return unless corporation.type == :regional
+
+          pay_home_token_cost!(corporation)
+        end
+
+        def new_concession_round
+          @log << '-- Concession RR Phase --'
+          Round::G18OE::Concession.new(self, [
+            G18OE::Step::HomeToken,
+            G18OE::Step::Concession,
+          ])
+        end
+
+        def reorder_players_after_concessions!
+          @players.rotate!(@players.index(@round.entities.last) + 1)
+          @log << "#{@players.first.name} has priority deal"
         end
 
         def new_consolidation_round
@@ -957,12 +1013,8 @@ module Engine
           'Float'
         end
 
-        def after_par(corporation)
-          super
-          # Spend the track rights zone fee when a regional pars.
-          # Zones not yet in TRACK_RIGHTS_COST (or not in NATIONAL_REGION_HEXES) are skipped safely.
-          region = CORPORATIONS_TRACK_RIGHTS[corporation.id]
-          cost = TRACK_RIGHTS_COST[region]
+        def pay_home_token_cost!(corporation)
+          cost = TRACK_RIGHTS_COST[CORPORATIONS_TRACK_RIGHTS[corporation.id]]
           corporation.spend(cost, @bank) if cost&.positive?
         end
 

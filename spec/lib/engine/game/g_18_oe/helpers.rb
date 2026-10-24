@@ -37,6 +37,14 @@ module G18OESpecHelpers
     regional
   end
 
+  def float_regionals!(game, count, except: [])
+    player = game.players.first
+    game.corporations.select { |corporation| corporation.type == :regional && !corporation.ipoed }
+      .reject { |corporation| except.include?(corporation.id) }
+      .first(count)
+      .each { |corporation| start_regional!(game, corporation.id, player) }
+  end
+
   def start_major!(game, id, player)
     regional = start_regional!(game, id, player)
     Engine::Game::G18OE::Step::BuySellParShares.new(game, []).float_major(regional)
