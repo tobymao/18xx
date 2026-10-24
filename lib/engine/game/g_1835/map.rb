@@ -100,6 +100,15 @@ module Engine
           '221' => 1,
         }.freeze
 
+        # yellow double dits upgrade to green tiles with one dit
+        EXTRA_UPGRADES = {
+          '1' => %w[88],
+          '2' => %w[87],
+          '55' => %w[88],
+          '56' => %w[87],
+          '69' => %w[204],
+        }.freeze
+
         LOCATION_NAMES = {
           'A11' => 'Kiel',
           'C11' => 'Hamburg',
