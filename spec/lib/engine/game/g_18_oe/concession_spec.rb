@@ -16,7 +16,7 @@ describe 'G18OE Concession RR Phase (§8, §8.1)' do
       fund!(game, holder)
       give_company!(holder, game.company_by_id("CON#{index + 1}"))
     end
-    game.concessions.reject(&:owner).each(&:close!)
+    game.open_concessions.reject(&:owner).each(&:close!)
     enter_round!(game, game.new_concession_round)
   end
 
@@ -38,6 +38,17 @@ describe 'G18OE Concession RR Phase (§8, §8.1)' do
   def place_home!(minor)
     city = game.home_token_locations(minor).first.tile.cities.first
     act!(game, Engine::Action::PlaceToken.new(minor, city: city, slot: 0))
+  end
+
+  it 'describes which stock action each concession gives the right to take (§8)' do
+    expect(game.company_by_id('CON4').desc).to eq('Right to take the 4th stock action in the first stock round.')
+  end
+
+  it 'keeps closed concessions in the full list but not in the open ones (§8.1)' do
+    game.company_by_id('CON1').close!
+
+    expect(game.concessions.map(&:sym)).to eq((1..10).map { |n| "CON#{n}" })
+    expect(game.open_concessions.map(&:sym)).to eq((2..10).map { |n| "CON#{n}" })
   end
 
   it 'starts the Concession RR Phase once the opening packet is sold (§8)' do
@@ -96,13 +107,13 @@ describe 'G18OE Concession RR Phase (§8, §8.1)' do
     expect(help).to include('Available track rights zones:')
   end
 
-  it 'tells a holder who can float neither a minor nor a regional to par into the Open Market (§8.1)' do
+  it 'tells a holder who can float neither a minor nor a regional to par only (§8.1)' do
     round = concession_round!([a, b])
     a.spend(a.cash - 100, game.bank)
 
     expect(round.active_step.help).to eq(
       'Executing the 1st Concession: you cannot float a minor or afford a regional, ' \
-      'so par a regional into the Open Market'
+      'so par a regional for any player to float later'
     )
   end
 
@@ -182,7 +193,7 @@ describe 'G18OE Concession RR Phase (§8, §8.1)' do
 
     expect(game.company_by_id('CON1')).to be_closed
     expect(a.companies.map(&:sym)).not_to include('CON1')
-    expect(game.concessions.map(&:sym)).to eq(['CON2'])
+    expect(game.open_concessions.map(&:sym)).to eq(['CON2'])
   end
 
   it 'logs the execution of the concession (§8.1)' do
@@ -220,7 +231,7 @@ describe 'G18OE Concession RR Phase (§8, §8.1)' do
   end
 
   describe 'mandatory regional float' do
-    def open_market_par!(player, par: 80)
+    def par_only!(player, par: 80)
       lnwr = game.corporation_by_id('LNWR')
       act!(game, Engine::Action::Par.new(player, corporation: lnwr, share_price: cell(game, par, :par)))
       lnwr
@@ -230,36 +241,37 @@ describe 'G18OE Concession RR Phase (§8, §8.1)' do
       round = concession_round!([a])
       a.spend(a.cash - 120, game.bank)
 
-      expect(round.active_step.must_par_in_open_market?(a)).to be(false)
+      expect(round.active_step.must_par_only?(a)).to be(false)
       expect(round.active_step.get_par_prices(a, game.corporation_by_id('LNWR')).map(&:price)).to eq([60])
     end
 
-    it 'requires the open-market par when no regional is affordable and no minor is held (§8.1)' do
+    it 'requires a par-only when no regional is affordable and no minor is held (§8.1)' do
       round = concession_round!([a])
       a.spend(a.cash - 100, game.bank)
 
-      expect(round.active_step.must_par_in_open_market?(a)).to be(true)
+      expect(round.active_step.must_par_only?(a)).to be(true)
       prices = round.active_step.get_par_prices(a, game.corporation_by_id('LNWR')).map(&:price)
       expect(prices).to eq(game.stock_market.par_prices.map(&:price))
       expect(round.active_step.par_price_only(game.corporation_by_id('LNWR'), cell(game, 80, :par))).to be(true)
     end
 
-    it 'does not require the open-market par of a holder who owns a minor (§8.1)' do
+    it 'does not require a par-only of a holder who owns a minor (§8.1)' do
       round = concession_round!([a])
       give_company!(a, game.company_by_id('A'))
       a.spend(a.cash - 100, game.bank)
 
-      expect(round.active_step.must_par_in_open_market?(a)).to be(false)
+      expect(round.active_step.must_par_only?(a)).to be(false)
       expect(round.active_step.get_par_prices(a, game.corporation_by_id('LNWR'))).to eq([])
     end
 
-    it 'places the president share of the open-market regional in the Open Market (§8.1)' do
+    it "leaves the parred regional's president share in its treasury and moves no cash (§8.1)" do
       concession_round!([a])
       a.spend(a.cash - 100, game.bank)
-      lnwr = open_market_par!(a)
+      lnwr = par_only!(a)
 
       expect(lnwr.share_price.price).to eq(80)
-      expect(game.share_pool.shares_of(lnwr).map(&:percent)).to eq([50])
+      expect(lnwr.presidents_share.owner).to eq(lnwr)
+      expect(game.share_pool.shares_of(lnwr)).to eq([])
       expect(lnwr.owner).to be_nil
       expect(lnwr).not_to be_floated
       expect(a.cash).to eq(100)
@@ -267,45 +279,45 @@ describe 'G18OE Concession RR Phase (§8, §8.1)' do
       expect(lnwr.cash).to eq(0)
     end
 
-    it 'logs the open-market par (§8.1)' do
+    it 'logs the par (§8.1)' do
       concession_round!([a])
       a.spend(a.cash - 100, game.bank)
-      open_market_par!(a)
+      par_only!(a)
 
-      expect(game.log.map(&:message)).to include("#{a.name} pars LNWR at #{game.format_currency(80)} into the Open Market")
+      expect(game.log.map(&:message)).to include("#{a.name} pars LNWR at #{game.format_currency(80)}")
     end
 
-    it 'gives an open-market regional an operating-order slot without running it (§8.1)' do
+    it 'gives a parred regional an operating-order slot without running it (§8.1)' do
       concession_round!([a])
       a.spend(a.cash - 100, game.bank)
-      lnwr = open_market_par!(a)
+      lnwr = par_only!(a)
 
       expect(game.minor_regional_order.last).to eq(lnwr)
       expect(game.operating_order).not_to include(lnwr)
     end
 
-    it 'counts an open-market regional toward the regionals in play (§8.2)' do
+    it 'counts a parred regional toward the regionals in play (§8.2)' do
       concession_round!([a])
       a.spend(a.cash - 100, game.bank)
-      open_market_par!(a)
+      par_only!(a)
 
       expect(game.regional_corps_floated).to eq(0)
       expect(game.regionals_in_play).to eq(1)
     end
 
-    it 'closes the concession of an open-market par (§8.1)' do
+    it 'closes the concession of a par-only (§8.1)' do
       round = concession_round!([a, b])
       a.spend(a.cash - 100, game.bank)
-      open_market_par!(a)
+      par_only!(a)
 
       expect(game.company_by_id('CON1')).to be_closed
       expect(round.current_entity).to eq(b)
     end
 
-    it 'does not offer a fresh par of an open-market regional in the stock round (§8.2)' do
+    it 'does not offer a second par of a parred regional (§8.2)' do
       concession_round!([a])
       a.spend(a.cash - 100, game.bank)
-      lnwr = open_market_par!(a)
+      lnwr = par_only!(a)
       stock_round!(game)
 
       expect(game.can_par?(lnwr, a)).to be(false)
@@ -331,18 +343,18 @@ describe 'G18OE Concession RR Phase (§8, §8.1)' do
       expect(game.operating_order).to include(lnwr)
     end
 
-    describe 'buying the presidency from the Open Market (§8.2)' do
+    describe 'buying the president share of a parred regional (§8.2)' do
       let!(:lnwr) do
         concession_round!([a])
         a.spend(a.cash - 100, game.bank)
-        open_market_par!(a)
+        par_only!(a)
       end
       let(:round) do
         fund!(game, b)
         stock_round!(game)
       end
       let(:step) { round_step(round, Engine::Game::G18OE::Step::BuySellParShares) }
-      let(:presidency) { game.share_pool.shares_of(lnwr).first }
+      let(:presidency) { lnwr.presidents_share }
 
       def buy!
         act!(round, Engine::Action::BuyShares.new(b, shares: presidency, percent: 50))
@@ -350,7 +362,7 @@ describe 'G18OE Concession RR Phase (§8, §8.1)' do
 
       before { pass_until!(round, b) }
 
-      it "offers an Open-Market regional's presidency in the stock round (§8.2)" do
+      it "offers a parred regional's president share in the stock round (§8.2)" do
         expect(step.can_buy?(b, presidency.to_bundle)).to be(true)
         expect(step.actions(b)).to include('buy_shares')
       end
@@ -364,7 +376,7 @@ describe 'G18OE Concession RR Phase (§8, §8.1)' do
 
       it 'makes the buyer president and floats the regional (§8.2)' do
         buy!
-        expect([lnwr.owner, b.percent_of(lnwr), lnwr.floated?, game.share_pool.shares_of(lnwr)]).to eq([b, 50, true, []])
+        expect([lnwr.owner, b.percent_of(lnwr), lnwr.floated?]).to eq([b, 50, true])
       end
 
       it "places the regional's home token when bought (§9.2)" do
@@ -383,11 +395,11 @@ describe 'G18OE Concession RR Phase (§8, §8.1)' do
         expect([game.regional_corps_floated, game.regionals_in_play]).to eq([1, 1])
       end
 
-      it 'refuses a partial bundle of the presidency share (§8.2)' do
+      it 'refuses a partial bundle of the president share (§8.2)' do
         expect(step.can_buy?(b, Engine::ShareBundle.new(presidency, 25))).to be(false)
       end
 
-      it 'refuses the presidency after the buyer already bought or parred this turn (§8.2)' do
+      it 'refuses the president share after the buyer already bought or parred this turn (§8.2)' do
         round.current_actions << Engine::Action::Par.new(b, corporation: game.corporation_by_id('PLM'),
                                                             share_price: cell(game, 60, :par))
         expect(step.can_buy?(b, presidency.to_bundle)).to be(false)
@@ -401,31 +413,41 @@ describe 'G18OE Concession RR Phase (§8, §8.1)' do
         expect(game.major_phase?).to be(true)
       end
 
-      it 'refuses the presidency to a player who cannot pay twice par (§9.2)' do
+      it 'refuses the president share to a player who cannot pay twice par (§9.2)' do
         b.spend(b.cash - 150, game.bank)
         expect(step.can_buy?(b, presidency.to_bundle)).to be(false)
       end
 
       it "keeps a parred regional's 25% shares off sale (§8.2)" do
-        allow(game).to receive(:major_phase?).and_return(true)
-        expect(step.can_buy?(b, lnwr.ipo_shares.first.to_bundle)).to be(false)
+        expect(step.can_buy?(b, lnwr.ipo_shares.find { |share| !share.president }.to_bundle)).to be(false)
       end
 
-      it "records the presidency purchase as the buyer's share action and passes the turn (§8.2)" do
+      it "records the president share purchase as the buyer's share action and passes the turn (§8.2)" do
         buy!
         expect([round.players_bought[b][lnwr], round.current_entity]).to eq([50, c])
       end
     end
 
-    it 'does not offer the Open-Market presidency during the Concession round (§8.1)' do
+    it 'does not offer the president share of a parred regional during the Concession round (§8.1)' do
       round = concession_round!([a, b])
       a.spend(a.cash - 100, game.bank)
-      open_market_par!(a)
+      par_only!(a)
 
       expect(round.active_step.actions(b)).to eq(['par'])
     end
 
-    it 'still lets a regional parred normally be bought as before (§8.1)' do
+    it "keeps a floated regional's 25% shares off sale before the Major RR Phase (§8.2)" do
+      concession_round!([a, b])
+      float_regional!(game.round, 'LNWR')
+      lnwr = game.corporation_by_id('LNWR')
+      round = stock_round!(game)
+      step = round_step(round, Engine::Game::G18OE::Step::BuySellParShares)
+
+      expect(game.parred_regional?(lnwr)).to be(false)
+      expect(step.can_buy?(b, lnwr.ipo_shares.first.to_bundle)).to be(false)
+    end
+
+    it "offers a floated regional's 25% shares from the Major RR Phase (§8.2)" do
       concession_round!([a, b])
       float_regional!(game.round, 'LNWR')
       lnwr = game.corporation_by_id('LNWR')
@@ -433,15 +455,14 @@ describe 'G18OE Concession RR Phase (§8, §8.1)' do
       step = round_step(round, Engine::Game::G18OE::Step::BuySellParShares)
       allow(game).to receive(:major_phase?).and_return(true)
 
-      expect(game.open_market_regional?(lnwr)).to be(false)
       expect(step.can_buy?(b, lnwr.ipo_shares.first.to_bundle)).to be(true)
     end
 
-    it 'closes the unparred regionals when an open-market par reaches the regional maximum (§8.2)' do
+    it 'closes the unparred regionals when a par-only reaches the regional maximum (§8.2)' do
       concession_round!([a, b])
       game.regional_corps_floated = game.class::MAX_FLOATED_REGIONALS - 1
       a.spend(a.cash - 100, game.bank)
-      lnwr = open_market_par!(a)
+      lnwr = par_only!(a)
 
       expect(lnwr).not_to be_closed
       expect(game.regional_corps_floated).to eq(game.class::MAX_FLOATED_REGIONALS - 1)
@@ -454,7 +475,7 @@ describe 'G18OE Concession RR Phase (§8, §8.1)' do
       game.regional_corps_floated = game.class::MAX_FLOATED_REGIONALS - 1
       game.minor_floated_regions = game.corporations.select { |c| c.type == :minor }.to_h { |m| [m.id, 'RU'] }
       a.spend(a.cash - 100, game.bank)
-      open_market_par!(a)
+      par_only!(a)
 
       expect(game.major_phase?).to be(false)
     end

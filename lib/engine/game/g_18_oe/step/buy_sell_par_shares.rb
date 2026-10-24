@@ -40,21 +40,15 @@ module Engine
           end
 
           def can_buy_any_from_ipo?(entity)
-            return false unless @game.major_phase?
+            return super if @game.major_phase?
 
-            super
-          end
-
-          def can_buy_shares?(entity, shares)
-            if shares.any? && @game.open_market_regional?(shares.first.corporation)
-              return shares.any? { |share| can_buy_open_market_presidency?(entity, share.to_bundle) }
+            @game.corporations.any? do |corporation|
+              @game.parred_regional?(corporation) && can_buy?(entity, corporation.presidents_share.to_bundle)
             end
-
-            super
           end
 
           def can_buy?(entity, bundle)
-            return can_buy_open_market_presidency?(entity, bundle) if bundle && @game.open_market_regional?(bundle.corporation)
+            return false if treasury_share_off_sale?(bundle)
 
             # During conversion lock-in: only the new major's IPO is available.
             return false if @converted && bundle.corporation != @converted
@@ -68,27 +62,6 @@ module Engine
             end
 
             super
-          end
-
-          def can_buy_open_market_presidency?(entity, bundle)
-            return false unless @game.open_market_presidency?(bundle)
-            return false unless entity.player?
-            return false if bought?
-            return false if @round.players_sold[entity][bundle.corporation]
-            return false unless available_cash(entity) >= 2 * bundle.corporation.par_price.price
-
-            can_gain?(entity, bundle)
-          end
-
-          def process_buy_shares(action)
-            return super unless @game.open_market_presidency?(action.bundle)
-
-            corporation = action.bundle.corporation
-            raise GameError, "Cannot buy a share of #{corporation.name}" unless can_buy?(action.entity, action.bundle)
-
-            @round.players_bought[action.entity][corporation] += action.bundle.percent
-            @game.float_open_market_regional!(action.entity, corporation)
-            track_action(action, corporation)
           end
 
           def can_gain?(entity, bundle, exchange: false)
@@ -250,7 +223,6 @@ module Engine
               float_minor(action)
             else
               super
-              @game.regional_corps_floated += 1
             end
 
             @game.minor_regional_order << action.corporation
@@ -275,10 +247,14 @@ module Engine
             when :minor
               prices
             when :regional
-              prices.select { |p| p.price * 2 <= available_cash(entity) }
+              affordable_regional_par_prices(entity)
             else
               super
             end
+          end
+
+          def affordable_regional_par_prices(entity)
+            @game.stock_market.par_prices.select { |price| price.price * 2 <= available_cash(entity) }
           end
 
           def check_legal_buy(entity, shares, exchange: nil, swap: nil, allow_president_change: true)
@@ -330,6 +306,15 @@ module Engine
 
           def bought_corporation
             @round.current_actions.find { |x| x.is_a?(Action::BuyShares) }&.bundle&.corporation
+          end
+
+          def treasury_share_off_sale?(bundle)
+            return false if @game.major_phase? || !bundle
+
+            corporation = bundle.corporation
+            return false if bundle.owner != corporation.ipo_owner || !corporation.ipoed
+
+            !(@game.parred_regional?(corporation) && bundle.presidents_share && bundle.percent == corporation.presidents_percent)
           end
 
           def president_pool_overcap_buy?(entity, bundle)

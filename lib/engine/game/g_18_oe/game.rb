@@ -19,6 +19,7 @@ module Engine
         include G18OE::Map
         attr_accessor :minor_regional_order, :minor_available_regions, :minor_floated_regions, :regional_corps_floated,
                       :consolidation_triggered, :consolidation_complete
+        attr_reader :concessions
 
         MARKET = [
           ['', '110', '120C', '135', '150', '165', '180', '200', '225', '250', '280', '310', '350', '390', '440', '490', '550'],
@@ -680,6 +681,7 @@ module Engine
           @minor_asterisked_selected = 0
           @minor_floated_regions = {}
           @regional_corps_floated = 0
+          @concessions = companies.select { |company| concession?(company) }
           @fulfilled_train_obligation = Set.new
           @first_or_complete = false
 
@@ -700,8 +702,8 @@ module Engine
           company.type == :concession
         end
 
-        def concessions
-          @companies.select { |company| concession?(company) && !company.closed? }.sort_by { |company| company.sym[/\d+/].to_i }
+        def open_concessions
+          @concessions.reject(&:closed?)
         end
 
         def init_starting_cash(players, bank)
@@ -912,8 +914,8 @@ module Engine
               end
             when Engine::Round::Auction
               init_round_finished
-              reorder_players(silent: concessions.any?)
-              concessions.any? ? new_concession_round : new_stock_round
+              reorder_players(silent: open_concessions.any?)
+              open_concessions.any? ? new_concession_round : new_stock_round
             when Round::G18OE::Concession
               reorder_players_after_concessions!
               new_stock_round
@@ -951,48 +953,20 @@ module Engine
           @corporations.each { |c| c.always_market_price = true if c.type == :major }
         end
 
-        def game_corporations
-          super.map do |corporation|
-            corporation[:type] == 'regional' ? corporation.merge(float_excludes_market: true) : corporation
-          end
-        end
-
-        def lowest_regional_par_price
-          stock_market.par_prices.map(&:price).min
-        end
-
-        def par_regional_in_open_market!(corporation, share_price)
-          par_corporation(corporation, share_price)
-          corporation.ipoed = true
-          share_pool.transfer_shares(corporation.presidents_share.to_bundle, share_pool)
-          @minor_regional_order << corporation
-        end
-
-        def open_market_presidency?(bundle)
-          return false unless bundle&.presidents_share
-          return false unless bundle.percent == bundle.corporation.presidents_percent
-
-          bundle.owner == share_pool && open_market_regional?(bundle.corporation)
-        end
-
-        def float_open_market_regional!(player, corporation)
-          price = 2 * corporation.par_price.price
-          @log << "#{player.name} buys the presidency of #{corporation.name} from the Open Market for " \
-                  "#{format_currency(price)} and floats it"
-          share_pool.transfer_shares(corporation.presidents_share.to_bundle, player,
-                                     spender: player, receiver: corporation, price: price)
-          @regional_corps_floated += 1
-          float_corporation(corporation)
-          place_home_token(corporation)
-          after_par(corporation)
-        end
-
         def regionals_in_play
-          @regional_corps_floated + @corporations.count { |c| open_market_regional?(c) }
+          @regional_corps_floated + @corporations.count { |corporation| parred_regional?(corporation) }
         end
 
-        def open_market_regional?(corporation)
-          corporation.type == :regional && corporation.presidents_share.owner == share_pool
+        def parred_regional?(corporation)
+          corporation.type == :regional && corporation.ipoed && !corporation.floated?
+        end
+
+        def float_corporation(corporation)
+          super
+          return unless corporation.type == :regional
+
+          @regional_corps_floated += 1
+          charge_track_rights!(corporation)
         end
 
         def new_concession_round
@@ -1045,12 +1019,8 @@ module Engine
           'Float'
         end
 
-        def after_par(corporation)
-          super
-          # Spend the track rights zone fee when a regional pars.
-          # Zones not yet in TRACK_RIGHTS_COST (or not in NATIONAL_REGION_HEXES) are skipped safely.
-          region = CORPORATIONS_TRACK_RIGHTS[corporation.id]
-          cost = TRACK_RIGHTS_COST[region]
+        def charge_track_rights!(corporation)
+          cost = TRACK_RIGHTS_COST[CORPORATIONS_TRACK_RIGHTS[corporation.id]]
           corporation.spend(cost, @bank) if cost&.positive?
         end
 
