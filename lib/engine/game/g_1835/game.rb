@@ -309,6 +309,7 @@ module Engine
         def upgrades_to?(from, to, special = nil, selected_company: nil)
           # green double cities cannot be upgraded any further
           return false if %w[14 15].include?(from.name)
+          return true if EXTRA_UPGRADES[from.name]&.include?(to.name)
 
           super
         end
