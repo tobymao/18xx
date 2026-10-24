@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative '../g_1861/entities'
-
 module Engine
   module Game
     module G1864
@@ -166,24 +164,206 @@ module Engine
           },
         ].freeze
 
-        MINOR_HOMES = {
-          'RO' => { coordinates: 'C18' },                # Billings
-          'KB' => { coordinates: 'B23' },                # Bismarck
-          'OK' => { coordinates: 'J25' },                # Oklahoma City
-          'KK' => { coordinates: 'G20', city: 2 },       # Denver
-          'SPW' => { coordinates: 'G2' },                # San Francisco
-          'MB' => { coordinates: 'K12' },                # Phoenix
-          'KR' => { coordinates: 'G14', city: 1 },       # Salt Lake City
-          'N' => { coordinates: 'F27' },                 # Omaha
-          'Y' => { coordinates: 'D11', city: 0 },        # Boise
-          'M-K' => { coordinates: 'G20', city: 0 },      # Denver
-          'MNN' => { coordinates: 'G14', city: 0 },      # Salt Lake City
-          'MV' => { coordinates: 'J19' },                # Santa Fe
-          'V' => { coordinates: 'B5' },                  # Seattle
-          'TR' => { coordinates: 'G20', city: 1 },       # Denver
-          'SV' => { coordinates: 'J5' },                 # Los Angeles
-          'E' => { coordinates: 'D5' },                  # Eugene
-        }.freeze
+        MAJOR_CORPORATIONS = [
+          {
+            sym: 'WP',
+            name: 'Western Pacific Railroad',
+            color: '#A52A2A',
+            text_color: 'white',
+          },
+          {
+            sym: 'TP',
+            name: 'Texas & Pacific Railway',
+            color: '#800080',
+            text_color: 'white',
+          },
+          {
+            sym: 'SP',
+            name: 'Southern Pacific Railroad',
+            color: '#F48221',
+            text_color: 'black',
+          },
+          {
+            sym: 'NP',
+            name: 'Northern Pacific Railway',
+            color: '#000000',
+            text_color: 'white',
+          },
+          {
+            sym: 'MKT',
+            name: 'Missouri-Kansas-Texas Railroad',
+            color: '#018471',
+            text_color: 'white',
+          },
+          {
+            sym: 'GN',
+            name: 'Great Northern Railway',
+            color: '#87CEFA',
+            text_color: 'black',
+          },
+          {
+            sym: 'DRG',
+            name: 'Denver & Rio Grande Railroad',
+            color: '#A0522D',
+            text_color: 'white',
+          },
+          {
+            sym: 'ATSF',
+            name: 'Atchison, Topeka & Santa Fe Railway',
+            color: '#7090C9',
+            text_color: 'white',
+          },
+        ].map do |major|
+          {
+            logo: "1864/#{major[:sym]}",
+            simple_logo: "1864/#{major[:sym]}.alt",
+            float_percent: 20,
+            always_market_price: true,
+            tokens: [0, 20, 40],
+            type: 'major',
+          }.merge(major)
+        end.freeze
+
+        GREEN_MINOR_RESERVATION_COLOR = '#009a54ff'
+
+        MINOR_CORPORATIONS = [
+          {
+            sym: 'RF&CC',
+            name: 'Rocky Fork & Cooke City Railway',
+            coordinates: 'C18',
+            color: '#4169A1',
+            text_color: 'white',
+          },
+          {
+            sym: 'BW&GF',
+            name: 'Bismarck, Washburn & Great Falls Railway',
+            coordinates: 'B23',
+            color: '#2F3E46',
+            text_color: 'white',
+          },
+          {
+            sym: 'CC&R',
+            name: 'Choctaw Coal & Railway Company',
+            coordinates: 'J25',
+            color: '#285943',
+            text_color: 'white',
+          },
+          {
+            sym: 'SPP',
+            name: 'Denver, South Park & Pacific Railroad',
+            coordinates: 'G20',
+            city: 2,
+            color: '#FFA500',
+            text_color: 'black',
+          },
+          {
+            sym: 'CP',
+            name: 'Central Pacific Railroad',
+            coordinates: 'G2',
+            color: '#1D3557',
+            text_color: 'white',
+          },
+          {
+            sym: 'M&P',
+            name: 'Maricopa & Phoenix Railroad',
+            coordinates: 'K12',
+            color: '#F2D492',
+            text_color: 'black',
+            reservation_color: GREEN_MINOR_RESERVATION_COLOR,
+          },
+          {
+            sym: 'UCR',
+            name: 'Utah Central Railroad',
+            coordinates: 'G14',
+            city: 1,
+            color: '#8B8C5A',
+            text_color: 'black',
+          },
+          {
+            sym: 'O&NW',
+            name: 'Omaha & North Western Railroad',
+            coordinates: 'F27',
+            color: '#A58FD1',
+            text_color: 'black',
+          },
+          {
+            sym: 'ICR',
+            name: 'Idaho Central Railway',
+            coordinates: 'D11',
+            city: 0,
+            color: '#7A9A3A',
+            text_color: 'black',
+            reservation_color: GREEN_MINOR_RESERVATION_COLOR,
+          },
+          {
+            sym: 'DPR',
+            name: 'Denver Pacific Railway',
+            coordinates: 'G20',
+            city: 0,
+            color: '#4D2674',
+            text_color: 'white',
+          },
+          {
+            sym: 'U&N',
+            name: 'Utah & Northern Railway',
+            coordinates: 'G14',
+            city: 0,
+            color: '#D4A017',
+            text_color: 'black',
+          },
+          {
+            sym: 'NM&SP',
+            name: 'New Mexico & Southern Pacific Railroad',
+            coordinates: 'J19',
+            color: '#3FA7A0',
+            text_color: 'black',
+          },
+          {
+            sym: 'SLS&E',
+            name: 'Seattle, Lake Shore & Eastern Railway',
+            coordinates: 'B5',
+            color: '#8C1C3A',
+            text_color: 'white',
+            reservation_color: GREEN_MINOR_RESERVATION_COLOR,
+          },
+          {
+            sym: 'CCR',
+            name: 'Colorado Central Railroad',
+            coordinates: 'G20',
+            city: 1,
+            color: '#3D2314',
+            text_color: 'white',
+            reservation_color: GREEN_MINOR_RESERVATION_COLOR,
+          },
+          {
+            sym: 'CSR',
+            name: 'California Southern Railroad',
+            coordinates: 'J5',
+            color: '#E377A6',
+            text_color: 'black',
+            reservation_color: GREEN_MINOR_RESERVATION_COLOR,
+          },
+          {
+            sym: 'O&C',
+            name: 'Oregon & California Railroad',
+            coordinates: 'D5',
+            color: '#6C8794',
+            text_color: 'black',
+            reservation_color: GREEN_MINOR_RESERVATION_COLOR,
+          },
+        ].map do |minor|
+          {
+            logo: "1864/#{minor[:sym]}",
+            simple_logo: "1864/#{minor[:sym]}",
+            float_percent: 100,
+            always_market_price: true,
+            tokens: [0],
+            shares: [100],
+            max_ownership_percent: 100,
+            type: 'minor',
+            reservation_color: :yellow,
+          }.merge(minor)
+        end.freeze
 
         MINORS = [
           {
@@ -218,20 +398,13 @@ module Engine
           max_ownership_percent: 60,
           always_market_price: true,
           type: 'national',
-          color: '#c8102e',
-          text_color: 'white',
+          color: '#FFD700',
+          text_color: 'black',
         }.freeze
 
-        CORPORATIONS =
-          (G1861::Entities::CORPORATIONS.reject { |c| c[:sym] == 'RSR' }.map do |corporation|
-             home = MINOR_HOMES[corporation[:sym]]
-             next corporation unless home
-
-             corporation
-               .except(:city)
-               .merge(home)
-               .merge(reservation_color: corporation[:reservation_color] || :yellow)
-           end + [UNION_PACIFIC]).freeze
+        CORPORATIONS = (
+          MAJOR_CORPORATIONS + MINOR_CORPORATIONS + [UNION_PACIFIC]
+        ).freeze
       end
     end
   end

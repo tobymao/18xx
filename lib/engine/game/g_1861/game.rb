@@ -179,6 +179,10 @@ module Engine
           corporations + [@national]
         end
 
+        def first_minor
+          corporation_by_id('N')
+        end
+
         def unstarted_corporation_summary
           unipoed = (@corporations + @future_corporations).reject(&:ipoed)
           minor = unipoed.select { |c| c.type == :minor }
