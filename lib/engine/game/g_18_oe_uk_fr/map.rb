@@ -59,7 +59,7 @@ module Engine
           'T27' => 'Limoges',
           'T37' => 'Geneve and Lausanne',
           'U24' => 'Bordeaux',
-          'U32' => 'Saint-Etienne',
+          'U32' => 'Saint-Étienne',
           'U34' => 'Lyon',
           'V21' => 'Bayonne',
           'V27' => 'Toulouse',

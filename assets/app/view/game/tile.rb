@@ -7,6 +7,7 @@ require 'view/game/part/cities'
 require 'view/game/part/debug_region_weights'
 require 'view/game/part/label'
 require 'view/game/part/location_name'
+require 'view/game/part/patronage'
 require 'view/game/part/revenue'
 require 'view/game/part/towns'
 require 'view/game/part/track'
@@ -82,6 +83,7 @@ module View
         children << render_tile_part(Part::Cities, show_revenue: !render_revenue) unless @tile.cities.empty?
 
         children << render_tile_part(Part::Towns, routes: @routes, show_revenue: !render_revenue) unless @tile.towns.empty?
+        children << render_tile_part(Part::Patronage) if @tile.patronage
 
         borders = render_tile_part(Part::Borders) if @tile.borders.any?(&:type)
         # OO tiles have different rules...
@@ -89,7 +91,7 @@ module View
           rendered_loc_name = render_tile_part(Part::LocationName)
         end
         revenue = render_tile_part(Part::Revenue) if render_revenue
-        @tile.labels.each { |l| children << render_tile_part(Part::Label, label: l) }
+        @tile.labels.each { |l| children << render_tile_part(Part::Label, label: l, loc: l.loc) }
 
         render_tile_parts_by_loc(
           Part::Upgrades,
