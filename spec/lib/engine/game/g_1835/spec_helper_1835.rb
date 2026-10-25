@@ -20,3 +20,11 @@ def buy_shares(player, corporation_id, percent = nil, other_player = nil)
     share.percent == percent
   end)).maybe_raise!
 end
+
+def sell_shares(player, corporation_id, percent = 10)
+  corp = game.corporation_by_id(corporation_id)
+  bundle = game.sellable_bundles(player, corp).find { |b| b.percent == percent }
+  game.process_action(
+    Engine::Action::SellShares.new(player, shares: bundle.shares)
+  ).maybe_raise!
+end

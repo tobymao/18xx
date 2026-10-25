@@ -228,7 +228,7 @@ module Engine
         end
 
         def stock_round
-          Engine::Round::Stock.new(self, [
+          G1835::Round::Stock.new(self, [
             G1835::Step::MinorExchange,
             G1835::Step::BuySellParShares,
           ])

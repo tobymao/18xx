@@ -16,6 +16,13 @@ module Engine
             end
           end
 
+          def track_action(action, corporation, player_action = true)
+            @round.turns_since_last_purchase = 0 if action.type == 'buy_shares'
+            @round.last_to_act = action.entity.player if action.type == 'buy_shares'
+            @round.current_actions << action if player_action
+            @round.players_history[action.entity.player][corporation] << action
+          end
+
           def can_buy?(entity, bundle)
             if bundle&.owner&.player?
               return false unless can_nationalize?(entity, bundle.corporation)
