@@ -211,9 +211,9 @@ module Engine
             Engine::Step::Bankrupt,
             G1835::Step::MinorExchange,
             Engine::Step::DiscardTrain,
+            Engine::Step::HomeToken,
             Engine::Step::SpecialTrack,
             Engine::Step::Track,
-            Engine::Step::HomeToken,
             Engine::Step::SpecialToken,
             G1835::Step::Token,
             Engine::Step::Route,
@@ -223,7 +223,8 @@ module Engine
         end
 
         def stock_round
-          Engine::Round::Stock.new(self, [
+          G1835::Round::Stock.new(self, [
+            Engine::Step::HomeToken,
             G1835::Step::MinorExchange,
             G1835::Step::BuySellParShares,
           ])
@@ -323,6 +324,13 @@ module Engine
         # Modified to select operator if company is player owned
         def token_owner(entity)
           return @round.current_operator if entity&.company? && entity.owner&.player? && @round.operating?
+
+          super
+        end
+
+        def ability_usable?(ability)
+          # L6 cannot get tokened using the Pfalzbahnen as long as Baden has not placed its home token
+          return false if ability.type == :token && ability.owner == company_by_id('PB') && !corporation_by_id('BA').floated?
 
           super
         end
