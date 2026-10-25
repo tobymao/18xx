@@ -19,13 +19,13 @@ module Engine
         end
 
         it 'follows the ledge arrow at the bottom of the ladder' do
-          stock_market.set_par(corporation, stock_market.market.first[1])
+          game.par_corporation(corporation, stock_market.market.first[1])
           stock_market.move_left(corporation)
           expect(corporation.share_price.price).to eq(50)
         end
 
         it 'follows the ledge arrow at the top of the ladder' do
-          stock_market.set_par(corporation, stock_market.market.first[-2])
+          game.par_corporation(corporation, stock_market.market.first[-2])
           stock_market.move_right(corporation)
           expect(corporation.share_price.price).to eq(300)
         end
