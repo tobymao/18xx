@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 module G18OESpecHelpers
-  def new_game(players = %w[a b c], klass: Engine::Game::G18OE::Game)
-    klass.new(players, seed: 1)
+  def new_game(players = %w[a b c], klass: Engine::Game::G18OE::Game, optional_rules: [])
+    klass.new(players, seed: 1, optional_rules: optional_rules)
   end
 
   def act!(target, action)
@@ -35,6 +35,14 @@ module G18OESpecHelpers
     game.place_home_token(regional)
     game.minor_regional_order << regional
     regional
+  end
+
+  def float_regionals!(game, count, except: [])
+    player = game.players.first
+    game.corporations.select { |corporation| corporation.type == :regional && !corporation.ipoed }
+      .reject { |corporation| except.include?(corporation.id) }
+      .first(count)
+      .each { |corporation| start_regional!(game, corporation.id, player) }
   end
 
   def start_major!(game, id, player)

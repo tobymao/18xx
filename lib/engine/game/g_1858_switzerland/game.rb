@@ -134,8 +134,6 @@ module Engine
             train_6h.delete(:obsolete_on) # Wounded on second grey train, handled in code
             train_6h[:events] = [{ 'type' => 'blue_privates_available' }]
             train_6e[:events] = [{ 'type' => 'privates_close2' }]
-            train_6e[:price] = 700
-            train_6e[:variants][0][:price] = 600
             train_5d[:available_on] = '6'
           end
           @game_trains

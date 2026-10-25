@@ -6,7 +6,9 @@ require_relative 'map'
 require_relative 'stock_market'
 require_relative '../base'
 require_relative 'round/consolidation'
+require_relative 'round/concession'
 require_relative 'step/consolidate'
+require_relative 'step/concession'
 
 module Engine
   module Game
@@ -15,8 +17,12 @@ module Engine
         include_meta(G18OE::Meta)
         include G18OE::Entities
         include G18OE::Map
-        attr_accessor :minor_regional_order, :minor_available_regions, :minor_floated_regions, :regional_corps_floated,
+        attr_accessor :minor_regional_order, :minor_available_regions, :minor_floated_regions,
                       :consolidation_triggered, :consolidation_complete
+        attr_reader :concessions
+
+        PATRONAGE_DRAWS = [{ group: :pink, count: 3 }, { group: :yellow, count: 3 },
+                           { group: :white, count: 3 }, { group: :green, count: 8 }].freeze
 
         MARKET = [
           ['', '110', '120C', '135', '150', '165', '180', '200', '225', '250', '280', '310', '350', '390', '440', '490', '550'],
@@ -32,6 +38,7 @@ module Engine
         # Standard game: £5,400 total / num_players, rounded up to nearest £5.
         # 2-player variant uses without-concessions formula (£5,200 / 2 = £2,600).
         STARTING_CASH = { 2 => 2600, 3 => 1800, 4 => 1350, 5 => 1080, 6 => 900, 7 => 775 }.freeze
+        STARTING_CASH_NO_CONCESSIONS = { 2 => 2600, 3 => 1735, 4 => 1300, 5 => 1040, 6 => 870, 7 => 745 }.freeze
         BANK_CASH = 54_000
         CAPITALIZATION = :incremental
         SELL_BUY_ORDER = :sell_buy
@@ -361,10 +368,11 @@ module Engine
         }.freeze
 
         # Cities that sit on a national-zone border hex (hex listed in two zones).
-        # All other cities belong unambiguously to one zone; only these two need an explicit override.
+        # All other cities belong unambiguously to one zone; only these need an explicit override.
         CITY_NATIONAL_ZONE = {
           'Q38' => 'FR',  # Nancy   — FR/PHS border hex
           'O52' => 'PHS', # Dresden — PHS/AH border hex
+          'S76' => 'BRS',
         }.freeze
 
         # Cities excluded from minor home-token placement regardless of zone membership.
@@ -675,13 +683,79 @@ module Engine
           @minor_available_regions = self.class::MINOR_TRACK_RIGHTS_CHITS.transform_values(&:itself)
           @minor_asterisked_selected = 0
           @minor_floated_regions = {}
-          @regional_corps_floated = 0
+          @concessions = companies.select { |company| concession?(company) }
           @fulfilled_train_obligation = Set.new
           @first_or_complete = false
 
           corporations.each do |corp|
             corp.par_via_exchange = companies.find { |c| c.sym == corp.id } if corp.type == :minor
           end
+
+          setup_patronage_tiles!
+        end
+
+        def setup_patronage_tiles!
+          drawn = self.class::PATRONAGE_DRAWS.flat_map do |draw|
+            candidates = self.class::PATRONAGE_TILES.select do |_hex_id, data|
+              data[:group] == draw[:group] && (draw[:zone].nil? || data[:zone] == draw[:zone])
+            end
+            candidates.keys.sort_by { rand }.take(draw[:count])
+          end
+          drawn.each { |hex_id| place_patronage_tile!(hex_id) }
+
+          entries = drawn.map do |id|
+            "#{hex_by_id(id).location_name} (#{id}) #{self.class::PATRONAGE_TILES[id][:payouts].values.join('/')}"
+          end
+          @log << "Patronage tiles: #{entries.join(', ')}"
+        end
+
+        def place_patronage_tile!(hex_id)
+          hex_by_id(hex_id).tile.patronage = self.class::PATRONAGE_TILES[hex_id][:payouts]
+        end
+
+        def patronage_color
+          @phase.tiles.last
+        end
+
+        def remove_patronage!(hex)
+          payouts = hex.tile.patronage
+          hex.tile.patronage = nil
+          payouts
+        end
+
+        def fulfill_patronage!(entity, hex)
+          payouts = remove_patronage!(hex)
+          return unless payouts
+
+          amount = payouts[patronage_color]
+          @bank.spend(amount, entity)
+          @log << "#{entity.name} fulfills the #{hex.location_name} patronage tile and receives #{format_currency(amount)}"
+        end
+
+        def medium_start?
+          @optional_rules.include?(:medium_start)
+        end
+
+        def concessions?
+          !medium_start? && players.size > 2
+        end
+
+        def concession?(company)
+          company.type == :concession
+        end
+
+        def init_starting_cash(players, bank)
+          cash = medium_start? ? self.class::STARTING_CASH_NO_CONCESSIONS : self.class::STARTING_CASH
+          players.each { |player| bank.spend(cash[players.size], player) }
+        end
+
+        def init_companies(players)
+          companies = super
+          concessions? ? companies : companies.reject { |company| concession?(company) }
+        end
+
+        def num_certs(entity)
+          super - entity.companies.count { |company| concession?(company) }
         end
 
         def init_stock_market
@@ -698,7 +772,7 @@ module Engine
         # "Major Railroad Phase" entry: conversions and secondary-share purchases
         # become available from this point on.
         def major_phase?
-          return false unless @regional_corps_floated >= self.class::MAX_FLOATED_REGIONALS
+          return false if @corporations.any? { |corporation| corporation.type == :regional && !corporation.floated? }
 
           total_minors = corporations.count { |c| c.type == :minor }
           @minor_floated_regions.size >= total_minors
@@ -717,7 +791,8 @@ module Engine
         end
 
         def operating_order
-          @minor_regional_order + @corporations.select { |c| %i[major national].include?(c.type) && c.floated? }.sort
+          floated_minors_and_regionals = @minor_regional_order.select(&:floated?)
+          floated_minors_and_regionals + @corporations.select { |c| %i[major national].include?(c.type) && c.floated? }.sort
         end
 
         def hex_within_national_region?(entity, hex)
@@ -875,6 +950,13 @@ module Engine
                 or_set_finished
                 new_stock_round
               end
+            when Engine::Round::Auction
+              init_round_finished
+              reorder_players(silent: concessions.any?)
+              concessions.any? ? new_concession_round : new_stock_round
+            when Round::G18OE::Concession
+              reorder_players_after_concessions!
+              new_stock_round
             when Round::G18OE::Consolidation
               @consolidation_complete = true
               remove_major_par_markers!
@@ -907,6 +989,34 @@ module Engine
 
         def remove_major_par_markers!
           @corporations.each { |c| c.always_market_price = true if c.type == :major }
+        end
+
+        def regionals_in_play
+          @corporations.count { |corporation| corporation.type == :regional && corporation.ipoed }
+        end
+
+        def parred_regional?(corporation)
+          corporation.type == :regional && corporation.ipoed && !corporation.floated?
+        end
+
+        def float_corporation(corporation)
+          super
+          return unless corporation.type == :regional
+
+          pay_home_token_cost!(corporation)
+        end
+
+        def new_concession_round
+          @log << '-- Concession RR Phase --'
+          Round::G18OE::Concession.new(self, [
+            G18OE::Step::HomeToken,
+            G18OE::Step::Concession,
+          ])
+        end
+
+        def reorder_players_after_concessions!
+          @players.rotate!(@players.index(@round.entities.last) + 1)
+          @log << "#{@players.first.name} has priority deal"
         end
 
         def new_consolidation_round
@@ -946,12 +1056,8 @@ module Engine
           'Float'
         end
 
-        def after_par(corporation)
-          super
-          # Spend the track rights zone fee when a regional pars.
-          # Zones not yet in TRACK_RIGHTS_COST (or not in NATIONAL_REGION_HEXES) are skipped safely.
-          region = CORPORATIONS_TRACK_RIGHTS[corporation.id]
-          cost = TRACK_RIGHTS_COST[region]
+        def pay_home_token_cost!(corporation)
+          cost = TRACK_RIGHTS_COST[CORPORATIONS_TRACK_RIGHTS[corporation.id]]
           corporation.spend(cost, @bank) if cost&.positive?
         end
 

@@ -8,8 +8,9 @@ module Engine
       module Step
         class HomeToken < Engine::Step::HomeToken
           def process_place_token(action)
-            if action.entity.type == :minor
-              hex = action.city.hex
+            minor = action.entity.type == :minor
+            hex = action.city.hex
+            if minor
               region = @game.region_for_hex(hex)
 
               raise GameError, "Region #{region} is not available" unless @game.region_available?(region)
@@ -19,6 +20,10 @@ module Engine
             end
 
             super
+
+            return if !minor || !@game.remove_patronage!(hex)
+
+            @game.log << "The #{hex.location_name} patronage tile is removed"
           end
         end
       end

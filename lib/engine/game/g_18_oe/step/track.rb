@@ -46,6 +46,7 @@ module Engine
             lay_tile(action)
             @game.log << "Used #{points_cost} tile point(s) to lay tile"
             @game.log << "#{points_available - points_cost} point(s) remaining"
+            @game.fulfill_patronage!(action.entity, action.hex)
             if track_upgrade?(old_tile, tile, action.hex)
               @round.upgraded_track = true
               @round.num_upgraded_track += 1
