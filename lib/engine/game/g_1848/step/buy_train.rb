@@ -15,7 +15,7 @@ module Engine
 
             if must_buy_train?(entity)
               %w[buy_train]
-            elsif can_buy_train?(entity) || (!owns_2e?(entity) && entity.cash >= 100 && @game.can_take_loan?(entity))
+            elsif can_buy_train?(entity)
               %w[buy_train pass]
             else
               []
@@ -56,6 +56,12 @@ module Engine
             trains_to_buy.uniq
           end
 
+          def buying_power(entity)
+            return super if @round.loan_taken || !@game.can_take_loan?(entity)
+
+            super + @game.loan_value(entity)
+          end
+
           def owns_2e?(entity)
             entity.trains.any? { |t| t.name == '2E' }
           end
@@ -65,7 +71,7 @@ module Engine
 
             cost = ghan_train.price
             cost -= ghan_private_ability.discount if ghan_private_owned?(entity)
-            cost <= entity.cash
+            cost <= buying_power(entity)
           end
 
           def ghan_private_ability

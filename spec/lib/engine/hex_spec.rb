@@ -43,6 +43,15 @@ module Engine
           subject.lay(green_tile)
           expect(subject.tile.cities[0].reservations).to eq([corp_1])
         end
+
+        it 'moves patronage to the new tile' do
+          old_tile = subject.tile
+          old_tile.patronage = { yellow: 20, green: 30 }
+
+          subject.lay(green_tile)
+          expect(subject.tile.patronage).to eq(yellow: 20, green: 30)
+          expect(old_tile.patronage).to be_nil
+        end
       end
 
       context 'laying brown' do

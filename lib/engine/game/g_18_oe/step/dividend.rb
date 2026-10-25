@@ -28,6 +28,10 @@ module Engine
             process_dividend(Action::Dividend.new(current_entity, kind: kind))
           end
 
+          def half_pay_withhold_amount(_entity, revenue)
+            (revenue / 2).floor
+          end
+
           def share_price_change(entity, revenue)
             return {} if %i[minor regional].include?(entity.type)
             return { share_direction: :left, share_times: 1 } if revenue.zero?

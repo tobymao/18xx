@@ -130,7 +130,7 @@ module Engine
           'D1' => 'Cleveland',
           'D15' => 'Schenectady',
           'D17' => 'Albany',
-          'D25' => 'Worchester',
+          'D25' => 'Worcester',
           'D27' => 'Boston',
           'E10' => 'Binghamton',
           'E22' => 'Springfield & Hartford',
@@ -271,7 +271,7 @@ module Engine
             ['I8'] => 'city=revenue:20;path=a:1,b:_0;path=a:4,b:_0',
             ['J13'] => 'city=revenue:30;city=revenue:30;city=revenue:30;path=a:0,b:_0;path=a:2,b:_1;'\
                        'path=a:4,b:_2;label=PHI',
-            ['K10'] => 'city=revenue:30;path=a:0,b:_0;path=a:1,b:_0;path=a:4,b:_0',
+            ['K10'] => 'city=revenue:30;path=a:0,b:_0;path=a:1,b:_0;path=a:4,b:_0;label=BAL',
           },
           blue: {
             ['G26'] => 'path=a:0,b:3,track:narrow;border=edge:1,type:impassable',

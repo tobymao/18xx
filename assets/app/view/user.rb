@@ -4,6 +4,7 @@
 
 require 'game_manager'
 require 'user_manager'
+require 'lib/params'
 require 'lib/settings'
 require 'lib/whats_this'
 require 'view/game_row'
@@ -58,10 +59,26 @@ module View
 
       children << render_stats("#{name} Statistics")
 
+      url_search_params = Lib::Params::URLSearchParams.new
+      selected_titles = url_search_params.unsupported ? [] : url_search_params.get_all('profile_title')
+
       player_games = @games.select { |game| user_in_game?(@profile, game) }.group_by { |game| game['status'] }
       player_games.default = []
 
       active_games = player_games['active'].sort_by { |game| -game['updated_at'] }
+      finished_games = (player_games['finished'] + player_games['archived']).sort_by { |game| -game['finished_at'] }
+
+      all_games = active_games + finished_games
+      if all_games.any? || selected_titles.any?
+        children << render_game_filters(url_search_params, selected_titles,
+                                        player_games)
+      end
+
+      unless selected_titles.empty?
+        active_games = active_games.select { |g| selected_titles.include?(g['title']) }
+        finished_games = finished_games.select { |g| selected_titles.include?(g['title']) }
+      end
+
       unless active_games.empty?
         children << h(GameRow,
                       header: "#{name} Active Games",
@@ -70,7 +87,6 @@ module View
                       user: @user)
       end
 
-      finished_games = (player_games['finished'] + player_games['archived']).sort_by { |game| -game['finished_at'] }
       unless finished_games.empty?
         children << h(GameRow,
                       header: "#{name} Finished Games",
@@ -511,6 +527,82 @@ module View
 
       ]
       h(:div, children)
+    end
+
+    def render_game_filters(url_search_params, selected_titles, player_games)
+      all_games = (player_games['active'] + player_games['finished'] + player_games['archived'])
+      available_titles = all_games.map { |g| g['title'] }.uniq.sort
+
+      title_display = {}
+      available_titles.each do |t|
+        title_display[t] = Engine.meta_by_title(t)&.display_title || t
+      end
+
+      update_filter = lambda do |new_titles|
+        url_search_params.set_array('profile_title', new_titles)
+        qs = url_search_params.to_query_string
+        store(:app_route, "#{@app_route.split('?').first}?#{qs}", skip: false)
+      end
+
+      # Chips for selected titles
+      chips = selected_titles.map do |t|
+        display = title_display[t] || t
+        on_remove = lambda do
+          update_filter.call(selected_titles.reject { |x| x == t })
+        end
+        h(:span, {
+            style: {
+              display: 'inline-flex',
+              alignItems: 'center',
+              background: '#4a4a4a',
+              color: '#fff',
+              borderRadius: '3px',
+              padding: '2px 6px',
+              margin: '2px',
+              fontSize: '0.9em',
+            },
+          }, [
+          h(:span, "\u{1F682} #{display}"),
+          h(:span, {
+              style: { marginLeft: '4px', cursor: 'pointer', fontWeight: 'bold' },
+              on: { click: on_remove },
+            }, "\u00d7"),
+        ])
+      end
+
+      # Dropdown options: exclude already-selected titles
+      game_options = [h(:option, { attrs: { value: '' } }, '(Filter by title...)')]
+      title_display.each do |value, display|
+        next if selected_titles.include?(value)
+
+        game_options << h(:option, { attrs: { value: value } }, display)
+      end
+
+      on_select = lambda do |e|
+        target = e.JS['currentTarget']
+        title = target.JS['value']
+        return if title.empty?
+
+        update_filter.call((selected_titles + [title]).uniq)
+        target.JS['value'] = ''
+      end
+
+      filter_children = []
+      filter_children << h(:div, { style: { marginBottom: '4px' } }, chips) unless chips.empty?
+      filter_children << h('select', { on: { input: on_select }, style: { maxWidth: '90vw' } }, game_options)
+
+      unless selected_titles.empty?
+        on_reset = -> { update_filter.call([]) }
+        filter_children << h(:button, {
+                               style: { marginLeft: '0.5rem' },
+                               on: { click: on_reset },
+                             }, 'Reset')
+      end
+
+      h(:div, { style: { margin: '0.5rem 0' } }, [
+        h(:strong, 'Filter Games: '),
+        *filter_children,
+      ])
     end
 
     def params

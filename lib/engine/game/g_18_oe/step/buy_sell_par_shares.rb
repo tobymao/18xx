@@ -40,12 +40,16 @@ module Engine
           end
 
           def can_buy_any_from_ipo?(entity)
-            return false unless @game.major_phase?
+            return super if @game.major_phase?
 
-            super
+            @game.corporations.any? do |corporation|
+              @game.parred_regional?(corporation) && can_buy?(entity, corporation.presidents_share.to_bundle)
+            end
           end
 
           def can_buy?(entity, bundle)
+            return false if treasury_share_off_sale?(bundle)
+
             # During conversion lock-in: only the new major's IPO is available.
             return false if @converted && bundle.corporation != @converted
 
@@ -143,6 +147,7 @@ module Engine
             # Step 5: Promote to major (do this after price moves so move logic
             # doesn't see a half-converted corporation)
             corporation.type = :major
+            @game.place_major_par_marker!(corporation)
 
             # Step 6: Issue the 6 new 10% IPO shares.
             # add_new_share registers each share in @_shares immediately, keeping
@@ -172,10 +177,11 @@ module Engine
             corporation = action.corporation
             entity = action.entity
             company = find_minor_company(corporation)
+            raise GameError, "#{entity.name} does not own #{company.name}" unless company.owner == entity
 
             @log << "#{entity.name} floats #{company.sym}"
 
-            @game.stock_market.set_par(corporation, share_price)
+            @game.par_corporation(corporation, share_price)
             share = corporation.ipo_shares.first
             @round.players_bought[entity][corporation] += share.percent
             buy_shares(entity, share.to_bundle, exchange: company, silent: true)
@@ -217,19 +223,20 @@ module Engine
               float_minor(action)
             else
               super
-              @game.regional_corps_floated += 1
             end
 
             @game.minor_regional_order << action.corporation
 
-            return unless @game.regional_corps_floated == @game.class::MAX_FLOATED_REGIONALS
+            close_unfloated_regionals_at_maximum!
+          end
 
-            corps = @game.corporations.dup
-            corps.each do |corp|
-              next if corp.ipoed || corp.type == :minor
+          def close_unfloated_regionals_at_maximum!
+            return unless @game.regionals_in_play >= @game.class::MAX_FLOATED_REGIONALS
 
-              @game.close_corporation(corp)
-            end
+            leftovers = @game.corporations.reject { |corp| corp.ipoed || corp.type == :minor }
+            return if leftovers.empty?
+
+            leftovers.each { |corp| @game.close_corporation(corp) }
 
             pass!
           end
@@ -240,10 +247,14 @@ module Engine
             when :minor
               prices
             when :regional
-              prices.select { |p| p.price * 2 <= available_cash(entity) }
+              affordable_regional_par_prices(entity)
             else
               super
             end
+          end
+
+          def affordable_regional_par_prices(entity)
+            @game.stock_market.par_prices.select { |price| price.price * 2 <= available_cash(entity) }
           end
 
           def check_legal_buy(entity, shares, exchange: nil, swap: nil, allow_president_change: true)
@@ -257,14 +268,7 @@ module Engine
               return
             end
 
-            if @converted
-              # Clear current_actions before calling super so the base pass! logic
-              # sees an "empty turn" and calls entity.pass! (marking the player as
-              # done) rather than entity.unpass! (which would give them another
-              # full SR turn for having done Convert+BuyShares this turn).
-              @round.current_actions.clear
-              @converted = nil
-            end
+            @converted = nil
 
             super
           end
@@ -302,6 +306,15 @@ module Engine
 
           def bought_corporation
             @round.current_actions.find { |x| x.is_a?(Action::BuyShares) }&.bundle&.corporation
+          end
+
+          def treasury_share_off_sale?(bundle)
+            return false if @game.major_phase? || !bundle
+
+            corporation = bundle.corporation
+            return false if bundle.owner != corporation.ipo_owner || !corporation.ipoed
+
+            !(@game.parred_regional?(corporation) && bundle.presidents_share && bundle.percent == corporation.presidents_percent)
           end
 
           def president_pool_overcap_buy?(entity, bundle)
