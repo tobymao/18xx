@@ -8,14 +8,14 @@ module Engine
       module Step
         class Token < Engine::Step::Token
           def available_hex(entity, hex)
-            return nil unless @game.hex_within_national_region?(entity, hex)
+            return nil unless @game.city_in_track_rights?(entity, hex)
 
             super
           end
 
           def check_connected(entity, city, hex)
             city_string = hex.tile.cities.size > 1 ? " city #{city.index}" : ''
-            unless @game.hex_within_national_region?(entity, hex)
+            unless @game.city_in_track_rights?(entity, hex)
               raise GameError, "Cannot place token on #{hex.name} because it is outside #{entity.name}'s track rights zone"
             end
 

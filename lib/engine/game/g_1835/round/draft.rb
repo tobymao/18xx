@@ -9,6 +9,12 @@ module Engine
         class Draft < Engine::Round::Draft
           def setup
             @all_players_have_acted_at_least_once = false
+            skip_steps
+            next_entity! unless active_step
+          end
+
+          def select_entities
+            @game.players
           end
 
           def next_entity!

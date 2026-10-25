@@ -87,6 +87,40 @@ describe Engine::Game::G1835::Game do
 
       expect(game.players.first).to eq(player_3)
     end
+
+    it 'should not get stuck in later draft rounds even if the PD cannot afford anything' do
+      buy(player_1, 'NF')
+      buy(player_2, 'LD')
+      buy(player_3, '2')
+      buy(player_1, '3')
+      buy(player_2, '4')
+      buy(player_3, 'BY_D')
+      buy(player_1, 'BB')
+      buy(player_2, '1')
+      buy(player_3, 'OBB')
+      buy(player_1, 'HB')
+      buy(player_2, '5')
+      pass(player_3)
+      buy(player_1, '6')
+      # Pfalzbahnen was not sold, so BY does not float
+
+      # skip laying track and buying trains for all minors
+      12.times do
+        pass(game.current_entity)
+      end
+
+      # no player can afford the Pfalzbahnen, so the draft is skipped entirely
+
+      expect(game.current_entity).to eq(game.minor_by_id('1'))
+
+      # skip laying track and buying trains for all minors
+      12.times do
+        pass(game.current_entity)
+      end
+
+      # player 2 has the PD, but they don't have enough money and are skipped, same as player 3
+      expect(game.current_entity).to eq(player_1)
+    end
   end
 
   describe 'after_starter_pack_player_order_4' do

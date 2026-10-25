@@ -5,8 +5,8 @@ def pass(entity)
 end
 
 def buy(player, company_id)
-  game.process_action(Engine::Action::Bid.new(player, company: game.company_by_id(company_id),
-                                                      price: game.company_by_id(company_id).value)).maybe_raise!
+  company = game.company_by_id(company_id)
+  game.process_action(Engine::Action::Bid.new(player, company: company, price: company.value)).maybe_raise!
 end
 
 def buy_shares(player, corporation_id, percent = nil, other_player = nil)

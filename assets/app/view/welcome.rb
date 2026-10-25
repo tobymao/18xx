@@ -16,7 +16,8 @@ module View
 
     def render_notification
       message = <<~MESSAGE
-        <p>The Old Prince 1871 is now live on <a href="https://www.kickstarter.com/projects/joshuastarr/the-old-prince-1871">Kickstarter</a>.</p>
+        <p><a href="https://github.com/tobymao/18xx/wiki/1864-Forty-Niner">1864: Forty-Niner</a> is now in alpha.</p>
+        <p><a href="https://github.com/tobymao/18xx/wiki/1837">1837</a> is now in production.</p>
         <p>Report bugs and make feature requests <a href='https://github.com/tobymao/18xx/issues'>on GitHub</a>.</p>
       MESSAGE
 

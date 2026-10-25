@@ -154,7 +154,7 @@ module Engine
           'F80' => 'Kawaguchi',
           'F82' => 'Itabashi',
           'F84' => 'Ikebukuro',
-          'F86' => 'Shijuku',
+          'F86' => 'Shinjuku',
           'F88' => 'Shibuya',
           'F92' => 'Kamata',
           'F94' => 'Kawasaki',
