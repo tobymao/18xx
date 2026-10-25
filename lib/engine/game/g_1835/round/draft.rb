@@ -13,10 +13,6 @@ module Engine
             next_entity! unless active_step
           end
 
-          def select_entities
-            @game.players
-          end
-
           def next_entity!
             next_entity_index!
             return if finished?
