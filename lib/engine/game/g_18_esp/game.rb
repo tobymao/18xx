@@ -741,7 +741,6 @@ module Engine
           return false unless entity&.corporation?
           return true if entity.destination_connected?
 
-          # reachable_hexes only contains hexes with walked paths; a missing or trackless destination is never in it.
           return false unless (destination = hex_by_id(entity.destination))
           return false if destination.tile.paths.empty?
 

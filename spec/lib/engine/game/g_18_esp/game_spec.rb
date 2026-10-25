@@ -68,12 +68,9 @@ describe Engine::Game::G18ESP::Game do
   end
 
   describe '18ESP_unreached_destination_phase_8' do
-    # The graph walk can only report hexes with paths, so these cases are answerable without it.
     describe 'destination connection short-circuits' do
-      # Phase 3: the minors still exist and three destinations have no track laid on them yet.
       let(:game) { fixture_at_action(600) }
 
-      # What the check did before the short circuit was added.
       def by_graph(corp)
         return false unless corp&.corporation?
         return true if corp.destination_connected?
@@ -84,7 +81,6 @@ describe Engine::Game::G18ESP::Game do
       it 'answers false for a corporation without a destination, without walking' do
         minor = game.corporations.find { |c| !c.destination }
         expect(minor).not_to be_nil
-        # Arm after the load, and on reachable_hexes: the graph itself is built once, inside that load.
         expect_any_instance_of(Engine::Graph).not_to receive(:reachable_hexes)
         expect(game.check_for_destination_connection(minor)).to be(false)
       end
@@ -98,7 +94,6 @@ describe Engine::Game::G18ESP::Game do
         expect(game.check_for_destination_connection(corp)).to be(false)
       end
 
-      # Equivalence with the body this replaced; walked counts the corporations that still reach the graph.
       it 'agrees with the graph walk for every corporation' do
         walked = 0
         game.corporations.each do |corp|
