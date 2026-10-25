@@ -5,8 +5,9 @@ require_relative 'base'
 module Engine
   module Part
     class Label < Base
-      def initialize(label = nil)
+      def initialize(label = nil, loc: nil)
         @label = label
+        @loc = loc
       end
 
       def to_s

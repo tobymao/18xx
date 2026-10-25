@@ -15,15 +15,16 @@ module Engine
                   'round. This can be in addition to the normal placing of a station marker and is free. A connection with the '\
                   'track of the company is not required. This action closes the Nürnberg-Fürth.',
             abilities: [{ type: 'shares', shares: 'BY_2' }, {
+              description: 'Free token in Nürnberg or Fürth (L14)',
               type: 'token',
-              when: 'owning_player_track',
-              owner_type: 'player',
+              when: 'owning_player_token',
               hexes: ['L14'],
-              price: 0,
               teleport_price: 0,
               count: 1,
               extra_action: true,
               from_owner: true,
+              connected: false,
+              closed_when_used_up: true,
             }],
             color: :dodgerblue,
             auction_row: 0,
@@ -284,6 +285,7 @@ module Engine
             floatable: false,
             max_ownership_percent: 100,
             shares: [10, 10, 10, 10, 10, 10, 10, 10, 5, 5, 5, 5],
+            coordinates: 'E19',
             color: '#37383a',
           },
           {

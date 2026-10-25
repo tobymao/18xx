@@ -95,7 +95,7 @@ describe Engine::Game::G18Norway::Game do
 
         # Ensure corporation has a share price
         share_price = game.stock_market.par_prices.first
-        game.stock_market.set_par(corporation, share_price)
+        game.par_corporation(corporation, share_price)
 
         # Give NSB enough shares to become president if current president sells
         shares = game.shares.select { |s| s.corporation == corporation }.take(2)
@@ -119,7 +119,7 @@ describe Engine::Game::G18Norway::Game do
 
         # Ensure corporation has a share price
         share_price = game.stock_market.par_prices.first
-        game.stock_market.set_par(corporation, share_price)
+        game.par_corporation(corporation, share_price)
 
         # Give NSB enough shares to become president if current president sells
         shares = game.shares.select { |s| s.corporation == corporation }.take(2)
@@ -148,7 +148,7 @@ describe Engine::Game::G18Norway::Game do
 
         # Ensure corporation has a share price
         share_price = game.stock_market.par_prices.first
-        game.stock_market.set_par(corporation, share_price)
+        game.par_corporation(corporation, share_price)
 
         # Give NSB enough shares to become president if current president sells
         shares = game.shares.select { |s| s.corporation == corporation }.take(2)
@@ -176,7 +176,7 @@ describe Engine::Game::G18Norway::Game do
 
         # Ensure corporation has a share price
         share_price = game.stock_market.par_prices.first
-        game.stock_market.set_par(corporation, share_price)
+        game.par_corporation(corporation, share_price)
 
         # Try to sell non-president share
         bundle = Engine::ShareBundle.new(game.shares.select { |s| s.corporation == corporation && !s.president })

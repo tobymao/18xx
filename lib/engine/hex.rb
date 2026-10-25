@@ -175,6 +175,9 @@ module Engine
       tile.reservations = @tile.reservations
       @tile.reservations = []
 
+      tile.patronage = @tile.patronage
+      @tile.patronage = nil
+
       tile.borders.concat(@tile.borders)
       @tile.borders.clear
 

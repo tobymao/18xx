@@ -100,6 +100,15 @@ module Engine
           '221' => 1,
         }.freeze
 
+        # yellow double dits upgrade to green tiles with one dit
+        EXTRA_UPGRADES = {
+          '1' => %w[88],
+          '2' => %w[87],
+          '55' => %w[88],
+          '56' => %w[87],
+          '69' => %w[204],
+        }.freeze
+
         LOCATION_NAMES = {
           'A11' => 'Kiel',
           'C11' => 'Hamburg',
@@ -180,7 +189,7 @@ module Engine
             ['G5'] => 'city=revenue:0,loc:0',
             ['H2'] => 'city=revenue:0,loc:3.5;label=Y',
             ['H16'] => 'city=revenue:0,loc:2.5',
-            ['H20'] => 'city=revenue:0,loc:0.5;upgrade=cost:50;label=Y',
+            ['H20'] => 'city=revenue:0,loc:0.5;label=Y',
             ['I3'] => 'city=revenue:0;label=Y;upgrade=cost:50',
             ['M9'] => 'city=revenue:0,loc:0.5',
             ['N12'] => 'city=revenue:0,loc:5',
@@ -208,8 +217,8 @@ module Engine
             %w[D14 E15 K7 K9 M13 M17] => 'upgrade=cost:50,terrain:water',
             %w[G13 H6 H8 H12 I7 I9 J14 K15 N8 O7] =>
                    'upgrade=cost:70,terrain:mountain',
-            ['C9'] => 'border=edge:3,type:water',
-            ['B10'] => 'border=edge:0,type:water',
+            ['C9'] => 'border=edge:3,type:impassable,color:blue',
+            ['B10'] => 'border=edge:0,type:impassable,color:blue',
           },
           red: {
             ['C21'] => 'offboard=revenue:yellow_20|green_20|brown_40;path=a:1,b:_0',
@@ -234,12 +243,12 @@ module Engine
           green: {
             ['C11'] =>
             'city=revenue:40;path=a:0,b:_0;city=revenue:40;path=a:2,b:_1;'\
-            'city=revenue:40;path=a:4,b:_2;path=a:3,b:_2;label=HH',
+            'city=revenue:40;path=a:4,b:_2;path=a:3,b:_2;label=HH;upgrade=cost:50',
             ['J8'] =>
             'city=revenue:40,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:3,b:_0;path=a:4,b:_0;upgrade=cost:50;label=Y',
             ['L14'] =>
             'city=revenue:30,loc:2.5;path=a:3,b:_0;path=a:2,b:_0;'\
-            'city=revenue:30,loc:5.5;path=a:5,b:_1;path=a:0,b:_1;label=XX',
+            'city=revenue:30,loc:5.5;path=a:5,b:_1;path=a:0,b:_1;label=XX;future_label=label:X,color:brown',
           },
           brown: {
             %w[A9 G1] => 'path=a:4,b:5',

@@ -34,7 +34,7 @@ module Engine
 
             @log << "#{company.sym} converts to a corporation: #{corporation.full_name}"
             @log << "#{corporation.name} share price is set to #{@game.format_currency(share_price.price)}"
-            @game.stock_market.set_par(corporation, share_price)
+            @game.par_corporation(corporation, share_price)
 
             if share_price.price >= company.value
               buy_and_issue(player, company, share_price, corporation, 1)

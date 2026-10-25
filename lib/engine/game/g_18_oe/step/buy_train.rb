@@ -29,8 +29,9 @@ module Engine
           end
 
           def process_buy_train(action)
+            reserved = action.train.name == '2+2' && action.train.from_depot?
             super
-            @game.fulfill_train_obligation!(action.entity) if action.train.name == '2+2' && action.train.from_depot?
+            @game.fulfill_train_obligation!(action.entity) if reserved
           end
 
           # TODO: Nationals claiming rusted trains for free (openpoints §1.9, §3.7) — deferred

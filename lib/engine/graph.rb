@@ -246,6 +246,8 @@ module Engine
       routes = @routes[corporation] || {}
       walk_corporation = @no_blocking ? nil : corporation
       skip_paths = @check_regions ? @game.graph_border_paths(corporation) : @game.graph_skip_paths(corporation)
+      pruner = Pruner.new(roots: tokens, found: paths, corporation: walk_corporation, skip_paths: skip_paths,
+                          skip_track: @skip_track, backtracking: @backtracking)
 
       tokens.keys.each do |node|
         if routes[:route_train_purchase] && routes_only
@@ -261,7 +263,7 @@ module Engine
 
         node.walk(visited: visited, corporation: walk_corporation, skip_track: @skip_track,
                   skip_paths: skip_paths, converging_path: false, walk_calls: @walk_calls[corporation],
-                  backtracking: @backtracking) do |path, _, _|
+                  backtracking: @backtracking, pruner: pruner) do |path, _, _|
           next if paths[path]
 
           paths[path] = true
@@ -324,6 +326,109 @@ module Engine
       LOGGER.debug do
         "    Graph computed with #{walk_calls(corporation)[:not_skipped]} "\
           "completed walk calls (skipped #{walk_calls(corporation)[:skipped]})"
+      end
+    end
+
+    class Pruner
+      def initialize(roots:, found:, corporation: nil, skip_paths: nil, skip_track: nil, backtracking: false)
+        @roots = roots
+        @found = found
+        @corporation = corporation
+        @skip_paths = skip_paths
+        @skip_track = skip_track
+        @backtracking = backtracking
+      end
+
+      def prune?(path)
+        build_components unless @component
+        return false unless (id = @component[path])
+
+        members = @members[id]
+        index = @cursor[id]
+        index += 1 while index < members.size && @found[members[index]]
+        @cursor[id] = index
+        index == members.size
+      end
+
+      private
+
+      def build_components
+        link_reachable_paths
+
+        @component = {}
+        @members = []
+        ids = {}
+        @parent.each_key do |path|
+          root = find(path)
+          unless (id = ids[root])
+            id = ids[root] = @members.size
+            @members << []
+          end
+          @members[id] << path
+          @component[path] = id
+        end
+        @cursor = Array.new(@members.size, 0)
+      end
+
+      def link_reachable_paths
+        @parent = {}
+        queue = @roots.keys.flat_map(&:paths).select { |path| walkable?(path) }
+        queue.each { |path| @parent[path] = path }
+
+        until queue.empty?
+          path = queue.pop
+          adjacent_paths(path).each do |other|
+            next unless walkable?(other)
+
+            unless @parent.key?(other)
+              @parent[other] = other
+              queue << other
+            end
+            union(path, other)
+          end
+        end
+      end
+
+      def walkable?(path)
+        !@skip_paths&.key?(path) && path.track != @skip_track && !(path.junction && path.terminal?)
+      end
+
+      def wall?(node)
+        @roots[node] || (@corporation && node.blocks?(@corporation))
+      end
+
+      def adjacent_paths(path)
+        adjacent = path.junction ? path.junction.paths.dup : []
+        hex = path.hex
+
+        path.exits.each do |edge|
+          adjacent.concat(hex.paths[edge]) if @backtracking
+          next unless (neighbor = hex.neighbors[edge])
+
+          adjacent.concat(neighbor.paths[hex.invert(edge)])
+        end
+
+        unless path.terminal?
+          path.nodes.each do |node|
+            adjacent.concat(node.paths) unless wall?(node)
+          end
+        end
+
+        adjacent
+      end
+
+      def find(path)
+        while (parent = @parent[path]) != path
+          @parent[path] = @parent[parent]
+          path = parent
+        end
+        path
+      end
+
+      def union(a, b)
+        root_a = find(a)
+        root_b = find(b)
+        @parent[root_b] = root_a unless root_a == root_b
       end
     end
   end

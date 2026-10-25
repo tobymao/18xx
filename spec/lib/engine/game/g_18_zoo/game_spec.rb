@@ -104,7 +104,7 @@ module Engine
       let(:corporation) { game.corporations.first }
 
       before do
-        game.stock_market.set_par(corporation, share_price)
+        game.par_corporation(corporation, share_price)
         game.share_pool.buy_shares(player_1, corporation.shares[0])
         game.round.process_action(Action::BuyShares.new(player_1, shares: corporation.shares[0]))
       end
@@ -115,7 +115,7 @@ module Engine
       let(:corporation) { game.corporations.first }
 
       before do
-        game.stock_market.set_par(corporation, share_price)
+        game.par_corporation(corporation, share_price)
         2.times { game.share_pool.buy_shares(player_1, corporation.shares[0]) }
         game.round.process_action(Action::SellShares.new(player_1, shares: player_1.shares[1]))
       end
@@ -269,7 +269,7 @@ module Engine
 
         it 'can\'t buy over 80%' do
           player_1.set_cash(10_000, game.bank)
-          stock_market.set_par(corporation, stock_market.par_prices.find { |price| price.price == 5 })
+          game.par_corporation(corporation, stock_market.par_prices.find { |price| price.price == 5 })
           3.times { game.share_pool.buy_shares(player_1, corporation.shares[0]) }
 
           expect(game.active_step.can_buy?(player_1, corporation.shares[0])).to be_falsy
@@ -277,7 +277,7 @@ module Engine
 
         it 'should be able to get 100% buying from market' do
           player_1.set_cash(10_000, game.bank)
-          stock_market.set_par(corporation, stock_market.par_prices.find { |price| price.price == 5 })
+          game.par_corporation(corporation, stock_market.par_prices.find { |price| price.price == 5 })
           3.times { game.share_pool.buy_shares(player_1, corporation.shares[0]) }
 
           player_2.set_cash(10_000, game.bank)
@@ -296,7 +296,7 @@ module Engine
           next_sr!
 
           player_1.set_cash(10_000, game.bank)
-          stock_market.set_par(corporation, stock_market.par_prices.find { |price| price.price == 5 })
+          game.par_corporation(corporation, stock_market.par_prices.find { |price| price.price == 5 })
           3.times { game.share_pool.buy_shares(player_1, corporation.shares[0]) }
 
           player_2.set_cash(10_000, game.bank)
@@ -467,6 +467,39 @@ module Engine
 
         expect(game.timeline).to be_an(Array)
         expect(game.timeline).not_to include(/NEARBY FAMILY/)
+      end
+    end
+
+    describe 'ZOOTickets' do
+      let(:players) { { 1 => 'Alice', 2 => 'Bob', 3 => 'Carol' } }
+      let(:game) { Engine::Game::G18ZOOMapA::Game.new(players) }
+
+      before do
+        3.times { game.process_action(Action::Pass.new(game.current_entity)) }
+      end
+
+      def sell_ticket(ticket_id)
+        game.process_action({
+                              'type' => 'choose_ability',
+                              'entity' => ticket_id,
+                              'entity_type' => 'company',
+                              'choice' => { 'type' => 'sell' },
+                            })
+      end
+
+      it 'still finds a ticket after its owner renames' do
+        sell_ticket(game.player_by_id(1).companies.first.id)
+        renamed = Engine::Game::G18ZOOMapA::Game.new(players.merge(1 => 'Alicia'), actions: game.raw_actions)
+
+        expect(renamed.exception).to be_nil
+        expect(renamed.player_by_id(1).companies.count { |c| renamed.zoo_ticket?(c) }).to eq(2)
+      end
+
+      it 'finds a ticket by its owner name' do
+        sell_ticket('ZOOTicket 1 - Alice')
+
+        expect(game.exception).to be_nil
+        expect(game.player_by_id(1).companies.map(&:name)).to eq(['ZOOTicket 2', 'ZOOTicket 3'])
       end
     end
   end
