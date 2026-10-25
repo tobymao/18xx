@@ -700,6 +700,7 @@ module View
             marginBottom: '0.5rem',
             padding: '0.1rem 0.2rem',
             fontSize: '80%',
+            whiteSpace: 'pre-line',
           },
         }
         ability_props = {}

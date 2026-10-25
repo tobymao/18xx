@@ -495,6 +495,17 @@ module Engine
           super
         end
 
+        def value_for_dumpable(player, corporation)
+          max_bundle = bundles_for_corporation(player, corporation)
+            .select do |bundle|
+              bundle.percent <= self.class::TURN_SELL_LIMIT &&
+                can_dump?(player, bundle) &&
+                @share_pool&.fit_in_bank?(bundle)
+            end
+            .max_by(&:price)
+          max_bundle&.price || 0
+        end
+
         def can_go_bankrupt?(player, corporation)
           return false if player == @union_bank
 

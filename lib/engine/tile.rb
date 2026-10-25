@@ -15,7 +15,7 @@ module Engine
     include Config::Tile
 
     attr_accessor :blocks_lay, :hex, :icons, :index, :legal_rotations, :location_name,
-                  :name, :opposite, :reservations, :upgrades, :color, :future_label, :future_paths, :halts
+                  :name, :opposite, :reservations, :upgrades, :color, :future_label, :future_paths, :halts, :patronage
     attr_reader :borders, :cities, :edges, :junction, :nodes, :labels, :parts, :preprinted, :rotation, :stops, :towns,
                 :offboards, :blockers, :city_towns, :unlimited, :stubs, :partitions, :id, :frame, :stripes, :hidden,
                 :hidden_blockers, :code
@@ -171,7 +171,7 @@ module Engine
         cache << offboard
         offboard
       when 'label'
-        Part::Label.new(params)
+        params.is_a?(Hash) ? Part::Label.new(params['label'], loc: params['loc']) : Part::Label.new(params)
       when 'upgrade'
         Part::Upgrade.new(params['cost'], params['terrain']&.split('|'), params['size'], loc: params['loc'])
       when 'border'
@@ -243,6 +243,7 @@ module Engine
       @unlimited = opts[:unlimited] || false
       @labels = []
       @future_label = nil
+      @patronage = nil
       @halts = []
       @opposite = nil
       @hidden = opts[:hidden] || false

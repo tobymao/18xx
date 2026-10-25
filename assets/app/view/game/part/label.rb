@@ -1,12 +1,15 @@
 # frozen_string_literal: true
 
 require 'view/game/part/base'
+require 'view/game/part/small_item'
 
 module View
   module Game
     module Part
       # letter label, like "Z", "H", "OO"
       class Label < Base
+        include SmallItem
+
         needs :label
 
         # left of center
@@ -204,6 +207,10 @@ module View
           else
             [P_LEFT_CORNER[layout], P_BOTTOM_LEFT_CORNER[layout]]
           end
+        end
+
+        def parts_for_loc
+          [@label]
         end
 
         def render_part
