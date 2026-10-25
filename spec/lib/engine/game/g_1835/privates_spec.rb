@@ -78,7 +78,7 @@ describe Engine::Game::G1835::Game do
       bayern_cash = by.cash
       bayern_num_unused_tokens = by.tokens.count { |t| !t.used }
       # Place token in Nürnberg/Fürth without connection
-      game.process_action(Engine::Action::PlaceToken.new(nf, city: hex('L14').tile.cities.first, tokener: by))
+      game.process_action(Engine::Action::PlaceToken.new(nf, city: hex('L14').tile.cities.first, tokener: by)).maybe_raise!
       # Ensure placing the token was free
       expect(by.cash).to be bayern_cash
 
@@ -86,7 +86,7 @@ describe Engine::Game::G1835::Game do
       expect(nf.closed?).to be true
 
       # Make sure we can place another token, but this one costs money: Augsburg is 2 hexes away, so 2 * 20 = 40
-      game.process_action(Engine::Action::PlaceToken.new(by, city: game.hex_by_id('N12').tile.cities.first))
+      game.process_action(Engine::Action::PlaceToken.new(by, city: game.hex_by_id('N12').tile.cities.first)).maybe_raise!
       expect(by.cash).to be bayern_cash - 40
 
       # Make sure NF used one of BY's tokens
